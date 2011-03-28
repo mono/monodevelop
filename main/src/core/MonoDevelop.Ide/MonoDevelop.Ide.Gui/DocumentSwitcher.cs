@@ -153,23 +153,27 @@ namespace MonoDevelop.Ide
 			return str;
 		}
 		
+		const int upperGradientHeight = 16;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
-				cr.LineWidth = 1;
-				cr.Rectangle (0, 0, Allocation.Width, 16);
-				var pattern = new Cairo.LinearGradient (0, 0, 0, 16);
-				pattern.AddColorStop (0, new Cairo.Color (0.6, 0.8, 0.6));
-				pattern.AddColorStop (1, new Cairo.Color (0.8, 1.0, 0.8));
-				cr.Pattern = pattern;
-				cr.Fill ();
-				cr.Rectangle (0, 16, Allocation.Width, Allocation.Height - 16);
-				pattern = new Cairo.LinearGradient (0, 16, 0, Allocation.Height);
-				pattern.AddColorStop (0, new Cairo.Color (0.8, 1.0, 0.8));
-				pattern.AddColorStop (1, new Cairo.Color (0.6, 0.8, 0.6));
-				cr.Pattern = pattern;
-				cr.Fill ();
+				cr.Rectangle (0, 0, Allocation.Width, upperGradientHeight);
+				using (var pattern = new Cairo.LinearGradient (0, 0, 0, upperGradientHeight)) {
+					pattern.AddColorStopRgb (0, new Cairo.Color (0.6, 0.8, 0.6));
+					pattern.AddColorStopRgb (1, new Cairo.Color (0.8, 1.0, 0.8));
+					cr.Pattern = pattern;
+					cr.Fill ();
+				}
 				
+				cr.Rectangle (0, upperGradientHeight, Allocation.Width, Allocation.Height - upperGradientHeight);
+				using (var pattern = new Cairo.LinearGradient (0, upperGradientHeight, 0, Allocation.Height)) {
+					pattern.AddColorStop (0, new Cairo.Color (0.8, 1.0, 0.8));
+					pattern.AddColorStop (1, new Cairo.Color (0.6, 0.8, 0.6));
+					cr.Pattern = pattern;
+					cr.Fill ();
+				}
+				
+				cr.LineWidth = 1;
 				cr.Line (0, 0, Allocation.Width, 0);
 				cr.Color = new Cairo.Color (0.4, 0.6, 0.4);
 				cr.Stroke ();
@@ -194,16 +198,16 @@ namespace MonoDevelop.Ide
 					var startY = yPos;
 					int curItem = 0;
 					int row = 0;
-					var iconHeight = Math.Max (h, cat.Items[0].Icon.Height + 2);
+					var iconHeight = Math.Max (h, cat.Items [0].Icon.Height + 2);
 					if (cat.FirstVisibleItem > 0) {
-						Gtk.Style.PaintArrow (Style, e.Window, State, ShadowType.None,
+						Gtk.Style.PaintArrow (Style, e.Window, State, ShadowType.None, 
 								new Rectangle ((int)xPos, (int)yPos, w, h), 
-								this,
+								this, 
 								"", 
 								ArrowType.Up, 
 								true, 
 								(int)xPos, 
-								(int)yPos,
+								(int)yPos, 
 								w, 
 								h);
 						yPos += iconHeight;
@@ -211,41 +215,43 @@ namespace MonoDevelop.Ide
 					}
 					
 					for (int i = cat.FirstVisibleItem; i < cat.Items.Count; i++) {
-						var item = cat.Items[i];
+						var item = cat.Items [i];
 						
 						if (curItem + 1 >= maxItems && row + 1 >= maxRows && i + 1 < cat.Items.Count) {
-							Gtk.Style.PaintArrow (Style, e.Window, State, ShadowType.None,
+							Gtk.Style.PaintArrow (Style, e.Window, State, ShadowType.None, 
 								new Rectangle ((int)xPos, (int)yPos, w, h), 
-								this,
+								this, 
 								"", 
 								ArrowType.Down, 
 								true, 
 								(int)xPos, 
-								(int)yPos,
+								(int)yPos, 
 								w, 
 								h);
 							break;
 						}
 						
 						if (item == ActiveItem) {
-							cr.Rectangle (xPos + 0.5, yPos + 0.5, w  + item.Icon.Width + 2, iconHeight);
+							cr.Rectangle (xPos + 0.5, yPos + 0.5, w + item.Icon.Width + 2, iconHeight);
 							
-							pattern = new Cairo.LinearGradient (xPos, yPos, xPos, yPos + iconHeight * 2);
-							pattern.AddColorStop (0, (HslColor)Style.Base (StateType.Selected));
-							pattern.AddColorStop (1, new Cairo.Color (0.8, 1.0, 0.8));
-							cr.Pattern = pattern;
-							cr.FillPreserve ();
+							using (var pattern = new Cairo.LinearGradient (xPos, yPos, xPos, yPos + iconHeight * 2)) {
+								pattern.AddColorStop (0, (HslColor)Style.Base (StateType.Selected));
+								pattern.AddColorStop (1, new Cairo.Color (0.8, 1.0, 0.8));
+								cr.Pattern = pattern;
+								cr.FillPreserve ();
+							}
 							
 							cr.Color = (HslColor)Style.Base (StateType.Selected);
 							cr.Stroke ();
 							cr.Color = (HslColor)Style.Text (StateType.Selected);
 						} else if (item == hoverItem) {
-							cr.Rectangle (xPos + 0.5, yPos + 0.5, w  + item.Icon.Width + 2, iconHeight);
-							pattern = new Cairo.LinearGradient (xPos, yPos, xPos, yPos + iconHeight);
-							pattern.AddColorStop (0, new Cairo.Color (0.6, 0.8, 0.6));
-							pattern.AddColorStop (1, new Cairo.Color (0.8, 1.0, 0.8));
-							cr.Pattern = pattern;
-							cr.Fill ();
+							cr.Rectangle (xPos + 0.5, yPos + 0.5, w + item.Icon.Width + 2, iconHeight);
+							using (var pattern = new Cairo.LinearGradient (xPos, yPos, xPos, yPos + iconHeight)) {
+								pattern.AddColorStop (0, new Cairo.Color (0.6, 0.8, 0.6));
+								pattern.AddColorStop (1, new Cairo.Color (0.8, 1.0, 0.8));
+								cr.Pattern = pattern;
+								cr.Fill ();
+							}
 							cr.Color = (HslColor)Style.Text (StateType.Normal);
 						} else {
 							cr.Color = (HslColor)Style.Text (StateType.Normal);
@@ -259,13 +265,13 @@ namespace MonoDevelop.Ide
 						if (++curItem >= maxItems) {
 							curItem = 0;
 							yPos = startY;
-							xPos += w + cat.Items[0].Icon.Width + 2 + padding;
+							xPos += w + cat.Items [0].Icon.Width + 2 + padding;
 							row++;
 						}
 					}
 					
 				
-					xPos += w + cat.Items[0].Icon.Width + 2 + padding;
+					xPos += w + cat.Items [0].Icon.Width + 2 + padding;
 				}
 				layout.Dispose ();
 			}
@@ -506,7 +512,7 @@ namespace MonoDevelop.Ide
 		Label labelTitle    = new Label ();
 		DocumentList documentList = new DocumentList ();
 		
-		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
+		public DocumentSwitcher (Gtk.Window parent,bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
 			IdeApp.CommandService.IsEnabled = false;
 			this.documents = new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));
@@ -514,6 +520,7 @@ namespace MonoDevelop.Ide
 			
 			this.Decorated = false;
 			this.DestroyWithParent = true;
+			this.CanDefault = true;
 			
 			this.Modal = true;
 			this.WindowPosition = Gtk.WindowPosition.CenterOnParent;
