@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests
@@ -139,6 +140,34 @@ namespace Mono.TextEditor.Tests
 			segments.RemoveAt (1);
 			document.UpdateFoldSegments (segments, false);
 			Assert.AreEqual (25, document.LogicalToVisualLine (25));
+		}
+		
+		/// <summary>
+		/// Bug 682466 - Rendering corruption and jumping in text editor
+		/// </summary>
+		[Test()]
+		public void TestBug682466 ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"0
+1
+2
++[3
+4
+5
+6]
+7
+8
+9
+10";
+			var segments = GetFoldSegments (document);
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (true, document.FoldSegments.FirstOrDefault ().IsFolded);
+			segments = GetFoldSegments (document);
+			segments[0].IsFolded = false;
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (5, document.LogicalToVisualLine (8));
 		}
 		
 		[Test()]

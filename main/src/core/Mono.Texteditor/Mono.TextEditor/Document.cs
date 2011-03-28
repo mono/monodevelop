@@ -972,12 +972,10 @@ namespace Mono.TextEditor
 					FoldSegment curSegment = oldSegments [oldIndex];
 					curSegment.Length = newFoldSegment.Length;
 					curSegment.Description = newFoldSegment.Description;
-					if (curSegment.IsFolded && !newFoldSegment.IsFolded) {
-						foldedSegments.Remove (curSegment);
-					} else if (!curSegment.IsFolded && newFoldSegment.IsFolded) {
+					if (!curSegment.IsFolded && newFoldSegment.IsFolded) {
 						curSegment.isFolded = true;
 						foldedSegments.Add (curSegment);
-					} 
+					}
 				} else {
 					LineSegment startLine = splitter.GetLineByOffset (offset);
 					LineSegment endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
