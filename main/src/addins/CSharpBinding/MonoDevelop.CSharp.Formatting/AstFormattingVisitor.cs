@@ -301,7 +301,8 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			DomLocation location = n.EndLocation;
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
-			if (offset < 0)
+			var line = data.Document.GetLine (location.Line);
+			if (location.Column > line.EditableLength)
 				return;
 			int i = offset;
 			while (i < data.Document.Length && IsSpacing (data.Document.GetCharAt (i))) {
@@ -332,7 +333,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return 0;
 			DomLocation location = n.StartLocation;
 			// respect manual line breaks.
-			if (data.Document.GetLineIndent (location.Line).Length == location.Column - 1)
+			if (location.Column <= 1 || data.Document.GetLineIndent (location.Line).Length == location.Column - 1)
 				return 0;
 	
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
