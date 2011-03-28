@@ -83,8 +83,7 @@ namespace Mono.TextEditor
 			text = editor.FormatString (Location, text);
 			
 			LineSegment line = editor.Document.GetLineByOffset (offset);
-			
-			int insertionOffset = line.Offset;
+			int insertionOffset = line.Offset + Location.Column - 1;
 			offset = insertionOffset;
 			InsertNewLine (editor, LineBefore, ref offset);
 			
