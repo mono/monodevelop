@@ -85,18 +85,20 @@ namespace Mono.MHex.Rendering
 			
 			Cairo.Context cr = Gdk.CairoHelper.Create (win);
 			DrawRoundRectangle (cr, x + 1, y + 1, 8, Width - 4, Editor.LineHeight - 4);
-			Cairo.Gradient pat = new Cairo.LinearGradient (x + Width / 4, y, x + Width / 2, y + Editor.LineHeight - 4);
-			pat.AddColorStop (0, color1);
-			pat.AddColorStop (1, color2);
-			cr.Pattern = pat;
-			cr.FillPreserve ();
+			using (var pat = new Cairo.LinearGradient (x + Width / 4, y, x + Width / 2, y + Editor.LineHeight - 4)) {
+				pat.AddColorStop (0, color1);
+				pat.AddColorStop (1, color2);
+				cr.Pattern = pat;
+				cr.FillPreserve ();
+			}
 			
-			pat = new Cairo.LinearGradient (x, y + Editor.LineHeight, x + Width, y);
-			pat.AddColorStop (0, color2);
-			//pat.AddColorStop (1, color1);
-			cr.Pattern = pat;
-			cr.Stroke ();
-			((IDisposable)cr).Dispose();
+			using (var pat = new Cairo.LinearGradient (x, y + Editor.LineHeight, x + Width, y)) {
+				pat.AddColorStop (0, color2);
+				//pat.AddColorStop (1, color1);
+				cr.Pattern = pat;
+				cr.Stroke ();
+			}
+			((IDisposable)cr).Dispose ();
 		}
 		
 		public static void DrawRoundRectangle (Cairo.Context cr, int x, int y, int r, int w, int h)
