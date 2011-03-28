@@ -117,6 +117,12 @@ namespace MonoDevelop.MonoMac.Gui
 			FilePath workingApp = tempDir.Combine (cfg.AppDirectory.FileName);
 			
 			try {
+				//user will have agreed to overwrite when they picked the target
+				if (Directory.Exists (target))
+					Directory.Delete (target);
+				else if (File.Exists (target))
+					File.Delete (target);
+				
 				monitor.BeginTask (GettextCatalog.GetString ("Creating app bundle"), 0);
 				var files = Directory.GetFiles (cfg.AppDirectory, "*", SearchOption.AllDirectories);
 				HashSet<string> createdDirs = new HashSet<string> ();
