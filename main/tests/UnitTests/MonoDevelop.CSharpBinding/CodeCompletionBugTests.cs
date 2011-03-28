@@ -3377,5 +3377,43 @@ class TestClass
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 683037 - Missing autocompletion when 'using' directive references namespace by relative names
+		/// </summary>
+		/// 
+		[Test()]
+		public void TestBug683037 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"namespace N1.N2
+{
+	public class C1
+	{
+		public void Foo () {
+			System.Console.WriteLine (1);
+		}
+	}
+}
+
+namespace N1
+{
+	using N2;
+
+	public class C2
+	{
+		public static void Main (string[] args)
+		{
+			C1 x = new C1 ();
+
+			$x.$
+		}
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+		}
 	}
 }
