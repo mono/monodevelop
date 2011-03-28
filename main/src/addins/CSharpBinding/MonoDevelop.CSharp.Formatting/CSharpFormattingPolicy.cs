@@ -931,6 +931,7 @@ namespace MonoDevelop.CSharp.Formatting
 			BeforeConstructorDeclarationParentheses = true;
 			BeforeDelegateDeclarationParentheses = true;
 			AfterMethodCallParameterComma = true;
+			AfterConstructorDeclarationParameterComma = true;
 			
 			NewParentheses = true;
 			WithinNewParentheses = false;
