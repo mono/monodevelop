@@ -3,6 +3,8 @@
 # Author: Marc Christensen (mchristensen@novell.com)
 #         Michael Hutchinson (mhutchinson@novell.com)
 
+MONODEVELOP_MAJOR_VERSION=2.6
+
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 
@@ -45,7 +47,7 @@ if [ -d "$DIR/lib/moonlight" ]; then
         export MOONLIGHT_SDK_PATH="$DIR/lib/moonlight"
 fi
 
-_MD_LOG_FILE="${MD_LOG_FILE:-$HOME/Library/Logs/MonoDevelop/MonoDevelop.log}"
+_MD_LOG_FILE="${MD_LOG_FILE:-$HOME/Library/Logs/MonoDevelop-$MONODEVELOP_MAJOR_VERSION/MonoDevelop.log}"
 
 # NOTE: remove this for stable releases
 if [ -z "$MD_NO_DEBUG" ]; then
