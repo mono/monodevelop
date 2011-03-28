@@ -720,12 +720,13 @@ namespace MonoDevelop.CSharp.Completion
 								// read return types to '(' token
 								possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // varType
 								if (possibleForeachToken == ">") {
-									while (possibleForeachToken != "(")
+									while (possibleForeachToken != null && possibleForeachToken != "(") {
 										possibleForeachToken = GetPreviousToken (ref tokenIndex, false);
+									}
 								} else {
 									possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // (
 									if (possibleForeachToken == ".")
-										while (possibleForeachToken != "(")
+										while (possibleForeachToken != null && possibleForeachToken != "(")
 											possibleForeachToken = GetPreviousToken (ref tokenIndex, false);
 								}
 								possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // foreach
