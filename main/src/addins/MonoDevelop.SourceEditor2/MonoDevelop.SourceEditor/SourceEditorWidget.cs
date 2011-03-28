@@ -412,7 +412,7 @@ namespace MonoDevelop.SourceEditor
 						marker.IsFolded = false;
 					
 				}
-				doc.UpdateFoldSegments (foldSegments, false);
+				doc.UpdateFoldSegmentWorker (sender, new DoWorkEventArgs (foldSegments));
 				UpdateErrorUndelines (parsedDocument);
 				if (reloadSettings) {
 					reloadSettings = false;

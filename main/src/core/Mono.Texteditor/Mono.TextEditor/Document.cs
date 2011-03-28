@@ -918,7 +918,7 @@ namespace Mono.TextEditor
 				if (foldSegmentWorker == null) {
 					foldSegmentWorker = new BackgroundWorker ();
 					foldSegmentWorker.WorkerSupportsCancellation = true;
-					foldSegmentWorker.DoWork += FoldSegmentWork;
+					foldSegmentWorker.DoWork += UpdateFoldSegmentWorker;
 				}
 				return foldSegmentWorker;
 			}
@@ -937,7 +937,7 @@ namespace Mono.TextEditor
 			
 			InterruptFoldWorker ();
 			if (!runInThread) {
-				FoldSegmentWork (null, new DoWorkEventArgs (newSegments));
+				UpdateFoldSegmentWorker (null, new DoWorkEventArgs (newSegments));
 				return;
 			}
 			FoldSegmentWorker.RunWorkerAsync (newSegments);
@@ -951,7 +951,11 @@ namespace Mono.TextEditor
 			foldedSegments.Remove (folding);
 		}
 		
-		void FoldSegmentWork (object sender, DoWorkEventArgs e)
+		/// <summary>
+		/// Updates the fold segments in a background worker thread. Don't call this method outside of a background worker.
+		/// Use UpdateFoldSegments instead.
+		/// </summary>
+		public void UpdateFoldSegmentWorker (object sender, DoWorkEventArgs e)
 		{
 			BackgroundWorker worker = sender as BackgroundWorker;
 			var newSegments = (List<FoldSegment>)e.Argument;
