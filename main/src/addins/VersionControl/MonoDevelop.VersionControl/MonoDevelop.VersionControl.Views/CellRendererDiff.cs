@@ -448,11 +448,12 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.Fill ();
 			
 			ctx.Rectangle (markerx, y, width - markerx, height);
-			Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x + width, y);
-			pat.AddColorStop (0, color.AddLight (0.21).ToCairoColor ());
-			pat.AddColorStop (1, color.AddLight (0.3).ToCairoColor ());
-			ctx.Pattern = pat;
-			ctx.Fill ();
+			using (Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x + width, y)) {
+				pat.AddColorStop (0, color.AddLight (0.21).ToCairoColor ());
+				pat.AddColorStop (1, color.AddLight (0.3).ToCairoColor ());
+				ctx.Pattern = pat;
+				ctx.Fill ();
+			}
 		}
 		
 		void DrawChangeSymbol (Cairo.Context ctx, double x, int width, BlockInfo block)
