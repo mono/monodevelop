@@ -979,8 +979,8 @@ namespace Mono.TextEditor
 				} else {
 					LineSegment startLine = splitter.GetLineByOffset (offset);
 					LineSegment endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
-					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset;
-					newFoldSegment.Column = offset - startLine.Offset;
+					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
+					newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
 					if (newFoldSegment.IsFolded)
 						foldedSegments.Add (newFoldSegment);
@@ -1078,7 +1078,7 @@ namespace Mono.TextEditor
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
 			bool needUpdate = false;
-			foreach (FoldSegment fold in GetFoldingsFromOffset (offset)) {
+			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.Offset < offset && offset <= f.EndOffset)) {
 				needUpdate |= fold.IsFolded;
 				fold.IsFolded = false;
 			}

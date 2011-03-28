@@ -61,7 +61,7 @@ namespace Mono.TextEditor.Tests
 					foldSegments.Push (segment);
 				} else if (ch == ']' && foldSegments.Count > 0) {
 					FoldSegment segment = foldSegments.Pop ();
-					segment.Length = i - segment.Offset + 1;
+					segment.Length = i - segment.Offset;
 					result.Add (segment);
 				}
 			}
@@ -197,5 +197,38 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (13, document.VisualToLogicalLine (5));
 			Assert.AreEqual (18, document.VisualToLogicalLine (8));
 		}
+		
+		[Test()]
+		public void TestCaretRight ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"1234567890
+1234567890
+123$4+[567890
+1234]567890
+1234567890");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (new DocumentLocation (4, 6), data.Caret.Location);
+		}
+		
+		[Test()]
+		public void TestCaretLeft ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"1234567890
+1234567890
+1234+[567890
+1234]5$67890
+1234567890");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (new DocumentLocation (4, 6), data.Caret.Location);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
+		}
+		
 	}
 }

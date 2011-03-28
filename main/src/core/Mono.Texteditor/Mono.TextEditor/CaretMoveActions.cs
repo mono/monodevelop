@@ -48,16 +48,16 @@ namespace Mono.TextEditor
 			}
 			
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			IEnumerable<FoldSegment> foldings = data.Document.GetEndFoldings (line);
+			IEnumerable<FoldSegment > foldings = data.Document.GetEndFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
-				if (folding.IsFolded && folding.EndColumn == data.Caret.Column) {
+				if (folding.IsFolded && folding.EndColumn + 1 == data.Caret.Column) {
 					segment = folding;
 					break;
 				}
 			}
 			if (segment != null) {
-				data.Caret.Location = data.Document.OffsetToLocation (segment.StartLine.Offset + segment.Column); 
+				data.Caret.Location = data.Document.OffsetToLocation (segment.StartLine.Offset + segment.Column - 1); 
 				return;
 			}
 			
@@ -92,7 +92,7 @@ namespace Mono.TextEditor
 			}
 			
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
+			IEnumerable<FoldSegment > foldings = data.Document.GetStartFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
 				if (folding.IsFolded && folding.Column == data.Caret.Column) {
