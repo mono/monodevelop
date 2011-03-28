@@ -49,7 +49,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public MergeView (VersionControlDocumentInfo info) : base ("Merge")
+		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"))
 		{
 			widget = new MergeWidget ();
 			widget.Load (info);

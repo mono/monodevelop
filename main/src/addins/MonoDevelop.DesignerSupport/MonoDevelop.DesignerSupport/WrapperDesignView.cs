@@ -56,6 +56,12 @@ namespace MonoDevelop.DesignerSupport
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 		}
 		
+		public override string TabPageLabel {
+			get {
+				return content.TabPageLabel;
+			}
+		}
+		
 		public Gtk.Widget TopBar {
 			get {
 				return topBar;

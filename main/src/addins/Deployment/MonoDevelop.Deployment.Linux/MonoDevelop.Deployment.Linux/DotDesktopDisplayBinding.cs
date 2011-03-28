@@ -31,7 +31,7 @@ namespace MonoDevelop.Deployment.Linux
 		}
 
 		public override string Name {
-			get { return "Desktop Entry"; }
+			get { return MonoDevelop.Core.GettextCatalog.GetString ("Desktop Entry"); }
 		}
 	}
 }

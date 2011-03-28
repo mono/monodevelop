@@ -64,7 +64,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public BlameView (VersionControlDocumentInfo info) : base ("Blame")
+		public BlameView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Blame"))
 		{
 			this.info = info;
 			
