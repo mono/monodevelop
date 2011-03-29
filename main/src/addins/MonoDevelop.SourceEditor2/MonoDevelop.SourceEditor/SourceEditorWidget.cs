@@ -314,15 +314,10 @@ namespace MonoDevelop.SourceEditor
 			// nothing
 		}
 		
-		#region Error underlining
-		List<ErrorMarker> errors = new List<ErrorMarker> ();
-		uint resetTimerId;
-		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
 			Document document = textEditorData.Document;
-			if (document == null || region.Start.Line <= 0 || region.End.Line <= 0
-			    || region.Start.Line > document.LineCount || region.End.Line > document.LineCount)
+			if (document == null || region.Start.Line <= 0 || region.End.Line <= 0 || region.Start.Line > document.LineCount || region.End.Line > document.LineCount)
 			{
 				return null;
 			}
@@ -483,13 +478,16 @@ namespace MonoDevelop.SourceEditor
 				Thread.Sleep (20);
 		}
 		
+		#region Error underlining
+		List<ErrorMarker> errors = new List<ErrorMarker> ();
+		uint resetTimerId;
+		
 		void UpdateErrorUndelines (ParsedDocument parsedDocument)
 		{
 			if (!options.UnderlineErrors || parsedDocument == null)
 				return;
-			// this may be run in another thread, therefore we've to synchronize
-			// with the gtk main loop.
-			lock (this) {
+			
+			Application.Invoke (delegate {
 				if (resetTimerId > 0) {
 					GLib.Source.Remove (resetTimerId);
 					resetTimerId = 0;
@@ -497,48 +495,39 @@ namespace MonoDevelop.SourceEditor
 				
 				const uint timeout = 500;
 				resetTimerId = GLib.Timeout.Add (timeout, delegate {
-					lock (this) { // this runs in the gtk main loop.
-						RemoveErrorUnderlines ();
-						
-						// Else we underline the error
-						if (parsedDocument.Errors != null) {
-							foreach (MonoDevelop.Projects.Dom.Error info in parsedDocument.Errors)
-								UnderLineError (info);
+					if (!this.isDisposed) {
+						Document doc = this.TextEditor != null ? this.TextEditor.Document : null;
+						if (doc != null) {
+							RemoveErrorUnderlines (doc);
+							
+							// Else we underline the error
+							if (parsedDocument.Errors != null) {
+								foreach (var error in parsedDocument.Errors)
+									UnderLineError (doc, error);
+							}
 						}
-						
-						resetTimerId = 0;
 					}
+					resetTimerId = 0;
 					return false;
 				});
-			}
+			});
 		}
 		
-		void RemoveErrorUnderlines ()
+		void RemoveErrorUnderlines (Document doc)
 		{
-			Document doc = this.TextEditor != null ? this.TextEditor.Document : null;
-			if (errors.Count == 0 || doc == null)
-				return;
-			foreach (ErrorMarker error in errors) {
-				error.RemoveFromLine (doc);
-			}
+			errors.ForEach (err => doc.RemoveMarker (err));
 			errors.Clear ();
 		}
 		
-		void UnderLineError (Error info)
+		void UnderLineError (Document doc, Error info)
 		{
-			if (this.isDisposed)
-				return;
-			// Adjust the line to Gtk line representation
-//			info.Line -= 1;
-			
-			LineSegment line = this.TextEditor.Document.GetLine (info.Region.Start.Line);
-			
+			LineSegment line = doc.GetLine (info.Region.Start.Line);
 			// If the line is already underlined
 			if (errors.Any (em => em.LineSegment == line))
 				return;
 			ErrorMarker error = new ErrorMarker (info, line);
 			errors.Add (error);
-			error.AddToLine (this.TextEditor.Document);
+			doc.AddMarker (line, error);
 		}
 		#endregion
 	
@@ -1443,18 +1432,6 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				this.StartCol = this.EndCol = 0;
 			}
-		}
-		
-		public void AddToLine (Mono.TextEditor.Document doc)
-		{
-			if (LineSegment != null) {
-				doc.AddMarker (LineSegment, this);
-			}
-		}
-		
-		public void RemoveFromLine (Mono.TextEditor.Document doc)
-		{
-			doc.RemoveMarker (this);
 		}
 	}
 }
