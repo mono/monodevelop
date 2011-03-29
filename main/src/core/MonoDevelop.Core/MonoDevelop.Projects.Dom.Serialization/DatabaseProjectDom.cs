@@ -146,7 +146,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		internal override void Flush ()
 		{
-			database.Flush ();
+			if (database != null)
+				database.Flush ();
 		}
 		
 		public override string GetDocumentation (IMember member)
