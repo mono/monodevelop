@@ -1654,7 +1654,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, searchType, DomLocation.Empty);
 			var inheritanceTree = new List<IType> (this.dom.GetInheritanceTree (searchType));
-			var sortedTree = allBaseClasses.Where (c => c.ClassType != ClassType.Interface).Concat (allBaseClasses.Where (c => c.ClassType == ClassType.Interface));
+			var sortedTree = inheritanceTree.Where (c => c.ClassType != ClassType.Interface).Concat (inheritanceTree.Where (c => c.ClassType == ClassType.Interface));
 			foreach (IType t in sortedTree) {
 				foreach (IMember m in t.Members) {
 					if (/*!m.IsAccessibleFrom (dom, type, type, true) ||*/ m.IsSpecialName)
