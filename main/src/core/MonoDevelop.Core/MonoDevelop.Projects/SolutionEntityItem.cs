@@ -84,7 +84,24 @@ namespace MonoDevelop.Projects
 		
 		public override void Dispose ()
 		{
+			if (Disposed)
+				return;
+			
 			Counters.ItemsLoaded--;
+			
+			foreach (var item in items) {
+				IDisposable disp = item as IDisposable;
+				if (disp != null)
+					disp.Dispose ();
+			}
+			
+			items = null;
+			thisItemArgs = null;
+			fileStatusTracker = null;
+			fileFormat = null;
+			activeConfiguration = null;
+			configurations = null;
+			
 			base.Dispose ();
 		}
 

@@ -388,11 +388,21 @@ namespace MonoDevelop.Projects
 
 		public override void Dispose ()
 		{
-			base.Dispose ();
-			if (composedAssemblyContext != null)
+			if (composedAssemblyContext != null) {
 				composedAssemblyContext.Dispose ();
+				composedAssemblyContext = null;
+			}
+				
+			languageParameters = null;
+			privateAssemblyContext = null;
+			currentRuntimeContext = null;
+			languageBinding = null;
+			projectReferences = null;
+			
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
 			FileService.FileRemoved -= OnFileRemoved;
+			
+			base.Dispose ();
 		}
 
 		public virtual bool SupportsPartialTypes {

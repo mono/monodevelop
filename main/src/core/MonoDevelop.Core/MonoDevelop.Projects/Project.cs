@@ -283,9 +283,6 @@ namespace MonoDevelop.Projects
 		public override void Dispose ()
 		{
 			FileService.FileChanged -= OnFileChanged;
-			foreach (ProjectFile file in Files) {
-				file.Dispose ();
-			}
 			base.Dispose ();
 		}
 		

@@ -843,6 +843,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 					ProjectDomService.UnrefDom (dom.Uri);
 			}
 			OnUnloaded ();
+			references.Clear ();
+			instantiatedTypeCache.Clear ();
+			returnTypeCache.Clear ();
+			Project = null;
 		}
 
 		internal void UpdateReferences ()

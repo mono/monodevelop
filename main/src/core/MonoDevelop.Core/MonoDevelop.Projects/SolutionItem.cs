@@ -233,19 +233,33 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		internal protected bool Disposed { get; private set; }
+		
 		public virtual void Dispose ()
 		{
+			Disposed = true;
+			
 			if (extendedProperties != null) {
 				foreach (object ob in extendedProperties.Values) {
 					IDisposable disp = ob as IDisposable;
 					if (disp != null)
 						disp.Dispose ();
 				}
+				extendedProperties = null;
 			}
-			if (handler != null)
+			if (handler != null) {
 				handler.Dispose ();
-			if (userProperties != null)
+				handler = null;
+			}
+			if (userProperties != null) {
 				((IDisposable)userProperties).Dispose ();
+				userProperties = null;
+			}
+			
+			parentFolder = null;
+			parentSolution = null;
+			internalChildren = null;
+			policies = null;
 		}
 		
 		public virtual IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
@@ -492,14 +506,14 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void OnModified (SolutionItemModifiedEventArgs args)
 		{
-			if (Modified != null)
+			if (Modified != null && !Disposed)
 				Modified (this, args);
 		}
 		
 		protected virtual void OnNameChanged (SolutionItemRenamedEventArgs e)
 		{
 			NotifyModified ("Name");
-			if (NameChanged != null)
+			if (NameChanged != null && !Disposed)
 				NameChanged (this, e);
 		}
 		
@@ -534,7 +548,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		public event SolutionItemRenamedEventHandler NameChanged;
+		public event SolutionItemRenamedEventHandler NameChanged;		
 		public event SolutionItemModifiedEventHandler Modified;
 	}
 	

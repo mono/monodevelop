@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects
 	/// <summary>
 	/// This class represent a file information in an IProject object.
 	/// </summary>
-	public class ProjectFile : ProjectItem, ICloneable, IFileItem
+	public class ProjectFile : ProjectItem, ICloneable, IFileItem, IDisposable
 	{
 		public ProjectFile ()
 		{

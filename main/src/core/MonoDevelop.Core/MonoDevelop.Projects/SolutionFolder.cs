@@ -209,9 +209,13 @@ namespace MonoDevelop.Projects
 		
 		public override void Dispose()
 		{
+			if (items != null) {
+				foreach (SolutionItem e in items)
+					e.Dispose ();
+				items = null;
+			}
+			files = null;
 			base.Dispose ();
-			foreach (SolutionItem e in Items)
-				e.Dispose ();
 		}
 		
 		public SolutionItem ReloadItem (IProgressMonitor monitor, SolutionItem sitem)
