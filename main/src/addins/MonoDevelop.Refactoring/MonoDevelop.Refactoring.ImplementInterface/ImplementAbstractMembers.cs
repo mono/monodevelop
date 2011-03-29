@@ -50,7 +50,12 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			IType type = options.Dom.GetType (options.ResolveResult.ResolvedType);
 			if (type == null || type.ClassType != MonoDevelop.Projects.Dom.ClassType.Class)
 				return false;
-			return CurrentRefactoryOperationsHandler.ContainsAbstractMembers (type);
+			if (!CurrentRefactoryOperationsHandler.ContainsAbstractMembers (type))
+				return false;
+			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
+			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
+			var missingAbstractMembers = type.Members.Where (member => member.IsAbstract && !declaringType.Members.Any (m => member.Name == m.Name));
+			return missingAbstractMembers.Any ();
 		}
 		
 		public override void Run (RefactoringOptions options)

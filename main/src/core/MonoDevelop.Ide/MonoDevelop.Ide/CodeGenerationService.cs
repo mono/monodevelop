@@ -122,13 +122,17 @@ namespace MonoDevelop.Ide
 		
 		public static void AddNewMembers (IType type, IEnumerable<IMember> newMembers, string regionName = null, Func<IMember, bool> implementExplicit = null)
 		{
+			IMember firstNewMember = newMembers.FirstOrDefault ();
+			if (firstNewMember == null)
+				return;
 			bool isOpen;
 			var data = TextFileProvider.Instance.GetTextEditorData (type.CompilationUnit.FileName, out isOpen);
 			var parsedDocument = ProjectDomService.GetParsedDocument (type.SourceProjectDom, type.CompilationUnit.FileName);
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
 			
-			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMembers.First ());
+			
+			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, firstNewMember);
 			
 			var generator = CreateCodeGenerator (data);
 			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.CompilationUnit.GetTypeAt (type.Location));
