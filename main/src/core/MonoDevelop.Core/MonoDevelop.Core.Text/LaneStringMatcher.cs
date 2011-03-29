@@ -60,9 +60,7 @@ namespace MonoDevelop.Core.Text
 				if (lane.WordStartsMatched == lane.Index + 1)
 					matchRank += 100;
 				
-//				Console.WriteLine ("MM: " + name + " " + lane.WordStartsMatched + " - " + matchRank);
-				
-/*				// Favor matches with less splits. That is, 'abc def' is better than 'ab c def'.
+				// Favor matches with less splits. That is, 'abc def' is better than 'ab c def'.
 				int baseRank = (filter.Length - lane.Index - 1) * 5000;
 
 				// First matching letter close to the begining is better
@@ -74,7 +72,7 @@ namespace MonoDevelop.Core.Text
 				// rank up matches which start with a filter substring
 				if (lane.Positions [0] == 0)
 					matchRank += lane.Lengths[0] * 50;
-				*/
+
 				return true;
 			}
 			matchRank = int.MinValue;
