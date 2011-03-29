@@ -61,7 +61,7 @@ namespace MonoDevelop.VersionControl.Git
 				OnSolutionSaved (parentFolder.ParentSolution, null);
 		}
 		
-		void OnSolutionSaved (object o, EventArgs a)
+		static void OnSolutionSaved (object o, EventArgs a)
 		{
 			Solution sol = (Solution)o;
 			sol.Saved -= OnSolutionSaved;
