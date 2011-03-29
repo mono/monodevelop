@@ -199,7 +199,7 @@ namespace MonoDevelop.VersionControl.Git
 			RemoteSource remote = (RemoteSource) storeRemotes.GetValue (it, 0);
 			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the remote '{0}'?", remote.Name), AlertButton.Delete)) {
 				repo.RemoveRemote (remote.Name);
-				FillBranches ();
+				FillRemotes ();
 			}
 		}
 		
