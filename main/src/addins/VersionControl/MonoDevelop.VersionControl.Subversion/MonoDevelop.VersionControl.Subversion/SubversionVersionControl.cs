@@ -102,7 +102,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			else if (File.Exists (GetTextBase(localPath)) || File.Exists (localPath))
 				return GetFileStatus (repo, localPath, getRemoteStatus);
 			else
-				return null;
+				return VersionInfo.CreateUnversioned (localPath, false);
 		}
 
 		private VersionInfo GetFileStatus (Repository repo, FilePath sourcefile, bool getRemoteStatus)
@@ -135,13 +135,13 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			// If the directory is not versioned, there is no version info
 			if (!Directory.Exists (GetDirectoryDotSvn (localPath)))
-				return null;
+				return VersionInfo.CreateUnversioned (localPath, true);
 				
 			foreach (VersionInfo ent in Status (repo, localPath, SvnRevision.Head, false, false, getRemoteStatus)) {
-				if (ent.LocalPath == localPath)
+				if (ent.LocalPath.CanonicalPath == localPath.CanonicalPath)
 					return ent;
 			}
-			return null;
+			return VersionInfo.CreateUnversioned (localPath, true);
 		}
 
 		public VersionInfo[] GetDirectoryVersionInfo (Repository repo, FilePath sourcepath, bool getRemoteStatus, bool recursive)
