@@ -100,4 +100,8 @@
 		<StockIcon stockid = "vc-git-source" resource = "server.png" />
 		<StockIcon stockid = "vc-git-branch" resource = "arrow_branch.png" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
+		<Class class = "MonoDevelop.VersionControl.Git.GitSupportFeature" />
+	</Extension>
 </Addin>

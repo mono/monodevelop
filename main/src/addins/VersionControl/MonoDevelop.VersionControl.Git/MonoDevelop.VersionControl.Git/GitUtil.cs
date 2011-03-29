@@ -323,7 +323,7 @@ namespace MonoDevelop.VersionControl.Git
 			InitCommand ci = new InitCommand ();
 			ci.SetDirectory (targetLocalPath);
 			ci.Call ();
-			LocalGitRepository repo = new LocalGitRepository (targetLocalPath);
+			LocalGitRepository repo = new LocalGitRepository (Path.Combine (targetLocalPath, Constants.DOT_GIT));
 			
 			string branch = Constants.R_HEADS + "master";
 			
@@ -331,20 +331,21 @@ namespace MonoDevelop.VersionControl.Git
 			head.DisableRefLog ();
 			head.Link (branch);
 			
-			RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), "origin");
-			remoteConfig.AddURI (new URIish (url));
-			
-			string dst = Constants.R_REMOTES + remoteConfig.Name;
-			RefSpec wcrs = new RefSpec();
-			wcrs = wcrs.SetForceUpdate (true);
-			wcrs = wcrs.SetSourceDestination (Constants.R_HEADS	+ "*", dst + "/*");
-			
-			remoteConfig.AddFetchRefSpec (wcrs);
+			if (url != null) {
+				RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), "origin");
+				remoteConfig.AddURI (new URIish (url));
+				
+				string dst = Constants.R_REMOTES + remoteConfig.Name;
+				RefSpec wcrs = new RefSpec();
+				wcrs = wcrs.SetForceUpdate (true);
+				wcrs = wcrs.SetSourceDestination (Constants.R_HEADS	+ "*", dst + "/*");
+				
+				remoteConfig.AddFetchRefSpec (wcrs);
+				remoteConfig.Update (repo.GetConfig());
+			}
 	
 			// we're setting up for a clone with a checkout
 			repo.GetConfig().SetBoolean ("core", null, "bare", false);
-	
-			remoteConfig.Update (repo.GetConfig());
 	
 			repo.GetConfig().Save();
 			return repo;

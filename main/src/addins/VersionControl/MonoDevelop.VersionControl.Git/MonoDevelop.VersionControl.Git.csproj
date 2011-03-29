@@ -79,6 +79,7 @@
     <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtensionWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtension.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\GitSupportFeature.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
