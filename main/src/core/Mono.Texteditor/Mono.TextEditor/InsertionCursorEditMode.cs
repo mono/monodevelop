@@ -111,16 +111,20 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		protected void ShowHelpWindow ()
+		protected void ShowHelpWindow (bool positionWindow = true)
 		{
 			if (HelpWindow == null) 
 				return;
-			MoveHelpWindow (null, null);
-			editor.SizeAllocated += MoveHelpWindow;
+			
+			editor.Destroyed += HandleEditorDestroy;
+			if (positionWindow) {
+				MoveHelpWindow (null, null);
+				editor.SizeAllocated += MoveHelpWindow;
+			}
 			HelpWindow.Show ();
 		}
 		
-		public void DestroyHelpWindow ()
+		public virtual void DestroyHelpWindow ()
 		{
 			if (HelpWindow == null) 
 				return;
@@ -242,7 +246,19 @@ namespace Mono.TextEditor
 			editor.ScrollTo (insertionPoints[CurIndex].Location);
 			editor.QueueDraw ();
 			
-			ShowHelpWindow ();
+			SetHelpWindowPosition ();
+			ShowHelpWindow (false);
+			editor.SizeAllocated += HandleEditorSizeAllocated;
+		}
+		
+		public override void DestroyHelpWindow ()
+		{
+			base.DestroyHelpWindow ();
+			editor.SizeAllocated -= HandleEditorSizeAllocated;
+		}
+		
+		void HandleEditorSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
 			SetHelpWindowPosition ();
 		}
 		
