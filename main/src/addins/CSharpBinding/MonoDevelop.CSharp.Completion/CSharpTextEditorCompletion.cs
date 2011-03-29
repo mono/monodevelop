@@ -1653,14 +1653,12 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, searchType, DomLocation.Empty);
-			
-			List<IType> inheritanceTree = new List<IType> (this.dom.GetInheritanceTree (searchType));
-			inheritanceTree.Sort ((l, r) => l.ClassType == r.ClassType ? 0 : (l.ClassType == ClassType.Interface ? 1 : (r.ClassType == ClassType.Interface ? -1 : 0)));
-			foreach (IType t in inheritanceTree) {
+			var inheritanceTree = new List<IType> (this.dom.GetInheritanceTree (searchType));
+			var sortedTree = allBaseClasses.Where (c => c.ClassType != ClassType.Interface).Concat (allBaseClasses.Where (c => c.ClassType == ClassType.Interface));
+			foreach (IType t in sortedTree) {
 				foreach (IMember m in t.Members) {
-					if (!m.IsAccessibleFrom (dom, type, type, true) || m.IsSpecialName)
+					if (/*!m.IsAccessibleFrom (dom, type, type, true) ||*/ m.IsSpecialName)
 						continue;
-					//System.Console.WriteLine ("scan:" + m);
 					//if (m.IsSpecialName || (m.IsInternal && !m.IsProtectedOrInternal) || && searchType.SourceProject != Document.Project)
 					//	continue;
 					if (t.ClassType == ClassType.Interface || (isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
