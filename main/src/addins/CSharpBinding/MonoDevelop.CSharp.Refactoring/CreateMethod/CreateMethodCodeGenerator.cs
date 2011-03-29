@@ -268,49 +268,48 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			data = openDocument.Editor;
 			if (data == null)
 				return;
-			
-			if (data == null)
-				throw new InvalidOperationException ("Can't open file:" + modifiers);
-			try {
-				indent = data.Document.GetLine (declaringType.Location.Line).GetIndentation (data.Document) ?? "";
-			} catch (Exception) {
-				indent = "";
-			}
-			indent += "\t";
-			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (data.Parent, CodeGenerationService.GetInsertionPoints (openDocument, declaringType));
-			if (fileName == options.Document.FileName) {
-				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
-					var point = mode.InsertionPoints [i];
-					if (point.Location < data.Caret.Location) {
-						mode.CurIndex = i;
-					} else {
-						break;
+			openDocument.RunWhenLoaded (delegate {
+				try {
+					indent = data.Document.GetLine (declaringType.Location.Line).GetIndentation (data.Document) ?? "";
+				} catch (Exception) {
+					indent = "";
+				}
+				indent += "\t";
+				
+				InsertionCursorEditMode mode = new InsertionCursorEditMode (data.Parent, CodeGenerationService.GetInsertionPoints (openDocument, declaringType));
+				if (fileName == options.Document.FileName) {
+					for (int i = 0; i < mode.InsertionPoints.Count; i++) {
+						var point = mode.InsertionPoints [i];
+						if (point.Location < data.Caret.Location) {
+							mode.CurIndex = i;
+						} else {
+							break;
+						}
 					}
 				}
-			}
-			
-			ModeHelpWindow helpWindow = new ModeHelpWindow ();
-			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
-			helpWindow.TitleText = GettextCatalog.GetString ("<b>Create Method -- Targeting</b>");
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare new method</b> at target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
-			mode.HelpWindow = helpWindow;
-			mode.StartMode ();
-			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
-				if (args.Success) {
-					SetInsertionPoint (args.InsertionPoint);
-					BaseRun (options);
-					if (string.IsNullOrEmpty (fileName))
-						return;
-					data.ClearSelection ();
-					data.Caret.Offset = selectionEnd;
-					data.SetSelection (selectionStart, selectionEnd);
-				}
-			};
+				
+				ModeHelpWindow helpWindow = new ModeHelpWindow ();
+				helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
+				helpWindow.TitleText = GettextCatalog.GetString ("<b>Create Method -- Targeting</b>");
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare new method</b> at target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
+				mode.HelpWindow = helpWindow;
+				mode.StartMode ();
+				mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
+					if (args.Success) {
+						SetInsertionPoint (args.InsertionPoint);
+						BaseRun (options);
+						if (string.IsNullOrEmpty (fileName))
+							return;
+						data.ClearSelection ();
+						data.Caret.Offset = selectionEnd;
+						data.SetSelection (selectionStart, selectionEnd);
+					}
+				};
+			});
 		}
 		
 		//so anonymous delegate can access base.Run verifiably

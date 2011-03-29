@@ -182,11 +182,14 @@ namespace MonoDevelop.Ide
 				throw new ArgumentNullException ("parsedDocument");
 			if (type == null)
 				throw new ArgumentNullException ("type");
+			
+			// update type from parsed document, since this is always newer.
+			type = parsedDocument.CompilationUnit.GetTypeAt (type.Location) ?? type;
+			
 			List<InsertionPoint> result = new List<InsertionPoint> ();
 			int offset = data.LocationToOffset (type.BodyRegion.Start.Line, type.BodyRegion.Start.Column);
 			if (offset < 0)
 				return result;
-			
 			while (offset < data.Length && data.GetCharAt (offset) != '{') {
 				offset++;
 			}
