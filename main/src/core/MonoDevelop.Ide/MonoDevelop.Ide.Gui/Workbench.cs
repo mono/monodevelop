@@ -693,10 +693,12 @@ namespace MonoDevelop.Ide.Gui
 					if (doc.FileName == fileName) {
 						if (openFileInfo.BringToFront) {
 							doc.Select ();
-							IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
-							if (openFileInfo.Line != -1 && ipos != null) {
-								ipos.SetCaretTo (openFileInfo.Line, openFileInfo.Column != -1 ? openFileInfo.Column : 0, openFileInfo.HighlightCaretLine);
-							}
+							doc.RunWhenLoaded (delegate {
+								IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
+								if (openFileInfo.Line != -1 && ipos != null) {
+									ipos.SetCaretTo (openFileInfo.Line, openFileInfo.Column != -1 ? openFileInfo.Column : 0, openFileInfo.HighlightCaretLine);
+								}
+							});
 						}
 						openFileInfo.NewContent = doc.Window.ViewContent;
 						return;

@@ -266,9 +266,11 @@ namespace MonoDevelop.Ide
 			}
 			var doc = IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column, true);
 			if (doc != null) {
-				MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
-				if (handler != null)
-					handler.Open (member.HelpUrl);
+				doc.RunWhenLoaded (delegate {
+					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
+					if (handler != null)
+						handler.Open (member.HelpUrl);
+				});
 			}
 		}
 
