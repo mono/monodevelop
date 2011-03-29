@@ -125,7 +125,7 @@ namespace MonoDevelop.Core
 			
 			FilePath data = library.Combine (appId);
 			FilePath preferences = library.Combine ("Preferences", appId);
-			FilePath cache = library.Combine ("Cache", appId);
+			FilePath cache = library.Combine ("Caches", appId);
 			FilePath logs = library.Combine ("Logs", appId);
 			FilePath appSupport = library.Combine ("Application Support", appId);
 			
