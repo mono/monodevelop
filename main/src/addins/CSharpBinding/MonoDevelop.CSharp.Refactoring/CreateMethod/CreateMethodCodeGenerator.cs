@@ -258,7 +258,6 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		public override void Run (RefactoringOptions options)
 		{
-			data = options.GetTextEditorData ();
 			fileName = declaringType.CompilationUnit.FileName;
 			
 			var openDocument = IdeApp.Workbench.OpenDocument (fileName);
@@ -370,7 +369,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 					argument = de.Expression;
 				}
 				
-				string argExpression = data.GetTextBetween (argument.StartLocation.Line, argument.StartLocation.Column, argument.EndLocation.Line, argument.EndLocation.Column);
+				string argExpression = options.GetTextEditorData ().GetTextBetween (argument.StartLocation.Line, argument.StartLocation.Column, argument.EndLocation.Line, argument.EndLocation.Column);
 				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), resolvePosition);
 				
 				if (argument is MemberReferenceExpression) {
