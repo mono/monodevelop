@@ -1614,6 +1614,53 @@ namespace Mono.TextEditor
 			return Partitioner.GetPartition (line, column);
 		}
 		#endregion
+		
+		#region ContentLoaded 
+		// The problem: Action to perform on a newly opened text editor, but content didn't get loaded because autosave file exist.
+		//              At this point the document is open, but the content didn't yet have loaded - therefore the action on the conent can't be perfomed.
+		// Solution: Perform the action after the user did choose load autosave or not. 
+		//           This is done by the RunWhenLoaded method. Text editors should call the InformLoadComplete () when the content has successfully been loaded
+		//           at that point the outstanding actions are run.
+		bool isLoaded;
+		List<Action> loadedActions = new List<Action> ();
+		
+		/// <summary>
+		/// Gets a value indicating whether this instance is loaded.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is loaded; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsLoaded {
+			get { return isLoaded; }
+		}
+		
+		/// <summary>
+		/// Informs the document when the content is loaded. All outstanding actions are executed.
+		/// </summary>
+		public void InformLoadComplete ()
+		{
+			if (isLoaded)
+				return;
+			isLoaded = true;
+			loadedActions.ForEach (act => act ());
+			loadedActions = null;
+		}
+		
+		/// <summary>
+		/// Performs an action when the content is loaded.
+		/// </summary>
+		/// <param name='action'>
+		/// The action to run.
+		/// </param>
+		public void RunWhenLoaded (Action action)
+		{
+			if (IsLoaded) {
+				action ();
+				return;
+			}
+			loadedActions.Add (action);
+		}
+		#endregion
 	}
 	
 	public delegate bool ReadOnlyCheckDelegate (int line);

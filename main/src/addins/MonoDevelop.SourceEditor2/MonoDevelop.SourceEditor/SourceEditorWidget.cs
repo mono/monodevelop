@@ -733,6 +733,7 @@ namespace MonoDevelop.SourceEditor
 				b1.Clicked += delegate {
 					try {
 						AutoSave.RemoveAutoSaveFile (fileName);
+						TextEditor.GrabFocus ();
 						view.Load (fileName);
 						view.WorkbenchWindow.Document.UpdateParseDocument ();
 					} catch (Exception ex) {
@@ -749,6 +750,7 @@ namespace MonoDevelop.SourceEditor
 					try {
 						string content = AutoSave.LoadAutoSave (fileName);
 						AutoSave.RemoveAutoSaveFile (fileName);
+						TextEditor.GrabFocus ();
 						view.Load (fileName, content, null);
 						view.WorkbenchWindow.Document.UpdateParseDocument ();
 						view.IsDirty = true;

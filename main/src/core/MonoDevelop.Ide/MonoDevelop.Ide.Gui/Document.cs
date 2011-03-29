@@ -550,11 +550,21 @@ namespace MonoDevelop.Ide.Gui
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
 			window.Document = this;
-			UpdateParseDocument ();
+			RunWhenLoaded (() => UpdateParseDocument ());
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
-
+		
+		/// <summary>
+		/// Performs an action when the content is loaded.
+		/// </summary>
+		/// <param name='action'>
+		/// The action to run.
+		/// </param>
+		public void RunWhenLoaded (System.Action action)
+		{
+			Editor.Document.RunWhenLoaded (action);
+		}
 		
 		internal void SetProject (Project project)
 		{
