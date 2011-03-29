@@ -121,6 +121,15 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\arrow_branch.png">
+      <LogicalName>arrow_branch.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\server.png">
+      <LogicalName>server.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag_blue.png">
+      <LogicalName>tag_blue.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.VersionControl.Git\" />

@@ -61,6 +61,9 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
+	icons/arrow_branch.png \
+	icons/server.png \
+	icons/tag_blue.png \
 	MonoDevelop.VersionControl.Git.addin.xml
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
