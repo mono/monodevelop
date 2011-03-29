@@ -962,6 +962,7 @@ namespace Mono.TextEditor
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
 			newSegments.Sort ();
+			var newFoldedSegments = new HashSet<FoldSegment> (foldedSegments);
 			foreach (FoldSegment newFoldSegment in newSegments) {
 				if (worker != null && worker.CancellationPending)
 					return;
@@ -978,7 +979,7 @@ namespace Mono.TextEditor
 					curSegment.Description = newFoldSegment.Description;
 					if (!curSegment.IsFolded && newFoldSegment.IsFolded) {
 						curSegment.isFolded = true;
-						foldedSegments.Add (curSegment);
+						newFoldedSegments.Add (curSegment);
 					}
 				} else {
 					LineSegment startLine = splitter.GetLineByOffset (offset);
@@ -987,7 +988,7 @@ namespace Mono.TextEditor
 					newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
 					if (newFoldSegment.IsFolded)
-						foldedSegments.Add (newFoldSegment);
+						newFoldedSegments.Add (newFoldSegment);
 					foldSegmentTree.Add (newFoldSegment);
 				}
 				oldIndex++;
@@ -999,9 +1000,11 @@ namespace Mono.TextEditor
 			}
 			if (worker != null) {
 				Gtk.Application.Invoke (delegate {
+					foldedSegments = newFoldedSegments;
 					InformFoldTreeUpdated ();
 				});
 			} else {
+				foldedSegments = newFoldedSegments;
 				InformFoldTreeUpdated ();
 			}
 		}
