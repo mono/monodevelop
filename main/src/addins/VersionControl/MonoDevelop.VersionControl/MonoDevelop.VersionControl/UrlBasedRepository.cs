@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl
 			if (!Uri.IsWellFormedUriString (url, UriKind.Absolute))
 				return false;
 			Uri uri = new Uri (url);
-			if (string.IsNullOrEmpty (uri.Host))
+			if (Uri.Scheme != "file" && string.IsNullOrEmpty (uri.Host))
 				return false;
 			return Array.IndexOf (SupportedProtocols, uri.Scheme) != -1;
 		}
