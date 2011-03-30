@@ -84,6 +84,29 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected override void OnDestroyed ()
 		{
+			if (declarationviewwindow != null) {
+				declarationviewwindow.Destroy ();
+				declarationviewwindow = null;
+			}
+			
+			if (mutableList != null) {
+				mutableList.Changing -= OnCompletionDataChanging;
+				mutableList.Changed -= OnCompletionDataChanged;
+				mutableList = null;
+			}
+
+			if (completionDataList != null) {
+				if (completionDataList is IDisposable) 
+					((IDisposable)completionDataList).Dispose ();
+				completionDataList.OnCompletionListClosed (EventArgs.Empty);
+				completionDataList = null;
+			}
+
+			if (closedDelegate != null) {
+				closedDelegate ();
+				closedDelegate = null;
+			}
+			
 			HideDeclarationView ();
 			
 			if (declarationviewwindow != null) {
@@ -345,32 +368,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		public event EventHandler<CodeCompletionContextEventArgs> WordCompleted;
-		
-		public override void Destroy ()
-		{
-			if (declarationviewwindow != null) {
-				declarationviewwindow.Destroy ();
-				declarationviewwindow = null;
-			}
-			
-			if (mutableList != null) {
-				mutableList.Changing -= OnCompletionDataChanging;
-				mutableList.Changed -= OnCompletionDataChanged;
-				mutableList = null;
-			}
-
-			if (completionDataList != null) {
-				if (completionDataList is IDisposable) 
-					((IDisposable)completionDataList).Dispose ();
-				completionDataList = null;
-			}
-
-			if (closedDelegate != null) {
-				closedDelegate ();
-				closedDelegate = null;
-			}
-			base.Destroy ();
-		}
 		
 		void ListSizeChanged (object obj, SizeAllocatedArgs args)
 		{

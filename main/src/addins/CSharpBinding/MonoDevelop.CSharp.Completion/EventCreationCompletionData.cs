@@ -46,6 +46,7 @@ namespace MonoDevelop.CSharp.Completion
 		IMember callingMember;
 		TextEditorData editor;
 		int initialOffset;
+		public bool AddSemicolon = true;
 		
 		public EventCreationCompletionData (TextEditorData editor, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
@@ -73,7 +74,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override void InsertCompletionText (CompletionListWindow window)
 		{
 			// insert add/remove event handler code after +=/-=
-			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + ";");
+			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
 			
 			// Search opening bracket of member
 			int pos = callingMember != null ? editor.Document.LocationToOffset (callingMember.BodyRegion.Start.Line, callingMember.BodyRegion.Start.Column) : initialOffset;

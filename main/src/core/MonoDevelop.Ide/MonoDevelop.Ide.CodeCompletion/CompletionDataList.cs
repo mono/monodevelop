@@ -46,6 +46,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void Sort (IComparer<CompletionData> comparison);
 		
 		IEnumerable<ICompletionKeyHandler> KeyHandler { get; }
+		
+		void OnCompletionListClosed (EventArgs e);
+		event EventHandler CompletionListClosed;
 	}
 	
 	
@@ -149,5 +152,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			AddRange (from s in vals select new CompletionData (s));
 		}
+		
+		public void OnCompletionListClosed (EventArgs e)
+		{
+			EventHandler handler = this.CompletionListClosed;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler CompletionListClosed;
 	}
 }
