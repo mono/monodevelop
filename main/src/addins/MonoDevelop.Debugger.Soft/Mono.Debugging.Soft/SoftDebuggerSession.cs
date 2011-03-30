@@ -511,13 +511,20 @@ namespace Mono.Debugging.Soft
 		{
 			if (vm != null) {
 				//FIXME: this might never get reached if the IDE is exited first
+				if (vm.Process != null) {
+					ThreadPool.QueueUserWorkItem (delegate {
+						// This is a workaround for a mono bug
+						// Without this call, the process may become zombie in mono < 2.10.2
+						vm.Process.WaitForExit ();
+					});
+				}
 				var t = new System.Timers.Timer ();
-				t.Interval = 10000;
+				t.Interval = 1000;
 				t.Elapsed += delegate {
 					try {
-						EnsureExited ();
 						t.Enabled = false;
 						t.Dispose ();
+						EnsureExited ();
 					} catch (Exception ex) {
 						LoggingService.LogError ("Failed to force-terminate process", ex);
 					}
@@ -774,6 +781,11 @@ namespace Mono.Debugging.Soft
 						OnDebuggerOutput (true, ex.ToString ());
 				}
 			}
+			
+			// This is a workaround for a mono bug
+			// Without this call, the process may become zombie in mono < 2.10.2
+			if (vm.Process != null)
+				vm.Process.WaitForExit (1);
 			
 			exited = true;
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
