@@ -90,6 +90,10 @@ namespace Mono.TextEditor
 			splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
 			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.InstallListener (this);
+			foldSegmentTree.tree.NodeRemoved += delegate(object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e) {
+				if (e.Node.IsFolded)
+					foldedSegments.Remove (e.Node);
+			};
 		}
 
 		public Document () : this(new GapBuffer (), new LineSplitter ())
@@ -962,7 +966,7 @@ namespace Mono.TextEditor
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
 			newSegments.Sort ();
-			var newFoldedSegments = new HashSet<FoldSegment> (foldedSegments);
+			var newFoldedSegments = new HashSet<FoldSegment> ();
 			foreach (FoldSegment newFoldSegment in newSegments) {
 				if (worker != null && worker.CancellationPending)
 					return;
@@ -977,10 +981,10 @@ namespace Mono.TextEditor
 					FoldSegment curSegment = oldSegments [oldIndex];
 					curSegment.Length = newFoldSegment.Length;
 					curSegment.Description = newFoldSegment.Description;
-					if (!curSegment.IsFolded && newFoldSegment.IsFolded) {
+					if (newFoldSegment.IsFolded)
 						curSegment.isFolded = true;
+					if (curSegment.isFolded)
 						newFoldedSegments.Add (curSegment);
-					}
 				} else {
 					LineSegment startLine = splitter.GetLineByOffset (offset);
 					LineSegment endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);

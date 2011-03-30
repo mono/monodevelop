@@ -230,5 +230,36 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
 		}
 		
+		
+		[Test()]
+		public void TestUpdateFoldSegmentBug2 ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[0
+1
++[2
+3]
+4
++[5
+6]
+7
+8
+9
+10
+11
+12
+13]
+14
+15";
+			var segments = GetFoldSegments (document);
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (10, document.VisualToLogicalLine (8));
+			int start = document.GetLine (2).Offset;
+			int end = document.GetLine (8).Offset;
+			((IBuffer)document).Remove (start, end - start);
+			Assert.AreEqual (10, document.LogicalToVisualLine (10));
+		}
+
 	}
 }
