@@ -666,6 +666,7 @@ FixedParameter<out ParameterDeclarationExpression p>
 	TypeReference type;
 	ParameterModifiers mod = ParameterModifiers.In;
 	Location start = la.Location;
+	Expression defaultParameterExpr = null;
 .)
 =
 	[
@@ -673,6 +674,7 @@ FixedParameter<out ParameterDeclarationExpression p>
 		| "out"  (. mod = ParameterModifiers.Out; .)
 	]
 	Type<out type> Identifier (. p = new ParameterDeclarationExpression(type, t.val, mod); p.StartLocation = start; p.EndLocation = t.Location; .)
+	[ "=" Expr<out defaultParameterExpr> ]
 .
 
 ParameterArray<out ParameterDeclarationExpression p>

@@ -351,5 +351,31 @@ class Test
 			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
 			Assert.IsNull (provider.Find ("Length"), "property 'Length' found, but shouldn't (indicates wrong return type).");
 		}
+		
+		[Test()]
+		public void TestDefaultParameterBug ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+namespace Foo
+{
+    class Data
+    {
+        public int Value = 5;
+    }
+
+    public class C
+    {
+        public void Foo (bool aBool = false)
+        {
+			Data data;
+            $data.$
+        }
+    }
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Value"), "field 'Value' not found.");
+		}
 	}
 }
