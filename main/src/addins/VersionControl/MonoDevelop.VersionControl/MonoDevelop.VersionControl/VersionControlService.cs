@@ -94,7 +94,10 @@ namespace MonoDevelop.VersionControl
 				try {
 					// Include the repository type in the serialization context, so repositories
 					// of this type can be deserialized from the configuration file.
-					dataContext.IncludeType (vcs.CreateRepositoryInstance ().GetType ());
+					Repository r = vcs.CreateRepositoryInstance ();
+					r.AddRef ();
+					dataContext.IncludeType (r.GetType ());
+					r.Unref ();
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while adding version control system.", e);
 				}
@@ -175,14 +178,27 @@ namespace MonoDevelop.VersionControl
 		
 		public static Repository GetRepository (IWorkspaceObject entry)
 		{
-			Repository repo = (Repository) entry.ExtendedProperties [typeof(Repository)];
-			if (repo != null)
-				return repo;
+			InternalRepositoryReference repoRef = (InternalRepositoryReference) entry.ExtendedProperties [typeof(InternalRepositoryReference)];
+			if (repoRef != null)
+				return repoRef.Repo;
 			
-			repo = VersionControlService.GetRepositoryReference (entry.BaseDirectory, entry.Name);
-			entry.ExtendedProperties [typeof(Repository)] = repo;
+			Repository repo = VersionControlService.GetRepositoryReference (entry.BaseDirectory, entry.Name);
+			repo.AddRef ();
+			entry.ExtendedProperties [typeof(InternalRepositoryReference)] = new InternalRepositoryReference (repo);
 			
 			return repo;
+		}
+		
+		static Repository GetRepositoryReference (string path, string id)
+		{
+			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
+				Repository repo = vcs.GetRepositoryReference (path, id);
+				if (repo != null) {
+					repo.VersionControlSystem = vcs;
+					return repo;
+				}
+			}
+			return null;
 		}
 		
 		internal static void SetCommitComment (string file, string comment, bool save)
@@ -598,18 +614,6 @@ namespace MonoDevelop.VersionControl
 			configuration = null;
 		}
 		
-		public static Repository GetRepositoryReference (string path, string id)
-		{
-			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
-				Repository repo = vcs.GetRepositoryReference (path, id);
-				if (repo != null) {
-					repo.VersionControlSystem = vcs;
-					return repo;
-				}
-			}
-			return null;
-		}
-		
 		public static void StoreRepositoryReference (Repository repo, string path, string id)
 		{
 			repo.VersionControlSystem.StoreRepositoryReference (repo, path, id);
@@ -707,5 +711,26 @@ namespace MonoDevelop.VersionControl
 	{
 		public string Comment;
 		public DateTime Date;
+	}
+	
+	class InternalRepositoryReference: IDisposable
+	{
+		Repository repo;
+		
+		public InternalRepositoryReference (Repository repo)
+		{
+			this.repo = repo;
+		}
+
+		public Repository Repo {
+			get {
+				return this.repo;
+			}
+		}
+		
+		public void Dispose ()
+		{
+			repo.Unref ();
+		}
 	}
 }
