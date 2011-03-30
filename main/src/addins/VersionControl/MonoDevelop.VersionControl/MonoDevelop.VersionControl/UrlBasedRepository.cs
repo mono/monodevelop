@@ -32,6 +32,7 @@ namespace MonoDevelop.VersionControl
 				string method = ((DataValue)data ["Method"]).Value;
 				int port = int.Parse (((DataValue)data ["Port"]).Value);
 				UriBuilder ub = new UriBuilder (method, server, port, dir);
+				ub.UserName = user;
 				url = ub.ToString ();
 			}
 			CreateUri ();

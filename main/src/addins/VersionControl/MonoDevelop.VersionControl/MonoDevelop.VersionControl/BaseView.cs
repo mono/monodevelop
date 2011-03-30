@@ -73,7 +73,7 @@ namespace MonoDevelop.VersionControl
 			set { }
 		}
 		
-		public string TabPageLabel {
+		public override string TabPageLabel {
 			get { return name; }
 		}
 

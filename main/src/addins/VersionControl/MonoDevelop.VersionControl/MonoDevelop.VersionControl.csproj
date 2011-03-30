@@ -95,7 +95,9 @@
     </Reference>
     <Reference Include="System.Core">
     </Reference>
-    <Reference Include="Mono.Cairo" />
+    <Reference Include="Mono.Cairo">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="overlay_added.png">
