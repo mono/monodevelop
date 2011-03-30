@@ -53,10 +53,12 @@ namespace MonoDevelop.IPhone
 		static DateTime? lastMTExeWrite = DateTime.MinValue;
 		
 		const string PLAT_PLIST = "/Developer/Platforms/iPhoneOS.platform/Info.plist";
+		const string PLAT_VERSION_PLIST = "/Developer/Platforms/iPhoneOS.platform/version.plist";
 		const string SIM_PLIST = "/Developer/Platforms/iPhoneOSSimulator.platform/Info.plist";
 		const string MT_VERSION_FILE = "/Developer/MonoTouch/Version";
 		const string MONOTOUCH_EXE = "/Developer/MonoTouch/usr/bin/mtouch";
 		const string VERSION_PLIST = "/Developer/Library/version.plist";
+		const string SYSTEM_VERSION_PLIST = "/System/Library/CoreServices/SystemVersion.plist";
 		
 		public static bool IsInstalled {
 			get {
@@ -140,8 +142,7 @@ namespace MonoDevelop.IPhone
 			settings.DTCompiler = ((PlistString)props["GCC_VERSION"]).Value;
 			
 			var sdkPath = GetSdkPath (sdk.ToString ());
-			var file = sdkPath + "/System/Library/CoreServices/SystemVersion.plist";
-			settings.DTPlatformBuild = GrabRootString (file, "ProductBuildVersion");
+			settings.DTSDKBuild = GrabRootString (sdkPath + SYSTEM_VERSION_PLIST, "ProductBuildVersion");
 			
 			sdkSettingsCache[sdk.ToString ()] = settings;
 			return settings;
@@ -160,19 +161,20 @@ namespace MonoDevelop.IPhone
 			
 			vals.DTPlatformVersion = ((PlistString)infos["DTPlatformVersion"]).Value;
 			
-			var pool = SendMessage (GetClass ("NSAutoreleasePool"), GetSelector ("new"));
-			var bundle = SendMessage (GetClass ("NSString"), GetSelector ("stringWithUTF8String:"), "CFBundleShortVersionString");
-			var plist = SendMessage (GetClass ("NSString"), GetSelector ("stringWithUTF8String:"), "/Developer/Applications/Xcode.app/Contents/Info.plist");
-			var data = SendMessage (GetClass ("NSDictionary"), GetSelector ("dictionaryWithContentsOfFile:"), plist);
-			var val = SendMessage (data, GetSelector ("objectForKey:"), bundle);
-
-			var xcodeVersion = Marshal.PtrToStringAuto (SendMessage (val, GetSelector ("UTF8String")));
-
-			SendMessage (pool, GetSelector ("release"));
-
-			vals.DTXcode = "0" + xcodeVersion.Replace (".", "");
+			IntPtr pool = SendMessage (GetClass ("NSAutoreleasePool"), GetSelector ("new"));
+			try {
+				var bundle = SendMessage (GetClass ("NSString"), GetSelector ("stringWithUTF8String:"), "DTXcode");
+				var plist = SendMessage (GetClass ("NSString"), GetSelector ("stringWithUTF8String:"), "/Developer/Applications/Xcode.app/Contents/Info.plist");
+				var data = SendMessage (GetClass ("NSDictionary"), GetSelector ("dictionaryWithContentsOfFile:"), plist);
+				var val = SendMessage (data, GetSelector ("objectForKey:"), bundle);
+				vals.DTXcode = Marshal.PtrToStringAuto (SendMessage (val, GetSelector ("UTF8String")));
+			} finally {
+				SendMessage (pool, GetSelector ("release"));
+			}
 			
+			vals.DTPlatformBuild = GrabRootString (PLAT_VERSION_PLIST, "ProductBuildVersion");
 			vals.DTXcodeBuild = GrabRootString (VERSION_PLIST, "ProductBuildVersion");
+			vals.BuildMachineOSBuild = GrabRootString (SYSTEM_VERSION_PLIST, "ProductBuildVersion");
 			
 			return (dtSettings = vals);
 		}
@@ -371,6 +373,8 @@ namespace MonoDevelop.IPhone
 			public string DTXcode { get; set; }
 			public string DTXcodeBuild { get; set; }
 			public string DTPlatformVersion { get; set; }
+			public string DTPlatformBuild { get; set; }
+			public string BuildMachineOSBuild { get; set; }
 		}
 
 		public class DTSdkSettings
@@ -378,7 +382,7 @@ namespace MonoDevelop.IPhone
 			public string CanonicalName { get; set; }
 			public string AlternateSDK { get; set; }
 			public string DTCompiler { get; set; }
-			public string DTPlatformBuild { get; set; }
+			public string DTSDKBuild { get; set; }
 		}
 
 		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "sel_registerName")]
