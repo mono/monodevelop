@@ -563,7 +563,12 @@ namespace MonoDevelop.Ide.Gui
 		/// </param>
 		public void RunWhenLoaded (System.Action action)
 		{
-			Editor.Document.RunWhenLoaded (action);
+			var e = Editor;
+			if (e == null || e.Document == null) {
+				action ();
+				return;
+			}
+			e.Document.RunWhenLoaded (action);
 		}
 		
 		internal void SetProject (Project project)
