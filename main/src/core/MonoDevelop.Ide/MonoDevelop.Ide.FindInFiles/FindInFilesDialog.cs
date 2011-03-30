@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					string selectedText = view.SelectedText;
 					if (!string.IsNullOrEmpty (selectedText)) {
 						if (selectedText.Any (c => c == '\n' || c == '\r')) {
-							comboboxScope.Active = ScopeSelection; 
+//							comboboxScope.Active = ScopeSelection; 
 						} else {
 							if (comboboxScope.Active == ScopeSelection)
 								comboboxScope.Active = ScopeCurrentDocument;
