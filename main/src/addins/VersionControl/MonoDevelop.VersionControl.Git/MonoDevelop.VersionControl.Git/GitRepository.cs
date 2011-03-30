@@ -71,6 +71,12 @@ namespace MonoDevelop.VersionControl.Git
 			repo = new LocalGitRepository (path.Combine (Constants.DOT_GIT));
 		}
 		
+		public override void Dispose ()
+		{
+			((GitVersionControl)VersionControlSystem).UnregisterRepo (this);
+			base.Dispose ();
+		}
+		
 		public override string[] SupportedProtocols {
 			get {
 				return new string[] {"git", "ssh", "http", "https", "ftp", "ftps", "rsync"};
