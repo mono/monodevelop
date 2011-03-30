@@ -292,12 +292,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandUpdateHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWithUpdate (CommandArrayInfo info)
 		{
-			PopulateOpenWithViewers (info, ((ProjectFile) CurrentNode.DataItem).FilePath);
+			var pf = (ProjectFile) CurrentNode.DataItem;
+			PopulateOpenWithViewers (info, pf.Project, pf.FilePath);
 		}
 		
-		internal static void PopulateOpenWithViewers (CommandArrayInfo info, string filePath)
+		internal static void PopulateOpenWithViewers (CommandArrayInfo info, Project project, string filePath)
 		{
-			var viewers = DisplayBindingService.GetFileViewers (filePath).ToList ();
+			var viewers = DisplayBindingService.GetFileViewers (filePath, project).ToList ();
 			
 			//show the default viewer first
 			var def = viewers.FirstOrDefault (v => v.CanUseAsDefault) ?? viewers.FirstOrDefault (v => v.IsExternal);

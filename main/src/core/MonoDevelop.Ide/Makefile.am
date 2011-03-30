@@ -311,8 +311,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/FileFilterCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateConditionTypeCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs \
-	MonoDevelop.Ide.Codons/IAttachableDisplayBinding.cs \
-	MonoDevelop.Ide.Codons/IDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/LanguageActiveCondition.cs \
 	MonoDevelop.Ide.Codons/NodeBuilderCodon.cs \
 	MonoDevelop.Ide.Codons/PadCodon.cs \
@@ -532,7 +530,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
-	MonoDevelop.Ide.Gui/DisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
@@ -547,6 +544,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/HiddenWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/IAttachableViewContent.cs \
 	MonoDevelop.Ide.Gui/IBaseViewContent.cs \
+	MonoDevelop.Ide.Gui/IDisplayBinding.cs \
 	MonoDevelop.Ide.Gui/IMementoCapable.cs \
 	MonoDevelop.Ide.Gui/InternalLog.cs \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \

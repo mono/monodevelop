@@ -31,13 +31,17 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Desktop;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Codons
+namespace MonoDevelop.Ide.Gui
 {
 	public interface IDisplayBinding
 	{
-		bool CanHandleMimeType (string mimeType);
-		bool CanHandleFile (string filename);
+		/// <summary>
+		/// Whether this instance can handle the specified item. ownerProject may be null, and either 
+		/// fileName or mimeType may be null, but not both.
+		/// </summary>
+		bool CanHandle (FilePath fileName, string mimeType, Project ownerProject);
 		
 		/// <summary>
 		/// Whether the display binding can be used as the default handler for the content types
@@ -46,29 +50,23 @@ namespace MonoDevelop.Ide.Codons
 		bool CanUseAsDefault { get; }
 	}
 	
-	///<summary>A display binding that opens </summary>
+	///<summary>A display binding that opens a new view within the workspace.</summary>
 	public interface IViewDisplayBinding : IDisplayBinding
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mimeType">
-		/// A <see cref="System.String"/>
-		/// </param>
-		/// <param name="content">
-		/// A <see cref="System.IO.Stream"/> may be null. If it's null the contents are loaded with an ordinary "Load" call.
-		/// </param>
-		/// <returns>
-		/// A <see cref="IViewContent"/>
-		/// </returns>
-		IViewContent CreateContentForMimeType (string mimeType, Stream content);
-		IViewContent CreateContentForFile (string filename);
+		IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject);
 		string Name { get; }
 	}
 	
+	///<summary>A display binding that opens an external application.</summary>
 	public interface IExternalDisplayBinding : IDisplayBinding
 	{
-		DesktopApplication GetApplicationForMimeType (string mimeType);
-		DesktopApplication GetApplicationForFile (string filename);
+		DesktopApplication GetApplication (FilePath fileName, string mimeType, Project ownerProject);
+	}
+	
+	///<summary>A display binding that attaches to an existing view in the workspace.</summary>
+	public interface IAttachableDisplayBinding
+	{
+		bool CanAttachTo (IViewContent content);
+		IAttachableViewContent CreateViewContent (IViewContent viewContent);
 	}
 }

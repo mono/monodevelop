@@ -41,18 +41,26 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class ActionGroupDisplayBinding : ViewDisplayBinding
+	public class ActionGroupDisplayBinding : IViewDisplayBinding
 	{
 		bool excludeThis = false;
 		
-		public override string Name {
-			get { return "Action Group Editor"; }
+		public string Name {
+			get { return MonoDevelop.Core.GettextCatalog.GetString ("Action Group Editor"); }
 		}
 		
-		public override bool CanHandleFile (string fileName)
+		public bool CanUseAsDefault {
+			get { return true; }
+		}
+		
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			if (excludeThis)
 				return false;
+			
+			if (fileName.IsNullOrEmpty)
+				return false;
+			
 			if (!IdeApp.Workspace.IsOpen)
 				return false;
 			
@@ -60,20 +68,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, null);
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
 			excludeThis = false;
 			return db != null;
 		}
 		
-		public override IViewContent CreateContentForFile (string fileName)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, null);
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
+			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) ownerProject);
 			
-			Project project = IdeApp.Workspace.GetProjectContainingFile (fileName);
-			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) project);
-			
-			ActionGroupView view = new ActionGroupView (db.CreateContentForFile (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
+			var content = db.CreateContent (fileName, mimeType, ownerProject);
+			ActionGroupView view = new ActionGroupView (content, GetActionGroup (fileName), info.GuiBuilderProject);
 			excludeThis = false;
 			return view;
 		}

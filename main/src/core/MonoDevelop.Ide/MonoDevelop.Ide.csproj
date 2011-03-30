@@ -1041,7 +1041,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\OpenFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IOpenFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IAddFileDialogHandler.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\TextEditorExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DockItemToolbarLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\LogView.cs" />
@@ -1428,8 +1427,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectOptionsWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\FileTypeCondition.cs" />
     <Compile Include="MonoDevelop.Ide\CodeGenerationService.cs" />
-    <Compile Include="MonoDevelop.Ide.Codons\IDisplayBinding.cs" />
-    <Compile Include="MonoDevelop.Ide.Codons\IAttachableDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\IDisplayBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

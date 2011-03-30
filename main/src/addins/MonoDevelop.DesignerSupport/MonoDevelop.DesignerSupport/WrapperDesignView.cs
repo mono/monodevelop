@@ -108,6 +108,11 @@ namespace MonoDevelop.DesignerSupport
 			content.Load (fileName);
 		}
 		
+		public override void LoadNew (System.IO.Stream content, string mimeType)
+		{
+			this.content.LoadNew (content, mimeType);
+		}
+		
 		public override Gtk.Widget Control {
 			get { return contentBox; }
 		}

@@ -28,10 +28,12 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Codons;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class SourceEditorDisplayBinding : ViewDisplayBinding
+	public class SourceEditorDisplayBinding : IViewDisplayBinding
 	{
 		public static FilePath SyntaxModePath {
 			get {
@@ -63,40 +65,32 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		
-		public override string Name {
+		public string Name {
 			get {
 				return GettextCatalog.GetString ("Source Code Editor");
 			}
 		}
 		
-		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForFile (string fileName)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		{
+			if (string.IsNullOrEmpty (mimeType))
+				return false;
+			return DesktopService.GetMimeTypeIsText (mimeType);
+		}
+		
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new SourceEditorView ();
 		}
 
-		public override bool CanHandleMimeType (string mimetype)
-		{
-			if (String.IsNullOrEmpty (mimetype))
-				return false;
-			return DesktopService.GetMimeTypeIsText (mimetype);
-		}
-
-		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
-		{
-			SourceEditorView result = new SourceEditorView ();
-			result.Document.MimeType = mimeType;
-			if (content != null) {
-				using (StreamReader reader = new StreamReader (content)) {
-					result.Document.Text = reader.ReadToEnd ();
-				}
-			}
-			return result;
-		}
-
-		public override bool CanHandleFile (string fileName)
+		public bool CanHandleFile (string fileName)
 		{
 			string mt = DesktopService.GetMimeTypeForUri (fileName);
 			return DesktopService.GetMimeTypeIsText (mt);
+		}
+		
+		public bool CanUseAsDefault {
+			get { return true; }
 		}
 	}
 }

@@ -27,44 +27,29 @@
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.HexEditor
 {
-	public class HexEditorDisplayBinding : ViewDisplayBinding
+	public class HexEditorDisplayBinding : IViewDisplayBinding
 	{
-		public override string Name {
+		public string Name {
 			get {
 				return GettextCatalog.GetString ("Hex Editor");
 			}
 		}
 		
-		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForFile (string fileName)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
+			
 			return new HexEditorView ();
 		}
-
-		public override bool CanHandleMimeType (string mimetype)
-		{
-			return true;
-		}
-
-		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
-		{
-			HexEditorView result = new HexEditorView ();
-/*			result.Document.MimeType = mimeType;
-			if (content != null) {
-				using (StreamReader reader = new StreamReader (content)) {
-					result.Document.Text = reader.ReadToEnd ();
-				}
-			}*/
-			return result;
-		}
 		
-		public override bool CanHandleFile (string filename)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return true;
 		}
 		
-		public override bool CanUseAsDefault { get { return false; } } 
+		public bool CanUseAsDefault { get { return false; } }
 	}
 }

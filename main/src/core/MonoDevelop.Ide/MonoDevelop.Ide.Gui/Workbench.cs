@@ -435,26 +435,23 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document NewDocument (string defaultName, string mimeType, Stream content)
 		{
-			IViewDisplayBinding binding = DisplayBindingService.GetDefaultViewBinding (null, mimeType);
-			IViewContent newContent;
-			
-			if (binding != null) {
-				try {
-					newContent = binding.CreateContentForMimeType (mimeType, content);
-				} finally {
-					content.Close ();
-				}
-				
-				if (newContent == null) {
-					throw new ApplicationException(String.Format("Created view content was null{3}DefaultName:{0}{3}MimeType:{1}{3}Content:{2}", defaultName, mimeType, content, Environment.NewLine));
-				}
-				newContent.UntitledName = defaultName;
-				newContent.IsDirty = true;
-				workbench.ShowView(newContent, true);
-				DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);
-			} else {
+			IViewDisplayBinding binding = DisplayBindingService.GetDefaultViewBinding (null, mimeType, null);
+			if (binding == null)
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
+			
+			IViewContent newContent = binding.CreateContent (null, mimeType, null);
+			using (content) {
+				newContent.LoadNew (content, mimeType);
 			}
+				
+			if (newContent == null)
+				throw new ApplicationException(String.Format("Created view content was null{3}DefaultName:{0}{3}MimeType:{1}{3}Content:{2}",
+					defaultName, mimeType, content, Environment.NewLine));
+			
+			newContent.UntitledName = defaultName;
+			newContent.IsDirty = true;
+			workbench.ShowView (newContent, true);
+			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);
 			
 			return WrapDocument (newContent.WorkbenchWindow);
 		}
@@ -607,9 +604,12 @@ namespace MonoDevelop.Ide.Gui
 			IWorkbenchWindow window = (IWorkbenchWindow) sender;
 			if (!args.Forced && window.ViewContent != null && window.ViewContent.IsDirty) {
 				AlertButton result = MessageService.GenericAlert (Stock.Warning,
-				                                                  GettextCatalog.GetString ("Save the changes to document '{0}' before closing?", window.ViewContent.IsUntitled ? window.ViewContent.UntitledName : System.IO.Path.GetFileName (window.ViewContent.ContentName)), 
-				                                                  GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
-				                                                  AlertButton.CloseWithoutSave, AlertButton.Cancel, window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
+					GettextCatalog.GetString ("Save the changes to document '{0}' before closing?",
+						window.ViewContent.IsUntitled
+							? window.ViewContent.UntitledName
+							: System.IO.Path.GetFileName (window.ViewContent.ContentName)), 
+				    GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
+				    AlertButton.CloseWithoutSave, AlertButton.Cancel, window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
 					if (window.ViewContent.ContentName == null) {
 						FindDocument (window).Save ();
@@ -641,6 +641,32 @@ namespace MonoDevelop.Ide.Gui
 			window.Closed -= OnWindowClosed;
 			documents.Remove (FindDocument (window)); 
 		}
+		
+		// When looking for the project to which the file belongs, look first
+		// in the active project, then the active solution, and so on
+		static Project GetProjectContainingFile (FilePath fileName)
+		{
+			Project project = null;
+			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				if (IdeApp.ProjectOperations.CurrentSelectedProject.Files.GetFile (fileName) != null)
+					project = IdeApp.ProjectOperations.CurrentSelectedProject;
+			}
+			if (project == null && IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem != null) {
+				project = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetProjectContainingFile (fileName);
+				if (project == null) {
+					WorkspaceItem it = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.ParentWorkspace;
+					while (it != null && project == null) {
+						project = it.GetProjectContainingFile (fileName);
+						it = it.ParentWorkspace;
+					}
+				}
+			}
+			if (project == null) {
+				project = IdeApp.Workspace.GetProjectContainingFile (fileName);
+			}
+			return project;
+		}
+		
 		
 		void RealOpenFile (FileOpenInformation openFileInfo)
 		{
@@ -707,38 +733,26 @@ namespace MonoDevelop.Ide.Gui
 				
 				Counters.OpenDocumentTimer.Trace ("Looking for binding");
 				
-				IViewDisplayBinding binding;
+				IDisplayBinding binding = null;
+				IViewDisplayBinding viewBinding = null;
+				Project project = GetProjectContainingFile (fileName);
 				
 				if (openFileInfo.DisplayBinding != null) {
-					binding = openFileInfo.DisplayBinding;
+					binding = viewBinding = openFileInfo.DisplayBinding;
 				} else {
-					binding = DisplayBindingService.GetDefaultViewBinding (fileName, DesktopService.GetMimeTypeForUri (fileName));
+					binding = DisplayBindingService.GetDefaultBinding (fileName, null, project);
+					viewBinding = binding as IViewDisplayBinding;
 				}
 				
 				if (binding != null) {
-					// When looking for the project to which the file belongs, look first
-					// in the active project, then the active solution, and so on
-					Project project = null;
-					if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-						if (IdeApp.ProjectOperations.CurrentSelectedProject.Files.GetFile (fileName) != null)
-							project = IdeApp.ProjectOperations.CurrentSelectedProject;
+					if (viewBinding != null)  {
+						var fw = new LoadFileWrapper (workbench, viewBinding, project, openFileInfo);
+						fw.Invoke (fileName);
+					} else {
+						var extBinding = (IExternalDisplayBinding)binding;
+						var app = extBinding.GetApplication (fileName, null, project);
+						app.Launch (fileName);
 					}
-					if (project == null && IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem != null) {
-						project = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetProjectContainingFile (fileName);
-						if (project == null) {
-							WorkspaceItem it = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.ParentWorkspace;
-							while (it != null && project == null) {
-								project = it.GetProjectContainingFile (fileName);
-								it = it.ParentWorkspace;
-							}
-						}
-					}
-					if (project == null) {
-						project = IdeApp.Workspace.GetProjectContainingFile (fileName);
-					}
-					
-					LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, openFileInfo);
-					fw.Invoke (fileName);
 					
 					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
 					DesktopService.RecentFiles.AddFile (fileName, project);
@@ -1009,15 +1023,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				Counters.OpenDocumentTimer.Trace ("Creating content");
-				if (binding.CanHandleFile (fileName)) {
-					newContent = binding.CreateContentForFile (fileName);
+				string mimeType = DesktopService.GetMimeTypeForUri (fileName);
+				if (binding.CanHandle (fileName, mimeType, project)) {
+					newContent = binding.CreateContent (fileName, mimeType, project);
 				} else {
-					string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-					if (!binding.CanHandleMimeType (mimeType)) {
-						fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
-						return;
-					}
-					newContent = binding.CreateContentForMimeType (mimeType, null);
+					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 				}
 				if (newContent == null) {
 					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);

@@ -22,20 +22,32 @@ namespace MonoDevelop.VersionControl
 			this.name = name;
 		}
 		
-		protected virtual void SaveAs(string fileName) {
+		protected virtual void SaveAs (string fileName)
+		{
 		}
 
-		void IViewContent.Load(string fileName) {
+		void IViewContent.Load (string fileName)
+		{
 			throw new InvalidOperationException();
-		}
-		void IViewContent.Save() {
-			throw new InvalidOperationException();
-		}
-		void IViewContent.DiscardChanges() {
 		}
 		
-		void IViewContent.Save(string fileName) {
-			SaveAs(fileName);
+		void IViewContent.LoadNew (Stream stream, string mimeType)
+		{
+			throw new InvalidOperationException ();
+		}
+		
+		void IViewContent.Save ()
+		{
+			throw new InvalidOperationException ();
+		}
+		
+		void IViewContent.DiscardChanges ()
+		{
+		}
+		
+		void IViewContent.Save (string fileName)
+		{
+			SaveAs (fileName);
 		}
 		
 		string IViewContent.ContentName {

@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Database.Query
 {
@@ -40,9 +41,9 @@ namespace MonoDevelop.Database.Query
 			}
 		}
 
-		public bool CanHandleFile (string uri)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return uri.EndsWith (".sql", StringComparison.OrdinalIgnoreCase);
+			return fileName.IsNotNull && fileName.HasExtension (".sql");
 		}
 		
 		public IViewContent CreateContentForFile (string uri)

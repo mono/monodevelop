@@ -32,27 +32,32 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Gettext
 {	
-	public class GettextEditorDisplayBinding : ViewDisplayBinding
+	public class GettextEditorDisplayBinding : IViewDisplayBinding
 	{
-		public override string Name {
+		public  string Name {
 			get { return GettextCatalog.GetString ("Gettext Editor"); }
 		}
 		
-		public override bool CanHandleFile (string fileName)
+		public bool CanHandle (FilePath filePath, string mimeType, Project project)
 		{
-			return Path.GetExtension (fileName).Equals (".po", StringComparison.OrdinalIgnoreCase);
+			return filePath.IsNotNull && filePath.HasExtension (".po");
 		}
 		
-		public override IViewContent CreateContentForFile (string fileName)
+		public IViewContent CreateContent (FilePath filePath, string mimeType, Project project)
 		{
 			foreach (TranslationProject tp in IdeApp.Workspace.GetAllSolutionItems<TranslationProject>  ())
-				if (tp.BaseDirectory == Path.GetDirectoryName (fileName))
-					return new Editor.CatalogEditorView (tp, fileName);
+				if (tp.BaseDirectory == Path.GetDirectoryName (filePath))
+					return new Editor.CatalogEditorView (tp, filePath);
 			
-			return new Editor.CatalogEditorView (null, fileName);
+			return new Editor.CatalogEditorView (null, filePath);
+		}
+		
+		public bool CanUseAsDefault {
+			get { return true; }
 		}
 	}
 }

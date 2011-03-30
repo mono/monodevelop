@@ -56,6 +56,10 @@ namespace MonoDevelop.Core
 		public bool IsNullOrEmpty {
 			get { return string.IsNullOrEmpty (fileName); }
 		}
+		
+		public bool IsNotNull {
+			get { return fileName != null; }
+		}
 
 		public bool IsEmpty {
 			get { return fileName != null && fileName.Length == 0; }
@@ -92,6 +96,13 @@ namespace MonoDevelop.Core
 			get {
 				return Path.GetExtension (fileName);
 			}
+		}
+		
+		public bool HasExtension (string extension)
+		{
+			return fileName.Length > extension.Length
+				&& fileName.EndsWith (extension, StringComparison.OrdinalIgnoreCase)
+				&& fileName[fileName.Length - extension.Length - 1] != Path.PathSeparator;
 		}
 
 		public string FileNameWithoutExtension {

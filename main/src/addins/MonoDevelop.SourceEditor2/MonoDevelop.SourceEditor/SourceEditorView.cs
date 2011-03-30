@@ -429,6 +429,16 @@ namespace MonoDevelop.SourceEditor
 				AutoSave.RemoveAutoSaveFile (ContentName);
 		}
 		
+		public override void LoadNew (Stream content, string mimeType)
+		{
+			Document.MimeType = mimeType;
+			if (content != null) {
+				using (var reader = new StreamReader (content)) {
+					Document.Text = reader.ReadToEnd ();
+				}
+			}
+		}
+		
 		public override void Load (string fileName)
 		{
 			Load (fileName, null);

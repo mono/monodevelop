@@ -33,6 +33,7 @@ using Mono.Addins;
 
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -44,31 +45,26 @@ namespace MonoDevelop.Ide.Gui
 				.OfType<T> ();
 		}
 		
-		static IEnumerable<IDisplayBinding> GetDisplayBindings (string filename, string mimeType)
+		static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, Project ownerProject)
 		{
-			if (mimeType == null && filename != null)
-				mimeType = DesktopService.GetMimeTypeForUri (filename);
+			if (mimeType == null && !filePath.IsNullOrEmpty)
+				mimeType = DesktopService.GetMimeTypeForUri (filePath);
 			
 			foreach (var b in GetBindings<IDisplayBinding> ()) {
-				if ((filename != null && b.CanHandleFile (filename)) || (mimeType != null && b.CanHandleMimeType (mimeType)))
+				if (b.CanHandle (filePath, mimeType, ownerProject))
 					yield return b;
 			}
 		}
 		
-		public static IViewDisplayBinding GetDefaultViewBinding (string filename, string mimeType)
+		public static IViewDisplayBinding GetDefaultViewBinding (FilePath filePath, string mimeType, Project ownerProject)
 		{
-			return GetDisplayBindings (filename, mimeType).OfType<IViewDisplayBinding> ()
+			return GetDisplayBindings (filePath, mimeType, ownerProject).OfType<IViewDisplayBinding> ()
 				.FirstOrDefault (d => d.CanUseAsDefault);
 		}
 		
-		static IDisplayBinding GetDefaultBinding (string filename, string mimeType)
+		public static IDisplayBinding GetDefaultBinding (FilePath filePath, string mimeType, Project ownerProject)
 		{
-			return GetDisplayBindings (filename, mimeType).FirstOrDefault ();
-		}
-		
-		static IEnumerable<IDisplayBinding> GetBindingsForMimeType (string mimeType)
-		{
-			return GetBindings<IDisplayBinding> ().Where (b => b.CanHandleMimeType (mimeType));
+			return GetDisplayBindings (filePath, mimeType, ownerProject).FirstOrDefault ();
 		}
 		
 		public static void AttachSubWindows (IWorkbenchWindow workbenchWindow)
@@ -79,38 +75,48 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public static IEnumerable<FileViewer> GetFileViewers (FilePath fileName)
+		public static IEnumerable<FileViewer> GetFileViewers (FilePath filePath, Project ownerProject)
 		{
-			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
+			string mimeType = DesktopService.GetMimeTypeForUri (filePath);
 			var viewerIds = new HashSet<string> ();
 			
-			foreach (var b in GetBindings<IDisplayBinding> ()) {
-				if (b.CanHandleMimeType (mimeType)) {
-					var vb = b as IViewDisplayBinding;
-					if (vb != null) {
-						yield return new FileViewer (vb);
-					} else {
-						var eb = (IExternalDisplayBinding) b;
-						var app = eb.GetApplicationForMimeType (mimeType);
-						if (viewerIds.Add (app.Id))
-							yield return new FileViewer (app);
-					}
-				} else if (b.CanHandleFile (fileName)) {
-					var vb = b as IViewDisplayBinding;
-					if (vb != null) {
-						yield return new FileViewer (vb);
-					} else {
-						var eb = (IExternalDisplayBinding) b;
-						var app = eb.GetApplicationForFile (mimeType);
-						if (viewerIds.Add (app.Id))
-							yield return new FileViewer (app);
-					}
+			foreach (var b in GetDisplayBindings (filePath, mimeType, ownerProject)) {
+				var vb = b as IViewDisplayBinding;
+				if (vb != null) {
+					yield return new FileViewer (vb);
+				} else {
+					var eb = (IExternalDisplayBinding) b;
+					var app = eb.GetApplication (filePath, mimeType, ownerProject);
+					if (viewerIds.Add (app.Id))
+						yield return new FileViewer (app);
 				}
 			}
 
-			foreach (var app in DesktopService.GetApplications (fileName))
+			foreach (var app in DesktopService.GetApplications (filePath))
 				if (viewerIds.Add (app.Id))
 					yield return new FileViewer (app);
+		}
+	}
+	
+	//dummy binding, anchor point for extension tree
+	class DefaultDisplayBinding : IViewDisplayBinding
+	{
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		{
+			throw new InvalidOperationException ();
+		}
+
+		public string Name {
+			get { return null; }
+		}
+
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		{
+			return false;
+		}
+
+		public bool CanUseAsDefault {
+			get { return false; }
 		}
 	}
 }
