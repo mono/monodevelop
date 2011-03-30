@@ -183,8 +183,12 @@ namespace MonoDevelop.VersionControl
 				return repoRef.Repo;
 			
 			Repository repo = VersionControlService.GetRepositoryReference (entry.BaseDirectory, entry.Name);
-			repo.AddRef ();
-			entry.ExtendedProperties [typeof(InternalRepositoryReference)] = new InternalRepositoryReference (repo);
+			InternalRepositoryReference rref = null;
+			if (repo != null) {
+				repo.AddRef ();
+				rref = new InternalRepositoryReference (repo);
+			}
+			entry.ExtendedProperties [typeof(InternalRepositoryReference)] = rref;
 			
 			return repo;
 		}
