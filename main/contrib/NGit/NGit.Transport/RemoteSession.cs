@@ -42,28 +42,42 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using NGit.Transport;
-using NSch;
 using Sharpen;
 
 namespace NGit.Transport
 {
-	/// <summary>Loads known hosts and private keys from <code>$HOME/.ssh</code>.</summary>
+	/// <summary>Create a remote "session" for executing remote commands.</summary>
 	/// <remarks>
-	/// Loads known hosts and private keys from <code>$HOME/.ssh</code>.
+	/// Create a remote "session" for executing remote commands.
 	/// <p>
-	/// This is the default implementation used by JGit and provides most of the
-	/// compatibility necessary to match OpenSSH, a popular implementation of SSH
-	/// used by C Git.
-	/// <p>
-	/// If user interactivity is required by SSH (e.g. to obtain a password), the
-	/// connection will immediately fail.
+	/// Clients should subclass RemoteSession to create an alternate way for JGit to
+	/// execute remote commands. (The client application may already have this
+	/// functionality available.) Note that this class is just a factory for creating
+	/// remote processes. If the application already has a persistent connection to
+	/// the remote machine, RemoteSession may do nothing more than return a new
+	/// RemoteProcess when exec is called.
 	/// </remarks>
-	internal class DefaultSshSessionFactory : JschConfigSessionFactory
+	public interface RemoteSession
 	{
-		protected internal override void Configure(OpenSshConfig.Host hc, Session session
-			)
-		{
-		}
-		// No additional configuration required.
+		/// <summary>Generate a new remote process to execute the given command.</summary>
+		/// <remarks>
+		/// Generate a new remote process to execute the given command. This function
+		/// should also start execution and may need to create the streams prior to
+		/// execution.
+		/// </remarks>
+		/// <param name="commandName">command to execute</param>
+		/// <param name="timeout">timeout value, in seconds, for command execution</param>
+		/// <returns>a new remote process</returns>
+		/// <exception cref="System.IO.IOException">
+		/// may be thrown in several cases. For example, on problems
+		/// opening input or output streams or on problems connecting or
+		/// communicating with the remote host. For the latter two cases,
+		/// a TransportException may be thrown (a subclass of
+		/// IOException).
+		/// </exception>
+		SystemProcess Exec(string commandName, int timeout);
+
+		/// <summary>Disconnect the remote session</summary>
+		void Disconnect();
 	}
 }

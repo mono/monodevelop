@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -407,7 +407,6 @@
     <Compile Include="NGit.Util\HttpSupport.cs" />
     <Compile Include="NGit.Transport\TransportLocal.cs" />
     <Compile Include="NGit.Transport\DefaultSshSessionFactory.cs" />
-    <Compile Include="NGit.Transport\SshConfigSessionFactory.cs" />
     <Compile Include="NGit.Transport\SshSessionFactory.cs" />
     <Compile Include="NGit.Transport\SshTransport.cs" />
     <Compile Include="NGit.Transport\TransportGitSsh.cs" />
@@ -496,9 +495,15 @@
     <Compile Include="NGit.Transport.Resolver\UploadPackFactory.cs" />
     <Compile Include="NGit.Api\ResetCommand.cs" />
     <Compile Include="NGit\BatchingProgressMonitor.cs" />
+    <Compile Include="NGit.Util\BlockList.cs" />
     <Compile Include="NGit\ObjectIdOwnerMap.cs" />
     <Compile Include="NGit.Transport\TransportProtocol.cs" />
-    <Compile Include="NGit.Util\BlockList.cs" />
+    <Compile Include="NGit.Transport\JschConfigSessionFactory.cs" />
+    <Compile Include="NGit.Transport\JschSession.cs" />
+    <Compile Include="NGit.Transport\RemoteSession.cs" />
+    <Compile Include="NGit.Api\CherryPickResult.cs" />
+    <Compile Include="NGit.Api\Status.cs" />
+    <Compile Include="NGit.Api\StatusCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

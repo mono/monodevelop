@@ -481,6 +481,27 @@ namespace NGit.Api
 			return new ResetCommand(repo);
 		}
 
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>status</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-status.html"
+		/// *      >Git documentation about status</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="StatusCommand">StatusCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>status</code>
+		/// command
+		/// </returns>
+		public virtual StatusCommand Status()
+		{
+			return new StatusCommand(repo);
+		}
+
 		/// <returns>the git repository this class is interacting with</returns>
 		public virtual Repository GetRepository()
 		{

@@ -148,11 +148,12 @@ namespace NGit.Transport
 		/// <exception cref="NGit.Errors.TransportException"></exception>
 		internal virtual ChannelSftp NewSftp()
 		{
-			InitSession();
 			int tms = GetTimeout() > 0 ? GetTimeout() * 1000 : 0;
 			try
 			{
-				Channel channel = sock.OpenChannel("sftp");
+				// @TODO: Fix so that this operation is generic and casting to
+				// JschSession is no longer necessary.
+				Channel channel = ((JschSession)GetSession()).GetSftpChannel();
 				channel.Connect(tms);
 				return (ChannelSftp)channel;
 			}
@@ -277,7 +278,7 @@ namespace NGit.Transport
 						mtimes.Put(n, ent_1.GetAttrs().GetMTime());
 						packs.AddItem(n);
 					}
-					packs.Sort(new _IComparer_248(mtimes));
+					packs.Sort(new _IComparer_249(mtimes));
 				}
 				catch (SftpException je)
 				{
@@ -287,9 +288,9 @@ namespace NGit.Transport
 				return packs;
 			}
 
-			private sealed class _IComparer_248 : IComparer<string>
+			private sealed class _IComparer_249 : IComparer<string>
 			{
-				public _IComparer_248(Dictionary<string, int> mtimes)
+				public _IComparer_249(Dictionary<string, int> mtimes)
 				{
 					this.mtimes = mtimes;
 				}

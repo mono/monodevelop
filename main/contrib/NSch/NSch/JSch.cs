@@ -31,6 +31,7 @@ All credit should go to the authors of jsch.
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NSch;
 using Sharpen;
 

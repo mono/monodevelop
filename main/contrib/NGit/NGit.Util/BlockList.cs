@@ -161,6 +161,52 @@ namespace NGit.Util
 			return old;
 		}
 
+		/// <summary>Quickly append all elements of another BlockList.</summary>
+		/// <remarks>Quickly append all elements of another BlockList.</remarks>
+		/// <param name="src">the list to copy elements from.</param>
+		public virtual void AddAll(NGit.Util.BlockList<T> src)
+		{
+			if (src.size == 0)
+			{
+				return;
+			}
+			int srcDirIdx = 0;
+			for (; srcDirIdx < src.tailDirIdx; srcDirIdx++)
+			{
+				AddAll(src.directory[srcDirIdx], 0, BLOCK_SIZE);
+			}
+			if (src.tailBlkIdx != 0)
+			{
+				AddAll(src.tailBlock, 0, src.tailBlkIdx);
+			}
+		}
+
+		/// <summary>Quickly append all elements from an array.</summary>
+		/// <remarks>Quickly append all elements from an array.</remarks>
+		/// <param name="src">the source array.</param>
+		/// <param name="srcIdx">first index to copy.</param>
+		/// <param name="srcCnt">number of elements to copy.</param>
+		public virtual void AddAll(T[] src, int srcIdx, int srcCnt)
+		{
+			while (0 < srcCnt)
+			{
+				int i = tailBlkIdx;
+				int n = Math.Min(srcCnt, BLOCK_SIZE - i);
+				if (n == 0)
+				{
+					// Our tail is full, expand by one.
+					AddItem(src[srcIdx++]);
+					srcCnt--;
+					continue;
+				}
+				System.Array.Copy(src, srcIdx, tailBlock, i, n);
+				tailBlkIdx += n;
+				size += n;
+				srcIdx += n;
+				srcCnt -= n;
+			}
+		}
+
 		public override bool AddItem(T element)
 		{
 			int i = tailBlkIdx;

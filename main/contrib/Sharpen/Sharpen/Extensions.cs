@@ -216,21 +216,6 @@ namespace Sharpen
 			return (int)tzone.GetUtcOffset (MillisToDateTimeOffset (date, 0).DateTime).TotalMilliseconds;
 		}
 
-		public static InputStream GetErrorStream (this Process p)
-		{
-			return InputStream.Wrap (p.StandardError.BaseStream);
-		}
-
-		public static InputStream GetInputStream (this Process p)
-		{
-			return InputStream.Wrap (p.StandardOutput.BaseStream);
-		}
-
-		public static OutputStream GetOutputStream (this Process p)
-		{
-			return OutputStream.Wrap (p.StandardInput.BaseStream);
-		}
-
 		public static InputStream GetResourceAsStream (this Type type, string name)
 		{
 			string str2 = type.Assembly.GetName ().Name;
@@ -599,12 +584,6 @@ namespace Sharpen
 			return val;
 		}
 
-		public static int WaitFor (this Process p)
-		{
-			p.WaitForExit ();
-			return p.ExitCode;
-		}
-		
 		public static int GetTotalInFixed (this Inflater inf)
 		{
 			if (inf.TotalIn > 0)
@@ -781,14 +760,14 @@ namespace Sharpen
 			si.Arguments = string.Join (" ", args.Skip (1).Select (a => "\"" + a + "\"").ToArray ());
 		}
 		
-		public static Process Start (this ProcessStartInfo si)
+		public static SystemProcess Start (this ProcessStartInfo si)
 		{
 			si.UseShellExecute = false;
 			si.RedirectStandardInput = true;
 			si.RedirectStandardError = true;
 			si.RedirectStandardOutput = true;
 			si.CreateNoWindow = true;
-			return Process.Start (si);
+			return SystemProcess.Start (si);
 		}
 	}
 }

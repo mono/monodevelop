@@ -81,18 +81,16 @@ namespace NGit.Storage.File
 				}
 				who = RawParseUtils.ParsePersonIdentOnly(raw, pos);
 				int p0 = RawParseUtils.Next(raw, pos, '\t');
-				// personident has no
-				// \t
-				if (p0 == -1)
+				if (p0 >= raw.Length)
 				{
-					throw new ArgumentException(JGitText.Get().rawLogMessageDoesNotParseAsLogEntry);
+					comment = string.Empty;
 				}
-				int p1 = RawParseUtils.NextLF(raw, p0);
-				if (p1 == -1)
+				else
 				{
-					throw new ArgumentException(JGitText.Get().rawLogMessageDoesNotParseAsLogEntry);
+					// personident has no \t, no comment present
+					int p1 = RawParseUtils.NextLF(raw, p0);
+					comment = p1 > p0 ? RawParseUtils.Decode(raw, p0, p1 - 1) : string.Empty;
 				}
-				comment = RawParseUtils.Decode(raw, p0, p1 - 1);
 			}
 
 			/// <returns>the commit id before the change</returns>

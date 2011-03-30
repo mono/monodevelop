@@ -185,7 +185,7 @@ namespace NGit.Transport
 
 		// Resources must be established per-connection.
 		/// <exception cref="NGit.Errors.TransportException"></exception>
-		protected internal virtual Process Spawn(string cmd)
+		protected internal virtual SystemProcess Spawn(string cmd)
 		{
 			try
 			{
@@ -348,7 +348,7 @@ namespace NGit.Transport
 
 		internal class ForkLocalFetchConnection : BasePackFetchConnection
 		{
-			private Process uploadPack;
+			private SystemProcess uploadPack;
 
 			private Sharpen.Thread errorReaderThread;
 
@@ -531,7 +531,7 @@ namespace NGit.Transport
 
 		internal class ForkLocalPushConnection : BasePackPushConnection
 		{
-			private Process receivePack;
+			private SystemProcess receivePack;
 
 			private Sharpen.Thread errorReaderThread;
 

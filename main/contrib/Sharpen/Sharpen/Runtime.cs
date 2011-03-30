@@ -1,16 +1,16 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using ProcessStartInfo = System.Diagnostics.ProcessStartInfo;
+
 namespace Sharpen
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.IO;
-	using System.Net;
-	using System.Runtime.CompilerServices;
-
 	internal class Runtime
 	{
 		private static Runtime instance;
@@ -33,28 +33,27 @@ namespace Sharpen
 			return DateTime.UtcNow.ToMillisecondsSinceEpoch ();
 		}
 
-		public Process Exec (string[] cmd, string[] envp, FilePath dir)
+		public SystemProcess Exec (string[] cmd, string[] envp, FilePath dir)
 		{
 			try {
-				Process process = new Process ();
-				process.StartInfo.FileName = cmd[0];
-				process.StartInfo.Arguments = string.Join (" ", cmd, 1, cmd.Length - 1);
+				ProcessStartInfo psi = new ProcessStartInfo ();
+				psi.FileName = cmd[0];
+				psi.Arguments = string.Join (" ", cmd, 1, cmd.Length - 1);
 				if (dir != null) {
-					process.StartInfo.WorkingDirectory = dir.GetPath ();
+					psi.WorkingDirectory = dir.GetPath ();
 				}
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardInput = true;
-				process.StartInfo.RedirectStandardError = true;
-				process.StartInfo.RedirectStandardOutput = true;
-				process.StartInfo.CreateNoWindow = true;
+				psi.UseShellExecute = false;
+				psi.RedirectStandardInput = true;
+				psi.RedirectStandardError = true;
+				psi.RedirectStandardOutput = true;
+				psi.CreateNoWindow = true;
 				if (envp != null) {
 					foreach (string str in envp) {
 						int index = str.IndexOf ('=');
-						process.StartInfo.EnvironmentVariables[str.Substring (0, index)] = str.Substring (index + 1);
+						psi.EnvironmentVariables[str.Substring (0, index)] = str.Substring (index + 1);
 					}
 				}
-				process.Start ();
-				return process;
+				return SystemProcess.Start (psi);
 			} catch (System.ComponentModel.Win32Exception ex) {
 				throw new IOException (ex.Message);
 			}

@@ -51,7 +51,6 @@ using NGit.Errors;
 using NGit.Transport;
 using NGit.Util;
 using NGit.Util.IO;
-using NSch;
 using Sharpen;
 
 namespace NGit.Transport
@@ -70,9 +69,9 @@ namespace NGit.Transport
 	/// </remarks>
 	public class TransportGitSsh : SshTransport, PackTransport
 	{
-		private sealed class _TransportProtocol_89 : TransportProtocol
+		private sealed class _TransportProtocol_84 : TransportProtocol
 		{
-			public _TransportProtocol_89()
+			public _TransportProtocol_84()
 			{
 				this.schemeNames = new string[] { "ssh", "ssh+git", "git+ssh" };
 				this.schemeSet = Sharpen.Collections.UnmodifiableSet(new LinkedHashSet<string>(Arrays
@@ -130,33 +129,45 @@ namespace NGit.Transport
 			}
 		}
 
-		internal static readonly TransportProtocol PROTO_SSH = new _TransportProtocol_89(
+		internal static readonly TransportProtocol PROTO_SSH = new _TransportProtocol_84(
 			);
 
 		protected internal TransportGitSsh(Repository local, URIish uri) : base(local, uri
 			)
 		{
+			if (UseExtSession())
+			{
+				SetSshSessionFactory(new _SshSessionFactory_134(this));
+			}
+		}
+
+		private sealed class _SshSessionFactory_134 : SshSessionFactory
+		{
+			TransportGitSsh _enclosing;
+			
+			public _SshSessionFactory_134(TransportGitSsh _enclosing)
+			{
+				this._enclosing = _enclosing;
+			}
+
+			/// <exception cref="NGit.Errors.TransportException"></exception>
+			public override RemoteSession GetSession(URIish uri2, CredentialsProvider credentialsProvider
+				, FS fs, int tms)
+			{
+				return new TransportGitSsh.ExtSession(_enclosing);
+			}
 		}
 
 		/// <exception cref="NGit.Errors.TransportException"></exception>
 		public override FetchConnection OpenFetch()
 		{
-			return new TransportGitSsh.SshFetchConnection(this, NewConnection());
+			return new TransportGitSsh.SshFetchConnection(this);
 		}
 
 		/// <exception cref="NGit.Errors.TransportException"></exception>
 		public override PushConnection OpenPush()
 		{
-			return new TransportGitSsh.SshPushConnection(this, NewConnection());
-		}
-
-		private TransportGitSsh.Connection NewConnection()
-		{
-			if (UseExtConnection())
-			{
-				return new TransportGitSsh.ExtConnection(this);
-			}
-			return new TransportGitSsh.JschConnection(this);
+			return new TransportGitSsh.SshPushConnection(this);
 		}
 
 		internal virtual string CommandFor(string exe)
@@ -211,187 +222,15 @@ namespace NGit.Transport
 			return new NoRemoteRepositoryException(uri, why);
 		}
 
-		private abstract class Connection
-		{
-			/// <exception cref="NGit.Errors.TransportException"></exception>
-			internal abstract void Exec(string commandName);
-
-			/// <exception cref="NGit.Errors.TransportException"></exception>
-			internal abstract void Connect();
-
-			/// <exception cref="System.IO.IOException"></exception>
-			internal abstract InputStream GetInputStream();
-
-			/// <exception cref="System.IO.IOException"></exception>
-			internal abstract OutputStream GetOutputStream();
-
-			/// <exception cref="System.IO.IOException"></exception>
-			internal abstract InputStream GetErrorStream();
-
-			internal abstract int GetExitStatus();
-
-			internal abstract void Close();
-
-			internal Connection(TransportGitSsh _enclosing)
-			{
-				this._enclosing = _enclosing;
-			}
-
-			private readonly TransportGitSsh _enclosing;
-		}
-
-		private class JschConnection : TransportGitSsh.Connection
-		{
-			private ChannelExec channel;
-
-			private int exitStatus;
-
-			/// <exception cref="NGit.Errors.TransportException"></exception>
-			internal override void Exec(string commandName)
-			{
-				this._enclosing.InitSession();
-				try
-				{
-					this.channel = (ChannelExec)this._enclosing.sock.OpenChannel("exec");
-					this.channel.SetCommand(this._enclosing.CommandFor(commandName));
-				}
-				catch (JSchException je)
-				{
-					throw new TransportException(this._enclosing.uri, je.Message, je);
-				}
-			}
-
-			/// <exception cref="NGit.Errors.TransportException"></exception>
-			internal override void Connect()
-			{
-				try
-				{
-					this.channel.Connect(this._enclosing.GetTimeout() > 0 ? this._enclosing.GetTimeout
-						() * 1000 : 0);
-					if (!this.channel.IsConnected())
-					{
-						throw new TransportException(this._enclosing.uri, "connection failed");
-					}
-				}
-				catch (JSchException e)
-				{
-					throw new TransportException(this._enclosing.uri, e.Message, e);
-				}
-			}
-
-			/// <exception cref="System.IO.IOException"></exception>
-			internal override InputStream GetInputStream()
-			{
-				return this.channel.GetInputStream();
-			}
-
-			/// <exception cref="System.IO.IOException"></exception>
-			internal override OutputStream GetOutputStream()
-			{
-				// JSch won't let us interrupt writes when we use our InterruptTimer
-				// to break out of a long-running write operation. To work around
-				// that we spawn a background thread to shuttle data through a pipe,
-				// as we can issue an interrupted write out of that. Its slower, so
-				// we only use this route if there is a timeout.
-				//
-				OutputStream @out = this.channel.GetOutputStream();
-				if (this._enclosing.GetTimeout() <= 0)
-				{
-					return @out;
-				}
-				PipedInputStream pipeIn = new PipedInputStream();
-				StreamCopyThread copier = new StreamCopyThread(pipeIn, @out);
-				PipedOutputStream pipeOut = new _PipedOutputStream_259(this, copier, pipeIn);
-				// Just wake early, the thread will terminate anyway.
-				copier.Start();
-				return pipeOut;
-			}
-
-			private sealed class _PipedOutputStream_259 : PipedOutputStream
-			{
-				public _PipedOutputStream_259(JschConnection _enclosing, StreamCopyThread copier, 
-					PipedInputStream baseArg1) : base(baseArg1)
-				{
-					this._enclosing = _enclosing;
-					this.copier = copier;
-				}
-
-				/// <exception cref="System.IO.IOException"></exception>
-				public override void Flush()
-				{
-					base.Flush();
-					copier.Flush();
-				}
-
-				/// <exception cref="System.IO.IOException"></exception>
-				public override void Close()
-				{
-					base.Close();
-					try
-					{
-						copier.Join(this._enclosing._enclosing.GetTimeout() * 1000);
-					}
-					catch (Exception)
-					{
-					}
-				}
-
-				private readonly JschConnection _enclosing;
-
-				private readonly StreamCopyThread copier;
-			}
-
-			/// <exception cref="System.IO.IOException"></exception>
-			internal override InputStream GetErrorStream()
-			{
-				return this.channel.GetErrStream();
-			}
-
-			internal override int GetExitStatus()
-			{
-				return this.exitStatus;
-			}
-
-			internal override void Close()
-			{
-				if (this.channel != null)
-				{
-					try
-					{
-						this.exitStatus = this.channel.GetExitStatus();
-						if (this.channel.IsConnected())
-						{
-							this.channel.Disconnect();
-						}
-					}
-					finally
-					{
-						this.channel = null;
-					}
-				}
-			}
-
-			internal JschConnection(TransportGitSsh _enclosing) : base(_enclosing)
-			{
-				this._enclosing = _enclosing;
-			}
-
-			private readonly TransportGitSsh _enclosing;
-		}
-
-		private static bool UseExtConnection()
+		private static bool UseExtSession()
 		{
 			return SystemReader.GetInstance().Getenv("GIT_SSH") != null;
 		}
 
-		private class ExtConnection : TransportGitSsh.Connection
+		private class ExtSession : RemoteSession
 		{
-			private Process proc;
-
-			private int exitStatus;
-
 			/// <exception cref="NGit.Errors.TransportException"></exception>
-			internal override void Exec(string commandName)
+			public virtual SystemProcess Exec(string command, int timeout)
 			{
 				string ssh = SystemReader.GetInstance().Getenv("GIT_SSH");
 				bool putty = ssh.ToLower().Contains("plink");
@@ -415,7 +254,7 @@ namespace NGit.Transport
 				{
 					args.AddItem(this._enclosing.GetURI().GetHost());
 				}
-				args.AddItem(this._enclosing.CommandFor(commandName));
+				args.AddItem(command);
 				ProcessStartInfo pb = new ProcessStartInfo();
 				pb.SetCommand(args);
 				if (this._enclosing.local.Directory != null)
@@ -425,95 +264,47 @@ namespace NGit.Transport
 				}
 				try
 				{
-					this.proc = pb.Start();
+					return pb.Start();
 				}
 				catch (IOException err)
 				{
-					throw new TransportException(this._enclosing.uri, err.Message, err);
+					throw new TransportException(err.Message, err);
 				}
 			}
 
-			/// <exception cref="NGit.Errors.TransportException"></exception>
-			internal override void Connect()
+			public virtual void Disconnect()
 			{
 			}
 
-			// Nothing to do, the process was already opened.
-			/// <exception cref="System.IO.IOException"></exception>
-			internal override InputStream GetInputStream()
-			{
-				return this.proc.GetInputStream();
-			}
-
-			/// <exception cref="System.IO.IOException"></exception>
-			internal override OutputStream GetOutputStream()
-			{
-				return this.proc.GetOutputStream();
-			}
-
-			/// <exception cref="System.IO.IOException"></exception>
-			internal override InputStream GetErrorStream()
-			{
-				return this.proc.GetErrorStream();
-			}
-
-			internal override int GetExitStatus()
-			{
-				return this.exitStatus;
-			}
-
-			internal override void Close()
-			{
-				if (this.proc != null)
-				{
-					try
-					{
-						try
-						{
-							this.exitStatus = this.proc.WaitFor();
-						}
-						catch (Exception)
-						{
-						}
-					}
-					finally
-					{
-						// Ignore the interrupt, but return immediately.
-						this.proc = null;
-					}
-				}
-			}
-
-			internal ExtConnection(TransportGitSsh _enclosing) : base(_enclosing)
+			internal ExtSession(TransportGitSsh _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
 
 			private readonly TransportGitSsh _enclosing;
+			// Nothing to do
 		}
 
 		private class SshFetchConnection : BasePackFetchConnection
 		{
-			private TransportGitSsh.Connection conn;
+			private readonly SystemProcess process;
 
 			private StreamCopyThread errorThread;
 
 			/// <exception cref="NGit.Errors.TransportException"></exception>
-			internal SshFetchConnection(TransportGitSsh _enclosing, TransportGitSsh.Connection
-				 conn) : base(_enclosing)
+			public SshFetchConnection(TransportGitSsh _enclosing) : base(_enclosing)
 			{
 				this._enclosing = _enclosing;
-				this.conn = conn;
 				try
 				{
+					this.process = this._enclosing.GetSession().Exec(this._enclosing.CommandFor(this.
+						_enclosing.GetOptionUploadPack()), this._enclosing.GetTimeout());
 					MessageWriter msg = new MessageWriter();
 					this.SetMessageWriter(msg);
-					conn.Exec(this._enclosing.GetOptionUploadPack());
-					InputStream upErr = conn.GetErrorStream();
+					InputStream upErr = this.process.GetErrorStream();
 					this.errorThread = new StreamCopyThread(upErr, msg.GetRawStream());
 					this.errorThread.Start();
-					this.Init(conn.GetInputStream(), conn.GetOutputStream());
-					conn.Connect();
+					this.Init(this.process.GetInputStream(), this.process.GetOutputStream());
 				}
 				catch (TransportException err)
 				{
@@ -533,7 +324,7 @@ namespace NGit.Transport
 				catch (NoRemoteRepositoryException notFound)
 				{
 					string msgs = this.GetMessages();
-					this._enclosing.CheckExecFailure(conn.GetExitStatus(), this._enclosing.GetOptionUploadPack
+					this._enclosing.CheckExecFailure(this.process.ExitValue(), this._enclosing.GetOptionUploadPack
 						(), msgs);
 					throw this._enclosing.CleanNotFound(notFound, msgs);
 				}
@@ -558,7 +349,10 @@ namespace NGit.Transport
 					}
 				}
 				base.Close();
-				this.conn.Close();
+				if (this.process != null)
+				{
+					this.process.Destroy();
+				}
 			}
 
 			private readonly TransportGitSsh _enclosing;
@@ -566,26 +360,24 @@ namespace NGit.Transport
 
 		private class SshPushConnection : BasePackPushConnection
 		{
-			private TransportGitSsh.Connection conn;
+			private readonly SystemProcess process;
 
 			private StreamCopyThread errorThread;
 
 			/// <exception cref="NGit.Errors.TransportException"></exception>
-			internal SshPushConnection(TransportGitSsh _enclosing, TransportGitSsh.Connection
-				 conn) : base(_enclosing)
+			public SshPushConnection(TransportGitSsh _enclosing) : base(_enclosing)
 			{
 				this._enclosing = _enclosing;
-				this.conn = conn;
 				try
 				{
+					this.process = this._enclosing.GetSession().Exec(this._enclosing.CommandFor(this.
+						_enclosing.GetOptionReceivePack()), this._enclosing.GetTimeout());
 					MessageWriter msg = new MessageWriter();
 					this.SetMessageWriter(msg);
-					conn.Exec(this._enclosing.GetOptionReceivePack());
-					InputStream rpErr = conn.GetErrorStream();
+					InputStream rpErr = this.process.GetErrorStream();
 					this.errorThread = new StreamCopyThread(rpErr, msg.GetRawStream());
 					this.errorThread.Start();
-					this.Init(conn.GetInputStream(), conn.GetOutputStream());
-					conn.Connect();
+					this.Init(this.process.GetInputStream(), this.process.GetOutputStream());
 				}
 				catch (TransportException err)
 				{
@@ -605,7 +397,7 @@ namespace NGit.Transport
 				catch (NoRemoteRepositoryException notFound)
 				{
 					string msgs = this.GetMessages();
-					this._enclosing.CheckExecFailure(conn.GetExitStatus(), this._enclosing.GetOptionReceivePack
+					this._enclosing.CheckExecFailure(this.process.ExitValue(), this._enclosing.GetOptionReceivePack
 						(), msgs);
 					throw this._enclosing.CleanNotFound(notFound, msgs);
 				}
@@ -630,7 +422,10 @@ namespace NGit.Transport
 					}
 				}
 				base.Close();
-				this.conn.Close();
+				if (this.process != null)
+				{
+					this.process.Destroy();
+				}
 			}
 
 			private readonly TransportGitSsh _enclosing;
