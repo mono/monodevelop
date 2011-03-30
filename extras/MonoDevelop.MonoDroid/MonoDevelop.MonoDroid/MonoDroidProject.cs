@@ -308,8 +308,14 @@ namespace MonoDevelop.MonoDroid
 		{
 			// Avoid a 'build' needed error by returning the last build time of the newest resource/asset/java/native file
 			var baseLastWriteTime = base.OnGetLastBuildTime (configuration);
-			var lastWriteTime = Files.Where (file => IsAndroidSpecialFile (file)).
-				Max (file => File.Exists (file.FilePath) ? File.GetLastWriteTime (file.FilePath) : DateTime.MinValue);
+
+			var lastWriteTime = DateTime.MinValue;
+			var specialFiles = Files.Where (file => IsAndroidSpecialFile (file));
+			foreach (var file in specialFiles) {
+				var lastFileWriteTime = File.Exists (file.FilePath) ? File.GetLastWriteTime (file.FilePath) : DateTime.MinValue;
+				if (lastFileWriteTime > lastWriteTime)
+					lastWriteTime = lastFileWriteTime;
+			}
 
 			return lastWriteTime > baseLastWriteTime ? lastWriteTime : baseLastWriteTime;
 		}
