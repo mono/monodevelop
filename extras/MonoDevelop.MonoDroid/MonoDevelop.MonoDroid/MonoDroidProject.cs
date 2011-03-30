@@ -331,24 +331,6 @@ namespace MonoDevelop.MonoDroid
 			return base.GetOutputFileName (configuration);
 		}
 		
-		protected override bool CheckNeedsBuild (ConfigurationSelector configuration)
-		{
-			var apkBuildTime = GetLastBuildTime (configuration);
-			if (apkBuildTime == DateTime.MinValue)
-				return true;
-			
-			var dllBuildTime = base.GetLastBuildTime (configuration);
-			if (dllBuildTime == DateTime.MinValue || dllBuildTime > apkBuildTime)
-				return true;
-			
-			if (base.CheckNeedsBuild (configuration))
-				return true;
-			
-			// Same as in GetOutputFileName: we removed the apk checks as the apk file
-			// is now generated in the sign step, not in the build step.
-			return false;
-		}
-		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
 		                                                            DotNetProjectConfiguration configuration)
 		{
