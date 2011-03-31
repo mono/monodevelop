@@ -330,12 +330,6 @@ namespace MonoDevelop.MonoDroid
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
 			
-			if (NeedsBuilding (configSel)) {
-				monitor.ReportError (
-					GettextCatalog.GetString ("Mono for Android projects must be built before uploading"), null);
-				return;
-			}
-			
 			IConsole console = null;
 			var opMon = new AggregatedOperationMonitor (monitor);
 			try {
