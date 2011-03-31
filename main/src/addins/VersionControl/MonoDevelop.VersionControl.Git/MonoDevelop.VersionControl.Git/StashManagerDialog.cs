@@ -51,6 +51,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (store.GetIterFirst (out it))
 				list.Selection.SelectIter (it);
 			UpdateButtons ();
+			
+			list.Selection.Changed += delegate {
+				UpdateButtons ();
+			};
 		}
 		
 		void Fill ()
@@ -58,8 +62,17 @@ namespace MonoDevelop.VersionControl.Git
 			TreeViewState tvs = new TreeViewState (list, 0);
 			tvs.Save ();
 			store.Clear ();
-			foreach (var s in stashes)
-				store.AppendValues (s, s.DateTime.LocalDateTime.ToString (), s.Comment);
+			foreach (var s in stashes) {
+				string name = s.Comment;
+				string branch = GitRepository.GetStashBranchName (name);
+				if (branch != null) {
+					if (branch == "_tmp_")
+						name = GettextCatalog.GetString ("Temporary stash created by MonoDevelop");
+					else
+						name = GettextCatalog.GetString ("Local changes of branch '{0}'", branch);
+				}
+				store.AppendValues (s, s.DateTime.LocalDateTime.ToString (), name);
+			}
 			tvs.Load ();
 		}
 		
@@ -80,8 +93,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			Stash s = GetSelected ();
 			if (s != null) {
-				using (IdeApp.Workspace.GetFileStatusTracker ())
-					s.Apply ();
+				GitService.ApplyStash (s);
 				Respond (ResponseType.Ok);
 			}
 		}
@@ -104,9 +116,12 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			Stash s = GetSelected ();
 			if (s != null) {
-				using (IdeApp.Workspace.GetFileStatusTracker ())
-					s.Apply ();
-				stashes.Remove (s);
+				using (IdeApp.Workspace.GetFileStatusTracker ()) {
+					GitService.ApplyStash (s).Completed += delegate(IAsyncOperation op) {
+						if (op.Success)
+							stashes.Remove (s);
+					};
+				}
 				Respond (ResponseType.Ok);
 			}
 		}
