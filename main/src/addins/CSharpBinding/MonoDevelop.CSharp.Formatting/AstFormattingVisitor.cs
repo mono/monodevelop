@@ -302,7 +302,7 @@ namespace MonoDevelop.CSharp.Formatting
 			DomLocation location = n.EndLocation;
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
 			var line = data.Document.GetLine (location.Line);
-			if (location.Column > line.EditableLength)
+			if (line == null || location.Column > line.EditableLength)
 				return;
 			int i = offset;
 			while (i < data.Document.Length && IsSpacing (data.Document.GetCharAt (i))) {
