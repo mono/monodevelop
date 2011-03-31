@@ -751,17 +751,15 @@ namespace MonoDevelop.Ide.Gui
 					
 					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
 					DesktopService.RecentFiles.AddFile (fileName, project);
-					return;
 				} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
 					try {
 						Counters.OpenDocumentTimer.Trace ("Showing in browser");
 						DesktopService.OpenFile (fileName);
-						return;
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error opening file: " + fileName, ex);
+						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
 					}
 				}
-				MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
 			}
 		}
 		
