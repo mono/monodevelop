@@ -387,7 +387,7 @@ namespace MonoDevelop.MonoDroid
 				opMon.AddOperation (propOp);
 				propOp.WaitForCompleted ();
 				if (!propOp.Success) {
-					monitor.ReportError (GettextCatalog.GetString ("Count not clear debug settings on device"),
+					monitor.ReportError (GettextCatalog.GetString ("Could not clear debug settings on device"),
 						propOp.Error);
 					return;
 				}
