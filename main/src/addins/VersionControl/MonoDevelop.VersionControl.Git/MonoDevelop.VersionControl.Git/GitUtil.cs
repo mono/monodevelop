@@ -499,7 +499,7 @@ namespace MonoDevelop.VersionControl.Git
 			return lineCount;
 		}
 		
-		public static MergeCommandResult MergeTrees (NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
+		public static MergeCommandResult MergeTrees (NGit.ProgressMonitor monitor, NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
 		{
 			RevCommit newHead = null;
 			RevWalk revWalk = new RevWalk(repo);
@@ -517,9 +517,7 @@ namespace MonoDevelop.VersionControl.Git
 				ResolveMerger merger = (ResolveMerger)((ThreeWayMerger)MergeStrategy.RESOLVE.NewMerger
 					(repo));
 				
-				// CherryPick command sets the working tree, but this should not be necessary, and when setting it
-				// untracked files are deleted during the merge
-				// merger.SetWorkingTreeIterator(new FileTreeIterator(repo));
+				merger.SetWorkingTreeIterator(new FileTreeIterator(repo));
 				
 				merger.SetBase(srcBase);
 				
@@ -534,6 +532,9 @@ namespace MonoDevelop.VersionControl.Git
 				lowLevelResults = resolveMerger.GetMergeResults();
 				modifiedFiles = resolveMerger.GetModifiedFiles();
 				failingPaths = resolveMerger.GetFailingPaths();
+				
+				if (monitor != null)
+					monitor.Update (50);
 				
 				if (noProblems)
 				{
@@ -561,7 +562,7 @@ namespace MonoDevelop.VersionControl.Git
 					{
 						return new MergeCommandResult(null, merger.GetBaseCommit(0, 1), new ObjectId[] { 
 							headCommit.Id, srcCommit.Id }, MergeStatus.FAILED, MergeStrategy.RESOLVE, lowLevelResults
-							, null);
+							, failingPaths, null);
 					}
 					else
 					{
@@ -576,7 +577,6 @@ namespace MonoDevelop.VersionControl.Git
 				revWalk.Release();
 			}
 		}
-		
 	}
 	
 	class RevisionObjectIdPair
