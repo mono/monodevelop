@@ -41,6 +41,8 @@ namespace MonoDevelop.MonoDroid
 {
 	public static class MonoDroidFramework
 	{
+		static bool? isTrial;
+		
 		static MonoDroidFramework ()
 		{
 			EnvironmentOverrides = new Dictionary<string, string> ();
@@ -157,6 +159,15 @@ namespace MonoDevelop.MonoDroid
 		/// Tools directory of the Android SDK.
 		/// </summary>
 		public static FilePath AndroidBinDir { get; private set; }
+		
+		static string MandroidPath {
+			get {
+				string toolsDir = MonoDroidToolsDir;
+				if (PropertyService.IsMac && toolsDir == "/Developer/MonoDroid/usr/lib/mandroid")
+					return "/Developer/MonoDroid/usr/bin/mandroid";
+				return Path.Combine (toolsDir, "mandroid.exe");
+			}
+		}
 		
 		/// <summary>
 		/// Environment variables to be used when invoking MonoDroid tools.
@@ -330,6 +341,106 @@ namespace MonoDevelop.MonoDroid
 		
 		public static AndroidVersion DefaultAndroidVersion {
 			get { return AndroidVersions[AndroidVersions.Length-2]; } // 2.2
+		}
+		
+		public static bool IsTrial {
+			get {
+				if (isTrial.HasValue)
+					return isTrial.Value;
+				
+				System.Diagnostics.Process prc = null;
+				try {
+					prc = System.Diagnostics.Process.Start (MandroidPath, "--activated");
+					prc.WaitForExit (5000);
+					isTrial = prc.ExitCode != 0;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error checking Mono for Android activation status", ex);
+					isTrial = true;
+				} finally {
+					prc.Dispose ();
+				}
+				return isTrial.Value;
+			}
+		}
+		
+		static void Activate ()
+		{
+			System.Diagnostics.Debug.Assert (IsTrial && PropertyService.IsWindows);
+			
+			System.Diagnostics.Process prc = null;
+			try {
+				prc = System.Diagnostics.Process.Start (MandroidPath, "--activate");
+				prc.WaitForExit ();
+				isTrial = prc.ExitCode != 0;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error activating Mono for Android", ex);
+				isTrial = true;
+			} finally {
+				prc.Dispose ();
+			}
+		}
+		
+		public static bool CheckTrial ()
+		{
+			if (!IsTrial)
+				return false;
+			MonoDroidUtility.InvokeSynch (ShowEvalDialog);
+			return IsTrial;
+		}
+		
+		static void ShowEvalDialog ()
+		{
+			string evalTitle = GettextCatalog.GetString ("Evaluation Version");
+			string evalHeader = GettextCatalog.GetString ("Feature Not Available In Evaluation Version");
+			string evalMessage = GettextCatalog.GetString (
+				"Upgrade to the full version of Mono for Android to deploy\n" +
+				"to devices, and to enable your applications to be distributed.");
+			string continueMessage = GettextCatalog.GetString ("Continue evaluation");
+			string downloadUrl = "http://mono-android.net/";
+			
+			var dialog = new Gtk.Dialog () {
+				Title = evalTitle,
+			};
+			
+			dialog.VBox.PackStart (
+			 	new Gtk.Label ("<b><big>" + evalHeader + "</big></b>") {
+					Xalign = 0.5f,
+					UseMarkup = true
+				}, true, false, 12);
+			
+			var align = new Gtk.Alignment (0.5f, 0.5f, 1.0f, 1.0f) { LeftPadding = 12, RightPadding = 12 };
+			dialog.VBox.PackStart (align, true, false, 12);
+			align.Add (new Gtk.Label (evalMessage) {
+					Xalign = 0.5f,
+					Justify = Gtk.Justification.Center
+				});
+			
+			align = new Gtk.Alignment (0.5f, 0.5f, 1.0f, 1.0f) { LeftPadding = 12, RightPadding = 12 };
+			dialog.VBox.PackStart (align, true, false, 12);
+			
+			Gtk.Button buyButton;
+			
+			if (PropertyService.IsWindows) {
+				string activateMessage = GettextCatalog.GetString ("Activate Mono for Android");
+				buyButton = new Gtk.Button (new Gtk.Label ("<big>" + activateMessage + "</big>") { UseMarkup = true } );
+				buyButton.Clicked += delegate {
+					Activate ();
+					dialog.Respond (Gtk.ResponseType.Accept);
+				};
+			} else {
+				string buyMessage = GettextCatalog.GetString ("Buy Mono for Android");
+				buyButton = new Gtk.Button (new Gtk.Label ("<big>" + buyMessage + "</big>") { UseMarkup = true } );
+				buyButton.Clicked += delegate {
+					System.Diagnostics.Process.Start (downloadUrl);
+					dialog.Respond (Gtk.ResponseType.Accept);
+				};
+			}
+			
+			align.Add (buyButton);
+			dialog.AddButton (continueMessage, Gtk.ResponseType.Close);
+			dialog.ShowAll ();
+			
+			MessageService.ShowCustomDialog (dialog);
 		}
 	}
 	
