@@ -97,16 +97,9 @@ namespace MonoDevelop.Ide.Gui
 				
 				base.OnCompleted ();
 				
-				if (showErrorDialogs) {
-					MultiMessageDialog resultDialog = new MultiMessageDialog ();
-					foreach (string m in Errors)
-						resultDialog.AddError (m);
-					foreach (string m in Warnings)
-						resultDialog.AddWarning (m);
-					resultDialog.TransientFor = IdeApp.Workbench.RootWindow;
-					resultDialog.Run ();
-					resultDialog.Destroy ();
-				}
+				if (showErrorDialogs)
+					ShowResultDialog ();
+				
 				IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
 				return;
 			}
