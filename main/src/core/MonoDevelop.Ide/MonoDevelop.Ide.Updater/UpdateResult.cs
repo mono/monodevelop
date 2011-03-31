@@ -29,6 +29,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Setup;
 using System.Net;
 using System.Collections.Generic;
 
@@ -42,6 +43,7 @@ namespace MonoDevelop.Ide.Updater
 		public DateTime Date;
 		public List<Release> Releases;
 		public UpdateLevel Level;
+		public Func<IProgressMonitor,IAsyncOperation> InstallAction;
 	}
 	
 	class Release

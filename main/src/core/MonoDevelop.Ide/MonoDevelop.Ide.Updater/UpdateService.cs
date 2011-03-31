@@ -31,18 +31,16 @@ using System.Net;
 using System.Text;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Setup;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using System.Globalization;
+using Mono.Addins;
+using Mono.Addins.Setup;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Updater
 {
-	enum UpdateLevel
-	{
-		Stable = 0,
-		Beta = 1,
-		Alpha = 2,
-		Test = 3
-	}
-	
 	static class UpdateService
 	{
 		const int formatVersion = 1;
@@ -80,7 +78,7 @@ namespace MonoDevelop.Ide.Updater
 		}
 		
 		public static bool CanUpdate {
-			get { return DefaultUpdateInfos.Length > 0; }
+			get { return true; }
 		}
 		
 		public static UpdateInfo[] DefaultUpdateInfos {
@@ -160,8 +158,7 @@ namespace MonoDevelop.Ide.Updater
 		public static void QueryUpdateServer (UpdateInfo[] updateInfos, UpdateLevel level, Action<UpdateResult> callback)
 		{
 			if (updateInfos == null || updateInfos.Length == 0) {
-				string error = GettextCatalog.GetString ("No updatable products detected");
-				callback (new UpdateResult (null, level, error, null));
+				QueryAddinUpdates (level, callback);
 				return;
 			}
 			
@@ -234,12 +231,121 @@ namespace MonoDevelop.Ide.Updater
 							}).ToList ();
 					}
 				}
+				
+				CheckAddinUpdates (updates, level);
+				
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not retrieve update information", ex);
 				error = GettextCatalog.GetString ("Error retrieving update information");
 				errorDetail = ex;
 			}
+			
 			callback (new UpdateResult (updates, level, error, errorDetail));
+		}
+		
+		public static void QueryAddinUpdates (UpdateLevel level, Action<UpdateResult> callback)
+		{
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				List<Update> updates = new List<Update> ();
+				string error = null;
+				Exception errorDetail = null;
+				
+				try {
+					CheckAddinUpdates (updates, level);
+					
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not retrieve update information", ex);
+					error = GettextCatalog.GetString ("Error retrieving update information");
+					errorDetail = ex;
+				}
+				
+				callback (new UpdateResult (updates, level, error, errorDetail));
+			});
+		}
+		
+		static void CheckAddinUpdates (List<Update> updates, UpdateLevel level)
+		{
+			for (UpdateLevel n=UpdateLevel.Stable; n<=level; n++)
+				Runtime.AddinSetupService.RegisterMainRepository ((UpdateLevel)n, true);
+			
+			AddinUpdateHandler.QueryAddinUpdates ();
+			
+			updates.AddRange (GetAddinUpdates (UpdateLevel.Stable));
+			if (level >= UpdateLevel.Beta)
+				updates.AddRange (GetAddinUpdates (UpdateLevel.Beta));
+			if (level >= UpdateLevel.Alpha)
+				updates.AddRange (GetAddinUpdates (UpdateLevel.Alpha));
+			if (level == UpdateLevel.Test)
+				updates.AddRange (GetAddinUpdates (UpdateLevel.Test));
+		}
+		
+		static IEnumerable<Update> GetAddinUpdates (UpdateLevel level)
+		{
+			List<Update> res = new List<Update> ();
+			string url = Runtime.AddinSetupService.GetMainRepositoryUrl (level);
+			foreach (var ventry in Runtime.AddinSetupService.Repositories.GetAvailableUpdates (url)) {
+				var entry = ventry;
+				string sdate = entry.Addin.Properties.GetPropertyValue ("ReleaseDate");
+				DateTime date;
+				if (!string.IsNullOrEmpty (sdate))
+					date = DateTime.Parse (sdate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+				else
+					date = DateTime.Now;
+				res.Add (new Update () {
+					Name = entry.Addin.Name,
+					InstallAction = (m) => InstallAddin (m, entry),
+					Version = entry.Addin.Version,
+					Level = level,
+					Date = date,
+					Releases = ParseReleases (entry.Addin.Id, entry.Addin.Properties.GetPropertyValue ("ReleaseNotes")).ToList ()
+				});
+			}
+			return res;
+		}
+		
+		static IEnumerable<Release> ParseReleases (string addinId, string releaseNotes)
+		{
+			// Format of release notes is:
+			// {{version1,date1}} release note text {{version2,date2}} release note text ...
+			// for example:
+			// {{1.1,2011-01-10}} Release notes for 1.1 {{1.2,2011-03-22}} Release notes for 2.3
+			
+			var addin = AddinManager.Registry.GetAddin (Addin.GetIdName (addinId));
+			string currentVersion = addin != null ? addin.Version : null;
+			
+			int i = releaseNotes.IndexOf ("{{");
+			while (i != -1) {
+				int j = releaseNotes.IndexOf ("}}", i + 2);
+				if (j == -1)
+					break;
+				string[] h = releaseNotes.Substring (i + 2, j - i - 2).Trim ().Split (',');
+				if (h.Length != 2)
+					break;
+				DateTime date;
+				if (!DateTime.TryParse (h[1].Trim (), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date))
+					break;
+				int k = releaseNotes.IndexOf ("{{", j + 2);
+				string version = h[0].Trim ();
+				if (currentVersion == null || Addin.CompareVersions (currentVersion, version) > 0) {
+					string txt = k != -1 ? releaseNotes.Substring (j + 2, k - j - 2) : releaseNotes.Substring (j + 2);
+					yield return new Release () {
+						Version = version,
+						Date = date,
+						Notes = txt.Trim ()
+					};
+				}
+				i = k;
+			}
+		}
+		
+		static IAsyncOperation InstallAddin (IProgressMonitor monitor, AddinRepositoryEntry addin)
+		{
+			DispatchService.BackgroundDispatch (delegate {
+				using (monitor) {
+					Runtime.AddinSetupService.Install (new ProgressStatusMonitor (monitor), addin);
+				}
+			});
+			return monitor.AsyncOperation;
 		}
 	}
 }
