@@ -767,7 +767,7 @@ namespace CBinding
 		{
 			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
 			if (item != null)
-				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1, true);
+				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1);
 		}
 		
 		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]

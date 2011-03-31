@@ -882,7 +882,7 @@ namespace MonoDevelop.Refactoring
 				foreach (IReturnType bc in cls.BaseTypes) {
 					IType bcls = ctx.GetType (bc);
 					if (bcls != null && bcls.ClassType != ClassType.Interface && !bcls.Location.IsEmpty) {
-						IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, bcls.Location.Line, bcls.Location.Column, true);
+						IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, bcls.Location.Line, bcls.Location.Column);
 						return;
 					}
 				}
@@ -901,7 +901,7 @@ namespace MonoDevelop.Refactoring
 							}
 						}
 						if (baseMethod != null)
-							IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, baseMethod.Location.Line, baseMethod.Location.Column, true);
+							IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, baseMethod.Location.Line, baseMethod.Location.Column);
 						return;
 					}
 				}

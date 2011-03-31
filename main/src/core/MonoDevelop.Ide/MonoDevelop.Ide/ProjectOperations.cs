@@ -233,8 +233,7 @@ namespace MonoDevelop.Ide
 				LocalVariable localVar = (LocalVariable)visitable;
 				IdeApp.Workbench.OpenDocument (localVar.FileName,
 				                               localVar.Region.Start.Line,
-				                               localVar.Region.Start.Column,
-				                               true);
+				                               localVar.Region.Start.Column);
 				return;
 			}
 			
@@ -242,8 +241,7 @@ namespace MonoDevelop.Ide
 				IParameter para = (IParameter)visitable;
 				IdeApp.Workbench.OpenDocument (para.DeclaringMember.DeclaringType.CompilationUnit.FileName,
 				                               para.Location.Line,
-				                               para.Location.Column,
-				                               true);
+				                               para.Location.Column);
 				return;
 			}
 			
@@ -264,7 +262,7 @@ namespace MonoDevelop.Ide
 				IType declaringType = SearchContainingPart (member);
 				fileName = declaringType.CompilationUnit.FileName;
 			}
-			var doc = IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column, true);
+			var doc = IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column);
 			if (doc != null) {
 				doc.RunWhenLoaded (delegate {
 					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;

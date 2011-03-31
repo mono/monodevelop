@@ -44,6 +44,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.noneRadioButton = new global::Gtk.RadioButton ("radiobutton1");
 			this.noneRadioButton.CanFocus = true;
 			this.noneRadioButton.Name = "noneRadioButton";
+			this.noneRadioButton.Active = true;
 			this.noneRadioButton.DrawIndicator = true;
 			this.noneRadioButton.UseUnderline = true;
 			this.noneRadioButton.Group = new global::GLib.SList (global::System.IntPtr.Zero);

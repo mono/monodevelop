@@ -11,6 +11,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -300,7 +301,7 @@ namespace MonoDevelop.VersionControl.Views
 				int line = -1;
 				if (rows.Length == 1 && rows [0].Depth == 2)
 					line = diffRenderer.GetSelectedLine (rows[0]);
-				IdeApp.Workbench.OpenDocument (files [0], line, 0, true);
+				IdeApp.Workbench.OpenDocument (files [0], line, 0);
 			}
 			else {
 				AlertButton openAll = new AlertButton (GettextCatalog.GetString ("_Open All")); 

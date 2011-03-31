@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui
 				.OfType<T> ();
 		}
 		
-		static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, Project ownerProject)
+		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, Project ownerProject)
 		{
 			if (mimeType == null && !filePath.IsNullOrEmpty)
 				mimeType = DesktopService.GetMimeTypeForUri (filePath);

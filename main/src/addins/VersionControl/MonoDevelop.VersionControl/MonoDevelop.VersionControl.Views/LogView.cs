@@ -28,7 +28,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			foreach (VersionControlItem item in items) {
 				if (!item.IsDirectory) {
-					var document = IdeApp.Workbench.OpenDocument (item.Path);
+					var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 					DiffView.AttachViewContents (document, item);
 					document.Window.SwitchView (document.Window.FindView (typeof(LogView)));
 				} else if (item.VersionInfo.CanLog) {

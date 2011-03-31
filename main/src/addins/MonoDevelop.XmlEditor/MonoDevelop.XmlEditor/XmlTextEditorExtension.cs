@@ -596,7 +596,7 @@ namespace MonoDevelop.XmlEditor
 					IdeApp.Workbench.OpenDocument (
 					    schemaFileName,
 					    Math.Max (1, schemaObject.LineNumber),
-					    Math.Max (1, schemaObject.LinePosition), true);
+					    Math.Max (1, schemaObject.LinePosition));
 				}
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);

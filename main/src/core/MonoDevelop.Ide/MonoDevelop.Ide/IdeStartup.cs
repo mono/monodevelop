@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide
 					MonoDevelop.Projects.Services.ProjectService.IsSolutionItemFile (file)) {
 						IdeApp.Workspace.OpenWorkspaceItem (file);
 				} else {
-						IdeApp.Workbench.OpenDocument (file, line, column, true);
+						IdeApp.Workbench.OpenDocument (file, line, column);
 				}
 			} catch {
 			}

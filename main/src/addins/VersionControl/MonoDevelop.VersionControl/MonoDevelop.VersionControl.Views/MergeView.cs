@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl.Views
 		public static void Show (VersionControlItemList items)
 		{
 			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path);
+				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 				DiffView.AttachViewContents (document, item);
 				document.Window.SwitchView (document.Window.FindView (typeof (MergeView)));
 			}

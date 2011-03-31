@@ -769,7 +769,7 @@ namespace MonoDevelop.Debugger
 			if (currentBacktrace != null) {
 				var sf = GetCurrentVisibleFrame ();
 				if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
-					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, true, false);
+					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, OpenDocumentOptions.BringToFront);
 					OnDisableConditionalCompilation (new DocumentEventArgs (document));
 				}
 			}
