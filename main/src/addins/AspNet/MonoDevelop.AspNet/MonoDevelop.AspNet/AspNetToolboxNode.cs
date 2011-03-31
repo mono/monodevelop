@@ -85,7 +85,7 @@ namespace MonoDevelop.AspNet
 		{
 			int code = base.GetHashCode ();
 			if (text != null)
-				code += text.GetHashCode ();
+				code ^= text.GetHashCode ();
 			return code;
 		}
 		
