@@ -109,6 +109,11 @@ namespace MonoDevelop.MonoDroid
 				return null;
 			}
 			
+			if (!device.IsEmulator && MonoDroidFramework.CheckTrial ()) {
+				opMon.Dispose ();
+				return null;
+			}
+			
 			//copture the device for a later anonymous method
 			AndroidDevice dev = device;
 			
@@ -153,7 +158,7 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		static T InvokeSynch<T> (Func<T> func)
+		internal static T InvokeSynch<T> (Func<T> func)
 		{
 			if (DispatchService.IsGuiThread)
 				return func ();
@@ -166,6 +171,21 @@ namespace MonoDevelop.MonoDroid
 			});
 			ev.WaitOne ();
 			return val;
+		}
+		
+		internal static void InvokeSynch (Action action)
+		{
+			if (DispatchService.IsGuiThread) {
+				action ();
+				return;
+			}
+			
+			var ev = new ManualResetEvent (false);
+			Gtk.Application.Invoke (delegate {
+				action ();
+				ev.Set ();
+			});
+			ev.WaitOne ();
 		}
 	}
 	

@@ -354,6 +354,9 @@ namespace MonoDevelop.MonoDroid
 				if (device == null)
 					return;
 				
+				if (!device.IsEmulator && MonoDroidFramework.CheckTrial ())
+					return;
+				
 				opMon.AddOperation (uploadOp);
 				uploadOp.WaitForCompleted ();
 				
