@@ -261,7 +261,8 @@ namespace MonoDevelop.Platform.Mac
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
 					GLib.Timeout.Add (10, delegate {
-						IdeApp.OpenFiles (e.Documents.Select (doc => new FileOpenInformation (doc.Key, doc.Value, 1, true)));
+						IdeApp.OpenFiles (e.Documents.Select (doc =>
+							new FileOpenInformation (doc.Key, doc.Value, 1, OpenDocumentOptions.Default)));
 						return false;
 					});
 					e.Handled = true;
