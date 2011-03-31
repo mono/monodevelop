@@ -62,4 +62,10 @@
 		<StockIcon stockid = "xib-template-window"
 		           file = "icons/xib-template-window.png" size="Dnd" />
 	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding id = "InterfaceBuilder"
+			insertafter ="DefaultDisplayBinding"
+			class = "MonoDevelop.MacDev.XcodeInterfaceBuilderDisplayBinding" />
+	</Extension>
 </Addin>

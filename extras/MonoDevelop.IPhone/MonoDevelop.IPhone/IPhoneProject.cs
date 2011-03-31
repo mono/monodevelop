@@ -51,7 +51,7 @@ namespace MonoDevelop.IPhone
 		IPhoneAndIPad = IPhone | IPad,
 	}
 
-	public class IPhoneProject : DotNetProject
+	public class IPhoneProject : DotNetProject, IXcodeTrackedProject
 	{
 		internal const string PLAT_IPHONE = "iPhone";
 		internal const string PLAT_SIM = "iPhoneSimulator";
@@ -312,6 +312,8 @@ namespace MonoDevelop.IPhone
 		}
 		
 		XcodeProjectTracker projectTracker;
+		
+		XcodeProjectTracker IXcodeTrackedProject.XcodeProjectTracker { get { return projectTracker; } }
 		
 		void Init ()
 		{

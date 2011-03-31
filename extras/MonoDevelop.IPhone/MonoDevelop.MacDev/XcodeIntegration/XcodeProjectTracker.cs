@@ -36,6 +36,11 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.MacDev.XcodeIntegration
 {
+	public interface IXcodeTrackedProject
+	{
+		XcodeProjectTracker XcodeProjectTracker { get; }
+	}
+	
 	public class XcodeProjectTracker : IDisposable
 	{
 		string wrapperName;
@@ -57,7 +62,13 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		public IAsyncOperation OpenDocument (FilePath xib)
 		{
 			EnableSyncing ();
-			throw new NotImplementedException ();
+			UpdateTypes (true);
+			UpdateXcodeProject ();
+			
+			var xcode = XcodeInterfaceBuilderDesktopApplication.XCODE_LOCATION;
+			MonoMac.AppKit.NSWorkspace.SharedWorkspace.OpenFile (outputDir.Combine (dnp.Name + ".xcodeproj"), xcode);
+			MonoMac.AppKit.NSWorkspace.SharedWorkspace.OpenFile (xib, xcode);
+			return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
 		}
 		
 		void EnableSyncing ()
@@ -198,10 +209,11 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			if (userClasses.Add (type.ObjCName))
 				xcodeProjectDirty = true;
-			
-			FilePath target = outputDir.Combine (type.ObjCName + ".h");
-			if (File.Exists (target) && File.GetLastWriteTime (target) >= type.DefinedIn.Max (f => File.GetLastWriteTime (f)))
-				return;
+
+			//FIXME: types dep on other types on project, need better regeneration skipping			
+			//FilePath target = outputDir.Combine (type.ObjCName + ".h");
+			//if (File.Exists (target) && File.GetLastWriteTime (target) >= type.DefinedIn.Max (f => File.GetLastWriteTime (f)))
+			//	return;
 			
 			if (!Directory.Exists (outputDir))
 				Directory.CreateDirectory (outputDir);
