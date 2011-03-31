@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static IDisplayBinding GetDefaultBinding (FilePath filePath, string mimeType, Project ownerProject)
 		{
-			return GetDisplayBindings (filePath, mimeType, ownerProject).FirstOrDefault ();
+			return GetDisplayBindings (filePath, mimeType, ownerProject).FirstOrDefault (d => d.CanUseAsDefault);
 		}
 		
 		public static void AttachSubWindows (IWorkbenchWindow workbenchWindow)
