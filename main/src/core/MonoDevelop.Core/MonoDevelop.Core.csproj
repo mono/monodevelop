@@ -89,7 +89,6 @@
     <Compile Include="MonoDevelop.Core.FileSystem\FileSystemExtension.cs" />
     <Compile Include="MonoDevelop.Core.FileSystem\DefaultFileSystemExtension.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProgressStatus.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\AssemblyExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\ApplicationExtensionNode.cs" />
@@ -503,6 +502,7 @@
     <Compile Include="MonoDevelop.Core\IApplication.cs" />
     <Compile Include="MonoDevelop.Core\IApplicationInfo.cs" />
     <Compile Include="MonoDevelop.Core\ApplicationService.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressStatusMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
