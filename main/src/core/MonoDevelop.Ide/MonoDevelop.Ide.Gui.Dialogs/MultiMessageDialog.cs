@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (lastImage != null) {
 				HSeparator sep = new HSeparator ();
 				sep.Show ();
-				msgBox.PackStart (sep);
+				msgBox.PackStart (sep, false, false, 0);
 				lastImage.IconSize = (int) Gtk.IconSize.Button;
 			}
 			
