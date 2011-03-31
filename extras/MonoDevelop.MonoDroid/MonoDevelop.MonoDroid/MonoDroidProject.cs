@@ -290,20 +290,6 @@ namespace MonoDevelop.MonoDroid
 				buildAction == MonoDroidBuildAction.AndroidResource;
 		}
 		
-		// Disable this as we are not gonna use it for now.
-		//bool HackGetUserAssemblyPaths = false;
-		
-		//HACK: base.GetUserAssemblyPaths depends on GetOutputFileName being an assembly
-		new IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
-		{
-			try {
-				//HackGetUserAssemblyPaths = true;
-				return base.GetUserAssemblyPaths (configuration);
-			} finally {
-				//HackGetUserAssemblyPaths = false;
-			}
-		}
-
 		protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			// Avoid a 'build' needed error by returning the last build time of the newest resource/asset/java/native file
@@ -320,17 +306,6 @@ namespace MonoDevelop.MonoDroid
 			return lastWriteTime > baseLastWriteTime ? lastWriteTime : baseLastWriteTime;
 		}
 
-		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
-		{
-			if (!IsAndroidApplication)
-				return base.GetOutputFileName (configuration);
-
-			// Don't return the apk file here,
-			// as it is produced in the sign step,
-			// not in the build step anymore (for now).
-			return base.GetOutputFileName (configuration);
-		}
-		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
 		                                                            DotNetProjectConfiguration configuration)
 		{
