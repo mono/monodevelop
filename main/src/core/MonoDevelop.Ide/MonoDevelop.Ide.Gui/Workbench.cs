@@ -309,7 +309,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Document OpenDocument (FilePath fileName, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
-			return OpenDocument (fileName, options);
+			return OpenDocument (fileName, -1, -1, options, null, null);
 		}
 
 		public Document OpenDocument (FilePath fileName, string encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
