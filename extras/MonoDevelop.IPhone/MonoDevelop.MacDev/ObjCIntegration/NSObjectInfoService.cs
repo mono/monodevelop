@@ -148,19 +148,18 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 			if (string.IsNullOrEmpty (objcName))
 				return null;
-			
 			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseType.FullName, isModel);
 			info.IsUserType = type.SourceProject != null;
 			
 			if (info.IsUserType) {
-				UpdateType (dom, info, type);
+				UpdateTypeMembers (dom, info, type);
 				info.DefinedIn = type.Parts.Select (p => (string) p.CompilationUnit.FileName).ToArray ();
 			}
 			
 			return info;
 		}
 		
-		static void UpdateType (ProjectDom dom, NSObjectTypeInfo info, IType type)
+		static void UpdateTypeMembers (ProjectDom dom, NSObjectTypeInfo info, IType type)
 		{
 			info.Actions.Clear ();
 			info.Outlets.Clear ();

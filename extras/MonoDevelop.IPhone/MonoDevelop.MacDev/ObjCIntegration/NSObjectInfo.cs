@@ -80,7 +80,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				}
 				sw.WriteLine ();
 				
-				sw.WriteLine ("@interface {0} : {1} {{", ObjCName, BaseIsModel? "NSObject" : BaseObjCType);
+				var baseType = (BaseIsModel || BaseObjCType == null) ? "NSObject" : BaseObjCType;
+				sw.WriteLine ("@interface {0} : {1} {{", ObjCName, baseType);
 				foreach (var outlet in Outlets) {
 					sw.WriteLine ("\t{0} *_{1};", outlet.ObjCType, outlet.ObjCName);
 				}

@@ -89,26 +89,26 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return objcTypes.Values;
 		}
 		
-		bool TryResolveObjcType (string cliType, out NSObjectTypeInfo resolved)
+		bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
 		{
-			if (objcTypes.TryGetValue (cliType, out resolved))
+			if (cliTypes.TryGetValue (cliType, out resolved))
 				return true;
 			foreach (var r in dom.References) {
 				var rDom = NSObjectInfoService.GetProjectInfo (r);
-				if (rDom != null && rDom.objcTypes.TryGetValue (cliType, out resolved))
+				if (rDom != null && rDom.cliTypes.TryGetValue (cliType, out resolved))
 					return true;
 			}
 			resolved = null;
 			return false;
 		}
 		
-		bool TryResolveCliType (string objcType, out NSObjectTypeInfo resolved)
+		bool TryResolveObjcToCli (string objcType, out NSObjectTypeInfo resolved)
 		{
-			if (cliTypes.TryGetValue (objcType, out resolved))
+			if (objcTypes.TryGetValue (objcType, out resolved))
 				return true;
 			foreach (var r in dom.References) {
 				var rDom = NSObjectInfoService.GetProjectInfo (r);
-				if (rDom != null && rDom.cliTypes.TryGetValue (objcType, out resolved))
+				if (rDom != null && rDom.objcTypes.TryGetValue (objcType, out resolved))
 					return true;
 			}
 			resolved = null;
@@ -118,9 +118,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		void ResolveTypes (NSObjectTypeInfo type)
 		{
 			NSObjectTypeInfo resolved;
-			
 			if (type.BaseObjCType == null && type.BaseCliType != null) {
-				if (TryResolveObjcType (type.BaseCliType, out resolved)) {
+				if (TryResolveCliToObjc (type.BaseCliType, out resolved)) {
 					if (resolved.IsModel)
 						type.BaseIsModel = true;
 					type.BaseObjCType = resolved.ObjCName;
@@ -132,7 +131,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					//expressible in obj-c. In this case, the best we can do is walk down the 
 					//hierarchy until we find a valid base class
 					foreach (var bt in dom.GetInheritanceTree (dom.GetType (type.BaseCliType))) {
-						if (TryResolveObjcType (bt.FullName, out resolved)) {
+						if (bt.ClassType != ClassType.Class)
+							continue;
+						if (TryResolveCliToObjc (bt.FullName, out resolved)) {
 							if (resolved.IsModel)
 								type.BaseIsModel = true;
 							type.BaseObjCType = resolved.ObjCName;
@@ -145,20 +146,20 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 			
 			if (type.BaseCliType == null && type.BaseObjCType != null) {
-				if (TryResolveObjcType (type.BaseObjCType, out resolved))
+				if (TryResolveObjcToCli (type.BaseObjCType, out resolved))
 					type.BaseCliType = resolved.CliName;
 			}
 			
 			foreach (var outlet in type.Outlets) {
 				if (outlet.ObjCType == null) {
-					if (TryResolveCliType (outlet.CliType, out resolved)) {
+					if (TryResolveCliToObjc (outlet.CliType, out resolved)) {
 						outlet.ObjCType = resolved.ObjCName;
 						if (resolved.IsUserType)
 							type.UserTypeReferences.Add (resolved.ObjCName);
 					}
 				}
 				if (outlet.CliType == null) {
-					if (TryResolveObjcType (outlet.ObjCType, out resolved))
+					if (TryResolveObjcToCli (outlet.ObjCType, out resolved))
 						outlet.CliType = resolved.CliName;
 				}
 			}
@@ -166,14 +167,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			foreach (var action in type.Actions) {
 				foreach (var param in action.Parameters) {
 					if (param.ObjCType == null) {
-						if (TryResolveCliType (param.CliType, out resolved)) {
+						if (TryResolveCliToObjc (param.CliType, out resolved)) {
 							param.ObjCType = resolved.ObjCName;
 							if (resolved.IsUserType)
 								type.UserTypeReferences.Add (resolved.ObjCName);
 						}
 					}
 					if (param.CliType == null) {
-						if (TryResolveObjcType (param.ObjCType, out resolved))
+						if (TryResolveObjcToCli (param.ObjCType, out resolved))
 							param.CliType = resolved.CliName;
 					}
 				}
