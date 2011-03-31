@@ -511,12 +511,16 @@ namespace Mono.Debugging.Soft
 		{
 			if (vm != null) {
 				//FIXME: this might never get reached if the IDE is exited first
-				if (vm.Process != null) {
-					ThreadPool.QueueUserWorkItem (delegate {
-						// This is a workaround for a mono bug
-						// Without this call, the process may become zombie in mono < 2.10.2
-						vm.Process.WaitForExit ();
-					});
+				try {
+					if (vm.Process != null) {
+						ThreadPool.QueueUserWorkItem (delegate {
+							// This is a workaround for a mono bug
+							// Without this call, the process may become zombie in mono < 2.10.2
+							vm.Process.WaitForExit ();
+						});
+					}
+				} catch {
+					// Ignore
 				}
 				var t = new System.Timers.Timer ();
 				t.Interval = 1000;
@@ -782,10 +786,14 @@ namespace Mono.Debugging.Soft
 				}
 			}
 			
-			// This is a workaround for a mono bug
-			// Without this call, the process may become zombie in mono < 2.10.2
-			if (vm.Process != null)
-				vm.Process.WaitForExit (1);
+			try {
+				// This is a workaround for a mono bug
+				// Without this call, the process may become zombie in mono < 2.10.2
+				if (vm.Process != null)
+					vm.Process.WaitForExit (1);
+			} catch {
+				// Ignore
+			}
 			
 			exited = true;
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
