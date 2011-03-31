@@ -498,6 +498,11 @@
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\StatsVisitor.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomStats.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\UpdateLevel.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\AddinSetupService.cs" />
+    <Compile Include="MonoDevelop.Core\IApplication.cs" />
+    <Compile Include="MonoDevelop.Core\IApplicationInfo.cs" />
+    <Compile Include="MonoDevelop.Core\ApplicationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -555,6 +560,8 @@
     <Folder Include="MonoDevelop.Projects.Dom\" />
     <Folder Include="MonoDevelop.Projects.Dom.Serialization\" />
     <Folder Include="MonoDevelop.Projects.Extensions\" />
+    <Folder Include="MonoDevelop.Core.Setup\" />
+    <Folder Include="MonoDevelop.Core\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">

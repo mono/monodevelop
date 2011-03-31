@@ -27,18 +27,18 @@
 //
 
 using System;
-using System.Collections;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-
-using MonoDevelop.Core;
-using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Execution;
+using System.Threading;
 using Mono.Addins;
 using Mono.Addins.Setup;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
-using System.Threading;
+using MonoDevelop.Core.Setup;
+
 
 namespace MonoDevelop.Core
 {
@@ -46,7 +46,7 @@ namespace MonoDevelop.Core
 	{
 		static ProcessService processService;
 		static SystemAssemblyService systemAssemblyService;
-		static SetupService setupService;
+		static AddinSetupService setupService;
 		static ApplicationService applicationService;
 		static bool initialized;
 		
@@ -75,7 +75,7 @@ namespace MonoDevelop.Core
 				
 				if (updateAddinRegistry)
 					AddinManager.Registry.Update (null);
-				setupService = new SetupService (AddinManager.Registry);
+				setupService = new AddinSetupService (AddinManager.Registry);
 				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
 				
 				//have to do this after the addin service is initialized
@@ -104,12 +104,7 @@ namespace MonoDevelop.Core
 		
 		static void RegisterAddinRepositories ()
 		{
-			string stableUrl = GetRepoUrl ("Stable");
-			string betaUrl = GetRepoUrl ("Beta");
-			string alphaUrl = GetRepoUrl ("Alpha");
-			string testUrl = GetRepoUrl ("Test");
-			
-			IList validUrls = new string[] { stableUrl, betaUrl, alphaUrl, testUrl };
+			var validUrls = Enum.GetValues (typeof(UpdateLevel)).Cast<UpdateLevel> ().Select (v => setupService.GetMainRepositoryUrl (v)).ToList ();
 			
 			// Remove old repositories
 			
@@ -122,22 +117,15 @@ namespace MonoDevelop.Core
 					reps.RemoveRepository (rep.Url);
 			}
 			
-			if (!reps.ContainsRepository (stableUrl)) {
-				var rep = reps.RegisterRepository (null, stableUrl, false);
-				rep.Name = "MonoDevelop Add-in Repository";
-				rep = reps.RegisterRepository (null, betaUrl, false);
-				rep.Name = "MonoDevelop Add-in Repository (Beta channel)";
+			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Stable)) {
+				setupService.RegisterMainRepository (UpdateLevel.Stable, true);
+				setupService.RegisterMainRepository (UpdateLevel.Beta, true);
 			}
-			if (!reps.ContainsRepository (betaUrl)) {
-				var rep = reps.RegisterRepository (null, betaUrl, false);
-				rep.Name = "MonoDevelop Add-in Repository (Beta channel)";
-				reps.SetRepositoryEnabled (betaUrl, false);
-			}
-			if (!reps.ContainsRepository (alphaUrl)) {
-				var rep = reps.RegisterRepository (null, alphaUrl, false);
-				rep.Name = "MonoDevelop Add-in Repository (Alpha channel)";
-				reps.SetRepositoryEnabled (alphaUrl, false);
-			}
+			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Beta))
+				setupService.RegisterMainRepository (UpdateLevel.Beta, false);
+
+			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Alpha))
+				setupService.RegisterMainRepository (UpdateLevel.Alpha, false);
 		}
 		
 		internal static string GetRepoUrl (string quality)
@@ -221,7 +209,7 @@ namespace MonoDevelop.Core
 			}
 		}
 	
-		public static SetupService AddinSetupService {
+		public static AddinSetupService AddinSetupService {
 			get {
 				return setupService;
 			}
@@ -268,50 +256,6 @@ namespace MonoDevelop.Core
 		}
 		
 		public static event EventHandler ShuttingDown;
-	}
-	
-	public class ApplicationService
-	{
-		public int StartApplication (string appId, string[] parameters)
-		{
-			ExtensionNode node = AddinManager.GetExtensionNode ("/MonoDevelop/Core/Applications/" + appId);
-			if (node == null)
-				throw new InstallException ("Application not found: " + appId);
-			
-			ApplicationExtensionNode apnode = node as ApplicationExtensionNode;
-			if (apnode == null)
-				throw new Exception ("Invalid node type");
-			
-			IApplication app = (IApplication) apnode.CreateInstance ();
-
-			try {
-				return app.Run (parameters);
-			} catch (Exception ex) {
-				Console.WriteLine (ex.Message);
-				LoggingService.LogFatalError (ex.ToString ());
-				return -1;
-			}
-		}
-		
-		public IApplicationInfo[] GetApplications ()
-		{
-			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/MonoDevelop/Core/Applications");
-			IApplicationInfo[] apps = new IApplicationInfo [nodes.Count];
-			for (int n=0; n<nodes.Count; n++)
-				apps [n] = (ApplicationExtensionNode) nodes [n];
-			return apps;
-		}
-	}
-	
-	public interface IApplicationInfo
-	{
-		string Id { get; }
-		string Description { get; }
-	}
-	
-	public interface IApplication
-	{
-		int Run (string[] arguments);
 	}
 	
 	internal static class Counters
