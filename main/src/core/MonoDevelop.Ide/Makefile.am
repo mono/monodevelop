@@ -66,6 +66,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs \
+	gtk-gui/MonoDevelop.Ide.ProgressMonitoring.ProgressBarMonitor.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.CombineEntryFeatureSelector.cs \
@@ -590,6 +591,7 @@ FILES =  \
 	MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \
+	MonoDevelop.Ide.ProgressMonitoring/ProgressBarMonitor.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/BaseDirectoryPanel.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/BaseDirectoryPanelWidget.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs \
