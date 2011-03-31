@@ -938,14 +938,14 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void RemoveBranch (string name)
 		{
-			RefUpdate updateRef = repo.UpdateRef ("refs/heads/" + name);
-			updateRef.Delete ();
+			var git = new NGit.Api.Git (repo);
+			git.BranchDelete ().SetBranchNames (name).SetForce (true).Call ();
 		}
 
 		public void RenameBranch (string name, string newName)
 		{
-			RefRename renameRef = repo.RenameRef ("refs/heads/" + name, "refs/heads/" + newName);
-			renameRef.Rename ();
+			var git = new NGit.Api.Git (repo);
+			git.BranchRename ().SetOldName (name).SetNewName (newName).Call ();
 		}
 
 		public IEnumerable<RemoteSource> GetRemotes ()
@@ -953,6 +953,18 @@ namespace MonoDevelop.VersionControl.Git
 			StoredConfig cfg = repo.GetConfig ();
 			foreach (RemoteConfig rc in RemoteConfig.GetAllRemoteConfigs (cfg))
 				yield return new RemoteSource (cfg, rc);
+		}
+		
+		public bool IsBranchMerged (string branchName)
+		{
+			// check if a branch is merged into HEAD
+			RevWalk walk = new RevWalk(repo);
+			RevCommit tip = walk.ParseCommit(repo.Resolve(Constants.HEAD));
+			Ref currentRef = repo.GetRef(branchName);
+			if (currentRef == null)
+				return true;
+			RevCommit @base = walk.ParseCommit(repo.Resolve(branchName));
+			return walk.IsMergedInto(@base, tip);
 		}
 
 		public void RenameRemote (string name, string newName)

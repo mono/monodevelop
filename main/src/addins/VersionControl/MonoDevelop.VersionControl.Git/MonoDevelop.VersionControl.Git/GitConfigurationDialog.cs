@@ -123,8 +123,13 @@ namespace MonoDevelop.VersionControl.Git
 			var dlg = new EditBranchDialog (repo, b, false);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-					if (dlg.BranchName != b.Name)
-						repo.RenameBranch (b.Name, dlg.BranchName);
+					if (dlg.BranchName != b.Name) {
+						try {
+							repo.RenameBranch (b.Name, dlg.BranchName);
+						} catch (Exception ex) {
+							MessageService.ShowException (ex, GettextCatalog.GetString ("The branch could not be renamed"));
+						}
+					}
 					repo.SetBranchTrackSource (dlg.BranchName, dlg.TrackSource);
 					FillBranches ();
 				}
@@ -139,9 +144,16 @@ namespace MonoDevelop.VersionControl.Git
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
 			Branch b = (Branch) storeBranches.GetValue (it, 0);
-			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the branch '{0}'?", b.Name), AlertButton.Delete)) {
-				repo.RemoveBranch (b.Name);
-				FillBranches ();
+			string txt = null;
+			if (!repo.IsBranchMerged (b.Name))
+				txt = GettextCatalog.GetString ("WARNING: The branch has not yet been merged to HEAD");
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the branch '{0}'?", b.Name), txt, AlertButton.Delete)) {
+				try {
+					repo.RemoveBranch (b.Name);
+					FillBranches ();
+				} catch (Exception ex) {
+					MessageService.ShowException (ex, GettextCatalog.GetString ("The branch could not be deleted"));
+				}
 			}
 		}
 		
