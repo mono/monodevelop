@@ -432,6 +432,13 @@ namespace MonoDevelop.Projects
 
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
 		{
+			// The OnFileChanged handler is unsubscibed in the Dispose method, so in theory we shouldn't need
+			// to check for disposed here. However, it might happen that this project is disposed while the
+			// FileService.FileChanged event is being dispatched, in which case the event handler list is already
+			// cached and won't take into account unsubscriptions until the next dispatch
+			if (Disposed)
+				return;
+			
 			base.OnFileChanged (source, e);
 			foreach (FileEventInfo ei in e)
 				CheckReferenceChange (ei.FileName);
