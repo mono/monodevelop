@@ -724,7 +724,7 @@ namespace MonoDevelop.Ide.Gui
 				if (openFileInfo.DisplayBinding != null) {
 					binding = viewBinding = openFileInfo.DisplayBinding;
 				} else {
-					var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, project);
+					var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, project).Where (d => d.CanUseAsDefault);
 					if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
 						binding = bindings.OfType<IViewDisplayBinding>().FirstOrDefault ();
 						viewBinding = (IViewDisplayBinding) binding;
