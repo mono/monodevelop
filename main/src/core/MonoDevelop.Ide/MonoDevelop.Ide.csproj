@@ -1428,6 +1428,16 @@
     <Compile Include="MonoDevelop.Ide.Extensions\FileTypeCondition.cs" />
     <Compile Include="MonoDevelop.Ide\CodeGenerationService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\ExportProjectPolicyDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\ApplyPolicyDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\ProjectSelectorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.ProjectSelectorWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\ProjectSelectorDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ProjectSelectorDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\ImportProjectPolicyDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ImportProjectPolicyDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

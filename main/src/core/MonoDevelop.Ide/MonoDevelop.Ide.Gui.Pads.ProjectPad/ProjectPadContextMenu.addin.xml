@@ -90,6 +90,12 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
 			<SeparatorItem id = "ExportSeparator" />
 		</Condition>
+		<Condition id="ItemType" value="Solution|Project|SolutionFolder">
+			<SeparatorItem id = "PolicyToolsStart" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ApplyPolicy" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportPolicy" />
+			<SeparatorItem id = "PolicyToolsEnd" />
+		</Condition>
 		<Condition id="ItemType" value="IFolderItem">
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
 		</Condition>

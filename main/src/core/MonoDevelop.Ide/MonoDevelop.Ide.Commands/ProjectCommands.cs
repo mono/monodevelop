@@ -41,6 +41,8 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Execution;
 using CustomCommand = MonoDevelop.Projects.CustomCommand;
 using System.Linq;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -528,6 +530,36 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run (object dataItem)
 		{
 			IdeApp.Workspace.ActiveRuntime = (MonoDevelop.Core.Assemblies.TargetRuntime) dataItem;
+		}
+	}
+	
+	class ApplyPolicyHandler: CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null || IdeApp.ProjectOperations.CurrentSelectedSolution != null;
+		}
+		
+		protected override void Run ()
+		{
+			ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
+			dlg.Run ();
+			dlg.Destroy ();
+		}
+	}
+	
+	class ExportPolicyHandler: CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null || IdeApp.ProjectOperations.CurrentSelectedSolution != null;
+		}
+		
+		protected override void Run ()
+		{
+			ExportProjectPolicyDialog dlg = new ExportProjectPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
+			dlg.Run ();
+			dlg.Destroy ();
 		}
 	}
 }

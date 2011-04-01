@@ -2046,6 +2046,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public object GetNextCommandTarget ()
 		{
+			target.SetCurrentNodes (null);
 			return Next;
 		}
 		
