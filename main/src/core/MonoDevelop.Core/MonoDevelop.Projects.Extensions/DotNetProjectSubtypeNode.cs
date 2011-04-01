@@ -119,6 +119,8 @@ namespace MonoDevelop.Projects.Extensions
 			MSBuildProjectHandler h = (MSBuildProjectHandler) ProjectExtensionUtil.GetItemHandler (item);
 			UpdateImports (item, h.TargetImports);
 			h.SubtypeGuids.Add (guid);
+			if (UseXBuild)
+				h.UseXbuild = true;
 		}
 		
 		public void UpdateImports (SolutionEntityItem item, List<string> imports)
