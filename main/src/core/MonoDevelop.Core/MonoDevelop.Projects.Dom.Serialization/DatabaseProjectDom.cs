@@ -152,6 +152,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override string GetDocumentation (IMember member)
 		{
+			if (database == null)
+				return "";
 			return database.GetDocumentation (member);
 		}
 		
