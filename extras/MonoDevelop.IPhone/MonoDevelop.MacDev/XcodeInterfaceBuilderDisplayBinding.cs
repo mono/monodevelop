@@ -42,7 +42,7 @@ namespace MonoDevelop.MacDev
 		
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			if (ownerProject == null || !(ownerProject is IXcodeTrackedProject))
+			if (ownerProject == null || !XcodeProjectTracker.TrackerEnabled || !(ownerProject is IXcodeTrackedProject))
 				return false;
 			if (mimeType == "application/vnd.apple-interface-builder")
 				return true;

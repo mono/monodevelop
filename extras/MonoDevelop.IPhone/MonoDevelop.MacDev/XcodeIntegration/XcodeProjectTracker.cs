@@ -53,6 +53,15 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		FilePath outputDir;
 		
+		static bool? trackerEnabled;
+		public static bool TrackerEnabled {
+			get {
+				if (!trackerEnabled.HasValue)
+					trackerEnabled = Environment.GetEnvironmentVariable ("MD_XC4_TEST") != null;
+				return trackerEnabled.Value;
+			}
+		}
+		
 		public XcodeProjectTracker (DotNetProject dnp, string wrapperName)
 		{
 			this.dnp = dnp;
