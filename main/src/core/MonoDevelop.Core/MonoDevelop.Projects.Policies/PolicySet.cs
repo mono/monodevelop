@@ -34,6 +34,7 @@ using System.Xml;
 
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Policies
 {
@@ -115,6 +116,12 @@ namespace MonoDevelop.Projects.Policies
 			return !externalPolicies.Contains (pk);
 		}
 		
+		public void SaveToFile (FilePath file)
+		{
+			using (StreamWriter sw = new StreamWriter (file))
+				SaveToFile (sw);
+		}
+		
 		internal void SaveToFile (StreamWriter writer)
 		{
 			XmlWriterSettings xws = new XmlWriterSettings ();
@@ -140,6 +147,12 @@ namespace MonoDevelop.Projects.Policies
 					cw.Write (xw, PolicyService.DiffSerialize (policyPair.Key.PolicyType, policyPair.Value, policyPair.Key.Scope));
 			}
 			xw.WriteEndElement ();
+		}
+		
+		public void LoadFromFile (FilePath file)
+		{
+			using (StreamReader sr = new StreamReader (file))
+				LoadFromFile (sr);
 		}
 		
 		internal void LoadFromFile (StreamReader reader)
@@ -171,37 +184,6 @@ namespace MonoDevelop.Projects.Policies
 					throw new InvalidOperationException ("Cannot add second policy of type '" +  
 					                                     key.ToString () + "' to policy set '" + Id + "'");
 				policies[key] = policyPair.Policy;
-			}
-		}
-		
-		public void CopyFrom (PolicySet pset)
-		{
-			if (pset.policies == null && policies == null)
-				return;
-
-			// Add and update policies
-			
-			if (pset.policies != null) {
-				foreach (KeyValuePair<PolicyKey, object> p in pset.policies) {
-					object oldVal;
-					if (policies == null || !policies.TryGetValue (p.Key, out oldVal) || oldVal == null || !oldVal.Equals (p.Value)) {
-						if (policies == null)
-							policies = new PolicyDictionary ();
-						policies [p.Key] = p.Value;
-						OnPolicyChanged (p.Key.PolicyType, p.Key.Scope);
-					}
-				}
-			}
-			
-			// Remove policies
-			
-			if (policies != null) {
-				foreach (PolicyKey k in policies.Keys.ToArray ()) {
-					if (pset.policies == null || !pset.policies.ContainsKey (k)) {
-						policies.Remove (k);
-						OnPolicyChanged (k.PolicyType, k.Scope);
-					}
-				}
 			}
 		}
 		
