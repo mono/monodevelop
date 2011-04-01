@@ -351,6 +351,7 @@ FILES =  \
 	MonoDevelop.Projects.Policies/PolicyDictionary.cs \
 	MonoDevelop.Projects.Policies/PolicyService.cs \
 	MonoDevelop.Projects.Policies/PolicySet.cs \
+	MonoDevelop.Projects.Policies/PolicyTypeAttribute.cs \
 	MonoDevelop.Projects.Policies/ScopedPolicy.cs \
 	MonoDevelop.Projects.Text/DocGenerator.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \

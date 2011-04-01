@@ -32,6 +32,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Policies
 {
+	[PolicyType ("Namespace and resource naming")]
 	[DataItem ("DotNetNamingPolicy")]
 	public class DotNetNamingPolicy : IEquatable<DotNetNamingPolicy>
 	{

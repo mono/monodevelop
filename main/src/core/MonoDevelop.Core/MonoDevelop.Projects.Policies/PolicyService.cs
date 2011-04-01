@@ -98,11 +98,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		static void HandlePolicyTypeUpdated (object sender, ExtensionNodeEventArgs args)
 		{
-			Type t = ((DataTypeCodon)args.ExtensionNode).Class;
-			if (t == null) {
-				throw new UserException ("Type '" + ((DataTypeCodon)args.ExtensionNode).TypeName
-				                         + "' not found. It could not be registered as a serializable type.");
-			}
+			Type t = ((TypeExtensionNode)args.ExtensionNode).Type;
 			
 			string name = null;
 			object[] obs = t.GetCustomAttributes (typeof (DataItemAttribute), true);
@@ -129,6 +125,14 @@ namespace MonoDevelop.Projects.Policies
 				invariantPolicies.InternalRemove (t, null);
 				break;
 			}
+		}
+		
+		public static string GetPolicyTypeDescription (Type t)
+		{
+			foreach (TypeExtensionNode<PolicyTypeAttribute> node in AddinManager.GetExtensionNodes (TYPE_EXT_POINT))
+				if (node.Type == t)
+					return node.Data.Description;
+			return t.Name;
 		}
 		
 		static DataSerializer Serializer {
