@@ -266,6 +266,10 @@ namespace MonoDevelop.IPhone
 		{
 			Init ();
 			
+			//don't create app settings and device/sim configurations for libraries, since they have no effect
+			if (this.CompileTarget != CompileTarget.Exe)
+				return;
+			
 			var mainNibAtt = projectOptions.Attributes ["MainNibFile"];
 			if (mainNibAtt != null) {
 				this.mainNibFile = mainNibAtt.InnerText;	
