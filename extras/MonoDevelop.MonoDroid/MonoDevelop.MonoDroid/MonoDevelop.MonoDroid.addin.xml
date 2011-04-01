@@ -224,6 +224,10 @@
 		<Condition id="Platform" value="mac">
 			<UpdateInfo file="/Developer/MonoAndroid/updateinfo" />
 		</Condition>
+		<Condition id="Platform" value="windows">
+			<UpdateInfo file="C:\Program Files\MSBuild\Novell\updateinfo.dat" />
+			<UpdateInfo file="C:\Program Files (x86)\MSBuild\Novell\updateinfo.dat" />
+		</Condition>
 	</Extension>
 
 	<!-- xml editing -->
