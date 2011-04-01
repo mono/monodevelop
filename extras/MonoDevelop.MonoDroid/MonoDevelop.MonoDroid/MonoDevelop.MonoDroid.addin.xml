@@ -165,8 +165,8 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<Condition id="MonoDroidInstalled">
-			<ItemSet id = "SelectSimulatorTarget" _label = "Mono for Android Device Target" 
-			         insertafter = "SelectActiveRuntime"  >
+			<ItemSet id = "SelectSimulatorTarget" _label = "Android Device Target" 
+			         insertafter = "SelectActiveRuntime" autohide="true"  >
 				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget" />
 				<SeparatorItem />
 				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.ManageDevices" />
@@ -264,7 +264,7 @@
 	
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 			<DebuggerEngine id="Mono.Debugger.Soft.MonoDroid"
-				name="Mono Soft Debugger for Mono for Android"
+				name="Mono Soft Debugger for Android"
 				features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
 				type="MonoDevelop.Debugger.Soft.MonoDroid.MonoDroidSoftDebuggerEngine" />
 		</Extension>
