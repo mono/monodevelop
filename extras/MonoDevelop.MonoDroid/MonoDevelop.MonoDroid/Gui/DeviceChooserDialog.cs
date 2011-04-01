@@ -38,6 +38,7 @@ namespace MonoDevelop.MonoDroid.Gui
 	{	
 		ListStore store = new ListStore (typeof (object));
 		bool destroyed;
+		bool isTrial;
 		
 		public DeviceChooserDialog ()
 		{
@@ -100,6 +101,44 @@ namespace MonoDevelop.MonoDroid.Gui
 					});
 				});
 			};
+			
+			isTrial = MonoDroidFramework.IsTrial;
+			
+			if (isTrial) {
+				var ib = new MonoDevelop.Components.InfoBar ();
+				var img = new Image (typeof (DeviceChooserDialog).Assembly, "information.png");
+				img.SetAlignment (0.5f, 0.5f);
+				ib.PackEnd (img, false, false, 0);
+				var msg = GettextCatalog.GetString ("Trial version only supports the emulator");
+				ib.MessageArea.Add (new Gtk.Label (msg) {
+					Yalign = 0.5f,
+					Xalign = 0f,
+					Style = ib.Style,
+				});
+				string buyMessage;
+				if (PropertyService.IsMac) { 
+					buyMessage = GettextCatalog.GetString ("Buy Full Version");
+				} else {
+					buyMessage = GettextCatalog.GetString ("Activate");
+				}
+				var buyButton = new Button (buyMessage);
+				buyButton.Clicked += delegate {
+					if (MonoDroidFramework.Activate ())
+						UnTrialify ();
+					};
+				ib.ActionArea.Add (buyButton);
+				ib.ShowAll ();
+				bannerPlaceholder.Add (ib);
+			}
+		}
+		
+		void UnTrialify ()
+		{
+			isTrial = false;
+			var child = bannerPlaceholder.Child;
+			bannerPlaceholder.Remove (child);
+			child.Destroy ();
+			OnDevicesUpdated (null, null);
 		}
 		
 		protected override void OnDestroyed ()
@@ -163,10 +202,10 @@ namespace MonoDevelop.MonoDroid.Gui
 				return;
 			
 			var device = (DisplayDevice) store.GetValue (iter, 0);
-			if (device.Device != null) {
+			if (device.Device != null && (!isTrial || device.VirtualDevice != null)) {
 				buttonOk.Sensitive = true;
 				Device = device.Device;
-			} else {
+			} else if (device.VirtualDevice != null) {
 				startEmulatorButton.Sensitive = true;
 			}
 		}
