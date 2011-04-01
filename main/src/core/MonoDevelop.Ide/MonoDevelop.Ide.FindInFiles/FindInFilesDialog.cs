@@ -448,7 +448,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			case ScopeSelection:
 				return new SelectionScope ();
 			case ScopeWholeSolution:
-				if (IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
+				if (!IdeApp.Workspace.IsOpen) {
 					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 					return null;
 				}
@@ -456,8 +456,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			case ScopeCurrentProject:
 				MonoDevelop.Projects.Project currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 				if (currentSelectedProject != null)
-					return new WholeProjectScope(currentSelectedProject);
-				if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+					return new WholeProjectScope (currentSelectedProject);
+				if (IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
 					AlertButton alertButton = MessageService.AskQuestion (GettextCatalog.GetString ("Currently there is no project selected. Search in the solution instead ?"), AlertButton.Yes, AlertButton.No);
 					if (alertButton == AlertButton.Yes)
 						return new WholeSolutionScope ();
