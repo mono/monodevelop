@@ -31,6 +31,7 @@ using System.Reflection;
 using System.Xml;
 using System.Text;
 using System.Linq;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -64,6 +65,7 @@ namespace MonoDevelop.CSharp.Formatting
 		ForceNewLine
 	}
 	
+	[PolicyType ("C# formatting")]
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
 		public string Name {

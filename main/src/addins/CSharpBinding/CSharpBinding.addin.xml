@@ -132,10 +132,6 @@
 		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
-		<PolicyType id="DotNetNamingPolicy" class="MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="MonoCSharpPolicy.xml" />
 	</Extension>

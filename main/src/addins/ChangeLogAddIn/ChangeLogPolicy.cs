@@ -35,6 +35,7 @@ using MonoDevelop.VersionControl;
 namespace MonoDevelop.ChangeLogAddIn
 {
 	
+	[PolicyType ("ChangeLog entry generation and formatting")]
 	[DataItem ("ChangeLogPolicy")]
 	public sealed class ChangeLogPolicy : IEquatable<ChangeLogPolicy>
 	{

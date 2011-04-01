@@ -283,10 +283,6 @@
 		<Section id = "VersionControlGeneral" _label = "Commit Message Style" fill="true" class="MonoDevelop.VersionControl.VersionControlPolicyPanel" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
-		<PolicyType id="VersionControlPolicy" class="MonoDevelop.VersionControl.VersionControlPolicy" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="Policies.xml"/>
 	</Extension>
