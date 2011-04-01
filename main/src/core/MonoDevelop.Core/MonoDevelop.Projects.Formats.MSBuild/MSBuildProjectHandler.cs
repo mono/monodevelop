@@ -280,6 +280,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
+		internal bool UseXbuild {
+			get { return useXBuild; }
+			set { useXBuild = value; }
+		}
+		
 		SolutionItem CreateSolutionItem (string language, string typeGuids, string itemType, Type itemClass)
 		{
 			// All the parameters are optional, but at least one must be provided.
