@@ -77,7 +77,6 @@ namespace MonoDevelop.Ide.Fonts
 				var label = new Gtk.Label ("");
 				string result = label.Style.FontDescription.Family + " " + ((int)label.Style.FontDesc.Size / Pango.Scale.PangoScale);
 				label.Destroy ();
-				Console.WriteLine (result);
 				return result;
 			}
 			
@@ -120,7 +119,6 @@ namespace MonoDevelop.Ide.Fonts
 				loadedFonts.Remove (name);
 			fontProperties.Set (name, value);
 			
-			Console.WriteLine (fontChangeCallbacks.ContainsKey (name));
 			if (fontChangeCallbacks.ContainsKey (name)) 
 				fontChangeCallbacks [name].ForEach (c => c ());
 		}

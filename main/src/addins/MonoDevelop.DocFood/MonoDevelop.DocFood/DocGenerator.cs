@@ -109,7 +109,6 @@ namespace MonoDevelop.DocFood
 					while (reader.Read ()) {
 						if (reader.NodeType != XmlNodeType.Element)
 							continue;
-						Console.WriteLine (reader.LocalName);
 						if (reader.LocalName == "root") {
 							continue;
 						}
@@ -346,7 +345,6 @@ namespace MonoDevelop.DocFood
 						break;
 					}
 					count++;
-					Console.WriteLine ("type parameter:" + curName);
 					DocConfig.Instance.Rules.ForEach (r => r.Run (this));
 				}
 			}

@@ -288,8 +288,6 @@ namespace MonoDevelop.Ide
 				char ch = doc.GetCharAt (i);
 				if (!char.IsWhiteSpace (ch)) {
 					// case2: next line contains non ws chars.
-					if (line == 39)
-						System.Console.WriteLine (2 + "ch:" + (int)ch);
 					return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
 				}
 			}
