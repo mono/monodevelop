@@ -222,8 +222,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/Updater">
 		<Condition id="Platform" value="mac">
-			<UpdateInfo file="/Developer/MonoDroid/updateinfo" />
-			<UpdateInfo file="/Developer/MonoDroid/Source/updateinfo" />
+			<UpdateInfo file="/Developer/MonoAndroid/updateinfo" />
 		</Condition>
 	</Extension>
 
