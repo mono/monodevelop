@@ -163,7 +163,7 @@ namespace MonoDevelop.MonoDroid
 		static string MandroidPath {
 			get {
 				string toolsDir = MonoDroidToolsDir;
-				if (PropertyService.IsMac && toolsDir == "/Developer/MonoDroid/usr/lib/mandroid")
+				if (PropertyService.IsMac && toolsDir == "/Developer/MonoAndroid/usr/lib/mandroid")
 					return "/Developer/MonoDroid/usr/bin/mandroid";
 				return Path.Combine (toolsDir, "mandroid.exe");
 			}
@@ -350,34 +350,49 @@ namespace MonoDevelop.MonoDroid
 				
 				System.Diagnostics.Process prc = null;
 				try {
-					prc = System.Diagnostics.Process.Start (MandroidPath, "--activated");
+					prc = System.Diagnostics.Process.Start (
+						new System.Diagnostics.ProcessStartInfo (MandroidPath, "--activated") {
+							UseShellExecute = false,
+					});
 					prc.WaitForExit (5000);
 					isTrial = prc.ExitCode != 0;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error checking Mono for Android activation status", ex);
 					isTrial = true;
 				} finally {
-					prc.Dispose ();
+					if (prc != null)
+						prc.Dispose ();
 				}
 				return isTrial.Value;
 			}
 		}
 		
-		static void Activate ()
+		public static bool Activate ()
 		{
-			System.Diagnostics.Debug.Assert (IsTrial && PropertyService.IsWindows);
+			System.Diagnostics.Debug.Assert (IsTrial);
+			if (PropertyService.IsMac) {
+				string downloadUrl = "http://mono-android.net/";
+				System.Diagnostics.Process.Start (downloadUrl);
+				return false;
+			}
 			
+			//on windows we can activate in place
 			System.Diagnostics.Process prc = null;
 			try {
-				prc = System.Diagnostics.Process.Start (MandroidPath, "--activate");
+				prc = System.Diagnostics.Process.Start (
+					new System.Diagnostics.ProcessStartInfo (MandroidPath, "--activate") {
+						UseShellExecute = false,
+				});
 				prc.WaitForExit ();
 				isTrial = prc.ExitCode != 0;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error activating Mono for Android", ex);
 				isTrial = true;
 			} finally {
-				prc.Dispose ();
+				if (prc != null)
+					prc.Dispose ();
 			}
+			return isTrial.Value;
 		}
 		
 		public static bool CheckTrial ()
@@ -396,7 +411,6 @@ namespace MonoDevelop.MonoDroid
 				"Upgrade to the full version of Mono for Android to deploy\n" +
 				"to devices, and to enable your applications to be distributed.");
 			string continueMessage = GettextCatalog.GetString ("Continue evaluation");
-			string downloadUrl = "http://mono-android.net/";
 			
 			var dialog = new Gtk.Dialog () {
 				Title = evalTitle,
@@ -418,25 +432,20 @@ namespace MonoDevelop.MonoDroid
 			align = new Gtk.Alignment (0.5f, 0.5f, 1.0f, 1.0f) { LeftPadding = 12, RightPadding = 12 };
 			dialog.VBox.PackStart (align, true, false, 12);
 			
-			Gtk.Button buyButton;
-			
+			string activateMessage;
 			if (PropertyService.IsWindows) {
-				string activateMessage = GettextCatalog.GetString ("Activate Mono for Android");
-				buyButton = new Gtk.Button (new Gtk.Label ("<big>" + activateMessage + "</big>") { UseMarkup = true } );
-				buyButton.Clicked += delegate {
-					Activate ();
-					dialog.Respond (Gtk.ResponseType.Accept);
-				};
+				activateMessage = GettextCatalog.GetString ("Activate Mono for Android");
 			} else {
-				string buyMessage = GettextCatalog.GetString ("Buy Mono for Android");
-				buyButton = new Gtk.Button (new Gtk.Label ("<big>" + buyMessage + "</big>") { UseMarkup = true } );
-				buyButton.Clicked += delegate {
-					System.Diagnostics.Process.Start (downloadUrl);
-					dialog.Respond (Gtk.ResponseType.Accept);
-				};
+				activateMessage = GettextCatalog.GetString ("Buy Mono for Android");
 			}
 			
+			var buyButton = new Gtk.Button (new Gtk.Label ("<big>" + activateMessage + "</big>") { UseMarkup = true } );
+			buyButton.Clicked += delegate {
+				Activate ();
+				dialog.Respond (Gtk.ResponseType.Accept);
+			};
 			align.Add (buyButton);
+			
 			dialog.AddButton (continueMessage, Gtk.ResponseType.Close);
 			dialog.ShowAll ();
 			
