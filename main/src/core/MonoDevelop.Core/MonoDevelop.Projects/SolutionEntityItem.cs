@@ -95,12 +95,12 @@ namespace MonoDevelop.Projects
 					disp.Dispose ();
 			}
 			
-			items = null;
-			thisItemArgs = null;
-			fileStatusTracker = null;
-			fileFormat = null;
-			activeConfiguration = null;
-			configurations = null;
+			// items = null;
+			// thisItemArgs = null;
+			// fileStatusTracker = null;
+			// fileFormat = null;
+			// activeConfiguration = null;
+			// configurations = null;
 			
 			base.Dispose ();
 		}

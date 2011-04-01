@@ -249,17 +249,17 @@ namespace MonoDevelop.Projects
 			}
 			if (handler != null) {
 				handler.Dispose ();
-				handler = null;
+				// handler = null;
 			}
 			if (userProperties != null) {
 				((IDisposable)userProperties).Dispose ();
 				userProperties = null;
 			}
 			
-			parentFolder = null;
-			parentSolution = null;
-			internalChildren = null;
-			policies = null;
+			// parentFolder = null;
+			// parentSolution = null;
+			// internalChildren = null;
+			// policies = null;
 		}
 		
 		public virtual IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)

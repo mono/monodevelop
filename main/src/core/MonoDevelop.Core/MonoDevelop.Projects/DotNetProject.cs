@@ -390,14 +390,14 @@ namespace MonoDevelop.Projects
 		{
 			if (composedAssemblyContext != null) {
 				composedAssemblyContext.Dispose ();
-				composedAssemblyContext = null;
+				// composedAssemblyContext = null;
 			}
 				
-			languageParameters = null;
-			privateAssemblyContext = null;
-			currentRuntimeContext = null;
-			languageBinding = null;
-			projectReferences = null;
+			// languageParameters = null;
+			// privateAssemblyContext = null;
+			// currentRuntimeContext = null;
+			// languageBinding = null;
+			// projectReferences = null;
 			
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
 			FileService.FileRemoved -= OnFileRemoved;
