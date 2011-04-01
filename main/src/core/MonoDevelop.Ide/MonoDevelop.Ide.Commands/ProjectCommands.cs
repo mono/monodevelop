@@ -153,13 +153,13 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = ((IdeApp.Workspace.IsOpen) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+			info.Enabled = ((IdeApp.ProjectOperations.CurrentSelectedSolution != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
 		}
 
 		protected override void Run ()
 		{
 			//Build solution
-			IdeApp.ProjectOperations.Build (IdeApp.Workspace);
+			IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedSolution);
 		}
 	}
 
@@ -205,13 +205,13 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = ((IdeApp.Workspace.IsOpen) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+			info.Enabled = ((IdeApp.ProjectOperations.CurrentSelectedSolution != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
 		}
 
 		protected override void Run ()
 		{
 			//Build solution
-			IdeApp.ProjectOperations.Rebuild (IdeApp.Workspace);
+			IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedSolution);
 		}
 	}
 
@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.Commands
 		public static bool CanRun (IExecutionHandler executionHandler)
 		{
             if (IdeApp.Workspace.IsOpen)
-                return (IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace, executionHandler)) && !(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
+                return IdeApp.ProjectOperations.CurrentSelectedSolution != null && IdeApp.ProjectOperations.CanExecute (IdeApp.ProjectOperations.CurrentSelectedSolution, executionHandler);
             else
                 return (IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.CanRun (executionHandler));
 		}
@@ -290,12 +290,13 @@ namespace MonoDevelop.Ide.Commands
             }
             else {
                 if (!IdeApp.Preferences.BuildBeforeExecuting)
-                    IdeApp.ProjectOperations.Execute (IdeApp.Workspace, executionHandler);
+                    IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedSolution, executionHandler);
                 else {
-                    IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
+					Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+                    IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (sol);
                     asyncOperation.Completed += delegate {
                         if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
-                            IdeApp.ProjectOperations.Execute (IdeApp.Workspace, executionHandler);
+                            IdeApp.ProjectOperations.Execute (sol, executionHandler);
                     };
                 }
 
@@ -410,13 +411,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			if (!IdeApp.Workspace.IsOpen)
-				info.Enabled = false;
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedSolution != null;
 		}
 
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Clean (IdeApp.Workspace);
+			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentSelectedSolution);
 		}
 	}
 

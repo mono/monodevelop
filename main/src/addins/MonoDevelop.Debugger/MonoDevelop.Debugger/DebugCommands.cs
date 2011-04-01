@@ -81,11 +81,11 @@ namespace MonoDevelop.Debugger
 			
 			if (!IdeApp.Preferences.BuildBeforeExecuting) {
 				if (IdeApp.Workspace.IsOpen) {
-					CheckResult cr = CheckBeforeDebugging (IdeApp.Workspace);
+					CheckResult cr = CheckBeforeDebugging (IdeApp.ProjectOperations.CurrentSelectedSolution);
 					if (cr == DebugHandler.CheckResult.Cancel)
 						return;
 					if (cr == DebugHandler.CheckResult.Run) {
-						ExecuteWorkspace ();
+						ExecuteSolution (IdeApp.ProjectOperations.CurrentSelectedSolution);
 						return;
 					}
 					// Else continue building
@@ -97,12 +97,13 @@ namespace MonoDevelop.Debugger
 			}
 			
 			if (IdeApp.Workspace.IsOpen) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
+				Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (sol);
 				op.Completed += delegate {
 					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
 						return;
 					if (op.Success)
-						ExecuteWorkspace ();
+						ExecuteSolution (sol);
 				};
 			} else {
 				Document doc = IdeApp.Workbench.ActiveDocument;
@@ -119,12 +120,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void ExecuteWorkspace ()
+		void ExecuteSolution (Solution sol)
 		{
-			if (IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace))
-				IdeApp.ProjectOperations.Debug (IdeApp.Workspace);
+			if (IdeApp.ProjectOperations.CanDebug (sol))
+				IdeApp.ProjectOperations.Debug (sol);
 			else
-				IdeApp.ProjectOperations.Execute (IdeApp.Workspace);
+				IdeApp.ProjectOperations.Execute (sol);
 		}
 
 		void ExecuteDocument (Document doc)
@@ -152,12 +153,13 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (IdeApp.Workspace.IsOpen) {
-				bool canExecute = IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace) ||
-					 (!DebuggingService.IsDebuggingSupported && IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace));
+				var sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+				bool canExecute = sol != null && (
+					IdeApp.ProjectOperations.CanDebug (sol) ||
+					(!DebuggingService.IsDebuggingSupported && IdeApp.ProjectOperations.CanExecute (sol))
+				);
 
-				info.Enabled = (IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted || !DebuggingService.IsDebuggingSupported) &&
-					canExecute &&
-					!(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
+				info.Enabled = canExecute && (IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted || !DebuggingService.IsDebuggingSupported);
 			} else {
 				Document doc = IdeApp.Workbench.ActiveDocument;
 				info.Enabled = (doc != null && doc.IsBuildTarget) && (doc.CanRun () || doc.CanDebug ());
