@@ -216,8 +216,24 @@ namespace MonoDevelop.MonoDroid.Gui
 			var device = (DisplayDevice) store.GetValue (iter, 0);
 			var txtCell = (CellRendererText) cell;
 			
-			txtCell.Markup = string.Format ("<span color=\"#{0}\">{1}\n    {2}</span>",
-				device.Device != null && device.Device.IsOnline ? "000000" : "444444",
+			TreeIter selIter;
+			bool selected = false;
+			if (deviceListTreeView.Selection.GetSelected (out selIter))
+				selected = selIter.Equals (iter);
+			
+			string color;
+			if (selected) {
+				color = null;
+			} else if (device.Device == null || !device.Device.IsOnline) {
+				color = "#777777";
+			} else if (isTrial && device.VirtualDevice == null) {
+				color = "#000088";
+			} else {
+				color = "#000000";
+			}
+			txtCell.Foreground = color;
+			
+			txtCell.Markup = string.Format ("{0}\n    {1}",
 				GLib.Markup.EscapeText (device.GetName ()),
 				device.GetStatus ());
 		}
@@ -241,7 +257,7 @@ namespace MonoDevelop.MonoDroid.Gui
 				if (VirtualDevice != null) {
 					if (Device != null)
 						return string.Format ("{0} ({1})", VirtualDevice.Name, Device.ID);
-					return VirtualDevice.Name;
+					return string.Format ("{0} (emulator)", VirtualDevice.Name);
 				}
 				return Device.ID;
 			}
