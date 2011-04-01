@@ -145,6 +145,9 @@
     <EmbeddedResource Include="Frameworks\framework_MonoDroid_2_3.xml">
       <LogicalName>framework_MonoDroid_2_3.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\information.png">
+      <LogicalName>information.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
@@ -218,6 +221,7 @@
     <None Include="schemas\schemas.android.com.apk.res.android.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="icons\README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
