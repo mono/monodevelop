@@ -245,7 +245,7 @@ msgstr "Directori de la solució"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:555
 msgid "Cyclic dependencies are not supported."
-msgstr "No hi ha compatibilitat amb les dependències cícliques"
+msgstr "No hi ha compatibilitat amb les dependències cícliques."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:560
 msgid "Building Solution {0}"
@@ -329,7 +329,7 @@ msgstr "No es pot executar «{0}»"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CyclicDependencyException.cs:33
 msgid "A cyclic build dependency has been detected."
-msgstr "S'ha detectat una dependència cíclica"
+msgstr "S'ha detectat una dependència cíclica."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:136
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:504
@@ -388,7 +388,7 @@ msgid ""
 "support this language."
 msgstr ""
 "Llenguatge desconegut:  «{0}». És probable que necessiteu instal·lar un "
-"complement addicional pel suport de d'aquest llenguatge."
+"complement addicional pel suport d'aquest llenguatge."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:135
 msgid "Referenced project '{0}' not found in the solution."
@@ -596,7 +596,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:756
 #, fuzzy
 msgid "Error while trying to load the project '{0}': {1}"
-msgstr "Esteu segur de que voleu suprimir el fitxer {0} del projecte {1}?"
+msgstr "Esteu segur que voleu suprimir el fitxer {0} del projecte {1}?"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:770
 msgid ""
@@ -718,7 +718,7 @@ msgstr "Xinès tradicional"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:169
 msgid "Cyrillic/Russian"
-msgstr "Círi·lic/Rus"
+msgstr "Círil·lic/Rus"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:171
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:172
@@ -851,7 +851,7 @@ msgstr "Miscel·lània"
 
 #: ../src/core/MonoDevelop.Ide/templates/AppConfigFile.xft.xml:8
 msgid "Creates a .NET application configuration file."
-msgstr "Crea un fitxer de configuració de l'aplicació .NET"
+msgstr "Crea un fitxer de configuració de l'aplicació .NET."
 
 #: ../src/core/MonoDevelop.Ide/templates/BlankCombine.xpt.xml:7
 msgid "Blank Solution"
@@ -898,7 +898,7 @@ msgstr "General"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyClass.xft.xml:8
 msgid "Creates an empty class."
-msgstr "Crea una classe buida"
+msgstr "Crea una classe buida."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyEnum.xft.xml:4
 msgid "Empty Enumeration"
@@ -918,7 +918,7 @@ msgstr "Web"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:7
 msgid "Creates an empty HTML file."
-msgstr "Crea un fitxer HTML buit"
+msgstr "Crea un fitxer HTML buit."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyInterface.xft.xml:4
 msgid "Empty Interface"
@@ -1265,7 +1265,7 @@ msgstr "_Suprimeix els espais finals en blanc"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:758
 msgid "Join the current line with the next line"
-msgstr "Uneix la línia actual amb la següent línea"
+msgstr "Uneix la línia actual amb la següent línia"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:759
 msgid "_Join Lines"
@@ -1367,7 +1367,7 @@ msgstr "Afegeix un projecte a la solució seleccionada"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:817
 msgid "Add Existing _Project..."
-msgstr "Afegeix un _projecte existent"
+msgstr "Afegeix un _projecte existent..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:819
 msgid "Add an existing item to the selected workspace"
@@ -1375,7 +1375,7 @@ msgstr "Afegeix un element existent a l'espai de treball seleccionat"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:820
 msgid "Add Existing _Item..."
-msgstr "Afegeix un _element existent"
+msgstr "Afegeix un _element existent..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:822
 msgid "_Remove From Project"
@@ -1853,7 +1853,7 @@ msgstr "_Obre"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1140
 msgid "Display Options List"
-msgstr "Llista d'opcions de visualizació"
+msgstr "Llista d'opcions de visualització"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1142
 msgid "Reset Options"
@@ -2057,7 +2057,7 @@ msgstr "_Quant a"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1301
 msgid "Show about dialog"
-msgstr "Mostra la capsa de diàleg en quant a"
+msgstr "Mostra la capsa de diàleg quant a"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1305
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1916
@@ -2241,7 +2241,7 @@ msgstr "Commuta els suggeriments de l'autocompletat"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1433
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:253
 msgid "I_nsert Template..."
-msgstr "I_nsereix una plantilla"
+msgstr "I_nsereix una plantilla..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1436
 msgid "Go to end of line"
@@ -2885,7 +2885,7 @@ msgstr "Nom de la classe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:29
 msgid "Template for an attribute."
-msgstr "Plantilla per l'atribut"
+msgstr "Plantilla per l'atribut."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:35
 msgid "The name of the attribute"
@@ -2909,11 +2909,11 @@ msgstr "Expressions a activar"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:177
 msgid "Template for void Main method."
-msgstr "Plantilla per al mètode «void Main»"
+msgstr "Plantilla per al mètode «void Main»."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:193
 msgid "Template for int Main method."
-msgstr "Plantilla per al mètode «int Main»"
+msgstr "Plantilla per al mètode «int Main»."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:209
 msgid "Template for exception"
@@ -2972,7 +2972,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:439
 msgid "Access last element of a collection"
-msgstr "Accedeix a l'últim element de la col·leció"
+msgstr "Accedeix a l'últim element de la col·lecció"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:445
 msgid "Collection name"
@@ -3284,7 +3284,7 @@ msgstr "Fitxer per obrir"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:92
 msgid "Only local files can be opened."
-msgstr "Només es poden obrir els fitxer locals."
+msgstr "Només es poden obrir els fitxers locals."
 
 #
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:94
@@ -3311,7 +3311,7 @@ msgstr "S'està obrint {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:296
 msgid "Are you sure you want to clear recent files list?"
-msgstr "Esteu segur de que voleu netejar la llista de fitxers recents?"
+msgstr "Esteu segur que voleu netejar la llista de fitxers recents?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:345
 msgid "Load solution {0}"
@@ -3327,7 +3327,7 @@ msgstr "Neteja els projectes recents"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:367
 msgid "Are you sure you want to clear recent projects list?"
-msgstr "Esteu segur de que voleu netejar la llista de projectes recents?"
+msgstr "Esteu segur que voleu netejar la llista de projectes recents?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:105
 msgid "{0} _Options"
@@ -3410,7 +3410,7 @@ msgid ""
 " '{0} {1}'"
 msgstr ""
 "L'execució del programa extern ha fallat.\n"
-"S'ha produït un error al iniciar:\n"
+"S'ha produït un error en iniciar:\n"
 " '{0} {1}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:70
@@ -3425,7 +3425,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:163
 msgid "Are you sure you want to delete the active layout?"
-msgstr "Esteu segur de que voleu suprimir el format actiu?"
+msgstr "Esteu segur que voleu suprimir el format actiu?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:193
 msgid "Show Next ({0})"
@@ -3655,7 +3655,7 @@ msgstr "Última modificació"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:151
 msgid "Are you sure you want to delete this file?"
-msgstr "Esteu segur de que voleu suprimir aquest fitxer?"
+msgstr "Esteu segur que voleu suprimir aquest fitxer?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:180
 msgid "Delete file"
@@ -3688,18 +3688,18 @@ msgstr "Documentació del Mono"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:177
 msgid "Solution name may not contain any of the following characters: {0}"
 msgstr ""
-"El nom de la solució no ha de contindre cap dels següents caràcters: {0}"
+"El nom de la solució no ha de contenir cap dels següents caràcters: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:208
 msgid ""
 "Are you sure you want to move the item '{0}' to the solution folder '{1}'?"
 msgstr ""
-"Esteu segur de que voleu moure l'element '{0}' a la carpeta '{1}' de la "
+"Esteu segur que voleu moure l'element '{0}' a la carpeta '{1}' de la "
 "solució?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:243
 msgid "Do you really want to remove the folder '{0}' from '{1}'?"
-msgstr "Esteu segur de que voleu suprimir la carpeta '{0}' de '{1}'?"
+msgstr "Esteu segur que voleu suprimir la carpeta '{0}' de '{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:277
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:408
@@ -3713,24 +3713,24 @@ msgid ""
 "Do you really want to move the folder '{0}' to the root folder of project "
 "'{1}'?"
 msgstr ""
-"Esteu segur de que voleu moure la carpeta '{0}' a la carpeta arrel del  "
+"Esteu segur que voleu moure la carpeta '{0}' a la carpeta arrel del  "
 "projecte '{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:233
 msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
-msgstr "Esteu segur de que voleu moure la carpeta '{0}' a la carpeta '{1}'?"
+msgstr "Esteu segur que voleu moure la carpeta '{0}' a la carpeta '{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:239
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
 msgstr ""
-"Esteu segur de que voleu copiar la carpeta '{0}' a la carpeta arrel del "
+"Esteu segur que voleu copiar la carpeta '{0}' a la carpeta arrel del "
 "projecte '{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:241
 msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
-msgstr "Esteu segur de que voleu copiar la carpeta '{0}' a la carpeta '{1}'?"
+msgstr "Esteu segur que voleu copiar la carpeta '{0}' a la carpeta '{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:272
 msgid "Do you want to save the file '{0}' before the move operation?"
@@ -3860,7 +3860,7 @@ msgstr ""
 msgid ""
 "Are you sure you want to remove the file {0} and its code-behind children "
 "from project {1}?"
-msgstr "Esteu segur de que voleu suprimir el fitxer {0} del projecte {1}?"
+msgstr "Esteu segur que voleu suprimir el fitxer {0} del projecte {1}?"
 
 #
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:233
@@ -3868,16 +3868,16 @@ msgstr "Esteu segur de que voleu suprimir el fitxer {0} del projecte {1}?"
 msgid ""
 "Are you sure you want to remove the selected files and their code-behind "
 "children from the project?"
-msgstr "Esteu segur de que voleu suprimir-ho del projecte?"
+msgstr "Esteu segur que voleu suprimir-ho del projecte?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:237
 msgid "Are you sure you want to remove file {0} from project {1}?"
-msgstr "Esteu segur de que voleu suprimir el fitxer {0} del projecte {1}?"
+msgstr "Esteu segur que voleu suprimir el fitxer {0} del projecte {1}?"
 
 #
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:240
 msgid "Are you sure you want to remove the selected files from the project?"
-msgstr "Esteu segur de que voleu suprimir els fitxers seleccionats del projecte?"
+msgstr "Esteu segur que voleu suprimir els fitxers seleccionats del projecte?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:280
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:213
@@ -3899,7 +3899,7 @@ msgstr "S'ha produït un error al connectar amb el servidor de base de dades."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:186
 msgid "Are you sure you want to permanently delete the folder {0}?"
-msgstr "Esteu segur de que voleu suprimir permanentment la carpeta {0}?"
+msgstr "Esteu segur que voleu suprimir permanentment la carpeta {0}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:199
 #, fuzzy
@@ -3932,7 +3932,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:124
 msgid "Are you sure you want to permanently delete the file {0}?"
-msgstr "Esteu segur de que voleu suprimir permanentment el fitxer {0}?"
+msgstr "Esteu segur que voleu suprimir permanentment el fitxer {0}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:130
 msgid "The file {0} could not be deleted"
@@ -4277,7 +4277,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:123
 msgid "Do you really want to remove project '{0}' from solution '{1}'"
-msgstr "Esteu segur de que voleu suprimir el projecte {0} de la solució {1}?"
+msgstr "Esteu segur que voleu suprimir el projecte {0} de la solució {1}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs:113
 msgid "Logging of errors is not enabled"
@@ -4414,7 +4414,7 @@ msgstr "Carrega configuració pròpia de l'usuari amb el document"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:166
 msgid "_Load previous solution on startup"
-msgstr "_Carrega la solució prèvia al inici"
+msgstr "_Carrega la solució prèvia a l'inici"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:198
 msgid "<b>Save</b>"
@@ -4438,7 +4438,7 @@ msgstr "Crea una _disposició"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:71
 msgid "Available encodings:"
-msgstr "Codificacions disponibles"
+msgstr "Codificacions disponibles:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:82
 msgid "Encodings shown in menu:"
@@ -4538,7 +4538,7 @@ msgstr "No s'ha trobat el control!"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:312
 msgid "The command of tool \"{0}\" is invalid."
-msgstr "L'ordre de l'eina \"{0}\" no és vàlida"
+msgstr "L'ordre de l'eina \"{0}\" no és vàlida."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:317
 msgid "The working directory of tool \"{0}\" is invalid."
@@ -4618,15 +4618,15 @@ msgstr "Molt compacte"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:98
 msgid "_Toolbar icon size:"
-msgstr "_Mida de les icones de la barres d'eines"
+msgstr "_Mida de les icones de la barra d'eines:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:110
 msgid "User Interface Language:"
-msgstr "Idioma de l'interfície d'usuari"
+msgstr "Idioma de la interfície d'usuari:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:121
 msgid "User Interface Theme:"
-msgstr "Tema de l'interfície d'usuari:"
+msgstr "Tema de la interfície d'usuari:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:132
 #, fuzzy
@@ -4683,24 +4683,24 @@ msgid ""
 "Are you sure you want to move the item '{0}' to the root node of the "
 "solution?"
 msgstr ""
-"Esteu segur de que voleu moure l'element '{0}' a la carpeta '{1}' de la "
+"Esteu segur que voleu moure l'element '{0}' a la carpeta '{1}' de la "
 "solució?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:262
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:213
 #, fuzzy
 msgid "Do you really want to remove solution {0} from workspace {1}?"
-msgstr "Esteu segur de que voleu suprimir la solució {0} de la solució {1}?"
+msgstr "Esteu segur que voleu suprimir la solució {0} de la solució {1}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:170
 #, fuzzy
 msgid "Are you sure you want to move the item '{0}' to the workspace '{1}'?"
-msgstr "Esteu segur de que voleu moure la carpeta '{0}' a la carpeta '{1}'?"
+msgstr "Esteu segur que voleu moure la carpeta '{0}' a la carpeta '{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:202
 #, fuzzy
 msgid "Do you really want to remove the item '{0}' from workspace '{1}'?"
-msgstr "Esteu segur de que voleu suprimir el projecte {0} de la solució {1}?"
+msgstr "Esteu segur que voleu suprimir el projecte {0} de la solució {1}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:1722
 msgid "Display Options"
@@ -4808,7 +4808,7 @@ msgstr "Suprimeix la plantilla"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:112
 msgid "Are you sure you want to remove this template?"
-msgstr "Esteu segur de que voleu suprimir aquesta plantilla?"
+msgstr "Esteu segur que voleu suprimir aquesta plantilla?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:55
 msgid "New template"
@@ -4942,8 +4942,8 @@ msgstr "Cerca completada."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:116
 msgid "{0} match."
 msgid_plural "{0} matches."
-msgstr[0] "{0} coincidència"
-msgstr[1] "{0} coincidències"
+msgstr[0] "{0} coincidència."
+msgstr[1] "{0} coincidències."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:62
 msgid "Replace in Files"
@@ -5741,7 +5741,7 @@ msgstr "Mostra la barra d'eines '{0}'"
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/MarkerOperationsHandler.cs:51
 #: ../src/addins/MacPlatform/Menus/OSXMenu.cs:626
 msgid "Could not open the url {0}"
-msgstr "No s'ha pogut obrir la URL {0}"
+msgstr "No s'ha pogut obrir l'URL {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.PropertyGrid/DefaultPropertyTab.cs:48
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs:56
@@ -5865,7 +5865,7 @@ msgstr "Suprimeix la carpeta"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/FileBrowser.cs:348
 msgid "Are you sure you want to delete this folder?"
-msgstr "Esteu segur de que voleu suprimir aquesta carpeta?"
+msgstr "Esteu segur que voleu suprimir aquesta carpeta?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/FileBrowser.cs:355
 msgid "Could not delete folder '{0}'"
@@ -5983,7 +5983,7 @@ msgstr "No s'ha seleccionat cap solució."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:476
 msgid "Could not close solution '{0}'."
-msgstr "No s'ha pogut tancar la solució: {0}"
+msgstr "No s'ha pogut tancar la solució: {0}."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:564
 #, fuzzy
@@ -6105,7 +6105,7 @@ msgid ""
 "Only use letters, digits, space, '.' or '_'."
 msgstr ""
 "Nom de projecte no vàlid.\n"
-"Feu servir només lletres, dígits, espais, '.' ó '_' "
+"Feu servir només lletres, dígits, espais, '.' ó '_'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs:87
 msgid "The project could not be renamed."
@@ -6123,7 +6123,7 @@ msgstr "Si us plau, introduïu un nom de configuració vàlid."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/RenameConfigDialog.cs:72
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewConfigurationDialog.cs:83
 msgid "A configuration with the name '{0}' already exists."
-msgstr "Ja existeix un configuració amb el nom '{0}'."
+msgstr "Ja existeix una configuració amb el nom '{0}'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectDialog.cs:87
 msgid "New Solution"
@@ -6247,7 +6247,7 @@ msgid ""
 "Some project files have been changed from outside MonoDevelop. Do you want "
 "to overwrite them?"
 msgstr ""
-"Aquest fitxer {0} s'ha modificat fora del MonoDevelop. Esteu segur de que "
+"Aquest fitxer {0} s'ha modificat fora del MonoDevelop. Esteu segur que "
 "voleu sobreescriure'l?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:467
@@ -6270,7 +6270,7 @@ msgstr "Afegeix a la solució"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:777
 #, fuzzy
 msgid "Do you really want to remove project '{0}' from '{1}'?"
-msgstr "Esteu segur de que voleu suprimir el projecte {0} de la solució {1}?"
+msgstr "Esteu segur que voleu suprimir el projecte {0} de la solució {1}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:778
 msgid "The Delete option physically removes the project files from disc."
@@ -6371,7 +6371,7 @@ msgstr "El fitxer '{0}' ja existeix. Voleu reemplaçar-lo?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1373
 msgid "Could not get any file from '{0}'."
-msgstr "No s'ha pogut obtenir cap fitxer des de '{0}'"
+msgstr "No s'ha pogut obtenir cap fitxer des de '{0}'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1392
 msgid "Could not create directory '{0}'."
@@ -6446,7 +6446,7 @@ msgstr "Totes les solucions"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:103
 #, fuzzy
 msgid "Are you sure you want to delete the custom execution mode '{0}'?"
-msgstr "Esteu segur de que voleu suprimir el grup d'accions '{0}'?"
+msgstr "Esteu segur que voleu suprimir el grup d'accions '{0}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParametersPreview.cs:50
 msgid "No options have been specified."
@@ -6463,7 +6463,7 @@ msgstr "Variables d'entorn"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParametersWidget.cs:72
 #, fuzzy
 msgid "Are you sure you want to clear all specified options?"
-msgstr "Esteu segur de que voleu netejar la llista de fitxers recents?"
+msgstr "Esteu segur que voleu netejar la llista de fitxers recents?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:76
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:138
@@ -6659,11 +6659,11 @@ msgstr "Versió:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:243
 msgid "<b>On Project Load</b>"
-msgstr "<b>Al carregar el projecte</b>"
+msgstr "<b>En carregar el projecte</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:266
 msgid "Search for new _files on load"
-msgstr "Cerca nous _fitxers al carregar"
+msgstr "Cerca nous _fitxers en carregar"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:294
 msgid "Automatically _include found files"
@@ -6720,7 +6720,7 @@ msgstr "_Nom de l'assemblat:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanelWidget.cs:98
 msgid "Output _path:"
-msgstr "Camí de _sortida"
+msgstr "Camí de _sortida:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs:48
 msgid "Paramet_ers:"
@@ -6745,7 +6745,7 @@ msgstr "Projecte d'inici individual:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanelWidget.cs:79
 msgid "Multiple startup projects:"
-msgstr "Projectes d'inici múltiples"
+msgstr "Projectes d'inici múltiples:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:222
 msgid "File Type"
@@ -6763,7 +6763,7 @@ msgstr "(política heretada)"
 #, fuzzy
 msgid ""
 "Are you sure you want to remove the formatting policy for the type '{0}'?"
-msgstr "Esteu segur de que voleu suprimir l'activador '{0}'?"
+msgstr "Esteu segur que voleu suprimir l'activador '{0}'?"
 
 #
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:79
@@ -6854,7 +6854,7 @@ msgstr "Suprimeix la configuració"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.DeleteConfigDialog.cs:53
 msgid "Are you sure you want to delete this configuration?"
-msgstr "Esteu segur de que voleu suprimir aquesta configuració?"
+msgstr "Esteu segur que voleu suprimir aquesta configuració?"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.DeleteConfigDialog.cs:62
 msgid "Delete also configurations in solution items"
@@ -6870,7 +6870,7 @@ msgstr "Carpeta de destí:"
 #
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectDialog.cs:87
 msgid "New format:"
-msgstr "Format nou"
+msgstr "Format nou:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectDialog.cs:98
 msgid "Current format:"
@@ -6928,7 +6928,7 @@ msgstr "_Afegeix al projecte:"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewFileDialog.cs:226
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:169
 msgid "Path:"
-msgstr "Camí"
+msgstr "Camí:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewProjectDialog.cs:231
 #, fuzzy
@@ -6964,7 +6964,7 @@ msgstr "Política pare"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.cs:33
 msgid "Select Project File..."
-msgstr "Selecciona el fitxers del projecte..."
+msgstr "Selecciona els fitxers del projecte..."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.cs:81
 msgid "File _type:"
@@ -7109,14 +7109,14 @@ msgstr "Suprime_ix de la solució"
 msgid ""
 "Are you sure you want to remove the file {0} from the solution folder {1}?"
 msgstr ""
-"Esteu segur de que voleu moure l'element '{0}' a la carpeta '{1}' de la "
+"Esteu segur que voleu moure l'element '{0}' a la carpeta '{1}' de la "
 "solució?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:97
 #, fuzzy
 msgid "Are you sure you want to remove the file {0} from the solution {1}?"
 msgstr ""
-"Esteu segur de que voleu moure l'element '{0}' a la carpeta '{1}' de la "
+"Esteu segur que voleu moure l'element '{0}' a la carpeta '{1}' de la "
 "solució?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:102
@@ -7533,11 +7533,11 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:406
 msgid "No files have local modifications."
-msgstr "Els fitxer no tenen modificacions locals."
+msgstr "Els fitxers no tenen modificacions locals."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:408
 msgid "No files have local or remote modifications."
-msgstr "Els fitxer no tenen modificacions locals o remotes."
+msgstr "Els fitxers no tenen modificacions locals o remotes."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:514
 msgid "Commit message for file '{0}':"
@@ -7630,7 +7630,7 @@ msgstr ""
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:43
 #, fuzzy
 msgid "Are you sure you want to publish the project?"
-msgstr "Esteu segur de que voleu suprimir el giny '{0}'?"
+msgstr "Esteu segur que voleu suprimir el giny '{0}'?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:43
 msgid "The project will be published to the repository '{0}', module '{1}'."
@@ -7647,7 +7647,7 @@ msgstr "No s'ha pogut completar l'operació de publicació."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:31
 #, fuzzy
 msgid "Are you sure you want to revert the changes done in the selected files?"
-msgstr "Esteu segur de que voleu suprimir aquest fitxer?"
+msgstr "Esteu segur que voleu suprimir aquest fitxer?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:32
 msgid "All changes made to the selected files will be permanently lost."
@@ -7738,7 +7738,7 @@ msgstr "Dipòsit:"
 #
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:315
 msgid "Message:"
-msgstr "{0} missatge"
+msgstr "Missatge:"
 
 #
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:326
@@ -7808,14 +7808,14 @@ msgstr "Comú"
 msgid ""
 "Are you sure you want to revert the selected resources to the revision "
 "specified (all local changes will be discarded)?"
-msgstr "Esteu segur de que voleu suprimir aquest fitxer?"
+msgstr "Esteu segur que voleu suprimir aquest fitxer?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:57
 #, fuzzy
 msgid ""
 "Are you sure you want to revert the changes from the revision selected on "
 "these resources?"
-msgstr "Esteu segur de que voleu suprimir aquest fitxer?"
+msgstr "Esteu segur que voleu suprimir aquest fitxer?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:61
 msgid ""
@@ -8196,7 +8196,7 @@ msgstr "Edita les icones del projecte..."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml:91
 msgid "GTK# support settings..."
-msgstr "Paràmeteres de compatibilitat GTK#..."
+msgstr "Paràmetres de compatibilitat GTK#..."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml:145
 msgid "GTK# Settings"
@@ -8282,7 +8282,7 @@ msgstr "Dissenyador de finestres"
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:213
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs:61
 msgid "The widget design {0} is not currently bound to a class."
-msgstr "El disseny del giny {0} no està associat actualment a cap classe"
+msgstr "El disseny del giny {0} no està associat actualment a cap classe."
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:239
 msgid "Bind the design to an existing class"
@@ -8311,7 +8311,7 @@ msgstr "Ubicació:"
 #
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:677
 msgid "Also remove the file '{0}'"
-msgstr "Suprimir també el fitxer '{0}'"
+msgstr "Suprimeix també el fitxer '{0}'"
 
 #
 #: ../src/addins/MonoDevelop.GtkCore/templates/DrawingArea.xft.xml:3
@@ -8411,19 +8411,19 @@ msgstr "Interfície d'usuari"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:48
 msgid "Are you sure you want to delete the window '{0}'?"
-msgstr "Esteu segur de que voleu suprimir la finestra '{0}'?"
+msgstr "Esteu segur que voleu suprimir la finestra '{0}'?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:50
 msgid "Are you sure you want to delete the widget '{0}'?"
-msgstr "Esteu segur de que voleu suprimir el giny '{0}'?"
+msgstr "Esteu segur que voleu suprimir el giny '{0}'?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:52
 msgid "Are you sure you want to delete the action group '{0}'?"
-msgstr "Esteu segur de que voleu suprimir el grup d'accions '{0}'?"
+msgstr "Esteu segur que voleu suprimir el grup d'accions '{0}'?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:54
 msgid "Are you sure you want to delete '{0}'?"
-msgstr "Esteu segur de que voleu suprimir '{0}'?"
+msgstr "Esteu segur que voleu suprimir '{0}'?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:302
 msgid ""
@@ -8548,7 +8548,7 @@ msgstr ""
 msgid ""
 "Are you sure you want to delete the action '{0}'? It will be removed from "
 "all menus and toolbars."
-msgstr "Esteu segur de que voleu suprimir el grup d'accions '{0}'?"
+msgstr "Esteu segur que voleu suprimir el grup d'accions '{0}'?"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionMenu.cs:529
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionMenuBar.cs:494
@@ -8681,11 +8681,11 @@ msgstr "Direcció"
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/SelectIconDialog.cs:149
 #, fuzzy
 msgid "Are you sure you want to delete the icon '{0}'"
-msgstr "Esteu segur de que voleu suprimir la finestra '{0}'?"
+msgstr "Esteu segur que voleu suprimir la finestra '{0}'?"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/GroupPicker.cs:77
 msgid "Rename Group..."
-msgstr "Canvia del nom el group..."
+msgstr "Canvia del nom el grup..."
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/GroupPicker.cs:78
 msgid "New Group..."
@@ -9076,7 +9076,7 @@ msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:253
 msgid "Convert to MSBuild"
-msgstr "Coverteix a MSBuild"
+msgstr "Converteix a MSBuild"
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:256
 msgid "Converting to MSBuild format will overwrite existing files."
@@ -9118,7 +9118,7 @@ msgstr "Icona de Win32:"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:172
 msgid "My Type:"
-msgstr "El meu tipus"
+msgstr "El meu tipus:"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:183
 msgid "Option Explicit:"
@@ -9212,7 +9212,7 @@ msgstr "Selecciona els continguts"
 #: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:57
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:60
 msgid "Executable with GUI"
-msgstr "Executable amb interfíce gràfica"
+msgstr "Executable amb interfície gràfica"
 
 #: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:58
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:61
@@ -9301,12 +9301,12 @@ msgstr ""
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.cs:117
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:101
 msgid "The name or e-mail of the user has not been configured."
-msgstr "No s'ha configurat el nom o l'adreça de correu electrònica del usuari."
+msgstr "No s'ha configurat el nom o l'adreça electrònica de l'usuari."
 
 #
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:60
 msgid "View ChangeLog..."
-msgstr "Visualitza el ChangeLog"
+msgstr "Visualitza el ChangeLog..."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:63
 msgid "Options..."
@@ -9512,7 +9512,7 @@ msgstr ""
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:203
 #, fuzzy
 msgid "Are you sure you want to remove the selected Item?"
-msgstr "Esteu segur de que voleu suprimir-ho del projecte?"
+msgstr "Esteu segur que voleu suprimir-ho del projecte?"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:241
 #, fuzzy
@@ -9597,7 +9597,7 @@ msgstr "Tipus de component_:"
 #
 #: ../src/addins/MonoDevelop.DesignerSupport/gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs:88
 msgid "Add Assembly..."
-msgstr "Afegir assemblat..."
+msgstr "Afegeix assemblat..."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs:120
 msgid "Group by component category"
@@ -9836,7 +9836,7 @@ msgstr "No s'ha pogut crear el projecte"
 #: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:95
 #, fuzzy
 msgid "Creating {0} for Project {1}"
-msgstr "Esteu segur de que voleu suprimir el fitxer {0} del projecte {1}?"
+msgstr "Esteu segur que voleu suprimir el fitxer {0} del projecte {1}?"
 
 #: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:103
 #, fuzzy
@@ -10109,7 +10109,7 @@ msgstr "Error al carregar el fitxer de plantilla des del recurs {0}"
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:115
 #, fuzzy
 msgid "Error saving to Makefile ({0}) for project {1}"
-msgstr "Esteu segur de que voleu suprimir el fitxer {0} del projecte {1}?"
+msgstr "Esteu segur que voleu suprimir el fitxer {0} del projecte {1}?"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:161
 msgid "Building {0}"
@@ -10159,7 +10159,7 @@ msgstr ""
 msgid ""
 "Error trying to read configure.in ('{0}') for project '{1}':\n"
 "{2}"
-msgstr "Esteu segur de que voleu suprimir el fitxer {0} del projecte {1}?"
+msgstr "Esteu segur que voleu suprimir el fitxer {0} del projecte {1}?"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:790
 msgid "Error in loading references: {0}. Skipping syncing of references"
@@ -10519,7 +10519,7 @@ msgstr "S'estan actualitzant les referències web"
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:92
 #, fuzzy
 msgid "Are you sure you want to delete the web service reference '{0}'?"
-msgstr "Esteu segur de que voleu suprimir la finestra '{0}'?"
+msgstr "Esteu segur que voleu suprimir la finestra '{0}'?"
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:58
 msgid "Go back one page"
@@ -10770,7 +10770,7 @@ msgstr "Claus"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:345
 msgid "Namespace declaration"
-msgstr "Declaració del espai de noms:"
+msgstr "Declaració de l'espai de noms:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:347
 msgid "Type declaration"
@@ -11243,7 +11243,7 @@ msgstr "Versió del llenguatge C#:"
 # Millor no traduir _unsafe ja que és una paraula clau
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:266
 msgid "Allow '_unsafe' code"
-msgstr "Permetre codi '_unsafe'"
+msgstr "Permet codi '_unsafe'"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpBindingCompilerManager.cs:79
 msgid "{0} could not be found or is invalid."
@@ -11533,12 +11533,12 @@ msgstr "Sortida del traductor"
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:179
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:141
 msgid "Translation update failed."
-msgstr "Ha fallat la actualització de la traducció."
+msgstr "Ha fallat l'actualització de la traducció."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:103
 #, fuzzy
 msgid "Do you really want to remove the translation {0} from solution {1}?"
-msgstr "Esteu segur de que voleu suprimir la solució {0} de la solució {1}?"
+msgstr "Esteu segur que voleu suprimir la solució {0} de la solució {1}?"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:67
 msgid "Translation Options"
@@ -11555,7 +11555,7 @@ msgstr "Seleccioneu el camí de sortida"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:160
 msgid "_System path:"
-msgstr "_Camí dels sistema:"
+msgstr "_Camí del sistema:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:200
 msgid "The catalog initialization string should look like:"
@@ -11635,7 +11635,7 @@ msgstr "Biblioteca"
 msgid ""
 "Do you really want to remove the translation string {0} (It will be removed "
 "from all translations)?"
-msgstr "Esteu segur de que voleu suprimir la solució {0} de la solució {1}?"
+msgstr "Esteu segur que voleu suprimir la solució {0} de la solució {1}?"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:550
 msgid "{0:#00.00}% Translated"
@@ -11691,7 +11691,7 @@ msgstr[1] "Solució {0} (1 entrada)"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:113
 msgid "_Filter:"
-msgstr "_Fitre:"
+msgstr "_Filtre:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:147
 msgid "Valid"
@@ -11782,7 +11782,7 @@ msgstr "_Actualitza les traduccions"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:52
 msgid "Updates all translation files."
-msgstr "Actualitza tots els fitxers de traduccions"
+msgstr "Actualitza tots els fitxers de traduccions."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:54
 msgid "_Update Translation"
@@ -11937,7 +11937,7 @@ msgstr "Patró:"
 #
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:203
 msgid "Author:"
-msgstr "Autor"
+msgstr "Autor:"
 
 #
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:266
@@ -13044,7 +13044,7 @@ msgid ""
 "This file {0} has been changed outside of MonoDevelop. Are you sure you want "
 "to overwrite the file?"
 msgstr ""
-"Aquest fitxer {0} s'ha modificat fora del MonoDevelop. Esteu segur de que "
+"Aquest fitxer {0} s'ha modificat fora del MonoDevelop. Esteu segur que "
 "voleu sobreescriure'l?"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:950
@@ -13278,7 +13278,7 @@ msgstr "Ressalta la _línia actual"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:121
 msgid "Show _column ruler"
-msgstr "Mostra la regla de _columna"
+msgstr "Mostra el regle de _columna"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:133
 msgid "_Animations enabled"
@@ -13832,11 +13832,11 @@ msgstr "Seleccioneu un tipus de paquet."
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:187
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:213
 msgid "Project name not provided."
-msgstr "No s'ha proporcionat un nom de projecte"
+msgstr "No s'ha proporcionat un nom de projecte."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:196
 msgid "Please select a project or solution."
-msgstr "Seleccioneu un projecte o solucció."
+msgstr "Seleccioneu un projecte o solució."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:209
 msgid "Package name not provided."
@@ -13848,7 +13848,7 @@ msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:218
 msgid "Packaging project not selected."
-msgstr "No s'ha seleccionat un projecte d'empaquetat"
+msgstr "No s'ha seleccionat un projecte d'empaquetat."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:266
 msgid "Create"
@@ -13967,7 +13967,7 @@ msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:160
 msgid "Deployed file {0}."
-msgstr "S'ha deplegat el fitxer {0}."
+msgstr "S'ha desplegat el fitxer {0}."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:75
 msgid "The source project failed to build."
@@ -14002,7 +14002,7 @@ msgstr "S'estan copiant els fitxers..."
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs:123
 #, fuzzy
 msgid "Are you sure you want to delete the package '{0}'?"
-msgstr "Esteu segur de que voleu suprimir el giny '{0}'?"
+msgstr "Esteu segur que voleu suprimir el giny '{0}'?"
 
 #
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployOperations.cs:30
@@ -14106,12 +14106,12 @@ msgstr ""
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:354
 #, fuzzy
 msgid "Enter the name you want to give to this package configuration:"
-msgstr "Esteu segur de que voleu suprimir aquesta configuració?"
+msgstr "Esteu segur que voleu suprimir aquesta configuració?"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:404
 #, fuzzy
 msgid "Where do you want to save this configuration?"
-msgstr "Esteu segur de que voleu suprimir aquesta configuració?"
+msgstr "Esteu segur que voleu suprimir aquesta configuració?"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:411
 #, fuzzy
@@ -14119,9 +14119,8 @@ msgid "Save in a new Packaging Project"
 msgstr "Crea un nou projecte C#"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:469
-#, fuzzy
 msgid "Project name:"
-msgstr "Nom de fitxer del projecte"
+msgstr "Nom del projecte:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:479
 #, fuzzy
@@ -15030,12 +15029,12 @@ msgstr "Nom genèric:"
 #
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:329
 msgid "Comment:"
-msgstr "Commentari:"
+msgstr "Comentari:"
 
 #
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:367
 msgid "Run in terminal"
-msgstr "Ejecuta en la terminal"
+msgstr "Executa en un terminal"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:426
 msgid "Test exe:"
@@ -15054,7 +15053,7 @@ msgstr "Capçalera"
 #
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:495
 msgid "Show in desktop menu"
-msgstr "Mostra el el menú de l'escriptori"
+msgstr "Mostra el menú de l'escriptori"
 
 #
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:518
@@ -15710,7 +15709,7 @@ msgstr "Mostra les proves ignorades"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:120
 msgid "Add assembly..."
-msgstr "Afegir assemblat..."
+msgstr "Afegeix assemblat..."
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:142
 msgid "Run Test With"
@@ -16009,7 +16008,7 @@ msgstr "Comprova si hi ha actualitzacions del Monodevelop i els paquets que requ
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:114
 msgid "(Line:{0}, Column:{1})"
-msgstr "(línea:{0}, columna:{1})"
+msgstr "(línia:{0}, columna:{1})"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:234
 msgid "_Organize Usings"
@@ -16026,7 +16025,7 @@ msgstr "_Vés a la declaració"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:276
 msgid "{0}, Line {1}"
-msgstr "{0}, línea {1}"
+msgstr "{0}, línia {1}"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:324
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:333
@@ -16302,7 +16301,7 @@ msgstr "Reanomena fitxer"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs:61
 #, fuzzy
 msgid "_Move type to file '{0}'"
-msgstr "Suprimir també el fitxer '{0}'"
+msgstr "Suprimeix també el fitxer '{0}'"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:45
 msgid "Introduce Format Item"
@@ -16723,7 +16722,7 @@ msgstr "Pàgina mestre amb codi associat"
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/MasterPage-CodeBehind.xft.xml:11
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/MasterPage-CodeBehindNonPartial.xft.xml:11
 msgid "Creates an ASP.NET Master Page with a CodeBehind class."
-msgstr "Crea un pàgina metre ASP.NET amb una classe amb codi associat."
+msgstr "Crea una pàgina metre ASP.NET amb una classe amb codi associat."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/MasterPage-Empty.xft.xml:7
 msgid "Master Page without CodeBehind"
@@ -17495,7 +17494,7 @@ msgstr "Ha fallat l'avaluació."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ImmediatePad.cs:119
 msgid "Evaluating"
-msgstr "S'està evaluant"
+msgstr "S'està avaluant"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ImmediatePad.cs:123
 msgid "Timed out."
@@ -17570,7 +17569,7 @@ msgstr "_Reemplaça"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AddTracePointDialog.cs:88
 msgid "Condition:"
-msgstr "Condició"
+msgstr "Condició:"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AddTracePointDialog.cs:100
 msgid ""
