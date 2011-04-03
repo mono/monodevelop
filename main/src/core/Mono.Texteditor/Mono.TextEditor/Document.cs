@@ -90,6 +90,10 @@ namespace Mono.TextEditor
 			splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
 			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.InstallListener (this);
+			foldSegmentTree.tree.NodeRemoved += delegate(object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e) {
+				if (e.Node.IsFolded)
+					foldedSegments.Remove (e.Node);
+			};
 		}
 
 		public Document () : this(new GapBuffer (), new LineSplitter ())
@@ -918,7 +922,7 @@ namespace Mono.TextEditor
 				if (foldSegmentWorker == null) {
 					foldSegmentWorker = new BackgroundWorker ();
 					foldSegmentWorker.WorkerSupportsCancellation = true;
-					foldSegmentWorker.DoWork += FoldSegmentWork;
+					foldSegmentWorker.DoWork += UpdateFoldSegmentWorker;
 				}
 				return foldSegmentWorker;
 			}
@@ -937,7 +941,7 @@ namespace Mono.TextEditor
 			
 			InterruptFoldWorker ();
 			if (!runInThread) {
-				FoldSegmentWork (null, new DoWorkEventArgs (newSegments));
+				UpdateFoldSegmentWorker (null, new DoWorkEventArgs (newSegments));
 				return;
 			}
 			FoldSegmentWorker.RunWorkerAsync (newSegments);
@@ -951,13 +955,18 @@ namespace Mono.TextEditor
 			foldedSegments.Remove (folding);
 		}
 		
-		void FoldSegmentWork (object sender, DoWorkEventArgs e)
+		/// <summary>
+		/// Updates the fold segments in a background worker thread. Don't call this method outside of a background worker.
+		/// Use UpdateFoldSegments instead.
+		/// </summary>
+		public void UpdateFoldSegmentWorker (object sender, DoWorkEventArgs e)
 		{
 			BackgroundWorker worker = sender as BackgroundWorker;
 			var newSegments = (List<FoldSegment>)e.Argument;
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
 			newSegments.Sort ();
+			var newFoldedSegments = new HashSet<FoldSegment> ();
 			foreach (FoldSegment newFoldSegment in newSegments) {
 				if (worker != null && worker.CancellationPending)
 					return;
@@ -972,20 +981,18 @@ namespace Mono.TextEditor
 					FoldSegment curSegment = oldSegments [oldIndex];
 					curSegment.Length = newFoldSegment.Length;
 					curSegment.Description = newFoldSegment.Description;
-					if (curSegment.IsFolded && !newFoldSegment.IsFolded) {
-						foldedSegments.Remove (curSegment);
-					} else if (!curSegment.IsFolded && newFoldSegment.IsFolded) {
+					if (newFoldSegment.IsFolded)
 						curSegment.isFolded = true;
-						foldedSegments.Add (curSegment);
-					} 
+					if (curSegment.isFolded)
+						newFoldedSegments.Add (curSegment);
 				} else {
 					LineSegment startLine = splitter.GetLineByOffset (offset);
 					LineSegment endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
-					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset;
-					newFoldSegment.Column = offset - startLine.Offset;
+					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
+					newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
 					if (newFoldSegment.IsFolded)
-						foldedSegments.Add (newFoldSegment);
+						newFoldedSegments.Add (newFoldSegment);
 					foldSegmentTree.Add (newFoldSegment);
 				}
 				oldIndex++;
@@ -997,9 +1004,11 @@ namespace Mono.TextEditor
 			}
 			if (worker != null) {
 				Gtk.Application.Invoke (delegate {
+					foldedSegments = newFoldedSegments;
 					InformFoldTreeUpdated ();
 				});
 			} else {
+				foldedSegments = newFoldedSegments;
 				InformFoldTreeUpdated ();
 			}
 		}
@@ -1080,7 +1089,7 @@ namespace Mono.TextEditor
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
 			bool needUpdate = false;
-			foreach (FoldSegment fold in GetFoldingsFromOffset (offset)) {
+			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.Offset < offset && offset <= f.EndOffset)) {
 				needUpdate |= fold.IsFolded;
 				fold.IsFolded = false;
 			}
@@ -1610,6 +1619,53 @@ namespace Mono.TextEditor
 			if (Partitioner == null)
 				return null;
 			return Partitioner.GetPartition (line, column);
+		}
+		#endregion
+		
+		#region ContentLoaded 
+		// The problem: Action to perform on a newly opened text editor, but content didn't get loaded because autosave file exist.
+		//              At this point the document is open, but the content didn't yet have loaded - therefore the action on the conent can't be perfomed.
+		// Solution: Perform the action after the user did choose load autosave or not. 
+		//           This is done by the RunWhenLoaded method. Text editors should call the InformLoadComplete () when the content has successfully been loaded
+		//           at that point the outstanding actions are run.
+		bool isLoaded;
+		List<Action> loadedActions = new List<Action> ();
+		
+		/// <summary>
+		/// Gets a value indicating whether this instance is loaded.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is loaded; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsLoaded {
+			get { return isLoaded; }
+		}
+		
+		/// <summary>
+		/// Informs the document when the content is loaded. All outstanding actions are executed.
+		/// </summary>
+		public void InformLoadComplete ()
+		{
+			if (isLoaded)
+				return;
+			isLoaded = true;
+			loadedActions.ForEach (act => act ());
+			loadedActions = null;
+		}
+		
+		/// <summary>
+		/// Performs an action when the content is loaded.
+		/// </summary>
+		/// <param name='action'>
+		/// The action to run.
+		/// </param>
+		public void RunWhenLoaded (Action action)
+		{
+			if (IsLoaded) {
+				action ();
+				return;
+			}
+			loadedActions.Add (action);
 		}
 		#endregion
 	}

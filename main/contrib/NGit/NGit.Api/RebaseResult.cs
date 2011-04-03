@@ -41,7 +41,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
 using NGit.Api;
+using NGit.Merge;
 using NGit.Revwalk;
 using Sharpen;
 
@@ -60,6 +62,7 @@ namespace NGit.Api
 			OK,
 			ABORTED,
 			STOPPED,
+			FAILED,
 			UP_TO_DATE,
 			FAST_FORWARD
 		}
@@ -71,16 +74,36 @@ namespace NGit.Api
 
 		private readonly RevCommit currentCommit;
 
+		private IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths;
+
 		internal RebaseResult(RebaseResult.Status status)
 		{
 			this.mySatus = status;
 			currentCommit = null;
 		}
 
+		/// <summary>
+		/// Create <code>RebaseResult</code> with status
+		/// <see cref="Status.STOPPED">Status.STOPPED</see>
+		/// </summary>
+		/// <param name="commit">current commit</param>
 		internal RebaseResult(RevCommit commit)
 		{
-			this.mySatus = RebaseResult.Status.STOPPED;
+			mySatus = RebaseResult.Status.STOPPED;
 			currentCommit = commit;
+		}
+
+		/// <summary>
+		/// Create <code>RebaseResult</code> with status
+		/// <see cref="Status.FAILED">Status.FAILED</see>
+		/// </summary>
+		/// <param name="failingPaths">list of paths causing this rebase to fail</param>
+		internal RebaseResult(IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths
+			)
+		{
+			mySatus = RebaseResult.Status.FAILED;
+			currentCommit = null;
+			this.failingPaths = failingPaths;
 		}
 
 		/// <returns>the overall status</returns>
@@ -98,6 +121,20 @@ namespace NGit.Api
 		public virtual RevCommit GetCurrentCommit()
 		{
 			return currentCommit;
+		}
+
+		/// <returns>
+		/// the list of paths causing this rebase to fail (see
+		/// <see cref="NGit.Merge.ResolveMerger.GetFailingPaths()">NGit.Merge.ResolveMerger.GetFailingPaths()
+		/// 	</see>
+		/// for details) if status is
+		/// <see cref="Status.FAILED">Status.FAILED</see>
+		/// , otherwise <code>null</code>
+		/// </returns>
+		public virtual IDictionary<string, ResolveMerger.MergeFailureReason> GetFailingPaths
+			()
+		{
+			return failingPaths;
 		}
 	}
 }

@@ -95,6 +95,26 @@ namespace MonoDevelop.Refactoring
 		throw new System.NotImplementedException ();
 	}");
 		}
+		
+		/// <summary>
+		/// Bug 683007 - "Refactor/Implement implicit" creates explicit implementations of methods with same names
+		/// </summary>
+		[Test()]
+		public void TestBug683007 ()
+		{
+			TestCreateInterface (@"interface ITest {
+	void M1();
+	void M1(int x);
+}", @"public void M1 ()
+	{
+		throw new System.NotImplementedException ();
+	}
+
+	public void M1 (int x)
+	{
+		throw new System.NotImplementedException ();
+	}");
+		}
 	}
 }
 

@@ -58,13 +58,13 @@ namespace MonoDevelop.VersionControl.Views
 		public static void Show (VersionControlItemList items)
 		{
 			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path);
+				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 				DiffView.AttachViewContents (document, item);
 				document.Window.SwitchView (document.Window.FindView (typeof(BlameView)));
 			}
 		}
 		
-		public BlameView (VersionControlDocumentInfo info) : base ("Blame")
+		public BlameView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Blame"))
 		{
 			this.info = info;
 			

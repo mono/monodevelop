@@ -2191,7 +2191,6 @@ namespace Mono.TextEditor
 							layout = cr.CreateLayout ();
 							layout.FontDescription = Editor.Options.Font;
 							string markup = Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true);
-							System.Console.WriteLine (markup);
 							layout.SetMarkup (markup);
 							layout.GetPixelSize (out layoutWidth, out layoutHeight);
 						}
@@ -2203,7 +2202,7 @@ namespace Mono.TextEditor
 						cr.Fill (); 
 						
 						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 -2, -Editor.LineHeight / 2, System.Math.Min (10, layoutWidth), layoutWidth + 4, Editor.LineHeight);
-						using (Cairo.LinearGradient gradient = new Cairo.LinearGradient (0, -Editor.LineHeight / 2, 0, Editor.LineHeight / 2)) {
+						using (var gradient = new Cairo.LinearGradient (0, -Editor.LineHeight / 2, 0, Editor.LineHeight / 2)) {
 							color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 1.1);
 							color.A = opacity;
 							gradient.AddColorStop (0, color);

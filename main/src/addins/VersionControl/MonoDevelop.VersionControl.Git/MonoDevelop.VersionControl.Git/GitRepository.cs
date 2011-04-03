@@ -71,6 +71,12 @@ namespace MonoDevelop.VersionControl.Git
 			repo = new LocalGitRepository (path.Combine (Constants.DOT_GIT));
 		}
 		
+		public override void Dispose ()
+		{
+			((GitVersionControl)VersionControlSystem).UnregisterRepo (this);
+			base.Dispose ();
+		}
+		
 		public override string[] SupportedProtocols {
 			get {
 				return new string[] {"git", "ssh", "http", "https", "ftp", "ftps", "rsync"};
@@ -338,7 +344,8 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), remote);
 			Transport tn = Transport.Open (repo, remoteConfig);
-			tn.Fetch (new GitMonitor (monitor), null);
+			using (var gm = new GitMonitor (monitor))
+				tn.Fetch (gm, null);
 			monitor.Step (1);
 			
 			string upstreamRef = GitUtil.GetUpstreamSource (repo, GetCurrentBranch ());
@@ -369,17 +376,19 @@ namespace MonoDevelop.VersionControl.Git
 				if (saveLocalChanges) {
 					monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 3);
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
-					stash = stashes.Create (GetStashName ("_tmp_"));
+					using (var gm = new GitMonitor (monitor))
+						stash = stashes.Create (gm, GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
-				
-				GitMonitor gmonitor = new GitMonitor (monitor);
 				
 				NGit.Api.Git git = new NGit.Api.Git (repo);
 				RebaseCommand rebase = git.Rebase ();
 				rebase.SetOperation (RebaseCommand.Operation.BEGIN);
 				rebase.SetUpstream (upstreamRef);
+				
+				var gmonitor = new GitMonitor (monitor);
 				rebase.SetProgressMonitor (gmonitor);
+				
 				bool aborted = false;
 				
 				try {
@@ -419,6 +428,8 @@ namespace MonoDevelop.VersionControl.Git
 						rebase.Call ();
 					}
 					throw;
+				} finally {
+					gmonitor.Dispose ();
 				}
 				
 			} finally {
@@ -428,7 +439,8 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stash != null) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					stash.Apply ();
+					using (var gm = new GitMonitor (monitor))
+						stash.Apply (gm);
 					stashes.Remove (stash);
 					monitor.EndTask ();
 				}
@@ -450,7 +462,8 @@ namespace MonoDevelop.VersionControl.Git
 				if (saveLocalChanges) {
 					monitor.BeginTask (GettextCatalog.GetString ("Merging"), 3);
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
-					stash = stashes.Create (GetStashName ("_tmp_"));
+					using (var gm = new GitMonitor (monitor))
+						stash = stashes.Create (gm, GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
 				
@@ -485,7 +498,8 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stash != null) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					stash.Apply ();
+					using (var gm = new GitMonitor (monitor))
+						stash.Apply (gm);
 					stashes.Remove (stash);
 					monitor.EndTask ();
 				}
@@ -595,8 +609,10 @@ namespace MonoDevelop.VersionControl.Git
 			cmd.SetRemote ("origin");
 			cmd.SetBranch ("refs/heads/master");
 			cmd.SetDirectory ((string)targetLocalPath);
-			cmd.SetProgressMonitor (new GitMonitor (monitor, 4));
-			cmd.Call ();
+			using (var gm = new GitMonitor (monitor, 4)) {
+				cmd.SetProgressMonitor (gm);
+				cmd.Call ();
+			}
 		}
 
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
@@ -884,7 +900,8 @@ namespace MonoDevelop.VersionControl.Git
 			RemoteRefUpdate rr = new RemoteRefUpdate (repo, repo.GetBranch (), remoteRef, false, null, null);
 			List<RemoteRefUpdate> list = new List<RemoteRefUpdate> ();
 			list.Add (rr);
-			tp.Push (new GitMonitor (monitor), list);
+			using (var gm = new GitMonitor (monitor))
+				tp.Push (gm, list);
 			switch (rr.GetStatus ()) {
 			case RemoteRefUpdate.Status.UP_TO_DATE: monitor.ReportSuccess (GettextCatalog.GetString ("Remote branch is up to date.")); break;
 			case RemoteRefUpdate.Status.REJECTED_NODELETE: monitor.ReportError (GettextCatalog.GetString ("The server is configured to deny deletion of the branch"), null); break;
@@ -921,14 +938,14 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void RemoveBranch (string name)
 		{
-			RefUpdate updateRef = repo.UpdateRef ("refs/heads/" + name);
-			updateRef.Delete ();
+			var git = new NGit.Api.Git (repo);
+			git.BranchDelete ().SetBranchNames (name).SetForce (true).Call ();
 		}
 
 		public void RenameBranch (string name, string newName)
 		{
-			RefRename renameRef = repo.RenameRef ("refs/heads/" + name, "refs/heads/" + newName);
-			renameRef.Rename ();
+			var git = new NGit.Api.Git (repo);
+			git.BranchRename ().SetOldName (name).SetNewName (newName).Call ();
 		}
 
 		public IEnumerable<RemoteSource> GetRemotes ()
@@ -936,6 +953,18 @@ namespace MonoDevelop.VersionControl.Git
 			StoredConfig cfg = repo.GetConfig ();
 			foreach (RemoteConfig rc in RemoteConfig.GetAllRemoteConfigs (cfg))
 				yield return new RemoteSource (cfg, rc);
+		}
+		
+		public bool IsBranchMerged (string branchName)
+		{
+			// check if a branch is merged into HEAD
+			RevWalk walk = new RevWalk(repo);
+			RevCommit tip = walk.ParseCommit(repo.Resolve(Constants.HEAD));
+			Ref currentRef = repo.GetRef(branchName);
+			if (currentRef == null)
+				return true;
+			RevCommit @base = walk.ParseCommit(repo.Resolve(branchName));
+			return walk.IsMergedInto(@base, tip);
 		}
 
 		public void RenameRemote (string name, string newName)
@@ -1036,7 +1065,8 @@ namespace MonoDevelop.VersionControl.Git
 				
 				// Create a new stash for the branch. This allows switching branches
 				// without losing local changes
-				stash = stashes.Create (GetStashName (currentBranch));
+				using (var gm = new GitMonitor (monitor))
+					stash = stashes.Create (gm, GetStashName (currentBranch));
 			
 				monitor.Step (1);
 			}
@@ -1060,7 +1090,8 @@ namespace MonoDevelop.VersionControl.Git
 				dc.Unlock ();
 				if (GitService.StashUnstashWhenSwitchingBranches) {
 					// If something goes wrong, restore the work tree status
-					stash.Apply ();
+					using (var gm = new GitMonitor (monitor))
+						stash.Apply (gm);
 					stashes.Remove (stash);
 				}
 				throw;
@@ -1071,7 +1102,8 @@ namespace MonoDevelop.VersionControl.Git
 			if (GitService.StashUnstashWhenSwitchingBranches) {
 				stash = GetStashForBranch (stashes, branch);
 				if (stash != null) {
-					stash.Apply ();
+					using (var gm = new GitMonitor (monitor))
+						stash.Apply (gm);
 					stashes.Remove (stash);
 				}
 				monitor.Step (1);
@@ -1090,21 +1122,33 @@ namespace MonoDevelop.VersionControl.Git
 		void NotifyFileChanges (IProgressMonitor monitor, IEnumerable<Change> statusList)
 		{
 			List<Change> changes = new List<Change> (statusList);
-			monitor.BeginTask (null, changes.Count);
-			foreach (Change change in changes) {
-				if (change.ChangeType == ChangeType.Added)
-					// File added to source branch not present to target branch.
-					FileService.NotifyFileRemoved (FromGitPath (change.Path));
-				else
-					FileService.NotifyFileChanged (FromGitPath (change.Path));
-				monitor.Step (1);
-			}
+			
+			// Files added to source branch not present to target branch.
+			var removed = changes.Where (c => c.ChangeType == ChangeType.Added).Select (c => FromGitPath (c.Path)).ToList ();
+			var modified = changes.Where (c => c.ChangeType != ChangeType.Added).Select (c => FromGitPath (c.Path)).ToList ();
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Updating solution"), removed.Count + modified.Count);
+			
+			FileService.NotifyFilesChanged (modified);
+			monitor.Step (modified.Count);
+			
+			FileService.NotifyFilesRemoved (removed);
+			monitor.Step (removed.Count);
+			
 			monitor.EndTask ();
 		}
 
-		string GetStashName (string branchName)
+		static string GetStashName (string branchName)
 		{
 			return "__MD_" + branchName;
+		}
+		
+		public static string GetStashBranchName (string stashName)
+		{
+			if (stashName.StartsWith ("__MD_"))
+				return stashName.Substring (5);
+			else
+				return null;
 		}
 
 		Stash GetStashForBranch (StashCollection stashes, string branchName)
@@ -1337,13 +1381,14 @@ namespace MonoDevelop.VersionControl.Git
 		public string PushUrl { get; internal set; }
 	}
 	
-	class GitMonitor: NGit.ProgressMonitor
+	class GitMonitor: NGit.ProgressMonitor, IDisposable
 	{
 		IProgressMonitor monitor;
 		int currentWork;
 		int currentStep;
 		bool taskStarted;
 		int totalTasksOverride = -1;
+		bool monitorStarted;
 		
 		public GitMonitor (IProgressMonitor monitor)
 		{
@@ -1358,6 +1403,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Start (int totalTasks)
 		{
+			monitorStarted = true;
 			currentStep = 0;
 			currentWork = totalTasksOverride != -1 ? totalTasksOverride : (totalTasks > 0 ? totalTasks : 1);
 			totalTasksOverride = -1;
@@ -1398,6 +1444,12 @@ namespace MonoDevelop.VersionControl.Git
 		public override bool IsCancelled ()
 		{
 			return monitor.IsCancelRequested;
+		}
+		
+		public void Dispose ()
+		{
+			if (monitorStarted)
+				monitor.EndTask ();
 		}
 	}
 	

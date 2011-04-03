@@ -158,7 +158,7 @@ namespace NGit.Api
 					{
 						try
 						{
-							return Abort();
+							return Abort(new RebaseResult(RebaseResult.Status.ABORTED));
 						}
 						catch (IOException ioe)
 						{
@@ -188,13 +188,13 @@ namespace NGit.Api
 				}
 				if (monitor.IsCancelled())
 				{
-					return Abort();
+					return Abort(new RebaseResult(RebaseResult.Status.ABORTED));
 				}
-				if (this.operation == RebaseCommand.Operation.CONTINUE)
+				if (operation == RebaseCommand.Operation.CONTINUE)
 				{
 					newHead = ContinueRebase();
 				}
-				if (this.operation == RebaseCommand.Operation.SKIP)
+				if (operation == RebaseCommand.Operation.SKIP)
 				{
 					newHead = CheckoutCurrentHead();
 				}
@@ -214,24 +214,53 @@ namespace NGit.Api
 					{
 						return new RebaseResult(commitToPick);
 					}
-					monitor.BeginTask(MessageFormat.Format(JGitText.Get().applyingCommit, commitToPick
-						.GetShortMessage()), ProgressMonitor.UNKNOWN);
-					// if the first parent of commitToPick is the current HEAD,
-					// we do a fast-forward instead of cherry-pick to avoid
-					// unnecessary object rewriting
-					newHead = TryFastForward(commitToPick);
-					lastStepWasForward = newHead != null;
-					if (!lastStepWasForward)
+					try
 					{
-						// TODO if the content of this commit is already merged here
-						// we should skip this step in order to avoid confusing
-						// pseudo-changed
-						newHead = new Git(repo).CherryPick().Include(commitToPick).Call();
+						monitor.BeginTask(MessageFormat.Format(JGitText.Get().applyingCommit, commitToPick
+							.GetShortMessage()), ProgressMonitor.UNKNOWN);
+						// if the first parent of commitToPick is the current HEAD,
+						// we do a fast-forward instead of cherry-pick to avoid
+						// unnecessary object rewriting
+						newHead = TryFastForward(commitToPick);
+						lastStepWasForward = newHead != null;
+						if (!lastStepWasForward)
+						{
+							// TODO if the content of this commit is already merged
+							// here we should skip this step in order to avoid
+							// confusing pseudo-changed
+							CherryPickResult cherryPickResult = new Git(repo).CherryPick().Include(commitToPick
+								).Call();
+							switch (cherryPickResult.GetStatus())
+							{
+								case CherryPickResult.CherryPickStatus.FAILED:
+								{
+									if (operation == RebaseCommand.Operation.BEGIN)
+									{
+										return Abort(new RebaseResult(cherryPickResult.GetFailingPaths()));
+									}
+									else
+									{
+										return Stop(commitToPick);
+									}
+									goto case CherryPickResult.CherryPickStatus.CONFLICTING;
+								}
+
+								case CherryPickResult.CherryPickStatus.CONFLICTING:
+								{
+									return Stop(commitToPick);
+								}
+
+								case CherryPickResult.CherryPickStatus.OK:
+								{
+									newHead = cherryPickResult.GetNewHead();
+									break;
+								}
+							}
+						}
 					}
-					monitor.EndTask();
-					if (newHead == null)
+					finally
 					{
-						return Stop(commitToPick);
+						monitor.EndTask();
 					}
 				}
 				if (newHead != null)
@@ -770,17 +799,24 @@ namespace NGit.Api
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private RebaseResult Abort()
+		private RebaseResult Abort(RebaseResult result)
 		{
 			try
 			{
 				string commitId = ReadFile(repo.Directory, Constants.ORIG_HEAD);
 				monitor.BeginTask(MessageFormat.Format(JGitText.Get().abortingRebase, commitId), 
 					ProgressMonitor.UNKNOWN);
+				DirCacheCheckout dco;
 				RevCommit commit = walk.ParseCommit(repo.Resolve(commitId));
-				// no head in order to reset --hard
-				DirCacheCheckout dco = new DirCacheCheckout(repo, repo.LockDirCache(), commit.Tree
-					);
+				if (result.GetStatus().Equals(RebaseResult.Status.FAILED))
+				{
+					RevCommit head = walk.ParseCommit(repo.Resolve(Constants.HEAD));
+					dco = new DirCacheCheckout(repo, head.Tree, repo.LockDirCache(), commit.Tree);
+				}
+				else
+				{
+					dco = new DirCacheCheckout(repo, repo.LockDirCache(), commit.Tree);
+				}
 				dco.SetFailOnConflict(false);
 				dco.Checkout();
 				walk.Release();
@@ -816,7 +852,7 @@ namespace NGit.Api
 				}
 				// cleanup the files
 				FileUtils.Delete(rebaseDir, FileUtils.RECURSIVE);
-				return new RebaseResult(RebaseResult.Status.ABORTED);
+				return result;
 			}
 			finally
 			{

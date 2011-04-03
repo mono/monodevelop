@@ -28,7 +28,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			foreach (VersionControlItem item in items) {
 				if (!item.IsDirectory) {
-					var document = IdeApp.Workbench.OpenDocument (item.Path);
+					var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 					DiffView.AttachViewContents (document, item);
 					document.Window.SwitchView (document.Window.FindView (typeof(LogView)));
 				} else if (item.VersionInfo.CanLog) {
@@ -73,7 +73,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		VersionControlDocumentInfo info;
-		public LogView (VersionControlDocumentInfo info) : base ("Log")
+		public LogView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Log"))
 		{
 			this.info = info;
 		}
@@ -268,7 +268,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			
 			protected override string GetDescription () {
-				return GettextCatalog.GetString ("Retreiving content of {0} at revision {1}...", name, revision);
+				return GettextCatalog.GetString ("Retrieving content of {0} at revision {1}...", name, revision);
 			}
 			
 			protected override void Run () {

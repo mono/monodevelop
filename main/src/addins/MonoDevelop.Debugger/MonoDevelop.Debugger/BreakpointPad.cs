@@ -224,7 +224,7 @@ namespace MonoDevelop.Debugger
 			TreeIter iter;
 			if (tree.Selection.GetSelected (out iter)) {
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-				IdeApp.Workbench.OpenDocument (bp.FileName, bp.Line, 1, true);	
+				IdeApp.Workbench.OpenDocument (bp.FileName, bp.Line, 1);	
 			}
 		}
 		

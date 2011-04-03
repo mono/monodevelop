@@ -67,9 +67,6 @@ namespace Mono.TextEditor
 		{
 			this.editor = editor;
 			layout = PangoUtil.CreateLayout (editor);
-			delayTimer = new Timer (150);
-			delayTimer.AutoReset = false;
-			delayTimer.Elapsed += DelayTimerElapsed;
 			editor.Caret.PositionChanged += HandleEditorCaretPositionChanged;
 			editor.Document.FoldTreeUpdated += HandleEditorDocumentFoldTreeUpdated;
 		}
@@ -112,17 +109,16 @@ namespace Mono.TextEditor
 			
 			if (!areEqual) {
 				foldings = newFoldings;
-				DelayTimerElapsed (this, null);
+				StopTimer ();
 			}
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
-			
-			if (lineHover == null)
+			if (args.LineSegment == null)
 				return;
-			foreach (FoldSegment segment in editor.Document.GetStartFoldings (lineHover)) {
+			foreach (FoldSegment segment in editor.Document.GetStartFoldings (args.LineSegment)) {
 				segment.IsFolded = !segment.IsFolded; 
 			}
 			editor.SetAdjustments ();
@@ -150,31 +146,38 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
-			
-			delayTimer.Stop ();
+			StopTimer ();
 			if (found) {
 				foldings = editor.Document.GetFoldingContaining (lineSegment);
 				if (editor.TextViewMargin.BackgroundRenderer == null) {
-					delayTimer.Start ();
+					timerId = GLib.Timeout.Add (150, SetBackgroundRenderer);
 				} else {
-					DelayTimerElapsed (this, null);
+					SetBackgroundRenderer ();
 				}
 			} else {
 				RemoveBackgroundRenderer ();
 			}
 		}
 		
-		Timer delayTimer;
-		IEnumerable<FoldSegment> foldings;
-		void DelayTimerElapsed (object sender, ElapsedEventArgs e)
+		bool SetBackgroundRenderer ()
 		{
-			Application.Invoke (delegate {
-				editor.TextViewMargin.DisposeLayoutDict ();
-				editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, foldings);
-				editor.QueueDraw ();
-			});
+			editor.TextViewMargin.DisposeLayoutDict ();
+			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, foldings);
+			editor.QueueDraw ();
+			timerId = 0;
+			return false;
 		}
 		
+		void StopTimer ()
+		{
+			if (timerId != 0) {
+				GLib.Source.Remove (timerId);
+				timerId = 0;
+			}
+		}
+		
+		uint timerId;
+		IEnumerable<FoldSegment> foldings;
 		void RemoveBackgroundRenderer ()
 		{
 			if (editor.TextViewMargin.BackgroundRenderer != null) {
@@ -191,7 +194,7 @@ namespace Mono.TextEditor
 				lineHover = null;
 				editor.RedrawMargin (this);
 			}
-			delayTimer.Stop ();
+			StopTimer ();
 			RemoveBackgroundRenderer ();
 		}
 		
@@ -223,12 +226,8 @@ namespace Mono.TextEditor
 		public override void Dispose ()
 		{
 			base.Dispose ();
+			StopTimer ();
 			editor.Document.FoldTreeUpdated -= HandleEditorDocumentFoldTreeUpdated;
-			if (delayTimer != null) {
-				delayTimer.Stop ();
-				delayTimer.Dispose ();
-				delayTimer = null;
-			}
 			layout = layout.Kill ();
 		}
 

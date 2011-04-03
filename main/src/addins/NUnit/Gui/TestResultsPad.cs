@@ -410,7 +410,7 @@ namespace MonoDevelop.NUnit
 					if (i != -1) {
 						int line;
 						if (int.TryParse (file.Substring (i+1), out line)) {
-							IdeApp.Workbench.OpenDocument (file.Substring (0, i), line, -1, true);
+							IdeApp.Workbench.OpenDocument (file.Substring (0, i), line, -1);
 							return;
 						}
 					}
@@ -462,7 +462,7 @@ namespace MonoDevelop.NUnit
 			if (loc == null)
 				loc = test.SourceCodeLocation;
 			if (loc != null)
-				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
+				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
 		
 		[CommandHandler (TestCommands.ShowTestCode)]
@@ -473,7 +473,7 @@ namespace MonoDevelop.NUnit
 				return;
 			SourceCodeLocation loc = test.SourceCodeLocation;
 			if (loc != null)
-				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
+				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]

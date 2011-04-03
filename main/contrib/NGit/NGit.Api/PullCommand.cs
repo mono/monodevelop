@@ -277,8 +277,9 @@ namespace NGit.Api
 			else
 			{
 				MergeCommand merge = new MergeCommand(repo);
-				merge.Include("branch \'" + remoteBranchName + "\' of " + remoteUri, commitToMerge
-					);
+				string name = "branch \'" + Repository.ShortenRefName(remoteBranchName) + "\' of "
+					 + remoteUri;
+				merge.Include(name, commitToMerge);
 				MergeCommandResult mergeRes;
 				try
 				{

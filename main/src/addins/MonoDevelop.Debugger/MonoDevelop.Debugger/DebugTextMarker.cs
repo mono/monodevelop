@@ -104,19 +104,21 @@ namespace MonoDevelop.Debugger
 		
 		protected void FillGradient (Cairo.Context cr, Cairo.Color color1, Cairo.Color color2, double x, double y, double size)
 		{
-			Cairo.Gradient pat = new Cairo.LinearGradient (x + size / 4, y, x + size / 2, y + size - 4);
-			pat.AddColorStop (0, color1);
-			pat.AddColorStop (1, color2);
-			cr.Pattern = pat;
-			cr.FillPreserve ();
+			using (var pat = new Cairo.LinearGradient (x + size / 4, y, x + size / 2, y + size - 4)) {
+				pat.AddColorStop (0, color1);
+				pat.AddColorStop (1, color2);
+				cr.Pattern = pat;
+				cr.FillPreserve ();
+			}
 		}
 		
 		protected void DrawBorder (Cairo.Context cr, Cairo.Color color, double x, double y, double size)
 		{
-			Cairo.Gradient pat = new Cairo.LinearGradient (x, y + size, x + size, y);
-			pat.AddColorStop (0, color);
-			cr.Pattern = pat;
-			cr.Stroke ();
+			using (var pat = new Cairo.LinearGradient (x, y + size, x + size, y)) {
+				pat.AddColorStop (0, color);
+				cr.Pattern = pat;
+				cr.Stroke ();
+			}
 		}
 
 		public void MousePress (MarginMouseEventArgs args)

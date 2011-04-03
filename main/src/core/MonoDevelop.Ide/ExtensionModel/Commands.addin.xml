@@ -324,6 +324,12 @@
 			type = "radio|array"
 			defaultHandler="MonoDevelop.Ide.Commands.SelectActiveRuntimeHandler"
 			_label = "Active Runtime" />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ApplyPolicy"
+			defaultHandler="MonoDevelop.Ide.Commands.ApplyPolicyHandler"
+			_label = "Apply Policy..." />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportPolicy"
+			defaultHandler="MonoDevelop.Ide.Commands.ExportPolicyHandler"
+			_label = "Export Policy..." />
 	</Category>
 
 

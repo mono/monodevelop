@@ -34,6 +34,10 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IWorkbenchWindow WorkbenchWindow { get; set; }
 		Widget Control { get; }
+		
+		/// <summary>
+		/// The label used for the subview list.
+		/// </summary>
 		string TabPageLabel { get; }
 
 		T GetContent<T> () where T : class;

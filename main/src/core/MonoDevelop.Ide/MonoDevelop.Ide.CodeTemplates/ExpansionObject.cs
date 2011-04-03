@@ -200,8 +200,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 			} else {
 				returnType = new DomReturnType (fullTypeName.Substring (0, idx), fullTypeName.Substring (idx + 1));
 			}
-			System.Console.WriteLine (returnType);
-			
 			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (returnType, CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column).FullName;
 		}
 		

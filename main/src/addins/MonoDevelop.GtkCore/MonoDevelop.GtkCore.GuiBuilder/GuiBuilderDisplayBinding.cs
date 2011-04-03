@@ -34,32 +34,41 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderDisplayBinding : DisplayBinding
+	public class GuiBuilderDisplayBinding : IViewDisplayBinding
 	{
 		bool excludeThis = false;
 		
-		public override string Name {
-			get { return "Window Designer"; }
+		public string Name {
+			get { return MonoDevelop.Core.GettextCatalog.GetString ("Window Designer"); }
 		}
 		
-		public override bool CanCreateContentForUri (string fileName)
+		public bool CanUseAsDefault {
+			get { return true; }
+		}
+		
+		public bool CanHandle (MonoDevelop.Core.FilePath fileName, string mimeType, Project ownerProject)
 		{
-			if (excludeThis) return false;
+			if (excludeThis)
+				return false;
+			
+			if (fileName.IsNullOrEmpty == null)
+				return false;
 			
 			if (GetWindow (fileName) == null)
 				return false;
 			
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
 			excludeThis = false;
 			return db != null;
 		}
-
-		public override IViewContent CreateContentForUri (string fileName)
+		
+		public IViewContent CreateContent (MonoDevelop.Core.FilePath fileName, string mimeType, Project ownerProject)
 		{
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
-			GuiBuilderView view = new GuiBuilderView (db.CreateContentForUri (fileName), GetWindow (fileName));
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
+			var content = db.CreateContent (fileName, mimeType, ownerProject);
+			GuiBuilderView view = new GuiBuilderView (content, GetWindow (fileName));
 			excludeThis = false;
 			return view;
 		}

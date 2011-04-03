@@ -145,9 +145,9 @@ namespace MonoDevelop.VersionControl.Git
 			return s;
 		}
 		
-		public MergeCommandResult Apply ()
+		public MergeCommandResult Apply (NGit.ProgressMonitor monitor)
 		{
-			return StashCollection.Apply (this);
+			return StashCollection.Apply (monitor, this);
 		}
 	}
 	
@@ -175,13 +175,18 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		public Stash Create ()
+		public Stash Create (NGit.ProgressMonitor monitor)
 		{
-			return Create (null);
+			return Create (monitor, null);
 		}
 		
-		public Stash Create (string message)
+		public Stash Create (NGit.ProgressMonitor monitor, string message)
 		{
+			if (monitor != null) {
+				monitor.Start (1);
+				monitor.BeginTask ("Stashing changes", 100);
+			}
+			
 			UserConfig config = _repo.GetConfig ().Get (UserConfig.KEY);
 			RevWalk rw = new RevWalk (_repo);
 			ObjectId headId = _repo.Resolve (Constants.HEAD);
@@ -200,16 +205,29 @@ namespace MonoDevelop.VersionControl.Git
 			// Create the index tree commit
 			ObjectInserter inserter = _repo.NewObjectInserter ();
 			DirCache dc = _repo.ReadDirCache ();
+			
+			if (monitor != null)
+				monitor.Update (10);
+				
 			var tree_id = dc.WriteTree (inserter);
 			inserter.Release ();
+			
+			if (monitor != null)
+				monitor.Update (10);
 			
 			string commitMsg = "index on " + _repo.GetBranch () + ": " + message;
 			ObjectId indexCommit = GitUtil.CreateCommit (_repo, commitMsg + "\n", new ObjectId[] {headId}, tree_id, author, author);
 
+			if (monitor != null)
+				monitor.Update (20);
+			
 			// Create the working dir commit
 			tree_id = WriteWorkingDirectoryTree (parent.Tree, dc);
 			commitMsg = "WIP on " + _repo.GetBranch () + ": " + message;
 			var wipCommit = GitUtil.CreateCommit(_repo, commitMsg + "\n", new ObjectId[] { headId, indexCommit }, tree_id, author, author);
+			
+			if (monitor != null)
+				monitor.Update (20);
 			
 			string prevCommit = null;
 			FileInfo sf = StashRefFile;
@@ -222,9 +240,13 @@ namespace MonoDevelop.VersionControl.Git
 			File.AppendAllText (stashLog.FullName, s.FullLine + "\n");
 			File.WriteAllText (sf.FullName, s.CommitId + "\n");
 			
+			if (monitor != null)
+				monitor.Update (5);
+			
 			// Wipe all local changes
 			GitUtil.HardReset (_repo, Constants.HEAD);
 			
+			monitor.EndTask ();
 			s.StashCollection = this;
 			return s;
 		}
@@ -280,14 +302,18 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		internal MergeCommandResult Apply (Stash stash)
+		internal MergeCommandResult Apply (NGit.ProgressMonitor monitor, Stash stash)
 		{
+			monitor.Start (1);
+			monitor.BeginTask ("Applying stash", 100);
 			ObjectId cid = _repo.Resolve (stash.CommitId);
 			RevWalk rw = new RevWalk (_repo);
 			RevCommit wip = rw.ParseCommit (cid);
 			RevCommit oldHead = wip.Parents.First();
 			rw.ParseHeaders (oldHead);
-			return GitUtil.MergeTrees (_repo, oldHead, wip, "Stash", false);
+			MergeCommandResult res = GitUtil.MergeTrees (monitor, _repo, oldHead, wip, "Stash", false);
+			monitor.EndTask ();
+			return res;
 		}
 		
 		public void Remove (Stash s)
@@ -296,12 +322,13 @@ namespace MonoDevelop.VersionControl.Git
 			Remove (stashes, s);
 		}
 		
-		public MergeCommandResult Pop ()
+		public MergeCommandResult Pop (NGit.ProgressMonitor monitor)
 		{
 			List<Stash> stashes = ReadStashes ();
 			Stash last = stashes.Last ();
-			MergeCommandResult res = last.Apply ();
-			Remove (stashes, last);
+			MergeCommandResult res = last.Apply (monitor);
+			if (res.GetMergeStatus () != MergeStatus.FAILED && res.GetMergeStatus () != MergeStatus.NOT_SUPPORTED)
+				Remove (stashes, last);
 			return res;
 		}
 		

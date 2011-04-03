@@ -102,11 +102,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public virtual void DiscardChanges ()
 		{
-			
 		}
 
 		public abstract void Load (string fileName);
-
+		
+		public virtual void LoadNew (System.IO.Stream content, string mimeType)
+		{
+			throw new NotSupportedException ();
+		}
 
 		public event EventHandler ContentNameChanged;
 

@@ -502,6 +502,13 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override void Visit (UsingsBag.Using u)
 			{
+				if (!string.IsNullOrEmpty (currentNamespaceName)) {
+					DomUsing relativeNamespaceUsing = new DomUsing ();
+					relativeNamespaceUsing.Region = ConvertRegion (u.UsingLocation, u.SemicolonLocation);
+					relativeNamespaceUsing.ValidRegion = ConvertRegion (currentNamespace.Peek ().OpenBrace, currentNamespace.Peek ().CloseBrace); 
+					relativeNamespaceUsing.Add (currentNamespaceName + "." + ConvertToString (u.NSpace));
+					Unit.Add (relativeNamespaceUsing);
+				}
 				DomUsing domUsing = new DomUsing ();
 				domUsing.Region = ConvertRegion (u.UsingLocation, u.SemicolonLocation);
 				domUsing.ValidRegion = ConvertRegion (currentNamespace.Peek ().OpenBrace, currentNamespace.Peek ().CloseBrace); 

@@ -43,13 +43,7 @@
     <string name="app_name">${ProjectName}</string>
 </resources>]]></File>
 					</Directory>
-					<Directory name="drawable-hdpi">
-						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
-					</Directory>
-					<Directory name="drawable-mdpi">
-						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
-					</Directory>
-					<Directory name="drawable-ldpi">
+					<Directory name="drawable">
 						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
 					</Directory>
 				</Directory>

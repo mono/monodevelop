@@ -84,6 +84,8 @@ namespace NGit.Storage.File
 
 		private readonly FilePath packFile;
 
+		private volatile string packName;
+
 		internal readonly int hash;
 
 		private RandomAccessFile fd;
@@ -187,14 +189,19 @@ namespace NGit.Storage.File
 		/// </returns>
 		public virtual string GetPackName()
 		{
-			string name = GetPackFile().GetName();
-			if (name.StartsWith("pack-"))
+			string name = packName;
+			if (name == null)
 			{
-				name = Sharpen.Runtime.Substring(name, "pack-".Length);
-			}
-			if (name.EndsWith(".pack"))
-			{
-				name = Sharpen.Runtime.Substring(name, 0, name.Length - ".pack".Length);
+				name = GetPackFile().GetName();
+				if (name.StartsWith("pack-"))
+				{
+					name = Sharpen.Runtime.Substring(name, "pack-".Length);
+				}
+				if (name.EndsWith(".pack"))
+				{
+					name = Sharpen.Runtime.Substring(name, 0, name.Length - ".pack".Length);
+				}
+				packName = name;
 			}
 			return name;
 		}

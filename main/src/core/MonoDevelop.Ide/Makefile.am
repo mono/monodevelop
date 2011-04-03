@@ -41,6 +41,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Fonts.FontChooserPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Components.ProjectSelectorWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GtkErrorDialog.cs \
@@ -66,11 +67,14 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.DeleteConfigDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ExportProjectDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.FeatureSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.ImportProjectPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.NewConfigurationDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.NewFileDialog.cs \
@@ -92,6 +96,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.ProjectSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.RenameConfigDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
@@ -311,9 +316,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/FileFilterCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateConditionTypeCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs \
-	MonoDevelop.Ide.Codons/IAttachableDisplayBinding.cs \
-	MonoDevelop.Ide.Codons/IBaseDisplayBinding.cs \
-	MonoDevelop.Ide.Codons/IDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/LanguageActiveCondition.cs \
 	MonoDevelop.Ide.Codons/NodeBuilderCodon.cs \
 	MonoDevelop.Ide.Codons/PadCodon.cs \
@@ -408,6 +410,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/NodeState.cs \
 	MonoDevelop.Ide.Gui.Components/PadTreeView.cs \
 	MonoDevelop.Ide.Gui.Components/ProjectFileEntry.cs \
+	MonoDevelop.Ide.Gui.Components/ProjectSelectorWidget.cs \
 	MonoDevelop.Ide.Gui.Components/StringTagSelectorButton.cs \
 	MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeBuilder.cs \
@@ -533,7 +536,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
-	MonoDevelop.Ide.Gui/DisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
@@ -548,6 +550,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/HiddenWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/IAttachableViewContent.cs \
 	MonoDevelop.Ide.Gui/IBaseViewContent.cs \
+	MonoDevelop.Ide.Gui/IDisplayBinding.cs \
 	MonoDevelop.Ide.Gui/IMementoCapable.cs \
 	MonoDevelop.Ide.Gui/InternalLog.cs \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \
@@ -606,6 +609,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs \
 	MonoDevelop.Ide.Projects/AddFileDialog.cs \
 	MonoDevelop.Ide.Projects/AddMimeTypeDialog.cs \
+	MonoDevelop.Ide.Projects/ApplyPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs \
 	MonoDevelop.Ide.Projects/CombineEntryFeatureSelector.cs \
 	MonoDevelop.Ide.Projects/CombineOptionsDialog.cs \
@@ -613,8 +617,10 @@ FILES =  \
 	MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs \
 	MonoDevelop.Ide.Projects/DeleteConfigDialog.cs \
 	MonoDevelop.Ide.Projects/ExportProjectDialog.cs \
+	MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/FeatureSelectorDialog.cs \
 	MonoDevelop.Ide.Projects/GacReferencePanel.cs \
+	MonoDevelop.Ide.Projects/ImportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/IncludeNewFilesDialog.cs \
 	MonoDevelop.Ide.Projects/NewConfigurationDialog.cs \
 	MonoDevelop.Ide.Projects/NewFileDialog.cs \
@@ -624,6 +630,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs \
 	MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs \
 	MonoDevelop.Ide.Projects/ProjectReferencePanel.cs \
+	MonoDevelop.Ide.Projects/ProjectSelectorDialog.cs \
 	MonoDevelop.Ide.Projects/RenameConfigDialog.cs \
 	MonoDevelop.Ide.Projects/SelectReferenceDialog.cs \
 	MonoDevelop.Ide.Projects/TemplatePickerWidget.cs \

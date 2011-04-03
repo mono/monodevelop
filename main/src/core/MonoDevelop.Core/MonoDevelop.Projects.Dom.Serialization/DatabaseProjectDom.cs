@@ -122,6 +122,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (!database.Disposed)
 				database.Dispose ();
 			base.Unload ();
+			// database = null;
 		}
 
 		internal override void OnProjectReferenceAdded (ProjectReference pref)
@@ -145,11 +146,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		internal override void Flush ()
 		{
-			database.Flush ();
+			if (database != null)
+				database.Flush ();
 		}
 		
 		public override string GetDocumentation (IMember member)
 		{
+			if (database == null)
+				return "";
 			return database.GetDocumentation (member);
 		}
 		

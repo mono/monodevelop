@@ -69,11 +69,9 @@ namespace NGit.Api
 	/// <seealso><a
 	/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-cherry-pick.html"
 	/// *      >Git documentation about cherry-pick</a></seealso>
-	public class CherryPickCommand : GitCommand<RevCommit>
+	public class CherryPickCommand : GitCommand<CherryPickResult>
 	{
 		private IList<Ref> commits = new List<Ref>();
-
-		private IList<Ref> cherryPickedRefs = new List<Ref>();
 
 		/// <param name="repo"></param>
 		protected internal CherryPickCommand(Repository repo) : base(repo)
@@ -90,21 +88,12 @@ namespace NGit.Api
 		/// this class. Each instance of this class should only be used for one
 		/// invocation of the command. Don't call this method twice on an instance.
 		/// </summary>
-		/// <returns>
-		/// on success the
-		/// <see cref="NGit.Revwalk.RevCommit">NGit.Revwalk.RevCommit</see>
-		/// pointed to by the new HEAD is
-		/// returned. If a failure occurred during cherry-pick
-		/// <code>null</code> is returned. The list of successfully
-		/// cherry-picked
-		/// <see cref="NGit.Ref">NGit.Ref</see>
-		/// 's can be obtained by calling
-		/// <see cref="GetCherryPickedRefs()">GetCherryPickedRefs()</see>
-		/// </returns>
+		/// <returns>the result of the cherry-pick</returns>
 		/// <exception cref="NGit.Api.Errors.GitAPIException"></exception>
-		public override RevCommit Call()
+		public override CherryPickResult Call()
 		{
 			RevCommit newHead = null;
+			IList<Ref> cherryPickedRefs = new List<Ref>();
 			CheckCallable();
 			RevWalk revWalk = new RevWalk(repo);
 			try
@@ -157,7 +146,12 @@ namespace NGit.Api
 					}
 					else
 					{
-						return null;
+						if (merger.Failed())
+						{
+							return new CherryPickResult(merger.GetFailingPaths());
+						}
+						// merge conflicts
+						return CherryPickResult.CONFLICT;
 					}
 				}
 			}
@@ -170,7 +164,7 @@ namespace NGit.Api
 			{
 				revWalk.Release();
 			}
-			return newHead;
+			return new CherryPickResult(newHead, cherryPickedRefs);
 		}
 
 		/// <param name="commit">
@@ -210,18 +204,6 @@ namespace NGit.Api
 			)
 		{
 			return Include(new ObjectIdRef.Unpeeled(RefStorage.LOOSE, name, commit.Copy()));
-		}
-
-		/// <returns>
-		/// the list of successfully cherry-picked
-		/// <see cref="NGit.Ref">NGit.Ref</see>
-		/// 's. Never
-		/// <code>null</code> but maybe an empty list if no commit was
-		/// successfully cherry-picked
-		/// </returns>
-		public virtual IList<Ref> GetCherryPickedRefs()
-		{
-			return cherryPickedRefs;
 		}
 	}
 }

@@ -31,6 +31,7 @@ All credit should go to the authors of jsch.
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;

@@ -296,7 +296,7 @@ namespace NGit.Util
 		{
 			try
 			{
-				Process p = Runtime.GetRuntime().Exec(command, null, dir);
+				SystemProcess p = Runtime.GetRuntime().Exec(command, null, dir);
 				BufferedReader lineRead = new BufferedReader(new InputStreamReader(p.GetInputStream
 					(), encoding));
 				string r = null;

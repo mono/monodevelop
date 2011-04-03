@@ -49,6 +49,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/GitOptionsPanelWidget.cs \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \
 	MonoDevelop.VersionControl.Git/GitService.cs \
+	MonoDevelop.VersionControl.Git/GitSupportFeature.cs \
 	MonoDevelop.VersionControl.Git/GitUtil.cs \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
 	MonoDevelop.VersionControl.Git/MergeDialog.cs \
@@ -61,6 +62,9 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
+	icons/arrow_branch.png \
+	icons/server.png \
+	icons/tag_blue.png \
 	MonoDevelop.VersionControl.Git.addin.xml
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)

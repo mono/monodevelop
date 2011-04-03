@@ -134,6 +134,8 @@ namespace NGit.Storage.Pack
 
 		private readonly PackWriter.Statistics stats;
 
+		private PackWriter.Statistics.ObjectType typeStats;
+
 		private IList<ObjectToPack> sortedByName;
 
 		private byte[] packcsum;
@@ -716,14 +718,19 @@ namespace NGit.Storage.Pack
 			stats.totalObjects = objCnt;
 			writeMonitor.BeginTask(JGitText.Get().writingObjects, (int)objCnt);
 			long writeStart = Runtime.CurrentTimeMillis();
-			long headerStart = @out.Length();
 			@out.WriteFileHeader(PACK_VERSION_GENERATED, objCnt);
 			@out.Flush();
-			long headerEnd = @out.Length();
 			WriteObjects(@out);
 			if (!edgeObjects.IsEmpty() || !cachedPacks.IsEmpty())
 			{
-				stats.thinPackBytes = @out.Length() - (headerEnd - headerStart);
+				foreach (PackWriter.Statistics.ObjectType typeStat in stats.objectTypes)
+				{
+					if (typeStat == null)
+					{
+						continue;
+					}
+					stats.thinPackBytes += typeStat.bytes;
+				}
 			}
 			foreach (CachedPack pack in cachedPacks)
 			{
@@ -738,6 +745,17 @@ namespace NGit.Storage.Pack
 			stats.timeWriting = Runtime.CurrentTimeMillis() - writeStart;
 			stats.totalBytes = @out.Length();
 			stats.reusedPacks = Sharpen.Collections.UnmodifiableList(cachedPacks);
+			foreach (PackWriter.Statistics.ObjectType typeStat_1 in stats.objectTypes)
+			{
+				if (typeStat_1 == null)
+				{
+					continue;
+				}
+				typeStat_1.cntDeltas += typeStat_1.reusedDeltas;
+				stats.reusedObjects += typeStat_1.reusedObjects;
+				stats.reusedDeltas += typeStat_1.reusedDeltas;
+				stats.totalDeltas += typeStat_1.cntDeltas;
+			}
 			reader.Release();
 			writeMonitor.EndTask();
 		}
@@ -890,7 +908,7 @@ namespace NGit.Storage.Pack
 			// applies "Linus' Law" which states that newer files tend to be the
 			// bigger ones, because source files grow and hardly ever shrink.
 			//
-			Arrays.Sort(list, 0, cnt, new _IComparer_797());
+			Arrays.Sort(list, 0, cnt, new _IComparer_812());
 			// Above we stored the objects we cannot delta onto the end.
 			// Remove them from the list so we don't waste time on them.
 			while (0 < cnt && list[cnt - 1].IsDoNotDelta())
@@ -920,9 +938,9 @@ namespace NGit.Storage.Pack
 			}
 		}
 
-		private sealed class _IComparer_797 : IComparer<ObjectToPack>
+		private sealed class _IComparer_812 : IComparer<ObjectToPack>
 		{
-			public _IComparer_797()
+			public _IComparer_812()
 			{
 			}
 
@@ -1093,7 +1111,7 @@ namespace NGit.Storage.Pack
 					//
 					foreach (DeltaTask task in myTasks)
 					{
-						executor.Execute(new _Runnable_947(task, errors));
+						executor.Execute(new _Runnable_962(task, errors));
 					}
 					try
 					{
@@ -1132,9 +1150,9 @@ namespace NGit.Storage.Pack
 			}
 		}
 
-		private sealed class _Runnable_947 : Runnable
+		private sealed class _Runnable_962 : Runnable
 		{
-			public _Runnable_947(DeltaTask task, IList<Exception> errors)
+			public _Runnable_962(DeltaTask task, IList<Exception> errors)
 			{
 				this.task = task;
 				this.errors = errors;
@@ -1203,6 +1221,12 @@ namespace NGit.Storage.Pack
 		/// <exception cref="System.IO.IOException"></exception>
 		private void WriteObjects(PackOutputStream @out, IList<ObjectToPack> list)
 		{
+			if (list.IsEmpty())
+			{
+				return;
+			}
+			typeStats = stats.objectTypes[list[0].GetType()];
+			long beginOffset = @out.Length();
 			if (reuseSupport != null)
 			{
 				reuseSupport.WriteObjects(@out, list);
@@ -1214,6 +1238,8 @@ namespace NGit.Storage.Pack
 					@out.WriteObject(otp);
 				}
 			}
+			typeStats.bytes += @out.Length() - beginOffset;
+			typeStats.cntObjects = list.Count;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -1238,11 +1264,11 @@ namespace NGit.Storage.Pack
 					reuseSupport.CopyObjectAsIs(@out, otp, reuseValidate);
 					@out.EndObject();
 					otp.SetCRC(@out.GetCRC32());
-					stats.reusedObjects++;
+					typeStats.reusedObjects++;
 					if (otp.IsDeltaRepresentation())
 					{
-						stats.totalDeltas++;
-						stats.reusedDeltas++;
+						typeStats.reusedDeltas++;
+						typeStats.deltaBytes += @out.Length() - otp.GetOffset();
 					}
 					return;
 				}
@@ -1359,7 +1385,8 @@ namespace NGit.Storage.Pack
 			DeflaterOutputStream dst = new DeflaterOutputStream(@out, deflater);
 			delta.WriteTo(dst, null);
 			dst.Finish();
-			stats.totalDeltas++;
+			typeStats.cntDeltas++;
+			typeStats.deltaBytes += @out.Length() - otp.GetOffset();
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -1931,6 +1958,87 @@ namespace NGit.Storage.Pack
 		/// <remarks>Summary of how PackWriter created the pack.</remarks>
 		public class Statistics
 		{
+			/// <summary>Statistics about a single class of object.</summary>
+			/// <remarks>Statistics about a single class of object.</remarks>
+			public class ObjectType
+			{
+				internal long cntObjects;
+
+				internal long cntDeltas;
+
+				internal long reusedObjects;
+
+				internal long reusedDeltas;
+
+				internal long bytes;
+
+				internal long deltaBytes;
+
+				/// <returns>
+				/// total number of objects output. This total includes the
+				/// value of
+				/// <see cref="GetDeltas()">GetDeltas()</see>
+				/// .
+				/// </returns>
+				public virtual long GetObjects()
+				{
+					return cntObjects;
+				}
+
+				/// <returns>
+				/// total number of deltas output. This may be lower than the
+				/// actual number of deltas if a cached pack was reused.
+				/// </returns>
+				public virtual long GetDeltas()
+				{
+					return cntDeltas;
+				}
+
+				/// <returns>
+				/// number of objects whose existing representation was
+				/// reused in the output. This count includes
+				/// <see cref="GetReusedDeltas()">GetReusedDeltas()</see>
+				/// .
+				/// </returns>
+				public virtual long GetReusedObjects()
+				{
+					return reusedObjects;
+				}
+
+				/// <returns>
+				/// number of deltas whose existing representation was reused
+				/// in the output, as their base object was also output or
+				/// was assumed present for a thin pack. This may be lower
+				/// than the actual number of reused deltas if a cached pack
+				/// was reused.
+				/// </returns>
+				public virtual long GetReusedDeltas()
+				{
+					return reusedDeltas;
+				}
+
+				/// <returns>
+				/// total number of bytes written. This size includes the
+				/// object headers as well as the compressed data. This size
+				/// also includes all of
+				/// <see cref="GetDeltaBytes()">GetDeltaBytes()</see>
+				/// .
+				/// </returns>
+				public virtual long GetBytes()
+				{
+					return bytes;
+				}
+
+				/// <returns>
+				/// number of delta bytes written. This size includes the
+				/// object headers for the delta objects.
+				/// </returns>
+				public virtual long GetDeltaBytes()
+				{
+					return deltaBytes;
+				}
+			}
+
 			internal ICollection<ObjectId> interestingObjects;
 
 			internal ICollection<ObjectId> uninterestingObjects;
@@ -1962,6 +2070,8 @@ namespace NGit.Storage.Pack
 			internal long timeCompressing;
 
 			internal long timeWriting;
+
+			internal PackWriter.Statistics.ObjectType[] objectTypes;
 
 			/// <returns>
 			/// unmodifiable collection of objects to be included in the
@@ -2076,6 +2186,13 @@ namespace NGit.Storage.Pack
 				return thinPackBytes;
 			}
 
+			/// <param name="typeCode">object type code, e.g. OBJ_COMMIT or OBJ_TREE.</param>
+			/// <returns>information about this type of object in the pack.</returns>
+			public virtual PackWriter.Statistics.ObjectType ByObjectType(int typeCode)
+			{
+				return objectTypes[typeCode];
+			}
+
 			/// <returns>
 			/// time in milliseconds spent enumerating the objects that need
 			/// to be included in the output. This time includes any restarts
@@ -2146,6 +2263,17 @@ namespace NGit.Storage.Pack
 			{
 				return MessageFormat.Format(JGitText.Get().packWriterStatistics, totalObjects, totalDeltas
 					, reusedObjects, reusedDeltas);
+			}
+
+			public Statistics()
+			{
+				{
+					objectTypes = new PackWriter.Statistics.ObjectType[5];
+					objectTypes[Constants.OBJ_COMMIT] = new PackWriter.Statistics.ObjectType();
+					objectTypes[Constants.OBJ_TREE] = new PackWriter.Statistics.ObjectType();
+					objectTypes[Constants.OBJ_BLOB] = new PackWriter.Statistics.ObjectType();
+					objectTypes[Constants.OBJ_TAG] = new PackWriter.Statistics.ObjectType();
+				}
 			}
 			//
 			//

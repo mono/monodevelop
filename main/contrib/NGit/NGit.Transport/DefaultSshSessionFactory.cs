@@ -58,7 +58,7 @@ namespace NGit.Transport
 	/// If user interactivity is required by SSH (e.g. to obtain a password), the
 	/// connection will immediately fail.
 	/// </remarks>
-	internal class DefaultSshSessionFactory : SshConfigSessionFactory
+	internal class DefaultSshSessionFactory : JschConfigSessionFactory
 	{
 		protected internal override void Configure(OpenSshConfig.Host hc, Session session
 			)

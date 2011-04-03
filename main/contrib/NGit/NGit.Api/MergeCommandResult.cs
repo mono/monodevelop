@@ -72,6 +72,8 @@ namespace NGit.Api
 
 		private MergeStrategy mergeStrategy;
 
+		private IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths;
+
 		/// <param name="newHead">the object the head points at after the merge</param>
 		/// <param name="base">
 		/// the common base which was used to produce a content-merge. May
@@ -80,14 +82,14 @@ namespace NGit.Api
 		/// </param>
 		/// <param name="mergedCommits">all the commits which have been merged together</param>
 		/// <param name="mergeStatus">the status the merge resulted in</param>
-		/// <param name="mergeStrategy">
-		/// the used
-		/// <see cref="NGit.Merge.MergeStrategy">NGit.Merge.MergeStrategy</see>
-		/// </param>
 		/// <param name="lowLevelResults">
 		/// merge results as returned by
 		/// <see cref="NGit.Merge.ResolveMerger.GetMergeResults()">NGit.Merge.ResolveMerger.GetMergeResults()
 		/// 	</see>
+		/// </param>
+		/// <param name="mergeStrategy">
+		/// the used
+		/// <see cref="NGit.Merge.MergeStrategy">NGit.Merge.MergeStrategy</see>
 		/// </param>
 		public MergeCommandResult(ObjectId newHead, ObjectId @base, ObjectId[] mergedCommits
 			, MergeStatus mergeStatus, IDictionary<string, NGit.Merge.MergeResult<Sequence>> lowLevelResults
@@ -116,7 +118,38 @@ namespace NGit.Api
 		/// <param name="description">a user friendly description of the merge result</param>
 		public MergeCommandResult(ObjectId newHead, ObjectId @base, ObjectId[] mergedCommits
 			, MergeStatus mergeStatus, MergeStrategy mergeStrategy, IDictionary<string, NGit.Merge.MergeResult
-			<Sequence>> lowLevelResults, string description)
+			<Sequence>> lowLevelResults, string description) : this(newHead, @base, mergedCommits
+			, mergeStatus, mergeStrategy, lowLevelResults, null, null)
+		{
+		}
+
+		/// <param name="newHead">the object the head points at after the merge</param>
+		/// <param name="base">
+		/// the common base which was used to produce a content-merge. May
+		/// be <code>null</code> if the merge-result was produced without
+		/// computing a common base
+		/// </param>
+		/// <param name="mergedCommits">all the commits which have been merged together</param>
+		/// <param name="mergeStatus">the status the merge resulted in</param>
+		/// <param name="mergeStrategy">
+		/// the used
+		/// <see cref="NGit.Merge.MergeStrategy">NGit.Merge.MergeStrategy</see>
+		/// </param>
+		/// <param name="lowLevelResults">
+		/// merge results as returned by
+		/// <see cref="NGit.Merge.ResolveMerger.GetMergeResults()">NGit.Merge.ResolveMerger.GetMergeResults()
+		/// 	</see>
+		/// </param>
+		/// <param name="failingPaths">
+		/// list of paths causing this merge to fail as returned by
+		/// <see cref="NGit.Merge.ResolveMerger.GetFailingPaths()">NGit.Merge.ResolveMerger.GetFailingPaths()
+		/// 	</see>
+		/// </param>
+		/// <param name="description">a user friendly description of the merge result</param>
+		public MergeCommandResult(ObjectId newHead, ObjectId @base, ObjectId[] mergedCommits
+			, MergeStatus mergeStatus, MergeStrategy mergeStrategy, IDictionary<string, NGit.Merge.MergeResult
+			<Sequence>> lowLevelResults, IDictionary<string, ResolveMerger.MergeFailureReason>
+			 failingPaths, string description)
 		{
 			this.newHead = newHead;
 			this.mergedCommits = mergedCommits;
@@ -124,6 +157,7 @@ namespace NGit.Api
 			this.mergeStatus = mergeStatus;
 			this.mergeStrategy = mergeStrategy;
 			this.description = description;
+			this.failingPaths = failingPaths;
 			if (lowLevelResults != null)
 			{
 				foreach (KeyValuePair<string, NGit.Merge.MergeResult<Sequence>> result in lowLevelResults
@@ -205,6 +239,10 @@ namespace NGit.Api
 		public virtual void AddConflict<_T0>(string path, NGit.Merge.MergeResult<_T0> lowLevelResult
 			) where _T0:Sequence
 		{
+			if (!lowLevelResult.ContainsConflicts())
+			{
+				return;
+			}
 			if (conflicts == null)
 			{
 				conflicts = new Dictionary<string, int[][]>();
@@ -293,6 +331,21 @@ namespace NGit.Api
 		public virtual IDictionary<string, int[][]> GetConflicts()
 		{
 			return conflicts;
+		}
+
+		/// <summary>
+		/// Returns a list of paths causing this merge to fail as returned by
+		/// <see cref="NGit.Merge.ResolveMerger.GetFailingPaths()">NGit.Merge.ResolveMerger.GetFailingPaths()
+		/// 	</see>
+		/// </summary>
+		/// <returns>
+		/// the list of paths causing this merge to fail or <code>null</code>
+		/// if no failure occurred
+		/// </returns>
+		public virtual IDictionary<string, ResolveMerger.MergeFailureReason> GetFailingPaths
+			()
+		{
+			return failingPaths;
 		}
 	}
 

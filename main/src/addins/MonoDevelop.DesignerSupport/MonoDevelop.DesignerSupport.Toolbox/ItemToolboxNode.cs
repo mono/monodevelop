@@ -120,7 +120,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public override int GetHashCode ()
 		{
-			return (string.Empty + Name + Category + Description).GetHashCode ();
+			int code = 0;
+			if (Name != null)
+				code ^= Name.GetHashCode ();
+			if (Category != null)
+				code ^= Category.GetHashCode ();
+			if (Description != null)
+				code ^= Description.GetHashCode ();
+			return code;
 		}
 		
 		public int CompareTo (object other)

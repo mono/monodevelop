@@ -417,8 +417,13 @@ namespace MonoDevelop.IPhone
 				bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 				bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 				
+				var sdkSettings = IPhoneFramework.GetSdkSettings (sdkVersion);
+				var dtSettings = IPhoneFramework.GetDTSettings ();
+				
+				SetIfNotPresent (dict, "BuildMachineOSBuild", dtSettings.BuildMachineOSBuild);
+				
 				SetIfNotPresent (dict, "CFBundleDevelopmentRegion",
-					String.IsNullOrEmpty (proj.BundleDevelopmentRegion)? "English" : proj.BundleDevelopmentRegion);
+					String.IsNullOrEmpty (proj.BundleDevelopmentRegion)? "en" : proj.BundleDevelopmentRegion);
 				
 				SetIfNotPresent (dict, "CFBundleDisplayName", proj.BundleDisplayName ?? proj.Name);
 				SetIfNotPresent (dict, "CFBundleExecutable", conf.NativeExe.FileName);
@@ -470,12 +475,10 @@ namespace MonoDevelop.IPhone
 					new PlistArray () { sim? "iPhoneSimulator" : "iPhoneOS" });
 				SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
 				
-				var sdkSettings = IPhoneFramework.GetSdkSettings (sdkVersion);
-				var dtSettings = IPhoneFramework.GetDTSettings ();
-				
 				if (!sim) {
 					SetIfNotPresent (dict, "DTCompiler", sdkSettings.DTCompiler);
-					SetIfNotPresent (dict, "DTPlatformBuild", sdkSettings.DTPlatformBuild);
+					SetIfNotPresent (dict, "DTPlatformBuild", dtSettings.DTPlatformBuild);
+					SetIfNotPresent (dict, "DTSDKBuild", sdkSettings.DTSDKBuild);
 				}
 				SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
 				if (!sim) {

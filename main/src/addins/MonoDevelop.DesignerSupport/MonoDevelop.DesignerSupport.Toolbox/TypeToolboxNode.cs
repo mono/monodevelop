@@ -91,7 +91,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			int code = base.GetHashCode ();
 			if (type != null)
-				code += type.GetHashCode ();
+				code ^= type.GetHashCode ();
 			return code;
 		}
 		

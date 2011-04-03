@@ -55,7 +55,7 @@ namespace MonoDevelop.ValaBinding.Navigation
 			
 			if (null != item && 0 < item.SourceReferences.Count) {
 				SourceReference reference = item.SourceReferences[0];
-				IdeApp.Workbench.OpenDocument (reference.File, reference.FirstLine, reference.FirstColumn, true);
+				IdeApp.Workbench.OpenDocument (reference.File, reference.FirstLine, reference.FirstColumn);
 			}
 		}
 	}

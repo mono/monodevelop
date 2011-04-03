@@ -566,6 +566,7 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		public override RefUpdate NewUpdate(string name, bool detach)
 		{
+			bool detachingSymbolicRef = false;
 			RefList<Ref> packed = GetPackedRefs();
 			Ref @ref = ReadRef(name, packed);
 			if (@ref != null)
@@ -578,12 +579,18 @@ namespace NGit.Storage.File
 			}
 			else
 			{
-				if (detach && @ref.IsSymbolic())
+				detachingSymbolicRef = detach && @ref.IsSymbolic();
+				if (detachingSymbolicRef)
 				{
 					@ref = new ObjectIdRef.Unpeeled(RefStorage.LOOSE, name, @ref.GetObjectId());
 				}
 			}
-			return new RefDirectoryUpdate(this, @ref);
+			RefDirectoryUpdate refDirUpdate = new RefDirectoryUpdate(this, @ref);
+			if (detachingSymbolicRef)
+			{
+				refDirUpdate.SetDetachingSymbolicRef();
+			}
+			return refDirUpdate;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -947,12 +954,12 @@ namespace NGit.Storage.File
 		private void CommitPackedRefs(LockFile lck, RefList<Ref> refs, RefDirectory.PackedRefList
 			 oldPackedList)
 		{
-			new _RefWriter_771(this, lck, oldPackedList, refs, refs).WritePackedRefs();
+			new _RefWriter_778(this, lck, oldPackedList, refs, refs).WritePackedRefs();
 		}
 
-		private sealed class _RefWriter_771 : RefWriter
+		private sealed class _RefWriter_778 : RefWriter
 		{
-			public _RefWriter_771(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
+			public _RefWriter_778(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
 				 oldPackedList, RefList<Ref> refs, RefList<Ref> baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;

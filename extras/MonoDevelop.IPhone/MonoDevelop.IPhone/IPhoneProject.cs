@@ -51,7 +51,7 @@ namespace MonoDevelop.IPhone
 		IPhoneAndIPad = IPhone | IPad,
 	}
 
-	public class IPhoneProject : DotNetProject
+	public class IPhoneProject : DotNetProject, IXcodeTrackedProject
 	{
 		internal const string PLAT_IPHONE = "iPhone";
 		internal const string PLAT_SIM = "iPhoneSimulator";
@@ -266,6 +266,10 @@ namespace MonoDevelop.IPhone
 		{
 			Init ();
 			
+			//don't create app settings and device/sim configurations for libraries, since they have no effect
+			if (this.CompileTarget != CompileTarget.Exe)
+				return;
+			
 			var mainNibAtt = projectOptions.Attributes ["MainNibFile"];
 			if (mainNibAtt != null) {
 				this.mainNibFile = mainNibAtt.InnerText;	
@@ -313,6 +317,8 @@ namespace MonoDevelop.IPhone
 		
 		XcodeProjectTracker projectTracker;
 		
+		XcodeProjectTracker IXcodeTrackedProject.XcodeProjectTracker { get { return projectTracker; } }
+		
 		void Init ()
 		{
 			CodeBehindGenerator = new IPhoneCodeBehind (this);
@@ -338,7 +344,8 @@ namespace MonoDevelop.IPhone
 			
 			base.OnEndLoad ();
 			
-			projectTracker = new XcodeProjectTracker (this, "MonoTouch");
+			if (XcodeProjectTracker.TrackerEnabled)
+				projectTracker = new XcodeProjectTracker (this, "MonoTouch");
 		}
 		
 		// HACK: Using older MD, C# projects may have become created with the wrong platform target

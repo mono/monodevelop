@@ -166,7 +166,7 @@ namespace MonoDevelop.NUnit
 			UnitTestResult res = test.GetLastResult ();
 			loc = test.SourceCodeLocation;
 			if (loc != null)
-				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
+				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
 		
 		[CommandHandler (TestCommands.GoToFailure)]
@@ -180,7 +180,7 @@ namespace MonoDevelop.NUnit
 			if (loc == null)
 				loc = test.SourceCodeLocation;
 			if (loc != null)
-				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
+				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
 		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]

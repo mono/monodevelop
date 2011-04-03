@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandUpdateHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWithUpdate (CommandArrayInfo info)
 		{
-			ProjectFileNodeCommandHandler.PopulateOpenWithViewers (info, ((SystemFile) CurrentNode.DataItem).Path);
+			ProjectFileNodeCommandHandler.PopulateOpenWithViewers (info, null, ((SystemFile) CurrentNode.DataItem).Path);
 		}
 	}
 }

@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Tasks
 		public virtual void JumpToPosition()
 		{
 			if (!file.IsNullOrEmpty) {
-				var doc = IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), Math.Max (1, column), true);
+				var doc = IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), Math.Max (1, column));
 				var project = WorkspaceObject as Project;
 				if (doc != null && project != null)
 					doc.Project = project;

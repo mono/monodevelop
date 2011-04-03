@@ -429,6 +429,16 @@ namespace MonoDevelop.SourceEditor
 				AutoSave.RemoveAutoSaveFile (ContentName);
 		}
 		
+		public override void LoadNew (Stream content, string mimeType)
+		{
+			Document.MimeType = mimeType;
+			if (content != null) {
+				using (var reader = new StreamReader (content)) {
+					Document.Text = reader.ReadToEnd ();
+				}
+			}
+		}
+		
 		public override void Load (string fileName)
 		{
 			Load (fileName, null);
@@ -448,10 +458,11 @@ namespace MonoDevelop.SourceEditor
 			
 			// Look for a mime type for which there is a syntax mode
 			UpdateMimeType (fileName);
-			
+			bool didLoadCleanly;
 			if (AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
 				this.encoding = encoding;
+				didLoadCleanly = false;
 			} else {
 				TextFile file = TextFile.ReadFile (fileName, encoding);
 				inLoad = true;
@@ -459,6 +470,8 @@ namespace MonoDevelop.SourceEditor
 				inLoad = false;
 				this.encoding = file.SourceEncoding;
 				this.hadBom = file.HadBOM;
+				didLoadCleanly = true;
+			
 			}
 			
 			// TODO: Would be much easier if the view would be created after the containers.
@@ -483,6 +496,8 @@ namespace MonoDevelop.SourceEditor
 			this.IsDirty = false;
 			UpdateTasks (null, null);
 			widget.TextEditor.VAdjustment.Changed += HandleTextEditorVAdjustmentChanged;
+			if (didLoadCleanly)
+				Document.InformLoadComplete ();
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
@@ -563,6 +578,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateBreakpoints ();
 			UpdatePinnedWatches ();
 			this.IsDirty = false;
+			Document.InformLoadComplete ();
 		}
 		
 		void UpdateMimeType (string fileName)

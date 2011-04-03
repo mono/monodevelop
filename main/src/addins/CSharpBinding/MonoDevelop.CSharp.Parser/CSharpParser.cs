@@ -124,7 +124,7 @@ namespace MonoDevelop.CSharp.Parser
 						var spec = new ArraySpecifier () { Dimensions = cc.Spec.Dimension - 1 };
 						spec.AddChild (new CSharpTokenNode (Convert (cc.Spec.Location), 1), FieldDeclaration.Roles.LBracket);
 						if (location != null)
-							spec.AddChild (new CSharpTokenNode (Convert (location[0]), 1), FieldDeclaration.Roles.RBracket);
+							spec.AddChild (new CSharpTokenNode (Convert (location [0]), 1), FieldDeclaration.Roles.RBracket);
 						
 						result.ArraySpecifiers = new ArraySpecifier[] {
 							spec
@@ -232,7 +232,7 @@ namespace MonoDevelop.CSharp.Parser
 					var typeArgLocation = LocationsBag.GetLocations (c.MemberName);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), TypeDeclaration.Roles.LChevron);
-//					AddTypeArguments (newType, typeArgLocation, c.MemberName.TypeArguments);
+					AddTypeParameters (newType, typeArgLocation, c.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
 					AddConstraints (newType, c);
@@ -261,7 +261,7 @@ namespace MonoDevelop.CSharp.Parser
 					var typeArgLocation = LocationsBag.GetLocations (s.MemberName);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), TypeDeclaration.Roles.LChevron);
-//					AddTypeArguments (newType, typeArgLocation, s.MemberName.TypeArguments);
+					AddTypeParameters (newType, typeArgLocation, s.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
 					AddConstraints (newType, s);
@@ -290,7 +290,7 @@ namespace MonoDevelop.CSharp.Parser
 					var typeArgLocation = LocationsBag.GetLocations (i.MemberName);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), MemberReferenceExpression.Roles.LChevron);
-//					AddTypeArguments (newType, typeArgLocation, i.MemberName.TypeArguments);
+					AddTypeParameters (newType, typeArgLocation, i.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
 					AddConstraints (newType, i);
@@ -314,12 +314,12 @@ namespace MonoDevelop.CSharp.Parser
 				if (location != null)
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[0]), "delegate".Length), TypeDeclaration.Roles.Keyword);
 				newDelegate.AddChild (ConvertToType (d.ReturnType), AstNode.Roles.Type);
-				newDelegate.AddChild (new Identifier (d.Name, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
+				newDelegate.AddChild (new Identifier (d.Basename, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
 				if (d.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (d.MemberName);
 					if (typeArgLocation != null)
 						newDelegate.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), TypeDeclaration.Roles.LChevron);
-//					AddTypeArguments (newDelegate, typeArgLocation, d.MemberName.TypeArguments);
+					AddTypeParameters (newDelegate, typeArgLocation, d.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newDelegate.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
 					AddConstraints (newDelegate, d);
@@ -638,7 +638,7 @@ namespace MonoDevelop.CSharp.Parser
 					var typeArgLocation = LocationsBag.GetLocations (m.MemberName);
 					if (typeArgLocation != null)
 						newMethod.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), MemberReferenceExpression.Roles.LChevron);
-//					AddTypeArguments (newMethod, typeArgLocation, m.MemberName.TypeArguments);
+					AddTypeParameters (newMethod, typeArgLocation, m.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newMethod.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
 					
@@ -1794,44 +1794,63 @@ namespace MonoDevelop.CSharp.Parser
 				
 				for (int i = 0; i < parameters.Count; i++) {
 					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count)
-						parent.AddChild (new CSharpTokenNode (Convert (paramLocation[i - 1]), 1), ParameterDeclaration.Roles.Comma);
-					var p = (Parameter)parameters.FixedParameters[i];
+						parent.AddChild (new CSharpTokenNode (Convert (paramLocation [i - 1]), 1), ParameterDeclaration.Roles.Comma);
+					var p = (Parameter)parameters.FixedParameters [i];
 					var location = LocationsBag.GetLocations (p);
 					
 					ParameterDeclaration parameterDeclarationExpression = new ParameterDeclaration ();
 					switch (p.ModFlags) {
-						case Parameter.Modifier.OUT:
-							parameterDeclarationExpression.ParameterModifier = ParameterModifier.Out;
+					case Parameter.Modifier.OUT:
+						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Out;
+						if (location != null)
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location [0]), "out".Length), ParameterDeclaration.Roles.Keyword);
+						break;
+					case Parameter.Modifier.REF:
+						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Ref;
+						if (location != null)
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location [0]), "ref".Length), ParameterDeclaration.Roles.Keyword);
+						break;
+					case Parameter.Modifier.PARAMS:
+						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Params;
+						if (location != null)
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location [0]), "params".Length), ParameterDeclaration.Roles.Keyword);
+						break;
+					default:
+						if (p.HasExtensionMethodModifier) {
+							parameterDeclarationExpression.ParameterModifier = ParameterModifier.This;
 							if (location != null)
-								parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "out".Length), ParameterDeclaration.Roles.Keyword);
-							break;
-						case Parameter.Modifier.REF:
-							parameterDeclarationExpression.ParameterModifier = ParameterModifier.Ref;
-							if (location != null)
-								parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "ref".Length), ParameterDeclaration.Roles.Keyword);
-							break;
-						case Parameter.Modifier.PARAMS:
-							parameterDeclarationExpression.ParameterModifier = ParameterModifier.Params;
-							if (location != null)
-								parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "params".Length), ParameterDeclaration.Roles.Keyword);
-							break;
-						default:
-							if (p.HasExtensionMethodModifier) {
-								parameterDeclarationExpression.ParameterModifier = ParameterModifier.This;
-								if (location != null)
-									parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "this".Length), ParameterDeclaration.Roles.Keyword);
-							}
-							break;
+								parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location [0]), "this".Length), ParameterDeclaration.Roles.Keyword);
+						}
+						break;
 					}
 					if (p.TypeExpression != null) // lambdas may have no types (a, b) => ...
 						parameterDeclarationExpression.AddChild (ConvertToType (p.TypeExpression), ParameterDeclaration.Roles.Type);
 					parameterDeclarationExpression.AddChild (new Identifier (p.Name, Convert (p.Location)), ParameterDeclaration.Roles.Identifier);
 					if (p.HasDefaultValue) {
 						if (location != null)
-							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ParameterDeclaration.Roles.Assign);
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location [1]), 1), ParameterDeclaration.Roles.Assign);
 						parameterDeclarationExpression.AddChild ((MonoDevelop.CSharp.Ast.Expression)p.DefaultValue.Accept (this), ParameterDeclaration.Roles.Expression);
 					}
 					parent.AddChild (parameterDeclarationExpression, InvocationExpression.Roles.Parameter);
+				}
+			}
+			
+			void AddTypeParameters (AstNode parent, List<Location> location, Mono.CSharp.TypeArguments typeArguments)
+			{
+				if (typeArguments == null || typeArguments.IsEmpty)
+					return;
+				for (int i = 0; i < typeArguments.Count; i++) {
+					if (location != null && i > 0 && i - 1 < location.Count)
+						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
+					var arg = (TypeParameterName)typeArguments.Args[i];
+					if (arg == null)
+						continue;
+					TypeParameterDeclaration tp = new TypeParameterDeclaration();
+					// TODO: attributes
+					if (arg.Variance != Variance.None)
+						throw new NotImplementedException(); // TODO: variance
+					tp.AddChild (new Identifier (arg.Name, Convert (arg.Location)), InvocationExpression.Roles.Identifier);
+					parent.AddChild (tp, InvocationExpression.Roles.TypeParameter);
 				}
 			}
 			
@@ -1868,14 +1887,15 @@ namespace MonoDevelop.CSharp.Parser
 				if (d == null || d.Constraints == null)
 					return;
 				for (int i = 0; i < d.Constraints.Count; i++) {
-					Constraints c = d.Constraints[i];
+					Constraints c = d.Constraints [i];
 					var location = LocationsBag.GetLocations (c);
-//					var constraint = new Constraint ();
-					parent.AddChild (new CSharpTokenNode (Convert (location[0]), "where".Length), InvocationExpression.Roles.Keyword);
-					parent.AddChild (new Identifier (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
-					parent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), Constraint.ColonRole);
+					var constraint = new Constraint ();
+					constraint.AddChild (new CSharpTokenNode (Convert (location [0]), "where".Length), InvocationExpression.Roles.Keyword);
+					constraint.AddChild (new Identifier (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
+					constraint.AddChild (new CSharpTokenNode (Convert (location [1]), 1), Constraint.ColonRole);
 					foreach (var expr in c.ConstraintExpressions)
-						parent.AddChild (ConvertToType (expr), Constraint.BaseTypeRole);
+						constraint.AddChild (ConvertToType (expr), Constraint.BaseTypeRole);
+					parent.AddChild (constraint, AstNode.Roles.Constraint);
 				}
 			}
 			
@@ -1892,7 +1912,7 @@ namespace MonoDevelop.CSharp.Parser
 						DirectionExpression direction = new DirectionExpression ();
 						direction.FieldDirection = arg.ArgType == Argument.AType.Out ? FieldDirection.Out : FieldDirection.Ref;
 						var argLocation = LocationsBag.GetLocations (arg);
-						if (location != null)
+						if (argLocation != null)
 							direction.AddChild (new CSharpTokenNode (Convert (argLocation[0]), "123".Length), InvocationExpression.Roles.Keyword);
 						direction.AddChild ((MonoDevelop.CSharp.Ast.Expression)arg.Expr.Accept (this), InvocationExpression.Roles.Expression);
 						
@@ -2115,10 +2135,10 @@ namespace MonoDevelop.CSharp.Parser
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "stackalloc".Length), StackAllocExpression.Roles.Keyword);
 				result.AddChild (ConvertToType (stackAllocExpression.TypeExpression), StackAllocExpression.Roles.Type);
-				if (location != null)
+				if (location != null && location.Count > 1)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), StackAllocExpression.Roles.LBracket);
 				result.AddChild ((MonoDevelop.CSharp.Ast.Expression)stackAllocExpression.CountExpression.Accept (this), StackAllocExpression.Roles.Expression);
-				if (location != null)
+				if (location != null && location.Count > 2)
 					result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), StackAllocExpression.Roles.RBracket);
 				return result;
 			}
@@ -2220,11 +2240,9 @@ namespace MonoDevelop.CSharp.Parser
 					}
 				}
 				if (lambdaExpression.Block.IsCompilerGenerated) {
-					Console.WriteLine ("1");
 					ContextualReturn generatedReturn = (ContextualReturn)lambdaExpression.Block.Statements [0];
 					result.AddChild ((AstNode)generatedReturn.Expr.Accept (this), MonoDevelop.CSharp.Ast.LambdaExpression.BodyRole);
 				} else {
-					Console.WriteLine ("2");
 					result.AddChild ((AstNode)lambdaExpression.Block.Accept (this), MonoDevelop.CSharp.Ast.LambdaExpression.BodyRole);
 				}
 				
@@ -2467,13 +2485,8 @@ namespace MonoDevelop.CSharp.Parser
 			node.AddChild (comment, AstNode.Roles.Comment);
 		}
 		
-		internal static MonoDevelop.CSharp.Ast.CompilationUnit Parse (CompilerCompilationUnit top)
+		static void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)
 		{
-			if (top == null)
-				return null;
-			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
-			top.UsingsBag.Global.Accept (conversionVisitor);
-			
 			foreach (var special in top.SpecialsBag.Specials) {
 				var comment = special as SpecialsBag.Comment;
 				
@@ -2487,7 +2500,15 @@ namespace MonoDevelop.CSharp.Parser
 					InsertComment (conversionVisitor.Unit, domComment);
 				}
 			}
-			
+		}
+		
+		internal static MonoDevelop.CSharp.Ast.CompilationUnit Parse (CompilerCompilationUnit top)
+		{
+			if (top == null)
+				return null;
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			top.UsingsBag.Global.Accept (conversionVisitor);
+			InsertComments (top, conversionVisitor);
 			return conversionVisitor.Unit;
 		}
 
@@ -2496,6 +2517,18 @@ namespace MonoDevelop.CSharp.Parser
 		public McsParser.ErrorReportPrinter ErrorReportPrinter {
 			get {
 				return errorReportPrinter;
+			}
+		}
+		
+		public bool HasErrors {
+			get {
+				return errorReportPrinter.ErrorsCount + errorReportPrinter.FatalCounter > 0;
+			}
+		}
+		
+		public bool HasWarnings {
+			get {
+				return errorReportPrinter.WarningsCount > 0;
 			}
 		}
 		
@@ -2509,6 +2542,81 @@ namespace MonoDevelop.CSharp.Parser
 	
 				return Parse (top);
 			}
+		}
+		
+		public MonoDevelop.CSharp.Ast.CompilationUnit Parse (TextReader reader)
+		{
+			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
+			using (MemoryStream stream = new MemoryStream ()) {
+				StreamWriter w = new StreamWriter(stream, Encoding.UTF8);
+				char[] buffer = new char[2048];
+				int read;
+				while ((read = reader.ReadBlock(buffer, 0, buffer.Length)) > 0)
+					w.Write(buffer, 0, read);
+				w.Flush(); // we can't close the StreamWriter because that would also close the MemoryStream
+				stream.Position = 0;
+				return Parse(stream);
+			}
+		}
+		
+		public MonoDevelop.CSharp.Ast.CompilationUnit Parse (Stream stream)
+		{
+			lock (CompilerCallableEntryPoint.parseLock) {
+				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", Console.Out);
+				
+				if (top == null)
+					return null;
+				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+				top.UsingsBag.Global.Accept (conversionVisitor);
+				InsertComments (top, conversionVisitor);
+				return conversionVisitor.Unit;
+			}
+		}
+		
+		public IEnumerable<AttributedNode> ParseTypeMembers(TextReader reader)
+		{
+			string code = "class MyClass { " + reader.ReadToEnd() + "}";
+			var cu = Parse(new StringReader(code));
+			var td = cu.Children.FirstOrDefault() as TypeDeclaration;
+			if (td != null)
+				return td.Members;
+			return Enumerable.Empty<AttributedNode> ();
+		}
+		
+		public IEnumerable<MonoDevelop.CSharp.Ast.Statement> ParseStatements(TextReader reader)
+		{
+			string code = "void M() { " + reader.ReadToEnd() + "}";
+			var members = ParseTypeMembers(new StringReader(code));
+			var method = members.FirstOrDefault() as MethodDeclaration;
+			if (method != null && method.Body != null)
+				return method.Body.Statements;
+			return Enumerable.Empty<MonoDevelop.CSharp.Ast.Statement> ();
+		}
+		
+		public AstType ParseTypeReference(TextReader reader)
+		{
+			// TODO: add support for parsing type references
+			throw new NotImplementedException();
+		}
+		
+		public AstNode ParseExpression(TextReader reader)
+		{
+			var es = ParseStatements(new StringReader("tmp = " + reader.ReadToEnd() + ";")).FirstOrDefault() as MonoDevelop.CSharp.Ast.ExpressionStatement;
+			if (es != null) {
+				AssignmentExpression ae = es.Expression as AssignmentExpression;
+				if (ae != null)
+					return ae.Right;
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Parses a file snippet; guessing what the code snippet represents (compilation unit, type members, block, type reference, expression).
+		/// </summary>
+		public AstNode ParseSnippet(TextReader reader)
+		{
+			// TODO: add support for parsing a part of a file
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -59,8 +59,8 @@ namespace NGit.Merge
 	public class ResolveMerger : ThreeWayMerger
 	{
 		/// <summary>
-		/// If the merge fails abnormally (means: not because of unresolved
-		/// conflicts) this enum is used to explain why it failed
+		/// If the merge fails (means: not stopped because of unresolved conflicts)
+		/// this enum is used to explain why it failed
 		/// </summary>
 		public enum MergeFailureReason
 		{
@@ -363,34 +363,42 @@ namespace NGit.Merge
 		{
 			enterSubtree = true;
 			int modeO = tw.GetRawMode(T_OURS);
-			int modeI = tw.GetRawMode(T_INDEX);
-			// Each index entry has to match ours, means: it has to be clean
-			if (NonTree(modeI) && !(tw.IdEqual(T_INDEX, T_OURS) && modeO == modeI))
+			int modeT = tw.GetRawMode(T_THEIRS);
+			int modeB = tw.GetRawMode(T_BASE);
+			if (modeO == 0 && modeT == 0 && modeB == 0)
 			{
-				failingPaths.Put(tw.PathString, ResolveMerger.MergeFailureReason.DIRTY_INDEX);
+				// File is either untracked or new, staged but uncommitted
+				return true;
+			}
+			if (IsIndexDirty())
+			{
 				return false;
 			}
-			int modeT = tw.GetRawMode(T_THEIRS);
 			if (NonTree(modeO) && modeO == modeT && tw.IdEqual(T_OURS, T_THEIRS))
 			{
-				// ours and theirs are equal: it doesn'nt matter
-				// which one we choose. OURS is choosen here.
+				// OURS and THEIRS are equal: it doesn't matter which one we choose.
+				// OURS is chosen.
 				Add(tw.RawPath, ours, DirCacheEntry.STAGE_0);
 				// no checkout needed!
 				return true;
 			}
-			int modeB = tw.GetRawMode(T_BASE);
 			if (NonTree(modeO) && modeB == modeT && tw.IdEqual(T_BASE, T_THEIRS))
 			{
-				// THEIRS was not changed compared to base. All changes must be in
-				// OURS. Choose OURS.
+				// THEIRS was not changed compared to BASE. All changes must be in
+				// OURS. OURS is chosen.
 				Add(tw.RawPath, ours, DirCacheEntry.STAGE_0);
+				// no checkout needed!
 				return true;
 			}
 			if (modeB == modeO && tw.IdEqual(T_BASE, T_OURS))
 			{
-				// OURS was not changed compared to base. All changes must be in
-				// THEIRS. Choose THEIRS.
+				// OURS was not changed compared to BASE. All changes must be in
+				// THEIRS. THEIRS is chosen.
+				// Check worktree before checking out THEIRS
+				if (IsWorktreeDirty())
+				{
+					return false;
+				}
 				if (NonTree(modeT))
 				{
 					DirCacheEntry e = Add(tw.RawPath, theirs, DirCacheEntry.STAGE_0);
@@ -402,7 +410,7 @@ namespace NGit.Merge
 				}
 				else
 				{
-					if ((modeT == 0) && (modeB != 0))
+					if (modeT == 0 && modeB != 0)
 					{
 						// we want THEIRS ... but THEIRS contains the deletion of the
 						// file
@@ -452,16 +460,10 @@ namespace NGit.Merge
 			// and do the content merge
 			if (NonTree(modeO) && NonTree(modeT))
 			{
-				if (!inCore)
+				// Check worktree before modifying files
+				if (IsWorktreeDirty())
 				{
-					// We are going to update the worktree. Make sure the worktree
-					// is not modified
-					if (work != null && (!NonTree(work.EntryRawMode) || work.IsModified(index.GetDirCacheEntry
-						(), true)))
-					{
-						failingPaths.Put(tw.PathString, ResolveMerger.MergeFailureReason.DIRTY_WORKTREE);
-						return false;
-					}
+					return false;
 				}
 				if (!ContentMerge(@base, ours, theirs))
 				{
@@ -470,6 +472,36 @@ namespace NGit.Merge
 				modifiedFiles.AddItem(tw.PathString);
 			}
 			return true;
+		}
+
+		private bool IsIndexDirty()
+		{
+			int modeI = tw.GetRawMode(T_INDEX);
+			int modeO = tw.GetRawMode(T_OURS);
+			// Index entry has to match ours to be considered clean
+			bool isDirty = NonTree(modeI) && !(tw.IdEqual(T_INDEX, T_OURS) && modeO == modeI);
+			if (isDirty)
+			{
+				failingPaths.Put(tw.PathString, ResolveMerger.MergeFailureReason.DIRTY_INDEX);
+			}
+			return isDirty;
+		}
+
+		private bool IsWorktreeDirty()
+		{
+			if (inCore)
+			{
+				return false;
+			}
+			int modeF = tw.GetRawMode(T_FILE);
+			int modeO = tw.GetRawMode(T_OURS);
+			// Worktree entry has to match ours to be considered clean
+			bool isDirty = NonTree(modeF) && !(tw.IdEqual(T_FILE, T_OURS) && modeO == modeF);
+			if (isDirty)
+			{
+				failingPaths.Put(tw.PathString, ResolveMerger.MergeFailureReason.DIRTY_WORKTREE);
+			}
+			return isDirty;
 		}
 
 		/// <exception cref="System.IO.FileNotFoundException"></exception>
@@ -642,14 +674,28 @@ namespace NGit.Merge
 		}
 
 		/// <returns>
-		/// lists paths causing this merge to fail abnormally (not because of
-		/// a conflict). <code>null</code> is returned if this merge didn't
-		/// fail abnormally.
+		/// lists paths causing this merge to fail (not stopped because of a
+		/// conflict). <code>null</code> is returned if this merge didn't
+		/// fail.
 		/// </returns>
 		public virtual IDictionary<string, ResolveMerger.MergeFailureReason> GetFailingPaths
 			()
 		{
 			return (failingPaths.Count == 0) ? null : failingPaths;
+		}
+
+		/// <summary>Returns whether this merge failed (i.e.</summary>
+		/// <remarks>
+		/// Returns whether this merge failed (i.e. not stopped because of a
+		/// conflict)
+		/// </remarks>
+		/// <returns>
+		/// <code>true</code> if a failure occurred, <code>false</code>
+		/// otherwise
+		/// </returns>
+		public virtual bool Failed()
+		{
+			return failingPaths.Count > 0;
 		}
 
 		/// <summary>Sets the DirCache which shall be used by this merger.</summary>

@@ -475,7 +475,7 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			Task task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
-				Document doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column), true);
+				Document doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column));
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {

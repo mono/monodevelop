@@ -122,13 +122,17 @@ namespace MonoDevelop.Ide
 		
 		public static void AddNewMembers (IType type, IEnumerable<IMember> newMembers, string regionName = null, Func<IMember, bool> implementExplicit = null)
 		{
+			IMember firstNewMember = newMembers.FirstOrDefault ();
+			if (firstNewMember == null)
+				return;
 			bool isOpen;
 			var data = TextFileProvider.Instance.GetTextEditorData (type.CompilationUnit.FileName, out isOpen);
 			var parsedDocument = ProjectDomService.GetParsedDocument (type.SourceProjectDom, type.CompilationUnit.FileName);
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
 			
-			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMembers.First ());
+			
+			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, firstNewMember);
 			
 			var generator = CreateCodeGenerator (data);
 			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.CompilationUnit.GetTypeAt (type.Location));
@@ -178,11 +182,14 @@ namespace MonoDevelop.Ide
 				throw new ArgumentNullException ("parsedDocument");
 			if (type == null)
 				throw new ArgumentNullException ("type");
+			
+			// update type from parsed document, since this is always newer.
+			type = parsedDocument.CompilationUnit.GetTypeAt (type.Location) ?? type;
+			
 			List<InsertionPoint> result = new List<InsertionPoint> ();
 			int offset = data.LocationToOffset (type.BodyRegion.Start.Line, type.BodyRegion.Start.Column);
 			if (offset < 0)
 				return result;
-			
 			while (offset < data.Length && data.GetCharAt (offset) != '{') {
 				offset++;
 			}
@@ -281,8 +288,6 @@ namespace MonoDevelop.Ide
 				char ch = doc.GetCharAt (i);
 				if (!char.IsWhiteSpace (ch)) {
 					// case2: next line contains non ws chars.
-					if (line == 39)
-						System.Console.WriteLine (2 + "ch:" + (int)ch);
 					return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
 				}
 			}

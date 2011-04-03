@@ -109,6 +109,20 @@ namespace NGit
 
 		private readonly Ref @ref;
 
+		/// <summary>
+		/// Is this RefUpdate detaching a symbolic ref?
+		/// We need this info since this.ref will normally be peeled of in case of
+		/// detaching a symbolic ref (HEAD for example).
+		/// </summary>
+		/// <remarks>
+		/// Is this RefUpdate detaching a symbolic ref?
+		/// We need this info since this.ref will normally be peeled of in case of
+		/// detaching a symbolic ref (HEAD for example).
+		/// Without this flag we cannot decide whether the ref has to be updated or
+		/// not in case when it was a symbolic ref and the newValue == oldValue.
+		/// </remarks>
+		private bool detachingSymbolicRef;
+
 		/// <summary>Construct a new update operation for the reference.</summary>
 		/// <remarks>
 		/// Construct a new update operation for the reference.
@@ -211,6 +225,13 @@ namespace NGit
 		public virtual ObjectId GetNewObjectId()
 		{
 			return newValue;
+		}
+
+		/// <summary>Tells this RefUpdate that it is actually detaching a symbolic ref.</summary>
+		/// <remarks>Tells this RefUpdate that it is actually detaching a symbolic ref.</remarks>
+		public virtual void SetDetachingSymbolicRef()
+		{
+			detachingSymbolicRef = true;
 		}
 
 		/// <summary>Set the new value the ref will update to.</summary>
@@ -458,7 +479,7 @@ namespace NGit
 			RequireCanDoUpdate();
 			try
 			{
-				return result = UpdateImpl(walk, new _Store_466(this));
+				return result = UpdateImpl(walk, new _Store_484(this));
 			}
 			catch (IOException x)
 			{
@@ -467,9 +488,9 @@ namespace NGit
 			}
 		}
 
-		private sealed class _Store_466 : RefUpdate.Store
+		private sealed class _Store_484 : RefUpdate.Store
 		{
-			public _Store_466(RefUpdate _enclosing) : base(_enclosing)
+			public _Store_484(RefUpdate _enclosing) : base(_enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -536,7 +557,7 @@ namespace NGit
 			}
 			try
 			{
-				return result = UpdateImpl(walk, new _Store_522(this));
+				return result = UpdateImpl(walk, new _Store_540(this));
 			}
 			catch (IOException x)
 			{
@@ -545,9 +566,9 @@ namespace NGit
 			}
 		}
 
-		private sealed class _Store_522 : RefUpdate.Store
+		private sealed class _Store_540 : RefUpdate.Store
 		{
-			public _Store_522(RefUpdate _enclosing) : base(_enclosing)
+			public _Store_540(RefUpdate _enclosing) : base(_enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -660,7 +681,7 @@ namespace NGit
 				}
 				newObj = SafeParse(walk, newValue);
 				oldObj = SafeParse(walk, oldValue);
-				if (newObj == oldObj)
+				if (newObj == oldObj && !detachingSymbolicRef)
 				{
 					return store.Execute(RefUpdate.Result.NO_CHANGE);
 				}

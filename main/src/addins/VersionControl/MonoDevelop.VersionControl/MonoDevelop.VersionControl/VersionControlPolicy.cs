@@ -26,11 +26,12 @@
 //
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.VersionControl
 {
+	[PolicyType ("Version control commit message style")]
 	[DataItem ("VersionControlPolicy")]
 	public class VersionControlPolicy: IEquatable<VersionControlPolicy>
 	{

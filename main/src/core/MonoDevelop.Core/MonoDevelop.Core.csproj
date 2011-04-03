@@ -497,6 +497,7 @@
     <Compile Include="MonoDevelop.Core\FilePath.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\StatsVisitor.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomStats.cs" />
+    <Compile Include="MonoDevelop.Projects.Policies\PolicyTypeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

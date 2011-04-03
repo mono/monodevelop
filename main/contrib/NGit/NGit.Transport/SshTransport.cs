@@ -43,9 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using NGit;
-using NGit.Errors;
 using NGit.Transport;
-using NSch;
 using Sharpen;
 
 namespace NGit.Transport
@@ -60,7 +58,7 @@ namespace NGit.Transport
 		private SshSessionFactory sch;
 
 		/// <summary>The open SSH session</summary>
-		protected internal Session sock;
+		private RemoteSession sock;
 
 		/// <summary>Create a new transport instance.</summary>
 		/// <remarks>Create a new transport instance.</remarks>
@@ -114,42 +112,19 @@ namespace NGit.Transport
 			return sch;
 		}
 
-		/// <summary>Initialize SSH session</summary>
+		/// <summary>Get the default SSH session</summary>
+		/// <returns>a remote session</returns>
 		/// <exception cref="NGit.Errors.TransportException">in case of error with opening SSH session
 		/// 	</exception>
-		protected internal virtual void InitSession()
+		protected internal virtual RemoteSession GetSession()
 		{
 			if (sock != null)
 			{
-				return;
+				return sock;
 			}
 			int tms = GetTimeout() > 0 ? GetTimeout() * 1000 : 0;
-			string user = uri.GetUser();
-			string pass = uri.GetPass();
-			string host = uri.GetHost();
-			int port = uri.GetPort();
-			try
-			{
-				sock = sch.GetSession(user, pass, host, port, GetCredentialsProvider(), local.FileSystem
-					);
-				if (!sock.IsConnected())
-				{
-					sock.Connect(tms);
-				}
-			}
-			catch (JSchException je)
-			{
-				Exception c = je.InnerException;
-				if (c is UnknownHostException)
-				{
-					throw new TransportException(uri, JGitText.Get().unknownHost);
-				}
-				if (c is ConnectException)
-				{
-					throw new TransportException(uri, c.Message);
-				}
-				throw new TransportException(uri, je.Message, je);
-			}
+			sock = sch.GetSession(uri, GetCredentialsProvider(), local.FileSystem, tms);
+			return sock;
 		}
 
 		public override void Close()

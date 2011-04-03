@@ -220,6 +220,8 @@ namespace MonoDevelop.CSharp.Ast
 		
 		public static string NormalizeTypeName (string typeName)
 		{
+			if (typeName == null)
+				return null;
 			int idx = typeName.IndexOf ('`');
 			if (idx > 0) 
 				return typeName.Substring (0, idx);
@@ -342,11 +344,13 @@ namespace MonoDevelop.CSharp.Ast
 			if (!settings.UseNETTypeNames && netToCSharpTypes.ContainsKey (returnType.FullName)) {
 				result.Append (settings.EmitName (returnType, netToCSharpTypes[returnType.FullName]));
 			} else {
-				if (settings.UseFullName) 
+				if (settings.UseFullName && returnType.Namespace != null) 
 					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (returnType.Namespace))));
 				
 				foreach (ReturnTypePart part in returnType.Parts) {
 					if (part.IsGenerated)
+						continue;
+					if (!settings.UseFullName && part != returnType.Parts.LastOrDefault ())
 						continue;
 					if (result.Length > 0)
 						result.Append (settings.EmitName (returnType, "."));

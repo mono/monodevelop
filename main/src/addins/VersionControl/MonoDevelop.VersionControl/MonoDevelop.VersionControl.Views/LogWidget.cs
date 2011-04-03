@@ -281,7 +281,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			string fileName = (string)changedpathstore.GetValue (iter, colPath);
 			int line = diffRenderer.GetSelectedLine (paths[0]);
-			var doc = IdeApp.Workbench.OpenDocument (fileName, line, 0, true);
+			var doc = IdeApp.Workbench.OpenDocument (fileName, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			int i = 1;
 			foreach (var content in doc.Window.SubViewContents) {
 				DiffView diffView = content as DiffView;

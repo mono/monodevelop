@@ -286,16 +286,16 @@ namespace Mono.CSharp
 			existing.Add (type);
 		}
 
-		public void AddAttributes (List<Attribute> attrs, IMemberContext context)
+		public void AddAttribute (Attribute attr, IMemberContext context)
 		{
-			foreach (Attribute a in attrs)
-				a.AttachTo (this, context);
+			attr.AttachTo (this, context);
 
 			if (attributes == null) {
-				attributes = new Attributes (attrs);
+				attributes = new Attributes (attr);
 				return;
 			}
-			attributes.AddAttributes (attrs);
+
+			attributes.AddAttribute (attr);
 		}
 
 		public override TypeContainer AddPartial (TypeContainer nextPart)
@@ -434,6 +434,12 @@ namespace Mono.CSharp
 			if (compiler_generated != null)
 				foreach (var c in compiler_generated)
 					c.EmitType ();
+		}
+
+		internal override void GenerateDocComment (DocumentationBuilder builder)
+		{
+			foreach (var tc in types)
+				tc.GenerateDocComment (builder);
 		}
 
 		public AnonymousTypeClass GetAnonymousType (IList<AnonymousTypeParameter> parameters)

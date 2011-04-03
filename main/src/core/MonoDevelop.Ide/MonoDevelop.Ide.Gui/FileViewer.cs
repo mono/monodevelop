@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class FileViewer
 	{
-		IDisplayBinding binding;
+		IViewDisplayBinding binding;
 		DesktopApplication app;
 		
 		internal FileViewer (DesktopApplication app)
@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui
 			this.app = app;
 		}
 		
-		internal FileViewer (IDisplayBinding binding)
+		internal FileViewer (IViewDisplayBinding binding)
 		{
 			this.binding = binding;
 		}
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui
 		public Document OpenFile (string filePath, string encoding)
 		{
 			if (binding != null)
-				return IdeApp.Workbench.OpenDocument (filePath, -1, -1, true, encoding, binding);
+				return IdeApp.Workbench.OpenDocument (filePath, -1, -1, OpenDocumentOptions.Default, encoding, binding);
 			else {
 				app.Launch (filePath);
 				return null;

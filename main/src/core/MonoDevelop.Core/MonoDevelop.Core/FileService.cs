@@ -241,9 +241,13 @@ namespace MonoDevelop.Core
 		
 		public static void NotifyFileRemoved (string fileName)
 		{
-			Debug.Assert (!String.IsNullOrEmpty (fileName));
+			NotifyFilesRemoved (new FilePath[] { fileName });
+		}
+		
+		public static void NotifyFilesRemoved (IEnumerable<FilePath> files)
+		{
 			try {
-				OnFileRemoved (new FileEventArgs (fileName, false));
+				OnFileRemoved (new FileEventArgs (files, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File remove notification failed", ex);
 			}

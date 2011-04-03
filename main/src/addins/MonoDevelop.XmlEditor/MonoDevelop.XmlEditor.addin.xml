@@ -139,10 +139,6 @@
 		<Formatter mimeType="application/xml" class="MonoDevelop.Xml.Formatting.XmlFormatter" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
-		<PolicyType class="MonoDevelop.Xml.Formatting.XmlFormattingPolicy" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="MonoXmlPolicy.xml" />
 	</Extension>

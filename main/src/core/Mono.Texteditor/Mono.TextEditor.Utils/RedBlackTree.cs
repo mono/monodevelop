@@ -275,7 +275,30 @@ namespace Mono.TextEditor.Utils
 		{
 			if (node.Left != null && node.Right != null) {
 				IRedBlackTreeNode outerLeft = node.Right.GetOuterLeft ();
-				Remove (outerLeft);
+				InternalRemove (outerLeft);
+				Replace (node, outerLeft);
+				
+				outerLeft.Color = node.Color;
+				outerLeft.Left = node.Left;
+				if (outerLeft.Left != null)
+					outerLeft.Left.Parent = outerLeft;
+				
+				outerLeft.Right = node.Right;
+				if (outerLeft.Right != null)
+					outerLeft.Right.Parent = outerLeft;
+				outerLeft.UpdateAugmentedData ();
+				OnNodeRemoved (new RedBlackTreeNodeEventArgs ((T)node));
+				return;
+			}
+			InternalRemove (node);
+			OnNodeRemoved (new RedBlackTreeNodeEventArgs ((T)node));
+		}
+		
+		void InternalRemove (IRedBlackTreeNode node)
+		{
+			if (node.Left != null && node.Right != null) {
+				IRedBlackTreeNode outerLeft = node.Right.GetOuterLeft ();
+				InternalRemove (outerLeft);
 				Replace (node, outerLeft);
 				
 				outerLeft.Color = node.Color;
@@ -303,6 +326,15 @@ namespace Mono.TextEditor.Utils
 				}
 			}
 		}
+
+		protected virtual void OnNodeRemoved (RedBlackTreeNodeEventArgs e)
+		{
+			EventHandler<RedBlackTreeNodeEventArgs> handler = this.NodeRemoved;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler<RedBlackTreeNodeEventArgs> NodeRemoved;
 
 		static RedBlackColor GetColorSafe (IRedBlackTreeNode node)
 		{

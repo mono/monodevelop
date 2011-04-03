@@ -1362,6 +1362,15 @@ namespace MonoDevelop.Debugger
 		}
 		static List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
 		public IEnumerable<ICompletionKeyHandler> KeyHandler { get { return keyHandler;} }
+
+		public void OnCompletionListClosed (EventArgs e)
+		{
+			EventHandler handler = this.CompletionListClosed;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler CompletionListClosed;
 	}
 	
 	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData

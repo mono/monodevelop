@@ -30,6 +30,7 @@ using System;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -92,6 +93,7 @@ namespace MonoDevelop.Ide.StandardHeader
 		}
 	}
 	
+	[PolicyType ("Standard header for new files")]
 	[DataItem ("StandardHeader")]
 	public class StandardHeaderPolicy : IEquatable<StandardHeaderPolicy>
 	{

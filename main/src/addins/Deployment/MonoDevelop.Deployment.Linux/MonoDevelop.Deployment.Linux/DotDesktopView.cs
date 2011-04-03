@@ -19,6 +19,12 @@ namespace MonoDevelop.Deployment.Linux
 			widget.DesktopEntry = entry;
 		}
 		
+		public override string TabPageLabel {
+			get {
+				return MonoDevelop.Core.GettextCatalog.GetString ("Desktop Entry");
+			}
+		}
+		
 		public override void Load (string fileName)
 		{
 			ContentName = fileName;

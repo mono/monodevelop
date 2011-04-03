@@ -28,38 +28,39 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Database.Query
 {
 	
-	public class SqlQueryDisplayBinding : DisplayBinding
+	public class SqlQueryDisplayBinding : IDisplayBinding
 	{
-		public override string Name {
+		public string Name {
 			get {
 				return GettextCatalog.GetString ("Query Editor");
 			}
 		}
 
-		public override bool CanCreateContentForUri (string uri)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return uri.ToLower ().EndsWith (".sql");
+			return fileName.IsNotNull && fileName.HasExtension (".sql");
 		}
 		
-		public override IViewContent CreateContentForUri (string uri)
+		public IViewContent CreateContentForFile (string uri)
 		{
 			return new SqlQueryView ();
 		}
 		
-		public override bool CanCreateContentForMimeType (string mimetype)
+		public bool CanHandleMimeType (string mimetype)
 		{
 			return mimetype == "text/x-sql";
 		}
 
-		public override IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
+		public IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
 			return new SqlQueryView ();
 		}
 		
-		public override bool CanUseAsDefault { get { return false; } }
+		public bool CanUseAsDefault { get { return false; } }
 	}
 }

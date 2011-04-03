@@ -123,6 +123,7 @@
     <Compile Include="XcodeIntegration\XcodeProjectTracker.cs" />
     <Compile Include="ObjCIntegration\NSObjectInfoService.cs" />
     <Compile Include="ObjCIntegration\NSObjectProjectInfo.cs" />
+    <Compile Include="XcodeInterfaceBuilderDisplayBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

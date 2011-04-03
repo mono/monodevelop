@@ -1981,7 +1981,7 @@ namespace Mono.TextEditor
 			restart:
 			//			int caretOffset = Caret.Offset;
 			foreach (FoldSegment folding in foldings) {
-				int foldOffset = folding.StartLine.Offset + folding.Column;
+				int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 				if (foldOffset < offset)
 					continue;
 
@@ -2067,7 +2067,7 @@ namespace Mono.TextEditor
 			int logicalRulerColumn = line.GetLogicalColumn(textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
 			
 			foreach (FoldSegment folding in foldings) {
-				int foldOffset = folding.StartLine.Offset + folding.Column;
+				int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 				if (foldOffset < offset)
 					continue;
 
@@ -2268,7 +2268,7 @@ namespace Mono.TextEditor
 				int logicalRulerColumn = line.GetLogicalColumn(margin.textEditor.GetTextEditorData(), margin.textEditor.Options.RulerColumn);
 				foreach (FoldSegment folding in foldings.Where(f => f.IsFolded))
 				{
-					int foldOffset = folding.StartLine.Offset + folding.Column;
+					int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 					if (foldOffset < offset)
 						continue;
 					layoutWrapper = margin.CreateLinePartLayout(mode, line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);

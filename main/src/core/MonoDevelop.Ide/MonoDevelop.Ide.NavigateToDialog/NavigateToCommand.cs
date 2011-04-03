@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 			if (locations != null) {
 				foreach (var loc in locations)
-					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
+					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column);
 			}
 		}
 		
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 			if (locations != null) {
 				foreach (var loc in locations)
-					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
+					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column);
 			}
 		}
 		
@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 			if (locations != null) {
 				foreach (var loc in locations)
-					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
+					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column);
 			}
 		}
 		

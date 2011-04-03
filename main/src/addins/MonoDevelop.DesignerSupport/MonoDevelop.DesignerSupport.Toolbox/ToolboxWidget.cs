@@ -203,7 +203,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					messageLayout.SetText (CustomMessage);
 				else
 					messageLayout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("There are no tools available for the current document."));
-				draw.DrawLayout (Style.TextGC (StateType.Normal), Allocation.Width * 1 / 6 , 12, messageLayout);
+				draw.DrawLayout (Style.TextGC (StateType.Normal), Allocation.Width * 1 / 6, 12, messageLayout);
 				messageLayout.Dispose ();
 				return true;
 			}
@@ -219,8 +219,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (category == SelectedItem) {
 					draw.DrawRectangle (Style.BaseGC (StateType.Selected), 
 					                   true, 
-					                   new Gdk.Rectangle (xpos,
-					                                      ypos,
+					                   new Gdk.Rectangle (xpos, 
+					                                      ypos, 
 					                                      itemDimension.Width, 
 					                                      itemDimension.Height));
 				} else {
@@ -231,15 +231,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					cr.RelLineTo (-itemDimension.Width, 0);
 					cr.RelLineTo (0, -itemDimension.Height);
 					cr.ClosePath ();
-					Cairo.Gradient pat = new Cairo.LinearGradient (xpos, ypos, xpos, ypos + itemDimension.Height);
-					Cairo.Color ccol = Convert (Style.Mid (StateType.Normal));
-					ccol.A = 0.2;
-					pat.AddColorStop (0, ccol);
-					ccol.A = 1;
-					pat.AddColorStop (1, ccol);
-					cr.Pattern = pat;
-					cr.FillPreserve ();
-					
+					using (var pat = new Cairo.LinearGradient (xpos, ypos, xpos, ypos + itemDimension.Height)) {
+						Cairo.Color ccol = Convert (Style.Mid (StateType.Normal));
+						ccol.A = 0.2;
+						pat.AddColorStop (0, ccol);
+						ccol.A = 1;
+						pat.AddColorStop (1, ccol);
+						cr.Pattern = pat;
+						cr.FillPreserve ();
+					}
 				}
 				DrawFoldSegment (draw, xpos + 2, ypos + (itemDimension.Height - foldSegmentHeight) / 2, foldSegmentHeight, foldSegmentHeight, category.IsExpanded, category == mouseOverItem && mouseX < xpos + 2 + 12);
 				headerLayout.SetText (category.Text);

@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui
 			Name = "";
 		}
 		
-		public override void Load(string fileName)
+		public override void Load (string fileName)
 		{
 		}
 		

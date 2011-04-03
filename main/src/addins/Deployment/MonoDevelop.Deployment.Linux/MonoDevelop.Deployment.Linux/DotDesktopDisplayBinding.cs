@@ -1,37 +1,32 @@
 
 using System;
 using System.IO;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 
-
 namespace MonoDevelop.Deployment.Linux
 {
-	public class DotDesktopDisplayBinding: DisplayBinding
+	public class DotDesktopDisplayBinding: IViewDisplayBinding
 	{
-		public override bool CanCreateContentForUri (string fileName)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return fileName.EndsWith (".desktop");
+			return (fileName.IsNotNull && fileName.HasExtension (".desktop"))
+				|| (mimeType != null && mimeType == "application/x-desktop");
 		}
 		
-		public override bool CanCreateContentForMimeType (string mimetype)
-		{
-			return mimetype == "application/x-desktop";
-		}
-
-		public override IViewContent CreateContentForUri (string fileName)
-		{
-			return new DotDesktopView ();
-		}
-		
-		public override IViewContent CreateContentForMimeType (string mimeType, Stream content)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new DotDesktopView ();
 		}
 
-		public override string Name {
-			get { return "Desktop Entry"; }
+		public string Name {
+			get { return MonoDevelop.Core.GettextCatalog.GetString ("Desktop Entry"); }
+		}
+
+		public bool CanUseAsDefault {
+			get { return true; }
 		}
 	}
 }

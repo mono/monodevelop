@@ -30,34 +30,43 @@ using System.IO;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Desktop;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Codons
+namespace MonoDevelop.Ide.Gui
 {
-	public interface IDisplayBinding : IBaseDisplayBinding
+	public interface IDisplayBinding
 	{
-		bool CanCreateContentForMimeType (string mimeType);
-		
 		/// <summary>
-		/// 
+		/// Whether this instance can handle the specified item. ownerProject may be null, and either 
+		/// fileName or mimeType may be null, but not both.
 		/// </summary>
-		/// <param name="mimeType">
-		/// A <see cref="System.String"/>
-		/// </param>
-		/// <param name="content">
-		/// A <see cref="System.IO.Stream"/> may be null. If it's null the contents are loaded with an ordinary "Load" call.
-		/// </param>
-		/// <returns>
-		/// A <see cref="IViewContent"/>
-		/// </returns>
-		IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content);
-		
-		bool CanCreateContentForUri (string uri);
-		IViewContent CreateContentForUri (string uri);
+		bool CanHandle (FilePath fileName, string mimeType, Project ownerProject);
 		
 		/// <summary>
 		/// Whether the display binding can be used as the default handler for the content types
 		/// that it handles. If this is false, the binding is only used when the user explicitly picks it.
 		/// </summary>
 		bool CanUseAsDefault { get; }
+	}
+	
+	///<summary>A display binding that opens a new view within the workspace.</summary>
+	public interface IViewDisplayBinding : IDisplayBinding
+	{
+		IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject);
+		string Name { get; }
+	}
+	
+	///<summary>A display binding that opens an external application.</summary>
+	public interface IExternalDisplayBinding : IDisplayBinding
+	{
+		DesktopApplication GetApplication (FilePath fileName, string mimeType, Project ownerProject);
+	}
+	
+	///<summary>A display binding that attaches to an existing view in the workspace.</summary>
+	public interface IAttachableDisplayBinding
+	{
+		bool CanAttachTo (IViewContent content);
+		IAttachableViewContent CreateViewContent (IViewContent viewContent);
 	}
 }

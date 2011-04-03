@@ -56,6 +56,12 @@ namespace MonoDevelop.DesignerSupport
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 		}
 		
+		public override string TabPageLabel {
+			get {
+				return content.TabPageLabel;
+			}
+		}
+		
 		public Gtk.Widget TopBar {
 			get {
 				return topBar;
@@ -100,6 +106,11 @@ namespace MonoDevelop.DesignerSupport
 		{
 			ContentName = fileName;
 			content.Load (fileName);
+		}
+		
+		public override void LoadNew (System.IO.Stream content, string mimeType)
+		{
+			this.content.LoadNew (content, mimeType);
 		}
 		
 		public override Gtk.Widget Control {

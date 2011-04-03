@@ -290,59 +290,22 @@ namespace MonoDevelop.MonoDroid
 				buildAction == MonoDroidBuildAction.AndroidResource;
 		}
 		
-		// Disable this as we are not gonna use it for now.
-		//bool HackGetUserAssemblyPaths = false;
-		
-		//HACK: base.GetUserAssemblyPaths depends on GetOutputFileName being an assembly
-		new IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
-		{
-			try {
-				//HackGetUserAssemblyPaths = true;
-				return base.GetUserAssemblyPaths (configuration);
-			} finally {
-				//HackGetUserAssemblyPaths = false;
-			}
-		}
-
 		protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			// Avoid a 'build' needed error by returning the last build time of the newest resource/asset/java/native file
 			var baseLastWriteTime = base.OnGetLastBuildTime (configuration);
-			var lastWriteTime = Files.Where (file => IsAndroidSpecialFile (file)).
-				Max (file => File.Exists (file.FilePath) ? File.GetLastWriteTime (file.FilePath) : DateTime.MinValue);
+
+			var lastWriteTime = DateTime.MinValue;
+			var specialFiles = Files.Where (file => IsAndroidSpecialFile (file));
+			foreach (var file in specialFiles) {
+				var lastFileWriteTime = File.Exists (file.FilePath) ? File.GetLastWriteTime (file.FilePath) : DateTime.MinValue;
+				if (lastFileWriteTime > lastWriteTime)
+					lastWriteTime = lastFileWriteTime;
+			}
 
 			return lastWriteTime > baseLastWriteTime ? lastWriteTime : baseLastWriteTime;
 		}
 
-		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
-		{
-			if (!IsAndroidApplication)
-				return base.GetOutputFileName (configuration);
-
-			// Don't return the apk file here,
-			// as it is produced in the sign step,
-			// not in the build step anymore (for now).
-			return base.GetOutputFileName (configuration);
-		}
-		
-		protected override bool CheckNeedsBuild (ConfigurationSelector configuration)
-		{
-			var apkBuildTime = GetLastBuildTime (configuration);
-			if (apkBuildTime == DateTime.MinValue)
-				return true;
-			
-			var dllBuildTime = base.GetLastBuildTime (configuration);
-			if (dllBuildTime == DateTime.MinValue || dllBuildTime > apkBuildTime)
-				return true;
-			
-			if (base.CheckNeedsBuild (configuration))
-				return true;
-			
-			// Same as in GetOutputFileName: we removed the apk checks as the apk file
-			// is now generated in the sign step, not in the build step.
-			return false;
-		}
-		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
 		                                                            DotNetProjectConfiguration configuration)
 		{
@@ -367,12 +330,6 @@ namespace MonoDevelop.MonoDroid
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
 			
-			if (NeedsBuilding (configSel)) {
-				monitor.ReportError (
-					GettextCatalog.GetString ("Mono for Android projects must be built before uploading"), null);
-				return;
-			}
-			
 			IConsole console = null;
 			var opMon = new AggregatedOperationMonitor (monitor);
 			try {
@@ -395,6 +352,9 @@ namespace MonoDevelop.MonoDroid
 				
 				//user cancelled device selection
 				if (device == null)
+					return;
+				
+				if (!device.IsEmulator && MonoDroidFramework.CheckTrial ())
 					return;
 				
 				opMon.AddOperation (uploadOp);
@@ -421,7 +381,7 @@ namespace MonoDevelop.MonoDroid
 				opMon.AddOperation (propOp);
 				propOp.WaitForCompleted ();
 				if (!propOp.Success) {
-					monitor.ReportError (GettextCatalog.GetString ("Count not clear debug settings on device"),
+					monitor.ReportError (GettextCatalog.GetString ("Could not clear debug settings on device"),
 						propOp.Error);
 					return;
 				}

@@ -167,6 +167,10 @@
 		<ItemSet id = "SelectActiveRuntime" _label = "Active Runtime" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveRuntime" />
 		</ItemSet>
+		<SeparatorItem id = "PolicyToolsStart" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ApplyPolicy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportPolicy" />
+		<SeparatorItem id = "PolicyToolsEnd" />
 		<SeparatorItem id = "OptionsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions" />

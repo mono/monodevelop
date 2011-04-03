@@ -73,6 +73,7 @@ namespace MonoDevelop.NUnit
 				}
 			} catch {
 			}
+			base.Dispose ();
 		}
 		
 		public override bool HasTests {

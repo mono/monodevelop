@@ -197,16 +197,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				ProjectDomService.SpecialCommentTagsChanged -= OnSpecialTagsChanged;
 			disposed = true;
 			Counters.LiveDatabases--;
-		}
-
-		~SerializationCodeCompletionDatabase ()
-		{
+			
 			if (tempDataFile != null) {
 				File.Delete (tempDataFile);
 				tempDataFile = null;
 			}
 		}
-		
+
 		public string DataFile {
 			get { return dataFile; }
 		}
@@ -685,9 +682,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			classEntries = new Dictionary<string, List<ClassEntry>> ();
 			classEntriesIgnoreCase = new Dictionary<string, List<ClassEntry>> (StringComparer.InvariantCultureIgnoreCase);
 			files = new Dictionary<string, FileEntry> ();
+			typeEntries.Clear ();
+			typeEntriesIgnoreCase.Clear ();
 			references.Clear ();
+			namespaceEntries.Clear ();
+			namespaceEntriesIgnoreCase.Clear ();
 			headers = new Hashtable ();
 			unresolvedSubclassTable = new Hashtable ();
+			globalAttributes = null;
 		}
 		
 		public IType GetClass (string typeName, IList<IReturnType> genericArguments, bool caseSensitive)

@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public class SegmentTree<T> : ISegmentTree where T : TreeSegment
 	{
-		readonly RedBlackTree<T> tree = new RedBlackTree<T> ();
+		internal readonly RedBlackTree<T> tree = new RedBlackTree<T> ();
 		
 		public int Count {
 			get {
@@ -84,7 +84,6 @@ namespace Mono.TextEditor
 			}
 			
 			int delta = (e.Value != null ? e.Value.Length : 0) - e.Count;
-
 			foreach (var segment in GetSegmentsOverlapping (e.Offset, e.Count)) {
 				if (segment.Offset <= e.Offset) {
 					if (segment.EndOffset >= e.Offset + e.Count) {
@@ -238,7 +237,7 @@ namespace Mono.TextEditor
 				}
 			
 				if (node.DistanceToMaxEnd < nodeStart) 
-					yield break;
+					continue;
 			
 				if (node.left != null)
 					intervalStack.Push (new Interval (node.left, interval.start, interval.end));

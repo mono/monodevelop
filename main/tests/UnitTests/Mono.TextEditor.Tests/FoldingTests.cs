@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests
@@ -60,7 +61,7 @@ namespace Mono.TextEditor.Tests
 					foldSegments.Push (segment);
 				} else if (ch == ']' && foldSegments.Count > 0) {
 					FoldSegment segment = foldSegments.Pop ();
-					segment.Length = i - segment.Offset + 1;
+					segment.Length = i - segment.Offset;
 					result.Add (segment);
 				}
 			}
@@ -141,6 +142,34 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (25, document.LogicalToVisualLine (25));
 		}
 		
+		/// <summary>
+		/// Bug 682466 - Rendering corruption and jumping in text editor
+		/// </summary>
+		[Test()]
+		public void TestBug682466 ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"0
+1
+2
++[3
+4
+5
+6]
+7
+8
+9
+10";
+			var segments = GetFoldSegments (document);
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (true, document.FoldSegments.FirstOrDefault ().IsFolded);
+			segments = GetFoldSegments (document);
+			segments[0].IsFolded = false;
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (5, document.LogicalToVisualLine (8));
+		}
+		
 		[Test()]
 		public void TestLogicalToVisualLine ()
 		{
@@ -168,5 +197,69 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (13, document.VisualToLogicalLine (5));
 			Assert.AreEqual (18, document.VisualToLogicalLine (8));
 		}
+		
+		[Test()]
+		public void TestCaretRight ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"1234567890
+1234567890
+123$4+[567890
+1234]567890
+1234567890");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (new DocumentLocation (4, 6), data.Caret.Location);
+		}
+		
+		[Test()]
+		public void TestCaretLeft ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"1234567890
+1234567890
+1234+[567890
+1234]5$67890
+1234567890");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (new DocumentLocation (4, 6), data.Caret.Location);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
+		}
+		
+		
+		[Test()]
+		public void TestUpdateFoldSegmentBug2 ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[0
+1
++[2
+3]
+4
++[5
+6]
+7
+8
+9
+10
+11
+12
+13]
+14
+15";
+			var segments = GetFoldSegments (document);
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (10, document.VisualToLogicalLine (8));
+			int start = document.GetLine (2).Offset;
+			int end = document.GetLine (8).Offset;
+			((IBuffer)document).Remove (start, end - start);
+			Assert.AreEqual (10, document.LogicalToVisualLine (10));
+		}
+
 	}
 }

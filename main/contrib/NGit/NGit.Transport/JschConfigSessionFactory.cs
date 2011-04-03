@@ -41,8 +41,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using NGit;
+using NGit.Errors;
 using NGit.Transport;
 using NGit.Util;
 using NSch;
@@ -68,7 +71,7 @@ namespace NGit.Transport
 	/// <see cref="NSch.UserInfo">NSch.UserInfo</see>
 	/// to the session.
 	/// </remarks>
-	public abstract class SshConfigSessionFactory : SshSessionFactory
+	public abstract class JschConfigSessionFactory : SshSessionFactory
 	{
 		private readonly IDictionary<string, JSch> byIdentityFile = new Dictionary<string
 			, JSch>();
@@ -77,54 +80,78 @@ namespace NGit.Transport
 
 		private OpenSshConfig config;
 
-		/// <exception cref="NSch.JSchException"></exception>
-		public override Session GetSession(string user, string pass, string host, int port
-			, CredentialsProvider credentialsProvider, FS fs)
+		/// <exception cref="NGit.Errors.TransportException"></exception>
+		public override RemoteSession GetSession(URIish uri, CredentialsProvider credentialsProvider
+			, FS fs, int tms)
 		{
 			lock (this)
 			{
-				if (config == null)
+				string user = uri.GetUser();
+				string pass = uri.GetPass();
+				string host = uri.GetHost();
+				int port = uri.GetPort();
+				try
 				{
-					config = OpenSshConfig.Get(fs);
+					if (config == null)
+					{
+						config = OpenSshConfig.Get(fs);
+					}
+					OpenSshConfig.Host hc = config.Lookup(host);
+					host = hc.GetHostName();
+					if (port <= 0)
+					{
+						port = hc.GetPort();
+					}
+					if (user == null)
+					{
+						user = hc.GetUser();
+					}
+					Session session = CreateSession(hc, user, host, port, fs);
+					if (pass != null)
+					{
+						session.SetPassword(pass);
+					}
+					string strictHostKeyCheckingPolicy = hc.GetStrictHostKeyChecking();
+					if (strictHostKeyCheckingPolicy != null)
+					{
+						session.SetConfig("StrictHostKeyChecking", strictHostKeyCheckingPolicy);
+					}
+					string pauth = hc.GetPreferredAuthentications();
+					if (pauth != null)
+					{
+						session.SetConfig("PreferredAuthentications", pauth);
+					}
+					if (credentialsProvider != null && (!hc.IsBatchMode() || !credentialsProvider.IsInteractive
+						()))
+					{
+						session.SetUserInfo(new CredentialsProviderUserInfo(session, credentialsProvider)
+							);
+					}
+					Configure(hc, session);
+					if (!session.IsConnected())
+					{
+						session.Connect(tms);
+					}
+					return new JschSession(session, uri);
 				}
-				OpenSshConfig.Host hc = config.Lookup(host);
-				host = hc.GetHostName();
-				if (port <= 0)
+				catch (JSchException je)
 				{
-					port = hc.GetPort();
+					Exception c = je.InnerException;
+					if (c is UnknownHostException)
+					{
+						throw new TransportException(uri, JGitText.Get().unknownHost);
+					}
+					if (c is ConnectException)
+					{
+						throw new TransportException(uri, c.Message);
+					}
+					throw new TransportException(uri, je.Message, je);
 				}
-				if (user == null)
-				{
-					user = hc.GetUser();
-				}
-				Session session = CreateSession(hc, user, host, port, fs);
-				if (pass != null)
-				{
-					session.SetPassword(pass);
-				}
-				string strictHostKeyCheckingPolicy = hc.GetStrictHostKeyChecking();
-				if (strictHostKeyCheckingPolicy != null)
-				{
-					session.SetConfig("StrictHostKeyChecking", strictHostKeyCheckingPolicy);
-				}
-				string pauth = hc.GetPreferredAuthentications();
-				if (pauth != null)
-				{
-					session.SetConfig("PreferredAuthentications", pauth);
-				}
-				if (credentialsProvider != null && (!hc.IsBatchMode() || !credentialsProvider.IsInteractive
-					()))
-				{
-					session.SetUserInfo(new CredentialsProviderUserInfo(session, credentialsProvider)
-						);
-				}
-				Configure(hc, session);
-				return session;
 			}
 		}
 
-		/// <summary>Create a new JSch session for the requested address.</summary>
-		/// <remarks>Create a new JSch session for the requested address.</remarks>
+		/// <summary>Create a new remote session for the requested address.</summary>
+		/// <remarks>Create a new remote session for the requested address.</remarks>
 		/// <param name="hc">host configuration</param>
 		/// <param name="user">login to authenticate as.</param>
 		/// <param name="host">server name to connect to.</param>

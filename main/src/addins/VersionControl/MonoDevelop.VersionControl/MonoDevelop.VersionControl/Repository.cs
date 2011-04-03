@@ -11,13 +11,15 @@ using System.Linq;
 namespace MonoDevelop.VersionControl
 {
 	[DataItem (FallbackType=typeof(UnknownRepository))]
-	public abstract class Repository
+	public abstract class Repository: IDisposable
 	{
 		string name;
 		VersionControlSystem vcs;
 		
 		[ItemProperty ("VcsType")] 
 		string vcsName;
+
+		int references;
 		
 		public event EventHandler NameChanged;
 		
@@ -25,7 +27,7 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
-		public Repository (VersionControlSystem vcs)
+		public Repository (VersionControlSystem vcs): this ()
 		{
 			VersionControlSystem = vcs;
 		}
@@ -42,6 +44,21 @@ namespace MonoDevelop.VersionControl
 			Repository res = VersionControlSystem.CreateRepositoryInstance ();
 			res.CopyConfigurationFrom (this);
 			return res;
+		}
+		
+		internal void AddRef ()
+		{
+			references++;
+		}
+		
+		internal void Unref ()
+		{
+			if (--references == 0)
+				Dispose ();
+		}
+		
+		public virtual void Dispose ()
+		{
 		}
 		
 		// Display name of the repository
@@ -134,15 +151,9 @@ namespace MonoDevelop.VersionControl
 		// Returns the versioning status of a file or directory
 		public VersionInfo GetVersionInfo (FilePath localPath, bool getRemoteStatus)
 		{
-			try {
 			VersionInfo vi = OnGetVersionInfo (new FilePath[] { localPath }, getRemoteStatus).Single ();
-				vi.Init (this);
-				return vi;
-			} catch {
-				Console.WriteLine ("pp:");
-				VersionInfo vi = OnGetVersionInfo (new FilePath[] { localPath }, getRemoteStatus).Single ();
-				throw;
-			}
+			vi.Init (this);
+			return vi;
 		}
 		
 		/// <summary>

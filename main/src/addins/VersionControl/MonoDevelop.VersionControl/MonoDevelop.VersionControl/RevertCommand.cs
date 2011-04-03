@@ -63,11 +63,11 @@ namespace MonoDevelop.VersionControl
 				Gtk.Application.Invoke (delegate {
 					foreach (VersionControlItem item in items) {
 						if (!item.IsDirectory) {
+							FileService.NotifyFileChanged (item.Path);
 							// Reload reverted files
 							Document doc = IdeApp.Workbench.GetDocument (item.Path);
 							if (doc != null && System.IO.File.Exists (item.Path))
 								doc.Reload ();
-							FileService.NotifyFileChanged (item.Path);
 						}
 					}
 					VersionControlService.NotifyFileStatusChanged (items);

@@ -172,7 +172,7 @@ namespace MonoDevelop.Gettext
 					lineNr = 1 + int.Parse (line);
 				} catch {
 				}
-				IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
+				IdeApp.Workbench.OpenDocument (file, lineNr, 1);
 			};
 			this.notebookTranslated.RemovePage (0);
 			this.searchEntryFilter.Entry.Text = "";

@@ -75,6 +75,7 @@
     </Reference>
     <Reference Include="MacPlatform, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
       <HintPath>..\..\..\main\build\AddIns\MacPlatform.dll</HintPath>
     </Reference>
   </ItemGroup>

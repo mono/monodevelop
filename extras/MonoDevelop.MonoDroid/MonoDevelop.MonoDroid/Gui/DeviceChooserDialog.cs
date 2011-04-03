@@ -38,6 +38,7 @@ namespace MonoDevelop.MonoDroid.Gui
 	{	
 		ListStore store = new ListStore (typeof (object));
 		bool destroyed;
+		bool isTrial;
 		
 		public DeviceChooserDialog ()
 		{
@@ -100,6 +101,44 @@ namespace MonoDevelop.MonoDroid.Gui
 					});
 				});
 			};
+			
+			isTrial = MonoDroidFramework.IsTrial;
+			
+			if (isTrial) {
+				var ib = new MonoDevelop.Components.InfoBar ();
+				var img = new Image (typeof (DeviceChooserDialog).Assembly, "information.png");
+				img.SetAlignment (0.5f, 0.5f);
+				ib.PackEnd (img, false, false, 0);
+				var msg = GettextCatalog.GetString ("Trial version only supports the emulator");
+				ib.MessageArea.Add (new Gtk.Label (msg) {
+					Yalign = 0.5f,
+					Xalign = 0f,
+					Style = ib.Style,
+				});
+				string buyMessage;
+				if (PropertyService.IsMac) { 
+					buyMessage = GettextCatalog.GetString ("Buy Full Version");
+				} else {
+					buyMessage = GettextCatalog.GetString ("Activate");
+				}
+				var buyButton = new Button (buyMessage);
+				buyButton.Clicked += delegate {
+					if (MonoDroidFramework.Activate ())
+						UnTrialify ();
+					};
+				ib.ActionArea.Add (buyButton);
+				ib.ShowAll ();
+				bannerPlaceholder.Add (ib);
+			}
+		}
+		
+		void UnTrialify ()
+		{
+			isTrial = false;
+			var child = bannerPlaceholder.Child;
+			bannerPlaceholder.Remove (child);
+			child.Destroy ();
+			OnDevicesUpdated (null, null);
 		}
 		
 		protected override void OnDestroyed ()
@@ -163,10 +202,10 @@ namespace MonoDevelop.MonoDroid.Gui
 				return;
 			
 			var device = (DisplayDevice) store.GetValue (iter, 0);
-			if (device.Device != null) {
+			if (device.Device != null && (!isTrial || device.VirtualDevice != null)) {
 				buttonOk.Sensitive = true;
 				Device = device.Device;
-			} else {
+			} else if (device.VirtualDevice != null) {
 				startEmulatorButton.Sensitive = true;
 			}
 		}
@@ -177,8 +216,24 @@ namespace MonoDevelop.MonoDroid.Gui
 			var device = (DisplayDevice) store.GetValue (iter, 0);
 			var txtCell = (CellRendererText) cell;
 			
-			txtCell.Markup = string.Format ("<span color=\"#{0}\">{1}\n    {2}</span>",
-				device.Device != null && device.Device.IsOnline ? "000000" : "444444",
+			TreeIter selIter;
+			bool selected = false;
+			if (deviceListTreeView.Selection.GetSelected (out selIter))
+				selected = selIter.Equals (iter);
+			
+			string color;
+			if (selected) {
+				color = null;
+			} else if (device.Device == null || !device.Device.IsOnline) {
+				color = "#777777";
+			} else if (isTrial && device.VirtualDevice == null) {
+				color = "#000088";
+			} else {
+				color = "#000000";
+			}
+			txtCell.Foreground = color;
+			
+			txtCell.Markup = string.Format ("{0}\n    {1}",
 				GLib.Markup.EscapeText (device.GetName ()),
 				device.GetStatus ());
 		}
@@ -202,7 +257,7 @@ namespace MonoDevelop.MonoDroid.Gui
 				if (VirtualDevice != null) {
 					if (Device != null)
 						return string.Format ("{0} ({1})", VirtualDevice.Name, Device.ID);
-					return VirtualDevice.Name;
+					return string.Format ("{0} (emulator)", VirtualDevice.Name);
 				}
 				return Device.ID;
 			}

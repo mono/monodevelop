@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -36,6 +37,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		Windows = 3 // '\r\n'
 	}
 	
+	[PolicyType ("Text file formatting")]
 	public sealed class TextStylePolicy : IEquatable<TextStylePolicy>
 	{
 		public TextStylePolicy (int fileWidth, int tabWidth, bool tabsToSpaces, bool noTabsAfterNonTabs, bool removeTrailingWhitespace, EolMarker eolMarker)

@@ -156,8 +156,6 @@ namespace MonoDevelop.VersionControl.Views
 				infoGC.RgbFgColor = widget.Style.Text (StateType.Normal).AddLight (0.2);
 				
 				Cairo.Context ctx = CairoHelper.Create (window);
-				Gdk.Color bgColor = new Gdk.Color (0,0,0);
-				
 				
 				// Rendering is done in two steps:
 				// 1) Get a list of blocks to render
@@ -197,7 +195,6 @@ namespace MonoDevelop.VersionControl.Views
 						cline++;
 					
 					BlockType type;
-					bool hasBg = false;
 					switch (tag) {
 						case '-': type = BlockType.Removed; break;
 						case '+': type = BlockType.Added; break;
@@ -448,11 +445,12 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.Fill ();
 			
 			ctx.Rectangle (markerx, y, width - markerx, height);
-			Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x + width, y);
-			pat.AddColorStop (0, color.AddLight (0.21).ToCairoColor ());
-			pat.AddColorStop (1, color.AddLight (0.3).ToCairoColor ());
-			ctx.Pattern = pat;
-			ctx.Fill ();
+			using (Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x + width, y)) {
+				pat.AddColorStop (0, color.AddLight (0.21).ToCairoColor ());
+				pat.AddColorStop (1, color.AddLight (0.3).ToCairoColor ());
+				ctx.Pattern = pat;
+				ctx.Fill ();
+			}
 		}
 		
 		void DrawChangeSymbol (Cairo.Context ctx, double x, int width, BlockInfo block)

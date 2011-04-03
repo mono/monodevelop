@@ -30,6 +30,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Linq;
+using MonoDevelop.Ide.ProgressMonitoring;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -134,8 +136,21 @@ namespace MonoDevelop.VersionControl.Git
 			var stashes = Repository.GetStashes ();
 			NewStashDialog dlg = new NewStashDialog ();
 			if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
-				using (IdeApp.Workspace.GetFileStatusTracker ())
-					stashes.Create (dlg.Comment);
+				string comment = dlg.Comment;
+				MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+				var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
+				ThreadPool.QueueUserWorkItem (delegate {
+					try {
+						using (var gm = new GitMonitor (monitor))
+							stashes.Create (gm, comment);
+					} catch (Exception ex) {
+						MessageService.ShowException (ex);
+					}
+					finally {
+						monitor.Dispose ();
+						statusTracker.NotifyChanges ();
+					}
+				});
 			}
 			dlg.Destroy ();
 		}
@@ -146,8 +161,22 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void Run ()
 		{
 			var stashes = Repository.GetStashes ();
-			using (IdeApp.Workspace.GetFileStatusTracker ())
-				stashes.Pop ();
+			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					NGit.Api.MergeCommandResult result;
+					using (var gm = new GitMonitor (monitor))
+						result = stashes.Pop (gm);
+					GitService.ReportStashResult (monitor, result);
+				} catch (Exception ex) {
+					MessageService.ShowException (ex);
+				}
+				finally {
+					monitor.Dispose ();
+					statusTracker.NotifyChanges ();
+				}
+			});
 		}
 		
 		protected override void Update (CommandInfo info)

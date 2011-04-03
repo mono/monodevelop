@@ -43,7 +43,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using NGit.Transport;
 using NGit.Util;
-using NSch;
 using Sharpen;
 
 namespace NGit.Transport
@@ -57,10 +56,10 @@ namespace NGit.Transport
 	/// configuration settings, such as known hosts and private keys.
 	/// <p>
 	/// A
-	/// <see cref="NSch.Session">NSch.Session</see>
-	/// must be returned to the factory that created it. Callers
-	/// are encouraged to retain the SshSessionFactory for the duration of the period
-	/// they are using the Session.
+	/// <see cref="RemoteSession">RemoteSession</see>
+	/// must be returned to the factory that created it.
+	/// Callers are encouraged to retain the SshSessionFactory for the duration of
+	/// the period they are using the Session.
 	/// </remarks>
 	public abstract class SshSessionFactory
 	{
@@ -107,46 +106,31 @@ namespace NGit.Transport
 		/// The caller must connect the session by invoking <code>connect()</code>
 		/// if it has not already been connected.
 		/// </remarks>
-		/// <param name="user">
-		/// username to authenticate as. If null a reasonable default must
-		/// be selected by the implementation. This may be
-		/// <code>System.getProperty("user.name")</code>.
-		/// </param>
-		/// <param name="pass">
-		/// optional user account password or passphrase. If not null a
-		/// UserInfo that supplies this value to the SSH library will be
-		/// configured.
-		/// </param>
-		/// <param name="host">hostname (or IP address) to connect to. Must not be null.</param>
-		/// <param name="port">
-		/// port number the server is listening for connections on. May be &lt;=
-		/// 0 to indicate the IANA registered port of 22 should be used.
-		/// </param>
+		/// <param name="uri">URI information about the remote host</param>
 		/// <param name="credentialsProvider">provider to support authentication, may be null.
 		/// 	</param>
 		/// <param name="fs">
 		/// the file system abstraction which will be necessary to
 		/// perform certain file system operations.
 		/// </param>
+		/// <param name="tms">Timeout value, in milliseconds.</param>
 		/// <returns>a session that can contact the remote host.</returns>
-		/// <exception cref="NSch.JSchException">the session could not be created.</exception>
-		public abstract Session GetSession(string user, string pass, string host, int port
-			, CredentialsProvider credentialsProvider, FS fs);
+		/// <exception cref="NGit.Errors.TransportException">the session could not be created.
+		/// 	</exception>
+		public abstract RemoteSession GetSession(URIish uri, CredentialsProvider credentialsProvider
+			, FS fs, int tms);
 
 		/// <summary>Close (or recycle) a session to a host.</summary>
 		/// <remarks>Close (or recycle) a session to a host.</remarks>
 		/// <param name="session">
 		/// a session previously obtained from this factory's
-		/// <see cref="GetSession(string, string, string, int, CredentialsProvider, NGit.Util.FS)
-		/// 	">GetSession(string, string, string, int, CredentialsProvider, NGit.Util.FS)</see>
+		/// <see cref="GetSession(URIish, CredentialsProvider, NGit.Util.FS, int)">GetSession(URIish, CredentialsProvider, NGit.Util.FS, int)
+		/// 	</see>
 		/// method.
 		/// </param>
-		public virtual void ReleaseSession(Session session)
+		public virtual void ReleaseSession(RemoteSession session)
 		{
-			if (session.IsConnected())
-			{
-				session.Disconnect();
-			}
+			session.Disconnect();
 		}
 	}
 }

@@ -43,13 +43,13 @@ namespace MonoDevelop.VersionControl.Views
 		public static void Show (VersionControlItemList items)
 		{
 			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path);
+				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 				DiffView.AttachViewContents (document, item);
-				document.Window.SwitchView (5);
+				document.Window.SwitchView (document.Window.FindView (typeof (MergeView)));
 			}
 		}
 		
-		public MergeView (VersionControlDocumentInfo info) : base ("Merge")
+		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"))
 		{
 			widget = new MergeWidget ();
 			widget.Load (info);

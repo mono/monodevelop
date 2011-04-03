@@ -176,7 +176,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			ProjectDom dom = implementingType.SourceProjectDom;
 			
-			List<KeyValuePair<IMember, bool>> toImplement = new List<KeyValuePair<IMember, bool>> ();
+			List<KeyValuePair<IMember, bool >> toImplement = new List<KeyValuePair<IMember, bool>> ();
 			bool alreadyImplemented;
 			
 			// Stub out non-implemented events defined by @iface
@@ -209,7 +209,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 						}
 					}
 				}
-				
 				if (!alreadyImplemented) 
 					toImplement.Add (new KeyValuePair<IMember, bool> (method, needsExplicitly));
 			}
@@ -247,16 +246,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 				foreach (IMember member in implementedMembers.Where (m => m.Name == pair.Key.Name && m.MemberType == pair.Key.MemberType)) {
 					if (member.MemberType == MemberType.Method) {
 						isExplicit = member.ReturnType.ToInvariantString () != pair.Key.ReturnType.ToInvariantString ();
-						
 						if (member.Parameters.Count == pair.Key.Parameters.Count && pair.Key.Parameters.Count > 0) {
 							for (int i = 0; i < member.Parameters.Count; i++) {
-								if (member.Parameters[i].ReturnType.ToInvariantString () != pair.Key.Parameters[i].ReturnType.ToInvariantString ()) {
+								if (member.Parameters [i].ReturnType.ToInvariantString () != pair.Key.Parameters [i].ReturnType.ToInvariantString ()) {
 									isExplicit = true;
 									break;
 								}
 							}
-						} else {
-							isExplicit = true;
 						}
 					} else {
 						isExplicit = true;

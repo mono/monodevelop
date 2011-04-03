@@ -88,6 +88,12 @@ namespace MonoDevelop.Debugger
 			DebuggingService.StoppedEvent += OnStop;
 		}
 		
+		public override string TabPageLabel {
+			get {
+				return GettextCatalog.GetString ("Disassembly");
+			}
+		}
+		
 		public override Gtk.Widget Control {
 			get {
 				return sw;

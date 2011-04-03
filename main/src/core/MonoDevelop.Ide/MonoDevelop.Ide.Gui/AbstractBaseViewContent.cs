@@ -34,13 +34,12 @@ namespace MonoDevelop.Ide.Gui
 {
 	public abstract class AbstractBaseViewContent : IBaseViewContent
 	{
+		IWorkbenchWindow workbenchWindow = null;
+		
 		#region IBaseViewContent Members
 
-		public abstract Gtk.Widget Control {
-			get;
-		}
-
-		private IWorkbenchWindow workbenchWindow = null;
+		public abstract Gtk.Widget Control { get; }
+		
 		public virtual IWorkbenchWindow WorkbenchWindow {
 			get { return workbenchWindow; }
 			set {
@@ -51,9 +50,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public virtual string TabPageLabel {
-			get { return "Abstract Content"; }
-		}
+		public virtual string TabPageLabel { get { return GettextCatalog.GetString ("Content"); } }
 
 		public virtual void RedrawContent ()
 		{
@@ -80,6 +77,7 @@ namespace MonoDevelop.Ide.Gui
 		#endregion
 
 		public event EventHandler WorkbenchWindowChanged;
+		
 		protected virtual void OnWorkbenchWindowChanged (EventArgs e)
 		{
 			if (WorkbenchWindowChanged != null) {

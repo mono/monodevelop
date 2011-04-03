@@ -211,7 +211,7 @@ namespace NGit.Api
 								repo.WriteMergeHeads(null);
 								return new MergeCommandResult(null, merger.GetBaseCommit(0, 1), new ObjectId[] { 
 									headCommit.Id, srcCommit.Id }, MergeStatus.FAILED, mergeStrategy, lowLevelResults
-									, null);
+									, failingPaths, null);
 							}
 							else
 							{

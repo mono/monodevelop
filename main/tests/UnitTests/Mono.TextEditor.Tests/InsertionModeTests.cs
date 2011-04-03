@@ -56,7 +56,7 @@ namespace Mono.TextEditor.Tests
 		{
 			string test = CreateInsertionPoint (@"class Test
 {
-	$void TestMethod ()
+$	void TestMethod ()
 	{
 	}
 }", "\tint a;", NewLineInsertion.None, NewLineInsertion.BlankLine);
@@ -97,7 +97,7 @@ $}", "\tint a;", NewLineInsertion.Eol, NewLineInsertion.Eol);
 	void TestMethod1 ()
 	{
 	}
-	$void TestMethod2 ()
+$	void TestMethod2 ()
 	{
 	}
 }", "\tint a;", NewLineInsertion.Eol, NewLineInsertion.BlankLine);
@@ -112,6 +112,20 @@ $}", "\tint a;", NewLineInsertion.Eol, NewLineInsertion.Eol);
 	void TestMethod2 ()
 	{
 	}
+}", test);
+		}
+		
+		/// <summary>
+		/// Bug 683011 - Implement interface may insert region in the wrong spot
+		/// </summary>
+		[Test()]
+		public void TestBug683011 ()
+		{
+			string test = CreateInsertionPoint (@"class Test
+{$}", "\tint a;", NewLineInsertion.Eol, NewLineInsertion.Eol);
+			Assert.AreEqual (@"class Test
+{
+	int a;
 }", test);
 		}
 		

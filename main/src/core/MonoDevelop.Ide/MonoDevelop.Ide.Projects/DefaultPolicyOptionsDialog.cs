@@ -35,14 +35,17 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Components;
 using Gtk;
+using System.Linq;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Projects
 {
 	public class DefaultPolicyOptionsDialog : OptionsDialog
 	{
 		ComboBox policiesCombo;
-		Button newButton;
+		MenuButton newButton;
 		Button deleteButton;
+		MenuButton exportButton;
 		List<PolicySet> sets = new List<PolicySet> ();
 		Dictionary<PolicySet,PolicySet> originalSets = new Dictionary<PolicySet, PolicySet> ();
 		
@@ -64,11 +67,45 @@ namespace MonoDevelop.Ide.Projects
 			policiesCombo = ComboBox.NewText ();
 			topBar.PackStart (policiesCombo, false, false, 0);
 			
-			newButton = new Button (GettextCatalog.GetString ("Add Policy"));
-			topBar.PackEnd (newButton, false, false, 0);
-			
 			deleteButton = new Button (GettextCatalog.GetString ("Delete Policy"));
 			topBar.PackEnd (deleteButton, false, false, 0);
+			
+			exportButton = new MenuButton ();
+			exportButton.Label = GettextCatalog.GetString ("Export");
+			exportButton.MenuCreator = delegate {
+				Gtk.Menu menu = new Gtk.Menu ();
+				MenuItem mi = new MenuItem (GettextCatalog.GetString ("To file..."));
+				mi.Activated += HandleToFile;
+				menu.Insert (mi, -1);
+				mi = new MenuItem (GettextCatalog.GetString ("To project or solution..."));
+				mi.Activated += HandleToProject;
+				if (!IdeApp.Workspace.IsOpen)
+					mi.Sensitive = false;
+				menu.Insert (mi, -1);
+				menu.ShowAll ();
+				return menu;
+			};
+			topBar.PackEnd (exportButton, false, false, 0);
+			
+			newButton = new MenuButton ();
+			newButton.Label = GettextCatalog.GetString ("Add Policy");
+			newButton.MenuCreator = delegate {
+				Gtk.Menu menu = new Gtk.Menu ();
+				MenuItem mi = new MenuItem (GettextCatalog.GetString ("New policy..."));
+				mi.Activated += HandleNewButtonClicked;
+				menu.Insert (mi, -1);
+				mi = new MenuItem (GettextCatalog.GetString ("From file..."));
+				mi.Activated += HandleFromFile;
+				menu.Insert (mi, -1);
+				mi = new MenuItem (GettextCatalog.GetString ("From project or solution..."));
+				mi.Activated += HandleFromProject;
+				if (!IdeApp.Workspace.IsOpen)
+					mi.Sensitive = false;
+				menu.Insert (mi, -1);
+				menu.ShowAll ();
+				return menu;
+			};
+			topBar.PackEnd (newButton, false, false, 0);
 			
 			Alignment align = new Alignment (0f, 0f, 1f, 1f);
 			align.LeftPadding = 9;
@@ -97,7 +134,6 @@ namespace MonoDevelop.Ide.Projects
 			FillPolicySets ();
 			
 			policiesCombo.Changed += HandlePoliciesComboChanged;
-			newButton.Clicked += HandleNewButtonClicked;
 			deleteButton.Clicked += HandleDeleteButtonClicked;
 		}
 		
@@ -155,6 +191,98 @@ namespace MonoDevelop.Ide.Projects
 				dlg.Destroy ();
 			}
 		}
+
+		void HandleFromProject (object sender, EventArgs e)
+		{
+			ImportProjectPolicyDialog dlg = new ImportProjectPolicyDialog ();
+			try {
+				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
+					PolicySet pset = new PolicySet ();
+					pset.CopyFrom (dlg.SelectedItem.Policies);
+					pset.Name = GetValidName (dlg.PolicyName);
+					sets.Add (pset);
+					FillPolicySets ();
+					policiesCombo.Active = sets.IndexOf (pset);
+				}
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+
+		void HandleFromFile (object sender, EventArgs e)
+		{
+			OpenFileDialog dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Policy File"));
+			dlg.Action = FileChooserAction.Open;
+			dlg.TransientFor = this;
+			dlg.AddFilter (GettextCatalog.GetString ("MonoDevelop policy files"), "*.mdpolicy");
+			dlg.AddAllFilesFilter ();
+			dlg.CurrentFolder = ExportProjectPolicyDialog.DefaultFileDialogPolicyDir;
+			if (dlg.Run ()) {
+				try {
+					PolicySet pset = new PolicySet ();
+					pset.LoadFromFile (dlg.SelectedFile);
+					if (string.IsNullOrEmpty (pset.Name))
+						pset.Name = dlg.SelectedFile.FileNameWithoutExtension;
+					pset.Name = GetValidName (pset.Name);
+					sets.Add (pset);
+					ExportProjectPolicyDialog.DefaultFileDialogPolicyDir = dlg.SelectedFile.ParentDirectory;
+					FillPolicySets ();
+					policiesCombo.Active = sets.IndexOf (pset);
+				} catch (Exception ex) {
+					MessageService.ShowException (ex, GettextCatalog.GetString ("The policy set could not be loaded"));
+				}
+			}
+		}
+		
+		string GetValidName (string name)
+		{
+			string finalName = name;
+			int n = 1;
+			while (sets.Any (ps => ps.Name == finalName)) {
+				n++;
+				finalName = name + n;
+			}
+			return finalName;
+		}
+
+		void HandleToProject (object sender, EventArgs e)
+		{
+			ProjectSelectorDialog dlg = new ProjectSelectorDialog ();
+			try {
+				dlg.Title = GettextCatalog.GetString ("Apply to Project");
+				dlg.RootItem = IdeApp.Workspace;
+				dlg.SelectedItem = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+				dlg.SelectableItemTypes = new Type[] { typeof(Solution), typeof(SolutionItem) };
+				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
+					((IPolicyProvider)dlg.SelectedItem).Policies.Import (currentSet, true);
+					if (dlg.SelectedItem is IWorkspaceFileObject)
+						IdeApp.ProjectOperations.Save ((IWorkspaceFileObject)dlg.SelectedItem);
+					else
+						IdeApp.ProjectOperations.Save (((SolutionItem)dlg.SelectedItem).ParentSolution);
+				}
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+
+		void HandleToFile (object sender, EventArgs e)
+		{
+			OpenFileDialog dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Policy File"));
+			dlg.TransientFor = this;
+			dlg.InitialFileName = currentSet.Name + ".mdpolicy";
+			dlg.Action = FileChooserAction.Save;
+			dlg.AddFilter (GettextCatalog.GetString ("MonoDevelop policy files"), "*.mdpolicy");
+			dlg.AddAllFilesFilter ();
+			dlg.CurrentFolder = ExportProjectPolicyDialog.DefaultFileDialogPolicyDir;
+			if (dlg.Run ()) {
+				try {
+					currentSet.SaveToFile (dlg.SelectedFile);
+					ExportProjectPolicyDialog.DefaultFileDialogPolicyDir = dlg.SelectedFile.ParentDirectory;
+				} catch (Exception ex) {
+					MessageService.ShowException (ex, GettextCatalog.GetString ("The policy set could not be saved"));
+				}
+			}
+		}
 		
 		void FillPolicySets ()
 		{
@@ -192,7 +320,7 @@ namespace MonoDevelop.Ide.Projects
 		void UpdateStatus ()
 		{
 			if (sets.Count == 0) {
-				deleteButton.Sensitive = false;
+				deleteButton.Sensitive = exportButton.Sensitive = false;
 				MainBox.Sensitive = false;
 				((ListStore)policiesCombo.Model).Clear ();
 				policiesCombo.Sensitive = false;
@@ -200,7 +328,7 @@ namespace MonoDevelop.Ide.Projects
 				policiesCombo.Active = 0;
 			}
 			else {
-				deleteButton.Sensitive = true;
+				deleteButton.Sensitive = exportButton.Sensitive = true;
 				MainBox.Sensitive = true;
 				policiesCombo.Sensitive = true;
 			}

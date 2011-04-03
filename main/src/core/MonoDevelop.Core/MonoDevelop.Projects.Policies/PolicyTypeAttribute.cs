@@ -1,10 +1,10 @@
 // 
-// IAttachableDisplayBinding.cs
+// PolicyTypeAttribute.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Ide.Gui;
+using Mono.Addins;
 
-
-namespace MonoDevelop.Ide.Codons
+namespace MonoDevelop.Projects.Policies
 {
-	public interface IAttachableDisplayBinding : IBaseDisplayBinding
+	public class PolicyTypeAttribute: CustomExtensionAttribute
 	{
-		bool CanAttachTo (IViewContent content);
+		public PolicyTypeAttribute ()
+		{
+		}
 		
-		IAttachableViewContent CreateViewContent (IViewContent viewContent);
+		public PolicyTypeAttribute ([NodeAttribute ("description")] string description)
+		{
+		}
+		
+		[NodeAttribute ("description")]
+		public string Description { get; set; }
 	}
 }
+

@@ -219,7 +219,7 @@ namespace MonoDevelop.Projects.Dom
 				}
 					
 				foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
-					foreach (string ns in u.Namespaces.Where (ns => returnType.Namespace == ns || returnType.Namespace.StartsWith (ns + "."))) {
+					foreach (string ns in u.Namespaces.Where (ns => returnType.Namespace == ns || returnType.Namespace != null && returnType.Namespace.StartsWith (ns + "."))) {
 						if (longest.Length < ns.Length)
 							longest = ns;
 					}

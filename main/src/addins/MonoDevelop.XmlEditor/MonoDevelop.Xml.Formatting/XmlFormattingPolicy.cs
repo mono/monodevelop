@@ -32,9 +32,11 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using System.Text;
 using System.ComponentModel;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Xml.Formatting
 {
+	[PolicyType ("XML formatting")]
 	public class XmlFormattingPolicy : IEquatable<XmlFormattingPolicy>
 	{
 		List<XmlFormattingSettings> formats = new List<XmlFormattingSettings> ();

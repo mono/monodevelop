@@ -8,6 +8,7 @@
     <widget-library name="MonoDevelop.Ide, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="../../../MonoDevelop.IPhone/build/MonoDevelop.MacDev.dll" />
+    <widget-library name="../../../../main/build/AddIns/MacPlatform.dll" />
     <widget-library name="../../build/MonoDevelop.MonoMac.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.MonoMac.Gui.MonoMacPackagingSettingsWidget" design-size="529 400">

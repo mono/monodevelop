@@ -319,7 +319,7 @@ namespace MonoDevelop.Ide
 			
 			foreach (var file in filteredFiles) {
 				try {
-					Workbench.OpenDocument (file.FileName, file.Line, file.Column, file.BringToFront);
+					Workbench.OpenDocument (file.FileName, file.Line, file.Column, file.Options);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unhandled error opening file \"" + file.FileName + "\"", ex);
 					MessageService.ShowException (ex, "Could not open file: " + file.FileName);
