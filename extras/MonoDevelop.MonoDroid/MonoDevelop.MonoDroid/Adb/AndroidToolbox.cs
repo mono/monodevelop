@@ -71,6 +71,12 @@ namespace MonoDevelop.MonoDroid
 				return androidToolsPath.Combine (PropertyService.IsWindows? "emulator.exe" : "emulator");
 			}
 		}
+
+		public string ZipAlignExe {
+			get {
+				return androidToolsPath.Combine (PropertyService.IsWindows ? "zipalign.exe" : "zipalign");
+			}
+		}
 		
 		public string JarsignerExe {
 			get {
@@ -103,7 +109,8 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		//string dname = "CN=Android Debug,O=Android,C=US";
-		public IProcessAsyncOperation Genkeypair (AndroidSigningOptions options, string dname,
+		//keyalg = RSA and keyalg = 2048 for now
+		public IProcessAsyncOperation Genkeypair (AndroidSigningOptions options, string dname, int validity,
 			TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = new ProcessArgumentBuilder ();
@@ -118,10 +125,43 @@ namespace MonoDevelop.MonoDroid
 			args.AddQuoted (options.KeyPass);
 			args.Add ("-keystore");
 			args.AddQuoted (options.KeyStore);
+			args.Add ("-keysize");
+			args.Add ("2048");
+			args.Add ("-keyalg");
+			args.Add ("RSA");
+			if (validity > 0) {
+				args.Add ("-validity");
+				args.AddQuoted (validity.ToString ());
+			}
 			
 			return StartProcess (KeytoolExe, args.ToString (), outputLog, errorLog);
 		}
-		
+
+		public IProcessAsyncOperation AlignPackage (string srcApk, string destApk, TextWriter outputLog, TextWriter errorLog)
+		{
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-f");
+			args.Add ("4");
+			args.AddQuoted (srcApk);
+			args.AddQuoted (destApk);
+
+			return StartProcess (ZipAlignExe, args.ToString (), outputLog, errorLog);
+		}
+
+		public IProcessAsyncOperation VerifyKeypair (AndroidSigningOptions options, TextWriter outputLog, TextWriter errorLog)
+		{
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-list");
+			args.Add ("-keystore");
+			args.AddQuoted (options.KeyStore);
+			args.Add ("-storepass");
+			args.AddQuoted (options.StorePass);
+			args.Add ("-alias");
+			args.AddQuoted (options.KeyAlias);
+
+			return StartProcess (KeytoolExe, args.ToString (), outputLog, errorLog);
+		}
+
 		ProcessWrapper StartProcess (string name, string args, TextWriter outputLog, TextWriter errorLog)
 		{
 			var psi = new ProcessStartInfo (name, args) {

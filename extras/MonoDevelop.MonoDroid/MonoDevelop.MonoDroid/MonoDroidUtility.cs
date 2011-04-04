@@ -84,6 +84,26 @@ namespace MonoDevelop.MonoDroid
 				LoggingService.LogError ("Error clearing upload flags", ex);
 			}
 		}
+
+		public static IAsyncOperation Sign (IProgressMonitor monitor, MonoDroidProject project, ConfigurationSelector configSel)
+		{
+			var conf = project.GetConfiguration (configSel);
+			var opMon = new AggregatedOperationMonitor (monitor);
+
+			InvokeSynch (() => MonoDroidFramework.EnsureSdksInstalled ());
+			
+			IAsyncOperation signOp = null;
+			if (project.PackageNeedsSigning (configSel)) {
+				ClearUploadFlags (conf);
+				signOp = project.SignPackage (configSel);
+				signOp.Completed += delegate {
+					opMon.Dispose ();
+				};
+				return signOp;
+			}
+
+			return Core.Execution.NullProcessAsyncOperation.Success;
+		}
 		
 		//may block while it's showing a GUI. project MUST be built before calling this
 		public static MonoDroidUploadOperation SignAndUpload (IProgressMonitor monitor, MonoDroidProject project,
