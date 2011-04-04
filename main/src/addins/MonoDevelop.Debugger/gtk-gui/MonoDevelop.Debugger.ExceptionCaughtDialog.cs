@@ -84,15 +84,7 @@ namespace MonoDevelop.Debugger
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.GtkScrolledWindow.BorderWidth = ((uint)(3));
 			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-			this.valueView = new global::MonoDevelop.Debugger.ObjectValueTreeView ();
-			this.valueView.CanFocus = true;
-			this.valueView.Name = "valueView";
-			this.valueView.AllowAdding = false;
-			this.valueView.AllowEditing = true;
-			this.valueView.AllowPinning = false;
-			this.valueView.AllowExpanding = false;
-			this.valueView.PinnedWatchLine = 0;
-			this.valueView.CompactView = false;
+			this.valueView = null;
 			this.GtkScrolledWindow.Add (this.valueView);
 			this.notebook1.Add (this.GtkScrolledWindow);
 			global::Gtk.Notebook.NotebookChild w7 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.GtkScrolledWindow]));

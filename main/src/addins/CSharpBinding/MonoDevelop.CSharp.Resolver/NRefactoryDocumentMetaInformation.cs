@@ -31,11 +31,11 @@
 //using MonoDevelop.Projects.Dom;
 //using MonoDevelop.Projects.Dom.Parser;
 //
-//using ICSharpCode.NRefactory.Visitors;
-//using ICSharpCode.NRefactory.Parser;
-//using ICSharpCode.NRefactory.Ast;
-//using ICSharpCode.NRefactory;
-//using ICSharpCode.NRefactory.Parser.CSharp;
+//using ICSharpCode.OldNRefactory.Visitors;
+//using ICSharpCode.OldNRefactory.Parser;
+//using ICSharpCode.OldNRefactory.Ast;
+//using ICSharpCode.OldNRefactory;
+//using ICSharpCode.OldNRefactory.Parser.CSharp;
 //
 //namespace MonoDevelop.CSharpBinding
 //{
@@ -85,17 +85,17 @@
 //			return null;
 //		}
 //		
-//		object ISpecialVisitor.Visit(ICSharpCode.NRefactory.Comment comment, object data)
+//		object ISpecialVisitor.Visit(ICSharpCode.OldNRefactory.Comment comment, object data)
 //		{
 //			MonoDevelop.Projects.Dom.Comment newComment = new MonoDevelop.Projects.Dom.Comment ();
 //			newComment.CommentStartsLine = comment.CommentStartsLine;
 //			newComment.Text = comment.CommentText;
 //			newComment.Region = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column, comment.EndPosition.Line, comment.EndPosition.Column);
 //			switch (comment.CommentType) {
-//				case ICSharpCode.NRefactory.CommentType.Block:
+//				case ICSharpCode.OldNRefactory.CommentType.Block:
 //					newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.MultiLine;
 //					break;
-//				case ICSharpCode.NRefactory.CommentType.Documentation:
+//				case ICSharpCode.OldNRefactory.CommentType.Documentation:
 //					newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.SingleLine;
 //					newComment.IsDocumentation = true;
 //					break;

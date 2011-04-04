@@ -13,12 +13,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.CSharp;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.Parser;
+using ICSharpCode.OldNRefactory.Parser.CSharp;
+using ICSharpCode.OldNRefactory.Visitors;
 
-namespace ICSharpCode.NRefactory.PrettyPrinter
+namespace ICSharpCode.OldNRefactory.PrettyPrinter
 {
 	public sealed class CSharpOutputVisitor : NodeTrackingAstVisitor, IOutputAstVisitor
 	{
@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			Error(node, "Not supported in C#: " + node.GetType().Name);
 		}
 		
-		#region ICSharpCode.NRefactory.Parser.IASTVisitor interface implementation
+		#region ICSharpCode.OldNRefactory.Parser.IASTVisitor interface implementation
 		public override object TrackedVisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			compilationUnit.AcceptChildren(this, data);
@@ -267,7 +267,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitAttribute (ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
+		public override object TrackedVisitAttribute (ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data)
 		{
 			outputFormatter.PrintIdentifier (attribute.Name);
 			if (attribute.IsEmptyCall)

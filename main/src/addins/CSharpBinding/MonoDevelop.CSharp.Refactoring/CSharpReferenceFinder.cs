@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			if (doc == null || doc.CompilationUnit == null)
 				return null;
-			var resolver = new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+			var resolver = new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
 			
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, member);
 			visitor.IncludeXmlDocumentation = IncludeDocumentation;

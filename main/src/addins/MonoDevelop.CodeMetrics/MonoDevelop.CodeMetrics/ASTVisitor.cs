@@ -40,9 +40,9 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.AstBuilder;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.AstBuilder;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -79,7 +79,7 @@ namespace MonoDevelop.CodeMetrics
 		{
 			private static ClassProperties cls;
 			
-			internal static void EvaluateComplexityMetrics (ICSharpCode.NRefactory.Ast.INode method, MethodProperties props)
+			internal static void EvaluateComplexityMetrics (ICSharpCode.OldNRefactory.Ast.INode method, MethodProperties props)
 			{
 				props.CyclometricComplexity = 1;
 				props.LOCReal=0;
@@ -254,7 +254,7 @@ namespace MonoDevelop.CodeMetrics
 				VisitExpression(statement.Expression, meth);
 			}
 			
-			private void VisitStatement(ICSharpCode.NRefactory.Ast.INode statement, MethodProperties meth)
+			private void VisitStatement(ICSharpCode.OldNRefactory.Ast.INode statement, MethodProperties meth)
 			{
 				try{
 					if(statement is BlockStatement){

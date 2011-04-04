@@ -29,9 +29,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.PrettyPrinter;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -137,11 +137,11 @@ namespace MonoDevelop.Refactoring.CreateClass
 			if (resolver == null || provider == null)
 				return result;
 
-			TypeDeclaration newType = new TypeDeclaration (ICSharpCode.NRefactory.Ast.Modifiers.None, null);
+			TypeDeclaration newType = new TypeDeclaration (ICSharpCode.OldNRefactory.Ast.Modifiers.None, null);
 			newType.Name = createExpression.CreateType.Type;
 			newType.Type = GetNewTypeType ();
 
-			ConstructorDeclaration constructor = new ConstructorDeclaration (newType.Name, ICSharpCode.NRefactory.Ast.Modifiers.Public, null, null);
+			ConstructorDeclaration constructor = new ConstructorDeclaration (newType.Name, ICSharpCode.OldNRefactory.Ast.Modifiers.Public, null, null);
 			constructor.Body = new BlockStatement ();
 			int i = 0;
 			foreach (Expression expression in createExpression.Parameters) {
@@ -160,7 +160,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, parameterName);
 				constructor.Parameters.Add (pde);
 			}
-			ICSharpCode.NRefactory.Ast.INode node = newType;
+			ICSharpCode.OldNRefactory.Ast.INode node = newType;
 			IType curType = options.Document.CompilationUnit.GetTypeAt (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
 			if (curType != null && !string.IsNullOrEmpty (curType.Namespace)) {
 				NamespaceDeclaration namespaceDeclaration = new NamespaceDeclaration (curType.Namespace);
@@ -176,9 +176,9 @@ namespace MonoDevelop.Refactoring.CreateClass
 			return result;
 		}
 
-		protected virtual ICSharpCode.NRefactory.Ast.ClassType GetNewTypeType ()
+		protected virtual ICSharpCode.OldNRefactory.Ast.ClassType GetNewTypeType ()
 		{
-			return ICSharpCode.NRefactory.Ast.ClassType.Class;
+			return ICSharpCode.OldNRefactory.Ast.ClassType.Class;
 		}
 
 	}

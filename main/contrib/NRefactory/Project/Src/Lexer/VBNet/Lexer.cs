@@ -10,7 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.Parser.VB
+namespace ICSharpCode.OldNRefactory.Parser.VB
 {
 	internal sealed class Lexer : AbstractLexer
 	{

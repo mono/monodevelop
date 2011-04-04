@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Visitors;
 using System.Collections.Generic;
 using System.Text;
 
@@ -34,7 +34,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 	public class TypeFilterTransformer : AbstractAstTransformer
 	{
 		string fullName;
-		public ICSharpCode.NRefactory.Ast.TypeDeclaration TypeDeclaration {
+		public ICSharpCode.OldNRefactory.Ast.TypeDeclaration TypeDeclaration {
 			get;
 			set;
 		}
@@ -43,7 +43,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 			this.fullName = fullName;
 		}
 		
-		public override object VisitTypeDeclaration (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration (ICSharpCode.OldNRefactory.Ast.TypeDeclaration typeDeclaration, object data)
 		{
 			if (BuildName (typeDeclaration) != fullName) {
 				RemoveCurrentNode ();
@@ -54,8 +54,8 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 			return result;
 		}
 		
-		Stack<ICSharpCode.NRefactory.Ast.NamespaceDeclaration> namespaces = new Stack<ICSharpCode.NRefactory.Ast.NamespaceDeclaration> ();
-		public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
+		Stack<ICSharpCode.OldNRefactory.Ast.NamespaceDeclaration> namespaces = new Stack<ICSharpCode.OldNRefactory.Ast.NamespaceDeclaration> ();
+		public override object VisitNamespaceDeclaration (ICSharpCode.OldNRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			namespaces.Push (namespaceDeclaration);
 			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
@@ -63,7 +63,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 			return result;
 		}
 
-		string BuildName (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration)
+		string BuildName (ICSharpCode.OldNRefactory.Ast.TypeDeclaration typeDeclaration)
 		{
 			// note: inner types can't be moved therefore they're missing here.
 			StringBuilder result = new StringBuilder ();

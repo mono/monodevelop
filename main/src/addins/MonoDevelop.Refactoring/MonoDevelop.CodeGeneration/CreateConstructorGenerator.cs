@@ -26,7 +26,7 @@
 
 using Gtk;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
@@ -105,7 +105,7 @@ namespace MonoDevelop.CodeGeneration
 					parameters.Add (new ParameterDeclarationExpression (member.ReturnType.ConvertToTypeReference (), CreateParameterName (member)));
 				}
 
-				ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration (Options.EnclosingType.Name, ICSharpCode.NRefactory.Ast.Modifiers.Public, parameters, null, null);
+				ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration (Options.EnclosingType.Name, ICSharpCode.OldNRefactory.Ast.Modifiers.Public, parameters, null, null);
 				constructorDeclaration.Body = new BlockStatement ();
 				foreach (IMember member in includedMembers) {
 					MemberReferenceExpression memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);

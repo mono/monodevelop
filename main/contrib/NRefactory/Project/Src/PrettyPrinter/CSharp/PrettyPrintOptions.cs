@@ -5,7 +5,7 @@
 //     <version>$Revision: 4481 $</version>
 // </file>
 
-namespace ICSharpCode.NRefactory.PrettyPrinter
+namespace ICSharpCode.OldNRefactory.PrettyPrinter
 {
 	public enum BraceStyle {
 		DoNotChange,

@@ -213,8 +213,8 @@ namespace MonoDevelop.CSharp.Completion
 						return null;
 					NRefactoryResolver resolver = CreateResolver ();
 					ResolveResult resolveResult = resolver.Resolve (result, location);
-					if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression) {
-						ICSharpCode.NRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.NRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
+					if (resolver.ResolvedExpression is ICSharpCode.OldNRefactory.Ast.PrimitiveExpression) {
+						ICSharpCode.OldNRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.OldNRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
 						if (!tryToForceCompletion && !(pex.Value is string || pex.Value is char || pex.Value is bool))
 							return null;
 					}
@@ -276,7 +276,7 @@ namespace MonoDevelop.CSharp.Completion
 					if (resolveResult == null)
 						return null;
 					
-					if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
+					if (resolver.ResolvedExpression is ICSharpCode.OldNRefactory.Ast.TypeOfExpression) {
 						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					
 						CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
@@ -905,10 +905,10 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 		
-		public ICSharpCode.NRefactory.Ast.CompilationUnit ParsedUnit { get; set; }
+		public ICSharpCode.OldNRefactory.Ast.CompilationUnit ParsedUnit { get; set; }
 		NRefactoryResolver CreateResolver ()
 		{
-			NRefactoryResolver result = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, textEditorData, Document.FileName);
+			NRefactoryResolver result = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, textEditorData, Document.FileName);
 			if (ParsedUnit != null)
 				result.SetupParsedCompilationUnit (ParsedUnit);
 			return result;
@@ -1319,7 +1319,7 @@ namespace MonoDevelop.CSharp.Completion
 			CompletionDataList completionList;
 /*			if (result.ExpressionContext == ExpressionContext.IdentifierExpected) {
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
-				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+				                                                                                ICSharpCode.OldNRefactory.SupportedLanguage.CSharp,
 				                                                                                Editor,
 				                                                                                Document.FileName);
 				
@@ -1877,7 +1877,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			for (int i = 0; i < keywords.Length; i++) {
 				if (keywords[i]) {
-					string keyword = ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString (i);
+					string keyword = ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.GetTokenString (i);
 					if (keyword.IndexOf ('<') >= 0)
 						continue;
 					col.Add (keyword, "md-keyword");
@@ -1898,16 +1898,16 @@ namespace MonoDevelop.CSharp.Completion
 				resolver.AddAccessibleCodeCompletionData (ExpressionContext.Global, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.TypeDeclaration) {
 				AddPrimitiveTypes (col);
-				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.TypeLevel);
+				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.TypeLevel);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfaceDeclaration) {
 				AddPrimitiveTypes (col);
-				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.InterfaceLevel);
+				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.InterfaceLevel);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.MethodBody) {
 				col.Add ("global", "md-keyword");
 				col.Add ("var", "md-keyword");
-				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.StatementStart);
+				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.StatementStart);
 				AddPrimitiveTypes (col);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfacePropertyDeclaration) {
@@ -1945,7 +1945,7 @@ namespace MonoDevelop.CSharp.Completion
 				AddPrimitiveTypes (col);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.PropertyDeclaration) {
-				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.InPropertyDeclaration);
+				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.InPropertyDeclaration);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.EventDeclaration) {
 				col.Add ("add", "md-keyword");
 				col.Add ("remove", "md-keyword");
@@ -1954,11 +1954,11 @@ namespace MonoDevelop.CSharp.Completion
 				col.Add ("global", "md-keyword");
 				col.Add ("var", "md-keyword");
 				AddPrimitiveTypes (col);
-				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionStart);
-				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionContent);
+				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.ExpressionStart);
+				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.ExpressionContent);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
-				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.GlobalLevel);
+				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.GlobalLevel);
 				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.ObjectInitializer) {
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForObjectInitializer (textEditorData, resolver.Unit, Document.FileName, resolver.CallingType);
@@ -2116,12 +2116,12 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		class SwitchFinder : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
+		class SwitchFinder : ICSharpCode.OldNRefactory.Visitors.AbstractAstVisitor
 		{
 			
-			ICSharpCode.NRefactory.Ast.SwitchStatement switchStatement = null;
+			ICSharpCode.OldNRefactory.Ast.SwitchStatement switchStatement = null;
 			
-			public ICSharpCode.NRefactory.Ast.SwitchStatement SwitchStatement {
+			public ICSharpCode.OldNRefactory.Ast.SwitchStatement SwitchStatement {
 				get {
 					return this.switchStatement;
 				}
@@ -2129,10 +2129,10 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public SwitchFinder (DomLocation location)
 			{
-				//this.location = new ICSharpCode.NRefactory.Location (location.Column, location.Line);
+				//this.location = new ICSharpCode.OldNRefactory.Location (location.Column, location.Line);
 			}
 			
-			public override object VisitSwitchStatement (ICSharpCode.NRefactory.Ast.SwitchStatement switchStatement, object data)
+			public override object VisitSwitchStatement (ICSharpCode.OldNRefactory.Ast.SwitchStatement switchStatement, object data)
 			{
 //				if (switchStatement.StartLocation < caretLocation && caretLocation < switchStatement.EndLocation)
 					this.switchStatement = switchStatement;

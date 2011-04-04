@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.Ast
+namespace ICSharpCode.OldNRefactory.Ast
 {
 	public abstract class Statement : AbstractNode, INullable
 	{

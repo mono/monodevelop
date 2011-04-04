@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-namespace ICSharpCode.NRefactory.Parser.CSharp
+namespace ICSharpCode.OldNRefactory.Parser.CSharp
 {
 	public static class Tokens
 	{

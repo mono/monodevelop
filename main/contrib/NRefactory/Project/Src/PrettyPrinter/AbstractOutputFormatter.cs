@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.PrettyPrinter
+namespace ICSharpCode.OldNRefactory.PrettyPrinter
 {
 	/// <summary>
 	/// Base class of output formatters.

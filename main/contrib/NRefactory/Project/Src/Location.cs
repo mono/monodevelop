@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.OldNRefactory
 {
 	/// <summary>
 	/// A line/column position.

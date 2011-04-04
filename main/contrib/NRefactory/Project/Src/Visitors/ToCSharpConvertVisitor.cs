@@ -5,11 +5,11 @@
 //     <version>$Revision: 4570 $</version>
 // </file>
 
-using ICSharpCode.NRefactory.AstBuilder;
+using ICSharpCode.OldNRefactory.AstBuilder;
 using System;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	/// <summary>
 	/// Converts elements not supported by C# to their C# representation.

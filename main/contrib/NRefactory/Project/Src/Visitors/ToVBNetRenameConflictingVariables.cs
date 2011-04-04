@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	/// <summary>
 	/// Renames local variables if they conflict with other locals, fields or parameters.

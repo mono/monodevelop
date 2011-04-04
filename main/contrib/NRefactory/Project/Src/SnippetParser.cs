@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald"/>
@@ -10,10 +10,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.Parser;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.OldNRefactory
 {
 	public enum SnippetType
 	{

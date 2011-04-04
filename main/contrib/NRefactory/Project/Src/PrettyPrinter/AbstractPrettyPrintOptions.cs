@@ -1,11 +1,11 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version>$Revision: 4482 $</version>
 // </file>
 
-namespace ICSharpCode.NRefactory.PrettyPrinter
+namespace ICSharpCode.OldNRefactory.PrettyPrinter
 {
 	/// <summary>
 	/// Description of PrettyPrintOptions.	

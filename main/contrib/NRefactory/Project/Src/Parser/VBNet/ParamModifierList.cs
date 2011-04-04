@@ -5,9 +5,9 @@
 //     <version>$Revision: 4482 $</version>
 // </file>
 
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser.VB
+namespace ICSharpCode.OldNRefactory.Parser.VB
 {
 	internal class ParamModifierList
 	{

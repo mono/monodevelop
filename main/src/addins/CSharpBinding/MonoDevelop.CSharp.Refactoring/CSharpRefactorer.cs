@@ -48,10 +48,10 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Parser;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.Visitors;
 
 using ClassType = MonoDevelop.Projects.Dom.ClassType;
 using MonoDevelop.CSharp.Formatting;
@@ -74,8 +74,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (string.IsNullOrEmpty (name))
 				return ValidationResult.CreateError (GettextCatalog.GetString ("Name must not be empty."));
 			
-			int token = ICSharpCode.NRefactory.Parser.CSharp.Keywords.GetToken (name);
-			if (token >= ICSharpCode.NRefactory.Parser.CSharp.Tokens.Abstract)
+			int token = ICSharpCode.OldNRefactory.Parser.CSharp.Keywords.GetToken (name);
+			if (token >= ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.Abstract)
 				return ValidationResult.CreateError (GettextCatalog.GetString ("Name can't be a keyword."));
 			
 			char startChar = name[0];
@@ -430,7 +430,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var doc = ProjectDomService.GetParsedDocument (ctx.ParserContext, fileName);
 			if (doc == null || doc.CompilationUnit == null)
 				return null;
-			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
 			
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, cls);
 			visitor.IncludeXmlDocumentation = includeXmlComment;
@@ -666,7 +666,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var doc = ProjectDomService.GetParsedDocument (ctx.ParserContext, fileName);
 			if (doc == null || doc.CompilationUnit == null)
 				return null;
-			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
 			resolver.CallingMember = member;
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, member);
 			visitor.IncludeXmlDocumentation = includeXmlComment;
@@ -679,7 +679,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var editor = ((Mono.TextEditor.ITextEditorDataProvider)ctx.GetFile (fileName)).GetTextEditorData ();
 			
-			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, var.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, var.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
 			resolver.CallingMember = var.DeclaringMember;
 			
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, var);
@@ -691,7 +691,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param, bool includeXmlComment)
 		{
 			var editor = ((Mono.TextEditor.ITextEditorDataProvider)ctx.GetFile (fileName)).GetTextEditorData ();
-			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, param.DeclaringMember.DeclaringType.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, param.DeclaringMember.DeclaringType.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
 			
 			resolver.CallingMember = param.DeclaringMember;
 			

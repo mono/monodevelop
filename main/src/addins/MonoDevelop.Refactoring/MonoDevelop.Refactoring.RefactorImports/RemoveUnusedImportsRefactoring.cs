@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 
@@ -48,7 +48,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			List<Change> result = new List<Change> ();
-			ICSharpCode.NRefactory.Ast.CompilationUnit unit = options.GetASTProvider ().ParseFile (options.Document.Editor.Text);
+			ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = options.GetASTProvider ().ParseFile (options.Document.Editor.Text);
 			FindTypeReferencesVisitor visitor = new FindTypeReferencesVisitor (options.GetTextEditorData (), options.GetResolver ());
 			visitor.VisitCompilationUnit (unit, null);
 

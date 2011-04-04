@@ -34,9 +34,9 @@ using System.IO;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Parser;
+using ICSharpCode.OldNRefactory.Visitors;
 
 namespace MonoDevelop.CSharp
 {

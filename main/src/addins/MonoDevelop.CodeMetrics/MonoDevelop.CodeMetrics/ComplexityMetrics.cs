@@ -43,9 +43,9 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.AstBuilder;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.AstBuilder;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -98,7 +98,7 @@ namespace MonoDevelop.CodeMetrics
 					foreach(LineSegment segment in doc.Lines)
 						FileText.Add(segment);
 					
-					using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(text))) {
+					using (ICSharpCode.OldNRefactory.IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(text))) {
 						parser.Parse();
 						if (parser.Errors.Count > 0) {
 							//Error handling TODO
@@ -114,7 +114,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		
 		
-		private static void ProcessNode (MetricsContext ctx, ICSharpCode.NRefactory.Ast.INode node)
+		private static void ProcessNode (MetricsContext ctx, ICSharpCode.OldNRefactory.Ast.INode node)
 		{
 			if(node is UsingStatement) {
 				//TODO do something (something to do with afferent and efferent coupling of namespaces)
@@ -130,7 +130,7 @@ namespace MonoDevelop.CodeMetrics
 			}
 		} 
 				
-		private static void ProcessMethod (MetricsContext ctx, ICSharpCode.NRefactory.Ast.INode method, IProperties parentClass)
+		private static void ProcessMethod (MetricsContext ctx, ICSharpCode.OldNRefactory.Ast.INode method, IProperties parentClass)
 		{
 			if(method==null)
 				return;

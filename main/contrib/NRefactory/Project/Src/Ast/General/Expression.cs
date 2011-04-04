@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.Ast
+namespace ICSharpCode.OldNRefactory.Ast
 {
 	public abstract class Expression : AbstractNode, INullable
 	{

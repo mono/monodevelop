@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
@@ -45,7 +45,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 				set;
 			}
 			
-			public ICSharpCode.NRefactory.Ast.Modifiers Modifiers {
+			public ICSharpCode.OldNRefactory.Ast.Modifiers Modifiers {
 				get;
 				set;
 			}
@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			varDecl.Initializer = provider.ParseExpression (resolveResult.ResolvedExpression.Expression);
 			fieldDeclaration.Fields.Add (varDecl);
 			fieldDeclaration.Modifier = param.Modifiers;
-			fieldDeclaration.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Const;
+			fieldDeclaration.Modifier |= ICSharpCode.OldNRefactory.Ast.Modifiers.Const;
 			fieldDeclaration.TypeReference = resolveResult.ResolvedType.ConvertToTypeReference ();
 			fieldDeclaration.TypeReference.IsKeyword = true;
 

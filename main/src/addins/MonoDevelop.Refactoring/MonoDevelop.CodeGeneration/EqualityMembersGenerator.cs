@@ -26,7 +26,7 @@
 
 using Gtk;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
@@ -96,7 +96,7 @@ namespace MonoDevelop.CodeGeneration
 				methodDeclaration.Name = "Equals";
 
 				methodDeclaration.TypeReference = DomReturnType.Bool.ConvertToTypeReference ();
-				methodDeclaration.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.Public | ICSharpCode.NRefactory.Ast.Modifiers.Override;
+				methodDeclaration.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Public | ICSharpCode.OldNRefactory.Ast.Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
 				methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (DomReturnType.Object.ConvertToTypeReference (), "obj"));
 				IdentifierExpression paramId = new IdentifierExpression ("obj");
@@ -140,7 +140,7 @@ namespace MonoDevelop.CodeGeneration
 				methodDeclaration.Name = "GetHashCode";
 
 				methodDeclaration.TypeReference = DomReturnType.Int32.ConvertToTypeReference ();
-				methodDeclaration.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.Public | ICSharpCode.NRefactory.Ast.Modifiers.Override;
+				methodDeclaration.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Public | ICSharpCode.OldNRefactory.Ast.Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
 
 				binOp = null;

@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.OldNRefactory.Parser
 {
 	/// <summary>
 	/// Description of TagComment.	

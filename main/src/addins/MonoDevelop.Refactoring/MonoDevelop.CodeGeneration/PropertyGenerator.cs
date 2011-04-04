@@ -26,9 +26,9 @@
 
 using System;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.PrettyPrinter;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;

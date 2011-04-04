@@ -8,9 +8,9 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	public sealed class LocalLookupVariable
 	{
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
-		public override object VisitCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit (ICSharpCode.OldNRefactory.Ast.CompilationUnit compilationUnit, object data)
 		{
 			variables.Clear ();
 			return base.VisitCompilationUnit (compilationUnit, data);

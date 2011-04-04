@@ -27,8 +27,8 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 

@@ -11,7 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.Parser.CSharp
+namespace ICSharpCode.OldNRefactory.Parser.CSharp
 {
 	public sealed class Lexer : AbstractLexer
 	{

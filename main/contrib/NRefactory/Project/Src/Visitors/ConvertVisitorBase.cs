@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	/// <summary>
 	/// Base class for the conversion visitors.

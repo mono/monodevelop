@@ -1,18 +1,18 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision: 4482 $</version>
 // </file>
 
-using ICSharpCode.NRefactory.AstBuilder;
+using ICSharpCode.OldNRefactory.AstBuilder;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ICSharpCode.NRefactory.Ast;
-using Attribute = ICSharpCode.NRefactory.Ast.Attribute;
+using ICSharpCode.OldNRefactory.Ast;
+using Attribute = ICSharpCode.OldNRefactory.Ast.Attribute;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	/// <summary>
 	/// Converts special VB constructs to use more general AST classes.

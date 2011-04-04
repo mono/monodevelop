@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.OldNRefactory
 {
 	public class BlankLine : AbstractSpecial
 	{

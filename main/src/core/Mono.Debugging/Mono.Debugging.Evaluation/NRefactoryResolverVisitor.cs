@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Visitors;
 using Mono.Debugging.Client;
 using System.Collections.Generic;
 using System.Text;
@@ -84,14 +84,14 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 		
-		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression (ICSharpCode.OldNRefactory.Ast.IdentifierExpression identifierExpression, object data)
 		{
 			if (!identifierExpression.StartLocation.IsEmpty)
 				ResolveType (identifierExpression.Identifier, 0, identifierExpression.StartLocation.Column - 1, identifierExpression.EndLocation.Column - identifierExpression.StartLocation.Column);
 			return null;
 		}
 		
-		public override object VisitTypeReference (ICSharpCode.NRefactory.Ast.TypeReference typeReference, object data)
+		public override object VisitTypeReference (ICSharpCode.OldNRefactory.Ast.TypeReference typeReference, object data)
 		{
 			if (!typeReference.StartLocation.IsEmpty) {
 				int offset = typeReference.StartLocation.Column - 1;

@@ -321,7 +321,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				if (startOffset < bodyStartOffset || bodyEndOffset < endOffset)
 					return false;
 				text = data.Document.GetTextBetween (bodyStartOffset, startOffset) + data.Document.GetTextBetween (endOffset, bodyEndOffset);
-				//				ICSharpCode.NRefactory.Ast.INode parsedNode = provider.ParseText (text);
+				//				ICSharpCode.OldNRefactory.Ast.INode parsedNode = provider.ParseText (text);
 				//				visitor = new VariableLookupVisitor (resolver, param.Location);
 				//				visitor.CutRegion = new DomRegion (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 				//				visitor.MemberLocation = new Location (param.DeclaringMember.Location.Column, param.DeclaringMember.Location.Line);

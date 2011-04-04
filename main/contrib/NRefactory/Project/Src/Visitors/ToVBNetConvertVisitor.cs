@@ -7,11 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.AstBuilder;
-using Attribute = ICSharpCode.NRefactory.Ast.Attribute;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.AstBuilder;
+using Attribute = ICSharpCode.OldNRefactory.Ast.Attribute;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	/// <summary>
 	/// Converts elements not supported by VB to their VB representation.
@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			return null;
 		}
 		
-		bool ConvertPInvoke(MethodDeclaration method, ICSharpCode.NRefactory.Ast.Attribute att)
+		bool ConvertPInvoke(MethodDeclaration method, ICSharpCode.OldNRefactory.Ast.Attribute att)
 		{
 			if (att.PositionalArguments.Count != 1)
 				return false;

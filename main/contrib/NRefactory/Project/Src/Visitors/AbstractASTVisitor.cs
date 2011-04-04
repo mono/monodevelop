@@ -8,11 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.NRefactory.Visitors {
+namespace ICSharpCode.OldNRefactory.Visitors {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using ICSharpCode.NRefactory.Ast;
+	using ICSharpCode.OldNRefactory.Ast;
 	
 	
 	public abstract class AbstractAstVisitor : IAstVisitor {
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return assignmentExpression.Right.AcceptVisitor(this, data);
 		}
 		
-		public virtual object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data) {
+		public virtual object VisitAttribute(ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data) {
 			Debug.Assert((attribute != null));
 			Debug.Assert((attribute.PositionalArguments != null));
 			Debug.Assert((attribute.NamedArguments != null));
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 		public virtual object VisitAttributeSection(AttributeSection attributeSection, object data) {
 			Debug.Assert((attributeSection != null));
 			Debug.Assert((attributeSection.Attributes != null));
-			foreach (ICSharpCode.NRefactory.Ast.Attribute o in attributeSection.Attributes) {
+			foreach (ICSharpCode.OldNRefactory.Ast.Attribute o in attributeSection.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}

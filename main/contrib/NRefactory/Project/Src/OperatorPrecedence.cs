@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.OldNRefactory
 {
 	/// <summary>
 	/// Stores the operator precedences for the output visitor.

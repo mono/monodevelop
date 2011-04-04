@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Security.Permissions;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	[PermissionSet(SecurityAction.InheritanceDemand, Name = "FullTrust")]
 	[PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]

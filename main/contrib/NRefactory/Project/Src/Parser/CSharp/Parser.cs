@@ -4,17 +4,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
-using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
-using Types = ICSharpCode.NRefactory.Ast.ClassType;
+using ICSharpCode.OldNRefactory.Parser;
+using ICSharpCode.OldNRefactory.Ast;
+using ASTAttribute = ICSharpCode.OldNRefactory.Ast.Attribute;
+using Types = ICSharpCode.OldNRefactory.Ast.ClassType;
 /*
   Parser.frame file for NRefactory.
  */
 using System;
 using System.Reflection;
 
-namespace ICSharpCode.NRefactory.Parser.CSharp {
+namespace ICSharpCode.OldNRefactory.Parser.CSharp {
 
 
 

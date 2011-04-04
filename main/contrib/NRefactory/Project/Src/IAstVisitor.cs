@@ -8,9 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.NRefactory {
+namespace ICSharpCode.OldNRefactory {
 	using System;
-	using ICSharpCode.NRefactory.Ast;
+	using ICSharpCode.OldNRefactory.Ast;
 	
 	
 	public interface IAstVisitor {
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data);
 		
-		object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data);
+		object VisitAttribute(ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data);
 		
 		object VisitAttributeSection(AttributeSection attributeSection, object data);
 		

@@ -27,7 +27,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Projects.Dom;
@@ -130,7 +130,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				setText = astProvider.OutputNode (options.Dom, setRegion, options.GetIndent (property) + "\t").Trim ();
 			} else {
 				setEndOffset = setStartOffset = data.Document.LocationToOffset (property.GetRegion.End.ToDocumentLocation (data.Document));
-				setRegion.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.Private;
+				setRegion.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Private;
 				setText = Environment.NewLine + astProvider.OutputNode (options.Dom, setRegion, options.GetIndent (property) + "\t").TrimEnd ();
 			}
 			result.RemoveAll (c => setStartOffset <= ((TextReplaceChange)c).Offset  && ((TextReplaceChange)c).Offset <= setEndOffset);
@@ -168,7 +168,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 
 		string RetrieveBackingStore (MonoDevelop.Refactoring.RefactoringOptions options, MonoDevelop.Refactoring.INRefactoryASTProvider astProvider, MonoDevelop.Projects.Dom.IProperty property)
 		{
-			ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit = astProvider.ParseFile (options.Document.Editor.Text);
+			ICSharpCode.OldNRefactory.Ast.CompilationUnit compilationUnit = astProvider.ParseFile (options.Document.Editor.Text);
 			PropertyVisitor visitor = new PropertyVisitor (property);
 			compilationUnit.AcceptVisitor (visitor, null);
 			return visitor.BackingStoreName;

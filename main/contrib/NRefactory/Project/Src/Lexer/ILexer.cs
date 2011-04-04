@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.OldNRefactory.Parser
 {
 	/// <summary>
 	/// Lexer interface
@@ -20,14 +20,14 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		/// <summary>
-		/// The current Token. <seealso cref="ICSharpCode.NRefactory.Parser.Token"/>
+		/// The current Token. <seealso cref="ICSharpCode.OldNRefactory.Parser.Token"/>
 		/// </summary>
 		Token Token {
 			get;
 		}
 		
 		/// <summary>
-		/// The next Token (The <see cref="Token"/> after <see cref="NextToken"/> call) . <seealso cref="ICSharpCode.NRefactory.Parser.Token"/>
+		/// The next Token (The <see cref="Token"/> after <see cref="NextToken"/> call) . <seealso cref="ICSharpCode.OldNRefactory.Parser.Token"/>
 		/// </summary>
 		Token LookAhead {
 			get;

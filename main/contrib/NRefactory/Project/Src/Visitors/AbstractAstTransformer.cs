@@ -8,11 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
  
-namespace ICSharpCode.NRefactory.Visitors {
+namespace ICSharpCode.OldNRefactory.Visitors {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using ICSharpCode.NRefactory.Ast;
+	using ICSharpCode.OldNRefactory.Ast;
 	
 	
 	/// <summary>
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data) {
+		public virtual object VisitAttribute(ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data) {
 			Debug.Assert((attribute != null));
 			Debug.Assert((attribute.PositionalArguments != null));
 			Debug.Assert((attribute.NamedArguments != null));
@@ -152,11 +152,11 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((attributeSection != null));
 			Debug.Assert((attributeSection.Attributes != null));
 			for (int i = 0; i < attributeSection.Attributes.Count; i++) {
-				ICSharpCode.NRefactory.Ast.Attribute o = attributeSection.Attributes[i];
+				ICSharpCode.OldNRefactory.Ast.Attribute o = attributeSection.Attributes[i];
 				Debug.Assert(o != null);
 				nodeStack.Push(o);
 				o.AcceptVisitor(this, data);
-				o = (ICSharpCode.NRefactory.Ast.Attribute)nodeStack.Pop();
+				o = (ICSharpCode.OldNRefactory.Ast.Attribute)nodeStack.Pop();
 				if (o == null)
 					attributeSection.Attributes.RemoveAt(i--);
 				else

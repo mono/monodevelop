@@ -23,9 +23,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.CSharp;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Parser;
+using ICSharpCode.OldNRefactory.Parser.CSharp;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
@@ -83,12 +83,12 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			if (expr == null)
 				return false;
-			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expr))) {
+			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expr))) {
 				var parsedExpr = parser.ParseExpression ();
 				if (parsedExpr == null)
 					return false;
 				
-				var visitor = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor ();
+				var visitor = new ICSharpCode.OldNRefactory.PrettyPrinter.CSharpOutputVisitor ();
 				parsedExpr.AcceptVisitor (visitor, null);
 				return Strip (expr) == Strip (visitor.Text);
 			}
@@ -267,7 +267,7 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			ExpressionResult lhsExpr = FindFullExpression (editor, lastWs);
 			if (lhsExpr.Expression != null) {
-				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line, editor.Caret.Column));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
@@ -345,7 +345,7 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			ExpressionResult lhsExpr = FindExpression (editor, pos);
 			if (lhsExpr.Expression != null) {
-				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line, editor.Caret.Column));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);

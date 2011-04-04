@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.OldNRefactory.Parser
 {
 	public class SpecialTracker
 	{

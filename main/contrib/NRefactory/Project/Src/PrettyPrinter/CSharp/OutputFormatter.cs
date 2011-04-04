@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -6,9 +6,9 @@
 // </file>
 
 using System.Collections;
-using ICSharpCode.NRefactory.Parser.CSharp;
+using ICSharpCode.OldNRefactory.Parser.CSharp;
 
-namespace ICSharpCode.NRefactory.PrettyPrinter
+namespace ICSharpCode.OldNRefactory.PrettyPrinter
 {
 	public sealed class CSharpOutputFormatter : AbstractOutputFormatter
 	{

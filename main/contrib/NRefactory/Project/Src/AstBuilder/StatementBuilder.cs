@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.AstBuilder
+namespace ICSharpCode.OldNRefactory.AstBuilder
 {
 	/// <summary>
 	/// Extension methods for NRefactory.Ast.Expression.

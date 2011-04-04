@@ -5,7 +5,7 @@
 //     <version>$Revision: 4482 $</version>
 // </file>
 
-namespace ICSharpCode.NRefactory.Ast
+namespace ICSharpCode.OldNRefactory.Ast
 {
 	public interface INullable
 	{

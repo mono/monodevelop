@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	public class CodeDomVisitor : AbstractAstVisitor
 	{

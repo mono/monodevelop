@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.OldNRefactory
 {
 	public enum SupportedLanguage {
 		CSharp,
@@ -25,9 +25,9 @@ namespace ICSharpCode.NRefactory
 		{
 			switch (language) {
 				case SupportedLanguage.CSharp:
-					return new ICSharpCode.NRefactory.Parser.CSharp.Lexer(textReader);
+					return new ICSharpCode.OldNRefactory.Parser.CSharp.Lexer(textReader);
 				case SupportedLanguage.VBNet:
-					return new ICSharpCode.NRefactory.Parser.VB.Lexer(textReader);
+					return new ICSharpCode.OldNRefactory.Parser.VB.Lexer(textReader);
 			}
 			throw new System.NotSupportedException(language + " not supported.");
 		}
@@ -37,9 +37,9 @@ namespace ICSharpCode.NRefactory
 			Parser.ILexer lexer = CreateLexer(language, textReader);
 			switch (language) {
 				case SupportedLanguage.CSharp:
-					return new ICSharpCode.NRefactory.Parser.CSharp.Parser(lexer);
+					return new ICSharpCode.OldNRefactory.Parser.CSharp.Parser(lexer);
 				case SupportedLanguage.VBNet:
-					return new ICSharpCode.NRefactory.Parser.VB.Parser(lexer);
+					return new ICSharpCode.OldNRefactory.Parser.VB.Parser(lexer);
 			}
 			throw new System.NotSupportedException(language + " not supported.");
 		}

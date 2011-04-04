@@ -7,10 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.Visitors;
 
-namespace ICSharpCode.NRefactory.Parser.CSharp
+namespace ICSharpCode.OldNRefactory.Parser.CSharp
 {
 	public sealed class ConditionalCompilation : AbstractAstVisitor
 	{

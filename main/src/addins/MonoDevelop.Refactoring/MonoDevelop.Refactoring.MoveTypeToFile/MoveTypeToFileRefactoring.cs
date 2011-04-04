@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using System.Text;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.StandardHeader;
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				
 				INRefactoryASTProvider provider = options.GetASTProvider ();
 				Mono.TextEditor.TextEditorData data = options.GetTextEditorData ();
-				ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (options.Document.Editor.Text);
+				ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = provider.ParseFile (options.Document.Editor.Text);
 				
 				TypeFilterTransformer typeFilterTransformer = new TypeFilterTransformer ((type is InstantiatedType) ? ((InstantiatedType)type).UninstantiatedType.DecoratedFullName : type.DecoratedFullName);
 				unit.AcceptVisitor (typeFilterTransformer, null);
@@ -119,7 +119,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				}
 				int length = data.Document.LocationToOffset (typeFilterTransformer.TypeDeclaration.EndLocation.Line, typeFilterTransformer.TypeDeclaration.EndLocation.Column) - start;
 				
-				ICSharpCode.NRefactory.Ast.CompilationUnit generatedCompilationUnit = provider.ParseFile (generatedDocument.Text);
+				ICSharpCode.OldNRefactory.Ast.CompilationUnit generatedCompilationUnit = provider.ParseFile (generatedDocument.Text);
 				TypeSearchVisitor typeSearchVisitor = new TypeSearchVisitor ();
 				generatedCompilationUnit.AcceptVisitor (typeSearchVisitor, null);
 				

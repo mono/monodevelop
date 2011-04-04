@@ -27,15 +27,15 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Ast;
 
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Visitors;
 
 namespace MonoDevelop.Refactoring.DeclareLocal
 {
@@ -160,7 +160,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			}
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
-			ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
+			ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
 			var visitor = new VariableLookupVisitor (resolver, new DomLocation (endPoint.Line, endPoint.Column));
 			if (options.ResolveResult == null) {
 				LoggingService.LogError ("Declare local error: resolve result == null");
@@ -533,7 +533,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
 		
-		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression (ICSharpCode.OldNRefactory.Ast.IdentifierExpression identifierExpression, object data)
 		{
 			if (!variables.ContainsKey (identifierExpression.Identifier)) {
 
@@ -562,7 +562,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return base.VisitIdentifierExpression (identifierExpression, data);
 		}
 		bool valueGetsChanged = false;
-		public override object VisitAssignmentExpression (ICSharpCode.NRefactory.Ast.AssignmentExpression assignmentExpression, object data)
+		public override object VisitAssignmentExpression (ICSharpCode.OldNRefactory.Ast.AssignmentExpression assignmentExpression, object data)
 		{
 			assignmentExpression.Right.AcceptVisitor(this, data);
 				
@@ -580,7 +580,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return null;
 		}
 		
-		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression (ICSharpCode.OldNRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			switch (unaryOperatorExpression.Op) {
 			case UnaryOperatorType.Increment:
@@ -605,7 +605,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return result;
 		}
 
-		public override object VisitDirectionExpression (ICSharpCode.NRefactory.Ast.DirectionExpression directionExpression, object data)
+		public override object VisitDirectionExpression (ICSharpCode.OldNRefactory.Ast.DirectionExpression directionExpression, object data)
 		{
 			valueGetsChanged = true;
 			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;

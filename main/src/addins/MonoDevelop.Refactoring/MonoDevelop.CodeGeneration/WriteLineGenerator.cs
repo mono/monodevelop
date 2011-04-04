@@ -30,12 +30,12 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.NRefactory;
+using ICSharpCode.OldNRefactory.Visitors;
+using ICSharpCode.OldNRefactory;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -89,7 +89,7 @@ namespace MonoDevelop.CodeGeneration
 					yield break;
 				
 				// add local variables
-				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.NRefactory.SupportedLanguage.CSharp);
+				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp);
 				Location location = new Location (editor.Caret.Line, editor.Caret.Column);
 				var result = provider.ParseFile (editor.Text);
 				result.AcceptVisitor (visitor, null);

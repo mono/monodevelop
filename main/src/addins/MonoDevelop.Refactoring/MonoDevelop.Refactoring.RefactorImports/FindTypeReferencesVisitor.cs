@@ -27,8 +27,8 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
@@ -51,7 +51,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			this.resolver = resolver;
 		}
 		
-		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression (ICSharpCode.OldNRefactory.Ast.IdentifierExpression identifierExpression, object data)
 		{
 			possibleTypeReferences.Add (new TypeReference (identifierExpression.Identifier));
 			
@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			return base.VisitTypeReference (typeReference, data);
 		}
 		
-		public override object VisitAttribute (ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
+		public override object VisitAttribute (ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data)
 		{
 			possibleTypeReferences.Add (new TypeReference (attribute.Name));
 			possibleTypeReferences.Add (new TypeReference (attribute.Name + "Attribute"));

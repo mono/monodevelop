@@ -26,10 +26,10 @@
 
 using System;
 using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Projects.Dom.Parser;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory;
+using ICSharpCode.OldNRefactory.PrettyPrinter;
+using ICSharpCode.OldNRefactory;
 using System.IO;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Projects.Policies;
@@ -112,14 +112,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			return (result / tabSize) * tabSize;
 		}
 		
-		public ICSharpCode.NRefactory.Parser.Errors LastErrors {
+		public ICSharpCode.OldNRefactory.Parser.Errors LastErrors {
 			get;
 			private set;
 		}
 		public Expression ParseExpression (string expressionText)
 		{
 			expressionText = expressionText.Trim ();
-			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expressionText))) {
+			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expressionText))) {
 				Expression result = null;
 				try {
 					result = parser.ParseExpression ();
@@ -133,7 +133,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public INode ParseText (string text)
 		{
 			text = text.Trim ();
-			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (text))) {
+			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (text))) {
 				if (text.EndsWith (";") || text.EndsWith ("}")) {
 					BlockStatement block = null ;
 					try {
@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public CompilationUnit ParseFile (string content)
 		{
-			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
+			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
 				try {
 					parser.Parse ();
 					LastErrors = parser.Errors;
@@ -163,7 +163,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public TypeReference ParseTypeReference (string content)
 		{
 			content = content.Trim ();
-			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
+			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
 				try {
 					var result = parser.ParseTypeReference ();
 					LastErrors = parser.Errors;

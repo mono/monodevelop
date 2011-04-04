@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.PrettyPrinter;
+using ICSharpCode.OldNRefactory;
 using System.IO;
 using MonoDevelop.Projects.Dom.Parser;
 
@@ -38,7 +38,7 @@ namespace MonoDevelop.Refactoring
 		string OutputNode (ProjectDom dom, INode node);
 		string OutputNode (ProjectDom dom, INode node, string indent);
 		
-		ICSharpCode.NRefactory.Parser.Errors LastErrors {
+		ICSharpCode.OldNRefactory.Parser.Errors LastErrors {
 			get;
 		}
 		

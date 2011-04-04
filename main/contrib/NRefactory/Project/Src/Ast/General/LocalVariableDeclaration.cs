@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.Ast
+namespace ICSharpCode.OldNRefactory.Ast
 {
 	public class LocalVariableDeclaration : Statement
 	{

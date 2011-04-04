@@ -32,7 +32,7 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeGeneration
 					MethodDeclaration methodDeclaration = new MethodDeclaration ();
 					methodDeclaration.Name = "On" + member.Name;
 					methodDeclaration.TypeReference = DomReturnType.Void.ConvertToTypeReference ();
-					methodDeclaration.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.Protected | ICSharpCode.NRefactory.Ast.Modifiers.Virtual;
+					methodDeclaration.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Protected | ICSharpCode.OldNRefactory.Ast.Modifiers.Virtual;
 					methodDeclaration.Body = new BlockStatement ();
 
 					IType type = Options.Dom.SearchType (Options.Document.ParsedDocument.CompilationUnit, member.DeclaringType, member.Location, member.ReturnType);

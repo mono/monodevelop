@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -12,7 +12,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.Ast
+namespace ICSharpCode.OldNRefactory.Ast
 {
 	public class TypeReference : AbstractNode, INullable, ICloneable
 	{

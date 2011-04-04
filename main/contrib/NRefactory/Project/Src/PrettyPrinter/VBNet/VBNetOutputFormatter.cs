@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser.VB;
+using ICSharpCode.OldNRefactory.Parser.VB;
 
-namespace ICSharpCode.NRefactory.PrettyPrinter
+namespace ICSharpCode.OldNRefactory.PrettyPrinter
 {
 	/// <summary>
 	/// Description of VBNetOutputFormatter.

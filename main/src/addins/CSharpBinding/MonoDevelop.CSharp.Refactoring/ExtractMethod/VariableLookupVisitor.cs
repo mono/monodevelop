@@ -267,7 +267,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		}
 		
 		/*
-		public override object VisitDirectionExpression (ICSharpCode.NRefactory.Ast.DirectionExpression directionExpression, object data)
+		public override object VisitDirectionExpression (ICSharpCode.OldNRefactory.Ast.DirectionExpression directionExpression, object data)
 		{
 			valueGetsChanged = true;
 			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;

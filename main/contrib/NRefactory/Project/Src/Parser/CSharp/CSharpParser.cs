@@ -5,14 +5,14 @@
 //     <version>$Revision: 4740 $</version>
 // </file>
 
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Visitors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
-namespace ICSharpCode.NRefactory.Parser.CSharp
+namespace ICSharpCode.OldNRefactory.Parser.CSharp
 {
 	internal sealed partial class Parser : AbstractParser
 	{

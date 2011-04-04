@@ -25,18 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Visitors;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Refactoring.MoveTypeToFile
 {
 	public class TypeSearchVisitor : AbstractAstVisitor
 	{
-		List<ICSharpCode.NRefactory.Ast.TypeDeclaration> types = new List<ICSharpCode.NRefactory.Ast.TypeDeclaration> ();
-		public List<ICSharpCode.NRefactory.Ast.TypeDeclaration> Types {
+		List<ICSharpCode.OldNRefactory.Ast.TypeDeclaration> types = new List<ICSharpCode.OldNRefactory.Ast.TypeDeclaration> ();
+		public List<ICSharpCode.OldNRefactory.Ast.TypeDeclaration> Types {
 			get { return this.types; }
 		}
-		public override object VisitTypeDeclaration (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration (ICSharpCode.OldNRefactory.Ast.TypeDeclaration typeDeclaration, object data)
 		{
 			types.Add (typeDeclaration);
 			return base.VisitTypeDeclaration (typeDeclaration, data);

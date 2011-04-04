@@ -35,7 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
-using ICSharpCode.NRefactory;
+using ICSharpCode.OldNRefactory;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp.Completion
 			};
 			
 			var r = new System.IO.StringReader (localInfo.LocalDocument);
-			using (var parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, r)) {
+			using (var parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, r)) {
 				parser.Parse ();
 				return new CSharpTextEditorCompletion (localInfo.HiddenDocument) {
 					ParsedUnit = parser.CompilationUnit,

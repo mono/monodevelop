@@ -28,7 +28,7 @@
 using System.Collections.Generic;
 
 using Gtk;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 
 using MonoDevelop;
 using MonoDevelop.CodeGeneration;

@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Text;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Visitors;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Refactoring;

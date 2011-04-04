@@ -8,7 +8,7 @@
 using System;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.OldNRefactory.Parser
 {
 	public delegate void ErrorCodeProc(int line, int col, int n);
 	public delegate void ErrorMsgProc(int line, int col, string msg);

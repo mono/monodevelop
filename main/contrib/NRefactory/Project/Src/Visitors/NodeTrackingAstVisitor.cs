@@ -8,9 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.NRefactory.Visitors {
+namespace ICSharpCode.OldNRefactory.Visitors {
 	using System;
-	using ICSharpCode.NRefactory.Ast;
+	using ICSharpCode.OldNRefactory.Ast;
 	
 	
 	/// <summary>
@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data) {
+		public sealed override object VisitAttribute(ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data) {
 			this.BeginVisit(attribute);
 			object result = this.TrackedVisitAttribute(attribute, data);
 			this.EndVisit(attribute);
@@ -905,7 +905,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitAssignmentExpression(assignmentExpression, data);
 		}
 		
-		public virtual object TrackedVisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data) {
+		public virtual object TrackedVisitAttribute(ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data) {
 			return base.VisitAttribute(attribute, data);
 		}
 		

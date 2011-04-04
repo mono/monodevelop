@@ -5,10 +5,10 @@
 //     <version>$Revision: 4482 $</version>
 // </file>
 
-using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.OldNRefactory.PrettyPrinter;
 using System;
 
-namespace ICSharpCode.NRefactory.Ast
+namespace ICSharpCode.OldNRefactory.Ast
 {
 	public class PrimitiveExpression : Expression
 	{

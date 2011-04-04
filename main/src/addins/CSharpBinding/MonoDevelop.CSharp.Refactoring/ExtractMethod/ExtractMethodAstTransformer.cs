@@ -28,9 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Ast;
 using System.Diagnostics;
 
 namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			return null;
 		}
 		
-		public override object VisitLocalVariableDeclaration (ICSharpCode.NRefactory.Ast.LocalVariableDeclaration localVariableDeclaration, object data)
+		public override object VisitLocalVariableDeclaration (ICSharpCode.OldNRefactory.Ast.LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			object result = base.VisitLocalVariableDeclaration (localVariableDeclaration, data);
 			if (localVariableDeclaration.Variables.Count == 0)
@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			return result;
 		}
 
-		public override object VisitVariableDeclaration (ICSharpCode.NRefactory.Ast.VariableDeclaration variableDeclaration, object data)
+		public override object VisitVariableDeclaration (ICSharpCode.OldNRefactory.Ast.VariableDeclaration variableDeclaration, object data)
 		{
 			if (variablesToGenerate.Any (v => v.Name == variableDeclaration.Name)) {
 				RemoveCurrentNode ();

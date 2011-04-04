@@ -65,15 +65,7 @@ namespace MonoDevelop.Debugger
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-			this.valueTree = new global::MonoDevelop.Debugger.ObjectValueTreeView ();
-			this.valueTree.CanFocus = true;
-			this.valueTree.Name = "valueTree";
-			this.valueTree.AllowAdding = false;
-			this.valueTree.AllowEditing = false;
-			this.valueTree.AllowPinning = false;
-			this.valueTree.AllowExpanding = false;
-			this.valueTree.PinnedWatchLine = 0;
-			this.valueTree.CompactView = false;
+			this.valueTree = null;
 			this.GtkScrolledWindow.Add (this.valueTree);
 			this.vbox2.Add (this.GtkScrolledWindow);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));

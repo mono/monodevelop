@@ -27,7 +27,7 @@
 
 using Gtk;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
@@ -96,15 +96,15 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			static ICSharpCode.NRefactory.Ast.ParameterModifiers GetModifier (IParameter para)
+			static ICSharpCode.OldNRefactory.Ast.ParameterModifiers GetModifier (IParameter para)
 			{
 				if (para.IsOut)
-					return ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
+					return ICSharpCode.OldNRefactory.Ast.ParameterModifiers.Out;
 				if (para.IsRef)
-					return ICSharpCode.NRefactory.Ast.ParameterModifiers.Ref;
+					return ICSharpCode.OldNRefactory.Ast.ParameterModifiers.Ref;
 				if (para.IsParams)
-					return ICSharpCode.NRefactory.Ast.ParameterModifiers.Params;
-				return ICSharpCode.NRefactory.Ast.ParameterModifiers.None;
+					return ICSharpCode.OldNRefactory.Ast.ParameterModifiers.Params;
+				return ICSharpCode.OldNRefactory.Ast.ParameterModifiers.None;
 			}
 			
 			static FieldDirection GetDirection (IParameter para)
@@ -116,7 +116,7 @@ namespace MonoDevelop.CodeGeneration
 				return FieldDirection.None;
 			}
 			
-			static readonly ICSharpCode.NRefactory.Ast.INode throwNotImplemented = new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null));
+			static readonly ICSharpCode.OldNRefactory.Ast.INode throwNotImplemented = new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null));
 			
 			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{

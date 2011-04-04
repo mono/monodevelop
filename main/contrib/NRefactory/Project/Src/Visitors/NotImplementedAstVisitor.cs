@@ -8,9 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.NRefactory.Visitors {
+namespace ICSharpCode.OldNRefactory.Visitors {
 	using System;
-	using ICSharpCode.NRefactory.Ast;
+	using ICSharpCode.OldNRefactory.Ast;
 	
 	
 	/// <summary>
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("AssignmentExpression");
 		}
 		
-		public virtual object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data) {
+		public virtual object VisitAttribute(ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data) {
 			throw new global::System.NotImplementedException("Attribute");
 		}
 		

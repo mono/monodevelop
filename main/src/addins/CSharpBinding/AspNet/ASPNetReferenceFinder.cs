@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		IEnumerable<MemberReference> SearchMember (INode member, ProjectDom dom, FilePath fileName, Mono.TextEditor.TextEditorData editor, Mono.TextEditor.Document buildDocument, List<LocalDocumentInfo.OffsetInfo> offsetInfos, ParsedDocument parsedDocument)
 		{
-			var resolver = new NRefactoryResolver (dom, parsedDocument.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+			var resolver = new NRefactoryResolver (dom, parsedDocument.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
 			
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (buildDocument, resolver, member);
 			visitor.IncludeXmlDocumentation = IncludeDocumentation;

@@ -4,16 +4,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Parser.VB;
-using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.Parser.VB;
+using ASTAttribute = ICSharpCode.OldNRefactory.Ast.Attribute;
 /*
   Parser.frame file for NRefactory.
  */
 using System;
 using System.Reflection;
 
-namespace ICSharpCode.NRefactory.Parser.VB {
+namespace ICSharpCode.OldNRefactory.Parser.VB {
 
 
 

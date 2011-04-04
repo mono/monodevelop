@@ -40,12 +40,12 @@ namespace MonoDevelop.VBNetBinding
 	{
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
-			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
+			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (ICSharpCode.OldNRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
 				return Parse (parser, fileName);
 			}
 		}
 		
-		ParsedDocument Parse (ICSharpCode.NRefactory.IParser parser, string fileName)
+		ParsedDocument Parse (ICSharpCode.OldNRefactory.IParser parser, string fileName)
 		{
 			parser.Parse();
 			
@@ -61,28 +61,28 @@ namespace MonoDevelop.VBNetBinding
 			return result;
 		}
 		
-		class DomConverter : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
+		class DomConverter : ICSharpCode.OldNRefactory.Visitors.AbstractAstVisitor
 		{
 			MonoDevelop.Projects.Dom.CompilationUnit cu;
 				
 			Stack<string>  currentNamespace = new Stack<string> ();
 			Stack<DomType> currentType      = new Stack<DomType> ();
 			
-//			static ICSharpCode.NRefactory.Visitors.CodeDomVisitor domVisitor = new ICSharpCode.NRefactory.Visitors.CodeDomVisitor ();
+//			static ICSharpCode.OldNRefactory.Visitors.CodeDomVisitor domVisitor = new ICSharpCode.OldNRefactory.Visitors.CodeDomVisitor ();
 			
 			public DomConverter (string fileName)
 			{
 				cu = new CompilationUnit (fileName);
 			}
 			
-			public override object VisitCompilationUnit(ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit, object data)
+			public override object VisitCompilationUnit(ICSharpCode.OldNRefactory.Ast.CompilationUnit compilationUnit, object data)
 			{
 				//TODO: Imports, Comments
 				compilationUnit.AcceptChildren (this, data);
 				return cu;
 			}
 			
-//			public override object VisitUsing(ICSharpCode.NRefactory.Ast.Using usingDeclaration, object data)
+//			public override object VisitUsing(ICSharpCode.OldNRefactory.Ast.Using usingDeclaration, object data)
 //			{
 //				DefaultUsing u = new DefaultUsing();
 //				if (usingDeclaration.IsAlias)
@@ -98,7 +98,7 @@ namespace MonoDevelop.VBNetBinding
 //			return (ModifierEnum)m;
 //		}
 			
-			public override object VisitNamespaceDeclaration(ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
+			public override object VisitNamespaceDeclaration(ICSharpCode.OldNRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
 			{
 				string name;
 				if (currentNamespace.Count == 0) {
@@ -112,22 +112,22 @@ namespace MonoDevelop.VBNetBinding
 				return ret;
 			}
 			
-			ClassType TranslateClassType(ICSharpCode.NRefactory.Ast.ClassType type)
+			ClassType TranslateClassType(ICSharpCode.OldNRefactory.Ast.ClassType type)
 			{
 				switch (type) {
-					case ICSharpCode.NRefactory.Ast.ClassType.Class:
+					case ICSharpCode.OldNRefactory.Ast.ClassType.Class:
 						return ClassType.Class;
-					case ICSharpCode.NRefactory.Ast.ClassType.Enum:
+					case ICSharpCode.OldNRefactory.Ast.ClassType.Enum:
 						return ClassType.Enum;
-					case ICSharpCode.NRefactory.Ast.ClassType.Interface:
+					case ICSharpCode.OldNRefactory.Ast.ClassType.Interface:
 						return ClassType.Interface;
-					case ICSharpCode.NRefactory.Ast.ClassType.Struct:
+					case ICSharpCode.OldNRefactory.Ast.ClassType.Struct:
 						return ClassType.Struct;
 				}
 				return ClassType.Unknown;
 			}
 			
-			public override object VisitTypeDeclaration(ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
+			public override object VisitTypeDeclaration(ICSharpCode.OldNRefactory.Ast.TypeDeclaration typeDeclaration, object data)
 			{
 				DomType type = new DomType (cu, 
 				                            TranslateClassType (typeDeclaration.Type),
@@ -144,7 +144,7 @@ namespace MonoDevelop.VBNetBinding
 				}
 				
 				if (typeDeclaration.BaseTypes != null) {
-					foreach (ICSharpCode.NRefactory.Ast.TypeReference baseType in typeDeclaration.BaseTypes) {
+					foreach (ICSharpCode.OldNRefactory.Ast.TypeReference baseType in typeDeclaration.BaseTypes) {
 						if (type.BaseType == null) {
 							type.BaseType = TranslateTypeReference (baseType);
 						} else {
@@ -159,16 +159,16 @@ namespace MonoDevelop.VBNetBinding
 				return null;
 			}
 			
-			static DomReturnType TranslateTypeReference (ICSharpCode.NRefactory.Ast.TypeReference type)
+			static DomReturnType TranslateTypeReference (ICSharpCode.OldNRefactory.Ast.TypeReference type)
 			{
 				return new DomReturnType (type.Type);
 			}
-			static DomRegion TranslateRegion (ICSharpCode.NRefactory.Location start, ICSharpCode.NRefactory.Location end)
+			static DomRegion TranslateRegion (ICSharpCode.OldNRefactory.Location start, ICSharpCode.OldNRefactory.Location end)
 			{
 				return new DomRegion (start.Y, start.X, end.Y, end.X);
 			}
 			
-			public override object VisitMethodDeclaration(ICSharpCode.NRefactory.Ast.MethodDeclaration methodDeclaration, object data)
+			public override object VisitMethodDeclaration(ICSharpCode.OldNRefactory.Ast.MethodDeclaration methodDeclaration, object data)
 			{
 				Debug.Assert (currentType.Count > 0);
 				DomType type = currentType.Peek ();
@@ -181,7 +181,7 @@ namespace MonoDevelop.VBNetBinding
 				return null;
 			}
 			
-			public override object VisitConstructorDeclaration(ICSharpCode.NRefactory.Ast.ConstructorDeclaration constructorDeclaration, object data)
+			public override object VisitConstructorDeclaration(ICSharpCode.OldNRefactory.Ast.ConstructorDeclaration constructorDeclaration, object data)
 			{
 				Debug.Assert (currentType.Count > 0);
 				DomType type = currentType.Peek ();
@@ -194,11 +194,11 @@ namespace MonoDevelop.VBNetBinding
 				return null;
 			}
 			
-			public override object VisitFieldDeclaration(ICSharpCode.NRefactory.Ast.FieldDeclaration fieldDeclaration, object data)
+			public override object VisitFieldDeclaration(ICSharpCode.OldNRefactory.Ast.FieldDeclaration fieldDeclaration, object data)
 			{
 				Debug.Assert (currentType.Count > 0);
 				DomType type = currentType.Peek ();
-				foreach (ICSharpCode.NRefactory.Ast.VariableDeclaration field in fieldDeclaration.Fields) {
+				foreach (ICSharpCode.OldNRefactory.Ast.VariableDeclaration field in fieldDeclaration.Fields) {
 					type.Add (new DomField (field.Name,
 					                        (Modifiers)fieldDeclaration.Modifier,
 					                        new DomLocation (fieldDeclaration.StartLocation.Line, fieldDeclaration.StartLocation.Column),
@@ -207,16 +207,16 @@ namespace MonoDevelop.VBNetBinding
 				return null;
 			}
 			
-			public override object VisitPropertyDeclaration(ICSharpCode.NRefactory.Ast.PropertyDeclaration propertyDeclaration, object data)
+			public override object VisitPropertyDeclaration(ICSharpCode.OldNRefactory.Ast.PropertyDeclaration propertyDeclaration, object data)
 			{
 				Debug.Assert (currentType.Count > 0);
 				DomType type = currentType.Peek ();
 				
 				var getterModifier = (Modifiers)propertyDeclaration.Modifier;
 				var setterModifier = (Modifiers)propertyDeclaration.Modifier;
-				if (propertyDeclaration.HasGetRegion && propertyDeclaration.GetRegion.Modifier != ICSharpCode.NRefactory.Ast.Modifiers.None)
+				if (propertyDeclaration.HasGetRegion && propertyDeclaration.GetRegion.Modifier != ICSharpCode.OldNRefactory.Ast.Modifiers.None)
 					getterModifier = (Modifiers) propertyDeclaration.GetRegion.Modifier;
-				if (propertyDeclaration.HasSetRegion && propertyDeclaration.SetRegion.Modifier != ICSharpCode.NRefactory.Ast.Modifiers.None)
+				if (propertyDeclaration.HasSetRegion && propertyDeclaration.SetRegion.Modifier != ICSharpCode.OldNRefactory.Ast.Modifiers.None)
 					setterModifier = (Modifiers) propertyDeclaration.SetRegion.Modifier;
 				
 				type.Add (new DomProperty (propertyDeclaration.Name,
@@ -227,7 +227,7 @@ namespace MonoDevelop.VBNetBinding
 				return null;
 			}
 			
-			public override object VisitEventDeclaration(ICSharpCode.NRefactory.Ast.EventDeclaration eventDeclaration, object data)
+			public override object VisitEventDeclaration(ICSharpCode.OldNRefactory.Ast.EventDeclaration eventDeclaration, object data)
 			{
 				Debug.Assert (currentType.Count > 0);
 				DomType type = currentType.Peek ();

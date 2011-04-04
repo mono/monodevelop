@@ -6,10 +6,10 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.Visitors
+namespace ICSharpCode.OldNRefactory.Visitors
 {
 	/// <summary>
 	/// Sets the parent property on all nodes in the tree.

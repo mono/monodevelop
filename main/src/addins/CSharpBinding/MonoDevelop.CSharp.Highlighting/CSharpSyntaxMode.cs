@@ -217,7 +217,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return (CSharpSyntaxMode)mode;
 				}
 			}
-			class ConditinalExpressionEvaluator : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
+			class ConditinalExpressionEvaluator : ICSharpCode.OldNRefactory.Visitors.AbstractAstVisitor
 			{
 				HashSet<string> symbols = new HashSet<string> ();
 				
@@ -252,37 +252,37 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 				}
 				
-				public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
+				public override object VisitIdentifierExpression (ICSharpCode.OldNRefactory.Ast.IdentifierExpression identifierExpression, object data)
 				{
 					return symbols.Contains (identifierExpression.Identifier);
 				}
 				
-				public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
+				public override object VisitUnaryOperatorExpression (ICSharpCode.OldNRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
 				{
 					bool result = (bool)(unaryOperatorExpression.Expression.AcceptVisitor (this, data) ?? (object)false);
-					if (unaryOperatorExpression.Op == ICSharpCode.NRefactory.Ast.UnaryOperatorType.Not)
+					if (unaryOperatorExpression.Op == ICSharpCode.OldNRefactory.Ast.UnaryOperatorType.Not)
 						return !result;
 					return result;
 				}
 				
-				public override object VisitPrimitiveExpression (ICSharpCode.NRefactory.Ast.PrimitiveExpression primitiveExpression, object data)
+				public override object VisitPrimitiveExpression (ICSharpCode.OldNRefactory.Ast.PrimitiveExpression primitiveExpression, object data)
 				{
 					return (bool)primitiveExpression.Value;
 				}
 
-				public override object VisitBinaryOperatorExpression (ICSharpCode.NRefactory.Ast.BinaryOperatorExpression binaryOperatorExpression, object data)
+				public override object VisitBinaryOperatorExpression (ICSharpCode.OldNRefactory.Ast.BinaryOperatorExpression binaryOperatorExpression, object data)
 				{
 					bool left  = (bool)(binaryOperatorExpression.Left.AcceptVisitor (this, data) ?? (object)false);
 					bool right = (bool)(binaryOperatorExpression.Right.AcceptVisitor (this, data) ?? (object)false);
 					
 					switch (binaryOperatorExpression.Op) {
-					case ICSharpCode.NRefactory.Ast.BinaryOperatorType.InEquality:
+					case ICSharpCode.OldNRefactory.Ast.BinaryOperatorType.InEquality:
 						return left != right;
-					case ICSharpCode.NRefactory.Ast.BinaryOperatorType.Equality:
+					case ICSharpCode.OldNRefactory.Ast.BinaryOperatorType.Equality:
 						return left == right;
-					case ICSharpCode.NRefactory.Ast.BinaryOperatorType.LogicalOr:
+					case ICSharpCode.OldNRefactory.Ast.BinaryOperatorType.LogicalOr:
 						return left || right;
-					case ICSharpCode.NRefactory.Ast.BinaryOperatorType.LogicalAnd:
+					case ICSharpCode.OldNRefactory.Ast.BinaryOperatorType.LogicalAnd:
 						return left && right;
 					}
 					
@@ -336,8 +336,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (CurRule.Name == "<root>" && CurText.IsAt (textOffset, "#if")) {
 					int length = CurText.Length - textOffset;
 					string parameter = CurText.Substring (textOffset + 3, length - 3);
-					ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
-					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
+					ICSharpCode.OldNRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.OldNRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
+					ICSharpCode.OldNRefactory.Ast.Expression expr = lexer.PPExpression ();
 					bool result = false;
 					if (expr != null && !expr.IsNull) {
 						object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null);
@@ -363,8 +363,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					int length = line.Offset + line.EditableLength - i;
 					string parameter = doc.GetTextAt (i + 5, length - 5);
 					
-					ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
-					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
+					ICSharpCode.OldNRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.OldNRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
+					ICSharpCode.OldNRefactory.Ast.Expression expr = lexer.PPExpression ();
 				
 					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null) : false;
 					

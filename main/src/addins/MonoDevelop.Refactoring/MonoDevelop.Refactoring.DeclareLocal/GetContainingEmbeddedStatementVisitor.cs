@@ -27,11 +27,11 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using ICSharpCode.NRefactory;
+using ICSharpCode.OldNRefactory;
 
 namespace MonoDevelop.Refactoring.DeclareLocal
 {
@@ -50,7 +50,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			}
 		}
 		
-		protected override void BeginVisit(ICSharpCode.NRefactory.Ast.INode node) 
+		protected override void BeginVisit(ICSharpCode.OldNRefactory.Ast.INode node) 
 		{
 			StatementWithEmbeddedStatement embedded = node as StatementWithEmbeddedStatement;
 			if (embedded != null) {

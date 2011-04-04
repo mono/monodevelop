@@ -41,8 +41,8 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
 
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.AstBuilder;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.AstBuilder;
 //add reference to configure.in file
 
 namespace MonoDevelop.CodeMetrics
@@ -50,7 +50,7 @@ namespace MonoDevelop.CodeMetrics
 	public sealed class MethodProperties : IProperties
 	{
 		private readonly IMethod mthd;
-		private readonly ICSharpCode.NRefactory.Ast.INode mthdAst;
+		private readonly ICSharpCode.OldNRefactory.Ast.INode mthdAst;
 		
 		public List<string> ParameterList;
 		
@@ -58,7 +58,7 @@ namespace MonoDevelop.CodeMetrics
 			get; private set; 
 		}
 		
-		public ICSharpCode.NRefactory.Ast.INode MethodAST {
+		public ICSharpCode.OldNRefactory.Ast.INode MethodAST {
 			get; private set;
 		}
 		
@@ -146,7 +146,7 @@ namespace MonoDevelop.CodeMetrics
 			this.EndLine = mthd.BodyRegion.End.Line;
 		}
 		
-		public MethodProperties (ICSharpCode.NRefactory.Ast.INode m, ClassProperties prop)
+		public MethodProperties (ICSharpCode.OldNRefactory.Ast.INode m, ClassProperties prop)
 		{
 			mthd=null;
 			ParameterList = new List<string> (0);

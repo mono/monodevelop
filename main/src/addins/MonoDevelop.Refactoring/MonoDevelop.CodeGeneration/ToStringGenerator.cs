@@ -30,7 +30,7 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
@@ -113,7 +113,7 @@ namespace MonoDevelop.CodeGeneration
 				MethodDeclaration methodDeclaration = new MethodDeclaration ();
 				methodDeclaration.Name = "ToString";
 				methodDeclaration.TypeReference = DomReturnType.String.ConvertToTypeReference ();
-				methodDeclaration.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.Public | ICSharpCode.NRefactory.Ast.Modifiers.Override;
+				methodDeclaration.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Public | ICSharpCode.OldNRefactory.Ast.Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
 				MemberReferenceExpression formatReference = new MemberReferenceExpression (new TypeReferenceExpression (methodDeclaration.TypeReference), "Format");
 				List<Expression> arguments = new List<Expression> ();

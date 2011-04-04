@@ -29,7 +29,7 @@ using System.Linq;
 using System.Text;
 using Gtk;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Projects.Dom.Output;

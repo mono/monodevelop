@@ -40,9 +40,9 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.AstBuilder;
+using ICSharpCode.OldNRefactory;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory.AstBuilder;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -59,7 +59,7 @@ namespace MonoDevelop.CodeMetrics
 					NamespaceProperties namespaceRef = ComplexityMetrics.ProjProp.GetNamespaceReference(node.Name);
 					if(namespaceRef==null)
 						return;
-					Dictionary<int, ICSharpCode.NRefactory.Ast.INode> typeLocations = new Dictionary<int, ICSharpCode.NRefactory.Ast.INode>();
+					Dictionary<int, ICSharpCode.OldNRefactory.Ast.INode> typeLocations = new Dictionary<int, ICSharpCode.OldNRefactory.Ast.INode>();
 					foreach(var childnode in node.Children){
 						if(childnode is TypeDeclaration)
 							typeLocations.Add(childnode.StartLocation.Line, childnode);
@@ -135,16 +135,16 @@ namespace MonoDevelop.CodeMetrics
 					IProperties typeRef = null;
 					switch(node.Type)
 					{
-					case ICSharpCode.NRefactory.Ast.ClassType.Class:
+					case ICSharpCode.OldNRefactory.Ast.ClassType.Class:
 						typeRef = ComplexityMetrics.ProjProp.GetClassReference(typeName.ToString());
 						break;
-					case ICSharpCode.NRefactory.Ast.ClassType.Enum:
+					case ICSharpCode.OldNRefactory.Ast.ClassType.Enum:
 						typeRef = ComplexityMetrics.ProjProp.GetEnumReference(typeName.ToString(), namespaceRef);
 						break;
-					case ICSharpCode.NRefactory.Ast.ClassType.Struct:
+					case ICSharpCode.OldNRefactory.Ast.ClassType.Struct:
 						typeRef = ComplexityMetrics.ProjProp.GetStructReference(typeName.ToString(), namespaceRef);
 						break;
-					case ICSharpCode.NRefactory.Ast.ClassType.Interface:
+					case ICSharpCode.OldNRefactory.Ast.ClassType.Interface:
 						typeRef = ComplexityMetrics.ProjProp.GetInterfaceReference(typeName.ToString(), namespaceRef);
 						break;
 					default:
@@ -154,8 +154,8 @@ namespace MonoDevelop.CodeMetrics
 					if(typeRef==null)
 						return node.EndLocation.Line;
 					
-					Dictionary<int, ICSharpCode.NRefactory.Ast.INode> childLocations = new Dictionary<int, ICSharpCode.NRefactory.Ast.INode>(0);
-					foreach(ICSharpCode.NRefactory.Ast.INode childNode in node.Children) {
+					Dictionary<int, ICSharpCode.OldNRefactory.Ast.INode> childLocations = new Dictionary<int, ICSharpCode.OldNRefactory.Ast.INode>(0);
+					foreach(ICSharpCode.OldNRefactory.Ast.INode childNode in node.Children) {
 						if((childNode is TypeDeclaration) || (childNode is ConstructorDeclaration) || (childNode is MethodDeclaration))
 							childLocations.Add(childNode.StartLocation.Line, childNode);
 					}

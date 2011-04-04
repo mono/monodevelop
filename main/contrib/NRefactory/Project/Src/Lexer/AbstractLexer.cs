@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.Parser
+namespace ICSharpCode.OldNRefactory.Parser
 {
 	/// <summary>
 	/// This is the base class for the C# and VB.NET lexer
@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		/// <summary>
-		/// The current Token. <seealso cref="ICSharpCode.NRefactory.Parser.Token"/>
+		/// The current Token. <seealso cref="ICSharpCode.OldNRefactory.Parser.Token"/>
 		/// </summary>
 		public Token Token {
 			get {
@@ -159,7 +159,7 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		/// <summary>
-		/// The next Token (The <see cref="Token"/> after <see cref="NextToken"/> call) . <seealso cref="ICSharpCode.NRefactory.Parser.Token"/>
+		/// The next Token (The <see cref="Token"/> after <see cref="NextToken"/> call) . <seealso cref="ICSharpCode.OldNRefactory.Parser.Token"/>
 		/// </summary>
 		public Token LookAhead {
 			get {
@@ -221,7 +221,7 @@ namespace ICSharpCode.NRefactory.Parser
 			if (curToken == null) {
 				curToken = Next();
 				specialTracker.InformToken(curToken.kind);
-				//Console.WriteLine(ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
+				//Console.WriteLine(ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
 				return curToken;
 			}
 			
@@ -235,7 +235,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			
 			curToken  = curToken.next;
-			//Console.WriteLine(ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
+			//Console.WriteLine(ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
 			return curToken;
 		}
 		

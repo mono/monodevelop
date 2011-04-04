@@ -45,10 +45,10 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory;
+using ICSharpCode.OldNRefactory.Visitors;
+using ICSharpCode.OldNRefactory.Parser;
+using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.OldNRefactory;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Completion;
 using Mono.TextEditor;
@@ -144,8 +144,8 @@ namespace MonoDevelop.CSharp.Resolver
 			return dom.SearchType (Unit, CallingType, resolvePosition, type);
 		}
 		
-		ICSharpCode.NRefactory.Ast.CompilationUnit memberCompilationUnit;
-		public ICSharpCode.NRefactory.Ast.CompilationUnit MemberCompilationUnit {
+		ICSharpCode.OldNRefactory.Ast.CompilationUnit memberCompilationUnit;
+		public ICSharpCode.OldNRefactory.Ast.CompilationUnit MemberCompilationUnit {
 			get {
 				return this.memberCompilationUnit;
 			}
@@ -193,7 +193,7 @@ namespace MonoDevelop.CSharp.Resolver
 				return;
 			if (callingMember != null && !setupLookupTableVisitor ) {
 				string wrapper = CreateWrapperClassForMember (callingMember, fileName, editor);
-				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
+				using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
 					parser.Parse ();
 					memberCompilationUnit = parser.CompilationUnit;
 					lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
@@ -208,7 +208,7 @@ namespace MonoDevelop.CSharp.Resolver
 				sb.Append (editor.EolMarker);
 				sb.Append (editor.GetLineText (editor.Caret.Line));
 				sb.Append ("}");
-				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (sb.ToString ()))) {
+				using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (lang, new StringReader (sb.ToString ()))) {
 					parser.Parse ();
 					lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
 					memberCompilationUnit = parser.CompilationUnit;
@@ -220,7 +220,7 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		bool setupLookupTableVisitor = false;
 		int lookupVariableLine = 0;
-		internal void SetupParsedCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit unit)
+		internal void SetupParsedCompilationUnit (ICSharpCode.OldNRefactory.Ast.CompilationUnit unit)
 		{
 			lookupVariableLine = 0; // all compilation unit lines are 1 based
 			memberCompilationUnit = unit;
@@ -395,7 +395,7 @@ namespace MonoDevelop.CSharp.Resolver
 			string expr = expressionResult.Expression.Trim ();
 			if (!expr.EndsWith (";"))
 				expr += ";";
-			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr))) {
+			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr))) {
 				Expression result = parser.ParseExpression();
 				if (result is BinaryOperatorExpression) {
 					TypeReference typeRef = ParseTypeReference (expressionResult);
@@ -412,7 +412,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
 				return null;
 			string expr = expressionResult.Expression.Trim ();
-			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader ("typeof(" + expr + ");"))) {
+			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader ("typeof(" + expr + ");"))) {
 				TypeOfExpression typeOfExpression = parser.ParseExpression () as TypeOfExpression;
 				if (typeOfExpression != null)
 					return typeOfExpression.TypeReference;
