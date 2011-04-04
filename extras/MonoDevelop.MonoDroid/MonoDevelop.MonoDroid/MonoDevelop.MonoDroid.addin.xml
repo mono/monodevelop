@@ -151,6 +151,11 @@
 				_description = "Manage Android Devices" 
 				defaultHandler = "MonoDevelop.MonoDroid.ManageDevicesHandler"
 				_label = "Manage Devices..." />
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.PublishApplication"
+				_description = "Publish Mono for Android Application"
+				defaultHandler = "MonoDevelop.MonoDroid.PublishApplicationHandler"
+				_label = "Publish Android Application..."
+				/>
 		</Condition>
 	</Extension>
 	
@@ -171,6 +176,7 @@
 				<SeparatorItem />
 				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.ManageDevices" />
 			</ItemSet>
+			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.PublishApplication" />
 		</Condition>
 	</Extension>
 	

@@ -110,6 +110,8 @@
     <Compile Include="Adb\AndroidVirtualDevice.cs" />
     <Compile Include="Adb\Package.cs" />
     <Compile Include="Adb\PackageList.cs" />
+    <Compile Include="Gui\MonoDroidPublishDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidPublishDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">
