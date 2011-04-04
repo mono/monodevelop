@@ -46,6 +46,7 @@ namespace MonoDevelop.MonoDroid
 		SelectDeviceTarget,
 		ManageDevices,
 		OpenAvdManager,
+		PublishApplication
 	}
 	
 	class SelectDeviceTargetHandler : CommandHandler
@@ -180,6 +181,45 @@ namespace MonoDevelop.MonoDroid
 				return;
 
 			MonoDroidFramework.Toolbox.StartAvdManager ();
+		}
+	}
+	
+	class PublishApplicationHandler : CommandHandler 
+	{
+		protected override void Update (CommandInfo info)
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			info.Visible = info.Enabled = proj != null;
+		}
+
+		protected override void Run ()
+		{
+			if (!MonoDroidFramework.EnsureSdksInstalled ())
+				return;
+			
+			// TODO: We may should check the current build profile and
+			// show a warning if we are in a debug mode.
+			var configSel = IdeApp.Workspace.ActiveConfiguration;
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			var conf = proj.GetConfiguration (configSel);
+
+			// We need to properly wait for signing
+			OperationHandler signOp = delegate {
+				using (var monitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor ()) {
+					MonoDroidUtility.Sign (monitor, proj, configSel);
+				};
+				var dlg = new MonoDevelop.MonoDroid.Gui.MonoDroidPublishDialog () {
+					ApkPath = conf.ApkPath,
+					BaseDirectory = proj.BaseDirectory
+				};
+				MessageService.ShowCustomDialog (dlg);
+
+			};
+
+			if (proj.NeedsBuilding (configSel))
+				IdeApp.ProjectOperations.Build (proj).Completed += signOp;
+			else
+				signOp (null);
 		}
 	}
 }
