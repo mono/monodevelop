@@ -61,7 +61,8 @@ namespace MonoDevelop.MonoDroid.Gui
 			
 			
 			string configuredAndroidSdk, configuredJavaSdk;
-			MonoDroidSdk.GetConfiguredSdkLocations (out configuredAndroidSdk, out configuredJavaSdk);
+			MonoDroidSdk.GetConfiguredSdkLocations (out configuredAndroidSdk, out configuredJavaSdk, 
+				new Microsoft.Build.Utilities.TaskLoggingHelper ());
 			
 			androidFolderEntry.Path = configuredAndroidSdk ?? "";
 			javaFolderEntry.Path = configuredJavaSdk ?? "";
