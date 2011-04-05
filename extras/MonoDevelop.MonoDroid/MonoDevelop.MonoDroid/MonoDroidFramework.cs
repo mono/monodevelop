@@ -164,7 +164,7 @@ namespace MonoDevelop.MonoDroid
 			get {
 				string toolsDir = MonoDroidToolsDir;
 				if (PropertyService.IsMac && toolsDir == "/Developer/MonoAndroid/usr/lib/mandroid")
-					return "/Developer/MonoDroid/usr/bin/mandroid";
+					return "/Developer/MonoAndroid/usr/bin/mandroid";
 				return Path.Combine (toolsDir, "mandroid.exe");
 			}
 		}
