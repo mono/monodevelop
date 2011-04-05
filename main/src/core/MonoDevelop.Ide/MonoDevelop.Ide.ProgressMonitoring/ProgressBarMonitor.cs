@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			protected override void OnProgressChanged ()
 			{
 				widget.progressBar.Fraction = GlobalWork;
+				RunPendingEvents ();
 			}
 			
 			protected override void OnCompleted ()
