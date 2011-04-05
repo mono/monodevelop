@@ -56,7 +56,7 @@ using ICSharpCode.OldNRefactory.Visitors;
 using ClassType = MonoDevelop.Projects.Dom.ClassType;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Refactoring

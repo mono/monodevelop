@@ -38,7 +38,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
 using System.Text.RegularExpressions;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Resolver;
 using Mono.TextEditor;
 

@@ -39,7 +39,7 @@ using System.Text;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.CSharp.Resolver;
@@ -161,7 +161,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				set;
 			}
 			
-			public Modifiers Modifiers {
+			public ICSharpCode.NRefactory.CSharp.Modifiers Modifiers {
 				get;
 				set;
 			}

@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Projects.Dom;
 using Mono.TextEditor;
@@ -110,7 +110,7 @@ namespace MonoDevelop.CSharp.Formatting
 				this.InsertedText = replaceWith;
 			}
 		}
-		public override object VisitCompilationUnit (MonoDevelop.CSharp.Ast.CompilationUnit unit,     object data)
+		public override object VisitCompilationUnit (ICSharpCode.NRefactory.CSharp.CompilationUnit unit,     object data)
 		{
 			base.VisitCompilationUnit (unit, data);
 			if (AutoAcceptChanges)
@@ -738,7 +738,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 		
-		public override object VisitComment (MonoDevelop.CSharp.Ast.Comment comment, object data)
+		public override object VisitComment (ICSharpCode.NRefactory.CSharp.Comment comment, object data)
 		{
 			if (comment.StartsLine && !HadErrors && comment.StartLocation.Column > 1)
 				FixIndentation (comment.StartLocation);
@@ -925,11 +925,11 @@ namespace MonoDevelop.CSharp.Formatting
 				break;
 			case BraceStyle.EndOfLine:
 				var prevNode = lbrace.GetPrevNode ();
-				if (prevNode is MonoDevelop.CSharp.Ast.Comment) {
+				if (prevNode is ICSharpCode.NRefactory.CSharp.Comment) {
 					// delete old bracket
 					AddChange (whitespaceStart, lbraceOffset - whitespaceStart + 1, "");
 					
-					while (prevNode is MonoDevelop.CSharp.Ast.Comment) {
+					while (prevNode is ICSharpCode.NRefactory.CSharp.Comment) {
 						prevNode = prevNode.GetPrevNode ();
 					}
 					whitespaceStart = data.Document.LocationToOffset (prevNode.EndLocation.Line, prevNode.EndLocation.Column);

@@ -35,7 +35,7 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide;
 using System.Collections.ObjectModel;
 
-namespace MonoDevelop.CSharp.Ast
+namespace MonoDevelop.CSharp
 {
 	public class CSharpAmbience : Ambience, IDomVisitor<OutputSettings, string>
 	{

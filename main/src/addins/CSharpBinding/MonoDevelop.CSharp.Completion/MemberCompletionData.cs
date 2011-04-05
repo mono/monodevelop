@@ -35,7 +35,7 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Completion
 {

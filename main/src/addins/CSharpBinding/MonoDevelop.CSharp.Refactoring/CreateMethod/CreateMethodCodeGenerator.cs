@@ -39,7 +39,7 @@ using System.Text;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Refactoring.CreateMethod
@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			}
 		}
 
-		InvocationExpression GetInvocation (MonoDevelop.CSharp.Ast.CompilationUnit unit, TextEditorData data)
+		InvocationExpression GetInvocation (ICSharpCode.NRefactory.CSharp.CompilationUnit unit, TextEditorData data)
 		{
 			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 			var curNode = containingNode;
@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			return curNode as InvocationExpression;
 		}
 		
-		bool AnalyzeTargetExpression (RefactoringOptions options, MonoDevelop.CSharp.Ast.CompilationUnit unit)
+		bool AnalyzeTargetExpression (RefactoringOptions options, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
 		{
 			var data = options.GetTextEditorData ();
 			var target = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
@@ -100,7 +100,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			return false;
 		}
 		
-		IType GetDelegateType (RefactoringOptions options, MonoDevelop.CSharp.Ast.CompilationUnit unit)
+		IType GetDelegateType (RefactoringOptions options, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
 		{
 			var data = options.GetTextEditorData ();
 			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);

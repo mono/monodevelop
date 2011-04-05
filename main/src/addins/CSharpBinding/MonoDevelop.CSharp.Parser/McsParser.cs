@@ -31,7 +31,7 @@ using System.IO;
 using Mono.CSharp;
 using System.Text;
 using Mono.TextEditor;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Resolver;

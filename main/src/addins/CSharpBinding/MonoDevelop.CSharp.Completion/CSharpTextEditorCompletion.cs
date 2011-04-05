@@ -46,7 +46,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Components;
@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		ProjectDom dom;
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
-		CSharpFormattingPolicy policy;
+		MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy;
 		Mono.TextEditor.TextEditorData textEditorData;
 		
 		public ProjectDom Dom {
@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Completion
 		public CSharpTextEditorCompletion ()
 		{
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 		}
 		
 		public CSharpTextEditorCompletion (Document doc) : this ()

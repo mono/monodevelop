@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom;
 using System.Text;
@@ -40,9 +40,9 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		
 		OutputVisitor visitor;
-		CSharpFormattingPolicy policy;
+		MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy;
 		
-		public CSharpFormattingPolicy Policy {
+		public MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
 			get {
 				return this.policy;
 			}
@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return member.AcceptVisitor (visitor, options);
 		}
 		
-		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
+		void AppendBraceStart (StringBuilder result, MonoDevelop.CSharp.Formatting.BraceStyle braceStyle)
 		{
 			switch (braceStyle) {
 			case BraceStyle.EndOfLine:
@@ -126,7 +126,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			IndentLevel++;
 		}
 		
-		void AppendBraceEnd (StringBuilder result, BraceStyle braceStyle)
+		void AppendBraceEnd (StringBuilder result, MonoDevelop.CSharp.Formatting.BraceStyle braceStyle)
 		{
 			switch (braceStyle) {
 			case BraceStyle.EndOfLineWithoutSpace:
@@ -543,8 +543,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				return member.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
 			}
 		}
-
-		public override string CreateFieldEncapsulation (IType implementingType, IField field, string propertyName, Modifiers modifiers, bool readOnly)
+		
+		public override string CreateFieldEncapsulation (IType implementingType, IField field, string propertyName, ICSharpCode.NRefactory.CSharp.Modifiers modifiers, bool readOnly)
 		{
 			SetIndentTo (implementingType);
 			StringBuilder result = new StringBuilder ();

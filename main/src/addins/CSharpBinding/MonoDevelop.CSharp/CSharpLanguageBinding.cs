@@ -44,7 +44,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
 
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.CSharp.Project;

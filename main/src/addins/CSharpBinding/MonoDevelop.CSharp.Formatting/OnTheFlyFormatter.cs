@@ -33,7 +33,7 @@ using MonoDevelop.Refactoring;
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.CSharp.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using System.Linq;
 
