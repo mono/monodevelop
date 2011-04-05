@@ -108,47 +108,21 @@ namespace MonoDevelop.MonoDroid.Gui
 		public string ApkPath { get; set; }
 		public string BaseDirectory { get; set; }
 
-		void DoSignPackage ()
-		{
-			AndroidToolbox tb = MonoDroidFramework.Toolbox;
-			var destApk = (FilePath)apkDestionationLocEntry.Path;
-			var destUnalignedApk = ((FilePath)(destApk.FileNameWithoutExtension + "-unaligned.apk"));
-			if (!destApk.ParentDirectory.IsNullOrEmpty)
-				destUnalignedApk = destApk.ParentDirectory.Combine (destUnalignedApk);
-
-			var monitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor ();
-
-			var chop = new ChainedAsyncOperationSequence (monitor,
-				new ChainedAsyncOperation () {
-					TaskName = GettextCatalog.GetString ("Creating new keystore"),
-					Skip = () => !usingNewKey ? "" : null,
-					Create = () => tb.Genkeypair (signingOptions, GetDNameFromValues (dNameEntries),
-						keyValidity * 365, monitor.Log, monitor.Log),
-					ErrorMessage = GettextCatalog.GetString ("Failed to create a new keystore")
-				},
-				new ChainedAsyncOperation () {
-					TaskName = GettextCatalog.GetString ("Signing package"),
-					Create = () => tb.SignPackage (signingOptions, ApkPath, destUnalignedApk, 
-						monitor.Log, monitor.Log),
-					ErrorMessage = GettextCatalog.GetString ("Failed to sign package")
-				},
-				new ChainedAsyncOperation () {
-					TaskName = GettextCatalog.GetString ("Aligning package"),
-					Create = () => tb.AlignPackage (destUnalignedApk, destApk,
-						monitor.Log, monitor.Log),
-					ErrorMessage = GettextCatalog.GetString ("Failed to align package")
-				},
-				new ChainedAsyncOperation () {
-					TaskName = GettextCatalog.GetString ("Removing temp package file"),
-					Create = () => { 
-						File.Delete (destUnalignedApk);
-						return Core.Execution.NullProcessAsyncOperation.Success;
-					},
-					ErrorMessage = GettextCatalog.GetString ("Failed to remove temp package file")
-				}
-			);
-			chop.Completed += delegate { monitor.Dispose (); };
-			chop.Start ();
+		// Output properties
+		public AndroidSigningOptions SigningOptions {
+			get { return signingOptions; }
+		}
+		public int KeyValidity {
+			get { return keyValidity; }
+		}
+		public bool CreateNewKey { 
+			get { return usingNewKey; }
+		}
+		public string DName {
+			get { return usingNewKey ? GetDNameFromValues (dNameEntries) : String.Empty; }
+		}
+		public string DestinationApkPath {
+			get { return apkDestionationLocEntry.Path; }
 		}
 
 		bool VerifyKeyInfo ()
@@ -160,7 +134,7 @@ namespace MonoDevelop.MonoDroid.Gui
 				proc = MonoDroidFramework.Toolbox.VerifyKeypair (signingOptions, output, output);
 				proc.WaitForCompleted ();
 				success = proc.Success;
-			} catch (Exception exc) {
+			} catch {
 			} finally {
 				if (proc != null)
 					proc.Dispose ();
@@ -251,7 +225,7 @@ namespace MonoDevelop.MonoDroid.Gui
 				notebook1.Page = (int)PublishPage.Publish;
 				break;
 			default: // Publish
-				DoSignPackage ();
+				//DoSignPackage ();
 				Respond (ResponseType.Ok);
 				break;
 			}
