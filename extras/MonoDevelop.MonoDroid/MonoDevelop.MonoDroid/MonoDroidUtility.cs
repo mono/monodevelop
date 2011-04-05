@@ -449,7 +449,6 @@ namespace MonoDevelop.MonoDroid
 
 		public void Cancel ()
 		{
-			Console.WriteLine ("PUBLISH CANCELLED");
 			chop.Cancel ();
 		}
 
