@@ -81,6 +81,31 @@ namespace NGit.Storage.File
 		public static readonly NGit.Storage.File.FileSnapshot DIRTY = new NGit.Storage.File.FileSnapshot
 			(-1, -1);
 
+		private sealed class _FileSnapshot_81 : NGit.Storage.File.FileSnapshot
+		{
+			public _FileSnapshot_81(long baseArg1, long baseArg2) : base(baseArg1, baseArg2)
+			{
+			}
+
+			public override bool IsModified(FilePath path)
+			{
+				return path.Exists();
+			}
+		}
+
+		/// <summary>A FileSnapshot that is clean if the file does not exist.</summary>
+		/// <remarks>
+		/// A FileSnapshot that is clean if the file does not exist.
+		/// <p>
+		/// This instance is useful if the application wants to consider a missing
+		/// file to be clean.
+		/// <see cref="IsModified(Sharpen.FilePath)">IsModified(Sharpen.FilePath)</see>
+		/// will return false if the file
+		/// path does not exist.
+		/// </remarks>
+		public static readonly NGit.Storage.File.FileSnapshot MISSING_FILE = new _FileSnapshot_81
+			(0, 0);
+
 		/// <summary>Record a snapshot for a specific file path.</summary>
 		/// <remarks>
 		/// Record a snapshot for a specific file path.

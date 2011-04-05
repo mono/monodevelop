@@ -111,8 +111,8 @@ namespace NGit.Api
 		/// A <code>CherryPickResult</code> with status
 		/// <see cref="CherryPickStatus.CONFLICTING">CherryPickStatus.CONFLICTING</see>
 		/// </summary>
-		public static NGit.Api.CherryPickResult CONFLICT = new NGit.Api.CherryPickResult(
-			CherryPickResult.CherryPickStatus.CONFLICTING);
+		public static readonly NGit.Api.CherryPickResult CONFLICT = new NGit.Api.CherryPickResult
+			(CherryPickResult.CherryPickStatus.CONFLICTING);
 
 		/// <returns>the status this cherry-pick resulted in</returns>
 		public virtual CherryPickResult.CherryPickStatus GetStatus()

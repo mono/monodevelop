@@ -49,7 +49,7 @@ using Sharpen;
 
 namespace NGit.Api
 {
-	/// <summary>Create an empty git repository</summary>
+	/// <summary>Create an empty git repository or reinitalize an existing one</summary>
 	/// <seealso><a href="http://www.kernel.org/pub/software/scm/git/docs/git-init.html"
 	/// *      >Git documentation about init</a></seealso>
 	public class InitCommand : Callable<Git>
@@ -106,7 +106,10 @@ namespace NGit.Api
 					}
 				}
 				Repository repository = builder.Build();
-				repository.Create(bare);
+				if (!repository.ObjectDatabase.Exists())
+				{
+					repository.Create(bare);
+				}
 				return new Git(repository);
 			}
 			catch (IOException e)

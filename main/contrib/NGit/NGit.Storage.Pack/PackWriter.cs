@@ -42,7 +42,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using NGit;
@@ -108,8 +107,8 @@ namespace NGit.Storage.Pack
 	{
 		private const int PACK_VERSION_GENERATED = 2;
 
-		private readonly IList<ObjectToPack>[] objectsLists = new IList<ObjectToPack>[Constants.OBJ_TAG
-			 + 1];
+		private readonly BlockList<ObjectToPack>[] objectsLists = new BlockList<ObjectToPack>[Constants
+			.OBJ_TAG + 1];
 
 		private readonly ObjectIdOwnerMap<ObjectToPack> objectsMap = new ObjectIdOwnerMap
 			<ObjectToPack>();
@@ -153,6 +152,8 @@ namespace NGit.Storage.Pack
 		private bool useCachedPacks;
 
 		private bool ignoreMissingUninteresting = true;
+
+		private bool pruneCurrentObjectList;
 
 		/// <summary>Create writer for specified repository.</summary>
 		/// <remarks>
@@ -228,7 +229,6 @@ namespace NGit.Storage.Pack
 		public PackWriter(PackConfig config, ObjectReader reader)
 		{
 			{
-				objectsLists[0] = Sharpen.Collections.EmptyList<ObjectToPack>();
 				objectsLists[Constants.OBJ_COMMIT] = new BlockList<ObjectToPack>();
 				objectsLists[Constants.OBJ_TREE] = new BlockList<ObjectToPack>();
 				objectsLists[Constants.OBJ_BLOB] = new BlockList<ObjectToPack>();
@@ -431,10 +431,10 @@ namespace NGit.Storage.Pack
 			if (stats.totalObjects == 0)
 			{
 				long objCnt = 0;
-				foreach (IList<ObjectToPack> list in objectsLists)
-				{
-					objCnt += list.Count;
-				}
+				objCnt += objectsLists[Constants.OBJ_COMMIT].Count;
+				objCnt += objectsLists[Constants.OBJ_TREE].Count;
+				objCnt += objectsLists[Constants.OBJ_BLOB].Count;
+				objCnt += objectsLists[Constants.OBJ_TAG].Count;
 				foreach (CachedPack pack in cachedPacks)
 				{
 					objCnt += pack.GetObjectCount();
@@ -562,19 +562,7 @@ namespace NGit.Storage.Pack
 		public virtual bool WillInclude(ObjectId id)
 		{
 			ObjectToPack obj = objectsMap.Get(id);
-			if (obj != null && !obj.IsEdge())
-			{
-				return true;
-			}
-			ICollection<ObjectId> toFind = Sharpen.Collections.Singleton(id.ToObjectId());
-			foreach (CachedPack pack in cachedPacks)
-			{
-				if (pack.HasObject(toFind.AsIterable()).Contains(id))
-				{
-					return true;
-				}
-			}
-			return false;
+			return obj != null && !obj.IsEdge();
 		}
 
 		/// <summary>Lookup the ObjectToPack object for a given ObjectId.</summary>
@@ -654,15 +642,15 @@ namespace NGit.Storage.Pack
 			if (sortedByName == null)
 			{
 				int cnt = 0;
-				foreach (IList<ObjectToPack> list in objectsLists)
-				{
-					cnt += list.Count;
-				}
+				cnt += objectsLists[Constants.OBJ_COMMIT].Count;
+				cnt += objectsLists[Constants.OBJ_TREE].Count;
+				cnt += objectsLists[Constants.OBJ_BLOB].Count;
+				cnt += objectsLists[Constants.OBJ_TAG].Count;
 				sortedByName = new BlockList<ObjectToPack>(cnt);
-				foreach (IList<ObjectToPack> list_1 in objectsLists)
-				{
-					Sharpen.Collections.AddAll(sortedByName, list_1);
-				}
+				Sharpen.Collections.AddAll(sortedByName, objectsLists[Constants.OBJ_COMMIT]);
+				Sharpen.Collections.AddAll(sortedByName, objectsLists[Constants.OBJ_TREE]);
+				Sharpen.Collections.AddAll(sortedByName, objectsLists[Constants.OBJ_BLOB]);
+				Sharpen.Collections.AddAll(sortedByName, objectsLists[Constants.OBJ_TAG]);
 				sortedByName.Sort();
 			}
 			return sortedByName;
@@ -705,7 +693,8 @@ namespace NGit.Storage.Pack
 			{
 				writeMonitor = NullProgressMonitor.INSTANCE;
 			}
-			if ((reuseDeltas || config.IsReuseObjects()) && reuseSupport != null)
+			if (reuseSupport != null && (reuseDeltas || config.IsReuseObjects() || !cachedPacks
+				.IsEmpty()))
 			{
 				SearchForReuse(compressMonitor);
 			}
@@ -787,18 +776,51 @@ namespace NGit.Storage.Pack
 		private void SearchForReuse(ProgressMonitor monitor)
 		{
 			int cnt = 0;
-			foreach (IList<ObjectToPack> list in objectsLists)
-			{
-				cnt += list.Count;
-			}
+			cnt += objectsLists[Constants.OBJ_COMMIT].Count;
+			cnt += objectsLists[Constants.OBJ_TREE].Count;
+			cnt += objectsLists[Constants.OBJ_BLOB].Count;
+			cnt += objectsLists[Constants.OBJ_TAG].Count;
 			long start = Runtime.CurrentTimeMillis();
 			monitor.BeginTask(JGitText.Get().searchForReuse, cnt);
-			foreach (IList<ObjectToPack> list_1 in objectsLists)
+			if (cnt <= 4096)
 			{
-				reuseSupport.SelectObjectRepresentation(this, monitor, list_1.AsIterable());
+				// For small object counts, do everything as one list.
+				BlockList<ObjectToPack> tmp = new BlockList<ObjectToPack>(cnt);
+				tmp.AddAll(objectsLists[Constants.OBJ_COMMIT]);
+				tmp.AddAll(objectsLists[Constants.OBJ_TREE]);
+				tmp.AddAll(objectsLists[Constants.OBJ_BLOB]);
+				tmp.AddAll(objectsLists[Constants.OBJ_TAG]);
+				SearchForReuse(monitor, tmp);
+				if (pruneCurrentObjectList)
+				{
+					// If the list was pruned, we need to re-prune the main lists.
+					PruneEdgesFromObjectList(objectsLists[Constants.OBJ_COMMIT]);
+					PruneEdgesFromObjectList(objectsLists[Constants.OBJ_TREE]);
+					PruneEdgesFromObjectList(objectsLists[Constants.OBJ_BLOB]);
+					PruneEdgesFromObjectList(objectsLists[Constants.OBJ_TAG]);
+				}
+			}
+			else
+			{
+				SearchForReuse(monitor, objectsLists[Constants.OBJ_COMMIT]);
+				SearchForReuse(monitor, objectsLists[Constants.OBJ_TREE]);
+				SearchForReuse(monitor, objectsLists[Constants.OBJ_BLOB]);
+				SearchForReuse(monitor, objectsLists[Constants.OBJ_TAG]);
 			}
 			monitor.EndTask();
 			stats.timeSearchingForReuse = Runtime.CurrentTimeMillis() - start;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
+		private void SearchForReuse(ProgressMonitor monitor, IList<ObjectToPack> list)
+		{
+			pruneCurrentObjectList = false;
+			reuseSupport.SelectObjectRepresentation(this, monitor, list.AsIterable());
+			if (pruneCurrentObjectList)
+			{
+				PruneEdgesFromObjectList(list);
+			}
 		}
 
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
@@ -908,7 +930,7 @@ namespace NGit.Storage.Pack
 			// applies "Linus' Law" which states that newer files tend to be the
 			// bigger ones, because source files grow and hardly ever shrink.
 			//
-			Arrays.Sort(list, 0, cnt, new _IComparer_812());
+			Arrays.Sort(list, 0, cnt, new _IComparer_849());
 			// Above we stored the objects we cannot delta onto the end.
 			// Remove them from the list so we don't waste time on them.
 			while (0 < cnt && list[cnt - 1].IsDoNotDelta())
@@ -938,9 +960,9 @@ namespace NGit.Storage.Pack
 			}
 		}
 
-		private sealed class _IComparer_812 : IComparer<ObjectToPack>
+		private sealed class _IComparer_849 : IComparer<ObjectToPack>
 		{
-			public _IComparer_812()
+			public _IComparer_849()
 			{
 			}
 
@@ -1111,7 +1133,7 @@ namespace NGit.Storage.Pack
 					//
 					foreach (DeltaTask task in myTasks)
 					{
-						executor.Execute(new _Runnable_962(task, errors));
+						executor.Execute(new _Runnable_999(task, errors));
 					}
 					try
 					{
@@ -1150,9 +1172,9 @@ namespace NGit.Storage.Pack
 			}
 		}
 
-		private sealed class _Runnable_962 : Runnable
+		private sealed class _Runnable_999 : Runnable
 		{
-			public _Runnable_962(DeltaTask task, IList<Exception> errors)
+			public _Runnable_999(DeltaTask task, IList<Exception> errors)
 			{
 				this.task = task;
 				this.errors = errors;
@@ -1245,20 +1267,40 @@ namespace NGit.Storage.Pack
 		/// <exception cref="System.IO.IOException"></exception>
 		internal virtual void WriteObject(PackOutputStream @out, ObjectToPack otp)
 		{
-			if (otp.IsWritten())
+			if (!otp.IsWritten())
 			{
-				return;
+				WriteObjectImpl(@out, otp);
 			}
-			// We shouldn't be here.
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private void WriteObjectImpl(PackOutputStream @out, ObjectToPack otp)
+		{
+			if (otp.WantWrite())
+			{
+				// A cycle exists in this delta chain. This should only occur if a
+				// selected object representation disappeared during writing
+				// (for example due to a concurrent repack) and a different base
+				// was chosen, forcing a cycle. Select something other than a
+				// delta, and write this object.
+				//
+				reuseDeltas = false;
+				otp.ClearDeltaBase();
+				otp.ClearReuseAsIs();
+				reuseSupport.SelectObjectRepresentation(this, NullProgressMonitor.INSTANCE, Sharpen.Collections
+					.Singleton(otp).AsIterable());
+			}
 			otp.MarkWantWrite();
-			if (otp.IsDeltaRepresentation())
-			{
-				WriteBaseFirst(@out, otp);
-			}
-			@out.ResetCRC32();
-			otp.SetOffset(@out.Length());
 			while (otp.IsReuseAsIs())
 			{
+				WriteBase(@out, otp.GetDeltaBase());
+				if (otp.IsWritten())
+				{
+					return;
+				}
+				// Delta chain cycle caused this to write already.
+				@out.ResetCRC32();
+				otp.SetOffset(@out.Length());
 				try
 				{
 					reuseSupport.CopyObjectAsIs(@out, otp, reuseValidate);
@@ -1276,7 +1318,11 @@ namespace NGit.Storage.Pack
 				{
 					if (otp.GetOffset() == @out.Length())
 					{
-						RedoSearchForReuse(otp);
+						otp.SetOffset(0);
+						otp.ClearDeltaBase();
+						otp.ClearReuseAsIs();
+						reuseSupport.SelectObjectRepresentation(this, NullProgressMonitor.INSTANCE, Sharpen.Collections
+							.Singleton(otp).AsIterable());
 						continue;
 					}
 					else
@@ -1305,51 +1351,12 @@ namespace NGit.Storage.Pack
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private void WriteBaseFirst(PackOutputStream @out, ObjectToPack otp)
+		private void WriteBase(PackOutputStream @out, ObjectToPack baseInPack)
 		{
-			ObjectToPack baseInPack = otp.GetDeltaBase();
-			if (baseInPack != null)
+			if (baseInPack != null && !baseInPack.IsWritten())
 			{
-				if (!baseInPack.IsWritten())
-				{
-					if (baseInPack.WantWrite())
-					{
-						// There is a cycle. Our caller is trying to write the
-						// object we want as a base, and called us. Turn off
-						// delta reuse so we can find another form.
-						//
-						reuseDeltas = false;
-						RedoSearchForReuse(otp);
-						reuseDeltas = true;
-					}
-					else
-					{
-						WriteObject(@out, baseInPack);
-					}
-				}
+				WriteObjectImpl(@out, baseInPack);
 			}
-			else
-			{
-				if (!thin)
-				{
-					// This should never occur, the base isn't in the pack and
-					// the pack isn't allowed to reference base outside objects.
-					// Write the object as a whole form, even if that is slow.
-					//
-					otp.ClearDeltaBase();
-					otp.ClearReuseAsIs();
-				}
-			}
-		}
-
-		/// <exception cref="System.IO.IOException"></exception>
-		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
-		private void RedoSearchForReuse(ObjectToPack otp)
-		{
-			otp.ClearDeltaBase();
-			otp.ClearReuseAsIs();
-			reuseSupport.SelectObjectRepresentation(this, NullProgressMonitor.INSTANCE, Sharpen.Collections
-				.Singleton(otp).AsIterable());
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -1357,6 +1364,8 @@ namespace NGit.Storage.Pack
 		{
 			ICSharpCode.SharpZipLib.Zip.Compression.Deflater deflater = Deflater();
 			ObjectLoader ldr = reader.Open(otp, otp.GetType());
+			@out.ResetCRC32();
+			otp.SetOffset(@out.Length());
 			@out.WriteHeader(otp, ldr.GetSize());
 			deflater.Reset();
 			DeflaterOutputStream dst = new DeflaterOutputStream(@out, deflater);
@@ -1367,6 +1376,9 @@ namespace NGit.Storage.Pack
 		/// <exception cref="System.IO.IOException"></exception>
 		private void WriteDeltaObjectDeflate(PackOutputStream @out, ObjectToPack otp)
 		{
+			WriteBase(@out, otp.GetDeltaBase());
+			@out.ResetCRC32();
+			otp.SetOffset(@out.Length());
 			DeltaCache.Ref @ref = otp.PopCachedDelta();
 			if (@ref != null)
 			{
@@ -1586,7 +1598,6 @@ namespace NGit.Storage.Pack
 			{
 				walker.MarkUninteresting(obj_1);
 			}
-			int typesToPrune = 0;
 			int maxBases = config.GetDeltaSearchWindowSize();
 			ICollection<RevTree> baseTrees = new HashSet<RevTree>();
 			BlockList<RevCommit> commits = new BlockList<RevCommit>();
@@ -1654,19 +1665,6 @@ namespace NGit.Storage.Pack
 				}
 			}
 			commits = null;
-			foreach (CachedPack p_1 in cachedPacks)
-			{
-				foreach (ObjectId d in p_1.HasObject(objectsLists[Constants.OBJ_COMMIT].AsIterable
-					()))
-				{
-					if (baseTrees.Count <= maxBases)
-					{
-						baseTrees.AddItem(walker.LookupCommit(d).Tree);
-					}
-					objectsMap.Get(d).SetEdge();
-					typesToPrune |= 1 << Constants.OBJ_COMMIT;
-				}
-			}
 			BaseSearch bases = new BaseSearch(countingMonitor, baseTrees, objectsMap, edgeObjects
 				, reader);
 			//
@@ -1684,34 +1682,6 @@ namespace NGit.Storage.Pack
 				AddObject(o_1, pathHash);
 				countingMonitor.Update(1);
 			}
-			foreach (CachedPack p_2 in cachedPacks)
-			{
-				foreach (ObjectId d in p_2.HasObject(objectsLists[Constants.OBJ_TREE].AsIterable(
-					)))
-				{
-					objectsMap.Get(d).SetEdge();
-					typesToPrune |= 1 << Constants.OBJ_TREE;
-				}
-				foreach (ObjectId d_1 in p_2.HasObject(objectsLists[Constants.OBJ_BLOB].AsIterable
-					()))
-				{
-					objectsMap.Get(d_1).SetEdge();
-					typesToPrune |= 1 << Constants.OBJ_BLOB;
-				}
-				foreach (ObjectId d_2 in p_2.HasObject(objectsLists[Constants.OBJ_TAG].AsIterable
-					()))
-				{
-					objectsMap.Get(d_2).SetEdge();
-					typesToPrune |= 1 << Constants.OBJ_TAG;
-				}
-			}
-			if (typesToPrune != 0)
-			{
-				PruneObjectList(typesToPrune, Constants.OBJ_COMMIT);
-				PruneObjectList(typesToPrune, Constants.OBJ_TREE);
-				PruneObjectList(typesToPrune, Constants.OBJ_BLOB);
-				PruneObjectList(typesToPrune, Constants.OBJ_TAG);
-			}
 			foreach (CachedPack pack_2 in cachedPacks)
 			{
 				countingMonitor.Update((int)pack_2.GetObjectCount());
@@ -1720,13 +1690,8 @@ namespace NGit.Storage.Pack
 			stats.timeCounting = Runtime.CurrentTimeMillis() - countingStart;
 		}
 
-		private void PruneObjectList(int typesToPrune, int typeCode)
+		private static void PruneEdgesFromObjectList(IList<ObjectToPack> list)
 		{
-			if ((typesToPrune & (1 << typeCode)) == 0)
-			{
-				return;
-			}
-			IList<ObjectToPack> list = objectsLists[typeCode];
 			int size = list.Count;
 			int src = 0;
 			int dst = 0;
@@ -1803,7 +1768,6 @@ namespace NGit.Storage.Pack
 			AddObject(@object, 0);
 		}
 
-		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
 		private void AddObject(RevObject @object, int pathHashCode)
 		{
 			ObjectToPack otp;
@@ -1816,21 +1780,7 @@ namespace NGit.Storage.Pack
 				otp = new ObjectToPack(@object);
 			}
 			otp.SetPathHash(pathHashCode);
-			try
-			{
-				objectsLists[@object.Type].AddItem(otp);
-			}
-			catch (IndexOutOfRangeException)
-			{
-				throw new IncorrectObjectTypeException(@object, JGitText.Get().incorrectObjectType_COMMITnorTREEnorBLOBnorTAG
-					);
-			}
-			catch (NotSupportedException)
-			{
-				// index pointing to "dummy" empty list
-				throw new IncorrectObjectTypeException(@object, JGitText.Get().incorrectObjectType_COMMITnorTREEnorBLOBnorTAG
-					);
-			}
+			objectsLists[@object.Type].AddItem(otp);
 			objectsMap.Add(otp);
 		}
 
@@ -1849,35 +1799,27 @@ namespace NGit.Storage.Pack
 		public virtual void Select(ObjectToPack otp, StoredObjectRepresentation next)
 		{
 			int nFmt = next.GetFormat();
-			int nWeight;
-			if (otp.IsReuseAsIs())
+			if (!cachedPacks.IsEmpty())
 			{
-				// We've already chosen to reuse a packed form, if next
-				// cannot beat that break out early.
-				//
-				if (StoredObjectRepresentation.PACK_WHOLE < nFmt)
+				if (otp.IsEdge())
 				{
 					return;
 				}
-				else
+				if ((nFmt == StoredObjectRepresentation.PACK_WHOLE) | (nFmt == StoredObjectRepresentation
+					.PACK_DELTA))
 				{
-					// next isn't packed
-					if (StoredObjectRepresentation.PACK_DELTA < nFmt && otp.IsDeltaRepresentation())
+					foreach (CachedPack pack in cachedPacks)
 					{
-						return;
+						if (pack.HasObject(otp, next))
+						{
+							otp.SetEdge();
+							otp.ClearDeltaBase();
+							otp.ClearReuseAsIs();
+							pruneCurrentObjectList = true;
+							return;
+						}
 					}
 				}
-				// next isn't a delta, but we are
-				nWeight = next.GetWeight();
-				if (otp.GetWeight() <= nWeight)
-				{
-					return;
-				}
-			}
-			else
-			{
-				// next would be bigger
-				nWeight = next.GetWeight();
 			}
 			if (nFmt == StoredObjectRepresentation.PACK_DELTA && reuseDeltas && ReuseDeltaFor
 				(otp))
@@ -1888,7 +1830,6 @@ namespace NGit.Storage.Pack
 				{
 					otp.SetDeltaBase(ptr);
 					otp.SetReuseAsIs();
-					otp.SetWeight(nWeight);
 				}
 				else
 				{
@@ -1896,7 +1837,6 @@ namespace NGit.Storage.Pack
 					{
 						otp.SetDeltaBase(baseId);
 						otp.SetReuseAsIs();
-						otp.SetWeight(nWeight);
 					}
 					else
 					{
@@ -1909,6 +1849,17 @@ namespace NGit.Storage.Pack
 			{
 				if (nFmt == StoredObjectRepresentation.PACK_WHOLE && config.IsReuseObjects())
 				{
+					int nWeight = next.GetWeight();
+					if (otp.IsReuseAsIs() && !otp.IsDeltaRepresentation())
+					{
+						// We've chosen another PACK_WHOLE format for this object,
+						// choose the one that has the smaller compressed size.
+						//
+						if (otp.GetWeight() <= nWeight)
+						{
+							return;
+						}
+					}
 					otp.ClearDeltaBase();
 					otp.SetReuseAsIs();
 					otp.SetWeight(nWeight);

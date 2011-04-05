@@ -175,9 +175,12 @@ namespace NGit.Api
 			RefUpdate u = repo.UpdateRef(Constants.HEAD, detached);
 			u.SetNewObjectId(commit.Id);
 			u.ForceUpdate();
-			DirCache dc = repo.LockDirCache();
-			DirCacheCheckout co = new DirCacheCheckout(repo, dc, commit.Tree);
-			co.Checkout();
+			if (!bare)
+			{
+				DirCache dc = repo.LockDirCache();
+				DirCacheCheckout co = new DirCacheCheckout(repo, dc, commit.Tree);
+				co.Checkout();
+			}
 		}
 
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>

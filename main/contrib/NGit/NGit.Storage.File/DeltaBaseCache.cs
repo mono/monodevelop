@@ -41,7 +41,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
 using NGit.Storage.File;
 using Sharpen;
 
@@ -58,82 +57,83 @@ namespace NGit.Storage.File
 			return (int)(((uint)(((int)position) << 22)) >> 22);
 		}
 
-		private static int maxByteCount;
+		private static volatile int defaultMaxByteCount;
 
-		private static readonly DeltaBaseCache.Slot[] cache;
+		private readonly int maxByteCount;
 
-		private static DeltaBaseCache.Slot lruHead;
+		private readonly DeltaBaseCache.Slot[] cache;
 
-		private static DeltaBaseCache.Slot lruTail;
+		private DeltaBaseCache.Slot lruHead;
 
-		private static int openByteCount;
+		private DeltaBaseCache.Slot lruTail;
+
+		private int openByteCount;
 
 		static DeltaBaseCache()
 		{
 			DEAD = new SoftReference<DeltaBaseCache.Entry>(null);
-			maxByteCount = new WindowCacheConfig().GetDeltaBaseCacheLimit();
-			cache = new DeltaBaseCache.Slot[CACHE_SZ];
-			for (int i = 0; i < CACHE_SZ; i++)
-			{
-				cache[i] = new DeltaBaseCache.Slot();
-			}
+			Reconfigure(new WindowCacheConfig());
 		}
 
 		internal static void Reconfigure(WindowCacheConfig cfg)
 		{
-			lock (typeof(DeltaBaseCache))
-			{
-				int dbLimit = cfg.GetDeltaBaseCacheLimit();
-				if (maxByteCount != dbLimit)
-				{
-					maxByteCount = dbLimit;
-					ReleaseMemory();
-				}
-			}
+			defaultMaxByteCount = cfg.GetDeltaBaseCacheLimit();
 		}
 
-		internal static DeltaBaseCache.Entry Get(PackFile pack, long position)
+		public DeltaBaseCache()
 		{
-			lock (typeof(DeltaBaseCache))
+			maxByteCount = defaultMaxByteCount;
+			cache = new DeltaBaseCache.Slot[CACHE_SZ];
+		}
+
+		internal virtual DeltaBaseCache.Entry Get(PackFile pack, long position)
+		{
+			DeltaBaseCache.Slot e = cache[Hash(position)];
+			if (e == null)
 			{
-				DeltaBaseCache.Slot e = cache[Hash(position)];
-				if (e.provider == pack && e.position == position)
-				{
-					DeltaBaseCache.Entry buf = e.data.Get();
-					if (buf != null)
-					{
-						MoveToHead(e);
-						return buf;
-					}
-				}
 				return null;
 			}
+			if (e.provider == pack && e.position == position)
+			{
+				DeltaBaseCache.Entry buf = e.data.Get();
+				if (buf != null)
+				{
+					MoveToHead(e);
+					return buf;
+				}
+			}
+			return null;
 		}
 
-		internal static void Store(PackFile pack, long position, byte[] data, int objectType
+		internal virtual void Store(PackFile pack, long position, byte[] data, int objectType
 			)
 		{
-			lock (typeof(DeltaBaseCache))
+			if (data.Length > maxByteCount)
 			{
-				if (data.Length > maxByteCount)
-				{
-					return;
-				}
-				// Too large to cache.
-				DeltaBaseCache.Slot e = cache[Hash(position)];
-				ClearEntry(e);
-				openByteCount += data.Length;
-				ReleaseMemory();
-				e.provider = pack;
-				e.position = position;
-				e.sz = data.Length;
-				e.data = new SoftReference<DeltaBaseCache.Entry>(new DeltaBaseCache.Entry(data, objectType
-					));
-				MoveToHead(e);
+				return;
 			}
+			// Too large to cache.
+			DeltaBaseCache.Slot e = cache[Hash(position)];
+			if (e == null)
+			{
+				e = new DeltaBaseCache.Slot();
+				cache[Hash(position)] = e;
+			}
+			else
+			{
+				ClearEntry(e);
+			}
+			openByteCount += data.Length;
+			ReleaseMemory();
+			e.provider = pack;
+			e.position = position;
+			e.sz = data.Length;
+			e.data = new SoftReference<DeltaBaseCache.Entry>(new DeltaBaseCache.Entry(data, objectType
+				));
+			MoveToHead(e);
 		}
 
-		private static void ReleaseMemory()
+		private void ReleaseMemory()
 		{
 			while (openByteCount > maxByteCount && lruTail != null)
 			{
@@ -154,22 +154,7 @@ namespace NGit.Storage.File
 			}
 		}
 
-		internal static void Purge(PackFile file)
-		{
-			lock (typeof(DeltaBaseCache))
-			{
-				foreach (DeltaBaseCache.Slot e in cache)
-				{
-					if (e.provider == file)
-					{
-						ClearEntry(e);
-						Unlink(e);
-					}
-				}
-			}
-		}
-
-		private static void MoveToHead(DeltaBaseCache.Slot e)
+		private void MoveToHead(DeltaBaseCache.Slot e)
 		{
 			Unlink(e);
 			e.lruPrev = null;
@@ -185,7 +170,7 @@ namespace NGit.Storage.File
 			lruHead = e;
 		}
 
-		private static void Unlink(DeltaBaseCache.Slot e)
+		private void Unlink(DeltaBaseCache.Slot e)
 		{
 			DeltaBaseCache.Slot prev = e.lruPrev;
 			DeltaBaseCache.Slot next = e.lruNext;
@@ -199,17 +184,12 @@ namespace NGit.Storage.File
 			}
 		}
 
-		private static void ClearEntry(DeltaBaseCache.Slot e)
+		private void ClearEntry(DeltaBaseCache.Slot e)
 		{
 			openByteCount -= e.sz;
 			e.provider = null;
 			e.data = DEAD;
 			e.sz = 0;
-		}
-
-		public DeltaBaseCache()
-		{
-			throw new NotSupportedException();
 		}
 
 		internal class Entry

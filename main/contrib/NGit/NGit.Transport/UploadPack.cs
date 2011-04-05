@@ -136,6 +136,10 @@ namespace NGit.Transport
 		/// <remarks>Filter used while advertising the refs to the client.</remarks>
 		private RefFilter refFilter;
 
+		/// <summary>Hook handling the various upload phases.</summary>
+		/// <remarks>Hook handling the various upload phases.</remarks>
+		private PreUploadHook preUploadHook = PreUploadHook.NULL;
+
 		/// <summary>Capabilities requested by the client.</summary>
 		/// <remarks>Capabilities requested by the client.</remarks>
 		private readonly ICollection<string> options = new HashSet<string>();
@@ -230,6 +234,10 @@ namespace NGit.Transport
 		/// <returns>all refs which were advertised to the client.</returns>
 		public IDictionary<string, Ref> GetAdvertisedRefs()
 		{
+			if (refs == null)
+			{
+				refs = refFilter.Filter(db.GetAllRefs());
+			}
 			return refs;
 		}
 
@@ -292,6 +300,20 @@ namespace NGit.Transport
 		public virtual void SetRefFilter(RefFilter refFilter)
 		{
 			this.refFilter = refFilter != null ? refFilter : RefFilter.DEFAULT;
+		}
+
+		/// <returns>the configured upload hook.</returns>
+		public virtual PreUploadHook GetPreUploadHook()
+		{
+			return preUploadHook;
+		}
+
+		/// <summary>Set the hook that controls how this instance will behave.</summary>
+		/// <remarks>Set the hook that controls how this instance will behave.</remarks>
+		/// <param name="hook">the hook; if null no special actions are taken.</param>
+		public virtual void SetPreUploadHook(PreUploadHook hook)
+		{
+			preUploadHook = hook != null ? hook : PreUploadHook.NULL;
 		}
 
 		/// <summary>Set the configuration used by the pack generator.</summary>
@@ -392,8 +414,7 @@ namespace NGit.Transport
 			else
 			{
 				advertised = new HashSet<ObjectId>();
-				refs = refFilter.Filter(db.GetAllRefs());
-				foreach (Ref @ref in refs.Values)
+				foreach (Ref @ref in GetAdvertisedRefs().Values)
 				{
 					if (@ref.GetObjectId() != null)
 					{
@@ -404,6 +425,8 @@ namespace NGit.Transport
 			RecvWants();
 			if (wantIds.IsEmpty())
 			{
+				preUploadHook.OnBeginNegotiateRound(this, wantIds, 0);
+				preUploadHook.OnEndNegotiateRound(this, wantIds, 0, 0, false);
 				return;
 			}
 			if (options.Contains(OPTION_MULTI_ACK_DETAILED))
@@ -432,8 +455,24 @@ namespace NGit.Transport
 		/// <param name="adv">the advertisement formatter.</param>
 		/// <exception cref="System.IO.IOException">the formatter failed to write an advertisement.
 		/// 	</exception>
+		/// <exception cref="UploadPackMayNotContinueException">the hook denied advertisement.
+		/// 	</exception>
+		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
 		public virtual void SendAdvertisedRefs(RefAdvertiser adv)
 		{
+			try
+			{
+				preUploadHook.OnPreAdvertiseRefs(this);
+			}
+			catch (UploadPackMayNotContinueException fail)
+			{
+				if (fail.Message != null)
+				{
+					adv.WriteOne("ERR " + fail.Message);
+					fail.SetOutput();
+				}
+				throw;
+			}
 			adv.Init(db);
 			adv.AdvertiseCapability(OPTION_INCLUDE_TAG);
 			adv.AdvertiseCapability(OPTION_MULTI_ACK_DETAILED);
@@ -444,8 +483,7 @@ namespace NGit.Transport
 			adv.AdvertiseCapability(OPTION_THIN_PACK);
 			adv.AdvertiseCapability(OPTION_NO_PROGRESS);
 			adv.SetDerefTags(true);
-			refs = refFilter.Filter(db.GetAllRefs());
-			advertised = adv.Send(refs);
+			advertised = adv.Send(GetAdvertisedRefs());
 			adv.End();
 		}
 
@@ -562,6 +600,19 @@ namespace NGit.Transport
 		/// <exception cref="System.IO.IOException"></exception>
 		private ObjectId ProcessHaveLines(IList<ObjectId> peerHas, ObjectId last)
 		{
+			try
+			{
+				preUploadHook.OnBeginNegotiateRound(this, wantIds, peerHas.Count);
+			}
+			catch (UploadPackMayNotContinueException fail)
+			{
+				if (fail.Message != null)
+				{
+					pckOut.WriteString("ERR " + fail.Message + "\n");
+					fail.SetOutput();
+				}
+				throw;
+			}
 			if (peerHas.IsEmpty())
 			{
 				return last;
@@ -579,6 +630,7 @@ namespace NGit.Transport
 				Sharpen.Collections.AddAll(toParse, peerHasSet);
 				needMissing = true;
 			}
+			int haveCnt = 0;
 			AsyncRevObjectQueue q = walk.ParseAny(toParse.AsIterable(), needMissing);
 			try
 			{
@@ -642,6 +694,7 @@ namespace NGit.Transport
 						}
 					}
 					last = obj;
+					haveCnt++;
 					if (obj is RevCommit)
 					{
 						RevCommit c = (RevCommit)obj;
@@ -691,40 +744,46 @@ namespace NGit.Transport
 			{
 				q.Release();
 			}
+			int missCnt = peerHas.Count - haveCnt;
 			// If we don't have one of the objects but we're also willing to
 			// create a pack at this point, let the client know so it stops
 			// telling us about its history.
 			//
 			bool didOkToGiveUp = false;
-			for (int i = peerHas.Count - 1; i >= 0; i--)
+			bool sentReady = false;
+			if (0 < missCnt)
 			{
-				ObjectId id = peerHas[i];
-				if (walk.LookupOrNull(id) == null)
+				for (int i = peerHas.Count - 1; i >= 0; i--)
 				{
-					didOkToGiveUp = true;
-					if (OkToGiveUp())
+					ObjectId id = peerHas[i];
+					if (walk.LookupOrNull(id) == null)
 					{
-						switch (multiAck)
+						didOkToGiveUp = true;
+						if (OkToGiveUp())
 						{
-							case BasePackFetchConnection.MultiAck.OFF:
+							switch (multiAck)
 							{
-								break;
-							}
+								case BasePackFetchConnection.MultiAck.OFF:
+								{
+									break;
+								}
 
-							case BasePackFetchConnection.MultiAck.CONTINUE:
-							{
-								pckOut.WriteString("ACK " + id.Name + " continue\n");
-								break;
-							}
+								case BasePackFetchConnection.MultiAck.CONTINUE:
+								{
+									pckOut.WriteString("ACK " + id.Name + " continue\n");
+									break;
+								}
 
-							case BasePackFetchConnection.MultiAck.DETAILED:
-							{
-								pckOut.WriteString("ACK " + id.Name + " ready\n");
-								break;
+								case BasePackFetchConnection.MultiAck.DETAILED:
+								{
+									pckOut.WriteString("ACK " + id.Name + " ready\n");
+									sentReady = true;
+									break;
+								}
 							}
 						}
+						break;
 					}
-					break;
 				}
 			}
 			if (multiAck == BasePackFetchConnection.MultiAck.DETAILED && !didOkToGiveUp && OkToGiveUp
@@ -732,6 +791,21 @@ namespace NGit.Transport
 			{
 				ObjectId id = peerHas[peerHas.Count - 1];
 				pckOut.WriteString("ACK " + id.Name + " ready\n");
+				sentReady = true;
+			}
+			try
+			{
+				preUploadHook.OnEndNegotiateRound(this, wantAll, haveCnt, missCnt, sentReady);
+			}
+			catch (UploadPackMayNotContinueException fail)
+			{
+				//
+				if (fail.Message != null)
+				{
+					pckOut.WriteString("ERR " + fail.Message + "\n");
+					fail.SetOutput();
+				}
+				throw;
 			}
 			peerHas.Clear();
 			return last;
@@ -833,6 +907,29 @@ namespace NGit.Transport
 						);
 					pm = new SideBandProgressMonitor(msgOut);
 				}
+			}
+			try
+			{
+				if (wantAll.IsEmpty())
+				{
+					preUploadHook.OnSendPack(this, wantIds, commonBase);
+				}
+				else
+				{
+					preUploadHook.OnSendPack(this, wantAll, commonBase);
+				}
+			}
+			catch (UploadPackMayNotContinueException noPack)
+			{
+				if (sideband && noPack.Message != null)
+				{
+					noPack.SetOutput();
+					SideBandOutputStream err = new SideBandOutputStream(SideBandOutputStream.CH_ERROR
+						, SideBandOutputStream.SMALL_BUF, rawOut);
+					err.Write(Constants.Encode(noPack.Message));
+					err.Flush();
+				}
+				throw;
 			}
 			PackConfig cfg = packConfig;
 			if (cfg == null)

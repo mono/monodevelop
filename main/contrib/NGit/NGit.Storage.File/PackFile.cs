@@ -250,7 +250,6 @@ namespace NGit.Storage.File
 		/// <summary>Close the resources utilized by this repository</summary>
 		public virtual void Close()
 		{
-			DeltaBaseCache.Purge(this);
 			WindowCache.Purge(this);
 			lock (this)
 			{
@@ -886,7 +885,7 @@ namespace NGit.Storage.File
 							{
 								goto SEARCH_break;
 							}
-							DeltaBaseCache.Entry e = DeltaBaseCache.Get(this, @base);
+							DeltaBaseCache.Entry e = curs.GetDeltaBaseCache().Get(this, @base);
 							if (e != null)
 							{
 								type = e.type;
@@ -907,7 +906,7 @@ namespace NGit.Storage.File
 							{
 								goto SEARCH_break;
 							}
-							DeltaBaseCache.Entry e = DeltaBaseCache.Get(this, @base);
+							DeltaBaseCache.Entry e = curs.GetDeltaBaseCache().Get(this, @base);
 							if (e != null)
 							{
 								type = e.type;
@@ -945,7 +944,7 @@ SEARCH_break: ;
 					{
 						if (delta.next == null)
 						{
-							DeltaBaseCache.Store(this, delta.basePos, data, type);
+							curs.GetDeltaBaseCache().Store(this, delta.basePos, data, type);
 						}
 					}
 					pos = delta.deltaPos;

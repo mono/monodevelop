@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using NGit;
 using NGit.Api;
+using NGit.Util;
 using Sharpen;
 
 namespace NGit.Api
@@ -90,6 +91,59 @@ namespace NGit.Api
 	{
 		/// <summary>The git repository this class is interacting with</summary>
 		private readonly Repository repo;
+
+		/// <param name="dir">
+		/// the repository to open. May be either the GIT_DIR, or the
+		/// working tree directory that contains
+		/// <code>.git</code>
+		/// .
+		/// </param>
+		/// <returns>
+		/// a
+		/// <see cref="Git">Git</see>
+		/// object for the existing git repository
+		/// </returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public static NGit.Api.Git Open(FilePath dir)
+		{
+			return Open(dir, FS.DETECTED);
+		}
+
+		/// <param name="dir">
+		/// the repository to open. May be either the GIT_DIR, or the
+		/// working tree directory that contains
+		/// <code>.git</code>
+		/// .
+		/// </param>
+		/// <param name="fs">filesystem abstraction to use when accessing the repository.</param>
+		/// <returns>
+		/// a
+		/// <see cref="Git">Git</see>
+		/// object for the existing git repository
+		/// </returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public static NGit.Api.Git Open(FilePath dir, FS fs)
+		{
+			RepositoryCache.FileKey key;
+			key = RepositoryCache.FileKey.Lenient(dir, fs);
+			return Wrap(new RepositoryBuilder().SetFS(fs).SetGitDir(key.GetFile()).SetMustExist
+				(true).Build());
+		}
+
+		/// <param name="repo">
+		/// the git repository this class is interacting with.
+		/// <code>null</code>
+		/// is not allowed
+		/// </param>
+		/// <returns>
+		/// a
+		/// <see cref="Git">Git</see>
+		/// object for the existing git repository
+		/// </returns>
+		public static NGit.Api.Git Wrap(Repository repo)
+		{
+			return new NGit.Api.Git(repo);
+		}
 
 		/// <summary>
 		/// Returns a command object to execute a

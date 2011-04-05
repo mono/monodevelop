@@ -372,7 +372,7 @@ namespace NGit.Dircache
 			{
 				return false;
 			}
-			return snapshot != null && snapshot.IsModified(liveFile);
+			return snapshot == null || snapshot.IsModified(liveFile);
 		}
 
 		/// <summary>Empty this index, removing all entries.</summary>

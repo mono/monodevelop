@@ -191,6 +191,12 @@ namespace NGit.Storage.File
 			packedRefs.Set(RefDirectory.PackedRefList.NO_PACKED_REFS);
 		}
 
+		public override void Refresh()
+		{
+			base.Refresh();
+			Rescan();
+		}
+
 		/// <exception cref="System.IO.IOException"></exception>
 		public override bool IsNameConflicting(string name)
 		{
@@ -641,7 +647,7 @@ namespace NGit.Storage.File
 				}
 				try
 				{
-					RefDirectory.PackedRefList cur = ReadPackedRefs(0, 0);
+					RefDirectory.PackedRefList cur = ReadPackedRefs();
 					int idx = cur.Find(name);
 					if (0 <= idx)
 					{
@@ -847,14 +853,12 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		private RefDirectory.PackedRefList GetPackedRefs()
 		{
-			long size = packedRefsFile.Length();
-			long mtime = size != 0 ? packedRefsFile.LastModified() : 0;
 			RefDirectory.PackedRefList curList = packedRefs.Get();
-			if (size == curList.lastSize && mtime == curList.lastModified)
+			if (!curList.snapshot.IsModified(packedRefsFile))
 			{
 				return curList;
 			}
-			RefDirectory.PackedRefList newList = ReadPackedRefs(size, mtime);
+			RefDirectory.PackedRefList newList = ReadPackedRefs();
 			if (packedRefs.CompareAndSet(curList, newList))
 			{
 				modCnt.IncrementAndGet();
@@ -863,8 +867,9 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private RefDirectory.PackedRefList ReadPackedRefs(long size, long mtime)
+		private RefDirectory.PackedRefList ReadPackedRefs()
 		{
+			FileSnapshot snapshot = FileSnapshot.Save(packedRefsFile);
 			BufferedReader br;
 			try
 			{
@@ -878,7 +883,7 @@ namespace NGit.Storage.File
 			}
 			try
 			{
-				return new RefDirectory.PackedRefList(ParsePackedRefs(br), size, mtime);
+				return new RefDirectory.PackedRefList(ParsePackedRefs(br), snapshot);
 			}
 			finally
 			{
@@ -954,12 +959,12 @@ namespace NGit.Storage.File
 		private void CommitPackedRefs(LockFile lck, RefList<Ref> refs, RefDirectory.PackedRefList
 			 oldPackedList)
 		{
-			new _RefWriter_778(this, lck, oldPackedList, refs, refs).WritePackedRefs();
+			new _RefWriter_782(this, lck, oldPackedList, refs, refs).WritePackedRefs();
 		}
 
-		private sealed class _RefWriter_778 : RefWriter
+		private sealed class _RefWriter_782 : RefWriter
 		{
-			public _RefWriter_778(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
+			public _RefWriter_782(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
 				 oldPackedList, RefList<Ref> refs, RefList<Ref> baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;
@@ -972,7 +977,7 @@ namespace NGit.Storage.File
 			protected internal override void WriteFile(string name, byte[] content)
 			{
 				lck.SetFSync(true);
-				lck.SetNeedStatInformation(true);
+				lck.SetNeedSnapshot(true);
 				try
 				{
 					lck.Write(content);
@@ -998,7 +1003,7 @@ namespace NGit.Storage.File
 						, name));
 				}
 				this._enclosing.packedRefs.CompareAndSet(oldPackedList, new RefDirectory.PackedRefList
-					(refs, content.Length, lck.GetCommitLastModified()));
+					(refs, lck.GetCommitSnapshot()));
 			}
 
 			private readonly RefDirectory _enclosing;
@@ -1078,10 +1083,11 @@ namespace NGit.Storage.File
 					return null;
 				}
 			}
+			int limit = 4096;
 			byte[] buf;
 			try
 			{
-				buf = IOUtil.ReadFully(path, 4096);
+				buf = IOUtil.ReadSome(path, limit);
 			}
 			catch (FileNotFoundException)
 			{
@@ -1096,6 +1102,11 @@ namespace NGit.Storage.File
 			// empty file; not a reference.
 			if (IsSymRef(buf, n))
 			{
+				if (n == limit)
+				{
+					return null;
+				}
+				// possibly truncated ref
 				// trim trailing whitespace
 				while (0 < n && char.IsWhiteSpace((char)buf[n - 1]))
 				{
@@ -1238,20 +1249,13 @@ namespace NGit.Storage.File
 		private class PackedRefList : RefList<Ref>
 		{
 			internal static readonly RefDirectory.PackedRefList NO_PACKED_REFS = new RefDirectory.PackedRefList
-				(RefList.EmptyList(), 0, 0);
+				(RefList.EmptyList(), FileSnapshot.MISSING_FILE);
 
-			/// <summary>Last length of the packed-refs file when we read it.</summary>
-			/// <remarks>Last length of the packed-refs file when we read it.</remarks>
-			internal readonly long lastSize;
+			internal readonly FileSnapshot snapshot;
 
-			/// <summary>Last modified time of the packed-refs file when we read it.</summary>
-			/// <remarks>Last modified time of the packed-refs file when we read it.</remarks>
-			internal readonly long lastModified;
-
-			internal PackedRefList(RefList<Ref> src, long size, long mtime) : base(src)
+			internal PackedRefList(RefList<Ref> src, FileSnapshot s) : base(src)
 			{
-				lastSize = size;
-				lastModified = mtime;
+				snapshot = s;
 			}
 		}
 

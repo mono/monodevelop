@@ -254,5 +254,18 @@ namespace NGit
 		/// <exception cref="System.IO.IOException">the reference space or object space cannot be accessed.
 		/// 	</exception>
 		public abstract Ref Peel(Ref @ref);
+
+		/// <summary>Triggers a refresh of all internal data structures.</summary>
+		/// <remarks>
+		/// Triggers a refresh of all internal data structures.
+		/// <p>
+		/// In case the RefDatabase implementation has internal caches this method
+		/// will trigger that all these caches are cleared.
+		/// <p>
+		/// Implementors should overwrite this method if they use any kind of caches.
+		/// </remarks>
+		public virtual void Refresh()
+		{
+		}
 	}
 }

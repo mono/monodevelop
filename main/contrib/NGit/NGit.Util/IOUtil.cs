@@ -63,6 +63,59 @@ namespace NGit.Util
 			return IOUtil.ReadFully(path, int.MaxValue);
 		}
 
+		/// <summary>Read at most limit bytes from the local file into memory as a byte array.
+		/// 	</summary>
+		/// <remarks>Read at most limit bytes from the local file into memory as a byte array.
+		/// 	</remarks>
+		/// <param name="path">location of the file to read.</param>
+		/// <param name="limit">
+		/// maximum number of bytes to read, if the file is larger than
+		/// only the first limit number of bytes are returned
+		/// </param>
+		/// <returns>
+		/// complete contents of the requested local file. If the contents
+		/// exceeds the limit, then only the limit is returned.
+		/// </returns>
+		/// <exception cref="System.IO.FileNotFoundException">the file does not exist.</exception>
+		/// <exception cref="System.IO.IOException">the file exists, but its contents cannot be read.
+		/// 	</exception>
+		public static byte[] ReadSome(FilePath path, int limit)
+		{
+			FileInputStream @in = new FileInputStream(path);
+			try
+			{
+				byte[] buf = new byte[limit];
+				int cnt = 0;
+				for (; ; )
+				{
+					int n = @in.Read(buf, cnt, buf.Length - cnt);
+					if (n <= 0)
+					{
+						break;
+					}
+					cnt += n;
+				}
+				if (cnt == buf.Length)
+				{
+					return buf;
+				}
+				byte[] res = new byte[cnt];
+				System.Array.Copy(buf, 0, res, 0, cnt);
+				return res;
+			}
+			finally
+			{
+				try
+				{
+					@in.Close();
+				}
+				catch (IOException)
+				{
+				}
+			}
+		}
+
+		// do nothing
 		/// <summary>Read an entire local file into memory as a byte array.</summary>
 		/// <remarks>Read an entire local file into memory as a byte array.</remarks>
 		/// <param name="path">location of the file to read.</param>

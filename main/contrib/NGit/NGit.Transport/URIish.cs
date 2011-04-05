@@ -79,14 +79,14 @@ namespace NGit.Transport
 		/// capturing groups: the first containing the user and the second containing
 		/// the password
 		/// </remarks>
-		private static readonly string OPT_USER_PWD_P = "(?:([^/:@]+)(?::([^/]+))?@)?";
+		private static readonly string OPT_USER_PWD_P = "(?:([^\\\\/:@]+)(?::([^\\\\/]+))?@)?";
 
 		/// <summary>Part of a pattern which matches the host part of URIs.</summary>
 		/// <remarks>
 		/// Part of a pattern which matches the host part of URIs. Defines one
 		/// capturing group containing the host name.
 		/// </remarks>
-		private static readonly string HOST_P = "([^/:]+)";
+		private static readonly string HOST_P = "([^\\\\/:]+)";
 
 		/// <summary>Part of a pattern which matches the optional port part of URIs.</summary>
 		/// <remarks>
@@ -100,7 +100,7 @@ namespace NGit.Transport
 		/// Part of a pattern which matches the ~username part (e.g. /~root in
 		/// git://host.xyz/~root/a.git) of URIs. Defines no capturing group.
 		/// </remarks>
-		private static readonly string USER_HOME_P = "(?:/~(?:[^/]+))";
+		private static readonly string USER_HOME_P = "(?:/~(?:[^\\\\/]+))";
 
 		/// <summary>Part of a pattern which matches the optional drive letter in paths (e.g.
 		/// 	</summary>
@@ -115,14 +115,14 @@ namespace NGit.Transport
 		/// Part of a pattern which matches a relative path. Relative paths don't
 		/// start with slash or drive letters. Defines no capturing group.
 		/// </remarks>
-		private static readonly string RELATIVE_PATH_P = "(?:(?:[^/]+/)*[^/]+/?)";
+		private static readonly string RELATIVE_PATH_P = "(?:(?:[^\\\\/]+[\\\\/])*[^\\\\/]+[\\\\/]?)";
 
 		/// <summary>Part of a pattern which matches a relative or absolute path.</summary>
 		/// <remarks>
 		/// Part of a pattern which matches a relative or absolute path. Defines no
 		/// capturing group.
 		/// </remarks>
-		private static readonly string PATH_P = "(" + OPT_DRIVE_LETTER_P + "/?" + RELATIVE_PATH_P
+		private static readonly string PATH_P = "(" + OPT_DRIVE_LETTER_P + "[\\\\/]?" + RELATIVE_PATH_P
 			 + ")";
 
 		private const long serialVersionUID = 1L;
@@ -133,7 +133,7 @@ namespace NGit.Transport
 		/// </summary>
 		private static readonly Sharpen.Pattern FULL_URI = Sharpen.Pattern.Compile("^" + 
 			SCHEME_P + "(?:" + OPT_USER_PWD_P + HOST_P + OPT_PORT_P + "(" + (USER_HOME_P + "?"
-			) + "/)" + ")?" + "(.+)?" + "$");
+			) + "[\\\\/])" + ")?" + "(.+)?" + "$");
 
 		/// <summary>A pattern matching the reference to a local file.</summary>
 		/// <remarks>
@@ -141,7 +141,7 @@ namespace NGit.Transport
 		/// path (maybe even containing windows drive-letters) or a relative path.
 		/// </remarks>
 		private static readonly Sharpen.Pattern LOCAL_FILE = Sharpen.Pattern.Compile("^" 
-			+ "(/?" + PATH_P + ")" + "$");
+			+ "([\\\\/]?" + PATH_P + ")" + "$");
 
 		/// <summary>
 		/// A pattern matching a URI for the scheme 'file' which has only ':/' as
@@ -153,16 +153,17 @@ namespace NGit.Transport
 		/// separator, but java.io.File.toURI() constructs those URIs.
 		/// </remarks>
 		private static readonly Sharpen.Pattern SINGLE_SLASH_FILE_URI = Sharpen.Pattern.Compile
-			("^" + "(file):(/(?!/)" + PATH_P + ")$");
+			("^" + "(file):([\\\\/](?![\\\\/])" + PATH_P + ")$");
 
 		/// <summary>A pattern matching a SCP URI's of the form user@host:path/to/repo.git</summary>
 		private static readonly Sharpen.Pattern RELATIVE_SCP_URI = Sharpen.Pattern.Compile
-			("^" + OPT_USER_PWD_P + HOST_P + ":(" + ("(?:" + USER_HOME_P + "/)?") + RELATIVE_PATH_P
+			("^" + OPT_USER_PWD_P + HOST_P + ":(" + ("(?:" + USER_HOME_P + "[\\\\/])?") + RELATIVE_PATH_P
 			 + ")$");
 
 		/// <summary>A pattern matching a SCP URI's of the form user@host:/path/to/repo.git</summary>
 		private static readonly Sharpen.Pattern ABSOLUTE_SCP_URI = Sharpen.Pattern.Compile
-			("^" + OPT_USER_PWD_P + "([^/:]{2,})" + ":(" + "/" + RELATIVE_PATH_P + ")$");
+			("^" + OPT_USER_PWD_P + "([^\\\\/:]{2,})" + ":(" + "[\\\\/]" + RELATIVE_PATH_P +
+			 ")$");
 
 		private string scheme;
 
@@ -213,7 +214,6 @@ namespace NGit.Transport
 			//
 			//
 			//
-			s = s.Replace('\\', '/');
 			Matcher matcher = SINGLE_SLASH_FILE_URI.Matcher(s);
 			if (matcher.Matches())
 			{

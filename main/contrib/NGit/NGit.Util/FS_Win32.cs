@@ -120,7 +120,12 @@ namespace NGit.Util
 			//
 			if (w != null)
 			{
-				return new FilePath(w).GetParentFile().GetParentFile();
+				// The path may be in cygwin/msys notation so resolve it right away
+				gitExe = Resolve(null, w);
+				if (gitExe != null)
+				{
+					return gitExe.GetParentFile().GetParentFile();
+				}
 			}
 			return null;
 		}
