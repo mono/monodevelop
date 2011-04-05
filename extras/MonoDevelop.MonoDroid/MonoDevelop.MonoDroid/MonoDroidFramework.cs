@@ -61,7 +61,8 @@ namespace MonoDevelop.MonoDroid
 				EnvironmentOverrides.Remove ("PATH");
 				
 				string monoDroidToolsDir, monoDroidFrameworkDir, javaPath, androidPath;
-				MonoDroidSdk.GetPaths (out monoDroidToolsDir, out monoDroidFrameworkDir, out androidPath, out javaPath);
+				MonoDroidSdk.GetPaths (out monoDroidToolsDir, out monoDroidFrameworkDir, out androidPath, out javaPath,
+					new Microsoft.Build.Utilities.TaskLoggingHelper ());
 				
 				if (monoDroidToolsDir == null) {
 					LoggingService.LogInfo ("Mono for Android SDK not found, disabling Mono for Android addin");
@@ -474,6 +475,30 @@ namespace MonoDevelop.MonoDroid
 		
 		public string Label {
 			get { return GettextCatalog.GetString ("API Level {0} (Android {1})", ApiLevel, OSVersion); }
+		}
+	}
+}
+
+//dummy implementation of Microsoft.Build.Utilities.TaskLoggingHelper
+//so we can use MonoDroidSdk without a dep on MSBuild
+namespace Microsoft.Build.Utilities
+{
+	class TaskLoggingHelper
+	{
+		public void LogMessage (string message)
+		{
+		}
+		
+		public void LogMessage (string format, object arg0)
+		{
+		}
+		
+		public void LogMessage (string format, object arg0, object arg1)
+		{
+		}
+		
+		public void LogMessage (string format, params object[] args)
+		{
 		}
 	}
 }
