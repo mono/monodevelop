@@ -157,6 +157,9 @@ namespace MonoDevelop.Ide.Updater
 		
 		public static void QueryUpdateServer (UpdateInfo[] updateInfos, UpdateLevel level, Action<UpdateResult> callback)
 		{
+			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATER_TEST")))
+				level = UpdateLevel.Test;
+			
 			if (updateInfos == null || updateInfos.Length == 0) {
 				QueryAddinUpdates (level, callback);
 				return;
@@ -168,9 +171,6 @@ namespace MonoDevelop.Ide.Updater
 			
 			foreach (var info in updateInfos)
 				query.AppendFormat ("&{0}={1}", info.AppId, info.VersionId);
-			
-			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATER_TEST")))
-				level = UpdateLevel.Test;
 			
 			if (level != UpdateLevel.Stable) {
 				query.Append ("&level=");
@@ -283,8 +283,14 @@ namespace MonoDevelop.Ide.Updater
 		{
 			List<Update> res = new List<Update> ();
 			string url = Runtime.AddinSetupService.GetMainRepositoryUrl (level);
-			foreach (var ventry in Runtime.AddinSetupService.Repositories.GetAvailableUpdates (url)) {
+			List<AddinRepositoryEntry> list = new List<AddinRepositoryEntry> ();
+			list.AddRange (Runtime.AddinSetupService.Repositories.GetAvailableUpdates (url));
+			FilterOldVersions (list);
+			foreach (var ventry in list) {
 				var entry = ventry;
+				string notify = entry.Addin.Properties.GetPropertyValue ("NotifyUpdate").ToLower ();
+				if (notify != "yes" && notify != "true")
+					continue;
 				string sdate = entry.Addin.Properties.GetPropertyValue ("ReleaseDate");
 				DateTime date;
 				if (!string.IsNullOrEmpty (sdate))
@@ -297,18 +303,58 @@ namespace MonoDevelop.Ide.Updater
 					Version = entry.Addin.Version,
 					Level = level,
 					Date = date,
-					Releases = ParseReleases (entry.Addin.Id, entry.Addin.Properties.GetPropertyValue ("ReleaseNotes")).ToList ()
+					Releases = ParseReleases (entry.Addin.Id, entry).ToList ()
 				});
 			}
 			return res;
 		}
 		
-		static IEnumerable<Release> ParseReleases (string addinId, string releaseNotes)
+		static void FilterOldVersions (List<AddinRepositoryEntry> addins)
+		{
+			Dictionary<string,string> versions = new Dictionary<string, string> ();
+			foreach (AddinRepositoryEntry a in addins) {
+				string last;
+				string id, version;
+				Addin.GetIdParts (a.Addin.Id, out id, out version);
+				if (!versions.TryGetValue (id, out last) || Addin.CompareVersions (last, version) > 0)
+					versions [id] = version;
+			}
+			for (int n=0; n<addins.Count; n++) {
+				AddinRepositoryEntry a = addins [n];
+				string id, version;
+				Addin.GetIdParts (a.Addin.Id, out id, out version);
+				if (versions [id] != version)
+					addins.RemoveAt (n--);
+			}
+		}
+		
+		static IEnumerable<Release> ParseReleases (string addinId, AddinRepositoryEntry entry)
 		{
 			// Format of release notes is:
 			// {{version1,date1}} release note text {{version2,date2}} release note text ...
+			// Releases msyu
 			// for example:
 			// {{1.1,2011-01-10}} Release notes for 1.1 {{1.2,2011-03-22}} Release notes for 2.3
+			
+			string releaseNotes = entry.Addin.Properties.GetPropertyValue ("ReleaseNotes");
+			if (releaseNotes.Length == 0) {
+				string file = entry.Addin.Properties.GetPropertyValue ("ReleaseNotesFile");
+				if (file.Length > 0) {
+					IAsyncResult res = entry.BeginDownloadSupportFile (file, null, null);
+					res.AsyncWaitHandle.WaitOne ();
+					try {
+						using (Stream s = entry.EndDownloadSupportFile (res)) {
+							StreamReader sr = new StreamReader (s);
+							releaseNotes = sr.ReadToEnd ();
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not download release notes", ex);
+					}
+				}
+			}
+			
+			if (releaseNotes.Length == 0)
+				yield break;
 			
 			var addin = AddinManager.Registry.GetAddin (Addin.GetIdName (addinId));
 			string currentVersion = addin != null ? addin.Version : null;
@@ -331,7 +377,7 @@ namespace MonoDevelop.Ide.Updater
 					yield return new Release () {
 						Version = version,
 						Date = date,
-						Notes = txt.Trim ()
+						Notes = txt.Trim (' ','\t','\r','\n')
 					};
 				}
 				i = k;
@@ -340,7 +386,8 @@ namespace MonoDevelop.Ide.Updater
 		
 		static IAsyncOperation InstallAddin (IProgressMonitor monitor, AddinRepositoryEntry addin)
 		{
-			DispatchService.BackgroundDispatch (delegate {
+			// Add-in engine changes must be done in the gui thread since mono.addins is not thread safe
+			DispatchService.GuiDispatch (delegate {
 				using (monitor) {
 					Runtime.AddinSetupService.Install (new ProgressStatusMonitor (monitor), addin);
 				}
