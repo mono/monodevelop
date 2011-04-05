@@ -203,17 +203,18 @@ namespace MonoDevelop.MonoDroid
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			var conf = proj.GetConfiguration (configSel);
 
-			// We need to properly wait for signing
 			OperationHandler signOp = delegate {
 				using (var monitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor ()) {
-					MonoDroidUtility.Sign (monitor, proj, configSel);
-				};
-				var dlg = new MonoDevelop.MonoDroid.Gui.MonoDroidPublishDialog () {
-					ApkPath = conf.ApkPath,
-					BaseDirectory = proj.BaseDirectory
-				};
-				MessageService.ShowCustomDialog (dlg);
+					var dlg = new MonoDevelop.MonoDroid.Gui.MonoDroidPublishDialog () {
+						ApkPath = conf.ApkPath,
+						BaseDirectory = proj.BaseDirectory
+					};
 
+					if (MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok) {
+						MonoDroidUtility.PublishPackage (monitor, proj, configSel, dlg.SigningOptions,
+							conf.ApkPath, dlg.DestinationApkPath, dlg.CreateNewKey, dlg.DName, dlg.KeyValidity * 365);
+					}
+				};
 			};
 
 			if (proj.NeedsBuilding (configSel))

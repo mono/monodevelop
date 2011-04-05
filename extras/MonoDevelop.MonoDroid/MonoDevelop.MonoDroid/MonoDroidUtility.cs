@@ -104,6 +104,34 @@ namespace MonoDevelop.MonoDroid
 
 			return Core.Execution.NullProcessAsyncOperation.Success;
 		}
+
+		public static MonoDroidPublishOperation PublishPackage (IProgressMonitor monitor, MonoDroidProject project,
+			ConfigurationSelector configSel, AndroidSigningOptions options, string sourceApk, string destApk,
+			bool createNewKey, string dName, int keyValidity)
+		{
+			var conf = project.GetConfiguration (configSel);
+			var opMon = new AggregatedOperationMonitor (monitor);
+
+			IAsyncOperation packageOp = null;
+
+			// If we need signing, it means we don't have the apk ready
+			if (project.PackageNeedsSigning (configSel)) {
+				ClearUploadFlags (conf);
+				packageOp = project.SignPackage (configSel);
+				opMon.AddOperation (packageOp);
+			}
+
+			var outputMonitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				GettextCatalog.GetString ("Publishing package"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
+			var op = new MonoDroidPublishOperation (outputMonitor, options, sourceApk, destApk, packageOp,
+				createNewKey, dName, keyValidity);
+			op.Completed += delegate {
+				opMon.Dispose ();
+				outputMonitor.Dispose ();
+			};
+			op.Start ();
+			return op;
+		}
 		
 		//may block while it's showing a GUI. project MUST be built before calling this
 		public static MonoDroidUploadOperation SignAndUpload (IProgressMonitor monitor, MonoDroidProject project,
@@ -355,6 +383,92 @@ namespace MonoDevelop.MonoDroid
 			get { return chop.SuccessWithWarnings; }
 		}
 		#endregion
+	}
+
+	public class MonoDroidPublishOperation : IAsyncOperation
+	{
+		ChainedAsyncOperationSequence chop;
+		
+		public MonoDroidPublishOperation (IProgressMonitor monitor, AndroidSigningOptions signingOptions,
+			string sourceApk, string destinationApk, IAsyncOperation packagingOperation, bool createNewKey, string dName, int keyValidity)
+		{
+			var toolbox = MonoDroidFramework.Toolbox;
+			var destApk = (FilePath)destinationApk;
+			var destUnalignedApk = ((FilePath)(destApk.FileNameWithoutExtension + "-unaligned.apk"));
+			if (!destApk.ParentDirectory.IsNullOrEmpty)
+				destUnalignedApk = destApk.ParentDirectory.Combine (destUnalignedApk);
+
+			chop = new ChainedAsyncOperationSequence (monitor,
+				new ChainedAsyncOperation () {
+					TaskName = GettextCatalog.GetString ("Creating new keystore"),
+					Skip = () => !createNewKey ? "" : null,
+					Create = () => toolbox.Genkeypair (signingOptions, dName,
+						keyValidity, monitor.Log, monitor.Log),
+					ErrorMessage = GettextCatalog.GetString ("Failed to create a new keystore")
+				},
+				new ChainedAsyncOperation () {
+					TaskName = GettextCatalog.GetString ("Waiting for packaging to complete"),
+					Skip = () => (packagingOperation == null || packagingOperation.IsCompleted) ? "" : null,
+					Create = () => packagingOperation,
+					ErrorMessage = GettextCatalog.GetString ("Failed to create android package")
+				},
+				new ChainedAsyncOperation () {
+					TaskName = GettextCatalog.GetString ("Signing package with custom key"),
+					Create = () => toolbox.SignPackage (signingOptions, sourceApk, destUnalignedApk, 
+						monitor.Log, monitor.Log),
+					ErrorMessage = GettextCatalog.GetString ("Failed to sign package")
+				},
+				new ChainedAsyncOperation () {
+					Create = () => toolbox.AlignPackage (destUnalignedApk, destApk,
+						monitor.Log, monitor.Log),
+					ErrorMessage = GettextCatalog.GetString ("Failed to align package")
+				},
+				new ChainedAsyncOperation () {
+					Create = () => {
+						File.Delete (destUnalignedApk);
+						return Core.Execution.NullProcessAsyncOperation.Success;
+					},
+					ErrorMessage = GettextCatalog.GetString ("Failed to remove temp package file")
+				},
+				new ChainedAsyncOperation () {
+					TaskName = GettextCatalog.GetString ("Package successfully signed"),
+					Create = () => Core.Execution.NullProcessAsyncOperation.Success
+				}
+			);
+		}
+
+		public void Start ()
+		{
+			chop.Start ();
+		}
+		
+		public event OperationHandler Completed {
+			add { chop.Completed += value; }
+			remove { chop.Completed -= value; }
+		}
+
+		public void Cancel ()
+		{
+			Console.WriteLine ("PUBLISH CANCELLED");
+			chop.Cancel ();
+		}
+
+		public void WaitForCompleted ()
+		{
+			chop.WaitForCompleted ();
+		}
+
+		public bool IsCompleted {
+			get { return chop.IsCompleted; }
+		}
+
+		public bool Success {
+			get { return chop.Success; }
+		}
+
+		public bool SuccessWithWarnings {
+			get { return chop.SuccessWithWarnings; }
+		}
 	}
 	
 	public class ChainedAsyncOperationSequence : IAsyncOperation
