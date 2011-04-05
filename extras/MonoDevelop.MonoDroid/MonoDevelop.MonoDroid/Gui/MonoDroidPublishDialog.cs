@@ -225,7 +225,6 @@ namespace MonoDevelop.MonoDroid.Gui
 				notebook1.Page = (int)PublishPage.Publish;
 				break;
 			default: // Publish
-				//DoSignPackage ();
 				Respond (ResponseType.Ok);
 				break;
 			}
