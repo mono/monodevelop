@@ -76,7 +76,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			
 			var xcode = XcodeInterfaceBuilderDesktopApplication.XCODE_LOCATION;
 			MonoMac.AppKit.NSWorkspace.SharedWorkspace.OpenFile (outputDir.Combine (dnp.Name + ".xcodeproj"), xcode);
-			MonoMac.AppKit.NSWorkspace.SharedWorkspace.OpenFile (xib, xcode);
+			MonoMac.AppKit.NSWorkspace.SharedWorkspace.OpenFile (outputDir.Combine (xib.FileName), xcode);
 			return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
 		}
 		
