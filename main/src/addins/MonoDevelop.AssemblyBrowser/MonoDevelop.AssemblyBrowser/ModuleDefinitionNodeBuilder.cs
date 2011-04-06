@@ -35,6 +35,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -90,11 +91,9 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		void PrintModuleHeader (StringBuilder result, DomCecilCompilationUnit.Module module)
 		{
-			result.Append ("<span style=\"comment\">");
 			result.Append (Ambience.SingleLineComment (
 			                    String.Format (GettextCatalog.GetString ("Module <b>{0}</b>"),
 			                    module.ModuleDefinition.Name)));
-			result.Append ("</span>");
 			result.AppendLine ();
 		}
 		
@@ -111,7 +110,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public string GetDisassembly (ITreeNavigator navigator)
+		public void Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			DomCecilCompilationUnit.Module module = (DomCecilCompilationUnit.Module)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
@@ -128,18 +127,16 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			foreach (string ns in namespaces) {
-				result.Append ("<span style=\"keyword.namespace\">namespace</span> ");
-				result.Append ("<span style=\"text\">");
+				result.Append ("namespace ");
 				result.Append (ns);
-				result.Append ("</span>");
 				result.AppendLine ();
 			}
 			
-			return result.ToString ();
+			data.Text = result.ToString ();
 		}
-		public string GetDecompiledCode (ITreeNavigator navigator)
+		public void Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			return this.GetDisassembly (navigator);
+			Disassemble (data, navigator);
 		}
 		public string GetDocumentationMarkup (ITreeNavigator navigator)
 		{

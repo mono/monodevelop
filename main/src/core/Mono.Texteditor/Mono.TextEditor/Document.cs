@@ -933,6 +933,7 @@ namespace Mono.TextEditor
 			UpdateFoldSegments (newSegments, true);
 		}
 		
+
 		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool runInThread)
 		{
 			if (newSegments == null) {
@@ -1033,7 +1034,8 @@ namespace Mono.TextEditor
 			foldSegmentTree.RemoveListener (this);
 			foldSegmentTree = new SegmentTree<FoldSegment> ();
 			foldSegmentTree.InstallListener (this);
-							
+			foldedSegments = new HashSet<FoldSegment> ();
+			
 			InformFoldTreeUpdated ();
 		}
 		

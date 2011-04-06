@@ -33,6 +33,10 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler;
+using System.Threading;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -98,22 +102,16 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		void IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			IEvent evt = (IEvent)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			result.Append (Ambience.GetString (evt, DomTypeNodeBuilder.settings));
-			return result.ToString ();
+			var evt = (DomCecilEvent)navigator.DataItem;
+			DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleEvent (evt.EventDefinition));
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		void IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			IEvent evt = (IEvent)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, evt.Attributes));
-			result.Append (Ambience.GetString (evt, DomTypeNodeBuilder.settings));
-			result.Append (";");
-			return result.ToString ();
+			var evt = (DomCecilEvent)navigator.DataItem;
+			DomMethodNodeBuilder.Decompile (data, ((DomCecilType)evt.DeclaringType).TypeDefinition, b => b.AddEvent (evt.EventDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

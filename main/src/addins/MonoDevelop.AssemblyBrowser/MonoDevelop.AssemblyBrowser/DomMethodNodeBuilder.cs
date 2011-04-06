@@ -37,8 +37,12 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
-using Cecil.Decompiler.Languages;
 using MonoDevelop.Ide;
+using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler;
+using System.Threading;
+using ICSharpCode.Decompiler.Disassembler;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -114,29 +118,39 @@ namespace MonoDevelop.AssemblyBrowser
 			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
 		
-		
-		public static string Decompile (DomCecilMethod method, bool markup)
+		public static void Decompile (TextEditorData data, TypeDefinition currentType, Action<AstBuilder> setData)
 		{
-			if (method.MethodDefinition.IsPInvokeImpl)
-				return GettextCatalog.GetString ("Method is P/Invoke");
-			if (method.MethodDefinition.Body == null) {
-				IType type = method.DeclaringType;
-				return type == null || type.ClassType == ClassType.Interface ? GettextCatalog.GetString ("Interface method") : GettextCatalog.GetString ("Abstract method");
-			}
-			
-			StringBuilder result = new StringBuilder ();
 			try {
-				//ControlFlowGraph controlFlowGraph = ControlFlowGraph.Create (method.MethodDefinition);
-				ILanguage lang = CSharp.GetLanguage (CSharpVersion.V3);
-				ColoredCSharpFormatter formatter = new ColoredCSharpFormatter ();
-				ILanguageWriter langWriter = lang.GetWriter (formatter);
-				langWriter.Write (method.MethodDefinition);
-				result.Append (formatter.Text);
+				var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+				var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+				
+				var context = new DecompilerContext ();
+				var source = new CancellationTokenSource ();
+				
+				context.CancellationToken = source.Token;
+				context.CurrentType = currentType;
+				
+				context.Settings = new DecompilerSettings () {
+					AnonymousMethods = true,
+					AutomaticEvents  = true,
+					AutomaticProperties = true,
+					ForEachStatement = true,
+					LockStatement = true
+				};
+				
+				AstBuilder astBuilder = new AstBuilder (context);
+				
+				setData (astBuilder);
+				
+				astBuilder.RunTransformations (o => false);
+				var output = new ColoredCSharpFormatter (data.Document);
+				astBuilder.GenerateCode (output, codePolicy.CreateOptions ());
+				output.SetDocumentData ();
 			} catch (Exception e) {
-				result.Append ("Decompilation failed: \n" + e);
+				data.Text = "Decompilation failed: \n" + e;
 			}
-			return result.ToString ();
 		}
+		
 		
 		internal static string GetAttributes (Ambience ambience, IEnumerable<IAttribute> attributes)
 		{
@@ -151,21 +165,12 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public string GetDecompiledCode (ITreeNavigator navigator)
+		public void Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
-				return "";
-			
-			StringBuilder result = new StringBuilder ();
-/*			result.Append (GetAttributes (Ambience, method.Attributes));
-			result.Append (Ambience.GetString (method, DomTypeNodeBuilder.settings));
-			result.AppendLine ();
-			result.Append ("{");
-			result.AppendLine ();*/
-			result.Append (Decompile (method, true));
-//			result.Append ("}");
-			return result.ToString ();
+				return;
+			DomMethodNodeBuilder.Decompile (data, ((DomCecilType)method.DeclaringType).TypeDefinition, b => b.AddMethod (method.MethodDefinition));
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -177,105 +182,21 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append ("</a></u></span>");
 		}
 		
-		public static string Disassemble (DomCecilMethod method, bool markup)
+		public static void Disassemble (TextEditorData data, Action<ReflectionDisassembler> setData)
 		{
-			if (method.MethodDefinition.IsPInvokeImpl)
-				return GettextCatalog.GetString ("Method is P/Invoke");
-			if (method.MethodDefinition.Body == null) {
-				IType type = method.DeclaringType;
-				return type == null || type.ClassType == ClassType.Interface ? GettextCatalog.GetString ("Interface method") : GettextCatalog.GetString ("Abstract method");
-			}
-			
-			StringBuilder result = new StringBuilder ();
-			foreach (Instruction instruction in method.MethodDefinition.Body.Instructions ) {
-				if (markup)
-					result.Append ("<b>");
-				result.Append (GetInstructionOffset (instruction));
-				result.Append (markup ? ":</b> " : ": ");
-				result.Append (instruction.OpCode);
-				if (markup)
-					result.Append ("<i>");
-				if (instruction.Operand != null) {
-					result.Append (' ');
-					if (instruction.Operand is string) {
-						result.Append ('"');
-						result.Append (AssemblyBrowserWidget.FormatText (instruction.Operand.ToString ()));
-						result.Append ('"');
-					} else if (instruction.Operand is Mono.Cecil.Cil.Instruction) {
-						result.Append (GetInstructionOffset ((Mono.Cecil.Cil.Instruction)instruction.Operand));
-					} else if (instruction.Operand is Mono.Cecil.TypeDefinition) {
-						AppendLink (result, 
-						            new DomCecilType ((Mono.Cecil.TypeDefinition)instruction.Operand).HelpUrl,
-						            instruction.Operand.ToString ());
-					} else if (instruction.Operand is Mono.Cecil.MethodDefinition) {
-						Mono.Cecil.MethodDefinition md = instruction.Operand as Mono.Cecil.MethodDefinition;
-						AppendLink (result, 
-						            new DomCecilMethod (md) { DeclaringType = new DomCecilType (md.DeclaringType) } .HelpUrl, 
-						            instruction.Operand.ToString ());
-					} else if (instruction.Operand is Mono.Cecil.FieldDefinition) {
-						Mono.Cecil.FieldDefinition fd = instruction.Operand as Mono.Cecil.FieldDefinition;
-						AppendLink (result, 
-						            new DomCecilField (fd) { DeclaringType = new DomCecilType (fd.DeclaringType) }.HelpUrl,  
-						            instruction.Operand.ToString ());
-					} else if (instruction.Operand is Mono.Cecil.PropertyDefinition) {
-						Mono.Cecil.PropertyDefinition pd = instruction.Operand as Mono.Cecil.PropertyDefinition;
-						AppendLink (result, 
-						            new DomCecilProperty (pd) { DeclaringType = new DomCecilType (pd.DeclaringType) } .HelpUrl, 
-						            instruction.Operand.ToString ());
-					} else if (instruction.Operand is Mono.Cecil.TypeReference) {
-						AppendLink (result, 
-						            "T:" + ((TypeReference)instruction.Operand).FullName,
-						            instruction.Operand.ToString ());
-					} else if (instruction.Operand is Mono.Cecil.MethodReference) {
-						Mono.Cecil.MethodReference mr = instruction.Operand as Mono.Cecil.MethodReference;
-						StringBuilder id = new StringBuilder (mr.DeclaringType.ToString ());
-						bool isConstructor = mr.Name == ".ctor";
-						if (!isConstructor)
-							id.Append ("." + mr.Name);
-						id.Append ("(");
-						for (int i = 0; i < mr.Parameters.Count; i++) {
-							if (i > 0)
-								id.Append (',');
-							id.Append (mr.Parameters[i].ParameterType.FullName);
-						}
-						id.Append (")");
-						AppendLink (result, (isConstructor ? "C:" : "M:") + id, id.ToString ());
-					} else if (instruction.Operand is Mono.Cecil.FieldReference) {
-						Mono.Cecil.FieldReference fr = instruction.Operand as Mono.Cecil.FieldReference;
-						string id = fr.DeclaringType + "." + fr.Name;
-						AppendLink (result, "F:" + id, id);
-					} else if (instruction.Operand is Mono.Cecil.PropertyReference) {
-						Mono.Cecil.PropertyReference pr = instruction.Operand as Mono.Cecil.PropertyReference;
-						string id = pr.DeclaringType + "." + pr.Name;
-						AppendLink (result, "P:" + id, id);
-					} else {
-						result.Append (AssemblyBrowserWidget.FormatText (instruction.Operand.ToString ()));
-					}
-				}
-				if (markup)
-					result.Append ("</i>");
-				result.AppendLine ();
-			}
-			result.AppendLine ();
-			return result.ToString ();
+			var source = new CancellationTokenSource ();
+			var output = new ColoredCSharpFormatter (data.Document);
+			var disassembler = new ReflectionDisassembler (output, true, source.Token);
+			setData (disassembler);
+			output.SetDocumentData ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		void IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
-				return "";
-
-			NetAmbience netAmbience = new NetAmbience ();
-			StringBuilder result = new StringBuilder ();
-			var settings = DomTypeNodeBuilder.settings;
-			settings.OutputFlags |= OutputFlags.IncludeConstraints;
-			result.Append (netAmbience.GetString (method, settings));
-			settings.OutputFlags &= ~OutputFlags.IncludeConstraints;
-			result.AppendLine ();
-			result.AppendLine ();
-			result.Append (Disassemble (method, true));
-			return result.ToString ();
+				return;
+			Disassemble (data, rd => rd.DisassembleMethod (method.MethodDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

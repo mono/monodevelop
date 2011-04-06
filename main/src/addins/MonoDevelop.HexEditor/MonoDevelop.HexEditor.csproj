@@ -54,6 +54,10 @@
     </Reference>
     <Reference Include="Mono.Cairo">
     </Reference>
+    <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\build\bin\NRefactory.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -146,11 +150,6 @@
     <ProjectReference Include="..\..\core\Mono.Debugging\Mono.Debugging.csproj">
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.AssemblyBrowser\MonoDevelop.AssemblyBrowser.csproj">

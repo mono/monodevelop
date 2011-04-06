@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -88,37 +89,17 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public string GetDisassembly (ITreeNavigator navigator)
+		public void Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			bool publicOnly = navigator.Options ["PublicApiOnly"];
+		//	bool publicOnly = navigator.Options ["PublicApiOnly"];
 			Namespace ns = (Namespace)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			if (!String.IsNullOrEmpty (ns.Name)) {
-				result.Append ("<span style=\"keyword.namespace\">namespace</span> ");
-				result.Append ("<span style=\"text\">");
-				result.Append (ns.Name);
-				result.Append ("</span>");
-				result.AppendLine ();
-				result.Append ("<span style=\"text\">{</span>");
-				result.AppendLine ();
-			}
-			foreach (IType type in ns.Types) {
-				if (publicOnly && !type.IsPublic)
-					continue;
-				if (!String.IsNullOrEmpty (ns.Name))
-					result.Append ("\t");
-				result.Append (Ambience.GetString (type, DomTypeNodeBuilder.settings));
-				result.AppendLine ();
-			}
-			if (!String.IsNullOrEmpty (ns.Name)) {
-				result.Append ("<span style=\"text\">}</span>");
-				result.AppendLine ();
-			}
-			return result.ToString ();
+			
+			data.Text = "// " + ns.Name;
 		}
-		public string GetDecompiledCode (ITreeNavigator navigator)
+		
+		public void Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			return this.GetDisassembly (navigator);
+			Disassemble (data, navigator);
 		}
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{

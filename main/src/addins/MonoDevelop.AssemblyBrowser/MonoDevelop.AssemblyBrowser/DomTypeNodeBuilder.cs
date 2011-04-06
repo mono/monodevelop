@@ -37,6 +37,10 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide;
+using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler;
+using System.Threading;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -159,171 +163,16 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public string GetDisassembly (ITreeNavigator navigator)
+		public void Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			bool publicOnly = navigator.Options ["PublicApiOnly"];
-			IType type = (IType)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, type.Attributes));
-			settings.OutputFlags |= OutputFlags.IncludeConstraints;
-			result.Append (Ambience.GetString (type, settings));
-			settings.OutputFlags &= ~OutputFlags.IncludeConstraints;
-			bool first = true;
-			
-			if (type.ClassType == ClassType.Enum) {
-				result.Append ("<span style=\"text\"> {</span>");
-				result.Append ("");
-				result.AppendLine ();
-				int length = result.Length;
-				foreach (IField field in type.Fields) {
-					if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
-						continue;
-					result.Append ("<span style=\"text\"> \t");
-					result.Append (field.Name);
-					length = result.Length;
-					result.Append (",</span>");
-					result.AppendLine ();
-				}
-				result.Length = length;
-				result.AppendLine ();
-				result.Append ("<span style=\"text\">}</span>");
-				return result.ToString ();
-			}
-			result.AppendLine ();
-			result.Append ("<span style=\"text\">{</span>");
-			
-//			Style colorStyle = TextEditorOptions.Options.GetColorStyle (widget);
-//			ChunkStyle comments = colorStyle.GetChunkStyle ("comment");
-//			string commentSpan = String.Format ("<span foreground=\"#{0:X6}\">", comments.Color.Pixel);
-			string commentSpan = "<span style=\"comment\">";
-			foreach (IField field in type.Fields) {
-				if (publicOnly && !(field.IsPublic || field.IsProtected))
-					continue;
-				if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
-					continue;
-				if (first) {
-					result.AppendLine ();
-					result.Append ("\t");
-					result.Append (commentSpan);
-					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Fields")));
-					result.Append ("</span>");
-					result.AppendLine ();
-				}
-				first = false;
-				result.Append ("\t");
-				result.Append (Ambience.GetString (field, settings));
-				result.Append ("<span style=\"text\">;</span>");
-				result.AppendLine ();
-			}
-			first = true;
-			foreach (IEvent evt in type.Events) {
-				if (publicOnly && !(evt.IsPublic || evt.IsProtected))
-					continue;
-				if (first) {
-					result.AppendLine ();
-					result.Append ("\t");
-					result.Append (commentSpan);
-					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Events")));
-					result.Append ("</span>");
-					result.AppendLine ();
-				}
-				first = false;
-				result.Append ("\t");
-				result.Append (Ambience.GetString (evt, settings));
-				result.Append ("<span style=\"text\">;</span>");
-				result.AppendLine ();
-			}
-			first = true;
-			foreach (IMethod method in type.Methods) {
-				if (publicOnly && !(method.IsPublic || method.IsProtected))
-					continue;
-				if (!method.IsConstructor)
-					continue;
-				if (first) {
-					result.AppendLine ();
-					result.Append ("\t");
-					result.Append (commentSpan);
-					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Constructors")));
-					result.Append ("</span>");
-					result.AppendLine ();
-				}
-				first = false;
-				result.Append ("\t");
-				result.Append (Ambience.GetString (method, settings));
-				result.Append ("<span style=\"text\">;</span>");
-				result.AppendLine ();
-			}
-			first = true;
-			foreach (IMethod method in type.Methods) {
-				if (publicOnly && !(method.IsPublic || method.IsProtected))
-					continue;
-				if ((method.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName || method.IsConstructor)
-					continue;
-				if (first) {
-					result.AppendLine ();
-					result.Append ("\t");
-					result.Append (commentSpan);
-					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Methods")));
-					result.Append ("</span>");
-					result.AppendLine ();
-				}
-				first = false;
-				result.Append ("\t");
-				result.Append (Ambience.GetString (method, settings));
-				result.Append ("<span style=\"text\">;</span>");
-				result.AppendLine ();
-			}
-			first = true;
-			foreach (IProperty property in type.Properties) {
-				if (publicOnly && !(property.IsPublic || property.IsProtected))
-					continue;
-				if (first) {
-					result.AppendLine ();
-					result.Append ("\t");
-					result.Append (commentSpan);
-					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Properties")));
-					result.Append ("</span>");
-					result.AppendLine ();
-				}
-				first = false;
-				result.Append ("\t");
-				result.Append (Ambience.GetString (property, settings));
-				result.Append (" <span style=\"text\">{</span>");
-				if (property.HasGet) {
-					if (property.GetterModifier != property.Modifiers) {
-						result.Append (" <span style=\"keyword.modifier\">");
-						result.Append (Ambience.GetString (property.GetterModifier));
-						result.Append ("</span>");
-					}
-					result.Append (" <span style=\"keyword.property\">get</span><span style=\"text\">;</span>");
-				}
-				if (property.HasSet) {
-					if (property.SetterModifier != property.Modifiers) {
-						result.Append (" <span style=\"keyword.modifier\">");
-						result.Append (Ambience.GetString (property.SetterModifier));
-						result.Append ("</span>");
-					}
-					result.Append (" <span style=\"keyword.property\">set</span><span style=\"text\">;</span>");
-				}
-				result.Append (" <span style=\"text\">}</span>");
-				result.AppendLine ();
-			}
-			result.Append ("<span style=\"text\">}</span>");
-			
-			result.AppendLine ();
-			return result.ToString ();
+			var type = (DomCecilType)navigator.DataItem;
+			DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type.TypeDefinition));
 		}
 		
-		public string GetDecompiledCode (ITreeNavigator navigator)
+		public void Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			IType type = (IType)navigator.DataItem;
-			if (type.ClassType == ClassType.Delegate) {
-				settings.OutputFlags |= OutputFlags.ReformatDelegates | OutputFlags.IncludeConstraints;
-				string result =  Ambience.GetString (type, settings);
-				settings.OutputFlags &= ~(OutputFlags.ReformatDelegates | OutputFlags.IncludeConstraints);
-				return result;
-			}
-			return GetDisassembly (navigator);
+			var type = (DomCecilType)navigator.DataItem;
+			DomMethodNodeBuilder.Decompile (data, type.TypeDefinition, b => b.AddType (type.TypeDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

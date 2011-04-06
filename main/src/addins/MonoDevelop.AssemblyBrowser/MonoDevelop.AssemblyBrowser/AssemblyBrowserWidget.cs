@@ -114,7 +114,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			PropertyService.PropertyChanged += HandlePropertyChanged;
 			this.inspectEditor.Document.ReadOnly = true;
-			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
+//			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
 			
 //			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
@@ -502,9 +502,9 @@ namespace MonoDevelop.AssemblyBrowser
 								DomCecilMethod domMethod = method as DomCecilMethod;
 								if (domMethod == null)
 									continue;
-								if (DomMethodNodeBuilder.Disassemble (domMethod, false).ToUpper ().Contains (pattern)) {
-									members.Add (method);
-								}
+//								if (DomMethodNodeBuilder.Disassemble (rd => rd.DisassembleMethod (domMethod.MethodDefinition)).ToUpper ().Contains (pattern)) {
+//									members.Add (method);
+//								}
 							}
 
 						}
@@ -534,9 +534,9 @@ namespace MonoDevelop.AssemblyBrowser
 								DomCecilMethod domMethod = method as DomCecilMethod;
 								if (domMethod == null)
 									continue;
-								if (DomMethodNodeBuilder.Decompile (domMethod, false).ToUpper ().Contains (pattern)) {
+/*								if (DomMethodNodeBuilder.Decompile (domMethod, false).ToUpper ().Contains (pattern)) {
 									members.Add (method);
-								}
+								}*/
 							}
 						}
 					}
@@ -812,18 +812,25 @@ namespace MonoDevelop.AssemblyBrowser
 				this.inspectEditor.Document.Text = "";
 				return;
 			}
-			
+			inspectEditor.Document.ClearFoldSegments ();
 			switch (this.languageCombobox.Active) {
 			case 0:
+				inspectEditor.Options.ShowFoldMargin = false;
+				this.inspectEditor.Document.MimeType = "text/x-csharp";
 				this.documentationPanel.Markup = builder.GetDocumentationMarkup (nav);
 				break;
 			case 1:
-				this.inspectEditor.Document.Text = builder.GetDisassembly (nav);
+				inspectEditor.Options.ShowFoldMargin = true;
+				this.inspectEditor.Document.MimeType = "text/x-ilasm";
+				builder.Disassemble (inspectEditor.GetTextEditorData (), nav);
 				break;
 			case 2:
-				this.inspectEditor.Document.Text = builder.GetDecompiledCode (nav);
+				inspectEditor.Options.ShowFoldMargin = true;
+				this.inspectEditor.Document.MimeType = "text/x-csharp";
+				builder.Decompile (inspectEditor.GetTextEditorData (),  nav);
 				break;
 			default:
+				inspectEditor.Options.ShowFoldMargin = false;
 				this.inspectEditor.Document.Text = "Invalid combobox value: " + this.languageCombobox.Active;
 				break;
 			}

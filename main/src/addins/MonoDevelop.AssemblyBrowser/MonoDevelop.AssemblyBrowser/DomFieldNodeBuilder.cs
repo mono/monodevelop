@@ -33,6 +33,10 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler;
+using System.Threading;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -89,21 +93,17 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		void IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			IField field = (IField)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			result.Append (Ambience.GetString (field, DomTypeNodeBuilder.settings));
-			return result.ToString ();
+			var field = (DomCecilField)navigator.DataItem;
+			DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field.FieldDefinition));
 		}
-		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		
+		void IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			IField field = (IField)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, field.Attributes));
-			result.Append (Ambience.GetString (field, DomTypeNodeBuilder.settings));
-			result.Append (";");
-			return result.ToString ();
+			var field = (DomCecilField)navigator.DataItem;
+			
+			DomMethodNodeBuilder.Decompile (data, ((DomCecilType)field.DeclaringType).TypeDefinition, b => b.AddField (field.FieldDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

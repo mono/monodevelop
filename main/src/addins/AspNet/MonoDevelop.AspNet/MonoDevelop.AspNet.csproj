@@ -73,11 +73,6 @@
       <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
       <Name>MonoDevelop.SourceEditor</Name>
@@ -116,6 +111,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Posix" />
+    <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\build\bin\NRefactory.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AspNet.addin.xml">
@@ -326,7 +325,6 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar Sync="true" Name="DATA_FILES" />

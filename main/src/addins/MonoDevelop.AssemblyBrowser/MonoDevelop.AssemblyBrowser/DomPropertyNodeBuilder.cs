@@ -34,6 +34,10 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
+using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler;
+using System.Threading;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -103,25 +107,10 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		void IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			NetAmbience netAmbience = new NetAmbience ();
-			IProperty property = (IProperty)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			result.Append (netAmbience.GetString (property, DomTypeNodeBuilder.settings));
-			result.AppendLine ();
-			result.AppendLine ();
-			DomCecilProperty cecilProperty = property as DomCecilProperty;
-			if (property.HasGet) {
-				result.Append ("Getter:");result.AppendLine ();
-				result.Append (DomMethodNodeBuilder.Disassemble (cecilProperty.GetMethod as DomCecilMethod, true).Replace ("\t", "\t\t"));
-			}
-			if (property.HasSet) {
-				result.Append ("Setter:");result.AppendLine ();
-				result.Append (DomMethodNodeBuilder.Disassemble (cecilProperty.SetMethod as DomCecilMethod, true).Replace ("\t", "\t\t"));
-			}
-			
-			return result.ToString ();
+			var property = (DomCecilProperty)navigator.DataItem;
+			DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property.PropertyDefinition));
 		}
 		
 		static string GetBody (string text)
@@ -137,41 +126,10 @@ namespace MonoDevelop.AssemblyBrowser
 			return result;
 		}
 
-		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
+		void IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			IProperty property = (IProperty)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, property.Attributes));
-			result.Append (Ambience.GetString (property, DomTypeNodeBuilder.settings));
-			result.Append (" {");result.AppendLine ();
-			DomCecilProperty cecilProperty = property as DomCecilProperty;
-			if (property.HasGet) {
-				result.Append ("\t");
-				if (property.GetterModifier != property.Modifiers) {
-					result.Append ("<span style=\"keyword.modifier\">");
-					result.Append (Ambience.GetString (property.GetterModifier));
-					result.Append ("</span> ");
-				}
-				result.Append ("<b>get</b> {");result.AppendLine ();
-				string text = DomMethodNodeBuilder.Decompile (cecilProperty.GetMethod as DomCecilMethod, true).Replace ("\t", "\t\t");
-				
-				result.Append (GetBody (text));
-				result.Append ("\t}");result.AppendLine ();
-			}
-			if (property.HasSet) {
-				result.Append ("\t");
-				if (property.SetterModifier != property.Modifiers) {
-					result.Append ("<span style=\"keyword.modifier\">");
-					result.Append (Ambience.GetString (property.SetterModifier));
-					result.Append ("</span> ");
-				}
-				result.Append ("<b>set</b> {");result.AppendLine ();
-				string text = DomMethodNodeBuilder.Decompile (cecilProperty.SetMethod as DomCecilMethod, true).Replace ("\t", "\t\t");
-				result.Append (GetBody (text));
-				result.Append ("\t}");result.AppendLine ();
-			}
-			result.Append ("}");
-			return result.ToString ();
+			var property = (DomCecilProperty)navigator.DataItem;
+			DomMethodNodeBuilder.Decompile (data, ((DomCecilType)property.DeclaringType).TypeDefinition, b => b.AddProperty (property.PropertyDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

@@ -33,14 +33,13 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomCecilField : MonoDevelop.Projects.Dom.DomField
 	{
-/*		FieldDefinition fieldDefinition;
+		FieldDefinition fieldDefinition;
 		
 		public FieldDefinition FieldDefinition {
 			get {
 				return fieldDefinition;
 			}
 		}
-		*/
 		
 		public DomCecilField (FieldDefinition fieldDefinition)
 		{
