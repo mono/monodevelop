@@ -220,6 +220,7 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\TextEditorDataAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

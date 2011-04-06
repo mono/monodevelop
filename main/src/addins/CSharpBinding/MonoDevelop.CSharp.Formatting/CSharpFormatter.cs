@@ -45,6 +45,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Refactoring;
 using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -93,20 +94,19 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var compilationUnit = parser.Parse (data);
-			bool hadErrors = parser.HasErrors;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-		/*	var formattingVisitor = new AstFormattingVisitor (policy, data) {
-				AutoAcceptChanges = false,
-			};
+			var adapter = new TextEditorDataAdapter (data);
+			
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter);
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
 			
-			var changes = new List<Change> ();
+			var changes = new List<ICSharpCode.NRefactory.Change> ();
 
 			changes.AddRange (formattingVisitor.Changes.
-				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
+				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
 
-			RefactoringService.AcceptChanges (null, null, changes);*/
+			adapter.AcceptChanges (changes);
 		}
 
 		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
@@ -132,30 +132,29 @@ namespace MonoDevelop.CSharp.Formatting
 			if (hadErrors)
 				return null;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-
-	/*		var formattingVisitor = new AstFormattingVisitor (policy, data) {
-				AutoAcceptChanges = false
-			};
+			var adapter = new TextEditorDataAdapter (data);
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter);
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
-
-			var changes = new List<Change> ();
+			
+			
+			var changes = new List<ICSharpCode.NRefactory.Change> ();
 
 			changes.AddRange (formattingVisitor.Changes.
-				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
-
-			RefactoringService.AcceptChanges (null, null, changes);
+				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
+			
+			adapter.AcceptChanges (changes);
+			
 			int end = endOffset;
-			foreach (TextReplaceChange c in changes) {
+			foreach (var c in changes) {
 				end -= c.RemovedChars;
 				if (c.InsertedText != null)
 					end += c.InsertedText.Length;
-			}*/
-			
+			}
 			
 			/*			System.Console.WriteLine ("-----");
 			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
-			string result = ""; //data.GetTextBetween (startOffset, Math.Min (data.Length, end));
+			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
 			data.Dispose ();
 			return result;
 		}

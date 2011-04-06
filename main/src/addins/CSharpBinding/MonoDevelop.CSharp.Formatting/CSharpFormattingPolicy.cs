@@ -53,6 +53,11 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			return (CSharpFormattingPolicy)MemberwiseClone ();
 		}
+
+		public CSharpFormattingOptions CreateOptions ()
+		{
+			return new CSharpFormattingOptions ();
+		}
 		
 		#region Indentation
 		[ItemProperty]

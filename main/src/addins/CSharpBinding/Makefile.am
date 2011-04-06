@@ -57,6 +57,7 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/Indent.cs \
 	MonoDevelop.CSharp.Formatting/NewFormattingProfileDialog.cs \
 	MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs \
+	MonoDevelop.CSharp.Formatting/TextEditorDataAdapter.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
