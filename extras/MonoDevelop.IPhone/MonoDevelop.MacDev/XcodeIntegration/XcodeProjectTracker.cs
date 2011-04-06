@@ -46,6 +46,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		string wrapperName;
 		DotNetProject dnp;
 		HashSet<string> userClasses = new HashSet<string> ();
+		Dictionary<string,DateTime> trackedFiles = new Dictionary<string,DateTime> ();
 		
 		bool xcodeProjectDirty;
 		bool syncing;
@@ -94,6 +95,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			dnp.FileRemovedFromProject += FileRemovedFromProject;
 			dnp.FileChangedInProject += FileChangedInProject;
 			dnp.NameChanged += ProjectNameChanged;
+			
+			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn += delegate {
+				DetectXcodeChanges ();
+			};
 		}
 		
 		void DisableSyncing ()
@@ -211,6 +216,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				if (File.Exists (target))
 					File.Delete (target);
 				Mono.Unix.UnixMarshal.ThrowExceptionForLastErrorIf (Mono.Unix.Native.Syscall.link (p.FilePath, target));
+				trackedFiles[target] = File.GetLastWriteTime (target);
+			}
+			else if (!trackedFiles.ContainsKey (target)) {
+				trackedFiles[target] = File.GetLastWriteTime (target);
 			}
 		}
 		
@@ -229,11 +238,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			
 			type.GenerateObjcType (outputDir);
 			
-			string headerFlag = outputDir.Combine (type.ObjCName + ".h.modified");
-			if (File.Exists (headerFlag))
-				File.SetLastWriteTime (headerFlag, DateTime.Now);
-			else
-				File.WriteAllText (headerFlag, "");
+			string fullH = outputDir.Combine (type.ObjCName + ".h");
+			trackedFiles[fullH] = File.GetLastWriteTime (fullH);
 		}
 		
 		void RemoveUserType (string objcName)
@@ -263,18 +269,33 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			if (!Directory.Exists (outputDir))
 				Directory.CreateDirectory (outputDir);
 			
+			trackedFiles.Clear ();
+			
 			var xcp = new XcodeProject (dnp.Name);
 			foreach (var file in dnp.Files.Where (IsPageOrContent)) {
-				xcp.AddResource (file.ProjectVirtualPath);
+				string pvp = file.ProjectVirtualPath;
+				xcp.AddResource (pvp);
 				CopyFile (file);
 			}
 			
 			foreach (var cls in userClasses) {
-				xcp.AddSource (cls + ".h");
+				string h = cls + ".h";
+				xcp.AddSource (h);
 				xcp.AddSource (cls + ".m");
+				string fullH = outputDir.Combine (h);
+				trackedFiles[fullH] = File.GetLastWriteTime (fullH);
 			}
 			
 			xcp.Generate (outputDir);
+		}
+		
+		void DetectXcodeChanges ()
+		{
+			foreach (var f in trackedFiles) {
+				var xcwrite = File.GetLastWriteTime (f.Key);
+				if (xcwrite > f.Value)
+					Console.WriteLine (f.Key);
+			}
 		}
 		
 		#endregion
