@@ -267,6 +267,7 @@ contrib/NRefactory/Makefile
 contrib/Sharpen/Makefile
 contrib/NGit/Makefile
 contrib/NSch/Makefile
+contrib/ICSharpCode.NRefactory/Makefile
 src/Makefile
 src/core/Makefile
 src/core/Mono.Texteditor/Makefile
