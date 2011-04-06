@@ -93,9 +93,9 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var compilationUnit = parser.Parse (data);
-			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
+			bool hadErrors = parser.HasErrors;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var formattingVisitor = new AstFormattingVisitor (policy, data) {
+		/*	var formattingVisitor = new AstFormattingVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
@@ -106,7 +106,7 @@ namespace MonoDevelop.CSharp.Formatting
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
 
-			RefactoringService.AcceptChanges (null, null, changes);
+			RefactoringService.AcceptChanges (null, null, changes);*/
 		}
 
 		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
@@ -128,12 +128,12 @@ namespace MonoDevelop.CSharp.Formatting
 
 			MonoDevelop.CSharp.Parser.CSharpParser parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var compilationUnit = parser.Parse (data);
-			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
+			bool hadErrors = parser.HasErrors;
 			if (hadErrors)
 				return null;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 
-			var formattingVisitor = new AstFormattingVisitor (policy, data) {
+	/*		var formattingVisitor = new AstFormattingVisitor (policy, data) {
 				AutoAcceptChanges = false
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
@@ -149,11 +149,13 @@ namespace MonoDevelop.CSharp.Formatting
 				end -= c.RemovedChars;
 				if (c.InsertedText != null)
 					end += c.InsertedText.Length;
-			}
+			}*/
+			
+			
 			/*			System.Console.WriteLine ("-----");
 			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
-			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
+			string result = ""; //data.GetTextBetween (startOffset, Math.Min (data.Length, end));
 			data.Dispose ();
 			return result;
 		}

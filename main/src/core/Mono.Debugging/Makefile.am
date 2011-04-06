@@ -4,7 +4,7 @@ ASSEMBLY = $(ASSEMBLY_BUILD_DIR)/Mono.Debugging.dll
 
 SIGNING_KEY=$(srcdir)/mono.debugging.snk
 
-DEPS = $(top_builddir)/build/bin/NRefactory.dll
+DEPS = $(top_builddir)/build/bin/OldNRefactory.dll
 
 REFS =  \
 	-r:System \

@@ -7,7 +7,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/NRefactory.dll
+	$(top_builddir)/build/bin/OldNRefactory.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \

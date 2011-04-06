@@ -81,7 +81,7 @@ namespace MonoDevelop.CSharp.Parser
 		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
-			lock (CompilerCallableEntryPoint.parseLock) {
+		//	lock (CompilerCallableEntryPoint.parseLock) {
 				if (string.IsNullOrEmpty (content))
 					return null;
 				var tagComments = ProjectDomService.SpecialCommentTags.GetNames ();
@@ -144,7 +144,7 @@ namespace MonoDevelop.CSharp.Parser
 				// parser errors
 				errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
 				return result;
-			}
+//			}
 		}
 		
 		void VisitComment (ParsedDocument result, SpecialsBag.Comment comment, string[] tagComments)

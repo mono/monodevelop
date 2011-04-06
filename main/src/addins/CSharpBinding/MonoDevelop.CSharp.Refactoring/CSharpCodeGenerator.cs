@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return member.AcceptVisitor (visitor, options);
 		}
 		
-		void AppendBraceStart (StringBuilder result, MonoDevelop.CSharp.Formatting.BraceStyle braceStyle)
+		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
 		{
 			switch (braceStyle) {
 			case BraceStyle.EndOfLine:
@@ -126,7 +126,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			IndentLevel++;
 		}
 		
-		void AppendBraceEnd (StringBuilder result, MonoDevelop.CSharp.Formatting.BraceStyle braceStyle)
+		void AppendBraceEnd (StringBuilder result, BraceStyle braceStyle)
 		{
 			switch (braceStyle) {
 			case BraceStyle.EndOfLineWithoutSpace:
@@ -455,8 +455,8 @@ namespace MonoDevelop.CSharp.Refactoring
 						}
 					}
 				}
-				if (!isFromInterface && ((member.Modifiers & Modifiers.Virtual) == Modifiers.Virtual || 
-					(member.Modifiers & Modifiers.Abstract) == Modifiers.Abstract))
+				if (!isFromInterface && ((member.Modifiers & MonoDevelop.Projects.Dom.Modifiers.Virtual) == MonoDevelop.Projects.Dom.Modifiers.Virtual || 
+					(member.Modifiers & MonoDevelop.Projects.Dom.Modifiers.Abstract) == MonoDevelop.Projects.Dom.Modifiers.Abstract))
 					result.Append ("override ");
 			}
 			
@@ -544,13 +544,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		public override string CreateFieldEncapsulation (IType implementingType, IField field, string propertyName, ICSharpCode.NRefactory.CSharp.Modifiers modifiers, bool readOnly)
+		public override string CreateFieldEncapsulation (IType implementingType, IField field, string propertyName, MonoDevelop.Projects.Dom.Modifiers modifiers, bool readOnly)
 		{
 			SetIndentTo (implementingType);
 			StringBuilder result = new StringBuilder ();
 			AppendIndent (result);
 			
-			if (modifiers != Modifiers.None) {
+			if (modifiers != MonoDevelop.Projects.Dom.Modifiers.None) {
 				result.Append (ambience.GetString (modifiers));
 				result.Append (" ");
 			}

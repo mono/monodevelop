@@ -161,7 +161,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				set;
 			}
 			
-			public ICSharpCode.NRefactory.CSharp.Modifiers Modifiers {
+			public MonoDevelop.Projects.Dom.Modifiers Modifiers {
 				get;
 				set;
 			}
@@ -256,7 +256,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		bool Analyze (RefactoringOptions options, ExtractMethodParameters param, bool fillParameter)
 		{
 			var data = options.GetTextEditorData ();
-			var parser = new CSharpParser ();
+			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var unit = parser.Parse (data);
 			var resolver = options.GetResolver ();
 			if (unit == null)
@@ -423,7 +423,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			result.ReturnType = param.ExpressionType ?? DomReturnType.Void;
 			result.Modifiers = param.Modifiers;
 			if (!param.ReferencesMember)
-				result.Modifiers |= Modifiers.Static;
+				result.Modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
 			
 			if (param.Parameters == null)
 				return result;

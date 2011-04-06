@@ -30,6 +30,7 @@ using MonoDevelop.Ide;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp;
 namespace MonoDevelop.CSharp.Formatting
 {
 	public partial class CSharpFormattingProfileDialog : Gtk.Dialog

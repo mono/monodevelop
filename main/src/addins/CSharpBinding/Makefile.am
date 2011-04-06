@@ -10,11 +10,12 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/NRefactory.dll
+	$(top_builddir)/build/bin/OldNRefactory.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -36,110 +37,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
-	MonoDevelop.CSharp.Ast/AstLocation.cs \
-	MonoDevelop.CSharp.Ast/AstNode.cs \
-	MonoDevelop.CSharp.Ast/AstType.cs \
-	MonoDevelop.CSharp.Ast/CompilationUnit.cs \
-	MonoDevelop.CSharp.Ast/ComposedType.cs \
-	MonoDevelop.CSharp.Ast/CSharpAmbience.cs \
-	MonoDevelop.CSharp.Ast/CSharpModifierToken.cs \
-	MonoDevelop.CSharp.Ast/CSharpTokenNode.cs \
-	MonoDevelop.CSharp.Ast/DepthFirstAstVisitor.cs \
-	MonoDevelop.CSharp.Ast/Expressions/AnonymousMethodExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/ArgListExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/ArrayCreateExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/ArrayInitializerExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/AsExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/AssignmentExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/BaseReferenceExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/BinaryOperatorExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/CastExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/CheckedExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/ConditionalExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/DefaultValueExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/DirectionExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/EmptyExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/Expression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/IdentifierExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/IndexerExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/InvocationExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/IsExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/LambdaExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/MemberReferenceExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/NamedArgumentExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/NullReferenceExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/ObjectCreateExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/ParenthesizedExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/PointerReferenceExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/PrimitiveExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/QueryExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/SizeOfExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/StackAllocExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/ThisReferenceExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/TypeOfExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/UnaryOperatorExpression.cs \
-	MonoDevelop.CSharp.Ast/Expressions/UncheckedExpression.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/Attribute.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/AttributeSection.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/Comment.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/Constraint.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/DelegateDeclaration.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/NamespaceDeclaration.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/TypeDeclaration.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/TypeParameterDeclaration.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/UsingAliasDeclaration.cs \
-	MonoDevelop.CSharp.Ast/GeneralScope/UsingDeclaration.cs \
-	MonoDevelop.CSharp.Ast/IAstVisitor.cs \
-	MonoDevelop.CSharp.Ast/Identifier.cs \
-	MonoDevelop.CSharp.Ast/LookupTableVisitor.cs \
-	MonoDevelop.CSharp.Ast/MemberType.cs \
-	MonoDevelop.CSharp.Ast/NodeType.cs \
-	MonoDevelop.CSharp.Ast/PrimitiveType.cs \
-	MonoDevelop.CSharp.Ast/QualifiedIdentifier.cs \
-	MonoDevelop.CSharp.Ast/Role.cs \
-	MonoDevelop.CSharp.Ast/SimpleType.cs \
-	MonoDevelop.CSharp.Ast/Statements/BlockStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/BreakStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/CheckedStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/ContinueStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/DoWhileStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/EmptyStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/ExpressionStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/FixedStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/ForeachStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/ForStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/GotoStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/IfElseStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/LabelStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/LockStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/ReturnStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/Statement.cs \
-	MonoDevelop.CSharp.Ast/Statements/SwitchStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/ThrowStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/TryCatchStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/UncheckedStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/UnsafeStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/UsingStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/VariableDeclarationStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/WhileStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/YieldBreakStatement.cs \
-	MonoDevelop.CSharp.Ast/Statements/YieldStatement.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/Accessor.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/AttributedNode.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/ConstructorDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/DestructorDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/EnumMemberDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/EventDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/FieldDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/IndexerDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/MemberDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/MethodDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/OperatorDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/ParameterDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/PropertyDeclaration.cs \
-	MonoDevelop.CSharp.Ast/TypeMembers/VariableInitializer.cs \
-	MonoDevelop.CSharp.Ast/Utils/ModiferNodeExtension.cs \
-	MonoDevelop.CSharp.Ast/Utils/TreeTraversal.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
@@ -148,7 +45,6 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
-	MonoDevelop.CSharp.Formatting/AstFormattingVisitor.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicyPanel.cs \
@@ -166,62 +62,6 @@ FILES =  \
 	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
 	MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs \
 	MonoDevelop.CSharp.Parser/CSharpParser.cs \
-	MonoDevelop.CSharp.Parser/mcs/anonymous.cs \
-	MonoDevelop.CSharp.Parser/mcs/argument.cs \
-	MonoDevelop.CSharp.Parser/mcs/assembly.cs \
-	MonoDevelop.CSharp.Parser/mcs/assign.cs \
-	MonoDevelop.CSharp.Parser/mcs/attribute.cs \
-	MonoDevelop.CSharp.Parser/mcs/cfold.cs \
-	MonoDevelop.CSharp.Parser/mcs/class.cs \
-	MonoDevelop.CSharp.Parser/mcs/codegen.cs \
-	MonoDevelop.CSharp.Parser/mcs/complete.cs \
-	MonoDevelop.CSharp.Parser/mcs/const.cs \
-	MonoDevelop.CSharp.Parser/mcs/constant.cs \
-	MonoDevelop.CSharp.Parser/mcs/context.cs \
-	MonoDevelop.CSharp.Parser/mcs/convert.cs \
-	MonoDevelop.CSharp.Parser/mcs/CryptoConvert.cs \
-	MonoDevelop.CSharp.Parser/mcs/cs-parser.cs \
-	MonoDevelop.CSharp.Parser/mcs/cs-tokenizer.cs \
-	MonoDevelop.CSharp.Parser/mcs/decl.cs \
-	MonoDevelop.CSharp.Parser/mcs/delegate.cs \
-	MonoDevelop.CSharp.Parser/mcs/doc.cs \
-	MonoDevelop.CSharp.Parser/mcs/driver.cs \
-	MonoDevelop.CSharp.Parser/mcs/dynamic.cs \
-	MonoDevelop.CSharp.Parser/mcs/ecore.cs \
-	MonoDevelop.CSharp.Parser/mcs/enum.cs \
-	MonoDevelop.CSharp.Parser/mcs/eval.cs \
-	MonoDevelop.CSharp.Parser/mcs/expression.cs \
-	MonoDevelop.CSharp.Parser/mcs/field.cs \
-	MonoDevelop.CSharp.Parser/mcs/flowanalysis.cs \
-	MonoDevelop.CSharp.Parser/mcs/generic.cs \
-	MonoDevelop.CSharp.Parser/mcs/import.cs \
-	MonoDevelop.CSharp.Parser/mcs/iterators.cs \
-	MonoDevelop.CSharp.Parser/mcs/lambda.cs \
-	MonoDevelop.CSharp.Parser/mcs/linq.cs \
-	MonoDevelop.CSharp.Parser/mcs/literal.cs \
-	MonoDevelop.CSharp.Parser/mcs/location.cs \
-	MonoDevelop.CSharp.Parser/mcs/membercache.cs \
-	MonoDevelop.CSharp.Parser/mcs/method.cs \
-	MonoDevelop.CSharp.Parser/mcs/modifiers.cs \
-	MonoDevelop.CSharp.Parser/mcs/MonoSymbolFile.cs \
-	MonoDevelop.CSharp.Parser/mcs/MonoSymbolTable.cs \
-	MonoDevelop.CSharp.Parser/mcs/MonoSymbolWriter.cs \
-	MonoDevelop.CSharp.Parser/mcs/namespace.cs \
-	MonoDevelop.CSharp.Parser/mcs/nullable.cs \
-	MonoDevelop.CSharp.Parser/mcs/outline.cs \
-	MonoDevelop.CSharp.Parser/mcs/parameter.cs \
-	MonoDevelop.CSharp.Parser/mcs/pending.cs \
-	MonoDevelop.CSharp.Parser/mcs/property.cs \
-	MonoDevelop.CSharp.Parser/mcs/reflection.cs \
-	MonoDevelop.CSharp.Parser/mcs/report.cs \
-	MonoDevelop.CSharp.Parser/mcs/rootcontext.cs \
-	MonoDevelop.CSharp.Parser/mcs/roottypes.cs \
-	MonoDevelop.CSharp.Parser/mcs/statement.cs \
-	MonoDevelop.CSharp.Parser/mcs/support.cs \
-	MonoDevelop.CSharp.Parser/mcs/symbolwriter.cs \
-	MonoDevelop.CSharp.Parser/mcs/typemanager.cs \
-	MonoDevelop.CSharp.Parser/mcs/typespec.cs \
-	MonoDevelop.CSharp.Parser/mcs/visit.cs \
 	MonoDevelop.CSharp.Parser/McsParser.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
 	MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs \
@@ -245,6 +85,7 @@ FILES =  \
 	MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs \
 	MonoDevelop.CSharp.Resolver/ResolveVisitor.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
+	MonoDevelop.CSharp/CSharpAmbience.cs \
 	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \
 	MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs \
 	MonoDevelop.CSharp/CSharpLanguageBinding.cs

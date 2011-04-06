@@ -190,7 +190,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var data = options.GetTextEditorData ();
 			if (data.Document.MimeType != CSharpFormatter.MimeType)
 				return false;
-			var parser = new CSharpParser ();
+			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var unit = parser.Parse (data);
 			if (unit == null)
 				return false;

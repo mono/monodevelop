@@ -36,17 +36,12 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Parser
 {
-	public class CSharpParser
+	public class CSharpParser : ICSharpCode.NRefactory.CSharp.CSharpParser
 	{
 		public ICSharpCode.NRefactory.CSharp.CompilationUnit Parse (TextEditorData data)
 		{
-			lock (CompilerCallableEntryPoint.parseLock) {
-				CompilerCompilationUnit top;
-				using (Stream stream = data.OpenStream ()) {
-					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName ?? "empty.cs", errorReportPrinter);
-				}
-	
-				return Parse (top);
+			using (Stream stream = data.OpenStream ()) {
+				return Parse (stream);
 			}
 		}
 	}

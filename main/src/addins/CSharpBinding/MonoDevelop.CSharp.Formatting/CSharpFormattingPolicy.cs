@@ -32,39 +32,10 @@ using System.Xml;
 using System.Text;
 using System.Linq;
 using MonoDevelop.Projects.Policies;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public enum BraceStyle
-	{
-		DoNotChange,
-		EndOfLine,
-		EndOfLineWithoutSpace,
-		NextLine,
-		NextLineShifted,
-		NextLineShifted2
-	}
-	
-	public enum BraceForcement
-	{
-		DoNotChange,
-		RemoveBraces,
-		AddBraces
-	}
-	
-	public enum ArrayInitializerPlacement
-	{
-		AlwaysNewLine,
-		AlwaysSameLine
-	}
-	
-	public enum PropertyFormatting
-	{
-		AllowOneLine,
-		ForceOneLine,
-		ForceNewLine
-	}
-	
 	[PolicyType ("C# formatting")]
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{

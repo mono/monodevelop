@@ -128,11 +128,6 @@
       <Name>MonoDevelop.AspNet</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
@@ -157,6 +152,10 @@
       <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
       <Name>Sharpen</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -217,11 +216,6 @@
     <Compile Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetTesting.cs" />
     <Compile Include="MonoDevelop.Refactoring\BaseRefactorerTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestSpacingVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestBraceStlye.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestStatementIndentation.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestTypeLevelIndentation.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestFormattingBugs.cs" />
     <Compile Include="MonoDevelop.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
@@ -229,7 +223,6 @@
     <Compile Include="Mono.TextEditor.Tests\BufferTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\InsertionModeTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\CreateMethodTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestBlankLineFormatting.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImplementInterfaceTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />

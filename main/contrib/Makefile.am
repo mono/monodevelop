@@ -1,4 +1,4 @@
-SUBDIRS = Mono.Cecil Mono.Debugger.Soft NRefactory Sharpen NSch NGit
+SUBDIRS = Mono.Cecil Mono.Debugger.Soft NRefactory Sharpen NSch NGit ICSharpCode.NRefactory
 
 EXTRA_DIST =  $(srcdir)/extract_makefile_variable.sh
 
