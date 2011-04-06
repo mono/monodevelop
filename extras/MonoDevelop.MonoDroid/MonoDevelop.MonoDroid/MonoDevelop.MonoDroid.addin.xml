@@ -3,7 +3,7 @@
        name        = "Mono for Android development"
        author      = "Michael Hutchinson"
        copyright   = "MIT X11"
-       url         = "http://monodevelop.com/"
+       url         = "http://mono-android.net/"
        description = "Support for developing and deploying Mono for Android applications."
        category    = "Mobile Development"
        version     = "2.6.2">
