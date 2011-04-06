@@ -89,7 +89,6 @@
     <Compile Include="MonoDevelop.Core.FileSystem\FileSystemExtension.cs" />
     <Compile Include="MonoDevelop.Core.FileSystem\DefaultFileSystemExtension.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProgressStatus.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\AssemblyExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\ApplicationExtensionNode.cs" />
@@ -498,6 +497,12 @@
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\StatsVisitor.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomStats.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\UpdateLevel.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\AddinSetupService.cs" />
+    <Compile Include="MonoDevelop.Core\IApplication.cs" />
+    <Compile Include="MonoDevelop.Core\IApplicationInfo.cs" />
+    <Compile Include="MonoDevelop.Core\ApplicationService.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressStatusMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -555,6 +560,8 @@
     <Folder Include="MonoDevelop.Projects.Dom\" />
     <Folder Include="MonoDevelop.Projects.Dom.Serialization\" />
     <Folder Include="MonoDevelop.Projects.Extensions\" />
+    <Folder Include="MonoDevelop.Core.Setup\" />
+    <Folder Include="MonoDevelop.Core\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">

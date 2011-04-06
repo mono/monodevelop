@@ -504,6 +504,8 @@
     <Compile Include="NGit.Api\CherryPickResult.cs" />
     <Compile Include="NGit.Api\Status.cs" />
     <Compile Include="NGit.Api\StatusCommand.cs" />
+    <Compile Include="NGit.Transport\PreUploadHook.cs" />
+    <Compile Include="NGit.Transport\UploadPackMayNotContinueException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

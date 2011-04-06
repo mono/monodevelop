@@ -66,11 +66,22 @@ namespace NGit.Storage.File
 
 		private ByteWindow window;
 
+		private DeltaBaseCache baseCache;
+
 		internal readonly FileObjectDatabase db;
 
 		internal WindowCursor(FileObjectDatabase db)
 		{
 			this.db = db;
+		}
+
+		internal DeltaBaseCache GetDeltaBaseCache()
+		{
+			if (baseCache == null)
+			{
+				baseCache = new DeltaBaseCache();
+			}
+			return baseCache;
 		}
 
 		public override ObjectReader NewReader()
@@ -376,6 +387,7 @@ namespace NGit.Storage.File
 		public override void Release()
 		{
 			window = null;
+			baseCache = null;
 			try
 			{
 				InflaterCache.Release(inf);

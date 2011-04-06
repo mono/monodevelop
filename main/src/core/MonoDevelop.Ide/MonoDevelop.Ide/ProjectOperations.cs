@@ -658,7 +658,6 @@ namespace MonoDevelop.Ide
 		
 		public SolutionItem CreateProject (SolutionFolder parentFolder)
 		{
-			SolutionItem res = null;
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
 			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
 			if (MessageService.ShowCustomDialog (npdlg) == (int)Gtk.ResponseType.Ok)

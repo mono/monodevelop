@@ -503,12 +503,7 @@ namespace Sharpen
 				list.Add (str.Substring (startIndex));
 			}
 			if (limit >= 0) {
-				int count = 0;
-				while ((count < list.Count) && (list[count].Length == 0)) {
-					count++;
-				}
-				list.RemoveRange (0, count);
-				count = list.Count - 1;
+				int count = list.Count - 1;
 				while ((count >= 0) && (list[count].Length == 0)) {
 					count--;
 				}

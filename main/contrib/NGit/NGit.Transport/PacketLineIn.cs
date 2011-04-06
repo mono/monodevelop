@@ -52,9 +52,25 @@ using Sharpen;
 
 namespace NGit.Transport
 {
+	/// <summary>Read Git style pkt-line formatting from an input stream.</summary>
+	/// <remarks>
+	/// Read Git style pkt-line formatting from an input stream.
+	/// <p>
+	/// This class is not thread safe and may issue multiple reads to the underlying
+	/// stream for each method call made.
+	/// <p>
+	/// This class performs no buffering on its own. This makes it suitable to
+	/// interleave reads performed by this class with reads performed directly
+	/// against the underlying InputStream.
+	/// </remarks>
 	public class PacketLineIn
 	{
-		internal static readonly string END = new StringBuilder(0).ToString();
+		/// <summary>
+		/// Magic return from
+		/// <see cref="ReadString()">ReadString()</see>
+		/// when a flush packet is found.
+		/// </summary>
+		public static readonly string END = string.Copy ("");
 
 		internal enum AckNackResult
 		{
@@ -69,7 +85,10 @@ namespace NGit.Transport
 
 		private readonly byte[] lineBuffer;
 
-		internal PacketLineIn(InputStream i)
+		/// <summary>Create a new packet line reader.</summary>
+		/// <remarks>Create a new packet line reader.</remarks>
+		/// <param name="i">the input stream to consume.</param>
+		public PacketLineIn(InputStream i)
 		{
 			@in = i;
 			lineBuffer = new byte[SideBandOutputStream.SMALL_BUF];
@@ -122,8 +141,24 @@ namespace NGit.Transport
 				, line));
 		}
 
-		/// <exception cref="System.IO.IOException"></exception>
-		internal virtual string ReadString()
+		/// <summary>Read a single UTF-8 encoded string packet from the input stream.</summary>
+		/// <remarks>
+		/// Read a single UTF-8 encoded string packet from the input stream.
+		/// <p>
+		/// If the string ends with an LF, it will be removed before returning the
+		/// value to the caller. If this automatic trimming behavior is not desired,
+		/// use
+		/// <see cref="ReadStringRaw()">ReadStringRaw()</see>
+		/// instead.
+		/// </remarks>
+		/// <returns>
+		/// the string.
+		/// <see cref="END">END</see>
+		/// if the string was the magic flush
+		/// packet.
+		/// </returns>
+		/// <exception cref="System.IO.IOException">the stream cannot be read.</exception>
+		public virtual string ReadString()
 		{
 			int len = ReadLength();
 			if (len == 0)
@@ -153,8 +188,22 @@ namespace NGit.Transport
 			return RawParseUtils.Decode(Constants.CHARSET, raw, 0, len);
 		}
 
-		/// <exception cref="System.IO.IOException"></exception>
-		internal virtual string ReadStringRaw()
+		/// <summary>Read a single UTF-8 encoded string packet from the input stream.</summary>
+		/// <remarks>
+		/// Read a single UTF-8 encoded string packet from the input stream.
+		/// <p>
+		/// Unlike
+		/// <see cref="ReadString()">ReadString()</see>
+		/// a trailing LF will be retained.
+		/// </remarks>
+		/// <returns>
+		/// the string.
+		/// <see cref="END">END</see>
+		/// if the string was the magic flush
+		/// packet.
+		/// </returns>
+		/// <exception cref="System.IO.IOException">the stream cannot be read.</exception>
+		public virtual string ReadStringRaw()
 		{
 			int len = ReadLength();
 			if (len == 0)

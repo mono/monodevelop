@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override string[] SupportedProtocols {
 			get {
-				return new string[] {"git", "ssh", "http", "https", "ftp", "ftps", "rsync"};
+				return new string[] {"git", "ssh", "http", "https", "ftp", "ftps", "rsync", "file"};
 			}
 		}
 		

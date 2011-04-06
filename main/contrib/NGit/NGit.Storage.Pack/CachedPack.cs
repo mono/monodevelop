@@ -99,12 +99,33 @@ namespace NGit.Storage.Pack
 			return 0;
 		}
 
-		/// <summary>Determine if the pack contains the requested objects.</summary>
-		/// <remarks>Determine if the pack contains the requested objects.</remarks>
-		/// <?></?>
-		/// <param name="toFind">the objects to search for.</param>
-		/// <returns>the objects contained in the pack.</returns>
-		/// <exception cref="System.IO.IOException">the pack cannot be accessed</exception>
-		public abstract ICollection<ObjectId> HasObject<T>(Iterable<T> toFind) where T:ObjectId;
+		/// <summary>Determine if this pack contains the object representation given.</summary>
+		/// <remarks>
+		/// Determine if this pack contains the object representation given.
+		/// <p>
+		/// PackWriter uses this method during the finding sources phase to prune
+		/// away any objects from the leading thin-pack that already appear within
+		/// this pack and should not be sent twice.
+		/// <p>
+		/// Implementors are strongly encouraged to rely on looking at
+		/// <code>rep</code>
+		/// only and using its internal state to decide if this object is within this
+		/// pack. Implementors should ensure a representation from this cached pack
+		/// is tested as part of
+		/// <see cref="ObjectReuseAsIs.SelectObjectRepresentation(PackWriter, NGit.ProgressMonitor, Sharpen.Iterable{T})
+		/// 	">ObjectReuseAsIs.SelectObjectRepresentation(PackWriter, NGit.ProgressMonitor, Sharpen.Iterable&lt;T&gt;)
+		/// 	</see>
+		/// , ensuring this method would eventually return true if the object would
+		/// be included by this cached pack.
+		/// </remarks>
+		/// <param name="obj">the object being packed. Can be used as an ObjectId.</param>
+		/// <param name="rep">
+		/// representation from the
+		/// <see cref="ObjectReuseAsIs">ObjectReuseAsIs</see>
+		/// instance that
+		/// originally supplied this CachedPack.
+		/// </param>
+		/// <returns>true if this pack contains this object.</returns>
+		public abstract bool HasObject(ObjectToPack obj, StoredObjectRepresentation rep);
 	}
 }

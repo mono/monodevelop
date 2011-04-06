@@ -459,7 +459,7 @@ namespace NGit.Transport
 
 			internal string preferredAuthentications;
 
-			internal bool batchMode;
+			internal bool? batchMode;
 
 			internal string strictHostKeyChecking;
 
@@ -548,7 +548,7 @@ namespace NGit.Transport
 			/// </returns>
 			public virtual bool IsBatchMode()
 			{
-				return batchMode != null && batchMode;
+				return batchMode != null && batchMode.Value;
 			}
 		}
 	}

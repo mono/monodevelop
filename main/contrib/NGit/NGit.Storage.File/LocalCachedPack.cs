@@ -58,6 +58,8 @@ namespace NGit.Storage.File
 
 		private readonly string[] packNames;
 
+		private PackFile[] packs;
+
 		internal LocalCachedPack(ObjectDirectory odb, ICollection<ObjectId> tips, IList<string
 			> packNames)
 		{
@@ -83,9 +85,9 @@ namespace NGit.Storage.File
 		public override long GetObjectCount()
 		{
 			long cnt = 0;
-			foreach (string packName in packNames)
+			foreach (PackFile pack in GetPacks())
 			{
-				cnt += GetPackFile(packName).GetObjectCount();
+				cnt += pack.GetObjectCount();
 			}
 			return cnt;
 		}
@@ -94,33 +96,45 @@ namespace NGit.Storage.File
 		internal virtual void CopyAsIs(PackOutputStream @out, bool validate, WindowCursor
 			 wc)
 		{
-			foreach (string packName in packNames)
+			foreach (PackFile pack in GetPacks())
 			{
-				GetPackFile(packName).CopyPackAsIs(@out, validate, wc);
+				pack.CopyPackAsIs(@out, validate, wc);
 			}
 		}
 
-		/// <exception cref="System.IO.IOException"></exception>
-		public override ICollection<ObjectId> HasObject<T>(Iterable<T> toFind)
+		public override bool HasObject(ObjectToPack obj, StoredObjectRepresentation rep)
 		{
-			PackFile[] packs = new PackFile[packNames.Length];
-			for (int i = 0; i < packNames.Length; i++)
+			try
 			{
-				packs[i] = GetPackFile(packNames[i]);
-			}
-			ICollection<ObjectId> have = new HashSet<ObjectId>();
-			foreach (ObjectId id in toFind)
-			{
-				foreach (PackFile pack in packs)
+				LocalObjectRepresentation local = (LocalObjectRepresentation)rep;
+				foreach (PackFile pack in GetPacks())
 				{
-					if (pack.HasObject(id))
+					if (local.pack == pack)
 					{
-						have.AddItem(id);
-						break;
+						return true;
 					}
 				}
+				return false;
 			}
-			return have;
+			catch (FileNotFoundException)
+			{
+				return false;
+			}
+		}
+
+		/// <exception cref="System.IO.FileNotFoundException"></exception>
+		private PackFile[] GetPacks()
+		{
+			if (packs == null)
+			{
+				PackFile[] p = new PackFile[packNames.Length];
+				for (int i = 0; i < packNames.Length; i++)
+				{
+					p[i] = GetPackFile(packNames[i]);
+				}
+				packs = p;
+			}
+			return packs;
 		}
 
 		/// <exception cref="System.IO.FileNotFoundException"></exception>

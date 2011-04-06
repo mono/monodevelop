@@ -29,10 +29,11 @@ using System.IO;
 using System.Text;
 using System.Xml.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Build.Utilities;
 
 namespace MonoDroid
 {
-	// Thie file must be kept in sync between: 
+	// This file must be kept in sync between: 
 	//  - The Mono for Android MSBuild tooling
 	//  - The Mono for Android VS Plugin
 	//  - The Mono for Android MonoDevelop Plugin [extras/MonoDevelop.MonoDroid/MonoDevelop.MonoDroid/MonoDroidSdk.cs]
@@ -70,13 +71,13 @@ namespace MonoDroid
 		}
 		
 		public static void GetPaths (out string monoDroidBinDir, out string monoDroidFrameworkDir,
-			out string androidSdkPath, out string javaSdkPath)
+			out string androidSdkPath, out string javaSdkPath, TaskLoggingHelper log)
 		{
 			monoDroidBinDir = monoDroidFrameworkDir = androidSdkPath = javaSdkPath = null;
 			
 			GetMonoDroidSdk (out monoDroidBinDir, out monoDroidFrameworkDir);
 			
-			GetConfiguredSdkLocations (out androidSdkPath, out javaSdkPath);
+			GetConfiguredSdkLocations (out androidSdkPath, out javaSdkPath, log);
 			
 			if (!ValidateAndroidSdkLocation (androidSdkPath))
 				androidSdkPath = null;
@@ -123,19 +124,13 @@ namespace MonoDroid
 			} 
 			
 			string monoAndroidPath  = Environment.GetEnvironmentVariable ("MONO_ANDROID_PATH");
-			string monodroidPath    = Environment.GetEnvironmentVariable ("MONODROID_PATH");
 			string libmandroid      = Path.Combine ("lib", "mandroid");
-			string libmonodroid     = Path.Combine ("lib", "monodroid");
 			string debugRuntime     = "Mono.Android.DebugRuntime-debug.apk";
 
 			foreach (var loc in new[]{
-					new { D = monoAndroidPath,              L = libmandroid,  E = debugRuntime  },
-					new { D = monodroidPath,                L = libmandroid,  E = debugRuntime  },
-					new { D = monodroidPath,                L = libmonodroid, E = debugRuntime },
-					new { D = "/Developer/MonoAndroid/usr", L = libmandroid,  E = debugRuntime  },
-					new { D = "/Developer/MonoDroid/usr",   L = libmonodroid, E = debugRuntime },
-					new { D = "/opt/mono-android",          L = libmandroid,  E = debugRuntime  },
-					new { D = "/opt/monodroid",             L = libmonodroid, E = debugRuntime }})
+					new { D = monoAndroidPath,              L = libmandroid,  E = debugRuntime },
+					new { D = "/Developer/MonoAndroid/usr", L = libmandroid,  E = debugRuntime },
+					new { D = "/opt/mono-android",          L = libmandroid,  E = debugRuntime }})
 				if (CheckMonoDroidPath (loc.D, loc.L, loc.E, out monoDroidBinDir, out monoDroidFrameworkDir))
 					return;
 		}
@@ -264,10 +259,11 @@ namespace MonoDroid
 		/// <summary>
 		/// Gets the configured sdk locations. They may be invalid, so should be validated before use.
 		/// </summary>
-		public static void GetConfiguredSdkLocations (out string androidSdk, out string javaSdk)
+		public static void GetConfiguredSdkLocations (out string androidSdk, out string javaSdk, TaskLoggingHelper log)
 		{
 			if (IsWindows) {
-				GetWindowsConfiguredSdkLocations (out androidSdk, out javaSdk);
+				androidSdk = GetWindowsAndroidSdkLocation (log);
+				javaSdk = GetWindowsJavaSdkLocation (log);
 			} else {
 				GetUnixConfiguredSdkLocations (out androidSdk, out javaSdk);
 			}
@@ -324,35 +320,85 @@ namespace MonoDroid
 			doc.Save (file);
 		}
 		
-		static void GetWindowsConfiguredSdkLocations (out string androidSdk, out string javaSdk)
+		private static string GetWindowsAndroidSdkLocation (TaskLoggingHelper log)
 		{
-			var roots = new [] { RegistryEx.CurrentUser, RegistryEx.LocalMachine };
+			var roots = new[] { RegistryEx.CurrentUser, RegistryEx.LocalMachine };
 			var wow = RegistryEx.Wow64.Key32;
-			
-			androidSdk = null;
-			javaSdk = null;
-			
+
+			log.LogMessage ("Looking for Android SDK..");
+
 			// Check for the key written by the Android SDK installer first
-			foreach (var root in roots) {
-				androidSdk = NullIfEmpty (RegistryEx.GetValueString (root, ANDROID_INSTALLER_PATH, ANDROID_INSTALLER_KEY, wow));
-				if (androidSdk != null)
-					break;
-			}
+			foreach (var root in roots)
+				if (CheckRegistryKeyForExecutable (root, ANDROID_INSTALLER_PATH, ANDROID_INSTALLER_KEY, wow, "platform-tools", AdbTool, log))
+					return RegistryEx.GetValueString (root, ANDROID_INSTALLER_PATH, ANDROID_INSTALLER_KEY, wow);
 
 			// Check for the key the user gave us in the VS options
-			if (androidSdk == null)
-				foreach (var root in roots) {
-					androidSdk = NullIfEmpty (RegistryEx.GetValueString (root, MDREG_KEY, MDREG_ANDROID, wow));
-					if (androidSdk != null)
-						break;
-				}
-			
-			// Find the Java SDK
-			foreach (var root in roots) {
-				javaSdk = NullIfEmpty (RegistryEx.GetValueString (root, MDREG_KEY, MDREG_JAVA, wow));
-				if (javaSdk != null)
-					break;
+			foreach (var root in roots)
+				if (CheckRegistryKeyForExecutable (root, MDREG_KEY, MDREG_ANDROID, wow, "platform-tools", AdbTool, log))
+					return RegistryEx.GetValueString (root, MDREG_KEY, MDREG_ANDROID, wow);
+
+			// Check 2 default locations
+			var program_files = GetProgramFilesX86 ();
+			var installerLoc = Path.Combine (program_files, @"\Android\android-sdk-windows");
+			var unzipLoc = Path.Combine (program_files, @"C:\android-sdk-windows");
+
+			if (ValidateAndroidSdkLocation (installerLoc)) {
+				log.LogMessage ("  adb.exe found in {0}", installerLoc);
+				return installerLoc;
 			}
+
+			if (ValidateAndroidSdkLocation (unzipLoc)) {
+				log.LogMessage ("  adb.exe found in {0}", unzipLoc);
+				return unzipLoc;
+			}
+
+			// We ran out of things to check..
+			return null;
+		}
+
+		private static string GetWindowsJavaSdkLocation (TaskLoggingHelper log)
+		{
+			string subkey = @"SOFTWARE\JavaSoft\Java Development Kit";
+
+			log.LogMessage ("Looking for Java SDK..");
+
+			foreach (var wow64 in new[] { RegistryEx.Wow64.Key32, RegistryEx.Wow64.Key64 }) {
+				string key_name = string.Format (@"{0}\{1}\{2}", "HKLM", subkey, "CurrentVersion");
+				var currentVersion = RegistryEx.GetValueString (RegistryEx.LocalMachine, subkey, "CurrentVersion", wow64);
+
+				if (!string.IsNullOrEmpty (currentVersion)) {
+					log.LogMessage ("  Key {0} found: {1}.", key_name, currentVersion);
+
+					if (CheckRegistryKeyForExecutable (RegistryEx.LocalMachine, subkey + "\\" + currentVersion, "JavaHome", wow64, "bin", JarSignerTool, log))
+						return RegistryEx.GetValueString (RegistryEx.LocalMachine, subkey + "\\" + currentVersion, "JavaHome", wow64);
+				}
+
+				log.LogMessage ("  Key {0} not found.", key_name);
+			}
+
+			// We ran out of things to check..
+			return null;
+		}
+
+		private static bool CheckRegistryKeyForExecutable (UIntPtr key, string subkey, string valueName, MonoDroid.RegistryEx.Wow64 wow64, string subdir, string exe, TaskLoggingHelper log)
+		{
+			string key_name = string.Format (@"{0}\{1}\{2}", key == RegistryEx.CurrentUser ? "HKCU" : "HKLM", subkey, valueName);
+
+			var path = NullIfEmpty (RegistryEx.GetValueString (key, subkey, valueName, wow64));
+
+			if (path == null) {
+				log.LogMessage ("  Key {0} not found.", key_name);
+				return false;
+			}
+
+			if (!File.Exists (Path.Combine (path, subdir, exe))) {
+				log.LogMessage ("  Key {0} found:\n    Path does not contain {1} in \\{2} ({3}).", key_name, exe, subdir, path);
+				return false;
+			}
+
+			log.LogMessage ("  Key {0} found:\n    Path contains {1} in \\{2} ({3}).", key_name, exe, subdir, path);
+
+			return true;
 		}
 
 		static void GetUnixConfiguredSdkLocations (out string androidSdk, out string javaSdk)

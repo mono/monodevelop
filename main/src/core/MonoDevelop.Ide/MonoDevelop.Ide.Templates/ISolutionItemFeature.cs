@@ -36,20 +36,117 @@ namespace MonoDevelop.Ide.Templates
 {
 	public enum FeatureSupportLevel
 	{
+		/// <summary>
+		/// The feature is not supported
+		/// </summary>
 		NotSupported,
+		
+		/// <summary>
+		/// The feature is supported and it is currently enabled for the provided solution item
+		/// </summary>
 		Enabled,
+		
+		/// <summary>
+		/// The feature is supported
+		/// </summary>
 		Supported,
+		
+		/// <summary>
+		/// The feature is supported and it should be shown in the default list of features for the solution item
+		/// </summary>
 		SupportedByDefault
 	}
 	
 	public interface ISolutionItemFeature
 	{
-		FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry);
+		/// <summary>
+		/// Gets the support level of this feature for the provided project
+		/// </summary>
+		/// <returns>
+		/// The support level.
+		/// </returns>
+		/// <param name='parentFolder'>
+		/// The parent folder of the solution item. It may be null.
+		/// </param>
+		/// <param name='item'>
+		/// The project being checked for the feature
+		/// </param>
+		/// <remarks>
+		/// The provided item, parent folder and parent solution may or may not have a file name, and even if they
+		/// have, they may not be saved to disk. parentFolder can be null.
+		/// </remarks>
+		FeatureSupportLevel GetSupportLevel (SolutionFolder parentFolder, SolutionItem item);
+		
+		/// <summary>
+		/// Short title of the feature
+		/// </summary>
 		string Title { get; }
+		
+		/// <summary>
+		/// Description of the feature (one or two sentences)
+		/// </summary>
 		string Description { get; }
-		Gtk.Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry);
-		string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor);
-		void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor);
+		
+		/// <summary>
+		/// Creates a widget for editing the feature configuration
+		/// </summary>
+		/// <returns>
+		/// The feature editor.
+		/// </returns>
+		/// <param name='parentFolder'>
+		/// The parent folder of the solution item.
+		/// </param>
+		/// <param name='entry'>
+		/// The project being checked for the feature
+		/// </param>
+		/// <remarks>
+		/// The provided item, parent folder and parent solution may or may not have a file name, and even if they
+		/// have, they may not be saved to disk.
+		/// </remarks>
+		Gtk.Widget CreateFeatureEditor (SolutionFolder parentFolder, SolutionItem entry);
+		
+		/// <summary>
+		/// Validates the configuration of the feature
+		/// </summary>
+		/// <returns>
+		/// <c>null</c> if the configuration is correct, or an error message if there is some
+		/// error in the configuration parameters specified in the editor
+		/// </returns>
+		/// <param name='parentFolder'>
+		/// The parent folder of the solution item.
+		/// </param>
+		/// <param name='entry'>
+		/// The project being checked for the feature
+		/// </param>
+		/// <param name='editor'>
+		/// The feature editor.
+		/// </param>
+		/// <remarks>
+		/// This method is always called before calling ApplyFeature
+		/// </remarks>
+		/// <remarks>
+		/// The provided item, parent folder and parent solution may or may not have a file name, and even if they
+		/// have, they may not be saved to disk.
+		/// </remarks>
+		string Validate (SolutionFolder parentFolder, SolutionItem entry, Gtk.Widget editor);
+		
+		/// <summary>
+		/// Applies the feature to a project
+		/// </summary>
+		/// <param name='parentFolder'>
+		/// The parent folder of the solution item.
+		/// </param>
+		/// <param name='entry'>
+		/// The project being checked for the feature
+		/// </param>
+		/// <param name='editor'>
+		/// The feature editor.
+		/// </param>
+		/// <remarks>
+		/// The provided item, parent folder and parent solution may or may not have a file name, and even if they
+		/// have, they may not be saved to disk.
+		/// </remarks>
+		void ApplyFeature (SolutionFolder parentFolder, SolutionItem entry, Gtk.Widget editor);
 	}
 	
 	internal class SolutionItemFeatures

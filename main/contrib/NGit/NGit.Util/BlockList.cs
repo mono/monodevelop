@@ -398,7 +398,7 @@ namespace NGit.Util
 			internal MyIterator(BlockList<T> _enclosing)
 			{
 				this._enclosing = _enclosing;
-				block = this._enclosing.directory[this.dirIdx];
+				block = this._enclosing.directory[0];
 			}
 
 			private readonly BlockList<T> _enclosing;

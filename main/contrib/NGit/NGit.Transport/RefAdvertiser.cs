@@ -143,9 +143,6 @@ namespace NGit.Transport
 		/// 	</see>
 		/// <li>
 		/// <see cref="AdvertiseHave(NGit.AnyObjectId)">AdvertiseHave(NGit.AnyObjectId)</see>
-		/// <li>
-		/// <see cref="IncludeAdditionalHaves(NGit.Repository)">IncludeAdditionalHaves(NGit.Repository)
-		/// 	</see>
 		/// </ul>
 		/// </remarks>
 		/// <param name="name">
@@ -232,24 +229,6 @@ namespace NGit.Transport
 		public virtual void AdvertiseHave(AnyObjectId id)
 		{
 			AdvertiseAnyOnce(id, ".have");
-		}
-
-		/// <summary>
-		/// Include references of alternate repositories as
-		/// <code>.have</code>
-		/// lines.
-		/// </summary>
-		/// <param name="src">repository to get the additional reachable objects from.</param>
-		/// <exception cref="System.IO.IOException">
-		/// the underlying output stream failed to write out an
-		/// advertisement record.
-		/// </exception>
-		public virtual void IncludeAdditionalHaves(Repository src)
-		{
-			foreach (ObjectId id in src.GetAdditionalHaves())
-			{
-				AdvertiseHave(id);
-			}
 		}
 
 		/// <returns>true if no advertisements have been sent yet.</returns>

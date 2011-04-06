@@ -325,11 +325,15 @@ namespace NGit.Util
 					}
 				}
 			}
-			catch (IOException)
+			catch (IOException e)
 			{
+				// Stop bothering me, I have a zombie to reap.
+				if (SystemReader.GetInstance().GetProperty("jgit.fs.debug") != null)
+				{
+					System.Console.Error.WriteLine(e);
+				}
 			}
-			// Stop bothering me, I have a zombie to reap.
-			// ignore
+			// Ignore error (but report)
 			return null;
 		}
 
@@ -339,7 +343,16 @@ namespace NGit.Util
 			FS.Holder<FilePath> p = gitPrefix;
 			if (p == null)
 			{
-				p = new FS.Holder<FilePath>(DiscoverGitPrefix());
+				string overrideGitPrefix = SystemReader.GetInstance().GetProperty("jgit.gitprefix"
+					);
+				if (overrideGitPrefix != null)
+				{
+					p = new FS.Holder<FilePath>(new FilePath(overrideGitPrefix));
+				}
+				else
+				{
+					p = new FS.Holder<FilePath>(DiscoverGitPrefix());
+				}
 				gitPrefix = p;
 			}
 			return p.value;

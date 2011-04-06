@@ -134,6 +134,13 @@ namespace MonoDevelop.Ide.Gui
 			
 			AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 		}
+		
+		internal static void QueryAddinUpdates ()
+		{
+			AggregatedProgressMonitor monitor = UpdateMonitor;
+			if (monitor != null)
+				monitor.AsyncOperation.WaitForCompleted ();
+		}
 	}
 }
 

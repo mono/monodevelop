@@ -568,17 +568,19 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			IReturnType replaceType;
 			IReturnType replaceWith;
+			string invariantString;
 			
 			public TypeReplaceVisitor (IReturnType replaceType, IReturnType replaceWith)
 			{
 				this.replaceType = replaceType;
 				this.replaceWith = replaceWith;
+				invariantString = replaceType.ToInvariantString ();
 			}
 			
 			public override MonoDevelop.Projects.Dom.INode Visit (IReturnType type, object data)
 			{
-				if (type.ToInvariantString () == replaceType.ToInvariantString ())
-					return base.Visit (replaceWith, data);
+				if (type.ToInvariantString () == invariantString)
+					return replaceWith;
 				return base.Visit (type, data);
 			}
 
@@ -601,7 +603,6 @@ namespace MonoDevelop.CSharp.Resolver
 						IParameter parameter = method.Parameters [i];
 						IReturnType returnType = parameter.ReturnType;
 						IType type = resolver.Dom.GetType (returnType);
-					
 						bool isResolved = false;
 						if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 							IMethod invocationMethod = type.Methods.First ();
@@ -614,7 +615,7 @@ namespace MonoDevelop.CSharp.Resolver
 								isResolved = true;
 							}
 						}
-											
+
 						if (!isResolved) {
 							while (returnType.GenericArguments.Count > 0) {
 								returnType = returnType.GenericArguments [0];
@@ -651,7 +652,7 @@ namespace MonoDevelop.CSharp.Resolver
 					return resolver.GetFunctionParameterType (resolver.ResolveIdentifier (visitor, varDec.Name));
 				}
 				if (lambdaExpression.Parent is InvocationExpression) {
-					LambdaExpression lambda = (LambdaExpression)lambdaExpression; 
+					LambdaExpression lambda = (LambdaExpression)lambdaExpression;
 					ResolveResult lambdaReturnType = null;
 					if (!lambda.ExpressionBody.IsNull) {
 						DomLocation old = resolver.resolvePosition;

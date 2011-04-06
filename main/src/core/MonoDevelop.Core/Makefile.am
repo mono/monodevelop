@@ -93,11 +93,11 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs \
-	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs \
 	MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/LogTextWriter.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs \
+	MonoDevelop.Core.ProgressMonitoring/ProgressStatusMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs \
 	MonoDevelop.Core.ProgressMonitoring/SimpleProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs \
@@ -134,6 +134,8 @@ FILES =  \
 	MonoDevelop.Core.Serialization/XmlDataSerializer.cs \
 	MonoDevelop.Core.Serialization/XmlElementDataType.cs \
 	MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs \
+	MonoDevelop.Core.Setup/AddinSetupService.cs \
+	MonoDevelop.Core.Setup/UpdateLevel.cs \
 	MonoDevelop.Core.StringParsing/IStringTagModel.cs \
 	MonoDevelop.Core.StringParsing/IStringTagProvider.cs \
 	MonoDevelop.Core.StringParsing/StringTagDescription.cs \
@@ -143,6 +145,7 @@ FILES =  \
 	MonoDevelop.Core.Text/BacktrackingStringMatcher.cs \
 	MonoDevelop.Core.Text/LaneStringMatcher.cs \
 	MonoDevelop.Core.Text/StringMatcher.cs \
+	MonoDevelop.Core/ApplicationService.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/ComponentModelLocalization.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
@@ -151,6 +154,8 @@ FILES =  \
 	MonoDevelop.Core/FilePath.cs \
 	MonoDevelop.Core/FileService.cs \
 	MonoDevelop.Core/Gettext.cs \
+	MonoDevelop.Core/IApplication.cs \
+	MonoDevelop.Core/IApplicationInfo.cs \
 	MonoDevelop.Core/IAsyncOperation.cs \
 	MonoDevelop.Core/IconId.cs \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \

@@ -148,6 +148,10 @@ namespace NGit.Transport
 		/// <remarks>The refs we advertised as existing at the start of the connection.</remarks>
 		private IDictionary<string, Ref> refs;
 
+		/// <summary>All SHA-1s shown to the client, which can be possible edges.</summary>
+		/// <remarks>All SHA-1s shown to the client, which can be possible edges.</remarks>
+		private ICollection<ObjectId> advertisedHaves;
+
 		/// <summary>Capabilities requested by the client.</summary>
 		/// <remarks>Capabilities requested by the client.</remarks>
 		private ICollection<string> enabledCapablities;
@@ -202,14 +206,15 @@ namespace NGit.Transport
 			refFilter = RefFilter.DEFAULT;
 			preReceive = PreReceiveHook.NULL;
 			postReceive = PostReceiveHook.NULL;
+			advertisedHaves = new HashSet<ObjectId>();
 		}
 
 		private class ReceiveConfig
 		{
-			private sealed class _SectionParser_214 : Config.SectionParser<ReceivePack.ReceiveConfig
+			private sealed class _SectionParser_218 : Config.SectionParser<ReceivePack.ReceiveConfig
 				>
 			{
-				public _SectionParser_214()
+				public _SectionParser_218()
 				{
 				}
 
@@ -220,7 +225,7 @@ namespace NGit.Transport
 			}
 
 			internal static readonly Config.SectionParser<ReceivePack.ReceiveConfig> KEY = new 
-				_SectionParser_214();
+				_SectionParser_218();
 
 			internal readonly bool checkReceivedObjects;
 
@@ -258,7 +263,31 @@ namespace NGit.Transport
 		/// <returns>all refs which were advertised to the client.</returns>
 		public IDictionary<string, Ref> GetAdvertisedRefs()
 		{
+			if (refs == null)
+			{
+				refs = refFilter.Filter(db.GetAllRefs());
+				Ref head = refs.Get(Constants.HEAD);
+				if (head != null && head.IsSymbolic())
+				{
+					Sharpen.Collections.Remove(refs, Constants.HEAD);
+				}
+				foreach (Ref @ref in refs.Values)
+				{
+					if (@ref.GetObjectId() != null)
+					{
+						advertisedHaves.AddItem(@ref.GetObjectId());
+					}
+				}
+				Sharpen.Collections.AddAll(advertisedHaves, db.GetAdditionalHaves());
+			}
 			return refs;
+		}
+
+		/// <returns>the set of objects advertised as present in this repository.</returns>
+		public ICollection<ObjectId> GetAdvertisedObjects()
+		{
+			GetAdvertisedRefs();
+			return advertisedHaves;
 		}
 
 		/// <returns>
@@ -703,7 +732,7 @@ namespace NGit.Transport
 			}
 			else
 			{
-				refs = refFilter.Filter(db.GetAllRefs());
+				GetAdvertisedRefs();
 			}
 			if (advertiseError != null)
 			{
@@ -746,14 +775,14 @@ namespace NGit.Transport
 				UnlockPack();
 				if (reportStatus)
 				{
-					SendStatusReport(true, new _Reporter_662(this));
+					SendStatusReport(true, new _Reporter_685(this));
 					pckOut.End();
 				}
 				else
 				{
 					if (msgOut != null)
 					{
-						SendStatusReport(false, new _Reporter_669(this));
+						SendStatusReport(false, new _Reporter_692(this));
 					}
 				}
 				postReceive.OnPostReceive(this, FilterCommands(ReceiveCommand.Result.OK));
@@ -764,9 +793,9 @@ namespace NGit.Transport
 			}
 		}
 
-		private sealed class _Reporter_662 : ReceivePack.Reporter
+		private sealed class _Reporter_685 : ReceivePack.Reporter
 		{
-			public _Reporter_662(ReceivePack _enclosing)
+			public _Reporter_685(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -780,9 +809,9 @@ namespace NGit.Transport
 			private readonly ReceivePack _enclosing;
 		}
 
-		private sealed class _Reporter_669 : ReceivePack.Reporter
+		private sealed class _Reporter_692 : ReceivePack.Reporter
 		{
-			public _Reporter_669(ReceivePack _enclosing)
+			public _Reporter_692(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -826,14 +855,11 @@ namespace NGit.Transport
 			{
 				adv.AdvertiseCapability(BasePackPushConnection.CAPABILITY_OFS_DELTA);
 			}
-			refs = refFilter.Filter(db.GetAllRefs());
-			Ref head = Sharpen.Collections.Remove(refs, Constants.HEAD);
-			adv.Send(refs);
-			if (head != null && !head.IsSymbolic())
+			adv.Send(GetAdvertisedRefs());
+			foreach (ObjectId obj in advertisedHaves)
 			{
-				adv.AdvertiseHave(head.GetObjectId());
+				adv.AdvertiseHave(obj);
 			}
-			adv.IncludeAdditionalHaves(db);
 			if (adv.IsEmpty())
 			{
 				adv.AdvertiseId(ObjectId.ZeroId, "capabilities^{}");
@@ -1009,9 +1035,9 @@ namespace NGit.Transport
 				}
 				ow.MarkStart(ow.ParseAny(cmd.GetNewId()));
 			}
-			foreach (Ref @ref in refs.Values)
+			foreach (ObjectId have in advertisedHaves)
 			{
-				RevObject o = ow.ParseAny(@ref.GetObjectId());
+				RevObject o = ow.ParseAny(have);
 				ow.MarkUninteresting(o);
 				if (checkReferencedIsReachable && !baseObjects.IsEmpty())
 				{

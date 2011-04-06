@@ -91,9 +91,10 @@ namespace Sharpen
 			return length;
 		}
 		
-		private void Allocate (int len)
+		private int Allocate (int len)
 		{
-			while (!TryAllocate (len)) {
+			int alen;
+			while ((alen = TryAllocate (len)) == 0) {
 				// Wait until somebody reads data
 				try {
 					Monitor.Wait (thisLock);
@@ -103,9 +104,10 @@ namespace Sharpen
 					throw;
 				}
 			}
+			return alen;
 		}
 		
-		bool TryAllocate (int len)
+		int TryAllocate (int len)
 		{
 			int free;
 			if (start <= end) {
@@ -115,7 +117,7 @@ namespace Sharpen
 			}
 			if (free <= len) {
 				if (!allowGrow)
-					return false;
+					return free > 0 ? free - 1 : 0;
 				int sizeInc = (len - free) + 1;
 				byte[] destinationArray = new byte[buffer.Length + sizeInc];
 				if (start <= end) {
@@ -127,7 +129,7 @@ namespace Sharpen
 				}
 				buffer = destinationArray;
 			}
-			return true;
+			return len;
 		}
 		
 		internal void Write (int b)
@@ -142,17 +144,21 @@ namespace Sharpen
 		
 		internal void Write (byte[] b, int offset, int len)
 		{
-			lock (thisLock) {
-				Allocate (len);
-				int length = Math.Min (buffer.Length - end, len);
-				Array.Copy (b, offset, buffer, end, length);
-				end = (end + length) % buffer.Length;
-				if (length < len) {
-					Array.Copy (b, offset + length, buffer, 0, len - length);
-					end += len - length;
+			do {
+				lock (thisLock) {
+					int alen = Allocate (len);
+					int length = Math.Min (buffer.Length - end, alen);
+					Array.Copy (b, offset, buffer, end, length);
+					end = (end + length) % buffer.Length;
+					if (length < alen) {
+						Array.Copy (b, offset + length, buffer, 0, alen - length);
+						end += alen - length;
+					}
+					dataEvent.Set ();
+					len -= alen;
+					offset += alen;
 				}
-				dataEvent.Set ();
-			}
+			} while (len > 0);
 		}
 	}
 }

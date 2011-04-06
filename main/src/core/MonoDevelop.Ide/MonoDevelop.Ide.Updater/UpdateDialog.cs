@@ -31,7 +31,9 @@ using System.Text;
 
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Setup;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Updater
 {
@@ -41,6 +43,8 @@ namespace MonoDevelop.Ide.Updater
 		const int PAGE_UPDATES = 1;
 		
 		List<UpdateResult> results = new List<UpdateResult> ();
+		bool installing;
+		Queue<System.Action> installQueue = new Queue<System.Action> ();
 		
 		public UpdateDialog ()
 		{
@@ -151,9 +155,9 @@ namespace MonoDevelop.Ide.Updater
 				};
 				
 				//NOTE: grab the variable from the loop var so the closure captures it 
-				var url = update.Url;
+				var updateVal = update;
 				downloadButton.Clicked += delegate {
-					DesktopService.ShowUrl (url);
+					Install (labelBox, downloadButton, updateVal);
 				};
 				labelBox.PackStart (downloadButton, false, false, 0);
 				
@@ -200,6 +204,57 @@ namespace MonoDevelop.Ide.Updater
 			}
 			
 			notebook1.CurrentPage = PAGE_UPDATES;
+		}
+		
+		void Install (HBox labelBox, Button installButton, Update update)
+		{
+			if (update.InstallAction == null) {
+				DesktopService.ShowUrl (update.Url);
+				return;
+			}
+			
+			installButton.Hide ();
+			
+			if (installing) {
+				Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString ("Waiting"));
+				labelBox.PackStart (lab, false, false, 0);
+				lab.Show ();
+				installQueue.Enqueue (delegate {
+					lab.Hide ();
+					RunInstall (labelBox, update);
+				});
+				return;
+			}
+			
+			RunInstall (labelBox, update);
+		}
+		
+		void RunInstall (HBox labelBox, Update update)
+		{
+			installing = true;
+			
+			ProgressBarMonitor monitorBar = new ProgressBarMonitor ();
+			monitorBar.ShowErrorsDialog = true;
+			monitorBar.Show ();
+			labelBox.PackStart (monitorBar, false, false, 0);
+			
+			IAsyncOperation oper = update.InstallAction (monitorBar.CreateProgressMonitor ());
+			oper.Completed += delegate {
+				DispatchService.GuiDispatch (delegate {
+					monitorBar.Hide ();
+					Gtk.Label result = new Gtk.Label ();
+					if (oper.Success)
+						result.Text = GettextCatalog.GetString ("Completed");
+					else
+						result.Text = GettextCatalog.GetString ("Failed");
+					labelBox.PackStart (result, false, false, 0);
+					result.Show ();
+					installing = false;
+					
+					if (installQueue.Count > 0)
+						installQueue.Dequeue ()();
+				});
+			};
 		}
 	}
 }

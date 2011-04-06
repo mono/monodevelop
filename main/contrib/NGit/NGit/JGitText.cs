@@ -488,8 +488,6 @@ namespace NGit
 
 		public string incorrectOBJECT_ID_LENGTH;
 
-		public string incorrectObjectType_COMMITnorTREEnorBLOBnorTAG;
-
 		public string indexFileIsInUse;
 
 		public string indexFileIsTooLargeForJgit;

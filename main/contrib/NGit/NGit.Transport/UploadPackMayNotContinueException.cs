@@ -41,26 +41,46 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
 using System.IO;
-using NGit;
 using Sharpen;
 
-namespace NGit.Errors
+namespace NGit.Transport
 {
-	/// <summary>Indicates a ReceivePack failure while scanning the pack stream.</summary>
-	/// <remarks>Indicates a ReceivePack failure while scanning the pack stream.</remarks>
+	/// <summary>Indicates UploadPack may not continue execution.</summary>
+	/// <remarks>Indicates UploadPack may not continue execution.</remarks>
 	[System.Serializable]
-	public class UnpackException : IOException
+	public class UploadPackMayNotContinueException : IOException
 	{
 		private const long serialVersionUID = 1L;
 
-		/// <summary>Creates an exception with a root cause.</summary>
-		/// <remarks>Creates an exception with a root cause.</remarks>
-		/// <param name="why">the root cause of the unpacking failure.</param>
-		public UnpackException(Exception why) : base(JGitText.Get().unpackException, why)
+		private bool output;
+
+		/// <summary>Initialize with no message.</summary>
+		/// <remarks>Initialize with no message.</remarks>
+		public UploadPackMayNotContinueException()
 		{
-			Sharpen.Extensions.InitCause(this, why);
+		}
+
+		/// <param name="msg">
+		/// a message explaining why it cannot continue. This message may
+		/// be shown to an end-user.
+		/// </param>
+		public UploadPackMayNotContinueException(string msg) : base(msg)
+		{
+		}
+
+		// Do not set a message.
+		/// <returns>true if the message was already output to the client.</returns>
+		public virtual bool IsOutput()
+		{
+			return output;
+		}
+
+		/// <summary>Mark this message has being sent to the client.</summary>
+		/// <remarks>Mark this message has being sent to the client.</remarks>
+		public virtual void SetOutput()
+		{
+			output = true;
 		}
 	}
 }

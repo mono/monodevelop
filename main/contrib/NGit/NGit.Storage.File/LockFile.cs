@@ -457,9 +457,9 @@ namespace NGit.Storage.File
 		/// <remarks>
 		/// Wait until the lock file information differs from the old file.
 		/// <p>
-		/// This method tests both the length and the last modification date. If both
-		/// are the same, this method sleeps until it can force the new lock file's
-		/// modification date to be later than the target file.
+		/// This method tests the last modification date. If both are the same, this
+		/// method sleeps until it can force the new lock file's modification date to
+		/// be later than the target file.
 		/// </remarks>
 		/// <exception cref="System.Exception">
 		/// the thread was interrupted before the last modified date of
@@ -468,16 +468,13 @@ namespace NGit.Storage.File
 		/// </exception>
 		public virtual void WaitForStatChange()
 		{
-			if (@ref.Length() == lck.Length())
+			FileSnapshot o = FileSnapshot.Save(@ref);
+			FileSnapshot n = FileSnapshot.Save(lck);
+			while (o.Equals(n))
 			{
-				long otime = @ref.LastModified();
-				long ntime = lck.LastModified();
-				while (otime == ntime)
-				{
-					Sharpen.Thread.Sleep(25);
-					lck.SetLastModified(Runtime.CurrentTimeMillis());
-					ntime = lck.LastModified();
-				}
+				Sharpen.Thread.Sleep(25);
+				lck.SetLastModified(Runtime.CurrentTimeMillis());
+				n = FileSnapshot.Save(lck);
 			}
 		}
 
@@ -620,10 +617,17 @@ namespace NGit.Storage.File
 			if (haveLck)
 			{
 				haveLck = false;
-				lck.Delete();
+				try
+				{
+					FileUtils.Delete(lck, FileUtils.RETRY);
+				}
+				catch (IOException)
+				{
+				}
 			}
 		}
 
+		// couldn't delete the file even after retry.
 		public override string ToString()
 		{
 			return "LockFile[" + lck + ", haveLck=" + haveLck + "]";
