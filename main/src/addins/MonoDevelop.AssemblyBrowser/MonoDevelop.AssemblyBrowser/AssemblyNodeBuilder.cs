@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -120,15 +121,15 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public void Disassemble (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)navigator.DataItem;
-			DomMethodNodeBuilder.Decompile (data, null, b => b.AddAssembly (compilationUnit.AssemblyDefinition, true));
+			return DomMethodNodeBuilder.Decompile (data, null, b => b.AddAssembly (compilationUnit.AssemblyDefinition, true));
 		}
 		
-		public void Decompile (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			Disassemble (data, navigator);
+			return Disassemble (data, navigator);
 		}
 		
 		public string GetDocumentationMarkup (ITreeNavigator navigator)

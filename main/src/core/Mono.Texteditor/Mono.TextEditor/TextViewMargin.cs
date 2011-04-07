@@ -1517,7 +1517,7 @@ namespace Mono.TextEditor
 			int anchor = selection != null ? selection.GetAnchorOffset (this.textEditor.GetTextEditorData ()) : -1;
 			int oldOffset = textEditor.Caret.Offset;
 
-			string link = GetLink (args);
+			string link = GetLink != null ? GetLink (args) : null;
 			if (!String.IsNullOrEmpty (link)) {
 				textEditor.FireLinkEvent (link, args.Button, args.ModifierState);
 				return;
@@ -1730,33 +1730,33 @@ namespace Mono.TextEditor
 				codeSegmentTooltipTimeoutId = 0;
 			}
 		}
-
-		string GetLink (MarginMouseEventArgs args)
-		{
-			LineSegment line = args.LineSegment;
-			Mono.TextEditor.Highlighting.Style style = ColorStyle;
-			Document doc = Document;
-			if (doc == null)
-				return null;
-			SyntaxMode mode = doc.SyntaxMode;
-			if (line == null || style == null || mode == null)
-				return null;
-
-			Chunk chunk = GetCachedChunks (mode, Document, style, line, line.Offset, line.EditableLength);
-			if (chunk != null) {
-				DocumentLocation loc = PointToLocation (args.X, args.Y);
-				int column = 0;
-				for (; chunk != null; chunk = chunk.Next) {
-					if (column <= loc.Column && loc.Column < column + chunk.Length) {
-						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
-
-						return chunkStyle != null ? chunkStyle.Link : null;
-					}
-					column += chunk.Length;
-				}
-			}
-			return null;
-		}
+		
+		public Func<MarginMouseEventArgs, string> GetLink;
+//		= new delegate (MarginMouseEventArgs args) {
+//			LineSegment line = args.LineSegment;
+//			Mono.TextEditor.Highlighting.Style style = ColorStyle;
+//			Document doc = Document;
+//			if (doc == null)
+//				return null;
+//			SyntaxMode mode = doc.SyntaxMode;
+//			if (line == null || style == null || mode == null)
+//				return null;
+//
+//			Chunk chunk = GetCachedChunks (mode, Document, style, line, line.Offset, line.EditableLength);
+//			if (chunk != null) {
+//				DocumentLocation loc = PointToLocation (args.X, args.Y);
+//				int column = 0;
+//				for (; chunk != null; chunk = chunk.Next) {
+//					if (column <= loc.Column && loc.Column < column + chunk.Length) {
+//						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
+//
+//						return chunkStyle != null ? chunkStyle.Link : null;
+//					}
+//					column += chunk.Length;
+//				}
+//			}
+//			return null;
+//		};
 
 		public LineSegment HoveredLine {
 			get;
@@ -1824,7 +1824,7 @@ namespace Mono.TextEditor
 				}
 
 				ShowTooltip (null, Gdk.Rectangle.Zero);
-				string link = GetLink (args);
+				string link = GetLink != null ? GetLink (args) : null;
 
 				if (!String.IsNullOrEmpty (link)) {
 					base.cursor = arrowCursor;

@@ -41,6 +41,7 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
 using Mono.TextEditor;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -163,16 +164,16 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public void Disassemble (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			var type = (DomCecilType)navigator.DataItem;
-			DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type.TypeDefinition));
+			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type.TypeDefinition));
 		}
 		
-		public void Decompile (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
 			var type = (DomCecilType)navigator.DataItem;
-			DomMethodNodeBuilder.Decompile (data, type.TypeDefinition, b => b.AddType (type.TypeDefinition));
+			return DomMethodNodeBuilder.Decompile (data, type.TypeDefinition, b => b.AddType (type.TypeDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

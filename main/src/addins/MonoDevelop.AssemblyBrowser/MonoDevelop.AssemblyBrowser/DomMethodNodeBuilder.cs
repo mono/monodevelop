@@ -118,7 +118,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
 		
-		public static void Decompile (TextEditorData data, TypeDefinition currentType, Action<AstBuilder> setData)
+		public static List<ReferenceSegment> Decompile (TextEditorData data, TypeDefinition currentType, Action<AstBuilder> setData)
 		{
 			try {
 				var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
@@ -146,9 +146,11 @@ namespace MonoDevelop.AssemblyBrowser
 				var output = new ColoredCSharpFormatter (data.Document);
 				astBuilder.GenerateCode (output, codePolicy.CreateOptions ());
 				output.SetDocumentData ();
+				return output.ReferencedSegments;
 			} catch (Exception e) {
 				data.Text = "Decompilation failed: \n" + e;
 			}
+			return null;
 		}
 		
 		
@@ -165,12 +167,12 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public void Decompile (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
-				return;
-			DomMethodNodeBuilder.Decompile (data, ((DomCecilType)method.DeclaringType).TypeDefinition, b => b.AddMethod (method.MethodDefinition));
+				return null;
+			return DomMethodNodeBuilder.Decompile (data, ((DomCecilType)method.DeclaringType).TypeDefinition, b => b.AddMethod (method.MethodDefinition));
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -182,21 +184,22 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append ("</a></u></span>");
 		}
 		
-		public static void Disassemble (TextEditorData data, Action<ReflectionDisassembler> setData)
+		public static List<ReferenceSegment> Disassemble (TextEditorData data, Action<ReflectionDisassembler> setData)
 		{
 			var source = new CancellationTokenSource ();
 			var output = new ColoredCSharpFormatter (data.Document);
 			var disassembler = new ReflectionDisassembler (output, true, source.Token);
 			setData (disassembler);
 			output.SetDocumentData ();
+			return output.ReferencedSegments;
 		}
 		
-		void IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
-				return;
-			Disassemble (data, rd => rd.DisassembleMethod (method.MethodDefinition));
+				return null;
+			return Disassemble (data, rd => rd.DisassembleMethod (method.MethodDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

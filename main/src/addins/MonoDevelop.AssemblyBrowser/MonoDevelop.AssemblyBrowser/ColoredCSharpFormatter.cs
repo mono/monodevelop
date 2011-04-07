@@ -33,14 +33,28 @@ using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
+	public class ReferenceSegment : Segment
+	{
+		public object Reference {
+			get;
+			set;
+		}
+		
+		public ReferenceSegment (int offset, int length, object reference) : base (offset, length)
+		{
+			this.Reference = reference;
+		}
+	}
+	
+		
 	public class ColoredCSharpFormatter : ITextOutput
 	{
 		public StringBuilder sb = new StringBuilder();
 		Document doc;
 		bool write_indent;
 		int indent;
-		public List<FoldSegment> FoldSegments = new List<FoldSegment>();
-		
+		public List<FoldSegment>      FoldSegments       = new List<FoldSegment>();
+		public List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
 		
 		public ColoredCSharpFormatter (Document doc)
 		{
@@ -100,6 +114,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public void WriteReference (string text, object reference)
 		{
 			WriteIndent ();
+			ReferencedSegments.Add (new ReferenceSegment (sb.Length, text.Length, reference));
 			sb.Append (text);
 		}
 		

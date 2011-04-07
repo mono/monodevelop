@@ -41,6 +41,8 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
+using System.Linq;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -115,6 +117,14 @@ namespace MonoDevelop.AssemblyBrowser
 			PropertyService.PropertyChanged += HandlePropertyChanged;
 			this.inspectEditor.Document.ReadOnly = true;
 //			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
+			this.inspectEditor.TextViewMargin.GetLink = delegate(Mono.TextEditor.MarginMouseEventArgs arg) {
+				var loc = inspectEditor.PointToLocation (arg.X, arg.Y);
+				int offset = inspectEditor.LocationToOffset (loc);
+				var referencedSegment = ReferencedSegments != null ? ReferencedSegments.FirstOrDefault (seg => seg.Contains (offset)) : null;
+				if (referencedSegment == null)
+					return null;
+				return referencedSegment.Reference.ToString ();
+			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
 			
 //			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
@@ -265,7 +275,7 @@ namespace MonoDevelop.AssemblyBrowser
 				IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
 				((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
 			} else {
-				this.Open (args.Link);
+				this.OpenSoftLink (args.Link);
 			}
 		}
 		
@@ -802,6 +812,32 @@ namespace MonoDevelop.AssemblyBrowser
 			this.scrolledwindow3.ShowAll ();
 		}
 		
+		List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
+		List<UnderlineMarker> underlineMarkers = new List<UnderlineMarker> ();
+		
+		public void ClearReferenceSegment ()
+		{
+			ReferencedSegments = null;
+			underlineMarkers.ForEach (m => inspectEditor.Document.RemoveMarker (m));
+			underlineMarkers.Clear ();
+		}
+		
+		public void SetReferencedSegments (List<ReferenceSegment> refs)
+		{
+			ReferencedSegments = refs;
+			if (ReferencedSegments == null)
+				return;
+			foreach (var seg in refs) {
+				LineSegment line = inspectEditor.GetLineByOffset (seg.Offset);
+				if (line == null)
+					continue;
+				var marker = new UnderlineMarker ("blue", 1 + seg.Offset - line.Offset, 1 + seg.EndOffset - line.Offset);
+				marker.Wave = false;
+				underlineMarkers.Add (marker);
+				inspectEditor.Document.AddMarker (line, marker);
+			}
+		}
+
 		void FillInspectLabel ()
 		{
 			ITreeNavigator nav = TreeView.GetSelectedNode ();
@@ -812,6 +848,8 @@ namespace MonoDevelop.AssemblyBrowser
 				this.inspectEditor.Document.Text = "";
 				return;
 			}
+			
+			ClearReferenceSegment ();
 			inspectEditor.Document.ClearFoldSegments ();
 			switch (this.languageCombobox.Active) {
 			case 0:
@@ -822,12 +860,12 @@ namespace MonoDevelop.AssemblyBrowser
 			case 1:
 				inspectEditor.Options.ShowFoldMargin = true;
 				this.inspectEditor.Document.MimeType = "text/x-ilasm";
-				builder.Disassemble (inspectEditor.GetTextEditorData (), nav);
+				SetReferencedSegments (builder.Disassemble (inspectEditor.GetTextEditorData (), nav));
 				break;
 			case 2:
 				inspectEditor.Options.ShowFoldMargin = true;
 				this.inspectEditor.Document.MimeType = "text/x-csharp";
-				builder.Decompile (inspectEditor.GetTextEditorData (),  nav);
+				SetReferencedSegments (builder.Decompile (inspectEditor.GetTextEditorData (),  nav));
 				break;
 			default:
 				inspectEditor.Options.ShowFoldMargin = false;
@@ -886,7 +924,52 @@ namespace MonoDevelop.AssemblyBrowser
 			oldSize2 = size;
 			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
 		}
-			
+		
+		
+		static string Concat (string cur, string nodeName)
+		{
+			if (string.IsNullOrEmpty (cur))
+				return nodeName;
+			return cur + "." + nodeName;
+		}
+		
+		ITreeNavigator SearchSoftLink (ITreeNavigator nav, string helpUrl, string cur, int depth)
+		{
+			do {
+				string curName = depth > 1 ? Concat (cur, nav.NodeName) : "";
+				Console.WriteLine (curName + "/" + helpUrl);
+				if (curName == helpUrl)
+					return nav;
+				if (!helpUrl.StartsWith (curName))
+					return null;
+				
+				if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
+					DispatchService.RunPendingEvents ();
+					nav.MoveToFirstChild ();
+					do { 
+						ITreeNavigator result = SearchSoftLink (nav, helpUrl, curName, depth + 1);
+						if (result != null)
+							return result;
+					
+					} while (nav.MoveNext ());
+					nav.MoveToParent ();
+				}
+				
+			} while (nav.MoveNext());
+			return null;
+		}
+		
+		void OpenSoftLink (string url)
+		{
+			ITreeNavigator nav = SearchSoftLink (TreeView.GetRootNode (), url, null, 0);
+			if (nav != null) {
+				nav.ExpandToNode ();
+				nav.Selected = true;
+			} else {
+				LoggingService.LogError ("Can't open: " + url + " (not found).");
+			}
+		}
+		
 		public void Open (string url)
 		{
 			ITreeNavigator nav = SearchMember (url);

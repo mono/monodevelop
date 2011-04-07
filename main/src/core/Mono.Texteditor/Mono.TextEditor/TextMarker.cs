@@ -283,7 +283,13 @@ namespace Mono.TextEditor
 			}
 			double height = editor.LineHeight / 5;
 			cr.Color = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
-			Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
+			if (Wave) {	
+				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
+			} else {
+				cr.MoveTo (@from, y + editor.LineHeight - 1);
+				cr.LineTo (to, y + editor.LineHeight - 1);
+				cr.Stroke ();
+			}
 		}
 	}
 

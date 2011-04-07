@@ -116,10 +116,8 @@ namespace MonoDevelop.CSharp.Parser
 				using (var stream = new MemoryStream (Encoding.Default.GetBytes (content))) {
 					top = CompilerCallableEntryPoint.ParseFile (compilerArguments.ToArray (), stream, fileName, errorReportPrinter);
 				}
-				System.Console.WriteLine ("a : " + top);
 				if (top == null)
 					return null;
-				System.Console.WriteLine ("B");
 				foreach (var special in top.SpecialsBag.Specials) {
 					var comment = special as SpecialsBag.Comment;
 					if (comment != null) {
@@ -128,7 +126,6 @@ namespace MonoDevelop.CSharp.Parser
 						VisitPreprocessorDirective (result, special as SpecialsBag.PreProcessorDirective);
 					}
 				}
-				System.Console.WriteLine ("c");
 				// convert DOM
 				var conversionVisitor = new ConversionVisitor (top.LocationsBag);
 				try {
@@ -140,10 +137,8 @@ namespace MonoDevelop.CSharp.Parser
 				} catch (Exception ex) {
 					System.Console.WriteLine (ex);
 				}
-				System.Console.WriteLine ("d");
 				// parser errorse
 				errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
-				System.Console.WriteLine (result.CompilationUnit.Types.Count ());
 				return result;
 			}
 		}
@@ -474,14 +469,12 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override void Visit (ModuleContainer mc)
 			{
-				System.Console.WriteLine ("visit module container !!!");
 				foreach (var at in ConvertAttributes (mc.OptAttributes, mc))
 					Unit.Add (at);
 			}
 			
 			public override void Visit (UsingsBag.Namespace nspace)
 			{
-				System.Console.WriteLine ("visit namespace :" + nspace.Name);
 				string oldNamespace = currentNamespaceName;
 				currentNamespace.Push (nspace);
 				if (nspace.Name != null) { // no need to push the global namespace
@@ -505,7 +498,6 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override void Visit (UsingsBag.Using u)
 			{
-				System.Console.WriteLine ("add using + " + u.NSpace);
 				if (!string.IsNullOrEmpty (currentNamespaceName)) {
 					DomUsing relativeNamespaceUsing = new DomUsing ();
 					relativeNamespaceUsing.Region = ConvertRegion (u.UsingLocation, u.SemicolonLocation);
@@ -539,7 +531,6 @@ namespace MonoDevelop.CSharp.Parser
 			
 			void VisitType (TypeContainer c, ClassType classType)
 			{
-				System.Console.WriteLine ("visit type !!!");
 				DomType newType = new DomType ();
 				newType.SourceProjectDom = Dom;
 				newType.CompilationUnit = Unit;

@@ -110,7 +110,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public void Disassemble (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			DomCecilCompilationUnit.Module module = (DomCecilCompilationUnit.Module)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
@@ -133,10 +133,11 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			data.Text = result.ToString ();
+			return null;
 		}
-		public void Decompile (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			Disassemble (data, navigator);
+			return Disassemble (data, navigator);
 		}
 		public string GetDocumentationMarkup (ITreeNavigator navigator)
 		{
