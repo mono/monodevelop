@@ -27,10 +27,25 @@
 
 namespace MonoDevelop.Projects
 {
+	/// <summary>
+	/// Specifies a configuration to be used for solution and project operations
+	/// </summary>
 	public class ConfigurationSelector
 	{
+		/// <summary>
+		/// A configuration selector which selects the default (active) project or solution configuration
+		/// </summary>
 		public static readonly ConfigurationSelector Default = new DefaultConfigurationSelector ();
 		
+		/// <summary>
+		/// Gets the configuration selected by this instance for a given target
+		/// </summary>
+		/// <returns>
+		/// The configuration.
+		/// </returns>
+		/// <param name='target'>
+		/// A target
+		/// </param>
 		public virtual ItemConfiguration GetConfiguration (IConfigurationTarget target)
 		{
 			return null;

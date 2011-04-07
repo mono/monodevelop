@@ -30,13 +30,47 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Extensions
 {
+	/// <summary>
+	/// An abstraction of some solution item operations that may be specific to the underlying file format.
+	/// </summary>
 	public interface ISolutionItemHandler: IDisposable
 	{
+		/// <summary>
+		/// Executes a build target
+		/// </summary>
+		/// <returns>
+		/// The result of the operation
+		/// </returns>
+		/// <param name='monitor'>
+		/// A progress monitor
+		/// </param>
+		/// <param name='target'>
+		/// Name of the target to execute
+		/// </param>
+		/// <param name='configuration'>
+		/// Selector to be used to get the target configuration
+		/// </param>
 		BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
+		
+		/// <summary>
+		/// Saves the solution item
+		/// </summary>
+		/// <param name='monitor'>
+		/// A progress monitor
+		/// </param>
 		void Save (IProgressMonitor monitor);
+		
+		/// <summary>
+		/// Gets a value indicating whether the name of the solution item should be the same as the name of the file
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if the file name must be in sync with the solution item name; otherwise, <c>false</c>.
+		/// </value>
 		bool SyncFileName { get; }
+		
+		/// <summary>
+		/// Unique and immutable identifier of the solution item inside the solution
+		/// </summary>
 		string ItemId { get; }
 	}
-	
-	
 }
