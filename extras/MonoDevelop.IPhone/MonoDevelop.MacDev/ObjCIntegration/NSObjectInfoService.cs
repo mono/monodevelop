@@ -173,7 +173,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						name = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
 					if (string.IsNullOrEmpty (name))
 						name = prop.Name;
-					info.Outlets.Add (new IBOutlet (name, prop.Name, null, prop.ReturnType.FullName));
+					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.FullName);
+					if (prop.DeclaringType.CompilationUnit.FileName.FileNameWithoutExtension.EndsWith (".designer"))
+						ol.IsDesigner = true;
+					info.Outlets.Add (ol);
 					break;
 				}
 			}
@@ -189,7 +192,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							name = n.Split (colonChar);
 					}
 					var action = new IBAction (name != null? name [0] : meth.Name, meth.Name);
-					info.Actions.Add (action);
 					int i = 1;
 					foreach (var param in meth.Parameters) {
 						string label = name != null && i < name.Length? name[i] : null;
@@ -197,6 +199,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							label = null;
 						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.ReturnType.FullName));
 					}
+					if (meth.DeclaringType.CompilationUnit.FileName.FileNameWithoutExtension.EndsWith (".designer"))
+						action.IsDesigner = true;
+					info.Actions.Add (action);
 					break;
 				}
 			}
