@@ -21,6 +21,7 @@ REFS =  \
 	-r:../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
 	-r:../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Git.dll \
+	-r:../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:../../build/bin/Mono.TextEditor.dll \
 	-r:../../build/bin/MonoDevelop.Core.dll \
 	-r:../../build/bin/MonoDevelop.Ide.dll \

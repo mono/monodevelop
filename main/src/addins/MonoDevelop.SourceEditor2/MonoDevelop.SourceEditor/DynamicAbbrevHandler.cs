@@ -116,9 +116,9 @@ namespace MonoDevelop.SourceEditor
 				curState = AbbrevState.SearchOtherBuffers;
 				goto case AbbrevState.SearchOtherBuffers;
 			case AbbrevState.SearchOtherBuffers:
-				foreach (Document curDoc in IdeApp.Workbench.Documents.Where (d => d != doc)) {
+				foreach (Document curDoc in IdeApp.Workbench.Documents) {
 					SourceEditorView otherView = curDoc.GetContent<SourceEditorView> ();
-					if (otherView == null)
+					if (curDoc == doc && otherView == null)
 						continue;
 					for (int i = 0; i < otherView.Document.Length; i++) {
 						if (IsMatchAt (otherView, i, abbrevWord)) {
@@ -143,14 +143,19 @@ namespace MonoDevelop.SourceEditor
 				break;
 			}
 		}
-
+		
+		public static bool IsIdentifierPart (char ch)
+		{
+			return char.IsLetterOrDigit (ch) || ch == '_';
+		}
+		
 		static string GetWordBeforeCaret (MonoDevelop.SourceEditor.ExtensibleTextEditor editor)
 		{
 			int startOffset = editor.Caret.Offset;
 			int offset = startOffset - 1;
 			while (offset > 0) {
 				char ch = editor.Document.GetCharAt (offset);
-				if (!ch.IsIdentifierPart ()) {
+				if (!IsIdentifierPart (ch)) {
 					offset++;
 					break;
 				}
@@ -170,7 +175,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static int SearchEndPos (int offset, MonoDevelop.SourceEditor.SourceEditorView view)
 		{
-			while (offset < view.TextEditor.Document.Length && view.TextEditor.Document.GetCharAt (offset).IsIdentifierPart ()) {
+			while (offset < view.TextEditor.Document.Length && IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset))) {
 				offset++;
 			}
 			return offset;
@@ -180,9 +185,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (offset + abbrevWord.Length >= view.TextEditor.Document.Length)
 				return false;
-			if (offset > 0 && view.TextEditor.Document.GetCharAt (offset - 1).IsIdentifierPart ())
+			if (offset > 0 && IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset - 1)))
 				return false;
-			if (offset + abbrevWord.Length < view.TextEditor.Document.Length && !view.TextEditor.Document.GetCharAt (offset + abbrevWord.Length).IsIdentifierPart ())
+			if (offset + abbrevWord.Length < view.TextEditor.Document.Length && !IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset + abbrevWord.Length)))
 				return false;
 			return view.TextEditor.Document.GetTextAt (offset, abbrevWord.Length) == abbrevWord;
 		}
