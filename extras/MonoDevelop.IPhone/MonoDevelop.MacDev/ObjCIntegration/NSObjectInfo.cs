@@ -27,6 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.IO;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
@@ -168,6 +171,180 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					writer.Write (" {0}:({1}){2}", param.Label, paramType, param.Name);
 				}
 			}	
+		}
+		
+		public CodeCompileUnit GenerateDesignerClass (CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
+			NSObjectTypeInfo previousType, string wrapperName)
+		{
+			var registerAtt = new CodeTypeReference (wrapperName + ".Foundation.RegisterAttribute");
+			var connectAtt = new CodeTypeReference (wrapperName + ".Foundation.ConnectAttribute");
+			var exportAtt = new CodeTypeReference (wrapperName + ".Foundation.ExportAttribute");
+			
+			var existingOutlets = new Dictionary<string,IBOutlet> ();
+			foreach (var o in previousType.Outlets)
+				existingOutlets[o.ObjCName] = o;
+			
+			var existingActions = new Dictionary<string,IBAction> ();
+			foreach (var a in previousType.Actions)
+				existingActions[a.ObjCName] = a;
+			
+			var ccu = new System.CodeDom.CodeCompileUnit ();
+			var cns = new System.CodeDom.CodeNamespace ();
+			ccu.Namespaces.Add (cns);
+			var ctd = new System.CodeDom.CodeTypeDeclaration ();
+			cns.Types.Add (ctd);
+			
+			AddWarningDisablePragmas (ctd, provider);
+			
+			var dotIdx = previousType.CliName.LastIndexOf ('.');
+			if (dotIdx > 0) {
+				cns.Name = previousType.CliName.Substring (0, dotIdx);
+				ctd.Name = previousType.CliName.Substring (dotIdx + 1);
+			} else {
+				ctd.Name = previousType.CliName;
+			}
+			AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
+			
+			StringWriter actionStubWriter = null;
+			foreach (var a in Actions) {
+				IBAction existing;
+				if (existingActions.TryGetValue (a.ObjCName, out existing))
+					if (existing.IsDesigner)
+						continue;
+				GenerateAction (exportAtt, ctd, a, provider, generatorOptions, ref actionStubWriter);
+			}
+			if (actionStubWriter != null) {
+				ctd.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
+				actionStubWriter.Dispose ();
+			}
+			
+			foreach (var o in Outlets) {
+				IBOutlet existing;
+				if (existingOutlets.TryGetValue (o.ObjCName, out existing))
+					if (!existing.IsDesigner)
+						continue;
+				AddOutletProperty (connectAtt, ctd, o.CliName ?? o.ObjCName, new CodeTypeReference (o.CliType));
+			}
+			
+			return ccu;
+		}
+		
+		static void AddOutletProperty (CodeTypeReference connectAtt, CodeTypeDeclaration type, string name, CodeTypeReference typeRef)
+		{
+			var fieldName = "__impl_" + name;
+			var field = new CodeMemberField (typeRef, fieldName);
+			
+			var prop = new CodeMemberProperty () {
+				Name = name,
+				Type = typeRef
+			};
+			AddAttribute (prop.CustomAttributes, connectAtt, name);
+			
+			var setValue = new CodePropertySetValueReferenceExpression ();
+			var thisRef = new CodeThisReferenceExpression ();
+			var fieldRef = new CodeFieldReferenceExpression (thisRef, fieldName);
+			var setNativeRef = new CodeMethodReferenceExpression (thisRef, "SetNativeField");
+			var getNativeRef = new CodeMethodReferenceExpression (thisRef, "GetNativeField");
+			var namePrimitive = new CodePrimitiveExpression (name);
+			var invokeGetNative = new CodeMethodInvokeExpression (getNativeRef, namePrimitive);
+			
+			prop.SetStatements.Add (new CodeAssignStatement (fieldRef, setValue));
+			prop.SetStatements.Add (new CodeMethodInvokeExpression (setNativeRef, namePrimitive, setValue));
+			
+			prop.GetStatements.Add (new CodeAssignStatement (fieldRef, new CodeCastExpression (typeRef, invokeGetNative)));
+			prop.GetStatements.Add (new CodeMethodReturnStatement (fieldRef));
+			
+			prop.Attributes = field.Attributes = (prop.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+			
+			type.Members.Add (prop);
+			type.Members.Add (field);
+		}
+		
+		static void AddAttribute (CodeAttributeDeclarationCollection atts, CodeTypeReference type, string val)
+		{
+			atts.Add (new CodeAttributeDeclaration (type, new CodeAttributeArgument (new CodePrimitiveExpression (val))));
+		}
+		
+		static void AddWarningDisablePragmas (CodeTypeDeclaration type, CodeDomProvider provider)
+		{
+			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+				type.Members.Add (new CodeSnippetTypeMember ("#pragma warning disable 0169")); // unused member
+			}
+		}
+
+		static void GenerateAction (CodeTypeReference exportAtt, CodeTypeDeclaration type, IBAction action, 
+			CodeDomProvider provider, CodeGeneratorOptions generatorOptions, ref StringWriter actionStubWriter)
+		{
+			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+				type.Members.Add (new CodeSnippetTypeMember ("[" + exportAtt.BaseType + "(\"" + action.GetObjcFullName ()  + "\")]"));
+				
+				var sb = new System.Text.StringBuilder ();
+				sb.Append ("partial void ");
+				sb.Append (action.CliName ?? action.ObjCName);
+				sb.Append (" (");
+				if (action.Parameters != null) {
+					bool isFirst = true;
+					foreach (var p in action.Parameters) {
+						if (!isFirst) {
+							sb.Append (", ");
+						} else {
+							isFirst = false;
+						}
+						if (string.IsNullOrEmpty (p.CliType))
+							Console.WriteLine (p.ObjCType);
+						sb.Append (p.CliType);
+						sb.Append (" ");
+						sb.Append (p.Name);
+					}
+				}
+				sb.Append (")");
+				
+				type.Members.Add (new CodeSnippetTypeMember (sb.ToString ()));
+				return;
+			}
+			else if (provider.FileExtension == "pas") {
+				var m = CreateEventMethod (exportAtt, action);
+				m.UserData ["OxygenePartial"] = "YES";
+				m.UserData ["OxygeneEmpty"] = "YES";
+				type.Members.Add (m);
+				return;
+			}
+			
+			
+			var meth = CreateEventMethod (exportAtt, action);
+			
+			bool actionStubWriterCreated = false;
+			if (actionStubWriter == null) {
+				actionStubWriterCreated = true;
+				actionStubWriter = new StringWriter ();
+				actionStubWriter.WriteLine ("Action method stubs:");
+				actionStubWriter.WriteLine ();
+			}
+			try {
+				provider.GenerateCodeFromMember (meth, actionStubWriter, generatorOptions);
+				actionStubWriter.WriteLine ();
+			} catch {
+				//clear the header if generation failed
+				if (actionStubWriterCreated)
+					actionStubWriter = null;
+			}
+		}
+		
+		public static CodeTypeMember CreateEventMethod (CodeTypeReference exportAtt, IBAction action)
+		{
+			var meth = new CodeMemberMethod () {
+				Name = action.CliName ?? action.ObjCName,
+				ReturnType = new CodeTypeReference (typeof (void)),
+			};
+			foreach (var p in action.Parameters) {
+				meth.Parameters.Add (new CodeParameterDeclarationExpression () {
+					Name = p.Name,
+					Type = new CodeTypeReference (p.ObjCType)
+				});
+			}
+			AddAttribute (meth.CustomAttributes, exportAtt, action.GetObjcFullName ());
+			
+			return meth;
 		}
 	}
 }

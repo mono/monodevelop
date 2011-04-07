@@ -95,10 +95,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			dnp.FileRemovedFromProject += FileRemovedFromProject;
 			dnp.FileChangedInProject += FileChangedInProject;
 			dnp.NameChanged += ProjectNameChanged;
-			
-			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn += delegate {
-				DetectXcodeChanges ();
-			};
+			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn += AppRegainedFocus;
 		}
 		
 		void DisableSyncing ()
@@ -113,6 +110,12 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			dnp.FileRemovedFromProject -= FileRemovedFromProject;
 			dnp.FileChangedInProject -= FileChangedInProject;
 			dnp.NameChanged -= ProjectNameChanged;
+			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn -= AppRegainedFocus;
+		}
+
+		void AppRegainedFocus (object sender, EventArgs e)
+		{
+			DetectXcodeChanges ();
 		}
 		
 		void UpdateOutputDir ()
@@ -293,9 +296,40 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			foreach (var f in trackedFiles) {
 				var xcwrite = File.GetLastWriteTime (f.Key);
-				if (xcwrite > f.Value)
-					Console.WriteLine (f.Key);
+				if (xcwrite <= f.Value)
+					continue;
+				if (f.Key.EndsWith (".h")) {
+					SyncTypeFromXcode (f.Key);
+				}
 			}
+		}
+		
+		void SyncTypeFromXcode (FilePath hFile)
+		{
+			var parsed = NSObjectInfoService.ParseHeader (hFile);
+			
+			var pinfo = NSObjectInfoService.GetProjectInfo (dnp);
+			var objcType = pinfo.GetType (hFile.FileNameWithoutExtension);
+			if (objcType == null) {
+				Console.WriteLine ("Missing objc type {0}", hFile.FileNameWithoutExtension);
+				return;
+			}
+			if (parsed.ObjCName != objcType.ObjCName) {
+				Console.WriteLine ("Parsed type name {0} does not match original {1}", parsed.ObjCName, objcType.ObjCName);
+				return;
+			}
+			if (!objcType.IsUserType) {
+				Console.WriteLine ("Parsed type {0} is not a user type", objcType);
+				return;
+			}
+			
+			//FIXME: detect unresolved types
+			pinfo.ResolveTypes (parsed);
+			var provider = System.CodeDom.Compiler.CodeDomProvider.CreateProvider ("C#");
+			var options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
+			var ccu = parsed.GenerateDesignerClass (provider, options, objcType, wrapperName);
+			
+			//provider.GenerateCodeFromCompileUnit (ccu, Console.Out, options);
 		}
 		
 		#endregion

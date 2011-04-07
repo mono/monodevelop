@@ -89,6 +89,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return objcTypes.Values;
 		}
 		
+		public NSObjectTypeInfo GetType (string objcName)
+		{
+			NSObjectTypeInfo ret;
+			if (objcTypes.TryGetValue (objcName, out ret))
+				return ret;
+			return null;
+		}
+		
 		bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
 		{
 			if (cliTypes.TryGetValue (cliType, out resolved))
@@ -115,7 +123,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return false;
 		}
 		
-		void ResolveTypes (NSObjectTypeInfo type)
+		public void ResolveTypes (NSObjectTypeInfo type)
 		{
 			NSObjectTypeInfo resolved;
 			if (type.BaseObjCType == null && type.BaseCliType != null) {
