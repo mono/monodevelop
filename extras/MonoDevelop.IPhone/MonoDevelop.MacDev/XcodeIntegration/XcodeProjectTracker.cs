@@ -71,13 +71,17 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		public IAsyncOperation OpenDocument (FilePath xib)
 		{
+			//FIXME: show a UI and progress while we do the initial sync
 			EnableSyncing ();
 			UpdateTypes (true);
 			UpdateXcodeProject ();
 			
+			//FIXME: detect when the project's opened, so it will open the xib file in the project
 			var xcode = XcodeInterfaceBuilderDesktopApplication.XCODE_LOCATION;
 			MonoMac.AppKit.NSWorkspace.SharedWorkspace.OpenFile (outputDir.Combine (dnp.Name + ".xcodeproj"), xcode);
 			MonoMac.AppKit.NSWorkspace.SharedWorkspace.OpenFile (outputDir.Combine (xib.FileName), xcode);
+			
+			//FIXME: actually report progress of this operation
 			return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
 		}
 		
@@ -116,6 +120,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		void AppRegainedFocus (object sender, EventArgs e)
 		{
 			DetectXcodeChanges ();
+			
+			//FIXME: detect when the project's been closed in xcode, and disable syncing
 		}
 		
 		void UpdateOutputDir ()
@@ -151,21 +157,25 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		void FileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
+			//FIXME: do we need to disable syncing here?
 			if (syncing && e.Any (finf => IsPage (finf.ProjectFile)))
 				if (!dnp.Files.Any (IsPage))
 					DisableSyncing ();
 			
+			//FIXME: make this async
 			UpdateTypes (true);
 		}
 
 		void FileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
+			//FIXME: make this async
 			UpdateTypes (true);
 			UpdateXcodeProject ();
 		}
 
 		void FileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
+			//FIXME: make this async
 			UpdateTypes (true);
 			UpdateXcodeProject ();
 		}
@@ -175,6 +185,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			if (!xcodeProjectDirty && syncing && e.Any (finf => IsContent (finf.ProjectFile)))
 				xcodeProjectDirty = true;
 			
+			//FIXME: make this async
 			UpdateTypes (true);
 			UpdateXcodeProject ();
 		}
@@ -251,6 +262,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				File.Delete (impl);
 		}
 		
+		//FIXME: report errors
 		void UpdateXcodeProject ()
 		{
 			var projFile = outputDir.Combine (dnp.Name + ".xcodeproj", dnp.Name + ".pbxproj");
@@ -282,6 +294,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			xcp.Generate (outputDir);
 		}
 		
+		//FIXME: make this async so it doesn't block the UI
 		void DetectXcodeChanges ()
 		{
 			foreach (var f in trackedFiles.ToList ()) {
@@ -291,9 +304,11 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				if (f.Key.EndsWith (".h")) {
 					SyncTypeFromXcode (f.Key);
 				}
+				//TODO: copy changed xibs back into the project
 			}
 		}
 		
+		//FIXME: report errors
 		void SyncTypeFromXcode (FilePath hFile)
 		{
 			var parsed = NSObjectInfoService.ParseHeader (hFile);
@@ -313,9 +328,11 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				return;
 			}
 			
+			//FIXME: fix data loss when there are multiple designer types in one designer file, like MT templates
 			var designerFile = objcType.DefinedIn.FirstOrDefault (f =>
 				MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (f));
 			
+			//FIXME: add a designer file if there are any designer outlets and actions
 			if (designerFile == null)
 				return;
 			
@@ -348,6 +365,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				return;
 			disposed = true;
 			
+			//FIXME: close the project in Xcode
 			DisableSyncing ();
 		}
 	}
