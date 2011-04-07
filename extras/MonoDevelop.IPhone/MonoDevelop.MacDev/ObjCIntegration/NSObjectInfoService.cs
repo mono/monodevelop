@@ -219,14 +219,20 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					var split = def.Split (whitespaceChars, StringSplitOptions.RemoveEmptyEntries);
 					if (split.Length != 2)
 						continue;
-					type.Outlets.Add (new IBOutlet (split[1].TrimStart ('*'), null, split[0].TrimEnd ('*'), null));
+					string objcType = split[1].TrimStart ('*');
+					if (objcType == "id")
+						objcType = "NSObject";
+					type.Outlets.Add (new IBOutlet ((objcType), null, split[0].TrimEnd ('*'), null));
 				} else {
 					string[] split = def.Split (colonChar);
 					var action = new IBAction (split[0].Trim (), null);
 					string label = null;
 					for (int i = 1; i < split.Length; i++) {
 						var s = split[i].Split (splitActionParamsChars, StringSplitOptions.RemoveEmptyEntries);
-						var par = new IBActionParameter (label, s[1], s[0], null);
+						string objcType = s[0];
+						if (objcType == "id")
+							objcType = "NSObject";
+						var par = new IBActionParameter (label, s[1], objcType, null);
 						label = s.Length == 3? s[2] : null;
 						action.Parameters.Add (par);
 					}

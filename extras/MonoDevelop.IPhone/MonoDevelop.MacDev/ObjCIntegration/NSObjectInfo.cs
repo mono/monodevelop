@@ -83,13 +83,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				var baseType = (BaseIsModel || BaseObjCType == null) ? "NSObject" : BaseObjCType;
 				sw.WriteLine ("@interface {0} : {1} {{", ObjCName, baseType);
 				foreach (var outlet in Outlets) {
-					sw.WriteLine ("\t{0} *_{1};", outlet.ObjCType, outlet.ObjCName);
+					sw.WriteLine ("\t{0} *_{1};", AsId (outlet.ObjCType), outlet.ObjCName);
 				}
 				sw.WriteLine ("}");
 				sw.WriteLine ();
 				
 				foreach (var outlet in Outlets) {
-					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", outlet.ObjCType, outlet.ObjCName);
+					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", AsId (outlet.ObjCType), outlet.ObjCName);
 					sw.WriteLine ();
 				}
 				
@@ -133,6 +133,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				
 				sw.WriteLine ("@end");
 			}
+		}
+		
+		static string AsId (string objcType)
+		{
+			if (objcType == "NSObject")
+				return "id";
+			return objcType;
 		}
 		
 		static string modificationWarning =
