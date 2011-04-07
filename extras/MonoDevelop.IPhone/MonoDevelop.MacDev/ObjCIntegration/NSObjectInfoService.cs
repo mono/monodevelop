@@ -174,7 +174,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					if (string.IsNullOrEmpty (name))
 						name = prop.Name;
 					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.FullName);
-					if (prop.DeclaringType.CompilationUnit.FileName.FileNameWithoutExtension.EndsWith (".designer"))
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.DeclaringType.CompilationUnit.FileName))
 						ol.IsDesigner = true;
 					info.Outlets.Add (ol);
 					break;
@@ -199,7 +199,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							label = null;
 						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.ReturnType.FullName));
 					}
-					if (meth.DeclaringType.CompilationUnit.FileName.FileNameWithoutExtension.EndsWith (".designer"))
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.DeclaringType.CompilationUnit.FileName))
 						action.IsDesigner = true;
 					info.Actions.Add (action);
 					break;
