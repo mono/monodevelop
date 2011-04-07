@@ -176,10 +176,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public CodeCompileUnit GenerateDesignerClass (CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
 			NSObjectTypeInfo previousType, string wrapperName)
 		{
-			var registerAtt = new CodeTypeReference (wrapperName + ".Foundation.RegisterAttribute");
-			var connectAtt = new CodeTypeReference (wrapperName + ".Foundation.ConnectAttribute");
-			var exportAtt = new CodeTypeReference (wrapperName + ".Foundation.ExportAttribute");
-			
 			var existingOutlets = new Dictionary<string,IBOutlet> ();
 			foreach (var o in previousType.Outlets)
 				existingOutlets[o.ObjCName] = o;
@@ -187,6 +183,38 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			var existingActions = new Dictionary<string,IBAction> ();
 			foreach (var a in previousType.Actions)
 				existingActions[a.ObjCName] = a;
+			
+			List<IBAction> genActions = new List<IBAction> ();
+			foreach (var a in Actions) {
+				IBAction existing;
+				if (existingActions.TryGetValue (a.ObjCName, out existing)) {
+					if (!existing.IsDesigner)
+						continue;
+					//TODO: merge missing info from existing action
+				}
+				genActions.Add (a);
+			}
+			
+			List<IBOutlet> genOutlets = new List<IBOutlet> ();
+			foreach (var o in Outlets) {
+				IBOutlet existing;
+				if (existingOutlets.TryGetValue (o.ObjCName, out existing)) {
+					if (!existing.IsDesigner)
+						continue;
+					//TODO: merge missing info from existing outlet
+				}
+				genOutlets.Add (o);
+			}
+			
+			return GenerateCompileUnit (provider, generatorOptions, genOutlets, genActions, previousType, wrapperName);
+		}
+		
+		CodeCompileUnit GenerateCompileUnit (CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
+			List<IBOutlet> genOutlets, List<IBAction> genActions, NSObjectTypeInfo previousType, string wrapperName)
+		{
+			var registerAtt = new CodeTypeReference (wrapperName + ".Foundation.RegisterAttribute");
+			var connectAtt = new CodeTypeReference (wrapperName + ".Foundation.ConnectAttribute");
+			var exportAtt = new CodeTypeReference (wrapperName + ".Foundation.ExportAttribute");
 			
 			var ccu = new System.CodeDom.CodeCompileUnit ();
 			var cns = new System.CodeDom.CodeNamespace ();
@@ -206,25 +234,16 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
 			
 			StringWriter actionStubWriter = null;
-			foreach (var a in Actions) {
-				IBAction existing;
-				if (existingActions.TryGetValue (a.ObjCName, out existing))
-					if (existing.IsDesigner)
-						continue;
+			foreach (var a in genActions)
 				GenerateAction (exportAtt, ctd, a, provider, generatorOptions, ref actionStubWriter);
-			}
+			
 			if (actionStubWriter != null) {
 				ctd.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
 				actionStubWriter.Dispose ();
 			}
 			
-			foreach (var o in Outlets) {
-				IBOutlet existing;
-				if (existingOutlets.TryGetValue (o.ObjCName, out existing))
-					if (!existing.IsDesigner)
-						continue;
+			foreach (var o in genOutlets)
 				AddOutletProperty (connectAtt, ctd, o.CliName ?? o.ObjCName, new CodeTypeReference (o.CliType));
-			}
 			
 			return ccu;
 		}
