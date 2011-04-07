@@ -104,10 +104,6 @@
     <Reference Include="System.Core">
     </Reference>
     <Reference Include="Mono.Cairo" />
-    <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\build\bin\NRefactory.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

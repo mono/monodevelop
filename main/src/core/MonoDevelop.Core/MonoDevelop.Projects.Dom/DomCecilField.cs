@@ -33,16 +33,14 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomCecilField : MonoDevelop.Projects.Dom.DomField
 	{
-		FieldDefinition fieldDefinition;
-		
 		public FieldDefinition FieldDefinition {
-			get {
-				return fieldDefinition;
-			}
+			get;
+			private set;
 		}
 		
 		public DomCecilField (FieldDefinition fieldDefinition)
 		{
+			this.FieldDefinition = fieldDefinition;
 			base.name            = fieldDefinition.Name;
 			base.Modifiers       = DomCecilType.GetModifiers (fieldDefinition);
 			base.ReturnType      = DomCecilMethod.GetReturnType (fieldDefinition.FieldType);

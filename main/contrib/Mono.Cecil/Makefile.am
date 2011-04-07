@@ -1,6 +1,6 @@
 BINDIR=$(top_builddir)/build/bin
 
-all: $(CECIL) $(CECIL_MDB) $(CECIL_DECOMPILER)
+all: $(CECIL) $(CECIL_MDB)
 
 CECIL_DLL=Mono.Cecil.dll
 CECIL=$(BINDIR)/$(CECIL_DLL)
@@ -28,17 +28,6 @@ $(CECIL_MDB): $(CECIL_MDB_CSFILES) $(CECIL)
 	gmcs $(CECIL_MDB_CSFILES) /debug /target:library /keyfile:$(CECIL_SNK) /r:$(CECIL) /d:CECIL /d:NET_3_5 /out:$(CECIL_MDB)
 
 $(CECIL_MDB_DEBUG): $(CECIL_MDB)
-
-CECIL_DECOMPILER_DLL=Cecil.Decompiler.dll
-CECIL_DECOMPILER=$(BINDIR)/$(CECIL_DECOMPILER_DLL)
-CECIL_DECOMPILER_DEBUG=$(BINDIR)/$(CECIL_DECOMPILER_DLL).mdb
-CECIL_DECOMPILER_DIR=$(srcdir)/Cecil.Decompiler
-CECIL_DECOMPILER_CSFILES=$(CECIL_DECOMPILER_DIR)/*/*.cs
-CECIL_DECOMPILER_DIST= $(CECIL_DECOMPILER_CSFILES)
-
-$(CECIL_DECOMPILER): $(CECIL_DECOMPILER_CSFILES) $(CECIL)
-	mkdir -p $(BINDIR)
-	gmcs /debug /target:library /r:$(CECIL) /r:System /r:System.Core /r:System.Xml /out:$(CECIL_DECOMPILER) $(CECIL_DECOMPILER_CSFILES)
 
 ## Helpers for re-importing the latest source
 ## Can specify revision with SVN_REVISION environment variable and username with $USER

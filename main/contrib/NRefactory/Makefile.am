@@ -1,5 +1,5 @@
 	
-ASSEMBLY = $(top_builddir)/build/bin/NRefactory.dll
+ASSEMBLY = $(top_builddir)/build/bin/OldNRefactory.dll
   
 
 REFS =  \

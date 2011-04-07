@@ -310,7 +310,7 @@ FILES =  \
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources)
-	$(CSC) $(CSC_FLAGS) -define:NET35 -debug -out:$@ -target:library $(REFS) $(build_sources)
+	$(CSC) $(CSC_FLAGS) "-define:NET35;FULL_AST;BOOTSTRAP_BASIC" -debug -out:$@ -target:library $(REFS) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 

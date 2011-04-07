@@ -10,6 +10,7 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -20,7 +21,6 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:../../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \

@@ -60,10 +60,6 @@
     <Reference Include="System.Core">
     </Reference>
     <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\build\bin\NRefactory.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -98,6 +94,10 @@
     <ProjectReference Include="..\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
