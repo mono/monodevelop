@@ -284,7 +284,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		void DetectXcodeChanges ()
 		{
-			foreach (var f in trackedFiles) {
+			foreach (var f in trackedFiles.ToList ()) {
 				var xcwrite = File.GetLastWriteTime (f.Key);
 				if (xcwrite <= f.Value)
 					continue;
@@ -313,13 +313,31 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				return;
 			}
 			
+			var designerFile = objcType.DefinedIn.FirstOrDefault (f =>
+				MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (f));
+			
+			if (designerFile == null)
+				return;
+			
 			//FIXME: detect unresolved types
 			pinfo.ResolveTypes (parsed);
 			var provider = System.CodeDom.Compiler.CodeDomProvider.CreateProvider ("C#");
 			var options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
 			var ccu = parsed.GenerateDesignerClass (provider, options, objcType, wrapperName);
 			
-			//provider.GenerateCodeFromCompileUnit (ccu, Console.Out, options);
+			try {
+				var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
+					new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
+				writer.Write (ccu, designerFile);
+				//FIXME: coalesce the file writes into one operation
+				//FIXME: don't regen h file after resultant change events 
+				writer.WriteOpenFiles ();
+			} catch (Exception ex) {
+				//FIXME: report in UI
+				LoggingService.LogError (string.Format ("Error generating code for file '{0}'", designerFile), ex);
+			}
+			
+			trackedFiles[hFile] = File.GetLastWriteTime (hFile);
 		}
 		
 		#endregion
