@@ -113,7 +113,7 @@ namespace MonoDroid
 				monoDroidBinDir = programFilesX86 + @"\MSBuild\Novell";
 
 				// This will probably never be used on Windows
-				var fxDir = programFilesX86 + @"\Reference Assemblies\Microsoft\Framework\MonoDroid\v1.0";
+				var fxDir = programFilesX86 + @"\Reference Assemblies\Microsoft\Framework\MonoAndroid\v1.0";
 				
 				if (File.Exists (fxDir + @"\mscorlib.dll"))
 					monoDroidFrameworkDir = fxDir;

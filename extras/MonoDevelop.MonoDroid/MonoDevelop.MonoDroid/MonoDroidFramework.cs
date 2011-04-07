@@ -128,7 +128,7 @@ namespace MonoDevelop.MonoDroid
 		/// </summary>
 		public static bool IsInstalled {
 			get {
-				return !MonoDroidToolsDir.IsNullOrEmpty;
+				return !MonoDroidFrameworkDir.IsNullOrEmpty;
 			}
 		}
 		
