@@ -63,6 +63,15 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public string[] DefinedIn { get; internal set; }
 		
+		public string GetDesignerFile ()
+		{
+			if (DefinedIn != null)
+				foreach (var d in DefinedIn)
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (d))
+						return d;
+			return null;
+		}
+		
 		public HashSet<string> UserTypeReferences { get; private set; }
 		
 		public void GenerateObjcType (string directory)
@@ -173,9 +182,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}	
 		}
 		
-		public CodeCompileUnit GenerateDesignerClass (CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
-			NSObjectTypeInfo previousType, string wrapperName)
+		/// <summary>
+		/// Merges CLI info from previous version of the type into the parsed objc-type.
+		/// </summary>
+		public void MergeCliInfo (NSObjectTypeInfo previousType)
 		{
+			CliName = previousType.CliName;
+			DefinedIn = previousType.DefinedIn;
+			IsModel = previousType.IsModel;
+			BaseIsModel = previousType.BaseIsModel;
+			IsUserType = previousType.IsUserType;
+			
 			var existingOutlets = new Dictionary<string,IBOutlet> ();
 			foreach (var o in previousType.Outlets)
 				existingOutlets[o.ObjCName] = o;
@@ -184,65 +201,65 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			foreach (var a in previousType.Actions)
 				existingActions[a.ObjCName] = a;
 			
-			List<IBAction> genActions = new List<IBAction> ();
 			foreach (var a in Actions) {
 				IBAction existing;
 				if (existingActions.TryGetValue (a.ObjCName, out existing)) {
+					a.CliName = existing.CliName;
 					if (!existing.IsDesigner)
 						continue;
-					//TODO: merge missing info from existing action
+				} else {
+					a.CliName = a.ObjCName;
 				}
-				genActions.Add (a);
+				a.IsDesigner = true;
 			}
 			
-			List<IBOutlet> genOutlets = new List<IBOutlet> ();
 			foreach (var o in Outlets) {
 				IBOutlet existing;
 				if (existingOutlets.TryGetValue (o.ObjCName, out existing)) {
+					o.CliName = existing.CliName;
 					if (!existing.IsDesigner)
 						continue;
-					//TODO: merge missing info from existing outlet
+				} else {
+					o.CliName = o.ObjCName;
 				}
-				genOutlets.Add (o);
+				o.IsDesigner = true;
 			}
-			
-			return GenerateCompileUnit (provider, generatorOptions, genOutlets, genActions, previousType, wrapperName);
 		}
 		
-		CodeCompileUnit GenerateCompileUnit (CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
-			List<IBOutlet> genOutlets, List<IBAction> genActions, NSObjectTypeInfo previousType, string wrapperName)
+		public void GenerateCodeTypeDeclaration (CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
+			string wrapperName, out CodeTypeDeclaration ctd, out string ns)
 		{
 			var registerAtt = new CodeTypeReference (wrapperName + ".Foundation.RegisterAttribute");
 			var connectAtt = new CodeTypeReference (wrapperName + ".Foundation.ConnectAttribute");
 			var exportAtt = new CodeTypeReference (wrapperName + ".Foundation.ExportAttribute");
 			
-			var ccu = new System.CodeDom.CodeCompileUnit ();
-			var cns = new System.CodeDom.CodeNamespace ();
-			ccu.Namespaces.Add (cns);
-			var ctd = new System.CodeDom.CodeTypeDeclaration ();
-			cns.Types.Add (ctd);
+			ctd = new System.CodeDom.CodeTypeDeclaration () {
+				IsPartial = true,
+			};
 			
 			AddWarningDisablePragmas (ctd, provider);
 			
-			var dotIdx = previousType.CliName.LastIndexOf ('.');
+			var dotIdx = CliName.LastIndexOf ('.');
 			if (dotIdx > 0) {
-				cns.Name = previousType.CliName.Substring (0, dotIdx);
-				ctd.Name = previousType.CliName.Substring (dotIdx + 1);
+				ns = CliName.Substring (0, dotIdx);
+				ctd.Name = CliName.Substring (dotIdx + 1);
 			} else {
-				ctd.Name = previousType.CliName;
+				ctd.Name = CliName;
+				ns = null;
 			}
 			AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
 			
-			foreach (var a in genActions)
-				GenerateAction (exportAtt, ctd, a, provider, generatorOptions);
+			foreach (var a in Actions)
+				if (a.IsDesigner)
+					GenerateAction (exportAtt, ctd, a, provider, generatorOptions);
 			
-			foreach (var o in genOutlets)
-				AddOutletProperty (connectAtt, ctd, o.CliName ?? o.ObjCName, new CodeTypeReference (o.CliType));
-			
-			return ccu;
+			foreach (var o in Outlets)
+				if (o.IsDesigner)
+					AddOutletProperty (connectAtt, ctd, o.CliName, new CodeTypeReference (o.CliType));
 		}
 		
-		static void AddOutletProperty (CodeTypeReference connectAtt, CodeTypeDeclaration type, string name, CodeTypeReference typeRef)
+		static void AddOutletProperty (CodeTypeReference connectAtt, CodeTypeDeclaration type, string name,
+			CodeTypeReference typeRef)
 		{
 			var fieldName = "__impl_" + name;
 			var field = new CodeMemberField (typeRef, fieldName);
@@ -293,7 +310,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				
 				var sb = new System.Text.StringBuilder ();
 				sb.Append ("partial void ");
-				sb.Append (provider.CreateEscapedIdentifier (action.CliName ?? action.ObjCName));
+				sb.Append (provider.CreateEscapedIdentifier (action.CliName));
 				sb.Append (" (");
 				if (action.Parameters != null) {
 					bool isFirst = true;
@@ -303,8 +320,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						} else {
 							isFirst = false;
 						}
-						if (string.IsNullOrEmpty (p.CliType))
-							Console.WriteLine (p.ObjCType);
 						sb.Append (p.CliType);
 						sb.Append (" ");
 						sb.Append (provider.CreateEscapedIdentifier (p.Name));
@@ -328,7 +343,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public static CodeTypeMember CreateEventMethod (CodeTypeReference exportAtt, IBAction action)
 		{
 			var meth = new CodeMemberMethod () {
-				Name = action.CliName ?? action.ObjCName,
+				Name = action.CliName,
 				ReturnType = new CodeTypeReference (typeof (void)),
 			};
 			foreach (var p in action.Parameters) {

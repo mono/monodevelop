@@ -294,67 +294,131 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			xcp.Generate (outputDir);
 		}
 		
+		#endregion
+		
+		#region Inbound syncing
+		
 		//FIXME: make this async so it doesn't block the UI
 		void DetectXcodeChanges ()
 		{
+			NSObjectProjectInfo pinfo = null;
+			var typeSyncJobs = new List<SyncObjcBackJob> ();
+			
 			foreach (var f in trackedFiles.ToList ()) {
 				var xcwrite = File.GetLastWriteTime (f.Key);
 				if (xcwrite <= f.Value)
 					continue;
 				if (f.Key.EndsWith (".h")) {
-					SyncTypeFromXcode (f.Key);
+					var job = ReadTypeFromXcode (f.Key, ref pinfo);
+					if (job != null)
+						typeSyncJobs.Add (job);
 				}
 				//TODO: copy changed xibs back into the project
+			}
+			
+			if (typeSyncJobs.Count > 0) {
+				UpdateCliTypes (pinfo, typeSyncJobs);
 			}
 		}
 		
 		//FIXME: report errors
-		void SyncTypeFromXcode (FilePath hFile)
+		SyncObjcBackJob ReadTypeFromXcode (FilePath hFile, ref NSObjectProjectInfo pinfo)
 		{
 			var parsed = NSObjectInfoService.ParseHeader (hFile);
 			
-			var pinfo = NSObjectInfoService.GetProjectInfo (dnp);
+			if (pinfo == null)
+				pinfo = NSObjectInfoService.GetProjectInfo (dnp);
+			
 			var objcType = pinfo.GetType (hFile.FileNameWithoutExtension);
 			if (objcType == null) {
 				Console.WriteLine ("Missing objc type {0}", hFile.FileNameWithoutExtension);
-				return;
+				return null;
 			}
 			if (parsed.ObjCName != objcType.ObjCName) {
 				Console.WriteLine ("Parsed type name {0} does not match original {1}", parsed.ObjCName, objcType.ObjCName);
-				return;
+				return null;
 			}
 			if (!objcType.IsUserType) {
 				Console.WriteLine ("Parsed type {0} is not a user type", objcType);
-				return;
+				return null;
 			}
 			
 			//FIXME: fix data loss when there are multiple designer types in one designer file, like MT templates
-			var designerFile = objcType.DefinedIn.FirstOrDefault (f =>
-				MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (f));
+			var designerFile = objcType.GetDesignerFile ();
 			
 			//FIXME: add a designer file if there are any designer outlets and actions
 			if (designerFile == null)
-				return;
+				return null;
 			
 			//FIXME: detect unresolved types
+			parsed.MergeCliInfo (objcType);
 			pinfo.ResolveTypes (parsed);
+			
+			return new SyncObjcBackJob () {
+				HFile = hFile,
+				DesignerFile = designerFile,
+				Type = parsed,
+			};
+		}
+		
+		//FIXME: error handling
+		void UpdateCliTypes (NSObjectProjectInfo pinfo, List<SyncObjcBackJob> typeSyncJobs)
+		{
 			var provider = System.CodeDom.Compiler.CodeDomProvider.CreateProvider ("C#");
 			var options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
-			var ccu = parsed.GenerateDesignerClass (provider, options, objcType, wrapperName);
+			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
+				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			
-			try {
-				var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
-					new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
-				writer.Write (ccu, designerFile);
-				//FIXME: coalesce the file writes into one operation
-				//FIXME: don't regen h file after resultant change events 
-				writer.WriteOpenFiles ();
-			} catch (Exception ex) {
-				//FIXME: report in UI
-				LoggingService.LogError (string.Format ("Error generating code for file '{0}'", designerFile), ex);
+			//group all the types by designer file
+			var designerFile = new Dictionary<string, List<NSObjectTypeInfo>> ();
+			foreach (var job in typeSyncJobs) {
+				List<NSObjectTypeInfo> types;
+				if (!designerFile.TryGetValue (job.DesignerFile, out types))
+					designerFile[job.DesignerFile] = types = new List<NSObjectTypeInfo> ();
+				types.Add (job.Type);
 			}
 			
-			trackedFiles[hFile] = File.GetLastWriteTime (hFile);
+			//add in other designer types that exist in the designer files
+			foreach (var ut in pinfo.GetTypes ()) {
+				if (!ut.IsUserType)
+					continue;
+				var df = ut.GetDesignerFile ();
+				List<NSObjectTypeInfo> types;
+				if (df != null && designerFile.TryGetValue (df, out types))
+					if (!types.Any (t => t.ObjCName == ut.ObjCName))
+						types.Add (ut);
+			}
+			
+			foreach (var df in designerFile) {
+				var ccu = new System.CodeDom.CodeCompileUnit ();
+				var namespaces = new Dictionary<string, System.CodeDom.CodeNamespace> ();
+				foreach (var t in df.Value) {
+					System.CodeDom.CodeTypeDeclaration type;
+					string nsName;
+					System.CodeDom.CodeNamespace ns;
+					t.GenerateCodeTypeDeclaration (provider, options, wrapperName, out type, out nsName);
+					if (!namespaces.TryGetValue (nsName, out ns)) {
+						namespaces[nsName] = ns = new System.CodeDom.CodeNamespace (nsName);
+						ccu.Namespaces.Add (ns);
+					}
+					ns.Types.Add (type);
+				}
+				writer.Write (ccu, df.Key);
+			}
+			
+			//FIXME: don't regen h files after resultant change events 
+			writer.WriteOpenFiles ();
+			
+			foreach (var job in typeSyncJobs) {
+				trackedFiles[job.HFile] = File.GetLastWriteTime (job.HFile);
+			}
+		}
+		
+		class SyncObjcBackJob
+		{
+			public string HFile;
+			public string DesignerFile;
+			public NSObjectTypeInfo Type;
 		}
 		
 		#endregion

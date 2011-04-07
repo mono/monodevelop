@@ -39,7 +39,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 		
 		public string ObjCName { get; private set; }
-		public string CliName { get; private set; }
+		public string CliName { get; internal set; }
 		public List<IBActionParameter> Parameters { get; private set; }
 		public bool IsDesigner { get; internal set; }
 		
