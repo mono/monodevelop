@@ -233,14 +233,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 			AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
 			
-			StringWriter actionStubWriter = null;
 			foreach (var a in genActions)
-				GenerateAction (exportAtt, ctd, a, provider, generatorOptions, ref actionStubWriter);
-			
-			if (actionStubWriter != null) {
-				ctd.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
-				actionStubWriter.Dispose ();
-			}
+				GenerateAction (exportAtt, ctd, a, provider, generatorOptions);
 			
 			foreach (var o in genOutlets)
 				AddOutletProperty (connectAtt, ctd, o.CliName ?? o.ObjCName, new CodeTypeReference (o.CliType));
@@ -292,14 +286,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 
 		static void GenerateAction (CodeTypeReference exportAtt, CodeTypeDeclaration type, IBAction action, 
-			CodeDomProvider provider, CodeGeneratorOptions generatorOptions, ref StringWriter actionStubWriter)
+			CodeDomProvider provider, CodeGeneratorOptions generatorOptions)
 		{
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				type.Members.Add (new CodeSnippetTypeMember ("[" + exportAtt.BaseType + "(\"" + action.GetObjcFullName ()  + "\")]"));
 				
 				var sb = new System.Text.StringBuilder ();
 				sb.Append ("partial void ");
-				sb.Append (action.CliName ?? action.ObjCName);
+				sb.Append (provider.CreateEscapedIdentifier (action.CliName ?? action.ObjCName));
 				sb.Append (" (");
 				if (action.Parameters != null) {
 					bool isFirst = true;
@@ -313,39 +307,21 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							Console.WriteLine (p.ObjCType);
 						sb.Append (p.CliType);
 						sb.Append (" ");
-						sb.Append (p.Name);
+						sb.Append (provider.CreateEscapedIdentifier (p.Name));
 					}
 				}
-				sb.Append (")");
+				sb.Append (");");
 				
 				type.Members.Add (new CodeSnippetTypeMember (sb.ToString ()));
 				return;
 			}
-			else if (provider.FileExtension == "pas") {
-				var m = CreateEventMethod (exportAtt, action);
+			
+			var m = CreateEventMethod (exportAtt, action);
+			type.Members.Add (m);
+			
+			if (provider.FileExtension == "pas") {
 				m.UserData ["OxygenePartial"] = "YES";
 				m.UserData ["OxygeneEmpty"] = "YES";
-				type.Members.Add (m);
-				return;
-			}
-			
-			
-			var meth = CreateEventMethod (exportAtt, action);
-			
-			bool actionStubWriterCreated = false;
-			if (actionStubWriter == null) {
-				actionStubWriterCreated = true;
-				actionStubWriter = new StringWriter ();
-				actionStubWriter.WriteLine ("Action method stubs:");
-				actionStubWriter.WriteLine ();
-			}
-			try {
-				provider.GenerateCodeFromMember (meth, actionStubWriter, generatorOptions);
-				actionStubWriter.WriteLine ();
-			} catch {
-				//clear the header if generation failed
-				if (actionStubWriterCreated)
-					actionStubWriter = null;
 			}
 		}
 		
