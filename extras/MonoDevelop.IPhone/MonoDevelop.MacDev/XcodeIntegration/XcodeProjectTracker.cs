@@ -155,23 +155,18 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				if (!dnp.Files.Any (IsPage))
 					DisableSyncing ();
 			
-			if (syncing)
-				UpdateTypes (true);
+			UpdateTypes (true);
 		}
 
 		void FileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
-			if (syncing)
-				UpdateTypes (true);
-			
+			UpdateTypes (true);
 			UpdateXcodeProject ();
 		}
 
 		void FileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
-			if (syncing)
-				UpdateTypes (true);
-			
+			UpdateTypes (true);
 			UpdateXcodeProject ();
 		}
 
@@ -180,9 +175,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			if (!xcodeProjectDirty && syncing && e.Any (finf => IsContent (finf.ProjectFile)))
 				xcodeProjectDirty = true;
 			
-			if (syncing)
-				UpdateTypes (true);
-			
+			UpdateTypes (true);
 			UpdateXcodeProject ();
 		}
 		
@@ -260,9 +253,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		void UpdateXcodeProject ()
 		{
-			if (!syncing)
-				return;
-			
 			var projFile = outputDir.Combine (dnp.Name + ".xcodeproj", dnp.Name + ".pbxproj");
 			if (!xcodeProjectDirty && File.Exists (projFile))
 				return;
