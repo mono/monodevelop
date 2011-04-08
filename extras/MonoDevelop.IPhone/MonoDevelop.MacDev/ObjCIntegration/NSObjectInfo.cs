@@ -237,7 +237,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				IsPartial = true,
 			};
 			
-			AddWarningDisablePragmas (ctd, provider);
+			if (Outlets.Any (o => o.IsDesigner) || Actions.Any (a => a.IsDesigner))
+				AddWarningDisablePragmas (ctd, provider);
 			
 			var dotIdx = CliName.LastIndexOf ('.');
 			if (dotIdx > 0) {
