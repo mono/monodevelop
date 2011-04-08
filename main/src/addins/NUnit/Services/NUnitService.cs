@@ -340,7 +340,7 @@ namespace MonoDevelop.NUnit
 			UnitTestGroup group = test as UnitTestGroup;
 			if (group == null) 
 				return;
-			foreach (UnitTest t in group.Tests)
+			foreach (UnitTest t in new List<UnitTest> (group.Tests))
 				ResetResult (t);
 		}
 		
