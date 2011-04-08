@@ -87,7 +87,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return true;
+			return false;
 		}
 	}
 }
