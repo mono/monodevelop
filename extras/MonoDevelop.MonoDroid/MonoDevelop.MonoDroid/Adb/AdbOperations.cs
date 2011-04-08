@@ -292,7 +292,7 @@ namespace MonoDevelop.MonoDroid
 		// The first line is the header, so we ignore it.
 		// The information we are looking are is contained in the members:
 		// 1 - Process ID
-		// 8 - Package name
+		// 8 - Package name (can be an empty string in some devices)
 		static int ParseResponse (string packageName, string response)
 		{
 			using (var sr = new StringReader (response)) {
@@ -307,11 +307,12 @@ namespace MonoDevelop.MonoDroid
 						continue;
 
 					string [] stats = line.Split (space, StringSplitOptions.RemoveEmptyEntries);
-					if (stats.Length < 9)
+					if (stats.Length < 8)
 						throw new Exception ("'ps' output not recognized: '" + response + "'");
 
-					// Some devices have *system* processes with names containing spaces within. Ignore them.
-					if (stats.Length > 9)
+					// Some devices have *system* processes either with names containing spaces within,
+					// or nameless. Ignore them.
+					if (stats.Length != 9)
 						continue;
 
 					if (stats [8].Trim () == packageName)
