@@ -97,6 +97,12 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return null;
 		}
 		
+		internal void InsertUpdatedType (NSObjectTypeInfo type)
+		{
+			objcTypes[type.ObjCName] = type;
+			cliTypes[type.CliName] = type;
+		}
+		
 		bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
 		{
 			if (cliTypes.TryGetValue (cliType, out resolved))

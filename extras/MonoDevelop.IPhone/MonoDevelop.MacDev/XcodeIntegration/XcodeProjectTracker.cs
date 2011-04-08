@@ -52,6 +52,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		bool syncing;
 		bool disposed;
 		
+		bool updatingProjectFiles;
+		
 		FilePath outputDir;
 		
 		static bool? trackerEnabled;
@@ -175,6 +177,9 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		void FileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
+			if (updatingProjectFiles)
+				return;
+			
 			//FIXME: make this async
 			UpdateTypes (true);
 			UpdateXcodeProject ();
@@ -389,29 +394,42 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 						types.Add (ut);
 			}
 			
-			foreach (var df in designerFile) {
-				var ccu = new System.CodeDom.CodeCompileUnit ();
-				var namespaces = new Dictionary<string, System.CodeDom.CodeNamespace> ();
-				foreach (var t in df.Value) {
-					System.CodeDom.CodeTypeDeclaration type;
-					string nsName;
-					System.CodeDom.CodeNamespace ns;
-					t.GenerateCodeTypeDeclaration (provider, options, wrapperName, out type, out nsName);
-					if (!namespaces.TryGetValue (nsName, out ns)) {
-						namespaces[nsName] = ns = new System.CodeDom.CodeNamespace (nsName);
-						ccu.Namespaces.Add (ns);
-					}
-					ns.Types.Add (type);
+			updatingProjectFiles = true;
+			
+			try {
+				foreach (var df in designerFile) {
+					var ccu = GenerateCompileUnit (provider, options, df.Key, df.Value);
+					writer.Write (ccu, df.Key);
 				}
-				writer.Write (ccu, df.Key);
+				writer.WriteOpenFiles ();
+				
+				foreach (var job in typeSyncJobs) {
+					pinfo.InsertUpdatedType (job.Type);
+					trackedFiles[job.HFile] = File.GetLastWriteTime (job.HFile);
+				}
+				
+			} finally {
+				updatingProjectFiles = false;
 			}
-			
-			//FIXME: don't regen h files after resultant change events 
-			writer.WriteOpenFiles ();
-			
-			foreach (var job in typeSyncJobs) {
-				trackedFiles[job.HFile] = File.GetLastWriteTime (job.HFile);
+		}
+		
+		System.CodeDom.CodeCompileUnit GenerateCompileUnit (System.CodeDom.Compiler.CodeDomProvider provider,
+			System.CodeDom.Compiler.CodeGeneratorOptions options, string file, List<NSObjectTypeInfo> types)
+		{
+			var ccu = new System.CodeDom.CodeCompileUnit ();
+			var namespaces = new Dictionary<string, System.CodeDom.CodeNamespace> ();
+			foreach (var t in types) {
+				System.CodeDom.CodeTypeDeclaration type;
+				string nsName;
+				System.CodeDom.CodeNamespace ns;
+				t.GenerateCodeTypeDeclaration (provider, options, wrapperName, out type, out nsName);
+				if (!namespaces.TryGetValue (nsName, out ns)) {
+					namespaces[nsName] = ns = new System.CodeDom.CodeNamespace (nsName);
+					ccu.Namespaces.Add (ns);
+				}
+				ns.Types.Add (type);
 			}
+			return ccu;
 		}
 		
 		class SyncObjcBackJob
