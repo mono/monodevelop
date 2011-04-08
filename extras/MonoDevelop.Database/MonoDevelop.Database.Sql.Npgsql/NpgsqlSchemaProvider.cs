@@ -569,7 +569,7 @@ using Npgsql;
 								WHERE 
 									relname='{0}'
 									AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname='{1}'))
-					ORDER BY 1;, table.Name, table.SchemaName"))) {
+					ORDER BY 1;", table.Name, table.SchemaName))) {
 					try {
 						using (IDataReader r = command.ExecuteReader()) {
 							while (r.Read ()) {	
