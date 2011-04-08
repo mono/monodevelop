@@ -39,7 +39,23 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 		
 		public string ObjCName { get; private set; }
-		public string CliName { get; private set; }
+		public string CliName { get; internal set; }
 		public List<IBActionParameter> Parameters { get; private set; }
+		public bool IsDesigner { get; internal set; }
+		
+		public string GetObjcFullName ()
+		{
+			if (Parameters == null || Parameters.Count == 0)
+				return ObjCName;
+			
+			var sb = new System.Text.StringBuilder ();
+			sb.Append (ObjCName);
+			foreach (var p in Parameters) {
+				if (p.Label != null)
+					sb.Append (p.Label);
+				sb.Append (":");
+			}
+			return sb.ToString ();
+		}
 	}
 }

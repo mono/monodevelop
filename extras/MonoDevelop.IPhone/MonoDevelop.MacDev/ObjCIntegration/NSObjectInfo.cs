@@ -27,6 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.IO;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
@@ -60,6 +63,15 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public string[] DefinedIn { get; internal set; }
 		
+		public string GetDesignerFile ()
+		{
+			if (DefinedIn != null)
+				foreach (var d in DefinedIn)
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (d))
+						return d;
+			return null;
+		}
+		
 		public HashSet<string> UserTypeReferences { get; private set; }
 		
 		public void GenerateObjcType (string directory)
@@ -83,13 +95,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				var baseType = (BaseIsModel || BaseObjCType == null) ? "NSObject" : BaseObjCType;
 				sw.WriteLine ("@interface {0} : {1} {{", ObjCName, baseType);
 				foreach (var outlet in Outlets) {
-					sw.WriteLine ("\t{0} *_{1};", outlet.ObjCType, outlet.ObjCName);
+					sw.WriteLine ("\t{0} *_{1};", AsId (outlet.ObjCType), outlet.ObjCName);
 				}
 				sw.WriteLine ("}");
 				sw.WriteLine ();
 				
 				foreach (var outlet in Outlets) {
-					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", outlet.ObjCType, outlet.ObjCName);
+					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", AsId (outlet.ObjCType), outlet.ObjCName);
 					sw.WriteLine ();
 				}
 				
@@ -135,6 +147,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 		}
 		
+		static string AsId (string objcType)
+		{
+			if (objcType == "NSObject")
+				return "id";
+			return objcType;
+		}
+		
 		static string modificationWarning =
 			"// WARNING\n" +
 			"// This file has been generated automatically by MonoDevelop to\n" +
@@ -161,6 +180,182 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					writer.Write (" {0}:({1}){2}", param.Label, paramType, param.Name);
 				}
 			}	
+		}
+		
+		/// <summary>
+		/// Merges CLI info from previous version of the type into the parsed objc-type.
+		/// </summary>
+		public void MergeCliInfo (NSObjectTypeInfo previousType)
+		{
+			CliName = previousType.CliName;
+			DefinedIn = previousType.DefinedIn;
+			IsModel = previousType.IsModel;
+			BaseIsModel = previousType.BaseIsModel;
+			IsUserType = previousType.IsUserType;
+			
+			var existingOutlets = new Dictionary<string,IBOutlet> ();
+			foreach (var o in previousType.Outlets)
+				existingOutlets[o.ObjCName] = o;
+			
+			var existingActions = new Dictionary<string,IBAction> ();
+			foreach (var a in previousType.Actions)
+				existingActions[a.ObjCName] = a;
+			
+			foreach (var a in Actions) {
+				IBAction existing;
+				if (existingActions.TryGetValue (a.ObjCName, out existing)) {
+					a.CliName = existing.CliName;
+					if (!existing.IsDesigner)
+						continue;
+				} else {
+					a.CliName = a.ObjCName;
+				}
+				a.IsDesigner = true;
+			}
+			
+			foreach (var o in Outlets) {
+				IBOutlet existing;
+				if (existingOutlets.TryGetValue (o.ObjCName, out existing)) {
+					o.CliName = existing.CliName;
+					if (!existing.IsDesigner)
+						continue;
+				} else {
+					o.CliName = o.ObjCName;
+				}
+				o.IsDesigner = true;
+			}
+		}
+		
+		public void GenerateCodeTypeDeclaration (CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
+			string wrapperName, out CodeTypeDeclaration ctd, out string ns)
+		{
+			var registerAtt = new CodeTypeReference (wrapperName + ".Foundation.RegisterAttribute");
+			var connectAtt = new CodeTypeReference (wrapperName + ".Foundation.ConnectAttribute");
+			var exportAtt = new CodeTypeReference (wrapperName + ".Foundation.ExportAttribute");
+			
+			ctd = new System.CodeDom.CodeTypeDeclaration () {
+				IsPartial = true,
+			};
+			
+			if (Outlets.Any (o => o.IsDesigner) || Actions.Any (a => a.IsDesigner))
+				AddWarningDisablePragmas (ctd, provider);
+			
+			var dotIdx = CliName.LastIndexOf ('.');
+			if (dotIdx > 0) {
+				ns = CliName.Substring (0, dotIdx);
+				ctd.Name = CliName.Substring (dotIdx + 1);
+			} else {
+				ctd.Name = CliName;
+				ns = null;
+			}
+			AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
+			
+			foreach (var a in Actions)
+				if (a.IsDesigner)
+					GenerateAction (exportAtt, ctd, a, provider, generatorOptions);
+			
+			foreach (var o in Outlets)
+				if (o.IsDesigner)
+					AddOutletProperty (connectAtt, ctd, o.CliName, new CodeTypeReference (o.CliType));
+		}
+		
+		static void AddOutletProperty (CodeTypeReference connectAtt, CodeTypeDeclaration type, string name,
+			CodeTypeReference typeRef)
+		{
+			var fieldName = "__impl_" + name;
+			var field = new CodeMemberField (typeRef, fieldName);
+			
+			var prop = new CodeMemberProperty () {
+				Name = name,
+				Type = typeRef
+			};
+			AddAttribute (prop.CustomAttributes, connectAtt, name);
+			
+			var setValue = new CodePropertySetValueReferenceExpression ();
+			var thisRef = new CodeThisReferenceExpression ();
+			var fieldRef = new CodeFieldReferenceExpression (thisRef, fieldName);
+			var setNativeRef = new CodeMethodReferenceExpression (thisRef, "SetNativeField");
+			var getNativeRef = new CodeMethodReferenceExpression (thisRef, "GetNativeField");
+			var namePrimitive = new CodePrimitiveExpression (name);
+			var invokeGetNative = new CodeMethodInvokeExpression (getNativeRef, namePrimitive);
+			
+			prop.SetStatements.Add (new CodeAssignStatement (fieldRef, setValue));
+			prop.SetStatements.Add (new CodeMethodInvokeExpression (setNativeRef, namePrimitive, setValue));
+			
+			prop.GetStatements.Add (new CodeAssignStatement (fieldRef, new CodeCastExpression (typeRef, invokeGetNative)));
+			prop.GetStatements.Add (new CodeMethodReturnStatement (fieldRef));
+			
+			prop.Attributes = field.Attributes = (prop.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+			
+			type.Members.Add (prop);
+			type.Members.Add (field);
+		}
+		
+		static void AddAttribute (CodeAttributeDeclarationCollection atts, CodeTypeReference type, string val)
+		{
+			atts.Add (new CodeAttributeDeclaration (type, new CodeAttributeArgument (new CodePrimitiveExpression (val))));
+		}
+		
+		static void AddWarningDisablePragmas (CodeTypeDeclaration type, CodeDomProvider provider)
+		{
+			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+				type.Members.Add (new CodeSnippetTypeMember ("#pragma warning disable 0169")); // unused member
+			}
+		}
+
+		static void GenerateAction (CodeTypeReference exportAtt, CodeTypeDeclaration type, IBAction action, 
+			CodeDomProvider provider, CodeGeneratorOptions generatorOptions)
+		{
+			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+				type.Members.Add (new CodeSnippetTypeMember ("[" + exportAtt.BaseType + "(\"" + action.GetObjcFullName ()  + "\")]"));
+				
+				var sb = new System.Text.StringBuilder ();
+				sb.Append ("partial void ");
+				sb.Append (provider.CreateEscapedIdentifier (action.CliName));
+				sb.Append (" (");
+				if (action.Parameters != null) {
+					bool isFirst = true;
+					foreach (var p in action.Parameters) {
+						if (!isFirst) {
+							sb.Append (", ");
+						} else {
+							isFirst = false;
+						}
+						sb.Append (p.CliType);
+						sb.Append (" ");
+						sb.Append (provider.CreateEscapedIdentifier (p.Name));
+					}
+				}
+				sb.Append (");");
+				
+				type.Members.Add (new CodeSnippetTypeMember (sb.ToString ()));
+				return;
+			}
+			
+			var m = CreateEventMethod (exportAtt, action);
+			type.Members.Add (m);
+			
+			if (provider.FileExtension == "pas") {
+				m.UserData ["OxygenePartial"] = "YES";
+				m.UserData ["OxygeneEmpty"] = "YES";
+			}
+		}
+		
+		public static CodeTypeMember CreateEventMethod (CodeTypeReference exportAtt, IBAction action)
+		{
+			var meth = new CodeMemberMethod () {
+				Name = action.CliName,
+				ReturnType = new CodeTypeReference (typeof (void)),
+			};
+			foreach (var p in action.Parameters) {
+				meth.Parameters.Add (new CodeParameterDeclarationExpression () {
+					Name = p.Name,
+					Type = new CodeTypeReference (p.ObjCType)
+				});
+			}
+			AddAttribute (meth.CustomAttributes, exportAtt, action.GetObjcFullName ());
+			
+			return meth;
 		}
 	}
 }
