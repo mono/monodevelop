@@ -45,6 +45,13 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
+		protected override void OnEndLoad ()
+		{
+			base.OnEndLoad ();
+			if (Configurations.Count == 0)
+				Configurations.Add (CreateConfiguration ("Default"));
+		}
+
 		public override void InitializeFromTemplate (XmlElement element)
 		{
 			Configurations.Add (CreateConfiguration ("Default"));
