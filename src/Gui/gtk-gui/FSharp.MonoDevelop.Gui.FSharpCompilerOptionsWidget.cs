@@ -5,37 +5,21 @@ namespace FSharp.MonoDevelop.Gui
 	public partial class FSharpCompilerOptionsWidget
 	{
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Frame frame3;
-
 		private global::Gtk.Alignment GtkAlignment;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.CheckButton checkDebugInfo;
-
 		private global::Gtk.CheckButton checkOptimize;
-
 		private global::Gtk.CheckButton checkTailCalls;
-
 		private global::Gtk.CheckButton checkXmlDocumentation;
-
 		private global::Gtk.Label GtkLabel4;
-
 		private global::Gtk.Frame frame4;
-
 		private global::Gtk.Alignment GtkAlignment1;
-
 		private global::Gtk.Entry entryDefines;
-
 		private global::Gtk.Label GtkLabel5;
-
 		private global::Gtk.Frame frame5;
-
 		private global::Gtk.Alignment GtkAlignment2;
-
 		private global::Gtk.Entry entryCustomParameters;
-
 		private global::Gtk.Label GtkLabel6;
 
 		protected virtual void Build ()
@@ -53,21 +37,22 @@ namespace FSharp.MonoDevelop.Gui
 			this.frame3.Name = "frame3";
 			this.frame3.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame3.Gtk.Container+ContainerChild
-			this.GtkAlignment = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment.Name = "GtkAlignment";
 			this.GtkAlignment.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			this.vbox3 = new global::Gtk.VBox ();
+			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.checkDebugInfo = new global::Gtk.CheckButton ();
 			this.checkDebugInfo.CanFocus = true;
 			this.checkDebugInfo.Name = "checkDebugInfo";
-			this.checkDebugInfo.Label = "Generate debug information";
+			this.checkDebugInfo.Label = global::Mono.Unix.Catalog.GetString ("Generate debug information");
 			this.checkDebugInfo.DrawIndicator = true;
 			this.checkDebugInfo.UseUnderline = true;
 			this.vbox3.Add (this.checkDebugInfo);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.checkDebugInfo]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.checkDebugInfo]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -75,11 +60,11 @@ namespace FSharp.MonoDevelop.Gui
 			this.checkOptimize = new global::Gtk.CheckButton ();
 			this.checkOptimize.CanFocus = true;
 			this.checkOptimize.Name = "checkOptimize";
-			this.checkOptimize.Label = "Optimize code";
+			this.checkOptimize.Label = global::Mono.Unix.Catalog.GetString ("Optimize code");
 			this.checkOptimize.DrawIndicator = true;
 			this.checkOptimize.UseUnderline = true;
 			this.vbox3.Add (this.checkOptimize);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.checkOptimize]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.checkOptimize]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -87,11 +72,11 @@ namespace FSharp.MonoDevelop.Gui
 			this.checkTailCalls = new global::Gtk.CheckButton ();
 			this.checkTailCalls.CanFocus = true;
 			this.checkTailCalls.Name = "checkTailCalls";
-			this.checkTailCalls.Label = "Enable tail calls";
+			this.checkTailCalls.Label = global::Mono.Unix.Catalog.GetString ("Enable tail calls");
 			this.checkTailCalls.DrawIndicator = true;
 			this.checkTailCalls.UseUnderline = true;
 			this.vbox3.Add (this.checkTailCalls);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.checkTailCalls]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.checkTailCalls]));
 			w3.Position = 2;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -99,11 +84,11 @@ namespace FSharp.MonoDevelop.Gui
 			this.checkXmlDocumentation = new global::Gtk.CheckButton ();
 			this.checkXmlDocumentation.CanFocus = true;
 			this.checkXmlDocumentation.Name = "checkXmlDocumentation";
-			this.checkXmlDocumentation.Label = "Generate XML documentation";
+			this.checkXmlDocumentation.Label = global::Mono.Unix.Catalog.GetString ("Generate XML documentation");
 			this.checkXmlDocumentation.DrawIndicator = true;
 			this.checkXmlDocumentation.UseUnderline = true;
 			this.vbox3.Add (this.checkXmlDocumentation);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.checkXmlDocumentation]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.checkXmlDocumentation]));
 			w4.Position = 3;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -111,18 +96,18 @@ namespace FSharp.MonoDevelop.Gui
 			this.frame3.Add (this.GtkAlignment);
 			this.GtkLabel4 = new global::Gtk.Label ();
 			this.GtkLabel4.Name = "GtkLabel4";
-			this.GtkLabel4.LabelProp = "<b>Compiler options</b>";
+			this.GtkLabel4.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Compiler options</b>");
 			this.GtkLabel4.UseMarkup = true;
 			this.frame3.LabelWidget = this.GtkLabel4;
 			this.vbox4.Add (this.frame3);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.frame3]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.frame3]));
 			w7.Position = 0;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.frame4 = new global::Gtk.Frame ();
 			this.frame4.Name = "frame4";
 			this.frame4.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame4.Gtk.Container+ContainerChild
-			this.GtkAlignment1 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment1 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment1.Name = "GtkAlignment1";
 			this.GtkAlignment1.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment1.Gtk.Container+ContainerChild
@@ -135,11 +120,11 @@ namespace FSharp.MonoDevelop.Gui
 			this.frame4.Add (this.GtkAlignment1);
 			this.GtkLabel5 = new global::Gtk.Label ();
 			this.GtkLabel5.Name = "GtkLabel5";
-			this.GtkLabel5.LabelProp = "<b>Defined symbols</b>";
+			this.GtkLabel5.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Defined symbols</b>");
 			this.GtkLabel5.UseMarkup = true;
 			this.frame4.LabelWidget = this.GtkLabel5;
 			this.vbox4.Add (this.frame4);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.frame4]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.frame4]));
 			w10.Position = 1;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -148,7 +133,7 @@ namespace FSharp.MonoDevelop.Gui
 			this.frame5.Name = "frame5";
 			this.frame5.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame5.Gtk.Container+ContainerChild
-			this.GtkAlignment2 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment2 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment2.Name = "GtkAlignment2";
 			this.GtkAlignment2.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment2.Gtk.Container+ContainerChild
@@ -161,11 +146,11 @@ namespace FSharp.MonoDevelop.Gui
 			this.frame5.Add (this.GtkAlignment2);
 			this.GtkLabel6 = new global::Gtk.Label ();
 			this.GtkLabel6.Name = "GtkLabel6";
-			this.GtkLabel6.LabelProp = "<b>Command line parameters</b>";
+			this.GtkLabel6.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Command line parameters</b>");
 			this.GtkLabel6.UseMarkup = true;
 			this.frame5.LabelWidget = this.GtkLabel6;
 			this.vbox4.Add (this.frame5);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.frame5]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.frame5]));
 			w13.Position = 2;
 			w13.Expand = false;
 			w13.Fill = false;
