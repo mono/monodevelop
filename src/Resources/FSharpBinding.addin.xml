@@ -5,12 +5,17 @@
   <Runtime>
     <Import assembly="FSharpBinding.dll" />
     <Import assembly="FSharpBinding.Gui.dll" />
+    <Import assembly="FSharp.Compiler.dll" />
+    <Import assembly="FSharp.Compiler.Server.Shared.dll" />
+    <Import assembly="FSharp.Build.dll" />
+    <Import assembly="FSharp.Compiler.Interactive.Settings.dll" />
+    <Import assembly="FSharp.Core.dll" />
   </Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.4"/>
-		<Addin id="Ide" version="2.4"/>
-    <Addin id="SourceEditor2" version="2.4"/>
+		<Addin id="Core" version="2.6"/>
+		<Addin id="Ide" version="2.6"/>
+		<Addin id="SourceEditor2" version="2.6"/>
   </Dependencies>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -25,7 +30,7 @@
   </Extension>
   
   <Extension path="/MonoDevelop/ProjectModel/DomParser">
-    <Class class="FSharp.MonoDevelop.FSharpParser" />
+    <Parser class="FSharp.MonoDevelop.FSharpParser"  fileExtensions=".fs" />
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/TextEditorResolver">

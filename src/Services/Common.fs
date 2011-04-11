@@ -8,6 +8,7 @@ open System
 open System.IO
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Gui
+open Mono.Addins
 
 module Environment = 
   /// Are we running on the Mono platform?
@@ -121,7 +122,7 @@ module ScriptOptions =
     // Return all known directories
     [ let runtime = RuntimeEnvironment.GetRuntimeDirectory() 
       yield if not (runtime.EndsWith("1.0", StringComparison.Ordinal)) then runtime
-            else Path.Combine(Path.GetDirectoryName runtime, "2.0") // Mono 
+            else Path.Combine(Path.GetDirectoryName runtime, "4.0") // Mono 
       match root with 
       | Some(root) -> yield! includes |> List.map (makeAbsolute root)
       | None -> yield! includes |> List.filter Path.IsPathRooted
@@ -377,6 +378,9 @@ module Common =
   /// .NET or we use "fsharpc" command on Mono (installed by the package)
   let fscPath = 
     match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
+    | _ when ScriptOptions.safeExists(AddinManager.CurrentAddin.GetFilePath ("fsc.exe")) ->
+        // Use the fsi bundled with the add-in
+        AddinManager.CurrentAddin.GetFilePath ("fsc.exe")
     | _ when Environment.runningOnMono && ((ScriptOptions.safeExists "/usr/bin/fsharpc") || (ScriptOptions.safeExists "/usr/local/bin/fsharpc")) ->
         // On Mono, we always prefer 'fsharpc' script, especially if we can find it
         "fsharpc"
@@ -390,6 +394,9 @@ module Common =
   /// .NET or we use "fsharpi" command on Mono (installed by the package)
   let fsiPath = 
     match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
+    | _ when ScriptOptions.safeExists(AddinManager.CurrentAddin.GetFilePath ("fsi.exe")) ->
+        // Use the fsi bundled with the add-in
+        AddinManager.CurrentAddin.GetFilePath ("fsi.exe")
     | _ when Environment.runningOnMono && ScriptOptions.safeExists("/usr/bin/fsharpi") ->
         // On Mono, we always prefer 'fsharpi' script, especially if we can find it
         "fsharpi"
