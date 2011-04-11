@@ -53,6 +53,11 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
+		public bool IsQuoted {
+			get;
+			set;
+		}
+		
 		public IEnumerable<AstType> TypeArguments {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 			set { SetChildrenByRole (Roles.TypeArgument, value); }

@@ -62,6 +62,11 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
+		public bool IsQuoted {
+			get;
+			set;
+		}
+		
 		AstLocation startLocation;
 		public override AstLocation StartLocation {
 			get {
@@ -71,7 +76,7 @@ namespace MonoDevelop.CSharp.Ast
 		
 		public override AstLocation EndLocation {
 			get {
-				return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length + (IsQuoted ? 1 : 0));
 			}
 		}
 		

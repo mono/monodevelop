@@ -541,7 +541,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (typeStack.Count == 0 && !string.IsNullOrEmpty (currentNamespaceName))
 					newType.Namespace = currentNamespaceName;
 				
-				newType.Name = c.MemberName.Name;
+				newType.Name = ConvertQuoted (c.MemberName.Name);
 				newType.Location = Convert (c.MemberName.Location);
 				newType.ClassType = classType;
 				var location = LocationsBag.GetMemberLocation (c);
@@ -698,7 +698,7 @@ namespace MonoDevelop.CSharp.Parser
 				
 				foreach (var attr in optAttributes.Attrs) {
 					DomAttribute domAttribute = new DomAttribute ();
-					domAttribute.Name = attr.Name;
+					domAttribute.Name = ConvertQuoted (attr.Name);
 					domAttribute.Region = ConvertRegion (attr.Location, attr.Location);
 					domAttribute.AttributeType = ConvertReturnType (attr.TypeNameExpression);
 					if (attr.PosArguments != null) {
@@ -801,7 +801,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (FixedField f)
 			{
 				DomField field = new DomField ();
-				field.Name = f.MemberName.Name;
+				field.Name = ConvertQuoted (f.MemberName.Name);
 				field.Documentation = RetrieveDocumentation (f.Location.Row);
 				field.Location = Convert (f.MemberName.Location);
 				field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Fixed;
@@ -812,7 +812,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (f.Declarators != null) {
 					foreach (var decl in f.Declarators) {
 						field = new DomField ();
-						field.Name = decl.Name.Value;
+						field.Name = ConvertQuoted (decl.Name.Value);
 						field.Location = Convert (decl.Name.Location);
 						field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Fixed;
 						field.ReturnType = ConvertReturnType (f.TypeName);
@@ -826,7 +826,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (Field f)
 			{
 				var field = new DomField ();
-				field.Name = f.MemberName.Name;
+				field.Name = ConvertQuoted (f.MemberName.Name);
 				field.Documentation = RetrieveDocumentation (f.Location.Row);
 				field.Location = Convert (f.MemberName.Location);
 				field.Modifiers = ConvertModifiers (f.ModFlags);
@@ -838,7 +838,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (f.Declarators != null) {
 					foreach (var decl in f.Declarators) {
 						field = new DomField ();
-						field.Name = decl.Name.Value;
+						field.Name = ConvertQuoted (decl.Name.Value);
 						field.Location = Convert (decl.Name.Location);
 						field.Modifiers = ConvertModifiers (f.ModFlags);
 						field.ReturnType = ConvertReturnType (f.TypeName);
@@ -852,7 +852,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (Const f)
 			{
 				DomField field = new DomField ();
-				field.Name = f.MemberName.Name;
+				field.Name = ConvertQuoted (f.MemberName.Name);
 				field.Documentation = RetrieveDocumentation (f.Location.Row);
 				field.Location = Convert (f.MemberName.Location);
 				field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Const;
@@ -863,7 +863,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (f.Declarators != null) {
 					foreach (var decl in f.Declarators) {
 						field = new DomField ();
-						field.Name = decl.Name.Value;
+						field.Name = ConvertQuoted (decl.Name.Value);
 						field.Location = Convert (decl.Name.Location);
 						field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Const;
 						field.ReturnType = ConvertReturnType (f.TypeName);
@@ -884,7 +884,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (EventField e)
 			{
 				var evt = new DomEvent ();
-				evt.Name = e.MemberName.Name;
+				evt.Name = ConvertQuoted (e.MemberName.Name);
 				evt.Documentation = RetrieveDocumentation (e.Location.Row);
 				evt.Location = Convert (e.MemberName.Location);
 				evt.Modifiers = ConvertModifiers (e.ModFlags);
@@ -896,7 +896,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (e.Declarators != null) {
 					foreach (var decl in e.Declarators) {
 						evt = new DomEvent ();
-						evt.Name = decl.Name.Value;
+						evt.Name = ConvertQuoted (decl.Name.Value);
 						evt.Location = Convert (decl.Name.Location);
 						evt.Modifiers = ConvertModifiers (e.ModFlags);
 						evt.ReturnType = ConvertReturnType (e.TypeName);
@@ -910,7 +910,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (EventProperty e)
 			{
 				DomEvent evt = new DomEvent ();
-				evt.Name = e.MemberName.Name;
+				evt.Name = ConvertQuoted (e.MemberName.Name);
 				evt.Documentation = RetrieveDocumentation (e.Location.Row);
 				evt.Location = Convert (e.MemberName.Location);
 				evt.Modifiers = ConvertModifiers (e.ModFlags);
@@ -929,7 +929,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (Property p)
 			{
 				DomProperty property = new DomProperty ();
-				property.Name = p.MemberName.Name;
+				property.Name = ConvertQuoted (p.MemberName.Name);
 				property.Documentation = RetrieveDocumentation (p.Location.Row);
 				property.Location = Convert (p.MemberName.Location);
 				property.GetterModifier = property.SetterModifier = ConvertModifiers (p.ModFlags);
@@ -973,12 +973,19 @@ namespace MonoDevelop.CSharp.Parser
 				typeStack.Peek ().Add (property);
 			}
 
+			static string ConvertQuoted (string name)
+			{
+				if (name == null)
+					return null;
+				return name.StartsWith ("@") ? name.Substring (1) : name;
+			}
+
 			public void AddParameter (MonoDevelop.Projects.Dom.AbstractMember member, AParametersCollection parameters)
 			{
 				for (int i = 0; i < parameters.Count; i++) {
 					var p = (Parameter)parameters.FixedParameters[i];
 					DomParameter parameter = new DomParameter ();
-					parameter.Name = p.Name;
+					parameter.Name = ConvertQuoted (p.Name);
 					parameter.Location = Convert (p.Location);
 					parameter.ReturnType = ConvertReturnType (p.TypeExpression);
 					var modifiers = MonoDevelop.Projects.Dom.ParameterModifiers.None;
@@ -1047,7 +1054,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (Method m)
 			{
 				DomMethod method = new DomMethod ();
-				method.Name = m.MemberName.Name;
+				method.Name = ConvertQuoted (m.MemberName.Name);
 				method.Documentation = RetrieveDocumentation (m.Location.Row);
 				method.Location = Convert (m.MemberName.Location);
 				method.Modifiers = ConvertModifiers (m.ModFlags);
@@ -1075,7 +1082,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (Operator o)
 			{
 				DomMethod method = new DomMethod ();
-				method.Name = o.MemberName.Name;
+				method.Name = ConvertQuoted (o.MemberName.Name);
 				method.Documentation = RetrieveDocumentation (o.Location.Row);
 				method.Location = Convert (o.MemberName.Location);
 				method.Modifiers = ConvertModifiers (o.ModFlags);
@@ -1143,7 +1150,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (EnumMember f)
 			{
 				DomField field = new DomField ();
-				field.Name = f.MemberName.Name;
+				field.Name = ConvertQuoted (f.MemberName.Name);
 				field.Documentation = RetrieveDocumentation (f.Location.Row);
 				// return types for enum fields are == null
 				field.Location = Convert (f.MemberName.Location);
