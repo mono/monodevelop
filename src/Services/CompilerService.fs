@@ -65,18 +65,11 @@ module CompilerService =
     // Concatenate arguments & run
     let args = String.concat " " argsList
     let startInfo = 
-      // If we're running "exe" file on Mono, then we need to run "mono fsc.exe"
-      if Common.fscPath.EndsWith(".exe") && Environment.runningOnMono then
-        Debug.tracef "Compiler" "Compile using: mono Arguments: %s" (Common.fscPath + " " + args)
-        new ProcessStartInfo
-          (FileName = "mono", UseShellExecute = false, Arguments = Common.fscPath + " " + args, 
-           RedirectStandardError = true, CreateNoWindow = true) 
-      else
-        Debug.tracef "Compiler" "Compile using: %s Arguments: %s" Common.fscPath args
-        new ProcessStartInfo
-          (FileName = Common.fscPath, UseShellExecute = false, Arguments = args, 
-           RedirectStandardError = true, CreateNoWindow = true) 
-    let p = Process.Start(startInfo) 
+      new ProcessStartInfo
+        (FileName = Common.fscPath, UseShellExecute = false, Arguments = args, 
+         RedirectStandardError = true, CreateNoWindow = true) 
+    Debug.tracef "Compiler" "Compile using: %s Arguments: %s" Common.fscPath args
+    let p = Runtime.SystemAssemblyService.CurrentRuntime.ExecuteAssembly (startInfo, null) 
     
     // Read all output and fold multi-line 
     let lines = 
