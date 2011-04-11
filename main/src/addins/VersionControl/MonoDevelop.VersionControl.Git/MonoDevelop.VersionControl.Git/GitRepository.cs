@@ -221,8 +221,12 @@ namespace MonoDevelop.VersionControl.Git
 				var localFiles = new List<FilePath> ();
 				var arev = new GitRevision (this, "");
 				foreach (var p in localFileNames) {
-					if (Directory.Exists (p))
-						versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+					if (Directory.Exists (p)) {
+						if (recursive)
+							versions.AddRange (GetDirectoryVersionInfo (p, getRemoteStatus, true));
+						else
+							versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+					}
 					else {
 						localFiles.Add (p);
 						if (File.Exists (p))
@@ -783,30 +787,26 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
-			if (localPaths != null) {
-				return new DiffInfo[0];
-			} else {
-				List<DiffInfo> diffs = new List<DiffInfo> ();
-				VersionInfo[] vinfos = GetDirectoryVersionInfo (baseLocalPath, null, false, true);
-				foreach (VersionInfo vi in vinfos) {
-					try {
-						if ((vi.Status & VersionStatus.ScheduledAdd) != 0) {
-							var ctxt = GetFileContent (vi.LocalPath);
-							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (EmptyContent, ctxt)));
-						} else if ((vi.Status & VersionStatus.ScheduledDelete) != 0) {
-							var ctxt = GetCommitContent (GetHeadCommit (), vi.LocalPath);
-							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt, EmptyContent)));
-						} else if ((vi.Status & VersionStatus.Modified) != 0 || (vi.Status & VersionStatus.Conflicted) != 0) {
-							var ctxt1 = GetCommitContent (GetHeadCommit (), vi.LocalPath);
-							var ctxt2 = GetFileContent (vi.LocalPath);
-							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt1, ctxt2)));
-						}
-					} catch (Exception ex) {
-						LoggingService.LogError ("Could not get diff for file '" + vi.LocalPath + "'", ex);
+			List<DiffInfo> diffs = new List<DiffInfo> ();
+			VersionInfo[] vinfos = GetDirectoryVersionInfo (baseLocalPath, localPaths, false, true);
+			foreach (VersionInfo vi in vinfos) {
+				try {
+					if ((vi.Status & VersionStatus.ScheduledAdd) != 0) {
+						var ctxt = GetFileContent (vi.LocalPath);
+						diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (EmptyContent, ctxt)));
+					} else if ((vi.Status & VersionStatus.ScheduledDelete) != 0) {
+						var ctxt = GetCommitContent (GetHeadCommit (), vi.LocalPath);
+						diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt, EmptyContent)));
+					} else if ((vi.Status & VersionStatus.Modified) != 0 || (vi.Status & VersionStatus.Conflicted) != 0) {
+						var ctxt1 = GetCommitContent (GetHeadCommit (), vi.LocalPath);
+						var ctxt2 = GetFileContent (vi.LocalPath);
+						diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt1, ctxt2)));
 					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not get diff for file '" + vi.LocalPath + "'", ex);
 				}
-				return diffs.ToArray ();
 			}
+			return diffs.ToArray ();
 		}
 		
 		byte[] GetFileContent (string file)

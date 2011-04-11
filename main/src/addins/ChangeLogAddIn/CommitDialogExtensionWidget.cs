@@ -253,7 +253,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				ChangeLogEntry entry;
 				if (!entries.TryGetValue (logf, out entry)) {
 					entry = new ChangeLogEntry ();
-					entry.AuthorInformation = parentItem.AuthorInformation;
+					entry.AuthorInformation = parentItem != null ? parentItem.AuthorInformation : AuthorInformation.Default;
 					entry.MessageStyle = ChangeLogService.GetMessageStyle (parentItem);
 					entry.CantGenerate = cantGenerate;
 					entry.File = logf;

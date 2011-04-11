@@ -38,7 +38,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		// Returns the path of the ChangeLog where changes of the provided file have to be logged.
 		// Returns null if no ChangeLog could be found.
 		// Returns an empty string if changes don't have to be logged.
-		public static string GetChangeLogForFile (string baseCommitPath, string file, out SolutionItem parentEntry, out ChangeLogPolicy policy)
+		public static string GetChangeLogForFile (string baseCommitPath, FilePath file, out SolutionItem parentEntry, out ChangeLogPolicy policy)
 		{
 			parentEntry = null;
 			policy = null;
@@ -48,16 +48,16 @@ namespace MonoDevelop.ChangeLogAddIn
 			// Find the project that contains the file. If none is found
 			// find a combine entry at the file location
 			string bestPath = null;
-			file = FileService.GetFullPath (file);
+			file = file.CanonicalPath;
 			
 			foreach (SolutionItem e in IdeApp.Workspace.GetAllSolutionItems ()) {
 				if (e is Project && ((Project)e).Files.GetFile (file) != null) {
 					parentEntry = e;
 					break;
 				}
-				string epath = FileService.GetFullPath (e.BaseDirectory) + Path.DirectorySeparatorChar;
-				if (file.StartsWith (epath) && (bestPath == null || bestPath.Length < epath.Length)) {
-					bestPath = epath;
+				FilePath epath = e.BaseDirectory.CanonicalPath;
+				if ((file == epath || file.IsChildPathOf (epath)) && (bestPath == null || bestPath.Length < epath.ToString().Length)) {
+					bestPath = epath.ToString();
 					parentEntry = e;
 				}
 			}

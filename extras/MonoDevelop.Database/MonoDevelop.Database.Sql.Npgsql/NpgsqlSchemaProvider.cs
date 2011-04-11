@@ -113,11 +113,10 @@ using Npgsql;
 						a.attname, 
 						a.attnotnull, 
 						a.attlen,
-						typ.typname, 
+						t.typname, 
 						adef.adsrc 
 					FROM
-						pg_catalog.pg_attribute a, 
-						pg_catalog.pg_type typ
+						pg_catalog.pg_attribute a
 					LEFT JOIN pg_catalog.pg_attrdef adef ON 
 						a.attrelid=adef.adrelid
 						AND a.attnum=adef.adnum
@@ -130,7 +129,7 @@ using Npgsql;
 							WHERE relname='{0}')
 						AND a.attnum > 0 
 						AND NOT a.attisdropped
-						AND a.atttypid = typ.oid
+						AND a.atttypid = t.oid
 					ORDER BY a.attnum;", table.Name))) {
 					try {
 							using (IDataReader r = command.ExecuteReader()) {
@@ -569,7 +568,7 @@ using Npgsql;
 								WHERE 
 									relname='{0}'
 									AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname='{1}'))
-					ORDER BY 1;, table.Name, table.SchemaName"))) {
+					ORDER BY 1;", table.Name, table.SchemaName))) {
 					try {
 						using (IDataReader r = command.ExecuteReader()) {
 							while (r.Read ()) {	

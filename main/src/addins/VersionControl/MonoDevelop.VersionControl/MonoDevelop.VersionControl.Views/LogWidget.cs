@@ -454,6 +454,8 @@ namespace MonoDevelop.VersionControl.Views
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
 			string author = rev.Author;
+			if (string.IsNullOrEmpty (author))
+				return;
 			int idx = author.IndexOf ("<");
 			if (idx >= 0 && idx < author.IndexOf (">"))
 				author = author.Substring (0, idx).Trim ();

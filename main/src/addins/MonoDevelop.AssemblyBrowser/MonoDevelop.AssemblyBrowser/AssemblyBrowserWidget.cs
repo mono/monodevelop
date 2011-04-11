@@ -123,6 +123,30 @@ namespace MonoDevelop.AssemblyBrowser
 				var referencedSegment = ReferencedSegments != null ? ReferencedSegments.FirstOrDefault (seg => seg.Contains (offset)) : null;
 				if (referencedSegment == null)
 					return null;
+				if (referencedSegment.Reference is TypeDefinition)
+					return new DomCecilType ((TypeDefinition)referencedSegment.Reference).HelpUrl;
+				
+				if (referencedSegment.Reference is MethodDefinition)
+					return new DomCecilMethod ((MethodDefinition)referencedSegment.Reference).HelpUrl;
+				
+				if (referencedSegment.Reference is PropertyDefinition)
+					return new DomCecilProperty ((PropertyDefinition)referencedSegment.Reference).HelpUrl;
+				
+				if (referencedSegment.Reference is FieldDefinition)
+					return new DomCecilField ((FieldDefinition)referencedSegment.Reference).HelpUrl;
+				
+				if (referencedSegment.Reference is EventDefinition)
+					return new DomCecilEvent ((EventDefinition)referencedSegment.Reference).HelpUrl;
+				
+				if (referencedSegment.Reference is FieldDefinition)
+					return new DomCecilField ((FieldDefinition)referencedSegment.Reference).HelpUrl;
+				
+				if (referencedSegment.Reference is TypeReference) {
+					var returnType = DomCecilMethod.GetReturnType ((TypeReference)referencedSegment.Reference);
+					if (returnType.GenericArguments.Count == 0)
+						return "T:" + returnType.FullName;
+					return "T:" + returnType.FullName + "`" + returnType.GenericArguments.Count;
+				}
 				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
@@ -275,7 +299,7 @@ namespace MonoDevelop.AssemblyBrowser
 				IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
 				((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
 			} else {
-				this.OpenSoftLink (args.Link);
+				this.Open (args.Link);
 			}
 		}
 		
@@ -923,51 +947,6 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			oldSize2 = size;
 			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
-		}
-		
-		
-		static string Concat (string cur, string nodeName)
-		{
-			if (string.IsNullOrEmpty (cur))
-				return nodeName;
-			return cur + "." + nodeName;
-		}
-		
-		ITreeNavigator SearchSoftLink (ITreeNavigator nav, string helpUrl, string cur, int depth)
-		{
-			do {
-				string curName = depth > 1 ? Concat (cur, nav.NodeName) : "";
-				Console.WriteLine (curName + "/" + helpUrl);
-				if (curName == helpUrl)
-					return nav;
-				if (!helpUrl.StartsWith (curName))
-					return null;
-				
-				if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
-					DispatchService.RunPendingEvents ();
-					nav.MoveToFirstChild ();
-					do { 
-						ITreeNavigator result = SearchSoftLink (nav, helpUrl, curName, depth + 1);
-						if (result != null)
-							return result;
-					
-					} while (nav.MoveNext ());
-					nav.MoveToParent ();
-				}
-				
-			} while (nav.MoveNext());
-			return null;
-		}
-		
-		void OpenSoftLink (string url)
-		{
-			ITreeNavigator nav = SearchSoftLink (TreeView.GetRootNode (), url, null, 0);
-			if (nav != null) {
-				nav.ExpandToNode ();
-				nav.Selected = true;
-			} else {
-				LoggingService.LogError ("Can't open: " + url + " (not found).");
-			}
 		}
 		
 		public void Open (string url)
