@@ -29,7 +29,7 @@ type FSharpLanguageBinding() =
       // Trigger full parse using the current configuration
       let config = IdeApp.Workspace.ActiveConfiguration
       Debug.tracef "Parsing" "Triggering full parse from OnIdle"
-      LanguageService.Service.TriggerParse(doc.FileName, doc.TextEditor.Text, doc.Dom, config, full=true)
+      LanguageService.Service.TriggerParse(doc.FileName, doc.Editor.Text, doc.Dom, config, full=true)
     true
 
   // Create or remove Idle timer 

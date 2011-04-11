@@ -54,7 +54,7 @@ type FSharpTextEditorCompletion() =
   override x.CodeCompletionCommand(context:CodeCompletionContext) : ICompletionDataList =
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
-      let req = x.Document.FileName, x.Document.TextEditor.Text, x.Document.Dom, config
+      let req = x.Document.FileName, x.Document.Editor.Text, x.Document.Dom, config
       
       // Try to get typed information from LanguageService (with the specified timeout)
       let tyRes = LanguageService.Service.GetTypedParseResult(req, timeout = ServiceSettings.blockingTimeout)

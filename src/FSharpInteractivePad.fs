@@ -29,12 +29,10 @@ type FSharpInteractivePad() =
   let mutable enterHandler = { new IDisposable with member x.Dispose() = () }
 
   let AddSourceToSelection selection =
-     let line = ref 0
-     let col  = ref 0
-     let stap = IdeApp.Workbench.ActiveDocument.TextEditor.SelectionStartPosition
-     IdeApp.Workbench.ActiveDocument.TextEditor.GetLineColumnFromPosition(stap, line, col)
+     let stap = IdeApp.Workbench.ActiveDocument.Editor.SelectionRange.Offset
+     let line = IdeApp.Workbench.ActiveDocument.Editor.GetLineByOffset(stap)
      let file = IdeApp.Workbench.ActiveDocument.FileName
-     String.Format("# {0} \"{1}\"\n{2}" ,line.Value ,file.FullPath,selection)  
+     String.Format("# {0} \"{1}\"\n{2}" ,line ,file.FullPath,selection)  
 
   let rec setupReleaseHandler (ea:Gtk.KeyReleaseEventArgs) =
     enterHandler.Dispose()
@@ -123,7 +121,7 @@ type FSharpInteractivePad() =
         
   member x.SendSelection() = 
     if x.IsSelectionNonEmpty then
-      let sel = IdeApp.Workbench.ActiveDocument.TextEditor.SelectedText
+      let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
       x.EnsureCorrectDirectory()
       sendCommand (AddSourceToSelection sel) false
       
@@ -131,8 +129,8 @@ type FSharpInteractivePad() =
     if IdeApp.Workbench.ActiveDocument = null then () 
     else
       x.EnsureCorrectDirectory()
-      let line = IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine
-      let text = IdeApp.Workbench.ActiveDocument.TextEditor.GetLineText(line)
+      let line = IdeApp.Workbench.ActiveDocument.Editor.Caret.Line
+      let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
       let file = IdeApp.Workbench.ActiveDocument.FileName
       let sel = String.Format("# {0} \"{1}\"\n{2}" ,line ,file.FullPath,text) 
       sendCommand sel false
@@ -141,7 +139,7 @@ type FSharpInteractivePad() =
     if IdeApp.Workbench.ActiveDocument = null || 
        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false  
     else
-      let sel = IdeApp.Workbench.ActiveDocument.TextEditor.SelectedText
+      let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
       not(String.IsNullOrEmpty(sel))
     
   member x.IsInsideFSharpFile = 
