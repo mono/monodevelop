@@ -101,6 +101,35 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 		}
 		
+		/// <summary>
+		/// Return this constant in CompareToObject to instruct the tree view to
+		/// use the default sorting rules for the compared objects.
+		/// </summary>
+		public const int DefaultSort = int.MinValue;
+		
+		/// <summary>
+		/// Compares two nodes. Used when sorting the nodes in the tree.
+		/// </summary>
+		/// <returns>
+		/// A value < 0 if thisNode is less than otherNode, 0 if equal, 1 if greater, <c>DefaultSort</c>
+		/// if the default sort order has to be used.
+		/// </returns>
+		/// <param name='thisNode'>
+		/// A node handled by this builder
+		/// </param>
+		/// <param name='otherNode'>
+		/// Another node (which may not be handled by this builder)
+		/// </param>
+		/// <remarks>
+		/// This method is used by ExtensibleTreeView to sort nodes. <c>thisNode</c> always points to a node
+		/// which is handled by this builder, but <c>otherNode</c> can be any node, handled or not by this builder.
+		/// The value <c>DefaultSort</c> can be returned to instruct that no order can be decided in this node, and
+		/// that the default ordering should be used (by default, node names are compared)
+		/// </remarks>
+		public virtual int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			return DefaultSort;
+		}
 
 		// Helper methods
 		
