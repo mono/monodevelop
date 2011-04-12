@@ -1540,22 +1540,39 @@ namespace MonoDevelop.Components.Commands
 	internal class ToolbarTracker
 	{
 		Gtk.IconSize lastSize;
-		
+		 
 		public void Track (Gtk.Toolbar toolbar)
 		{
 			lastSize = toolbar.IconSize;
-			toolbar.AddNotification (OnToolbarPropChanged);
+			toolbar.AddNotification ("icon-size", IconSizeChanged);
+			toolbar.OrientationChanged += HandleToolbarOrientationChanged;
+			toolbar.StyleChanged += HandleToolbarStyleChanged;
+			
 			toolbar.Destroyed += delegate {
-				toolbar.RemoveNotification (OnToolbarPropChanged);
+				toolbar.StyleChanged -= HandleToolbarStyleChanged;
+				toolbar.OrientationChanged -= HandleToolbarOrientationChanged;
+				toolbar.RemoveNotification ("icon-size", IconSizeChanged);
 			};
 		}
-		
-		void OnToolbarPropChanged (object ob, GLib.NotifyArgs args)
+
+		void HandleToolbarStyleChanged (object o, Gtk.StyleChangedArgs args)
 		{
-			Gtk.Toolbar t = (Gtk.Toolbar) ob;
-			if (lastSize != t.IconSize || args.Property == "orientation" || args.Property == "toolbar-style")
+			Gtk.Toolbar t = (Gtk.Toolbar) o;
+			if (lastSize != t.IconSize)
 				UpdateCustomItems (t);
-			lastSize = t.IconSize;
+		}
+
+		void HandleToolbarOrientationChanged (object o, Gtk.OrientationChangedArgs args)
+		{
+			Gtk.Toolbar t = (Gtk.Toolbar) o;
+			if (lastSize != t.IconSize)
+				UpdateCustomItems (t);
+		}
+
+		void IconSizeChanged (object o, GLib.NotifyArgs args)
+		{
+			this.lastSize = ((Gtk.Toolbar) o).IconSize;
+			UpdateCustomItems ((Gtk.Toolbar) o);
 		}
 		
 		void UpdateCustomItems (Gtk.Toolbar t)
