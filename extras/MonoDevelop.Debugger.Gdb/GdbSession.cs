@@ -304,14 +304,15 @@ namespace MonoDevelop.Debugger.Gdb
 						}
 					}
 					if (res == null) {
-						OnDebuggerOutput (true, "Could not set breakpoint: " + errorMsg);
-						return null;
+						bi.SetStatus (BreakEventStatus.Invalid, errorMsg);
+						return bi;
 					}
 					int bh = res.GetObject ("bkpt").GetInt ("number");
 					if (!be.Enabled)
 						RunCommand ("-break-disable", bh.ToString ());
 					breakpoints [bh] = bi;
 					bi.Handle = bh;
+					bi.SetStatus (BreakEventStatus.Bound, null);
 					return bi;
 				} finally {
 					InternalResume (dres);
@@ -402,6 +403,8 @@ namespace MonoDevelop.Debugger.Gdb
 		protected override void OnRemoveBreakEvent (BreakEventInfo binfo)
 		{
 			lock (gdbLock) {
+				if (binfo.Handle == null)
+					return;
 				bool dres = InternalStop ();
 				breakpointsWithHitCount.Remove (binfo);
 				breakpoints.Remove ((int)binfo.Handle);
@@ -416,6 +419,8 @@ namespace MonoDevelop.Debugger.Gdb
 		protected override void OnEnableBreakEvent (BreakEventInfo binfo, bool enable)
 		{
 			lock (gdbLock) {
+				if (binfo.Handle == null)
+					return;
 				bool dres = InternalStop ();
 				try {
 					if (enable)
@@ -434,6 +439,9 @@ namespace MonoDevelop.Debugger.Gdb
 			if (bp == null)
 				throw new NotSupportedException ();
 
+			if (binfo.Handle == null)
+				return;
+			
 			bool ss = InternalStop ();
 			
 			try {
