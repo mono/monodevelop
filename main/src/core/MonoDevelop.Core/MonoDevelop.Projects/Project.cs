@@ -532,7 +532,7 @@ namespace MonoDevelop.Projects
 		public FileCopySet GetSupportFileList (ConfigurationSelector configuration)
 		{
 			FileCopySet list = new FileCopySet ();
-			PopulateSupportFileList (list, configuration);
+			Services.ProjectService.GetExtensionChain (this).PopulateSupportFileList (this, list, configuration);
 			return list;
 		}
 
@@ -549,7 +549,7 @@ namespace MonoDevelop.Projects
 		/// Returns a list of all files that are required to use the project output binary, for example: data files with
 		/// the Copy to Output option, debug information files, generated resource files, etc.
 		/// </remarks>
-		protected virtual void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
+		internal protected virtual void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
 			foreach (ProjectFile pf in Files) {
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
@@ -574,7 +574,7 @@ namespace MonoDevelop.Projects
 		public List<FilePath> GetOutputFiles (ConfigurationSelector configuration)
 		{
 			List<FilePath> list = new List<FilePath> ();
-			PopulateOutputFileList (list, configuration);
+			Services.ProjectService.GetExtensionChain (this).PopulateOutputFileList (this, list, configuration);
 			return list;
 		}
 
@@ -591,7 +591,7 @@ namespace MonoDevelop.Projects
 		/// Returns a list of all files that are required to use the project output binary, for example: data files with
 		/// the Copy to Output option, debug information files, generated resource files, etc.
 		/// </remarks>
-		protected virtual void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
+		internal protected virtual void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
 		{
 			string file = GetOutputFileName (configuration);
 			if (file != null)

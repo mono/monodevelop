@@ -299,6 +299,15 @@ namespace MonoDevelop.Projects
 			return GetNext (item).Compile (monitor, item, buildData, compileCallbackStack.Peek ());
 		}
 		
+		public virtual void PopulateSupportFileList (Project project, FileCopySet list, ConfigurationSelector configuration)
+		{
+			GetNext (project).PopulateSupportFileList (project, list, configuration);
+		}
+		
+		public virtual void PopulateOutputFileList (Project project, List<FilePath> list, ConfigurationSelector configuration)
+		{
+			GetNext (project).PopulateOutputFileList (project, list, configuration);
+		}
 	}
 
 	public class BuildData

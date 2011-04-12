@@ -473,7 +473,7 @@ namespace MonoDevelop.Projects
 			return base.OnRunTarget (monitor, target, configuration);
 		}
 		
-		protected override void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
+		internal protected override void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
 		{
 			base.PopulateOutputFileList (list, configuration);
 			DotNetProjectConfiguration conf = GetConfiguration (configuration) as DotNetProjectConfiguration;
@@ -503,15 +503,23 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
+		
+		[ThreadStatic]
+		static int supportReferDistance = -1;
 
-		protected override void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
+		internal protected override void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
-			PopulateSupportFileList (list, configuration, 0);
+			try {
+				supportReferDistance++;
+				PopulateSupportFileListInternal (list, configuration);
+			} finally {
+				supportReferDistance--;
+			}
 		}
 
-		void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration, int referenceDistance)
+		void PopulateSupportFileListInternal (FileCopySet list, ConfigurationSelector configuration)
 		{
-			if (referenceDistance < 2)
+			if (supportReferDistance < 2)
 				base.PopulateSupportFileList (list, configuration);
 
 			//rename the app.config file
@@ -547,7 +555,8 @@ namespace MonoDevelop.Projects
 
 					//VS COMPAT: recursively copy references's "local copy" files
 					//but only copy the "copy to output" files from the immediate references
-					p.PopulateSupportFileList (list, configuration, referenceDistance + 1);
+					foreach (var f in p.GetSupportFileList (configuration))
+						list.Add (f.Src, f.CopyOnlyIfNewer, f.Target);
 
 					DotNetProjectConfiguration refConfig = p.GetConfiguration (configuration) as DotNetProjectConfiguration;
 
