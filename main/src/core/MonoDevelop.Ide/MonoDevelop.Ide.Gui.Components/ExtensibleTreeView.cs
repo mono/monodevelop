@@ -1296,25 +1296,36 @@ namespace MonoDevelop.Ide.Gui.Components
 				compareNode1.MoveToIter (a);
 				compareNode2.MoveToIter (b);
 				
-				TypeNodeBuilder tb1 = (TypeNodeBuilder) chain1[0];
-				int sort = tb1.CompareObjects (compareNode1, compareNode2);
+				int sort = CompareObjects (chain1, compareNode1, compareNode2);
 				if (sort != TypeNodeBuilder.DefaultSort) return sort;
 				
 				NodeBuilder[] chain2 = (NodeBuilder[]) store.GetValue (b, BuilderChainColumn);
 				if (chain2 == null) return 1;
-				TypeNodeBuilder tb2 = (TypeNodeBuilder) chain2[0];
 				
 				if (chain1 != chain2) {
-					sort = tb2.CompareObjects (compareNode2, compareNode1);
+					sort = CompareObjects (chain2, compareNode2, compareNode1);
 					if (sort != TypeNodeBuilder.DefaultSort) return sort * -1;
 				}
 				
+				TypeNodeBuilder tb1 = (TypeNodeBuilder) chain1[0];
+				TypeNodeBuilder tb2 = (TypeNodeBuilder) chain2[0];
 				object o1 = store.GetValue (a, DataItemColumn);
 				object o2 = store.GetValue (b, DataItemColumn);
 				return string.Compare (tb1.GetNodeName (compareNode1, o1), tb2.GetNodeName (compareNode2, o2), true);
 			} finally {
 				sorting = false;
 			}
+		}
+		
+		int CompareObjects (NodeBuilder[] chain, ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			int result = NodeBuilder.DefaultSort;
+			for (int n=0; n<chain.Length; n++) {
+				int sort = chain[n].CompareObjects (thisNode, otherNode);
+				if (sort != NodeBuilder.DefaultSort)
+					result = sort;
+			}
+			return result;
 		}
 		
 		internal bool GetFirstNode (object dataObject, out Gtk.TreeIter iter)
