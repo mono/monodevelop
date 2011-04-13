@@ -161,6 +161,8 @@ namespace MonoDevelop.Ide
 		
 		public static T GuiDispatch<T> (T theDelegate)
 		{
+			if (guiContext == null)
+				return theDelegate;
 			Delegate del = (Delegate)(object)theDelegate;
 			return (T)(object)guiContext.CreateSynchronizedDelegate (del);
 		}
