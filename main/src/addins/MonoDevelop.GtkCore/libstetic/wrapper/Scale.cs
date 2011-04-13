@@ -7,12 +7,14 @@ namespace Stetic.Wrapper {
 		public override void Wrap (object obj, bool initialized)
 		{
 			base.Wrap (obj, initialized);
-			((Gtk.Scale)Wrapped).Adjustment.AddNotification (AdjustmentNotifyHandler);
+			foreach (string property in Range.adjustmentProperties)
+				((Gtk.Scale)Wrapped).Adjustment.AddNotification (property, AdjustmentNotifyHandler);
 		}
 
 		public override void Dispose ()
 		{
-			((Gtk.Scale)Wrapped).Adjustment.RemoveNotification (AdjustmentNotifyHandler);
+			foreach (string property in Range.adjustmentProperties)
+				((Gtk.Scale)Wrapped).Adjustment.RemoveNotification (property, AdjustmentNotifyHandler);
 			base.Dispose ();
 		}
 
