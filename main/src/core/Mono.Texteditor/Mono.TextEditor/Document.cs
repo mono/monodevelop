@@ -90,10 +90,13 @@ namespace Mono.TextEditor
 			splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
 			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.InstallListener (this);
-			foldSegmentTree.tree.NodeRemoved += delegate(object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e) {
-				if (e.Node.IsFolded)
+			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
+		}
+
+		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
+		{
+			if (e.Node.IsFolded)
 					foldedSegments.Remove (e.Node);
-			};
 		}
 
 		public Document () : this(new GapBuffer (), new LineSplitter ())
@@ -151,6 +154,7 @@ namespace Mono.TextEditor
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
 				splitter.Initalize (value);
+				ClearFoldSegments ();
 				UpdateHighlighting ();
 				this.OnTextReplaced (args);
 				this.OnTextSet (EventArgs.Empty);
@@ -952,7 +956,7 @@ namespace Mono.TextEditor
 			folding.isAttached = false;
 			if (folding.isFolded)
 				foldedSegments.Remove (folding);
-			foldedSegments.Remove (folding);
+			foldSegmentTree.Remove (folding);
 		}
 		
 		/// <summary>
@@ -1033,7 +1037,8 @@ namespace Mono.TextEditor
 			foldSegmentTree.RemoveListener (this);
 			foldSegmentTree = new SegmentTree<FoldSegment> ();
 			foldSegmentTree.InstallListener (this);
-							
+			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
+			foldedSegments.Clear ();
 			InformFoldTreeUpdated ();
 		}
 		
@@ -1119,6 +1124,7 @@ namespace Mono.TextEditor
 			if (handler != null)
 				handler (this, args);
 		}
+		
 		public event EventHandler<FoldSegmentEventArgs> Folded;
 		#endregion
 		
@@ -1268,16 +1274,22 @@ namespace Mono.TextEditor
 		{
 			int result = logicalLine;
 			LineSegment line = GetLine (result) ?? GetLine (LineCount);
-			int maxOffset = 0;
 			int lineOffset = line.Offset;
+			var curSegment = new List<FoldSegment> ();
 			foreach (FoldSegment segment in foldedSegments) {
+				if (curSegment.Any (seg => seg.Contains (segment)))
+					continue;
 				int startLineOffset = segment.StartLine.Offset;
-				if (startLineOffset < lineOffset && segment.Offset >= maxOffset) {
-					result -= GetLineCount (segment);
-					maxOffset = segment.EndOffset;
+				if (startLineOffset >= lineOffset)
+					continue;
+				
+				foreach (var containingSegments in new List <FoldSegment> (curSegment.Where (seg => segment.Contains (seg)))) {
+					result += GetLineCount (containingSegments);
+					curSegment.Remove (containingSegments);
 				}
-				if (startLineOffset > lineOffset)
-					break;
+				
+				result -= GetLineCount (segment);
+				curSegment.Add (segment);
 			}
 			return result;
 		}
@@ -1288,19 +1300,24 @@ namespace Mono.TextEditor
 				return DocumentLocation.MinLine;
 			
 			int result = visualLineNumber;
-			int maxOffset = 0;
-			LineSegment line = GetLine (result);
+			
+			var curSegment = new List<FoldSegment> ();
 			foreach (FoldSegment segment in foldedSegments) {
-				if (segment.Offset < maxOffset)
+				if (curSegment.Any (seg => seg.Contains (segment)))
 					continue;
-				if ((line == null || segment.StartLine.Offset < line.Offset)) {
-					result += GetLineCount (segment);
-					if (line != null)
-						line = GetLine (result);
-					maxOffset = segment.EndOffset;
+				LineSegment line = GetLine (result);
+				if (line != null && segment.Offset >= line.Offset)
+					continue;
+				
+				foreach (var containingSegments in new List <FoldSegment> (curSegment.Where (seg => segment.Contains (seg)))) {
+					result -= GetLineCount (containingSegments);
+					curSegment.Remove (containingSegments);
 				}
-				if (line != null && segment.Offset > line.Offset)
-					break;
+				
+				curSegment.Add (segment);
+				int start = OffsetToLineNumber (segment.Offset);
+				int end = OffsetToLineNumber (segment.EndOffset);
+				result += end - start;
 			}
 			return result;
 		}

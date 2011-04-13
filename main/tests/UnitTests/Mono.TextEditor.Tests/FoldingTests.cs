@@ -36,7 +36,6 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class FoldingTests
 	{
-
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
@@ -69,32 +68,143 @@ namespace Mono.TextEditor.Tests
 		}
 		
 		[Test()]
-		public void TestVisualToLogicalLine ()
+		public void TestLogicalToVisualLine ()
 		{
 			Document document = new Mono.TextEditor.Document ();
 			document.Text = 
-@"-[0
-+[1
-2
-]3
-4
-+[5
+@"-[1
++[2
+3
+]4
+5
 +[6
 +[7
-8
-]9
++[8
+9
 ]10
 ]11
 ]12
-13
-+[14
-15
-]16
-17";
+]13
+14
++[15
+16
+]17
+18";
 			document.UpdateFoldSegments (GetFoldSegments (document), false);
 			Assert.AreEqual (4, document.LogicalToVisualLine (12));
 			Assert.AreEqual (6, document.LogicalToVisualLine (16));
 			Assert.AreEqual (7, document.LogicalToVisualLine (17));
+		}
+		
+		[Test()]
+		public void TestLogicalToVisualLineStartLine ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[1
+-[2
+3
+]4
+5
+-[6
++[7
+-[8
+9
+]10
+]11
+]12
+]13
+14
+-[15
+16
+]17
+18";
+			document.UpdateFoldSegments (GetFoldSegments (document), false);
+			Assert.AreEqual (7, document.LogicalToVisualLine (7));
+		}
+		
+		[Test()]
+		public void TestVisualToLogicalLineStartLine ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[1
+-[2
+3
+]4
+5
+-[6
++[7
+-[8
+9
+]10
+]11
+]12
+]13
+14
+-[15
+16
+]17
+18";
+			document.UpdateFoldSegments (GetFoldSegments (document), false);
+			Assert.AreEqual (7, document.VisualToLogicalLine (7));
+		}
+		
+		[Test()]
+		public void TestVisualToLogicalLineCase2 ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[1
++[2
+3
+]4
+5
++[6
++[7
++[8
+9
+]10
+]11
+]12
+]13
+14
++[15
+16
+]17
+18";
+			document.UpdateFoldSegments (GetFoldSegments (document), false);
+			Assert.AreEqual (6, document.VisualToLogicalLine (4));
+			Assert.AreEqual (14, document.VisualToLogicalLine (6));
+			Assert.AreEqual (15, document.VisualToLogicalLine (7));
+		}
+		
+		[Test()]
+		public void TestVisualToLogicalLineCase3 ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[1
++[2
+3
+]4
+5
++[6
++[7
++[8
+9
+]10
+]11
+]12
+]13
+14
++[15
+16
+]17
+18";
+			document.UpdateFoldSegments (GetFoldSegments (document), false);
+			Assert.AreEqual (2, document.VisualToLogicalLine (2));
+			Assert.AreEqual (2, document.LogicalToVisualLine (2));
 		}
 
 		[Test()]
@@ -132,13 +242,17 @@ namespace Mono.TextEditor.Tests
 			var segments = GetFoldSegments (document);
 			document.UpdateFoldSegments (segments, false);
 			Assert.AreEqual (25, document.VisualToLogicalLine (9));
+			Assert.AreEqual (3, document.FoldSegments.Count ());
 			segments.RemoveAt (1);
+			
 			
 			document.UpdateFoldSegments (segments, false);
 			
+			Assert.AreEqual (2, document.FoldSegments.Count ());
 			Assert.AreEqual (17, document.LogicalToVisualLine (25));
 			segments.RemoveAt (1);
 			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (1, document.FoldSegments.Count ());
 			Assert.AreEqual (25, document.LogicalToVisualLine (25));
 		}
 		
@@ -171,7 +285,7 @@ namespace Mono.TextEditor.Tests
 		}
 		
 		[Test()]
-		public void TestLogicalToVisualLine ()
+		public void TestVisualToLogicalLine ()
 		{
 			Document document = new Mono.TextEditor.Document ();
 			document.Text = 
@@ -197,6 +311,8 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (13, document.VisualToLogicalLine (5));
 			Assert.AreEqual (18, document.VisualToLogicalLine (8));
 		}
+		
+		
 		
 		[Test()]
 		public void TestCaretRight ()
@@ -236,30 +352,123 @@ namespace Mono.TextEditor.Tests
 		{
 			Document document = new Mono.TextEditor.Document ();
 			document.Text = 
-@"-[0
-1
-+[2
-3]
-4
-+[5
-6]
-7
+@"-[1
+2
++[3
+4]
+5
++[6
+7]
 8
 9
 10
 11
 12
-13]
-14
-15";
+13
+14]
+15
+16";
 			var segments = GetFoldSegments (document);
 			document.UpdateFoldSegments (segments, false);
 			Assert.AreEqual (10, document.VisualToLogicalLine (8));
+			Assert.AreEqual (3, document.FoldSegments.Count ());
 			int start = document.GetLine (2).Offset;
 			int end = document.GetLine (8).Offset;
 			((IBuffer)document).Remove (start, end - start);
+			Assert.AreEqual (1, document.FoldSegments.Count ());
 			Assert.AreEqual (10, document.LogicalToVisualLine (10));
 		}
-
+		
+		[Test()]
+		public void TestGetStartFoldingsGetStartFoldings ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"+[1
+2
+3
++[4
+5
++[6
+7]
+8]
++[9
+10
+11]
+12]
++[13
+14]
+15
+16";
+			var segments = GetFoldSegments (document);
+			document.UpdateFoldSegments (segments, false);
+			document.UpdateFoldSegments (segments, false);
+			document.UpdateFoldSegments (segments, false);
+			
+			Assert.AreEqual (1, document.GetStartFoldings (1).Count ());
+			Assert.AreEqual (1, document.GetStartFoldings (4).Count ());
+			Assert.AreEqual (1, document.GetStartFoldings (6).Count ());
+			Assert.AreEqual (1, document.GetStartFoldings (9).Count ());
+			Assert.AreEqual (1, document.GetStartFoldings (13).Count ());
+		}
+		
+		[Test()]
+		public void TestIsFoldedSetFolded ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[1
+2
+3
+-[4
+5
+-[6
+7]
+8]
+-[9
+10
+11]
+12]
+-[13
+14]
+15
+16";
+			var segments = GetFoldSegments (document);
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (15, document.LogicalToVisualLine (15));
+			document.GetStartFoldings (6).First ().IsFolded = true;
+			document.GetStartFoldings (4).First ().IsFolded = true;
+			Assert.AreEqual (11, document.LogicalToVisualLine (15));
+		}
+		
+		[Test()]
+		public void TestIsFoldedUnsetFolded ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[1
+2
+3
++[4
+5
++[6
+7]
+8]
+-[9
+10
+11]
+12]
+-[13
+14]
+15
+16";
+			var segments = GetFoldSegments (document);
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (11, document.LogicalToVisualLine (15));
+			document.GetStartFoldings (6).First ().IsFolded = false;
+			document.GetStartFoldings (4).First ().IsFolded = false;
+			Assert.AreEqual (15, document.LogicalToVisualLine (15));
+		}
+		
 	}
 }
