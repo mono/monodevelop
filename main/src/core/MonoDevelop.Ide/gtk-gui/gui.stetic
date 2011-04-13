@@ -6466,6 +6466,7 @@ All solutions</property>
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Delete the project file and the whole project directory:</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -11346,7 +11347,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Updater.UpdateDialog" design-size="450 373">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Updater.UpdateDialog" design-size="508 373">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>

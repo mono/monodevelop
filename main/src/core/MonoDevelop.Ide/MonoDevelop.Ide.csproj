@@ -1440,6 +1440,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ImportProjectPolicyDialog.cs" />
     <Compile Include="MonoDevelop.Ide.ProgressMonitoring\ProgressBarMonitor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.ProgressMonitoring.ProgressBarMonitor.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateTagExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateRank.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

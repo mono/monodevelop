@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.Updater
 		const string updateLevelKey = "AppUpdate.UpdateLevel";
 		
 		static UpdateInfo[] updateInfos;
+		static List<string> tags = new List<string> ();
 		
 		static UpdateInfo[] LoadUpdateInfos ()
 		{
@@ -75,6 +76,25 @@ namespace MonoDevelop.Ide.Updater
 		static UpdateService ()
 		{
 			updateInfos = LoadUpdateInfos ();
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/UpdateTags", OnTagExtensionChanged);
+		}
+		
+		static void OnTagExtensionChanged (object sender, ExtensionNodeEventArgs args)
+		{
+			if (args.Change == ExtensionChange.Add)
+				tags.Add (args.ExtensionNode.Id);
+			else
+				tags.Remove (args.ExtensionNode.Id);
+		}
+		
+		public static void AddUpdateTag (string tag)
+		{
+			tags.Add (tag);
+		}
+		
+		public static void RemoteUpdateTag (string tag)
+		{
+			tags.Remove (tag);
 		}
 		
 		public static bool CanUpdate {
@@ -288,8 +308,8 @@ namespace MonoDevelop.Ide.Updater
 			FilterOldVersions (list);
 			foreach (var ventry in list) {
 				var entry = ventry;
-				string notify = entry.Addin.Properties.GetPropertyValue ("NotifyUpdate").ToLower ();
-				if (notify != "yes" && notify != "true")
+				UpdateRank rank = GetUpdateRank (entry.Addin.Properties.GetPropertyValue ("UpdateRank"));
+				if (rank != UpdateRank.Important)
 					continue;
 				string sdate = entry.Addin.Properties.GetPropertyValue ("ReleaseDate");
 				DateTime date;
@@ -393,6 +413,40 @@ namespace MonoDevelop.Ide.Updater
 				}
 			});
 			return monitor.AsyncOperation;
+		}
+
+		/// <summary>
+		/// Parses an update rank string
+		/// </summary>
+		/// <returns>
+		/// The update rank
+		/// </returns>
+		/// <param name='updateRankString'>
+		/// Update rank string.
+		/// </param>
+		/// <remarks>
+		/// This method parses an update rank string. If the rank is conditioned to an update tag, it will
+		/// check the presence of the tag
+		/// </remarks>
+		internal static UpdateRank GetUpdateRank (string updateRankString)
+		{
+			string slevel = null;
+			foreach (string cond in updateRankString.Split (new char[] {' '}, StringSplitOptions.RemoveEmptyEntries)) {
+				int i = cond.IndexOf (':');
+				if (i == -1) {
+					slevel = cond;
+					break;
+				}
+				if (tags.Contains (cond.Substring (0, i))) {
+					slevel = cond.Substring (i+1);
+					break;
+				}
+			}
+			UpdateRank level;
+			if (slevel != null && Enum.TryParse<UpdateRank> (slevel, out level))
+				return level;
+			else
+				return UpdateRank.Normal;
 		}
 	}
 }
