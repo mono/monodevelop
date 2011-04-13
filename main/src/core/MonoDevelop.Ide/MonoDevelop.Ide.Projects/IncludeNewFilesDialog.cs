@@ -125,10 +125,12 @@ namespace MonoDevelop.Ide.Projects
 		void TraverseSubtree (TreeIter iter, Action<TreeIter> action)
 		{
 			TreeIter newIter;
-			if (store.IterIsValid (iter)) {
-				store.IterNthChild (out newIter, iter, 0);
+			if (!iter.Equals (TreeIter.Zero)) {
+				if (!store.IterChildren (out newIter, iter))
+					return;
 			} else {
-				store.IterNthChild (out newIter, 0);
+				if (!store.GetIterFirst (out newIter))
+					return;
 			}
 			do {
 				action (newIter);
