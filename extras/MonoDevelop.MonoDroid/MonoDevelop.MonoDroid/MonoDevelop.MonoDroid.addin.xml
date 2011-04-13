@@ -236,6 +236,12 @@
 		</Condition>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/UpdateTags">
+		<Condition id="MonoDroidInstalled">
+			<Tag id="MonoDevelop.MonoDroid.MonoDroidInstalled" />
+		</Condition>
+	</Extension>
+
 	<!-- xml editing -->
 	<Module>
 		<Runtime>
