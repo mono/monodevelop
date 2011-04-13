@@ -54,7 +54,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 				return false;
 			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
 			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
-			var missingAbstractMembers = type.Members.Where (member => member.IsAbstract && !declaringType.Members.Any (m => member.Name == m.Name));
+			var missingAbstractMembers = type.Members.Where (member => member.IsAbstract && !member.IsSpecialName && !declaringType.Members.Any (m => member.Name == m.Name));
 			return missingAbstractMembers.Any ();
 		}
 		
@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
 			options.Document.Editor.Document.BeginAtomicUndo ();
 			
-			var missingAbstractMembers = interfaceType.Members.Where (member => member.IsAbstract && !declaringType.Members.Any (m => member.Name == m.Name));
+			var missingAbstractMembers = interfaceType.Members.Where (member => member.IsAbstract && !member.IsSpecialName && !declaringType.Members.Any (m => member.Name == m.Name));
 			CodeGenerationService.AddNewMembers (declaringType, missingAbstractMembers, "implemented abstract members of " + interfaceType.FullName);
 			options.Document.Editor.Document.EndAtomicUndo ();
 		}
