@@ -32,6 +32,8 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
+using Mono.TextEditor.PopupWindow;
+using System.Text;
 
 namespace MonoDevelop.Refactoring.ImplementInterface
 {
@@ -58,16 +60,47 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			return missingAbstractMembers.Any ();
 		}
 		
+		public static void Implement (MonoDevelop.Ide.Gui.Document document, IType abstractType)
+		{
+			TextEditor editor = document.Editor.Parent;
+			
+			DocumentLocation location = editor.Caret.Location;
+			IType declaringType = document.CompilationUnit.GetTypeAt (location.Line, location.Column);
+			
+			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (document, declaringType));
+			ModeHelpWindow helpWindow = new ModeHelpWindow ();
+			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
+			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement abstract members -- Targeting</b>");
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare interface implementation</b> at target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
+			mode.HelpWindow = helpWindow;
+			mode.CurIndex = mode.InsertionPoints.Count - 1;
+			mode.StartMode ();
+			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
+				if (args.Success) {
+					CodeGenerator generator = document.CreateCodeGenerator ();
+					var missingAbstractMembers = abstractType.Members.Where (member => member.IsAbstract && !member.IsSpecialName && !declaringType.Members.Any (m => member.Name == m.Name));
+					StringBuilder sb = new StringBuilder ();
+					foreach (var member in missingAbstractMembers) {
+						if (sb.Length > 0) {
+							sb.Append (editor.EolMarker);
+							sb.Append (editor.EolMarker);
+						}
+				
+						sb.Append (generator.CreateMemberImplementation (declaringType, member, false).Code);
+					}
+					args.InsertionPoint.Insert (document.Editor, generator.WrapInRegions ("implemented abstract members of " + abstractType.FullName, sb.ToString ()));
+				}
+			};
+		}
+		
 		public override void Run (RefactoringOptions options)
 		{
-			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
-			IType interfaceType = options.Dom.GetType (options.ResolveResult.ResolvedType);
-			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
-			options.Document.Editor.Document.BeginAtomicUndo ();
-			
-			var missingAbstractMembers = interfaceType.Members.Where (member => member.IsAbstract && !member.IsSpecialName && !declaringType.Members.Any (m => member.Name == m.Name));
-			CodeGenerationService.AddNewMembers (declaringType, missingAbstractMembers, "implemented abstract members of " + interfaceType.FullName);
-			options.Document.Editor.Document.EndAtomicUndo ();
+			IType type = options.Dom.GetType (options.ResolveResult.ResolvedType);
+			Implement (options.Document, type);
 		}
 	}
 }
