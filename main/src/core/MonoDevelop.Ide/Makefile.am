@@ -668,8 +668,10 @@ FILES =  \
 	MonoDevelop.Ide.Updater/UpdateCommands.cs \
 	MonoDevelop.Ide.Updater/UpdateDialog.cs \
 	MonoDevelop.Ide.Updater/UpdateInfoExtensionNode.cs \
+	MonoDevelop.Ide.Updater/UpdateRank.cs \
 	MonoDevelop.Ide.Updater/UpdateResult.cs \
 	MonoDevelop.Ide.Updater/UpdateService.cs \
+	MonoDevelop.Ide.Updater/UpdateTagExtensionNode.cs \
 	MonoDevelop.Ide.WebBrowser/IWebBrowser.cs \
 	MonoDevelop.Ide.WebBrowser/IWebBrowserLoader.cs \
 	MonoDevelop.Ide.WebBrowser/LoadingProgressChangedEventArgs.cs \
