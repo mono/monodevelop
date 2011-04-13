@@ -36,7 +36,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/Core/Applications" name = "Applications">
 		<Description>MonoDevelop tools.</Description>
-		<ExtensionNode name="Application" type="MonoDevelop.Core.AddIns.ApplicationExtensionNode"/>
+		<ExtensionNode name="Application" type="MonoDevelop.Core.AddIns.ApplicationExtensionNode" customAttributeType="MonoDevelop.Core.ApplicationExtensionAttribute"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Core/SupportPackages">
