@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharp.Formatting
 			sb.Append (new string ('}', closingBrackets));
 			TextEditorData stubData = new TextEditorData () { Text = sb.ToString () };
 			stubData.Document.FileName = data.FileName;
-			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
+			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
 			bool hadErrors = parser.HasErrors;
 			var compilationUnit = parser.Parse (stubData);
 			

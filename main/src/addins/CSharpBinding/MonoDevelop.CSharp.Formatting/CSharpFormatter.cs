@@ -46,6 +46,7 @@ using MonoDevelop.Refactoring;
 using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -92,7 +93,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
 			TextEditorData data, int startOffset, int endOffset)
 		{
-			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
+			var parser = new CSharpParser ();
 			var compilationUnit = parser.Parse (data);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (data);
@@ -126,7 +127,7 @@ namespace MonoDevelop.CSharp.Formatting
 			//System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
 			//System.Console.WriteLine ("-----");
 
-			MonoDevelop.CSharp.Parser.CSharpParser parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
+			var parser = new CSharpParser ();
 			var compilationUnit = parser.Parse (data);
 			bool hadErrors = parser.HasErrors;
 			if (hadErrors)

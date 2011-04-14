@@ -221,6 +221,7 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\TextEditorDataAdapter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -80,6 +80,7 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs \
+	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs \
 	MonoDevelop.CSharp.Resolver/NRefactoryDocumentMetaInformation.cs \
 	MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs \

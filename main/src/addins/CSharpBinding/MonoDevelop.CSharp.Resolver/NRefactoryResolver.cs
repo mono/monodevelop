@@ -962,18 +962,6 @@ namespace MonoDevelop.CSharp.Resolver
 			return result.ToString ();
 		}
 	}
-	static class HelperMethods
-	{
-		public static void SetText (this CompletionData data, string text)
-		{
-			if (data is CompletionData) {
-				((CompletionData)data).CompletionText = text;
-			} else if (data is MonoDevelop.Ide.CodeCompletion.MemberCompletionData) {
-				((MonoDevelop.Ide.CodeCompletion.MemberCompletionData)data).CompletionText = text;
-			} else {
-				System.Console.WriteLine("Unknown completion data:" + data);
-			}
-		}
-	}
+
 	
 }

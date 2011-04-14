@@ -256,7 +256,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		bool Analyze (RefactoringOptions options, ExtractMethodParameters param, bool fillParameter)
 		{
 			var data = options.GetTextEditorData ();
-			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
+			var parser = new CSharpParser ();
 			var unit = parser.Parse (data);
 			var resolver = options.GetResolver ();
 			if (unit == null)
