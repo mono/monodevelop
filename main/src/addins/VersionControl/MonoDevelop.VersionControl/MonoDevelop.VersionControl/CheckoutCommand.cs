@@ -77,8 +77,11 @@ namespace MonoDevelop.VersionControl
 				}	
 			}
 			
-			if (projectFn != null)
-				IdeApp.Workspace.OpenWorkspaceItem (projectFn);
+			if (projectFn != null) {
+				DispatchService.GuiDispatch (delegate {
+					IdeApp.Workspace.OpenWorkspaceItem (projectFn);
+				});
+			}
 			
 			Monitor.ReportSuccess (GettextCatalog.GetString ("Solution checked out"));
 		}
