@@ -88,19 +88,19 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			parameters.Name = entry.Text;
 			switch (comboboxModifiers.Active) {
 			case 0:
-				parameters.Modifiers = ICSharpCode.OldNRefactory.Ast.Modifiers.None;
+				parameters.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.None;
 				break;
 			case 1:
-				parameters.Modifiers = ICSharpCode.OldNRefactory.Ast.Modifiers.Public;
+				parameters.Modifiers =ICSharpCode.NRefactory.CSharp.Modifiers.Public;
 				break;
 			case 2:
-				parameters.Modifiers = ICSharpCode.OldNRefactory.Ast.Modifiers.Private;
+				parameters.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Private;
 				break;
 			case 3:
-				parameters.Modifiers = ICSharpCode.OldNRefactory.Ast.Modifiers.Protected;
+				parameters.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected;
 				break;
 			case 4:
-				parameters.Modifiers = ICSharpCode.OldNRefactory.Ast.Modifiers.Internal;
+				parameters.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Internal;
 				break;
 			}
 		}

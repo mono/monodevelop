@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 using System.Text;
@@ -90,12 +90,12 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			usings.Sort (UsingComparer);
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
 			foreach (IUsing u in usings) {
-				UsingDeclaration declaration;
+				AstNode declaration;
 				if (u.IsFromNamespace)
 					continue;
 				if (u.Aliases.Any ()) {
 					KeyValuePair<string, IReturnType> alias = u.Aliases.First ();
-					declaration = new UsingDeclaration (alias.Key, alias.Value.ConvertToTypeReference ());
+					declaration = new UsingAliasDeclaration (alias.Key, alias.Value.ConvertToTypeReference ());
 				} else {
 					declaration = new UsingDeclaration (u.Namespaces.First ());
 				}

@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
 using Mono.TextEditor;
 using System.Linq;
@@ -35,6 +35,27 @@ namespace MonoDevelop.Refactoring
 {
 	public static class HelperMethods
 	{
+		static Dictionary<string, string> TypeTable = new Dictionary<string, string> ();
+		static HelperMethods ()
+		{
+			TypeTable[DomReturnType.Void.FullName] = "void";
+			TypeTable[DomReturnType.String.FullName] = "string";
+			TypeTable[DomReturnType.Int32.FullName] = "int";
+			TypeTable[DomReturnType.UInt32.FullName] = "uint";
+			TypeTable[DomReturnType.Int64.FullName] = "long";
+			TypeTable[DomReturnType.UInt64.FullName] = "ulong";
+			TypeTable[DomReturnType.Object.FullName] = "object";
+			TypeTable[DomReturnType.Float.FullName] = "float";
+			TypeTable[DomReturnType.Double.FullName] = "double";
+			TypeTable[DomReturnType.Byte.FullName] = "byte";
+			TypeTable[DomReturnType.SByte.FullName] = "sbyte";
+			TypeTable[DomReturnType.Int16.FullName] = "short";
+			TypeTable[DomReturnType.UInt16.FullName] = "ushort";
+			TypeTable[DomReturnType.Decimal.FullName] = "decimal";
+			TypeTable[DomReturnType.Char.FullName] = "char";
+			TypeTable[DomReturnType.Bool.FullName] = "bool";
+		}
+		
 		public static bool IsIdentifierPart (this char ch)
 		{
 			return Char.IsLetterOrDigit (ch) || ch == '_';
@@ -45,13 +66,38 @@ namespace MonoDevelop.Refactoring
 			return new DocumentLocation (location.Line, location.Column);
 		}
 		
-		public static TypeReference ConvertToTypeReference (this MonoDevelop.Projects.Dom.IReturnType returnType)
+		public static AstType ConvertToTypeReference (this MonoDevelop.Projects.Dom.IReturnType returnType)
 		{
+			string primitiveType;
+			if (TypeTable.TryGetValue (returnType.DecoratedFullName, out primitiveType))
+				return new PrimitiveType (primitiveType);
+			
+			AstType result = null;
+			if (!string.IsNullOrEmpty (returnType.Namespace))
+				result = new SimpleType (returnType.Namespace);
+			foreach (var part in returnType.Parts) {
+				if (result == null) {
+					var st = new SimpleType (part.Name);
+					foreach (var type in part.GenericArguments.Select (ga => ConvertToTypeReference (ga)))
+						st.AddChild (type, SimpleType.Roles.TypeArgument);
+					result = st;
+				} else {
+					var mt = new ICSharpCode.NRefactory.CSharp.MemberType () {
+						Target = result,
+						MemberName = part.Name
+					};
+					foreach (var type in part.GenericArguments.Select (ga => ConvertToTypeReference (ga)))
+						mt.AddChild (type, SimpleType.Roles.TypeArgument);
+					result = mt;
+				}
+			}
+			
+			/*
 			List<TypeReference> genericTypes = new List<TypeReference> ();
 			foreach (MonoDevelop.Projects.Dom.IReturnType genericType in returnType.GenericArguments) {
 				genericTypes.Add (ConvertToTypeReference (genericType));
 			}
-			TypeReference result = new TypeReference (returnType.FullName, genericTypes);
+			TypeReference result = new AstType (returnType.FullName, genericTypes);
 			result.IsKeyword = true;
 			result.PointerNestingLevel = returnType.PointerNestingLevel;
 			if (returnType.ArrayDimensions > 0) {
@@ -60,32 +106,51 @@ namespace MonoDevelop.Refactoring
 					rankSpecfier[i] = returnType.GetDimension (i);
 				}
 				result.RankSpecifier = rankSpecfier;
-			}
+			}*/
 			return result;
 		}
 		
-		public static DomReturnType ConvertToReturnType (this TypeReference typeRef)
+		public static DomReturnType ConvertToReturnType (this AstType typeRef)
 		{
 			if (typeRef == null)
 				return null;
 			DomReturnType result;
-			if (typeRef is InnerClassTypeReference) {
-				InnerClassTypeReference innerTypeRef = (InnerClassTypeReference)typeRef;
-				result = innerTypeRef.BaseType.ConvertToReturnType ();
-				result.Parts.Add (new ReturnTypePart (typeRef.Type));
-			} else {
-				result = new DomReturnType (typeRef.Type);
-			}
-			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
-				result.AddTypeParameter (ConvertToReturnType (genericArgument));
-			}
-			result.PointerNestingLevel = typeRef.PointerNestingLevel;
-			if (typeRef.IsArrayType) {
-				result.ArrayDimensions = typeRef.RankSpecifier.Length;
-				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
-					result.SetDimension (i, typeRef.RankSpecifier[i]);
+			if (typeRef is SimpleType) {
+				var st = (SimpleType)typeRef;
+				result = new DomReturnType (st.Identifier);
+				foreach (var arg in st.TypeArguments){
+					result.AddTypeParameter (ConvertToReturnType (arg));
 				}
+			} else if (typeRef is ICSharpCode.NRefactory.CSharp.MemberType) {
+				var mt = (ICSharpCode.NRefactory.CSharp.MemberType)typeRef;
+				result = ConvertToReturnType (mt.Target);
+				result.Parts.Add (new ReturnTypePart (mt.MemberName));
+				
+				foreach (var arg in mt.TypeArguments){
+					result.AddTypeParameter (ConvertToReturnType (arg));
+				}
+			} else if (typeRef is ComposedType) {
+				var ct = (ComposedType)typeRef;
+				result = ConvertToReturnType (ct.BaseType);
+				result.PointerNestingLevel = ct.PointerRank;
+				result.IsNullable = ct.HasNullableSpecifier;
+				
+				int arraySpecifiers = ct.ArraySpecifiers.Count;
+				if (arraySpecifiers> 0) {
+					result.ArrayDimensions = arraySpecifiers;
+					int i = 0;
+					foreach (var spec in ct.ArraySpecifiers) {
+						result.SetDimension (i, spec.Dimensions);
+						i++;
+					}
+				}
+			} else if (typeRef is PrimitiveType) {
+				var pt = (PrimitiveType)typeRef;
+				result = new DomReturnType (pt.Keyword);
+			}else { 
+				throw new InvalidOperationException ("unknown AstType:" + typeRef);
 			}
+			
 			return result;
 		}
 	}

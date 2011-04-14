@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp.Resolver
 							methodResolveResult.CallingType   = resolver.CallingType;
 							methodResolveResult.CallingMember = resolver.CallingMember;
 							
-							identifierExpression.TypeArguments.ForEach (arg => methodResolveResult.AddGenericArgument (resolver.ResolveType (arg.ConvertToReturnType ())));
+							identifierExpression.TypeArguments.ForEach (arg => methodResolveResult.AddGenericArgument (resolver.ResolveType (NRefactoryResolver.ConvertTypeReference (arg))));
 							methodResolveResult.ResolveExtensionMethods ();
 							return methodResolveResult;
 						}
@@ -634,7 +634,7 @@ namespace MonoDevelop.CSharp.Resolver
 					result.StaticResolve = isStatic;
 					//result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
 					foreach (TypeReference typeReference in memberReferenceExpression.TypeArguments) {
-						((MethodResolveResult)result).AddGenericArgument (resolver.ResolveType (typeReference.ConvertToReturnType ()));
+						((MethodResolveResult)result).AddGenericArgument (resolver.ResolveType (NRefactoryResolver.ConvertTypeReference (typeReference)));
 					}
 					((MethodResolveResult)result).ResolveExtensionMethods ();
 					if (nonMethodMembers.Count > 0) {
@@ -813,7 +813,7 @@ namespace MonoDevelop.CSharp.Resolver
 				typeRef.GenericTypes.Add (TypeReference.Null);
 				ResolveResult result = resolver.ResolveExpression (selectLambdaExpr, resolver.ResolvePosition, false);
 				
-				typeRef.GenericTypes.Add (result.ResolvedType.ConvertToTypeReference ());
+				typeRef.GenericTypes.Add (NRefactoryResolver.ConvertToTypeReference (result.ResolvedType));
 				
 				ObjectCreateExpression createExpression = new ObjectCreateExpression (typeRef, new List<Expression> (new Expression [] {
 					null,

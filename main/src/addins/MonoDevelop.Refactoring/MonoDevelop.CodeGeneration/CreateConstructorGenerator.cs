@@ -26,7 +26,7 @@
 
 using Gtk;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
@@ -100,17 +100,20 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
-				List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression> ();
+				var parameters = new List<ParameterDeclaration> ();
 				foreach (IMember member in includedMembers) {
-					parameters.Add (new ParameterDeclarationExpression (member.ReturnType.ConvertToTypeReference (), CreateParameterName (member)));
+					parameters.Add (new ParameterDeclaration (member.ReturnType.ConvertToTypeReference (), CreateParameterName (member)));
 				}
 
-				ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration (Options.EnclosingType.Name, ICSharpCode.OldNRefactory.Ast.Modifiers.Public, parameters, null, null);
+				var constructorDeclaration = new ConstructorDeclaration ();
+				constructorDeclaration.Name = Options.EnclosingType.Name;
+				constructorDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public;
+				constructorDeclaration.Parameters.AddRange (parameters);
 				constructorDeclaration.Body = new BlockStatement ();
 				foreach (IMember member in includedMembers) {
 					MemberReferenceExpression memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
 					AssignmentExpression assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
-					constructorDeclaration.Body.AddChild (new ExpressionStatement (assign));
+					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
 				}
 				yield return astProvider.OutputNode (this.Options.Dom, constructorDeclaration, indent);
 			}

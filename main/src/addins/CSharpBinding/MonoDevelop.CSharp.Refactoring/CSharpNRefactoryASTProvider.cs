@@ -26,10 +26,8 @@
 
 using System;
 using MonoDevelop.Refactoring;
-using ICSharpCode.OldNRefactory.Ast;
 using MonoDevelop.Projects.Dom.Parser;
-using ICSharpCode.OldNRefactory.PrettyPrinter;
-using ICSharpCode.OldNRefactory;
+using ICSharpCode.NRefactory.CSharp;
 using System.IO;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Projects.Policies;
@@ -38,6 +36,7 @@ using MonoDevelop.Projects.Text;
 using System.Reflection;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -48,49 +47,23 @@ namespace MonoDevelop.CSharp.Refactoring
 			return mimeType == CSharpFormatter.MimeType;
 		}
 
-		public string OutputNode (ProjectDom dom, INode node)
+		public string OutputNode (ProjectDom dom, AstNode node)
 		{
 			return OutputNode (dom, node, "");
 		}
 		
-		public string OutputNode (ProjectDom dom, INode node, string indent)
+		public string OutputNode (ProjectDom dom, AstNode node, string indent)
 		{
-			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor ();
-			SetFormatOptions (outputVisitor, dom != null && dom.Project != null ? dom.Project.Policies : null);
-			int col = GetColumn (indent, 0, 4);
-			outputVisitor.OutputFormatter.IndentationLevel = System.Math.Max (0, col / 4);
-			node.AcceptVisitor (outputVisitor, null);
-			return outputVisitor.Text;
-		}
-		
-		static void SetFormatOptions (CSharpOutputVisitor outputVisitor, PolicyContainer policyParent)
-		{
+			StringWriter w = new StringWriter();
+			var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;
 			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			TextStylePolicy currentPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
 			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-
-			outputVisitor.Options.IndentationChar = currentPolicy.TabsToSpaces ? ' ' : '\t';
-			outputVisitor.Options.TabSize = currentPolicy.TabWidth;
-			outputVisitor.Options.IndentSize = currentPolicy.TabWidth;
-
-			outputVisitor.Options.EolMarker = TextStylePolicy.GetEolMarker(currentPolicy.EolMarker);
-			Type optionType = outputVisitor.Options.GetType ();
-
-			foreach (var property in typeof (CSharpFormattingPolicy).GetProperties ()) {
-				PropertyInfo info = optionType.GetProperty (property.Name);
-				if (info == null) 
-					continue;
-				object val = property.GetValue (codePolicy, null);
-				object cval = null;
-				if (info.PropertyType.IsEnum) {
-					cval = Enum.Parse (info.PropertyType, val.ToString ());
-				} else if (info.PropertyType == typeof(bool)) {
-					cval = Convert.ToBoolean (val);
-				} else {
-					cval = Convert.ChangeType (val, info.PropertyType);
-				}
-				info.SetValue (outputVisitor.Options, cval, null);
-			}
+			var formatter = new TextWriterOutputFormatter(w);
+			int col = GetColumn (indent, 0, 4);
+			formatter.Indentation = System.Math.Max (0, col / 4);
+			OutputVisitor visitor = new OutputVisitor (formatter, codePolicy.CreateOptions ());
+			node.AcceptVisitor (visitor, null);
+			return w.ToString();
 		}
 		
 		public static int GetColumn (string wrapper, int i, int tabSize)
@@ -106,72 +79,69 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			return col;
 		}
+		
 		static int GetNextTabstop (int currentColumn, int tabSize)
 		{
 			int result = currentColumn + tabSize;
 			return (result / tabSize) * tabSize;
 		}
 		
-		public ICSharpCode.OldNRefactory.Parser.Errors LastErrors {
+	/*	public ICSharpCode.OldNRefactory.Parser.Errors LastErrors {
 			get;
 			private set;
-		}
+		}*/
+		
 		public Expression ParseExpression (string expressionText)
 		{
 			expressionText = expressionText.Trim ();
-			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expressionText))) {
-				Expression result = null;
-				try {
-					result = parser.ParseExpression ();
-					LastErrors = parser.Errors;
-				} catch (Exception) {
+			var parser = new CSharpParser ();
+			Expression result = null;
+			try {
+				using (var reader = new StringReader (expressionText)) {
+					result = parser.ParseExpression (reader) as Expression;
+					result.Remove ();
+//					LastErrors = parser.Errors;
 				}
-				return result;
+			} catch (Exception) {
 			}
+			return result;
 		}
 		
-		public INode ParseText (string text)
+		public AstNode ParseText (string text)
 		{
 			text = text.Trim ();
-			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (text))) {
-				if (text.EndsWith (";") || text.EndsWith ("}")) {
-					BlockStatement block = null ;
-					try {
-						block = parser.ParseBlock ();
-						LastErrors = parser.Errors;
-					} catch (Exception) {
-					}
-					if (block != null)
-						return block;
-				}
-				return parser.ParseExpression ();
+			var parser = new CSharpParser ();
+
+			using (var reader = new StringReader (text)) {
+				var result = parser.ParseStatements (reader).FirstOrDefault ();
+				if (result != null)
+					result.Remove ();
+				return result;
 			}
 		}
 		
 		public CompilationUnit ParseFile (string content)
 		{
-			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
-				try {
-					parser.Parse ();
-					LastErrors = parser.Errors;
-				} catch (Exception) {
+			try {
+				using (var reader = new StringReader (content)) {
+					var parser = new CSharpParser ();
+					return parser.Parse (reader);
 				}
-				return parser.CompilationUnit;
+			} catch {
+				return null;
 			}
 		}
 
-		public TypeReference ParseTypeReference (string content)
+		public AstType ParseTypeReference (string content)
 		{
-			content = content.Trim ();
-			using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
-				try {
-					var result = parser.ParseTypeReference ();
-					LastErrors = parser.Errors;
-					return result;
-				} catch (Exception) {
+			try {
+				using (var reader = new StringReader (content.Trim ())) {
+					var parser = new CSharpParser ();
+					return parser.ParseTypeReference (reader);
 				}
+			} catch {
+				return null;
 			}
-			return null;
 		}
 	}
 }

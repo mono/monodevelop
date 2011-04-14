@@ -30,12 +30,10 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using ICSharpCode.OldNRefactory.Visitors;
-using ICSharpCode.OldNRefactory;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -89,17 +87,18 @@ namespace MonoDevelop.CodeGeneration
 					yield break;
 				
 				// add local variables
-				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp);
-				Location location = new Location (editor.Caret.Line, editor.Caret.Column);
-				var result = provider.ParseFile (editor.Text);
-				result.AcceptVisitor (visitor, null);
-				
-				foreach (var pair in visitor.Variables) {
-					foreach (LocalLookupVariable varDescr in pair.Value) {
-						if (varDescr.StartPos <= location && location <= varDescr.EndPos)
-							yield return new LocalVariable (Options.EnclosingMember, varDescr.Name, varDescr.TypeRef.ConvertToReturnType (), DomRegion.Empty);
-					}
-				}
+// TODO !!!!
+//				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp);
+//				var location = new AstLocation (editor.Caret.Line, editor.Caret.Column);
+//				var result = provider.ParseFile (editor.Text);
+//				result.AcceptVisitor (visitor, null);
+//				
+//				foreach (var pair in visitor.Variables) {
+//					foreach (LocalLookupVariable varDescr in pair.Value) {
+//						if (varDescr.StartPos <= location && location <= varDescr.EndPos)
+//							yield return new LocalVariable (Options.EnclosingMember, varDescr.Name, varDescr.TypeRef.ConvertToReturnType (), DomRegion.Empty);
+//					}
+//				}
 				
 				// add parameters
 				if (Options.EnclosingMember.CanHaveParameters) {

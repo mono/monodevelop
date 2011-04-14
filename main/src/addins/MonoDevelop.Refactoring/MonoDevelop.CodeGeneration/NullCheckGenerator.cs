@@ -28,7 +28,7 @@
 using System.Collections.Generic;
 
 using Gtk;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 
 using MonoDevelop;
 using MonoDevelop.CodeGeneration;
@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeGeneration
 					        new PrimitiveExpression (null)
 					    ), new ThrowStatement (
 					    	new ObjectCreateExpression (
-					        	Options.ShortenTypeName (new TypeReference ("System.ArgumentNullException")),
+					        	Options.ShortenTypeName (new SimpleType ("System.ArgumentNullException")),
 					            new List<Expression> { new PrimitiveExpression (member.Name) }
 							)
 					    )

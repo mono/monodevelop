@@ -26,7 +26,7 @@
 
 using Gtk;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
@@ -95,32 +95,32 @@ namespace MonoDevelop.CodeGeneration
 				MethodDeclaration methodDeclaration = new MethodDeclaration ();
 				methodDeclaration.Name = "Equals";
 
-				methodDeclaration.TypeReference = DomReturnType.Bool.ConvertToTypeReference ();
-				methodDeclaration.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Public | ICSharpCode.OldNRefactory.Ast.Modifiers.Override;
+				methodDeclaration.ReturnType = DomReturnType.Bool.ConvertToTypeReference ();
+				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
-				methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (DomReturnType.Object.ConvertToTypeReference (), "obj"));
+				methodDeclaration.Parameters.Add (new ParameterDeclaration (DomReturnType.Object.ConvertToTypeReference (), "obj"));
 				IdentifierExpression paramId = new IdentifierExpression ("obj");
-				IfElseStatement ifStatement = new IfElseStatement (null);
+				IfElseStatement ifStatement = new IfElseStatement ();
 				ifStatement.Condition = new BinaryOperatorExpression (paramId, BinaryOperatorType.Equality, new PrimitiveExpression (null));
-				ifStatement.TrueStatement.Add (new ReturnStatement (new PrimitiveExpression (false)));
-				methodDeclaration.Body.AddChild (ifStatement);
+				ifStatement.TrueStatement = new ReturnStatement (new PrimitiveExpression (false));
+				methodDeclaration.Body.Statements.Add (ifStatement);
 
-				ifStatement = new IfElseStatement (null);
+				ifStatement = new IfElseStatement ();
 				List<Expression> arguments = new List<Expression> ();
 				arguments.Add (new ThisReferenceExpression ());
 				arguments.Add (paramId);
 				ifStatement.Condition = new InvocationExpression (new IdentifierExpression ("ReferenceEquals"), arguments);
-				ifStatement.TrueStatement.Add (new ReturnStatement (new PrimitiveExpression (true)));
-				methodDeclaration.Body.AddChild (ifStatement);
+				ifStatement.TrueStatement = new ReturnStatement (new PrimitiveExpression (true));
+				methodDeclaration.Body.Statements.Add (ifStatement);
 
-				ifStatement = new IfElseStatement (null);
-				ifStatement.Condition = new BinaryOperatorExpression (new InvocationExpression (new MemberReferenceExpression (paramId, "GetType")), BinaryOperatorType.InEquality, new TypeOfExpression (new TypeReference (Options.EnclosingType.Name)));
-				ifStatement.TrueStatement.Add (new ReturnStatement (new PrimitiveExpression (false)));
-				methodDeclaration.Body.AddChild (ifStatement);
+				ifStatement = new IfElseStatement ();
+				ifStatement.Condition = new BinaryOperatorExpression (new InvocationExpression (new MemberReferenceExpression (paramId, "GetType")), BinaryOperatorType.InEquality, new TypeOfExpression (new SimpleType (Options.EnclosingType.Name)));
+				ifStatement.TrueStatement = new ReturnStatement (new PrimitiveExpression (false));
+				methodDeclaration.Body.Statements.Add (ifStatement);
 
-				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (new DomReturnType (Options.EnclosingType).ConvertToTypeReference ());
-				varDecl.Variables.Add (new VariableDeclaration ("other", new CastExpression (varDecl.TypeReference, paramId, CastType.Cast)));
-				methodDeclaration.Body.AddChild (varDecl);
+				AstType varType = new DomReturnType (Options.EnclosingType).ConvertToTypeReference ();
+				var varDecl = new VariableDeclarationStatement (varType, "other", new CastExpression (varType, paramId));
+				methodDeclaration.Body.Statements.Add (varDecl);
 				
 				IdentifierExpression otherId = new IdentifierExpression ("other");
 				Expression binOp = null;
@@ -129,18 +129,18 @@ namespace MonoDevelop.CodeGeneration
 					if (binOp == null) {
 						binOp = right;
 					} else {
-						binOp = new BinaryOperatorExpression (binOp, BinaryOperatorType.LogicalAnd, right);
+						binOp = new BinaryOperatorExpression (binOp, BinaryOperatorType.ConditionalAnd, right);
 					}
 				}
 
-				methodDeclaration.Body.AddChild (new ReturnStatement (binOp));
+				methodDeclaration.Body.Statements.Add (new ReturnStatement (binOp));
 				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 
 				methodDeclaration = new MethodDeclaration ();
 				methodDeclaration.Name = "GetHashCode";
 
-				methodDeclaration.TypeReference = DomReturnType.Int32.ConvertToTypeReference ();
-				methodDeclaration.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Public | ICSharpCode.OldNRefactory.Ast.Modifiers.Override;
+				methodDeclaration.ReturnType = DomReturnType.Int32.ConvertToTypeReference ();
+				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
 
 				binOp = null;
@@ -159,9 +159,9 @@ namespace MonoDevelop.CodeGeneration
 					}
 				}
 				BlockStatement uncheckedBlock = new BlockStatement ();
-				uncheckedBlock.AddChild (new ReturnStatement (binOp));
+				uncheckedBlock.Statements.Add (new ReturnStatement (binOp));
 
-				methodDeclaration.Body.AddChild (new UncheckedStatement (uncheckedBlock));
+				methodDeclaration.Body.Statements.Add (new UncheckedStatement (uncheckedBlock));
 				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 			}
 		}

@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
@@ -104,10 +104,10 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
 			backingStoreName = GetBackingStoreName (property);
 			
-			FieldDeclaration backingStore = new FieldDeclaration (null);
+			FieldDeclaration backingStore = new FieldDeclaration ();
 			
-			backingStore.TypeReference = options.Document.CompilationUnit.ShortenTypeName (property.ReturnType, property.Location).ConvertToTypeReference ();
-			backingStore.Fields.Add (new VariableDeclaration (backingStoreName));
+			backingStore.ReturnType = options.Document.CompilationUnit.ShortenTypeName (property.ReturnType, property.Location).ConvertToTypeReference ();
+			backingStore.Variables.Add (new VariableInitializer (backingStoreName));
 			DocumentLocation location = property.Location.ToDocumentLocation (data.Document);
 			location.Column = 1;
 			refactoringStartOffset = data.Document.LocationToOffset (location);
@@ -123,8 +123,8 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				int endOffset = data.Document.LocationToOffset (property.GetRegion.End.ToDocumentLocation (data.Document));
 				
 				BlockStatement getBlock = new BlockStatement ();
-				getBlock.AddChild (new ReturnStatement (new IdentifierExpression (backingStoreName)));
-				string text = astProvider.OutputNode (options.Dom, new PropertyGetRegion (getBlock, null), options.GetIndent (property) + "\t").Trim ();
+				getBlock.Statements.Add (new ReturnStatement (new IdentifierExpression (backingStoreName)));
+				string text = "get " + astProvider.OutputNode (options.Dom, getBlock, options.GetIndent (property) + "\t").Trim ();
 				result.Add (new TextReplaceChange () {
 					FileName = options.Document.FileName,
 					Offset = startOffset,
@@ -137,8 +137,8 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				int startOffset = data.Document.LocationToOffset (property.SetRegion.Start.ToDocumentLocation (data.Document));
 				int endOffset = data.Document.LocationToOffset (property.SetRegion.End.ToDocumentLocation (data.Document));
 				BlockStatement setBlock = new BlockStatement ();
-				setBlock.AddChild (new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (backingStoreName), AssignmentOperatorType.Assign, new IdentifierExpression ("value"))));
-				string text = astProvider.OutputNode (options.Dom, new PropertySetRegion (setBlock, null), options.GetIndent (property) + "\t").Trim ();
+				setBlock.Statements.Add (new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (backingStoreName), AssignmentOperatorType.Assign, new IdentifierExpression ("value"))));
+				string text = "set " + astProvider.OutputNode (options.Dom, setBlock, options.GetIndent (property) + "\t").Trim ();
 				result.Add (new TextReplaceChange () {
 					FileName = options.Document.FileName,
 					Offset = startOffset,

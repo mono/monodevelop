@@ -27,15 +27,14 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.OldNRefactory;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
-using ICSharpCode.OldNRefactory.Visitors;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring.DeclareLocal
 {
@@ -85,7 +84,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			string line = data.Document.GetTextAt (lineSegment);
 			Expression expression = provider.ParseExpression (line);
 			BlockStatement block = provider.ParseText (line) as BlockStatement;
-			if (expression == null || (block != null && block.Children [0] is LocalVariableDeclaration))
+			if (expression == null || (block != null && block.Statements.FirstOrDefault ()  is VariableDeclarationStatement))
 				return false;
 			
 			options.ResolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
@@ -160,7 +159,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			}
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
-			ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
+			var unit = provider.ParseFile (data.Document.Text);
 			var visitor = new VariableLookupVisitor (resolver, new DomLocation (endPoint.Line, endPoint.Column));
 			if (options.ResolveResult == null) {
 				LoggingService.LogError ("Declare local error: resolve result == null");
@@ -168,7 +167,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			}
 			IMember callingMember = options.ResolveResult.CallingMember;
 			if (callingMember != null)
-				visitor.MemberLocation = new Location (callingMember.Location.Column, callingMember.Location.Line);
+				visitor.MemberLocation = new AstLocation (callingMember.Location.Column, callingMember.Location.Line);
 			unit.AcceptVisitor (visitor, null);
 			
 			if (data.IsSomethingSelected) {
@@ -182,10 +181,9 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				if (resolvedType == null || string.IsNullOrEmpty (resolvedType.Name))
 					resolvedType = DomReturnType.Object;
 				varName = CreateVariableName (resolvedType, visitor);
-				TypeReference returnType;
+				AstType returnType;
 				if (resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.Name)) {
-					returnType = new TypeReference ("var");
-					returnType.IsKeyword = true;
+					returnType = new SimpleType ("var");
 				} else {
 					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 				}
@@ -195,63 +193,21 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				insert.FileName = options.Document.FileName;
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 				
-				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (returnType);
-				varDecl.Variables.Add (new VariableDeclaration (varName, provider.ParseExpression (data.SelectedText)));
+				var varDecl = new VariableDeclarationStatement (returnType, varName, provider.ParseExpression (data.SelectedText));
 				
-				GetContainingEmbeddedStatementVisitor blockVisitor = new GetContainingEmbeddedStatementVisitor ();
-				blockVisitor.LookupLocation = new Location (endPoint.Column, endPoint.Line);
-			
-				unit.AcceptVisitor (blockVisitor, null);
+				var node = unit.GetNodeAt (endPoint.Line, endPoint.Column);
 				
-				StatementWithEmbeddedStatement containing = blockVisitor.ContainingStatement as StatementWithEmbeddedStatement;
+				var containing = node.Parent;
 				
-				if (containing != null && !(containing.EmbeddedStatement is BlockStatement)) {
-					insert.Offset = data.Document.LocationToOffset (containing.StartLocation.Line, containing.StartLocation.Column);
-					lineSegment = data.Document.GetLineByOffset (insert.Offset);
-					insert.RemovedChars = data.Document.LocationToOffset (containing.EndLocation.Line, containing.EndLocation.Column) - insert.Offset;
-					BlockStatement insertedBlock = new BlockStatement ();
-					insertedBlock.AddChild (varDecl);
-					insertedBlock.AddChild (containing.EmbeddedStatement);
-					
-					containing.EmbeddedStatement = insertedBlock;
-					insert.InsertedText = provider.OutputNode (options.Dom, containing, options.GetWhitespaces (lineSegment.Offset)).TrimStart ();
-					int offset, length;
-					if (SearchSubExpression (insert.InsertedText, data.SelectedText, 0, out offset, out length)) 
-					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) {
-						insert.InsertedText = insert.InsertedText.Substring (0, offset) + varName + insert.InsertedText.Substring (offset + length);
-						insertOffset = insert.Offset + offset;
-					}
-					
-				} else if (blockVisitor.ContainingStatement is IfElseStatement) {
-					IfElseStatement ifElse = blockVisitor.ContainingStatement as IfElseStatement;
-					
-					insert.Offset = data.Document.LocationToOffset (blockVisitor.ContainingStatement.StartLocation.Line, blockVisitor.ContainingStatement.StartLocation.Column);
-					lineSegment = data.Document.GetLineByOffset (insert.Offset);
-					insert.RemovedChars = data.Document.LocationToOffset (blockVisitor.ContainingStatement.EndLocation.Line, blockVisitor.ContainingStatement.EndLocation.Column) - insert.Offset;
-					BlockStatement insertedBlock = new BlockStatement ();
-					insertedBlock.AddChild (varDecl);
-					if (blockVisitor.ContainsLocation (ifElse.TrueStatement [0])) {
-						insertedBlock.AddChild (ifElse.TrueStatement [0]);
-						ifElse.TrueStatement [0] = insertedBlock;
+				{
+					if (containing is BlockStatement) {
+						lineSegment = data.Document.GetLine (data.Caret.Line);
 					} else {
-						insertedBlock.AddChild (ifElse.FalseStatement [0]);
-						ifElse.FalseStatement [0] = insertedBlock;
+						lineSegment = data.Document.GetLine (containing.StartLocation.Line);
 					}
-					
-					insert.InsertedText = provider.OutputNode (options.Dom, blockVisitor.ContainingStatement, options.GetWhitespaces (lineSegment.Offset));
-					int offset, length;
-					
-					if (SearchSubExpression (insert.InsertedText, provider.OutputNode (options.Dom, insertedBlock), 0, out offset, out length)) 
-					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) 
-					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) {
-						insert.InsertedText = insert.InsertedText.Substring (0, offset) + varName + insert.InsertedText.Substring (offset + length);
-						insertOffset = insert.Offset + offset;
-					}
-				} else {
-					lineSegment = data.Document.GetLine (data.Caret.Line);
 					insert.Offset = lineSegment.Offset;
 					insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl) + data.EolMarker;
-					insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + provider.OutputNode (options.Dom, varDecl.TypeReference).Length + " ".Length;
+					insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + provider.OutputNode (options.Dom, varDecl.Type).Length + " ".Length;
 
 					TextReplaceChange replace = new TextReplaceChange ();
 					replace.FileName = options.Document.FileName;
@@ -286,11 +242,10 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 				insert.Offset = lineSegment.Offset + options.GetWhitespaces (lineSegment.Offset).Length;
 				varName = CreateVariableName (resolveResult.ResolvedType, visitor);
-				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ());
-				varDecl.Variables.Add (new VariableDeclaration (varName, expression));
+				var varDecl = new VariableDeclarationStatement (options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference (), varName, expression);
 				insert.RemovedChars = expression.EndLocation.Column - 1;
 				insert.InsertedText = provider.OutputNode (options.Dom, varDecl);
-				insertOffset = insert.Offset + provider.OutputNode (options.Dom, varDecl.TypeReference).Length + " ".Length;
+				insertOffset = insert.Offset + provider.OutputNode (options.Dom, varDecl.Type).Length + " ".Length;
 
 				result.Add (insert);
 				varCount++;
@@ -455,7 +410,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		}
 	}
 	
-	public class VariableLookupVisitor : AbstractAstVisitor
+	public class VariableLookupVisitor : DepthFirstAstVisitor<object, object>
 	{
 		List<KeyValuePair <string, IReturnType>> unknownVariables = new List<KeyValuePair <string, IReturnType>> ();
 		Dictionary<string, VariableDescriptor> variables = new Dictionary<string, VariableDescriptor> ();
@@ -483,7 +438,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			}
 		}
 		
-		public Location MemberLocation {
+		public AstLocation MemberLocation {
 			get;
 			set;
 		}
@@ -498,42 +453,23 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		{
 			this.resolver = resolver;
 			this.position = position;
-			this.MemberLocation = Location.Empty;
+			this.MemberLocation = AstLocation.Empty;
 		}
-		
-		static IReturnType ConvertTypeReference (TypeReference typeRef)
-		{
-			if (typeRef == null)
-				return null;
-			DomReturnType result = new DomReturnType (typeRef.Type);
-			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
-				result.AddTypeParameter (ConvertTypeReference (genericArgument));
-			}
-			result.PointerNestingLevel = typeRef.PointerNestingLevel;
-			if (typeRef.IsArrayType) {
-				result.ArrayDimensions = typeRef.RankSpecifier.Length;
-				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
-					result.SetDimension (i, typeRef.RankSpecifier[i]);
-				}
-			}
-			return result;
-		}
-		
-		public override object VisitLocalVariableDeclaration (LocalVariableDeclaration localVariableDeclaration, object data)
+		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement localVariableDeclaration, object data)
 		{
 			if (!CutRegion.Contains (localVariableDeclaration.StartLocation.Line, localVariableDeclaration.StartLocation.Column)) {
-				foreach (VariableDeclaration varDecl in localVariableDeclaration.Variables) {
+				foreach (var varDecl in localVariableDeclaration.Variables) {
 					variables[varDecl.Name] = new VariableDescriptor (varDecl.Name) {
 						IsDefined = true, 
-						ReturnType = ConvertTypeReference (localVariableDeclaration.TypeReference),
+						ReturnType = HelperMethods.ConvertToReturnType  (localVariableDeclaration.Type),
 						Location = new DocumentLocation (MemberLocation.Line + localVariableDeclaration.StartLocation.Line, localVariableDeclaration.StartLocation.Column)
 					};
 				}
 			}
-			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
+			return base.VisitVariableDeclarationStatement(localVariableDeclaration, data);
 		}
 		
-		public override object VisitIdentifierExpression (ICSharpCode.OldNRefactory.Ast.IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
 		{
 			if (!variables.ContainsKey (identifierExpression.Identifier)) {
 
@@ -562,7 +498,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return base.VisitIdentifierExpression (identifierExpression, data);
 		}
 		bool valueGetsChanged = false;
-		public override object VisitAssignmentExpression (ICSharpCode.OldNRefactory.Ast.AssignmentExpression assignmentExpression, object data)
+		public override object VisitAssignmentExpression (AssignmentExpression assignmentExpression, object data)
 		{
 			assignmentExpression.Right.AcceptVisitor(this, data);
 				
@@ -580,9 +516,9 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return null;
 		}
 		
-		public override object VisitUnaryOperatorExpression (ICSharpCode.OldNRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			switch (unaryOperatorExpression.Op) {
+			switch (unaryOperatorExpression.Operator) {
 			case UnaryOperatorType.Increment:
 			case UnaryOperatorType.Decrement:
 			case UnaryOperatorType.PostIncrement:
@@ -592,7 +528,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			}
 			object result = base.VisitUnaryOperatorExpression (unaryOperatorExpression, data);
 			valueGetsChanged = false;
-			switch (unaryOperatorExpression.Op) {
+			switch (unaryOperatorExpression.Operator) {
 			case UnaryOperatorType.Increment:
 			case UnaryOperatorType.Decrement:
 			case UnaryOperatorType.PostIncrement:
@@ -605,7 +541,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return result;
 		}
 
-		public override object VisitDirectionExpression (ICSharpCode.OldNRefactory.Ast.DirectionExpression directionExpression, object data)
+		public override object VisitDirectionExpression (DirectionExpression directionExpression, object data)
 		{
 			valueGetsChanged = true;
 			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;

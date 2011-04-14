@@ -45,20 +45,21 @@ namespace MonoDevelop.Refactoring.Tests
 		}
 		
 		[Test()]
+		[Ignore()]
 		public void DeclareLocalStatementTest ()
 		{
 			TestDeclareLocal (@"class TestClass
 {
 	void Test ()
 	{
-		$345
+		<-test()->;
 	}
 }
 ", @"class TestClass
 {
 	void Test ()
 	{
-		int i = 345;
+		int i = test();
 	}
 }
 ");

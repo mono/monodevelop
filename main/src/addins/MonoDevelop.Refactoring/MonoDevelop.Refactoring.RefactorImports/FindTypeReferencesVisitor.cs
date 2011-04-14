@@ -27,21 +27,20 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Visitors;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring.RefactorImports
 {
-	public class FindTypeReferencesVisitor : AbstractAstVisitor
+	public class FindTypeReferencesVisitor : DepthFirstAstVisitor<object, object>
 	{
 		TextEditorData data;
 		IResolver resolver;
-		List<TypeReference> possibleTypeReferences = new List<TypeReference> ();
+		List<AstType> possibleTypeReferences = new List<AstType> ();
 		
-		public List<TypeReference> PossibleTypeReferences {
+		public List<AstType> PossibleTypeReferences {
 			get { return this.possibleTypeReferences; }
 		}
 		
@@ -51,24 +50,36 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			this.resolver = resolver;
 		}
 		
-		public override object VisitIdentifierExpression (ICSharpCode.OldNRefactory.Ast.IdentifierExpression identifierExpression, object data)
+		public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
 		{
-			possibleTypeReferences.Add (new TypeReference (identifierExpression.Identifier));
+			possibleTypeReferences.Add (new SimpleType (identifierExpression.Identifier));
 			
 			return base.VisitIdentifierExpression (identifierExpression, data);
 		}
 		
-		public override object VisitTypeReference (TypeReference typeReference, object data)
+		public override object VisitComposedType (ComposedType composedType, object data)
 		{
-			if (!typeReference.IsGlobal)
-				possibleTypeReferences.Add (typeReference);
-			return base.VisitTypeReference (typeReference, data);
+			possibleTypeReferences.Add (composedType);
+			return null;
 		}
 		
-		public override object VisitAttribute (ICSharpCode.OldNRefactory.Ast.Attribute attribute, object data)
+		public override object VisitMemberType (ICSharpCode.NRefactory.CSharp.MemberType memberType, object data)
 		{
-			possibleTypeReferences.Add (new TypeReference (attribute.Name));
-			possibleTypeReferences.Add (new TypeReference (attribute.Name + "Attribute"));
+			possibleTypeReferences.Add (memberType);
+			return null;
+		}
+		
+		public override object VisitSimpleType (SimpleType simpleType, object data)
+		{
+			possibleTypeReferences.Add (simpleType);
+			return null;
+		}
+		
+		public override object VisitAttribute (ICSharpCode.NRefactory.CSharp.Attribute attribute, object data)
+		{
+			possibleTypeReferences.Add (attribute.Type);
+			//
+			//possibleTypeReferences.Add (new SimpleType (attribute.Name + "Attribute"));
 			return base.VisitAttribute(attribute, data);
 		}
 		
@@ -84,7 +95,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			MethodResolveResult mrr = resolver.Resolve (new ExpressionResult (invocation), new DomLocation (invocationExpression.StartLocation.Line, invocationExpression.StartLocation.Column)) as MethodResolveResult;
 			if (mrr != null && mrr.MostLikelyMethod != null && mrr.MostLikelyMethod is ExtensionMethod) {
 				IMethod originalMethod = ((ExtensionMethod)mrr.MostLikelyMethod).OriginalMethod;
-				possibleTypeReferences.Add (new TypeReference (originalMethod.DeclaringType.Name));
+				possibleTypeReferences.Add (new SimpleType (originalMethod.DeclaringType.Name));
 			}
 			return null;
 		}

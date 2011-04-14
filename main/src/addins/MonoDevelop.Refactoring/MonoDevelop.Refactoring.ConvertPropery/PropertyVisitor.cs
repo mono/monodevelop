@@ -27,14 +27,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Visitors;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Refactoring.ConvertPropery
 {
-	public class PropertyVisitor : AbstractAstVisitor
+	public class PropertyVisitor : DepthFirstAstVisitor<object, object>
 	{
 		IProperty Property {
 			get;
@@ -54,27 +53,24 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 		{
 			this.curPropertyDeclaration = propertyDeclaration;
+			var propertyGetRegion = propertyDeclaration.Getter;
+			if (!propertyGetRegion.IsNull) {
+				if (curPropertyDeclaration != null && curPropertyDeclaration.Name == Property.Name && propertyGetRegion.Body.Statements.Count == 1) {
+					ReturnStatement returnStatement = propertyGetRegion.Body.Statements.FirstOrDefault () as ReturnStatement;
+					if (returnStatement != null) {
+						MemberReferenceExpression mrr = returnStatement.Expression as MemberReferenceExpression;
+						if (mrr != null) {
+							if (mrr.Target is ThisReferenceExpression)
+								BackingStoreName = mrr.MemberName;
+						}
+						IdentifierExpression idExpr = returnStatement.Expression as IdentifierExpression;
+						if (idExpr != null) 
+							BackingStoreName = idExpr.Identifier;
+					}
+				}
 				
+			}
 			return base.VisitPropertyDeclaration (propertyDeclaration, data);
 		}
-		
-		public override object VisitPropertyGetRegion (PropertyGetRegion propertyGetRegion, object data)
-		{
-			if (curPropertyDeclaration != null && curPropertyDeclaration.Name == Property.Name && propertyGetRegion.Block.Children.Count == 1) {
-				ReturnStatement returnStatement = propertyGetRegion.Block.Children[0] as ReturnStatement;
-				if (returnStatement != null) {
-					MemberReferenceExpression mrr = returnStatement.Expression as MemberReferenceExpression;
-					if (mrr != null) {
-						if (mrr.TargetObject is ThisReferenceExpression)
-							BackingStoreName = mrr.MemberName;
-					}
-					IdentifierExpression idExpr = returnStatement.Expression as IdentifierExpression;
-					if (idExpr != null) 
-						BackingStoreName = idExpr.Identifier;
-				}
-			}
-			return base.VisitPropertyGetRegion (propertyGetRegion, data);
-		}
-		
 	}
 }

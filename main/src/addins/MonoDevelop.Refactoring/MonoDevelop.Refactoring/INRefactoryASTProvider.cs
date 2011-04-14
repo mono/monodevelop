@@ -25,9 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.PrettyPrinter;
-using ICSharpCode.OldNRefactory;
+using ICSharpCode.NRefactory.CSharp;
 using System.IO;
 using MonoDevelop.Projects.Dom.Parser;
 
@@ -35,17 +33,17 @@ namespace MonoDevelop.Refactoring
 {
 	public interface INRefactoryASTProvider
 	{
-		string OutputNode (ProjectDom dom, INode node);
-		string OutputNode (ProjectDom dom, INode node, string indent);
+		string OutputNode (ProjectDom dom, AstNode node);
+		string OutputNode (ProjectDom dom, AstNode node, string indent);
 		
-		ICSharpCode.OldNRefactory.Parser.Errors LastErrors {
+	/*	ICSharpCode.OldNRefactory.Parser.Errors LastErrors {
 			get;
-		}
+		}*/
 		
-		INode ParseText (string text);
+		AstNode ParseText (string text);
 		Expression ParseExpression (string expressionText);
 		CompilationUnit ParseFile (string content);
-		TypeReference ParseTypeReference (string typeText);
+		AstType ParseTypeReference (string typeText);
 		
 		bool CanGenerateASTFrom (string mimeType);
 	}

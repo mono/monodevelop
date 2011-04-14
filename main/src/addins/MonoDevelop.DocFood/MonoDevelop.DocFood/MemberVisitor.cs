@@ -24,21 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.OldNRefactory.Visitors;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using System.Collections.Generic;
 
 namespace MonoDevelop.DocFood
 {
-	public class MemberVisitor : AbstractAstVisitor
+	public class MemberVisitor : DepthFirstAstVisitor<object, object>
 	{
-		public List<TypeReference> Exceptions = new List<TypeReference> ();
+		public List<AstType> Exceptions = new List<AstType> ();
 		
 		public override object VisitThrowStatement (ThrowStatement throwStatement, object data)
 		{
-			ObjectCreateExpression oce = throwStatement.Expression as ObjectCreateExpression;
+			var oce = throwStatement.Expression as ObjectCreateExpression;
 			if (oce != null)
-				Exceptions.Add (oce.CreateType);
+				Exceptions.Add (oce.Type);
 			return null;
 		}
 	}

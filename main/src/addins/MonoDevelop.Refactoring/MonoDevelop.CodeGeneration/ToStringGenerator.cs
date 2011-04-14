@@ -30,7 +30,7 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
@@ -112,10 +112,10 @@ namespace MonoDevelop.CodeGeneration
 
 				MethodDeclaration methodDeclaration = new MethodDeclaration ();
 				methodDeclaration.Name = "ToString";
-				methodDeclaration.TypeReference = DomReturnType.String.ConvertToTypeReference ();
-				methodDeclaration.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Public | ICSharpCode.OldNRefactory.Ast.Modifiers.Override;
+				methodDeclaration.ReturnType = DomReturnType.String.ConvertToTypeReference ();
+				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
-				MemberReferenceExpression formatReference = new MemberReferenceExpression (new TypeReferenceExpression (methodDeclaration.TypeReference), "Format");
+				MemberReferenceExpression formatReference = new MemberReferenceExpression (new TypeReferenceExpression (methodDeclaration.ReturnType), "Format");
 				List<Expression> arguments = new List<Expression> ();
 				arguments.Add (new PrimitiveExpression (format.ToString ()));
 
@@ -123,7 +123,7 @@ namespace MonoDevelop.CodeGeneration
 					arguments.Add (new IdentifierExpression (member.Name));
 				}
 
-				methodDeclaration.Body.AddChild (new ReturnStatement (new InvocationExpression (formatReference, arguments)));
+				methodDeclaration.Body.Statements.Add (new ReturnStatement (new InvocationExpression (formatReference, arguments)));
 				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 			}
 		}

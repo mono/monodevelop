@@ -25,16 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.OldNRefactory.Visitors;
+using ICSharpCode.NRefactory.CSharp;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MonoDevelop.Refactoring.MoveTypeToFile
 {
-	public class TypeFilterTransformer : AbstractAstTransformer
+	public class TypeFilterTransformer : DepthFirstAstVisitor<object, object>
 	{
 		string fullName;
-		public ICSharpCode.OldNRefactory.Ast.TypeDeclaration TypeDeclaration {
+		public TypeDeclaration TypeDeclaration {
 			get;
 			set;
 		}
@@ -43,10 +43,10 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 			this.fullName = fullName;
 		}
 		
-		public override object VisitTypeDeclaration (ICSharpCode.OldNRefactory.Ast.TypeDeclaration typeDeclaration, object data)
+		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
 			if (BuildName (typeDeclaration) != fullName) {
-				RemoveCurrentNode ();
+				typeDeclaration.Remove ();
 				return null;
 			}
 			TypeDeclaration = typeDeclaration;
@@ -54,8 +54,8 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 			return result;
 		}
 		
-		Stack<ICSharpCode.OldNRefactory.Ast.NamespaceDeclaration> namespaces = new Stack<ICSharpCode.OldNRefactory.Ast.NamespaceDeclaration> ();
-		public override object VisitNamespaceDeclaration (ICSharpCode.OldNRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
+		Stack<NamespaceDeclaration> namespaces = new Stack<NamespaceDeclaration> ();
+		public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			namespaces.Push (namespaceDeclaration);
 			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
@@ -63,7 +63,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 			return result;
 		}
 
-		string BuildName (ICSharpCode.OldNRefactory.Ast.TypeDeclaration typeDeclaration)
+		string BuildName (TypeDeclaration typeDeclaration)
 		{
 			// note: inner types can't be moved therefore they're missing here.
 			StringBuilder result = new StringBuilder ();
@@ -72,9 +72,9 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				result.Append (".");
 			}
 			result.Append (typeDeclaration.Name);
-			if (typeDeclaration.Templates != null && typeDeclaration.Templates.Count > 0) {
+			if (typeDeclaration.TypeParameters.Count > 0) {
 				result.Append ("`");
-				result.Append (typeDeclaration.Templates.Count);
+				result.Append (typeDeclaration.TypeParameters.Count);
 			}
 			
 			return result.ToString ();

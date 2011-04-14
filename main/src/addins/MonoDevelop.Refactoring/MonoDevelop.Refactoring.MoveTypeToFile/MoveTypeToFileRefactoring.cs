@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using System.Text;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.StandardHeader;
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				
 				INRefactoryASTProvider provider = options.GetASTProvider ();
 				Mono.TextEditor.TextEditorData data = options.GetTextEditorData ();
-				ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = provider.ParseFile (options.Document.Editor.Text);
+				ICSharpCode.NRefactory.CSharp.CompilationUnit unit = provider.ParseFile (options.Document.Editor.Text);
 				
 				TypeFilterTransformer typeFilterTransformer = new TypeFilterTransformer ((type is InstantiatedType) ? ((InstantiatedType)type).UninstantiatedType.DecoratedFullName : type.DecoratedFullName);
 				unit.AcceptVisitor (typeFilterTransformer, null);
@@ -108,8 +108,8 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				if (startLine >= 1) {
 					start = data.Document.GetLine (startLine).Offset;
 				} else {
-					var startLocation = typeFilterTransformer.TypeDeclaration.StartLocation;
-					startLocation.Column = 1;
+					var startLocation = new AstLocation (typeFilterTransformer.TypeDeclaration.StartLocation.Line, 1);
+					
 					foreach (var attr in typeFilterTransformer.TypeDeclaration.Attributes) {
 						if (attr.StartLocation < startLocation)
 							startLocation = attr.StartLocation;
@@ -119,7 +119,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				}
 				int length = data.Document.LocationToOffset (typeFilterTransformer.TypeDeclaration.EndLocation.Line, typeFilterTransformer.TypeDeclaration.EndLocation.Column) - start;
 				
-				ICSharpCode.OldNRefactory.Ast.CompilationUnit generatedCompilationUnit = provider.ParseFile (generatedDocument.Text);
+				ICSharpCode.NRefactory.CSharp.CompilationUnit generatedCompilationUnit = provider.ParseFile (generatedDocument.Text);
 				TypeSearchVisitor typeSearchVisitor = new TypeSearchVisitor ();
 				generatedCompilationUnit.AcceptVisitor (typeSearchVisitor, null);
 				

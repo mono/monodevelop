@@ -32,7 +32,7 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
@@ -99,27 +99,28 @@ namespace MonoDevelop.CodeGeneration
 				foreach (IMember member in includedMembers) {
 					MethodDeclaration methodDeclaration = new MethodDeclaration ();
 					methodDeclaration.Name = "On" + member.Name;
-					methodDeclaration.TypeReference = DomReturnType.Void.ConvertToTypeReference ();
-					methodDeclaration.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Protected | ICSharpCode.OldNRefactory.Ast.Modifiers.Virtual;
+					methodDeclaration.ReturnType = DomReturnType.Void.ConvertToTypeReference ();
+					methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Virtual;
 					methodDeclaration.Body = new BlockStatement ();
 
 					IType type = Options.Dom.SearchType (Options.Document.ParsedDocument.CompilationUnit, member.DeclaringType, member.Location, member.ReturnType);
 					IMethod invokeMethod = type.Methods.First ();
 
-					methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.ShortenTypeName (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference ()), invokeMethod.Parameters[1].Name));
+					methodDeclaration.Parameters.Add (new ParameterDeclaration (Options.ShortenTypeName (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference ()), invokeMethod.Parameters[1].Name));
 					const string handlerName = "handler";
 					
-					LocalVariableDeclaration handlerVariable = new LocalVariableDeclaration (new VariableDeclaration (handlerName, new MemberReferenceExpression (new ThisReferenceExpression (), member.Name)));
-					handlerVariable.TypeReference = Options.ShortenTypeName (member.ReturnType.ConvertToTypeReference ());
-					methodDeclaration.Body.AddChild (handlerVariable);
+					var handlerVariable = new VariableDeclarationStatement (Options.ShortenTypeName (member.ReturnType.ConvertToTypeReference ()),
+						handlerName,
+						new MemberReferenceExpression (new ThisReferenceExpression (), member.Name));
+					methodDeclaration.Body.Statements.Add (handlerVariable);
 					
-					IfElseStatement ifStatement = new IfElseStatement (null);
+					IfElseStatement ifStatement = new IfElseStatement ();
 					ifStatement.Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null));
 					List<Expression> arguments = new List<Expression> ();
 					arguments.Add (new ThisReferenceExpression ());
 					arguments.Add (new IdentifierExpression (invokeMethod.Parameters[1].Name));
-					ifStatement.TrueStatement.Add (new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments)));
-					methodDeclaration.Body.AddChild (ifStatement);
+					ifStatement.TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments));
+					methodDeclaration.Body.Statements.Add (ifStatement);
 					yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 				}
 			}

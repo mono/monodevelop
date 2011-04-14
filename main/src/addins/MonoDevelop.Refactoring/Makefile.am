@@ -4,10 +4,10 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Refactoring.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/OldNRefactory.dll
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -48,7 +48,6 @@ FILES =  \
 	MonoDevelop.Refactoring.CreateClass/CreateStructCodeGenerator.cs \
 	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs \
 	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalHandler.cs \
-	MonoDevelop.Refactoring.DeclareLocal/GetContainingEmbeddedStatementVisitor.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs \

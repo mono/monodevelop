@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
@@ -45,7 +45,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 				set;
 			}
 			
-			public ICSharpCode.OldNRefactory.Ast.Modifiers Modifiers {
+			public ICSharpCode.NRefactory.CSharp.Modifiers Modifiers {
 				get;
 				set;
 			}
@@ -167,14 +167,12 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 				return result;
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 
-			FieldDeclaration fieldDeclaration = new FieldDeclaration (null);
-			VariableDeclaration varDecl = new VariableDeclaration (param.Name);
-			varDecl.Initializer = provider.ParseExpression (resolveResult.ResolvedExpression.Expression);
-			fieldDeclaration.Fields.Add (varDecl);
-			fieldDeclaration.Modifier = param.Modifiers;
-			fieldDeclaration.Modifier |= ICSharpCode.OldNRefactory.Ast.Modifiers.Const;
-			fieldDeclaration.TypeReference = resolveResult.ResolvedType.ConvertToTypeReference ();
-			fieldDeclaration.TypeReference.IsKeyword = true;
+			var fieldDeclaration = new FieldDeclaration ();
+			var varDecl = new VariableInitializer (param.Name, provider.ParseExpression (resolveResult.ResolvedExpression.Expression));
+			fieldDeclaration.AddChild (varDecl, FieldDeclaration.Roles.Variable);
+			fieldDeclaration.Modifiers = param.Modifiers;
+			fieldDeclaration.Modifiers |= ICSharpCode.NRefactory.CSharp.Modifiers.Const;
+			fieldDeclaration.ReturnType = resolveResult.ResolvedType.ConvertToTypeReference ();
 
 			TextReplaceChange insertConstant = new TextReplaceChange ();
 			insertConstant.FileName = options.Document.FileName;

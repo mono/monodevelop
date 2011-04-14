@@ -109,7 +109,6 @@
     <Compile Include="MonoDevelop.Refactoring.ConvertPropery\RemoveBackingStore.cs" />
     <Compile Include="MonoDevelop.Refactoring.ConvertPropery\PropertyVisitor.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\NullCheckGenerator.cs" />
-    <Compile Include="MonoDevelop.Refactoring.DeclareLocal\GetContainingEmbeddedStatementVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeSearchVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
@@ -166,9 +165,9 @@
       <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

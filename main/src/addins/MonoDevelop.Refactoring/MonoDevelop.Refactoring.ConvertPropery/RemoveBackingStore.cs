@@ -27,7 +27,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Projects.Dom;
@@ -109,7 +109,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				int startOffset = data.Document.LocationToOffset (property.GetRegion.Start.ToDocumentLocation (data.Document));
 				int endOffset = data.Document.LocationToOffset (property.GetRegion.End.ToDocumentLocation (data.Document));
 				
-				string text = astProvider.OutputNode (options.Dom, new PropertyGetRegion (null, null), options.GetIndent (property) + "\t").Trim ();
+				string text = "get { }";
 				
 				result.RemoveAll (c => startOffset <= ((TextReplaceChange)c).Offset  && ((TextReplaceChange)c).Offset <= endOffset);
 				result.Add (new TextReplaceChange () {
@@ -122,7 +122,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			
 			int setStartOffset;
 			int setEndOffset;
-			PropertySetRegion setRegion = new PropertySetRegion (null, null);
+			Accessor setRegion = new Accessor ();
 			string setText;
 			if (property.HasSet) {
 				setStartOffset = data.Document.LocationToOffset (property.SetRegion.Start.ToDocumentLocation (data.Document));
@@ -130,7 +130,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				setText = astProvider.OutputNode (options.Dom, setRegion, options.GetIndent (property) + "\t").Trim ();
 			} else {
 				setEndOffset = setStartOffset = data.Document.LocationToOffset (property.GetRegion.End.ToDocumentLocation (data.Document));
-				setRegion.Modifier = ICSharpCode.OldNRefactory.Ast.Modifiers.Private;
+				setRegion.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Private;
 				setText = Environment.NewLine + astProvider.OutputNode (options.Dom, setRegion, options.GetIndent (property) + "\t").TrimEnd ();
 			}
 			result.RemoveAll (c => setStartOffset <= ((TextReplaceChange)c).Offset  && ((TextReplaceChange)c).Offset <= setEndOffset);
@@ -154,7 +154,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			backinStoreStart = 0;
 			backinStoreEnd = 0;
 			foreach (IMember member in members) {
-				if (member.MemberType == MemberType.Field) {
+				if (member.MemberType == MonoDevelop.Projects.Dom.MemberType.Field) {
 					DocumentLocation location = member.Location.ToDocumentLocation (data.Document);
 					LineSegment line = data.Document.GetLine (location.Line);
 					backinStoreStart = line.Offset;
@@ -168,7 +168,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 
 		string RetrieveBackingStore (MonoDevelop.Refactoring.RefactoringOptions options, MonoDevelop.Refactoring.INRefactoryASTProvider astProvider, MonoDevelop.Projects.Dom.IProperty property)
 		{
-			ICSharpCode.OldNRefactory.Ast.CompilationUnit compilationUnit = astProvider.ParseFile (options.Document.Editor.Text);
+			ICSharpCode.NRefactory.CSharp.CompilationUnit compilationUnit = astProvider.ParseFile (options.Document.Editor.Text);
 			PropertyVisitor visitor = new PropertyVisitor (property);
 			compilationUnit.AcceptVisitor (visitor, null);
 			return visitor.BackingStoreName;

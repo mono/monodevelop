@@ -70,7 +70,7 @@ namespace MonoDevelop.CodeGeneration
 			return ProjectDomService.GetParser (Document.FileName);
 		}
 		
-		public ICSharpCode.OldNRefactory.Ast.TypeReference ShortenTypeName (ICSharpCode.OldNRefactory.Ast.TypeReference typeReference)
+		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (ICSharpCode.NRefactory.CSharp.AstType typeReference)
 		{
 			return Document.CompilationUnit.ShortenTypeName (typeReference.ConvertToReturnType (), Document.Editor.Caret.Line, Document.Editor.Caret.Column).ConvertToTypeReference ();
 		}

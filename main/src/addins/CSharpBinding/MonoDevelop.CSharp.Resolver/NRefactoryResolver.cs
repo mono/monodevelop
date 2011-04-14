@@ -519,10 +519,50 @@ namespace MonoDevelop.CSharp.Resolver
 			return result;
 		}
 		
-		public static IReturnType ConvertTypeReference (TypeReference typeRef)
+		public static DomReturnType ConvertTypeReference (TypeReference typeRef)
 		{
-			return typeRef.ConvertToReturnType ();
+			if (typeRef == null)
+				return null;
+			DomReturnType result;
+			if (typeRef is InnerClassTypeReference) {
+				InnerClassTypeReference innerTypeRef = (InnerClassTypeReference)typeRef;
+				result = ConvertTypeReference (innerTypeRef.BaseType);
+				result.Parts.Add (new ReturnTypePart (typeRef.Type));
+			} else {
+				result = new DomReturnType (typeRef.Type);
+			}
+			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
+				result.AddTypeParameter (ConvertTypeReference (genericArgument));
+			}
+			result.PointerNestingLevel = typeRef.PointerNestingLevel;
+			if (typeRef.IsArrayType) {
+				result.ArrayDimensions = typeRef.RankSpecifier.Length;
+				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
+					result.SetDimension (i, typeRef.RankSpecifier[i]);
+				}
+			}
+			return result;
 		}
+		
+		public static TypeReference ConvertToTypeReference (MonoDevelop.Projects.Dom.IReturnType returnType)
+		{
+			List<TypeReference> genericTypes = new List<TypeReference> ();
+			foreach (MonoDevelop.Projects.Dom.IReturnType genericType in returnType.GenericArguments) {
+				genericTypes.Add (ConvertToTypeReference (genericType));
+			}
+			TypeReference result = new TypeReference (returnType.FullName, genericTypes);
+			result.IsKeyword = true;
+			result.PointerNestingLevel = returnType.PointerNestingLevel;
+			if (returnType.ArrayDimensions > 0) {
+				int[] rankSpecfier = new int[returnType.ArrayDimensions];
+				for (int i = 0; i < returnType.ArrayDimensions; i++) {
+					rankSpecfier[i] = returnType.GetDimension (i);
+				}
+				result.RankSpecifier = rankSpecfier;
+			}
+			return result;
+		}
+		
 		
 		public IReturnType ResolveType (IReturnType type)
 		{

@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 using System.Text;
 using System.IO;
+using System.Linq;
 
 
 namespace MonoDevelop.Refactoring.IntroduceFormat
@@ -96,14 +97,15 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 			InvocationExpression formatCall = null;
 			if (expressionResult != null) {
 				InvocationExpression possibleFormatCall = provider.ParseExpression (expressionResult.Expression) as InvocationExpression;
-				if (possibleFormatCall != null && possibleFormatCall.TargetObject is MemberReferenceExpression && ((MemberReferenceExpression)possibleFormatCall.TargetObject).MemberName == "Format") {
-					PrimitiveExpression expr = possibleFormatCall.Arguments[0] as PrimitiveExpression;
+				if (possibleFormatCall != null && possibleFormatCall.Target is MemberReferenceExpression && ((MemberReferenceExpression)possibleFormatCall.Target).MemberName == "Format") {
+					PrimitiveExpression expr = possibleFormatCall.Arguments.FirstOrDefault () as PrimitiveExpression;
 					if (expr != null) {
 						string str = data.Document.GetTextBetween (start + 1, data.SelectionRange.Offset) + 
 							"{" + (possibleFormatCall.Arguments.Count - 1) + "}" +
 								data.Document.GetTextBetween (data.SelectionRange.EndOffset, end);
-						expr.Value = str;
-						expr.StringValue = '"' + str  + '"';
+						expr.ReplaceWith (new PrimitiveExpression (str));
+						//expr.Value = str;
+						//expr.StringValue = '"' + str  + '"';
 						possibleFormatCall.Arguments.Add (new PrimitiveExpression (data.Document.GetTextAt (data.SelectionRange)));
 						formatCall = possibleFormatCall;
 						start = data.Document.LocationToOffset (expressionResult.Region.Start.Line, expressionResult.Region.Start.Column);
@@ -119,9 +121,8 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 				args.Add (new PrimitiveExpression (formattedString));
 				args.Add (new PrimitiveExpression (data.Document.GetTextAt (data.SelectionRange)));
 				
-				TypeReference typeRef = new TypeReference ("System.String");
-				typeRef.IsKeyword = true;
-				MemberReferenceExpression stringFormat = new MemberReferenceExpression (new TypeReferenceExpression (typeRef), "Format");
+				var typeRef = new PrimitiveType ("string");
+				var stringFormat = new MemberReferenceExpression (new TypeReferenceExpression (typeRef), "Format");
 				formatCall = new InvocationExpression (stringFormat, args);
 			}
 			

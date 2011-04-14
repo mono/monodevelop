@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Gui;
  
 using System.Text;
 using MonoDevelop.Projects.Text;
-using ICSharpCode.OldNRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
@@ -92,7 +92,7 @@ namespace MonoDevelop.Refactoring
 			return ProjectDomService.GetParser (Document.FileName);
 		}
 		
-		public ICSharpCode.OldNRefactory.Ast.INode ParseMember (IMember member)
+		public AstNode ParseMember (IMember member)
 		{
 			if (member == null || member.BodyRegion.IsEmpty)
 				return null;
