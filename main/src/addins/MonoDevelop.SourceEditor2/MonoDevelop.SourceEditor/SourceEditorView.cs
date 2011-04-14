@@ -490,6 +490,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			ContentName = fileName;
+			lastSaveTime = File.GetLastWriteTime (ContentName);			
 			
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
