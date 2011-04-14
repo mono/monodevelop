@@ -528,6 +528,7 @@ namespace MonoDevelop.Ide
 				var optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject);
 				var conf = selectedProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				optionsDialog.CurrentConfig = conf != null ? conf.Name : null;
+				optionsDialog.CurrentPlatform = conf != null ? conf.Platform : null;
 				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);

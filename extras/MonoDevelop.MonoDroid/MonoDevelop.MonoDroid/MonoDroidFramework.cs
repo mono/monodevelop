@@ -128,7 +128,7 @@ namespace MonoDevelop.MonoDroid
 		/// </summary>
 		public static bool IsInstalled {
 			get {
-				return !MonoDroidToolsDir.IsNullOrEmpty;
+				return !MonoDroidFrameworkDir.IsNullOrEmpty;
 			}
 		}
 		
@@ -197,6 +197,11 @@ namespace MonoDevelop.MonoDroid
 
 		public static int GetRuntimeVersion ()
 		{
+			// It seems that MfA 1.0 on Windows didn't include the xml files to get the runtime version.
+			// Remove this line as soon as we include them again.
+			if (!File.Exists (MonoDroidToolsDir.Combine ("Mono.Android.DebugRuntime-debug.xml")))
+				return 3; // Most recent runtime version
+
 			var doc = XDocument.Load (MonoDroidToolsDir.Combine ("Mono.Android.DebugRuntime-debug.xml"));
 			var version = doc.Element ("manifest").Attribute ("{http://schemas.android.com/apk/res/android}versionCode");
 			return int.Parse (version.Value);

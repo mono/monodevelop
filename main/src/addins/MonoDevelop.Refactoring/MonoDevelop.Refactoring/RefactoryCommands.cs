@@ -973,30 +973,9 @@ namespace MonoDevelop.Refactoring
 		
 		public void ImplementAbstractMembers ()
 		{
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			IType aclass = item as IType;
-			
-			if (klass == null)
-				return;
-			
-			if (aclass == null)
-				return;
-				
-			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
-			if (editor != null)
-				editor.BeginAtomicUndo ();
-				
-/*			try {
-				List<KeyValuePair<IMember,IReturnType>> members = new List<KeyValuePair<IMember, IReturnType>> ();
-				foreach (IMember member in aclass.Members) {
-					if (member.IsAbstract && !klass.Members.Any (m => member.Name == m.Name)) 
-						members.Add (new KeyValuePair<IMember,IReturnType> (member, null));
-				}
-				refactorer.ImplementMembers (klass, members, "implemented abstract members of " + aclass.FullName);
-			} finally {
-				if (editor != null)
-					editor.EndAtomicUndo ();
-			}*/
+			var doc = IdeApp.Workbench.ActiveDocument;
+			IType interfaceType = item as IType;
+			MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers.Implement (doc, interfaceType);
 		}
 		
 		public void EncapsulateField ()

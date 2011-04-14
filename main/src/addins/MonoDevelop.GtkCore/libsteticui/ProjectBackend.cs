@@ -277,8 +277,11 @@ namespace Stetic {
 			}
 
 			foreach (WidgetData wd in topLevels) {
-				if (wd.Widget != null)
-					wd.Widget.Destroy ();
+				if (wd.Widget != null) {
+					try {
+						wd.Widget.Destroy ();
+					} catch (Exception e) { Console.WriteLine (e); }
+				}
 			}
 
 			selection = null;

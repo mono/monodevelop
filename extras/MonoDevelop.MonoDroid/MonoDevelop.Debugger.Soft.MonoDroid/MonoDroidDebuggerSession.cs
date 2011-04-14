@@ -84,7 +84,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					Create = () => {
 						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Setting debug property") + "\n");
 						long expireDate = date + (DEBUGGER_TIMEOUT_MS / 1000);
-						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3},server=y", startArgs.Address, startArgs.DebugPort, 0, expireDate);
+						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3},server=y", startArgs.Address, startArgs.DebugPort, startArgs.OutputPort, expireDate);
 						return MonoDroidFramework.Toolbox.SetProperty (cmd.Device, "debug.mono.extra", monoOptions);
 					},
 					Completed = (op) => {

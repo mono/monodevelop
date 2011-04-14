@@ -386,7 +386,7 @@ namespace CBinding
 			}
 			
 			string linker_args = string.Format ("-o \"{0}\" {1} {2} {3}",
-			    outputName, pkgargs, objectFiles, args.ToString ());
+			    outputName, objectFiles, pkgargs, args.ToString ());
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating binary \"{0}\" from object files", Path.GetFileName (outputName)), 1);
 			
@@ -464,7 +464,7 @@ namespace CBinding
 			}
 			
 			string linker_args = string.Format ("-shared -o \"{0}\" {1} {2} {3}",
-			    outputName, pkgargs, objectFiles, args.ToString ());
+			    outputName, objectFiles, pkgargs, args.ToString ());
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating shared object \"{0}\" from object files", Path.GetFileName (outputName)), 1);
 			

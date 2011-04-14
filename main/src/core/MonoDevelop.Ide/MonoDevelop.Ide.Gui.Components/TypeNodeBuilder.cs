@@ -32,10 +32,6 @@ namespace MonoDevelop.Ide.Gui.Components
 {
 	public abstract class TypeNodeBuilder: NodeBuilder
 	{
-		// Return this const in CompareToObject to instruct the tree view to
-		// use the default sorting rules for the compared objects.
-		public const int DefaultSort = int.MinValue;
-		
 		public abstract Type NodeDataType { get; }
 		
 		public abstract string GetNodeName (ITreeNavigator thisNode, object dataObject);
@@ -45,16 +41,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		public virtual object GetParentObject (object dataObject)
 		{
 			return null;
-		}
-		
-		// Return -1 if thisDataObject is less than otherDataObject, 0 if equal, 1 if greater
-		// Return DefaultSort is sort is undefined or you want to use default sorting rules
-		// (by default, it compares the node name).
-		// The thisDataObject parameter is an instance valid for this node builder.
-		// otherDataObject may not be an instance valid for this builder.
-		public virtual int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			return DefaultSort;
 		}
 		
 		public virtual string ContextMenuAddinPath {

@@ -50,6 +50,8 @@ namespace MonoDevelop.Core.AddIns
 		{
 			typeName = elem.GetAttribute ("class");
 			if (typeName.Length == 0)
+				typeName = elem.GetAttribute ("type");
+			if (typeName.Length == 0)
 				throw new InvalidOperationException ("Application type not provided");
 			description = elem.GetAttribute ("description");
 		}

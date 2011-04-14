@@ -80,9 +80,9 @@ namespace MonoDevelop.SourceEditor
 				throw new NotSupportedException ();
 			}
 		}
-
+		
 		public string DefaultEolMarker {
-			get { return DefaultSourceEditorOptions.Instance.DefaultEolMarker; }
+			get { return TextStylePolicy.GetEolMarker (CurrentPolicy.EolMarker); }
 			set {
 				throw new NotSupportedException ();
 			}

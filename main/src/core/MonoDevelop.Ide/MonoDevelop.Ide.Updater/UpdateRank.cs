@@ -1,6 +1,5 @@
-using Mono.Addins;
 // 
-// IApplication.cs
+// UpdateRank.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -24,17 +23,15 @@ using Mono.Addins;
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 
-namespace MonoDevelop.Core
+namespace MonoDevelop.Ide.Updater
 {
-	public interface IApplication
+	enum UpdateRank
 	{
-		int Run (string[] arguments);
-	}
-	
-	public class ApplicationExtensionAttribute: CustomExtensionAttribute
-	{
-		[NodeAttribute ("description")]
-		public string Description { get; set; }
+		Important,
+		Normal,
+		Minor
 	}
 }
+

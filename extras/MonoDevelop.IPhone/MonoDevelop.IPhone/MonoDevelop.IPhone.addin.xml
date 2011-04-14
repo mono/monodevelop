@@ -221,7 +221,12 @@
 		<UpdateInfo file="/Developer/MonoTouch/updateinfo" />
 		<UpdateInfo file="/Developer/MonoTouch/Source/updateinfo" />
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/Ide/UpdateTags">
+		<Condition id="MonoTouchInstalled">
+			<Tag id="MonoDevelop.IPhone.MonoTouchInstalled" />
+		</Condition>
+	</Extension>
 	
 	<!-- debugger addin -->
 	<Module>

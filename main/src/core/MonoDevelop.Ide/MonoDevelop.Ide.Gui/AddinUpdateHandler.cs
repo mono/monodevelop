@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Threading;
 
 using Gtk;
@@ -37,6 +38,7 @@ using Mono.Addins.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.ProgressMonitoring;
+using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -82,7 +84,7 @@ namespace MonoDevelop.Ide.Gui
 				t.Start ();
 			} else {
 				updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();
-				if (updates.Length > 0)
+				if (updates.Any (u => UpdateRank.Minor != UpdateService.GetUpdateRank (u.Addin.Properties.GetPropertyValue ("UpdateRank"))))
 					WarnAvailableUpdates ();
 			}
 		}

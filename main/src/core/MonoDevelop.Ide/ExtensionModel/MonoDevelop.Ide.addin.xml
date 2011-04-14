@@ -150,6 +150,11 @@
 		<Description>Reference finder.</Description>
 		<ExtensionNode name="ReferenceFinder" type="MonoDevelop.Ide.FindInFiles.ReferenceFinderCodon"/>
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/UpdateTags" name = "Update tags">
+		<Description>Update tags for the Updater service</Description>
+		<ExtensionNode name="Tag" type="Mono.Addins.ExtensionNode"/>
+	</ExtensionPoint>
 
 		<!-- Extensions -->
 	

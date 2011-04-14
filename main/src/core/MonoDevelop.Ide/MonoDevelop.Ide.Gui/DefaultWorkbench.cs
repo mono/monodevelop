@@ -458,14 +458,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 			DockItem item = GetDockItem (codon);
 			padContentCollection.Remove (codon);
-			PadWindow win = (PadWindow) padWindows [codon];
-			win.NotifyDestroyed ();
+			PadWindow win = (PadWindow) GetPadWindow (codon);
+			if (win != null) {
+				win.NotifyDestroyed ();
+				Counters.PadsLoaded--;
+				padCodons.Remove (win);
+			}
 			if (item != null)
 				dock.RemoveItem (item);
 			padWindows.Remove (codon);
-			padCodons.Remove (win);
-			
-			Counters.PadsLoaded--;
 		}
 		
 		public void BringToFront (PadCodon content)

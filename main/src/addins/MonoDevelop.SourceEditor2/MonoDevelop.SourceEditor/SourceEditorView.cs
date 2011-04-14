@@ -343,9 +343,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			Save (fileName, this.encoding);
 		}
-		
+
 		public void Save (string fileName, string encoding)
 		{
+			if (!widget.EnsureCorrectEolMarker (fileName, encoding))
+				return;
 			if (!string.IsNullOrEmpty (ContentName))
 				AutoSave.RemoveAutoSaveFile (ContentName);
 
@@ -471,7 +473,7 @@ namespace MonoDevelop.SourceEditor
 				this.encoding = file.SourceEncoding;
 				this.hadBom = file.HadBOM;
 				didLoadCleanly = true;
-			
+
 			}
 			
 			// TODO: Would be much easier if the view would be created after the containers.

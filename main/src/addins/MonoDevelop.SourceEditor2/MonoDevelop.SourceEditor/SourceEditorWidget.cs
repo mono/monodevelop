@@ -715,7 +715,81 @@ namespace MonoDevelop.SourceEditor
 			view.WorkbenchWindow.ShowNotification = true;
 		}
 		
-		
+		#region Eol marker check
+		bool useIncorrectMarkers;
+		internal bool EnsureCorrectEolMarker (string fileName, string encoding)
+		{
+			if (useIncorrectMarkers)
+				return true;
+			var firstLine = Document.GetLine (1);
+			if (firstLine != null && firstLine.DelimiterLength > 0) {
+				string firstDelimiter = Document.GetTextAt (firstLine.EditableLength, firstLine.DelimiterLength);
+				if (firstDelimiter != TextEditor.Options.DefaultEolMarker) {
+					ShowIncorretEolMarkers (fileName, encoding);
+					return false;
+				}
+			}
+			return true;
+		}
+
+		void ConvertLineEndings ()
+		{
+			string correctEol = TextEditor.Options.DefaultEolMarker;
+			var newText = new System.Text.StringBuilder ();
+			foreach (var line in Document.Lines) {
+				newText.Append (TextEditor.GetTextAt (line.Offset, line.EditableLength));
+				if (line.DelimiterLength > 0)
+					newText.Append (correctEol);
+			}
+			TextEditor.Text = newText.ToString ();
+		}
+
+		void ShowIncorretEolMarkers (string fileName, string encoding)
+		{
+			RemoveMessageBar ();
+			
+			if (messageBar == null) {
+				messageBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
+				messageBar.SetMessageLabel (GettextCatalog.GetString (
+					"<b>The file \"{0}\" has line endings which differ from the policy settings.</b>\n" +
+					"Do you want to convert the line endings?",
+					EllipsizeMiddle (Document.FileName, 50)));
+				
+				Button b1 = new Button (GettextCatalog.GetString("_Convert"));
+				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
+				b1.Clicked += delegate(object sender, EventArgs e) {
+					try {
+						ConvertLineEndings ();
+						view.Save (fileName, encoding);
+					} finally {
+						RemoveMessageBar ();
+						view.WorkbenchWindow.ShowNotification = false;
+					}
+				};
+				messageBar.ActionArea.Add (b1);
+				
+				Button b2 = new Button (GettextCatalog.GetString("_Keep changes"));
+				b2.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+				b2.Clicked += delegate(object sender, EventArgs e) {
+					try {
+						useIncorrectMarkers = true;
+						view.Save (fileName, encoding);
+					} finally {
+						RemoveMessageBar ();
+						view.WorkbenchWindow.ShowNotification = false;
+					}
+				};
+				messageBar.ActionArea.Add (b2);
+			}
+			
+			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
+			vbox.ReorderChild (messageBar, 0);
+			messageBar.ShowAll ();
+
+			messageBar.QueueDraw ();
+			view.WorkbenchWindow.ShowNotification = true;
+		}
+		#endregion
 		public void ShowAutoSaveWarning (string fileName)
 		{
 			RemoveMessageBar ();

@@ -513,6 +513,7 @@ namespace MonoDevelop.Debugger
 		
 		static bool ExceptionHandler (Exception ex)
 		{
+			LoggingService.LogError ("Error in debugger", ex);
 			Gtk.Application.Invoke (delegate {
 				if (ex is DebuggerException)
 					MessageService.ShowError (ex.Message);
