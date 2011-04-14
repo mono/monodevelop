@@ -96,7 +96,6 @@
     <Reference Include="System.Core">
     </Reference>
     <Reference Include="Mono.Cairo">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>

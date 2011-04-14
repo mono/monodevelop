@@ -13,7 +13,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		private global::Gtk.TextView textview;
 		private global::Gtk.Label label2;
 		private global::Gtk.Button button29;
-		private global::Gtk.Button button31;
+		private global::Gtk.Button buttonCommit;
 
 		protected virtual void Build ()
 		{
@@ -119,12 +119,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child VersionControlAddIn.CommitDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-			this.button31 = new global::Gtk.Button ();
-			this.button31.CanDefault = true;
-			this.button31.CanFocus = true;
-			this.button31.Name = "button31";
-			this.button31.UseUnderline = true;
-			// Container child button31.Gtk.Container+ContainerChild
+			this.buttonCommit = new global::Gtk.Button ();
+			this.buttonCommit.CanDefault = true;
+			this.buttonCommit.CanFocus = true;
+			this.buttonCommit.Name = "buttonCommit";
+			this.buttonCommit.UseUnderline = true;
+			// Container child buttonCommit.Gtk.Container+ContainerChild
 			global::Gtk.Alignment w12 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w13 = new global::Gtk.HBox ();
@@ -139,9 +139,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w16.UseUnderline = true;
 			w13.Add (w16);
 			w12.Add (w13);
-			this.button31.Add (w12);
-			this.AddActionWidget (this.button31, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button31]));
+			this.buttonCommit.Add (w12);
+			w10.Add (this.buttonCommit);
+			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonCommit]));
 			w20.Position = 1;
 			w20.Expand = false;
 			w20.Fill = false;
@@ -152,6 +152,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.DefaultHeight = 481;
 			this.label2.MnemonicWidget = this.textview;
 			this.Hide ();
+			this.buttonCommit.Clicked += new global::System.EventHandler (this.OnButtonCommitClicked);
 		}
 	}
 }
