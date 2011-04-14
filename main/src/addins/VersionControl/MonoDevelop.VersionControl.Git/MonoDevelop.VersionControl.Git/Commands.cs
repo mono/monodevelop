@@ -51,7 +51,9 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		public GitRepository Repository {
 			get {
-				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
+				if (wob == null)
+					wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 				if (wob != null)
 					return VersionControlService.GetRepository (wob) as GitRepository;
 				else
@@ -69,10 +71,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			if (repo != null)
-				GitService.Push (repo);
+			GitService.Push (Repository);
 		}
 	}
 	
@@ -80,9 +79,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run (object dataItem)
 		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			GitService.SwitchToBranch (repo, (string)dataItem);
+			GitService.SwitchToBranch (Repository, (string)dataItem);
 		}
 		
 		protected override void Update (CommandArrayInfo info)
@@ -103,9 +100,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			GitService.ShowConfigurationDialog (repo);
+			GitService.ShowConfigurationDialog (Repository);
 		}
 	}
 	
@@ -113,9 +108,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			GitService.ShowMergeDialog (repo, false);
+			GitService.ShowMergeDialog (Repository, false);
 		}
 	}
 	
@@ -123,9 +116,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			GitService.ShowMergeDialog (repo, true);
+			GitService.ShowMergeDialog (Repository, true);
 		}
 	}
 	
