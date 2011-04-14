@@ -62,7 +62,6 @@ FILES =  \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
 	MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs \
-	MonoDevelop.CSharp.Parser/CSharpParser.cs \
 	MonoDevelop.CSharp.Parser/McsParser.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
 	MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs \
