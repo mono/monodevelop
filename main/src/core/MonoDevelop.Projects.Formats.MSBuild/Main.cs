@@ -80,14 +80,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				while (true) {
 					Thread.Sleep (1000);
 					try {
-						// Throws exception if process is not running
-						Process.GetProcessById (id);
+						// Throws exception if process is not running.
+						// When watching a .NET process from Mono, GetProcessById may
+						// return the process with HasExited=true
+						Process p = Process.GetProcessById (id);
+						if (p.HasExited)
+							break;
 					}
 					catch {
-						exitEvent.Set ();
 						break;
 					}
 				}
+				exitEvent.Set ();
 			});
 			t.IsBackground = true;
 			t.Start ();

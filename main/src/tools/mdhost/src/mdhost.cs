@@ -153,12 +153,18 @@ public class MonoDevelopProcessHost
 		Thread t = new Thread (delegate () {
 			while (true) {
 				try {
-					System.Diagnostics.Process.GetProcessById (pid);
+					// Throws exception if process is not running.
+					// When watching a .NET process from Mono, GetProcessById may
+					// return the process with HasExited=true
+					var p = System.Diagnostics.Process.GetProcessById (pid);
+					if (p.HasExited)
+						break;
 				} catch {
-					Environment.Exit (1);
+					break;
 				}
 				Thread.Sleep (1000);
 			}
+			Environment.Exit (1);
 		});
 		t.Name = "Parent process watcher";
 		t.IsBackground = true;
