@@ -39,17 +39,14 @@ namespace Mono.TextEditor
 	
 	public class ChunkStyle
 	{
-		public virtual Gdk.Color Color {
+		public virtual Cairo.Color CairoColor {
 			get;
 			set;
 		}
 		
-		Cairo.Color cairoColor = new Cairo.Color (0, 0, 0, 0);
-		public Cairo.Color CairoColor {
+		public Gdk.Color Color {
 			get {
-				if (cairoColor.A == 0)
-					cairoColor = Mono.TextEditor.Highlighting.Style.ToCairoColor (Color);
-				return cairoColor;
+				return (HslColor)CairoColor;
 			}
 		}
 		
@@ -66,25 +63,18 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual Gdk.Color BackgroundColor {
-			get {
-				return backColor;
-			}
-			set {
-				backColor = value;
-				backColorIsZeroDirty = true;
-			}
-		}
 		
 		Cairo.Color cairoBackgroundColor = new Cairo.Color (0, 0, 0, 0);
-		public Cairo.Color CairoBackgroundColor {
-			get {
-				if (cairoBackgroundColor.A == 0)
-					cairoBackgroundColor = Mono.TextEditor.Highlighting.Style.ToCairoColor (BackgroundColor);
-				return cairoBackgroundColor;
-			}
+		public virtual Cairo.Color CairoBackgroundColor {
+			get;
+			set;
 		}
 		
+		public Gdk.Color BackgroundColor {
+			get {
+				return (HslColor)CairoBackgroundColor;
+			}
+		}
 		
 		public bool TransparentBackround {
 			get {
@@ -122,8 +112,8 @@ namespace Mono.TextEditor
 		
 		public ChunkStyle (ChunkStyle style)
 		{
-			Color                = style.Color;
-			BackgroundColor      = style.BackgroundColor;
+			CairoColor           = style.CairoColor;
+			CairoBackgroundColor = style.CairoBackgroundColor;
 			ChunkProperties      = style.ChunkProperties;
 		}
 
@@ -157,25 +147,32 @@ namespace Mono.TextEditor
 		
 		public ChunkStyle (Gdk.Color color, Gdk.Color bgColor, ChunkProperties chunkProperties)
 		{
-			this.Color           = color;
-			this.BackgroundColor = bgColor;
+			this.CairoColor           = (HslColor)color;
+			this.CairoBackgroundColor = (HslColor)bgColor;
+			this.ChunkProperties = chunkProperties;
+		}
+		
+		public ChunkStyle (Cairo.Color color, Cairo.Color bgColor, ChunkProperties chunkProperties)
+		{
+			this.CairoColor           = color;
+			this.CairoBackgroundColor = bgColor;
 			this.ChunkProperties = chunkProperties;
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[ChunkStyle: Color={0}, BackgroundColor={1}, TransparentBackround={2}, ChunkProperties={3}, Link={4}]", Color, BackgroundColor, TransparentBackround, ChunkProperties, Link);
+			return string.Format ("[ChunkStyle: Color={0}, BackgroundColor={1}, TransparentBackround={2}, ChunkProperties={3}, Link={4}]", CairoColor, CairoBackgroundColor, TransparentBackround, ChunkProperties, Link);
 		}
 		
 		public override int GetHashCode ()
 		{
-			return Color.GetHashCode () ^ Bold.GetHashCode ();
+			return CairoColor.GetHashCode () ^ Bold.GetHashCode ();
 		}
 
 		public override bool Equals (object o)
 		{
 			ChunkStyle c = o as ChunkStyle;
-			return c != null && Bold == c.Bold && Italic == c.Italic && Color.GetHashCode () == c.Color.GetHashCode ();
+			return c != null && Bold == c.Bold && Italic == c.Italic && CairoColor.GetHashCode () == c.CairoColor.GetHashCode ();
 		}
 		
 		public Gdk.GC CreateBgGC (Gdk.Drawable drawable)

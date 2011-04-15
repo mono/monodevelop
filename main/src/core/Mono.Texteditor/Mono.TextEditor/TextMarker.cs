@@ -360,11 +360,11 @@ namespace Mono.TextEditor
 			
 			ChunkStyle style = new ChunkStyle (baseStyle);
 			if ((includedStyles & StyleFlag.Color) != 0)
-				style.Color = Mono.TextEditor.Highlighting.Style.ToGdkColor (Color);
+				style.CairoColor = Color;
 		
 			if ((includedStyles & StyleFlag.BackgroundColor) != 0) {
 				style.ChunkProperties &= ~ChunkProperties.TransparentBackground;
-				style.BackgroundColor = Mono.TextEditor.Highlighting.Style.ToGdkColor (BackgroundColor);
+				style.CairoBackgroundColor = BackgroundColor;
 			}
 			
 			if ((includedStyles & StyleFlag.Bold) != 0)

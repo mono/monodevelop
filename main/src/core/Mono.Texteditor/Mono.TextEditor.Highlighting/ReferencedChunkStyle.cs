@@ -32,16 +32,15 @@ namespace Mono.TextEditor.Highlighting
 	{
 		Style style;
 		string referencedStyle;
-		
-		public override Gdk.Color Color {
+		public override Cairo.Color CairoColor {
 			get {
-				return style.GetChunkStyle (referencedStyle).Color;
+				return style.GetChunkStyle (referencedStyle).CairoColor;
 			}
 		}
 		
-		public override Gdk.Color BackgroundColor {
+		public override Cairo.Color CairoBackgroundColor {
 			get {
-				return style.GetChunkStyle (referencedStyle).BackgroundColor;
+				return style.GetChunkStyle (referencedStyle).CairoBackgroundColor;
 			}
 		}
 		

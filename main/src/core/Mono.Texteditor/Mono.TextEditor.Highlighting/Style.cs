@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using Gdk;
+using System.Globalization;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -658,8 +659,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void SetChunkStyle (string name, string weight, string foreColor, string backColor)
 		{
-			Gdk.Color color   = !String.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : Gdk.Color.Zero;
-			Gdk.Color bgColor = !String.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : Gdk.Color.Zero;
+			Cairo.Color color   = !String.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
+			Cairo.Color bgColor = !String.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : new Cairo.Color (0, 0, 0);
 			ChunkProperties properties = ChunkProperties.None;
 			if (weight != null) {
 				if (weight.ToUpper ().IndexOf ("BOLD") >= 0)
@@ -672,17 +673,26 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (name, new ChunkStyle (color, bgColor, properties));
 		}
 		
-		public Gdk.Color GetColorFromString (string colorString)
+		static int GetNumber (string str, int offset)
+		{
+			return int.Parse (str.Substring (offset, 2), NumberStyles.HexNumber);
+		}
+		
+		public Cairo.Color GetColorFromString (string colorString)
 		{
 			string refColorString;
 			if (customPalette.TryGetValue (colorString, out refColorString))
 				return this.GetColorFromString (refColorString);
 			ChunkStyle style;
 			if (styleLookupTable.TryGetValue (colorString, out style))
-				return style.Color;
+				return style.CairoColor;
+			if (colorString.Length == 9 && colorString[0] == '#') {
+				// #AARRGGBB
+				return new Cairo.Color (GetNumber (colorString, 3), GetNumber (colorString, 5), GetNumber (colorString, 7), GetNumber (colorString, 1));
+			}
 			Gdk.Color color = new Gdk.Color ();
 			if (Gdk.Color.Parse (colorString, ref color))
-				return color;
+				return (Cairo.Color)((HslColor)color);
 			throw new Exception ("Failed to parse color or find named color '" + colorString + "'");
 		}
 		
