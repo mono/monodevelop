@@ -1,6 +1,6 @@
 <Addin id        = "SubversionAddinWindows"
        namespace = "MonoDevelop"
-       version   = "2.6">
+       version   = "2.6.0.1">
 
   <Header>
     <Name>Subversion Add-in</Name>
@@ -10,6 +10,8 @@
     <Author>Lluis Sanchez</Author>
     <Copyright>GPL</Copyright>
     <Category>Version Control</Category>
+    <UpdateRank>Important</UpdateRank>
+    <ReleaseNotes>{{2.6.0.1,2011-04-15}} Update for MonoDevelop 2.6 Beta 2</ReleaseNotes>
   </Header>
   
 	<Dependencies>
