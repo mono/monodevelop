@@ -362,7 +362,7 @@ namespace MonoDevelop.Debugger
 		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
 			ChunkStyle st = new ChunkStyle (baseStyle);
-			st.Color = new Gdk.Color (125, 125, 125);
+			st.CairoColor = new Cairo.Color (125, 125, 125);
 			return st;
 		}
 	}
