@@ -686,10 +686,17 @@ namespace Mono.TextEditor.Highlighting
 			ChunkStyle style;
 			if (styleLookupTable.TryGetValue (colorString, out style))
 				return style.CairoColor;
-			if (colorString.Length == 9 && colorString[0] == '#') {
-				// #AARRGGBB
-				return new Cairo.Color (GetNumber (colorString, 3), GetNumber (colorString, 5), GetNumber (colorString, 7), GetNumber (colorString, 1));
-			}
+			if (colorString.Length > 0 && colorString[0] == '#') {
+				if (colorString.Length == 9) {
+					// #AARRGGBB
+					return new Cairo.Color ( GetNumber (colorString, 3) / 255.0, GetNumber (colorString, 5) / 255.0, GetNumber (colorString, 7) / 255.0, GetNumber (colorString, 1) / 255.0);
+				}
+				if (colorString.Length == 7) {
+					// #RRGGBB
+					return new Cairo.Color ( GetNumber (colorString, 1) / 255.0, GetNumber (colorString, 3) / 255.0, GetNumber (colorString, 5) / 255.0);
+				}
+				throw new ArgumentException ("colorString", "colorString must either be #RRGGBB (length 7) or #AARRGGBB (length 9) your string " + colorString + " is invalid because it has a length of " + colorString.Length);
+			} 
 			Gdk.Color color = new Gdk.Color ();
 			if (Gdk.Color.Parse (colorString, ref color))
 				return (Cairo.Color)((HslColor)color);
