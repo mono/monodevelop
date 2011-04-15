@@ -7,6 +7,10 @@
        description = "Support for developing and deploying iPhone applications using Mono."
        category    = "Mac Development"
        version     = "2.6">
+       
+    <Header>
+    	<UpdateRank>MonoDevelop.IPhone.MonoTouchInstalled:Important Minor</UpdateRank>
+    </Header>
 	
 	<Runtime>
 		<Import file = "icons/phone-apple-iphone-16.png" />
