@@ -1,7 +1,8 @@
 var MAJOR_VERSION = 2;
 var MINOR_VERSION = 5;
 var POINT_VERSION = 9;
-var BUILD_VERSION = 0;
+var BUILD_VERSION = 1;
+var PRODUCT_VERSION_TEXT = "2.6 beta 2";
 
 var ASSEMBLY_MAJOR_VERSION = 2;
 var ASSEMBLY_MINOR_VERSION = 6;
@@ -14,7 +15,6 @@ var MONO_LIBS = "C:\\Program Files\\MonoLibraries\\2.6";
 var MD_DIR = "..\\..";
 var MD_EXTRAS_DIR = "..\\..\\extras";
 var PRODUCT_VERSION = "" + MAJOR_VERSION + "." + MINOR_VERSION + "." + POINT_VERSION + (BUILD_VERSION != 0 ? "." + BUILD_VERSION : "");
-var PRODUCT_VERSION_TEXT = "" + MAJOR_VERSION + "." + MINOR_VERSION + (POINT_VERSION != 0 || BUILD_VERSION != 0 ? "." + POINT_VERSION : "") + (BUILD_VERSION != 0 ? "." + BUILD_VERSION : "");
 var ASSEMBLY_VERSION = ASSEMBLY_MAJOR_VERSION + "." + ASSEMBLY_MINOR_VERSION + "." + ASSEMBLY_POINT_VERSION + "." + ASSEMBLY_BUILD_VERSION;
 var MONO_PRODUCT_VERSION = "" + MAJOR_VERSION + format (MINOR_VERSION, 2) + format (POINT_VERSION, 2) + format (BUILD_VERSION, 3);
 
@@ -26,6 +26,8 @@ if (build ("extras\\VersionControl.Subversion.Win32\\VersionControl.Subversion.W
     WScript.Quit(1);
 if (build ("extras\\MonoDevelop.Debugger.Win32\\MonoDevelop.Debugger.Win32.sln") != 0)
     WScript.Quit (1);
+if (build("extras\\MonoDevelop.MonoDroid\\MonoDevelop.MonoDroid.sln") != 0)
+    WScript.Quit(1);
 
 // Copy support assemblies
 

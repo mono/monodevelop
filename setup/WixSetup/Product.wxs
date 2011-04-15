@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define ProductShortName = "MonoDevelop" ?>
-<?define ProductVersion = "2.5.9" ?>
-<?define ProductVersionText = "2.5.9" ?>
+<?define ProductVersion = "2.5.9.1" ?>
+<?define ProductVersionText = "2.6 beta 2" ?>
 <?define AssemblyVersion = "2.6.0.0" ?>
 <?define Manufacturer = "Novell" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
 
 <?define BuildRoot= "..\..\main\build" ?>
+<?define ExtrasRoot= "..\..\extras" ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" Name="$(var.ProductShortName) $(var.ProductVersionText)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.UpgradeCode)">
@@ -578,7 +579,56 @@
                 <File Name="WelcomePage.dll" Source="$(var.BuildRoot)\AddIns\WelcomePage\WelcomePage.dll" />
               </Component>
             </Directory>
-
+            <Directory Id="MonoDevelop.MonoDroid" Name="MonoDevelop.MonoDroid">
+              <Directory Id="icons" Name="icons">
+                <Component Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_icons" Guid="0D5F609C-F365-4FE4-87E9-92D012320483">
+                  <File Name="monodroid-project-16.png" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\icons\monodroid-project-16.png" />
+                  <File Name="monodroid-project-32.png" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\icons\monodroid-project-32.png" />
+                  <File Name="mfa-pro.png" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\icons\mfa-pro.png" />
+                  <File Name="monodroid-32.png" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\icons\monodroid-32.png" />
+                </Component>
+              </Directory>
+              <Directory Id="MonoDroidSchemas" Name="schemas">
+                <Component Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_schemas" Guid="1594BF68-9F0B-472B-8061-FA385FA1E51B">
+                  <File Name="android-layout-xml.xsd" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\schemas\android-layout-xml.xsd" />
+                  <File Name="schemas.android.com.apk.res.android.xsd" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\schemas\schemas.android.com.apk.res.android.xsd" />
+                </Component>
+              </Directory>
+              <Directory Id="MonoDroidTemplates" Name="templates">
+                <Directory Id="MonoDroidApplication" Name="MonoDroidApplication">
+                  <Component Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_templates_MonoDroidApplication" Guid="07F2BE17-B292-4E75-B66D-D33A9219CA3F">
+                    <File Name="AboutAssets.txt" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplication\AboutAssets.txt" />
+                    <File Name="AboutResources.txt" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplication\AboutResources.txt" />
+                    <File Id="MonoDroidApplication_Activity1.cs"  Name="Activity1.cs" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplication\Activity1.cs" />
+                    <File Name="Icon-hd.png" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplication\Icon-hd.png" />
+                    <File Name="Icon-ld.png" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplication\Icon-ld.png" />
+                    <File Name="Icon-md.png" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplication\Icon-md.png" />
+                    <File Id="MonoDroidApplication_Main.axml" Name="Main.axml" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplication\Main.axml" />
+                    <File Id="MonoDroidApplication_Resource.cs" Name="Resource.cs" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplication\Resource.cs" />
+                  </Component>
+                </Directory>
+                <Directory Id="OpenGLApplication" Name="OpenGLApplication">
+                  <Component Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_templates_OpenGLApplication" Guid="4424A69A-54AF-43D5-8002-A972FD888AD8">
+                    <File Name="Activity1.cs" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\OpenGLApplication\Activity1.cs" />
+                    <File Name="GLView1.cs" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\OpenGLApplication\GLView1.cs" />
+                    <File Name="Main.axml" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\OpenGLApplication\Main.axml" />
+                    <File Name="Resource.cs" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\OpenGLApplication\Resource.cs" />
+                  </Component>
+                </Directory>
+                <Component Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_templates" Guid="D0133545-7E16-42EF-8032-1B433054D01C">
+                  <File Name="MonoDroidActivity.xft.xml" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidActivity.xft.xml" />
+                  <File Name="MonoDroidApplicationProject.xpt.xml" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidApplicationProject.xpt.xml" />
+                  <File Name="MonoDroidLibraryProject.xpt.xml" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidLibraryProject.xpt.xml" />
+                  <File Name="MonoDroidOpenGLProject.xpt.xml" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidOpenGLProject.xpt.xml" />
+                  <File Name="MonoDroidView.xft.xml" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\templates\MonoDroidView.xft.xml" />
+                </Component>
+              </Directory>
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid" Guid="4592C6A1-DE62-46DA-B4C5-1B4D4F189959">
+                <File Name="MonoDevelop.MonoDroid.dll" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\MonoDevelop.MonoDroid.dll" />
+                <File Name="MonoDevelop.Debugger.Soft.MonoDroid.dll" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\MonoDevelop.Debugger.Soft.MonoDroid.dll" />
+              </Component>
+            </Directory>
+            
             <Component Id="MonoDevelop_AddIns" Guid="46cc2e83-b46c-4c25-9b35-ef5fc55ffec7">
               <File Name="MonoDevelop.AssemblyBrowser.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AssemblyBrowser.dll" />
               <File Name="MonoDevelop.SourceEditor2.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.SourceEditor2.dll" />
@@ -713,6 +763,12 @@
       <ComponentRef Id="MonoDevelop_AddIns_NUnit" />
       <ComponentRef Id="MonoDevelop_AddIns_VersionControl" />
       <ComponentRef Id="MonoDevelop_AddIns_WelcomePage" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_icons" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_schemas" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_templates" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_templates_MonoDroidApplication" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid_templates_OpenGLApplication" />
       <ComponentRef Id="MonoDevelop_AddIns" />
       <ComponentRef Id="MonoDevelop_data_options" />
 
