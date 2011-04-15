@@ -171,7 +171,8 @@ namespace Mono.CSharp
  				return false;
 
 			MemberSpec candidate;
-			var conflict_symbol = MemberCache.FindBaseMember (this, out candidate);
+			bool overrides = false;
+			var conflict_symbol = MemberCache.FindBaseMember (this, out candidate, ref overrides);
 			if (conflict_symbol == null)
 				conflict_symbol = candidate;
 
@@ -241,6 +242,8 @@ namespace Mono.CSharp
 			if (((status & Status.HAS_OFFSET) == 0) && (ModFlags & (Modifiers.STATIC | Modifiers.BACKING_FIELD)) == 0 && Parent.PartialContainer.HasExplicitLayout) {
 				Report.Error (625, Location, "`{0}': Instance field types marked with StructLayout(LayoutKind.Explicit) must have a FieldOffset attribute", GetSignatureForError ());
 			}
+
+			ConstraintChecker.Check (this, member_type, type_expr.Location);
 
 			base.Emit ();
 		}
@@ -613,7 +616,7 @@ namespace Mono.CSharp
 
 			MetaType[] required_modifier = null;
 			if ((ModFlags & Modifiers.VOLATILE) != 0) {
-				var mod = Module.PredefinedTypes.IsVolatile.Resolve (Location);
+				var mod = Module.PredefinedTypes.IsVolatile.Resolve ();
 				if (mod != null)
 					required_modifier = new MetaType[] { mod.GetMetaInfo () };
 			}

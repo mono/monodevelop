@@ -306,7 +306,7 @@ namespace Mono.CSharp
 
 		public abstract class PropertyMethod : AbstractPropertyEventMethod
 		{
-			public const Modifiers AllowedModifiers =
+			const Modifiers AllowedModifiers =
 				Modifiers.PUBLIC |
 				Modifiers.PROTECTED |
 				Modifiers.INTERNAL |
@@ -319,7 +319,8 @@ namespace Mono.CSharp
 				: base (method, prefix, attrs, loc)
 			{
 				this.method = method;
-				this.ModFlags = modifiers | (method.ModFlags & (Modifiers.STATIC | Modifiers.UNSAFE));
+				this.ModFlags = ModifiersExtensions.Check (AllowedModifiers, modifiers, 0, loc, Report);
+				this.ModFlags |= (method.ModFlags & (Modifiers.STATIC | Modifiers.UNSAFE));
 			}
 
 			public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
@@ -356,8 +357,7 @@ namespace Mono.CSharp
 					if (container.Kind == MemberKind.Interface)
 						Report.Error (275, Location, "`{0}': accessibility modifiers may not be used on accessors in an interface",
 							GetSignatureForError ());
-
-					if ((method.ModFlags & Modifiers.ABSTRACT) != 0 && (ModFlags & Modifiers.PRIVATE) != 0) {
+					else if ((method.ModFlags & Modifiers.ABSTRACT) != 0 && (ModFlags & Modifiers.PRIVATE) != 0) {
 						Report.Error (442, Location, "`{0}': abstract properties cannot have private accessors", GetSignatureForError ());
 					}
 
@@ -668,6 +668,8 @@ namespace Mono.CSharp
 				Module.PredefinedAttributes.Dynamic.EmitAttribute (PropertyBuilder, member_type, Location);
 			}
 
+			ConstraintChecker.Check (this, member_type, type_expr.Location);
+
 			first.Emit (Parent);
 			if (AccessorSecond != null)
 				AccessorSecond.Emit (Parent);
@@ -804,11 +806,6 @@ namespace Mono.CSharp
 			}
 
 			base.Emit ();
-		}
-
-		public override string GetDocCommentName ()
-		{
-			return String.Concat (DocCommentHeader, Parent.Name, ".", GetFullName (ShortName).Replace ('.', '#'));
 		}
 	}
 
@@ -1118,7 +1115,7 @@ namespace Mono.CSharp
 		public abstract class AEventAccessor : AbstractPropertyEventMethod
 		{
 			protected readonly Event method;
-			ParametersCompiled parameters;
+			readonly ParametersCompiled parameters;
 
 			static readonly string[] attribute_targets = new string [] { "method", "param", "return" };
 
@@ -1169,7 +1166,10 @@ namespace Mono.CSharp
 
 			public virtual MethodBuilder Define (DeclSpace parent)
 			{
-				parameters.Resolve (this);
+				// Fill in already resolved event type to speed things up and
+				// avoid confusing duplicate errors
+				((Parameter) parameters.FixedParameters[0]).Type = method.member_type;
+				parameters.Types = new TypeSpec[] { method.member_type };
 
 				method_data = new MethodData (method, method.ModFlags,
 					method.flags | MethodAttributes.HideBySig | MethodAttributes.SpecialName, this);
@@ -1323,6 +1323,8 @@ namespace Mono.CSharp
 			if (OptAttributes != null) {
 				OptAttributes.Emit ();
 			}
+
+			ConstraintChecker.Check (this, member_type, type_expr.Location);
 
 			Add.Emit (Parent);
 			Remove.Emit (Parent);
@@ -1493,6 +1495,22 @@ namespace Mono.CSharp
 			this.parameters = parameters;
 		}
 
+		#region Properties
+
+		AParametersCollection IParametersMember.Parameters {
+			get {
+				return parameters;
+			}
+		}
+
+		public ParametersCompiled ParameterInfo {
+			get {
+				return parameters;
+			}
+		}
+
+		#endregion
+
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.Type == pa.IndexerName) {
@@ -1576,34 +1594,29 @@ namespace Mono.CSharp
 			return base.EnableOverloadChecks (overload);
 		}
 
-		public override string GetDocCommentName ()
+		public override void Emit ()
 		{
-			return DocumentationBuilder.GetMethodDocCommentName (this, parameters);
+			parameters.CheckConstraints (this);
+
+			base.Emit ();
 		}
 
 		public override string GetSignatureForError ()
 		{
 			StringBuilder sb = new StringBuilder (Parent.GetSignatureForError ());
 			if (MemberName.Left != null) {
-				sb.Append ('.');
+				sb.Append (".");
 				sb.Append (MemberName.Left.GetSignatureForError ());
 			}
 
 			sb.Append (".this");
-			sb.Append (parameters.GetSignatureForError ().Replace ('(', '[').Replace (')', ']'));
+			sb.Append (parameters.GetSignatureForError ("[", "]", parameters.Count));
 			return sb.ToString ();
 		}
 
-		public AParametersCollection Parameters {
-			get {
-				return parameters;
-			}
-		}
-
-		public ParametersCompiled ParameterInfo {
-			get {
-				return parameters;
-			}
+		public override string GetSignatureForDocumentation ()
+		{
+			return base.GetSignatureForDocumentation () + parameters.GetSignatureForDocumentation ();
 		}
 
 		protected override bool VerifyClsCompliance ()
@@ -1633,6 +1646,11 @@ namespace Mono.CSharp
 			}
 		}
 		#endregion
+
+		public override string GetSignatureForDocumentation ()
+		{
+			return base.GetSignatureForDocumentation () + parameters.GetSignatureForDocumentation ();
+		}
 
 		public override string GetSignatureForError ()
 		{

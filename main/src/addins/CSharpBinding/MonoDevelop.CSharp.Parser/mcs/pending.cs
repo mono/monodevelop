@@ -55,7 +55,7 @@ namespace Mono.CSharp {
 		/// <summary>
 		///   The container for this PendingImplementation
 		/// </summary>
-		TypeContainer container;
+		readonly TypeContainer container;
 		
 		/// <summary>
 		///   This is the array of TypeAndMethods that describes the pending implementations
@@ -93,6 +93,12 @@ namespace Mono.CSharp {
 				pending_implementations [i].found = new MethodData [count];
 				pending_implementations [i].need_proxy = new MethodSpec [count];
 				i++;
+			}
+		}
+
+		Report Report {
+			get {
+				return container.Module.Compiler.Report;
 			}
 		}
 
@@ -275,6 +281,9 @@ namespace Mono.CSharp {
 					// for an interface indexer).
 					//
 					if (op != Operation.Lookup) {
+						if (m.IsAccessor != method.method.IsAccessor)
+							continue;
+
 						// If `t != null', then this is an explicitly interface
 						// implementation and we can always clear the method.
 						// `need_proxy' is not null if we're implementing an
@@ -327,10 +336,11 @@ namespace Mono.CSharp {
 
 			MethodBuilder proxy = container.TypeBuilder.DefineMethod (
 				proxy_name,
+				MethodAttributes.Private |
 				MethodAttributes.HideBySig |
 				MethodAttributes.NewSlot |
 				MethodAttributes.CheckAccessOnOverride |
-				MethodAttributes.Virtual,
+				MethodAttributes.Virtual | MethodAttributes.Final,
 				CallingConventions.Standard | CallingConventions.HasThis,
 				base_method.ReturnType.GetMetaInfo (), param.GetMetaInfo ());
 
@@ -364,29 +374,112 @@ namespace Mono.CSharp {
 		/// </summary>
 		bool BaseImplements (TypeSpec iface_type, MethodSpec mi, out MethodSpec base_method)
 		{
+			base_method = null;
 			var base_type = container.BaseType;
 
 			//
 			// Setup filter with no return type to give better error message
 			// about mismatch at return type when the check bellow rejects them
 			//
-			var filter = new MemberFilter (mi.Name, mi.Arity, MemberKind.Method, mi.Parameters, null);
+			var parameters = mi.Parameters;
+			while (true) {
+				var candidates = MemberCache.FindMembers (base_type, mi.Name, false);
+				if (candidates == null)
+					return false;
 
-			base_method = (MethodSpec) MemberCache.FindMember (base_type, filter, BindingRestriction.None);
+				MethodSpec similar_candidate = null;
+				foreach (var candidate in candidates) {
+					if (candidate.Kind != MemberKind.Method)
+						continue;
 
-			if (base_method == null || (base_method.Modifiers & Modifiers.PUBLIC) == 0)
-				return false;
+					if (candidate.Arity != mi.Arity)
+						continue;
 
-			if (base_method.DeclaringType.IsInterface)
-				return false;
+					var candidate_param = ((MethodSpec) candidate).Parameters;
+					if (!TypeSpecComparer.Override.IsEqualByRuntime (parameters, candidate_param))
+						continue;
 
-			if (!TypeSpecComparer.Override.IsEqual (mi.ReturnType, base_method.ReturnType))
-				return false;
+					bool modifiers_match = true;
+					for (int i = 0; i < parameters.Count; ++i) {
+						//
+						// First check exact ref/out match
+						//
+						const Parameter.Modifier ref_out = Parameter.Modifier.REF | Parameter.Modifier.OUT;
+						if ((parameters.FixedParameters[i].ModFlags & ref_out) == (candidate_param.FixedParameters[i].ModFlags & ref_out))
+							continue;
 
-			if (!base_method.IsAbstract && !base_method.IsVirtual)
-				// FIXME: We can avoid creating a proxy if base_method can be marked 'final virtual' instead.
-				//        However, it's too late now, the MethodBuilder has already been created (see bug 377519)
+						modifiers_match = false;
+
+						//
+						// Different in ref/out only
+						//
+						if ((parameters.FixedParameters[i].ModFlags & candidate_param.FixedParameters[i].ModFlags & Parameter.Modifier.ISBYREF) != 0) {
+							if (similar_candidate == null) {
+								if (!candidate.IsPublic)
+									break;
+
+								if (!TypeSpecComparer.Override.IsEqual (mi.ReturnType, ((MethodSpec) candidate).ReturnType))
+									break;
+
+								// It's used for ref/out ambiguity overload check
+								similar_candidate = (MethodSpec) candidate;
+							}
+
+							continue;
+						}
+
+						similar_candidate = null;
+						break;
+					}
+
+					if (!modifiers_match)
+						continue;
+
+					//
+					// From this point on the candidate is used for detailed error reporting
+					// because it's very close match to what we are looking for
+					//
+					base_method = (MethodSpec) candidate;
+
+					if (!candidate.IsPublic)
+						return false;
+
+					if (!TypeSpecComparer.Override.IsEqual (mi.ReturnType, base_method.ReturnType))
+						return false;
+				}
+
+				if (base_method != null) {
+					if (similar_candidate != null) {
+						Report.SymbolRelatedToPreviousError (similar_candidate);
+						Report.SymbolRelatedToPreviousError (mi);
+						Report.SymbolRelatedToPreviousError (container);
+						Report.Warning (1956, 1, ((MemberCore) base_method.MemberDefinition).Location,
+							"The interface method `{0}' implementation is ambiguous between following methods: `{1}' and `{2}' in type `{3}'",
+							mi.GetSignatureForError (), base_method.GetSignatureForError (), similar_candidate.GetSignatureForError (), container.GetSignatureForError ());
+					}
+
+					break;
+				}
+
+				base_type = candidates[0].DeclaringType.BaseType;
+				if (base_type == null)
+					return false;
+			}
+
+			if (!base_method.IsVirtual) {
+#if STATIC
+				var base_builder = base_method.GetMetaInfo () as MethodBuilder;
+				if (base_builder != null) {
+					//
+					// We can avoid creating a proxy if base_method can be marked 'final virtual'. This can
+					// be done for all methods from compiled assembly
+					//
+					base_builder.__SetAttributes (base_builder.Attributes | MethodAttributes.Virtual | MethodAttributes.Final | MethodAttributes.NewSlot);
+					return true;
+				}
+#endif
 				DefineProxy (iface_type, base_method, mi);
+			}
 
 			return true;
 		}
@@ -395,7 +488,7 @@ namespace Mono.CSharp {
 		///   Verifies that any pending abstract methods or interface methods
 		///   were implemented.
 		/// </summary>
-		public bool VerifyPendingMethods (Report Report)
+		public bool VerifyPendingMethods ()
 		{
 			int top = pending_implementations.Length;
 			bool errors = false;

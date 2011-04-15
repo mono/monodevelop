@@ -84,7 +84,7 @@ namespace Mono.CSharp {
 		CompileUnitEntry comp_unit;
 		Dictionary<string, SourceFile> include_files;
 		Dictionary<string, bool> conditionals;
-		NamespaceEntry ns_container;
+		NamespaceContainer ns_container;
 
 		public CompilationSourceFile (string name, string fullPathName, int index)
 			: base (name, fullPathName, index)
@@ -99,7 +99,7 @@ namespace Mono.CSharp {
 			get { return comp_unit; }
 		}
 
-		public NamespaceEntry NamespaceContainer {
+		public NamespaceContainer NamespaceContainer {
 			get {
 				return ns_container;
 			}
@@ -788,18 +788,40 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			}
 		}
 		
-		public class Using 
+		public class Using
 		{
 			public readonly Location UsingLocation;
 			public readonly MemberName NSpace;
 			public readonly Location SemicolonLocation;
-			
+
 			public Using (Location usingLocation, MemberName nSpace, Location semicolonLocation)
 			{
 				this.UsingLocation = usingLocation;
 				this.NSpace = nSpace;
 				this.SemicolonLocation = semicolonLocation;
 			}
+
+			public virtual void Accept (StructuralVisitor visitor)
+			{
+				visitor.Visit (this);
+			}
+		}
+		
+		public class ExternAlias 
+		{
+			public readonly Location ExternLocation;
+			public readonly Location AliasLocation;
+			public readonly Tokenizer.LocatedToken Identifier;
+			public readonly Location SemicolonLocation;
+			
+			public ExternAlias (Location externLocation, Location aliasLocation, Tokenizer.LocatedToken identifier, Location semicolonLocation)
+			{
+				this.ExternLocation = externLocation;
+				this.AliasLocation = aliasLocation;
+				this.Identifier = identifier;
+				this.SemicolonLocation = semicolonLocation;
+			}
+
 			public virtual void Accept (StructuralVisitor visitor)
 			{
 				visitor.Visit (this);
@@ -830,6 +852,12 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		public void AddUsing (Location usingLocation, MemberName nspace, Location semicolonLocation)
 		{
 			curNamespace.Peek ().usings.Add (new Using (usingLocation, nspace, semicolonLocation));
+		}
+
+		[Conditional ("FULL_AST")]
+		public void AddExternAlias (Location externLocation, Location aliasLocation, Tokenizer.LocatedToken identifier, Location semicolonLocation)
+		{
+			curNamespace.Peek ().usings.Add (new ExternAlias (externLocation, aliasLocation, identifier, semicolonLocation));
 		}
 		
 		[Conditional ("FULL_AST")]

@@ -342,7 +342,7 @@ namespace Mono.CSharp {
 			get { return hoisted_params; }
 		}
 
-		protected override TypeExpr [] ResolveBaseTypes (out TypeExpr base_class)
+		protected override TypeSpec[] ResolveBaseTypes (out FullNamedExpression base_class)
 		{
 			var mtype = Iterator.OriginalIteratorType;
 			if (Mutator != null)
@@ -488,7 +488,7 @@ namespace Mono.CSharp {
 
 			reset.Block = new ToplevelBlock (Compiler, Location);
 
-			TypeSpec ex_type = Module.PredefinedTypes.NotSupportedException.Resolve (Location);
+			TypeSpec ex_type = Module.PredefinedTypes.NotSupportedException.Resolve ();
 			if (ex_type == null)
 				return;
 

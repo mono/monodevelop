@@ -59,6 +59,11 @@ namespace Mono.CSharp {
 		{
 			throw new NotImplementedException ();
 		}
+
+		public override FullNamedExpression ResolveAsTypeOrNamespace (IMemberContext ec)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 
 	//
@@ -128,12 +133,23 @@ namespace Mono.CSharp {
 			return false;
 		}
 
-		public void CheckGenericConstraints (IMemberContext context)
+		public void CheckGenericConstraints (IMemberContext context, bool obsoleteCheck)
 		{
 			foreach (var c in constraints) {
-				var ge = c as GenericTypeExpr;
-				if (ge != null)
-					ge.CheckConstraints (context);
+				if (c == null)
+					continue;
+
+				var t = c.Type;
+				if (t == null)
+					continue;
+
+				if (obsoleteCheck) {
+					ObsoleteAttribute obsolete_attr = t.GetAttributeObsolete ();
+					if (obsolete_attr != null)
+						AttributeTester.Report_ObsoleteMessage (obsolete_attr, t.GetSignatureForError (), c.Location, context.Module.Compiler.Report);
+				}
+
+				ConstraintChecker.Check (context, t, c.Location);
 			}
 		}
 
@@ -169,18 +185,15 @@ namespace Mono.CSharp {
 					continue;
 				}
 
-				var type_expr = constraints[i] = constraint.ResolveAsTypeTerminal (context, false);
-				if (type_expr == null)
+				var type = constraint.ResolveAsType (context);
+				if (type == null)
 					continue;
 
-				var gexpr = type_expr as GenericTypeExpr;
-				if (gexpr != null && gexpr.HasDynamicArguments ()) {
+				if (type.Arity > 0 && ((InflatedTypeSpec) type).HasDynamicArgument ()) {
 					context.Module.Compiler.Report.Error (1968, constraint.Location,
-						"A constraint cannot be the dynamic type `{0}'", gexpr.GetSignatureForError ());
+						"A constraint cannot be the dynamic type `{0}'", type.GetSignatureForError ());
 					continue;
 				}
-
-				var type = type_expr.Type;
 
 				if (!context.CurrentMemberDefinition.IsAccessibleAs (type)) {
 					context.Module.Compiler.Report.SymbolRelatedToPreviousError (type);
@@ -268,7 +281,7 @@ namespace Mono.CSharp {
 				}
 
 				if (spec.HasSpecialStruct || spec.HasSpecialClass) {
-					context.Module.Compiler.Report.Error (450, type_expr.Location,
+					context.Module.Compiler.Report.Error (450, constraint.Location,
 						"`{0}': cannot specify both a constraint class and the `class' or `struct' constraint",
 						type.GetSignatureForError ());
 				}
@@ -467,10 +480,10 @@ namespace Mono.CSharp {
 			builder.SetCustomAttribute ((ConstructorInfo) ctor.GetMetaInfo (), cdata);
 		}
 
-		public void CheckGenericConstraints ()
+		public void CheckGenericConstraints (bool obsoleteCheck)
 		{
 			if (constraints != null)
-				constraints.CheckGenericConstraints (this);
+				constraints.CheckGenericConstraints (this, obsoleteCheck);
 		}
 
 		public TypeParameter CreateHoistedCopy (TypeContainer declaringType, TypeSpec declaringSpec)
@@ -569,6 +582,11 @@ namespace Mono.CSharp {
 		public AttributeUsageAttribute GetAttributeUsage (PredefinedAttribute pa)
 		{
 			throw new NotSupportedException ();
+		}
+
+		public override string GetSignatureForDocumentation ()
+		{
+			throw new NotImplementedException ();
 		}
 
 		public override string GetSignatureForError ()
@@ -746,6 +764,13 @@ namespace Mono.CSharp {
 
 				if (targs != null) {
 					foreach (var ta in targs) {
+						//
+						// Secondary special constraints are ignored (I am not sure why)
+						//
+						var tp = ta as TypeParameterSpec;
+						if (tp != null && (tp.spec & (SpecialConstraint.Class | SpecialConstraint.Struct)) != 0)
+							continue;
+
 						if (TypeManager.IsReferenceType (ta))
 							return true;
 					}
@@ -845,6 +870,19 @@ namespace Mono.CSharp {
 				return Convert.FindMostEncompassedType (types.Select (l => l.BaseType));
 
 			return BaseType;
+		}
+
+		public override string GetSignatureForDocumentation ()
+		{
+			int c = 0;
+			var type = DeclaringType;
+			while (type != null && type.DeclaringType != null) {
+				type = type.DeclaringType;
+				c += type.MemberDefinition.TypeParametersCount;
+			}
+
+			var prefix = IsMethodOwned ? "``" : "`";
+			return prefix + (c + DeclaredPosition);
 		}
 
 		public override string GetSignatureForError ()
@@ -1196,6 +1234,14 @@ namespace Mono.CSharp {
 				targs = type.TypeArguments;
 
 				//
+				// When inflating imported nested type used inside same declaring type, we get TypeSpec
+				// because the import cache helps us to catch it. However, that means we have to look at
+				// type definition to get type argument (they are in fact type parameter in this case)
+				//
+				if (targs.Length == 0 && type.Arity > 0)
+					targs = type.MemberDefinition.TypeParameters;
+
+				//
 				// Parent was inflated, find the same type on inflated type
 				// to use same cache for nested types on same generic parent
 				//
@@ -1344,23 +1390,12 @@ namespace Mono.CSharp {
 	/// <summary>
 	///   A TypeExpr which already resolved to a type parameter.
 	/// </summary>
-	public class TypeParameterExpr : TypeExpr {
-		
+	public class TypeParameterExpr : TypeExpression
+	{
 		public TypeParameterExpr (TypeParameter type_parameter, Location loc)
+			: base (type_parameter.Type, loc)
 		{
-			this.type = type_parameter.Type;
 			this.eclass = ExprClass.TypeParameter;
-			this.loc = loc;
-		}
-
-		protected override TypeExpr DoResolveAsTypeStep (IMemberContext ec)
-		{
-			throw new NotSupportedException ();
-		}
-
-		public override FullNamedExpression ResolveAsTypeStep (IMemberContext ec, bool silent)
-		{
-			return this;
 		}
 	}
 
@@ -1391,6 +1426,9 @@ namespace Mono.CSharp {
 
 			if (open_type.Kind == MemberKind.MissingType)
 				MemberCache = MemberCache.Empty;
+
+			if ((open_type.Modifiers & Modifiers.COMPILER_GENERATED) != 0)
+				state |= StateFlags.ConstraintsChecked;
 		}
 
 		#region Properties
@@ -1414,6 +1452,18 @@ namespace Mono.CSharp {
 				}
 
 				return constraints;
+			}
+		}
+
+		//
+		// Used to cache expensive constraints validation on constructed types
+		//
+		public bool HasConstraintsChecked {
+			get {
+				return (state & StateFlags.ConstraintsChecked) != 0;
+			}
+			set {
+				state = value ? state | StateFlags.ConstraintsChecked : state & ~StateFlags.ConstraintsChecked;
 			}
 		}
 
@@ -1594,6 +1644,34 @@ namespace Mono.CSharp {
 				return null;
 
 			return "<" + TypeManager.CSharpName (targs) + ">";
+		}
+
+		public bool HasDynamicArgument ()
+		{
+			for (int i = 0; i < targs.Length; ++i) {
+				var item = targs[i];
+
+				if (item.BuiltinType == BuiltinTypeSpec.Type.Dynamic)
+					return true;
+
+				if (item is InflatedTypeSpec) {
+					if (((InflatedTypeSpec) item).HasDynamicArgument ())
+						return true;
+
+					continue;
+				}
+
+				if (item.IsArray) {
+					while (item.IsArray) {
+						item = ((ArrayContainer) item).Element;
+					}
+
+					if (item.BuiltinType == BuiltinTypeSpec.Type.Dynamic)
+						return true;
+				}
+			}
+
+			return false;
 		}
 
 		protected override void InitializeMemberCache (bool onlyTypes)
@@ -1793,22 +1871,22 @@ namespace Mono.CSharp {
 			atypes = new TypeSpec [count];
 
 			for (int i = 0; i < count; i++){
-				TypeExpr te = args[i].ResolveAsTypeTerminal (ec, false);
+				var te = args[i].ResolveAsType (ec);
 				if (te == null) {
 					ok = false;
 					continue;
 				}
 
-				atypes[i] = te.Type;
+				atypes[i] = te;
 
-				if (te.Type.IsStatic) {
-					ec.Module.Compiler.Report.Error (718, te.Location, "`{0}': static classes cannot be used as generic arguments",
+				if (te.IsStatic) {
+					ec.Module.Compiler.Report.Error (718, args[i].Location, "`{0}': static classes cannot be used as generic arguments",
 						te.GetSignatureForError ());
 					ok = false;
 				}
 
-				if (te.Type.IsPointer || te.Type.IsSpecialRuntimeType) {
-					ec.Module.Compiler.Report.Error (306, te.Location,
+				if (te.IsPointer || te.IsSpecialRuntimeType) {
+					ec.Module.Compiler.Report.Error (306, args[i].Location,
 						"The type `{0}' may not be used as a type argument",
 						te.GetSignatureForError ());
 					ok = false;
@@ -1888,7 +1966,6 @@ namespace Mono.CSharp {
 	{
 		TypeArguments args;
 		TypeSpec open_type;
-		bool constraints_checked;
 
 		/// <summary>
 		///   Instantiate the generic type `t' with the type arguments `args'.
@@ -1911,9 +1988,12 @@ namespace Mono.CSharp {
 			return TypeManager.CSharpName (type);
 		}
 
-		protected override TypeExpr DoResolveAsTypeStep (IMemberContext ec)
+		public override TypeSpec ResolveAsType (IMemberContext mc)
 		{
-			if (!args.Resolve (ec))
+			if (eclass != ExprClass.Unresolved)
+				return type;
+
+			if (!args.Resolve (mc))
 				return null;
 
 			TypeSpec[] atypes = args.Arguments;
@@ -1921,63 +2001,24 @@ namespace Mono.CSharp {
 			//
 			// Now bind the parameters
 			//
-			type = open_type.MakeGenericType (ec, atypes);
+			var inflated = open_type.MakeGenericType (mc, atypes);
+			type = inflated;
+			eclass = ExprClass.Type;
 
 			//
-			// Check constraints when context is not method/base type
+			// The constraints can be checked only when full type hierarchy is known
 			//
-			if (!ec.HasUnresolvedConstraints)
-				CheckConstraints (ec);
-
-			return this;
-		}
-
-		//
-		// Checks the constraints of open generic type against type
-		// arguments. Has to be called after all members have been defined
-		//
-		public bool CheckConstraints (IMemberContext ec)
-		{
-			if (constraints_checked)
-				return true;
-
-			constraints_checked = true;
-
-			var gtype = (InflatedTypeSpec) type;
-			var constraints = gtype.Constraints;
-			if (constraints == null)
-				return true;
-
-			return new ConstraintChecker(ec).CheckAll (open_type, args.Arguments, constraints, loc);
-		}
-
-		public bool HasDynamicArguments ()
-		{
-			return HasDynamicArguments (args.Arguments);
-		}
-
-		static bool HasDynamicArguments (TypeSpec[] args)
-		{
-			for (int i = 0; i < args.Length; ++i) {
-				var item = args[i];
-
-				if (item.BuiltinType == BuiltinTypeSpec.Type.Dynamic)
-					return true;
-
-				if (TypeManager.IsGenericType (item))
-					return HasDynamicArguments (TypeManager.GetTypeArguments (item));
-
-				if (item.IsArray) {
-					while (item.IsArray) {
-						item = ((ArrayContainer) item).Element;
+			if (!inflated.HasConstraintsChecked && mc.Module.HasTypesFullyDefined) {
+				var constraints = inflated.Constraints;
+				if (constraints != null) {
+					var cc = new ConstraintChecker (mc);
+					if (cc.CheckAll (open_type, atypes, constraints, loc)) {
+						inflated.HasConstraintsChecked = true;
 					}
-
-					if (item.BuiltinType == BuiltinTypeSpec.Type.Dynamic)
-						return true;
 				}
 			}
 
-			return false;
+			return type;
 		}
 
 		public override bool Equals (object obj)
@@ -2001,17 +2042,11 @@ namespace Mono.CSharp {
 	//
 	// Generic type with unbound type arguments, used for typeof (G<,,>)
 	//
-	class GenericOpenTypeExpr : TypeExpr
+	class GenericOpenTypeExpr : TypeExpression
 	{
 		public GenericOpenTypeExpr (TypeSpec type, /*UnboundTypeArguments args,*/ Location loc)
+			: base (type.GetDefinition (), loc)
 		{
-			this.type = type.GetDefinition ();
-			this.loc = loc;
-		}
-
-		protected override TypeExpr DoResolveAsTypeStep (IMemberContext ec)
-		{
-			return this;
 		}
 	}
 
@@ -2019,11 +2054,13 @@ namespace Mono.CSharp {
 	{
 		IMemberContext mc;
 		bool ignore_inferred_dynamic;
+		bool recursive_checks;
 
 		public ConstraintChecker (IMemberContext ctx)
 		{
 			this.mc = ctx;
 			ignore_inferred_dynamic = false;
+			recursive_checks = false;
 		}
 
 		#region Properties
@@ -2040,6 +2077,48 @@ namespace Mono.CSharp {
 		#endregion
 
 		//
+		// Checks the constraints of open generic type against type
+		// arguments. This version is used for types which could not be
+		// checked immediatelly during construction because the type
+		// hierarchy was not yet fully setup (before Emit phase)
+		//
+		public static bool Check (IMemberContext mc, TypeSpec type, Location loc)
+		{
+			//
+			// Check declaring type first if there is any
+			//
+			if (type.DeclaringType != null && !Check (mc, type.DeclaringType, loc))
+				return false;
+
+			while (type is ElementTypeSpec)
+				type = ((ElementTypeSpec) type).Element;
+
+			if (type.Arity == 0)
+				return true;
+
+			var gtype = type as InflatedTypeSpec;
+			if (gtype == null)
+				return true;
+
+			var constraints = gtype.Constraints;
+			if (constraints == null)
+				return true;
+
+			if (gtype.HasConstraintsChecked)
+				return true;
+
+			var cc = new ConstraintChecker (mc);
+			cc.recursive_checks = true;
+
+			if (cc.CheckAll (gtype.GetDefinition (), type.TypeArguments, constraints, loc)) {
+				gtype.HasConstraintsChecked = true;
+				return true;
+			}
+
+			return false;
+		}
+
+		//
 		// Checks all type arguments againts type parameters constraints
 		// NOTE: It can run in probing mode when `mc' is null
 		//
@@ -2049,7 +2128,14 @@ namespace Mono.CSharp {
 				if (ignore_inferred_dynamic && targs[i].BuiltinType == BuiltinTypeSpec.Type.Dynamic)
 					continue;
 
-				if (!CheckConstraint (context, targs [i], tparams [i], loc))
+				var targ = targs[i];
+				if (!CheckConstraint (context, targ, tparams [i], loc))
+					return false;
+
+				if (!recursive_checks)
+					continue;
+
+				if (!Check (mc, targ, loc))
 					return false;
 			}
 
@@ -2247,30 +2333,6 @@ namespace Mono.CSharp {
 
 			var tdef = atype.GetDefinition ();
 
-			//
-			// In some circumstances MemberCache is not yet populated and members
-			// cannot be defined yet (recursive type new constraints)
-			//
-			// class A<T> where T : B<T>, new () {}
-			// class B<T> where T : A<T>, new () {}
-			//
-			var tc = tdef.MemberDefinition as Class;
-			if (tc != null) {
-				if (tc.InstanceConstructors == null) {
-					// Default ctor will be generated later
-					return true;
-				}
-
-				foreach (var c in tc.InstanceConstructors) {
-					if (c.ParameterInfo.IsEmpty) {
-						if ((c.ModFlags & Modifiers.PUBLIC) != 0)
-							return true;
-					}
-				}
-
-				return false;
-			}
-
 			var found = MemberCache.FindMember (tdef,
 				MemberFilter.Constructor (ParametersCompiled.EmptyReadOnlyParameters),
 				BindingRestriction.DeclaredOnly | BindingRestriction.InstanceOnly);
@@ -2286,14 +2348,14 @@ namespace Mono.CSharp {
 	{
 		ParametersCompiled parameters;
 
-		public GenericMethod (NamespaceEntry ns, DeclSpace parent, MemberName name,
+		public GenericMethod (NamespaceContainer ns, DeclSpace parent, MemberName name,
 				      FullNamedExpression return_type, ParametersCompiled parameters)
 			: base (ns, parent, name, null)
 		{
 			this.parameters = parameters;
 		}
 
-		public GenericMethod (NamespaceEntry ns, DeclSpace parent, MemberName name, TypeParameter[] tparams,
+		public GenericMethod (NamespaceContainer ns, DeclSpace parent, MemberName name, TypeParameter[] tparams,
 					  FullNamedExpression return_type, ParametersCompiled parameters)
 			: this (ns, parent, name, return_type, parameters)
 		{
@@ -2676,7 +2738,7 @@ namespace Mono.CSharp {
 			//
 			// Some types cannot be used as type arguments
 			//
-			if (bound.Type.Kind == MemberKind.Void || bound.Type.IsPointer)
+			if (bound.Type.Kind == MemberKind.Void || bound.Type.IsPointer || bound.Type.IsSpecialRuntimeType)
 				return;
 
 			var a = bounds [index];

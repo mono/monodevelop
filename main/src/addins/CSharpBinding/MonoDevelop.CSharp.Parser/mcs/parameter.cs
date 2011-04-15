@@ -215,6 +215,7 @@ namespace Mono.CSharp {
 			ISBYREF = 8,
 			REFMASK	= 32,
 			OUTMASK = 64,
+			SignatureMask = REFMASK | OUTMASK,
 			This	= 128
 		}
 
@@ -280,6 +281,9 @@ namespace Mono.CSharp {
 		public TypeSpec Type {
 			get {
 				return parameter_type;
+			}
+			set {
+				parameter_type = value;
 			}
 		}
 
@@ -353,13 +357,11 @@ namespace Mono.CSharp {
 			if (attributes != null)
 				attributes.AttachTo (this, rc);
 
-			var expr = texpr.ResolveAsTypeTerminal (rc, false);
-			if (expr == null)
+			parameter_type = texpr.ResolveAsType (rc);
+			if (parameter_type == null)
 				return null;
 
 			this.idx = index;
-			texpr = expr;
-			parameter_type = texpr.Type;
 	
 			if ((modFlags & Parameter.Modifier.ISBYREF) != 0 && parameter_type.IsSpecialRuntimeType) {
 				rc.Module.Compiler.Report.Error (1601, Location, "Method or delegate parameter cannot be of type `{0}'",
@@ -559,7 +561,7 @@ namespace Mono.CSharp {
 				var def_value = DefaultValue;
 				Constant c = def_value != null ? def_value.Child as Constant : default_expr as Constant;
 				if (c != null) {
-					if (default_expr.Type.BuiltinType == BuiltinTypeSpec.Type.Decimal) {
+					if (c.Type.BuiltinType == BuiltinTypeSpec.Type.Decimal) {
 						pa.DecimalConstant.EmitAttribute (builder, (decimal) c.GetValue (), c.Location);
 					} else {
 						builder.SetConstant (c.GetValue ());
@@ -601,8 +603,7 @@ namespace Mono.CSharp {
 			expr_tree_variable = (TemporaryVariableReference) expr_tree_variable.Resolve (ec);
 
 			Arguments arguments = new Arguments (2);
-			arguments.Add (new Argument (new TypeOf (
-				new TypeExpression (parameter_type, Location), Location)));
+			arguments.Add (new Argument (new TypeOf (parameter_type, Location)));
 			arguments.Add (new Argument (new StringConstant (ec.BuiltinTypes, Name, Location)));
 			return new SimpleAssign (ExpressionTreeVariableReference (),
 				Expression.CreateExpressionFactoryCall (ec, "Parameter", null, arguments, Location));
@@ -657,7 +658,7 @@ namespace Mono.CSharp {
 		//
 		public static TypeExpr ResolveParameterExpressionType (IMemberContext ec, Location location)
 		{
-			TypeSpec p_type = ec.Module.PredefinedTypes.ParameterExpression.Resolve (location);
+			TypeSpec p_type = ec.Module.PredefinedTypes.ParameterExpression.Resolve ();
 			return new TypeExpression (p_type, location);
 		}
 
@@ -798,6 +799,26 @@ namespace Mono.CSharp {
 			}
 
 			return -1;
+		}
+
+		public string GetSignatureForDocumentation ()
+		{
+			if (IsEmpty)
+				return string.Empty;
+
+			StringBuilder sb = new StringBuilder ("(");
+			for (int i = 0; i < Count; ++i) {
+				if (i != 0)
+					sb.Append (",");
+
+				sb.Append (types [i].GetSignatureForDocumentation ());
+
+				if ((parameters[i].ModFlags & Parameter.Modifier.ISBYREF) != 0)
+					sb.Append ("@");
+			}
+			sb.Append (")");
+
+			return sb.ToString ();
 		}
 
 		public string GetSignatureForError ()
@@ -987,6 +1008,17 @@ namespace Mono.CSharp {
 			return new ParametersCompiled (
 				new[] { new Parameter (texpr, "value", Parameter.Modifier.NONE, null, loc) },
 				null);
+		}
+
+		public void CheckConstraints (IMemberContext mc)
+		{
+			foreach (Parameter p in parameters) {
+				//
+				// It's null for compiler generated types or special types like __arglist
+				//
+				if (p.TypeExpression != null)
+					ConstraintChecker.Check (mc, p.Type, p.TypeExpression.Location);
+			}
 		}
 
 		//

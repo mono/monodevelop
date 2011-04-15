@@ -1366,50 +1366,47 @@ namespace Mono.CSharp {
 		{
 			if (li.Type == null) {
 				TypeSpec type = null;
-				if (type_expr is VarExpr) {
-					//
-					// C# 3.0 introduced contextual keywords (var) which behaves like a type if type with
-					// same name exists or as a keyword when no type was found
-					// 
-					var texpr = type_expr.ResolveAsTypeTerminal (bc, true);
-					if (texpr == null) {
-						if (bc.Module.Compiler.Settings.Version < LanguageVersion.V_3)
-							bc.Report.FeatureIsNotAvailable (bc.Module.Compiler, loc, "implicitly typed local variable");
+				var vexpr = type_expr as VarExpr;
 
-						if (li.IsFixed) {
-							bc.Report.Error (821, loc, "A fixed statement cannot use an implicitly typed local variable");
-							return false;
-						}
+				//
+				// C# 3.0 introduced contextual keywords (var) which behaves like a type if type with
+				// same name exists or as a keyword when no type was found
+				//
+				if (vexpr != null && !vexpr.IsPossibleTypeOrNamespace (bc)) {
+					if (bc.Module.Compiler.Settings.Version < LanguageVersion.V_3)
+						bc.Report.FeatureIsNotAvailable (bc.Module.Compiler, loc, "implicitly typed local variable");
 
-						if (li.IsConstant) {
-							bc.Report.Error (822, loc, "An implicitly typed local variable cannot be a constant");
-							return false;
-						}
+					if (li.IsFixed) {
+						bc.Report.Error (821, loc, "A fixed statement cannot use an implicitly typed local variable");
+						return false;
+					}
 
-						if (Initializer == null) {
-							bc.Report.Error (818, loc, "An implicitly typed local variable declarator must include an initializer");
-							return false;
-						}
+					if (li.IsConstant) {
+						bc.Report.Error (822, loc, "An implicitly typed local variable cannot be a constant");
+						return false;
+					}
 
-						if (declarators != null) {
-							bc.Report.Error (819, loc, "An implicitly typed local variable declaration cannot include multiple declarators");
-							declarators = null;
-						}
+					if (Initializer == null) {
+						bc.Report.Error (818, loc, "An implicitly typed local variable declarator must include an initializer");
+						return false;
+					}
 
-						Initializer = Initializer.Resolve (bc);
-						if (Initializer != null) {
-							((VarExpr) type_expr).InferType (bc, Initializer);
-							type = type_expr.Type;
-						}
+					if (declarators != null) {
+						bc.Report.Error (819, loc, "An implicitly typed local variable declaration cannot include multiple declarators");
+						declarators = null;
+					}
+
+					Initializer = Initializer.Resolve (bc);
+					if (Initializer != null) {
+						((VarExpr) type_expr).InferType (bc, Initializer);
+						type = type_expr.Type;
 					}
 				}
 
 				if (type == null) {
-					var texpr = type_expr.ResolveAsTypeTerminal (bc, false);
-					if (texpr == null)
+					type = type_expr.ResolveAsType (bc);
+					if (type == null)
 						return false;
-
-					type = texpr.Type;
 
 					if (li.IsConstant && !type.IsConstantCompatible) {
 						Const.Error_InvalidConstantType (type, loc, bc.Report);
@@ -1982,14 +1979,7 @@ namespace Mono.CSharp {
 			var pi = variable as ParametersBlock.ParameterInfo;
 			if (pi != null) {
 				var p = pi.Parameter;
-				if (p is AnonymousTypeClass.GeneratedParameter) {
-					ParametersBlock.TopBlock.Report.Error (833, p.Location, "`{0}': An anonymous type cannot have multiple properties with the same name",
-						p.Name);
-				} else {
-					ParametersBlock.TopBlock.Report.Error (100, p.Location, "The parameter name `{0}' is a duplicate", p.Name);
-				}
-
-				return;
+				ParametersBlock.TopBlock.Report.Error (100, p.Location, "The parameter name `{0}' is a duplicate", p.Name);
 			}
 
 			ParametersBlock.TopBlock.Report.Error (128, variable.Location,
@@ -2621,7 +2611,8 @@ namespace Mono.CSharp {
 
 				// TODO: Should use Parameter only and more block there
 				parameter_info[i] = new ParameterInfo (this, i);
-				AddLocalName (p.Name, parameter_info[i]);
+				if (p.Name != null)
+					AddLocalName (p.Name, parameter_info[i]);
 			}
 		}
 
@@ -3760,7 +3751,7 @@ namespace Mono.CSharp {
 			} else if (ec.Module.PredefinedTypes.Hashtable.Define ()) {
 				string_dictionary_type = new TypeExpression (ec.Module.PredefinedTypes.Hashtable.TypeSpec, loc);
 			} else {
-				ec.Module.PredefinedTypes.Dictionary.Resolve (loc);
+				ec.Module.PredefinedTypes.Dictionary.Resolve ();
 				return;
 			}
 
@@ -4777,11 +4768,10 @@ namespace Mono.CSharp {
 		{
 			using (ec.With (ResolveContext.Options.CatchScope, true)) {
 				if (type_expr != null) {
-					TypeExpr te = type_expr.ResolveAsTypeTerminal (ec, false);
-					if (te == null)
+					type = type_expr.ResolveAsType (ec);
+					if (type == null)
 						return false;
 
-					type = te.Type;
 					if (type.BuiltinType != BuiltinTypeSpec.Type.Exception && !TypeSpec.IsBaseClass (type, ec.BuiltinTypes.Exception, false)) {
 						ec.Report.Error (155, loc, "The type caught or thrown must be derived from System.Exception");
 					} else if (li != null) {
@@ -5328,18 +5318,18 @@ namespace Mono.CSharp {
 				if (access == null)
 					return false;
 
-				Expression var_type = for_each.type;
-				VarExpr ve = var_type as VarExpr;
-				if (ve != null) {
+				TypeSpec var_type;
+				if (for_each.type is VarExpr) {
 					// Infer implicitly typed local variable from foreach array type
-					var_type = new TypeExpression (access.Type, ve.Location);
+					var_type = access.Type;
+				} else {
+					var_type = for_each.type.ResolveAsType (ec);
 				}
 
-				var_type = var_type.ResolveAsTypeTerminal (ec, false);
 				if (var_type == null)
 					return false;
 
-				conv = Convert.ExplicitConversion (ec, access, var_type.Type, loc);
+				conv = Convert.ExplicitConversion (ec, access, var_type, loc);
 				if (conv == null)
 					return false;
 
@@ -5685,29 +5675,31 @@ namespace Mono.CSharp {
 					return false;
 
 				VarExpr ve = var_type as VarExpr;
+
 				if (ve != null) {
 					if (is_dynamic) {
 						// Source type is dynamic, set element type to dynamic too
-						var_type = new TypeExpression (ec.BuiltinTypes.Dynamic, var_type.Location);
+						variable.Type = ec.BuiltinTypes.Dynamic;
 					} else {
 						// Infer implicitly typed local variable from foreach enumerable type
-						var_type = new TypeExpression (current_pe.Type, var_type.Location);
+						variable.Type = current_pe.Type;
 					}
-				} else if (is_dynamic) {
-					// Explicit cast of dynamic collection elements has to be done at runtime
-					current_pe = EmptyCast.Create (current_pe, ec.BuiltinTypes.Dynamic);
+				} else {
+					if (is_dynamic) {
+						// Explicit cast of dynamic collection elements has to be done at runtime
+						current_pe = EmptyCast.Create (current_pe, ec.BuiltinTypes.Dynamic);
+					}
+
+					variable.Type = var_type.ResolveAsType (ec);
 				}
 
-				var_type = var_type.ResolveAsTypeTerminal (ec, false);
-				if (var_type == null)
+				if (variable.Type == null)
 					return false;
-
-				variable.Type = var_type.Type;
 
 				var init = new Invocation (get_enumerator_mg, null);
 
 				statement = new While (new BooleanExpression (new Invocation (move_next_mg, null)),
-					new Body (var_type.Type, variable, current_pe, statement, loc), loc);
+					new Body (variable.Type, variable, current_pe, statement, loc), loc);
 
 				var enum_type = enumerator_variable.Type;
 

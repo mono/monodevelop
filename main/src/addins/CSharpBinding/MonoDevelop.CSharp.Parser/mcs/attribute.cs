@@ -21,10 +21,12 @@ using System.IO;
 
 #if STATIC
 using SecurityType = System.Collections.Generic.List<IKVM.Reflection.Emit.CustomAttributeBuilder>;
+using BadImageFormat = IKVM.Reflection.BadImageFormatException;
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
 #else
 using SecurityType = System.Collections.Generic.Dictionary<System.Security.Permissions.SecurityAction, System.Security.PermissionSet>;
+using BadImageFormat = System.BadImageFormatException;
 using System.Reflection;
 using System.Reflection.Emit;
 #endif
@@ -165,7 +167,7 @@ namespace Mono.CSharp {
 			}
 
 			// When re-attaching global attributes
-			if (context is NamespaceEntry) {
+			if (context is NamespaceContainer) {
 				this.targets[0] = target;
 				this.context = context;
 				return;
@@ -245,22 +247,6 @@ namespace Mono.CSharp {
 			}
 		}
 
-		TypeSpec ResolvePossibleAttributeType (ATypeNameExpression expr, ref bool is_attr)
-		{
-			TypeExpr te = expr.ResolveAsTypeTerminal (context, false);
-			if (te == null)
-				return null;
-
-			TypeSpec t = te.Type;
-			if (t.IsAttribute) {
-				is_attr = true;
-			} else {
-				Report.SymbolRelatedToPreviousError (t);
-				Report.Error (616, Location, "`{0}': is not an attribute class", TypeManager.CSharpName (t));
-			}
-			return t;
-		}
-
 		/// <summary>
 		///   Tries to resolve the type of the attribute. Flags an error if it can't, and complain is true.
 		/// </summary>
@@ -274,8 +260,15 @@ namespace Mono.CSharp {
 			TypeSpec t1, t2;
 			ATypeNameExpression expanded = null;
 
+			// TODO: Additional warnings such as CS0436 are swallowed because we don't
+			// print on success
+
 			try {
-				t1 = ResolvePossibleAttributeType (expression, ref t1_is_attr);
+				t1 = expression.ResolveAsType (context);
+				if (t1 != null)
+					t1_is_attr = t1.IsAttribute;
+
+				resolve_printer.EndSession ();
 
 				if (nameEscaped) {
 					t2 = null;
@@ -283,15 +276,15 @@ namespace Mono.CSharp {
 					expanded = (ATypeNameExpression) expression.Clone (null);
 					expanded.Name += "Attribute";
 
-					t2 = ResolvePossibleAttributeType (expanded, ref t2_is_attr);
+					t2 = expanded.ResolveAsType (context);
+					if (t2 != null)
+						t2_is_attr = t2.IsAttribute;
 				}
-
-				resolve_printer.EndSession ();
 			} finally {
 				context.Module.Compiler.Report.SetPrinter (prev_recorder);
 			}
 
-			if (t1_is_attr && t2_is_attr) {
+			if (t1_is_attr && t2_is_attr && t1 != t2) {
 				Report.Error (1614, Location, "`{0}' is ambiguous between `{1}' and `{2}'. Use either `@{0}' or `{0}Attribute'",
 					GetSignatureForError (), expression.GetSignatureForError (), expanded.GetSignatureForError ());
 				resolve_error = true;
@@ -308,8 +301,23 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			resolve_printer.Merge (prev_recorder);
 			resolve_error = true;
+
+			if (t1 != null) {
+				resolve_printer.Merge (prev_recorder);
+
+				Report.SymbolRelatedToPreviousError (t1);
+				Report.Error (616, Location, "`{0}': is not an attribute class", t1.GetSignatureForError ());
+				return;
+			}
+
+			if (t2 != null) {
+				Report.SymbolRelatedToPreviousError (t2);
+				Report.Error (616, Location, "`{0}': is not an attribute class", t2.GetSignatureForError ());
+				return;
+			}
+
+			resolve_printer.Merge (prev_recorder);
 		}
 
 		public TypeSpec ResolveType ()
@@ -431,7 +439,7 @@ namespace Mono.CSharp {
 			// Add [module: DefaultCharSet] to all DllImport import attributes
 			//
 			var module = context.Module;
-			if (Type == module.PredefinedAttributes.DllImport && module.HasDefaultCharSet) {
+			if ((Type == module.PredefinedAttributes.DllImport || Type == module.PredefinedAttributes.UnmanagedFunctionPointer) && module.HasDefaultCharSet) {
 				if (rc == null)
 					rc = CreateResolveContext ();
 
@@ -644,7 +652,7 @@ namespace Mono.CSharp {
 				// But because a lot of attribute class code must be rewritten will be better to wait...
 				Resolve ();
 
-			if (resolve_error)
+			if (resolve_error || PosArguments.Count != 1 || !(PosArguments [0].Expr is Constant))
 				return null;
 
 			return ((Constant) PosArguments [0].Expr).GetValue () as string;
@@ -946,11 +954,12 @@ namespace Mono.CSharp {
 						var pt = param_types[j];
 						var arg_expr = PosArguments[j].Expr;
 						if (j == 0) {
-							if (Type == predefined.IndexerName || Type == predefined.Conditional) {
-								string v = ((StringConstant) arg_expr).Value;
+							if ((Type == predefined.IndexerName || Type == predefined.Conditional) && arg_expr is Constant) {
+								string v = ((Constant) arg_expr).GetValue () as string;
 								if (!Tokenizer.IsValidIdentifier (v) || Tokenizer.IsKeyword (v)) {
 									context.Module.Compiler.Report.Error (633, arg_expr.Location,
 										"The argument to the `{0}' attribute must be a valid identifier", GetSignatureForError ());
+									return;
 								}
 							} else if (Type == predefined.Guid) {
 								try {
@@ -974,7 +983,7 @@ namespace Mono.CSharp {
 									}
 								}
 							} else if (Type == predefined.DllImport) {
-								if (PosArguments.Count == 1) {
+								if (PosArguments.Count == 1 && PosArguments[0].Expr is Constant) {
 									var value = ((Constant) PosArguments[0].Expr).GetValue () as string;
 									if (string.IsNullOrEmpty (value))
 										Error_AttributeEmitError ("DllName cannot be empty");
@@ -1013,6 +1022,9 @@ namespace Mono.CSharp {
 				foreach (Attributable target in targets)
 					target.ApplyAttributeBuilder (this, ctor, cdata, predefined);
 			} catch (Exception e) {
+				if (e is BadImageFormat && Report.Errors > 0)
+					return;
+
 				Error_AttributeEmitError (e.Message);
 				return;
 			}
@@ -1146,7 +1158,7 @@ namespace Mono.CSharp {
 			return true;
 		}
 
-		public void ConvertGlobalAttributes (TypeContainer member, NamespaceEntry currentNamespace, bool isGlobal)
+		public void ConvertGlobalAttributes (TypeContainer member, NamespaceContainer currentNamespace, bool isGlobal)
 		{
 			var member_explicit_targets = member.ValidAttributeTargets;
 			for (int i = 0; i < Attrs.Count; ++i) {
@@ -1621,8 +1633,6 @@ namespace Mono.CSharp {
 		public readonly PredefinedAttribute DefaultParameterValue;
 		public readonly PredefinedAttribute OptionalParameter;
 		public readonly PredefinedAttribute UnverifiableCode;
-
-		// New in .NET 2.0
 		public readonly PredefinedAttribute DefaultCharset;
 		public readonly PredefinedAttribute TypeForwarder;
 		public readonly PredefinedAttribute FixedBuffer;
@@ -1631,6 +1641,7 @@ namespace Mono.CSharp {
 		public readonly PredefinedAttribute RuntimeCompatibility;
 		public readonly PredefinedAttribute DebuggerHidden;
 		public readonly PredefinedAttribute UnsafeValueType;
+		public readonly PredefinedAttribute UnmanagedFunctionPointer;
 
 		// New in .NET 3.5
 		public readonly PredefinedAttribute Extension;
@@ -1650,8 +1661,8 @@ namespace Mono.CSharp {
 		{
 			ParamArray = new PredefinedAttribute (module, "System", "ParamArrayAttribute");
 			Out = new PredefinedAttribute (module, "System.Runtime.InteropServices", "OutAttribute");
-			ParamArray.Resolve (Location.Null);
-			Out.Resolve (Location.Null);
+			ParamArray.Resolve ();
+			Out.Resolve ();
 
 			Obsolete = new PredefinedAttribute (module, "System", "ObsoleteAttribute");
 			DllImport = new PredefinedAttribute (module, "System.Runtime.InteropServices", "DllImportAttribute");
@@ -1684,6 +1695,7 @@ namespace Mono.CSharp {
 			RuntimeCompatibility = new PredefinedAttribute (module, "System.Runtime.CompilerServices", "RuntimeCompatibilityAttribute");
 			DebuggerHidden = new PredefinedAttribute (module, "System.Diagnostics", "DebuggerHiddenAttribute");
 			UnsafeValueType = new PredefinedAttribute (module, "System.Runtime.CompilerServices", "UnsafeValueTypeAttribute");
+			UnmanagedFunctionPointer = new PredefinedAttribute (module, "System.Runtime.InteropServices", "UnmanagedFunctionPointerAttribute");
 
 			Extension = new PredefinedAttribute (module, "System.Runtime.CompilerServices", "ExtensionAttribute");
 

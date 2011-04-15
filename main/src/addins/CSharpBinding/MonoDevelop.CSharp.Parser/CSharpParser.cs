@@ -581,7 +581,7 @@ namespace MonoDevelop.CSharp.Parser
 				
 				if (location != null)
 					newIndexer.AddChild (new CSharpTokenNode (Convert (location[0]), 1), IndexerDeclaration.Roles.LBracket);
-				AddParameter (newIndexer, indexer.Parameters);
+				AddParameter (newIndexer, indexer.ParameterInfo);
 				if (location != null)
 					newIndexer.AddChild (new CSharpTokenNode (Convert (location[1]), 1), IndexerDeclaration.Roles.RBracket);
 				

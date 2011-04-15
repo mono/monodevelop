@@ -40,6 +40,12 @@ namespace Mono.CSharp {
 			if (array.Element == arg_type)
 				return true;
 
+			//
+			// Reject conversion from T[] to IList<U> even if T has U dependency
+			//
+			if (arg_type.IsGenericParameter)
+				return false;
+
 			if (isExplicit)
 				return ExplicitReferenceConversionExists (array.Element, arg_type);
 
@@ -253,20 +259,17 @@ namespace Mono.CSharp {
 				if (target_type_array != null && expr_type_array.Rank == target_type_array.Rank) {
 
 					//
-					// Both SE and TE are reference-types
+					// Both SE and TE are reference-types. TE check is defered
+					// to ImplicitReferenceConversionExists
 					//
 					TypeSpec expr_element_type = expr_type_array.Element;
 					if (!TypeManager.IsReferenceType (expr_element_type))
 						return false;
 
-					TypeSpec target_element_type = target_type_array.Element;
-					if (!TypeManager.IsReferenceType (target_element_type))
-						return false;
-
 					//
 					// An implicit reference conversion exists from SE to TE
 					//
-					return ImplicitReferenceConversionExists (expr_element_type, target_element_type);
+					return ImplicitReferenceConversionExists (expr_element_type, target_type_array.Element);
 				}
 
 				// from an array-type to System.Array
@@ -817,40 +820,42 @@ namespace Mono.CSharp {
 			return best;
 		}
 
-		/// <summary>
-		///  Finds "most encompassing type" according to the spec (13.4.2)
-		///  amongst the types in the given set
-		/// </summary>
+		//
+		// Finds the most encompassing type (type into which all other
+		// types can convert to) amongst the types in the given set
+		//
 		static TypeSpec FindMostEncompassingType (IList<TypeSpec> types)
 		{
-			TypeSpec best = null;
-
 			if (types.Count == 0)
 				return null;
 
 			if (types.Count == 1)
 				return types [0];
 
-			foreach (TypeSpec t in types) {
+			TypeSpec best = null;
+			for (int i = 0; i < types.Count; ++i) {
+				int ii = 0;
+				for (; ii < types.Count; ++ii) {
+					if (ii == i)
+						continue;
+
+					var expr = new EmptyExpression (types[ii]);
+					if (!ImplicitStandardConversionExists (expr, types [i])) {
+						ii = 0;
+						break;
+					}
+				}
+
+				if (ii == 0)
+					continue;
+
 				if (best == null) {
-					best = t;
+					best = types[i];
 					continue;
 				}
 
-				var expr = new EmptyExpression (best);
-				if (ImplicitStandardConversionExists (expr, t))
-					best = t;
-			}
-
-			foreach (TypeSpec t in types) {
-				if (best == t)
-					continue;
-
-				var expr = new EmptyExpression (best);
-				if (!ImplicitStandardConversionExists (expr, best)) {
-					best = null;
-					break;
-				}
+				// Indicates multiple best types
+				return InternalType.FakeInternalType;
 			}
 
 			return best;
@@ -1130,6 +1135,8 @@ namespace Mono.CSharp {
 						"Ambiguous user defined operators `{0}' and `{1}' when converting from `{2}' to `{3}'",
 						ambig_arg.GetSignatureForError (), most_specific_operator.GetSignatureForError (),
 						source.Type.GetSignatureForError (), target.GetSignatureForError ());
+
+					return ErrorExpression.Instance;
 				}
 			}
 

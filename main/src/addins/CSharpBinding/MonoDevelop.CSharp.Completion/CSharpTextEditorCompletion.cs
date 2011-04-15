@@ -801,7 +801,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 			completionList.AutoCompleteEmptyMatch = false;
-			//completionList.AutoSelect = false;
+			completionList.AutoSelect = false;
 			resolver.AddAccessibleCodeCompletionData (context, cdc);
 			return completionList;
 		}

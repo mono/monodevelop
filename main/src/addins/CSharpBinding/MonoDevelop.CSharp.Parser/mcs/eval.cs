@@ -62,6 +62,7 @@ namespace Mono.CSharp
 
 		Type base_class;
 		bool inited;
+		int startup_files;
 
 		readonly CompilerContext ctx;
 		readonly ModuleContainer module;
@@ -76,8 +77,9 @@ namespace Mono.CSharp
 			module.Evaluator = this;
 
 			source_file = new CompilationSourceFile ("{interactive}", "", 1);
- 			source_file.NamespaceContainer = new NamespaceEntry (module, null, source_file, null);
+ 			source_file.NamespaceContainer = new NamespaceContainer (null, module, null, source_file);
 
+			startup_files = ctx.SourceFiles.Count;
 			ctx.SourceFiles.Add (source_file);
 
 			// FIXME: Importer needs this assembly for internalsvisibleto
@@ -104,6 +106,18 @@ namespace Mono.CSharp
 			module.InitializePredefinedTypes ();
 
 			inited = true;
+		}
+
+		void ParseStartupFiles ()
+		{
+			Driver d = new Driver (ctx);
+
+			Location.Initialize (ctx.SourceFiles);
+
+			for (int i = 0; i < startup_files; ++i) {
+				var sf = ctx.Settings.SourceFiles [i];
+				d.Parse (sf, module);
+			}
 		}
 
 		void Reset ()
@@ -195,10 +209,12 @@ namespace Mono.CSharp
 			}
 
 			lock (evaluator_lock){
-				if (!inited)
+				if (!inited) {
 					Init ();
-				else
+					ParseStartupFiles ();
+				} else {
 					ctx.Report.Printer.Reset ();
+				}
 
 				bool partial_input;
 				CSharpParser parser = ParseString (ParseMode.Silent, input, out partial_input);
@@ -528,8 +544,9 @@ namespace Mono.CSharp
 			Reset ();
 			Tokenizer.LocatedToken.Initialize ();
 
-			Stream s = new MemoryStream (Encoding.Default.GetBytes (input));
-			SeekableStreamReader seekable = new SeekableStreamReader (s, Encoding.Default);
+			var enc = ctx.Settings.Encoding;
+			var s = new MemoryStream (enc.GetBytes (input));
+			SeekableStreamReader seekable = new SeekableStreamReader (s, enc);
 
 			InputKind kind = ToplevelOrStatement (seekable);
 			if (kind == InputKind.Error){

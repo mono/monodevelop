@@ -76,7 +76,11 @@ namespace Mono.CSharp
 		public virtual void Visit (UsingsBag.AliasUsing aliasUsing)
 		{
 		}
-		
+
+		public virtual void Visit (UsingsBag.ExternAlias externAlias)
+		{
+		}
+
 		public virtual void Visit (Class c)
 		{
 			VisitTypeContainer (c);
@@ -340,6 +344,11 @@ namespace Mono.CSharp
 			return null;
 		}
 
+		public virtual object Visit (QualifiedAliasMember qualifiedAliasMember)
+		{
+			return null;
+		}
+
 		public virtual object Visit (LocalVariableReference localVariableReference)
 		{
 			return null;
@@ -433,6 +442,11 @@ namespace Mono.CSharp
 		}
 
 		public virtual object Visit (New newExpression)
+		{
+			return null;
+		}
+
+		public virtual object Visit (NewAnonymousType newAnonymousType)
 		{
 			return null;
 		}
@@ -537,6 +551,11 @@ namespace Mono.CSharp
 			return null;
 		}
 
+		public virtual object Visit (Linq.QueryStartClause queryExpression)
+		{
+			return null;
+		}
+		
 		public virtual object Visit (Linq.SelectMany selectMany)
 		{
 			return null;
@@ -586,8 +605,24 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
-
+		
 		public virtual object Visit (Linq.ThenByDescending thenByDescending)
+		{
+			return null;
+		}
+		
+		// undocumented expressions
+		public virtual object Visit (RefValueExpr refValueExpr)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (RefTypeExpr refTypeExpr)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (MakeRefExpr makeRefExpr)
 		{
 			return null;
 		}

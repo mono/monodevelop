@@ -1019,7 +1019,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				
 				indexer.ReturnType = ConvertReturnType (i.TypeName);
-				AddParameter (indexer, i.Parameters);
+				AddParameter (indexer, i.ParameterInfo);
 				
 				AddAttributes (indexer, i.OptAttributes, i);
 				AddExplicitInterfaces (indexer, i);
