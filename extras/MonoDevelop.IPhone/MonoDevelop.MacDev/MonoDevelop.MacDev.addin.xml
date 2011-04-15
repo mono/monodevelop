@@ -6,6 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Mac Development Support for MonoDevelop"
        category    = "Mac Development"
+       flags       = "Hidden"
        version     = "2.6">
 	
 	<Runtime>
