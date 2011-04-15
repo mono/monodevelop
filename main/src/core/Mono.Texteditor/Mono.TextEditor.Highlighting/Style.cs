@@ -659,8 +659,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void SetChunkStyle (string name, string weight, string foreColor, string backColor)
 		{
-			Cairo.Color color   = !String.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
-			Cairo.Color bgColor = !String.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : new Cairo.Color (0, 0, 0);
+			Cairo.Color color   = !string.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
+			Cairo.Color bgColor = !string.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : new Cairo.Color (0, 0, 0);
 			ChunkProperties properties = ChunkProperties.None;
 			if (weight != null) {
 				if (weight.ToUpper ().IndexOf ("BOLD") >= 0)
@@ -670,7 +670,7 @@ namespace Mono.TextEditor.Highlighting
 				if (weight.ToUpper ().IndexOf ("UNDERLINE") >= 0)
 					properties |= ChunkProperties.Underline;
 			}
-			SetStyle (name, new ChunkStyle (color, bgColor, properties));
+			SetStyle (name,  !string.IsNullOrEmpty (backColor) ? new ChunkStyle (color, bgColor, properties) : new ChunkStyle (color, properties));
 		}
 		
 		static int GetNumber (string str, int offset)
@@ -702,8 +702,8 @@ namespace Mono.TextEditor.Highlighting
 		{
 			string name    = reader.GetAttribute ("name"); 
 			string weight  = reader.GetAttribute ("weight") ?? curWeight;
-			string color   = reader.GetAttribute ("color") ?? curColor;
-			string bgColor = reader.GetAttribute ("bgColor") ?? curBgColor;
+			string color   = reader.GetAttribute ("color");
+			string bgColor = reader.GetAttribute ("bgColor");
 			string fullName;
 			if (String.IsNullOrEmpty (curName)) {
 				fullName = name;

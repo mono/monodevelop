@@ -50,24 +50,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		Gdk.Color backColor = Gdk.Color.Zero;
-		bool backColorIsZero = true, backColorIsZeroDirty = true;
-		
-		bool BackColorIsZero {
-			get {
-				if (backColorIsZeroDirty) {
-					backColorIsZero = backColor.Equal (Gdk.Color.Zero);
-					backColorIsZeroDirty = false;
-				}
-				return backColorIsZero;
-			}
-		}
-		
-		
+		bool backColorIsZero = true;
 		Cairo.Color cairoBackgroundColor = new Cairo.Color (0, 0, 0, 0);
 		public virtual Cairo.Color CairoBackgroundColor {
-			get;
-			set;
+			get { return cairoBackgroundColor; }
+			set { cairoBackgroundColor = value; backColorIsZero = false; }
 		}
 		
 		public Gdk.Color BackgroundColor {
@@ -78,7 +65,7 @@ namespace Mono.TextEditor
 		
 		public bool TransparentBackround {
 			get {
-				return (ChunkProperties & ChunkProperties.TransparentBackground) == ChunkProperties.TransparentBackground || BackColorIsZero; 
+				return (ChunkProperties & ChunkProperties.TransparentBackground) == ChunkProperties.TransparentBackground || backColorIsZero; 
 			}
 		}
 		
@@ -113,7 +100,8 @@ namespace Mono.TextEditor
 		public ChunkStyle (ChunkStyle style)
 		{
 			CairoColor           = style.CairoColor;
-			CairoBackgroundColor = style.CairoBackgroundColor;
+			if (!style.backColorIsZero)
+				CairoBackgroundColor = style.CairoBackgroundColor;
 			ChunkProperties      = style.ChunkProperties;
 		}
 
@@ -129,16 +117,19 @@ namespace Mono.TextEditor
 			return Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
 		}
 		
-		public ChunkStyle () : this (Gdk.Color.Zero, Gdk.Color.Zero, ChunkProperties.None)
+		public ChunkStyle ()
 		{
 		}
 		
-		public ChunkStyle (Gdk.Color color) : this (color, Gdk.Color.Zero, ChunkProperties.None)
+		public ChunkStyle (Gdk.Color color)
 		{
+			this.CairoColor =(HslColor) color;
 		}
 		
-		public ChunkStyle (Gdk.Color color, ChunkProperties chunkProperties) : this (color, Gdk.Color.Zero, chunkProperties)
+		public ChunkStyle (Gdk.Color color, ChunkProperties chunkProperties)
 		{
+			this.CairoColor      = (HslColor)color;
+			this.ChunkProperties = chunkProperties;
 		}
 		
 		public ChunkStyle (Gdk.Color color, Gdk.Color bgColor) : this (color, bgColor, ChunkProperties.None)
@@ -156,6 +147,12 @@ namespace Mono.TextEditor
 		{
 			this.CairoColor           = color;
 			this.CairoBackgroundColor = bgColor;
+			this.ChunkProperties = chunkProperties;
+		}
+		
+		public ChunkStyle (Cairo.Color color, ChunkProperties chunkProperties)
+		{
+			this.CairoColor           = color;
 			this.ChunkProperties = chunkProperties;
 		}
 		
