@@ -228,14 +228,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					//explictly remove the node from the tree, since it currently only tracks real folder deletions
 					folder.Remove ();
 				}
-
-				// If it's the last item in the parent folder, make sure we keep a reference to the parent 
-				// folder, so it is not deleted from the tree.
-				var inParentFolder = project.Files.GetFilesInVirtualPath (folderRelativePath.ParentDirectory);
-				if (!inParentFolder.Skip (1).Any ()) {
-					project.Files.Add (new ProjectFile (folder.Path.ParentDirectory) {
-						Subtype = Subtype.Directory,
-					});
+				
+				if (folder.Path.ParentDirectory != project.BaseDirectory) {
+					// If it's the last item in the parent folder, make sure we keep a reference to the parent 
+					// folder, so it is not deleted from the tree.
+					var inParentFolder = project.Files.GetFilesInVirtualPath (folderRelativePath.ParentDirectory);
+					if (!inParentFolder.Skip (1).Any ()) {
+						project.Files.Add (new ProjectFile (folder.Path.ParentDirectory) {
+							Subtype = Subtype.Directory,
+						});
+					}
 				}
 			}
 			IdeApp.ProjectOperations.Save (projects);
