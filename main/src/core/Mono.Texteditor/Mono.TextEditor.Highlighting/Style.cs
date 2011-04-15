@@ -380,12 +380,12 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string Name {
 			get;
-			private set;
+			set;
 		}
 		
 		public string Description {
 			get;
-			private set;
+			set;
 		}
 		
 		public static Cairo.Color ToCairoColor (Gdk.Color color)
