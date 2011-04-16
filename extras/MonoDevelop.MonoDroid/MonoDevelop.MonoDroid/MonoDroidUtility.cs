@@ -263,7 +263,6 @@ namespace MonoDevelop.MonoDroid
 					ErrorMessage = GettextCatalog.GetString ("Failed to get device")
 				},
 				new ChainedAsyncOperation<AdbShellOperation> () {
-					TaskName = GettextCatalog.GetString ("Getting the package list location from device"),
 					Create = () => new AdbShellOperation (device, "ls /data/system/packages.xml"),
 					Completed = op => {
 						string output = op.Output.Trim (new char [] { '\n', '\r' });
