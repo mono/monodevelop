@@ -391,8 +391,29 @@ namespace MonoDevelop.Ide.Projects
 						nameEntry.Text = item.DefaultFilename;
 						previousDefaultEntryText = item.DefaultFilename;
 					}
-
-					okButton.Sensitive = item.IsValidName (nameEntry.Text, sel.Language);
+					Project project = null;
+					string path = null;
+					if (!boxProject.Visible || projectAddCheckbox.Active) {
+						project = parentProject;
+						path = basePath;
+					}
+					
+					if (projectAddCheckbox.Active) {
+						okButton.Sensitive = item.IsValidName (nameEntry.Text, sel.Language);
+					} else {
+						if (!item.IsValidName (nameEntry.Text, sel.Language)) {
+							okButton.Sensitive = false;
+						} else {
+							bool sensitive = true;
+							foreach (var file in item.Files) {
+								if (!item.CanCreateUnsavedFiles (file, project, project, path, sel.Language, nameEntry.Text)) {
+									sensitive = false;
+									break;
+								}
+							}
+							okButton.Sensitive = sensitive;
+						}
+					}
 				} else {
 					nameEntry.Sensitive = true;
 					okButton.Sensitive = false;
