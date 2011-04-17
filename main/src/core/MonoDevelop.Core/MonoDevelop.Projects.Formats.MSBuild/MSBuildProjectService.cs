@@ -434,6 +434,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 				var pinfo = new ProcessStartInfo (exe) {
 					UseShellExecute = false,
+					CreateNoWindow = true,
 					RedirectStandardError = true,
 					RedirectStandardInput = true,
 				};
