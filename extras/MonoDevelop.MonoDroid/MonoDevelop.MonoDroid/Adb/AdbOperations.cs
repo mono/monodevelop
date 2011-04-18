@@ -367,6 +367,81 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 
+	public sealed class AdbGetPartitionSizeOperation : AdbBaseShellOperation
+	{
+		string partition;
+
+		public AdbGetPartitionSizeOperation (AndroidDevice device, string partition) : base (device, "df " + partition)
+		{
+			this.partition = partition;
+			BeginConnect ();
+		}
+
+		bool ParseDfOutput (string output, out long size)
+		{
+			size = 0;
+
+			string s;
+			var reader = new StringReader (output);
+			while ((s = reader.ReadLine ()) != null) {
+				if (!s.StartsWith (partition))
+					continue;
+
+				// /data/: 508416K total, 98548K used, 409868K available (block size 4096)
+				var parts = s.Split (new char [] { ',' });
+				if (parts.Length != 3 || parts [2].IndexOf ("available") < 0)
+					return false;
+
+				// the actual available component
+				parts = parts [2].Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+				var available = parts [0].Trim ();
+				var unit = available [available.Length - 1];
+				available = available.Substring (0, available.Length - 1);
+				if (!long.TryParse (available, out size))
+					return false;
+
+				switch (unit) {
+					case 'K': 
+						break; // No conversion needed
+					case 'M': size *= 1024;
+						break;
+					case 'G': size *= 1024 * 1024;
+						break;
+					default: 
+						  return false;
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+
+		long? size;
+
+		public override bool Success {
+			get {
+				if (!base.Success)
+					return false;
+				if (!size.HasValue) {
+					long value;
+					size = ParseDfOutput (Output, out value) ? value : -1;
+				}
+
+				return size >= 0;
+			}
+		}
+
+		public long Size {
+			get {
+				if (!Success)
+					throw new InvalidOperationException ("Error getting partition size from device:\n" + Output);
+				//Success will have parsed the value 
+				return size.Value;
+			}
+		}
+	}
+
 	public abstract class AdbBaseShellOperation : AdbTransportOperation
 	{
 		string command;
