@@ -2569,7 +2569,7 @@ namespace MonoDevelop.CSharp.Parser
 		public MonoDevelop.CSharp.Ast.CompilationUnit Parse (Stream stream)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
-				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", Console.Out);
+				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", errorReportPrinter);
 				
 				if (top == null)
 					return null;

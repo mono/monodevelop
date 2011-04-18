@@ -93,10 +93,11 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var compilationUnit = parser.Parse (data);
-			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
+			bool hadErrors = parser.HasErrors;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var formattingVisitor = new AstFormattingVisitor (policy, data) {
 				AutoAcceptChanges = false,
+				HadErrors = hadErrors
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
@@ -128,13 +129,14 @@ namespace MonoDevelop.CSharp.Formatting
 
 			MonoDevelop.CSharp.Parser.CSharpParser parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var compilationUnit = parser.Parse (data);
-			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
+			bool hadErrors = parser.HasErrors;
 			if (hadErrors)
 				return null;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 
 			var formattingVisitor = new AstFormattingVisitor (policy, data) {
-				AutoAcceptChanges = false
+				AutoAcceptChanges = false,
+				HadErrors = hadErrors
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 
