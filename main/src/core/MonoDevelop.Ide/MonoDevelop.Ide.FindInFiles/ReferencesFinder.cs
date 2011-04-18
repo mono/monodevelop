@@ -72,13 +72,55 @@ namespace MonoDevelop.Ide.FindInFiles
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, monitor);
 		}
 		
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, INode member, IProgressMonitor monitor = null)
+		
+		static IEnumerable<Tuple<ProjectDom, FilePath>> GetFileNames (Solution solution, ProjectDom dom, ICompilationUnit unit, INode member, IProgressMonitor monitor)
 		{
 			var scope = GetScope (member);
-			ReferenceFinder finder;
+			switch (scope) {
+			case RefactoryScope.File:
+			case RefactoryScope.DeclaringType:
+				if (dom != null && unit != null)
+					yield return Tuple.Create (dom, unit.FileName);
+				break;
+			case RefactoryScope.Project:
+				if (dom == null)
+					yield break;
+				if (monitor != null)
+					monitor.BeginTask (GettextCatalog.GetString ("Search reference in project..."), dom.Project.Files.Count);
+				int counter = 0;
+				foreach (var file in dom.Project.Files) {
+					yield return Tuple.Create (dom, file.FilePath);
+					if (monitor != null) {
+						if (counter % 10 == 0)
+							monitor.Step (10);
+						counter++;
+					}
+				}
+				if (monitor != null)
+					monitor.EndTask ();
+				break;
+			case RefactoryScope.Solution:
+				if (monitor != null)
+					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
+				foreach (var project in solution.GetAllProjects ()) {
+					var currentDom = ProjectDomService.GetProjectDom (project);
+					foreach (var file in project.Files) {
+						yield return Tuple.Create (currentDom, file.FilePath);
+					}
+					if (monitor != null)
+						monitor.Step (1);
+				}
+				if (monitor != null)
+					monitor.EndTask ();
+				break;
+			}
+		}
+		
+		public static IEnumerable<MemberReference> FindReferences (Solution solution, INode member, IProgressMonitor monitor = null)
+		{
 			ProjectDom dom = null;
 			ICompilationUnit unit = null;
-			IEnumerable<INode> searchNodes = new INode[] { member };
+			IEnumerable<INode > searchNodes = new INode[] { member };
 			if (member is LocalVariable) {
 				dom = ((LocalVariable)member).DeclaringMember.DeclaringType.SourceProjectDom;
 				unit = ((LocalVariable)member).CompilationUnit;
@@ -93,76 +135,22 @@ namespace MonoDevelop.Ide.FindInFiles
 				unit = ((IMember)member).DeclaringType.CompilationUnit;
 				searchNodes = CollectMembers (dom, (IMember)member);
 			}
-			var foundLocations = new HashSet<DomLocation> ();
+
+			string currentMime = null;
+			ReferenceFinder finder = null;
 			
-			switch (scope) {
-			case RefactoryScope.File:
-			case RefactoryScope.DeclaringType:
-				if (dom == null || unit == null)
-					yield break;
-				finder = GetReferenceFinder (DesktopService.GetMimeTypeForUri (unit.FileName));
+			foreach (var info in GetFileNames (solution, dom, unit, member, monitor)) {
+				string mime = DesktopService.GetMimeTypeForUri (info.Item2);
+				bool runReferenceFinder = false;
+				if (mime != currentMime) {
+					currentMime = mime;
+					finder = GetReferenceFinder (currentMime);
+				}
 				if (finder == null)
-					yield break;
-				foreach (var foundReference in finder.FindReferences (dom, unit.FileName, searchNodes)) {
-					var location = new DomLocation (foundReference.Line, foundReference.Column);
-					if (foundLocations.Contains (location))
-						continue;
-					foundLocations.Add (location);
+					continue;
+				foreach (var foundReference in finder.FindReferences (info.Item1, info.Item2, searchNodes)) {
 					yield return foundReference;
 				}
-				break;
-			case RefactoryScope.Project:
-				if (dom == null)
-					yield break;
-				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Search reference in project..."), dom.Project.Files.Count);
-				int counter = 0;
-				foreach (var file in dom.Project.Files) {
-					finder = GetReferenceFinder (DesktopService.GetMimeTypeForUri (file.FilePath));
-					if (finder == null)
-						continue;
-					foundLocations.Clear ();
-					foreach (var foundReference in finder.FindReferences (dom, file.FilePath, searchNodes)) {
-						var location = new DomLocation (foundReference.Line, foundReference.Column);
-						if (foundLocations.Contains (location))
-							continue;
-						foundLocations.Add (location);
-						yield return foundReference;
-					}
-					if (monitor != null) {
-						if (counter % 10 == 0)
-							monitor.Step (10);
-						counter++;
-					}
-				}
-				if (monitor != null)
-					monitor.EndTask ();
-				break;
-				
-			case RefactoryScope.Solution:
-				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
-				foreach (var project in solution.GetAllProjects ()) {
-					var currentDom = ProjectDomService.GetProjectDom (project);
-					foreach (var file in project.Files) {
-						finder = GetReferenceFinder (DesktopService.GetMimeTypeForUri (file.FilePath));
-						if (finder == null)
-							continue;
-						foundLocations.Clear ();
-						foreach (var foundReference in finder.FindReferences (currentDom, file.FilePath, searchNodes)) {
-							var location = new DomLocation (foundReference.Line, foundReference.Column);
-							if (foundLocations.Contains (location))
-								continue;
-							foundLocations.Add (location);
-							yield return foundReference;
-						}
-					}
-					if (monitor != null)
-						monitor.Step (1);
-				}
-				if (monitor != null)
-					monitor.EndTask ();
-				break;
 			}
 		}
 		

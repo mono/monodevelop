@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.FindInFiles;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -45,26 +46,26 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		public override IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, IEnumerable<INode> searchedMembers)
 		{
-			foreach (var member in searchedMembers) {
-				foreach (var reference in FindReferences (dom, fileName, member)) {
-					yield return reference;
-				}
-			}
-		}
-		
-		IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, INode member)
-		{
+			HashSet<int > positions = new HashSet<int> ();
 			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);
-			var doc    = ProjectDomService.GetParsedDocument (dom, fileName);
-			
+			var doc = ProjectDomService.GetParsedDocument (dom, fileName);
 			if (doc == null || doc.CompilationUnit == null)
-				return null;
+				yield break;
 			var resolver = new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
-			
-			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, member);
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver);
 			visitor.IncludeXmlDocumentation = IncludeDocumentation;
+			visitor.Init (searchedMembers);
+			if (!visitor.FileContainsMemberName ())
+				yield break;
+			visitor.ParseFile ();
 			visitor.RunVisitor ();
-			return visitor.FoundReferences;
+			foreach (var reference in visitor.FoundReferences) {
+				if (positions.Contains (reference.Position))
+					continue;
+				positions.Add (reference.Position);
+				yield return reference;
+			}
+			visitor.ClearParsers ();
 		}
 	}
 }
