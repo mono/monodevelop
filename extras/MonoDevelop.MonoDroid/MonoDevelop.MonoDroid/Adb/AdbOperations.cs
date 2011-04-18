@@ -325,7 +325,6 @@ namespace MonoDevelop.MonoDroid
 
 	}
 
-	// this mechanism can only be actually triggered when debugging, not in normal mode
 	public class AdbKillProcessOperation : AdbBaseShellOperation
 	{
 		public AdbKillProcessOperation (AndroidDevice device, string packageName) : 
