@@ -122,15 +122,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void DeleteMultipleItems ()
 		{
-			ConfirmationMessage msg = new ConfirmationMessage ();
-			msg.ConfirmButton = AlertButton.Delete;
-			msg.AllowApplyToAll = true;
-			
+			if (CurrentNodes.Length == 1) {
+				SystemFile file = (SystemFile)CurrentNodes[0].DataItem;
+				if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path), AlertButton.Delete))
+					return;
+			} else {
+				if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete all selected files?"), AlertButton.Delete))
+					return;
+			}
 			foreach (SystemFile file in CurrentNodes.Select (n => (SystemFile)n.DataItem)) {
-				msg.Text = GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path);
-				bool yes = MessageService.Confirm (msg);
-				if (!yes) continue;
-	
 				try {
 					FileService.DeleteFile (file.Path);
 				} catch {
