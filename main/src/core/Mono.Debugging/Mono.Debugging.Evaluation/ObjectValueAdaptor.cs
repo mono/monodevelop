@@ -334,21 +334,24 @@ namespace Mono.Debugging.Evaluation
 			if (IsPrimitive (ctx, obj))
 				return new ObjectValue[0];
 
+			bool showRawView = false;
+			
 			// If there is a proxy, it has to show the members of the proxy
 			object proxy = obj;
 			if (dereferenceProxy) {
 				proxy = GetProxyObject (ctx, obj);
-				if (proxy != obj)
+				if (proxy != obj) {
 					type = GetValueType (ctx, proxy);
+					showRawView = true;
+				}
 			}
 
 			TypeDisplayData tdata = GetTypeDisplayData (ctx, type);
-			bool showRawView = tdata.IsProxyType && dereferenceProxy && ctx.Options.AllowDebuggerProxy;
 			bool groupPrivateMembers = ctx.Options.GroupPrivateMembers && (ctx.Options.GroupUserPrivateMembers || IsExternalType (ctx, type));
 
 			List<ObjectValue> values = new List<ObjectValue> ();
 			BindingFlags flattenFlag = ctx.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
-			BindingFlags nonNonPublicFlag = groupPrivateMembers ? (BindingFlags)0 : BindingFlags.NonPublic;
+			BindingFlags nonNonPublicFlag = groupPrivateMembers || showRawView ? (BindingFlags)0 : BindingFlags.NonPublic;
 			BindingFlags staticFlag = ctx.Options.GroupStaticMembers ? (BindingFlags)0 : BindingFlags.Static;
 			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonNonPublicFlag | staticFlag;
 			
