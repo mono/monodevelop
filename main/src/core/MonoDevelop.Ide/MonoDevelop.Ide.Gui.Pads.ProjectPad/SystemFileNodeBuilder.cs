@@ -120,17 +120,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workbench.OpenDocument (file.Path);
 		}
 		
-		public override void DeleteItem ()
+		public override void DeleteMultipleItems ()
 		{
-			SystemFile file = CurrentNode.DataItem as SystemFile;
+			ConfirmationMessage msg = new ConfirmationMessage ();
+			msg.ConfirmButton = AlertButton.Delete;
+			msg.AllowApplyToAll = true;
 			
-			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path), AlertButton.Delete);
-			if (!yes) return;
-
-			try {
-				FileService.DeleteFile (file.Path);
-			} catch {
-				MessageService.ShowError (GettextCatalog.GetString ("The file {0} could not be deleted", file.Path));
+			foreach (SystemFile file in CurrentNodes.Select (n => (SystemFile)n.DataItem)) {
+				msg.Text = GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path);
+				bool yes = MessageService.Confirm (msg);
+				if (!yes) continue;
+	
+				try {
+					FileService.DeleteFile (file.Path);
+				} catch {
+					MessageService.ShowError (GettextCatalog.GetString ("The file {0} could not be deleted", file.Path));
+				}
 			}
 		}
 		
