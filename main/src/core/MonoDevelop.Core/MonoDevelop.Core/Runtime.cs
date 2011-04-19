@@ -56,6 +56,9 @@ namespace MonoDevelop.Core
 			Counters.RuntimeInitialization.BeginTiming ();
 			SetupInstrumentation ();
 			
+			if (PropertyService.IsMac)
+				InitMacFoundation ();
+			
 			AddinManager.AddinLoadError += OnLoadError;
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
@@ -239,6 +242,14 @@ namespace MonoDevelop.Core
 					setproctitle (Encoding.ASCII.GetBytes ("%s\0"), Encoding.ASCII.GetBytes (name + "\0"));
 				} catch (EntryPointNotFoundException) {}
 			}
+		}
+		
+		[DllImport ("libc")]
+		extern static IntPtr dlopen (string name, int mode);
+		
+		static void InitMacFoundation ()
+		{
+			dlopen ("/System/Library/Frameworks/Foundation.framework/Foundation", 0x1);
 		}
 		
 		public static event EventHandler ShuttingDown;
