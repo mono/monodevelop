@@ -24,6 +24,17 @@ MonoDevelop.app:
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/{lib,share}
 	mkdir -p $(MAC_APP_LIB_DIR)
+
+	@echo ""
+	@echo "Copying install prefix into app bundle"
+	@echo ""
+	@if [[ "$(prefix)" == /Library* ]] || [[ "$(prefix)" == /usr* ]]; then \
+		echo "WARNING: cannot merge system prefix $(prefix)"; \
+	else \
+		echo "cp -pR $(prefix)/* $(MAC_APP_DIR)/Contents/MacOS/"; \
+		cp -pR $(prefix)/* $(MAC_APP_DIR)/Contents/MacOS/; \
+	fi
+
 	cp -pR ../AddIns $(MAC_APP_LIB_DIR)
 	cp -pR ../data $(MAC_APP_LIB_DIR)
 	cp -pR ../bin $(MAC_APP_LIB_DIR)
