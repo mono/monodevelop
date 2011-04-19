@@ -67,6 +67,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs \
 	gtk-gui/MonoDevelop.Ide.ProgressMonitoring.ProgressBarMonitor.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.AddExternalFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.CombineEntryFeatureSelector.cs \
@@ -609,6 +610,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects.OptionPanels/RuntimeOptionsPanel.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/SolutionItemConfigurationsPanel.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs \
+	MonoDevelop.Ide.Projects/AddExternalFileDialog.cs \
 	MonoDevelop.Ide.Projects/AddFileDialog.cs \
 	MonoDevelop.Ide.Projects/AddMimeTypeDialog.cs \
 	MonoDevelop.Ide.Projects/ApplyPolicyDialog.cs \
