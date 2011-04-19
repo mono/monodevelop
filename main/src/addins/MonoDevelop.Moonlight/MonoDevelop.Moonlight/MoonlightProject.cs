@@ -98,7 +98,7 @@ namespace MonoDevelop.Moonlight
 		
 		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
-			return new TargetFrameworkMoniker ("Silverlight", "2.0");
+			return new TargetFrameworkMoniker ("Silverlight", "4.0");
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)

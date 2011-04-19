@@ -92,6 +92,9 @@
 		<Framework id="SL3.0" file="Templates/framework_SL_3_0.xml">
 			<Backend class="MonoDevelop.Moonlight.MoonlightFrameworkBackend" />
 		</Framework>
+		<Framework id="SL4.0" file="Templates/framework_SL_4_0.xml">
+			<Backend class="MonoDevelop.Moonlight.MoonlightFrameworkBackend" />
+		</Framework>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
