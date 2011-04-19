@@ -1,4 +1,4 @@
-<TargetFramework id="Silverlight,Version=v3.0" _name="Moonlight / Silverlight 2.0" clrVersion="Clr_2_1">
+<TargetFramework id="Silverlight,Version=v2.0" _name="Moonlight / Silverlight 2.0" clrVersion="Clr_2_1">
 <Assemblies>
   <Assembly name="System" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="mscorlib" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
