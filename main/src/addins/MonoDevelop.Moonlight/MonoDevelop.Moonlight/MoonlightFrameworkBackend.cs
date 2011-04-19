@@ -115,8 +115,8 @@ namespace MonoDevelop.Moonlight
 		
 		public override IEnumerable<string> GetToolsPaths ()
 		{
-			foreach (var f in GetFrameworkFolders ())
-				yield return f;
+			yield return location;
+			yield return location.Combine (fxVersion);
 			foreach (var f in BaseGetToolsPaths ())
 				yield return f;
 		}
