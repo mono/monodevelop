@@ -48,6 +48,7 @@ RES =  \
 DATA_FILES =  \
 	Templates/framework_SL_2_0.xml \
 	Templates/framework_SL_3_0.xml \
+	Templates/framework_SL_4_0.xml \
 	Templates/Silverlight.js
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/Templates/, $(notdir $(DATA_FILES)))
