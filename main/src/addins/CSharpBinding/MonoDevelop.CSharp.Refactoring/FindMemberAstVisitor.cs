@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			set;
 		}
 
-		public FindMemberAstVisitor (Mono.TextEditor.Document document, NRefactoryResolver resolver, MonoDevelop.Projects.Dom.INode searchedMember = null)
+		public FindMemberAstVisitor (Mono.TextEditor.Document document, MonoDevelop.Projects.Dom.INode searchedMember = null)
 		{
 			fileName = document.FileName;
 			this.text = document;
@@ -192,7 +192,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			parsers.Clear ();
 		}
 		
-		public void ParseFile ()
+		public void ParseFile (NRefactoryResolver resolver)
 		{
 			string parseText = text.Text;
 			ClearParsers ();
@@ -215,12 +215,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		public void RunVisitor ()
+		public void RunVisitor (NRefactoryResolver resolver)
 		{
+			this.resolver = resolver;
 			if (searchedMembers.Count == 0)
 				return;
 			if (parsers.Count == 0)
-				ParseFile ();
+				ParseFile (resolver);
 			
 			foreach (var p in parsers)
 				VisitCompilationUnit (p.CompilationUnit, null);

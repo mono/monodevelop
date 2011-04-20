@@ -118,8 +118,8 @@ namespace MonoDevelop.CSharpBinding.Tests
 				                               ((IType)smv.FoundMember).TypeParameters.Count,
 				                               true);
 			}
-			FindMemberAstVisitor astVisitor = new FindMemberAstVisitor (testViewContent.GetTextEditorData ().Document, resolver, smv.FoundMember);
-			astVisitor.RunVisitor ();
+			FindMemberAstVisitor astVisitor = new FindMemberAstVisitor (testViewContent.GetTextEditorData ().Document, smv.FoundMember);
+			astVisitor.RunVisitor (resolver);
 			
 			int i = 0, j = 0;
 			StringBuilder errorText = new StringBuilder ();

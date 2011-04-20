@@ -48,17 +48,19 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			HashSet<int > positions = new HashSet<int> ();
 			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);
-			var doc = ProjectDomService.GetParsedDocument (dom, fileName);
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document);
+			visitor.IncludeXmlDocumentation = IncludeDocumentation;
+			visitor.Init (searchedMembers);
+			if (!visitor.FileContainsMemberName ()) {
+				yield break;
+			}
+			var doc = ProjectDomService.ParseFile (dom, fileName, () => editor.Text);
 			if (doc == null || doc.CompilationUnit == null)
 				yield break;
 			var resolver = new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
-			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver);
-			visitor.IncludeXmlDocumentation = IncludeDocumentation;
-			visitor.Init (searchedMembers);
-			if (!visitor.FileContainsMemberName ())
-				yield break;
-			visitor.ParseFile ();
-			visitor.RunVisitor ();
+
+			visitor.ParseFile (resolver);
+			visitor.RunVisitor (resolver);
 			foreach (var reference in visitor.FoundReferences) {
 				if (positions.Contains (reference.Position))
 					continue;

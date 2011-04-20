@@ -432,9 +432,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				return null;
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 			
-			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, cls);
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, cls);
 			visitor.IncludeXmlDocumentation = includeXmlComment;
-			visitor.RunVisitor ();
+			visitor.RunVisitor (resolver);
 			SetContext (visitor.FoundReferences, ctx);
 			return visitor.FoundReferences;
 		}
@@ -668,9 +668,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				return null;
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 			resolver.CallingMember = member;
-			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, member);
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, member);
 			visitor.IncludeXmlDocumentation = includeXmlComment;
-			visitor.RunVisitor ();
+			visitor.RunVisitor (resolver);
 			SetContext (visitor.FoundReferences, ctx);
 			return visitor.FoundReferences;
 		}
@@ -682,8 +682,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, var.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 			resolver.CallingMember = var.DeclaringMember;
 			
-			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, var);
-			visitor.RunVisitor ();
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, var);
+			visitor.RunVisitor (resolver);
 			SetContext (visitor.FoundReferences, ctx);
 			return visitor.FoundReferences;
 		}
@@ -695,9 +695,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			resolver.CallingMember = param.DeclaringMember;
 			
-			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, param);
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, param);
 			visitor.IncludeXmlDocumentation = includeXmlComment;
-			visitor.RunVisitor ();
+			visitor.RunVisitor (resolver);
 			SetContext (visitor.FoundReferences, ctx);
 			return visitor.FoundReferences;
 		}
