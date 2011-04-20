@@ -185,13 +185,17 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			//HACK: paint the button background as if it were bigger, but it stays clipped to the real area,
-			// so we get the content but not the border. This might break with crazy themes.
-			//FIXME: we can't use the style's actual internal padding because GTK# hasn't wrapped GtkBorder AFAICT
-			// (default-border, inner-border, default-outside-border, etc - see http://git.gnome.org/browse/gtk+/tree/gtk/gtkbutton.c)
-			const int boxpadding = 4;
-			Style.PaintBox (Style, evnt.Window, StateType.Normal, ShadowType.None, evnt.Area, styleButton, "button", 
-			                - boxpadding, - padding, Allocation.Width + boxpadding * 2, Allocation.Height + boxpadding * 2);
+			bool usePaintBox = !Gtk.Settings.Default.ThemeName.Contains ("Equinox");
+			if (usePaintBox) {
+				//HACK: paint the button background as if it were bigger, but it stays clipped to the real area,
+				// so we get the content but not the border. This might break with crazy themes.
+				// Themes that don't work need to be filtered out.
+				//FIXME: we can't use the style's actual internal padding because GTK# hasn't wrapped GtkBorder AFAICT
+				// (default-border, inner-border, default-outside-border, etc - see http://git.gnome.org/browse/gtk+/tree/gtk/gtkbutton.c)
+				const int boxpadding = 4;
+				Style.PaintBox (Style, evnt.Window, StateType.Normal, ShadowType.None, evnt.Area, styleButton, "button", 
+				                - boxpadding, - padding, Allocation.Width + boxpadding * 2, Allocation.Height + boxpadding * 2);
+			}
 			
 			if (leftWidths == null || rightWidths == null)
 				return true;
@@ -201,29 +205,33 @@ namespace MonoDevelop.Components
 				bool last = i == leftPath.Length - 1;
 				
 				int x = xpos;
-				xpos += leftWidths[i];
+				xpos += leftWidths [i];
 				xpos += spacing;
 				
-				if (hoverIndex >= 0 && hoverIndex < Path.Length && leftPath[i] == Path[hoverIndex] && (menuVisible || pressed || hovering)) {
-					Style.PaintBox (Style, GdkWindow,
-					                (pressed || menuVisible)? StateType.Active : StateType.Prelight,
-					                (pressed || menuVisible)? ShadowType.In : ShadowType.Out,
-					                evnt.Area, styleButton, "button",
-					                x - padding, ypos - padding, leftWidths[i] + padding + padding /*+ (last ? padding : spacing)*/,
-					                height + padding * 2);
+				if (hoverIndex >= 0 && hoverIndex < Path.Length && leftPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering)) {
+					if (usePaintBox) {
+						Style.PaintBox (Style, GdkWindow,
+						                (pressed || menuVisible) ? StateType.Active : StateType.Prelight,
+						                (pressed || menuVisible) ? ShadowType.In : ShadowType.Out,
+						                evnt.Area, styleButton, "button",
+						                x - padding, ypos - padding, leftWidths [i] + padding + padding /*+ (last ? padding : spacing)*/,
+						                height + padding * 2);
+					} else {
+						evnt.Window.DrawRectangle (Style.DarkGC (StateType.Normal), false, x - padding, ypos - padding, leftWidths [i] + padding + padding, height + padding);
+					}
 				}
 				
 				int textOffset = 0;
-				if (leftPath[i].Icon != null) {
-					GdkWindow.DrawPixbuf (Style.BaseGC (State), leftPath[i].Icon , 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
-					textOffset += leftPath[i].Icon.Width + padding;
+				if (leftPath [i].Icon != null) {
+					GdkWindow.DrawPixbuf (Style.BaseGC (State), leftPath [i].Icon, 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
+					textOffset += leftPath [i].Icon.Width + padding;
 				}
 				
-				layout.Attributes = (i == activeIndex)? boldAtts : null;
-				layout.SetText (leftPath[i].Text);
+				layout.Attributes = (i == activeIndex) ? boldAtts : null;
+				layout.SetText (leftPath [i].Text);
 				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", x + textOffset, ypos, layout);
 				if (!last) {
-					if (leftPath[i].IsPathEnd) {
+					if (leftPath [i].IsPathEnd) {
 						Style.PaintVline (Style, GdkWindow, State, evnt.Area, this, "", ypos, ypos + height, xpos - spacing / 2);
 					} else {
 						int arrowH = Math.Min (height, spacing);
@@ -238,28 +246,32 @@ namespace MonoDevelop.Components
 			for (int i = 0; i < rightPath.Length; i++) {
 //				bool last = i == rightPath.Length - 1;
 				
-				xposRight -= rightWidths[i];
+				xposRight -= rightWidths [i];
 				xposRight -= spacing;
 					
 				int x = xposRight;
 				
-				if (hoverIndex >= 0 && hoverIndex < Path.Length && rightPath[i] == Path[hoverIndex] && (menuVisible || pressed || hovering)) {
-					Style.PaintBox (Style, GdkWindow,
-					                (pressed || menuVisible)? StateType.Active : StateType.Prelight,
-					                (pressed || menuVisible)? ShadowType.In : ShadowType.Out,
-					                evnt.Area, this, "button",
-					                x - padding, ypos - padding, rightWidths[i] + padding + padding /*+ (last ? padding : spacing)*/,
-					                height + padding * 2);
+				if (hoverIndex >= 0 && hoverIndex < Path.Length && rightPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering)) {
+					if (usePaintBox) {
+						Style.PaintBox (Style, GdkWindow,
+						                (pressed || menuVisible) ? StateType.Active : StateType.Prelight,
+						                (pressed || menuVisible) ? ShadowType.In : ShadowType.Out,
+						                evnt.Area, this, "button",
+						                x - padding, ypos - padding, rightWidths [i] + padding + padding /*+ (last ? padding : spacing)*/,
+						                height + padding * 2);
+					} else {
+						evnt.Window.DrawRectangle (Style.DarkGC (StateType.Normal), false, x - padding, ypos - padding, rightWidths [i] + padding + padding, height + padding);
+					}
 				}
 				
 				int textOffset = 0;
-				if (rightPath[i].Icon != null) {
-					GdkWindow.DrawPixbuf (Style.BaseGC (State), rightPath[i].Icon , 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
-					textOffset += rightPath[i].Icon.Width + padding;
+				if (rightPath [i].Icon != null) {
+					GdkWindow.DrawPixbuf (Style.BaseGC (State), rightPath [i].Icon, 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
+					textOffset += rightPath [i].Icon.Width + padding;
 				}
 				
-				layout.Attributes = (i == activeIndex)? boldAtts : null;
-				layout.SetText (rightPath[i].Text);
+				layout.Attributes = (i == activeIndex) ? boldAtts : null;
+				layout.SetText (rightPath [i].Text);
 				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", x + textOffset, ypos, layout);
 			}
 			
