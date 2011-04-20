@@ -53,9 +53,9 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var resolver = new NRefactoryResolver (dom, parsedDocument.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 			
-			FindMemberAstVisitor visitor = new FindMemberAstVisitor (buildDocument, resolver, member);
+			FindMemberAstVisitor visitor = new FindMemberAstVisitor (buildDocument, member);
 			visitor.IncludeXmlDocumentation = IncludeDocumentation;
-			visitor.RunVisitor ();
+			visitor.RunVisitor (resolver);
 			
 			foreach (var result in visitor.FoundReferences) {
 				var offsetInfo = offsetInfos.FirstOrDefault (info => info.ToOffset <= result.Position && result.Position < info.ToOffset + info.Length);
