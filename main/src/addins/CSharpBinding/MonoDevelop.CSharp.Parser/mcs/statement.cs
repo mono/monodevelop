@@ -1519,7 +1519,7 @@ namespace Mono.CSharp {
 
 			c = c.ConvertImplicitly (li.Type);
 			if (c == null) {
-				if (TypeManager.IsReferenceType (li.Type))
+				if (TypeSpec.IsReferenceType (li.Type))
 					initializer.Error_ConstantCanBeInitializedWithNullOnly (bc, li.Type, initializer.Location, li.Name);
 				else
 					initializer.Error_ValueCannotBeConverted (bc, initializer.Location, li.Type, false);
@@ -1864,7 +1864,7 @@ namespace Mono.CSharp {
 
 		int? resolving_init_idx;
 
-		Block original;
+		protected Block original;
 
 #if DEBUG
 		static int id;
@@ -2332,7 +2332,7 @@ namespace Mono.CSharp {
 							b.am_storey.AddParentStoreyReference (ec, am_storey);
 
 							// Stop propagation inside same top block
-							if (b.ParametersBlock.am_storey == ParametersBlock.am_storey)
+							if (b.ParametersBlock.Original == ParametersBlock.Original)
 								break;
 
 							b = b.ParametersBlock;
@@ -2492,6 +2492,9 @@ namespace Mono.CSharp {
 			ParametersBlock = this;
 		}
 
+		//
+		// It's supposed to be used by method body implementation of anonymous methods
+		//
 		protected ParametersBlock (ParametersBlock source, ParametersCompiled parameters)
 			: base (null, 0, source.StartLocation, source.EndLocation)
 		{
@@ -2504,6 +2507,12 @@ namespace Mono.CSharp {
 			this.am_storey = source.am_storey;
 
 			ParametersBlock = this;
+
+			//
+			// Overwrite original for comparison purposes when linking cross references
+			// between anonymous methods
+			//
+			original = source;
 		}
 
 		#region Properties
@@ -4153,7 +4162,7 @@ namespace Mono.CSharp {
 			if (expr == null)
 				return false;
 
-			if (!TypeManager.IsReferenceType (expr.Type)){
+			if (!TypeSpec.IsReferenceType (expr.Type)) {
 				ec.Report.Error (185, loc,
 					"`{0}' is not a reference type as required by the lock statement",
 					expr.Type.GetSignatureForError ());
@@ -5707,7 +5716,7 @@ namespace Mono.CSharp {
 				// Add Dispose method call when enumerator can be IDisposable
 				//
 				if (!enum_type.ImplementsInterface (ec.BuiltinTypes.IDisposable, false)) {
-					if (!enum_type.IsSealed && !TypeManager.IsValueType (enum_type)) {
+					if (!enum_type.IsSealed && !TypeSpec.IsValueType (enum_type)) {
 						//
 						// Runtime Dispose check
 						//

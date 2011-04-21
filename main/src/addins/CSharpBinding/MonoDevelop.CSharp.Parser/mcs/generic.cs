@@ -596,7 +596,7 @@ namespace Mono.CSharp {
 
 		bool ITypeDefinition.IsInternalAsPublic (IAssemblyDefinition assembly)
 		{
-			return spec.GetEffectiveBase ().MemberDefinition.DeclaringAssembly == assembly;
+			return spec.MemberDefinition.DeclaringAssembly == assembly;
 		}
 
 		public void LoadMembers (TypeSpec declaringType, bool onlyTypes, ref MemberCache cache)
@@ -755,11 +755,17 @@ namespace Mono.CSharp {
 		}
 
 		//
-		// Returns whether the type parameter is "known to be a reference type"
+		// Returns whether the type parameter is known to be a reference type
 		//
-		public bool IsReferenceType {
+		public new bool IsReferenceType {
 			get {
-				if ((spec & SpecialConstraint.Class) != 0 || HasTypeConstraint)
+				if ((spec & (SpecialConstraint.Class | SpecialConstraint.Struct)) != 0)
+					return (spec & SpecialConstraint.Class) != 0;
+
+				//
+				// Full check is needed (see IsValueType for details)
+				//
+				if (HasTypeConstraint && TypeSpec.IsReferenceType (BaseType))
 					return true;
 
 				if (targs != null) {
@@ -771,7 +777,7 @@ namespace Mono.CSharp {
 						if (tp != null && (tp.spec & (SpecialConstraint.Class | SpecialConstraint.Struct)) != 0)
 							continue;
 
-						if (TypeManager.IsReferenceType (ta))
+						if (TypeSpec.IsReferenceType (ta))
 							return true;
 					}
 				}
@@ -780,10 +786,21 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public bool IsValueType {	// TODO: Do I need this ?
+		//
+		// Returns whether the type parameter is known to be a value type
+		//
+		public new bool IsValueType {
 			get {
-				// TODO MemberCache: probably wrong
-				return HasSpecialStruct;
+				//
+				// Even if structs/enums cannot be used directly as constraints
+				// they can apear as constraint type when inheriting base constraint
+				// which has dependant type parameter constraint which has been
+				// inflated using value type
+				//
+				// class A : B<int> { override void Foo<U> () {} }
+				// class B<T> { virtual void Foo<U> () where U : T {} }
+				//
+				return HasSpecialStruct || TypeSpec.IsValueType (BaseType);
 			}
 		}
 
@@ -850,15 +867,27 @@ namespace Mono.CSharp {
 		}
 
 		//
-		// Finds effective base class
+		// Finds effective base class. The effective base class is always a class-type
 		//
 		public TypeSpec GetEffectiveBase ()
 		{
 			if (HasSpecialStruct)
 				return BaseType;
 
-			if (BaseType != null && targs == null)
-				return BaseType;
+			//
+			// If T has a class-type constraint C but no type-parameter constraints, its effective base class is C
+			//
+			if (BaseType != null && targs == null) {
+				//
+				// If T has a constraint V that is a value-type, use instead the most specific base type of V that is a class-type.
+				// 
+				// LAMESPEC: Is System.ValueType always the most specific base type in this case?
+				//
+				// Note: This can never happen in an explicitly given constraint, but may occur when the constraints of a generic method
+				// are implicitly inherited by an overriding method declaration or an explicit implementation of an interface method.
+				//
+				return BaseType.IsStruct ? BaseType.BaseType : BaseType;
+			}
 
 			var types = targs;
 			if (HasTypeConstraint) {
@@ -2147,7 +2176,7 @@ namespace Mono.CSharp {
 			//
 			// First, check the `class' and `struct' constraints.
 			//
-			if (tparam.HasSpecialClass && !TypeManager.IsReferenceType (atype)) {
+			if (tparam.HasSpecialClass && !TypeSpec.IsReferenceType (atype)) {
 				if (mc != null) {
 					mc.Module.Compiler.Report.Error (452, loc,
 						"The type `{0}' must be a reference type in order to use it as type parameter `{1}' in the generic type or method `{2}'",
@@ -2157,7 +2186,7 @@ namespace Mono.CSharp {
 				return false;
 			}
 
-			if (tparam.HasSpecialStruct && (!TypeManager.IsValueType (atype) || atype.IsNullableType)) {
+			if (tparam.HasSpecialStruct && (!TypeSpec.IsValueType (atype) || atype.IsNullableType)) {
 				if (mc != null) {
 					mc.Module.Compiler.Report.Error (453, loc,
 						"The type `{0}' must be a non-nullable value type in order to use it as type parameter `{1}' in the generic type or method `{2}'",
@@ -2276,15 +2305,27 @@ namespace Mono.CSharp {
 
 		bool CheckConversion (IMemberContext mc, MemberSpec context, TypeSpec atype, TypeParameterSpec tparam, TypeSpec ttype, Location loc)
 		{
-			if (TypeManager.IsValueType (atype)) {
-				if (atype == ttype || Convert.ImplicitBoxingConversion (null, atype, ttype) != null)
+			if (atype == ttype)
+				return true;
+
+			if (atype.IsGenericParameter) {
+				var tps = (TypeParameterSpec) atype;
+				if (Convert.ImplicitTypeParameterConversion (null, tps, ttype) != null)
+					return true;
+
+				//
+				// LAMESPEC: Identity conversion with inflated type parameter
+				// It's not clear from the spec what rule should apply to inherited
+				// inflated type parameter. The specification allows only type parameter
+				// conversion but that's clearly not enough
+				//
+				if (tps.HasTypeConstraint && tps.BaseType == ttype)
+					return true;
+
+			} else if (TypeSpec.IsValueType (atype)) {
+				if (Convert.ImplicitBoxingConversion (null, atype, ttype) != null)
 					return true;
 			} else {
-				if (atype.IsGenericParameter) {
-					if (Convert.ImplicitTypeParameterConversion (null, (TypeParameterSpec) atype, ttype) != null)
-						return true;
-				}
-
 				var expr = new EmptyExpression (atype);
 				if (Convert.ImplicitStandardConversionExists (expr, ttype))
 					return true;
@@ -2300,13 +2341,13 @@ namespace Mono.CSharp {
 
 			if (mc != null) {
 				mc.Module.Compiler.Report.SymbolRelatedToPreviousError (tparam);
-				if (TypeManager.IsValueType (atype)) {
-					mc.Module.Compiler.Report.Error (315, loc,
-						"The type `{0}' cannot be used as type parameter `{1}' in the generic type or method `{2}'. There is no boxing conversion from `{0}' to `{3}'",
-						atype.GetSignatureForError (), tparam.GetSignatureForError (), context.GetSignatureForError (), ttype.GetSignatureForError ());
-				} else if (atype.IsGenericParameter) {
+				if (atype.IsGenericParameter) {
 					mc.Module.Compiler.Report.Error (314, loc,
 						"The type `{0}' cannot be used as type parameter `{1}' in the generic type or method `{2}'. There is no boxing or type parameter conversion from `{0}' to `{3}'",
+						atype.GetSignatureForError (), tparam.GetSignatureForError (), context.GetSignatureForError (), ttype.GetSignatureForError ());
+				} else if (TypeSpec.IsValueType (atype)) {
+					mc.Module.Compiler.Report.Error (315, loc,
+						"The type `{0}' cannot be used as type parameter `{1}' in the generic type or method `{2}'. There is no boxing conversion from `{0}' to `{3}'",
 						atype.GetSignatureForError (), tparam.GetSignatureForError (), context.GetSignatureForError (), ttype.GetSignatureForError ());
 				} else {
 					mc.Module.Compiler.Report.Error (311, loc,
@@ -2583,7 +2624,7 @@ namespace Mono.CSharp {
 				if (a.Expr.Type == InternalType.NullLiteral)
 					continue;
 
-				if (TypeManager.IsValueType (method_parameter)) {
+				if (TypeSpec.IsValueType (method_parameter)) {
 					score -= tic.LowerBoundInference (a.Type, method_parameter);
 					continue;
 				}
@@ -3136,7 +3177,7 @@ namespace Mono.CSharp {
 					if (u_ac.Rank != v_ac.Rank)
 						return 0;
 
-					if (TypeManager.IsValueType (u_ac.Element))
+					if (TypeSpec.IsValueType (u_ac.Element))
 						return ExactInference (u_ac.Element, v_ac.Element);
 
 					return LowerBoundInference (u_ac.Element, v_ac.Element, inversed);
@@ -3146,7 +3187,7 @@ namespace Mono.CSharp {
 					return 0;
 
 				var v_i = TypeManager.GetTypeArguments (v) [0];
-				if (TypeManager.IsValueType (u_ac.Element))
+				if (TypeSpec.IsValueType (u_ac.Element))
 					return ExactInference (u_ac.Element, v_i);
 
 				return LowerBoundInference (u_ac.Element, v_i);
@@ -3226,7 +3267,7 @@ namespace Mono.CSharp {
 						Variance variance = ga_open_v [i].Variance;
 
 						TypeSpec u_i = unique_candidate_targs [i];
-						if (variance == Variance.None || TypeManager.IsValueType (u_i)) {
+						if (variance == Variance.None || TypeSpec.IsValueType (u_i)) {
 							if (ExactInference (u_i, ga_v [i]) == 0)
 								++score;
 						} else {

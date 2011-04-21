@@ -1373,6 +1373,11 @@ namespace Mono.CSharp
 			}
 
 			expr.Emit (ec);
+
+			// Only to make verifier happy
+			if (probe_type_expr.IsGenericParameter && TypeSpec.IsValueType (expr.Type))
+				ec.Emit (OpCodes.Box, expr.Type);
+
 			ec.Emit (OpCodes.Isinst, probe_type_expr);
 			ec.Emit (OpCodes.Ldnull);
 			ec.Emit (OpCodes.Cgt_Un);
@@ -1471,15 +1476,21 @@ namespace Mono.CSharp
 						OperatorName, t.GetSignatureForError ());
 				}
 
-				if (d.IsStruct) {
-					if (Convert.ImplicitBoxingConversion (null, d, t) != null)
-						return CreateConstantResult (ec, true);
-				} else {
-					if (TypeManager.IsGenericParameter (d))
-						return ResolveGenericParameter (ec, t, (TypeParameterSpec) d);
+				if (TypeManager.IsGenericParameter (d))
+					return ResolveGenericParameter (ec, t, (TypeParameterSpec) d);
 
-					if (InflatedTypeSpec.ContainsTypeParameter (d))
-						return this;
+				if (TypeSpec.IsValueType (d)) {
+					if (Convert.ImplicitBoxingConversion (null, d, t) != null) {
+						if (d_is_nullable && !t_is_nullable) {
+							expr_unwrap = Nullable.Unwrap.Create (expr, false);
+							return this;
+						}
+
+						return CreateConstantResult (ec, true);
+					}
+				} else {
+				//	if (InflatedTypeSpec.ContainsTypeParameter (d))
+				//		return this;
 
 					if (Convert.ImplicitReferenceConversionExists (d, t) ||
 						Convert.ExplicitReferenceConversionExists (d, t)) {
@@ -1499,7 +1510,7 @@ namespace Mono.CSharp
 			}
 
 			if (TypeManager.IsGenericParameter (expr.Type)) {
-				if (t.IsValueType && expr.Type == d)
+				if (expr.Type == d && TypeSpec.IsValueType (t))
 					return CreateConstantResult (ec, true);
 
 				expr = new BoxedCast (expr, d);
@@ -1561,7 +1572,7 @@ namespace Mono.CSharp
 			eclass = ExprClass.Value;
 			TypeSpec etype = expr.Type;
 
-			if (!TypeManager.IsReferenceType (type) && !type.IsNullableType) {
+			if (!TypeSpec.IsReferenceType (type) && !type.IsNullableType) {
 				if (TypeManager.IsGenericParameter (type)) {
 					ec.Report.Error (413, loc,
 						"The `as' operator cannot be used with a non-reference type parameter `{0}'. Consider adding `class' or a reference type constraint",
@@ -1751,7 +1762,7 @@ namespace Mono.CSharp
 			if (type.IsPointer)
 				return new NullLiteral (Location).ConvertImplicitly (type);
 
-			if (TypeManager.IsReferenceType (type))
+			if (TypeSpec.IsReferenceType (type))
 				return new NullConstant (type, loc);
 
 			Constant c = New.Constantify (type, expr.Location);
@@ -2962,10 +2973,10 @@ namespace Mono.CSharp
 			}
 
 			if (ec.Module.Compiler.Settings.Version >= LanguageVersion.ISO_2 &&
-				((left.Type.IsNullableType && (right is NullLiteral || right.Type.IsNullableType || TypeManager.IsValueType (right.Type))) ||
-				(TypeManager.IsValueType (left.Type) && right is NullLiteral) ||
-				(right.Type.IsNullableType && (left is NullLiteral || left.Type.IsNullableType || TypeManager.IsValueType (left.Type))) ||
-				(TypeManager.IsValueType (right.Type) && left is NullLiteral))) {
+				((left.Type.IsNullableType && (right is NullLiteral || right.Type.IsNullableType || TypeSpec.IsValueType (right.Type))) ||
+				(TypeSpec.IsValueType (left.Type) && right is NullLiteral) ||
+				(right.Type.IsNullableType && (left is NullLiteral || left.Type.IsNullableType || TypeSpec.IsValueType (left.Type))) ||
+				(TypeSpec.IsValueType (right.Type) && left is NullLiteral))) {
 				var lifted = new Nullable.LiftedBinaryOperator (oper, left, right, loc);
 				lifted.state = state;
 				return lifted.Resolve (ec);
@@ -3307,7 +3318,7 @@ namespace Mono.CSharp
 				l = tparam_l.GetEffectiveBase ();
 				left = new BoxedCast (left, l);
 			} else if (left is NullLiteral && tparam_r == null) {
-				if (!TypeManager.IsReferenceType (r) || r.Kind == MemberKind.InternalCompilerType)
+				if (!TypeSpec.IsReferenceType (r) || r.Kind == MemberKind.InternalCompilerType)
 					return null;
 
 				return this;
@@ -3325,7 +3336,7 @@ namespace Mono.CSharp
 				r = tparam_r.GetEffectiveBase ();
 				right = new BoxedCast (right, r);
 			} else if (right is NullLiteral) {
-				if (!TypeManager.IsReferenceType (l) || l.Kind == MemberKind.InternalCompilerType)
+				if (!TypeSpec.IsReferenceType (l) || l.Kind == MemberKind.InternalCompilerType)
 					return null;
 
 				return this;
@@ -3391,7 +3402,7 @@ namespace Mono.CSharp
 				return null;
 
 			// Reject allowed explicit conversions like int->object
-			if (!TypeManager.IsReferenceType (l) || !TypeManager.IsReferenceType (r))
+			if (!TypeSpec.IsReferenceType (l) || !TypeSpec.IsReferenceType (r))
 				return null;
 
 			if (l.BuiltinType == BuiltinTypeSpec.Type.String || l.BuiltinType == BuiltinTypeSpec.Type.Delegate || MemberCache.GetUserOperator (l, CSharp.Operator.OpType.Equality, false) != null)
@@ -4776,8 +4787,13 @@ namespace Mono.CSharp
 			// flag it for capturing
 			//
 			if (ec.MustCaptureVariable (local_info)) {
-				if (local_info.AddressTaken)
+				if (local_info.AddressTaken) {
 					AnonymousMethodExpression.Error_AddressOfCapturedVar (ec, this, loc);
+				} else if (local_info.IsFixed) {
+					ec.Report.Error (1764, loc,
+						"Cannot use fixed local `{0}' inside an anonymous method, lambda expression or query expression",
+						GetSignatureForError ());
+				}
 
 				if (ec.IsVariableCapturingRequired) {
 					AnonymousMethodStorey storey = local_info.Block.Explicit.CreateAnonymousMethodStorey (ec);
@@ -5254,7 +5270,7 @@ namespace Mono.CSharp
 						// Any value type has to be pass as by-ref to get back the same
 						// instance on which the member was called
 						//
-						var mod = TypeManager.IsValueType (ma.LeftExpression.Type) ? Argument.AType.Ref : Argument.AType.None;
+						var mod = TypeSpec.IsValueType (ma.LeftExpression.Type) ? Argument.AType.Ref : Argument.AType.None;
 						args.Insert (0, new Argument (ma.LeftExpression.Resolve (ec), mod));
 					}
 				} else {	// is SimpleName
@@ -5798,7 +5814,7 @@ namespace Mono.CSharp
 		//
 		public virtual bool Emit (EmitContext ec, IMemoryLocation target)
 		{
-			bool is_value_type = TypeManager.IsValueType (type);
+			bool is_value_type = TypeSpec.IsValueType (type);
 			VariableReference vr = target as VariableReference;
 
 			if (target != null && is_value_type && (vr != null || method == null)) {
@@ -5832,7 +5848,7 @@ namespace Mono.CSharp
 		public override void Emit (EmitContext ec)
 		{
 			LocalTemporary v = null;
-			if (method == null && TypeManager.IsValueType (type)) {
+			if (method == null && TypeSpec.IsValueType (type)) {
 				// TODO: Use temporary variable from pool
 				v = new LocalTemporary (type);
 			}
@@ -5844,7 +5860,7 @@ namespace Mono.CSharp
 		public override void EmitStatement (EmitContext ec)
 		{
 			LocalTemporary v = null;
-			if (method == null && TypeManager.IsValueType (type)) {
+			if (method == null && TypeSpec.IsValueType (type)) {
 				// TODO: Use temporary variable from pool
 				v = new LocalTemporary (type);
 			}
@@ -7873,7 +7889,7 @@ namespace Mono.CSharp
 				me.SetTypeArguments (rc, targs);
 			}
 
-			if (sn != null && (!TypeManager.IsValueType (expr_type) || me is PropertyExpr)) {
+			if (sn != null && (!TypeSpec.IsValueType (expr_type) || me is PropertyExpr)) {
 				if (me.IsInstance) {
 					LocalVariableReference var = expr as LocalVariableReference;
 					if (var != null && !var.VerifyAssigned (rc))

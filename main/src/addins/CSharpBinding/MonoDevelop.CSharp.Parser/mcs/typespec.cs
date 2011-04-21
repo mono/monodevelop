@@ -516,6 +516,37 @@ namespace Mono.CSharp
 			return false;
 		}
 
+		public static bool IsReferenceType (TypeSpec t)
+		{
+			switch (t.Kind) {
+			case MemberKind.TypeParameter:
+				return ((TypeParameterSpec) t).IsReferenceType;
+			case MemberKind.Struct:
+			case MemberKind.Enum:
+				return false;
+			case MemberKind.InternalCompilerType:
+				//
+				// Null is considered to be a reference type
+				//			
+				return t == InternalType.NullLiteral || t.BuiltinType == BuiltinTypeSpec.Type.Dynamic;
+			default:
+				return true;
+			}
+		}
+
+		public static bool IsValueType (TypeSpec t)
+		{
+			switch (t.Kind) {
+			case MemberKind.TypeParameter:
+				return ((TypeParameterSpec) t).IsValueType;
+			case MemberKind.Struct:
+			case MemberKind.Enum:
+				return true;
+			default:
+				return false;
+			}
+		}
+
 		public override MemberSpec InflateMember (TypeParameterInflator inflator)
 		{
 			var targs = IsGeneric ? MemberDefinition.TypeParameters : TypeSpec.EmptyTypes;
@@ -664,8 +695,6 @@ namespace Mono.CSharp
 			Exception,
 			Attribute,
 			Other,
-
-			Null,
 		}
 
 		readonly Type type;
@@ -950,25 +979,6 @@ namespace Mono.CSharp
 
 				return true;
 			}
-
-			//
-			// CLR does not distinguishes between ref and out
-			//
-			public static bool IsEqualByRuntime (AParametersCollection a, AParametersCollection b)
-			{
-				if (a == b)
-					return true;
-
-				if (a.Count != b.Count)
-					return false;
-
-				for (int i = 0; i < a.Count; ++i) {
-					if (!IsEqual (a.Types[i], b.Types[i]))
-						return false;
-				}
-
-				return true;
-			}
 		}
 
 		//
@@ -1169,7 +1179,7 @@ namespace Mono.CSharp
 				if (b_a == null)
 					return false;
 
-				return IsEqual (a_a.Element, b_a.Element) && a_a.Rank == b_a.Rank;
+				return a_a.Rank == b_a.Rank && IsEqual (a_a.Element, b_a.Element);
 			}
 
 			if (!a.IsGeneric || !b.IsGeneric) {

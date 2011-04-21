@@ -11,6 +11,7 @@
 // Copyright 2003-2008 Novell, Inc.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -191,7 +192,74 @@ namespace Mono.CSharp {
 			if (total == 0)
 				return null;
 
-			return new PendingImplementation (container, missing_interfaces, abstract_methods, total);
+			var pending = new PendingImplementation (container, missing_interfaces, abstract_methods, total);
+
+			//
+			// check for inherited conflicting methods
+			//
+			foreach (var p in pending.pending_implementations) {
+				//
+				// It can happen for generic interfaces only
+				//
+				if (!p.type.IsGeneric)
+					continue;
+
+				//
+				// CLR does not distinguishes between ref and out
+				//
+				for (int i = 0; i < p.methods.Count; ++i) {
+					MethodSpec compared_method = p.methods[i];
+					if (compared_method.Parameters.IsEmpty)
+						continue;
+
+					for (int ii = i + 1; ii < p.methods.Count; ++ii) {
+						MethodSpec tested_method = p.methods[ii];
+						if (compared_method.Name != tested_method.Name)
+							continue;
+
+						if (p.type != tested_method.DeclaringType)
+							continue;
+
+						if (!TypeSpecComparer.Override.IsSame (compared_method.Parameters.Types, tested_method.Parameters.Types))
+							continue;
+
+						bool exact_match = true;
+						bool ref_only_difference = false;
+						var cp = compared_method.Parameters.FixedParameters;
+						var tp = tested_method.Parameters.FixedParameters;
+
+						for (int pi = 0; pi < cp.Length; ++pi) {
+							//
+							// First check exact modifiers match
+							//
+							const Parameter.Modifier ref_out = Parameter.Modifier.REF | Parameter.Modifier.OUT;
+							if ((cp[pi].ModFlags & ref_out) == (tp[pi].ModFlags & ref_out))
+								continue;
+
+							if ((cp[pi].ModFlags & tp[pi].ModFlags & Parameter.Modifier.ISBYREF) != 0) {
+								ref_only_difference = true;
+								continue;
+							}
+
+							exact_match = false;
+							break;
+						}
+
+						if (!exact_match || !ref_only_difference)
+							continue;
+
+						pending.Report.SymbolRelatedToPreviousError (compared_method);
+						pending.Report.SymbolRelatedToPreviousError (tested_method);
+						pending.Report.Error (767, container.Location,
+							"Cannot implement interface `{0}' with the specified type parameters because it causes method `{1}' to differ on parameter modifiers only",
+							p.type.GetDefinition().GetSignatureForError (), compared_method.GetSignatureForError ());
+
+						break;
+					}
+				}
+			}
+
+			return pending;
 		}
 
 		public enum Operation {
@@ -205,14 +273,14 @@ namespace Mono.CSharp {
 		/// <summary>
 		///   Whether the specified method is an interface method implementation
 		/// </summary>
-		public MethodSpec IsInterfaceMethod (MemberName name, TypeSpec ifaceType, MethodData method)
+		public MethodSpec IsInterfaceMethod (MemberName name, TypeSpec ifaceType, MethodData method, out MethodSpec ambiguousCandidate)
 		{
-			return InterfaceMethod (name, ifaceType, method, Operation.Lookup);
+			return InterfaceMethod (name, ifaceType, method, Operation.Lookup, out ambiguousCandidate);
 		}
 
-		public void ImplementMethod (MemberName name, TypeSpec ifaceType, MethodData method, bool clear_one) 
+		public void ImplementMethod (MemberName name, TypeSpec ifaceType, MethodData method, bool clear_one, out MethodSpec ambiguousCandidate)
 		{
-			InterfaceMethod (name, ifaceType, method, clear_one ? Operation.ClearOne : Operation.ClearAll);
+			InterfaceMethod (name, ifaceType, method, clear_one ? Operation.ClearOne : Operation.ClearAll, out ambiguousCandidate);
 		}
 
 		/// <remarks>
@@ -232,21 +300,23 @@ namespace Mono.CSharp {
 		///   that was used in the interface, then we always need to create a proxy for it.
 		///
 		/// </remarks>
-		public MethodSpec InterfaceMethod (MemberName name, TypeSpec iType, MethodData method, Operation op)
+		public MethodSpec InterfaceMethod (MemberName name, TypeSpec iType, MethodData method, Operation op, out MethodSpec ambiguousCandidate)
 		{
+			ambiguousCandidate = null;
+
 			if (pending_implementations == null)
 				return null;
 
 			TypeSpec ret_type = method.method.ReturnType;
 			ParametersCompiled args = method.method.ParameterInfo;
 			bool is_indexer = method.method is Indexer.SetIndexerMethod || method.method is Indexer.GetIndexerMethod;
+			MethodSpec m;
 
 			foreach (TypeAndMethods tm in pending_implementations){
 				if (!(iType == null || tm.type == iType))
 					continue;
 
 				int method_count = tm.methods.Count;
-				MethodSpec m;
 				for (int i = 0; i < method_count; i++){
 					m = tm.methods [i];
 
@@ -299,6 +369,11 @@ namespace Mono.CSharp {
 						tm.found [i] = method;
 					}
 
+					if (op == Operation.Lookup && name.Left != null && ambiguousCandidate == null) {
+						ambiguousCandidate = m;
+						continue;
+					}
+
 					//
 					// Lookups and ClearOne return
 					//
@@ -308,9 +383,12 @@ namespace Mono.CSharp {
 
 				// If a specific type was requested, we can stop now.
 				if (tm.type == iType)
-					return null;
+					break;
 			}
-			return null;
+
+			m = ambiguousCandidate;
+			ambiguousCandidate = null;
+			return m;
 		}
 
 		/// <summary>
@@ -396,7 +474,7 @@ namespace Mono.CSharp {
 						continue;
 
 					var candidate_param = ((MethodSpec) candidate).Parameters;
-					if (!TypeSpecComparer.Override.IsEqualByRuntime (parameters, candidate_param))
+					if (!TypeSpecComparer.Override.IsSame (parameters.Types, candidate_param.Types))
 						continue;
 
 					bool modifiers_match = true;
