@@ -2150,29 +2150,6 @@ namespace Mono.TextEditor
 					(int)(Editor.LineHeight + spaceY * 2));
 			}
 			
-			protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
-			{
-				// deprecated.
-				return null;
-			}
-			/*
-			protected override bool OnAnimationActorStep (Actor<BounceFadePopupWindow> actor)
-			{
-				if (actor.Expired) {
-					OnAnimationCompleted ();
-					return false;
-				}
-				
-				// for the first half, use an easing
-				if (actor.Percent < 0.5) {
-					scale = Choreographer.Compose (actor.Percent * 2, BounceEasing);
-				} else {
-					scale = Choreographer.Compose (1.0, BounceEasing);
-					alpha = 2.0 - actor.Percent * 2;
-				}
-				return true;
-			}*/
-			
 			Pango.Layout layout = null;
 			int layoutWidth, layoutHeight;
 			
@@ -2185,7 +2162,7 @@ namespace Mono.TextEditor
 						cr.Paint ();
 					}
 					using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
-						cr.Translate (width / 2,  height / 2);
+						cr.Translate (width / 2, height / 2);
 						cr.Scale (1 + scale / 4, 1 + scale / 4);
 						if (layout == null) {
 							layout = cr.CreateLayout ();

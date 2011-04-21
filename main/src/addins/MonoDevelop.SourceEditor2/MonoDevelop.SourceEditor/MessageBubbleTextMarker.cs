@@ -315,8 +315,8 @@ namespace MonoDevelop.SourceEditor
 			if (colorMatrix == null && editor.ColorStyle != null) {
 				bool isError = errors.Any (e => e.IsError);
 				if (errorMatrix == null) {
-					errorGc =  (HslColor)(editor.ColorStyle.GetChunkStyle ("bubble.error.text").Color);
-					warningGc =  (HslColor)(editor.ColorStyle.GetChunkStyle ("bubble.warning.text").Color);
+					errorGc = (HslColor)(editor.ColorStyle.GetChunkStyle ("bubble.error.text").Color);
+					warningGc = (HslColor)(editor.ColorStyle.GetChunkStyle ("bubble.warning.text").Color);
 					errorMatrix = CreateColorMatrix (editor, true);
 					warningMatrix = CreateColorMatrix (editor, false);
 				}
@@ -333,7 +333,8 @@ namespace MonoDevelop.SourceEditor
 			
 			layouts = new List<LayoutDescriptor> ();
 			fontDescription = FontService.GetFontDescription ("MessageBubbles");
-			
+			if (fontDescription != null)
+				fontDescription.Size = (int)(fontDescription.Size * editor.Options.Zoom);
 			foreach (ErrorText errorText in errors) {
 				Pango.Layout layout = new Pango.Layout (editor.PangoContext);
 				layout.FontDescription = fontDescription;
@@ -343,12 +344,12 @@ namespace MonoDevelop.SourceEditor
 				if (idx > 0)
 					firstLine = firstLine.Substring (0, idx);
 				layout.SetText (firstLine);
-				KeyValuePair<int, int> textSize;
+				KeyValuePair<int, int > textSize;
 				if (!textWidthDictionary.TryGetValue (errorText.ErrorMessage, out textSize)) {
 					int w, h;
 					layout.GetPixelSize (out w, out h);
 					textSize = new KeyValuePair<int, int> (w, h);
-					textWidthDictionary[errorText.ErrorMessage] = textSize;
+					textWidthDictionary [errorText.ErrorMessage] = textSize;
 				}
 				layouts.Add (new LayoutDescriptor (layout, textSize.Key, textSize.Value));
 			}
@@ -873,7 +874,7 @@ namespace MonoDevelop.SourceEditor
 			bool isCaretInLine = lineSegment.Offset <= editor.Caret.Offset && editor.Caret.Offset <= lineSegment.EndOffset;
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;
 			int selected = 0;
-			LayoutDescriptor layout = layouts[errorNumber];
+			LayoutDescriptor layout = layouts [errorNumber];
 			x2 = right - LayoutWidth - border - (ShowIconsInBubble ? errorPixbuf.Width : 0);
 			
 			x2 -= errorCounterWidth;
@@ -884,10 +885,10 @@ namespace MonoDevelop.SourceEditor
 			g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
 			g.LineTo (new Cairo.PointD (right, y));
 			g.ClosePath ();
-			g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
+			g.Color = colorMatrix [active, BOTTOM, LIGHT, highlighted, selected];
 			g.Fill ();
 			
-			g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
+			g.Color = colorMatrix [active, BOTTOM, LINE, highlighted, selected];
 			g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
 			g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
 			if (errorNumber == errors.Count - 1)
@@ -899,7 +900,7 @@ namespace MonoDevelop.SourceEditor
 				if (divider >= x2) {
 					g.MoveTo (new Cairo.PointD (divider + 0.5, y));
 					g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
-					g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
+					g.Color = colorMatrix [active, BOTTOM, DARK, highlighted, selected];
 					g.Stroke ();
 				}
 			}

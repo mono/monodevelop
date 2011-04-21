@@ -193,69 +193,7 @@ namespace Mono.TextEditor.Theatrics
 
 		protected abstract Rectangle CalculateInitialBounds ();
 		
-		protected abstract Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Rectangle bounds);
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			try {
-				using (var g = Gdk.CairoHelper.Create (evnt.Window)) {
-					g.SetSourceRGBA (1, 1, 1, 0);
-					g.Operator = Cairo.Operator.Source;
-					g.Paint ();
-				}
-				
-				if (textImage == null) {
-					var img = RenderInitialPixbuf (evnt.Window, bounds);
-					if (!img.HasAlpha) {
-						textImage = img.AddAlpha (false, 0, 0, 0);
-						img.Dispose (); 
-					} else {
-						textImage = img;
-					}
-				}
-				
-				int i = (int)(ExpandWidth * scale);
-				int j = (int)(ExpandHeight * scale);
-				int winw = Allocation.Width, winh = Allocation.Height;
-				int scaledw = winw - (int)(ExpandWidth - i);
-				int scaledh = winh - (int)(ExpandHeight - j);
-				
-				using (var scaled = textImage.ScaleSimple (scaledw, scaledh, Gdk.InterpType.Bilinear)) {
-					if (scaled != null) {
-						SetPixbufChannel (scaled, 4, (byte)(opacity*255));
-						using (var gc = new Gdk.GC (evnt.Window)) {
-							scaled.RenderToDrawable (evnt.Window, gc, 0, 0, (winw - scaledw) / 2, (winh - scaledh) / 2, 
-							                         scaledw, scaledh, Gdk.RgbDither.None, 0, 0);
-						}
-					}
-				}
-			} catch (Exception e) {
-				Console.WriteLine ("Exception in animation:" + e);
-			}
-			return false;
-		}
 		
-		/// <summary>
-		/// Utility method for setting a single channel in a pixbuf.
-		/// </summary>
-		/// <param name="channel">Channel indexx, 1-based.</param>
-		/// <param name="value">Value for all pixels in that channel.</param>
-		unsafe void SetPixbufChannel (Gdk.Pixbuf p, int channel, byte value)
-		{
-			int nChannels = p.NChannels;
-			
-			if (channel > nChannels)
-				throw new ArgumentException ("channel");
-			
-			byte *start = (byte*) p.Pixels;
-			int rowStride = p.Rowstride;
-			int width = p.Width;
-			byte *lastRow = start + p.Rowstride * (p.Height - 1);
-			for (byte *row = start; row <= lastRow; row += rowStride) {
-				byte *colEnd = row + width * nChannels;
-				for (byte *col = row + channel - 1; col < colEnd; col += nChannels)
-					*col = value;
-			}
-		}
 	}
 }
