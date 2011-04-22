@@ -366,11 +366,11 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 
-	public sealed class AdbGetPartitionSizeOperation : AdbBaseShellOperation
+	public sealed class AdbGetAvailableSpaceOperation : AdbBaseShellOperation
 	{
 		string partition;
 
-		public AdbGetPartitionSizeOperation (AndroidDevice device, string partition) : base (device, "df " + partition)
+		public AdbGetAvailableSpaceOperation (AndroidDevice device, string partition) : base (device, "df " + partition)
 		{
 			this.partition = partition;
 			BeginConnect ();
