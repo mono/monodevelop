@@ -370,6 +370,10 @@ namespace MonoDevelop.MonoDroid
 	{
 		string partition;
 
+		const long Kilobyte = 1024;
+		const long Megabyte = 1024 * 1024;
+		const long Gigabyte = 1024 * 1024 * 1024;
+
 		public AdbGetAvailableSpaceOperation (AndroidDevice device, string partition) : base (device, "df " + partition)
 		{
 			this.partition = partition;
@@ -400,13 +404,13 @@ namespace MonoDevelop.MonoDroid
 					return false;
 
 				switch (unit) {
-					case 'K': 
-						break; // No conversion needed
-					case 'M': size *= 1024;
+					case 'K': size *= Kilobyte;
 						break;
-					case 'G': size *= 1024 * 1024;
+					case 'M': size *= Megabyte;
 						break;
-					default: 
+					case 'G': size *= Gigabyte;
+						break;
+					default:
 						  return false;
 				}
 
