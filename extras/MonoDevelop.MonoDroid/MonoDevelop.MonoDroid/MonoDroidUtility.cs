@@ -291,8 +291,8 @@ namespace MonoDevelop.MonoDroid
 					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
-				new ChainedAsyncOperation<AdbGetPartitionSizeOperation> () {
-					Create = () => new AdbGetPartitionSizeOperation (device, "/data/"),
+				new ChainedAsyncOperation<AdbGetAvailableSpaceOperation> () {
+					Create = () => new AdbGetAvailableSpaceOperation (device, "/data/"),
 					Completed = op => spaceOnDevice = op.Success ? op.Size : 0,
 					ErrorMessage = GettextCatalog.GetString ("Failed to get device space on disk")
 				},
