@@ -336,6 +336,12 @@ namespace MonoDevelop.MonoDroid
 			"WRITE_SYNC_SETTINGS"
 		};
 		
+		public static readonly string [] InstallLocations = new [] {
+			"auto",
+			"internalOnly",
+			"preferExternal"
+		};
+		
 		public static AndroidVersion[] AndroidVersions = new[] {
 			new AndroidVersion (4, "1.6"),
 			new AndroidVersion (5, "2.0"),

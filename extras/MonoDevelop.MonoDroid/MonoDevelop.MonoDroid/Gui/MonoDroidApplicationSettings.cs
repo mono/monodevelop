@@ -127,6 +127,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			appIconCombo.Entry.Text = manifest.ApplicationIcon ?? "";
 			SetMinSdkVersion (manifest.MinSdkVersion);
 			SetPermissions (manifest.AndroidPermissions);
+			SetInstallLocation (manifest.InstallLocation);
 			
 			loaded = true;
 		}
@@ -181,6 +182,10 @@ namespace MonoDevelop.MonoDroid.Gui
 			foreach (var p in MonoDroidFramework.Permissions)
 				permissionsStore.AppendValues (false, p);
 			
+			installLocationCombo.AppendText (GettextCatalog.GetString ("Automatic"));
+			foreach (var l in MonoDroidFramework.InstallLocations)
+				installLocationCombo.AppendText (l);
+			
 			var toggleRenderer = new CellRendererToggle ();
 			permissionsTreeView.AppendColumn ("", toggleRenderer, "active", 0);
 			permissionsTreeView.AppendColumn ("", new CellRendererText (), "text", 1);
@@ -234,6 +239,18 @@ namespace MonoDevelop.MonoDroid.Gui
 			}
 		}
 		
+		void SetInstallLocation (string installLocation)
+		{
+			if (!String.IsNullOrEmpty (installLocation))
+				for (int i = 0; i < MonoDroidFramework.InstallLocations.Length; i++)
+					if (MonoDroidFramework.InstallLocations [i] == installLocation) {
+						installLocationCombo.Active = i + 1;
+						return;
+					}
+			
+			installLocationCombo.Active = 0;
+		}
+		
 		public void ApplyChanges ()
 		{
 			if (!loaded)
@@ -244,6 +261,10 @@ namespace MonoDevelop.MonoDroid.Gui
 			manifest.VersionName = versionNameEntry.Text;
 			manifest.VersionCode = versionNumberEntry.Text;
 			manifest.ApplicationIcon = appIconCombo.Entry.Text;
+			if (installLocationCombo.Active == 0)
+				manifest.InstallLocation = null;
+			else
+				manifest.InstallLocation = MonoDroidFramework.InstallLocations [installLocationCombo.Active - 1];
 			if (minAndroidVersionCombo.Active == 0)
 				manifest.MinSdkVersion = null;
 			else

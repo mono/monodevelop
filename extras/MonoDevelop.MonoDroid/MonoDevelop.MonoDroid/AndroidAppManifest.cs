@@ -129,6 +129,11 @@ namespace MonoDevelop.MonoDroid
 			get { return (string) manifest.Attribute (aNS + "versionCode");  }
 			set { manifest.SetAttributeValue (aNS + "versionCode", NullIfEmpty (value)); }
 		}
+
+		public string InstallLocation {
+			get { return (string) manifest.Attribute (aNS + "installLocation"); }
+			set { manifest.SetAttributeValue (aNS + "installLocation", NullIfEmpty (value)); }
+		}
 		
 		public int? MinSdkVersion {
 			get { return (int?) usesSdk.Attribute (aNS + "minSdkVersion");  }
