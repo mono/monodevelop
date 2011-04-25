@@ -322,6 +322,7 @@ namespace MonoDevelop.MonoDroid
 					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
 				new ChainedAsyncOperation<AdbGetAvailableSpaceOperation> () {
+					TaskName = GettextCatalog.GetString ("Getting available space on the device"),
 					Skip = () => 
 						(!conf.AndroidUseSharedRuntime || list.AreCurrentRuntimeAndPlatformInstalled (apiLevel, runtimeVersion)) &&
 						(list.ContainsPackage (packageName) && !replaceIfExists) ?
@@ -330,8 +331,13 @@ namespace MonoDevelop.MonoDroid
 					Completed = op => {
 						externalSpace = op.ExternalSpace;
 						internalSpace = op.InternalSpace;
-						if (externalSpace <= 0 && internalSpace <= 0) {
-							var msg = GettextCatalog.GetString ("Not enough space on device");
+						long pkgLength = new FileInfo (runtimeApk).Length;
+						long platformApkLength = new FileInfo (platformApk).Length;
+						long packageLength = new FileInfo (packageFile).Length;
+						if ((pkgLength > externalSpace && pkgLength > internalSpace) ||
+							(platformApkLength > externalSpace && platformApkLength > internalSpace) ||
+							(packageLength > externalSpace && packageLength > internalSpace)) {
+							var msg = GettextCatalog.GetString ("Not enough space on install location");
 							monitor.ReportError (msg, null);
 						}
 					},
@@ -341,30 +347,14 @@ namespace MonoDevelop.MonoDroid
 					TaskName = GettextCatalog.GetString ("Installing shared runtime package on device"),
 					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentRuntimeInstalled (runtimeVersion) ? 
 						"" : null,
-					Create = () => {
-						long pkgLength = new FileInfo (runtimeApk).Length;
-						if (pkgLength > externalSpace && pkgLength > internalSpace) {
-							var msg = GettextCatalog.GetString ("Not enough space on device");
-							monitor.ReportError (msg, null);
-							return null;
-						}
-						return toolbox.Install (device, runtimeApk, monitor.Log, monitor.Log);
-					},
+					Create = () => toolbox.Install (device, runtimeApk, monitor.Log, monitor.Log),
 					ErrorMessage = GettextCatalog.GetString ("Failed to install shared runtime package")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing the platform framework"),
 					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentPlatformInstalled (apiLevel, runtimeVersion) ? 
 						"" : null,
-					Create = () => {
-						long platformApkLength = new FileInfo (platformApk).Length;
-						if (platformApkLength > externalSpace && platformApkLength > internalSpace) {
-							var msg = GettextCatalog.GetString ("Not enough space on device");
-							monitor.ReportError (msg, null);
-							return null;
-						}
-						return toolbox.Install (device, platformApk, monitor.Log, monitor.Log);
-					},
+					Create = () => toolbox.Install (device, platformApk, monitor.Log, monitor.Log),
 					ErrorMessage = GettextCatalog.GetString ("Failed to install the platform framework")
 				},
 				new ChainedAsyncOperation () {
@@ -377,15 +367,7 @@ namespace MonoDevelop.MonoDroid
 					Skip = () => (list.ContainsPackage (packageName) && !replaceIfExists)
 						? GettextCatalog.GetString ("Package is already up to date") : null,
 					TaskName = GettextCatalog.GetString ("Installing package"),
-					Create = () => {
-						long packageLength = new FileInfo (packageFile).Length;
-						if (packageLength > externalSpace && packageLength > internalSpace) {
-							var msg = GettextCatalog.GetString ("Not enough space on device");
-							monitor.ReportError (msg, null);
-							return null;
-						}
-						return toolbox.Install (device, packageFile, monitor.Log, monitor.Log);
-					},
+					Create = () => toolbox.Install (device, packageFile, monitor.Log, monitor.Log),
 					ErrorMessage = GettextCatalog.GetString ("Failed to install package")
 				}
 			);
