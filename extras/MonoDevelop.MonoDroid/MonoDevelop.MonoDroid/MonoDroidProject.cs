@@ -433,16 +433,16 @@ namespace MonoDevelop.MonoDroid
 		
 		void SignPackageAsync (IProgressMonitor monitor, ConfigurationSelector configSel)
 		{
-			monitor.BeginTask ("Signing package", 0);
+			monitor.BeginTask ("Creating package", 0);
 			
 			BuildResult result = null;
 			try {
 				result = this.OnRunTarget (monitor, "SignAndroidPackage", configSel);
 				if (result.ErrorCount > 0) {
-					monitor.ReportError ("Signing failed", null);
+					monitor.ReportError ("Package creation failed", null);
 				}
 			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Signing failed."), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Package creation failed."), ex);
 			}
 			DispatchService.GuiDispatch (delegate {
 				SignPackageDone (monitor, result); // disposes the monitor
