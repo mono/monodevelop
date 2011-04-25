@@ -88,6 +88,11 @@ namespace MonoDevelop.MonoDroid
 			return packages.Count () > 0;
 		}
 
+		public bool AreCurrentRuntimeAndPlatformInstalled (int platform, int current)
+		{
+			return IsCurrentRuntimeInstalled (current) && IsCurrentPlatformInstalled (platform, current);
+		}
+
 		// Hopefully they don't have multiple old
 		// platforms installed, but just in case...
 		public List<InstalledPackage> GetOldPlatforms (int platform, int current)
