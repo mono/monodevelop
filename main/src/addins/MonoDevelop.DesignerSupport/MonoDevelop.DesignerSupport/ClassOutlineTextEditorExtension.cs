@@ -1,11 +1,11 @@
-// 
+//
 // ClassOutlineTextEditorExtension.cs
-// 
+//
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
-// 
+//
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -30,26 +30,47 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Docking;
 
 
 namespace MonoDevelop.DesignerSupport
 {
-
-
-	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
+	/// <summary>
+	/// Displays a types and members outline of the current document.
+	/// </summary>
+	/// <remarks>
+	/// Document types and members are displayed in a tree view.
+	/// The displayed nodes can be sorted by changing the sorting properties state.
+	/// The sort behaviour is serialized into MonoDevelopProperties.xml.
+	/// Nodes with lower sortKey value will be sorted before nodes with higher value.
+	/// Nodes with equal sortKey will be sorted by string comparison of the name of the nodes.
+	/// The string comparison ignores symbols (e.g. sort 'Foo()' next to '~Foo()').
+	/// </remarks>
+	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineNodeComparer"/>
+	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSortingProperties"/>
+	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument, ISortableOutline
 	{
-		ParsedDocument lastCU = null;
-		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
-		TreeStore outlineTreeStore;
-		bool refreshingOutline;
-		bool disposed;
-		bool outlineReady;
+		ParsedDocument                              lastCU = null;
+
+		MonoDevelop.Ide.Gui.Components.PadTreeView  outlineTreeView;
+		TreeStore                                   outlineTreeStore;
+		TreeModelSort                               outlineTreeModelSort;
+
+		ClassOutlineNodeComparer                    comparer;
+
+		bool                                        refreshingOutline;
+		bool                                        disposed;
+		bool                                        outlineReady;
+
+		ClassOutlineSortingProperties               sortingProperties;
+
 
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
@@ -72,6 +93,7 @@ namespace MonoDevelop.DesignerSupport
 			if (Document != null)
 				Document.DocumentParsed -= UpdateDocumentOutline;
 			RemoveRefillOutlineStoreTimeout ();
+
 			base.Dispose ();
 		}
 
@@ -81,6 +103,20 @@ namespace MonoDevelop.DesignerSupport
 				return outlineTreeView;
 
 			outlineTreeStore = new TreeStore (typeof(object));
+
+			// Initialize sorted tree model
+
+			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
+
+			sortingProperties = PropertyService.Get (
+				ClassOutlineSortingProperties.SORTING_PROPERTY_NAME,
+				ClassOutlineSortingProperties.GetDefaultInstance ());
+
+			comparer = new ClassOutlineNodeComparer (GetAmbience (), sortingProperties, outlineTreeModelSort);
+
+			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
+			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
+
 			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
 
 			var pixRenderer = new CellRendererPixbuf ();
@@ -100,7 +136,7 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeView.AppendColumn (treeCol);
 
 			outlineTreeView.HeadersVisible = false;
-			
+
 			outlineTreeView.Selection.Changed += delegate {
 				JumpToDeclaration (false);
 			};
@@ -110,8 +146,14 @@ namespace MonoDevelop.DesignerSupport
 			};
 
 			this.lastCU = Document.ParsedDocument;
-			
+
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
+
+			// Register for property changes (e.g. preferences dialog)
+
+			sortingProperties.EventSortingPropertiesChanged += OnSortingPropertiesChanged;
+
+			UpdateSorting ();
 
 			var sw = new CompactScrolledWindow ();
 			sw.Add (outlineTreeView);
@@ -126,8 +168,16 @@ namespace MonoDevelop.DesignerSupport
 			TreeIter iter;
 			if (!outlineTreeView.Selection.GetSelected (out iter))
 				return;
-			object o = outlineTreeStore.GetValue (iter, 0);
-			
+
+			object o;
+
+			if (IsSorting ()) {
+				o = outlineTreeStore.GetValue (outlineTreeModelSort.ConvertIterToChildIter (iter), 0);
+			}
+			else {
+				o = outlineTreeStore.GetValue (iter, 0);
+			}
+				
 			IdeApp.ProjectOperations.JumpToDeclaration (o as INode);
 			if (focusEditor)
 				IdeApp.Workbench.ActiveDocument.Select ();
@@ -165,11 +215,20 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			ScrolledWindow w = (ScrolledWindow)outlineTreeView.Parent;
 			w.Destroy ();
+			outlineTreeModelSort.Dispose ();
+			outlineTreeModelSort = null;
 			outlineTreeStore.Dispose ();
 			outlineTreeStore = null;
 			outlineTreeView = null;
+
+			// De-register from property changes
+
+			sortingProperties.EventSortingPropertiesChanged -= OnSortingPropertiesChanged;
+
+			sortingProperties = null;
+			comparer = null;
 		}
-		
+
 		void RemoveRefillOutlineStoreTimeout ()
 		{
 			if (refillOutlineStoreId == 0)
@@ -177,7 +236,7 @@ namespace MonoDevelop.DesignerSupport
 			GLib.Source.Remove (refillOutlineStoreId);
 			refillOutlineStoreId = 0;
 		}
-		
+
 		uint refillOutlineStoreId;
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
@@ -292,7 +351,7 @@ namespace MonoDevelop.DesignerSupport
 				var f = (IField)o;
 				return new DomRegion (f.Location, f.Location);
 			}
-			
+
 			if (o is IMember)
 				return ((IMember)o).BodyRegion;
 			throw new InvalidOperationException (o.GetType ().ToString ());
@@ -301,6 +360,41 @@ namespace MonoDevelop.DesignerSupport
 		static bool OuterEndsAfterInner (DomRegion outer, DomRegion inner)
 		{
 			return ((outer.End.Line > 1 && outer.End.Line > inner.End.Line) || (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
+		}
+
+		void UpdateSorting ()
+		{
+			if (IsSorting ()) {
+
+				// Sort the model, sort keys may have changed.
+				// Only setting the column again does not re-sort so we set the function instead.
+
+				outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
+
+				outlineTreeView.Model = outlineTreeModelSort;
+			} else {
+				outlineTreeView.Model = outlineTreeStore;
+			}
+
+			// Because sorting the tree by setting the sort function also collapses the tree view we expand
+			// the whole tree.
+
+			outlineTreeView.ExpandAll ();
+		}
+
+		void OnSortingPropertiesChanged (object sender, EventArgs e)
+		{
+			UpdateSorting ();
+		}
+
+		ISortingProperties ISortableOutline.GetSortingProperties ()
+		{
+			return sortingProperties;
+		}
+
+		bool IsSorting ()
+		{
+			return sortingProperties.IsGrouping || sortingProperties.IsSortingAlphabetically;
 		}
 	}
 }
