@@ -253,6 +253,7 @@ namespace MonoDevelop.MonoDroid
 			var conf = (MonoDroidProjectConfiguration) project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			int apiLevel = MonoDroidFramework.FrameworkVersionToApiLevel (project.TargetFramework.Id.Version);
 			int runtimeVersion = MonoDroidFramework.GetRuntimeVersion ();
+			string runtimeApk = null, platformApk = null;
 			string packagesListLocation = null;
 			long internalSpace = -1, externalSpace = -1;
 			PackageList list = null;
@@ -260,6 +261,25 @@ namespace MonoDevelop.MonoDroid
 			replaceIfExists = replaceIfExists || signingOperation != null;
 			
 			chop = new ChainedAsyncOperationSequence (monitor,
+				new ChainedAsyncOperation () {
+					Create = () => { // Local start
+						runtimeApk = MonoDroidFramework.SharedRuntimePackage;
+						platformApk = MonoDroidFramework.GetPlatformPackage (apiLevel);
+						if (!File.Exists (runtimeApk)) {
+							var msg = GettextCatalog.GetString ("Could not find shared runtime package file");
+							monitor.ReportError (msg, null);
+							LoggingService.LogError ("{0} '{1}'", msg, runtimeApk);
+							return null;
+						}
+						if (!File.Exists (platformApk)) {
+							var msg = GettextCatalog.GetString ("Could not find platform package file");
+							monitor.ReportError (msg, null);
+							LoggingService.LogError ("{0} '{1}'", msg, platformApk);
+							return null;
+						}
+						return Core.Execution.NullProcessAsyncOperation.Success;
+					}
+				},
 				new ChainedAsyncOperation () {
 					Skip = () => MonoDroidFramework.DeviceManager.GetDeviceIsOnline (device.ID) ? "" : null,
 					TaskName = GettextCatalog.GetString ("Waiting for device"),
@@ -322,20 +342,13 @@ namespace MonoDevelop.MonoDroid
 					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentRuntimeInstalled (runtimeVersion) ? 
 						"" : null,
 					Create = () => {
-						var pkg = MonoDroidFramework.SharedRuntimePackage;
-						if (!File.Exists (pkg)) {
-							var msg = GettextCatalog.GetString ("Could not find shared runtime package file");
-							monitor.ReportError (msg, null);
-							LoggingService.LogError ("{0} '{1}'", msg, pkg);
-							return null;
-						}
-						long pkgLength = new FileInfo (pkg).Length;
+						long pkgLength = new FileInfo (runtimeApk).Length;
 						if (pkgLength > externalSpace && pkgLength > internalSpace) {
 							var msg = GettextCatalog.GetString ("Not enough space on device");
 							monitor.ReportError (msg, null);
 							return null;
 						}
-						return toolbox.Install (device, pkg, monitor.Log, monitor.Log);
+						return toolbox.Install (device, runtimeApk, monitor.Log, monitor.Log);
 					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to install shared runtime package")
 				},
@@ -344,14 +357,7 @@ namespace MonoDevelop.MonoDroid
 					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentPlatformInstalled (apiLevel, runtimeVersion) ? 
 						"" : null,
 					Create = () => {
-						var platformApk = MonoDroidFramework.GetPlatformPackage (apiLevel);
-						if (!File.Exists (platformApk)) {
-							var msg = GettextCatalog.GetString ("Could not find platform package file");
-							monitor.ReportError (msg, null);
-							LoggingService.LogError ("{0} '{1}'", msg, platformApk);
-							return null;
-						}
-						long platformApkLength = new FileInfo (packageFile).Length;
+						long platformApkLength = new FileInfo (platformApk).Length;
 						if (platformApkLength > externalSpace && platformApkLength > internalSpace) {
 							var msg = GettextCatalog.GetString ("Not enough space on device");
 							monitor.ReportError (msg, null);
