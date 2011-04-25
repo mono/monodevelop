@@ -302,6 +302,10 @@ namespace MonoDevelop.MonoDroid
 					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
 				new ChainedAsyncOperation<AdbGetAvailableSpaceOperation> () {
+					Skip = () => 
+						(!conf.AndroidUseSharedRuntime || list.AreCurrentRuntimeAndPlatformInstalled (apiLevel, runtimeVersion)) &&
+						(list.ContainsPackage (packageName) && !replaceIfExists) ?
+						"" : null,
 					Create = () => new AdbGetAvailableSpaceOperation (device),
 					Completed = op => {
 						externalSpace = op.ExternalSpace;
