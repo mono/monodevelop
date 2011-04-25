@@ -236,7 +236,11 @@ namespace MonoDevelop.MonoDroid
 			ev.WaitOne ();
 		}
 	}
-	
+
+	// The available space checks are quite relaxed right now, and we only report the
+	// cases where we are *pretty* sure we will fail. This is due to Android's
+	// 'installLocation' option to let the package manager decide where to install the packages,
+	// either in the external or internal storage.
 	public class MonoDroidUploadOperation : IAsyncOperation
 	{
 		ChainedAsyncOperationSequence chop;
@@ -250,7 +254,7 @@ namespace MonoDevelop.MonoDroid
 			int apiLevel = MonoDroidFramework.FrameworkVersionToApiLevel (project.TargetFramework.Id.Version);
 			int runtimeVersion = MonoDroidFramework.GetRuntimeVersion ();
 			string packagesListLocation = null;
-			long spaceOnDevice = 0;
+			long internalSpace = -1, externalSpace = -1;
 			PackageList list = null;
 			
 			replaceIfExists = replaceIfExists || signingOperation != null;
@@ -292,8 +296,15 @@ namespace MonoDevelop.MonoDroid
 					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
 				new ChainedAsyncOperation<AdbGetAvailableSpaceOperation> () {
-					Create = () => new AdbGetAvailableSpaceOperation (device, "/data/"),
-					Completed = op => spaceOnDevice = op.Success ? op.Size : 0,
+					Create = () => new AdbGetAvailableSpaceOperation (device),
+					Completed = op => {
+						externalSpace = op.ExternalSpace;
+						internalSpace = op.InternalSpace;
+						if (externalSpace <= 0 && internalSpace <= 0) {
+							var msg = GettextCatalog.GetString ("Not enough space on device");
+							monitor.ReportError (msg, null);
+						}
+					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to get device space on disk")
 				},
 				new ChainedAsyncOperation () {
@@ -309,12 +320,11 @@ namespace MonoDevelop.MonoDroid
 							return null;
 						}
 						long pkgLength = new FileInfo (pkg).Length;
-						if (pkgLength > spaceOnDevice) {
+						if (pkgLength > externalSpace && pkgLength > internalSpace) {
 							var msg = GettextCatalog.GetString ("Not enough space on device");
 							monitor.ReportError (msg, null);
 							return null;
 						}
-						spaceOnDevice -= pkgLength;
 						return toolbox.Install (device, pkg, monitor.Log, monitor.Log);
 					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to install shared runtime package")
@@ -332,12 +342,11 @@ namespace MonoDevelop.MonoDroid
 							return null;
 						}
 						long platformApkLength = new FileInfo (packageFile).Length;
-						if (platformApkLength > spaceOnDevice) {
+						if (platformApkLength > externalSpace && platformApkLength > internalSpace) {
 							var msg = GettextCatalog.GetString ("Not enough space on device");
 							monitor.ReportError (msg, null);
 							return null;
 						}
-						spaceOnDevice -= platformApkLength;
 						return toolbox.Install (device, platformApk, monitor.Log, monitor.Log);
 					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to install the platform framework")
@@ -360,7 +369,7 @@ namespace MonoDevelop.MonoDroid
 					TaskName = GettextCatalog.GetString ("Installing package"),
 					Create = () => {
 						long packageLength = new FileInfo (packageFile).Length;
-						if (packageLength > spaceOnDevice) {
+						if (packageLength > externalSpace && packageLength > internalSpace) {
 							var msg = GettextCatalog.GetString ("Not enough space on device");
 							monitor.ReportError (msg, null);
 							return null;
