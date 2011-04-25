@@ -295,6 +295,12 @@ namespace MonoDevelop.MonoDroid
 					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
+				new ChainedAsyncOperation () {
+					TaskName = GettextCatalog.GetString ("Uninstalling old version of package"),
+					Skip = () => (!replaceIfExists || !list.ContainsPackage (packageName))? "" : null,
+					Create = () => toolbox.Uninstall (device, packageName, monitor.Log, monitor.Log),
+					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
+				},
 				new ChainedAsyncOperation<AdbGetAvailableSpaceOperation> () {
 					Create = () => new AdbGetAvailableSpaceOperation (device),
 					Completed = op => {
@@ -350,12 +356,6 @@ namespace MonoDevelop.MonoDroid
 						return toolbox.Install (device, platformApk, monitor.Log, monitor.Log);
 					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to install the platform framework")
-				},
-				new ChainedAsyncOperation () {
-					TaskName = GettextCatalog.GetString ("Uninstalling old version of package"),
-					Skip = () => (!replaceIfExists || !list.ContainsPackage (packageName))? "" : null,
-					Create = () => toolbox.Uninstall (device, packageName, monitor.Log, monitor.Log),
-					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Waiting for packaging signing to complete"),
