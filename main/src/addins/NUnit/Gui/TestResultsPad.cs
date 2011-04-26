@@ -66,6 +66,7 @@ namespace MonoDevelop.NUnit
 		Dictionary<UnitTest,int> outIters = new Dictionary<UnitTest,int> ();
 		Widget outputViewScrolled;
 		VSeparator infoSep;
+		Gtk.TreeIter startMessageIter;
 		
 		Button buttonStop;
 		Button buttonRun;
@@ -313,12 +314,14 @@ namespace MonoDevelop.NUnit
 			AddStartMessage ();
 		}
 		
-		public void AddStartMessage ()
+		public void AddStartMessage (bool isRunning = true)
 		{
 			if (rootTest != null) {
 				Gdk.Pixbuf infoIcon = failuresTreeView.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
-				string msg = string.Format (GettextCatalog.GetString ("Running tests for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
-				failuresStore.AppendValues (infoIcon, msg, rootTest);
+				string msg = string.Format (isRunning ? GettextCatalog.GetString ("Running tests for <b>{0}</b> configuration <b>{1}</b>") : GettextCatalog.GetString ("Test results for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
+				startMessageIter = failuresStore.AppendValues (infoIcon, msg, rootTest);
+			} else {
+				startMessageIter = Gtk.TreeIter.Zero;
 			}
 		}
 
@@ -359,6 +362,11 @@ namespace MonoDevelop.NUnit
 		
 		public void FinishTestRun ()
 		{
+			if (!Gtk.TreeIter.Zero.Equals (startMessageIter)) {
+				string msg = string.Format (GettextCatalog.GetString ("Test results for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
+				failuresStore.SetValue (startMessageIter, 1, msg);
+				startMessageIter = Gtk.TreeIter.Zero;
+			}
 			infoCurrent.Text = "";
 			progressBar.Fraction = 1;
 			progressBar.Text = "";
@@ -520,7 +528,7 @@ namespace MonoDevelop.NUnit
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
 			outIters.Clear ();
-			AddStartMessage ();
+			AddStartMessage (running);
 				
 			foreach (ResultRecord res in results) {
 				ShowTestResult (res.Test, res.Result);
