@@ -549,7 +549,8 @@ namespace MonoDevelop.NUnit
 			if (result.IsFailure) {
 				if (!buttonFailures.Active)
 					return;
-				TreeIter testRow = failuresStore.AppendValues (CircleImage.Failure, Escape (test.FullName), test);
+				string file = test.SourceCodeLocation != null ? test.SourceCodeLocation.FileName + ":" + test.SourceCodeLocation.Line : null;
+				TreeIter testRow = failuresStore.AppendValues (CircleImage.Failure, Escape (test.FullName), test, file);
 				bool hasMessage = result.Message != null && result.Message.Length > 0;
 				if (hasMessage)
 					failuresStore.AppendValues (testRow, null, Escape (result.Message), test);
