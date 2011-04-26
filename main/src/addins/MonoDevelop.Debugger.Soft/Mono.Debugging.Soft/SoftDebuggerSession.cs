@@ -77,7 +77,11 @@ namespace Mono.Debugging.Soft
 		
 		bool loggedSymlinkedRuntimesBug = false;
 		
-		public readonly SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
+		public SoftDebuggerAdaptor Adaptor {
+			get { return adaptor; }
+		}
+		
+		readonly SoftDebuggerAdaptor adaptor = new SoftDebuggerAdaptor ();
 		
 		public SoftDebuggerSession ()
 		{
