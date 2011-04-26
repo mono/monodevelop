@@ -48,7 +48,7 @@ namespace Mono.Debugging.Backend
 		
 		public AssemblyLine[] GetLines (int firstIndex, int lastIndex)
 		{
-			Console.WriteLine ("pp GET LINES: " + firstIndex + " " + lastIndex + " " + baseIndex);
+			//Console.WriteLine ("pp GET LINES: " + firstIndex + " " + lastIndex + " " + baseIndex);
 			
 			if (lastIndex >= 0)
 				FillDown (lastIndex);
@@ -68,7 +68,7 @@ namespace Mono.Debugging.Backend
 			// Lines we are missing
 			int linesReq = -(baseIndex + targetLine);
 			
-			Console.WriteLine ("pp FILLUP: " + linesReq);
+			//Console.WriteLine ("pp FILLUP: " + linesReq);
 			
 			// Last known valid address
 			long lastAddr = lines.Count > 0 ? lines [0].Address : baseAddress;
@@ -114,7 +114,7 @@ namespace Mono.Debugging.Backend
 			// Lines we are missing
 			int linesReq = (baseIndex + targetLine) - lines.Count + 1;
 			
-			Console.WriteLine ("pp FILLDOWN: " + linesReq);
+			//Console.WriteLine ("pp FILLDOWN: " + linesReq);
 			
 			// Last known valid address
 			long lastAddr = lines.Count > 0 ? lines [lines.Count - 1].Address : baseAddress;

@@ -87,7 +87,7 @@ namespace Mono.Debugging.Evaluation
 				childExceptionValue = ctx.Adapter.CreateObjectValueAsync ("InnerException", ObjectValueFlags.None, delegate {
 					ValueReference inner = exception.GetChild ("InnerException", options);
 					if (inner != null && !ctx.Adapter.IsNull (ctx, inner.Value)) {
-						Console.WriteLine ("pp got child:" + type);
+						//Console.WriteLine ("pp got child:" + type);
 						ExceptionInfoSource innerSource = new ExceptionInfoSource (ctx, inner);
 						ObjectValue res = innerSource.CreateObjectValue (false, options);
 						return res;
@@ -98,7 +98,7 @@ namespace Mono.Debugging.Evaluation
 			} else {
 				ValueReference inner = exception.GetChild ("InnerException", options);
 				if (inner != null && !ctx.Adapter.IsNull (ctx, inner.Value)) {
-					Console.WriteLine ("pp got child:" + type);
+					//Console.WriteLine ("pp got child:" + type);
 					ExceptionInfoSource innerSource = new ExceptionInfoSource (ctx, inner);
 					childExceptionValue = innerSource.CreateObjectValue (false, options);
 					childExceptionValue.Name = "InnerException";
