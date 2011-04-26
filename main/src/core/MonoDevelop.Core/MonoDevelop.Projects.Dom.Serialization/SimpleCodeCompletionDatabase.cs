@@ -42,14 +42,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			AddFile (file);
 			this.file = file;
-			
-			string requiredRefUri = "Assembly:" + Runtime.SystemAssemblyService.DefaultRuntime.Id + ":";
-			var assembly = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyForVersion ("mscorlib", null, Services.ProjectService.DefaultTargetFramework);
+			string mscorLibFullName = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName ("mscorlib", Services.ProjectService.DefaultTargetFramework);
+			if (mscorLibFullName == null) {
+				LoggingService.LogError ("Can't find mscorlib for runtime:" + Services.ProjectService.DefaultTargetFramework);
+				return;
+			}
+			var assembly = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyForVersion (mscorLibFullName, null, Services.ProjectService.DefaultTargetFramework);
 			if (assembly == null) {
 				LoggingService.LogError ("Can't find runtime directory for :" + Services.ProjectService.DefaultTargetFramework);
 				return;
 			}
-			requiredRefUri += assembly.Location;
+			string requiredRefUri = "Assembly:" + Runtime.SystemAssemblyService.DefaultRuntime.Id + ":" + assembly.Location;
 			AddReference (requiredRefUri);
 		}
 		
