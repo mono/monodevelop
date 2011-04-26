@@ -763,6 +763,9 @@ namespace MonoDevelop.CSharp.Completion
 			if (typeString.Contains ("."))
 				completionList.Add (typeString, resolvedType.StockIcon);
 			foreach (var field in resolvedType.Fields) {
+				if (field.IsSpecialName)
+					continue;
+				
 				completionList.Add (typeString + "." + field.Name, field.StockIcon);
 			}
 			completionList.DefaultCompletionString = typeString;
@@ -1502,6 +1505,8 @@ namespace MonoDevelop.CSharp.Completion
 				MemberCompletionData newData = new MemberCompletionData (member as INode, flags);
 				newData.HideExtensionParameter = HideExtensionParameter;
 				string memberKey = newData.CompletionText;
+				if (memberKey == null)
+					return null;
 				if (member is IMember) {
 					newData.CompletionCategory = GetCompletionCategory (((IMember)member).DeclaringType);
 				}
