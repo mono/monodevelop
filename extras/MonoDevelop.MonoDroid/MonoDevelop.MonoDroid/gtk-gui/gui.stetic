@@ -1205,7 +1205,7 @@ specified explicitly so that the linker can include supporting resources.&lt;/sm
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.MonoDroid.Gui.MonoDroidPublishDialog" design-size="505 509">
+  <widget class="Gtk.Dialog" id="MonoDevelop.MonoDroid.Gui.MonoDroidPublishDialog" design-size="505 473">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Publish Android Application</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1252,6 +1252,7 @@ specified explicitly so that the linker can include supporting resources.&lt;/sm
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="CurrentPage">3</property>
+                <property name="ShowTabs">False</property>
                 <property name="BorderWidth">6</property>
                 <child>
                   <widget class="Gtk.VBox" id="vbox3">
