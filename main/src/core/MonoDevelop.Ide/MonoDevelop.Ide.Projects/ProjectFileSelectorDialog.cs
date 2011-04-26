@@ -146,29 +146,34 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		//FIXME: this is horribly inefficient
-		void InitDirs (TreeIter parent)
+		void InitDirs (TreeIter root)
 		{
-			HashSet<string> hash = new HashSet<string> ();
+			//iters in TreeStore should remain valid as long as we only add nodes
+			var iters = new Dictionary<string,TreeIter> ();
 			foreach (ProjectFile pf in project.Files) {
-				string dirname;
+				FilePath dirname;
 				if (pf.Subtype == Subtype.Directory)
-					dirname = pf.FilePath;
+					dirname = pf.ProjectVirtualPath;
 				else
-					dirname = System.IO.Path.GetDirectoryName (pf.FilePath);
-				hash.Add (dirname);
+					dirname = pf.ProjectVirtualPath.ParentDirectory;
+				InitDir (root, iters, dirname);
 			}
-			
-			List<string> dirList = new List<string> (hash);
-			dirList.Sort ();
-			InitDirs (parent, dirList, project.BaseDirectory);
 		}
 		
-		void InitDirs (TreeIter parent, List<string> dirs, string path)
+		TreeIter InitDir (TreeIter root, Dictionary<string,TreeIter> iters, FilePath dir)
 		{
-			foreach (string s in dirs)
-				if (s.StartsWith (path) && s.Length > path.Length && s.IndexOf (System.IO.Path.DirectorySeparatorChar, s.Length) < 0)
-					InitDirs (dirStore.AppendValues (parent, s), dirs, s);
+			if (dir.IsNullOrEmpty)
+				return root;
+			
+			TreeIter value;
+			if (iters.TryGetValue (dir, out value))
+				return value;
+			
+			TreeIter parent = InitDir (root, iters, dir.ParentDirectory);
+			value = dirStore.AppendValues (parent, dir.FileName);
+			iters.Add (dir, value);
+			
+			return value;
 		}
 		
 		void PixDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
@@ -177,11 +182,14 @@ namespace MonoDevelop.Ide.Projects
 			string dirname = (string) tree_model.GetValue (iter, 0);
 			
 			if (dirname.Length == 0) {
-				pixRenderer.PixbufExpanderOpen = pixRenderer.PixbufExpanderClosed = projBuf;
+				pixRenderer.PixbufExpanderOpen = projBuf;
+				pixRenderer.PixbufExpanderClosed = projBuf;
+				pixRenderer.Pixbuf = projBuf;
 				return;
 			}
 			pixRenderer.PixbufExpanderOpen = dirOpenBuf;
-			pixRenderer.PixbufExpanderClosed = pixRenderer.Pixbuf = dirClosedBuf;
+			pixRenderer.PixbufExpanderClosed = dirClosedBuf;
+			pixRenderer.Pixbuf = dirClosedBuf;
 		}
 		
 		void TxtDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
