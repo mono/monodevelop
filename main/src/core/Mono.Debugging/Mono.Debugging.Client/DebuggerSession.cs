@@ -140,10 +140,6 @@ namespace Mono.Debugging.Client
 			frontend = new InternalDebuggerSession (this);
 		}
 		
-		public void Initialize ()
-		{
-		}
-		
 		/// <summary>
 		/// Releases all resource used by the <see cref="Mono.Debugging.Client.DebuggerSession"/> object.
 		/// </summary>

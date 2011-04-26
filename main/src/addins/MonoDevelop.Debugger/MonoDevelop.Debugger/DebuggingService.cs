@@ -486,7 +486,6 @@ namespace MonoDevelop.Debugger
 			currentEngine = factory;
 			session = factory.CreateSession ();
 			session.ExceptionHandler = ExceptionHandler;
-			session.Initialize ();
 			
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
