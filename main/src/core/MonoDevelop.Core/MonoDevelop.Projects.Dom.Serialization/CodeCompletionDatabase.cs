@@ -307,10 +307,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					object oo = bf.Deserialize (dataFileStream);
 					object[] data = (object[]) oo;
 					Queue dataQueue = new Queue (data);
-					references = (List<ReferenceEntry>) dataQueue.Dequeue ();
-					typeEntries = (Dictionary<string, ClassEntry>) dataQueue.Dequeue ();
-					files = (Dictionary<string, FileEntry>) dataQueue.Dequeue ();
-					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue ();
+					references = (List<ReferenceEntry>) dataQueue.Dequeue () ?? new List<ReferenceEntry> ();
+					typeEntries = (Dictionary<string, ClassEntry>) dataQueue.Dequeue () ?? new Dictionary<string, ClassEntry> ();
+					files = (Dictionary<string, FileEntry>) dataQueue.Dequeue () ?? new Dictionary<string, FileEntry> ();
+					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue () ?? new Hashtable ();
 					
 					// Read the global attributes position
 					globalAttributesPosition = br.ReadInt64 ();
@@ -606,7 +606,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		internal IEnumerable<ClassEntry> GetAllClasses ()
 		{
-			return this.typeEntries.Values;
+			// ensure that the GetAllClasses methods is save of type entry changes
+			return this.typeEntries.Values.Where (ce => ce != null).ToArray ();
 		}
 		
 		public void Flush ()
