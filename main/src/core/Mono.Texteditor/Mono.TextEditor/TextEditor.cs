@@ -826,8 +826,8 @@ namespace Mono.TextEditor
 		{
 			ModifierType mod;
 			Gdk.Key key;
-			Platform.MapRawKeys (evt, out key, out mod);
-			
+			uint keyVal;
+			Platform.MapRawKeys (evt, out key, out mod, out keyVal);
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
@@ -839,7 +839,8 @@ namespace Mono.TextEditor
 				return true;
 			}
 			
-			uint unicodeChar = Gdk.Keyval.ToUnicode (evt.KeyValue);
+			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
+			
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
 				ResetIMContext ();	
 				SimulateKeyPress (key, unicodeChar, mod);
