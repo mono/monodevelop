@@ -129,6 +129,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.notebook1.CanFocus = true;
 			this.notebook1.Name = "notebook1";
 			this.notebook1.CurrentPage = 3;
+			this.notebook1.ShowTabs = false;
 			this.notebook1.BorderWidth = ((uint)(6));
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.vbox3 = new global::Gtk.VBox ();
@@ -969,7 +970,7 @@ namespace MonoDevelop.MonoDroid.Gui
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 505;
-			this.DefaultHeight = 509;
+			this.DefaultHeight = 473;
 			this.Show ();
 		}
 	}
