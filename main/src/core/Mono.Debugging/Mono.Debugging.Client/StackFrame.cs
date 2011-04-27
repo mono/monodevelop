@@ -30,7 +30,7 @@ namespace Mono.Debugging.Client
 		}
 		
 		public StackFrame (long address, string addressSpace, SourceLocation location, string language)
-			: this (address, addressSpace, location, language, string.IsNullOrEmpty (location.Filename), true)
+			: this (address, addressSpace, location, language, string.IsNullOrEmpty (location.FileName), true)
 		{
 		}
 
@@ -40,12 +40,12 @@ namespace Mono.Debugging.Client
 		}
 
 		public StackFrame (long address, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo)
-			: this (address, "", location, language, string.IsNullOrEmpty (location.Filename), true)
+			: this (address, "", location, language, string.IsNullOrEmpty (location.FileName), true)
 		{
 		}
 		
 		public StackFrame (long address, SourceLocation location, string language)
-			: this (address, "", location, language, string.IsNullOrEmpty (location.Filename), true)
+			: this (address, "", location, language, string.IsNullOrEmpty (location.FileName), true)
 		{
 		}
 
@@ -262,13 +262,13 @@ namespace Mono.Debugging.Client
 		public override string ToString()
 		{
 			string loc;
-			if (location.Line != -1 && !string.IsNullOrEmpty (location.Filename))
-				loc = " at " + location.Filename + ":" + location.Line;
-			else if (!string.IsNullOrEmpty (location.Filename))
-				loc = " at " + location.Filename;
+			if (location.Line != -1 && !string.IsNullOrEmpty (location.FileName))
+				loc = " at " + location.FileName + ":" + location.Line;
+			else if (!string.IsNullOrEmpty (location.FileName))
+				loc = " at " + location.FileName;
 			else
 				loc = "";
-			return String.Format("0x{0:X} in {1}{2}", address, location.Method, loc);
+			return String.Format("0x{0:X} in {1}{2}", address, location.MethodName, loc);
 		}
 	}
 	

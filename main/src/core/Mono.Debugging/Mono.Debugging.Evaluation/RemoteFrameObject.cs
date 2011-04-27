@@ -34,9 +34,14 @@ namespace Mono.Debugging.Evaluation
 	{
 		static List<RemoteFrameObject> connectedValues = new List<RemoteFrameObject> ();
 
-		public static bool TrackConnections = false;
+		public static bool TrackConnections { get; set; }
 
 		bool connected;
+		
+		public RemoteFrameObject ()
+		{
+			TrackConnections = false;
+		}
 		
 		public void Connect ()
 		{

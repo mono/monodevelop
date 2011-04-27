@@ -78,8 +78,8 @@ namespace MonoDevelop.Debugger
 		{
 			if (null == a || null == z)
 				return a == z;
-			return a.SourceLocation.Filename.Equals (z.SourceLocation.Filename, StringComparison.Ordinal) &&
-			       a.SourceLocation.Method.Equals (z.SourceLocation.Method, StringComparison.Ordinal);
+			return a.SourceLocation.FileName.Equals (z.SourceLocation.FileName, StringComparison.Ordinal) &&
+			       a.SourceLocation.MethodName.Equals (z.SourceLocation.MethodName, StringComparison.Ordinal);
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace Mono.Debugging.Evaluation
 		Dictionary<string, TypeDisplayData> typeDisplayData = new Dictionary<string, TypeDisplayData> ();
 
 		// Time to wait while evaluating before switching to async mode
-		public int DefaultEvaluationWaitTime = 100;
+		public int DefaultEvaluationWaitTime { get; set; }
 		
 		public event EventHandler<BusyStateEventArgs> BusyStateChanged;
 		
@@ -46,6 +46,8 @@ namespace Mono.Debugging.Evaluation
 		
 		public ObjectValueAdaptor ()
 		{
+			DefaultEvaluationWaitTime = 100;
+			
 			asyncOperationManager.BusyStateChanged += delegate(object sender, BusyStateEventArgs e) {
 				OnBusyStateChanged (e);
 			};
@@ -1020,11 +1022,11 @@ namespace Mono.Debugging.Evaluation
 
 	public class TypeDisplayData
 	{
-		public string ProxyType;
-		public string ValueDisplayString;
-		public string TypeDisplayString;
-		public string NameDisplayString;
-		public bool IsCompilerGenerated;
+		public string ProxyType { get; set; }
+		public string ValueDisplayString { get; set; }
+		public string TypeDisplayString { get; set; }
+		public string NameDisplayString { get; set; }
+		public bool IsCompilerGenerated { get; set; }
 		
 		public bool IsProxyType {
 			get { return ProxyType != null; }
@@ -1032,7 +1034,7 @@ namespace Mono.Debugging.Evaluation
 
 		public static readonly TypeDisplayData Default = new TypeDisplayData ();
 
-		public Dictionary<string, DebuggerBrowsableState> MemberData;
+		public Dictionary<string, DebuggerBrowsableState> MemberData { get; set; }
 
 		public DebuggerBrowsableState GetMemberBrowsableState (string name)
 		{
