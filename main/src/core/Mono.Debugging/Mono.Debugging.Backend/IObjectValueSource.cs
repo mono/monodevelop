@@ -58,8 +58,6 @@ namespace Mono.Debugging.Backend
 	[Serializable]
 	public class EvaluationResult
 	{
-		public static readonly EvaluationResult Empty = new EvaluationResult (string.Empty);
-		
 		public EvaluationResult (string value)
 		{
 			Value = value;
@@ -71,8 +69,8 @@ namespace Mono.Debugging.Backend
 			DisplayValue = displayValue;
 		}
 		
-		public string Value { get; set; }
-		public string DisplayValue { get; set; }
+		public string Value { get; private set; }
+		public string DisplayValue { get; private set; }
 		
 		public override string ToString ()
 		{
