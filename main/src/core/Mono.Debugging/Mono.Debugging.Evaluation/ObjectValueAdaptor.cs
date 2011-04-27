@@ -184,8 +184,9 @@ namespace Mono.Debugging.Evaluation
 		
 		public virtual void OnBusyStateChanged (BusyStateEventArgs e)
 		{
-			if (BusyStateChanged != null)
-				BusyStateChanged (this, e);
+			EventHandler<BusyStateEventArgs> evnt = BusyStateChanged;
+			if (evnt != null)
+				evnt (this, e);
 		}
 
 		public abstract ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr);
