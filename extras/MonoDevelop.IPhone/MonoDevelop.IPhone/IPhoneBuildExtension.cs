@@ -607,7 +607,7 @@ namespace MonoDevelop.IPhone
 					return true;
 				
 				var dllWriteTime = File.GetLastWriteTimeUtc (conf.CompiledOutputName);
-				foreach (var cp in GetContentFilePairs (proj.Files, conf.AppDirectory))
+				foreach (var cp in GetContentFilePairs (proj.Files, conf.AppDirectory, null))
 					if (File.Exists (cp.Input) && File.GetLastWriteTimeUtc (cp.Input) > dllWriteTime)
 						return true;
 			}
@@ -632,7 +632,7 @@ namespace MonoDevelop.IPhone
 				return true;
 			
 			//Content files
-			if (GetContentFilePairs (proj.Files, conf.AppDirectory).Where (NeedsBuilding).Any ())
+			if (GetContentFilePairs (proj.Files, conf.AppDirectory, null).Where (NeedsBuilding).Any ())
 				return true;
 			
 			// the Info.plist
@@ -682,25 +682,30 @@ namespace MonoDevelop.IPhone
 				Directory.Delete (conf.OutputDirectory.Combine ("XcodeProject"), true);
 		}
 		
-		void MangleLibraryResourceNames (BuildData buildData, FilePath tempNibDir)
+		void MangleLibraryResourceNames (BuildData buildData, FilePath tempNibDir, BuildResult result)
 		{
 			for (int i = 0; i < buildData.Items.Count; i++) {
 				var pf = buildData.Items[i] as ProjectFile;
-				if (pf != null) {
-					if (pf.BuildAction == BuildAction.Content) {
-						buildData.Items[i] = new ProjectFile (pf.FilePath, BuildAction.EmbeddedResource) {
-							ResourceId = "__monotouch_content_" + EscapeMangledResource (pf.ProjectVirtualPath)
-						};
-					} else if (pf.BuildAction == BuildAction.Page) {
-						var vpath = pf.ProjectVirtualPath;
-						if (vpath.Extension != ".xib")
-							continue;
-						vpath = vpath.ChangeExtension (".nib");
-						var nibPath = vpath.ToAbsolute (tempNibDir);
-						buildData.Items[i] = new ProjectFile (nibPath, BuildAction.EmbeddedResource) {
-							ResourceId = "__monotouch_page_" + EscapeMangledResource (vpath)
-						};
-					}
+				if (pf == null)
+					continue;
+				if (pf.BuildAction == BuildAction.Content) {
+					var vpath = pf.ProjectVirtualPath;
+					if (!CheckContentNamePermitted (vpath, result))
+						continue;
+					buildData.Items[i] = new ProjectFile (pf.FilePath, BuildAction.EmbeddedResource) {
+						ResourceId = "__monotouch_content_" + EscapeMangledResource (vpath)
+					};
+				} else if (pf.BuildAction == BuildAction.Page) {
+					var vpath = pf.ProjectVirtualPath;
+					if (vpath.Extension != ".xib")
+						continue;
+					if (!CheckPageNamePermitted (vpath, result))
+						continue;
+					vpath = vpath.ChangeExtension (".nib");
+					var nibPath = vpath.ToAbsolute (tempNibDir);
+					buildData.Items[i] = new ProjectFile (nibPath, BuildAction.EmbeddedResource) {
+						ResourceId = "__monotouch_page_" + EscapeMangledResource (vpath)
+					};
 				}
 			}
 		}
@@ -760,7 +765,7 @@ namespace MonoDevelop.IPhone
 				var xibRes = MacBuildUtilities.CompileXibFiles (monitor, projFiles, nibDir);
 				if (xibRes.ErrorCount > 0)
 					return xibRes;
-				MangleLibraryResourceNames (buildData, nibDir);
+				MangleLibraryResourceNames (buildData, nibDir, xibRes);
 				return xibRes.Append (base.Compile (monitor, item, buildData));
 			}	
 			
@@ -783,7 +788,7 @@ namespace MonoDevelop.IPhone
 			if (result.Append (MacBuildUtilities.CompileXibFiles (monitor, projFiles, appDir)).ErrorCount > 0)
 				return result;
 			
-			var contentFiles = GetContentFilePairs (projFiles, appDir)
+			var contentFiles = GetContentFilePairs (projFiles, appDir, result)
 				.Where (NeedsBuilding).ToList ();
 			
 			contentFiles.AddRange (GetIconContentFiles (sdkVersion, proj, cfg));
@@ -1197,7 +1202,7 @@ namespace MonoDevelop.IPhone
 			//having written to a UTF8 stream to convince the xmlwriter to do the right thing,
 			//we now convert to string and back to do some substitutions to work around bugs
 			//in Apple's braindead entitlements XML parser.
-			//Specifically, it chokes on "<true />" but accepts "<true">
+			//Specifically, it chokes on "<true />" but accepts "<true/>"
 			//Hence, to be on the safe side, we produce EXACTLY the same format
 			var sb = new StringBuilder (Encoding.UTF8.GetString (ms.GetBuffer ()));
 			sb.Replace ("-//Apple Computer//DTD PLIST 1.0//EN", "-//Apple//DTD PLIST 1.0//EN");
@@ -1283,23 +1288,67 @@ namespace MonoDevelop.IPhone
 			return br;
 		}
 		
-		static IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
+		static IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot, BuildResult result)
 		{
-			//these are filenames that could overwrite important packaging files
-			//FIXME: warn if the user has marked these as content, or just ignore?
-			//FIXME: check for _CodeResources and dlls and binaries too?
-			var forbiddenNames = new HashSet<string> (new [] {
-				"Info.plist",
-				"Embedded.mobileprovision",
-				"ResourceRules.plist",
-				"PkgInfo",
-				"CodeResources"
-			}, StringComparer.OrdinalIgnoreCase);
-			
 			return allItems.OfType<ProjectFile> ()
-				.Where (pf => pf.BuildAction == BuildAction.Content && !forbiddenNames.Contains (pf.ProjectVirtualPath))
+				.Where (pf => pf.BuildAction == BuildAction.Content && CheckContentNamePermitted (pf.ProjectVirtualPath, result))
 				.Select (pf => new FilePair (pf.FilePath, pf.ProjectVirtualPath.ToAbsolute (outputRoot)));
 		}
+		
+		
+		//checks for filenames that could overwrite important packaging files
+		//FIXME: check for binaries too?
+		static bool CheckContentNamePermitted (string virtualPath, BuildResult result)
+		{
+			if (forbiddenContentNames.Contains (virtualPath)) {
+				if (result != null)
+					result.AddWarning (virtualPath, 0, 0, "", GettextCatalog.GetString (
+						"The filename '{0}' is reserved and cannot used for Content files", virtualPath));
+				return false;
+			}
+			
+			int i = virtualPath.IndexOf (Path.DirectorySeparatorChar);
+			if (i < 0)
+				return false;
+			string rootDir = virtualPath.Substring (0, i);
+			if (forbiddenContentFolders.Contains (rootDir)) {
+				if (result != null)
+					result.AddWarning (virtualPath, 0, 0, "", GettextCatalog.GetString (
+						"The folder name '{0}' is reserved and cannot used for Content files", rootDir));
+				return false;
+			}
+			
+			return true;
+		}
+		
+		static bool CheckPageNamePermitted (string virtualPath, BuildResult result)
+		{
+			int i = virtualPath.IndexOf (Path.DirectorySeparatorChar);
+			if (i < 0)
+				return false;
+			string rootDir = virtualPath.Substring (0, i);
+			if (forbiddenContentFolders.Contains (rootDir)) {
+				if (result != null)
+					result.AddWarning (virtualPath, 0, 0, "", GettextCatalog.GetString (
+						"The folder name '{0}' is reserved and cannot used for Page files", rootDir));
+				return false;
+			}
+			return true;
+		}
+		
+		static HashSet<string> forbiddenContentNames = new HashSet<string> (new [] {
+			"Info.plist",
+			"Embedded.mobileprovision",
+			"ResourceRules.plist",
+			"PkgInfo",
+			"CodeResources",
+			"_CodeSignature",
+		}, StringComparer.OrdinalIgnoreCase);
+		
+		static HashSet<string> forbiddenContentFolders = new HashSet<string> (new [] {
+			"Resources",
+			"_CodeSignature",
+		}, StringComparer.OrdinalIgnoreCase);
 		
 		static BuildResult UpdateDebugSettingsPlist (IProgressMonitor monitor, IPhoneProjectConfiguration conf,
 		                                             ProjectFile template, string target)
