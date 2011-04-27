@@ -141,15 +141,13 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Initializing Runtime");
-			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
+			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 3);
 			monitor.Step (1);
 			Runtime.Initialize (true);
 			
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
 			Counters.Initialization.Trace ("Initializing Platform Service");
 			DesktopService.Initialize ();
-			monitor.Step (1);
-			monitor.EndTask ();
 			
 			monitor.Step (1);
 
