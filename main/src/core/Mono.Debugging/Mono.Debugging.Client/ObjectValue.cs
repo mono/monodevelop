@@ -489,7 +489,8 @@ namespace Mono.Debugging.Client
 							ConnectCallbacks (parentFrame, cs);
 							children.AddRange (cs);
 						} catch (Exception ex) {
-							Console.WriteLine (ex);
+							if (parentFrame != null)
+								parentFrame.DebuggerSession.OnDebuggerOutput( true, ex.ToString());
 							children.Add (CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly));
 						}
 					}
