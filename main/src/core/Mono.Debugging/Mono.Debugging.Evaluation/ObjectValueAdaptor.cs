@@ -1022,21 +1022,30 @@ namespace Mono.Debugging.Evaluation
 
 	public class TypeDisplayData
 	{
-		public string ProxyType { get; set; }
-		public string ValueDisplayString { get; set; }
-		public string TypeDisplayString { get; set; }
-		public string NameDisplayString { get; set; }
-		public bool IsCompilerGenerated { get; set; }
+		public string ProxyType { get; internal set; }
+		public string ValueDisplayString { get; internal set; }
+		public string TypeDisplayString { get; internal set; }
+		public string NameDisplayString { get; internal set; }
+		public bool IsCompilerGenerated { get; internal set; }
 		
 		public bool IsProxyType {
 			get { return ProxyType != null; }
 		}
 
-		public static TypeDisplayData Default {
-			get { return new TypeDisplayData (); }
-		}
+		public static readonly TypeDisplayData Default = new TypeDisplayData (null, null, null, null, false, null);
 
-		public Dictionary<string, DebuggerBrowsableState> MemberData { get; set; }
+		public Dictionary<string, DebuggerBrowsableState> MemberData { get; internal set; }
+		
+		public TypeDisplayData (string proxyType, string valueDisplayString, string typeDisplayString,
+			string nameDisplayString, bool isCompilerGenerated, Dictionary<string, DebuggerBrowsableState> memberData)
+		{
+			ProxyType = proxyType;
+			ValueDisplayString = valueDisplayString;
+			TypeDisplayString = typeDisplayString;
+			NameDisplayString = nameDisplayString;
+			IsCompilerGenerated = isCompilerGenerated;
+			MemberData = memberData;
+		}
 
 		public DebuggerBrowsableState GetMemberBrowsableState (string name)
 		{
