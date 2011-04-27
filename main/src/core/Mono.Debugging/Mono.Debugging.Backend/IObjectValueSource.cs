@@ -58,7 +58,7 @@ namespace Mono.Debugging.Backend
 	[Serializable]
 	public class EvaluationResult
 	{
-		public static EvaluationResult Empty = new EvaluationResult (string.Empty);
+		public static readonly EvaluationResult Empty = new EvaluationResult (string.Empty);
 		
 		public EvaluationResult (string value)
 		{
