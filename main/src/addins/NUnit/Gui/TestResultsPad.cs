@@ -241,6 +241,10 @@ namespace MonoDevelop.NUnit
 		public void OnTestSuiteChanged (object sender, EventArgs e)
 		{
 			results.Clear ();
+			
+			error = null;
+			errorMessage = null;
+			
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
 			outIters.Clear ();
@@ -286,6 +290,10 @@ namespace MonoDevelop.NUnit
 			rootTest = test;
 			results.Clear ();
 			testsToRun = test.CountTestCases ();
+			
+			error = null;
+			errorMessage = null;
+			
 			progressBar.Fraction = 0;
 			progressBar.Text = "";
 			progressBar.Text = "0 / " + testsToRun;
