@@ -435,7 +435,7 @@ namespace MonoDevelop.IPhone
 						if (icon.IsNullOrEmpty || icon.ToString () == ".")
 							result.AddWarning ("Application bundle icon has not been set (iPhone Application options panel)");
 						else
-							dict ["CFBundleIconFile"] = icon.FileName;
+							dict ["CFBundleIconFile"] = "Icon.png";
 					}
 				}
 				
@@ -445,23 +445,23 @@ namespace MonoDevelop.IPhone
 					dict["CFBundleIconFiles"] = arr;
 					
 					if (supportsIPhone)
-						AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIcon, "Icon.png");
+						AddIconRelativeIfNotEmpty (arr, proj.BundleIcon, "Icon.png");
 					
 					if (v4_0_orNewer && supportsIPhone)
-						if (!AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconHigh, "Icon@2x.png"))
+						if (!AddIconRelativeIfNotEmpty (arr, proj.BundleIconHigh, "Icon@2x.png"))
 							result.AddWarning ("iPhone high res bundle icon has not been set (iPhone Application options panel)");
 					
 					if (supportsIPad)
-						if (!AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconIPad, "Icon-72.png"))
+						if (!AddIconRelativeIfNotEmpty (arr, proj.BundleIconIPad, "Icon-72.png"))
 							result.AddWarning ("iPad bundle icon has not been set (iPhone Application options panel)");
 					
-					AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconSpotlight, "Icon-Small.png");
+					AddIconRelativeIfNotEmpty (arr, proj.BundleIconSpotlight, "Icon-Small.png");
 					
 					if (supportsIPad)
-						AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconIPadSpotlight, "Icon-Small-50.png");
+						AddIconRelativeIfNotEmpty (arr, proj.BundleIconIPadSpotlight, "Icon-Small-50.png");
 					
 					if (v4_0_orNewer && supportsIPhone)
-						AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconSpotlightHigh, "Icon-Small@2x.png");
+						AddIconRelativeIfNotEmpty (arr, proj.BundleIconSpotlightHigh, "Icon-Small@2x.png");
 				}
 				
 				SetIfNotPresent (dict, "CFBundleIdentifier", identity.BundleID);
@@ -535,17 +535,11 @@ namespace MonoDevelop.IPhone
 			});
 		}
 		
-		static bool AddIconRelativeIfNotEmpty (IPhoneProject proj, PlistArray arr, FilePath iconFullPath)
+		static bool AddIconRelativeIfNotEmpty (PlistArray arr, FilePath iconFullPath, string name)
 		{
-			return AddIconRelativeIfNotEmpty (proj, arr, iconFullPath, null);
-		}
-		
-		static bool AddIconRelativeIfNotEmpty (IPhoneProject proj, PlistArray arr, FilePath iconFullPath, string name)
-		{
-			var icon = iconFullPath.ToRelative (proj.BaseDirectory).ToString ();
-			if (string.IsNullOrEmpty (icon) || icon == ".")
+			if (iconFullPath.IsNullOrEmpty)
 				return false;
-			arr.Add (null ?? icon);
+			arr.Add (name);
 			return true;
 		}
 		
