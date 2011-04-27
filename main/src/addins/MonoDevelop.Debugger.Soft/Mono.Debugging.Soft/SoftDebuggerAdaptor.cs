@@ -733,25 +733,32 @@ namespace Mono.Debugging.Soft
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext gctx, object type)
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
-			TypeDisplayData td = new TypeDisplayData ();
+			
+			bool isCompilerGenerated = false;
+			string nameString = null;
+			string typeString = null;
+			string valueString = null;
+			string proxyType = null;
+			Dictionary<string, DebuggerBrowsableState> memberData = null;
+			
 			try {
 				TypeMirror t = (TypeMirror) type;
 				foreach (CustomAttributeDataMirror attr in t.GetCustomAttributes (true)) {
 					string attName = attr.Constructor.DeclaringType.FullName;
 					if (attName == "System.Diagnostics.DebuggerDisplayAttribute") {
 						DebuggerDisplayAttribute at = BuildAttribute<DebuggerDisplayAttribute> (attr);
-						td.NameDisplayString = at.Name;
-						td.TypeDisplayString = at.Type;
-						td.ValueDisplayString = at.Value;
+						nameString = at.Name;
+						typeString = at.Type;
+						valueString = at.Value;
 					}
 					else if (attName == "System.Diagnostics.DebuggerTypeProxyAttribute") {
 						DebuggerTypeProxyAttribute at = BuildAttribute<DebuggerTypeProxyAttribute> (attr);
-						td.ProxyType = at.ProxyTypeName;
-						if (!string.IsNullOrEmpty (td.ProxyType))
-							ForceLoadType (ctx, td.ProxyType);
+						proxyType = at.ProxyTypeName;
+						if (!string.IsNullOrEmpty (proxyType))
+							ForceLoadType (ctx, proxyType);
 					}
 					else if (attName == "System.Runtime.CompilerServices.CompilerGeneratedAttribute")
-						td.IsCompilerGenerated = true;
+						isCompilerGenerated = true;
 				}
 				foreach (FieldInfoMirror fi in t.GetFields ()) {
 					CustomAttributeDataMirror[] attrs = fi.GetCustomAttributes (true);
@@ -762,25 +769,25 @@ namespace Mono.Debugging.Soft
 							att = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
 					}
 					if (att != null) {
-						if (td.MemberData == null)
-							td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
-						td.MemberData [fi.Name] = att.State;
+						if (memberData == null)
+							memberData = new Dictionary<string, DebuggerBrowsableState> ();
+						memberData [fi.Name] = att.State;
 					}
 				}
 				foreach (PropertyInfoMirror pi in t.GetProperties ()) {
 					DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (pi.GetCustomAttributes (true));
 					if (att != null) {
-						if (td.MemberData == null)
-							td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
-						td.MemberData [pi.Name] = att.State;
+						if (memberData == null)
+							memberData = new Dictionary<string, DebuggerBrowsableState> ();
+						memberData [pi.Name] = att.State;
 					}
 				}
 			} catch (Exception ex) {
 				ctx.Session.WriteDebuggerOutput (true, ex.ToString ());
 			}
-			return td;
+			return new TypeDisplayData (proxyType, valueString, typeString, nameString, isCompilerGenerated, memberData);
 		}
-					    
+		
 		T GetAttribute<T> (CustomAttributeDataMirror[] attrs)
 		{
 			foreach (CustomAttributeDataMirror attr in attrs) {

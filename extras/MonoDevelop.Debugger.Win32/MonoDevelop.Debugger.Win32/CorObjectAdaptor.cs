@@ -930,7 +930,7 @@ namespace MonoDevelop.Debugger.Win32
 								return ctx.Frame.GetArgument (pos);
 							});
 						}
-						catch (Exception ex) {
+						catch (Exception /*ex*/) {
 						}
 						if (vref != null)
 							yield return new VariableReference (ctx, vref, pi.Name, ObjectValueFlags.Parameter);

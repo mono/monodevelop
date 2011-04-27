@@ -870,7 +870,7 @@ namespace Mono.Debugging.Client
 			if (GetExpressionEvaluator == null)
 				return null;
 
-			string fn = frame.SourceLocation == null ? null : frame.SourceLocation.Filename;
+			string fn = frame.SourceLocation == null ? null : frame.SourceLocation.FileName;
 			if (String.IsNullOrEmpty (fn))
 				return null;
 

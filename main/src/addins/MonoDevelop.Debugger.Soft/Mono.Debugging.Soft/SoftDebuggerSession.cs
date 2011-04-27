@@ -1453,8 +1453,10 @@ namespace Mono.Debugging.Soft
 						Location loc = met.LocationAtILOffset (ins.Offset);
 						if (loc != null && lastLine == -1) {
 							lastLine = loc.LineNumber;
-							for (int n=firstPos; n<lines.Count; n++)
-								lines [n].SourceLine = loc.LineNumber;
+							for (int n=firstPos; n<lines.Count; n++) {
+								AssemblyLine old = lines [n];
+								lines [n] = new AssemblyLine (old.Address, old.AddressSpace, old.Code, loc.LineNumber);
+							}
 						}
 						lines.Add (new AssemblyLine (ins.Offset, addrSpace, Disassemble (ins), loc != null ? loc.LineNumber : lastLine));
 					}

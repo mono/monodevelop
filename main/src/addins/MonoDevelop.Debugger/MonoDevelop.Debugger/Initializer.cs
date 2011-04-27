@@ -75,7 +75,7 @@ namespace MonoDevelop.Debugger
 			if (frame == null)
 				return;
 			
-			FilePath file = frame.SourceLocation.Filename;
+			FilePath file = frame.SourceLocation.FileName;
 			int line = frame.SourceLocation.Line;
 			
 			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
@@ -115,14 +115,14 @@ namespace MonoDevelop.Debugger
 				for (int n=0; n<bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
 					if (!sf.IsExternalCode && sf.SourceLocation.Line != -1) {
-						bool found = !string.IsNullOrEmpty (sf.SourceLocation.Filename)
-							&& System.IO.File.Exists (sf.SourceLocation.Filename);
+						bool found = !string.IsNullOrEmpty (sf.SourceLocation.FileName)
+							&& System.IO.File.Exists (sf.SourceLocation.FileName);
 						if (found) {
 							if (n != DebuggingService.CurrentFrameIndex)
 								DebuggingService.CurrentFrameIndex = n;
 							break;
 						} else {
-							LoggingService.LogWarning ("Debugger could not find file '{0}'", sf.SourceLocation.Filename);
+							LoggingService.LogWarning ("Debugger could not find file '{0}'", sf.SourceLocation.FileName);
 						}
 					}
 				}
