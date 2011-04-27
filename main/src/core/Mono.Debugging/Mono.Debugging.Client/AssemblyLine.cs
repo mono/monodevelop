@@ -59,9 +59,6 @@ namespace Mono.Debugging.Client
 			get {
 				return sourceLine;
 			}
-			set {
-				sourceLine = value;
-			}
 		}
 		
 		public bool IsOutOfRange {

@@ -364,7 +364,8 @@ namespace MonoDevelop.Debugger.Win32
 			string file = e.Module.Assembly.Name;
 			lock (documents) {
 				ISymbolReader reader = null;
-				if (file.IndexOfAny (System.IO.Path.InvalidPathChars) == -1 && System.IO.File.Exists (System.IO.Path.ChangeExtension (file, ".pdb"))) {
+				char[] badPathChars = System.IO.Path.GetInvalidPathChars();
+				if (file.IndexOfAny (badPathChars) == -1 && System.IO.File.Exists (System.IO.Path.ChangeExtension (file, ".pdb"))) {
 					try {
 						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".");
 						foreach (ISymbolDocument doc in reader.GetDocuments ()) {
@@ -1249,10 +1250,5 @@ namespace MonoDevelop.Debugger.Win32
 			if (gv != null)
 				gv.SetValue (ctx.Adapter.TargetObjectToObject (ctx, val));
 		}
-	}
-
-	class CorBreakpointInfo : BreakEventInfo
-	{
-		public CorBreakpoint CorBreakpoint;
 	}
 }
