@@ -70,8 +70,9 @@ namespace Mono.Debugging.Client
 		
 		void NotifyChanged ()
 		{
-			if (Changed != null)
-				Changed (this, EventArgs.Empty);
+			EventHandler evnt = Changed;
+			if (evnt != null)
+				evnt (this, EventArgs.Empty);
 		}
 		
 		public string Type {
