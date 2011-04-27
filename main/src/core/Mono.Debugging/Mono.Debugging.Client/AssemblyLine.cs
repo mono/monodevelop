@@ -59,18 +59,13 @@ namespace Mono.Debugging.Client
 			get {
 				return sourceLine;
 			}
-			set {
-				sourceLine = value;
-			}
 		}
 		
 		public bool IsOutOfRange {
 			get { return address == -1 && code == null; }
 		}
 		
-		public static AssemblyLine OutOfRange {
-			get { return new AssemblyLine (-1, null, null); }
-		}
+		public static readonly AssemblyLine OutOfRange = new AssemblyLine (-1, null, null);
 		
 		public AssemblyLine (long address, string code): this (address, "", code, -1)
 		{
