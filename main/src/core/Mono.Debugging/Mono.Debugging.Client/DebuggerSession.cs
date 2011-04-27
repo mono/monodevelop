@@ -964,79 +964,77 @@ namespace Mono.Debugging.Client
 			}
 			if (args.Backtrace != null)
 				args.Backtrace.Attach (this);
-			
+
+			EventHandler<TargetEventArgs> evnt = null;
 			switch (args.Type) {
 				case TargetEventType.ExceptionThrown:
 					lock (slock) {
 						isRunning = false;
 						args.IsStopEvent = true;
 					}
-					if (TargetExceptionThrown != null)
-						TargetExceptionThrown (this, args);
+					evnt = TargetExceptionThrown;
 					break;
 				case TargetEventType.TargetExited:
 					lock (slock) {
 						isRunning = false;
 						started = false;
 					}
-					if (TargetExited != null)
-						TargetExited (this, args);
+					EventHandler exited = TargetExited;
+					if (exited != null)
+						exited (this, args);
 					break;
 				case TargetEventType.TargetHitBreakpoint:
 					lock (slock) {
 						isRunning = false;
 						args.IsStopEvent = true;
 					}
-					if (TargetHitBreakpoint != null)
-						TargetHitBreakpoint (this, args);
+					evnt = TargetHitBreakpoint;
 					break;
 				case TargetEventType.TargetInterrupted:
 					lock (slock) {
 						isRunning = false;
 						args.IsStopEvent = true;
 					}
-					if (TargetInterrupted != null)
-						TargetInterrupted (this, args);
+					evnt = TargetInterrupted;
 					break;
 				case TargetEventType.TargetSignaled:
 					lock (slock) {
 						isRunning = false;
 						args.IsStopEvent = true;
 					}
-					if (TargetSignaled != null)
-						TargetSignaled (this, args);
+					evnt = TargetSignaled;
 					break;
 				case TargetEventType.TargetStopped:
 					lock (slock) {
 						isRunning = false;
 						args.IsStopEvent = true;
 					}
-					if (TargetStopped != null)
-						TargetStopped (this, args);
+					evnt = TargetStopped;
 					break;
 				case TargetEventType.UnhandledException:
 					lock (slock) {
 						isRunning = false;
 						args.IsStopEvent = true;
 					}
-					if (TargetUnhandledException != null)
-						TargetUnhandledException (this, args);
+					evnt = TargetUnhandledException;
 					break;
 				case TargetEventType.TargetReady:
-					if (TargetReady != null)
-						TargetReady (this, args);
+					evnt = TargetReady;
 					break;
 				case TargetEventType.ThreadStarted:
-					if (TargetThreadStarted != null)
-						TargetThreadStarted (this, args);
+					evnt = TargetThreadStarted;
 					break;
 				case TargetEventType.ThreadStopped:
-					if (TargetThreadStopped != null)
-						TargetThreadStopped (this, args);
+					evnt = TargetThreadStopped;
 					break;
 			}
-			if (TargetEvent != null)
-				TargetEvent (this, args);
+			
+			if (evnt != null)
+				evnt (this, args);
+
+			EventHandler<TargetEventArgs> targetEvent = TargetEvent;
+			if (targetEvent != null)
+				targetEvent (this, args);
 		}
 		
 		internal void OnRunning ()
