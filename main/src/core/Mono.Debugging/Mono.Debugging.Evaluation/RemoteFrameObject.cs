@@ -38,11 +38,6 @@ namespace Mono.Debugging.Evaluation
 
 		bool connected;
 		
-		public RemoteFrameObject ()
-		{
-			TrackConnections = false;
-		}
-		
 		public void Connect ()
 		{
 			if (!TrackConnections)
