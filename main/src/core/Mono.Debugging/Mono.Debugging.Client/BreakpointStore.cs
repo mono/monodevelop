@@ -326,7 +326,7 @@ namespace Mono.Debugging.Client
 						CatchpointStatusChanged (this, new CatchpointEventArgs ((Catchpoint)be));
 				}
 			} catch {
-				// Ignone
+				// Ignore
 			}
 		}
 		
@@ -344,7 +344,7 @@ namespace Mono.Debugging.Client
 				}
 				OnChanged ();
 			} catch {
-				// Ignone
+				// Ignore
 			}
 		}
 		
@@ -361,7 +361,7 @@ namespace Mono.Debugging.Client
 						CatchpointUpdated (this, new CatchpointEventArgs ((Catchpoint)be));
 				}
 			} catch {
-				// Ignone
+				// Ignore
 			}
 		}
 		
