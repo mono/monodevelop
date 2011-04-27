@@ -485,10 +485,15 @@ namespace Mono.Debugging.Soft
 		protected override void OnContinue ()
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
-				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
-				OnResumed ();
-				vm.Resume ();
-				DequeueEventsForFirstThread ();
+				try {
+					Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
+					OnResumed ();
+					vm.Resume ();
+					DequeueEventsForFirstThread ();
+				} catch (Exception ex) {
+					if (!HandleException (ex))
+						OnDebuggerOutput (true, ex.ToString ());
+				}
 			});
 		}
 
