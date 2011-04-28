@@ -1496,7 +1496,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (QualifiedAliasMember qualifiedAliasMember)
 			{
 				var result = new MonoDevelop.CSharp.Ast.MemberType ();
-				result.Target = new SimpleType (qualifiedAliasMember.alias);
+				result.Target = new SimpleType (qualifiedAliasMember.alias, Convert (qualifiedAliasMember.Location));
 				result.IsDoubleColon = true;
 				result.AddChild (new Identifier (qualifiedAliasMember.Name, Convert (qualifiedAliasMember.Location)), MemberReferenceExpression.Roles.Identifier);
 				return new TypeReferenceExpression () { Type = result };
