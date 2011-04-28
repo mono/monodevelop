@@ -59,7 +59,7 @@ namespace MonoDevelop.IPhone
 			
 			var workspaceConfig = IdeApp.Workspace.ActiveConfigurationId;
 			var conf = proj.GetConfiguration (new SolutionConfigurationSelector (workspaceConfig)) as IPhoneProjectConfiguration;
-			if (conf == null || conf.Platform != IPhoneProject.PLAT_SIM)
+			if (conf == null || !conf.IsSimPlatform)
 				return;
 			
 			var projSetting = proj.GetSimulatorTarget (conf);
@@ -81,7 +81,7 @@ namespace MonoDevelop.IPhone
 			if (proj != null) {
 				var workspaceConfig = IdeApp.Workspace.ActiveConfigurationId;
 				var conf = proj.GetConfiguration (new SolutionConfigurationSelector (workspaceConfig)) as IPhoneProjectConfiguration;
-				if (conf != null && conf.Platform == IPhoneProject.PLAT_SIM)
+				if (conf != null && conf.IsSimPlatform)
 					proj.SetSimulatorTarget (conf, (IPhoneSimulatorTarget) dataItem);
 			}
 		}
@@ -95,7 +95,7 @@ namespace MonoDevelop.IPhone
 			info.Visible = proj != null;
 			if (info.Visible && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
 					var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-					info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE;
+					info.Enabled = conf != null && conf.IsDevicePlatform;
 				} else {
 				info.Enabled = false;
 			}
@@ -162,7 +162,7 @@ namespace MonoDevelop.IPhone
 			info.Visible = true;
 			
 			var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-			info.Enabled = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			info.Enabled = conf.IsDevicePlatform;
 		}
 		
 		protected override void Run ()

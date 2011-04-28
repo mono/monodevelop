@@ -83,6 +83,8 @@ namespace MonoDevelop.IPhone.Gui
 		
 		bool enableMtouch4Features;
 		
+		bool isSim;
+		
 		public IPhoneBuildOptionsWidget ()
 		{
 			IPhoneFramework.CheckInfoCaches ();
@@ -172,7 +174,7 @@ namespace MonoDevelop.IPhone.Gui
 				return;
 			
 			((ListStore)minOSComboEntry.Model).Clear ();
-			var sdkVer = GetSdkValue ().ResolveIfDefault ();
+			var sdkVer = GetSdkValue ().ResolveIfDefault (isSim);
 			
 			foreach (var v in IPhoneFramework.KnownOSVersions)
 				if (v.CompareTo (sdkVer) <= 0)
@@ -181,6 +183,8 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public void LoadPanelContents (IPhoneProjectConfiguration cfg)
 		{
+			isSim = cfg.IsSimPlatform;
+			
 			extraArgsEntry.Entry.Text = cfg.MtouchExtraArgs ?? "";
 			debugCheck.Active = cfg.MtouchDebug;
 			linkCombo.Active = (int) cfg.MtouchLink;
@@ -221,7 +225,7 @@ namespace MonoDevelop.IPhone.Gui
 			sdkStore.AppendValues (GettextCatalog.GetString ("Default"), IPhoneSdkVersion.UseDefault);
 			
 			int idx = 0;
-			var sdks = IPhoneFramework.InstalledSdkVersions;
+			var sdks = IPhoneFramework.GetInstalledSdkVersions (isSim);
 			for (int i = 0; i < sdks.Count; i++) {
 				var v = sdks[i];
 				if (selectedVersion.Equals (v))

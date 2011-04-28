@@ -60,9 +60,9 @@ namespace MonoDevelop.IPhone
 			
 			//prebuild
 			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
-			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			bool isSim = conf.IsSimPlatform;
 			
-			if (IPhoneFramework.SimOnly && isDevice) {
+			if (IPhoneFramework.SimOnly && !isSim) {
 				//if in the GUI, show a dialog too
 				if (MonoDevelop.Ide.IdeApp.IsInitialized)
 					Gtk.Application.Invoke (delegate { IPhoneFramework.ShowSimOnlyDialog (); } );
@@ -71,12 +71,12 @@ namespace MonoDevelop.IPhone
 			
 			var result = new BuildResult ();
 			
-			var sdkVersion = conf.MtouchSdkVersion.ResolveIfDefault ();
+			var sdkVersion = conf.MtouchSdkVersion.ResolveIfDefault (isSim);
 			
-			if (!IPhoneFramework.SdkIsInstalled (sdkVersion)) {
-				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
+			if (!IPhoneFramework.SdkIsInstalled (sdkVersion, isSim)) {
+				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion, isSim);
 				
-				if (sdkVersion.IsUseDefault || !IPhoneFramework.SdkIsInstalled (sdkVersion)) {
+				if (sdkVersion.IsUseDefault || !IPhoneFramework.SdkIsInstalled (sdkVersion, isSim)) {
 					if (conf.MtouchSdkVersion.IsUseDefault)
 						result.AddError (
 							string.Format ("The Apple iPhone SDK is not installed."));
@@ -93,7 +93,12 @@ namespace MonoDevelop.IPhone
 			}
 			
 			IPhoneAppIdentity identity = null;
-			if (isDevice) {
+			if (isSim) {
+				identity = new IPhoneAppIdentity () {
+					BundleID = !string.IsNullOrEmpty (proj.BundleIdentifier)?
+						proj.BundleIdentifier : GetDefaultBundleID (proj, null)
+				};
+			} else {
 				monitor.BeginTask (GettextCatalog.GetString ("Detecting signing identity..."), 0);
 				if ((result = GetIdentity (monitor, proj, conf, out identity).Append (result)).ErrorCount > 0)
 					return result;
@@ -101,11 +106,6 @@ namespace MonoDevelop.IPhone
 				monitor.Log.WriteLine ("Signing Identity: \"{0}\"", Keychain.GetCertificateCommonName (identity.SigningKey));
 				monitor.Log.WriteLine ("App ID: \"{0}\"", identity.AppID);
 				monitor.EndTask ();
-			} else {
-				identity = new IPhoneAppIdentity () {
-					BundleID = !string.IsNullOrEmpty (proj.BundleIdentifier)?
-						proj.BundleIdentifier : GetDefaultBundleID (proj, null)
-				};
 			}
 			
 			result = base.Build (monitor, item, configuration).Append (result);
@@ -131,7 +131,7 @@ namespace MonoDevelop.IPhone
 				args.Add ("--nomanifest", "--nosign");
 					
 				//FIXME: should we error out if the platform is invalid?
-				if (conf.Platform == IPhoneProject.PLAT_IPHONE) {
+				if (conf.IsDevicePlatform) {
 					args.Add ("-dev");
 					args.AddQuoted (conf.AppDirectory);
 				} else {
@@ -224,7 +224,7 @@ namespace MonoDevelop.IPhone
 		
 		static BuildResult UnpackContent (IProgressMonitor monitor, IPhoneProjectConfiguration cfg, List<string> assemblies)
 		{
-			bool isDevice = cfg.Platform == IPhoneProject.PLAT_IPHONE;
+			bool isDevice = cfg.IsDevicePlatform;
 			
 			//remove framework references, they don't contain embedded content
 			List<string> toProcess = new List<string> ();
@@ -410,14 +410,14 @@ namespace MonoDevelop.IPhone
 				if (dict == null)
 					doc.Root = dict = new PlistDictionary ();
 				
-				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
+				bool sim = conf.IsSimPlatform;
 				bool v3_2_orNewer = sdkVersion >= IPhoneSdkVersion.V3_2;
 				bool v3_1_orNewer = sdkVersion >= IPhoneSdkVersion.V3_1;
 				bool v4_0_orNewer = sdkVersion >= IPhoneSdkVersion.V4_0;
 				bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 				bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 				
-				var sdkSettings = IPhoneFramework.GetSdkSettings (sdkVersion);
+				var sdkSettings = IPhoneFramework.GetSdkSettings (sdkVersion, sim);
 				var dtSettings = IPhoneFramework.GetDTSettings ();
 				
 				SetIfNotPresent (dict, "BuildMachineOSBuild", dtSettings.BuildMachineOSBuild);
@@ -612,7 +612,7 @@ namespace MonoDevelop.IPhone
 			if (!Directory.Exists (conf.AppDirectory))
 				return true;
 			
-			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			bool isDevice = conf.IsDevicePlatform;
 			if (isDevice && !File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
 				return true;
 			
@@ -750,6 +750,8 @@ namespace MonoDevelop.IPhone
 			var cfg = (IPhoneProjectConfiguration) buildData.Configuration;
 			var projFiles = buildData.Items.OfType<ProjectFile> ();
 			
+			bool isSim = cfg.IsSimPlatform;
+			
 			if (proj.CompileTarget == CompileTarget.Library) {
 				if (IPhoneFramework.MonoTouchVersion < new IPhoneSdkVersion (3, 99))
 					return base.Compile (monitor, item, buildData);
@@ -765,9 +767,9 @@ namespace MonoDevelop.IPhone
 			
 			string appDir = cfg.AppDirectory;
 			
-			var sdkVersion = cfg.MtouchSdkVersion.ResolveIfDefault ();
-			if (!IPhoneFramework.SdkIsInstalled (sdkVersion))
-				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
+			var sdkVersion = cfg.MtouchSdkVersion.ResolveIfDefault (isSim);
+			if (!IPhoneFramework.SdkIsInstalled (sdkVersion, isSim))
+				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion, isSim);
 			
 			var result = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, projFiles);
 			if (result.ErrorCount > 0)
@@ -840,7 +842,7 @@ namespace MonoDevelop.IPhone
 			IPhoneProjectConfiguration conf, IPhoneAppIdentity identity)
 		{
 			//don't bother signing in the sim
-			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			bool isDevice = conf.IsDevicePlatform;
 			if (!isDevice)
 				return null;
 			

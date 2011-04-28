@@ -90,8 +90,8 @@ namespace MonoDevelop.IPhone
 			if (forceTarget != null) {
 				var version = forceTarget.Version;
 				
-				if (!version.IsUseDefault && !IPhoneFramework.SdkIsInstalled (version)) {
-					version = IPhoneFramework.GetClosestInstalledSdk (version);
+				if (!version.IsUseDefault && !IPhoneFramework.SdkIsInstalled (version, true)) {
+					version = IPhoneFramework.GetClosestInstalledSdk (version, true);
 					LoggingService.LogWarning ("iOS SDK '{0}' not installed, falling back to simulator '{1}'",
 						forceTarget.Version, version);
 				}

@@ -228,7 +228,7 @@ namespace MonoDevelop.IPhone
 			if (mtouchDebugData == null || string.IsNullOrEmpty (mtouchDebugData.Value)) {
 				if (Name == "Debug") {
 					MtouchDebug = true;
-					if (Platform == IPhoneProject.PLAT_SIM)
+					if (IsSimPlatform)
 						MtouchLink = MtouchLinkMode.None;
 				}
 				if (argsToMigrate != null && string.IsNullOrEmpty (argsToMigrate.Value)) {
@@ -250,6 +250,10 @@ namespace MonoDevelop.IPhone
 				return ParentItem.BaseDirectory.Combine ("obj", this.Name);
 			}
 		}
+		
+		public bool IsSimPlatform { get { return Platform == IPhoneProject.PLAT_SIM; } }
+		
+		public bool IsDevicePlatform { get { return Platform == IPhoneProject.PLAT_IPHONE; } }
 	}
 	
 	public enum MtouchLinkMode
