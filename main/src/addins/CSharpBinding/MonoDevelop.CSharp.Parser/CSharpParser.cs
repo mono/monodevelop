@@ -1490,9 +1490,18 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override object Visit (LocalVariableReference localVariableReference)
 			{
-				return CreateIdentifier (localVariableReference.Name, Convert (localVariableReference.Location));;
+				return CreateIdentifier (localVariableReference.Name, Convert (localVariableReference.Location));
 			}
-
+			
+			public override object Visit (QualifiedAliasMember qualifiedAliasMember)
+			{
+				var result = new MonoDevelop.CSharp.Ast.MemberType ();
+				result.Target = new SimpleType (qualifiedAliasMember.alias);
+				result.IsDoubleColon = true;
+				result.AddChild (new Identifier (qualifiedAliasMember.Name, Convert (qualifiedAliasMember.Location)), MemberReferenceExpression.Roles.Identifier);
+				return new TypeReferenceExpression () { Type = result };
+			}
+			
 			public override object Visit (MemberAccess memberAccess)
 			{
 				var result = new MemberReferenceExpression ();

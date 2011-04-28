@@ -129,6 +129,7 @@ namespace MonoDevelop.CSharp.Ast
 		S VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, T data);
 		S VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, T data);
 		S VisitVariableInitializer(VariableInitializer variableInitializer, T data);
+		S VisitTypeReferenceExpression (TypeReferenceExpression typeReferenceExpression, T data);
 		
 		S VisitCompilationUnit(CompilationUnit compilationUnit, T data);
 		S VisitSimpleType(SimpleType simpleType, T data);

@@ -77,6 +77,7 @@ FILES =  \
 	MonoDevelop.CSharp.Ast/Expressions/StackAllocExpression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/ThisReferenceExpression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/TypeOfExpression.cs \
+	MonoDevelop.CSharp.Ast/Expressions/TypeReferenceExpression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/UnaryOperatorExpression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/UncheckedExpression.cs \
 	MonoDevelop.CSharp.Ast/GeneralScope/Attribute.cs \

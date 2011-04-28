@@ -510,9 +510,14 @@ namespace MonoDevelop.CSharp.Ast
 			return VisitChildren (queryOrderClause, data);
 		}
 		
-		public virtual S VisitQueryOrdering(QueryOrdering queryOrdering, T data)
+		public virtual S VisitQueryOrdering (QueryOrdering queryOrdering, T data)
 		{
 			return VisitChildren (queryOrdering, data);
+		}
+		
+		public virtual S VisitTypeReferenceExpression (TypeReferenceExpression typeReferenceExpression, T data)
+		{
+			return VisitChildren (typeReferenceExpression, data);
 		}
 		
 		public virtual S VisitQuerySelectClause(QuerySelectClause querySelectClause, T data)
