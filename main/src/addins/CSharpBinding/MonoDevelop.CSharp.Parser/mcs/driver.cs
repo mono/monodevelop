@@ -442,9 +442,9 @@ namespace Mono.CSharp
 					unit.NamespaceContainer = new NamespaceContainer (null, module, null, unit);
 					files.Add (unit);
 					Location.Initialize (files);
-
+					
 					// TODO: encoding from driver
-					SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
+					SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.UTF8);
 				
 					RootContext.ToplevelTypes = module;
 					

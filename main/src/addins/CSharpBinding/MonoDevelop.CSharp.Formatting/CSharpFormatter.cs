@@ -123,15 +123,18 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			data.Text = input;
 
-			//System.Console.WriteLine ("-----");
-			//System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
-			//System.Console.WriteLine ("-----");
+//			System.Console.WriteLine ("-----");
+//			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
+//			System.Console.WriteLine ("-----");
 
 			MonoDevelop.CSharp.Parser.CSharpParser parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var compilationUnit = parser.Parse (data);
 			bool hadErrors = parser.HasErrors;
-			if (hadErrors)
-				return null;
+			if (hadErrors) {
+//				foreach (var e in parser.ErrorReportPrinter.Errors)
+//					Console.WriteLine (e.Message);
+				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
+			}
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 
 			var formattingVisitor = new AstFormattingVisitor (policy, data) {
