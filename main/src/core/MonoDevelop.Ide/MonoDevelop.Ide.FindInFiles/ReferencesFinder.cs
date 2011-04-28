@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					monitor.BeginTask (GettextCatalog.GetString ("Search reference in project..."), dom.Project.Files.Count);
 				int counter = 0;
 				foreach (var file in dom.Project.Files) {
-					if (monitor.IsCancelRequested)
+					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					yield return Tuple.Create (dom, file.FilePath);
 					if (monitor != null) {
@@ -105,11 +105,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (monitor != null)
 					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
 				foreach (var project in solution.GetAllProjects ()) {
-					if (monitor.IsCancelRequested)
+					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					var currentDom = ProjectDomService.GetProjectDom (project);
 					foreach (var file in project.Files) {
-						if (monitor.IsCancelRequested)
+						if (monitor != null && monitor.IsCancelRequested)
 							yield break;
 						yield return Tuple.Create (currentDom, file.FilePath);
 					}
@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			ReferenceFinder finder = null;
 			
 			foreach (var info in GetFileNames (solution, dom, unit, member, monitor)) {
-				if (monitor.IsCancelRequested)
+				if (monitor != null && monitor.IsCancelRequested)
 					yield break;
 				string mime = DesktopService.GetMimeTypeForUri (info.Item2);
 				bool runReferenceFinder = false;
@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (finder == null)
 					continue;
 				foreach (var foundReference in finder.FindReferences (info.Item1, info.Item2, searchNodes)) {
-					if (monitor.IsCancelRequested)
+					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					yield return foundReference;
 				}
