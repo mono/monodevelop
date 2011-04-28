@@ -84,12 +84,21 @@ namespace MonoDevelop.IPhone
 			cb.AddQuotedFormat ("-launchsim={0}", cmd.AppPath);
 			if (logSimOutput) {
 				cb.AddQuotedFormat ("-stderr={0}", errLog);
-				cb.AddQuotedFormat ("-stdout={1}", outLog);
+				cb.AddQuotedFormat ("-stdout={0}", outLog);
 			}
 			
 			if (forceTarget != null) {
-				if (!forceTarget.Version.IsUseDefault)
+				var version = forceTarget.Version;
+				
+				if (!version.IsUseDefault && !IPhoneFramework.SdkIsInstalled (version)) {
+					version = IPhoneFramework.GetClosestInstalledSdk (version);
+					LoggingService.LogWarning ("iOS SDK '{0}' not installed, falling back to simulator '{1}'",
+						forceTarget.Version, version);
+				}
+				
+				if (!version.IsUseDefault)
 					cb.AddQuotedFormat ("-sdk={0}", forceTarget.Version);
+				
 				if (forceTarget.Device == TargetDevice.IPad)
 					cb.Add ("-device=2");
 			}
