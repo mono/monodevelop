@@ -36,6 +36,7 @@ namespace MonoDevelop.Core.Text
 
 		readonly bool[] filterTextLowerCaseTable;
 		readonly bool[] filterIsNonLetter;
+		readonly bool[] filterIsDigit;
 		readonly string filterText;
 
 		int[] cachedResult;
@@ -46,9 +47,11 @@ namespace MonoDevelop.Core.Text
 			if (filterText != null) {
 				filterTextLowerCaseTable = new bool[filterText.Length];
 				filterIsNonLetter = new bool[filterText.Length];
+				filterIsDigit = new bool[filterText.Length];
 				for (int i = 0; i < filterText.Length; i++) {
-					filterTextLowerCaseTable[i] = char.IsLower (filterText[i]);
-					filterIsNonLetter[i] = !char.IsLetter (filterText[i]);
+					filterTextLowerCaseTable [i] = char.IsLower (filterText [i]);
+					filterIsNonLetter [i] = !char.IsLetterOrDigit (filterText [i]);
+					filterIsDigit [i] = char.IsDigit (filterText [i]);
 				}
 				
 				filterTextUpperCase = filterText.ToUpper ();
@@ -85,33 +88,32 @@ namespace MonoDevelop.Core.Text
 
 		int GetMatchChar (string text, int i, int j, bool onlyWordStart)
 		{
-			char filterChar = filterTextUpperCase[i];
+			char filterChar = filterTextUpperCase [i];
 			// filter char is no letter -> next char should match it - see Bug 674512 - Space doesn't commit generics
-			if (filterIsNonLetter[i]) {
-				if (filterChar == text[j])
+			if (filterIsNonLetter [i]) {
+				if (filterChar == text [j])
 					return j;
 				return -1;
 			}
-			
 			// letter case
-			bool textCharIsUpper = char.IsUpper (text[j]);
-			if (!onlyWordStart && filterChar == (textCharIsUpper ? text[j] : char.ToUpper (text[j]))) {
+			bool textCharIsUpper = char.IsUpper (text [j]);
+			if (!onlyWordStart && filterChar == (textCharIsUpper ? text [j] : char.ToUpper (text [j]))) {
 				// cases don't match. Filter is upper char & letter is low, now prefer the match that does the word skip.
-				if (!(textCharIsUpper || filterTextLowerCaseTable[i]) && j + 1 < text.Length) {
+				if (!(textCharIsUpper || filterTextLowerCaseTable [i]) && j + 1 < text.Length) {
 					int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart);
 					if (possibleBetterResult >= 0)
 						return possibleBetterResult;
 				}
 				return j;
 			}
-			
+			bool filterCharIsDigit = filterIsDigit [i];
 			// no match, try to continue match at the next word start
 			j++;
 			for (; j < text.Length; j++) {
 				// word start is either a upper case letter (FooBar) or a char that follows a non letter
 				// like foo:bar 
-				if (char.IsUpper (text[j]) && filterChar == text[j] || 
-					(filterChar == char.ToUpper (text[j]) && j > 0 && !char.IsLetterOrDigit (text[j - 1])))
+				if ((char.IsUpper (text [j]) || filterCharIsDigit) && filterChar == text [j] || 
+					(filterChar == char.ToUpper (text [j]) && j > 0 && !char.IsLetterOrDigit (text [j - 1])))
 					return j;
 			}
 			return -1;
