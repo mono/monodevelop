@@ -420,6 +420,10 @@ namespace MonoDevelop.IPhone
 						TargetDevice.IPad : TargetDevice.IPhone;
 					simTarget = new IPhoneSimulatorTarget (defaultDevice, conf.MtouchSdkVersion.ResolveIfDefault ());
 				}
+				if (!IPhoneFramework.SdkIsInstalled (simTarget.Version)) {
+					var newTarget = IPhoneFramework.GetClosestInstalledSdk (simTarget.Version);
+					simTarget = new IPhoneSimulatorTarget (simTarget.Device, newTarget);
+				}
 			}
 			
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
