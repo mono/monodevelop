@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="Community" copyright="???" url="http://www.fsharp.net"
-       description="F# Language Binding" category="Language bindings" version="2.4">
+       description="F# Language Binding" category="Language bindings" version="2.6">
 
   <Runtime>
     <Import assembly="FSharpBinding.dll" />
@@ -10,6 +10,10 @@
     <Import assembly="FSharp.Build.dll" />
     <Import assembly="FSharp.Compiler.Interactive.Settings.dll" />
     <Import assembly="FSharp.Core.dll" />
+    <Import file="fsc.exe" />
+    <Import file="fsi.exe" />
+    <Import file="FSharp.Core.optdata" />
+    <Import file="FSharp.Core.sigdata" />
   </Runtime>
 
 	<Dependencies>
@@ -124,10 +128,18 @@
     <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="FSharp.MonoDevelop.FSharpTextEditorCompletion" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+    <Class class = "FSharp.MonoDevelop.FSharpProjectServiceExtension" />
+  </Extension>
+
   <!-- F# interactive -->
   
   <Extension path="/MonoDevelop/Ide/Pads">
     <Pad id="FSharp.MonoDevelop.FSharpInteractivePad" defaultLayout="*" defaultPlacement="Bottom" _label="F# Interactive" icon="md-fs-project" class="FSharp.MonoDevelop.FSharpInteractivePad" />
+  </Extension>
+  
+  <Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+    <NodeBuilder class = "FSharp.MonoDevelop.FSharpProjectFileNodeExtension"/>
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/Commands">
