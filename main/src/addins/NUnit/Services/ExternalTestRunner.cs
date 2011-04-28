@@ -118,17 +118,19 @@ namespace MonoDevelop.NUnit.External
 		
 		public void SuiteFinished (TestSuiteResult result)
 		{
-			wrapped.SuiteFinished (GetTestName (result.Test.TestName), GetLocalTestResult (result));
+			testSuites.Pop ();
+			wrapped.SuiteFinished (GetTestName (result.Test), GetLocalTestResult (result));
 		}
-		
+		Stack<string> testSuites = new Stack<string>();
 		public void SuiteStarted (TestName suite)
 		{
+			testSuites.Push (suite.FullName);
 			wrapped.SuiteStarted (GetTestName (suite));
 		}
 		
 		public void TestFinished (TestCaseResult result)
 		{
-			wrapped.TestFinished (GetTestName (result.Test.TestName), GetLocalTestResult (result));
+			wrapped.TestFinished (GetTestName (result.Test), GetLocalTestResult (result));
 		}
 		
 		public void TestOutput (TestOutput testOutput)
@@ -153,6 +155,19 @@ namespace MonoDevelop.NUnit.External
 		public override object InitializeLifetimeService ()
 		{
 			return null;
+		}
+		
+		string GetTestName (ITest t)
+		{
+			if (t == null)
+				return null;
+			// Theoretically t.TestName.FullName should work, but when a test class inherits from a base
+			// class that contains tests the full name is that one of the base class, which is wrong.
+			// I suspect that is a NUnit bug, when this is fixed this code should be overworked and the testSuites stack be removed.
+			// see: Bug 677228 - RemotingException isn't counted as failure
+			if (t.TestType != "Test Case" || testSuites.Count == 0)
+				return t.TestName.FullName;
+			return testSuites.Peek () + "." + t.TestName.Name;
 		}
 		
 		public string GetTestName (TestName t)

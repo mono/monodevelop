@@ -239,12 +239,13 @@ namespace MonoDevelop.NUnit
 		
 		void FillTests (NunitTestInfo ti)
 		{
-			if (ti.Tests == null) return;
+			if (ti.Tests == null)
+				return;
 			foreach (NunitTestInfo test in ti.Tests) {
 				if (test.Tests != null)
 					Tests.Add (new NUnitTestSuite (this, test));
 				else
-					Tests.Add (new NUnitTestCase (this, test));
+					Tests.Add (new NUnitTestCase (this, test, test.PathName));
 			}
 			oldList = new UnitTest [Tests.Count];
 			Tests.CopyTo (oldList, 0);
@@ -324,7 +325,7 @@ namespace MonoDevelop.NUnit
 		
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
-			return RunUnitTest (this, "", null, testContext);
+			return RunUnitTest (this, "", "", null, testContext);
 		}
 		
 		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
@@ -332,15 +333,14 @@ namespace MonoDevelop.NUnit
 			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
 		}
 		
-		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, string testName, TestContext testContext)
+		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
 		{
 			ExternalTestRunner runner = (ExternalTestRunner) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext);
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName, testName != null);
 			
 			ITestFilter filter = null;
-			
 			if (testName != null) {
-				filter = new TestNameFilter (suiteName + "." + testName);
+				filter = new TestNameFilter (pathName + "." + testName);
 			} else {
 				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
 				if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
