@@ -90,11 +90,21 @@ namespace MonoDevelop.CSharp.Completion
 				policy = dom.Project.Policies.Get<CSharpFormattingPolicy> (types);
 			UpdatePath (null, null);
 			textEditorData.Caret.PositionChanged += UpdatePath;
-			Document.DocumentParsed += delegate {
-				UpdatePath (null, null);
-			};
+			Document.DocumentParsed += HandleDocumentDocumentParsed;
 		}
 
+		void HandleDocumentDocumentParsed (object sender, EventArgs e)
+		{
+			UpdatePath (null, null);
+		}
+
+		public override void Dispose ()
+		{
+			textEditorData.Caret.PositionChanged -= UpdatePath;
+			Document.DocumentParsed -= HandleDocumentDocumentParsed;
+			base.Dispose ();
+		}
+		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
 			return System.IO.Path.GetExtension (doc.Name) == ".cs";
