@@ -1843,7 +1843,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				bool isQuoted = name != null ? name.StartsWith ("@") : false;
 				string id = isQuoted ? name.Substring (1) : name;
-				return new Identifier (id, loc) { IsQuoted = isQuoted };
+				return new Identifier (id ?? "", loc) { IsQuoted = isQuoted };
 			}
 			
 			void AddTypeParameters (AstNode parent, List<Location> location, Mono.CSharp.TypeArguments typeArguments)
