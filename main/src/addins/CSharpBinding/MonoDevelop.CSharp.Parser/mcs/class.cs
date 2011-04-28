@@ -1148,16 +1148,19 @@ namespace Mono.CSharp
 
 				GenericMethod generic_method;
 				MemberName member_name;
+				TypeArguments targs = null;
 				if (method.IsGeneric) {
 					//
 					// Copy all base generic method type parameters info
 					//
 					var hoisted_tparams = method.GenericDefinition.TypeParameters;
-					var targs = new TypeArguments ();
 					var type_params = new TypeParameter[hoisted_tparams.Length];
+					targs = new TypeArguments ();
+					targs.Arguments = new TypeSpec[type_params.Length];
 					for (int i = 0; i < type_params.Length; ++i) {
 						var tp = hoisted_tparams[i];
 						targs.Add (new TypeParameterName (tp.Name, null, Location));
+						targs.Arguments[i] = tp;
 						type_params[i] = new TypeParameter (tp, this, null, new MemberName (tp.Name), null);
 					}
 
@@ -1178,6 +1181,8 @@ namespace Mono.CSharp
 
 				var mg = MethodGroupExpr.CreatePredefined (method, method.DeclaringType, Location);
 				mg.InstanceExpression = new BaseThis (method.DeclaringType, Location);
+				if (targs != null)
+					mg.SetTypeArguments (rc, targs);
 
 				// Get all the method parameters and pass them as arguments
 				var real_base_call = new Invocation (mg, block.GetAllParametersArguments ());
@@ -1797,13 +1802,13 @@ namespace Mono.CSharp
 							continue;
 						}
 						
+						if ((f.caching_flags & Flags.IsAssigned) != 0)
+							continue;
+
 						//
 						// Only report 649 on level 4
 						//
 						if (Report.WarningLevel < 4)
-							continue;
-						
-						if ((f.caching_flags & Flags.IsAssigned) != 0)
 							continue;
 
 						//
@@ -1813,8 +1818,24 @@ namespace Mono.CSharp
 							continue;
 						
 						Constant c = New.Constantify (f.MemberType, f.Location);
-						Report.Warning (649, 4, f.Location, "Field `{0}' is never assigned to, and will always have its default value `{1}'",
-							f.GetSignatureForError (), c == null ? "null" : c.GetValueAsLiteral ());
+						string value;
+						if (c != null) {
+							value = c.GetValueAsLiteral ();
+						} else if (TypeSpec.IsReferenceType (f.MemberType)) {
+							value = "null";
+						} else {
+							// Ignore this warning for struct value fields (they are always initialized)
+							if (f.MemberType.IsStruct)
+								continue;
+
+							value = null;
+						}
+
+						if (value != null)
+							value = " `" + value + "'";
+
+						Report.Warning (649, 4, f.Location, "Field `{0}' is never assigned to, and will always have its default value{1}",
+							f.GetSignatureForError (), value);
 					}
 				}
 			}

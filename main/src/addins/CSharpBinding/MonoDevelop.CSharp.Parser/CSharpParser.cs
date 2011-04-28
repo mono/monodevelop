@@ -1498,8 +1498,9 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new MonoDevelop.CSharp.Ast.MemberType ();
 				result.Target = new SimpleType (qualifiedAliasMember.alias, Convert (qualifiedAliasMember.Location));
 				result.IsDoubleColon = true;
-				result.AddChild (new Identifier (qualifiedAliasMember.Name, Convert (qualifiedAliasMember.Location)), MemberReferenceExpression.Roles.Identifier);
-				return new TypeReferenceExpression () { Type = result };
+				var location = LocationsBag.GetLocations (qualifiedAliasMember);
+				result.AddChild (new Identifier (qualifiedAliasMember.Name, location != null ? Convert (location [0]) : AstLocation.Empty), MemberReferenceExpression.Roles.Identifier);
+				return  new TypeReferenceExpression () { Type = result };
 			}
 			
 			public override object Visit (MemberAccess memberAccess)
