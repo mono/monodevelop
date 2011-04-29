@@ -1203,6 +1203,9 @@ namespace Mono.Debugging.Soft
 				}
 			}
 			
+			for (int n=0; n<sourceFiles.Length; n++)
+				sourceFiles[n] = NormalizePath (sourceFiles[n]);
+			
 			foreach (string s in sourceFiles) {
 				List<TypeMirror> typesList;
 				
@@ -1250,6 +1253,14 @@ namespace Mono.Debugging.Soft
 				pending_bes.Remove (be);
 		}
 		
+		internal static string NormalizePath (string path)
+		{
+			if (!IsWindows && path.StartsWith ("\\"))
+				return path.Replace ('\\','/');
+			else
+				return path;
+		}
+		
 		string PathToFileName (string path)
 		{
 			if (useFullPaths)
@@ -1273,7 +1284,7 @@ namespace Mono.Debugging.Soft
 				int rangeLastLine = -1;
 				
 				foreach (Location l in m.Locations) {
-					if (PathComparer.Compare (PathToFileName (l.SourceFile), file) == 0) {
+					if (PathComparer.Compare (PathToFileName (NormalizePath (l.SourceFile)), file) == 0) {
 						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
 						// pick the L+1 location, since that's where the debugger is going to stop.
 						if (l.LineNumber == line) {
@@ -1443,7 +1454,7 @@ namespace Mono.Debugging.Soft
 			List<AssemblyLine> lines = new List<AssemblyLine> ();
 			foreach (TypeMirror type in types) {
 				foreach (MethodMirror met in type.GetMethods ()) {
-					if (!PathsAreEqual (met.SourceFile, file))
+					if (!PathsAreEqual (NormalizePath (met.SourceFile), file))
 						continue;
 					var body = met.GetMethodBody ();
 					int lastLine = -1;
