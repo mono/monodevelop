@@ -773,10 +773,8 @@ namespace MonoDevelop.CSharp.Completion
 			if (typeString.Contains ("."))
 				completionList.Add (typeString, resolvedType.StockIcon);
 			foreach (var field in resolvedType.Fields) {
-				if (field.IsSpecialName)
-					continue;
-				
-				completionList.Add (typeString + "." + field.Name, field.StockIcon);
+				if (field.IsConst || field.IsStatic)
+					completionList.Add (typeString + "." + field.Name, field.StockIcon);
 			}
 			completionList.DefaultCompletionString = typeString;
 		}

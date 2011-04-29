@@ -3415,5 +3415,38 @@ namespace N1
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 690606 - Incomplete subclasses listing in code completion
+
+
+		/// <summary>
+		/// Bug 690606 - Incomplete subclasses listing in code completion
+		/// </summary>
+		[Test()]
+		public void TestBug690606 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+public abstract class Base {}
+public abstract class MyBase<T> : Base {}
+public class A : MyBase<string> {}
+public class B : MyBase<int> {}
+public class C : MyBase<bool> {}
+
+public class Test
+{
+	public static void Main (string[] args)
+	{
+		$Base x = new $
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("A"), "class 'A' not found.");
+			Assert.IsNotNull (provider.Find ("B"), "class 'B' not found.");
+			Assert.IsNotNull (provider.Find ("C"), "class 'C' not found.");
+		}
 	}
 }
