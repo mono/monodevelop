@@ -104,6 +104,18 @@ namespace MonoDevelop.MonoDroid
 				mandroidI18n = value;
 			}
 		}
+
+		[ItemProperty ("AndroidSupportedAbis", DefaultValue=null)]
+		string supportedAbis;
+
+		public string SupportedAbis {
+			get { return supportedAbis; }
+			set {
+				if (String.IsNullOrEmpty (value))
+					value = null;
+				supportedAbis = value;
+			}
+		}
 		
 		public string PackageName {
 			get {
@@ -149,6 +161,7 @@ namespace MonoDevelop.MonoDroid
 			monoDroidLinkMode = cfg.monoDroidLinkMode;
 			androidUseSharedRuntime = cfg.androidUseSharedRuntime;
 			mandroidI18n = cfg.mandroidI18n;
+			supportedAbis = cfg.supportedAbis;
 		}
 	}
 	
