@@ -227,7 +227,7 @@ namespace MonoDevelop.MonoDroid
 
 		protected override void Run ()
 		{
-			if (!MonoDroidFramework.EnsureSdksInstalled ())
+			if (!MonoDroidFramework.EnsureSdksInstalled () || !MonoDroidFramework.CheckTrial ())
 				return;
 			
 			var configSel = IdeApp.Workspace.ActiveConfiguration;
