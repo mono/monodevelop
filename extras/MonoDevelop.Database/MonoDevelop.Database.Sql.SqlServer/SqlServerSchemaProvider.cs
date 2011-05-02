@@ -185,7 +185,6 @@ using MonoDevelop.Core;
 										else 
 											table.IsSystemTable = false;
 									table.OwnerName = r.GetString(0);
-									table.Definition = GetTableDefinition (table);
 									tables.Add (table);
 								}
 								r.Close ();
