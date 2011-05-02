@@ -31,6 +31,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs \
 	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
 	MonoDevelop.SourceEditor/MarkerOperationsHandler.cs \
+	MonoDevelop.SourceEditor/MessageBubbleCache.cs \
 	MonoDevelop.SourceEditor/MessageBubbleCommands.cs \
 	MonoDevelop.SourceEditor/MessageBubbleHighlightPopupWindow.cs \
 	MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs \

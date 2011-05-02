@@ -154,7 +154,7 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
 				UpdateBreakpoints ();
-				if (MessageBubbleTextMarker.RemoveLine (e.Line)) {
+				if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
 					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
 					if (marker != null) {
 						double oldHeight = marker.lastHeight;
@@ -296,16 +296,18 @@ namespace MonoDevelop.SourceEditor
 			this.TextEditor.QueueDraw ();
 		}
 		
+		MessageBubbleCache messageBubbleCache;
 		List<MessageBubbleTextMarker> currentErrorMarkers = new List<MessageBubbleTextMarker> ();
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
 			Task[] tasks = TaskService.Errors.GetFileTasks (ContentName);
 			if (tasks == null)
 				return;
-			DisposeErrorMarkers ();
+			DisposeErrorMarkers (); // disposes messageBubbleCache as well.
 			if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.Never)
 				return;
 			widget.Document.BeginAtomicUndo ();
+			messageBubbleCache = new MessageBubbleCache (widget.TextEditor);
 			
 			foreach (Task task in tasks) {
 				if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
@@ -319,10 +321,10 @@ namespace MonoDevelop.SourceEditor
 						marker.AddError (task.Severity == TaskSeverity.Error, task.Description);
 						continue;
 					}
-					MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (widget.TextEditor, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
+					MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
 					currentErrorMarkers.Add (errorTextMarker);
 					
-					errorTextMarker.IsVisible = !IdeApp.Preferences.DefaultHideMessageBubbles;
+					errorTextMarker.IsVisible =  !IdeApp.Preferences.DefaultHideMessageBubbles;
 					widget.Document.AddMarker (lineSegment, errorTextMarker, false);
 				}
 			}
@@ -337,6 +339,10 @@ namespace MonoDevelop.SourceEditor
 				em.Dispose ();
 			});
 			currentErrorMarkers.Clear ();
+			if (messageBubbleCache != null) {
+				messageBubbleCache.Dispose ();
+				messageBubbleCache = null;
+			}
 		}
 		
 		public override void Save (string fileName)
