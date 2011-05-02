@@ -46,6 +46,7 @@ namespace MonoDevelop.MonoDroid
 		SelectDeviceTarget,
 		ManageDevices,
 		OpenAvdManager,
+		CreateAndroidPackage,
 		PublishApplication
 	}
 	
@@ -181,6 +182,35 @@ namespace MonoDevelop.MonoDroid
 				return;
 
 			MonoDroidFramework.Toolbox.StartAvdManager ();
+		}
+	}
+
+	class CreatePackageHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			info.Visible = info.Enabled = proj != null;
+		}
+
+		protected override void Run ()
+		{
+			if (!MonoDroidFramework.EnsureSdksInstalled ())
+				return;
+			
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			var configSel = IdeApp.Workspace.ActiveConfiguration;
+			
+			OperationHandler createApk = delegate {
+				using (var monitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor ()) {
+					MonoDroidUtility.SignAndCopy (monitor, proj, configSel);
+				}
+			};
+			
+			if (proj.NeedsBuilding (configSel))
+				IdeApp.ProjectOperations.Build (proj).Completed += createApk;
+			else
+				createApk (null);
 		}
 	}
 	

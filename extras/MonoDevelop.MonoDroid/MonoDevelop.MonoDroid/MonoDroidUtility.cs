@@ -193,6 +193,68 @@ namespace MonoDevelop.MonoDroid
 			return op;
 		}
 
+		public static IAsyncOperation SignAndCopy (IProgressMonitor monitor, MonoDroidProject project,
+			ConfigurationSelector configSel)
+		{
+			var conf = project.GetConfiguration (configSel);
+			var opMon = new AggregatedOperationMonitor (monitor);
+
+			IAsyncOperation signOp = null;
+			if (project.PackageNeedsSigning (configSel)) {
+				ClearUploadFlags (conf);
+				signOp = project.SignPackage (configSel);
+				opMon.AddOperation (signOp);
+			}
+
+			string packageName = project.GetPackageName (conf);
+			string targetFile = InvokeSynch (() => ChooseApkLocation (null, project.BaseDirectory, packageName));
+			if (String.IsNullOrEmpty (targetFile)) {
+				opMon.Dispose ();
+				return null;
+			}
+
+			if (MonoDroidFramework.CheckTrial ()) {
+				opMon.Dispose ();
+				return null;
+			}
+
+			var copy = CopyApk (signOp, conf.ApkSignedPath, targetFile);
+			copy.Completed += delegate {
+				opMon.Dispose ();
+			};
+
+			return copy;
+		}
+
+		static IAsyncOperation CopyApk (IAsyncOperation signOp, string srcApk, string destApk)
+		{
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				GettextCatalog.GetString ("Create Android Package"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
+
+			var chop = new ChainedAsyncOperationSequence (monitor,
+				new ChainedAsyncOperation () {
+					TaskName = "Waiting for package creation to complete",
+					Skip = () => signOp == null || signOp.IsCompleted ? "" : null,
+					Create = () => signOp,
+					ErrorMessage = "Package creation failed"
+				},
+				new ChainedAsyncOperation () {
+					TaskName = "Moving package to final destination",
+					Create = () => {
+						File.Copy (srcApk, destApk, true);
+						return Core.Execution.NullProcessAsyncOperation.Success;
+					},
+					ErrorMessage = "Error moving package to final destination"
+				}
+			);
+			chop.Completed += delegate {
+				monitor.Dispose ();
+			};
+
+			chop.Start ();
+			return chop;
+		}
+
 		public static AndroidDevice ChooseDevice (Gtk.Window parent)
 		{
 			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
@@ -201,6 +263,19 @@ namespace MonoDevelop.MonoDroid
 				if (result != (int)Gtk.ResponseType.Ok)
 					return null;
 				return dlg.Device;
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+
+		public static string ChooseApkLocation (Gtk.Window parent, string baseDirectory, string packageName)
+		{
+			var dlg = new MonoDevelop.MonoDroid.Gui.MonoDroidPackageDialog (baseDirectory, packageName);
+			try {
+				var result = MessageService.ShowCustomDialog (dlg, parent);
+				if (result != (int)Gtk.ResponseType.Ok)
+					return String.Empty;
+				return dlg.TargetFile;
 			} finally {
 				dlg.Destroy ();
 			}
