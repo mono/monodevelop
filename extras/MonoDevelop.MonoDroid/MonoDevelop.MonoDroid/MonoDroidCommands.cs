@@ -219,7 +219,10 @@ namespace MonoDevelop.MonoDroid
 		protected override void Update (CommandInfo info)
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
-			info.Visible = info.Enabled = proj != null;
+			var configSel = IdeApp.Workspace.ActiveConfiguration;
+			var conf = proj.GetConfiguration (configSel);
+			info.Visible = proj != null;
+			info.Enabled = proj != null && conf.Name.IndexOf ("debug", StringComparison.OrdinalIgnoreCase) < 0;
 		}
 
 		protected override void Run ()
@@ -227,8 +230,6 @@ namespace MonoDevelop.MonoDroid
 			if (!MonoDroidFramework.EnsureSdksInstalled ())
 				return;
 			
-			// TODO: We may should check the current build profile and
-			// show a warning if we are in a debug mode.
 			var configSel = IdeApp.Workspace.ActiveConfiguration;
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			var conf = proj.GetConfiguration (configSel);
