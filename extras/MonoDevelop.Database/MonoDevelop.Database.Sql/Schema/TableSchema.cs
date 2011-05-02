@@ -107,12 +107,10 @@ namespace MonoDevelop.Database.Sql
 		/// <summary>
 		/// Collection of columns associated with this table.
 		/// </summary>
-		public ColumnSchemaCollection Columns {
-			get {
+		public ColumnSchemaCollection GetColumns() {
 				if (columns == null)
 					columns = provider.GetTableColumns(this);
 				return columns;
-			}
 		}
 		
 		/// <summary>

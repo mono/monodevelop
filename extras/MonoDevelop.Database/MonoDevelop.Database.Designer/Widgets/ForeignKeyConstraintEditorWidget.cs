@@ -266,7 +266,7 @@ namespace MonoDevelop.Database.Designer
 			if (tables.Contains (table)) {
 				refTable = tables.Search (table);
 				if (refTable != null) {
-					referenceColumnSelecter.Initialize (refTable.Columns);
+					referenceColumnSelecter.Initialize (refTable.GetColumns());
 					referenceColumnSelecter.Sensitive = true;
 					store.SetValue (iter, colReferenceTableIndex, table);
 					SetSelectionFromIter (iter);

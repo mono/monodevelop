@@ -190,7 +190,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			TableNode node = (TableNode)state;
 			
-			ColumnSchemaCollection columns = node.Table.Columns; //this can invoke the schema provider, so it must be in bg thread
+			ColumnSchemaCollection columns = node.Table.GetColumns(); 
 			
 			DispatchService.GuiDispatch (delegate () {
 				SelectColumnDialog dlg = new SelectColumnDialog (true, columns);

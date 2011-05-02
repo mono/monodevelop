@@ -705,7 +705,7 @@ namespace MonoDevelop.Database.Sql.MySql
 			sb.Append (table.Name);
 		 	sb.Append (" (");
 			bool first = true;
-			foreach (ColumnSchema column in table.Columns) {
+			foreach (ColumnSchema column in table.GetColumns()) {
 				if (first)
 					first = false;
 				else
