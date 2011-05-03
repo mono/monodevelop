@@ -450,5 +450,73 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			//FIXME: close the project in Xcode
 			DisableSyncing ();
 		}
+		
+		static bool XcodeCheckRunning ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		static void XcodeSaveAllInPath (string path)
+		{
+			MacInterop.AppleScript.Run (XCODE_SAVE_IN_PATH, XCODE_PATH, path);
+		}
+		
+		static bool XcodeCheckProjectOpen (string project)
+		{
+			var ret = MacInterop.AppleScript.Run (XCODE_CHECK_PROJECT_OPEN, XCODE_PATH, project);
+			return ret == "true";
+		}
+		
+		static bool XcodeCloseWorkspaceInPath (string path)
+		{
+			var ret = MacInterop.AppleScript.Run (XCODE_CLOSE_WORKSPACE_IN_PATH, XCODE_PATH, path);
+			return ret == "true";
+		}
+		
+		const string XCODE_PATH = "/Developer/Applications/Xcode.app";
+		
+		const string XCODE_SAVE_IN_PATH =
+@"tell application ""{0}""
+set pp to ""{1}""
+	set ext to {"".xib"", "".h"", "".m""}
+	repeat with d in documents
+		if d is modified then
+			set f to path of d
+			if f starts with pp then
+				repeat with e in ext
+					if f ends with e then
+						save d
+						exit repeat
+					end if
+				end repeat
+			end if
+		end if
+	end repeat
+end tell";
+		
+		const string XCODE_CLOSE_WORKSPACE_IN_PATH =
+@"tell tell application ""{0}""
+	set pp to ""{1}""
+	repeat with d in documents
+		set f to path of d
+		if f starts with pp and f ends with "".xcworkspace"" then
+			close d
+			return true
+		end if
+	end repeat
+	return false
+end tell";
+		
+		const string XCODE_CHECK_PROJECT_OPEN =
+@"tell application ""{0}""
+	set pp to ""{1}""
+	repeat with p in projects
+		if real path of p is pp then
+			return true
+			exit repeat
+		end if
+	end repeat
+	return false
+end tell";
 	}
 }
