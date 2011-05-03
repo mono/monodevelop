@@ -38,9 +38,11 @@ namespace Mono.TextEditor
 				return isFolded;
 			}
 			set {
-				isFolded = value;
-				if (isAttached)
-					doc.InformFoldChanged (new FoldSegmentEventArgs (this));
+				if (isFolded != value) {
+					isFolded = value;
+					if (isAttached)
+						doc.InformFoldChanged (new FoldSegmentEventArgs (this));
+				}
 			}
 		}
 		

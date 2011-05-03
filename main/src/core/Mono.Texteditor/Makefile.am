@@ -92,6 +92,7 @@ FILES =  \
 	Mono.TextEditor/FoldSegment.cs \
 	Mono.TextEditor/GapBuffer.cs \
 	Mono.TextEditor/GutterMargin.cs \
+	Mono.TextEditor/HeightTree.cs \
 	Mono.TextEditor/HelperMethods.cs \
 	Mono.TextEditor/HslColor.cs \
 	Mono.TextEditor/IAnimationDrawer.cs \

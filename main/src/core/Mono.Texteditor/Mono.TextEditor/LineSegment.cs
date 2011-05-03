@@ -29,16 +29,16 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
 	public abstract class LineSegment : ISegment
 	{
-		static readonly IEnumerable<TextMarker> NullMarkers = new TextMarker[0];
 		List<TextMarker> markers;
 		public IEnumerable<TextMarker> Markers {
 			get {
-				return markers ?? NullMarkers;
+				return markers ?? Enumerable.Empty<TextMarker> ();
 			}
 		}
 		public int MarkerCount {

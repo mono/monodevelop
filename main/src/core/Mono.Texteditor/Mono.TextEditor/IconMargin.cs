@@ -118,7 +118,7 @@ namespace Mono.TextEditor
 			ctx.Color = separatorColor;
 			ctx.Stroke ();
 			
-			if (line <= editor.Document.LineCount) {
+			if (lineSegment != null && line <= editor.Document.LineCount) {
 				foreach (TextMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).DrawIcon (editor, ctx, lineSegment, line, x, y, (int)Width, editor.LineHeight);

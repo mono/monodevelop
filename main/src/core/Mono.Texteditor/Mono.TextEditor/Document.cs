@@ -1113,6 +1113,11 @@ namespace Mono.TextEditor
 		public event EventHandler FoldTreeUpdated;
 		
 		HashSet<FoldSegment> foldedSegments = new HashSet<FoldSegment> ();
+		public IEnumerable<FoldSegment> FoldedSegments {
+			get {
+				return foldedSegments;
+			}
+		}
 		internal void InformFoldChanged (FoldSegmentEventArgs args)
 		{
 			if (args.FoldSegment.IsFolded) {
