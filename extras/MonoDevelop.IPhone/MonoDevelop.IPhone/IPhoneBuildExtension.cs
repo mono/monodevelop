@@ -61,6 +61,11 @@ namespace MonoDevelop.IPhone
 			//prebuild
 			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
 			bool isSim = conf.IsSimPlatform;
+			if (!isSim && !conf.IsDevicePlatform) {
+				var br = new BuildResult ();
+				br.AddError (GettextCatalog.GetString ("MonoTouch project has invalid platform '{0}'", conf.Platform));
+				return br;
+			}
 			
 			if (IPhoneFramework.SimOnly && !isSim) {
 				//if in the GUI, show a dialog too
@@ -79,16 +84,16 @@ namespace MonoDevelop.IPhone
 				if (sdkVersion.IsUseDefault || !IPhoneFramework.SdkIsInstalled (sdkVersion, isSim)) {
 					if (conf.MtouchSdkVersion.IsUseDefault)
 						result.AddError (
-							string.Format ("The Apple iPhone SDK is not installed."));
+							GettextCatalog.GetString ("The Apple iPhone SDK is not installed."));
 					else
 						result.AddError (
-							string.Format ("Apple iPhone SDK version '{0}' is not installed, and no newer version was found.",
+							GettextCatalog.GetString ("Apple iPhone SDK version '{0}' is not installed, and no newer version was found.",
 							conf.MtouchSdkVersion));
 					return result;
 				}
 					
 				result.AddWarning (
-					string.Format ("Apple iPhone SDK version '{0}' is not installed. Using newer version '{1}' instead'.",
+					GettextCatalog.GetString ("Apple iPhone SDK version '{0}' is not installed. Using newer version '{1}' instead'.",
 					conf.MtouchSdkVersion, sdkVersion));
 			}
 			
@@ -102,9 +107,11 @@ namespace MonoDevelop.IPhone
 				monitor.BeginTask (GettextCatalog.GetString ("Detecting signing identity..."), 0);
 				if ((result = GetIdentity (monitor, proj, conf, out identity).Append (result)).ErrorCount > 0)
 					return result;
-				monitor.Log.WriteLine ("Provisioning profile: \"{0}\" ({1})", identity.Profile.Name, identity.Profile.Uuid);
-				monitor.Log.WriteLine ("Signing Identity: \"{0}\"", Keychain.GetCertificateCommonName (identity.SigningKey));
-				monitor.Log.WriteLine ("App ID: \"{0}\"", identity.AppID);
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Provisioning profile: \"{0}\" ({1})",
+					identity.Profile.Name, identity.Profile.Uuid));
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Signing Identity: \"{0}\"",
+					Keychain.GetCertificateCommonName (identity.SigningKey)));
+				monitor.Log.WriteLine (GettextCatalog.GetString ("App ID: \"{0}\"", identity.AppID));
 				monitor.EndTask ();
 			}
 			
@@ -129,15 +136,8 @@ namespace MonoDevelop.IPhone
 				args.Add ("-v");
 				
 				args.Add ("--nomanifest", "--nosign");
-					
-				//FIXME: should we error out if the platform is invalid?
-				if (conf.IsDevicePlatform) {
-					args.Add ("-dev");
-					args.AddQuoted (conf.AppDirectory);
-				} else {
-					args.Add ("-sim");
-					args.AddQuoted (conf.AppDirectory);
-				}
+				args.Add (isSim? "-sim" : "-dev");
+				args.AddQuoted (conf.AppDirectory);
 				
 				foreach (string asm in assemblyRefs)
 					args.AddQuotedFormat ("-r={0}", asm);
@@ -146,11 +146,12 @@ namespace MonoDevelop.IPhone
 				try {
 					osVersion = IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
 				} catch {
-					result.AddWarning ("Could not parse minimum OS version '" + conf.MtouchMinimumOSVersion + "'");
+					result.AddWarning (GettextCatalog.GetString ("Could not parse minimum OS version '{0}'",
+						conf.MtouchMinimumOSVersion));
 				}
 				
 				if (osVersion < IPhoneSdkVersion.V3_0 && conf.MtouchArch == MtouchArch.ARMv7) {
-					result.AddError ("Apps with a minimum OS older than 3.1 cannot be ARMv7 only");
+					result.AddError (GettextCatalog.GetString ("Apps with a minimum OS older than 3.1 cannot be ARMv7 only"));
 					return result;
 				}
 				
