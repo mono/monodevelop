@@ -387,6 +387,21 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
+		protected bool SetSocketTimeouts (int send_timeout, int receive_timeout, int keepalive_interval)
+		{
+			try {
+				if (vm.Version.MajorVersion == 2 && vm.Version.MinorVersion >= 4) {
+					vm.EnableEvents (EventType.KeepAlive);
+					vm.SetSocketTimeouts (send_timeout, receive_timeout, keepalive_interval);
+					return true;
+				} else {
+					return false;
+				}
+			} catch {
+				return false;
+			}
+		}
+
 		protected void ConnectOutput (System.IO.StreamReader reader, bool error)
 		{
 			Thread t = (error ? errorReader : outputReader);
