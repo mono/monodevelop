@@ -98,6 +98,10 @@ namespace MonoDevelop.MacDev
 		                                            IEnumerable<ProjectFile> items)
 		{
 			var result = new BuildResult ();
+			
+			if (XcodeIntegration.XcodeProjectTracker.TrackerEnabled)
+				return result;
+			
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (monitor, generator.Project);
 			if (!writer.SupportsPartialTypes) {
 				monitor.ReportWarning ("Cannot generate designer code, because CodeDom " +

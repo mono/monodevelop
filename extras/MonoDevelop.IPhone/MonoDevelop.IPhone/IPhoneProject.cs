@@ -321,7 +321,8 @@ namespace MonoDevelop.IPhone
 		
 		void Init ()
 		{
-			CodeBehindGenerator = new IPhoneCodeBehind (this);
+			if (!XcodeProjectTracker.TrackerEnabled)
+				CodeBehindGenerator = new IPhoneCodeBehind (this);
 		}
 		
 		public override MonoDevelop.Core.Assemblies.TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
