@@ -267,15 +267,15 @@ namespace MonoDevelop.IPhone
 		
 		public int ExitCode {
 			get {
-				//FIXME: implement
+				//FIXME: get return code from the sim process
 				return 0;
 			}
 		}
 		
 		public int ProcessId {
 			get {
-				//FIXME: implement
-				return mtouchProcess.Id;
+				//FIXME: get process ID from the sim process
+				return 0;
 			}
 		}
 		

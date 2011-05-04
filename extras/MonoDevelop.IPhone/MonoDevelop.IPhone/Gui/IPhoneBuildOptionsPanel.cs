@@ -207,7 +207,8 @@ namespace MonoDevelop.IPhone.Gui
 		{
 			cfg.MtouchExtraArgs = NullIfEmpty (extraArgsEntry.Entry.Text);
 			cfg.MtouchSdkVersion = GetSdkValue ();
-			cfg.MtouchMinimumOSVersion = minOSComboEntry.Entry.Text; //FIXME: validate this?
+			//we validate this when building
+			cfg.MtouchMinimumOSVersion = minOSComboEntry.Entry.Text;
 			cfg.MtouchDebug = debugCheck.Active;
 			cfg.MtouchLink = (MtouchLinkMode) linkCombo.Active;
 			cfg.MtouchI18n = GetI18nValues ();

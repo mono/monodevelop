@@ -217,9 +217,8 @@ namespace MonoDevelop.IPhone
 				//if packaging failed, make sure that it's marked as needing building
 				if (result.ErrorCount > 0 && File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
 					File.Delete (conf.AppDirectory.Combine ("PkgInfo"));	
-			}	
+			}
 			
-			//TODO: create/update the xcode project
 			return result;
 		}
 		
@@ -637,7 +636,6 @@ namespace MonoDevelop.IPhone
 			    	(appInfoIn != null && new FilePair (appInfoIn.FilePath, plistOut).NeedsBuilding ()))
 			    return true;
 			
-			//TODO: determine whether the the xcode project needs building
 			return false;
 		}
 		
