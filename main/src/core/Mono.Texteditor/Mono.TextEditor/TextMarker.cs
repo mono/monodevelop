@@ -361,7 +361,7 @@ namespace Mono.TextEditor
 		
 		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
-			if (includedStyles == StyleFlag.None)
+			if (baseStyle == null || includedStyles == StyleFlag.None)
 				return baseStyle;
 			
 			ChunkStyle style = new ChunkStyle (baseStyle);
