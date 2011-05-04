@@ -25,7 +25,7 @@ FILES =  \
 	CSharp/Ast/CSharpTokenNode.cs \
 	CSharp/Ast/DepthFirstAstVisitor.cs \
 	CSharp/Ast/Expressions/AnonymousMethodExpression.cs \
-	CSharp/Ast/Expressions/ArgListExpression.cs \
+	CSharp/Ast/Expressions/AnonymousTypeCreateExpression.cs \
 	CSharp/Ast/Expressions/ArrayCreateExpression.cs \
 	CSharp/Ast/Expressions/ArrayInitializerExpression.cs \
 	CSharp/Ast/Expressions/AsExpression.cs \
@@ -59,6 +59,7 @@ FILES =  \
 	CSharp/Ast/Expressions/TypeReferenceExpression.cs \
 	CSharp/Ast/Expressions/UnaryOperatorExpression.cs \
 	CSharp/Ast/Expressions/UncheckedExpression.cs \
+	CSharp/Ast/Expressions/UndocumentedExpression.cs \
 	CSharp/Ast/GeneralScope/Attribute.cs \
 	CSharp/Ast/GeneralScope/AttributeSection.cs \
 	CSharp/Ast/GeneralScope/Comment.cs \
@@ -75,16 +76,6 @@ FILES =  \
 	CSharp/Ast/MemberType.cs \
 	CSharp/Ast/Modifiers.cs \
 	CSharp/Ast/NodeType.cs \
-	CSharp/Ast/PatternMatching/AnyNode.cs \
-	CSharp/Ast/PatternMatching/Backreference.cs \
-	CSharp/Ast/PatternMatching/Choice.cs \
-	CSharp/Ast/PatternMatching/IPatternAstVisitor.cs \
-	CSharp/Ast/PatternMatching/Match.cs \
-	CSharp/Ast/PatternMatching/NamedNode.cs \
-	CSharp/Ast/PatternMatching/OptionalNode.cs \
-	CSharp/Ast/PatternMatching/Pattern.cs \
-	CSharp/Ast/PatternMatching/Placeholder.cs \
-	CSharp/Ast/PatternMatching/Repeat.cs \
 	CSharp/Ast/PrimitiveType.cs \
 	CSharp/Ast/Role.cs \
 	CSharp/Ast/SimpleType.cs \
@@ -202,12 +193,15 @@ FILES =  \
 	CSharp/Resolver/AmbiguousResolveResult.cs \
 	CSharp/Resolver/ByReferenceResolveResult.cs \
 	CSharp/Resolver/ConstantResolveResult.cs \
+	CSharp/Resolver/ConstantValues.cs \
 	CSharp/Resolver/Conversions.cs \
+	CSharp/Resolver/CSharpAttribute.cs \
 	CSharp/Resolver/CSharpResolver.cs \
 	CSharp/Resolver/ErrorResolveResult.cs \
 	CSharp/Resolver/IResolveVisitorNavigator.cs \
 	CSharp/Resolver/ITypeOrNamespaceReference.cs \
 	CSharp/Resolver/LocalResolveResult.cs \
+	CSharp/Resolver/MapTypeIntoNewContext.cs \
 	CSharp/Resolver/MemberLookup.cs \
 	CSharp/Resolver/MemberResolveResult.cs \
 	CSharp/Resolver/MemberTypeOrNamespaceReference.cs \
@@ -225,6 +219,17 @@ FILES =  \
 	CSharp/Resolver/UsingScope.cs \
 	Documentation/BinaryDocumentationProvider.cs \
 	Documentation/XmlDocumentationProvider.cs \
+	PatternMatching/AnyNode.cs \
+	PatternMatching/Backreference.cs \
+	PatternMatching/BacktrackingInfo.cs \
+	PatternMatching/Choice.cs \
+	PatternMatching/INode.cs \
+	PatternMatching/IPatternAstVisitor.cs \
+	PatternMatching/Match.cs \
+	PatternMatching/NamedNode.cs \
+	PatternMatching/OptionalNode.cs \
+	PatternMatching/Pattern.cs \
+	PatternMatching/Repeat.cs \
 	Properties/AssemblyInfo.cs \
 	TypeSystem/Accessibility.cs \
 	TypeSystem/ArrayType.cs \
