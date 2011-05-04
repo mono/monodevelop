@@ -152,7 +152,6 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this(new Document ())
 		{
-			heightTree = new HeightTree (this);
 		}
 
 		void HandleTextEditorDataDocumentMarkerChange (object sender, TextMarkerEvent e)
@@ -270,6 +269,7 @@ namespace Mono.TextEditor
 		
 		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode)
 		{
+			heightTree = new HeightTree (this);
 			textEditorData = new TextEditorData (doc);
 			textEditorData.Parent = this;
 			textEditorData.RecenterEditor += delegate {
