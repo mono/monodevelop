@@ -396,20 +396,13 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				return null;
 			}
 			
-			//FIXME: fix data loss when there are multiple designer types in one designer file, like MT templates
-			var designerFile = objcType.GetDesignerFile ();
-			
-			//FIXME: add a designer file if there are any designer outlets and actions
-			if (designerFile == null)
-				return null;
-			
 			//FIXME: detect unresolved types
 			parsed.MergeCliInfo (objcType);
 			pinfo.ResolveTypes (parsed);
 			
 			return new SyncObjcBackJob () {
 				HFile = hFile,
-				DesignerFile = designerFile,
+				DesignerFile = objcType.GetDesignerFile (),
 				Type = parsed,
 			};
 		}
@@ -422,9 +415,20 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			
-			//group all the types by designer file
+			
 			var designerFile = new Dictionary<string, List<NSObjectTypeInfo>> ();
+			Dictionary<string,ProjectFile> newFiles = null;
 			foreach (var job in typeSyncJobs) {
+				//generate designer filenames for classes without designer files
+				if (job.DesignerFile == null) {
+					var df = CreateDesignerFile (job);
+					job.DesignerFile = df.FilePath;
+					if (newFiles == null)
+						newFiles = new Dictionary<string, ProjectFile> ();
+					if (!newFiles.ContainsKey (job.DesignerFile))
+						newFiles.Add (job.DesignerFile, df);
+				}
+				//group all the types by designer file
 				List<NSObjectTypeInfo> types;
 				if (!designerFile.TryGetValue (job.DesignerFile, out types))
 					designerFile[job.DesignerFile] = types = new List<NSObjectTypeInfo> ();
@@ -456,9 +460,28 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 					trackedFiles[job.HFile] = File.GetLastWriteTime (job.HFile);
 				}
 				
+				if (newFiles != null) {
+					foreach (var f in newFiles)
+						dnp.AddFile (f.Value);
+					Ide.IdeApp.ProjectOperations.Save (dnp);
+				}
 			} finally {
 				updatingProjectFiles = false;
 			}
+		}
+		
+		ProjectFile CreateDesignerFile (SyncObjcBackJob job)
+		{
+			int i = 0;
+			FilePath designerFile = null;
+			do {
+				FilePath f = job.Type.DefinedIn[0];
+				string suffix = (i > 0? i.ToString () : "");
+				string name = f.FileNameWithoutExtension + suffix + ".designer" + f.Extension;
+				designerFile = f.ParentDirectory.Combine (name);
+			} while (dnp.Files.GetFileWithVirtualPath (designerFile.ToRelative (dnp.BaseDirectory)) != null);
+			var dependsOn = ((FilePath)job.Type.DefinedIn[0]).FileName;
+			return new ProjectFile (designerFile, BuildAction.Compile) { DependsOn = dependsOn };
 		}
 		
 		System.CodeDom.CodeCompileUnit GenerateCompileUnit (System.CodeDom.Compiler.CodeDomProvider provider,
