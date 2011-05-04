@@ -69,22 +69,36 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			base.EndSession ();
 			EndSimProcess ();
 		}
-
-		//FIXME: hook up the app's stdin and stdout, and mtouch's stdin and stdout
+		
 		void StartSimulatorProcess (IPhoneExecutionCommand cmd)
 		{
 			var psi = IPhoneExecutionHandler.CreateMtouchSimStartInfo (cmd, false);
 			psi.RedirectStandardInput = true;
-			simProcess = System.Diagnostics.Process.Start (psi);
-			
-			simProcess.Exited += delegate {
-				EndSession ();
-				simProcess = null;
-			};
+			psi.RedirectStandardOutput = true;
+			psi.RedirectStandardError = true;
+			simProcess = Runtime.ProcessService.StartProcess (psi, OnMtouchOutput, OnMtouchError, OnMtouchExit);
 			
 			TargetExited += delegate {
 				EndSimProcess ();
 			};
+		}
+
+		void OnMtouchExit (object sender, EventArgs e)
+		{
+			EndSession ();
+			simProcess = null;
+		}
+		
+		void OnMtouchError (object sender, string message)
+		{
+			OnDebuggerOutput (true, message);
+		}
+
+		void OnMtouchOutput (object sender, string message)
+		{
+			if (message == "Press enter to terminate the application")
+				return;
+			OnDebuggerOutput (false, message);
 		}
 		
 		void EndSimProcess ()
