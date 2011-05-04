@@ -196,7 +196,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		void FileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
-			//FIXME: do we need to disable syncing here?
 			if (syncing && e.Any (finf => IsPage (finf.ProjectFile)))
 				if (!dnp.Files.Any (IsPage))
 					DisableSyncing ();
@@ -354,11 +353,24 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 					if (job != null)
 						typeSyncJobs.Add (job);
 				}
-				//TODO: copy changed xibs back into the project
+				CopyChangedXibsBack ();
 			}
 			
 			if (typeSyncJobs.Count > 0) {
 				UpdateCliTypes (pinfo, typeSyncJobs);
+			}
+		}
+		
+		//FIXME: error reporting
+		void CopyChangedXibsBack ()
+		{
+			foreach (var file in dnp.Files.Where (IsPage)) {
+				var target = outputDir.Combine (file.ProjectVirtualPath);
+				if (!File.Exists (target))
+					continue;
+				DateTime modified;
+				if (trackedFiles.TryGetValue (target, out modified) && File.GetLastWriteTime (target) > modified)
+					File.Copy (target, file.FilePath);
 			}
 		}
 		
