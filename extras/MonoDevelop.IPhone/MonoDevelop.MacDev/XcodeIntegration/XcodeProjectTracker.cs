@@ -410,7 +410,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		//FIXME: error handling
 		void UpdateCliTypes (NSObjectProjectInfo pinfo, List<SyncObjcBackJob> typeSyncJobs)
 		{
-			var provider = System.CodeDom.Compiler.CodeDomProvider.CreateProvider ("C#");
+			var provider = dnp.LanguageBinding.GetCodeDomProvider ();
 			var options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
