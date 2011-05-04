@@ -25,64 +25,64 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core;
+using System.Collections;
 using System.Diagnostics;
-using System.Collections.Generic;
+
+using Gtk;
+
+using MonoDevelop.Components.Docking;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.IPhone
 {
-	public class IPhoneDeviceConsole : Window
+	class IPhoneDeviceLogPad : AbstractPadContent
+	{
+		IPhoneDeviceLog widget;
+		
+		public override void Initialize (IPadWindow container)
+		{
+			base.Initialize (container);
+			widget = new IPhoneDeviceLog (container);
+		}
+		
+		public override Widget Control {
+			get { return widget; }
+		}
+		
+		public override void Dispose ()
+		{
+			widget.Destroy ();
+		}
+	}
+	
+	class IPhoneDeviceLog : Bin
 	{
 		LogView log;
 		ProcessWrapper process;
 		
-		public IPhoneDeviceConsole () : base ("iPhone Device Console")
+		public IPhoneDeviceLog (IPadWindow container)
 		{
-			BorderWidth = 6;
+			Stetic.BinContainer.Attach (this);
+			DockItemToolbar toolbar = container.GetToolbar (PositionType.Top);
 			
-			//FIXME: persist these values
-			DefaultWidth = 400;
-			DefaultHeight = 400;
-			
-			var vbox = new VBox () {
-				Spacing = 12
+			var connectButton = new Button () {
+				Label = GettextCatalog.GetString ("Connect"),
 			};
+			toolbar.Add (connectButton);
 			
-			var bbox = new HButtonBox () {
-				Layout = ButtonBoxStyle.End,
-			};
-			
-			var closeButton = new Button (Gtk.Stock.Close);
-			var reconnectButton = new Button () {
-				Label = "Reconnect"
-			};
-			
-			log = new LogView ();
-			
-			this.Add (vbox);
-			vbox.PackEnd (bbox, false, false, 0);
-			vbox.PackEnd (log, true, true, 0);
-			
-			bbox.PackEnd (reconnectButton);
-			bbox.PackEnd (closeButton);
-			
-			closeButton.Clicked += delegate {
-				 Destroy ();
-			};
-			DeleteEvent += delegate {
-				Destroy ();
-			};
-			reconnectButton.Clicked += delegate {
+			connectButton.Clicked += delegate {
 				Disconnect ();
 				Connect ();
 			};
 			
+			log = new LogView ();
+			this.Add (log);
+			
+			toolbar.ShowAll ();
 			ShowAll ();
-			Connect ();
 		}
 		
 		void Disconnect ()
@@ -129,21 +129,8 @@ namespace MonoDevelop.IPhone
 		
 		protected override void OnDestroyed ()
 		{
-			instance = null;
-			
+			Disconnect ();
 			base.OnDestroyed ();
-		}
-
-		static IPhoneDeviceConsole instance;
-		
-		public static void Run ()
-		{
-			if (instance == null) {
-				instance = new IPhoneDeviceConsole ();
-				MessageService.PlaceDialog (instance, MessageService.RootWindow);
-				instance.Show ();
-			}
-			instance.Present ();
 		}
 	}
 }

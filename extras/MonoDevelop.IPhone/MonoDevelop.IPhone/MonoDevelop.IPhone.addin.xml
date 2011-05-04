@@ -170,15 +170,6 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Commands/Tools">
-		<Condition id="MonoTouchInstalled">
-		<Command id = "MonoDevelop.IPhone.IPhoneCommands.ViewDeviceConsole"
-				_description = "View the console of a connected iPhone/iPad device" 
-				defaultHandler = "MonoDevelop.IPhone.ViewDeviceConsoleHandler"
-				_label = "View iPhone Console" />
-		</Condition>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<Condition id="MonoTouchInstalled">
 			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ZipApp"
@@ -189,13 +180,6 @@
 			</ItemSet>
 		</Condition>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
-		<Condition id="MonoTouchInstalled">
-			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ViewDeviceConsole" />
-		</Condition>
-	</Extension>
-	
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<Condition id="MonoTouchInstalled">
@@ -229,6 +213,16 @@
 	<Extension path = "/MonoDevelop/Ide/UpdateTags">
 		<Condition id="MonoTouchInstalled">
 			<Tag id="MonoDevelop.IPhone.MonoTouchInstalled" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Pads">
+		<Condition id="MonoTouchInstalled">
+			<Pad id = "MonoDevelop.MonoDroid.IPhoneDeviceLogPad"
+				_label = "iOS Device Log"
+				class = "MonoDevelop.IPhone.IPhoneDeviceLogPad"
+				defaultPlacement = "Bottom"
+				defaultStatus="AutoHide" />
 		</Condition>
 	</Extension>
 	

@@ -138,18 +138,6 @@ namespace MonoDevelop.IPhone
 		}
 	}
 	
-	class ViewDeviceConsoleHandler : CommandHandler
-	{
-		protected override void Update (CommandInfo info)
-		{
-		}
-		
-		protected override void Run ()
-		{
-			IPhoneDeviceConsole.Run ();
-		}
-	}
-	
 	class ZipAppCommandHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
