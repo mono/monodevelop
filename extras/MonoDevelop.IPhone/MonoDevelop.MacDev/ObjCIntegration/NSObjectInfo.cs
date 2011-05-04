@@ -57,6 +57,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public bool BaseIsModel { get; internal set; }
 		
 		public bool IsUserType { get; internal set; }
+		public bool IsRegisteredInDesigner { get; internal set; }
 		
 		public List<IBOutlet> Outlets { get; private set; }
 		public List<IBAction> Actions { get; private set; }
@@ -192,6 +193,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			IsModel = previousType.IsModel;
 			BaseIsModel = previousType.BaseIsModel;
 			IsUserType = previousType.IsUserType;
+			IsRegisteredInDesigner = previousType.IsRegisteredInDesigner;
 			
 			var existingOutlets = new Dictionary<string,IBOutlet> ();
 			foreach (var o in previousType.Outlets)
@@ -248,7 +250,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				ctd.Name = CliName;
 				ns = null;
 			}
-			AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
+			if (IsRegisteredInDesigner)
+				AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
 			
 			foreach (var a in Actions)
 				if (a.IsDesigner)

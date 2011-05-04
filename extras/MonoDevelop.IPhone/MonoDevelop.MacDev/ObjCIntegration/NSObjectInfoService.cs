@@ -133,23 +133,31 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			string objcName = null;
 			bool isModel = false;
-			foreach (var att in type.Attributes) {
-				if (att.AttributeType.FullName == registerAttType.FullName) {
-					//type registered with an explicit type name are up to the user to proide a valid name
-					if (att.PositionalArguments.Count == 1)
-						objcName = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
-					//non-nested types in the root namespace have names accessible from obj-c
-					else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
-						objcName = type.Name;
-				}
-				if (att.AttributeType.FullName == modelAttType.FullName) {
-					isModel = true;
+			bool registeredInDesigner = true;
+			foreach (var part in type.Parts) {
+				foreach (var att in part.Attributes) {
+					if (att.AttributeType.FullName == registerAttType.FullName) {
+						if (type.SourceProject != null) {
+							registeredInDesigner &=
+								MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.CompilationUnit.FileName);
+						}
+						//type registered with an explicit type name are up to the user to provide a valid name
+						if (att.PositionalArguments.Count == 1)
+							objcName = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
+						//non-nested types in the root namespace have names accessible from obj-c
+						else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
+							objcName = type.Name;
+					}
+					if (att.AttributeType.FullName == modelAttType.FullName) {
+						isModel = true;
+					}
 				}
 			}
 			if (string.IsNullOrEmpty (objcName))
 				return null;
 			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseType.FullName, isModel);
 			info.IsUserType = type.SourceProject != null;
+			info.IsRegisteredInDesigner = registeredInDesigner;
 			
 			if (info.IsUserType) {
 				UpdateTypeMembers (dom, info, type);
