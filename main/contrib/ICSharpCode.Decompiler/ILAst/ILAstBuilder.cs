@@ -1,7 +1,27 @@
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Cecil = Mono.Cecil;
@@ -240,8 +260,8 @@ namespace ICSharpCode.Decompiler.ILAst
 					EndOffset   = inst.Next != null ? inst.Next.Offset : methodDef.Body.CodeSize,
 					Code        = code,
 					Operand     = operand,
-					PopCount    = inst.GetPopCount(),
-					PushCount   = inst.GetPushCount()
+					PopCount    = inst.GetPopDelta(),
+					PushCount   = inst.GetPushDelta()
 				};
 				if (prefixes != null) {
 					instrToByteCode[prefixes[0]] = byteCode;
@@ -264,9 +284,11 @@ namespace ICSharpCode.Decompiler.ILAst
 			// Add known states
 			if(methodDef.Body.HasExceptionHandlers) {
 				foreach(ExceptionHandler ex in methodDef.Body.ExceptionHandlers) {
-					ByteCode handlerStart = instrToByteCode[ex.HandlerType == ExceptionHandlerType.Filter ? ex.FilterStart : ex.HandlerStart];
+					ByteCode handlerStart = instrToByteCode[ex.HandlerStart];
 					handlerStart.StackBefore = new List<StackSlot>();
+					handlerStart.VariablesBefore = VariableSlot.MakeFullState(varCount);
 					if (ex.HandlerType == ExceptionHandlerType.Catch || ex.HandlerType == ExceptionHandlerType.Filter) {
+						// Catch and Filter handlers start with the exeption on the stack
 						ByteCode ldexception = new ByteCode() {
 							Code = ILCode.Ldexception,
 							Operand = ex.CatchType,
@@ -276,8 +298,23 @@ namespace ICSharpCode.Decompiler.ILAst
 						ldexceptions[ex] = ldexception;
 						handlerStart.StackBefore.Add(new StackSlot(ldexception));
 					}
-					handlerStart.VariablesBefore = VariableSlot.MakeFullState(varCount);
 					agenda.Push(handlerStart);
+					
+					if (ex.HandlerType == ExceptionHandlerType.Filter)
+					{
+						ByteCode filterStart = instrToByteCode[ex.FilterStart];
+						filterStart.StackBefore = new List<StackSlot>();
+						filterStart.VariablesBefore = VariableSlot.MakeFullState(varCount);
+						ByteCode ldexception = new ByteCode() {
+							Code = ILCode.Ldexception,
+							Operand = ex.CatchType,
+							PopCount = 0,
+							PushCount = 1
+						};
+						// TODO: ldexceptions[ex] = ldexception;
+						filterStart.StackBefore.Add(new StackSlot(ldexception));
+						agenda.Push(filterStart);
+					}
 				}
 			}
 			
@@ -389,11 +426,13 @@ namespace ICSharpCode.Decompiler.ILAst
 				}
 			}
 			
+			// Occasionally the compiler generates unreachable code - it can be usually just ignored
+			var reachableBody   = body.Where(b => b.StackBefore != null);
+			var unreachableBody = body.Where(b => b.StackBefore == null);
+			
 			// Genertate temporary variables to replace stack
-			foreach(ByteCode byteCode in body) {
-				if (byteCode.StackBefore == null)
-					continue;
-				
+			// Unrachable code does not need temporary variables - the values are never pushed on the stack for consuption
+			foreach(ByteCode byteCode in reachableBody) {
 				int argIdx = 0;
 				int popCount = byteCode.PopCount ?? byteCode.StackBefore.Count;
 				for (int i = byteCode.StackBefore.Count - popCount; i < byteCode.StackBefore.Count; i++) {
@@ -410,18 +449,20 @@ namespace ICSharpCode.Decompiler.ILAst
 			}
 			
 			// Try to use single temporary variable insted of several if possilbe (especially useful for dup)
-			foreach(ByteCode byteCode in body) {
+			// This has to be done after all temporary variables are assigned so we know about all loads
+			// Unrachable code will not have any StoreTo
+			foreach(ByteCode byteCode in reachableBody) {
 				if (byteCode.StoreTo != null && byteCode.StoreTo.Count > 1) {
 					var locVars = byteCode.StoreTo;
 					// For each of the variables, find the location where it is loaded - there should be preciesly one
-					var loadedBy = locVars.Select(argVar => body.SelectMany(bc => bc.StackBefore).Where(s => s.LoadFrom == argVar).Single()).ToList();
+					var loadedBy = locVars.Select(locVar => reachableBody.SelectMany(bc => bc.StackBefore).Where(s => s.LoadFrom == locVar).Single()).ToList();
 					// We now know that all the variables have a single load,
 					// Let's make sure that they have also a single store - us
 					if (loadedBy.All(slot => slot.PushedBy.Length == 1 && slot.PushedBy[0] == byteCode)) {
 						// Great - we can reduce everything into single variable
 						ILVariable tmpVar = new ILVariable() { Name = string.Format("expr_{0:X2}", byteCode.Offset), IsGenerated = true };
 						byteCode.StoreTo = new List<ILVariable>() { tmpVar };
-						foreach(ByteCode bc in body) {
+						foreach(ByteCode bc in reachableBody) {
 							for (int i = 0; i < bc.StackBefore.Count; i++) {
 								// Is it one of the variable to be merged?
 								if (locVars.Contains(bc.StackBefore[i].LoadFrom)) {
@@ -489,7 +530,7 @@ namespace ICSharpCode.Decompiler.ILAst
 							Variable = new ILVariable() {
 								Name = "var_" + variableIndex,
 								Type = isPinned ? ((PinnedType)varType).ElementType : varType,
-						    	OriginalVariable = methodDef.Body.Variables[variableIndex]
+								OriginalVariable = methodDef.Body.Variables[variableIndex]
 							},
 							Stores = stores,
 							Loads  = loads
@@ -506,11 +547,30 @@ namespace ICSharpCode.Decompiler.ILAst
 						    Loads  = new List<ByteCode>()
 						}).ToList();
 						
+						// VB.NET uses the 'init' to allow use of uninitialized variables.
+						// We do not really care about them too much - if the original variable
+						// was uninitialized at that point it means that no store was called and
+						// thus all our new variables must be uninitialized as well.
+						// So it does not matter which one we load.
+						
+						// TODO: We should add explicit initialization so that C# code compiles.
+						// Remember to handle cases where one path inits the variable, but other does not.
+						
 						// Add loads to the data structure; merge variables if necessary
 						foreach(ByteCode load in loads) {
 							ByteCode[] storedBy = load.VariablesBefore[variableIndex].StoredBy;
 							if (storedBy.Length == 0) {
-								throw new Exception("Load of uninitialized variable");
+								// Load which always loads the default ('uninitialized') value
+								// Create a dummy variable just for this load
+								newVars.Add(new VariableInfo() {
+									Variable = new ILVariable() {
+								    		Name = "var_" + variableIndex + "_" + load.Offset.ToString("X2") + "_default",
+								    		Type = varType,
+								    		OriginalVariable = methodDef.Body.Variables[variableIndex]
+								    },
+								    Stores = new List<ByteCode>(),
+								    Loads  = new List<ByteCode>() { load }
+								});
 							} else if (storedBy.Length == 1) {
 								VariableInfo newVar = newVars.Where(v => v.Stores.Contains(storedBy[0])).Single();
 								newVar.Loads.Add(load);

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using Mono.Cecil;
@@ -238,8 +253,18 @@ namespace ICSharpCode.Decompiler.ILAst
 		LogicOr,
 		NullCoalescing,
 		InitArray, // Array Initializer
-		InitCollection, // Collection Initializer: first arg is newobj, remaining args are InitCollectionAddMethod method calls
-		InitCollectionAddMethod,
+		
+		// new Class { Prop = 1, Collection = { { 2, 3 }, {4, 5} }}
+		// is represented as:
+		// InitObject(newobj Class,
+		//            CallSetter(Prop, InitializedObject, 1),
+		//            InitCollection(CallGetter(Collection, InitializedObject))),
+		//                           Call(Add, InitializedObject, 2, 3),
+		//                           Call(Add, InitializedObject, 4, 5)))
+		InitObject, // Object initializer: first arg is newobj, remaining args are the initializing statements
+		InitCollection, // Collection initializer: first arg is newobj, remaining args are the initializing statements
+		InitializedObject, // Refers the the object being initialized (refers to first arg in parent InitObject or InitCollection instruction)
+		
 		TernaryOp, // ?:
 		LoopOrSwitchBreak,
 		LoopContinue,
@@ -276,9 +301,12 @@ namespace ICSharpCode.Decompiler.ILAst
 		CallSetter,
 		/// <summary>Calls the setter of a instance property (or indexer)</summary>
 		CallvirtSetter,
-		/// <summary>Simulates getting the address of a property. Used as prefix on CallGetter or CallvirtGetter.</summary>
-		/// <remarks>Used for postincrement for properties, and to represent the Address() method on multi-dimensional arrays</remarks>
-		PropertyAddress
+		/// <summary>Simulates getting the address of the argument instruction.</summary>
+		/// <remarks>
+		/// Used for postincrement for properties, and to represent the Address() method on multi-dimensional arrays.
+		/// Also used when inlining a method call on a value type: "stloc(v, ...); call(M, ldloca(v));" becomes "call(M, AddressOf(...))"
+		/// </remarks>
+		AddressOf
 	}
 	
 	public static class ILCodeUtil
@@ -340,77 +368,6 @@ namespace ICSharpCode.Decompiler.ILAst
 					return true;
 				default:
 					return false;
-			}
-		}
-		
-		public static int? GetPopCount(this Instruction inst)
-		{
-			switch(inst.OpCode.StackBehaviourPop) {
-					case StackBehaviour.Pop0:   				return 0;
-					case StackBehaviour.Pop1:   				return 1;
-					case StackBehaviour.Popi:   				return 1;
-					case StackBehaviour.Popref: 				return 1;
-					case StackBehaviour.Pop1_pop1:   		return 2;
-					case StackBehaviour.Popi_pop1:   		return 2;
-					case StackBehaviour.Popi_popi:   		return 2;
-					case StackBehaviour.Popi_popi8:  		return 2;
-					case StackBehaviour.Popi_popr4:  		return 2;
-					case StackBehaviour.Popi_popr8:  		return 2;
-					case StackBehaviour.Popref_pop1: 		return 2;
-					case StackBehaviour.Popref_popi: 		return 2;
-					case StackBehaviour.Popi_popi_popi:     return 3;
-					case StackBehaviour.Popref_popi_popi:   return 3;
-					case StackBehaviour.Popref_popi_popi8:  return 3;
-					case StackBehaviour.Popref_popi_popr4:  return 3;
-					case StackBehaviour.Popref_popi_popr8:  return 3;
-					case StackBehaviour.Popref_popi_popref: return 3;
-					case StackBehaviour.PopAll: 				return null;
-				case StackBehaviour.Varpop:
-					switch(inst.OpCode.Code) {
-						case Code.Call:
-						case Code.Callvirt:
-							MethodReference cecilMethod = ((MethodReference)inst.Operand);
-							if (cecilMethod.HasThis) {
-								return cecilMethod.Parameters.Count + 1 /* this */;
-							} else {
-								return cecilMethod.Parameters.Count;
-							}
-							case Code.Calli:    throw new NotImplementedException();
-							case Code.Ret:		return null;
-						case Code.Newobj:
-							MethodReference ctorMethod = ((MethodReference)inst.Operand);
-							return ctorMethod.Parameters.Count;
-							default: throw new Exception("Unknown Varpop opcode");
-					}
-					default: throw new Exception("Unknown pop behaviour: " + inst.OpCode.StackBehaviourPop);
-			}
-		}
-		
-		public static int GetPushCount(this Instruction inst)
-		{
-			switch(inst.OpCode.StackBehaviourPush) {
-					case StackBehaviour.Push0:       return 0;
-					case StackBehaviour.Push1:       return 1;
-					case StackBehaviour.Push1_push1: return 2;
-					case StackBehaviour.Pushi:       return 1;
-					case StackBehaviour.Pushi8:      return 1;
-					case StackBehaviour.Pushr4:      return 1;
-					case StackBehaviour.Pushr8:      return 1;
-					case StackBehaviour.Pushref:     return 1;
-				case StackBehaviour.Varpush:     // Happens only for calls
-					switch(inst.OpCode.Code) {
-						case Code.Call:
-						case Code.Callvirt:
-							MethodReference cecilMethod = ((MethodReference)inst.Operand);
-							if (cecilMethod.ReturnType.FullName == "System.Void") {
-								return 0;
-							} else {
-								return 1;
-							}
-							case Code.Calli:    throw new NotImplementedException();
-							default: throw new Exception("Unknown Varpush opcode");
-					}
-					default: throw new Exception("Unknown push behaviour: " + inst.OpCode.StackBehaviourPush);
 			}
 		}
 		

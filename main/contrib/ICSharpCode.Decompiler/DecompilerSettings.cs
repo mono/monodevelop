@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
@@ -140,6 +155,60 @@ namespace ICSharpCode.Decompiler
 			}
 		}
 		
+		bool queryExpressions = true;
+		
+		public bool QueryExpressions {
+			get { return queryExpressions; }
+			set {
+				if (queryExpressions != value) {
+					queryExpressions = value;
+					OnPropertyChanged("QueryExpressions");
+				}
+			}
+		}
+		
+		bool fullyQualifyAmbiguousTypeNames = true;
+		
+		public bool FullyQualifyAmbiguousTypeNames {
+			get { return fullyQualifyAmbiguousTypeNames; }
+			set {
+				if (fullyQualifyAmbiguousTypeNames != value) {
+					fullyQualifyAmbiguousTypeNames = value;
+					OnPropertyChanged("FullyQualifyAmbiguousTypeNames");
+				}
+			}
+		}
+		
+		bool useDebugSymbols = true;
+		
+		/// <summary>
+		/// Gets/Sets whether to use variable names from debug symbols, if available.
+		/// </summary>
+		public bool UseDebugSymbols {
+			get { return useDebugSymbols; }
+			set {
+				if (useDebugSymbols != value) {
+					useDebugSymbols = value;
+					OnPropertyChanged("UseDebugSymbols");
+				}
+			}
+		}
+		
+		bool objectCollectionInitializers = true;
+		
+		/// <summary>
+		/// Gets/Sets whether to use C# 3.0 object/collection initializers
+		/// </summary>
+		public bool ObjectOrCollectionInitializers {
+			get { return objectCollectionInitializers; }
+			set {
+				if (objectCollectionInitializers != value) {
+					objectCollectionInitializers = value;
+					OnPropertyChanged("ObjectCollectionInitializers");
+				}
+			}
+		}
+		
 		public event PropertyChangedEventHandler PropertyChanged;
 		
 		protected virtual void OnPropertyChanged(string propertyName)
@@ -147,6 +216,13 @@ namespace ICSharpCode.Decompiler
 			if (PropertyChanged != null) {
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+		
+		public DecompilerSettings Clone()
+		{
+			DecompilerSettings settings = (DecompilerSettings)MemberwiseClone();
+			settings.PropertyChanged = null;
+			return settings;
 		}
 	}
 }

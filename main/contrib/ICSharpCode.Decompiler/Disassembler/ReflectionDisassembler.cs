@@ -28,7 +28,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 	/// <summary>
 	/// Disassembles type and member definitions.
 	/// </summary>
-	public sealed class ReflectionDisassembler
+	public sealed class ReflectionDisassembler : ICodeMappings
 	{
 		ITextOutput output;
 		CancellationToken cancellationToken;
@@ -123,6 +123,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 			method.ReturnType.WriteTo(output);
 			output.Write(' ');
 			output.Write(DisassemblerHelpers.Escape(method.Name));
+			WriteTypeParameters(output, method);
 			
 			//( params )
 			output.Write(" (");
@@ -146,8 +147,11 @@ namespace ICSharpCode.Decompiler.Disassembler
 				OpenBlock(defaultCollapsed: isInType);
 				WriteAttributes(method.CustomAttributes);
 				
-				if (method.HasBody)
-					methodBodyDisassembler.Disassemble(method.Body);
+				if (method.HasBody) {
+					// create IL code mappings - used in debugger
+					MemberMapping methodMapping = method.CreateCodeMapping(this.CodeMappings);
+					methodBodyDisassembler.Disassemble(method.Body, methodMapping);
+				}
 				
 				CloseBlock("End of method " + method.DeclaringType.Name + "." + method.Name);
 			} else {
@@ -312,6 +316,11 @@ namespace ICSharpCode.Decompiler.Disassembler
 		
 		public void DisassembleType(TypeDefinition type)
 		{
+			// create IL code mappings - used for debugger
+			if (this.CodeMappings == null)
+				this.CodeMappings = new Tuple<string, List<MemberMapping>>(type.FullName, new List<MemberMapping>());
+			
+			// start writing IL
 			output.WriteDefinition(".class ", type);
 			
 			if ((type.Attributes & TypeAttributes.ClassSemanticMask) == TypeAttributes.Interface)
@@ -323,6 +332,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 			WriteFlags(type.Attributes & ~masks, typeAttributes);
 			
 			output.Write(DisassemblerHelpers.Escape(type.Name));
+			WriteTypeParameters(output, type);
 			output.MarkFoldStart(defaultCollapsed: isInType);
 			output.WriteLine();
 			
@@ -330,6 +340,22 @@ namespace ICSharpCode.Decompiler.Disassembler
 				output.Indent();
 				output.Write("extends ");
 				type.BaseType.WriteTo(output, true);
+				output.WriteLine();
+				output.Unindent();
+			}
+			if (type.HasInterfaces) {
+				output.Indent();
+				for (int index = 0; index < type.Interfaces.Count; index++) {
+					if (index > 0)
+						output.WriteLine(",");
+					if (index == 0)
+						output.Write("implements ");
+					else
+						output.Write("           ");
+					if (type.Interfaces[index].Namespace != null)
+						output.Write("{0}.", type.Interfaces[index].Namespace);
+					output.Write(type.Interfaces[index].Name);
+				}
 				output.WriteLine();
 				output.Unindent();
 			}
@@ -391,6 +417,42 @@ namespace ICSharpCode.Decompiler.Disassembler
 			}
 			CloseBlock("End of class " + type.FullName);
 			isInType = oldIsInType;
+		}
+		
+		void WriteTypeParameters(ITextOutput output, IGenericParameterProvider p)
+		{
+			if (p.HasGenericParameters) {
+				output.Write('<');
+				for (int i = 0; i < p.GenericParameters.Count; i++) {
+					if (i > 0)
+						output.Write(", ");
+					GenericParameter gp = p.GenericParameters[i];
+					if (gp.HasReferenceTypeConstraint) {
+						output.Write("class ");
+					} else if (gp.HasNotNullableValueTypeConstraint) {
+						output.Write("valuetype ");
+					}
+					if (gp.HasConstraints) {
+						output.Write('(');
+						for (int j = 0; j < gp.Constraints.Count; j++) {
+							if (j > 0)
+								output.Write(", ");
+							gp.Constraints[j].WriteTo(output, true);
+						}
+						output.Write(") ");
+					}
+					if (gp.HasDefaultConstructorConstraint) {
+						output.Write(".ctor ");
+					}
+					if (gp.IsContravariant) {
+						output.Write('-');
+					} else if (gp.IsCovariant) {
+						output.Write('+');
+					}
+					output.Write(DisassemblerHelpers.Escape(gp.Name));
+				}
+				output.Write('>');
+			}
 		}
 		#endregion
 
@@ -541,6 +603,12 @@ namespace ICSharpCode.Decompiler.Disassembler
 			}
 			WriteAttributes(asm.CustomAttributes);
 			CloseBlock();
+		}
+		
+		/// <inheritdoc/>
+		public Tuple<string, List<MemberMapping>> CodeMappings {
+			get;
+			private set;
 		}
 	}
 }

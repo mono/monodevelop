@@ -61,6 +61,11 @@ namespace ICSharpCode.NRefactory
 			this.Offset = offset;
 			this.InsertedText = insertedText;
 		}
+
+		public void PerformChange (ITextEditorAdapter adapter)
+		{
+			adapter.Replace (Offset, RemovedChars, InsertedText);
+		}
 		
 		public override string ToString ()
 		{

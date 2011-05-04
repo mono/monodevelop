@@ -1,7 +1,25 @@
-﻿using System;
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp.PatternMatching;
+using ICSharpCode.NRefactory.PatternMatching;
 using Mono.Cecil;
 using Ast = ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp;
@@ -14,6 +32,14 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 	/// </summary>
 	public class ReplaceMethodCallsWithOperators : DepthFirstAstVisitor<object, object>, IAstTransform
 	{
+		static readonly MemberReferenceExpression typeHandleOnTypeOfPattern = new MemberReferenceExpression {
+			Target = new Choice {
+				new TypeOfExpression(new AnyNode()),
+				new UndocumentedExpression { UndocumentedExpressionType = UndocumentedExpressionType.RefType, Arguments = { new AnyNode() } }
+			},
+			MemberName = "TypeHandle"
+		};
+		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			base.VisitInvocationExpression(invocationExpression, data);
@@ -38,9 +64,8 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			switch (methodRef.FullName) {
 				case "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)":
 					if (arguments.Length == 1) {
-						MemberReferenceExpression mre = arguments[0] as MemberReferenceExpression;
-						if (mre != null && mre.Target is TypeOfExpression && mre.MemberName == "TypeHandle") {
-							invocationExpression.ReplaceWith(mre.Target);
+						if (typeHandleOnTypeOfPattern.IsMatch(arguments[0])) {
+							invocationExpression.ReplaceWith(((MemberReferenceExpression)arguments[0]).Target);
 							return null;
 						}
 					}
@@ -176,7 +201,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			// Combine "x = x op y" into "x op= y"
 			BinaryOperatorExpression binary = assignment.Right as BinaryOperatorExpression;
 			if (binary != null && assignment.Operator == AssignmentOperatorType.Assign) {
-				if (CanConvertToCompoundAssignment(assignment.Left) && assignment.Left.Match(binary.Left) != null) {
+				if (CanConvertToCompoundAssignment(assignment.Left) && assignment.Left.IsMatch(binary.Left)) {
 					assignment.Operator = GetAssignmentOperatorForBinaryOperator(binary.Operator);
 					if (assignment.Operator != AssignmentOperatorType.Assign) {
 						// If we found a shorter operator, get rid of the BinaryOperatorExpression:
@@ -188,7 +213,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			}
 			if (assignment.Operator == AssignmentOperatorType.Add || assignment.Operator == AssignmentOperatorType.Subtract) {
 				// detect increment/decrement
-				if (assignment.Right.Match(new PrimitiveExpression(1)) != null) {
+				if (assignment.Right.IsMatch(new PrimitiveExpression(1))) {
 					// only if it's not a custom operator
 					if (assignment.Annotation<MethodReference>() == null) {
 						UnaryOperatorType type;
@@ -249,7 +274,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		
 		static bool IsWithoutSideEffects(Expression left)
 		{
-			return left is ThisReferenceExpression || left is IdentifierExpression || left is TypeReferenceExpression;
+			return left is ThisReferenceExpression || left is IdentifierExpression || left is TypeReferenceExpression || left is BaseReferenceExpression;
 		}
 		
 		void IAstTransform.Run(AstNode node)

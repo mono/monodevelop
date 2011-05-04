@@ -98,6 +98,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.Body, value); }
 		}
 		
+		/// <summary>
+		/// Gets the operator type from the method name, or null, if the method does not represent one of the known operator types.
+		/// </summary>
+		public static OperatorType? GetOperatorType (string methodName)
+		{
+			return (OperatorType?)Mono.CSharp.Operator.GetType (methodName);
+		}
+
 		public static string GetName(OperatorType type)
 		{
 			return Mono.CSharp.Operator.GetMetadataName((Mono.CSharp.Operator.OpType)type);

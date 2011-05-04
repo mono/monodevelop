@@ -120,12 +120,13 @@ namespace MonoDevelop.AssemblyBrowser
 			result.AppendLine ();
 			return result.ToString ();
 		}
-		
+
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)navigator.DataItem;
-			return DomMethodNodeBuilder.Decompile (data, null, b => b.AddAssembly (compilationUnit.AssemblyDefinition, true));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => b.AddAssembly (compilationUnit.AssemblyDefinition, true));
 		}
+		
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{

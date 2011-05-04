@@ -39,8 +39,6 @@ namespace ICSharpCode.Decompiler.Disassembler
 			if (exceptionHandler.FilterStart != null) {
 				writer.Write(' ');
 				WriteOffsetReference(writer, exceptionHandler.FilterStart);
-				writer.Write('-');
-				WriteOffsetReference(writer, exceptionHandler.FilterEnd);
 				writer.Write(" handler ");
 			}
 			if (exceptionHandler.CatchType != null) {
@@ -88,8 +86,10 @@ namespace ICSharpCode.Decompiler.Disassembler
 				writer.Write("instance ");
 			method.ReturnType.WriteTo(writer);
 			writer.Write(' ');
-			method.DeclaringType.WriteTo(writer, true);
-			writer.Write("::");
+			if (method.DeclaringType != null) {
+				method.DeclaringType.WriteTo(writer, true);
+				writer.Write("::");
+			}
 			writer.WriteReference(method.Name, method);
 			writer.Write("(");
 			var parameters = method.Parameters;
@@ -126,7 +126,10 @@ namespace ICSharpCode.Decompiler.Disassembler
 				writer.Write(string.Join(", ", at.Dimensions));
 				writer.Write(']');
 			} else if (type is GenericParameter) {
-				writer.WriteReference(type.Name, type);
+				writer.Write('!');
+				if (((GenericParameter)type).Owner.GenericParameterType == GenericParameterType.Method)
+					writer.Write('!');
+				writer.Write(type.Name);
 			} else if (type is ByReferenceType) {
 				((ByReferenceType)type).ElementType.WriteTo(writer, onlyName, shortName);
 				writer.Write('&');

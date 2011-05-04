@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 
 using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler.Tests.Helpers;
 using Microsoft.CSharp;
 using Mono.Cecil;
 using NUnit.Framework;
@@ -19,7 +20,7 @@ namespace ICSharpCode.Decompiler.Tests
 			var lines = File.ReadAllLines(Path.Combine(@"..\..\Tests", samplesFileName));
 			var testCode = RemoveIgnorableLines(lines);
 			var decompiledTestCode = RoundtripCode(testCode);
-			Assert.AreEqual(testCode, decompiledTestCode);
+			CodeAssert.AreEqual(testCode, decompiledTestCode);
 		}
 
 		static string RemoveIgnorableLines(IEnumerable<string> lines)
@@ -34,10 +35,12 @@ namespace ICSharpCode.Decompiler.Tests
 		/// <returns>The decompilation result of compiled source code.</returns>
 		static string RoundtripCode(string code)
 		{
+			DecompilerSettings settings = new DecompilerSettings();
+			settings.FullyQualifyAmbiguousTypeNames = false;
 			AssemblyDefinition assembly = Compile(code);
-			AstBuilder decompiler = new AstBuilder(new DecompilerContext());
+			AstBuilder decompiler = new AstBuilder(new DecompilerContext(assembly.MainModule) { Settings = settings });
 			decompiler.AddAssembly(assembly);
-			decompiler.Transform(new Helpers.RemoveCompilerAttribute());
+			new Helpers.RemoveCompilerAttribute().Run(decompiler.CompilationUnit);
 			StringWriter output = new StringWriter();
 			decompiler.GenerateCode(new PlainTextOutput(output));
 			return output.ToString();

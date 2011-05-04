@@ -42,9 +42,11 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <WarningLevel>4</WarningLevel>
+    <OutputPath>..\..\build\bin</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <WarningLevel>4</WarningLevel>
+    <OutputPath>..\..\build\bin</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -57,10 +72,12 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 						Variables = { new VariableInitializer(v.Name, v.ReplacedAssignment.Right.Detach()).CopyAnnotationsFrom(v.ReplacedAssignment) }
 					};
 					ExpressionStatement es = v.ReplacedAssignment.Parent as ExpressionStatement;
-					if (es != null)
+					if (es != null) {
+						// Note: if this crashes with 'Cannot replace the root node', check whether two variables were assigned the same name
 						es.ReplaceWith(varDecl.CopyAnnotationsFrom(es));
-					else
+					} else {
 						v.ReplacedAssignment.ReplaceWith(varDecl);
+					}
 				}
 			}
 			variablesToDeclare = null;
@@ -198,7 +215,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 					}
 					// If we can move the variable into the sub-block, we need to ensure that the remaining code
 					// does not use the value that was assigned by the first sub-block
-					Statement nextStatement = stmt.NextStatement;
+					Statement nextStatement = stmt.GetNextStatement();
 					if (nextStatement != null) {
 						// Analyze the range from the next statement to the end of the block
 						daa.SetAnalyzedRange(nextStatement, block);

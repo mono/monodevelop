@@ -68,6 +68,13 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		#region ITextOutput implementation
+		int currentLine;
+		public int CurrentLine {
+			get {
+				return currentLine;
+			}
+		}
+		
 		public void Indent ()
 		{
 			indent++;
@@ -103,6 +110,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			sb.AppendLine ();
 			write_indent = true;
+			currentLine++;
 		}
 
 		public void WriteDefinition (string text, object definition)

@@ -104,7 +104,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var field = (DomCecilField)navigator.DataItem;
 			
-			return DomMethodNodeBuilder.Decompile (data, ((DomCecilType)field.DeclaringType).TypeDefinition, b => b.AddField (field.FieldDefinition));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), ((DomCecilType)field.DeclaringType).TypeDefinition, b => b.AddField (field.FieldDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

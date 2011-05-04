@@ -21,17 +21,22 @@ FILES =  \
 	Ast/NRefactoryExtensions.cs \
 	Ast/TextOutputFormatter.cs \
 	Ast/Transforms/AddCheckedBlocks.cs \
+	Ast/Transforms/CombineQueryExpressions.cs \
 	Ast/Transforms/ContextTrackingVisitor.cs \
 	Ast/Transforms/ConvertConstructorCallIntoInitializer.cs \
 	Ast/Transforms/DeclareVariables.cs \
 	Ast/Transforms/DelegateConstruction.cs \
+	Ast/Transforms/IntroduceExtensionMethods.cs \
+	Ast/Transforms/IntroduceQueryExpressions.cs \
 	Ast/Transforms/IntroduceUnsafeModifier.cs \
 	Ast/Transforms/IntroduceUsingDeclarations.cs \
 	Ast/Transforms/PatternStatementTransform.cs \
 	Ast/Transforms/PushNegation.cs \
 	Ast/Transforms/ReplaceMethodCallsWithOperators.cs \
 	Ast/Transforms/TransformationPipeline.cs \
+	Ast/TypesHierarchyHelpers.cs \
 	CecilExtensions.cs \
+	CodeMappings.cs \
 	DecompilerException.cs \
 	DecompilerSettings.cs \
 	Disassembler/DisassemblerHelpers.cs \
@@ -69,6 +74,7 @@ FILES =  \
 	ITextOutput.cs \
 	PlainTextOutput.cs \
 	Properties/AssemblyInfo.cs \
+	ReferenceResolvingException.cs \
 	TextOutputWriter.cs 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 

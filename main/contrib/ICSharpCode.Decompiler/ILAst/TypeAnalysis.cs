@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -319,10 +334,7 @@ namespace ICSharpCode.Decompiler.ILAst
 						if (expr.Code == ILCode.CallSetter || expr.Code == ILCode.CallvirtSetter) {
 							return SubstituteTypeArgs(method.Parameters.Last().ParameterType, method);
 						} else {
-							TypeReference type = SubstituteTypeArgs(method.ReturnType, method);
-							if (expr.GetPrefix(ILCode.PropertyAddress) != null && !(type is ByReferenceType))
-								type = new ByReferenceType(type);
-							return type;
+							return SubstituteTypeArgs(method.ReturnType, method);
 						}
 					}
 				case ILCode.Newobj:
@@ -335,18 +347,13 @@ namespace ICSharpCode.Decompiler.ILAst
 						}
 						return ctor.DeclaringType;
 					}
+				case ILCode.InitObject:
 				case ILCode.InitCollection:
 					return InferTypeForExpression(expr.Arguments[0], expectedType);
-				case ILCode.InitCollectionAddMethod:
-					{
-						MethodReference addMethod = (MethodReference)expr.Operand;
-						if (forceInferChildren) {
-							for (int i = 1; i < addMethod.Parameters.Count; i++) {
-								InferTypeForExpression(expr.Arguments[i-1], SubstituteTypeArgs(addMethod.Parameters[i].ParameterType, addMethod));
-							}
-						}
-						return addMethod.DeclaringType;
-					}
+				case ILCode.InitializedObject:
+					// expectedType should always be known due to the parent method call / property setter
+					Debug.Assert(expectedType != null);
+					return expectedType;
 					#endregion
 					#region Load/Store Fields
 				case ILCode.Ldfld:
@@ -452,6 +459,26 @@ namespace ICSharpCode.Decompiler.ILAst
 							InferTypeForExpression(expr.Arguments[0], new ByReferenceType(elementType));
 						}
 						return elementType;
+					}
+				case ILCode.Mkrefany:
+					if (forceInferChildren) {
+						InferTypeForExpression(expr.Arguments[0], (TypeReference)expr.Operand);
+					}
+					return typeSystem.TypedReference;
+				case ILCode.Refanytype:
+					if (forceInferChildren) {
+						InferTypeForExpression(expr.Arguments[0], typeSystem.TypedReference);
+					}
+					return new TypeReference("System", "RuntimeTypeHandle", module, module, true);
+				case ILCode.Refanyval:
+					if (forceInferChildren) {
+						InferTypeForExpression(expr.Arguments[0], typeSystem.TypedReference);
+					}
+					return new ByReferenceType((TypeReference)expr.Operand);
+				case ILCode.AddressOf:
+					{
+						TypeReference t = InferTypeForExpression(expr.Arguments[0], UnpackPointer(expectedType));
+						return t != null ? new ByReferenceType(t) : null;
 					}
 					#endregion
 					#region Arithmetic instructions
@@ -648,9 +675,15 @@ namespace ICSharpCode.Decompiler.ILAst
 				case ILCode.Conv_R_Un:
 					return (expectedType != null  && expectedType.MetadataType == MetadataType.Single) ? typeSystem.Single : typeSystem.Double;
 				case ILCode.Castclass:
-				case ILCode.Isinst:
 				case ILCode.Unbox_Any:
 					return (TypeReference)expr.Operand;
+				case ILCode.Isinst:
+					{
+						// isinst performs the equivalent of a cast only for reference types;
+						// value types still need to be unboxed after an isinst instruction
+						TypeReference tr = (TypeReference)expr.Operand;
+						return tr.IsValueType ? typeSystem.Object : tr;
+					}
 				case ILCode.Box:
 					if (forceInferChildren)
 						InferTypeForExpression(expr.Arguments.Single(), (TypeReference)expr.Operand);
@@ -732,12 +765,12 @@ namespace ICSharpCode.Decompiler.ILAst
 			return resultType;
 		}
 		
-		static TypeReference GetFieldType(FieldReference fieldReference)
+		public static TypeReference GetFieldType(FieldReference fieldReference)
 		{
 			return SubstituteTypeArgs(UnpackModifiers(fieldReference.FieldType), fieldReference);
 		}
 		
-		static TypeReference SubstituteTypeArgs(TypeReference type, MemberReference member)
+		public static TypeReference SubstituteTypeArgs(TypeReference type, MemberReference member)
 		{
 			if (type is TypeSpecification) {
 				ArrayType arrayType = type as ArrayType;

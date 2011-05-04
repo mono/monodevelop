@@ -173,7 +173,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
 			var type = (DomCecilType)navigator.DataItem;
-			return DomMethodNodeBuilder.Decompile (data, type.TypeDefinition, b => b.AddType (type.TypeDefinition));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type.TypeDefinition, b => b.AddType (type.TypeDefinition));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

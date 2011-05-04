@@ -118,13 +118,26 @@ namespace MonoDevelop.AssemblyBrowser
 			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
 		
-		public static List<ReferenceSegment> Decompile (TextEditorData data, TypeDefinition currentType, Action<AstBuilder> setData)
+		public static ModuleDefinition GetModule (ITreeNavigator navigator)
+		{
+			var nav = navigator.Clone ();
+			while (!(nav.DataItem is DomCecilCompilationUnit.Module) && !(nav.DataItem is DomCecilCompilationUnit)) {
+				if (!nav.MoveToParent ())
+					return ModuleDefinition.CreateModule ("", ModuleKind.Console);
+			}
+			if (nav.DataItem is DomCecilCompilationUnit)
+				return ((DomCecilCompilationUnit)nav.DataItem).AssemblyDefinition.MainModule;
+				
+			return ((DomCecilCompilationUnit.Module)nav.DataItem).ModuleDefinition;
+		}
+
+		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
 		{
 			try {
 				var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
 				var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 				
-				var context = new DecompilerContext ();
+				var context = new DecompilerContext (module);
 				var source = new CancellationTokenSource ();
 				
 				context.CancellationToken = source.Token;
@@ -172,7 +185,7 @@ namespace MonoDevelop.AssemblyBrowser
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, ((DomCecilType)method.DeclaringType).TypeDefinition, b => b.AddMethod (method.MethodDefinition));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), ((DomCecilType)method.DeclaringType).TypeDefinition, b => b.AddMethod (method.MethodDefinition));
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
