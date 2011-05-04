@@ -15,7 +15,7 @@ namespace Mono.Debugging.Evaluation
 		Dictionary<string, TypeDisplayData> typeDisplayData = new Dictionary<string, TypeDisplayData> ();
 
 		// Time to wait while evaluating before switching to async mode
-		public int DefaultEvaluationWaitTime = 100;
+		public int DefaultEvaluationWaitTime { get; set; }
 		
 		public event EventHandler<BusyStateEventArgs> BusyStateChanged;
 		
@@ -46,6 +46,8 @@ namespace Mono.Debugging.Evaluation
 		
 		public ObjectValueAdaptor ()
 		{
+			DefaultEvaluationWaitTime = 100;
+			
 			asyncOperationManager.BusyStateChanged += delegate(object sender, BusyStateEventArgs e) {
 				OnBusyStateChanged (e);
 			};
@@ -184,8 +186,9 @@ namespace Mono.Debugging.Evaluation
 		
 		public virtual void OnBusyStateChanged (BusyStateEventArgs e)
 		{
-			if (BusyStateChanged != null)
-				BusyStateChanged (this, e);
+			EventHandler<BusyStateEventArgs> evnt = BusyStateChanged;
+			if (evnt != null)
+				evnt (this, e);
 		}
 
 		public abstract ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr);
@@ -334,21 +337,24 @@ namespace Mono.Debugging.Evaluation
 			if (IsPrimitive (ctx, obj))
 				return new ObjectValue[0];
 
+			bool showRawView = false;
+			
 			// If there is a proxy, it has to show the members of the proxy
 			object proxy = obj;
 			if (dereferenceProxy) {
 				proxy = GetProxyObject (ctx, obj);
-				if (proxy != obj)
+				if (proxy != obj) {
 					type = GetValueType (ctx, proxy);
+					showRawView = true;
+				}
 			}
 
 			TypeDisplayData tdata = GetTypeDisplayData (ctx, type);
-			bool showRawView = tdata.IsProxyType && dereferenceProxy && ctx.Options.AllowDebuggerProxy;
 			bool groupPrivateMembers = ctx.Options.GroupPrivateMembers && (ctx.Options.GroupUserPrivateMembers || IsExternalType (ctx, type));
 
 			List<ObjectValue> values = new List<ObjectValue> ();
 			BindingFlags flattenFlag = ctx.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
-			BindingFlags nonNonPublicFlag = groupPrivateMembers ? (BindingFlags)0 : BindingFlags.NonPublic;
+			BindingFlags nonNonPublicFlag = groupPrivateMembers || showRawView ? (BindingFlags)0 : BindingFlags.NonPublic;
 			BindingFlags staticFlag = ctx.Options.GroupStaticMembers ? (BindingFlags)0 : BindingFlags.Static;
 			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonNonPublicFlag | staticFlag;
 			
@@ -1016,19 +1022,30 @@ namespace Mono.Debugging.Evaluation
 
 	public class TypeDisplayData
 	{
-		public string ProxyType;
-		public string ValueDisplayString;
-		public string TypeDisplayString;
-		public string NameDisplayString;
-		public bool IsCompilerGenerated;
+		public string ProxyType { get; internal set; }
+		public string ValueDisplayString { get; internal set; }
+		public string TypeDisplayString { get; internal set; }
+		public string NameDisplayString { get; internal set; }
+		public bool IsCompilerGenerated { get; internal set; }
 		
 		public bool IsProxyType {
 			get { return ProxyType != null; }
 		}
 
-		public static readonly TypeDisplayData Default = new TypeDisplayData ();
+		public static readonly TypeDisplayData Default = new TypeDisplayData (null, null, null, null, false, null);
 
-		public Dictionary<string, DebuggerBrowsableState> MemberData;
+		public Dictionary<string, DebuggerBrowsableState> MemberData { get; internal set; }
+		
+		public TypeDisplayData (string proxyType, string valueDisplayString, string typeDisplayString,
+			string nameDisplayString, bool isCompilerGenerated, Dictionary<string, DebuggerBrowsableState> memberData)
+		{
+			ProxyType = proxyType;
+			ValueDisplayString = valueDisplayString;
+			TypeDisplayString = typeDisplayString;
+			NameDisplayString = nameDisplayString;
+			IsCompilerGenerated = isCompilerGenerated;
+			MemberData = memberData;
+		}
 
 		public DebuggerBrowsableState GetMemberBrowsableState (string name)
 		{

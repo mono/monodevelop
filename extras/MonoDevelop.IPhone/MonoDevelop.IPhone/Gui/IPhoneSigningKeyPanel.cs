@@ -72,7 +72,7 @@ namespace MonoDevelop.IPhone.Gui
 		{
 			foreach (var conf in configurations) {
 				IPhoneProjectConfiguration ipconf = conf as IPhoneProjectConfiguration;
-				if (ipconf != null && ipconf.Platform == IPhoneProject.PLAT_IPHONE)
+				if (ipconf != null && ipconf.IsDevicePlatform)
 					yield return conf;
 			}
 		}
@@ -119,7 +119,7 @@ namespace MonoDevelop.IPhone.Gui
 			profileSelections.Clear ();
 			provisioningCombo.ClearList ();
 			
-			signingTable.Sensitive = cfg.Platform == IPhoneProject.PLAT_IPHONE;
+			signingTable.Sensitive = cfg.IsDevicePlatform;
 			
 			identityCombo.SelectedName = cfg.CodesignKey;
 			provisioningCombo.SelectedName = cfg.CodesignProvision;

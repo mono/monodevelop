@@ -77,7 +77,11 @@ namespace Mono.Debugging.Soft
 		
 		bool loggedSymlinkedRuntimesBug = false;
 		
-		public readonly SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
+		public SoftDebuggerAdaptor Adaptor {
+			get { return adaptor; }
+		}
+		
+		readonly SoftDebuggerAdaptor adaptor = new SoftDebuggerAdaptor ();
 		
 		public SoftDebuggerSession ()
 		{
@@ -481,10 +485,15 @@ namespace Mono.Debugging.Soft
 		protected override void OnContinue ()
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
-				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
-				OnResumed ();
-				vm.Resume ();
-				DequeueEventsForFirstThread ();
+				try {
+					Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
+					OnResumed ();
+					vm.Resume ();
+					DequeueEventsForFirstThread ();
+				} catch (Exception ex) {
+					if (!HandleException (ex))
+						OnDebuggerOutput (true, ex.ToString ());
+				}
 			});
 		}
 
@@ -1194,6 +1203,9 @@ namespace Mono.Debugging.Soft
 				}
 			}
 			
+			for (int n=0; n<sourceFiles.Length; n++)
+				sourceFiles[n] = NormalizePath (sourceFiles[n]);
+			
 			foreach (string s in sourceFiles) {
 				List<TypeMirror> typesList;
 				
@@ -1241,6 +1253,14 @@ namespace Mono.Debugging.Soft
 				pending_bes.Remove (be);
 		}
 		
+		internal static string NormalizePath (string path)
+		{
+			if (!IsWindows && path.StartsWith ("\\"))
+				return path.Replace ('\\','/');
+			else
+				return path;
+		}
+		
 		string PathToFileName (string path)
 		{
 			if (useFullPaths)
@@ -1264,7 +1284,7 @@ namespace Mono.Debugging.Soft
 				int rangeLastLine = -1;
 				
 				foreach (Location l in m.Locations) {
-					if (PathComparer.Compare (PathToFileName (l.SourceFile), file) == 0) {
+					if (PathComparer.Compare (PathToFileName (NormalizePath (l.SourceFile)), file) == 0) {
 						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
 						// pick the L+1 location, since that's where the debugger is going to stop.
 						if (l.LineNumber == line) {
@@ -1434,7 +1454,7 @@ namespace Mono.Debugging.Soft
 			List<AssemblyLine> lines = new List<AssemblyLine> ();
 			foreach (TypeMirror type in types) {
 				foreach (MethodMirror met in type.GetMethods ()) {
-					if (!PathsAreEqual (met.SourceFile, file))
+					if (!PathsAreEqual (NormalizePath (met.SourceFile), file))
 						continue;
 					var body = met.GetMethodBody ();
 					int lastLine = -1;
@@ -1444,8 +1464,10 @@ namespace Mono.Debugging.Soft
 						Location loc = met.LocationAtILOffset (ins.Offset);
 						if (loc != null && lastLine == -1) {
 							lastLine = loc.LineNumber;
-							for (int n=firstPos; n<lines.Count; n++)
-								lines [n].SourceLine = loc.LineNumber;
+							for (int n=firstPos; n<lines.Count; n++) {
+								AssemblyLine old = lines [n];
+								lines [n] = new AssemblyLine (old.Address, old.AddressSpace, old.Code, loc.LineNumber);
+							}
 						}
 						lines.Add (new AssemblyLine (ins.Offset, addrSpace, Disassemble (ins), loc != null ? loc.LineNumber : lastLine));
 					}

@@ -210,9 +210,9 @@ namespace MonoDevelop.Ide.Navigation
 		public void RemoveCurrent ()
 		{
 			if (CanMoveBack) {
+				DestroyItem (current);
 				current = back.Last.Value;
 				current.SetVisited ();
-				DestroyItem (back.Last.Value);
 				back.RemoveLast ();
 			}
 		}

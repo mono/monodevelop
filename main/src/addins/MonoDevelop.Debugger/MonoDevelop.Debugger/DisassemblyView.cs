@@ -118,7 +118,7 @@ namespace MonoDevelop.Debugger
 			sw.Sensitive = true;
 			
 			StackFrame sf = DebuggingService.CurrentFrame;
-			if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && File.Exists (sf.SourceLocation.Filename))
+			if (!string.IsNullOrEmpty (sf.SourceLocation.FileName) && File.Exists (sf.SourceLocation.FileName))
 				FillWithSource ();
 			else
 				Fill ();
@@ -130,17 +130,17 @@ namespace MonoDevelop.Debugger
 			
 			StackFrame sf = DebuggingService.CurrentFrame;
 			
-			if (currentFile != sf.SourceLocation.Filename) {
-				AssemblyLine[] asmLines = DebuggingService.DebuggerSession.DisassembleFile (sf.SourceLocation.Filename);
+			if (currentFile != sf.SourceLocation.FileName) {
+				AssemblyLine[] asmLines = DebuggingService.DebuggerSession.DisassembleFile (sf.SourceLocation.FileName);
 				if (asmLines == null) {
 					// Mixed disassemble not supported
 					Fill ();
 					return;
 				}
-				currentFile = sf.SourceLocation.Filename;
+				currentFile = sf.SourceLocation.FileName;
 				addressLines.Clear ();
 				editor.Document.Text = string.Empty;
-				StreamReader sr = new StreamReader (sf.SourceLocation.Filename);
+				StreamReader sr = new StreamReader (sf.SourceLocation.FileName);
 				string line;
 				int sourceLine = 1;
 				int na = 0;
@@ -362,7 +362,7 @@ namespace MonoDevelop.Debugger
 		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
 			ChunkStyle st = new ChunkStyle (baseStyle);
-			st.Color = new Gdk.Color (125, 125, 125);
+			st.CairoColor = new Cairo.Color (125, 125, 125);
 			return st;
 		}
 	}

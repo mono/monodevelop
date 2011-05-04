@@ -142,59 +142,8 @@ namespace MonoDevelop.Refactoring.References
 			return new WholeWordMatcher (member.Name);
 		}
 		
-		struct FileInfo { 
-			public readonly ProjectDom Dom;
-			public readonly string FileName;
-			
-			public FileInfo (ProjectDom dom, string fileName)
-			{
-				this.Dom = dom;
-				this.FileName = fileName;
-			}
-		}
 		
-		static IEnumerable<FileInfo> GetFileNames (IMember member)
-		{
-			switch (GetScope (member)) {
-			case RefactoryScope.DeclaringType:
-				IType declaringType = member.DeclaringType;
-				if (declaringType is InstantiatedType)
-					declaringType = ((InstantiatedType)declaringType).UninstantiatedType;
-				IType resolvedType = declaringType.SourceProjectDom.GetType (declaringType.FullName, declaringType.TypeParameters.Count, true, true);
-				if (resolvedType == null) 
-					goto case RefactoryScope.Solution;
-				foreach (IType part in resolvedType.Parts) {
-					string file = part.CompilationUnit.FileName;
-					yield return new FileInfo (declaringType.SourceProjectDom, file);
-				}
-				break;
-			case RefactoryScope.File: {
-				IType type = member is IType ? (IType)member : member.DeclaringType;
-				yield return new FileInfo (type.SourceProjectDom, type.CompilationUnit.FileName);
-				break;
-			}
-			case RefactoryScope.Project: {
-				IType type = member is IType ? (IType)member : member.DeclaringType;
-				foreach (var file in type.SourceProjectDom.Project.Files) {
-					yield return new FileInfo (type.SourceProjectDom, file.Name);
-				}
-				break;
-			}
-			case RefactoryScope.Solution:
-				IType type = member is IType ? (IType)member : member.DeclaringType;
-				var dom = type.SourceProjectDom;
-				
-				foreach (var project in dom.Project.ParentSolution.GetAllProjects ()) {
-					ProjectDom projectDom = ProjectDomService.GetProjectDom (project);
-					if (projectDom != dom && !projectDom.References.Contains (projectDom))
-						continue;
-					foreach (var file in project.Files) {
-						yield return new FileInfo (projectDom, file.Name);
-					}
-				}
-				break;
-			}
-		}
+		
 		
 		static RefactoryScope GetScope (IMember member)
 		{

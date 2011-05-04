@@ -49,6 +49,7 @@ namespace MonoDevelop.DesignerSupport
 		TreeStore outlineTreeStore;
 		bool refreshingOutline;
 		bool disposed;
+		bool outlineReady;
 
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
@@ -101,12 +102,11 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeView.HeadersVisible = false;
 			
 			outlineTreeView.Selection.Changed += delegate {
-				TreeIter iter;
-				if (!outlineTreeView.Selection.GetSelected (out iter))
-					return;
-				object o = outlineTreeStore.GetValue (iter, 0);
-				
-				IdeApp.ProjectOperations.JumpToDeclaration (o as INode);
+				JumpToDeclaration (false);
+			};
+			
+			outlineTreeView.RowActivated += delegate {
+				JumpToDeclaration (true);
 			};
 
 			this.lastCU = Document.ParsedDocument;
@@ -117,6 +117,20 @@ namespace MonoDevelop.DesignerSupport
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
+		}
+		
+		void JumpToDeclaration (bool focusEditor)
+		{
+			if (!outlineReady)
+				return;
+			TreeIter iter;
+			if (!outlineTreeView.Selection.GetSelected (out iter))
+				return;
+			object o = outlineTreeStore.GetValue (iter, 0);
+			
+			IdeApp.ProjectOperations.JumpToDeclaration (o as INode);
+			if (focusEditor)
+				IdeApp.Workbench.ActiveDocument.Select ();
 		}
 
 		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
@@ -184,12 +198,17 @@ namespace MonoDevelop.DesignerSupport
 				refillOutlineStoreId = 0;
 				return false;
 			}
-
+			
+			outlineReady = false;
 			outlineTreeStore.Clear ();
 			if (lastCU != null) {
 				BuildTreeChildren (outlineTreeStore, TreeIter.Zero, lastCU);
+				TreeIter it;
+				if (outlineTreeStore.GetIterFirst (out it))
+					outlineTreeView.Selection.SelectIter (it);
 				outlineTreeView.ExpandAll ();
 			}
+			outlineReady = true;
 
 			Gdk.Threads.Leave ();
 

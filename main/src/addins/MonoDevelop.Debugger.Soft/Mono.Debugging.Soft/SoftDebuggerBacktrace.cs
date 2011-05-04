@@ -81,7 +81,7 @@ namespace Mono.Debugging.Soft
 			string method = frame.Method.Name;
 			if (frame.Method.DeclaringType != null)
 				method = frame.Method.DeclaringType.FullName + "." + method;
-			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber);
+			var location = new DC.SourceLocation (method, SoftDebuggerSession.NormalizePath (frame.FileName), frame.LineNumber);
 			var lang = frame.Method != null? "Managed" : "Native";
 			return new DC.StackFrame (frame.ILOffset, frame.Method.FullName, location, lang, session.IsExternalCode (frame), true);
 		}

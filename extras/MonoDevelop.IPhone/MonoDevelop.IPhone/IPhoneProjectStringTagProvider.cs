@@ -74,7 +74,7 @@ namespace MonoDevelop.IPhone
 		{
 			switch (tag) {
 			case "SDKVERSION":
-				return instance.MtouchSdkVersion.ResolveIfDefault ();
+				return instance.MtouchSdkVersion.ResolveIfDefault (instance.IsSimPlatform);
 			case "APPDIRECTORY":
 				return instance.AppDirectory;
 			}

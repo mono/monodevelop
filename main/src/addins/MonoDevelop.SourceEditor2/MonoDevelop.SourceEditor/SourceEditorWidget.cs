@@ -339,6 +339,10 @@ namespace MonoDevelop.SourceEditor
 			var doc = Document;
 			if (doc == null || parsedDocument == null || !options.ShowFoldMargin)
 				return;
+			UpdateErrorUndelines (parsedDocument);
+			// don't update parsed documents that contain errors - the foldings from there may be invalid.
+			if (doc.HasFoldSegments && parsedDocument.HasErrors)
+				return;
 			try {
 				List<FoldSegment> foldSegments = new List<FoldSegment> ();
 				bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
@@ -408,7 +412,7 @@ namespace MonoDevelop.SourceEditor
 					
 				}
 				doc.UpdateFoldSegmentWorker (sender, new DoWorkEventArgs (foldSegments));
-				UpdateErrorUndelines (parsedDocument);
+				
 				if (reloadSettings) {
 					reloadSettings = false;
 					Application.Invoke (delegate {

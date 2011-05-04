@@ -38,9 +38,9 @@ namespace MonoDevelop.IPhone
 {
 	public struct IPhoneSdkVersion : IComparable<IPhoneSdkVersion>, IEquatable<IPhoneSdkVersion>
 	{
-		public static IPhoneSdkVersion GetDefault ()
+		public static IPhoneSdkVersion GetDefault (bool sim)
 		{
-			var v = IPhoneFramework.InstalledSdkVersions;
+			var v = IPhoneFramework.GetInstalledSdkVersions (sim);
 			return v.Count > 0? v[v.Count - 1] : UseDefault;
 		}
 		
@@ -162,10 +162,10 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		public IPhoneSdkVersion ResolveIfDefault ()
+		public IPhoneSdkVersion ResolveIfDefault (bool sim)
 		{
 			if (IsUseDefault)
-				return GetDefault ();
+				return GetDefault (sim);
 			else
 				return this;
 		}

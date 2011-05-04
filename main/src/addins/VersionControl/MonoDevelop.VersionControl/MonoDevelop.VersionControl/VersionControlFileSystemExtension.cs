@@ -20,13 +20,17 @@ namespace MonoDevelop.VersionControl
 				return GetRepository (path) != null;
 		}
 		
-		Repository GetRepository (string path)
+		Repository GetRepository (FilePath path)
 		{
-			// FIXME: Optimize
+			path = path.FullPath;
+			
+			Project p = IdeApp.Workspace.GetProjectContainingFile (path);
+			if (p != null)
+				return VersionControlService.GetRepository (p);
+			
 			foreach (Project prj in IdeApp.Workspace.GetAllProjects ()) {
-				if (path.StartsWith (prj.BaseDirectory)) {
+				if (path == prj.BaseDirectory || path.IsChildPathOf (prj.BaseDirectory))
 					return VersionControlService.GetRepository (prj);
-				}
 			}
 			return null;
 		}

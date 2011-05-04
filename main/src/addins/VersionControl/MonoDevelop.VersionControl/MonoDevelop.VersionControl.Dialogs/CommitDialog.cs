@@ -113,47 +113,50 @@ namespace MonoDevelop.VersionControl.Dialogs
 		
 		protected override void OnResponse (Gtk.ResponseType type)
 		{
-			if (type == Gtk.ResponseType.Ok) {
-			
-				// Update the change set
-				ArrayList todel = new ArrayList ();
-				foreach (ChangeSetItem it in changeSet.Items) {
-					if (!selected.Contains (it.LocalPath))
-						todel.Add (it.LocalPath);
-				}
-				foreach (string file in todel)
-					changeSet.RemoveFile (file);
-				changeSet.GlobalComment = Message;
-				
-				// Perform the commit
-				
-				int n;
-				for (n=0; n<extensions.Count; n++) {
-					CommitDialogExtension ext = (CommitDialogExtension) extensions [n];
-					bool res;
-					try {
-						res = ext.OnBeginCommit (changeSet);
-					} catch (Exception ex) {
-						MessageService.ShowException (ex);
-						res = false;
-					}
-					System.Console.WriteLine ("RES: " + res);
-					if (!res) {
-						// Commit failed. Rollback the previous extensions
-						for (int m=0; m<n; m++) {
-							ext = (CommitDialogExtension) extensions [m];
-							try {
-								ext.OnEndCommit (changeSet, false);
-							} catch {}
-						}
-						return;
-					}
-					Hide ();
-				}
-			} else {
+			if (type != Gtk.ResponseType.Ok) {
 				changeSet.GlobalComment = oldMessage;
 			}
 			base.OnResponse (type);
+		}
+
+		protected void OnButtonCommitClicked (object sender, System.EventArgs e)
+		{
+			// Update the change set
+			ArrayList todel = new ArrayList ();
+			foreach (ChangeSetItem it in changeSet.Items) {
+				if (!selected.Contains (it.LocalPath))
+					todel.Add (it.LocalPath);
+			}
+			foreach (string file in todel)
+				changeSet.RemoveFile (file);
+			changeSet.GlobalComment = Message;
+			
+			// Perform the commit
+			
+			int n;
+			for (n=0; n<extensions.Count; n++) {
+				CommitDialogExtension ext = (CommitDialogExtension) extensions [n];
+				bool res;
+				try {
+					res = ext.OnBeginCommit (changeSet);
+				} catch (Exception ex) {
+					MessageService.ShowException (ex);
+					res = false;
+				}
+				System.Console.WriteLine ("RES: " + res);
+				if (!res) {
+					// Commit failed. Rollback the previous extensions
+					for (int m=0; m<n; m++) {
+						ext = (CommitDialogExtension) extensions [m];
+						try {
+							ext.OnEndCommit (changeSet, false);
+						} catch {}
+					}
+					return;
+				}
+				Hide ();
+			}
+			Respond (Gtk.ResponseType.Ok);
 		}
 		
 		void OnTextChanged (object s, EventArgs args)

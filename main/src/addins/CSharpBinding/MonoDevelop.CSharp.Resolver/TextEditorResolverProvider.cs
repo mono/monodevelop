@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (doc == null)
 				return null;
 			
-			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
+			IResolver resolver = parser.CreateResolver (dom, doc, fileName);
 			if (resolver == null) 
 				return null;
 			var expressionFinder = new NewCSharpExpressionFinder (dom);
@@ -106,7 +106,7 @@ namespace MonoDevelop.CSharp.Resolver
 						continue;
 					if (ch == '=')
 						break;
-					if (Char.IsLetterOrDigit (ch) || ch =='_') {
+					if (Char.IsLetterOrDigit (ch) || ch == '_') {
 						identifer.Append (ch);
 						continue;
 					}
@@ -123,11 +123,13 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 				}
 			}
-			if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
+			
+			if (expressionResult.ExpressionContext == ExpressionContext.Attribute && !string.IsNullOrEmpty (expressionResult.Expression)) {
 				savedExpression = expressionResult.Expression;
 				expressionResult.Expression = expressionResult.Expression.Trim () + "Attribute";
 				expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
-			} 
+			}
+			
 			resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, loc.Column));
 			if (savedExpression != null && resolveResult == null) {
 				expressionResult.Expression = savedExpression;

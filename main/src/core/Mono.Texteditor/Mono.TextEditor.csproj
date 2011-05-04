@@ -181,6 +181,7 @@
     <Compile Include="Mono.TextEditor\TextMarkerEvent.cs" />
     <Compile Include="Mono.TextEditor\SegmentTree.cs" />
     <Compile Include="Mono.TextEditor.Utils\RedBlackTree.cs" />
+    <Compile Include="Mono.TextEditor\HeightTree.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -1263,7 +1263,7 @@ namespace MonoDevelop.Ide
 			
 			return AddFilesToProject (project, files, targetPaths, buildAction);
 		}
-		
+
 		/// <summary>
 		/// Adds files to a project, potentially asking the user whether to move, copy or link the files.
 		/// </summary>
@@ -1275,7 +1275,10 @@ namespace MonoDevelop.Ide
 			Debug.Assert (targetPaths != null);
 			Debug.Assert (files.Length == targetPaths.Length);
 			
-			int action = -1;
+			AddAction action = AddAction.Copy;
+			bool applyToAll = true;
+			bool dialogShown = false;
+			
 			IProgressMonitor monitor = null;
 			
 			if (files.Length > 10) {
@@ -1326,58 +1329,46 @@ namespace MonoDevelop.Ide
 					
 					//files in the target directory get added directly in their current location without moving/copying
 					if (file.CanonicalPath == targetPath) {
-						//FIXME: MD project system doesn't cope with duplicate includes - project save/load will remove the file
-						ProjectFile pf;
-						if (filesInProject.TryGetValue (targetPath, out pf)) {
-							var link = pf.Link;
-							MessageService.ShowWarning (GettextCatalog.GetString (
-								"The link '{0}' in the project already includes the file '{1}'", link, file));
-							continue;
-						}
-						pf = new ProjectFile (file, fileBuildAction);
-						vpathsInProject.Add (pf.ProjectVirtualPath);
-						filesInProject [pf.FilePath] = pf;
-						newFileList.Add (pf);
+						AddFileToFolder (newFileList, vpathsInProject, filesInProject, file, fileBuildAction);
 						continue;
 					}
 					
 					//for files outside the project directory, we ask the user whether to move, copy or link
-					var md = new Gtk.MessageDialog (
-						 IdeApp.Workbench.RootWindow,
-						 Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent,
-						 Gtk.MessageType.Question, Gtk.ButtonsType.None,
-						 GettextCatalog.GetString ("The file {0} is outside the target directory. What would you like to do?", file));
-
-					try {
-						Gtk.CheckButton remember = null;
+					
+					AddExternalFileDialog addExternalDialog = null;
+					
+					if (!dialogShown || !applyToAll) {
+						addExternalDialog = new AddExternalFileDialog (file);
 						if (files.Length > 1) {
-							remember = new Gtk.CheckButton (GettextCatalog.GetString ("Use the same action for all selected files."));
-							md.VBox.PackStart (remember, false, false, 0);
+							addExternalDialog.ApplyToAll = applyToAll;
+							addExternalDialog.ShowApplyAll = true;
 						}
-						
-						const int ACTION_LINK = 3;
-						const int ACTION_COPY = 1;
-						const int ACTION_MOVE = 2;
-						
-						md.AddButton (GettextCatalog.GetString ("_Link"), ACTION_LINK);
-						md.AddButton (Gtk.Stock.Copy, ACTION_COPY);
-						md.AddButton (GettextCatalog.GetString ("_Move"), ACTION_MOVE);
-						md.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
-						md.VBox.ShowAll ();
-						
-						int ret = -1;
-						if (action < 0) {
-							ret = MessageService.RunCustomDialog (md);
-							if (ret < 0) {
+						if (file.IsChildPathOf (targetPath.ParentDirectory))
+							addExternalDialog.ShowKeepOption (file.ParentDirectory.ToRelative (targetPath.ParentDirectory));
+						else {
+							if (action == AddAction.Keep)
+								action = AddAction.Copy;
+							addExternalDialog.SelectedAction = action;
+						}
+					}
+					
+					try {
+						if (!dialogShown || !applyToAll) {
+							if (MessageService.RunCustomDialog (addExternalDialog) == (int) Gtk.ResponseType.Cancel) {
 								project.Files.AddRange (newFileList.Where (f => f != null));
 								return newFileList;
 							}
-							if (remember != null && remember.Active) action = ret;
-						} else {
-							ret = action;
+							action = addExternalDialog.SelectedAction;
+							applyToAll = addExternalDialog.ApplyToAll;
+							dialogShown = true;
 						}
 						
-						if (ret == ACTION_LINK) {
+						if (action == AddAction.Keep) {
+							AddFileToFolder (newFileList, vpathsInProject, filesInProject, file, fileBuildAction);
+							continue;
+						}
+						
+						if (action == AddAction.Link) {
 							//FIXME: MD project system doesn't cope with duplicate includes - project save/load will remove the file
 							ProjectFile pf;
 							if (filesInProject.TryGetValue (file, out pf)) {
@@ -1400,7 +1391,7 @@ namespace MonoDevelop.Ide
 							if (!Directory.Exists (targetPath.ParentDirectory))
 								FileService.CreateDirectory (targetPath.ParentDirectory);
 							
-							if (MoveCopyFile (file, targetPath, ret == ACTION_MOVE)) {
+							if (MoveCopyFile (file, targetPath, action == AddAction.Move)) {
 								var pf = new ProjectFile (targetPath, fileBuildAction);
 								vpathsInProject.Add (pf.ProjectVirtualPath);
 								filesInProject [pf.FilePath] = pf;
@@ -1416,12 +1407,29 @@ namespace MonoDevelop.Ide
 							newFileList.Add (null);
 						}
 					} finally {
-						md.Destroy ();
+						if (addExternalDialog != null)
+							addExternalDialog.Destroy ();
 					}
 				}
 			}
 			project.Files.AddRange (newFileList.Where (f => f != null));
 			return newFileList;
+		}
+		
+		void AddFileToFolder (List<ProjectFile> newFileList, HashSet<FilePath> vpathsInProject, Dictionary<FilePath, ProjectFile> filesInProject, FilePath file, string fileBuildAction)
+		{
+			//FIXME: MD project system doesn't cope with duplicate includes - project save/load will remove the file
+			ProjectFile pf;
+			if (filesInProject.TryGetValue (file, out pf)) {
+				var link = pf.Link;
+				MessageService.ShowWarning (GettextCatalog.GetString (
+					"The link '{0}' in the project already includes the file '{1}'", link, file));
+				return;
+			}
+			pf = new ProjectFile (file, fileBuildAction);
+			vpathsInProject.Add (pf.ProjectVirtualPath);
+			filesInProject [pf.FilePath] = pf;
+			newFileList.Add (pf);
 		}
 		
 		bool MoveCopyFile (string filename, string targetFilename, bool move)

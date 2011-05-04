@@ -80,18 +80,30 @@ namespace MonoDevelop.IPhone
 				    File.Delete (outLog);
 			} catch (IOException) {}
 			
-			var sb = new StringBuilder ();
-			sb.AppendFormat ("-launchsim='{0}'", cmd.AppPath);
-			if (logSimOutput) 
-				sb.AppendFormat (" -stderr='{0}' -stdout='{1}'", errLog, outLog);
-			
-			if (forceTarget != null) {
-				sb.AppendFormat (" -sdk='{0}'", forceTarget.Version.ToString ());
-				if (forceTarget.Device == TargetDevice.IPad)
-					sb.AppendFormat (" -device=2");
+			var cb = new ProcessArgumentBuilder ();
+			cb.AddQuotedFormat ("-launchsim={0}", cmd.AppPath);
+			if (logSimOutput) {
+				cb.AddQuotedFormat ("-stderr={0}", errLog);
+				cb.AddQuotedFormat ("-stdout={0}", outLog);
 			}
 			
-			var psi = new ProcessStartInfo (mtouchPath, sb.ToString ()) {
+			if (forceTarget != null) {
+				var version = forceTarget.Version;
+				
+				if (!version.IsUseDefault && !IPhoneFramework.SdkIsInstalled (version, true)) {
+					version = IPhoneFramework.GetClosestInstalledSdk (version, true);
+					LoggingService.LogWarning ("iOS SDK '{0}' not installed, falling back to simulator '{1}'",
+						forceTarget.Version, version);
+				}
+				
+				if (!version.IsUseDefault)
+					cb.AddQuotedFormat ("-sdk={0}", forceTarget.Version);
+				
+				if (forceTarget.Device == TargetDevice.IPad)
+					cb.Add ("-device=2");
+			}
+			
+			var psi = new ProcessStartInfo (mtouchPath, cb.ToString ()) {
 				WorkingDirectory = cmd.LogDirectory,
 				UseShellExecute = false
 			};

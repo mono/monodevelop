@@ -72,6 +72,17 @@ namespace MonoDevelop.Components.Extensions
 			if (alertDialog.ApplyToAll)
 				data.ApplyToAll = true;
 			data.ResultButton = alertDialog.ResultButton;
+			
+			if (data.ResultButton == null) {
+				// If the dialog is closed clicking the close window button we may have no result.
+				// In that case, try to find a cancelling button
+				if (data.Buttons.Contains (AlertButton.Cancel))
+					data.ResultButton = AlertButton.Cancel;
+				else if (data.Buttons.Contains (AlertButton.No))
+					data.ResultButton = AlertButton.No;
+				else if (data.Buttons.Contains (AlertButton.Close))
+					data.ResultButton = AlertButton.Close;
+			}
 			return true;
 		}
 	}

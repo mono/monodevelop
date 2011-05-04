@@ -74,6 +74,10 @@ namespace MonoDevelop.CSharp.Formatting
 				// the dom parser breaks A.B.C into 3 namespaces with the same region, this is filtered here
 				if (u.ValidRegion == validRegion)
 					continue;
+				// indicates a parser error on namespace level.
+				if (u.Namespaces.FirstOrDefault () == "<invalid>")
+					continue;
+				
 				validRegion = u.ValidRegion;
 				sb.Append ("namespace Stub {");
 				closingBrackets++;
@@ -86,6 +90,7 @@ namespace MonoDevelop.CSharp.Formatting
 				parent = parent.DeclaringType;
 			}
 			sb.AppendLine ();
+			
 			int startOffset = sb.Length;
 			int memberStart = data.Editor.LocationToOffset (member.Location.Line, 1);
 			int memberEnd = data.Editor.LocationToOffset (member.BodyRegion.End.Line + (runAferCR ? 1 : 0), member.BodyRegion.End.Column);
@@ -98,13 +103,14 @@ namespace MonoDevelop.CSharp.Formatting
 			TextEditorData stubData = new TextEditorData () { Text = sb.ToString () };
 			stubData.Document.FileName = data.FileName;
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
-			bool hadErrors = parser.HasErrors;
 			var compilationUnit = parser.Parse (stubData);
-			
+			bool hadErrors = parser.HasErrors;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (stubData);
 			
-			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), adapter);
+			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), adapter) {
+				HadErrors = hadErrors
+			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
 			var changes = new List<ICSharpCode.NRefactory.Change> ();
@@ -117,7 +123,7 @@ namespace MonoDevelop.CSharp.Formatting
 				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
 			}
 			// be sensible in documents with parser errors - only correct up to the caret position.
-			if (parser.HasErrors || data.ParsedDocument.Errors.Any (e => e.ErrorType == ErrorType.Error)) {
+			if (hadErrors || data.ParsedDocument.Errors.Any (e => e.ErrorType == ErrorType.Error)) {
 				var lastOffset = data.Editor.Caret.Offset;
 				changes.RemoveAll (c => c.Offset > lastOffset);
 			}

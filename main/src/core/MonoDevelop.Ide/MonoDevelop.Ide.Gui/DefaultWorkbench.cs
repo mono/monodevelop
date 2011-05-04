@@ -998,7 +998,7 @@ namespace MonoDevelop.Ide.Gui
 				? KeyBindingManager.SelectionModifierControl
 				: KeyBindingManager.SelectionModifierAlt;
 			
-			if ((evnt.State & winSwitchModifier) != 0) {		
+			if ((evnt.State & winSwitchModifier) != 0 && (evnt.State & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask)) != (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask)) {
 				switch (evnt.Key) {
 				case Gdk.Key.KP_1:
 				case Gdk.Key.Key_1:

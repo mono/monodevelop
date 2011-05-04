@@ -44,7 +44,7 @@ namespace MonoDevelop.NUnit
 		
 		public NUnitTestSuite (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo): base (tinfo.Name)
 		{
-			fullName = tinfo.PathName != null && tinfo.PathName.Length > 0 ? tinfo.PathName + "." + tinfo.Name : tinfo.Name;
+			fullName = !string.IsNullOrEmpty (tinfo.PathName) ? tinfo.PathName + "." + tinfo.Name : tinfo.Name;
 			this.testInfo = tinfo;
 			this.rootSuite = rootSuite;
 		}
@@ -61,7 +61,7 @@ namespace MonoDevelop.NUnit
 		
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
-			return rootSuite.RunUnitTest (this, fullName, null, testContext);
+			return rootSuite.RunUnitTest (this, fullName, fullName, null, testContext);
 		}
 		
 		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
@@ -79,7 +79,7 @@ namespace MonoDevelop.NUnit
 				if (test.Tests != null)
 					Tests.Add (new NUnitTestSuite (rootSuite, test));
 				else
-					Tests.Add (new NUnitTestCase (rootSuite, test));
+					Tests.Add (new NUnitTestCase (rootSuite, test, ClassName));
 			}
 		}
 		

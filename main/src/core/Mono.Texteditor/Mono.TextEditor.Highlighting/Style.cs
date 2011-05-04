@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using Gdk;
+using System.Globalization;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -379,12 +380,12 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string Name {
 			get;
-			private set;
+			set;
 		}
 		
 		public string Description {
 			get;
-			private set;
+			set;
 		}
 		
 		public static Cairo.Color ToCairoColor (Gdk.Color color)
@@ -658,8 +659,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void SetChunkStyle (string name, string weight, string foreColor, string backColor)
 		{
-			Gdk.Color color   = !String.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : Gdk.Color.Zero;
-			Gdk.Color bgColor = !String.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : Gdk.Color.Zero;
+			Cairo.Color color   = !string.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
+			Cairo.Color bgColor = !string.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : new Cairo.Color (0, 0, 0);
 			ChunkProperties properties = ChunkProperties.None;
 			if (weight != null) {
 				if (weight.ToUpper ().IndexOf ("BOLD") >= 0)
@@ -669,20 +670,36 @@ namespace Mono.TextEditor.Highlighting
 				if (weight.ToUpper ().IndexOf ("UNDERLINE") >= 0)
 					properties |= ChunkProperties.Underline;
 			}
-			SetStyle (name, new ChunkStyle (color, bgColor, properties));
+			SetStyle (name,  !string.IsNullOrEmpty (backColor) ? new ChunkStyle (color, bgColor, properties) : new ChunkStyle (color, properties));
 		}
 		
-		public Gdk.Color GetColorFromString (string colorString)
+		static int GetNumber (string str, int offset)
+		{
+			return int.Parse (str.Substring (offset, 2), NumberStyles.HexNumber);
+		}
+		
+		public Cairo.Color GetColorFromString (string colorString)
 		{
 			string refColorString;
 			if (customPalette.TryGetValue (colorString, out refColorString))
 				return this.GetColorFromString (refColorString);
 			ChunkStyle style;
 			if (styleLookupTable.TryGetValue (colorString, out style))
-				return style.Color;
+				return style.CairoColor;
+			if (colorString.Length > 0 && colorString[0] == '#') {
+				if (colorString.Length == 9) {
+					// #AARRGGBB
+					return new Cairo.Color ( GetNumber (colorString, 3) / 255.0, GetNumber (colorString, 5) / 255.0, GetNumber (colorString, 7) / 255.0, GetNumber (colorString, 1) / 255.0);
+				}
+				if (colorString.Length == 7) {
+					// #RRGGBB
+					return new Cairo.Color ( GetNumber (colorString, 1) / 255.0, GetNumber (colorString, 3) / 255.0, GetNumber (colorString, 5) / 255.0);
+				}
+				throw new ArgumentException ("colorString", "colorString must either be #RRGGBB (length 7) or #AARRGGBB (length 9) your string " + colorString + " is invalid because it has a length of " + colorString.Length);
+			} 
 			Gdk.Color color = new Gdk.Color ();
 			if (Gdk.Color.Parse (colorString, ref color))
-				return color;
+				return (Cairo.Color)((HslColor)color);
 			throw new Exception ("Failed to parse color or find named color '" + colorString + "'");
 		}
 		
@@ -692,8 +709,8 @@ namespace Mono.TextEditor.Highlighting
 		{
 			string name    = reader.GetAttribute ("name"); 
 			string weight  = reader.GetAttribute ("weight") ?? curWeight;
-			string color   = reader.GetAttribute ("color") ?? curColor;
-			string bgColor = reader.GetAttribute ("bgColor") ?? curBgColor;
+			string color   = reader.GetAttribute ("color");
+			string bgColor = reader.GetAttribute ("bgColor");
 			string fullName;
 			if (String.IsNullOrEmpty (curName)) {
 				fullName = name;

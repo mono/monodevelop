@@ -140,8 +140,8 @@ namespace MonoDevelop.Ide.Templates
         {
             get { return projecttype; }
         }
-
-
+		
+		
         private static FileTemplate LoadFileTemplate (RuntimeAddin addin, ProjectTemplateCodon codon)
         {
 			XmlDocument xmlDocument = codon.GetTemplate ();
@@ -325,6 +325,42 @@ namespace MonoDevelop.Ide.Templates
             return valid;
         }
 
+		public static string GuessMimeType (string fileName)
+		{
+			// Guess the mime type of the new file
+			string fn = Path.GetTempFileName ();
+			string ext = Path.GetExtension (fileName);
+			int n = 0;
+			while (File.Exists (fn + n + ext))
+				n++;
+			FileService.MoveFile (fn, fn + n + ext);
+			string mimeType = DesktopService.GetMimeTypeForUri (fn + n + ext);
+			FileService.DeleteFile (fn + n + ext);
+			if (mimeType == null || mimeType == "")
+				mimeType = "text";
+			return mimeType;
+		}
+		
+		public virtual bool CanCreateUnsavedFiles (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)
+		{
+			if (project != null) {
+				return true;
+			} else {
+				SingleFileDescriptionTemplate singleFile = newfile as SingleFileDescriptionTemplate;
+				if (singleFile == null)
+					return false;
+
+				if (directory != null) {
+					return true;
+				} else {
+					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
+					string mimeType = GuessMimeType (fileName);
+					return DisplayBindingService.GetDefaultViewBinding (null, mimeType, null) != null;
+				}
+			}
+			return true;
+		}
+
 		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)
         {
             if (project != null) {
@@ -347,20 +383,9 @@ namespace MonoDevelop.Ide.Templates
                     string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
                     Stream stream = singleFile.CreateFileContent (policyParent, project, language, fileName, name);
 
-                    // Guess the mime type of the new file
-                    string fn = Path.GetTempFileName ();
-                    string ext = Path.GetExtension (fileName);
-					int n=0;
-                    while (File.Exists (fn + n + ext))
-                        n++;
-                    FileService.MoveFile (fn, fn + n + ext);
-					string mimeType = DesktopService.GetMimeTypeForUri (fn + n + ext);
-                    FileService.DeleteFile (fn + n + ext);
-                    if (mimeType == null || mimeType == "")
-                        mimeType = "text";
-
-                    IdeApp.Workbench.NewDocument (fileName, mimeType, stream);
-                    return true;
+					string mimeType = GuessMimeType (fileName);
+					IdeApp.Workbench.NewDocument (fileName, mimeType, stream);
+					return true;
                 }
             }
             return false;

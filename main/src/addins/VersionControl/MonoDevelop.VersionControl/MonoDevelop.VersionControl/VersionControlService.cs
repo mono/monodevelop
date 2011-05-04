@@ -513,10 +513,14 @@ namespace MonoDevelop.VersionControl
 				return;
 			
 			SolutionItem entry = args.SolutionItem;
-			string path = entry.BaseDirectory;
-			
-			if (!repo.GetVersionInfo (path).CanAdd)
+			Repository currentRepo = GetRepository (entry);
+			if (currentRepo != null && currentRepo.VersionControlSystem != repo.VersionControlSystem) {
+				// If the item is already under version control using a different version control system
+				// don't add it to the parent repo.
 				return;
+			}
+			
+			string path = entry.BaseDirectory;
 			
 			// While we /could/ call repo.Add with `recursive = true', we don't
 			// necessarily want to add files under the project/solution directory
@@ -531,8 +535,10 @@ namespace MonoDevelop.VersionControl
 			using (IProgressMonitor monitor = GetStatusMonitor ()) {
 				string[] paths = (string[]) files.ToArray (typeof (string));
 				
-				for (int i = 0; i < paths.Length; i++)
-					repo.Add (paths[i], false, monitor);
+				foreach (string p in paths) {
+					if (repo.GetVersionInfo (p).CanAdd)
+						repo.Add (p, false, monitor);
+				}
 			}
 			
 			NotifyFileStatusChanged (new FileUpdateEventArgs (repo, parent.BaseDirectory, true));

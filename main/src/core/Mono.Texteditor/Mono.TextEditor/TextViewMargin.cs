@@ -2430,6 +2430,12 @@ namespace Mono.TextEditor
 						foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 						attributes.Add (foreGround);
+						if (!chunkStyle.TransparentBackround) {
+							var background = new Pango.AttrBackground (chunkStyle.BackgroundColor.Red, chunkStyle.BackgroundColor.Green, chunkStyle.BackgroundColor.Blue);
+							background.StartIndex = foreGround.StartIndex;
+							background.EndIndex = foreGround.EndIndex;
+							attributes.Add (background);
+						}
 					}, delegate(int start, int end) {
 						Pango.AttrForeground selectedForeground = new Pango.AttrForeground (SelectionColor.Color.Red, SelectionColor.Color.Green, SelectionColor.Color.Blue);
 						selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
@@ -2473,10 +2479,9 @@ namespace Mono.TextEditor
 			return (logical_rect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale;
 		}
 		
-		// TODO: Reminder - put the line heights into the line segment tree - doing it this way is a performance bottlenek!
 		public int YToLine (double yPos)
 		{
-			double delta = 0;
+/*			double delta = 0;
 			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
 				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
 				double y = LineToY (lineNumber);
@@ -2487,12 +2492,17 @@ namespace Mono.TextEditor
 						return lineNumber;
 				}
 			}
-			return Document.VisualToLogicalLine (1 + (int)((yPos - delta) / LineHeight));
+			return Document.VisualToLogicalLine (1 + (int)((yPos - delta) / LineHeight));*/
+			
+			var result = textEditor.heightTree.YToLineNumber (yPos);
+			return result;
 		}
 		
 		public double LineToY (int logicalLine)
 		{
-			double delta = 0;
+			return textEditor.heightTree.LineNumberToY (logicalLine);
+			
+			/*		double delta = 0;
 			var doc = Document;
 			if (doc == null)
 				return 0;
@@ -2506,7 +2516,7 @@ namespace Mono.TextEditor
 			}
 			
 			int visualLine = doc.LogicalToVisualLine (logicalLine) - 1;
-			return visualLine * LineHeight + delta;
+			return visualLine * LineHeight + delta;*/
 		}
 		
 		public double GetLineHeight (LineSegment line)

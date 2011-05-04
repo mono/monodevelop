@@ -46,6 +46,7 @@ namespace MonoDevelop.MonoDroid
 		SelectDeviceTarget,
 		ManageDevices,
 		OpenAvdManager,
+		CreateAndroidPackage,
 		PublishApplication
 	}
 	
@@ -183,8 +184,8 @@ namespace MonoDevelop.MonoDroid
 			MonoDroidFramework.Toolbox.StartAvdManager ();
 		}
 	}
-	
-	class PublishApplicationHandler : CommandHandler 
+
+	class CreatePackageHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -197,8 +198,38 @@ namespace MonoDevelop.MonoDroid
 			if (!MonoDroidFramework.EnsureSdksInstalled ())
 				return;
 			
-			// TODO: We may should check the current build profile and
-			// show a warning if we are in a debug mode.
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			var configSel = IdeApp.Workspace.ActiveConfiguration;
+			
+			OperationHandler createApk = delegate {
+				using (var monitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor ()) {
+					MonoDroidUtility.SignAndCopy (monitor, proj, configSel);
+				}
+			};
+			
+			if (proj.NeedsBuilding (configSel))
+				IdeApp.ProjectOperations.Build (proj).Completed += createApk;
+			else
+				createApk (null);
+		}
+	}
+	
+	class PublishApplicationHandler : CommandHandler 
+	{
+		protected override void Update (CommandInfo info)
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			var configSel = IdeApp.Workspace.ActiveConfiguration;
+			var conf = proj.GetConfiguration (configSel);
+			info.Visible = proj != null;
+			info.Enabled = proj != null && conf.Name.IndexOf ("debug", StringComparison.OrdinalIgnoreCase) < 0;
+		}
+
+		protected override void Run ()
+		{
+			if (!MonoDroidFramework.EnsureSdksInstalled () || !MonoDroidFramework.CheckTrial ())
+				return;
+			
 			var configSel = IdeApp.Workspace.ActiveConfiguration;
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			var conf = proj.GetConfiguration (configSel);

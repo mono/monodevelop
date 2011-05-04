@@ -95,10 +95,13 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var parser = new CSharpParser ();
 			var compilationUnit = parser.Parse (data);
+
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (data);
 			
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter);
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter) {
+				HadErrors =  parser.HasErrors
+			};
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
 			
@@ -123,18 +126,25 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			data.Text = input;
 
-			//System.Console.WriteLine ("-----");
-			//System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
-			//System.Console.WriteLine ("-----");
+//			System.Console.WriteLine ("-----");
+//			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
+//			System.Console.WriteLine ("-----");
 
 			var parser = new CSharpParser ();
 			var compilationUnit = parser.Parse (data);
 			bool hadErrors = parser.HasErrors;
-			if (hadErrors)
-				return null;
+			
+			if (hadErrors) {
+//				foreach (var e in parser.ErrorReportPrinter.Errors)
+//					Console.WriteLine (e.Message);
+				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
+			}
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (data);
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter);
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter) {
+				HadErrors = hadErrors
+			};
+			
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
 			

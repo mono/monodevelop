@@ -63,7 +63,7 @@ namespace MonoDevelop.MonoDroid
 			var launchOp = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity);
 
 			return new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, 
-				console.Out.Write, console.Error.Write, launchOp);
+				console.Out.Write, console.Error.Write, launchOp, false);
 		}
 	}
 
@@ -77,6 +77,7 @@ namespace MonoDevelop.MonoDroid
 		Action<string> stdout;
 		Action<string> stderr;
 		ManualResetEvent endHandle = new ManualResetEvent (false);
+		bool killOnExit;
 		volatile int pid = UNASSIGNED_PID;
 
 		const int UNASSIGNED_PID = -1;
@@ -92,17 +93,18 @@ namespace MonoDevelop.MonoDroid
 
 		public MonoDroidProcess (AndroidDevice device, string activity, string packageName,
 			Action<string> stdout, Action<string> stderr) : 
-			this (device, activity, packageName, stdout, stderr, null)
+			this (device, activity, packageName, stdout, stderr, null, true)
 		{
 		}
 
 		public MonoDroidProcess (AndroidDevice device, string activity, string packageName,
-			Action<string> stdout, Action<string> stderr, IAsyncOperation startOp)
+			Action<string> stdout, Action<string> stderr, IAsyncOperation startOp, bool killOnExit)
 		{
 			this.device = device;
 			this.packageName = packageName;
 			this.stdout = stdout;
 			this.stderr = stderr;
+			this.killOnExit = killOnExit;
 
 			//startTime = DateTime.Now;
 
@@ -300,7 +302,7 @@ namespace MonoDevelop.MonoDroid
 				}
 
 				// Try to kill the activity if we were able to actually get its pid
-				if (pid != UNASSIGNED_PID) {
+				if (pid != UNASSIGNED_PID && killOnExit) {
 					try {
 						new AdbKillProcessOperation (device, packageName);
 					} catch {}

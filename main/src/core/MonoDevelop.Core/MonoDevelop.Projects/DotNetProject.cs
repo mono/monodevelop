@@ -571,12 +571,15 @@ namespace MonoDevelop.Projects
 					// VS COMPAT: Copy the assembly, but also all other assemblies referenced by it
 					// that are located in the same folder
 					foreach (string file in GetAssemblyRefsRec (projectReference.Reference, new HashSet<string> ())) {
-						list.Add (file);
+						// Indirectly referenced assemblies are only copied if a newer copy doesn't exist. This avoids overwritting directly referenced assemblies
+						// by indirectly referenced stale copies of the same assembly. See bug #655566.
+						bool copyIfNewer = file != projectReference.Reference;
+						list.Add (file, copyIfNewer);
 						if (File.Exists (file + ".config"))
-							list.Add (file + ".config");
+							list.Add (file + ".config", copyIfNewer);
 						string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (file);
 						if (File.Exists (mdbFile))
-							list.Add (mdbFile);
+							list.Add (mdbFile, copyIfNewer);
 					}
 				}
 				else if (projectReference.ReferenceType == ReferenceType.Custom) {

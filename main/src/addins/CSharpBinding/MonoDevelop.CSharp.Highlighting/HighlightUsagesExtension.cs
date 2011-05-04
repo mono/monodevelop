@@ -192,12 +192,12 @@ namespace MonoDevelop.CSharp.Highlighting
 					NRefactoryResolver resolver = new NRefactoryResolver (dom, compUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, Document.Editor, Document.FileName);
 					if (member is LocalVariable)
 						resolver.CallingMember = ((LocalVariable)member).DeclaringMember;
-					FindMemberAstVisitor visitor = new FindMemberAstVisitor (textEditorData.Document, resolver, member);
+					FindMemberAstVisitor visitor = new FindMemberAstVisitor (textEditorData.Document, member);
 					visitor.IncludeXmlDocumentation = true;
 /*					ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = compUnit.Tag as ICSharpCode.OldNRefactory.Ast.CompilationUnit;
 					if (unit == null)
 						return null;*/
-					visitor.RunVisitor ();
+					visitor.RunVisitor (resolver);
 					return visitor.FoundReferences;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in highlight usages extension.", e);

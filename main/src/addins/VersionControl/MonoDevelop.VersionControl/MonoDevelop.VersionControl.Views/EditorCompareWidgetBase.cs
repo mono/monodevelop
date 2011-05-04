@@ -482,7 +482,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
-			base.OnSizeAllocated (allocation);
 			const int overviewWidth = 16;
 			int vwidth = 1;
 
@@ -517,6 +516,7 @@ namespace MonoDevelop.VersionControl.Views
 			for (int i = 0; i < middleAreas.Length; i++) {
 				middleAreas[i].SizeAllocate (new Rectangle (childRectangle.X + editorWidth * (i + 1) + middleAreaWidth * i, childRectangle.Top, middleAreaWidth + 1, childRectangle.Height));
 			}
+			base.OnSizeAllocated (allocation);
 		}
 
 		static double GetWheelDelta (Adjustment adjustment, ScrollDirection direction)

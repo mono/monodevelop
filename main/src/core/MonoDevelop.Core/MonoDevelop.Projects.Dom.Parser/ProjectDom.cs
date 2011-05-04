@@ -483,8 +483,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 		
 		protected abstract IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces);
-		/*
-		IEnumerable<IType> GetSubclassesInternalSafe (IType btype, bool includeReferences)
+		
+		IEnumerable<IType> InternalGetSubclassesSafe (IType btype, bool includeReferences, IList<string> namespaces)
 		{
 			string decoratedName = btype.DecoratedFullName;
 			string genericName = decoratedName;
@@ -492,40 +492,32 @@ namespace MonoDevelop.Projects.Dom.Parser
 				genericName = ((InstantiatedType)btype).UninstantiatedType.DecoratedFullName;
 			
 			
-			Stack<IType> types = new Stack <IType> (Types);
+			Stack<IType > types = new Stack <IType> (Types);
 			while (types.Count > 0) {
 				IType t = types.Pop ();
+				string typeDecoratedFullName = t.DecoratedFullName;
 				foreach (var inner in t.InnerTypes)
 					types.Push (inner);
-				System.Console.WriteLine (t.DecoratedFullName);
 				foreach (var v in t.SourceProjectDom.GetInheritanceTree (t)) {
-					if (v.DecoratedFullName == t.DecoratedFullName)
+					string curDecoratedFullName = v.DecoratedFullName;
+					if (curDecoratedFullName == typeDecoratedFullName)
 						continue;
-					if (t.DecoratedFullName.StartsWith ("Library2.GenericBin["))
-						System.Console.WriteLine (v);
-					bool isInTree;
-					if (v is InstantiatedType) {
-						isInTree = v.DecoratedFullName == decoratedName;
-					} else {
-						isInTree = v.DecoratedFullName == genericName;
-					}
-					if (isInTree) {
+					if (curDecoratedFullName == (v is InstantiatedType ? decoratedName : genericName))
 						yield return t;
-					}
 				}
 			}
 			
 			if (includeReferences) {
 				foreach (var refDom in References) {
-					foreach (var t in refDom.GetSubclassesInternalSafe (btype, false))
+					foreach (var t in refDom.InternalGetSubclassesSafe (btype, false, namespaces))
 						yield return t;
 				}
 			}
-		}*/
+		}
 		
 		public virtual IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
-			foreach (IType subType in InternalGetSubclasses (type, searchDeep, null)) {
+			foreach (IType subType in InternalGetSubclassesSafe (type, searchDeep, null)) {
 				yield return subType;
 			}
 			if (type is InstantiatedType) {
@@ -540,7 +532,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			if (type.FullName == "System.Collections.IEnumerable" || type.FullName == "System.Collections.ICollection" || type.FullName == "System.Collections.IList") {
-				foreach (IType t in GetSubclasses (GetType(DomReturnType.Object), true, namespaces)) {
+				foreach (IType t in InternalGetSubclassesSafe (GetType(DomReturnType.Object), true, namespaces)) {
 					yield return GetArrayType (new DomReturnType (t));
 				}
 			}

@@ -204,6 +204,7 @@ namespace MonoDevelop.Ide
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
+			monitor.Step (1);
 			monitor.EndTask ();
 
 			// Set initial run flags

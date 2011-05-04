@@ -115,7 +115,7 @@ namespace Mono.TextEditor.Highlighting
 			ChunkStyle result = new ChunkStyle ();
 			if (style == null)
 				style = new DefaultStyle (null);
-			result.Color = style.Default.Color;
+			result.CairoColor = style.Default.CairoColor;
 			
 			foreach (Tag tag in tagStack) {
 				//System.Console.WriteLine("'" + tag.Command + "'");
@@ -128,16 +128,16 @@ namespace Mono.TextEditor.Highlighting
 					if (tag.Arguments.TryGetValue ("style", out val)) {
 						ChunkStyle chunkStyle = style.GetChunkStyle (val);
 						if (chunkStyle != null) {
-							result.Color = chunkStyle.Color;
+							result.CairoColor = chunkStyle.CairoColor;
 							result.ChunkProperties |= chunkStyle.ChunkProperties;
 						} else {
 							throw new Exception ("Style " + val + " not found.");
 						}
 					}
 					if (tag.Arguments.TryGetValue ("foreground", out val))
-						result.Color = style.GetColorFromString (val);
+						result.CairoColor = style.GetColorFromString (val);
 					if (tag.Arguments.TryGetValue ("background", out val))
-						result.BackgroundColor = style.GetColorFromString (val);
+						result.CairoBackgroundColor = style.GetColorFromString (val);
 					break;
 				case "A":
 					result.Link = tag.Arguments["ref"];

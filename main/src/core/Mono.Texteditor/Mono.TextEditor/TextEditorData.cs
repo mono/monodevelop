@@ -1060,6 +1060,12 @@ namespace Mono.TextEditor
 				Parent.CenterTo (offset);
 		}
 		
+		public void CenterTo (int line, int column)
+		{
+			if (Parent != null)
+				Parent.CenterTo (line, column);
+		}
+		
 		public void SetCaretTo (int line, int column)
 		{
 			SetCaretTo (line, column, true);

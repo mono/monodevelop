@@ -372,9 +372,9 @@ namespace MonoDevelop.IPhone
 			var conf = new IPhoneProjectConfiguration (name);
 			conf.CopyFrom (base.CreateConfiguration (name));
 			
-			if (conf.Platform == PLAT_IPHONE) {
+			if (conf.IsDevicePlatform) {
 				conf.CodesignKey = DEV_CERT_PREFIX;
-			} else if (conf.Platform == PLAT_SIM) {
+			} else if (conf.IsSimPlatform) {
 				conf.MtouchLink = MtouchLinkMode.None;
 			}
 			conf.SanitizeAppName ();
@@ -404,26 +404,28 @@ namespace MonoDevelop.IPhone
 		}
 		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
-		                                                            DotNetProjectConfiguration configuration)
+			DotNetProjectConfiguration configuration)
 		{
 			var conf = (IPhoneProjectConfiguration) configuration;
+			bool isSim = conf.IsSimPlatform;
 			
 			IPhoneSimulatorTarget simTarget = null;
 			
 			var minOS = string.IsNullOrEmpty (conf.MtouchMinimumOSVersion)?
-				IPhoneSdkVersion.GetDefault () : IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
+				IPhoneSdkVersion.GetDefault (isSim) : IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
 			
-			if (conf.Platform != PLAT_IPHONE) {
+			if (isSim) {
 				simTarget = GetSimulatorTarget (conf);
 				if (simTarget == null) {
 					var defaultDevice = ((IPhoneProject)conf.ParentItem).SupportedDevices == TargetDevice.IPad?
 						TargetDevice.IPad : TargetDevice.IPhone;
-					simTarget = new IPhoneSimulatorTarget (defaultDevice, conf.MtouchSdkVersion.ResolveIfDefault ());
+					simTarget = new IPhoneSimulatorTarget (defaultDevice, conf.MtouchSdkVersion.ResolveIfDefault (isSim));
 				}
 			}
 			
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
-			                                   conf.DebugMode && conf.MtouchDebug, simTarget, minOS, SupportedDevices) {
+				conf.DebugMode && conf.MtouchDebug, simTarget, minOS, SupportedDevices)
+			{
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}
@@ -431,7 +433,7 @@ namespace MonoDevelop.IPhone
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (IPhoneProjectConfiguration) GetConfiguration (configSel);
-			bool isDevice = conf.Platform == PLAT_IPHONE;
+			bool isDevice = conf.IsDevicePlatform;
 			
 			if (!Directory.Exists (conf.AppDirectory) || (isDevice && !File.Exists (conf.AppDirectory.Combine ("PkgInfo")))) {
 				Gtk.Application.Invoke (delegate {

@@ -62,8 +62,10 @@ namespace MonoDevelop.MonoDroid.Gui
 	public partial class MonoDroidBuildOptionsWidget : Gtk.Bin
 	{
 		string[] i18n = { "cjk", "mideast", "other", "rare", "west" };
+		string[] abis = { "armeabi", "armeabi-v7a" };
 		
 		ListStore i18nStore = new ListStore (typeof (string), typeof (bool));
+		ListStore abisStore = new ListStore (typeof (string), typeof (bool));
 		
 		public MonoDroidBuildOptionsWidget ()
 		{
@@ -85,6 +87,18 @@ namespace MonoDevelop.MonoDroid.Gui
 					i18nStore.SetValue (iter, 1, !(bool)i18nStore.GetValue (iter, 1));
 			};
 			
+			abisTreeView.Model = abisStore;
+
+			var abiToggle = new CellRendererToggle ();
+			abisTreeView.AppendColumn ("", abiToggle, "active", 1);
+			abisTreeView.AppendColumn ("", new CellRendererText (), "text", 0);
+			abisTreeView.HeadersVisible = false;
+			abiToggle.Toggled += delegate (object o, ToggledArgs args) {
+				TreeIter iter;
+				if (abisStore.GetIter (out iter, new TreePath (args.Path)))
+					abisStore.SetValue (iter, 1, !(bool)abisStore.GetValue (iter, 1));
+			};
+			
 			ShowAll ();
 		}
 		
@@ -94,6 +108,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			linkerCombo.Active = (int) cfg.MonoDroidLinkMode;
 			sharedRuntimeCheck.Active = cfg.AndroidUseSharedRuntime;
 			LoadI18nValues (cfg.MandroidI18n);
+			LoadABIValues (cfg.SupportedAbis);
 		}
 		
 		public void StorePanelContents (MonoDroidProjectConfiguration cfg)
@@ -102,6 +117,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			cfg.MonoDroidLinkMode = (MonoDroidLinkMode) linkerCombo.Active;
 			cfg.AndroidUseSharedRuntime = sharedRuntimeCheck.Active;
 			cfg.MandroidI18n = GetI18nValues ();
+			cfg.SupportedAbis = GetABIValues ();
 		}
 		
 		void LoadI18nValues (string values)
@@ -129,6 +145,35 @@ namespace MonoDevelop.MonoDroid.Gui
 						sb.Append ((string)i18nStore.GetValue (iter, 0));
 					}
 				} while (i18nStore.IterNext (ref iter));
+			}
+			return sb.ToString ();
+		}
+		
+		void LoadABIValues (string values)
+		{
+			abisStore.Clear ();
+			if (values == null)
+				foreach (string s in abis)
+					abisStore.AppendValues (s, false);
+			else {
+				var arr = values.Split (',');
+				foreach (string s in abis)
+					abisStore.AppendValues (s, arr.Contains (s));
+			}
+		}
+		
+		string GetABIValues ()
+		{
+			var sb = new StringBuilder ();
+			TreeIter iter;
+			if (abisStore.GetIterFirst (out iter)) {
+				do {
+					if ((bool)abisStore.GetValue (iter, 1)) {
+						if (sb.Length != 0)
+							sb.Append (",");
+						sb.Append ((string)abisStore.GetValue (iter, 0));
+					}
+				} while (abisStore.IterNext (ref iter));
 			}
 			return sb.ToString ();
 		}

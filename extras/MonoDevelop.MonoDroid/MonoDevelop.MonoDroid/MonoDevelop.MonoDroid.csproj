@@ -112,6 +112,8 @@
     <Compile Include="Adb\PackageList.cs" />
     <Compile Include="Gui\MonoDroidPublishDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidPublishDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidPackageDialog.cs" />
+    <Compile Include="Gui\MonoDroidPackageDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">

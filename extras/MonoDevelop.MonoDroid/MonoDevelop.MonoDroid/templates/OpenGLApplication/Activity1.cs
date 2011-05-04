@@ -9,7 +9,7 @@ using Android.OS;
 
 namespace ${Namespace}
 {
-	[Activity (Label = "My OpenGL Activity", MainLauncher = true)]
+	[Activity (Label = "${ProjectName}", MainLauncher = true)]
 	public class Activity1 : Activity
 	{
 		protected override void OnCreate (Bundle bundle)

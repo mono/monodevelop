@@ -486,7 +486,6 @@ namespace MonoDevelop.Debugger
 			currentEngine = factory;
 			session = factory.CreateSession ();
 			session.ExceptionHandler = ExceptionHandler;
-			session.Initialize ();
 			
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
@@ -769,8 +768,8 @@ namespace MonoDevelop.Debugger
 		{
 			if (currentBacktrace != null) {
 				var sf = GetCurrentVisibleFrame ();
-				if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
-					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, OpenDocumentOptions.BringToFront);
+				if (!string.IsNullOrEmpty (sf.SourceLocation.FileName) && System.IO.File.Exists (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1) {
+					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.FileName, sf.SourceLocation.Line, 1, OpenDocumentOptions.BringToFront);
 					OnDisableConditionalCompilation (new DocumentEventArgs (document));
 				}
 			}
@@ -873,7 +872,7 @@ namespace MonoDevelop.Debugger
 		
 		static string ResolveType (string identifier, SourceLocation location)
 		{
-			Document doc = IdeApp.Workbench.GetDocument (location.Filename);
+			Document doc = IdeApp.Workbench.GetDocument (location.FileName);
 			if (doc != null) {
 				ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
 				if (textEditorResolver != null) {

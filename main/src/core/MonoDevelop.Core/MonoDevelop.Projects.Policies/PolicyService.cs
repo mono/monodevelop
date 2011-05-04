@@ -1174,10 +1174,11 @@ namespace MonoDevelop.Projects.Policies
 				var xws = new XmlWriterSettings () {
 					Indent = true,
 				};
-				var xw = XmlTextWriter.Create (writer, xws);
-				xw.WriteStartElement ("Policies");
-				set.SaveToXml (xw);
-				xw.WriteEndElement ();
+				using (var xw = XmlTextWriter.Create (writer, xws)) {
+					xw.WriteStartElement ("Policies");
+					set.SaveToXml (xw);
+					xw.WriteEndElement ();
+				}
 			});
 		}
 		

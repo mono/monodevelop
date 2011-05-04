@@ -212,20 +212,42 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		#region IAttachableViewContent implementation
+
+		public int GetLineInCenter (Mono.TextEditor.TextEditor editor)
+		{
+			double midY = editor.VAdjustment.Value + editor.Allocation.Height / 2;
+			return editor.YToLine (midY);
+		}
+		
 		public void Selected ()
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
 			ComparisonWidget.OriginalEditor.Document.IgnoreFoldings = true;
 			ComparisonWidget.OriginalEditor.Caret.Location = info.Document.Editor.Caret.Location;
-			ComparisonWidget.OriginalEditor.VAdjustment.Value = info.Document.Editor.VAdjustment.Value;
+			if (ComparisonWidget.Allocation.Height == 1 && ComparisonWidget.Allocation.Width == 1) {
+				ComparisonWidget.SizeAllocated += HandleComparisonWidgetSizeAllocated;
+			} else {
+				HandleComparisonWidgetSizeAllocated (null, new Gtk.SizeAllocatedArgs ());
+			}
+		}
+
+		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
+			ComparisonWidget.SizeAllocated -= HandleComparisonWidgetSizeAllocated;
+			int line = GetLineInCenter (info.Document.Editor.Parent);
+			ComparisonWidget.OriginalEditor.CenterTo (line, 1);
 			ComparisonWidget.OriginalEditor.GrabFocus ();
 		}
 		
 		public void Deselected ()
 		{
 			info.Document.Editor.Caret.Location = ComparisonWidget.OriginalEditor.Caret.Location;
-			info.Document.Editor.VAdjustment.Value = ComparisonWidget.OriginalEditor.VAdjustment.Value;
+			
+			int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
+			if (Math.Abs (GetLineInCenter (info.Document.Editor.Parent) - line) > 2)
+				info.Document.Editor.CenterTo (line, 1);
+
 			ComparisonWidget.OriginalEditor.Document.IgnoreFoldings = false;
 		}
 

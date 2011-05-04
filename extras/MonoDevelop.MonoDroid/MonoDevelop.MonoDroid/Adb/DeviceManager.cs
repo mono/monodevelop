@@ -100,37 +100,40 @@ namespace MonoDevelop.MonoDroid
 			var tb = MonoDroidFramework.Toolbox;
 			if (tb == null)
 				return;
+
+			if (pop is AdbStartServerProcess)
+				((AdbStartServerProcess)pop).Exited += StartServerProcessDone;
 			
-			pop = new AdbStartServerProcess (tb, delegate(object sender, EventArgs e) {
-				var startOp = (AdbStartServerProcess) sender;
-				if (!object.ReferenceEquals (pop, startOp)) {
-					LoggingService.LogInfo ("Adb start operation completed but is no longer valid: {0}, {1}", pop, startOp);
+			pop = new AdbStartServerProcess (tb, StartServerProcessDone);
+		}
+
+		void StartServerProcessDone (object sender, EventArgs e)
+		{
+			var startOp = (AdbStartServerProcess) sender;
+
+			pop = null;
+			LoggingService.LogInfo ("Adb server launch operation completed");
+			try {
+				if (!startOp.Success) {
+					LoggingService.LogError ("Error starting adb server: " + startOp.GetOutput ());
+					ClearTracking ();
 					return;
 				}
-				pop = null;
-				LoggingService.LogInfo ("Adb server launch operation completed");
 				try {
-					if (!startOp.Success) {
-						LoggingService.LogError ("Error starting adb server: " + startOp.GetOutput ());
-						ClearTracking ();
-						return;
+					lock (lockObj) {
+						op = CreateTracker ();
 					}
-					try {
-						lock (lockObj) {
-							op = CreateTracker ();
-						}
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error creating device tracker: ", ex);
-						ClearTracking ();
-					}
-				} finally {
-					try {
-						((IDisposable)startOp).Dispose ();
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error disposing adb start operation: ", ex);
-					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error creating device tracker: ", ex);
+					ClearTracking ();
 				}
-			});
+			} finally {
+				try {
+					((IDisposable)startOp).Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error disposing adb start operation: ", ex);
+				}
+			}
 		}
 		
 		AdbTrackDevicesOperation CreateTracker ()
@@ -395,6 +398,11 @@ namespace MonoDevelop.MonoDroid
 				IsBackground = true,
 			};
 			captureErrorThread.Start ();*/
+		}
+
+		public event EventHandler Exited {
+			add { exited += value; }
+			remove { exited -= value; }
 		}
 		
 		void CaptureOutput ()

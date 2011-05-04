@@ -74,19 +74,27 @@ namespace Mono.TextEditor
 		static extern int uname (IntPtr buf);
 		
 		//from MonoDevelop.Components.Commands.KeyBindingManager
-		internal static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod)
+		internal static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod, out uint keyval)
 		{
 			mod = evt.State;
 			key = evt.Key;
+			keyval = evt.KeyValue;
 			
-			uint keyval;
 			int effectiveGroup, level;
 			Gdk.ModifierType consumedModifiers;
-			keymap.TranslateKeyboardState (evt.HardwareKeycode, evt.State, evt.Group, out keyval, out effectiveGroup,
-			                               out level, out consumedModifiers);
+			ModifierType modifier = evt.State;
+			byte grp = evt.Group;
+			// Workaround for bug "Bug 688247 - Ctrl+Alt key not work on windows7 with bootcamp on a Mac Book Pro"
+			// Ctrl+Alt should behave like right alt key - unfortunately TranslateKeyboardState doesn't handle it. 
+			if (IsWindows && (modifier & ~ModifierType.LockMask) == (ModifierType.Mod1Mask | ModifierType.ControlMask)) {
+				modifier = ModifierType.Mod2Mask;
+				grp = 1;
+			}
 			
+			keymap.TranslateKeyboardState (evt.HardwareKeycode, modifier, grp, out keyval, out effectiveGroup,
+			                               out level, out consumedModifiers);
 			key = (Gdk.Key)keyval;
-			mod = evt.State & ~consumedModifiers;
+			mod = modifier & ~consumedModifiers;
 			
 			if (IsX11) {
 				//this is a workaround for a common X mapping issue

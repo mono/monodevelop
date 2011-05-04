@@ -60,9 +60,9 @@ namespace MonoDevelop.IPhone
 			
 			//prebuild
 			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
-			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			bool isSim = conf.IsSimPlatform;
 			
-			if (IPhoneFramework.SimOnly && isDevice) {
+			if (IPhoneFramework.SimOnly && !isSim) {
 				//if in the GUI, show a dialog too
 				if (MonoDevelop.Ide.IdeApp.IsInitialized)
 					Gtk.Application.Invoke (delegate { IPhoneFramework.ShowSimOnlyDialog (); } );
@@ -71,12 +71,12 @@ namespace MonoDevelop.IPhone
 			
 			var result = new BuildResult ();
 			
-			var sdkVersion = conf.MtouchSdkVersion.ResolveIfDefault ();
+			var sdkVersion = conf.MtouchSdkVersion.ResolveIfDefault (isSim);
 			
-			if (!IPhoneFramework.SdkIsInstalled (sdkVersion)) {
-				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
+			if (!IPhoneFramework.SdkIsInstalled (sdkVersion, isSim)) {
+				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion, isSim);
 				
-				if (sdkVersion.IsUseDefault || !IPhoneFramework.SdkIsInstalled (sdkVersion)) {
+				if (sdkVersion.IsUseDefault || !IPhoneFramework.SdkIsInstalled (sdkVersion, isSim)) {
 					if (conf.MtouchSdkVersion.IsUseDefault)
 						result.AddError (
 							string.Format ("The Apple iPhone SDK is not installed."));
@@ -93,7 +93,12 @@ namespace MonoDevelop.IPhone
 			}
 			
 			IPhoneAppIdentity identity = null;
-			if (isDevice) {
+			if (isSim) {
+				identity = new IPhoneAppIdentity () {
+					BundleID = !string.IsNullOrEmpty (proj.BundleIdentifier)?
+						proj.BundleIdentifier : GetDefaultBundleID (proj, null)
+				};
+			} else {
 				monitor.BeginTask (GettextCatalog.GetString ("Detecting signing identity..."), 0);
 				if ((result = GetIdentity (monitor, proj, conf, out identity).Append (result)).ErrorCount > 0)
 					return result;
@@ -101,11 +106,6 @@ namespace MonoDevelop.IPhone
 				monitor.Log.WriteLine ("Signing Identity: \"{0}\"", Keychain.GetCertificateCommonName (identity.SigningKey));
 				monitor.Log.WriteLine ("App ID: \"{0}\"", identity.AppID);
 				monitor.EndTask ();
-			} else {
-				identity = new IPhoneAppIdentity () {
-					BundleID = !string.IsNullOrEmpty (proj.BundleIdentifier)?
-						proj.BundleIdentifier : GetDefaultBundleID (proj, null)
-				};
 			}
 			
 			result = base.Build (monitor, item, configuration).Append (result);
@@ -131,7 +131,7 @@ namespace MonoDevelop.IPhone
 				args.Add ("--nomanifest", "--nosign");
 					
 				//FIXME: should we error out if the platform is invalid?
-				if (conf.Platform == IPhoneProject.PLAT_IPHONE) {
+				if (conf.IsDevicePlatform) {
 					args.Add ("-dev");
 					args.AddQuoted (conf.AppDirectory);
 				} else {
@@ -224,7 +224,7 @@ namespace MonoDevelop.IPhone
 		
 		static BuildResult UnpackContent (IProgressMonitor monitor, IPhoneProjectConfiguration cfg, List<string> assemblies)
 		{
-			bool isDevice = cfg.Platform == IPhoneProject.PLAT_IPHONE;
+			bool isDevice = cfg.IsDevicePlatform;
 			
 			//remove framework references, they don't contain embedded content
 			List<string> toProcess = new List<string> ();
@@ -410,14 +410,14 @@ namespace MonoDevelop.IPhone
 				if (dict == null)
 					doc.Root = dict = new PlistDictionary ();
 				
-				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
+				bool sim = conf.IsSimPlatform;
 				bool v3_2_orNewer = sdkVersion >= IPhoneSdkVersion.V3_2;
 				bool v3_1_orNewer = sdkVersion >= IPhoneSdkVersion.V3_1;
 				bool v4_0_orNewer = sdkVersion >= IPhoneSdkVersion.V4_0;
 				bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 				bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 				
-				var sdkSettings = IPhoneFramework.GetSdkSettings (sdkVersion);
+				var sdkSettings = IPhoneFramework.GetSdkSettings (sdkVersion, sim);
 				var dtSettings = IPhoneFramework.GetDTSettings ();
 				
 				SetIfNotPresent (dict, "BuildMachineOSBuild", dtSettings.BuildMachineOSBuild);
@@ -435,7 +435,7 @@ namespace MonoDevelop.IPhone
 						if (icon.IsNullOrEmpty || icon.ToString () == ".")
 							result.AddWarning ("Application bundle icon has not been set (iPhone Application options panel)");
 						else
-							dict ["CFBundleIconFile"] = icon.FileName;
+							dict ["CFBundleIconFile"] = "Icon.png";
 					}
 				}
 				
@@ -445,23 +445,23 @@ namespace MonoDevelop.IPhone
 					dict["CFBundleIconFiles"] = arr;
 					
 					if (supportsIPhone)
-						AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIcon, "Icon.png");
+						AddIconRelativeIfNotEmpty (arr, proj.BundleIcon, "Icon.png");
 					
 					if (v4_0_orNewer && supportsIPhone)
-						if (!AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconHigh, "Icon@2x.png"))
+						if (!AddIconRelativeIfNotEmpty (arr, proj.BundleIconHigh, "Icon@2x.png"))
 							result.AddWarning ("iPhone high res bundle icon has not been set (iPhone Application options panel)");
 					
 					if (supportsIPad)
-						if (!AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconIPad, "Icon-72.png"))
+						if (!AddIconRelativeIfNotEmpty (arr, proj.BundleIconIPad, "Icon-72.png"))
 							result.AddWarning ("iPad bundle icon has not been set (iPhone Application options panel)");
 					
-					AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconSpotlight, "Icon-Small.png");
+					AddIconRelativeIfNotEmpty (arr, proj.BundleIconSpotlight, "Icon-Small.png");
 					
 					if (supportsIPad)
-						AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconIPadSpotlight, "Icon-Small-50.png");
+						AddIconRelativeIfNotEmpty (arr, proj.BundleIconIPadSpotlight, "Icon-Small-50.png");
 					
 					if (v4_0_orNewer && supportsIPhone)
-						AddIconRelativeIfNotEmpty (proj, arr, proj.BundleIconSpotlightHigh, "Icon-Small@2x.png");
+						AddIconRelativeIfNotEmpty (arr, proj.BundleIconSpotlightHigh, "Icon-Small@2x.png");
 				}
 				
 				SetIfNotPresent (dict, "CFBundleIdentifier", identity.BundleID);
@@ -535,17 +535,11 @@ namespace MonoDevelop.IPhone
 			});
 		}
 		
-		static bool AddIconRelativeIfNotEmpty (IPhoneProject proj, PlistArray arr, FilePath iconFullPath)
+		static bool AddIconRelativeIfNotEmpty (PlistArray arr, FilePath iconFullPath, string name)
 		{
-			return AddIconRelativeIfNotEmpty (proj, arr, iconFullPath, null);
-		}
-		
-		static bool AddIconRelativeIfNotEmpty (IPhoneProject proj, PlistArray arr, FilePath iconFullPath, string name)
-		{
-			var icon = iconFullPath.ToRelative (proj.BaseDirectory).ToString ();
-			if (string.IsNullOrEmpty (icon) || icon == ".")
+			if (iconFullPath.IsNullOrEmpty)
 				return false;
-			arr.Add (null ?? icon);
+			arr.Add (name);
 			return true;
 		}
 		
@@ -607,7 +601,7 @@ namespace MonoDevelop.IPhone
 					return true;
 				
 				var dllWriteTime = File.GetLastWriteTimeUtc (conf.CompiledOutputName);
-				foreach (var cp in GetContentFilePairs (proj.Files, conf.AppDirectory))
+				foreach (var cp in GetContentFilePairs (proj.Files, conf.AppDirectory, null))
 					if (File.Exists (cp.Input) && File.GetLastWriteTimeUtc (cp.Input) > dllWriteTime)
 						return true;
 			}
@@ -618,7 +612,7 @@ namespace MonoDevelop.IPhone
 			if (!Directory.Exists (conf.AppDirectory))
 				return true;
 			
-			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			bool isDevice = conf.IsDevicePlatform;
 			if (isDevice && !File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
 				return true;
 			
@@ -632,7 +626,7 @@ namespace MonoDevelop.IPhone
 				return true;
 			
 			//Content files
-			if (GetContentFilePairs (proj.Files, conf.AppDirectory).Where (NeedsBuilding).Any ())
+			if (GetContentFilePairs (proj.Files, conf.AppDirectory, null).Where (NeedsBuilding).Any ())
 				return true;
 			
 			// the Info.plist
@@ -682,25 +676,30 @@ namespace MonoDevelop.IPhone
 				Directory.Delete (conf.OutputDirectory.Combine ("XcodeProject"), true);
 		}
 		
-		void MangleLibraryResourceNames (BuildData buildData, FilePath tempNibDir)
+		void MangleLibraryResourceNames (BuildData buildData, FilePath tempNibDir, BuildResult result)
 		{
 			for (int i = 0; i < buildData.Items.Count; i++) {
 				var pf = buildData.Items[i] as ProjectFile;
-				if (pf != null) {
-					if (pf.BuildAction == BuildAction.Content) {
-						buildData.Items[i] = new ProjectFile (pf.FilePath, BuildAction.EmbeddedResource) {
-							ResourceId = "__monotouch_content_" + EscapeMangledResource (pf.ProjectVirtualPath)
-						};
-					} else if (pf.BuildAction == BuildAction.Page) {
-						var vpath = pf.ProjectVirtualPath;
-						if (vpath.Extension != ".xib")
-							continue;
-						vpath = vpath.ChangeExtension (".nib");
-						var nibPath = vpath.ToAbsolute (tempNibDir);
-						buildData.Items[i] = new ProjectFile (nibPath, BuildAction.EmbeddedResource) {
-							ResourceId = "__monotouch_page_" + EscapeMangledResource (vpath)
-						};
-					}
+				if (pf == null)
+					continue;
+				if (pf.BuildAction == BuildAction.Content) {
+					var vpath = pf.ProjectVirtualPath;
+					if (!CheckContentNamePermitted (vpath, result))
+						continue;
+					buildData.Items[i] = new ProjectFile (pf.FilePath, BuildAction.EmbeddedResource) {
+						ResourceId = "__monotouch_content_" + EscapeMangledResource (vpath)
+					};
+				} else if (pf.BuildAction == BuildAction.Page) {
+					var vpath = pf.ProjectVirtualPath;
+					if (vpath.Extension != ".xib")
+						continue;
+					if (!CheckPageNamePermitted (vpath, result))
+						continue;
+					vpath = vpath.ChangeExtension (".nib");
+					var nibPath = vpath.ToAbsolute (tempNibDir);
+					buildData.Items[i] = new ProjectFile (nibPath, BuildAction.EmbeddedResource) {
+						ResourceId = "__monotouch_page_" + EscapeMangledResource (vpath)
+					};
 				}
 			}
 		}
@@ -751,6 +750,8 @@ namespace MonoDevelop.IPhone
 			var cfg = (IPhoneProjectConfiguration) buildData.Configuration;
 			var projFiles = buildData.Items.OfType<ProjectFile> ();
 			
+			bool isSim = cfg.IsSimPlatform;
+			
 			if (proj.CompileTarget == CompileTarget.Library) {
 				if (IPhoneFramework.MonoTouchVersion < new IPhoneSdkVersion (3, 99))
 					return base.Compile (monitor, item, buildData);
@@ -760,15 +761,15 @@ namespace MonoDevelop.IPhone
 				var xibRes = MacBuildUtilities.CompileXibFiles (monitor, projFiles, nibDir);
 				if (xibRes.ErrorCount > 0)
 					return xibRes;
-				MangleLibraryResourceNames (buildData, nibDir);
+				MangleLibraryResourceNames (buildData, nibDir, xibRes);
 				return xibRes.Append (base.Compile (monitor, item, buildData));
 			}	
 			
 			string appDir = cfg.AppDirectory;
 			
-			var sdkVersion = cfg.MtouchSdkVersion.ResolveIfDefault ();
-			if (!IPhoneFramework.SdkIsInstalled (sdkVersion))
-				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
+			var sdkVersion = cfg.MtouchSdkVersion.ResolveIfDefault (isSim);
+			if (!IPhoneFramework.SdkIsInstalled (sdkVersion, isSim))
+				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion, isSim);
 			
 			var result = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, projFiles);
 			if (result.ErrorCount > 0)
@@ -783,7 +784,7 @@ namespace MonoDevelop.IPhone
 			if (result.Append (MacBuildUtilities.CompileXibFiles (monitor, projFiles, appDir)).ErrorCount > 0)
 				return result;
 			
-			var contentFiles = GetContentFilePairs (projFiles, appDir)
+			var contentFiles = GetContentFilePairs (projFiles, appDir, result)
 				.Where (NeedsBuilding).ToList ();
 			
 			contentFiles.AddRange (GetIconContentFiles (sdkVersion, proj, cfg));
@@ -841,7 +842,7 @@ namespace MonoDevelop.IPhone
 			IPhoneProjectConfiguration conf, IPhoneAppIdentity identity)
 		{
 			//don't bother signing in the sim
-			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			bool isDevice = conf.IsDevicePlatform;
 			if (!isDevice)
 				return null;
 			
@@ -1197,7 +1198,7 @@ namespace MonoDevelop.IPhone
 			//having written to a UTF8 stream to convince the xmlwriter to do the right thing,
 			//we now convert to string and back to do some substitutions to work around bugs
 			//in Apple's braindead entitlements XML parser.
-			//Specifically, it chokes on "<true />" but accepts "<true">
+			//Specifically, it chokes on "<true />" but accepts "<true/>"
 			//Hence, to be on the safe side, we produce EXACTLY the same format
 			var sb = new StringBuilder (Encoding.UTF8.GetString (ms.GetBuffer ()));
 			sb.Replace ("-//Apple Computer//DTD PLIST 1.0//EN", "-//Apple//DTD PLIST 1.0//EN");
@@ -1283,23 +1284,67 @@ namespace MonoDevelop.IPhone
 			return br;
 		}
 		
-		static IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
+		static IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot, BuildResult result)
 		{
-			//these are filenames that could overwrite important packaging files
-			//FIXME: warn if the user has marked these as content, or just ignore?
-			//FIXME: check for _CodeResources and dlls and binaries too?
-			var forbiddenNames = new HashSet<string> (new [] {
-				"Info.plist",
-				"Embedded.mobileprovision",
-				"ResourceRules.plist",
-				"PkgInfo",
-				"CodeResources"
-			}, StringComparer.OrdinalIgnoreCase);
-			
 			return allItems.OfType<ProjectFile> ()
-				.Where (pf => pf.BuildAction == BuildAction.Content && !forbiddenNames.Contains (pf.ProjectVirtualPath))
+				.Where (pf => pf.BuildAction == BuildAction.Content && CheckContentNamePermitted (pf.ProjectVirtualPath, result))
 				.Select (pf => new FilePair (pf.FilePath, pf.ProjectVirtualPath.ToAbsolute (outputRoot)));
 		}
+		
+		
+		//checks for filenames that could overwrite important packaging files
+		//FIXME: check for binaries too?
+		static bool CheckContentNamePermitted (string virtualPath, BuildResult result)
+		{
+			if (forbiddenContentNames.Contains (virtualPath)) {
+				if (result != null)
+					result.AddWarning (virtualPath, 0, 0, "", GettextCatalog.GetString (
+						"The filename '{0}' is reserved and cannot used for Content files", virtualPath));
+				return false;
+			}
+			
+			int i = virtualPath.IndexOf (Path.DirectorySeparatorChar);
+			if (i < 0)
+				return false;
+			string rootDir = virtualPath.Substring (0, i);
+			if (forbiddenContentFolders.Contains (rootDir)) {
+				if (result != null)
+					result.AddWarning (virtualPath, 0, 0, "", GettextCatalog.GetString (
+						"The folder name '{0}' is reserved and cannot used for Content files", rootDir));
+				return false;
+			}
+			
+			return true;
+		}
+		
+		static bool CheckPageNamePermitted (string virtualPath, BuildResult result)
+		{
+			int i = virtualPath.IndexOf (Path.DirectorySeparatorChar);
+			if (i < 0)
+				return false;
+			string rootDir = virtualPath.Substring (0, i);
+			if (forbiddenContentFolders.Contains (rootDir)) {
+				if (result != null)
+					result.AddWarning (virtualPath, 0, 0, "", GettextCatalog.GetString (
+						"The folder name '{0}' is reserved and cannot used for Page files", rootDir));
+				return false;
+			}
+			return true;
+		}
+		
+		static HashSet<string> forbiddenContentNames = new HashSet<string> (new [] {
+			"Info.plist",
+			"Embedded.mobileprovision",
+			"ResourceRules.plist",
+			"PkgInfo",
+			"CodeResources",
+			"_CodeSignature",
+		}, StringComparer.OrdinalIgnoreCase);
+		
+		static HashSet<string> forbiddenContentFolders = new HashSet<string> (new [] {
+			"Resources",
+			"_CodeSignature",
+		}, StringComparer.OrdinalIgnoreCase);
 		
 		static BuildResult UpdateDebugSettingsPlist (IProgressMonitor monitor, IPhoneProjectConfiguration conf,
 		                                             ProjectFile template, string target)

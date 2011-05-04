@@ -382,14 +382,21 @@ namespace MonoDevelop.Ide.Gui
 			if (Saved != null)
 				Saved (this, args);
 		}
-		
-		void OnClosed (object s, EventArgs a)
+
+		public void CancelParseTimeout ()
 		{
-			ProjectDomService.DomRegistered -= UpdateRegisteredDom;
 			if (parseTimeout != 0) {
 				GLib.Source.Remove (parseTimeout);
 				parseTimeout = 0;
 			}
+		}
+		
+		bool isClosed;
+		void OnClosed (object s, EventArgs a)
+		{
+			isClosed = true;
+			ProjectDomService.DomRegistered -= UpdateRegisteredDom;
+			CancelParseTimeout ();
 			ClearTasks ();
 			
 			string currentParseFile = FileName;
@@ -621,8 +628,7 @@ namespace MonoDevelop.Ide.Gui
 			// very inefficient. Do it after a small delay instead, so several changes can
 			// be parsed at the same time.
 			string currentParseFile = FileName;
-			if (parseTimeout != 0)
-				GLib.Source.Remove (parseTimeout);
+			CancelParseTimeout ();
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				string currentParseText = Editor.Text;
 				Project curentParseProject = Project;
@@ -630,6 +636,9 @@ namespace MonoDevelop.Ide.Gui
 				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
 					var currentParsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 					Application.Invoke (delegate {
+						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+						if (isClosed)
+							return;
 						this.parsedDocument = currentParsedDocument;
 						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 							this.lastErrorFreeParsedDocument = parsedDocument;

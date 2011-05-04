@@ -242,7 +242,8 @@ namespace MonoDevelop.Refactoring
 			try {
 				StringBuilder code = new StringBuilder ();
 				CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Editor.Document.MimeType, editor.Editor.Options.TabsToSpaces, editor.Editor.Options.TabSize, editor.Editor.EolMarker);
-				
+				IType declaringType = editor.CompilationUnit.GetTypeAt (cls.Location.Line, cls.Location.Column) ?? cls;
+
 				foreach (KeyValuePair<IType, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
 					if (code.Length > 0) {
 						code.AppendLine ();
@@ -256,7 +257,7 @@ namespace MonoDevelop.Refactoring
 							curImpl.AppendLine ();
 							curImpl.AppendLine ();
 						}
-						curImpl.Append (generator.CreateMemberImplementation (this.cls, pair.Key, pair.Value != null).Code);
+						curImpl.Append (generator.CreateMemberImplementation (declaringType, pair.Key, pair.Value != null).Code);
 					}
 					if (kvp.Key.ClassType == ClassType.Interface) {
 						code.Append (generator.WrapInRegions (kvp.Key.Name + " implementation", curImpl.ToString ()));

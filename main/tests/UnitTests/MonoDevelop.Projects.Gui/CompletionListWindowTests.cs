@@ -633,6 +633,13 @@ namespace MonoDevelop.Projects.Gui
 			Assert.AreEqual ("WriteRaw", output);
 		}
 		
+		[Test]
+		public void TestDigitSelection()
+		{
+			string output = RunSimulation ("", "v1\t", true, true, false, "var", "var1");
+			Assert.AreEqual ("var1", output);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

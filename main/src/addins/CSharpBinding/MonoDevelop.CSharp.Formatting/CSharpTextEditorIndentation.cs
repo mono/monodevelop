@@ -284,7 +284,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (reIndent || automaticReindent)
 					DoReSmartIndent ();
 
-				if (lastCharInserted == '\n') {
+				if (lastCharInserted == '\n' && !(textEditorData.CurrentMode is TextLinkEditMode)) {
 					RunFormatter ();
 					stateTracker.UpdateEngine ();
 					//					DoReSmartIndent ();
@@ -513,7 +513,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void RunFormatter ()
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null) {
+			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
 				textEditorData.Paste -= TextEditorDataPaste;
 				//		textEditorData.Document.TextReplaced -= TextCut;
 				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);

@@ -138,25 +138,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public void UpdateFromProject ()
 		{
 			Hashtable fs = new Hashtable ();
-			foreach (ProjectFile file in project.Files)
-			{
-				if (GetFile (file.Name) == null) AddFile (file.Name);
+			foreach (ProjectFile file in project.Files) {
+				if (GetFile (file.Name) == null)
+					AddFile (file.Name);
 				fs [file.Name] = null;
 			}
 
-			foreach (string file in files.Keys.ToArray ())
-			{
+			foreach (string file in files.Keys.ToArray ()) {
 				if (!fs.Contains (file))
 					RemoveFile (file);
 			}
 			
 			fs.Clear ();
 			if (project is DotNetProject) {
-				DotNetProject netProject = (DotNetProject) project;
+				DotNetProject netProject = (DotNetProject)project;
 				foreach (SolutionItem pr in netProject.GetReferencedItems (ConfigurationSelector.Default)) {
 					if (pr is Project) {
 						string refId = "Project:" + ((Project)pr).FileName;
-						fs[refId] = null;
+						fs [refId] = null;
 						if (!HasReference (refId))
 							AddReference (refId);
 					}
@@ -164,15 +163,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				// Get the assembly references throught the project, since it may have custom references
 				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-					string refId = "Assembly:" + netProject.TargetRuntime.Id + ":" + Path.GetFullPath (file);
-					fs[refId] = null;
+					string fileName;
+					if (!Path.IsPathRooted (file)) {
+						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
+					} else {
+						fileName = Path.GetFullPath (file);
+					}
+					string refId = "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
+					fs [refId] = null;
 					if (!HasReference (refId))
 						AddReference (refId);
 				}
 			}
 			
-			foreach (ReferenceEntry re in References)
-			{
+			foreach (ReferenceEntry re in References) {
 				// Don't delete corlib references. They are implicit to projects, but not to pidbs.
 				if (!fs.Contains (re.Uri) && !IsCorlibReference (re))
 					RemoveReference (re.Uri);

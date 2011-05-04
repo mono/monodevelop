@@ -45,20 +45,23 @@ namespace MonoDevelop.IPhone
 		static bool? isInstalled = null;
 		static bool? simOnly = null;
 		static IPhoneSdkVersion? monoTouchVersion;
-		static IPhoneSdkVersion[] installedSdkVersions, knownOSVersions;
+		static IPhoneSdkVersion[] installedSdkVersions, knownOSVersions, installedSimVersions;
 		static DTSettings dtSettings;
 		static Dictionary<string,DTSdkSettings> sdkSettingsCache = new Dictionary<string,DTSdkSettings> ();
+		static Dictionary<string,DTSdkSettings> simSettingsCache = new Dictionary<string,DTSdkSettings> ();
 		
 		static DateTime? lastSdkVersionWrite = DateTime.MinValue;
 		static DateTime? lastMTExeWrite = DateTime.MinValue;
 		
 		const string PLAT_PLIST = "/Developer/Platforms/iPhoneOS.platform/Info.plist";
 		const string PLAT_VERSION_PLIST = "/Developer/Platforms/iPhoneOS.platform/version.plist";
-		const string SIM_PLIST = "/Developer/Platforms/iPhoneOSSimulator.platform/Info.plist";
+		const string SIM_PLIST = "/Developer/Platforms/iPhoneSimulator.platform/Info.plist";
 		const string MT_VERSION_FILE = "/Developer/MonoTouch/Version";
 		const string MONOTOUCH_EXE = "/Developer/MonoTouch/usr/bin/mtouch";
 		const string VERSION_PLIST = "/Developer/Library/version.plist";
 		const string SYSTEM_VERSION_PLIST = "/System/Library/CoreServices/SystemVersion.plist";
+		const string SDK_DIR = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";
+		const string SIM_SDK_DIR = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/";
 		
 		public static bool IsInstalled {
 			get {
@@ -105,46 +108,78 @@ namespace MonoDevelop.IPhone
 			return res;
 		}
 		
-		static FilePath GetSdkPath (string version)
+		static FilePath GetSdkPath (string version, bool sim)
 		{
-			return "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + version + ".sdk";
+			if (sim)
+				return "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + version + ".sdk";
+			else
+				return "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + version + ".sdk";
 		}
 		
-		static string GetSdkPlistFilename (string version)
+		static string GetSdkPlistFilename (string version, bool sim)
 		{
-			return GetSdkPath (version).Combine ("SDKSettings.plist");
+			return GetSdkPath (version, sim).Combine ("SDKSettings.plist");
 		}
 		
-		public static bool SdkIsInstalled (string version)
+		public static bool SdkIsInstalled (string version, bool sim)
 		{
-			return File.Exists (GetSdkPlistFilename (version));
+			return File.Exists (GetSdkPlistFilename (version, sim));
 		}
 		
-		public static bool SdkIsInstalled (IPhoneSdkVersion version)
+		public static bool SdkIsInstalled (IPhoneSdkVersion version, bool sim)
 		{
-			return SdkIsInstalled (version.ToString ());
+			return SdkIsInstalled (version.ToString (), sim);
 		}
 		
-		public static DTSdkSettings GetSdkSettings (IPhoneSdkVersion sdk)
+		public static DTSdkSettings GetSdkSettings (IPhoneSdkVersion sdk, bool isSim)
 		{
+			Dictionary<string,DTSdkSettings> cache = isSim? simSettingsCache : sdkSettingsCache;
+			
 			DTSdkSettings settings;
-			if (sdkSettingsCache.TryGetValue (sdk.ToString (), out settings))
+			if (cache.TryGetValue (sdk.ToString (), out settings))
 				return settings;
 			
-			settings = new DTSdkSettings ();
+			try {
+				settings = LoadSdkSettings (sdk, isSim);
+			} catch (Exception ex) {
+				var sdkName = isSim? "iPhoneSimulator" : "iPhoneOS";
+				LoggingService.LogError (string.Format ("Error loading settings for SDK {0} {1}", sdkName, sdk), ex);
+			}
+			
+			cache[sdk.ToString ()] = settings;
+			return settings;
+		}
+		
+		static DTSdkSettings LoadSdkSettings (IPhoneSdkVersion sdk, bool isSim)
+		{
+			var settings = new DTSdkSettings ();
 			var doc = new PlistDocument ();
-			doc.LoadFromXmlFile (GetSdkPlistFilename (sdk.ToString ()));
+			doc.LoadFromXmlFile (GetSdkPlistFilename (sdk.ToString (), isSim));
 			var dict = (PlistDictionary) doc.Root;
 			
-			settings.AlternateSDK = ((PlistString)dict["AlternateSDK"]).Value;
+			if (!isSim)
+				settings.AlternateSDK = ((PlistString)dict["AlternateSDK"]).Value;
+			
 			settings.CanonicalName = ((PlistString)dict["CanonicalName"]).Value;
 			var props = (PlistDictionary) dict["DefaultProperties"];
 			settings.DTCompiler = ((PlistString)props["GCC_VERSION"]).Value;
 			
-			var sdkPath = GetSdkPath (sdk.ToString ());
+			TargetDevice deviceFamilies = TargetDevice.NotSet;
+			PlistArray deviceFamiliesArr;
+			if ((deviceFamiliesArr = props.TryGetValue ("SUPPORTED_DEVICE_FAMILIES") as PlistArray) != null) {
+				foreach (var v in deviceFamiliesArr) {
+					var s = v as PlistString;
+					int i;
+					if (s != null && int.TryParse (s.Value, out i)) {
+						deviceFamilies |= (TargetDevice) i;
+					}
+				}
+			}
+			settings.DeviceFamilies = deviceFamilies;
+			
+			var sdkPath = GetSdkPath (sdk.ToString (), isSim);
 			settings.DTSDKBuild = GrabRootString (sdkPath + SYSTEM_VERSION_PLIST, "ProductBuildVersion");
 			
-			sdkSettingsCache[sdk.ToString ()] = settings;
 			return settings;
 		}
 		
@@ -186,21 +221,20 @@ namespace MonoDevelop.IPhone
 			return ((PlistString) ((PlistDictionary)doc.Root)[key]).Value;
 		}
 			
-		public static IPhoneSdkVersion GetClosestInstalledSdk (IPhoneSdkVersion v)
+		public static IPhoneSdkVersion GetClosestInstalledSdk (IPhoneSdkVersion v, bool sim)
 		{
 			//sorted low to high, so get first that's >= requested version
-			foreach (var i in InstalledSdkVersions) {
+			foreach (var i in GetInstalledSdkVersions (sim)) {
 				if (i.CompareTo (v) >= 0)
 					return i;
 			}
 			return IPhoneSdkVersion.UseDefault;
 		}
 		
-		public static IList<IPhoneSdkVersion> InstalledSdkVersions {
-			get {
-				EnsureSdkVersions ();
-				return installedSdkVersions;
-			}
+		public static IList<IPhoneSdkVersion> GetInstalledSdkVersions (bool sim)
+		{
+			EnsureSdkVersions ();
+			return sim? installedSimVersions : installedSdkVersions;
 		}
 		
 		public static IList<IPhoneSdkVersion> KnownOSVersions {
@@ -217,24 +251,22 @@ namespace MonoDevelop.IPhone
 		
 		public static IEnumerable<IPhoneSimulatorTarget> GetSimulatorTargets ()
 		{
-			foreach (var v in IPhoneFramework.InstalledSdkVersions) {
-				//pre-3.2
-				if (IPhoneSdkVersion.V3_2.CompareTo (v) > 0) {
+			foreach (var v in IPhoneFramework.GetInstalledSdkVersions (true)) {
+				var settings = GetSdkSettings (v, true);
+				
+				if (v < IPhoneSdkVersion.V3_2) {
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPhone, v);
+					continue;
 				}
-				//3.2
-				else if (IPhoneSdkVersion.V3_2.CompareTo (v) == 0) {
+				if (v == IPhoneSdkVersion.V3_2) {
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPad, v);
+					continue;
 				}
-				//4.0, 4.1
-				else if (IPhoneSdkVersion.V4_0.CompareTo (v) == 0 || IPhoneSdkVersion.V4_1.CompareTo (v) == 0) {
+				
+				if (settings.DeviceFamilies.HasFlag (TargetDevice.IPhone))
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPhone, v);
-				}
-				//unknown, assume both
-				else {
-					yield return new IPhoneSimulatorTarget (TargetDevice.IPhone, v);
+				if (settings.DeviceFamilies.HasFlag (TargetDevice.IPad))
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPad, v);
-				}
 			}
 		}
 		
@@ -257,21 +289,24 @@ namespace MonoDevelop.IPhone
 				new IPhoneSdkVersion (new [] { 4, 2 }),
 				new IPhoneSdkVersion (new [] { 4, 3 }),
 			};
-			
-			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";
-			if (!Directory.Exists (sdkDir)) {
-				installedSdkVersions = new IPhoneSdkVersion[0];
-				return;
-			}
+			installedSdkVersions = EnumerateSdks (SDK_DIR, "iPhoneOS");
+			installedSimVersions = EnumerateSdks (SIM_SDK_DIR, "iPhoneSimulator");
+		}
+		
+		static IPhoneSdkVersion[] EnumerateSdks (string sdkDir, string name)
+		{
+			if (!Directory.Exists (sdkDir))
+				return new IPhoneSdkVersion[0];
 			
 			var sdks = new List<string> ();
+			
 			foreach (var dir in Directory.GetDirectories (sdkDir)) {
-				if (!File.Exists (dir + "/SDKSettings.plist"))
+				if (!File.Exists (Path.Combine (dir, "SDKSettings.plist")))
 					continue;
-				
-				string d = dir.Substring (sdkDir.Length);
-				if (d.StartsWith ("iPhoneOS"))
-					d = d.Substring ("iPhoneOS".Length);
+				string d = Path.GetFileName (dir);
+				if (!d.StartsWith (name))
+					continue;
+				d = d.Substring (name.Length);
 				if (d.EndsWith (".sdk"))
 					d = d.Substring (0, d.Length - ".sdk".Length);
 				if (d.Length > 0)
@@ -282,11 +317,12 @@ namespace MonoDevelop.IPhone
 				try {
 					vs.Add (IPhoneSdkVersion.Parse (s));
 				} catch (Exception ex) {
-					LoggingService.LogError ("Could not parse iPhone SDK version {0}:\n{1}", s, ex.ToString ());
+					LoggingService.LogError ("Could not parse {0} SDK version '{1}':\n{2}", name, s, ex.ToString ());
 				}
 			}
-			installedSdkVersions = vs.ToArray ();
-			Array.Sort (installedSdkVersions);
+			var versions = vs.ToArray ();
+			Array.Sort (versions);
+			return versions;
 		}
 		
 		public static void CheckInfoCaches ()
@@ -311,6 +347,7 @@ namespace MonoDevelop.IPhone
 			knownOSVersions = null;
 			dtSettings = null;
 			sdkSettingsCache.Clear ();
+			simSettingsCache.Clear ();
 		}
 		
 		static void CheckMTCaches ()
@@ -383,6 +420,7 @@ namespace MonoDevelop.IPhone
 			public string AlternateSDK { get; set; }
 			public string DTCompiler { get; set; }
 			public string DTSDKBuild { get; set; }
+			public TargetDevice DeviceFamilies { get; set; }
 		}
 
 		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "sel_registerName")]

@@ -90,11 +90,21 @@ namespace MonoDevelop.CSharp.Completion
 				policy = dom.Project.Policies.Get<CSharpFormattingPolicy> (types);
 			UpdatePath (null, null);
 			textEditorData.Caret.PositionChanged += UpdatePath;
-			Document.DocumentParsed += delegate {
-				UpdatePath (null, null);
-			};
+			Document.DocumentParsed += HandleDocumentDocumentParsed;
 		}
 
+		void HandleDocumentDocumentParsed (object sender, EventArgs e)
+		{
+			UpdatePath (null, null);
+		}
+
+		public override void Dispose ()
+		{
+			textEditorData.Caret.PositionChanged -= UpdatePath;
+			Document.DocumentParsed -= HandleDocumentDocumentParsed;
+			base.Dispose ();
+		}
+		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
 			return System.IO.Path.GetExtension (doc.Name) == ".cs";
@@ -763,7 +773,8 @@ namespace MonoDevelop.CSharp.Completion
 			if (typeString.Contains ("."))
 				completionList.Add (typeString, resolvedType.StockIcon);
 			foreach (var field in resolvedType.Fields) {
-				completionList.Add (typeString + "." + field.Name, field.StockIcon);
+				if (field.IsConst || field.IsStatic)
+					completionList.Add (typeString + "." + field.Name, field.StockIcon);
 			}
 			completionList.DefaultCompletionString = typeString;
 		}
@@ -801,7 +812,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 			completionList.AutoCompleteEmptyMatch = false;
-			//completionList.AutoSelect = false;
+			completionList.AutoSelect = false;
 			resolver.AddAccessibleCodeCompletionData (context, cdc);
 			return completionList;
 		}
@@ -1502,6 +1513,8 @@ namespace MonoDevelop.CSharp.Completion
 				MemberCompletionData newData = new MemberCompletionData (member as INode, flags);
 				newData.HideExtensionParameter = HideExtensionParameter;
 				string memberKey = newData.CompletionText;
+				if (memberKey == null)
+					return null;
 				if (member is IMember) {
 					newData.CompletionCategory = GetCompletionCategory (((IMember)member).DeclaringType);
 				}
@@ -1719,7 +1732,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			// special handling for nullable types: Bug 674516 - new completion for nullables should not include "Nullable"
 			if (type is InstantiatedType && ((InstantiatedType)type).UninstantiatedType.FullName == "System.Nullable" && ((InstantiatedType)type).GenericParameters.Count == 1) {
-				var genericParameter = ((InstantiatedType)type).GenericParameters[0];
+				var genericParameter = ((InstantiatedType)type).GenericParameters [0];
 				returnType = returnTypeUnresolved = Document.CompilationUnit.ShortenTypeName (genericParameter, location);
 				type = dom.SearchType (Document.CompilationUnit, callingType, location, genericParameter);
 			}
@@ -1749,7 +1762,7 @@ namespace MonoDevelop.CSharp.Completion
 			//			}
 			if (type == null)
 				return result;
-			HashSet<string> usedNamespaces = new HashSet<string> (GetUsedNamespaces ());
+			HashSet<string > usedNamespaces = new HashSet<string> (GetUsedNamespaces ());
 			if (type.FullName == DomReturnType.Object.FullName) 
 				AddPrimitiveTypes (col);
 			
@@ -1782,6 +1795,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 			}
+			result.AutoCompleteEmptyMatch = true;
 			return result;
 		}
 		
