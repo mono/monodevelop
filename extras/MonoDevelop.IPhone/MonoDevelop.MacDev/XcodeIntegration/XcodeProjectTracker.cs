@@ -153,6 +153,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			OpenXcodeProject ();
 			
 			//FIXME: detect when the project's opened, so it will open the xib file in the project
+			//FIXME: why is the xcode project sometime "locked for editing"?
+			//FIXME: switch xcode to the assistant view with the correct header file
 			MonoMac.AppKit.NSWorkspace.SharedWorkspace.OpenFile (
 				outputDir.Combine (xib.FileName),
 				XcodeInterfaceBuilderDesktopApplication.XCODE_LOCATION);
@@ -316,6 +318,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			
 			trackedFiles.Clear ();
 			
+			//FIXME: use resource directories in Xcode
 			var xcp = new XcodeProject (dnp.Name);
 			foreach (var file in dnp.Files.Where (IsPageOrContent)) {
 				string pvp = file.ProjectVirtualPath;
@@ -470,6 +473,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			}
 		}
 		
+		//FIXME: create the designer file based on xibs that use the class, not the other parts?
 		ProjectFile CreateDesignerFile (SyncObjcBackJob job)
 		{
 			int i = 0;
