@@ -1503,6 +1503,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.Info = info;
 			this.LineSegment = line; // may be null if no line is assigned to the error.
+			this.Wave = true;
 			
 			ColorName = info.ErrorType == ErrorType.Warning ? Mono.TextEditor.Highlighting.Style.WarningUnderlineString : Mono.TextEditor.Highlighting.Style.ErrorUnderlineString;
 			
