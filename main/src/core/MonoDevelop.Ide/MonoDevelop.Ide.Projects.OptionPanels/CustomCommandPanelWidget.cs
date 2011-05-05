@@ -27,6 +27,7 @@
 
 
 using System;
+using System.Linq;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
@@ -39,17 +40,19 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		CustomCommandWidget lastSlot;
 		SolutionEntityItem entry;
 		ConfigurationSelector configSelector;
+		CustomCommandType[] supportedTypes;
 		
 		public CustomCommandPanelWidget ()
 		{
 			this.Build();
 		}
 		
-		public void Load (SolutionEntityItem entry, CustomCommandCollection commands, ConfigurationSelector configSelector)
+		public void Load (SolutionEntityItem entry, CustomCommandCollection commands, ConfigurationSelector configSelector, CustomCommandType[] supportedTypes)
 		{
 			this.entry = entry;
 			this.commands = commands;
 			this.configSelector = configSelector;
+			this.supportedTypes = supportedTypes;
 			
 			// Clean the list
 			foreach (CustomCommandWidget ccw in vboxCommands.Children) {
@@ -60,7 +63,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 			
 			foreach (CustomCommand cmd in commands) {
-				AddCommandSlot (cmd);
+				if (supportedTypes.Contains (cmd.Type))
+					AddCommandSlot (cmd);
 			}
 			// Add an empty slot to allow adding more commands.
 			AddCommandSlot (null);
@@ -68,7 +72,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		void AddCommandSlot (CustomCommand cmd)
 		{
-			CustomCommandWidget widget = new CustomCommandWidget (entry, cmd, configSelector);
+			CustomCommandWidget widget = new CustomCommandWidget (entry, cmd, configSelector, supportedTypes);
 			vboxCommands.PackStart (widget, false, false, 0);
 			widget.CommandCreated += OnCommandCreated;
 			widget.CommandRemoved += OnCommandRemoved;

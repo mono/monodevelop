@@ -7797,18 +7797,7 @@ All solutions</property>
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="IsTextCombo">True</property>
-                <property name="Items" translatable="yes">(Select a project operation)
-Before Build
-Build
-After Build
-Before Execute
-Execute
-After Execute
-Before Clean
-Clean
-After Clean
-Custom Command</property>
-                <property name="Active">0</property>
+                <property name="Items" />
                 <signal name="Changed" handler="OnComboTypeChanged" />
               </widget>
               <packing>
@@ -12452,7 +12441,6 @@ please quit MonoDevelop before installing them.</property>
                             <property name="Visible">False</property>
                             <property name="CanFocus">True</property>
                             <property name="Label" translatable="yes" />
-                            <property name="Active">True</property>
                             <property name="DrawIndicator">True</property>
                             <property name="HasLabel">False</property>
                             <property name="UseUnderline">True</property>

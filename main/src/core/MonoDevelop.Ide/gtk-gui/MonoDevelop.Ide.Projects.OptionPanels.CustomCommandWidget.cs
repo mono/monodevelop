@@ -53,20 +53,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.comboType = global::Gtk.ComboBox.NewText ();
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("(Select a project operation)"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Before Build"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Build"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("After Build"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Before Execute"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Execute"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("After Execute"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Before Clean"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Clean"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("After Clean"));
-			this.comboType.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Custom Command"));
 			this.comboType.CanFocus = true;
 			this.comboType.Name = "comboType";
-			this.comboType.Active = 0;
 			this.hbox1.Add (this.comboType);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboType]));
 			w2.Position = 0;

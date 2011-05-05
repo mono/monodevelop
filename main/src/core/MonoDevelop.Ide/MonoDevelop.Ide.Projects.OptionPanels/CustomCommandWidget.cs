@@ -41,16 +41,36 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		CustomCommand cmd;
 		IWorkspaceObject entry;
 		bool updating;
+		CustomCommandType[] supportedTypes;
 		
-		public CustomCommandWidget (IWorkspaceObject entry, CustomCommand cmd, ConfigurationSelector configSelector)
+		string[] commandNames = {
+			GettextCatalog.GetString ("Before Build"),
+			GettextCatalog.GetString ("Build"),
+			GettextCatalog.GetString ("After Build"),
+			GettextCatalog.GetString ("Before Execute"),
+			GettextCatalog.GetString ("Execute"),
+			GettextCatalog.GetString ("After Execute"),
+			GettextCatalog.GetString ("Before Clean"),
+			GettextCatalog.GetString ("Clean"),
+			GettextCatalog.GetString ("After Clean"),
+			GettextCatalog.GetString ("Custom Command")
+		};
+		
+		public CustomCommandWidget (IWorkspaceObject entry, CustomCommand cmd, ConfigurationSelector configSelector, CustomCommandType[] supportedTypes)
 		{
 			this.Build();
+			this.supportedTypes = supportedTypes;
 			this.cmd = cmd;
-			if (cmd != null) {
-				updating = true;
-				comboType.RemoveText (0);
-				updating = false;
-			}
+			
+			updating = true;
+			
+			if (cmd == null)
+				comboType.AppendText (GettextCatalog.GetString ("(Select a project operation)"));
+			
+			foreach (var ct in supportedTypes)
+				comboType.AppendText (commandNames [(int)ct]);
+			
+			updating = false;
 			
 			this.entry = entry;
 			UpdateControls ();
@@ -85,8 +105,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				comboType.Active = 0;
 			}
 			else {
-				Array array = Enum.GetValues (typeof (CustomCommandType));
-				comboType.Active = Array.IndexOf (array, cmd.Type);
+				comboType.Active = Array.IndexOf (supportedTypes, cmd.Type);
 				labelName.Visible = entryName.Visible = (cmd.Type == CustomCommandType.Custom);
 				entryName.Text = cmd.Name ?? "";
 				entryCommand.Text = cmd.Command ?? "";
@@ -134,7 +153,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					if (comboType.Active != 0) {
 						// Selected a command type. Create the command now
 						cmd = new CustomCommand ();
-						cmd.Type = (CustomCommandType) (comboType.Active - 1);
+						cmd.Type = supportedTypes [comboType.Active - 1];
 						updating = true;
 						comboType.RemoveText (0);
 						updating = false;
@@ -142,7 +161,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 							CommandCreated (this, EventArgs.Empty);
 					}
 				} else
-					cmd.Type = (CustomCommandType) (comboType.Active);
+					cmd.Type = supportedTypes [comboType.Active];
 				UpdateControls ();
 				if (cmd.Type == CustomCommandType.Custom)
 					entryName.GrabFocus ();

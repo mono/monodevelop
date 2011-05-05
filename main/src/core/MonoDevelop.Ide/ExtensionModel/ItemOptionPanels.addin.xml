@@ -32,9 +32,6 @@
 		<Condition id="ItemType" value="Solution">
 			<Section id = "AuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanel" />
 		</Condition>
-		<Condition id="ItemType" value="SolutionEntityItem">
-			<Section id = "CustomCommands" _label = "Custom Commands" icon="md-custom-commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.CustomCommandPanel"/>
-		</Condition>
 	</Section>
 	<Section id="Build" _label="Build">
 		<Section id="General" _label="General" icon="md-build-combine">
@@ -45,6 +42,9 @@
 				<Panel id = "SolutionGeneral" _label = "Build" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineBuildOptions"/>
 			</Condition>
 		</Section>
+		<Condition id="ItemType" value="SolutionEntityItem">
+			<Section id = "CustomCommands" _label = "Custom Commands" icon="md-custom-commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.BuildCustomCommandPanel"/>
+		</Condition>
 		<Condition id="ItemType" value="Project">
 			<Section id = "ProjectConfigurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>
 			<Section id = "Compiler" _label="Compiler" icon="md-compiler-options" />
@@ -66,6 +66,9 @@
 		</Section>
 		<Condition id="ItemType" value="Solution">
 			<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel"/>
+		</Condition>
+		<Condition id="ItemType" value="SolutionEntityItem">
+			<Section id = "CustomCommands" _label = "Custom Commands" icon="md-custom-commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.ExecutionCustomCommandPanel"/>
 		</Condition>
 	</Section>
 	<Section id="SourceCode" _label="Source Code">

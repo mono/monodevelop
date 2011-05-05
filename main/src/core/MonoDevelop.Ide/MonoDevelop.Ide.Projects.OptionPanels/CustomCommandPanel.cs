@@ -37,6 +37,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal class CustomCommandPanel: MultiConfigItemOptionsPanel
 	{
 		CustomCommandPanelWidget widget;
+		CustomCommandType[] supportedTypes;
+		
+		public CustomCommandPanel (CustomCommandType[] supportedTypes)
+		{
+			this.supportedTypes = supportedTypes;
+		}
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
@@ -45,12 +51,38 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		public override void LoadConfigData ()
 		{
-			widget.Load (ConfiguredSolutionItem, CurrentConfiguration.CustomCommands, CurrentConfiguration.Selector);
+			widget.Load (ConfiguredSolutionItem, CurrentConfiguration.CustomCommands, CurrentConfiguration.Selector, supportedTypes);
 		}
 
 		public override void ApplyChanges ()
 		{
 			// Do nothing. Changes to cloned configurations are automatically applied.
+		}
+	}
+
+	internal class BuildCustomCommandPanel: CustomCommandPanel
+	{
+		public BuildCustomCommandPanel (): base (new CustomCommandType[] {
+			CustomCommandType.BeforeBuild,
+			CustomCommandType.Build,
+			CustomCommandType.AfterBuild,
+			CustomCommandType.BeforeClean,
+			CustomCommandType.Clean,
+			CustomCommandType.AfterClean,
+			CustomCommandType.Custom
+		})
+		{
+		}
+	}
+
+	internal class ExecutionCustomCommandPanel: CustomCommandPanel
+	{
+		public ExecutionCustomCommandPanel (): base (new CustomCommandType[] {
+			CustomCommandType.BeforeExecute,
+			CustomCommandType.Execute,
+			CustomCommandType.AfterExecute
+		})
+		{
 		}
 	}
 }
