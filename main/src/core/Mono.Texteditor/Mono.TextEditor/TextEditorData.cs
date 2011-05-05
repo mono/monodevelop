@@ -98,7 +98,7 @@ namespace Mono.TextEditor
 			
 			this.heightTree = new HeightTree (this);
 			this.heightTree.Rebuild ();
-			doc.TextSet += HandleDocTextSet;
+			
 		}
 
 		void HandleDocTextSet (object sender, EventArgs e)
@@ -131,6 +131,7 @@ namespace Mono.TextEditor
 				return document;
 			}
 			set {
+				DetachDocument ();
 				this.document = value;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
@@ -138,6 +139,10 @@ namespace Mono.TextEditor
 				this.document.Undone += DocumentHandleUndone;
 				this.document.Redone += DocumentHandleRedone;
 				this.document.LineChanged += HandleDocLineChanged;
+				
+				this.document.TextSet += HandleDocTextSet;
+				this.document.Folded += HandleTextEditorDataDocumentFolded;
+				this.document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
 			}
 		}
 
@@ -262,22 +267,28 @@ namespace Mono.TextEditor
 			Caret.Offset = offset + length;
 			Document.EndAtomicUndo ();
 		}
-		
+
+		void DetachDocument ()
+		{
+			if (document == null) 
+				return;
+			document.LineChanged -= HandleDocLineChanged;
+			document.BeginUndo -= OnBeginUndo;
+			document.EndUndo -= OnEndUndo;
+			document.Undone -= DocumentHandleUndone;
+			document.Redone -= DocumentHandleRedone;
+			document.TextSet -= HandleDocTextSet;
+			document.Folded += HandleTextEditorDataDocumentFolded;
+			document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
+			
+			document = null;
+		}
+
 		public void Dispose ()
 		{
 			options = options.Kill ();
 			
-			if (document != null) {
-				document.LineChanged -= HandleDocLineChanged;
-				document.BeginUndo -= OnBeginUndo;
-				document.EndUndo   -= OnEndUndo;
-				document.Undone -= DocumentHandleUndone;
-				document.Redone -= DocumentHandleRedone;
-				document.TextSet -= HandleDocTextSet;
-				
-				// DOCUMENT MUST NOT BE DISPOSED !!! (Split View shares document)
-				document = null;
-			}
+			DetachDocument ();
 			if (caret != null) {
 				caret.PositionChanged -= CaretPositionChanged;
 				caret = null;
@@ -1132,6 +1143,24 @@ namespace Mono.TextEditor
 		{
 			return heightTree.VisualToLogicalLine (visualLineNumber);
 		}
+		
+		void HandleTextEditorDataDocumentFoldTreeUpdated (object sender, EventArgs e)
+		{
+			heightTree.Rebuild ();
+		}
+
+		void HandleTextEditorDataDocumentFolded (object sender, FoldSegmentEventArgs e)
+		{
+			int start = OffsetToLineNumber (e.FoldSegment.StartLine.Offset);
+			int end = OffsetToLineNumber (e.FoldSegment.EndLine.Offset);
+			
+			if (e.FoldSegment.IsFolded) {
+				heightTree.Fold (start, end - start);
+			} else {
+				heightTree.Unfold (start, end - start);
+			}
+		}
+		
 		#endregion
 	}
 }

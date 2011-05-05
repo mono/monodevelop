@@ -93,27 +93,9 @@ namespace Mono.TextEditor
 				textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 				textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
 				textEditorData.Document.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
-				textEditorData.Document.Folded += HandleTextEditorDataDocumentFolded1;
-				textEditorData.Document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated1;
 			}
 		}
 
-		void HandleTextEditorDataDocumentFoldTreeUpdated1 (object sender, EventArgs e)
-		{
-			textEditorData.heightTree.Rebuild ();
-		}
-
-		void HandleTextEditorDataDocumentFolded1 (object sender, FoldSegmentEventArgs e)
-		{
-			int start = OffsetToLineNumber (e.FoldSegment.StartLine.Offset);
-			int end = OffsetToLineNumber (e.FoldSegment.EndLine.Offset);
-			
-			if (e.FoldSegment.IsFolded) {
-				textEditorData.heightTree.Fold (start, end - start);
-			} else {
-				textEditorData.heightTree.Unfold (start, end - start);
-			}
-		}
 		
 		public Mono.TextEditor.Caret Caret {
 			get {
@@ -658,8 +640,6 @@ namespace Mono.TextEditor
 				this.Document.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 
 				this.Document.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
 				this.Document.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
-				this.Document.Folded -= HandleTextEditorDataDocumentFolded1;
-				this.Document.FoldTreeUpdated -= HandleTextEditorDataDocumentFoldTreeUpdated1;
 			}
 			
 			DisposeAnimations ();

@@ -187,7 +187,7 @@ namespace Mono.TextEditor
 			if (data.Caret.Line < data.Document.LineCount) {
 				int nextLine = data.LogicalToVisualLine (data.Caret.Line) + 1;
 				int line = data.VisualToLogicalLine (nextLine);
-				int offset =  data.LocationToOffset (line, data.Caret.Column);
+				int offset = data.LocationToOffset (line, data.Caret.Column);
 				data.Caret.SetToOffsetWithDesiredColumn (offset);
 			} else {
 				ToDocumentEnd (data);

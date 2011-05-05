@@ -90,9 +90,9 @@ namespace Mono.TextEditor.Tests
 ]17
 18");
 			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
-			Assert.AreEqual (4, data.LogicalToVisualLine (12));
-			Assert.AreEqual (6, data.LogicalToVisualLine (16));
-			Assert.AreEqual (7, data.LogicalToVisualLine (17));
+			Assert.AreEqual (5, data.LogicalToVisualLine (12));
+			Assert.AreEqual (8, data.LogicalToVisualLine (16));
+			Assert.AreEqual (8, data.LogicalToVisualLine (17));
 		}
 		
 		[Test()]
@@ -367,7 +367,7 @@ namespace Mono.TextEditor.Tests
 			int end = data.GetLine (8).Offset;
 			data.Remove (start, end - start);
 			Assert.AreEqual (1, data.Document.FoldSegments.Count ());
-			Assert.AreEqual (10, data.LogicalToVisualLine (10));
+			Assert.AreEqual (8, data.LogicalToVisualLine (10));
 		}
 		
 		[Test()]
