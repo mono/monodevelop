@@ -81,9 +81,13 @@ namespace MonoDevelop.MonoDroid.Gui
 		private global::Gtk.HBox hbox6;
 		private global::Gtk.Image apkDestionationStatusImage;
 		private global::Gtk.Label apkDestinationStatusLabel;
+		private global::Gtk.Table table5;
+		private global::MonoDevelop.Components.FolderEntry apkDestionationDirEntry;
 		private global::Gtk.HBox hbox3;
+		private global::Gtk.Entry apkDestinationFileEntry;
+		private global::Gtk.Label label28;
 		private global::Gtk.Label label18;
-		private global::MonoDevelop.Components.FileEntry apkDestionationLocEntry;
+		private global::Gtk.Label label27;
 		private global::Gtk.Label destinationSummaryStatus;
 		private global::Gtk.Label label16;
 		private global::Gtk.Button buttonCancel;
@@ -872,42 +876,85 @@ namespace MonoDevelop.MonoDroid.Gui
 			w72.Expand = false;
 			w72.Fill = false;
 			// Container child vbox7.Gtk.Box+BoxChild
+			this.table5 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
+			this.table5.Name = "table5";
+			this.table5.RowSpacing = ((uint)(6));
+			this.table5.ColumnSpacing = ((uint)(6));
+			// Container child table5.Gtk.Table+TableChild
+			this.apkDestionationDirEntry = new global::MonoDevelop.Components.FolderEntry ();
+			this.apkDestionationDirEntry.Name = "apkDestionationDirEntry";
+			this.table5.Add (this.apkDestionationDirEntry);
+			global::Gtk.Table.TableChild w73 = ((global::Gtk.Table.TableChild)(this.table5 [this.apkDestionationDirEntry]));
+			w73.LeftAttach = ((uint)(1));
+			w73.RightAttach = ((uint)(2));
+			w73.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table5.Gtk.Table+TableChild
 			this.hbox3 = new global::Gtk.HBox ();
 			this.hbox3.Name = "hbox3";
 			this.hbox3.Spacing = 6;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.label18 = new global::Gtk.Label ();
-			this.label18.Name = "label18";
-			this.label18.LabelProp = global::Mono.Unix.Catalog.GetString ("Destination APK file");
-			this.hbox3.Add (this.label18);
-			global::Gtk.Box.BoxChild w73 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label18]));
-			w73.Position = 0;
-			w73.Expand = false;
-			w73.Fill = false;
+			this.apkDestinationFileEntry = new global::Gtk.Entry ();
+			this.apkDestinationFileEntry.CanFocus = true;
+			this.apkDestinationFileEntry.Name = "apkDestinationFileEntry";
+			this.apkDestinationFileEntry.IsEditable = true;
+			this.apkDestinationFileEntry.InvisibleChar = '●';
+			this.hbox3.Add (this.apkDestinationFileEntry);
+			global::Gtk.Box.BoxChild w74 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.apkDestinationFileEntry]));
+			w74.Position = 0;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.apkDestionationLocEntry = new global::MonoDevelop.Components.FileEntry ();
-			this.apkDestionationLocEntry.Name = "apkDestionationLocEntry";
-			this.hbox3.Add (this.apkDestionationLocEntry);
-			global::Gtk.Box.BoxChild w74 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.apkDestionationLocEntry]));
-			w74.Position = 1;
-			this.vbox7.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w75 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.hbox3]));
-			w75.Position = 3;
+			this.label28 = new global::Gtk.Label ();
+			this.label28.Name = "label28";
+			this.label28.LabelProp = global::Mono.Unix.Catalog.GetString (".apk");
+			this.hbox3.Add (this.label28);
+			global::Gtk.Box.BoxChild w75 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label28]));
+			w75.Position = 1;
 			w75.Expand = false;
 			w75.Fill = false;
+			this.table5.Add (this.hbox3);
+			global::Gtk.Table.TableChild w76 = ((global::Gtk.Table.TableChild)(this.table5 [this.hbox3]));
+			w76.TopAttach = ((uint)(1));
+			w76.BottomAttach = ((uint)(2));
+			w76.LeftAttach = ((uint)(1));
+			w76.RightAttach = ((uint)(2));
+			w76.XOptions = ((global::Gtk.AttachOptions)(4));
+			w76.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table5.Gtk.Table+TableChild
+			this.label18 = new global::Gtk.Label ();
+			this.label18.Name = "label18";
+			this.label18.LabelProp = global::Mono.Unix.Catalog.GetString ("Target directory:");
+			this.table5.Add (this.label18);
+			global::Gtk.Table.TableChild w77 = ((global::Gtk.Table.TableChild)(this.table5 [this.label18]));
+			w77.XOptions = ((global::Gtk.AttachOptions)(4));
+			w77.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table5.Gtk.Table+TableChild
+			this.label27 = new global::Gtk.Label ();
+			this.label27.Name = "label27";
+			this.label27.Xalign = 0F;
+			this.label27.LabelProp = global::Mono.Unix.Catalog.GetString ("File:");
+			this.table5.Add (this.label27);
+			global::Gtk.Table.TableChild w78 = ((global::Gtk.Table.TableChild)(this.table5 [this.label27]));
+			w78.TopAttach = ((uint)(1));
+			w78.BottomAttach = ((uint)(2));
+			w78.XOptions = ((global::Gtk.AttachOptions)(4));
+			w78.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.vbox7.Add (this.table5);
+			global::Gtk.Box.BoxChild w79 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.table5]));
+			w79.Position = 3;
+			w79.Expand = false;
+			w79.Fill = false;
 			// Container child vbox7.Gtk.Box+BoxChild
 			this.destinationSummaryStatus = new global::Gtk.Label ();
 			this.destinationSummaryStatus.Name = "destinationSummaryStatus";
 			this.destinationSummaryStatus.Xalign = 0F;
 			this.destinationSummaryStatus.Wrap = true;
 			this.vbox7.Add (this.destinationSummaryStatus);
-			global::Gtk.Box.BoxChild w76 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.destinationSummaryStatus]));
-			w76.Position = 4;
-			w76.Expand = false;
-			w76.Fill = false;
+			global::Gtk.Box.BoxChild w80 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.destinationSummaryStatus]));
+			w80.Position = 4;
+			w80.Expand = false;
+			w80.Fill = false;
 			this.notebook1.Add (this.vbox7);
-			global::Gtk.Notebook.NotebookChild w77 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox7]));
-			w77.Position = 3;
+			global::Gtk.Notebook.NotebookChild w81 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox7]));
+			w81.Position = 3;
 			// Notebook tab
 			this.label16 = new global::Gtk.Label ();
 			this.label16.Name = "label16";
@@ -915,19 +962,19 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.notebook1.SetTabLabel (this.vbox7, this.label16);
 			this.label16.ShowAll ();
 			this.hbox1.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w78 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.notebook1]));
-			w78.Position = 1;
+			global::Gtk.Box.BoxChild w82 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.notebook1]));
+			w82.Position = 1;
 			w1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w79 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox1]));
-			w79.Position = 0;
-			w79.Expand = false;
-			w79.Fill = false;
+			global::Gtk.Box.BoxChild w83 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox1]));
+			w83.Position = 0;
+			w83.Expand = false;
+			w83.Fill = false;
 			// Internal child MonoDevelop.MonoDroid.Gui.MonoDroidPublishDialog.ActionArea
-			global::Gtk.HButtonBox w80 = this.ActionArea;
-			w80.Name = "dialog1_ActionArea";
-			w80.Spacing = 10;
-			w80.BorderWidth = ((uint)(5));
-			w80.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w84 = this.ActionArea;
+			w84.Name = "dialog1_ActionArea";
+			w84.Spacing = 10;
+			w84.BorderWidth = ((uint)(5));
+			w84.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -937,9 +984,9 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w81 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w80 [this.buttonCancel]));
-			w81.Expand = false;
-			w81.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w85 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w84 [this.buttonCancel]));
+			w85.Expand = false;
+			w85.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonBack = new global::Gtk.Button ();
 			this.buttonBack.Sensitive = false;
@@ -948,11 +995,11 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.buttonBack.UseStock = true;
 			this.buttonBack.UseUnderline = true;
 			this.buttonBack.Label = "gtk-go-back";
-			w80.Add (this.buttonBack);
-			global::Gtk.ButtonBox.ButtonBoxChild w82 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w80 [this.buttonBack]));
-			w82.Position = 1;
-			w82.Expand = false;
-			w82.Fill = false;
+			w84.Add (this.buttonBack);
+			global::Gtk.ButtonBox.ButtonBoxChild w86 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w84 [this.buttonBack]));
+			w86.Position = 1;
+			w86.Expand = false;
+			w86.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonForward = new global::Gtk.Button ();
 			this.buttonForward.Sensitive = false;
@@ -961,11 +1008,11 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.buttonForward.UseStock = true;
 			this.buttonForward.UseUnderline = true;
 			this.buttonForward.Label = "gtk-go-forward";
-			w80.Add (this.buttonForward);
-			global::Gtk.ButtonBox.ButtonBoxChild w83 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w80 [this.buttonForward]));
-			w83.Position = 2;
-			w83.Expand = false;
-			w83.Fill = false;
+			w84.Add (this.buttonForward);
+			global::Gtk.ButtonBox.ButtonBoxChild w87 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w84 [this.buttonForward]));
+			w87.Position = 2;
+			w87.Expand = false;
+			w87.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
