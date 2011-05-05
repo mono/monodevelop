@@ -219,10 +219,15 @@ namespace MonoDevelop.MonoDroid
 		protected override void Update (CommandInfo info)
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			if (proj == null) {
+				info.Enabled = info.Visible = false;
+				return;
+			}
+				
 			var configSel = IdeApp.Workspace.ActiveConfiguration;
 			var conf = proj.GetConfiguration (configSel);
-			info.Visible = proj != null;
-			info.Enabled = proj != null && conf.Name.IndexOf ("debug", StringComparison.OrdinalIgnoreCase) < 0;
+			info.Visible = true;
+			info.Enabled = conf != null && conf.Name.IndexOf ("debug", StringComparison.OrdinalIgnoreCase) < 0;
 		}
 
 		protected override void Run ()
