@@ -1035,7 +1035,7 @@ delegate void BarFoo ();
 			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (CSharpFormatter.MimeType);
 			var policyParent = new MonoDevelop.Projects.Policies.PolicyBag (null);
 			policyParent.Set<CSharpFormattingPolicy> (profile, CSharpFormatter.MimeType);
-			texteditor.Document.Text  = formatter.FormatText (policyParent, example);
+			texteditor.Document.Text = formatter.FormatText (policyParent, Environment.NewLine != "\n" ? example.Replace ("\n", Environment.NewLine) : example);
 		}
 		
 		static PropertyInfo GetProperty (TreeModel model, TreeIter iter)
