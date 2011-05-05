@@ -65,7 +65,7 @@ namespace MonoDevelop.Database.Components
 		}
 		
 		public ColumnSchemaCollection Columns {
-			get { return schema.Columns; }
+			get { return schema.GetColumns(); }
 		}
 		
 		public ParameterSchemaCollection Parameters {

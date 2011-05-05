@@ -815,7 +815,7 @@ namespace MonoDevelop.Database.Sql
 		{
 			StringBuilder sb = new StringBuilder ("SELECT ");
 			bool coma = false;
-			foreach (ColumnSchema col in table.Columns) {
+			foreach (ColumnSchema col in table.GetColumns()) {
 				if (coma)
 					sb.AppendFormat(",");
 				coma = true;
@@ -832,7 +832,7 @@ namespace MonoDevelop.Database.Sql
 			StringBuilder sb = new StringBuilder ("UPDATE ");
 			sb.AppendFormat ("{0} {1}{1}{2}SET", table.Name, Convert.ToString (Convert.ToChar (9)), Environment.NewLine);
 			bool coma = false;
-			foreach (ColumnSchema col in table.Columns) {
+			foreach (ColumnSchema col in table.GetColumns()) {
 				if (coma)
 					sb.AppendFormat(",");
 				coma = true;
@@ -856,7 +856,7 @@ namespace MonoDevelop.Database.Sql
 			StringBuilder sb = new StringBuilder ("INSERT INTO ");
 			sb.AppendFormat ("{0} (", table.Name);
 			bool coma = false;
-			foreach (ColumnSchema col in table.Columns) {
+			foreach (ColumnSchema col in table.GetColumns()) {
 				if (coma)
 					sb.AppendFormat(",");
 				coma = true;
@@ -867,7 +867,7 @@ namespace MonoDevelop.Database.Sql
 			sb.Append (")");
 			sb.AppendLine ();
 			sb.AppendFormat ("{0}VALUES (", Convert.ToString (Convert.ToChar (9)));
-			foreach (ColumnSchema col in table.Columns) {				
+			foreach (ColumnSchema col in table.GetColumns()) {				
 				if (coma)
 					sb.AppendFormat(",");
 				coma = true;

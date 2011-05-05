@@ -185,7 +185,6 @@ using MonoDevelop.Core;
 										else 
 											table.IsSystemTable = false;
 									table.OwnerName = r.GetString(0);
-									table.Definition = GetTableDefinition (table);
 									tables.Add (table);
 								}
 								r.Close ();
@@ -714,7 +713,7 @@ using MonoDevelop.Core;
 			sb.Append (" (");
 			
 			bool first = true;
-			foreach (ColumnSchema column in table.Columns) {
+			foreach (ColumnSchema column in table.GetColumns()) {
 				if (first)
 					first = false;
 				else
@@ -1020,7 +1019,7 @@ using MonoDevelop.Core;
 			sb.AppendFormat ("-- DROP TABLE {0};\n\n", table.Name);
 			sb.AppendFormat ("CREATE TABLE {0} (\n", table.Name);
 
-			ColumnSchemaCollection columns = table.Columns;
+			ColumnSchemaCollection columns = table.GetColumns();
 			string[] parts = new string[columns.Count];
 			int i = 0;
 			foreach (ColumnSchema col in columns)

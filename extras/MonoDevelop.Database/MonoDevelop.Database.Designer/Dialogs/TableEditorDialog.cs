@@ -142,7 +142,7 @@ namespace MonoDevelop.Database.Designer
 		{
 			tables = schemaProvider.GetTables ();
 			dataTypes = schemaProvider.GetDataTypes ();
-			columns = originalTable.Columns;
+			columns = originalTable.GetColumns();
 			constraints = originalTable.Constraints;
 			triggers = originalTable.Triggers;
 			//TODO: indices
