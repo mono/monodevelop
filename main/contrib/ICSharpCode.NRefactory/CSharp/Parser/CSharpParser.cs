@@ -102,9 +102,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (typeName is Mono.CSharp.QualifiedAliasMember) {
 					var qam = (Mono.CSharp.QualifiedAliasMember)typeName;
-					var memberType = new MemberType ();
+					var memberType = new MemberType (); 
 					if (qam.LeftExpression == null) {
-						memberType.Target = new SimpleType("global");
+						memberType.Target = new SimpleType ("global", Convert (qam.Location));
 					} else { 
 						memberType.Target = ConvertToType (qam.LeftExpression);
 					}
