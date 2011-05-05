@@ -55,6 +55,34 @@ namespace Mono.TextEditor
 		{
 			this.editor = editor;
 		}
+
+		public void RemoveLine (int line)
+		{
+			var node = GetNodeByLine (line);
+			if (node == null)
+				return;
+			if (node.count == 1) {
+				tree.Remove (node);
+				return;
+			}
+			node.count--;
+		}
+		
+		public void InsertLine (int line)
+		{
+			var node = GetNodeByLine (line);
+			if (node == null)
+				return;
+			if (node.count == 1) {
+				var newLine = new HeightNode () {
+					count = 1,
+					height = editor.LineHeight
+				};
+				tree.InsertBefore (node, newLine);
+				return;
+			}
+			node.count++;
+		}
 		
 		public void Rebuild ()
 		{

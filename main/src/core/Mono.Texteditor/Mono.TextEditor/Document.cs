@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 	public class Document : IBuffer
 	{
 		IBuffer      buffer;
-		ILineSplitter splitter;
+		internal ILineSplitter splitter;
 		SyntaxMode   syntaxMode = null;
 		
 		string mimeType;

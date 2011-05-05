@@ -98,7 +98,6 @@ namespace Mono.TextEditor
 			
 			this.heightTree = new HeightTree (this);
 			this.heightTree.Rebuild ();
-			
 		}
 
 		void HandleDocTextSet (object sender, EventArgs e)
@@ -143,7 +142,20 @@ namespace Mono.TextEditor
 				this.document.TextSet += HandleDocTextSet;
 				this.document.Folded += HandleTextEditorDataDocumentFolded;
 				this.document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
+				
+				this.document.splitter.LineInserted += HandleDocumentsplitterhandleLineInserted;
+				this.document.splitter.LineRemoved += HandleDocumentsplitterhandleLineRemoved;
 			}
+		}
+
+		void HandleDocumentsplitterhandleLineRemoved (object sender, LineEventArgs e)
+		{
+			heightTree.RemoveLine (OffsetToLineNumber (e.Line.Offset));
+		}
+
+		void HandleDocumentsplitterhandleLineInserted (object sender, LineEventArgs e)
+		{
+			heightTree.InsertLine (OffsetToLineNumber (e.Line.Offset));
 		}
 
 		/// <value>
