@@ -358,7 +358,6 @@ namespace MonoDevelop.Ide.Templates
 					return DisplayBindingService.GetDefaultViewBinding (null, mimeType, null) != null;
 				}
 			}
-			return true;
 		}
 
 		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)

@@ -149,7 +149,6 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (monitor != null && monitor.IsCancelRequested)
 					yield break;
 				string mime = DesktopService.GetMimeTypeForUri (info.Item2);
-				bool runReferenceFinder = false;
 				if (mime != currentMime) {
 					currentMime = mime;
 					finder = GetReferenceFinder (currentMime);
