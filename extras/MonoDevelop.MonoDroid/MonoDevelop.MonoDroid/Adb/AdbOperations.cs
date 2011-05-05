@@ -83,10 +83,10 @@ namespace MonoDevelop.MonoDroid
 		
 		void OnGotResponse (string response)
 		{
-			Devices = Parse (response);
+			var devices = Parse (response);
 			var ev = DevicesChanged;
 			if (ev != null)
-				ev (Devices);
+				ev (devices);
 			ReadResponseWithLength (OnGotResponse);
 		}
 		
@@ -106,7 +106,6 @@ namespace MonoDevelop.MonoDroid
 			return devices;
 		}
 		
-		public List<AndroidDevice> Devices { get; private set; }
 		public event Action<List<AndroidDevice>> DevicesChanged;
 	}
 

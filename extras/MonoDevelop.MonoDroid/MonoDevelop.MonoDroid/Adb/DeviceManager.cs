@@ -39,7 +39,7 @@ namespace MonoDevelop.MonoDroid
 	public class DeviceManager
 	{
 		EventHandler devicesUpdated;
-		IDisposable pop; 
+		IDisposable pop;
 		IAsyncOperation op;
 		DevicePropertiesTracker propTracker;
 		object lockObj = new object ();
@@ -156,7 +156,6 @@ namespace MonoDevelop.MonoDroid
 					ClearTracking ();
 				}
 			};
-			Devices = trackerOp.Devices;
 			return trackerOp;
 		}
 		
