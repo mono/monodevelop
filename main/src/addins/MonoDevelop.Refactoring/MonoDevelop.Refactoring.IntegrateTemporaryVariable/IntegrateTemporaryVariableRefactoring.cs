@@ -164,7 +164,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				foreach (var o in localVariableDeclaration.Variables) {
 					if (o.Name == ((IntegrateTemporaryVariableVisitorOptions)data).GetName ()) {
 						IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
-						options.Initializer = localVariableDeclaration.GetVariable (((LocalVariable)options.Options.SelectedItem).Name).Initializer;
+						options.Initializer = localVariableDeclaration.GetVariable (((LocalVariable)options.Options.SelectedItem).Name).Initializer.Clone ();
 						if (localVariableDeclaration.Variables.Count == 1) {
 							TextReplaceChange change = new TextReplaceChange ();
 							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
