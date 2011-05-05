@@ -97,7 +97,8 @@ namespace MonoDevelop.MonoDroid.Gui
 					ValidateKeyAlias ();
 			};
 			
-			apkDestionationLocEntry.PathChanged += delegate { ValidateDestination (); };
+			apkDestionationDirEntry.PathChanged += delegate { ValidateDestination (); };
+			apkDestinationFileEntry.Changed += delegate { ValidateDestination (); };
 			
 			buttonBack.Clicked += delegate { GoBackward (); };
 			buttonForward.Clicked += delegate { GoForward (); };
@@ -122,7 +123,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			get { return usingNewKey ? GetDNameFromValues (dNameEntries) : String.Empty; }
 		}
 		public string DestinationApkPath {
-			get { return apkDestionationLocEntry.Path; }
+			get { return System.IO.Path.Combine (apkDestionationDirEntry.Path, apkDestinationFileEntry.Text); }
 		}
 
 		bool VerifyKeyInfo ()
@@ -217,8 +218,8 @@ namespace MonoDevelop.MonoDroid.Gui
 				buttonForward.Label = GettextCatalog.GetString ("Create");
 				buttonForward.UseStock = true;
 
-				if (apkDestionationLocEntry.Path.Length == 0)
-					apkDestionationLocEntry.Path = System.IO.Path.GetFileName (ApkPath);
+				if (apkDestinationFileEntry.Text.Length == 0)
+					apkDestinationFileEntry.Text = System.IO.Path.GetFileName (ApkPath);
 
 				ValidateDestination ();
 				destinationSummaryStatus.Text = GetSummary ();
@@ -374,20 +375,25 @@ namespace MonoDevelop.MonoDroid.Gui
 		void ValidateDestination ()
 		{
 			buttonBack.Sensitive = true;
+			buttonForward.Sensitive = false;
 
-			if (apkDestionationLocEntry.Path.Length == 0) {
-				apkDestionationStatusImage.Stock = Stock.Cancel;
-				apkDestinationStatusLabel.Text = "Enter destination for the APK file.";
-				buttonForward.Sensitive = false;
-			} else if (File.Exists (apkDestionationLocEntry.Path)) {
-				apkDestionationStatusImage.Stock = Stock.DialogWarning;
-				apkDestinationStatusLabel.Text = "File already exists.";
-				buttonForward.Sensitive = true;
-			} else {
-				apkDestionationStatusImage.Pixbuf = null;
-				apkDestinationStatusLabel.Text = String.Empty;
-				buttonForward.Sensitive = true;
+			if (apkDestionationDirEntry.Path.Length == 0) {
+				SetDestinationStatus (Stock.Cancel, "Enter target directory for the APK file.");
+				return;
 			}
+			
+			string fileName = apkDestinationFileEntry.Text.Trim ();
+			if (fileName.Length == 0) {
+				SetDestinationStatus (Stock.Cancel, "Enter filename for the APK file.");
+				return;
+			}
+			
+			if (File.Exists (apkDestionationDirEntry.Path))
+				SetDestinationStatus (Stock.DialogWarning, "File already exists.");
+			else
+				SetDestinationStatus (null, String.Empty);
+			
+			buttonForward.Sensitive = true;
 		}
 
 		string [] GetDNameEntries ()
@@ -462,6 +468,12 @@ namespace MonoDevelop.MonoDroid.Gui
 				keyStoreStatusImage.Stock = Stock.Cancel;
 			
 			keyStoreStatusLabel.Text = text;
+		}
+		
+		void SetDestinationStatus (string stockIcon, string text)
+		{
+			apkDestionationStatusImage.Stock = stockIcon;
+			apkDestinationStatusLabel.Text = text;
 		}
 	}
 }
