@@ -36,8 +36,8 @@ namespace Mono.TextEditor
 	{
 		// TODO: Add support for line word wrap to the text editor - with the height tree this is possible.
 		
-		RedBlackTree<HeightNode> tree = new RedBlackTree<HeightNode> ();
-		TextEditor editor;
+		internal RedBlackTree<HeightNode> tree = new RedBlackTree<HeightNode> ();
+		TextEditorData editor;
 		
 		public double TotalHeight {
 			get {
@@ -45,7 +45,13 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public HeightTree (TextEditor editor)
+		public int VisibleLineCount {
+			get {
+				return tree.Root.totalVisibleCount;
+			}
+		}
+		
+		public HeightTree (TextEditorData editor)
 		{
 			this.editor = editor;
 		}
@@ -204,7 +210,41 @@ namespace Mono.TextEditor
 			node.height = newHeight;
 			node.UpdateAugmentedData ();
 		}
+		
+		int GetValidLine (int logicalLine)
+		{
+			if (logicalLine < DocumentLocation.MinLine) 
+				return DocumentLocation.MinLine;
+			if (logicalLine > editor.LineCount) 
+				return editor.LineCount;
+			return logicalLine;
+		}
 
+		public int LogicalToVisualLine (int logicalLine)
+		{
+			int line = GetValidLine (logicalLine);
+			var node = GetNodeByLine (line);
+			int delta = logicalLine - node.GetLineNumber ();
+			return node.GetVisibleLineNumber () + delta;
+		}
+		
+		int GetValidVisualLine (int logicalLine)
+		{
+			if (logicalLine < DocumentLocation.MinLine) 
+				return DocumentLocation.MinLine;
+			if (logicalLine > VisibleLineCount) 
+				return VisibleLineCount;
+			return logicalLine;
+		}
+
+		public int VisualToLogicalLine (int visualLineNumber)
+		{
+			int line = GetValidVisualLine (visualLineNumber);
+			var node = GetNodeByVisibleLine (line);
+			int delta = visualLineNumber - node.GetVisibleLineNumber ();
+			return node.GetLineNumber () + delta;
+		}
+		
 		public HeightNode GetNodeByLine (int lineNumber)
 		{
 			var node = tree.Root;
@@ -218,6 +258,27 @@ namespace Mono.TextEditor
 					if (node.left != null)
 						i -= node.left.totalCount;
 					i -= node.count;
+					if (i < 0)
+						return node;
+					node = node.right;
+				}
+			}
+		}
+		
+		public HeightNode GetNodeByVisibleLine (int lineNumber)
+		{
+			var node = tree.Root;
+			int i = lineNumber - 1;
+			while (true) {
+				if (node == null)
+					return null;
+				if (node.left != null && i < node.left.totalVisibleCount) {
+					node = node.left;
+				} else {
+					if (node.left != null)
+						i -= node.left.totalVisibleCount;
+					if (node.foldLevel == 0)
+						i -= node.count;
 					if (i < 0)
 						return node;
 					node = node.right;
@@ -267,6 +328,7 @@ namespace Mono.TextEditor
 			public double totalHeight;
 			public double height;
 			
+			public int totalVisibleCount;
 			public int totalCount;
 			public int count = 1;
 			
@@ -281,6 +343,23 @@ namespace Mono.TextEditor
 						if (node.parent.left != null)
 							lineNumber += node.parent.left.totalCount;
 						lineNumber += node.parent.count;
+					}
+					
+					node = node.parent;
+				}
+				return lineNumber + 1;
+			}
+			
+			public int GetVisibleLineNumber ()
+			{
+				int lineNumber = left != null ? left.totalVisibleCount : 0;
+				var node = this;
+				while (node.parent != null) {
+					if (node == node.parent.right) {
+						if (node.parent.left != null)
+							lineNumber += node.parent.left.totalVisibleCount;
+						if (node.parent.foldLevel == 0)
+							lineNumber += node.parent.count;
 					}
 					
 					node = node.parent;
@@ -306,28 +385,41 @@ namespace Mono.TextEditor
 			
 			public override string ToString ()
 			{
-				return string.Format ("[HeightNode: totalHeight={0}, height={1}, totalCount={2}, count={3}, foldLevel={4}]", totalHeight, height, totalCount, count, foldLevel);
+				return string.Format ("[HeightNode: totalHeight={0}, height={1}, totalVisibleCount = {5}, totalCount={2}, count={3}, foldLevel={4}]", totalHeight, height, totalCount, count, foldLevel, totalVisibleCount);
 			}
 			
 			#region IRedBlackTreeNode implementation
 			public void UpdateAugmentedData ()
 			{
-				double newHeight = foldLevel == 0 ? height : 0;
+				double newHeight;
 				int newCount = count;
+				int newvisibleCount;
+				
+				if (foldLevel == 0) {
+					newHeight = height;
+					newvisibleCount = count;
+				} else {
+					newvisibleCount = 0;
+					newHeight = 0;
+				}
 				
 				if (left != null) {
 					newHeight += left.totalHeight;
 					newCount += left.totalCount;
+					newvisibleCount += left.totalVisibleCount;
 				}
 				
 				if (right != null) {
 					newHeight += right.totalHeight;
 					newCount += right.totalCount;
+					newvisibleCount += right.totalVisibleCount;
 				}
 				
-				if (newHeight != totalHeight || newCount != totalCount) {
+				if (newHeight != totalHeight || newCount != totalCount || newvisibleCount != totalVisibleCount) {
 					this.totalHeight = newHeight;
 					this.totalCount = newCount;
+					this.totalVisibleCount = newvisibleCount;
+					
 					if (Parent != null)
 						Parent.UpdateAugmentedData ();
 				}

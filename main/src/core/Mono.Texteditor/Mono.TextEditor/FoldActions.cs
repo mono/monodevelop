@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 			int lineNumber = data.LogicalToVisualLocation (data.Caret.Location).Line;
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
-					if (fold.IsFolded && data.Document.LogicalToVisualLine (data.Document.OffsetToLineNumber (fold.Offset)) == lineNumber && 
+					if (fold.IsFolded && data.LogicalToVisualLine (data.OffsetToLineNumber (fold.Offset)) == lineNumber && 
 					    fold.Offset <= startOffset && fold.EndOffset >= endOffset) {
 						currentFold = fold;
 						startOffset = fold.Offset;

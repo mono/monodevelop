@@ -70,8 +70,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLogicalToVisualLine ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[1
 +[2
 3
@@ -89,18 +88,17 @@ namespace Mono.TextEditor.Tests
 +[15
 16
 ]17
-18";
-			document.UpdateFoldSegments (GetFoldSegments (document), false);
-			Assert.AreEqual (4, document.LogicalToVisualLine (12));
-			Assert.AreEqual (6, document.LogicalToVisualLine (16));
-			Assert.AreEqual (7, document.LogicalToVisualLine (17));
+18");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			Assert.AreEqual (4, data.LogicalToVisualLine (12));
+			Assert.AreEqual (6, data.LogicalToVisualLine (16));
+			Assert.AreEqual (7, data.LogicalToVisualLine (17));
 		}
 		
 		[Test()]
 		public void TestLogicalToVisualLineStartLine ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[1
 -[2
 3
@@ -118,16 +116,15 @@ namespace Mono.TextEditor.Tests
 -[15
 16
 ]17
-18";
-			document.UpdateFoldSegments (GetFoldSegments (document), false);
-			Assert.AreEqual (7, document.LogicalToVisualLine (7));
+18");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			Assert.AreEqual (7, data.LogicalToVisualLine (7));
 		}
 		
 		[Test()]
 		public void TestVisualToLogicalLineStartLine ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[1
 -[2
 3
@@ -145,16 +142,15 @@ namespace Mono.TextEditor.Tests
 -[15
 16
 ]17
-18";
-			document.UpdateFoldSegments (GetFoldSegments (document), false);
-			Assert.AreEqual (7, document.VisualToLogicalLine (7));
+18");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			Assert.AreEqual (7, data.VisualToLogicalLine (7));
 		}
 		
 		[Test()]
 		public void TestVisualToLogicalLineCase2 ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[1
 +[2
 3
@@ -172,18 +168,17 @@ namespace Mono.TextEditor.Tests
 +[15
 16
 ]17
-18";
-			document.UpdateFoldSegments (GetFoldSegments (document), false);
-			Assert.AreEqual (6, document.VisualToLogicalLine (4));
-			Assert.AreEqual (14, document.VisualToLogicalLine (6));
-			Assert.AreEqual (15, document.VisualToLogicalLine (7));
+18");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			Assert.AreEqual (6, data.VisualToLogicalLine (4));
+			Assert.AreEqual (14, data.VisualToLogicalLine (6));
+			Assert.AreEqual (15, data.VisualToLogicalLine (7));
 		}
 		
 		[Test()]
 		public void TestVisualToLogicalLineCase3 ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[1
 +[2
 3
@@ -201,17 +196,16 @@ namespace Mono.TextEditor.Tests
 +[15
 16
 ]17
-18";
-			document.UpdateFoldSegments (GetFoldSegments (document), false);
-			Assert.AreEqual (2, document.VisualToLogicalLine (2));
-			Assert.AreEqual (2, document.LogicalToVisualLine (2));
+18");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			Assert.AreEqual (2, data.VisualToLogicalLine (2));
+			Assert.AreEqual (2, data.LogicalToVisualLine (2));
 		}
 
 		[Test()]
 		public void TestUpdateFoldSegmentBug ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[0
 1
 +[2
@@ -238,22 +232,22 @@ namespace Mono.TextEditor.Tests
 23
 24
 25
-26";
-			var segments = GetFoldSegments (document);
-			document.UpdateFoldSegments (segments, false);
-			Assert.AreEqual (25, document.VisualToLogicalLine (9));
-			Assert.AreEqual (3, document.FoldSegments.Count ());
+26");
+			var segments = GetFoldSegments (data.Document);
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (25, data.VisualToLogicalLine (9));
+			Assert.AreEqual (3, data.Document.FoldSegments.Count ());
 			segments.RemoveAt (1);
 			
 			
-			document.UpdateFoldSegments (segments, false);
+			data.Document.UpdateFoldSegments (segments, false);
 			
-			Assert.AreEqual (2, document.FoldSegments.Count ());
-			Assert.AreEqual (17, document.LogicalToVisualLine (25));
+			Assert.AreEqual (2, data.Document.FoldSegments.Count ());
+			Assert.AreEqual (17, data.LogicalToVisualLine (25));
 			segments.RemoveAt (1);
-			document.UpdateFoldSegments (segments, false);
-			Assert.AreEqual (1, document.FoldSegments.Count ());
-			Assert.AreEqual (25, document.LogicalToVisualLine (25));
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (1, data.Document.FoldSegments.Count ());
+			Assert.AreEqual (25, data.LogicalToVisualLine (25));
 		}
 		
 		/// <summary>
@@ -262,8 +256,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug682466 ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"0
 1
 2
@@ -274,21 +267,20 @@ namespace Mono.TextEditor.Tests
 7
 8
 9
-10";
-			var segments = GetFoldSegments (document);
-			document.UpdateFoldSegments (segments, false);
-			Assert.AreEqual (true, document.FoldSegments.FirstOrDefault ().IsFolded);
-			segments = GetFoldSegments (document);
+10");
+			var segments = GetFoldSegments (data.Document);
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (true, data.Document.FoldSegments.FirstOrDefault ().IsFolded);
+			segments = GetFoldSegments (data.Document);
 			segments[0].IsFolded = false;
-			document.UpdateFoldSegments (segments, false);
-			Assert.AreEqual (5, document.LogicalToVisualLine (8));
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (5, data.LogicalToVisualLine (8));
 		}
 		
 		[Test()]
 		public void TestVisualToLogicalLine ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[0
 +[1
 2
@@ -306,10 +298,10 @@ namespace Mono.TextEditor.Tests
 +[14
 15
 ]16
-17";
-			document.UpdateFoldSegments (GetFoldSegments (document), false);
-			Assert.AreEqual (13, document.VisualToLogicalLine (5));
-			Assert.AreEqual (18, document.VisualToLogicalLine (8));
+17");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			Assert.AreEqual (13, data.VisualToLogicalLine (5));
+			Assert.AreEqual (18, data.VisualToLogicalLine (8));
 		}
 		
 		
@@ -350,8 +342,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestUpdateFoldSegmentBug2 ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[1
 2
 +[3
@@ -367,23 +358,22 @@ namespace Mono.TextEditor.Tests
 13
 14]
 15
-16";
-			var segments = GetFoldSegments (document);
-			document.UpdateFoldSegments (segments, false);
-			Assert.AreEqual (10, document.VisualToLogicalLine (8));
-			Assert.AreEqual (3, document.FoldSegments.Count ());
-			int start = document.GetLine (2).Offset;
-			int end = document.GetLine (8).Offset;
-			((IBuffer)document).Remove (start, end - start);
-			Assert.AreEqual (1, document.FoldSegments.Count ());
-			Assert.AreEqual (10, document.LogicalToVisualLine (10));
+16");
+			var segments = GetFoldSegments (data.Document);
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (10, data.VisualToLogicalLine (8));
+			Assert.AreEqual (3, data.Document.FoldSegments.Count ());
+			int start = data.GetLine (2).Offset;
+			int end = data.GetLine (8).Offset;
+			data.Remove (start, end - start);
+			Assert.AreEqual (1, data.Document.FoldSegments.Count ());
+			Assert.AreEqual (10, data.LogicalToVisualLine (10));
 		}
 		
 		[Test()]
 		public void TestGetStartFoldingsGetStartFoldings ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"+[1
 2
 3
@@ -399,24 +389,23 @@ namespace Mono.TextEditor.Tests
 +[13
 14]
 15
-16";
-			var segments = GetFoldSegments (document);
-			document.UpdateFoldSegments (segments, false);
-			document.UpdateFoldSegments (segments, false);
-			document.UpdateFoldSegments (segments, false);
+16");
+			var segments = GetFoldSegments (data.Document);
+			data.Document.UpdateFoldSegments (segments, false);
+			data.Document.UpdateFoldSegments (segments, false);
+			data.Document.UpdateFoldSegments (segments, false);
 			
-			Assert.AreEqual (1, document.GetStartFoldings (1).Count ());
-			Assert.AreEqual (1, document.GetStartFoldings (4).Count ());
-			Assert.AreEqual (1, document.GetStartFoldings (6).Count ());
-			Assert.AreEqual (1, document.GetStartFoldings (9).Count ());
-			Assert.AreEqual (1, document.GetStartFoldings (13).Count ());
+			Assert.AreEqual (1, data.Document.GetStartFoldings (1).Count ());
+			Assert.AreEqual (1, data.Document.GetStartFoldings (4).Count ());
+			Assert.AreEqual (1, data.Document.GetStartFoldings (6).Count ());
+			Assert.AreEqual (1, data.Document.GetStartFoldings (9).Count ());
+			Assert.AreEqual (1, data.Document.GetStartFoldings (13).Count ());
 		}
 		
 		[Test()]
 		public void TestIsFoldedSetFolded ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[1
 2
 3
@@ -432,20 +421,19 @@ namespace Mono.TextEditor.Tests
 -[13
 14]
 15
-16";
-			var segments = GetFoldSegments (document);
-			document.UpdateFoldSegments (segments, false);
-			Assert.AreEqual (15, document.LogicalToVisualLine (15));
-			document.GetStartFoldings (6).First ().IsFolded = true;
-			document.GetStartFoldings (4).First ().IsFolded = true;
-			Assert.AreEqual (11, document.LogicalToVisualLine (15));
+16");
+			var segments = GetFoldSegments (data.Document);
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (15, data.LogicalToVisualLine (15));
+			data.Document.GetStartFoldings (6).First ().IsFolded = true;
+			data.Document.GetStartFoldings (4).First ().IsFolded = true;
+			Assert.AreEqual (11, data.LogicalToVisualLine (15));
 		}
 		
 		[Test()]
 		public void TestIsFoldedUnsetFolded ()
 		{
-			Document document = new Mono.TextEditor.Document ();
-			document.Text = 
+			var data = CaretMoveActionTests.Create (
 @"-[1
 2
 3
@@ -461,13 +449,13 @@ namespace Mono.TextEditor.Tests
 -[13
 14]
 15
-16";
-			var segments = GetFoldSegments (document);
-			document.UpdateFoldSegments (segments, false);
-			Assert.AreEqual (11, document.LogicalToVisualLine (15));
-			document.GetStartFoldings (6).First ().IsFolded = false;
-			document.GetStartFoldings (4).First ().IsFolded = false;
-			Assert.AreEqual (15, document.LogicalToVisualLine (15));
+16");
+			var segments = GetFoldSegments (data.Document);
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (11, data.LogicalToVisualLine (15));
+			data.Document.GetStartFoldings (6).First ().IsFolded = false;
+			data.Document.GetStartFoldings (4).First ().IsFolded = false;
+			Assert.AreEqual (15, data.LogicalToVisualLine (15));
 		}
 		
 		[Test()]

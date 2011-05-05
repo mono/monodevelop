@@ -230,7 +230,7 @@ namespace MonoDevelop.SourceEditor
 				// Handle keyboard menu popup
 				if (evnt.Key == Gdk.Key.Menu || (evnt.Key == Gdk.Key.F10 && (evnt.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
 					this.menuPopupLocation = LocationToPoint (this.Caret.Location);
-					this.menuPopupLocation.Y += (int)this.TextViewMargin.LineHeight;
+					this.menuPopupLocation.Y += (int)LineHeight;
 					this.ShowPopup ();
 					return true;
 				}

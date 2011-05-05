@@ -83,17 +83,41 @@ namespace Mono.TextEditor
 		
 		public TextEditorData () : this (new Document ())
 		{
-			
 		}
 		
 		public TextEditorData (Document doc)
 		{
+			LineHeight = 16;
+			
 			caret = new Caret (this);
 			caret.PositionChanged += CaretPositionChanged;
 			
 			options = TextEditorOptions.DefaultOptions;
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
+			
+			this.heightTree = new HeightTree (this);
+			this.heightTree.Rebuild ();
+			doc.TextSet += HandleDocTextSet;
+		}
+
+		void HandleDocTextSet (object sender, EventArgs e)
+		{
+			this.heightTree.Rebuild ();
+		}
+
+		public double GetLineHeight (LineSegment line)
+		{
+			if (Parent == null)
+				return LineHeight;
+			return Parent.GetLineHeight (line);
+		}
+		
+		public double GetLineHeight (int line)
+		{
+			if (Parent == null)
+				return LineHeight;
+			return Parent.GetLineHeight (line);
 		}
 
 		void HandleDocLineChanged (object sender, LineEventArgs e)
@@ -249,6 +273,7 @@ namespace Mono.TextEditor
 				document.EndUndo   -= OnEndUndo;
 				document.Undone -= DocumentHandleUndone;
 				document.Redone -= DocumentHandleRedone;
+				document.TextSet -= HandleDocTextSet;
 				
 				// DOCUMENT MUST NOT BE DISPOSED !!! (Split View shares document)
 				document = null;
@@ -469,17 +494,17 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
-		{
-			return Document.LogicalToVisualLocation (this, location);
-		}
-		
-		public DocumentLocation VisualToLogicalLocation (DocumentLocation location)
-		{
-			int line = Document.VisualToLogicalLine (location.Line);
-			int column = Document.GetLine (line).GetVisualColumn (this, location.Column);
-			return new DocumentLocation (line, column);
-		}
+//		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
+//		{
+//			return LogicalToVisualLocation (this, location);
+//		}
+//		
+//		public DocumentLocation VisualToLogicalLocation (DocumentLocation location)
+//		{
+//			int line = VisualToLogicalLine (location.Line);
+//			int column = Document.GetLine (line).GetVisualColumn (this, location.Column);
+//			return new DocumentLocation (line, column);
+//		}
 		public int SelectionAnchor {
 			get {
 				if (MainSelection == null)
@@ -1078,6 +1103,34 @@ namespace Mono.TextEditor
 			} else {
 				Caret.Location = new DocumentLocation (line, column);
 			}
+		}
+		#endregion
+		
+		#region folding
+		
+		public double LineHeight {
+			get;
+			internal set;
+		}
+		
+		internal HeightTree heightTree;
+		
+		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
+		{
+			int line = LogicalToVisualLine (location.Line);
+			LineSegment lineSegment = this.GetLine (location.Line);
+			int column = lineSegment != null ? lineSegment.GetVisualColumn (this, location.Column) : location.Column;
+			return new DocumentLocation (line, column);
+		}
+
+		public int LogicalToVisualLine (int logicalLine)
+		{
+			return heightTree.LogicalToVisualLine (logicalLine);
+		}
+
+		public int VisualToLogicalLine (int visualLineNumber)
+		{
+			return heightTree.VisualToLogicalLine (visualLineNumber);
 		}
 		#endregion
 	}

@@ -146,8 +146,8 @@ namespace Mono.TextEditor
 			}
 			
 			if (data.Caret.Line > DocumentLocation.MinLine) {
-				int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
-				int line = data.Document.VisualToLogicalLine (visualLine - 1);
+				int visualLine = data.LogicalToVisualLine (data.Caret.Line);
+				int line = data.VisualToLogicalLine (visualLine - 1);
 				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 				data.Caret.Offset = offset;
 				data.Caret.SetToDesiredColumn (desiredColumn);
@@ -185,9 +185,9 @@ namespace Mono.TextEditor
 			}
 			
 			if (data.Caret.Line < data.Document.LineCount) {
-				int nextLine = data.Document.LogicalToVisualLine (data.Caret.Line) + 1;
-				int line = data.Document.VisualToLogicalLine (nextLine);
-				int offset =  data.Document.LocationToOffset (line, data.Caret.Column);
+				int nextLine = data.LogicalToVisualLine (data.Caret.Line) + 1;
+				int line = data.VisualToLogicalLine (nextLine);
+				int offset =  data.LocationToOffset (line, data.Caret.Column);
 				data.Caret.SetToOffsetWithDesiredColumn (offset);
 			} else {
 				ToDocumentEnd (data);
@@ -307,10 +307,10 @@ namespace Mono.TextEditor
 		public static void PageUp (TextEditorData data)
 		{
 			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % LineHeight)) / LineHeight);
-			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
+			int visualLine = data.LogicalToVisualLine (data.Caret.Line);
 			visualLine -= pageLines;
-			int line = System.Math.Max (data.Document.VisualToLogicalLine (visualLine), DocumentLocation.MinLine);
-			int offset = data.Document.LocationToOffset (line, data.Caret.Column);
+			int line = System.Math.Max (data.VisualToLogicalLine (visualLine), DocumentLocation.MinLine);
+			int offset = data.LocationToOffset (line, data.Caret.Column);
 			ScrollActions.PageUp (data);
 			data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
 		}
@@ -318,10 +318,10 @@ namespace Mono.TextEditor
 		public static void PageDown (TextEditorData data)
 		{
 			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % LineHeight)) / LineHeight);
-			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
+			int visualLine = data.LogicalToVisualLine (data.Caret.Line);
 			visualLine += pageLines;
 			
-			int line = System.Math.Min (data.Document.VisualToLogicalLine (visualLine), data.Document.LineCount);
+			int line = System.Math.Min (data.VisualToLogicalLine (visualLine), data.Document.LineCount);
 			int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 			ScrollActions.PageDown (data);
 			data.Caret.Offset = MoveCaretOutOfFolding (data, offset);

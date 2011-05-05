@@ -96,7 +96,7 @@ namespace Mono.TextEditor
 		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
 		{
 			if (e.Node.IsFolded)
-					foldedSegments.Remove (e.Node);
+				foldedSegments.Remove (e.Node);
 		}
 
 		public Document () : this(new GapBuffer (), new LineSplitter ())
@@ -1267,65 +1267,6 @@ namespace Mono.TextEditor
 			return new Segment (0, Length).Contains (segment);
 		}
 		
-		
-		public DocumentLocation LogicalToVisualLocation (TextEditorData editor, DocumentLocation location)
-		{
-			int line = LogicalToVisualLine (location.Line);
-			LineSegment lineSegment = this.GetLine (location.Line);
-			int column = lineSegment != null ? lineSegment.GetVisualColumn (editor, location.Column) : location.Column;
-			return new DocumentLocation (line, column);
-		}
-		
-		public int LogicalToVisualLine (int logicalLine)
-		{
-			int result = logicalLine;
-			LineSegment line = GetLine (result) ?? GetLine (LineCount);
-			int lineOffset = line.Offset;
-			var curSegment = new List<FoldSegment> ();
-			foreach (FoldSegment segment in foldedSegments) {
-				if (curSegment.Any (seg => seg.Contains (segment)))
-					continue;
-				int startLineOffset = segment.StartLine.Offset;
-				if (startLineOffset >= lineOffset)
-					continue;
-				
-				foreach (var containingSegments in new List <FoldSegment> (curSegment.Where (seg => segment.Contains (seg)))) {
-					result += GetLineCount (containingSegments);
-					curSegment.Remove (containingSegments);
-				}
-				
-				result -= GetLineCount (segment);
-				curSegment.Add (segment);
-			}
-			return result;
-		}
-
-		public int VisualToLogicalLine (int visualLineNumber)
-		{
-			if (visualLineNumber < DocumentLocation.MinLine)
-				return DocumentLocation.MinLine;
-			
-			int result = visualLineNumber;
-			
-			var curSegment = new List<FoldSegment> ();
-			foreach (FoldSegment segment in foldedSegments) {
-				if (curSegment.Any (seg => seg.Contains (segment)))
-					continue;
-				LineSegment line = GetLine (result);
-				if (line != null && segment.Offset >= line.Offset)
-					continue;
-				
-				foreach (var containingSegments in new List <FoldSegment> (curSegment.Where (seg => segment.Contains (seg)))) {
-					result -= GetLineCount (containingSegments);
-					curSegment.Remove (containingSegments);
-				}
-				curSegment.Add (segment);
-				int start = OffsetToLineNumber (segment.Offset);
-				int end = OffsetToLineNumber (segment.EndOffset);
-				result += end - start;
-			}
-			return result;
-		}
 		
 		#region Update logic
 		List<DocumentUpdateRequest> updateRequests = new List<DocumentUpdateRequest> ();

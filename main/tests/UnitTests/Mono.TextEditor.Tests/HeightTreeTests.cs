@@ -35,7 +35,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSimpleLineNumberToY ()
 		{
-			TextEditor editor = new TextEditor ();
+			var editor = new TextEditorData ();
 			editor.Text = "1\n2\n3\n4\n5\n6\n7";
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSimpleYToLineNumber ()
 		{
-			TextEditor editor = new TextEditor ();
+			var editor = new TextEditorData ();
 			editor.Text = "1\n2\n3\n4\n5\n6\n7";
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
@@ -59,7 +59,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSetLineHeight ()
 		{
-			TextEditor editor = new TextEditor ();
+			var editor = new TextEditorData ();
 			editor.Text = "1\n2\n3\n4\n5\n6\n7";
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
@@ -84,7 +84,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFoldLineNumberToYCase1 ()
 		{
-			TextEditor editor = new TextEditor ();
+			var editor = new TextEditorData ();
 			editor.Text = "1\n2\n3\n4\n5\n6\n7";
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
@@ -108,7 +108,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFoldYToLineNumber ()
 		{
-			TextEditor editor = new TextEditor ();
+			var editor = new TextEditorData ();
 			editor.Text = "1\n2\n3\n4\n5\n6\n7";
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
@@ -139,7 +139,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFoldLineNumberToY ()
 		{
-			TextEditor editor = new TextEditor ();
+			var editor = new TextEditorData ();
 			editor.Text = "1\n2\n3\n4\n5\n6\n7\n8";
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
@@ -158,7 +158,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestUnfold ()
 		{
-			TextEditor editor = new TextEditor ();
+			var editor = new TextEditorData ();
 			editor.Text = "1\n2\n3\n4\n5\n6\n7";
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
