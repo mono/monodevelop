@@ -149,7 +149,7 @@ namespace Mono.TextEditor
 				int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
 				int line = data.Document.VisualToLogicalLine (visualLine - 1);
 				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
-				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
+				data.Caret.Offset = offset;
 				data.Caret.SetToDesiredColumn (desiredColumn);
 			} else {
 				ToDocumentStart (data);
@@ -187,8 +187,8 @@ namespace Mono.TextEditor
 			if (data.Caret.Line < data.Document.LineCount) {
 				int nextLine = data.Document.LogicalToVisualLine (data.Caret.Line) + 1;
 				int line = data.Document.VisualToLogicalLine (nextLine);
-				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
-				data.Caret.SetToOffsetWithDesiredColumn (MoveCaretOutOfFolding (data, offset));
+				int offset =  data.Document.LocationToOffset (line, data.Caret.Column);
+				data.Caret.SetToOffsetWithDesiredColumn (offset);
 			} else {
 				ToDocumentEnd (data);
 			}

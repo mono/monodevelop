@@ -1095,11 +1095,11 @@ namespace Mono.TextEditor
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
 			bool needUpdate = false;
-			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.Offset < offset && offset <= f.EndOffset)) {
-				needUpdate |= fold.IsFolded;
+			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset && offset < f.EndOffset)) {
+				needUpdate = true;
 				fold.IsFolded = false;
 			}
-			if (needUpdate) {
+			if (needUpdate) {
 				RequestUpdate (new UpdateAll ());
 				CommitDocumentUpdate ();
 			}
@@ -1319,7 +1319,6 @@ namespace Mono.TextEditor
 					result -= GetLineCount (containingSegments);
 					curSegment.Remove (containingSegments);
 				}
-				
 				curSegment.Add (segment);
 				int start = OffsetToLineNumber (segment.Offset);
 				int end = OffsetToLineNumber (segment.EndOffset);
@@ -1327,6 +1326,7 @@ namespace Mono.TextEditor
 			}
 			return result;
 		}
+		
 		#region Update logic
 		List<DocumentUpdateRequest> updateRequests = new List<DocumentUpdateRequest> ();
 		

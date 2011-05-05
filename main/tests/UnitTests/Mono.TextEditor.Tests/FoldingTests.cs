@@ -470,5 +470,47 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (15, document.LogicalToVisualLine (15));
 		}
 		
+		[Test()]
+		public void TestCaretDown ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"AAAAAAAA
+AAAAAAAA$
+AAAAAAAA+[BBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB]
+AAAAAAAA
+");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			
+			Assert.AreEqual (new DocumentLocation (2, 9), data.Caret.Location);
+			CaretMoveActions.Down (data);
+			CaretMoveActions.Down (data);
+			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsFolded);
+			Assert.AreEqual (new DocumentLocation (8, 9), data.Caret.Location);
+		}
+		
+		[Test()]
+		public void TestCaretUp ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"AAAAAAAA
+AAAAAAAA
+AAAAAAAA+[BBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB]
+AAAAAAAA$
+");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			
+			Assert.AreEqual (new DocumentLocation (8, 9), data.Caret.Location);
+			CaretMoveActions.Up (data);
+			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsFolded);
+			Assert.AreEqual (new DocumentLocation (3, 9), data.Caret.Location);
+		}
 	}
 }

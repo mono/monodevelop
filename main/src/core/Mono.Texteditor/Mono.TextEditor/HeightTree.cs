@@ -151,10 +151,10 @@ namespace Mono.TextEditor
 			
 			for (int i = lineNumber; i < lineNumber + count; i++) {
 				var node = GetNodeByLine (i);
-				node.foldLevel--;
-				if (node.foldLevel < 0)
-					throw new InvalidOperationException ("foldlevel < 0");
-				node.UpdateAugmentedData ();
+				if (node.foldLevel > 0) {
+					node.foldLevel--;
+					node.UpdateAugmentedData ();
+				}
 			}
 		}
 
