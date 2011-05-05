@@ -11,8 +11,8 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Cairo \
+	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -41,6 +41,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Fonts.FontChooserPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Components.PriorityList.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ProjectSelectorWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
@@ -411,6 +412,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs \
 	MonoDevelop.Ide.Gui.Components/NodeState.cs \
 	MonoDevelop.Ide.Gui.Components/PadTreeView.cs \
+	MonoDevelop.Ide.Gui.Components/PriorityList.cs \
 	MonoDevelop.Ide.Gui.Components/ProjectFileEntry.cs \
 	MonoDevelop.Ide.Gui.Components/ProjectSelectorWidget.cs \
 	MonoDevelop.Ide.Gui.Components/StringTagSelectorButton.cs \
