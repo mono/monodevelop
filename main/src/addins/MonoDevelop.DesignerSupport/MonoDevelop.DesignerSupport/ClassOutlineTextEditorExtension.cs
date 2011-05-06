@@ -293,8 +293,10 @@ namespace MonoDevelop.DesignerSupport
 				return new DomRegion (f.Location, f.Location);
 			}
 			
-			if (o is IMember)
-				return ((IMember)o).BodyRegion;
+			if (o is IMember) {
+				var m = (IMember)o;
+				return m.BodyRegion.IsEmpty ? new DomRegion (m.Location, m.Location) : m.BodyRegion;
+			}
 			throw new InvalidOperationException (o.GetType ().ToString ());
 		}
 
