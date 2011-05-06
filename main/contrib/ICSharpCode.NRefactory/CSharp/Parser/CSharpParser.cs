@@ -1189,12 +1189,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (new CSharpTokenNode (Convert (whileStatement.loc), "while".Length), WhileStatement.WhileKeywordRole);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), WhileStatement.Roles.LPar);
-				result.AddChild ((Expression)whileStatement.expr.Accept (this), WhileStatement.Roles.Condition);
+					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), WhileStatement.Roles.LPar);
+				if (whileStatement.expr != null)
+					result.AddChild ((Expression)whileStatement.expr.Accept (this), WhileStatement.Roles.Condition);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), WhileStatement.Roles.RPar);
-				result.AddChild ((Statement)whileStatement.Statement.Accept (this), WhileStatement.Roles.EmbeddedStatement);
-				
+					result.AddChild (new CSharpTokenNode (Convert (location [1]), 1), WhileStatement.Roles.RPar);
+				if (whileStatement.Statement != null)
+					result.AddChild ((Statement)whileStatement.Statement.Accept (this), WhileStatement.Roles.EmbeddedStatement);
 				return result;
 			}
 			
@@ -1222,23 +1223,24 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				result.AddChild (new CSharpTokenNode (Convert (forStatement.loc), "for".Length), ForStatement.Roles.Keyword);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ForStatement.Roles.LPar);
+					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), ForStatement.Roles.LPar);
 				
 				AddStatementOrList (result, forStatement.InitStatement, ForStatement.InitializerRole);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ForStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location [1]), 1), ForStatement.Roles.Semicolon);
 				if (forStatement.Test != null)
 					result.AddChild ((Expression)forStatement.Test.Accept (this), ForStatement.Roles.Condition);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), ForStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location [2]), 1), ForStatement.Roles.Semicolon);
 				
 				AddStatementOrList (result, forStatement.Increment, ForStatement.IteratorRole);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[3]), 1), ForStatement.Roles.RPar);
+					result.AddChild (new CSharpTokenNode (Convert (location [3]), 1), ForStatement.Roles.RPar);
 				
-				result.AddChild ((Statement)forStatement.Statement.Accept (this), ForStatement.Roles.EmbeddedStatement);
+				if (forStatement.Statement != null)
+					result.AddChild ((Statement)forStatement.Statement.Accept (this), ForStatement.Roles.EmbeddedStatement);
 				
 				return result;
 			}
@@ -1247,7 +1249,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new ExpressionStatement ();
 				object expr = statementExpression.Expr.Accept (this);
-				result.AddChild ((Expression)expr, ExpressionStatement.Roles.Expression);
+				if (expr != null)
+					result.AddChild ((Expression)expr, ExpressionStatement.Roles.Expression);
 				var location = LocationsBag.GetLocations (statementExpression);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ExpressionStatement.Roles.Semicolon);
@@ -1419,8 +1422,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (switchStatement);
 				result.AddChild (new CSharpTokenNode (Convert (switchStatement.loc), "switch".Length), SwitchStatement.Roles.Keyword);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), SwitchStatement.Roles.LPar);
-				result.AddChild ((Expression)switchStatement.Expr.Accept (this), SwitchStatement.Roles.Expression);
+					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), SwitchStatement.Roles.LPar);
+				if (switchStatement.Expr != null)
+					result.AddChild ((Expression)switchStatement.Expr.Accept (this), SwitchStatement.Roles.Expression);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), SwitchStatement.Roles.RPar);
 				if (location != null)
@@ -1552,7 +1556,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				} else {
 					result = new TryCatchStatement ();
 					result.AddChild (new CSharpTokenNode (Convert (tryFinallyStatement.loc), "try".Length), TryCatchStatement.TryKeywordRole);
-					result.AddChild ((BlockStatement)tryFinallyStatement.Stmt.Accept (this), TryCatchStatement.TryBlockRole);
+					if (tryFinallyStatement.Stmt != null)
+						result.AddChild ((BlockStatement)tryFinallyStatement.Stmt.Accept (this), TryCatchStatement.TryBlockRole);
 				}
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "finally".Length), TryCatchStatement.FinallyKeywordRole);
@@ -1587,7 +1592,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new TryCatchStatement ();
 				result.AddChild (new CSharpTokenNode (Convert (tryCatchStatement.loc), "try".Length), TryCatchStatement.TryKeywordRole);
-				result.AddChild ((BlockStatement)tryCatchStatement.Block.Accept (this), TryCatchStatement.TryBlockRole);
+				if (tryCatchStatement.Block != null)
+					result.AddChild ((BlockStatement)tryCatchStatement.Block.Accept (this), TryCatchStatement.TryBlockRole);
 				foreach (Catch ctch in tryCatchStatement.Specific) {
 					result.AddChild (ConvertCatch (ctch), TryCatchStatement.CatchClauseRole);
 				}
@@ -1604,14 +1610,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				result.AddChild (new CSharpTokenNode (Convert (usingStatement.loc), "using".Length), UsingStatement.Roles.Keyword);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), UsingStatement.Roles.LPar);
+					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), UsingStatement.Roles.LPar);
 				
-				result.AddChild ((AstNode)usingStatement.Expression.Accept (this), UsingStatement.ResourceAcquisitionRole);
+				if (usingStatement.Expression != null)
+					result.AddChild ((AstNode)usingStatement.Expression.Accept (this), UsingStatement.ResourceAcquisitionRole);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), UsingStatement.Roles.RPar);
+					result.AddChild (new CSharpTokenNode (Convert (location [1]), 1), UsingStatement.Roles.RPar);
 				
-				result.AddChild ((Statement)usingStatement.Statement.Accept (this), UsingStatement.Roles.EmbeddedStatement);
+				if (usingStatement.Statement != null)
+					result.AddChild ((Statement)usingStatement.Statement.Accept (this), UsingStatement.Roles.EmbeddedStatement);
 				return result;
 			}
 			
@@ -1623,7 +1631,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				result.AddChild (new CSharpTokenNode (Convert (foreachStatement.loc), "foreach".Length), ForeachStatement.Roles.Keyword);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ForeachStatement.Roles.LPar);
+					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), ForeachStatement.Roles.LPar);
 				
 				if (foreachStatement.TypeExpr != null)
 					result.AddChild (ConvertToType (foreachStatement.TypeExpr), ForeachStatement.Roles.Type);
@@ -1631,14 +1639,15 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.AddChild (new Identifier (foreachStatement.Variable.Name, Convert (foreachStatement.Variable.Location)), ForeachStatement.Roles.Identifier);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), "in".Length), ForeachStatement.Roles.InKeyword);
+					result.AddChild (new CSharpTokenNode (Convert (location [1]), "in".Length), ForeachStatement.Roles.InKeyword);
 				
 				if (foreachStatement.Expr != null)
 					result.AddChild ((Expression)foreachStatement.Expr.Accept (this), ForeachStatement.Roles.Expression);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), ForeachStatement.Roles.RPar);
-				result.AddChild ((Statement)foreachStatement.Statement.Accept (this), ForeachStatement.Roles.EmbeddedStatement);
+					result.AddChild (new CSharpTokenNode (Convert (location [2]), 1), ForeachStatement.Roles.RPar);
+				if (foreachStatement.Statement != null)
+					result.AddChild ((Statement)foreachStatement.Statement.Accept (this), ForeachStatement.Roles.EmbeddedStatement);
 				
 				return result;
 			}
