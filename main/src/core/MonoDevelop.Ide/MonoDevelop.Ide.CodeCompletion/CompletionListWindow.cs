@@ -81,7 +81,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			DataProvider = this;
 			HideDeclarationView ();
 		}
-		
+
+		bool completionListClosed;
+		void CloseCompletionList ()
+		{
+			if (!completionListClosed) {
+				completionDataList.OnCompletionListClosed (EventArgs.Empty);
+				completionListClosed = true;
+			}
+		}
+
 		protected override void OnDestroyed ()
 		{
 			if (declarationviewwindow != null) {
@@ -98,7 +107,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (completionDataList != null) {
 				if (completionDataList is IDisposable) 
 					((IDisposable)completionDataList).Dispose ();
-				completionDataList.OnCompletionListClosed (EventArgs.Empty);
+				CloseCompletionList ();
 				completionDataList = null;
 			}
 
@@ -351,9 +360,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (SelectionIndex == -1 || completionDataList == null)
 				return false;
-			CompletionData item = completionDataList[SelectionIndex];
+			CompletionData item = completionDataList [SelectionIndex];
 			if (item == null)
 				return false;
+			// first close the completion list, then insert the text.
+			// this is required because that's the logical event chain, otherwise things could be messed up
+			CloseCompletionList ();
 			item.InsertCompletionText (this);
 			AddWordToHistory (PartialWord, item.CompletionText);
 			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
