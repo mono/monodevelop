@@ -33,6 +33,7 @@ using System.Xml;
 using MonoDevelop.Projects.Dom;
 using Mono.Cecil;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -127,6 +128,7 @@ namespace MonoDevelop.Projects.Dom
 		class SimpleAssemblyResolver : IAssemblyResolver
 		{
 			string lookupPath;
+			Dictionary<string, AssemblyDefinition> cache = new Dictionary<string, AssemblyDefinition> ();
 			
 			public SimpleAssemblyResolver (string lookupPath)
 			{
@@ -135,24 +137,35 @@ namespace MonoDevelop.Projects.Dom
 
 			public AssemblyDefinition InternalResolve (string fullName)
 			{
-				var name = AssemblyNameReference.Parse (fullName);
+				AssemblyDefinition result;
+				if (cache.TryGetValue (fullName, out result))
+					return result;
 				
+				var name = AssemblyNameReference.Parse (fullName);
 				// need to handle different file extension casings. Some dlls from windows tend to end with .Dll or .DLL rather than '.dll'
 				foreach (string file in Directory.GetFiles (lookupPath, name.Name + ".*")) {
 					string ext = Path.GetExtension (file);
 					if (string.IsNullOrEmpty (ext))
 						continue;
 					ext = ext.ToUpper ();
-					if (ext == ".DLL" || ext == ".EXE")
-						return ReadAssembly (file);
+					if (ext == ".DLL" || ext == ".EXE") {
+						result = ReadAssembly (file);
+						break;
+					}
 				}
 				
-				foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
-					if (assembly.FullName == fullName && !string.IsNullOrEmpty (assembly.Location))
-						return ReadAssembly (assembly.Location);
-				}
+				if (result == null) {
+					var framework = Services.ProjectService.DefaultTargetFramework;
+					var assemblyName = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (fullName, framework);
+					var location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyName, framework);
 					
-				return null; 
+					if (!string.IsNullOrEmpty (location) && File.Exists (location)) {
+						result = ReadAssembly (location);
+					}
+				}
+				if (result != null)
+					cache [fullName] = result;
+				return result;
 			}
 
 			#region IAssemblyResolver implementation
