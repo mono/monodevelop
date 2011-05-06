@@ -1022,26 +1022,32 @@ namespace MonoDevelop.Debugger.Win32
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object gtype)
 		{
 			CorType type = (CorType) gtype;
-			TypeDisplayData td = null;
 
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
 			Type t = type.GetTypeInfo (wctx.Session);
 			if (t == null)
 				return null;
 
+			string proxyType = null;
+			string nameDisplayString = null;
+			string typeDisplayString = null;
+			string valueDisplayString = null;
+			Dictionary<string, DebuggerBrowsableState> memberData = null;
+			bool hasTypeData = false;
+
 			foreach (object att in t.GetCustomAttributes (false)) {
 				DebuggerTypeProxyAttribute patt = att as DebuggerTypeProxyAttribute;
 				if (patt != null) {
-					if (td == null) td = new TypeDisplayData ();
-					td.ProxyType = patt.ProxyTypeName;
+					proxyType = patt.ProxyTypeName;
+					hasTypeData = true;
 					continue;
 				}
 				DebuggerDisplayAttribute datt = att as DebuggerDisplayAttribute;
 				if (datt != null) {
-					if (td == null) td = new TypeDisplayData ();
-					td.NameDisplayString = datt.Name;
-					td.TypeDisplayString = datt.Type;
-					td.ValueDisplayString = datt.Value;
+					hasTypeData = true;
+					nameDisplayString = datt.Name;
+					typeDisplayString = datt.Type;
+					valueDisplayString = datt.Value;
 					continue;
 				}
 			}
@@ -1058,12 +1064,15 @@ namespace MonoDevelop.Debugger.Win32
 						atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
 				}
 				if (atts.Length > 0) {
-					if (td == null) td = new TypeDisplayData ();
-					if (td.MemberData == null) td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
-					td.MemberData[m.Name] = ((DebuggerBrowsableAttribute) atts[0]).State;
+					hasTypeData = true;
+					if (memberData == null) memberData = new Dictionary<string, DebuggerBrowsableState> ();
+					memberData[m.Name] = ((DebuggerBrowsableAttribute)atts[0]).State;
 				}
 			}
-			return td;
+			if (hasTypeData)
+				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, false, memberData);
+			else
+				return null;
 		}
 	}
 }
