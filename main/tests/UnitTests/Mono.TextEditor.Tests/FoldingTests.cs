@@ -319,7 +319,7 @@ namespace Mono.TextEditor.Tests
 			CaretMoveActions.Right (data);
 			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
 			CaretMoveActions.Right (data);
-			Assert.AreEqual (new DocumentLocation (4, 6), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (4, 5), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -334,6 +334,22 @@ namespace Mono.TextEditor.Tests
 			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
 			CaretMoveActions.Left (data);
 			Assert.AreEqual (new DocumentLocation (4, 6), data.Caret.Location);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
+		}
+		
+		[Test()]
+		public void TestCaretLeftCase2 ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"1234567890
+1234567890
+1234+[567890
+1234567890]
+$1234567890");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (new DocumentLocation (4, 12), data.Caret.Location);
 			CaretMoveActions.Left (data);
 			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
 		}
@@ -499,6 +515,27 @@ AAAAAAAA$
 			CaretMoveActions.Up (data);
 			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsFolded);
 			Assert.AreEqual (new DocumentLocation (3, 9), data.Caret.Location);
+		}
+		
+		[Test()]
+		public void TestCaretUpCase2 ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"AAAAAAAA
+AAAAAAAA
+AA+[AAAAAABBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB
+AAAAAAAABBBBBBBBBB]
+AAAAAAAA$
+");
+			data.Document.UpdateFoldSegments (GetFoldSegments (data.Document), false);
+			
+			Assert.AreEqual (new DocumentLocation (8, 9), data.Caret.Location);
+			CaretMoveActions.Up (data);
+			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsFolded);
+			Assert.AreEqual (new DocumentLocation (3, 3), data.Caret.Location);
 		}
 	}
 }

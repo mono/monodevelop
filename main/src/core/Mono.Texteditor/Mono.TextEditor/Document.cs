@@ -1047,7 +1047,7 @@ namespace Mono.TextEditor
 		{
 			if (offset < 0 || offset >= Length)
 				return new FoldSegment[0];
-			return foldSegmentTree.GetSegmentsAt (offset).Cast<FoldSegment> ();
+			return foldSegmentTree.GetSegmentsAt (offset);
 		}
 		
 		public IEnumerable<FoldSegment> GetFoldingContaining (int lineNumber)

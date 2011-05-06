@@ -34,6 +34,7 @@ using System.Text;
 
 using Gtk;
 using Mono.TextEditor.Highlighting;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -47,25 +48,16 @@ namespace Mono.TextEditor
 				return;
 			}
 			
-			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			IEnumerable<FoldSegment > foldings = data.Document.GetEndFoldings (line);
-			FoldSegment segment = null;
-			foreach (FoldSegment folding in foldings) {
-				if (folding.IsFolded && folding.EndColumn + 1 == data.Caret.Column) {
-					segment = folding;
-					break;
-				}
-			}
-			if (segment != null) {
-				data.Caret.Location = data.Document.OffsetToLocation (segment.StartLine.Offset + segment.Column - 1); 
-				return;
-			}
-			
 			if (data.Caret.Column > DocumentLocation.MinColumn) {
+				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column > line.EditableLength + 1) {
 					data.Caret.Column = line.EditableLength + 1;
 				} else {
-					data.Caret.Column--;
+					int offset = data.Caret.Offset - 1;
+					foreach (var folding in data.Document.GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset)) {
+						offset = System.Math.Min (offset, folding.Offset);
+					}
+					data.Caret.Offset = offset;
 				}
 			} else if (data.Caret.Line > DocumentLocation.MinLine) {
 				LineSegment prevLine = data.Document.GetLine (data.Caret.Line - 1);
@@ -101,7 +93,7 @@ namespace Mono.TextEditor
 				}
 			}
 			if (segment != null) {
-				data.Caret.Location = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
+				data.Caret.Offset = segment.EndOffset; 
 				return;
 			}
 			if (data.Caret.Column < line.EditableLength + 1 || data.Caret.AllowCaretBehindLineEnd) {
@@ -140,7 +132,7 @@ namespace Mono.TextEditor
 				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
 				int line = data.MainSelection.MinLine - 1;
 				data.ClearSelection ();
-				data.Caret.Location = (line >=  DocumentLocation.MinLine) ? new DocumentLocation (line, col) : new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
+				data.Caret.Location = (line >= DocumentLocation.MinLine) ? new DocumentLocation (line, col) : new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
 				data.Caret.SetToDesiredColumn (desiredColumn);
 				return;
 			}
@@ -148,24 +140,40 @@ namespace Mono.TextEditor
 			if (data.Caret.Line > DocumentLocation.MinLine) {
 				int visualLine = data.LogicalToVisualLine (data.Caret.Line);
 				int line = data.VisualToLogicalLine (visualLine - 1);
-				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
-				data.Caret.Offset = offset;
-				data.Caret.SetToDesiredColumn (desiredColumn);
+				int offset = MoveCaretOutOfFolding (data, data.Document.LocationToOffset (line, data.Caret.Column), false);
+				if (!IsFolded (data, line, data.Caret.DesiredColumn)) {
+					data.Caret.SetToOffsetWithDesiredColumn (offset);
+				} else {
+					data.Caret.Offset = offset;
+				}
 			} else {
 				ToDocumentStart (data);
 			}
 		}
 		
-		static int MoveCaretOutOfFolding (TextEditorData data, int offset)
+		static int MoveCaretOutOfFolding (TextEditorData data, int offset, bool moveToEnd = true)
 		{
-			IEnumerable<FoldSegment> foldings = data.Document.GetFoldingsFromOffset (offset);
-			foreach (FoldSegment folding in foldings) {
+			IEnumerable<FoldSegment > foldings = data.Document.GetFoldingsFromOffset (offset);
+			foreach (FoldSegment folding in foldings.Where (f => f.Offset < offset && offset < f.EndOffset)) {
 				if (folding.IsFolded) {
-					if (offset < folding.EndOffset)
-						offset = folding.EndOffset;
+					if (moveToEnd) {
+						if (offset < folding.EndOffset)
+							offset = folding.EndOffset;
+					} else {
+						if (offset > folding.Offset)
+							offset = folding.Offset;
+						
+					}
 				}
 			}
 			return offset;
+		}
+
+		public static bool IsFolded (TextEditorData data, int line, int column)
+		{
+			int offset = data.LocationToOffset (line, column);
+			Console.WriteLine ("is folded: " + offset + "/" + "/" + data.Document.GetFoldingsFromOffset (offset).Any (f => f.isFolded && f.Offset < offset && offset < f.EndOffset)) ;
+			return data.Document.GetFoldingsFromOffset (offset).Any (f => f.isFolded && f.Offset < offset && offset < f.EndOffset);
 		}
 		
 		public static void Down (TextEditorData data)
@@ -187,8 +195,12 @@ namespace Mono.TextEditor
 			if (data.Caret.Line < data.Document.LineCount) {
 				int nextLine = data.LogicalToVisualLine (data.Caret.Line) + 1;
 				int line = data.VisualToLogicalLine (nextLine);
-				int offset = data.LocationToOffset (line, data.Caret.Column);
-				data.Caret.SetToOffsetWithDesiredColumn (offset);
+				int offset = MoveCaretOutOfFolding (data, data.LocationToOffset (line, data.Caret.Column), true);
+				if (!IsFolded (data, line, data.Caret.DesiredColumn)) {
+					data.Caret.SetToOffsetWithDesiredColumn (offset);
+				} else {
+					data.Caret.Offset = offset;
+				}
 			} else {
 				ToDocumentEnd (data);
 			}
