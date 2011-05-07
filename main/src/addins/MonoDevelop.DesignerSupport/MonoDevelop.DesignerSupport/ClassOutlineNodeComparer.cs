@@ -83,7 +83,7 @@ namespace MonoDevelop.DesignerSupport
 		/// sort properties.
 		/// </summary>
 		/// <remarks>
-		/// When comparing names symbols are ignored (e.g. sort 'Foo()' next to '~Foo()').
+		/// For methods, constructors and destructors are sorted at the top.
 		/// </remarks>
 		/// <param name="model">
 		/// The TreeModel that the iterators refer to.
@@ -121,27 +121,107 @@ namespace MonoDevelop.DesignerSupport
 
 				if (groupOrder == 0) {
 
-					if (isSortingAlphabetically) {
+					bool isComparingTwoMethods = objectA is IMethod;
 
-						return String.Compare (nameA, nameB,
-							System.Globalization.CultureInfo.CurrentCulture,
-							System.Globalization.CompareOptions.IgnoreSymbols);
+					if (isComparingTwoMethods) {
+						return CompareMethods (objectA, objectB, nameA, nameB, isSortingAlphabetically);
+					} else {
+						if (isSortingAlphabetically) {
+							return CompareName (nameA, nameB);
+						} else {
+							return 0;
+						}
 					}
+				} else {
+					return groupOrder;
 				}
-
-				return groupOrder;
 
 			} else {
 
 				if (isSortingAlphabetically) {
-
-					return String.Compare (nameA, nameB,
-						System.Globalization.CultureInfo.CurrentCulture,
-						System.Globalization.CompareOptions.IgnoreSymbols);
+					return CompareName (nameA, nameB);
+				} else {
+					return 0;
 				}
 			}
+		}
 
-			return 0;
+		int CompareName (string nameA, string nameB)
+		{
+			return String.Compare (nameA, nameB,
+				System.Globalization.CultureInfo.CurrentCulture,
+				System.Globalization.CompareOptions.IgnoreSymbols);
+		}
+
+		int CompareMethods (object objectA, object objectB, string nameA, string nameB, bool isSortingAlphabetically)
+		{
+			// Here we sort constructors before destructors before other methods.
+			// Remember that two constructors have the same name.
+
+			// Sort constructors at top.
+
+			bool isConstructorA = IsConstructor (objectA);
+			bool isConstructorB = IsConstructor (objectB);
+
+			if (isConstructorA) {
+				if (isConstructorB) {
+					return 0;
+				} else {
+					return -1;
+				}
+			} else {
+				if (isConstructorB) {
+					return 1;
+				} else {
+
+					// Sort destructors after constructors.
+					//
+					// Sorting two destructors even though this is not valid C#. This gives a correct
+					// outline during editing.
+
+					bool isFinalizerA = IsFinalizer (objectA);
+					bool isFinalizerB = IsFinalizer (objectB);
+
+					if (isFinalizerA) {
+						if (isFinalizerB) {
+							return 0;
+						} else {
+							return -1;
+						}
+					} else {
+						if (isFinalizerB) {
+							return 1;
+						} else {
+
+							// Sort other methods
+
+							if (isSortingAlphabetically) {
+								return CompareName (nameA, nameB);
+							} else {
+								return 0;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		bool IsConstructor (object node)
+		{
+			if (node is IMethod) {
+				return ((IMethod) node).IsConstructor;
+			}
+
+			return false;
+		}
+
+		bool IsFinalizer (object node)
+		{
+			if (node is IMethod) {
+				return ((IMethod) node).IsFinalizer;
+			}
+
+			return false;
 		}
 
 		/// <summary>
