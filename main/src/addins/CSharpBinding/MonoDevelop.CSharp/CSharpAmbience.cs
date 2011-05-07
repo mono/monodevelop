@@ -269,10 +269,7 @@ namespace MonoDevelop.CSharp
 		{
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (property.Modifiers)));
-			if (settings.IncludeReturnType) {
-				result.Append (GetString (property.ReturnType, settings));
-				result.Append (settings.Markup (" "));
-			}
+
 			if (!settings.IncludeReturnType && settings.UseFullName) {
 				result.Append (GetString (property.DeclaringType, OutputFlags.UseFullName));
 				result.Append (settings.Markup ("."));
@@ -284,6 +281,12 @@ namespace MonoDevelop.CSharp
 				AppendParameterList (result, settings, property.Parameters);
 				result.Append (settings.Markup ("]"));
 			}
+
+			if (settings.IncludeReturnType) {
+				result.Append (settings.Markup (" : "));
+				result.Append (GetString (property.ReturnType, settings));
+			}
+
 			return result.ToString ();
 		}
 		
@@ -320,16 +323,17 @@ namespace MonoDevelop.CSharp
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (field.Modifiers)));
 			bool isEnum = field.DeclaringType != null && field.DeclaringType.ClassType == ClassType.Enum;
-			if (settings.IncludeReturnType && !isEnum) {
-				result.Append (GetString (field.ReturnType, settings));
-				result.Append (settings.Markup (" "));
-			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
 				result.Append (GetString (field.DeclaringType, OutputFlags.UseFullName));
 				result.Append (settings.Markup ("."));
 			}
 			result.Append (settings.EmitName (field, FilterName (Format (field.Name))));
+
+			if (settings.IncludeReturnType && !isEnum) {
+				result.Append (settings.Markup (" : "));
+				result.Append (GetString (field.ReturnType, settings));
+			}
 			
 			return result.ToString ();
 		}
@@ -397,10 +401,6 @@ namespace MonoDevelop.CSharp
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (method.Modifiers)));
 			
-			if (settings.IncludeReturnType && !method.IsConstructor && !method.IsFinalizer) {
-				result.Append (GetString (method.ReturnType, settings));
-				result.Append (settings.Markup (" "));
-			}
 			if (!settings.IncludeReturnType && settings.UseFullName) {
 				result.Append (GetString (method.DeclaringType, OutputFlags.UseFullName));
 				result.Append (settings.Markup ("."));
@@ -474,6 +474,12 @@ namespace MonoDevelop.CSharp
 				result.Append (settings.Markup (")"));
 			}
 			OutputConstraints (result, settings, method.TypeParameters);
+
+			if (settings.IncludeReturnType && !method.IsConstructor && !method.IsFinalizer) {
+				result.Append (settings.Markup (" : "));
+				result.Append (GetString (method.ReturnType, settings));
+			}
+
 			return result.ToString ();
 		}
 		
