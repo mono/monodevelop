@@ -538,7 +538,9 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Package successfully signed"),
-					Create = () => Core.Execution.NullProcessAsyncOperation.Success
+					Create = () => Core.Execution.NullProcessAsyncOperation.Success,
+					Completed = (op) => monitor.Log.WriteLine (
+						GettextCatalog.GetString ("File created: ") + destinationApk)
 				}
 			);
 		}
