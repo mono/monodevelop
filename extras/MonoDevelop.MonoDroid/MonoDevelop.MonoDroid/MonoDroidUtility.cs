@@ -207,7 +207,7 @@ namespace MonoDevelop.MonoDroid
 			}
 
 			string packageName = project.GetPackageName (conf);
-			string targetFile = InvokeSynch (() => ChooseApkLocation (null, project.BaseDirectory, packageName));
+			string targetFile = InvokeSynch (() => ChooseApkLocation (null, conf, project.BaseDirectory, packageName));
 			if (String.IsNullOrEmpty (targetFile)) {
 				opMon.Dispose ();
 				return null;
@@ -271,9 +271,10 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 
-		public static string ChooseApkLocation (Gtk.Window parent, string baseDirectory, string packageName)
+		public static string ChooseApkLocation (Gtk.Window parent, MonoDroidProjectConfiguration config, 
+			string baseDirectory, string packageName)
 		{
-			var dlg = new MonoDevelop.MonoDroid.Gui.MonoDroidPackageDialog (baseDirectory, packageName);
+			var dlg = new MonoDevelop.MonoDroid.Gui.MonoDroidPackageDialog (config, baseDirectory, packageName);
 			try {
 				var result = MessageService.ShowCustomDialog (dlg, parent);
 				if (result != (int)Gtk.ResponseType.Ok)
