@@ -30,9 +30,16 @@ namespace MonoDevelop.MonoDroid.Gui
 {
 	public partial class MonoDroidPackageDialog : Gtk.Dialog
 	{	
-		public MonoDroidPackageDialog (string baseDirectory, string fileName)
+		public MonoDroidPackageDialog (MonoDroidProjectConfiguration config, string baseDirectory, string fileName)
 		{
 			this.Build ();
+			
+			configLabel.Text = config.Name;
+			
+			if (config.AndroidUseSharedRuntime)
+				infoLabel.Text = "The shared runtime and the platform package will not be included in the resulting package.";
+			else
+				infoLabel.Text = "The shared runtime and platform package will be included in the resulting package.";
 			
 			folderEntry.Path = baseDirectory;
 			fileEntry.Text = fileName;
