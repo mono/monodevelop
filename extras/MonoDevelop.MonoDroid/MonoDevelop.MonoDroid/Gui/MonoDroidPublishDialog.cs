@@ -123,7 +123,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			get { return usingNewKey ? GetDNameFromValues (dNameEntries) : String.Empty; }
 		}
 		public string DestinationApkPath {
-			get { return System.IO.Path.Combine (apkDestionationDirEntry.Path, apkDestinationFileEntry.Text); }
+			get { return System.IO.Path.Combine (apkDestionationDirEntry.Path, apkDestinationFileEntry.Text + ".apk"); }
 		}
 
 		bool VerifyKeyInfo ()
@@ -219,7 +219,7 @@ namespace MonoDevelop.MonoDroid.Gui
 				buttonForward.UseStock = true;
 
 				if (apkDestinationFileEntry.Text.Length == 0)
-					apkDestinationFileEntry.Text = System.IO.Path.GetFileName (ApkPath);
+					apkDestinationFileEntry.Text = System.IO.Path.GetFileNameWithoutExtension (ApkPath);
 
 				ValidateDestination ();
 				destinationSummaryStatus.Text = GetSummary ();
@@ -388,7 +388,8 @@ namespace MonoDevelop.MonoDroid.Gui
 				return;
 			}
 			
-			if (File.Exists (apkDestionationDirEntry.Path))
+			string filePath = System.IO.Path.Combine (apkDestionationDirEntry.Path, fileName + ".apk");
+			if (File.Exists (filePath))
 				SetDestinationStatus (Stock.DialogWarning, "File already exists.");
 			else
 				SetDestinationStatus (null, String.Empty);
