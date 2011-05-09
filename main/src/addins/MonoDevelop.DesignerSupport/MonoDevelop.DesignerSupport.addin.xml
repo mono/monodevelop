@@ -96,11 +96,11 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-design-categorise" resource = "group-by-category.png" />
+		<StockIcon stockid = "md-design-categorise" resource = "group-by-category.png" size="Menu" />
 		<StockIcon stockid = "md-design-listboxtoggle" resource = "md-design-listboxtoggle.png" />
-		<StockIcon stockid = "md-properties-pad" resource = "properties-pad-16.png" />
-		<StockIcon stockid = "md-toolbox-pad" resource = "toolbox-pad-16.png" />
-		<StockIcon stockid = "md-pad-document-outline" resource = "pad-document-outline-16.png" />
+		<StockIcon stockid = "md-properties-pad" resource = "properties-pad-16.png" size="Menu" />
+		<StockIcon stockid = "md-toolbox-pad" resource = "toolbox-pad-16.png" size="Menu" />
+		<StockIcon stockid = "md-pad-document-outline" resource = "pad-document-outline-16.png" size="Menu" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">

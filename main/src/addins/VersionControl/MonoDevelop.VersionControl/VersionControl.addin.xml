@@ -69,18 +69,18 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "vc-add-command" file = "menu_add.png" />
-		<StockIcon stockid = "vc-remove-command" file = "menu_remove.png" />
-		<StockIcon stockid = "vc-resolve-command" file = "menu_resolve.png" />
-		<StockIcon stockid = "vc-revert-command" file = "menu_revert.png" />
-		<StockIcon stockid = "vc-diff" file = "menu_diff.png" />
-		<StockIcon stockid = "vc-log" file = "menu_log.png" />
-		<StockIcon stockid = "vc-status" file = "menu_status.png" />
-		<StockIcon stockid = "vc-update" file = "menu_update.png" />
-		<StockIcon stockid = "vc-commit" file = "menu_commit.png" />
-		<StockIcon stockid = "vc-remote-status" file = "menu_remote_status.png" />
-		<StockIcon stockid = "vc-comment" file = "comment.png" />
-		<StockIcon stockid = "md-version-control" resource = "version-control-16.png" />
+		<StockIcon stockid = "vc-add-command" file = "menu_add.png" size="Menu" />
+		<StockIcon stockid = "vc-remove-command" file = "menu_remove.png" size="Menu" />
+		<StockIcon stockid = "vc-resolve-command" file = "menu_resolve.png" size="Menu" />
+		<StockIcon stockid = "vc-revert-command" file = "menu_revert.png" size="Menu" />
+		<StockIcon stockid = "vc-diff" file = "menu_diff.png" size="Menu" />
+		<StockIcon stockid = "vc-log" file = "menu_log.png" size="Menu" />
+		<StockIcon stockid = "vc-status" file = "menu_status.png" size="Menu" />
+		<StockIcon stockid = "vc-update" file = "menu_update.png" size="Menu" />
+		<StockIcon stockid = "vc-commit" file = "menu_commit.png" size="Menu" />
+		<StockIcon stockid = "vc-remote-status" file = "menu_remote_status.png" size="Menu" />
+		<StockIcon stockid = "vc-comment" file = "comment.png" size="Menu" />
+		<StockIcon stockid = "md-version-control" resource = "version-control-16.png" size="Menu" />
 	</Extension>
     
 	<Extension path = "/MonoDevelop/Ide/Commands">

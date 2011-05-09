@@ -64,7 +64,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-vb-file" resource = "VB.FileIcon" />
+		<StockIcon stockid = "md-vb-file" resource = "VB.FileIcon" size="Menu" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">

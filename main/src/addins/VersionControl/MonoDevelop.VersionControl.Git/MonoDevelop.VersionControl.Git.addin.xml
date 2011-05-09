@@ -96,9 +96,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "vc-git-tag" resource = "tag_blue.png" />
-		<StockIcon stockid = "vc-git-source" resource = "server.png" />
-		<StockIcon stockid = "vc-git-branch" resource = "arrow_branch.png" />
+		<StockIcon stockid = "vc-git-tag" resource = "tag_blue.png" size="Menu" />
+		<StockIcon stockid = "vc-git-source" resource = "server.png" size="Menu" />
+		<StockIcon stockid = "vc-git-branch" resource = "arrow_branch.png" size="Menu" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">

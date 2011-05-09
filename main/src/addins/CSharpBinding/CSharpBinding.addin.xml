@@ -114,8 +114,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-csharp-file" resource = "C#.FileIcon" />
-		<StockIcon stockid = "md-csharp-project" resource = "csharp-project-16.png" />
+		<StockIcon stockid = "md-csharp-file" resource = "C#.FileIcon" size="Menu" />
+		<StockIcon stockid = "md-csharp-project" resource = "csharp-project-16.png" size="Menu"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
