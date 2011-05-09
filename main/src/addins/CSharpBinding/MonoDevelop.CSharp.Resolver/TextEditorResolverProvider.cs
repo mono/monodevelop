@@ -95,16 +95,18 @@ namespace MonoDevelop.CSharp.Resolver
 			ResolveResult resolveResult;
 			DocumentLocation loc = data.Document.OffsetToLocation (offset);
 			string savedExpression = null;
-			
 			// special handling for 'var' "keyword"
 			if (expressionResult.ExpressionContext == ExpressionContext.IdentifierExpected && expressionResult.Expression != null && expressionResult.Expression.Trim () == "var") {
 				int endOffset = data.Document.LocationToOffset (expressionResult.Region.End.Line, expressionResult.Region.End.Column);
 				StringBuilder identifer = new StringBuilder ();
 				for (int i = endOffset; i >= 0 && i < data.Document.Length; i++) {
 					char ch = data.Document.GetCharAt (i);
-					if (Char.IsWhiteSpace (ch))
+					if (Char.IsWhiteSpace (ch)) {
+						if (identifer.Length > 0)
+							break;
 						continue;
-					if (ch == '=')
+					}
+					if (ch == '=' || ch == ';')
 						break;
 					if (Char.IsLetterOrDigit (ch) || ch == '_') {
 						identifer.Append (ch);
@@ -115,7 +117,8 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 				if (identifer.Length > 0) {
 					expressionResult.Expression = identifer.ToString ();
-					resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, loc.Column));
+					Console.WriteLine (expressionResult.Expression);
+					resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, int.MaxValue));
 					if (resolveResult != null) {
 						resolveResult = new MemberResolveResult (dom.GetType (resolveResult.ResolvedType));
 						resolveResult.ResolvedExpression = expressionResult;
@@ -135,6 +138,11 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionResult.Expression = savedExpression;
 				resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, loc.Column));
 			}
+			
+			// identifier may not be valid at that point, try to resolve it at line end (ex. foreach loop variable)
+			if (resolveResult != null && string.IsNullOrEmpty (resolveResult.ResolvedType.FullName))
+				resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, int.MaxValue));
+		
 			// Search for possible generic parameters.
 //			if (this.resolveResult == null || this.resolveResult.ResolvedType == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
 			if (!expressionResult.Region.IsEmpty) {
