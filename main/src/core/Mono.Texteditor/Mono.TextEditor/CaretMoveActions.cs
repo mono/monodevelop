@@ -172,7 +172,6 @@ namespace Mono.TextEditor
 		public static bool IsFolded (TextEditorData data, int line, int column)
 		{
 			int offset = data.LocationToOffset (line, column);
-			Console.WriteLine ("is folded: " + offset + "/" + "/" + data.Document.GetFoldingsFromOffset (offset).Any (f => f.isFolded && f.Offset < offset && offset < f.EndOffset)) ;
 			return data.Document.GetFoldingsFromOffset (offset).Any (f => f.isFolded && f.Offset < offset && offset < f.EndOffset);
 		}
 		

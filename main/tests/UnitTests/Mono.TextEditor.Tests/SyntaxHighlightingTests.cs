@@ -62,7 +62,7 @@ namespace Mono.TextEditor.Tests
 		public void TestSpans ()
 		{
 			TestOutput ("/* TestMe */",
-		                "<span foreground=\"#4E9A06\">/* TestMe */</span>");
+		                "<span foreground=\"#4D9A06\">/* TestMe */</span>");
 		}
 		
 		[Test]
@@ -97,13 +97,13 @@ namespace Mono.TextEditor.Tests
 		public void TestCDATASection ()
 		{
 			string markup = GetMarkup ("<![CDATA[ test ]]>", "application/xml");
-			if (markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\"> ]]&gt;</span>" && 
-			    markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test </span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>") {
+			if (markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4D9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\"> ]]&gt;</span>" && 
+			    markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4D9A06\"> test </span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>") {
 				Assert.Fail ("CDATA markup invalid:" + markup);
 			}
 			
 			TestOutput ("<![CDATA[ test]]>",
-			            "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>",
+			            "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4D9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>",
 			            "application/xml");
 		}
 		
