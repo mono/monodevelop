@@ -290,8 +290,8 @@ namespace Mono.TextEditor
 			document.Undone -= DocumentHandleUndone;
 			document.Redone -= DocumentHandleRedone;
 			document.TextSet -= HandleDocTextSet;
-			document.Folded += HandleTextEditorDataDocumentFolded;
-			document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
+			document.Folded -= HandleTextEditorDataDocumentFolded;
+			document.FoldTreeUpdated -= HandleTextEditorDataDocumentFoldTreeUpdated;
 			
 			document = null;
 		}
