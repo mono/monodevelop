@@ -735,7 +735,15 @@ namespace MonoDevelop.CSharp
 		
 		public string Visit (LocalVariable var, OutputSettings settings)
 		{
-			return settings.EmitName (var, FilterName (var.Name));
+			StringBuilder result = new StringBuilder ();
+			
+			if (settings.IncludeReturnType) {
+				result.Append (GetString (var.ReturnType, settings));
+				result.Append (" ");
+			}
+			result.Append (settings.EmitName (var, FilterName (Format (var.Name))));
+			
+			return result.ToString ();
 		}
 		
 		public string Visit (IEvent evt, OutputSettings settings)
