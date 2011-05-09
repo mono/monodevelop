@@ -233,18 +233,21 @@ namespace MonoDevelop.MonoDroid
 
 			var chop = new ChainedAsyncOperationSequence (monitor,
 				new ChainedAsyncOperation () {
-					TaskName = "Waiting for package creation to complete",
+					TaskName = GettextCatalog.GetString ("Creating Android Package"),
 					Skip = () => signOp == null || signOp.IsCompleted ? "" : null,
 					Create = () => signOp,
-					ErrorMessage = "Package creation failed"
+					ErrorMessage = GettextCatalog.GetString ("Package creation failed")
 				},
 				new ChainedAsyncOperation () {
-					TaskName = "Moving package to final destination",
+					TaskName = GettextCatalog.GetString ("Moving package to final destination"),
 					Create = () => {
 						File.Copy (srcApk, destApk, true);
 						return Core.Execution.NullProcessAsyncOperation.Success;
 					},
-					ErrorMessage = "Error moving package to final destination"
+					Completed = (op) => {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("File created: ") + destApk);
+					},
+					ErrorMessage = GettextCatalog.GetString ("Error moving package to final destination")
 				}
 			);
 			chop.Completed += delegate {
