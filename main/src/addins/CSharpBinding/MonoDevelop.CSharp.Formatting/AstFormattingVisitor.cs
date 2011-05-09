@@ -129,12 +129,20 @@ namespace MonoDevelop.CSharp.Formatting
 				line++;
 				lineSegment = data.Document.GetLine (line);
 			} while (lineSegment != null && lineSegment.EditableLength == lineSegment.GetIndentation (data.Document).Length);
-			var startLine = data.Document.GetLine (loc.Line);
-			int start = startLine.EndOffset;
+			var start = data.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+			
+			int foundBlankLines = line - loc.Line - 1;
+			
 			StringBuilder sb = new StringBuilder ();
-			for (int i = 0; i < blankLines; i++)
+			for (int i = 0; i < blankLines - foundBlankLines; i++)
 				sb.Append (data.EolMarker);
-			int removedChars = lineSegment != null ? lineSegment.Offset - startLine.EndOffset : 0;
+			
+			int ws = start;
+			while (ws < data.Length && IsSpacing (data.GetCharAt (ws)))
+				ws++;
+			int removedChars = ws - start;
+			if (foundBlankLines > blankLines)
+				removedChars += data.GetLine (loc.Line + foundBlankLines - blankLines).EndOffset - data.GetLine (loc.Line).EndOffset;
 			AddChange (start, removedChars, sb.ToString ());
 		}
 		
