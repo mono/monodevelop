@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.curIndent.TabSize = this.data.TabSize;
 			CorrectBlankLines = true;
 		}
-		
+
 		public override object VisitCompilationUnit (CompilationUnit unit, object data)
 		{
 			base.VisitCompilationUnit (unit, data);
@@ -90,11 +90,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			do {
 				line++;
 			} while (line < data.LineCount && data.GetEditableLength (line) == data.GetIndentation (line).Length);
-			var start = data.GetLineEndOffset (loc.Line); 
+			var start = data.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+			
+			int foundBlankLines = line - loc.Line - 1;
+			
 			StringBuilder sb = new StringBuilder ();
-			for (int i = 0; i < blankLines; i++)
+			for (int i = 0; i < blankLines - foundBlankLines; i++)
 				sb.Append (data.EolMarker);
-			int removedChars = line < data.LineCount ? data.GetLineOffset (line) - start : 0;
+			
+			int ws = start;
+			while (ws < data.Length && IsSpacing (data.GetCharAt (ws)))
+				ws++;
+			int removedChars = ws - start;
+			if (foundBlankLines > blankLines)
+				removedChars += data.GetLineEndOffset (loc.Line + foundBlankLines - blankLines) - data.GetLineEndOffset (loc.Line);
 			AddChange (start, removedChars, sb.ToString ());
 		}
 
@@ -107,7 +116,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			do {
 				line--;
 			} while (line > 0 && data.GetEditableLength (line) == data.GetIndentation (line).Length);
-			
 			int end = data.GetLineOffset (loc.Line);
 			int start = line >= 1 ? data.GetLineEndOffset (line) : 0;
 			StringBuilder sb = new StringBuilder ();
@@ -118,20 +126,20 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitUsingDeclaration (UsingDeclaration usingDeclaration, object data)
 		{
-			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
-				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) 
 				EnsureBlankLinesBefore (usingDeclaration, policy.BlankLinesBeforeUsings);
+			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
+				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
 
 			return null;
 		}
 
 		public override object VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, object data)
 		{
-			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
-				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) 
 				EnsureBlankLinesBefore (usingDeclaration, policy.BlankLinesBeforeUsings);
+			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
+				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
 			return null;
 		}
 
@@ -528,12 +536,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
-		
+
 		public override object VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, object data)
 		{
 			FixIndentationForceNewLine (fixedFieldDeclaration.StartLocation);
 			FormatCommas (fixedFieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
-			if (fixedFieldDeclaration.NextSibling is FieldDeclaration || fixedFieldDeclaration.NextSibling is FixedFieldDeclaration ) {
+			if (fixedFieldDeclaration.NextSibling is FieldDeclaration || fixedFieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenFields);
 			} else if (IsMember (fixedFieldDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenMembers);
@@ -952,8 +960,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				}
 			}
-//			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars , insertedText == null ? "<null>" : insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
-//			Console.WriteLine (Environment.StackTrace);
+			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\t", "\\t").Replace (" ", "."));
+			//Console.WriteLine (Environment.StackTrace);
 			
 			changes.Add (new Change (offset, removedChars, insertedText));
 		}
@@ -1556,13 +1564,13 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		void FixIndentation (AstLocation location, int relOffset)
 		{
-			if (location.Line < 0 || location.Line >= data.LineCount) {
+			if (location.Line < 1 || location.Line > data.LineCount) {
 				Console.WriteLine ("Invalid location " + location);
 				Console.WriteLine (Environment.StackTrace);
 				return;
 			}
 		
-			string lineIndent =  data.GetIndentation (location.Line);
+			string lineIndent = data.GetIndentation (location.Line);
 			string indentString = this.curIndent.IndentString;
 			if (indentString != lineIndent && location.Column - 1 + relOffset == lineIndent.Length) {
 				AddChange (data.GetLineOffset (location.Line), lineIndent.Length, indentString);
@@ -1573,9 +1581,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			string lineIndent = data.GetIndentation (location.Line);
 			string indentString = this.curIndent.IndentString;
-			if (indentString != lineIndent && location.Column - 1 == lineIndent.Length) {
+			if (location.Column - 1 == lineIndent.Length) {
 				AddChange (data.GetLineOffset (location.Line), lineIndent.Length, indentString);
-			} else {
+			} else { 
 				int offset = data.LocationToOffset (location.Line, location.Column);
 				int start = SearchWhitespaceLineStart (offset);
 				if (start > 0) { 
@@ -1593,4 +1601,3 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 	}
 }
-
