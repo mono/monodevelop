@@ -253,7 +253,7 @@ namespace Mono.TextEditor
 			if (logicalLine < DocumentLocation.MinLine)
 				return DocumentLocation.MinLine;
 			if (logicalLine > tree.Root.totalCount)
-				return tree.Root.totalVisibleCount + logicalLine - tree.Root.totalCount;
+				return tree.Root.totalCount + logicalLine - tree.Root.totalCount;
 			int line = GetValidLine (logicalLine);
 			var node = GetNodeByLine (line);
 			int delta = logicalLine - node.GetLineNumber ();
@@ -274,7 +274,7 @@ namespace Mono.TextEditor
 			if (visualLineNumber < DocumentLocation.MinLine)
 				return DocumentLocation.MinLine;
 			if (visualLineNumber > tree.Root.totalVisibleCount)
-				return tree.Root.totalCount + tree.Root.totalVisibleCount - visualLineNumber;
+				return tree.Root.totalCount + visualLineNumber - tree.Root.totalVisibleCount;
 			int line = GetValidVisualLine (visualLineNumber);
 			var node = GetNodeByVisibleLine (line);
 			int delta = visualLineNumber - node.GetVisibleLineNumber ();
