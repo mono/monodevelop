@@ -319,6 +319,7 @@ namespace MonoDevelop.CSharp.Completion
 					provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
 					if (provider != null) {
 						int currentParameter = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
+						resolver = CreateResolver ();
 						resolver.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 						return CreateParameterCompletion (CreateResolver (), location, ExpressionContext.MethodBody, provider.Methods, currentParameter);	
 					}
