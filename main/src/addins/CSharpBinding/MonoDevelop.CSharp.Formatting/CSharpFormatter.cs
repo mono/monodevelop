@@ -113,17 +113,18 @@ namespace MonoDevelop.CSharp.Formatting
 			adapter.AcceptChanges (changes);
 		}
 
-		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
+		public string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
 			var data = new TextEditorData ();
 			data.Document.SuppressHighlightUpdate = true;
-			data.Document.MimeType = mimeTypeChain.First ();
+			data.Document.MimeType = mimeType;
 			data.Document.FileName = "toformat.cs";
-			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
-			data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
-			data.Options.TabSize = textPolicy.TabWidth;
+			if (textPolicy != null) {
+				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
+				data.Options.TabSize = textPolicy.TabWidth;
+				data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
+			}
 			data.Options.OverrideDocumentEolMarker = true;
-			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			data.Text = input;
 
 //			System.Console.WriteLine ("-----");
@@ -139,7 +140,6 @@ namespace MonoDevelop.CSharp.Formatting
 //					Console.WriteLine (e.Message);
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (data);
 			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter) {
 				HadErrors = hadErrors
@@ -168,6 +168,15 @@ namespace MonoDevelop.CSharp.Formatting
 			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
 			data.Dispose ();
 			return result;
+		}
+
+		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
+		{
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+
+			return FormatText (policy, textPolicy, mimeTypeChain.First (), input, startOffset, endOffset);
+
 		}
 	}
 }

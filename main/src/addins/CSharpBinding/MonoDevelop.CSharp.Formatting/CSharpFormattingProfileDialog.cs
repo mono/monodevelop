@@ -1033,10 +1033,14 @@ delegate void BarFoo ();
 		
 		void UpdateExample (string example)
 		{
-			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (CSharpFormatter.MimeType);
-			var policyParent = new MonoDevelop.Projects.Policies.PolicyBag (null);
-			policyParent.Set<CSharpFormattingPolicy> (profile, CSharpFormatter.MimeType);
-			texteditor.Document.Text = formatter.FormatText (policyParent, Environment.NewLine != "\n" ? example.Replace ("\n", Environment.NewLine) : example);
+			var formatter = new CSharpFormatter ();
+			string text;
+			if (!string.IsNullOrEmpty (example)) {
+				text = Environment.NewLine != "\n" ? example.Replace ("\n", Environment.NewLine) : example;
+			} else {
+				text = "";
+			}
+			texteditor.Document.Text = formatter.FormatText (profile, null, CSharpFormatter.MimeType, text, 0, text.Length);
 		}
 		
 		static PropertyInfo GetProperty (TreeModel model, TreeIter iter)

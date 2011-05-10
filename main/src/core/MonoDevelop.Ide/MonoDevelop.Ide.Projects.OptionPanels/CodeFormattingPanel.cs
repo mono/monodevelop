@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 						useParentPolicy = true;
 				}
 				if (modified)
-					pd.UseParentPolicy = useParentPolicy;
+					pd.SetUseParentPolicy  (useParentPolicy, e.PolicyType, e.Scope);
 				if (pd.SectionLoaded) {
 					pd.SectionPanel.FillPolicies ();
 					pd.SectionPanel.UpdateSelectedNamedPolicy ();

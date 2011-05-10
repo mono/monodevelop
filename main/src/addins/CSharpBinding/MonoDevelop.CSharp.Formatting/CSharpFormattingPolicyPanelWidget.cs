@@ -81,10 +81,8 @@ namespace Example {
 
 		public void FormatSample ()
 		{
-			var formatter = CodeFormatterService.GetFormatter (CSharpFormatter.MimeType);
-			var parent = new MonoDevelop.Projects.DotNetAssemblyProject ();
-			parent.Policies.Set<CSharpFormattingPolicy> (policy, CSharpFormatter.MimeType);
-			texteditor.Document.Text = formatter.FormatText (parent.Policies, example);
+			var formatter = new CSharpFormatter ();
+			texteditor.Document.Text = formatter.FormatText (policy, null, CSharpFormatter.MimeType, example, 0, example.Length);
 		}
 
 		void HandleButtonEditClicked (object sender, EventArgs e)

@@ -370,6 +370,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 		}
+
+		public void SetUseParentPolicy (bool useParentPolicy, System.Type policyType, string scope)
+		{
+			if (useParentPolicy == this.useParentPolicy) 
+				return;
+			this.useParentPolicy = useParentPolicy;
+			if (useParentPolicy) {
+				foreach (IMimeTypePolicyOptionsPanel panel in Panels) {
+					if (panel.HandlesPolicyType (policyType, scope))
+						panel.LoadParentPolicy ();
+				}
+			}
+			if (SectionLoaded)
+				SectionPanel.UpdateSelectedNamedPolicy ();
+		}
 		
 		public void AssignPolicies (PolicySet pset)
 		{
