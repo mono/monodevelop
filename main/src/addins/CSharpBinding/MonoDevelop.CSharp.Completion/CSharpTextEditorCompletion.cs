@@ -289,7 +289,7 @@ namespace MonoDevelop.CSharp.Completion
 					if (resolver.ResolvedExpression is ICSharpCode.OldNRefactory.Ast.TypeOfExpression) {
 						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					
-						CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+						CompletionDataCollector col = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 						AddPrimitiveTypes (col);
 						foreach (object o in dom.GetNamespaceContents (GetUsedNamespaces (), true, true)) {
 							col.Add (o);
@@ -467,7 +467,7 @@ namespace MonoDevelop.CSharp.Completion
 								return null;
 							if (resolvedType.ClassType == ClassType.Enum) {
 								CompletionDataList completionList = new ProjectDomCompletionDataList ();
-								CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+								CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 								IReturnType returnType = new DomReturnType (resolvedType);
 								bool added = false;
 								foreach (IUsing u in Document.CompilationUnit.Usings) {
@@ -505,7 +505,7 @@ namespace MonoDevelop.CSharp.Completion
 						
 							if (resolvedType.FullName == DomReturnType.Bool.FullName) {
 								CompletionDataList completionList = new ProjectDomCompletionDataList ();
-								CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+								CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 								completionList.AutoCompleteEmptyMatch = false;
 								cdc.Add ("true", "md-keyword");
 								cdc.Add ("false", "md-keyword");
@@ -556,7 +556,7 @@ namespace MonoDevelop.CSharp.Completion
 							if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
 								return null;
 							CompletionDataList completionList = new ProjectDomCompletionDataList ();
-							CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+							CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 						
 							IType declaringType = resolver.CallingType;
 							if (Document.LastErrorFreeParsedDocument != null) {
@@ -610,7 +610,7 @@ namespace MonoDevelop.CSharp.Completion
 									return CreateCtrlSpaceCompletionData (completionContext, result);
 								}
 								CompletionDataList dataList = new ProjectDomCompletionDataList ();
-								CompletionDataCollector col = new CompletionDataCollector (dom, dataList, Document.CompilationUnit, null, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+								CompletionDataCollector col = new CompletionDataCollector (this, dom, dataList, Document.CompilationUnit, null, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 								foreach (string kw in linqKeywords) {
 									col.Add (kw, "md-keyword");
 								}
@@ -810,7 +810,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			if (addedEnums.Count + addedDelegates.Count == 0)
 				return null;
-			CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+			CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 			completionList.AutoCompleteEmptyMatch = false;
 			completionList.AutoSelect = false;
 			resolver.AddAccessibleCodeCompletionData (context, cdc);
@@ -1062,7 +1062,7 @@ namespace MonoDevelop.CSharp.Completion
 					IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					List<string> namespaceList = GetUsedNamespaces ();
-					CSharpTextEditorCompletion.CompletionDataCollector col = new CSharpTextEditorCompletion.CompletionDataCollector (dom, completionList, Document.CompilationUnit, null, location);
+					var col = new CSharpTextEditorCompletion.CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, null, location);
 					bool isInterface = false;
 					HashSet<string> baseTypeNames = new HashSet<string> ();
 					if (cls != null) {
@@ -1124,7 +1124,7 @@ namespace MonoDevelop.CSharp.Completion
 					NRefactoryResolver resolver = CreateResolver ();
 					ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 					if (resolveResult != null && resolveResult.ResolvedType != null) {
-						CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+						CompletionDataCollector col = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 						IType foundType = null;
 						if (word == "as") {
 							ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForAsCompletion (textEditorData, Document.CompilationUnit, Document.FileName, resolver.CallingType);
@@ -1267,7 +1267,7 @@ namespace MonoDevelop.CSharp.Completion
 					return CreateCtrlSpaceCompletionData (completionContext, result);
 				}
 				CompletionDataList dataList = new ProjectDomCompletionDataList ();
-				CompletionDataCollector col = new CompletionDataCollector (dom, dataList, Document.CompilationUnit, null, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+				CompletionDataCollector col = new CompletionDataCollector (this, dom, dataList, Document.CompilationUnit, null, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				foreach (string kw in linqKeywords) {
 					col.Add (kw, "md-keyword");
 				}
@@ -1435,9 +1435,10 @@ namespace MonoDevelop.CSharp.Completion
 					return true;
 				}
 			}*/
-			
-			public CompletionDataCollector (ProjectDom dom, CompletionDataList completionList, ICompilationUnit unit, IType declaringType, DomLocation location)
+			CSharpTextEditorCompletion editorCompletion;
+			public CompletionDataCollector (CSharpTextEditorCompletion editorCompletion, ProjectDom dom, CompletionDataList completionList, ICompilationUnit unit, IType declaringType, DomLocation location)
 			{
+				this.editorCompletion = editorCompletion;
 				this.CompletionList = completionList;
 				this.unit = unit;
 				this.dom = dom;
@@ -1510,7 +1511,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			MemberCompletionData AddMemberCompletionData (object member, OutputFlags flags)
 			{
-				MemberCompletionData newData = new MemberCompletionData (member as INode, flags);
+				var newData = new MemberCompletionData (editorCompletion.policy, editorCompletion.textEditorData, member as INode, flags);
 				newData.HideExtensionParameter = HideExtensionParameter;
 				string memberKey = newData.CompletionText;
 				if (memberKey == null)
@@ -1620,7 +1621,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
-			CompletionDataCollector col = new CompletionDataCollector (dom, result, Document.CompilationUnit, resolver != null ? resolver.CallingType : null, location);
+			CompletionDataCollector col = new CompletionDataCollector (this, dom, result, Document.CompilationUnit, resolver != null ? resolver.CallingType : null, location);
 			col.HideExtensionParameter = !resolveResult.StaticResolve;
 			col.NamePrefix = expressionResult.Expression;
 			bool showOnlyTypes = expressionResult.Contexts.Any (ctx => ctx == ExpressionContext.InheritableType || ctx == ExpressionContext.Constraints);
@@ -1670,7 +1671,7 @@ namespace MonoDevelop.CSharp.Completion
 						return; // don't add override completion for static members
 				}
 			}
-			CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, searchType, DomLocation.Empty);
+			CompletionDataCollector col = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, searchType, DomLocation.Empty);
 			var inheritanceTree = new List<IType> (this.dom.GetInheritanceTree (searchType));
 			var sortedTree = inheritanceTree.Where (c => c.ClassType != ClassType.Interface).Concat (inheritanceTree.Where (c => c.ClassType == ClassType.Interface));
 			foreach (IType t in sortedTree) {
@@ -1723,7 +1724,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			//	ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
 
-			CompletionDataCollector col = new CompletionDataCollector (dom, result, Document.CompilationUnit, callingType, location);
+			CompletionDataCollector col = new CompletionDataCollector (this, dom, result, Document.CompilationUnit, callingType, location);
 			IType type = null;
 			if (returnType != null)
 				type = dom.GetType (returnType);
@@ -1905,7 +1906,7 @@ namespace MonoDevelop.CSharp.Completion
 			DomLocation cursorLocation = new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset);
 			resolver.SetupResolver (cursorLocation);
 			CompletionDataList result = new ProjectDomCompletionDataList ();
-			CompletionDataCollector col = new CompletionDataCollector (dom, result, Document.CompilationUnit, resolver.CallingType, cursorLocation);
+			CompletionDataCollector col = new CompletionDataCollector (this, dom, result, Document.CompilationUnit, resolver.CallingType, cursorLocation);
 			
 			if (expressionResult == null) {
 				AddPrimitiveTypes (col);
@@ -2124,7 +2125,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 //				if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null && NamePrefix != null && !NamePrefix.Contains ("::"))
 //					flags |= OutputFlags.UseFullName;
-				CompletionDataCollector cdc = new CompletionDataCollector (dom, result, Document.CompilationUnit, resolver.CallingType, location);
+				CompletionDataCollector cdc = new CompletionDataCollector (this, dom, result, Document.CompilationUnit, resolver.CallingType, location);
 				cdc.Add (type, flags);
 			}
 			return result;

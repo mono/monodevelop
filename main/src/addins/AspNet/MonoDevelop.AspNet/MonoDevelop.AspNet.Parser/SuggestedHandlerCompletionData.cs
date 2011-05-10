@@ -73,7 +73,7 @@ namespace MonoDevelop.AspNet.Parser
 			}
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			//insert the method name
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = window.CompletionWidget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;

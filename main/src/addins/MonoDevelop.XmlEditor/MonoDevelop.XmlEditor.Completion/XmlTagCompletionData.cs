@@ -66,7 +66,7 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return element; }
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			IEditableTextBuffer buf = window.CompletionWidget as IEditableTextBuffer;
 			if (buf != null) {

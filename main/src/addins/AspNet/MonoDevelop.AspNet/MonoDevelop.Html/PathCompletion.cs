@@ -118,7 +118,7 @@ namespace MonoDevelop.Html
 				get { throw new InvalidOperationException (); }
 			}
 			
-			public override void InsertCompletionText (CompletionListWindow window)
+			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 			{
 				string text;
 				var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (proj, "", pattern);

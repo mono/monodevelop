@@ -900,12 +900,12 @@ namespace MonoDevelop.Debugger
 		[GLib.ConnectBeforeAttribute]
 		void OnEditKeyPress (object s, Gtk.KeyPressEventArgs args)
 		{
-			Gtk.Entry entry = (Gtk.Entry) s;
+			Gtk.Entry entry = (Gtk.Entry)s;
 			
 			if (currentCompletionData != null) {
 				KeyActions ka;
 				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State, out ka);
-				CompletionWindowManager.PostProcessKeyEvent (ka);
+				CompletionWindowManager.PostProcessKeyEvent (ka, args.Event.Key, (char)args.Event.Key, args.Event.State);
 				args.RetVal = ret;
 			}
 			

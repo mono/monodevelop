@@ -125,10 +125,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.OnDestroyed ();
 		}
 
-		public void PostProcessKeyEvent (KeyActions ka)
+		public void PostProcessKeyEvent (KeyActions ka, Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if ((ka & KeyActions.Complete) != 0) 
-				CompleteWord ();
+				CompleteWord (ref ka, key, keyChar, modifier);
 		}
 		
 		public void ToggleCategoryMode ()
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			if ((ka & KeyActions.Complete) != 0) {
 				//bool completed =
-				CompleteWord ();
+				CompleteWord (ref ka, key, keyChar, modifier);
 				//NOTE: this passes the enter keystroke through to the editor if the current item is an exact match
 				//if (!completed) {
 				//	CompletionWindowManager.HideWindow ();
@@ -355,8 +355,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Reposition (true);
 		}
 		
-		
 		public bool CompleteWord ()
+		{
+			KeyActions ka = KeyActions.None;
+			return CompleteWord (ref ka, (Gdk.Key)0, '\0', Gdk.ModifierType.None);
+		}
+		
+		public bool CompleteWord (ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (SelectionIndex == -1 || completionDataList == null)
 				return false;
@@ -366,7 +371,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// first close the completion list, then insert the text.
 			// this is required because that's the logical event chain, otherwise things could be messed up
 			CloseCompletionList ();
-			item.InsertCompletionText (this);
+			item.InsertCompletionText (this, ref ka, closeChar, keyChar, modifier);
 			AddWordToHistory (PartialWord, item.CompletionText);
 			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
 			return true;

@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using MonoDevelop.Ide.CodeCompletion;
@@ -36,11 +37,14 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.NRefactory.CSharp;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class MemberCompletionData : MonoDevelop.Ide.CodeCompletion.MemberCompletionData
 	{
+		MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy;
+		TextEditorData editor;
 		OutputFlags flags;
 		bool hideExtensionParameter = true;
 		static CSharpAmbience ambience = new CSharpAmbience ();
@@ -93,14 +97,85 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public MemberCompletionData (INode member, OutputFlags flags) 
+		public MemberCompletionData (MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy, TextEditorData editor, INode member, OutputFlags flags)
 		{
+			this.policy = policy;
+			this.editor = editor;
 			this.flags = flags;
 			SetMember (member);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
 			IMember m = Member as IMember;
 			if (m != null && m.IsObsolete)
 				DisplayFlags |= DisplayFlags.Obsolete;
+		}
+		
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		{
+			string text = CompletionText;
+			string partialWord = GetCurrentWord (window);
+			int skipChars = 0;
+			
+			// todo: detect delegate case.
+			if (Member is IMethod && PropertyService.Get ("AutoInsertMatchingBracket", false)) {
+				IMethod method = (IMethod)Member;
+				var line = editor.GetLine (editor.Caret.Line);
+				string textToEnd = editor.GetTextBetween (window.CodeCompletionContext.TriggerOffset + partialWord.Length, line.Offset + line.EditableLength);
+				if (policy.BeforeMethodCallParentheses)
+					text += " ";
+				int exprStart = window.CodeCompletionContext.TriggerOffset;
+				while (exprStart > line.Offset) {
+					char ch = editor.GetCharAt (exprStart);
+					if (ch != '.' && ch != '_' && /*ch != '<' && ch != '>' && */!char.IsLetterOrDigit (ch))
+						break;
+					exprStart--;
+				}
+				string textBefore = editor.GetTextBetween (line.Offset, exprStart);
+				
+				bool insertSemicolon = false;
+				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
+					insertSemicolon = true;
+				
+				var type = method.DeclaringType;
+				bool anyOverloadWithParameters = false;
+				foreach (var t in type.SourceProjectDom.GetInheritanceTree (type)) {
+					if (t.Methods.Any (m => m.Name == method.Name && m.Parameters.Count > 0)) {
+						anyOverloadWithParameters = true;
+						break;
+					}
+				}
+				if (anyOverloadWithParameters) {
+					if (insertSemicolon) {
+						text += "(|);";
+						skipChars = 2;
+					} else {
+						text += "(|)";
+						skipChars = 1;
+					}
+				} else {
+					if (insertSemicolon) {
+						text += "();|";
+					} else {
+						text += "()|";
+					}
+				}
+				if (keyChar == '(') {
+					var skipChar = editor.SkipChars.LastOrDefault ();
+					if (skipChar != null && skipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && skipChar.Char == ')')
+						editor.Remove (skipChar.Offset, 1);
+				}
+				
+				ka |= KeyActions.Ignore;
+			}
+			
+			if (text == partialWord) 
+				return;
+
+			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
+			int offset = editor.Caret.Offset;
+			for (int i = 0; i < skipChars; i++) {
+				editor.SetSkipChar (offset, editor.GetCharAt (offset));
+				offset++;
+			}
 		}
 		
 		void SetMember (INode member)

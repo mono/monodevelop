@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.initialOffset = editor.Caret.Offset;
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			// insert add/remove event handler code after +=/-=
 			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
