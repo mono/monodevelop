@@ -97,6 +97,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
+		public bool IsDelegateExpected { get; set; }
+		
 		public MemberCompletionData (MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy, TextEditorData editor, INode member, OutputFlags flags)
 		{
 			this.policy = policy;
@@ -115,8 +117,7 @@ namespace MonoDevelop.CSharp.Completion
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			
-			// todo: detect delegate case.
-			if (Member is IMethod && PropertyService.Get ("AutoInsertMatchingBracket", false)) {
+			if (!IsDelegateExpected && Member is IMethod && PropertyService.Get ("AutoInsertMatchingBracket", false)) {
 				IMethod method = (IMethod)Member;
 				var line = editor.GetLine (editor.Caret.Line);
 				string textToEnd = editor.GetTextBetween (window.CodeCompletionContext.TriggerOffset + partialWord.Length, line.Offset + line.EditableLength);

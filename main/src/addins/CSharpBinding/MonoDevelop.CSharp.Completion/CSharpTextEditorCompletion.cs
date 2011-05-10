@@ -308,6 +308,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					if (resolveResult is MethodResolveResult) {
 						var methodResolveResult = resolveResult as MethodResolveResult;
+						resolver.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 						return CreateParameterCompletion (resolver, location, result.ExpressionContext, methodResolveResult.Methods, 0);	
 					}
 					return null;
@@ -318,6 +319,7 @@ namespace MonoDevelop.CSharp.Completion
 					provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
 					if (provider != null) {
 						int currentParameter = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
+						resolver.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 						return CreateParameterCompletion (CreateResolver (), location, ExpressionContext.MethodBody, provider.Methods, currentParameter);	
 					}
 					break;
@@ -453,7 +455,9 @@ namespace MonoDevelop.CSharp.Completion
 						provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
 						if (provider != null) {
 							int currentParameter = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
-							return CreateParameterCompletion (CreateResolver (), location, ExpressionContext.IdentifierExpected, provider.Methods, currentParameter);	
+							var resolver2 = CreateResolver ();
+							resolver2.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+							return CreateParameterCompletion (resolver2, location, ExpressionContext.IdentifierExpected, provider.Methods, currentParameter);
 						}
 						break;
 					case "=":
@@ -535,6 +539,13 @@ namespace MonoDevelop.CSharp.Completion
 								string parameterDefinition = AddDelegateHandlers (completionList, resolvedType);
 								string varName = GetPreviousMemberReferenceExpression (tokenIndex);
 								completionList.Add (new EventCreationCompletionData (textEditorData, varName, resolvedType, null, parameterDefinition, resolver.CallingMember, resolvedType));
+								
+								CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+								resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
+								foreach (var data in completionList) {
+									if (data is MemberCompletionData) 
+										((MemberCompletionData)data).IsDelegateExpected = true;
+								}
 								return completionList;
 							}
 						}
@@ -813,7 +824,13 @@ namespace MonoDevelop.CSharp.Completion
 			CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 			completionList.AutoCompleteEmptyMatch = false;
 			completionList.AutoSelect = false;
-			resolver.AddAccessibleCodeCompletionData (context, cdc);
+			resolver.AddAccessibleCodeCompletionData (ExpressionContext.MethodBody, cdc);
+			if (addedDelegates.Count > 0) {
+				foreach (var data in completionList) {
+					if (data is MemberCompletionData) 
+						((MemberCompletionData)data).IsDelegateExpected = true;
+				}
+			}
 			return completionList;
 		}
 		
