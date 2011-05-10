@@ -63,6 +63,7 @@ namespace Example {
 		public CSharpFormattingPolicyPanelWidget ()
 		{
 			this.Build ();
+			policy = new CSharpFormattingPolicy ();
 			buttonEdit.Clicked += HandleButtonEditClicked;
 			
 			var options = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance;
