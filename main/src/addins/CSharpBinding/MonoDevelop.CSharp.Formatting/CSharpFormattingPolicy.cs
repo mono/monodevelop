@@ -53,13 +53,19 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpFormattingPolicy Clone ()
 		{
-			return (CSharpFormattingPolicy)MemberwiseClone ();
+			return new CSharpFormattingPolicy (options.Clone ());
 		}
 
 		public CSharpFormattingOptions CreateOptions ()
 		{
 			return options;
 		}
+		
+		protected CSharpFormattingPolicy (CSharpFormattingOptions options)
+		{
+			this.options = options;
+		}
+		
 		
 		#region Indentation
 		[ItemProperty]
@@ -1409,6 +1415,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpFormattingPolicy ()
 		{
+			this.options = new CSharpFormattingOptions ();
+			
 			IndentNamespaceBody = true;
 			IndentClassBody = IndentInterfaceBody = IndentStructBody = IndentEnumBody = true;
 			IndentMethodBody = IndentPropertyBody = IndentEventBody = true;
