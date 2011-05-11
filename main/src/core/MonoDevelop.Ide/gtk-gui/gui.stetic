@@ -10947,7 +10947,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.SelectReferenceDialog" design-size="646 547">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.SelectReferenceDialog" design-size="837 551">
     <property name="MemberName" />
     <property name="WidthRequest">640</property>
     <property name="HeightRequest">520</property>
@@ -10957,8 +10957,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
     <property name="TypeHint">Dialog</property>
     <property name="Modal">True</property>
     <property name="BorderWidth">6</property>
-    <property name="DefaultWidth">520</property>
-    <property name="DefaultHeight">570</property>
     <property name="DestroyWithParent">True</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
@@ -10972,51 +10970,155 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
             <property name="Spacing">12</property>
             <property name="BorderWidth">6</property>
             <child>
-              <widget class="Gtk.VPaned" id="vpaned1">
+              <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
-                <property name="Position">256</property>
+                <property name="CanFocus">True</property>
+                <property name="Position">527</property>
                 <child>
-                  <widget class="Gtk.Notebook" id="mainBook">
+                  <widget class="Gtk.VBox" id="vbox2">
                     <property name="MemberName" />
-                    <property name="CurrentPage">0</property>
+                    <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.Label" id="label7">
+                      <widget class="Gtk.HBox" id="hbox1">
                         <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="Yalign">0</property>
-                        <property name="LabelProp">label7</property>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="Gtk.Label" id="label6">
-                        <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="Yalign">0</property>
-                        <property name="LabelProp">label6</property>
+                        <property name="Spacing">6</property>
+                        <child>
+                          <widget class="Gtk.Label" id="label1">
+                            <property name="MemberName" />
+                            <property name="LabelProp" translatable="yes">Filter:</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="MonoDevelop.Components.SearchEntry" id="searchentry">
+                            <property name="MemberName" />
+                            <property name="ForceFilterButtonVisible">False</property>
+                            <property name="IsCheckMenu">False</property>
+                            <property name="ActiveFilterID">0</property>
+                            <property name="Ready">True</property>
+                            <property name="HasFocus">True</property>
+                            <signal name="Changed" handler="OnSearchentryChanged" />
+                          </widget>
+                          <packing>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="label2">
+                            <property name="MemberName" />
+                            <property name="WidthRequest">100</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">2</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
                       </widget>
                       <packing>
-                        <property name="type">tab</property>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Notebook" id="mainBook">
+                        <property name="MemberName" />
+                        <property name="CurrentPage">0</property>
+                        <child>
+                          <widget class="Gtk.Label" id="label7">
+                            <property name="MemberName" />
+                            <property name="Xalign">0</property>
+                            <property name="Yalign">0</property>
+                            <property name="LabelProp">label7</property>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="label6">
+                            <property name="MemberName" />
+                            <property name="Xalign">0</property>
+                            <property name="Yalign">0</property>
+                            <property name="LabelProp">label6</property>
+                          </widget>
+                          <packing>
+                            <property name="type">tab</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">False</property>
                       </packing>
                     </child>
                   </widget>
                   <packing>
                     <property name="Resize">False</property>
-                    <property name="Shrink">False</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.VBox" id="vbox76">
+                  <widget class="Gtk.VBox" id="boxRefs">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.Label" id="label114">
+                      <widget class="Gtk.HBox" id="hbox2">
                         <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="LabelProp" translatable="yes">Selected references:</property>
+                        <property name="Spacing">6</property>
+                        <child>
+                          <widget class="Gtk.VBox" id="vbox3">
+                            <property name="MemberName" />
+                            <property name="Spacing">6</property>
+                            <child>
+                              <widget class="Gtk.Label" id="label114">
+                                <property name="MemberName" />
+                                <property name="Xalign">0</property>
+                                <property name="LabelProp" translatable="yes">Selected references:</property>
+                              </widget>
+                              <packing>
+                                <property name="PackType">End</property>
+                                <property name="Position">0</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Button" id="RemoveReferenceButton">
+                            <property name="MemberName" />
+                            <property name="Tooltip">Remove</property>
+                            <property name="UseStock">True</property>
+                            <property name="Type">StockItem</property>
+                            <property name="StockId">gtk-remove</property>
+                            <signal name="Clicked" handler="RemoveReference" />
+                            <property name="label">gtk-remove</property>
+                          </widget>
+                          <packing>
+                            <property name="PackType">End</property>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
-                        <property name="AutoSize">False</property>
+                        <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
                         <property name="Fill">False</property>
                       </packing>
@@ -11033,45 +11135,13 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                             <child>
                               <widget class="Gtk.TreeView" id="ReferencesTreeView">
                                 <property name="MemberName" />
+                                <property name="HeadersVisible">False</property>
                               </widget>
                             </child>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
                             <property name="AutoSize">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.VBox" id="vbox70">
-                            <property name="MemberName" />
-                            <child>
-                              <widget class="Gtk.Button" id="RemoveReferenceButton">
-                                <property name="MemberName" />
-                                <property name="Tooltip">Remove</property>
-                                <property name="Type">Custom</property>
-                                <signal name="Clicked" handler="RemoveReference" />
-                                <child>
-                                  <widget class="Gtk.Image" id="but">
-                                    <property name="MemberName" />
-                                    <property name="Xalign">0</property>
-                                    <property name="Yalign">0</property>
-                                    <property name="Pixbuf">stock:gtk-remove Button</property>
-                                  </widget>
-                                </child>
-                              </widget>
-                              <packing>
-                                <property name="Position">0</property>
-                                <property name="AutoSize">False</property>
-                                <property name="Expand">False</property>
-                                <property name="Fill">False</property>
-                              </packing>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                            <property name="AutoSize">False</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
                           </packing>
                         </child>
                       </widget>

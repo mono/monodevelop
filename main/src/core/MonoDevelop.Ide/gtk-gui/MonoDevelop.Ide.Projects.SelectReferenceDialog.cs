@@ -5,18 +5,23 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class SelectReferenceDialog
 	{
 		private global::Gtk.VBox vbox5;
-		private global::Gtk.VPaned vpaned1;
+		private global::Gtk.HPaned hpaned1;
+		private global::Gtk.VBox vbox2;
+		private global::Gtk.HBox hbox1;
+		private global::Gtk.Label label1;
+		private global::MonoDevelop.Components.SearchEntry searchentry;
+		private global::Gtk.Label label2;
 		private global::Gtk.Notebook mainBook;
 		private global::Gtk.Label label7;
 		private global::Gtk.Label label6;
-		private global::Gtk.VBox vbox76;
+		private global::Gtk.VBox boxRefs;
+		private global::Gtk.HBox hbox2;
+		private global::Gtk.VBox vbox3;
 		private global::Gtk.Label label114;
+		private global::Gtk.Button RemoveReferenceButton;
 		private global::Gtk.HBox hbox4;
 		private global::Gtk.ScrolledWindow scrolledwindow2;
 		private global::Gtk.TreeView ReferencesTreeView;
-		private global::Gtk.VBox vbox70;
-		private global::Gtk.Button RemoveReferenceButton;
-		private global::Gtk.Image but;
 		private global::Gtk.Button cancelbutton;
 		private global::Gtk.Button okbutton;
 
@@ -31,8 +36,6 @@ namespace MonoDevelop.Ide.Projects
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.Modal = true;
 			this.BorderWidth = ((uint)(6));
-			this.DefaultWidth = 520;
-			this.DefaultHeight = 570;
 			this.DestroyWithParent = true;
 			// Internal child MonoDevelop.Ide.Projects.SelectReferenceDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -44,10 +47,54 @@ namespace MonoDevelop.Ide.Projects
 			this.vbox5.Spacing = 12;
 			this.vbox5.BorderWidth = ((uint)(6));
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.vpaned1 = new global::Gtk.VPaned ();
-			this.vpaned1.Name = "vpaned1";
-			this.vpaned1.Position = 256;
-			// Container child vpaned1.Gtk.Paned+PanedChild
+			this.hpaned1 = new global::Gtk.HPaned ();
+			this.hpaned1.CanFocus = true;
+			this.hpaned1.Name = "hpaned1";
+			this.hpaned1.Position = 527;
+			// Container child hpaned1.Gtk.Paned+PanedChild
+			this.vbox2 = new global::Gtk.VBox ();
+			this.vbox2.Name = "vbox2";
+			this.vbox2.Spacing = 6;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.label1 = new global::Gtk.Label ();
+			this.label1.Name = "label1";
+			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Filter:");
+			this.hbox1.Add (this.label1);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
+			w2.Position = 0;
+			w2.Expand = false;
+			w2.Fill = false;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.searchentry = new global::MonoDevelop.Components.SearchEntry ();
+			this.searchentry.Name = "searchentry";
+			this.searchentry.ForceFilterButtonVisible = false;
+			this.searchentry.IsCheckMenu = false;
+			this.searchentry.ActiveFilterID = 0;
+			this.searchentry.Ready = true;
+			this.searchentry.HasFocus = true;
+			this.hbox1.Add (this.searchentry);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.searchentry]));
+			w3.Position = 1;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.label2 = new global::Gtk.Label ();
+			this.label2.WidthRequest = 100;
+			this.label2.Name = "label2";
+			this.label2.LabelProp = "";
+			this.hbox1.Add (this.label2);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
+			w4.Position = 2;
+			w4.Expand = false;
+			w4.Fill = false;
+			this.vbox2.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
+			w5.Position = 0;
+			w5.Expand = false;
+			w5.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
 			this.mainBook = new global::Gtk.Notebook ();
 			this.mainBook.Name = "mainBook";
 			this.mainBook.CurrentPage = 0;
@@ -66,25 +113,59 @@ namespace MonoDevelop.Ide.Projects
 			this.label6.LabelProp = "label6";
 			this.mainBook.SetTabLabel (this.label7, this.label6);
 			this.label6.ShowAll ();
-			this.vpaned1.Add (this.mainBook);
-			global::Gtk.Paned.PanedChild w3 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.mainBook]));
-			w3.Resize = false;
-			w3.Shrink = false;
-			// Container child vpaned1.Gtk.Paned+PanedChild
-			this.vbox76 = new global::Gtk.VBox ();
-			this.vbox76.Name = "vbox76";
-			this.vbox76.Spacing = 6;
-			// Container child vbox76.Gtk.Box+BoxChild
+			this.vbox2.Add (this.mainBook);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.mainBook]));
+			w7.Position = 1;
+			this.hpaned1.Add (this.vbox2);
+			global::Gtk.Paned.PanedChild w8 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.vbox2]));
+			w8.Resize = false;
+			// Container child hpaned1.Gtk.Paned+PanedChild
+			this.boxRefs = new global::Gtk.VBox ();
+			this.boxRefs.Name = "boxRefs";
+			this.boxRefs.Spacing = 6;
+			// Container child boxRefs.Gtk.Box+BoxChild
+			this.hbox2 = new global::Gtk.HBox ();
+			this.hbox2.Name = "hbox2";
+			this.hbox2.Spacing = 6;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.vbox3 = new global::Gtk.VBox ();
+			this.vbox3.Name = "vbox3";
+			this.vbox3.Spacing = 6;
+			// Container child vbox3.Gtk.Box+BoxChild
 			this.label114 = new global::Gtk.Label ();
 			this.label114.Name = "label114";
 			this.label114.Xalign = 0F;
 			this.label114.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Selected references:");
-			this.vbox76.Add (this.label114);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox76 [this.label114]));
-			w4.Position = 0;
-			w4.Expand = false;
-			w4.Fill = false;
-			// Container child vbox76.Gtk.Box+BoxChild
+			this.vbox3.Add (this.label114);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label114]));
+			w9.PackType = ((global::Gtk.PackType)(1));
+			w9.Position = 0;
+			w9.Expand = false;
+			w9.Fill = false;
+			this.hbox2.Add (this.vbox3);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox3]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.RemoveReferenceButton = new global::Gtk.Button ();
+			this.RemoveReferenceButton.TooltipMarkup = "Remove";
+			this.RemoveReferenceButton.Name = "RemoveReferenceButton";
+			this.RemoveReferenceButton.UseStock = true;
+			this.RemoveReferenceButton.UseUnderline = true;
+			this.RemoveReferenceButton.Label = "gtk-remove";
+			this.hbox2.Add (this.RemoveReferenceButton);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.RemoveReferenceButton]));
+			w11.PackType = ((global::Gtk.PackType)(1));
+			w11.Position = 1;
+			w11.Expand = false;
+			w11.Fill = false;
+			this.boxRefs.Add (this.hbox2);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.boxRefs [this.hbox2]));
+			w12.Position = 0;
+			w12.Expand = false;
+			w12.Fill = false;
+			// Container child boxRefs.Gtk.Box+BoxChild
 			this.hbox4 = new global::Gtk.HBox ();
 			this.hbox4.HeightRequest = 150;
 			this.hbox4.Name = "hbox4";
@@ -96,53 +177,29 @@ namespace MonoDevelop.Ide.Projects
 			// Container child scrolledwindow2.Gtk.Container+ContainerChild
 			this.ReferencesTreeView = new global::Gtk.TreeView ();
 			this.ReferencesTreeView.Name = "ReferencesTreeView";
+			this.ReferencesTreeView.HeadersVisible = false;
 			this.scrolledwindow2.Add (this.ReferencesTreeView);
 			this.hbox4.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.scrolledwindow2]));
-			w6.Position = 0;
-			// Container child hbox4.Gtk.Box+BoxChild
-			this.vbox70 = new global::Gtk.VBox ();
-			this.vbox70.Name = "vbox70";
-			// Container child vbox70.Gtk.Box+BoxChild
-			this.RemoveReferenceButton = new global::Gtk.Button ();
-			this.RemoveReferenceButton.TooltipMarkup = "Remove";
-			this.RemoveReferenceButton.Name = "RemoveReferenceButton";
-			// Container child RemoveReferenceButton.Gtk.Container+ContainerChild
-			this.but = new global::Gtk.Image ();
-			this.but.Name = "but";
-			this.but.Xalign = 0F;
-			this.but.Yalign = 0F;
-			this.but.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-remove", global::Gtk.IconSize.Button);
-			this.RemoveReferenceButton.Add (this.but);
-			this.RemoveReferenceButton.Label = null;
-			this.vbox70.Add (this.RemoveReferenceButton);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox70 [this.RemoveReferenceButton]));
-			w8.Position = 0;
-			w8.Expand = false;
-			w8.Fill = false;
-			this.hbox4.Add (this.vbox70);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.vbox70]));
-			w9.Position = 1;
-			w9.Expand = false;
-			w9.Fill = false;
-			this.vbox76.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox76 [this.hbox4]));
-			w10.Position = 1;
-			this.vpaned1.Add (this.vbox76);
-			global::Gtk.Paned.PanedChild w11 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.vbox76]));
-			w11.Resize = false;
-			this.vbox5.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.vpaned1]));
-			w12.Position = 0;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.scrolledwindow2]));
+			w14.Position = 0;
+			this.boxRefs.Add (this.hbox4);
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.boxRefs [this.hbox4]));
+			w15.Position = 1;
+			this.hpaned1.Add (this.boxRefs);
+			global::Gtk.Paned.PanedChild w16 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.boxRefs]));
+			w16.Resize = false;
+			this.vbox5.Add (this.hpaned1);
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hpaned1]));
+			w17.Position = 0;
 			w1.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
-			w13.Position = 0;
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
+			w18.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.SelectReferenceDialog.ActionArea
-			global::Gtk.HButtonBox w14 = this.ActionArea;
-			w14.Name = "dialog-action_area2";
-			w14.Spacing = 10;
-			w14.BorderWidth = ((uint)(5));
-			w14.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w19 = this.ActionArea;
+			w19.Name = "dialog-action_area2";
+			w19.Spacing = 10;
+			w19.BorderWidth = ((uint)(5));
+			w19.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog-action_area2.Gtk.ButtonBox+ButtonBoxChild
 			this.cancelbutton = new global::Gtk.Button ();
 			this.cancelbutton.Name = "cancelbutton";
@@ -150,9 +207,9 @@ namespace MonoDevelop.Ide.Projects
 			this.cancelbutton.UseUnderline = true;
 			this.cancelbutton.Label = "gtk-cancel";
 			this.AddActionWidget (this.cancelbutton, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.cancelbutton]));
-			w15.Expand = false;
-			w15.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19 [this.cancelbutton]));
+			w20.Expand = false;
+			w20.Fill = false;
 			// Container child dialog-action_area2.Gtk.ButtonBox+ButtonBoxChild
 			this.okbutton = new global::Gtk.Button ();
 			this.okbutton.Name = "okbutton";
@@ -160,14 +217,17 @@ namespace MonoDevelop.Ide.Projects
 			this.okbutton.UseUnderline = true;
 			this.okbutton.Label = "gtk-ok";
 			this.AddActionWidget (this.okbutton, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.okbutton]));
-			w16.Position = 1;
-			w16.Expand = false;
-			w16.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w21 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19 [this.okbutton]));
+			w21.Position = 1;
+			w21.Expand = false;
+			w21.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			this.DefaultWidth = 837;
+			this.DefaultHeight = 551;
 			this.Hide ();
+			this.searchentry.Changed += new global::System.EventHandler (this.OnSearchentryChanged);
 			this.RemoveReferenceButton.Clicked += new global::System.EventHandler (this.RemoveReference);
 		}
 	}

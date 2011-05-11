@@ -32,11 +32,15 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 
 using Gtk;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Projects
 {
 	internal interface IReferencePanel
 	{
+		void SetProject (DotNetProject configureProject);
+		void SignalRefChange (ProjectReference refInfo, bool newState);
+		void SetFilter (string filter);
 	}
 	
 	internal partial class SelectReferenceDialog: Gtk.Dialog
@@ -44,9 +48,11 @@ namespace MonoDevelop.Ide.Projects
 		ListStore refTreeStore;
 		
 		GacReferencePanel gacRefPanel;
+		GacReferencePanel allRefPanel;
 		ProjectReferencePanel projectRefPanel;
 		AssemblyReferencePanel assemblyRefPanel;
 		DotNetProject configureProject;
+		List<IReferencePanel> panels = new List<IReferencePanel> ();
 		
 		const int NameColumn = 0;
 		const int TypeNameColumn = 1;
@@ -67,20 +73,14 @@ namespace MonoDevelop.Ide.Projects
 				return referenceInformations;
 			}
 		}
-
+		
 		public void SetProject (DotNetProject configureProject)
 		{
 			this.configureProject = configureProject;
-			((ListStore) ReferencesTreeView.Model).Clear ();
-
-			projectRefPanel.SetProject (configureProject);
-			projectRefPanel.Show ();
+			foreach (var p in panels)
+				p.SetProject (configureProject);
 			
-			DotNetProject netProject = configureProject as DotNetProject;
-			if (netProject != null)
-				gacRefPanel.SetTargetFramework (netProject.AssemblyContext, netProject.TargetFramework);
-			gacRefPanel.Reset ();
-			assemblyRefPanel.SetBasePath (configureProject.BaseDirectory);
+			((ListStore) ReferencesTreeView.Model).Clear ();
 
 			foreach (ProjectReference refInfo in configureProject.References)
 				AppendReference (refInfo);
@@ -88,24 +88,11 @@ namespace MonoDevelop.Ide.Projects
 			OnChanged (null, null);
 		}
 		
-		public void SetReferenceCollection (ProjectReferenceCollection references, AssemblyContext runtime, TargetFramework targetVersion)
-		{
-			((ListStore) ReferencesTreeView.Model).Clear ();
-
-			projectRefPanel.Hide ();
-			
-			gacRefPanel.SetTargetFramework (runtime, targetVersion);
-			gacRefPanel.Reset ();
-			assemblyRefPanel.SetBasePath  (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
-
-			foreach (ProjectReference refInfo in references)
-				AppendReference (refInfo);
-
-			OnChanged (null, null);
-		}
-		
 		TreeIter AppendReference (ProjectReference refInfo)
 		{
+			foreach (var p in panels)
+				p.SignalRefChange (refInfo, true);
+			
 			switch (refInfo.ReferenceType) {
 				case ReferenceType.Assembly:
 					return AddAssemplyReference (refInfo);
@@ -120,7 +107,9 @@ namespace MonoDevelop.Ide.Projects
 
 		TreeIter AddAssemplyReference (ProjectReference refInfo)
 		{
-			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, "md-closed-folder");
+			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
+			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.Reference)) + "</small></span>";
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetPixbuf ("md-closed-folder", IconSize.Dnd));
 		}
 
 		TreeIter AddProjectReference (ProjectReference refInfo)
@@ -132,41 +121,57 @@ namespace MonoDevelop.Ide.Projects
 			if (p == null) return TreeIter.Zero;
 			
 			string iconName = p.StockIcon;
-			projectRefPanel.SignalRefChange (refInfo.Reference, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, iconName);
+			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
+			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (p.BaseDirectory.ToString ()) + "</small></span>";
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetPixbuf (iconName, IconSize.Dnd));
 		}
 
 		TreeIter AddGacReference (ProjectReference refInfo)
 		{
-			gacRefPanel.SignalRefChange (refInfo, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
+			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference));
+			int i = refInfo.Reference.IndexOf (',');
+			if (i != -1)
+				txt = GLib.Markup.EscapeText (txt.Substring (0, i)) + "\n<span color='darkgrey'><small>" + GLib.Markup.EscapeText (refInfo.Reference.Substring (i+1).Trim()) + "</small></span>";
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), refInfo.Reference, refInfo, ImageService.GetPixbuf ("md-package", IconSize.Dnd));
 		}
 		
 		public SelectReferenceDialog ()
 		{
 			Build ();
 			
-			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(string));
+			boxRefs.WidthRequest = 200;
+			searchentry.Ready = true;
+			searchentry.Visible = true;
+			
+			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(Gdk.Pixbuf));
 			ReferencesTreeView.Model = refTreeStore;
 
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString("Reference");
 			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			crp.Yalign = 0f;
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "stock-id", IconColumn);
+			col.AddAttribute (crp, "pixbuf", IconColumn);
 			CellRendererText text_render = new CellRendererText ();
 			col.PackStart (text_render, true);
-			col.AddAttribute (text_render, "text", NameColumn);
+			col.AddAttribute (text_render, "markup", NameColumn);
+			text_render.Ellipsize = Pango.EllipsizeMode.End;
 			
 			ReferencesTreeView.AppendColumn (col);
-			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), "text", TypeNameColumn);
-			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Location"), new CellRendererText (), "text", LocationColumn);
+//			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), "text", TypeNameColumn);
+//			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Location"), new CellRendererText (), "text", LocationColumn);
 			
 			projectRefPanel = new ProjectReferencePanel (this);
-			gacRefPanel = new GacReferencePanel (this);
+			gacRefPanel = new GacReferencePanel (this, false);
+			allRefPanel = new GacReferencePanel (this, true);
 			assemblyRefPanel = new AssemblyReferencePanel (this);
+			panels.Add (allRefPanel);
+			panels.Add (gacRefPanel);
+			panels.Add (projectRefPanel);
+			panels.Add (assemblyRefPanel);
 			
 			mainBook.RemovePage (mainBook.CurrentPage);
+			mainBook.AppendPage (allRefPanel, new Label (GettextCatalog.GetString ("All")));
 			mainBook.AppendPage (gacRefPanel, new Label (GettextCatalog.GetString ("Packages")));
 			mainBook.AppendPage (projectRefPanel, new Label (GettextCatalog.GetString ("Projects")));
 			mainBook.AppendPage (assemblyRefPanel, new Label (GettextCatalog.GetString (".Net Assembly")));
@@ -232,14 +237,9 @@ namespace MonoDevelop.Ide.Projects
 			TreeIter iter;
 			TreeModel mdl;
 			if (ReferencesTreeView.Selection.GetSelected (out mdl, out iter)) {
-				switch (((ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn)).ReferenceType) {
-					case ReferenceType.Gac:
-						gacRefPanel.SignalRefChange ((ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn), false);
-						break;
-					case ReferenceType.Project:
-						projectRefPanel.SignalRefChange ((string)refTreeStore.GetValue (iter, NameColumn), false);
-						break;
-				}
+				ProjectReference pref = (ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn);
+				foreach (var p in panels)
+					p.SignalRefChange (pref, false);
 				TreeIter newIter = iter;
 				if (refTreeStore.IterNext (ref newIter)) {
 					ReferencesTreeView.Selection.SelectIter (newIter);
@@ -254,6 +254,12 @@ namespace MonoDevelop.Ide.Projects
 					}
 				}
 			}
+		}
+
+		protected void OnSearchentryChanged (object sender, System.EventArgs e)
+		{
+			foreach (var p in panels)
+				p.SetFilter (searchentry.Query);
 		}
 	}
 }

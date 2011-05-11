@@ -74,6 +74,19 @@ namespace MonoDevelop.Ide.Projects
 			ShowAll();
 		}
 		
+		public void SetProject (DotNetProject configureProject)
+		{
+			SetBasePath (configureProject.BaseDirectory);
+		}
+		
+		public void SignalRefChange (ProjectReference refInfo, bool newState)
+		{
+		}
+		
+		public void SetFilter (string filter)
+		{
+		}
+		
 		public void SetBasePath (string path)
 		{
 			chooser.SetCurrentFolder (path);
