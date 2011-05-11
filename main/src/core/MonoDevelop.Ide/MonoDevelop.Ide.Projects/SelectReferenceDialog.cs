@@ -33,6 +33,7 @@ using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -53,6 +54,7 @@ namespace MonoDevelop.Ide.Projects
 		AssemblyReferencePanel assemblyRefPanel;
 		DotNetProject configureProject;
 		List<IReferencePanel> panels = new List<IReferencePanel> ();
+		SearchEntry filterEntry;
 		
 		const int NameColumn = 0;
 		const int TypeNameColumn = 1;
@@ -109,7 +111,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
 			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.Reference)) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetPixbuf ("md-closed-folder", IconSize.Dnd));
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetPixbuf ("md-empty-file-icon", IconSize.Dnd));
 		}
 
 		TreeIter AddProjectReference (ProjectReference refInfo)
@@ -120,10 +122,9 @@ namespace MonoDevelop.Ide.Projects
 			Project p = c.FindProjectByName (refInfo.Reference);
 			if (p == null) return TreeIter.Zero;
 			
-			string iconName = p.StockIcon;
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
 			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (p.BaseDirectory.ToString ()) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetPixbuf (iconName, IconSize.Dnd));
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetPixbuf ("md-project", IconSize.Dnd));
 		}
 
 		TreeIter AddGacReference (ProjectReference refInfo)
@@ -140,8 +141,6 @@ namespace MonoDevelop.Ide.Projects
 			Build ();
 			
 			boxRefs.WidthRequest = 200;
-			searchentry.Ready = true;
-			searchentry.Visible = true;
 			
 			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(Gdk.Pixbuf));
 			ReferencesTreeView.Model = refTreeStore;
@@ -171,14 +170,83 @@ namespace MonoDevelop.Ide.Projects
 			panels.Add (assemblyRefPanel);
 			
 			mainBook.RemovePage (mainBook.CurrentPage);
-			mainBook.AppendPage (allRefPanel, new Label (GettextCatalog.GetString ("All")));
-			mainBook.AppendPage (gacRefPanel, new Label (GettextCatalog.GetString ("Packages")));
-			mainBook.AppendPage (projectRefPanel, new Label (GettextCatalog.GetString ("Projects")));
-			mainBook.AppendPage (assemblyRefPanel, new Label (GettextCatalog.GetString (".Net Assembly")));
+			
+			HBox tab = new HBox (false, 3);
+//			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Reference, IconSize.Menu)), false, false, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("All")), true, true, 0);
+			tab.BorderWidth = 3;
+			tab.ShowAll ();
+			mainBook.AppendPage (allRefPanel, tab);
+			
+			tab = new HBox (false, 3);
+//			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Package, IconSize.Menu)), false, false, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("Packages")), true, true, 0);
+			tab.BorderWidth = 3;
+			tab.ShowAll ();
+			mainBook.AppendPage (gacRefPanel, tab);
+			
+			tab = new HBox (false, 3);
+//			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Project, IconSize.Menu)), false, false, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("Projects")), true, true, 0);
+			tab.BorderWidth = 3;
+			tab.ShowAll ();
+			mainBook.AppendPage (projectRefPanel, tab);
+			
+			tab = new HBox (false, 3);
+//			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu)), false, false, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString (".Net Assembly")), true, true, 0);
+			tab.BorderWidth = 3;
+			tab.ShowAll ();
+			mainBook.AppendPage (assemblyRefPanel, tab);
+			
 			mainBook.Page = 0;
+			
+			var w = selectedHeader.Child;
+			selectedHeader.Remove (w);
+			HeaderBox header = new HeaderBox (1, 0, 1, 1);
+			header.SetPadding (6, 6, 6, 6);
+			header.GradientBackround = true;
+			header.Add (w);
+			selectedHeader.Add (header);
+			
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
 			Child.ShowAll ();
 			OnChanged (null, null);
+			Show ();
+			InsertFilterEntry ();
+		}
+		
+		void InsertFilterEntry ()
+		{
+			filterEntry = new SearchEntry ();
+			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
+			filterEntry.Parent = mainBook;
+			filterEntry.Ready = true;
+			filterEntry.ForceFilterButtonVisible = true;
+			filterEntry.Visible = true;
+			filterEntry.HasFocus = true;
+			
+			mainBook.SizeAllocated += delegate {
+				RepositionFilter ();
+			};
+			filterEntry.Changed += delegate {
+				foreach (var p in panels)
+					p.SetFilter (filterEntry.Query);
+			};
+			RepositionFilter ();
+		}
+		
+		void RepositionFilter ()
+		{
+			int w = filterEntry.SizeRequest ().Width;
+			int h = filterEntry.SizeRequest ().Height;
+			filterEntry.Allocation = new Gdk.Rectangle (mainBook.Allocation.Right - w - 1, mainBook.Allocation.Y, w, h);
+		}
+		
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			Focus = filterEntry;
 		}
 
 		void OnChanged (object o, EventArgs e)
@@ -254,12 +322,6 @@ namespace MonoDevelop.Ide.Projects
 					}
 				}
 			}
-		}
-
-		protected void OnSearchentryChanged (object sender, System.EventArgs e)
-		{
-			foreach (var p in panels)
-				p.SetFilter (searchentry.Query);
 		}
 	}
 }

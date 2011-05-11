@@ -11,8 +11,8 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:Mono.Cairo \
 	-r:ICSharpCode.SharpZipLib \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -833,6 +833,7 @@ RES =  \
 	icons/navigate-previous-24.png \
 	icons/package-x-generic.png \
 	icons/package-x-generic_22.png \
+	icons/package-x-generic_32.png \
 	icons/pad-task-list-16.png \
 	icons/pad-task-list-24.png \
 	icons/parsing.png \

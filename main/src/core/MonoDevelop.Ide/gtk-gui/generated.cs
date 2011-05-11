@@ -6,7 +6,7 @@ namespace Stetic
 	{
 		private static bool initialized;
 
-		static internal void Initialize (Gtk.Widget iconRenderer)
+		internal static void Initialize (Gtk.Widget iconRenderer)
 		{
 			if ((Stetic.Gui.initialized == false)) {
 				Stetic.Gui.initialized = true;
@@ -17,7 +17,6 @@ namespace Stetic
 	internal class BinContainer
 	{
 		private Gtk.Widget child;
-
 		private Gtk.UIManager uimanager;
 
 		public static BinContainer Attach (Gtk.Bin bin)
@@ -77,7 +76,7 @@ namespace Stetic
 			} else {
 				int sz;
 				int sy;
-				global::Gtk.Icon.SizeLookup (size, out sz, out sy);
+				global::Gtk.Icon.SizeLookup (size, out  sz, out  sy);
 				try {
 					return Gtk.IconTheme.Default.LoadIcon (name, sz, 0);
 				} catch (System.Exception) {
