@@ -750,27 +750,6 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public bool SelectProjectReferences (ProjectReferenceCollection references, AssemblyContext ctx, TargetFramework targetVersion)
-		{
-			try {
-				if (selDialog == null)
-					selDialog = new SelectReferenceDialog ();
-				
-				selDialog.SetReferenceCollection (references, ctx, targetVersion);
-
-				if (MessageService.RunCustomDialog (selDialog) == (int)Gtk.ResponseType.Ok) {
-					references.Clear ();
-					references.AddRange (selDialog.ReferenceInformations);
-					return true;
-				}
-				else
-					return false;
-			} finally {
-				if (selDialog != null)
-					selDialog.Hide ();
-			}
-		}
-		
 		public void RemoveSolutionItem (SolutionItem item)
 		{
 			string question = GettextCatalog.GetString ("Do you really want to remove project '{0}' from '{1}'?", item.Name, item.ParentFolder.Name);
