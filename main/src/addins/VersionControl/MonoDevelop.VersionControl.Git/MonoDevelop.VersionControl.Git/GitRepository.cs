@@ -480,15 +480,17 @@ namespace MonoDevelop.VersionControl.Git
 				if (mergeResult.GetMergeStatus () == MergeStatus.CONFLICTING || mergeResult.GetMergeStatus () == MergeStatus.FAILED) {
 					var conflicts = mergeResult.GetConflicts ();
 					bool commit = true;
-					foreach (string conflictFile in conflicts.Keys) {
-						ConflictResult res = ResolveConflict (FromGitPath (conflictFile));
-						if (res == ConflictResult.Abort) {
-							GitUtil.HardReset (repo, GetHeadCommit ());
-							commit = false;
-							break;
-						} else if (res == ConflictResult.Skip) {
-							Revert (FromGitPath (conflictFile), false, monitor);
-							break;
+					if (conflicts != null) {
+						foreach (string conflictFile in conflicts.Keys) {
+							ConflictResult res = ResolveConflict (FromGitPath (conflictFile));
+							if (res == ConflictResult.Abort) {
+								GitUtil.HardReset (repo, GetHeadCommit ());
+								commit = false;
+								break;
+							} else if (res == ConflictResult.Skip) {
+								Revert (FromGitPath (conflictFile), false, monitor);
+								break;
+							}
 						}
 					}
 					if (commit)
