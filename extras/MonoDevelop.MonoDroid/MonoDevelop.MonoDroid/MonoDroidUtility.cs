@@ -412,10 +412,8 @@ namespace MonoDevelop.MonoDroid
 						internalSpace = op.InternalSpace;
 						long pkgLength = new FileInfo (runtimeApk).Length;
 						long platformApkLength = new FileInfo (platformApk).Length;
-						long packageLength = new FileInfo (packageFile).Length;
 						if ((pkgLength > externalSpace && pkgLength > internalSpace) ||
-							(platformApkLength > externalSpace && platformApkLength > internalSpace) ||
-							(packageLength > externalSpace && packageLength > internalSpace)) {
+							(platformApkLength > externalSpace && platformApkLength > internalSpace)) {
 							var msg = GettextCatalog.GetString ("Not enough space on install location");
 							monitor.ReportError (msg, null);
 						}
@@ -446,7 +444,15 @@ namespace MonoDevelop.MonoDroid
 					Skip = () => (list.ContainsPackage (packageName) && !replaceIfExists)
 						? GettextCatalog.GetString ("Package is already up to date") : null,
 					TaskName = GettextCatalog.GetString ("Installing package"),
-					Create = () => toolbox.Install (device, packageFile, monitor.Log, monitor.Log),
+					Create = () => {
+						long packageLength = new FileInfo (packageFile).Length;
+						if (packageLength > externalSpace && packageLength > internalSpace) {
+							var msg = GettextCatalog.GetString ("Not enough space on install location");
+							monitor.ReportError (msg, null);
+							return null;
+						}
+						return toolbox.Install (device, packageFile, monitor.Log, monitor.Log);
+					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to install package")
 				}
 			);
