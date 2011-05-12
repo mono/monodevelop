@@ -801,6 +801,29 @@ object item)
 }");
 		}
 		
+		/// <summary>
+		/// Bug 693228 - Rename in body of foreach loop doesn't change declaration instance
+		/// </summary>
+		[Test()]
+		public void TestBug693228 ()
+		{
+			LocalVariable localVariable = new LocalVariable (null,
+			                                  "arg",
+			                                  DomReturnType.String,
+			                                  new DomRegion (4, 29, 6, 9));
+			RunTest (
+@"class TestClass {
+	public static void Main (string[] args)
+	{
+		foreach (var $@arg in args) {
+			Console.WriteLine (@arg);
+		}
+		
+	}
+}
+", localVariable);
+		}
+		
 		/*
 		[Test()]
 		public void FindInterfaceMethodReferences ()
