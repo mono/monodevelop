@@ -103,6 +103,7 @@ namespace MonoDevelop.Ide.Projects
 			this.RemoveReferenceButton.TooltipMarkup = "Remove";
 			this.RemoveReferenceButton.Name = "RemoveReferenceButton";
 			this.RemoveReferenceButton.UseUnderline = true;
+			this.RemoveReferenceButton.FocusOnClick = false;
 			this.RemoveReferenceButton.Relief = ((global::Gtk.ReliefStyle)(2));
 			// Container child RemoveReferenceButton.Gtk.Container+ContainerChild
 			global::Gtk.Alignment w6 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
@@ -191,7 +192,10 @@ namespace MonoDevelop.Ide.Projects
 			this.DefaultWidth = 889;
 			this.DefaultHeight = 551;
 			this.Hide ();
+			this.mainBook.SwitchPage += new global::Gtk.SwitchPageHandler (this.OnMainBookSwitchPage);
 			this.RemoveReferenceButton.Clicked += new global::System.EventHandler (this.RemoveReference);
+			this.ReferencesTreeView.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler (this.OnReferencesTreeViewKeyReleaseEvent);
+			this.ReferencesTreeView.RowActivated += new global::Gtk.RowActivatedHandler (this.OnReferencesTreeViewRowActivated);
 		}
 	}
 }

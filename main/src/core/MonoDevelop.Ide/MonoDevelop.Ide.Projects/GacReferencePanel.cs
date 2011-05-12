@@ -61,13 +61,14 @@ namespace MonoDevelop.Ide.Projects
 		const int ColPackage = 5;
 		const int ColIcon = 6;
 		const int ColMatchRank = 7;
+		const int ColType = 8;
         
         public GacReferencePanel (SelectReferenceDialog selectDialog, bool showAll)
         {
             this.selectDialog = selectDialog;
 			this.showAll = showAll;
 			
-            store = new ListStore (typeof (string), typeof (string), typeof (SystemAssembly), typeof (bool), typeof (string), typeof (string), typeof(IconId), typeof(int));
+            store = new ListStore (typeof (string), typeof (string), typeof (SystemAssembly), typeof (bool), typeof (string), typeof (string), typeof(IconId), typeof(int), typeof(ReferenceType));
             treeView = new TreeView (store);
 
             TreeViewColumn firstColumn = new TreeViewColumn ();
@@ -108,6 +109,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public void SetProject (DotNetProject netProject)
 		{
+			selection.Clear ();
 			configureProject = netProject;
 			SetTargetFramework (netProject.AssemblyContext, netProject.TargetFramework);
 			Reset ();
@@ -136,7 +138,7 @@ namespace MonoDevelop.Ide.Projects
                 if (systemAssembly.Package.IsFrameworkPackage && systemAssembly.Name == "mscorlib")
                     continue;
 				
-				bool selected = IsSelected (ReferenceType.Gac, systemAssembly.Name, systemAssembly.Package.Name);
+				bool selected = IsSelected (ReferenceType.Gac, systemAssembly.FullName, systemAssembly.Package.Name);
 				int matchRank = 0;
 				string name, version;
 				
@@ -151,19 +153,20 @@ namespace MonoDevelop.Ide.Projects
 					name = GLib.Markup.EscapeText (systemAssembly.Name);
 					version = GLib.Markup.EscapeText (systemAssembly.Version);
 				}
-                if (systemAssembly.Package.IsInternalPackage) {
-                    store.AppendValues (name, 
-                                        version, 
-                                        systemAssembly, 
-                                        selected, 
-                                        systemAssembly.FullName, 
-                                        systemAssembly.Package.Name + " " + GettextCatalog.GetString ("(Provided by MonoDevelop)"),
-                                        MonoDevelop.Ide.Gui.Stock.Package);
-                }
-                else {
-                    store.AppendValues (name, version, systemAssembly, selected, systemAssembly.FullName, systemAssembly.Package.Name, MonoDevelop.Ide.Gui.Stock.Package, matchRank);
-                }
-            }
+				string pkg = systemAssembly.Package.Name;
+				if (systemAssembly.Package.IsInternalPackage)
+					pkg += " " + GettextCatalog.GetString ("(Provided by MonoDevelop)");
+				
+				store.AppendValues (name, 
+					version, 
+					systemAssembly, 
+					selected, 
+					systemAssembly.FullName, 
+					pkg,
+					MonoDevelop.Ide.Gui.Stock.Package,
+					matchRank,
+					ReferenceType.Gac);
+			}
 			
 			if (showAll) {
 				Solution openSolution = configureProject.ParentSolution;
@@ -197,7 +200,33 @@ namespace MonoDevelop.Ide.Projects
 					    else if (!configureProject.TargetFramework.IsCompatibleWithFramework (netProject.TargetFramework.Id))
 							continue;
 					}
-					store.AppendValues (name, "", null, false, projectEntry.Name, "", projectEntry.StockIcon, matchRank);
+					store.AppendValues (name, "", null, selected, projectEntry.Name, "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
+				}
+				
+				foreach (FilePath file in selectDialog.GetRecentFileReferences ()) {
+					bool selected = IsSelected (ReferenceType.Assembly, file, "");
+					int matchRank = 0;
+					string fname = file.FileName;
+					string name;
+
+					string version = string.Empty;
+					try {
+						string sname = SystemAssemblyService.GetAssemblyName (file);
+						var aname = SystemAssemblyService.ParseAssemblyName (sname);
+						version = aname.Version.ToString ();
+					} catch {
+						continue;
+					}
+					
+					if (stringMatcher != null) {
+						if (!stringMatcher.CalcMatchRank (fname, out matchRank))
+							continue;
+						int[] match = stringMatcher.GetMatch (fname);
+						name = GetMatchMarkup (treeView, fname, match, 0);
+					} else {
+						name = GLib.Markup.EscapeText (fname);
+					}
+					store.AppendValues (fname, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, ReferenceType.Assembly);
 				}
 			}
         }
@@ -236,23 +265,28 @@ namespace MonoDevelop.Ide.Projects
 			
             if (store.GetIterFirst (out iter)) {
                 do {
-					switch (refInfo.ReferenceType) {
-					case ReferenceType.Gac:
-						SystemAssembly systemAssembly = store.GetValue(iter, ColAssembly) as SystemAssembly;
-						if (systemAssembly != null && (refInfo.Reference == systemAssembly.FullName) && (refInfo.Package == systemAssembly.Package) )
-							found = true;
-						break;
-					case ReferenceType.Project:
-						if ((string)store.GetValue (iter, ColName) == refInfo.Reference)
-							found = true;
-						break;
+					if (refInfo.ReferenceType == (ReferenceType) store.GetValue(iter, ColType)) {
+						switch (refInfo.ReferenceType) {
+						case ReferenceType.Gac:
+							SystemAssembly systemAssembly = store.GetValue(iter, ColAssembly) as SystemAssembly;
+							if ((refInfo.Reference == systemAssembly.FullName) && (refInfo.Package == systemAssembly.Package) )
+								found = true;
+							break;
+						case ReferenceType.Project:
+							if ((string)store.GetValue (iter, ColFullName) == refInfo.Reference)
+								found = true;
+							break;
+						case ReferenceType.Assembly:
+							if ((string)store.GetValue (iter, ColFullName) == refInfo.Reference)
+								found = true;
+							break;
+						}
 					}
                 } while (!found && store.IterNext (ref iter));
             }
-			if (found) {
+			if (found)
 				store.SetValue(iter, ColSelected, newState);
-				SetSelection (refInfo.ReferenceType, refInfo.Reference, refInfo.Package != null ? refInfo.Package.Name : "", newState);
-			}
+			SetSelection (refInfo.ReferenceType, refInfo.Reference, refInfo.Package != null ? refInfo.Package.Name : "", newState);
         }
 		
 		void SetSelection (ReferenceType type, string name, string pkg, bool selected)
@@ -290,14 +324,18 @@ namespace MonoDevelop.Ide.Projects
         {
             Gtk.TreeIter iter;
             store.GetIterFromString (out iter, e.Path);
+			ReferenceType rt = (ReferenceType) store.GetValue(iter, ColType);
+			string fullName = (string)store.GetValue (iter, ColFullName);
             if ((bool)store.GetValue (iter, ColSelected) == false) {
                 store.SetValue (iter, ColSelected, true);
-                ProjectReference pr = new ProjectReference ((SystemAssembly)store.GetValue (iter, ColAssembly));
-                selectDialog.AddReference (pr);
+				if (rt == ReferenceType.Gac)
+					selectDialog.AddReference (new ProjectReference ((SystemAssembly)store.GetValue (iter, ColAssembly)));
+				else
+					selectDialog.AddReference (new ProjectReference (rt, fullName));
             }
             else {
                 store.SetValue (iter, ColSelected, false);
-                selectDialog.RemoveReference (ReferenceType.Gac, (string)store.GetValue (iter, ColFullName));
+                selectDialog.RemoveReference (rt, fullName);
             }
         }
     }

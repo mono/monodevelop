@@ -38,10 +38,12 @@ using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Ide.Projects
 {
-	internal class AssemblyReferencePanel : HBox, IReferencePanel
+	internal class AssemblyReferencePanel : VBox, IReferencePanel
 	{
 		SelectReferenceDialog selectDialog;
 		FileChooserWidget chooser;
+		Gtk.Label detailsLabel;
+		Gtk.Button addButton;
 		
 		public AssemblyReferencePanel (SelectReferenceDialog selectDialog)
 		{
@@ -58,18 +60,27 @@ namespace MonoDevelop.Ide.Projects
 			filter.AddPattern ("*.[Ee][Xx][Ee]");
 			chooser.AddFilter (filter);
 			chooser.FileActivated += new EventHandler (SelectReferenceDialog);
+			chooser.SelectionChanged += HandleChooserSelectionChanged;
+			chooser.BorderWidth = 6;
 
 			PackStart (chooser, true, true, 0);
 			
-			PackStart (new Gtk.VSeparator(), false, false, 0);
+			HeaderBox hbox = new HeaderBox (1, 0, 0, 0);
+			hbox.GradientBackround = true;
+			hbox.SetPadding (6,6,6,6);
 			
-			VBox box = new VBox ();
-			Gtk.Button addButton = new Gtk.Button (Gtk.Stock.Add);
-			addButton.Clicked += new EventHandler(SelectReferenceDialog);
-			box.PackStart (addButton, false, false, 0);
-			PackStart (box, false, false, 0);
+			HBox box = new HBox ();
+			detailsLabel = new Label ();
+			detailsLabel.Xalign = 0;
+			detailsLabel.Ellipsize = Pango.EllipsizeMode.End;
+			box.PackStart (detailsLabel, true, true, 0);
+			addButton = new Gtk.Button (Gtk.Stock.Add);
+			box.PackEnd (addButton, false, false, 0);
+			hbox.Add (box);
+			PackStart (hbox, false, false, 0);
 			
-			BorderWidth = 6;
+			addButton.Clicked += SelectReferenceDialog;
+			
 			Spacing = 6;
 			ShowAll();
 		}
@@ -107,10 +118,45 @@ namespace MonoDevelop.Ide.Projects
 			
 				if (isAssembly) {
 					selectDialog.AddReference (new ProjectReference (ReferenceType.Assembly, file));
+					selectDialog.RegisterFileReference (file);
 				} else {
 					MessageService.ShowError (GettextCatalog.GetString ("File '{0}' is not a valid .Net Assembly", file));
 				}
 			}
+		}
+
+		void HandleChooserSelectionChanged (object sender, EventArgs e)
+		{
+			if (chooser.Filenames.Length == 0) {
+				detailsLabel.Text = "";
+				addButton.Sensitive = false;
+				return;
+			}
+		
+			bool allAssemblies = true;
+			bool allFolders = false;
+			foreach (string file in chooser.Filenames) {
+				try	{
+					SystemAssemblyService.GetAssemblyName (System.IO.Path.GetFullPath (file));
+				} catch {
+					allAssemblies = false;
+					break;
+				}
+			}
+			
+			if (!allAssemblies) {
+				detailsLabel.Text = "";
+				addButton.Sensitive = false;
+				return;
+			}
+			
+			if (chooser.Filenames.Length == 1) {
+				string aname = SystemAssemblyService.GetAssemblyName (chooser.Filenames[0]);
+				detailsLabel.Text = aname;
+			} else {
+				detailsLabel.Text = GettextCatalog.GetString ("{0} Assemblies selected", chooser.Filenames.Length);
+			}
+			addButton.Sensitive = true;
 		}
 	}
 }

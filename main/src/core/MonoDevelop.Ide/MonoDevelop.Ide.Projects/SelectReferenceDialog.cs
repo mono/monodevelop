@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -34,6 +35,9 @@ using MonoDevelop.Core.Assemblies;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.Commands;
+using System.IO;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -56,6 +60,11 @@ namespace MonoDevelop.Ide.Projects
 		List<IReferencePanel> panels = new List<IReferencePanel> ();
 		SearchEntry filterEntry;
 		
+		List<FilePath> recentFiles;
+		bool recentFilesModified = false;
+		
+		const int RecentFileListSize = 75;
+		
 		const int NameColumn = 0;
 		const int TypeNameColumn = 1;
 		const int LocationColumn = 2;
@@ -74,6 +83,12 @@ namespace MonoDevelop.Ide.Projects
 				} while (refTreeStore.IterNext (ref looping_iter));
 				return referenceInformations;
 			}
+		}
+
+		protected void OnMainBookSwitchPage (object o, Gtk.SwitchPageArgs args)
+		{
+			if (filterEntry != null)
+				filterEntry.Sensitive = args.PageNum != 3;
 		}
 		
 		public void SetProject (DotNetProject configureProject)
@@ -173,28 +188,28 @@ namespace MonoDevelop.Ide.Projects
 			
 			HBox tab = new HBox (false, 3);
 //			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Reference, IconSize.Menu)), false, false, 0);
-			tab.PackStart (new Label (GettextCatalog.GetString ("All")), true, true, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("_All")), true, true, 0);
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
 			mainBook.AppendPage (allRefPanel, tab);
 			
 			tab = new HBox (false, 3);
 //			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Package, IconSize.Menu)), false, false, 0);
-			tab.PackStart (new Label (GettextCatalog.GetString ("Packages")), true, true, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("_Packages")), true, true, 0);
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
 			mainBook.AppendPage (gacRefPanel, tab);
 			
 			tab = new HBox (false, 3);
 //			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Project, IconSize.Menu)), false, false, 0);
-			tab.PackStart (new Label (GettextCatalog.GetString ("Projects")), true, true, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("Pro_jects")), true, true, 0);
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
 			mainBook.AppendPage (projectRefPanel, tab);
 			
 			tab = new HBox (false, 3);
 //			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu)), false, false, 0);
-			tab.PackStart (new Label (GettextCatalog.GetString (".Net Assembly")), true, true, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString (".Net A_ssembly")), true, true, 0);
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
 			mainBook.AppendPage (assemblyRefPanel, tab);
@@ -209,6 +224,7 @@ namespace MonoDevelop.Ide.Projects
 			header.Add (w);
 			selectedHeader.Add (header);
 			
+			RemoveReferenceButton.CanFocus = false;
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
 			Child.ShowAll ();
 			OnChanged (null, null);
@@ -220,11 +236,16 @@ namespace MonoDevelop.Ide.Projects
 		{
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
+			filterEntry.WidthRequest = 200;
 			filterEntry.Parent = mainBook;
 			filterEntry.Ready = true;
 			filterEntry.ForceFilterButtonVisible = true;
 			filterEntry.Visible = true;
 			filterEntry.HasFocus = true;
+			filterEntry.Entry.CanFocus = true;
+			filterEntry.EmptyMessage = GettextCatalog.GetString ("Search (Control+F)");
+			filterEntry.KeyPressEvent += HandleFilterEntryKeyPressEvent;
+			filterEntry.Activated += HandleFilterEntryActivated;
 			
 			mainBook.SizeAllocated += delegate {
 				RepositionFilter ();
@@ -234,6 +255,21 @@ namespace MonoDevelop.Ide.Projects
 					p.SetFilter (filterEntry.Query);
 			};
 			RepositionFilter ();
+		}
+
+		void HandleFilterEntryActivated (object sender, EventArgs e)
+		{
+			mainBook.HasFocus = true;
+			mainBook.ChildFocus (DirectionType.TabForward);
+		}
+
+		void HandleFilterEntryKeyPressEvent (object o, KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Tab) {
+				mainBook.HasFocus = true;
+				mainBook.ChildFocus (DirectionType.TabForward);
+				args.RetVal = true;
+			}
 		}
 		
 		void RepositionFilter ()
@@ -246,7 +282,17 @@ namespace MonoDevelop.Ide.Projects
 		protected override void OnShown ()
 		{
 			base.OnShown ();
-			Focus = filterEntry;
+			if (filterEntry != null)
+				filterEntry.HasFocus = true;
+		}
+		
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.f && evnt.State == Gdk.ModifierType.ControlMask) {
+				filterEntry.HasFocus = true;
+				return false;
+			}
+			return base.OnKeyPressEvent (evnt);
 		}
 
 		void OnChanged (object o, EventArgs e)
@@ -322,6 +368,80 @@ namespace MonoDevelop.Ide.Projects
 					}
 				}
 			}
+		}
+
+		protected void OnReferencesTreeViewKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Delete)
+				RemoveReference (null, null);
+		}
+
+		protected void OnReferencesTreeViewRowActivated (object o, Gtk.RowActivatedArgs args)
+		{
+			Respond (ResponseType.Ok);
+		}
+		
+		public void RegisterFileReference (FilePath file)
+		{
+			LoadRecentFiles ();
+			if (recentFiles.Contains (file))
+				return;
+			recentFilesModified = true;
+			recentFiles.Add (file);
+			if (recentFiles.Count > RecentFileListSize)
+				recentFiles.RemoveAt (0);
+		}
+		
+		public List<FilePath> GetRecentFileReferences ()
+		{
+			LoadRecentFiles ();
+			return recentFiles;
+		}
+		
+		void LoadRecentFiles ()
+		{
+			if (recentFiles != null)
+				return;
+			
+			recentFilesModified = false;
+			FilePath file = PropertyService.Locations.Cache.Combine ("RecentAssemblies.txt");
+			if (File.Exists (file)) {
+				try {
+					recentFiles = new List<FilePath> (File.ReadAllLines (file).Where (f => File.Exists (f)).Select (f => (FilePath)f));
+					return;
+				}
+				catch (Exception ex) {
+					LoggingService.LogError ("Error while loading recent assembly files list", ex);
+				}
+			}
+			recentFiles = new List<FilePath> ();
+		}
+		
+		void SaveRecentFiles ()
+		{
+			if (!recentFilesModified)
+				return;
+			FilePath file = PropertyService.Locations.Cache.Combine ("RecentAssemblies.txt");
+			try {
+				File.WriteAllLines (file, recentFiles.ToArray ().ToStringArray ());
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while saving recent assembly files list", ex);
+			}
+			recentFilesModified = false;
+		}
+		
+		protected override void OnHidden ()
+		{
+			base.OnHidden ();
+			SaveRecentFiles ();
+			recentFiles = null;
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			SaveRecentFiles ();
+			recentFiles = null;
 		}
 	}
 }

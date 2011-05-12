@@ -102,6 +102,7 @@ namespace MonoDevelop.Ide.Projects {
 
 		public void SetProject (DotNetProject configureProject)
 		{
+			selection.Clear ();
 			store.Clear ();
 			this.configureProject = configureProject;
 			PopulateListView ();

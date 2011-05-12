@@ -10981,6 +10981,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                       <widget class="Gtk.Notebook" id="mainBook">
                         <property name="MemberName" />
                         <property name="CurrentPage">0</property>
+                        <signal name="SwitchPage" handler="OnMainBookSwitchPage" />
                         <child>
                           <widget class="Gtk.Label" id="label7">
                             <property name="MemberName" />
@@ -11042,6 +11043,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                                     <property name="Icon">stock:gtk-delete Menu</property>
                                     <property name="Label" />
                                     <property name="UseUnderline">True</property>
+                                    <property name="FocusOnClick">False</property>
                                     <property name="Relief">None</property>
                                     <signal name="Clicked" handler="RemoveReference" />
                                   </widget>
@@ -11076,6 +11078,8 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                                   <widget class="Gtk.TreeView" id="ReferencesTreeView">
                                     <property name="MemberName" />
                                     <property name="HeadersVisible">False</property>
+                                    <signal name="KeyReleaseEvent" handler="OnReferencesTreeViewKeyReleaseEvent" />
+                                    <signal name="RowActivated" handler="OnReferencesTreeViewRowActivated" />
                                   </widget>
                                 </child>
                               </widget>
