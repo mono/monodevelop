@@ -63,15 +63,15 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			foreach (Branch b in repo.GetBranches ()) {
-				AddValues (b.Name, ImageService.GetPixbuf ("vc-git-branch"));
+				AddValues (b.Name, ImageService.GetPixbuf ("vc-git-branch", IconSize.Menu));
 			}
 			
 			foreach (string t in repo.GetTags ())
-				AddValues (t, ImageService.GetPixbuf ("vc-git-tag"));
+				AddValues (t, ImageService.GetPixbuf ("vc-git-tag", IconSize.Menu));
 			
 			foreach (RemoteSource r in repo.GetRemotes ()) {
 				foreach (string b in repo.GetRemoteBranches (r.Name))
-					AddValues (r.Name + "/" + b, ImageService.GetPixbuf ("md-web-search-icon"));
+					AddValues (r.Name + "/" + b, ImageService.GetPixbuf ("md-web-search-icon", IconSize.Menu));
 			}
 				
 			UpdateStatus ();

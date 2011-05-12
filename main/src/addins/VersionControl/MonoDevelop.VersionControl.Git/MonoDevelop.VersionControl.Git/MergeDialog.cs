@@ -95,15 +95,15 @@ namespace MonoDevelop.VersionControl.Git
 			store.Clear ();
 			
 			foreach (Branch b in repo.GetBranches ())
-				store.AppendValues (b.Name, ImageService.GetPixbuf ("vc-git-branch"), b.Name, "branch");
+				store.AppendValues (b.Name, ImageService.GetPixbuf ("vc-git-branch", IconSize.Menu), b.Name, "branch");
 			
 			foreach (string t in repo.GetTags ())
-				store.AppendValues (t, ImageService.GetPixbuf ("vc-git-tag"), t, "tag");
+				store.AppendValues (t, ImageService.GetPixbuf ("vc-git-tag", IconSize.Menu), t, "tag");
 			
 			foreach (RemoteSource r in repo.GetRemotes ()) {
-				TreeIter it = store.AppendValues (null, ImageService.GetPixbuf ("md-web-search-icon"), r.Name, null);
+				TreeIter it = store.AppendValues (null, ImageService.GetPixbuf ("md-web-search-icon", IconSize.Menu), r.Name, null);
 				foreach (string b in repo.GetRemoteBranches (r.Name))
-					store.AppendValues (it, r.Name + "/" + b, ImageService.GetPixbuf ("vc-git-branch"), b, "remote");
+					store.AppendValues (it, r.Name + "/" + b, ImageService.GetPixbuf ("vc-git-branch", IconSize.Menu), b, "remote");
 			}
 			UpdateStatus ();
 		}
