@@ -165,6 +165,8 @@ namespace MonoDevelop.Ide.Templates
 
 			TargetFramework curFx = item.TargetFramework;
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+				if (!item.TargetRuntime.IsInstalled (fx))
+					continue;
 				item.TargetFramework = fx;
 				if (format.CanWrite (item))
 					return;
