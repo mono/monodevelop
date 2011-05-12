@@ -100,7 +100,7 @@ apidocs:
 	mdassembler --out docs/sources/monodevelop-extension-guide --addins docs/extension-model.xml
 #	cd docs/apiguide && mdassembler --out monodevelop-api-guide --xhtml toc.xhtml && mv monodevelop-api-guide.zip ../web/sources
 
-MD_LAUNCH=$(MD_LAUNCH_SETUP) exec -a "monodevelop" $(RUNTIME)
+MD_LAUNCH=$(MD_LAUNCH_SETUP) UBUNTU_MENUPROXY=0 exec -a "monodevelop" $(RUNTIME)
 
 run: runmd
 
