@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
 using Gtk;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Projects {
 	
@@ -43,6 +44,18 @@ namespace MonoDevelop.Ide.Projects {
 
 		ListStore store;
 		TreeView  treeView;
+		StringMatcher stringMatcher;
+		DotNetProject configureProject;
+		HashSet<string> selection = new HashSet<string> ();
+		
+		const int ColName = 0;
+		const int ColPath = 1;
+		const int ColProject = 2;
+		const int ColSelected = 3;
+		const int ColPixbuf = 4;
+		const int ColVisible = 5;
+		const int ColColor = 6;
+		
 		
 		public ProjectReferencePanel (SelectReferenceDialog selectDialog) : base (false, 6)
 		{
@@ -59,22 +72,22 @@ namespace MonoDevelop.Ide.Projects {
 			tog_render.Xalign = 0;
 			tog_render.Toggled += new Gtk.ToggledHandler (AddReference);
 			firstColumn.PackStart (tog_render, false);
-			firstColumn.AddAttribute (tog_render, "active", 3);
-			firstColumn.AddAttribute (tog_render, "visible", 5);
+			firstColumn.AddAttribute (tog_render, "active", ColSelected);
+			firstColumn.AddAttribute (tog_render, "visible", ColVisible);
 
 			secondColumn.Title = GettextCatalog.GetString ("Project");
 			Gtk.CellRendererPixbuf pix_render = new Gtk.CellRendererPixbuf ();
 			secondColumn.PackStart (pix_render, false);
-			secondColumn.AddAttribute (pix_render, "pixbuf", 4);
+			secondColumn.AddAttribute (pix_render, "pixbuf", ColPixbuf);
 			
 			CellRendererText text_render = new CellRendererText ();
 			secondColumn.PackStart (text_render, true);
-			secondColumn.AddAttribute (text_render, "text", 0);
-			secondColumn.AddAttribute (text_render, "foreground", 6);
+			secondColumn.AddAttribute (text_render, "markup", ColName);
+			secondColumn.AddAttribute (text_render, "foreground", ColColor);
 			
 			treeView.AppendColumn (firstColumn);
 			treeView.AppendColumn (secondColumn);
-			treeView.AppendColumn (GettextCatalog.GetString ("Directory"), new CellRendererText (), "markup", 1);
+			treeView.AppendColumn (GettextCatalog.GetString ("Directory"), new CellRendererText (), "markup", ColPath);
 			
 			ScrolledWindow sc = new ScrolledWindow ();
 			sc.ShadowType = Gtk.ShadowType.In;
@@ -89,8 +102,20 @@ namespace MonoDevelop.Ide.Projects {
 
 		public void SetProject (DotNetProject configureProject)
 		{
+			selection.Clear ();
 			store.Clear ();
-			PopulateListView (configureProject);
+			this.configureProject = configureProject;
+			PopulateListView ();
+			Show ();
+		}
+		
+		public void SetFilter (string filter)
+		{
+			if (!string.IsNullOrEmpty (filter))
+				stringMatcher = StringMatcher.GetMatcher (filter, false);
+			else
+				stringMatcher = null;
+			PopulateListView ();
 		}
 		
 		public void AddReference(object sender, Gtk.ToggledArgs e)
@@ -99,29 +124,37 @@ namespace MonoDevelop.Ide.Projects {
 			store.GetIterFromString (out iter, e.Path);
 			Project project = (Project) store.GetValue (iter, 2);
 			
-			if ((bool)store.GetValue (iter, 3) == false) {
-				store.SetValue (iter, 3, true);
+			if ((bool)store.GetValue (iter, ColSelected) == false) {
+				store.SetValue (iter, ColSelected, true);
 				selectDialog.AddReference (new ProjectReference (project));
 				
 			} else {
-				store.SetValue (iter, 3, false);
+				store.SetValue (iter, ColSelected, false);
 				selectDialog.RemoveReference(ReferenceType.Project, project.Name);
 			}
 		}
 		
-		public void SignalRefChange (string refLoc, bool newstate)
+		public void SignalRefChange (ProjectReference pref, bool newstate)
 		{
-			Gtk.TreeIter looping_iter;
-			if (!store.GetIterFirst (out looping_iter)) {
+			if (pref.ReferenceType != ReferenceType.Project)
 				return;
-			}
+			
+			if (newstate)
+				selection.Add (pref.Reference);
+			else
+				selection.Remove (pref.Reference);
+			
+			string refLoc = pref.Reference;
+			Gtk.TreeIter looping_iter;
+			if (!store.GetIterFirst (out looping_iter))
+				return;
 
 			do {
-				Project project = (Project) store.GetValue (looping_iter, 2);
+				Project project = (Project) store.GetValue (looping_iter, ColProject);
 				if (project == null)
 					return;
 				if (project.Name == refLoc) {
-					store.SetValue (looping_iter, 3, newstate);
+					store.SetValue (looping_iter, ColSelected, newstate);
 					return;
 				}
 			} while (store.IterNext (ref looping_iter));
@@ -136,13 +169,13 @@ namespace MonoDevelop.Ide.Projects {
 			return String.Compare (s1, s2, true);
 		}
 		
-		void PopulateListView (DotNetProject configureProject)
+		void PopulateListView ()
 		{
-			Solution openSolution = configureProject.ParentSolution;
+			store.Clear ();
 			
-			if (openSolution == null) {
+			Solution openSolution = configureProject.ParentSolution;
+			if (openSolution == null)
 				return;
-			}
 			
 			Dictionary<DotNetProject,bool> references = new Dictionary<DotNetProject, bool> ();
 			
@@ -151,30 +184,46 @@ namespace MonoDevelop.Ide.Projects {
 				if (projectEntry == configureProject)
 					continue;
 
-				string txt = projectEntry.Name;
+				string txt;
+				int matchRank = 0;
+				
+				if (stringMatcher != null) {
+					if (!stringMatcher.CalcMatchRank (projectEntry.Name, out matchRank))
+						continue;
+					int[] match = stringMatcher.GetMatch (projectEntry.Name);
+					txt = GacReferencePanel.GetMatchMarkup (treeView, projectEntry.Name, match, 0);
+				} else {
+					txt = GLib.Markup.EscapeText (projectEntry.Name);
+				}
+	
+				bool selected = selection.Contains (projectEntry.Name);
 				bool allowSelecting = true;
 				DotNetProject netProject = projectEntry as DotNetProject;
 				if (netProject != null) {
 					if (ProjectReferencesProject (references, null, netProject, configureProject.Name)) {
-						txt += " " + GettextCatalog.GetString ("(Cyclic dependencies not allowed)");
+						txt += " " + GLib.Markup.EscapeText (GettextCatalog.GetString ("(Cyclic dependencies not allowed)"));
 						allowSelecting = false;
 					}
 				    else if (!configureProject.TargetFramework.IsCompatibleWithFramework (netProject.TargetFramework.Id)) {
-						txt += " " + GettextCatalog.GetString ("(Incompatible target framework: v{0})", netProject.TargetFramework.Id);
+						txt += " " + GLib.Markup.EscapeText (GettextCatalog.GetString ("(Incompatible target framework: v{0})", netProject.TargetFramework.Id));
 						allowSelecting = false;
 					}
 				}
 				
 				Gdk.Pixbuf icon = ImageService.GetPixbuf (projectEntry.StockIcon, IconSize.Menu);
-				if (!allowSelecting)
+				if (!allowSelecting) {
+					// Don't show unselectable projects if there is a filter
+					if (stringMatcher != null)
+						continue;
 					icon = ImageService.MakeTransparent (icon, 0.5);
-				Gtk.TreeIter it = store.AppendValues (txt, projectEntry.BaseDirectory.ToString (), projectEntry, false, icon, allowSelecting);
+				}
+				Gtk.TreeIter it = store.AppendValues (txt, projectEntry.BaseDirectory.ToString (), projectEntry, selected, icon, allowSelecting);
 				if (!allowSelecting)
-					store.SetValue (it, 6, "dimgrey");
+					store.SetValue (it, ColColor, "dimgrey");
 			}
 		}
 		
-		bool ProjectReferencesProject (Dictionary<DotNetProject,bool> references, HashSet<string> parentDeps,
+		internal static bool ProjectReferencesProject (Dictionary<DotNetProject,bool> references, HashSet<string> parentDeps,
 		                               DotNetProject project, string targetProject)
 		{
 			bool res;

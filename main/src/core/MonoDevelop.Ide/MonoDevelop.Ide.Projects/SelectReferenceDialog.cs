@@ -26,17 +26,26 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 
 using Gtk;
+using System.Collections.Generic;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.Commands;
+using System.IO;
 
 namespace MonoDevelop.Ide.Projects
 {
 	internal interface IReferencePanel
 	{
+		void SetProject (DotNetProject configureProject);
+		void SignalRefChange (ProjectReference refInfo, bool newState);
+		void SetFilter (string filter);
 	}
 	
 	internal partial class SelectReferenceDialog: Gtk.Dialog
@@ -44,9 +53,17 @@ namespace MonoDevelop.Ide.Projects
 		ListStore refTreeStore;
 		
 		GacReferencePanel gacRefPanel;
+		GacReferencePanel allRefPanel;
 		ProjectReferencePanel projectRefPanel;
 		AssemblyReferencePanel assemblyRefPanel;
 		DotNetProject configureProject;
+		List<IReferencePanel> panels = new List<IReferencePanel> ();
+		SearchEntry filterEntry;
+		
+		List<FilePath> recentFiles;
+		bool recentFilesModified = false;
+		
+		const int RecentFileListSize = 75;
 		
 		const int NameColumn = 0;
 		const int TypeNameColumn = 1;
@@ -68,19 +85,19 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
+		protected void OnMainBookSwitchPage (object o, Gtk.SwitchPageArgs args)
+		{
+			if (filterEntry != null)
+				filterEntry.Sensitive = args.PageNum != 3;
+		}
+		
 		public void SetProject (DotNetProject configureProject)
 		{
 			this.configureProject = configureProject;
-			((ListStore) ReferencesTreeView.Model).Clear ();
-
-			projectRefPanel.SetProject (configureProject);
-			projectRefPanel.Show ();
+			foreach (var p in panels)
+				p.SetProject (configureProject);
 			
-			DotNetProject netProject = configureProject as DotNetProject;
-			if (netProject != null)
-				gacRefPanel.SetTargetFramework (netProject.AssemblyContext, netProject.TargetFramework);
-			gacRefPanel.Reset ();
-			assemblyRefPanel.SetBasePath (configureProject.BaseDirectory);
+			((ListStore) ReferencesTreeView.Model).Clear ();
 
 			foreach (ProjectReference refInfo in configureProject.References)
 				AppendReference (refInfo);
@@ -88,24 +105,11 @@ namespace MonoDevelop.Ide.Projects
 			OnChanged (null, null);
 		}
 		
-		public void SetReferenceCollection (ProjectReferenceCollection references, AssemblyContext runtime, TargetFramework targetVersion)
-		{
-			((ListStore) ReferencesTreeView.Model).Clear ();
-
-			projectRefPanel.Hide ();
-			
-			gacRefPanel.SetTargetFramework (runtime, targetVersion);
-			gacRefPanel.Reset ();
-			assemblyRefPanel.SetBasePath  (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
-
-			foreach (ProjectReference refInfo in references)
-				AppendReference (refInfo);
-
-			OnChanged (null, null);
-		}
-		
 		TreeIter AppendReference (ProjectReference refInfo)
 		{
+			foreach (var p in panels)
+				p.SignalRefChange (refInfo, true);
+			
 			switch (refInfo.ReferenceType) {
 				case ReferenceType.Assembly:
 					return AddAssemplyReference (refInfo);
@@ -120,7 +124,9 @@ namespace MonoDevelop.Ide.Projects
 
 		TreeIter AddAssemplyReference (ProjectReference refInfo)
 		{
-			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, "md-closed-folder");
+			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
+			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.Reference)) + "</small></span>";
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetPixbuf ("md-empty-file-icon", IconSize.Dnd));
 		}
 
 		TreeIter AddProjectReference (ProjectReference refInfo)
@@ -131,49 +137,162 @@ namespace MonoDevelop.Ide.Projects
 			Project p = c.FindProjectByName (refInfo.Reference);
 			if (p == null) return TreeIter.Zero;
 			
-			string iconName = p.StockIcon;
-			projectRefPanel.SignalRefChange (refInfo.Reference, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, iconName);
+			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
+			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (p.BaseDirectory.ToString ()) + "</small></span>";
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetPixbuf ("md-project", IconSize.Dnd));
 		}
 
 		TreeIter AddGacReference (ProjectReference refInfo)
 		{
-			gacRefPanel.SignalRefChange (refInfo, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
+			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference));
+			int i = refInfo.Reference.IndexOf (',');
+			if (i != -1)
+				txt = GLib.Markup.EscapeText (txt.Substring (0, i)) + "\n<span color='darkgrey'><small>" + GLib.Markup.EscapeText (refInfo.Reference.Substring (i+1).Trim()) + "</small></span>";
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), refInfo.Reference, refInfo, ImageService.GetPixbuf ("md-package", IconSize.Dnd));
 		}
 		
 		public SelectReferenceDialog ()
 		{
 			Build ();
 			
-			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(string));
+			boxRefs.WidthRequest = 200;
+			
+			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(Gdk.Pixbuf));
 			ReferencesTreeView.Model = refTreeStore;
 
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString("Reference");
 			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			crp.Yalign = 0f;
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "stock-id", IconColumn);
+			col.AddAttribute (crp, "pixbuf", IconColumn);
 			CellRendererText text_render = new CellRendererText ();
 			col.PackStart (text_render, true);
-			col.AddAttribute (text_render, "text", NameColumn);
+			col.AddAttribute (text_render, "markup", NameColumn);
+			text_render.Ellipsize = Pango.EllipsizeMode.End;
 			
 			ReferencesTreeView.AppendColumn (col);
-			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), "text", TypeNameColumn);
-			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Location"), new CellRendererText (), "text", LocationColumn);
+//			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), "text", TypeNameColumn);
+//			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Location"), new CellRendererText (), "text", LocationColumn);
 			
 			projectRefPanel = new ProjectReferencePanel (this);
-			gacRefPanel = new GacReferencePanel (this);
+			gacRefPanel = new GacReferencePanel (this, false);
+			allRefPanel = new GacReferencePanel (this, true);
 			assemblyRefPanel = new AssemblyReferencePanel (this);
+			panels.Add (allRefPanel);
+			panels.Add (gacRefPanel);
+			panels.Add (projectRefPanel);
+			panels.Add (assemblyRefPanel);
 			
 			mainBook.RemovePage (mainBook.CurrentPage);
-			mainBook.AppendPage (gacRefPanel, new Label (GettextCatalog.GetString ("Packages")));
-			mainBook.AppendPage (projectRefPanel, new Label (GettextCatalog.GetString ("Projects")));
-			mainBook.AppendPage (assemblyRefPanel, new Label (GettextCatalog.GetString (".Net Assembly")));
+			
+			HBox tab = new HBox (false, 3);
+//			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Reference, IconSize.Menu)), false, false, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("_All")), true, true, 0);
+			tab.BorderWidth = 3;
+			tab.ShowAll ();
+			mainBook.AppendPage (allRefPanel, tab);
+			
+			tab = new HBox (false, 3);
+//			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Package, IconSize.Menu)), false, false, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("_Packages")), true, true, 0);
+			tab.BorderWidth = 3;
+			tab.ShowAll ();
+			mainBook.AppendPage (gacRefPanel, tab);
+			
+			tab = new HBox (false, 3);
+//			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Project, IconSize.Menu)), false, false, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString ("Pro_jects")), true, true, 0);
+			tab.BorderWidth = 3;
+			tab.ShowAll ();
+			mainBook.AppendPage (projectRefPanel, tab);
+			
+			tab = new HBox (false, 3);
+//			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu)), false, false, 0);
+			tab.PackStart (new Label (GettextCatalog.GetString (".Net A_ssembly")), true, true, 0);
+			tab.BorderWidth = 3;
+			tab.ShowAll ();
+			mainBook.AppendPage (assemblyRefPanel, tab);
+			
 			mainBook.Page = 0;
+			
+			var w = selectedHeader.Child;
+			selectedHeader.Remove (w);
+			HeaderBox header = new HeaderBox (1, 0, 1, 1);
+			header.SetPadding (6, 6, 6, 6);
+			header.GradientBackround = true;
+			header.Add (w);
+			selectedHeader.Add (header);
+			
+			RemoveReferenceButton.CanFocus = false;
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
 			Child.ShowAll ();
 			OnChanged (null, null);
+			Show ();
+			InsertFilterEntry ();
+		}
+		
+		void InsertFilterEntry ()
+		{
+			filterEntry = new SearchEntry ();
+			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
+			filterEntry.WidthRequest = 200;
+			filterEntry.Parent = mainBook;
+			filterEntry.Ready = true;
+			filterEntry.ForceFilterButtonVisible = true;
+			filterEntry.Visible = true;
+			filterEntry.HasFocus = true;
+			filterEntry.Entry.CanFocus = true;
+			filterEntry.EmptyMessage = GettextCatalog.GetString ("Search (Control+F)");
+			filterEntry.KeyPressEvent += HandleFilterEntryKeyPressEvent;
+			filterEntry.Activated += HandleFilterEntryActivated;
+			
+			mainBook.SizeAllocated += delegate {
+				RepositionFilter ();
+			};
+			filterEntry.Changed += delegate {
+				foreach (var p in panels)
+					p.SetFilter (filterEntry.Query);
+			};
+			RepositionFilter ();
+		}
+
+		void HandleFilterEntryActivated (object sender, EventArgs e)
+		{
+			mainBook.HasFocus = true;
+			mainBook.ChildFocus (DirectionType.TabForward);
+		}
+
+		void HandleFilterEntryKeyPressEvent (object o, KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Tab) {
+				mainBook.HasFocus = true;
+				mainBook.ChildFocus (DirectionType.TabForward);
+				args.RetVal = true;
+			}
+		}
+		
+		void RepositionFilter ()
+		{
+			int w = filterEntry.SizeRequest ().Width;
+			int h = filterEntry.SizeRequest ().Height;
+			filterEntry.Allocation = new Gdk.Rectangle (mainBook.Allocation.Right - w - 1, mainBook.Allocation.Y, w, h);
+		}
+		
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			if (filterEntry != null)
+				filterEntry.HasFocus = true;
+		}
+		
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.f && evnt.State == Gdk.ModifierType.ControlMask) {
+				filterEntry.HasFocus = true;
+				return false;
+			}
+			return base.OnKeyPressEvent (evnt);
 		}
 
 		void OnChanged (object o, EventArgs e)
@@ -232,14 +351,9 @@ namespace MonoDevelop.Ide.Projects
 			TreeIter iter;
 			TreeModel mdl;
 			if (ReferencesTreeView.Selection.GetSelected (out mdl, out iter)) {
-				switch (((ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn)).ReferenceType) {
-					case ReferenceType.Gac:
-						gacRefPanel.SignalRefChange ((ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn), false);
-						break;
-					case ReferenceType.Project:
-						projectRefPanel.SignalRefChange ((string)refTreeStore.GetValue (iter, NameColumn), false);
-						break;
-				}
+				ProjectReference pref = (ProjectReference)refTreeStore.GetValue (iter, ProjectReferenceColumn);
+				foreach (var p in panels)
+					p.SignalRefChange (pref, false);
 				TreeIter newIter = iter;
 				if (refTreeStore.IterNext (ref newIter)) {
 					ReferencesTreeView.Selection.SelectIter (newIter);
@@ -254,6 +368,80 @@ namespace MonoDevelop.Ide.Projects
 					}
 				}
 			}
+		}
+
+		protected void OnReferencesTreeViewKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Delete)
+				RemoveReference (null, null);
+		}
+
+		protected void OnReferencesTreeViewRowActivated (object o, Gtk.RowActivatedArgs args)
+		{
+			Respond (ResponseType.Ok);
+		}
+		
+		public void RegisterFileReference (FilePath file)
+		{
+			LoadRecentFiles ();
+			if (recentFiles.Contains (file))
+				return;
+			recentFilesModified = true;
+			recentFiles.Add (file);
+			if (recentFiles.Count > RecentFileListSize)
+				recentFiles.RemoveAt (0);
+		}
+		
+		public List<FilePath> GetRecentFileReferences ()
+		{
+			LoadRecentFiles ();
+			return recentFiles;
+		}
+		
+		void LoadRecentFiles ()
+		{
+			if (recentFiles != null)
+				return;
+			
+			recentFilesModified = false;
+			FilePath file = PropertyService.Locations.Cache.Combine ("RecentAssemblies.txt");
+			if (File.Exists (file)) {
+				try {
+					recentFiles = new List<FilePath> (File.ReadAllLines (file).Where (f => File.Exists (f)).Select (f => (FilePath)f));
+					return;
+				}
+				catch (Exception ex) {
+					LoggingService.LogError ("Error while loading recent assembly files list", ex);
+				}
+			}
+			recentFiles = new List<FilePath> ();
+		}
+		
+		void SaveRecentFiles ()
+		{
+			if (!recentFilesModified)
+				return;
+			FilePath file = PropertyService.Locations.Cache.Combine ("RecentAssemblies.txt");
+			try {
+				File.WriteAllLines (file, recentFiles.ToArray ().ToStringArray ());
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while saving recent assembly files list", ex);
+			}
+			recentFilesModified = false;
+		}
+		
+		protected override void OnHidden ()
+		{
+			base.OnHidden ();
+			SaveRecentFiles ();
+			recentFiles = null;
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			SaveRecentFiles ();
+			recentFiles = null;
 		}
 	}
 }

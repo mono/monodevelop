@@ -143,6 +143,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Addin = "md-addin";
 		public static readonly IconId SolutionFolderOpen = "md-solution-folder-open";
 		public static readonly IconId SolutionFolderClosed = "md-solution-folder-closed";
+		public static readonly IconId Package = "md-package";
 
 	}
 }
