@@ -163,12 +163,12 @@ namespace Mono.TextEditor
 		/// if no eol mark is found it's using the default (Environment.NewLine).
 		/// The value is saved, even when all lines are deleted the eol marker will still be the old eol marker.
 		/// </value>
-		string eol = null;
 		public string EolMarker {
 			get {
 				if (Options.OverrideDocumentEolMarker)
 					return Options.DefaultEolMarker;
-				if (eol == null && Document.LineCount > 0) {
+				string eol = null;
+				if (Document.LineCount > 0) {
 					LineSegment line = Document.GetLine (DocumentLocation.MinLine);
 					if (line.DelimiterLength > 0) 
 						eol = Document.GetTextAt (line.EditableLength, line.DelimiterLength);
@@ -224,8 +224,9 @@ namespace Mono.TextEditor
 				return "";
 			StringBuilder sb = new StringBuilder ();
 			bool convertTabs = Options.TabsToSpaces;
+			
 			for (int i = 0; i < str.Length; i++) {
-				char ch = str[i];
+				char ch = str [i];
 				switch (ch) {
 				case '\u00A0': // convert non breaking spaces to standard spaces.
 					sb.Append (' ');
@@ -239,11 +240,11 @@ namespace Mono.TextEditor
 						goto default;
 					break;
 				case '\r':
-					if (i + 1 < str.Length && str[i + 1] == '\n')
+					if (i + 1 < str.Length && str [i + 1] == '\n')
 						i++;
 					goto case '\n';
 				case '\n':
-					sb.Append (EolMarker);
+					sb.Append (Options.DefaultEolMarker);
 					loc.Line++;
 					loc.Column = 0;
 					break;
