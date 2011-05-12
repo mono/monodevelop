@@ -262,6 +262,12 @@ namespace Mono.TextEditor
 			this.undoDepth = Editor.Document.GetCurrentUndoDepth ();
 			ShowHelpWindow ();
 		}
+		
+		public bool HasChangedText {
+			get {
+				return undoDepth != Editor.Document.GetCurrentUndoDepth ();
+			}
+		}
 
 		void Setlink (TextLink link)
 		{

@@ -117,7 +117,8 @@ namespace MonoDevelop.Refactoring.Rename
 					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
 					tle.HelpWindow = helpWindow;
 					tle.Cancel += delegate {
-						editor.Document.Undo ();
+						if (tle.HasChangedText)
+							editor.Document.Undo ();
 					};
 					tle.OldMode = data.CurrentMode;
 					tle.StartMode ();
