@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 			
 			// identifier may not be valid at that point, try to resolve it at line end (ex. foreach loop variable)
-			if (resolveResult != null && string.IsNullOrEmpty (resolveResult.ResolvedType.FullName))
+			if (resolveResult != null &&  (resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)))
 				resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, int.MaxValue));
 		
 			// Search for possible generic parameters.
