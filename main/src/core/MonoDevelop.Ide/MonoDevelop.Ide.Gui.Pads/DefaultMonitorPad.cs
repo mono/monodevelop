@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			monitor = logView.GetProgressMonitor ();
 			asyncOperation = monitor.AsyncOperation;
 			
-			Gtk.Application.Invoke (delegate {
+			DispatchService.GuiDispatch (delegate {
 				window.HasNewData = false;
 				window.HasErrors = false;
 				window.IsWorking = true;
