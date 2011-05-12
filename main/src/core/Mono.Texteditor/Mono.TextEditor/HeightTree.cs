@@ -91,6 +91,8 @@ namespace Mono.TextEditor
 			tree.Root = new HeightNode () {
 				height = h,
 				totalHeight = h,
+				totalCount = editor.LineCount,
+				totalVisibleCount = editor.LineCount,
 				count = editor.LineCount
 			};
 			
@@ -153,7 +155,7 @@ namespace Mono.TextEditor
 		{
 			var node = GetNodeByY (y);
 			if (node == null)
-				return 0;
+				return y < 0 ? DocumentLocation.MinLine + (int)(y / editor.LineHeight) : tree.Root.totalCount + (int)((y - tree.Root.totalHeight) / editor.LineHeight);
 			int lineOffset = 0;
 			if (node.foldLevel == 0) {
 				double delta = y - node.GetY ();
