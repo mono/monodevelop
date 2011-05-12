@@ -696,8 +696,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var tuple in searchedMembers) {
 				var searchedMember = tuple.Item1;
 				var searchedMemberLocation = tuple.Item4;
-				
-				if (searchedMember is LocalVariable && foreachStatement.VariableName == SearchedMemberName && searchedMemberLocation.Line == foreachStatement.StartLocation.Line && searchedMemberLocation.Column == foreachStatement.StartLocation.Column) {
+				if (searchedMember is LocalVariable &&
+					foreachStatement.VariableName == SearchedMemberName && 
+					searchedMemberLocation.Line == foreachStatement.EmbeddedStatement.StartLocation.Line && 
+					searchedMemberLocation.Column == foreachStatement.EmbeddedStatement.StartLocation.Column) {
 					int line, col;
 					SearchText (SearchedMemberName, foreachStatement.StartLocation.Line, foreachStatement.StartLocation.Column, out line, out col);
 					AddUniqueReference (line, col, SearchedMemberName);
