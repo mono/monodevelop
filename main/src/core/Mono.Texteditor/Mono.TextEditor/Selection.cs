@@ -132,7 +132,27 @@ namespace Mono.TextEditor
 			Mono.TextEditor.Selection other = (Mono.TextEditor.Selection)obj;
 			return Anchor == other.Anchor && Lead == other.Lead;
 		}
-
+		
+		public bool IsSelected (DocumentLocation loc)
+		{
+			return anchor <= loc && loc <= lead || lead <= loc && loc <= anchor;
+		}
+		
+		public bool IsSelected (int line, int column)
+		{
+			return IsSelected (new DocumentLocation (line, column));
+		}
+		
+		public bool IsSelected (DocumentLocation start, DocumentLocation end)
+		{
+			return IsSelected (start) && IsSelected (end);
+		}
+		
+		public bool IsSelected (int startLine, int startColumn, int endLine, int endColumn)
+		{
+			return IsSelected (new DocumentLocation (startLine, startColumn), new DocumentLocation (endLine, endColumn));
+		}
+		
 		public override int GetHashCode ()
 		{
 			unchecked {
