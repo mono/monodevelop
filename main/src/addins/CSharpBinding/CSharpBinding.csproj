@@ -222,6 +222,7 @@
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\TextEditorDataAdapter.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
+    <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

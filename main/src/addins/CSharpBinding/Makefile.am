@@ -89,7 +89,8 @@ FILES =  \
 	MonoDevelop.CSharp/CSharpAmbience.cs \
 	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \
 	MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs \
-	MonoDevelop.CSharp/CSharpLanguageBinding.cs
+	MonoDevelop.CSharp/CSharpLanguageBinding.cs \
+	MonoDevelop.CSharp/ExpandSelectionHandler.cs
 
 RES =  \
 	CSharpBinding.addin.xml \
