@@ -10,7 +10,7 @@ namespace MonoDevelop.Debugger.Viewers
 		private global::Gtk.ComboBox comboVisualizers;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
