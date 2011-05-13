@@ -565,7 +565,6 @@ namespace Mono.TextEditor
 		#region Caret blinking
 		bool caretBlink = true;
 		uint blinkTimeout = 0;
-		object caretLock = new object ();
 		
 		// constants taken from gtk.
 		const int cursorOnMultiplier = 2;
@@ -574,34 +573,27 @@ namespace Mono.TextEditor
 		
 		public void ResetCaretBlink ()
 		{
-			lock (caretLock) {
-				StopCaretThread ();
-				blinkTimeout = GLib.Timeout.Add ((uint)(Gtk.Settings.Default.CursorBlinkTime * cursorOnMultiplier / cursorDivider), UpdateCaret);
-				caretBlink = true;
-			}
+			StopCaretThread ();
+			blinkTimeout = GLib.Timeout.Add ((uint)(Gtk.Settings.Default.CursorBlinkTime * cursorOnMultiplier / cursorDivider), UpdateCaret);
+			caretBlink = true;
 		}
 
 		internal void StopCaretThread ()
 		{
-			lock (caretLock) {
-				if (blinkTimeout == 0)
-					return;
-				GLib.Source.Remove (blinkTimeout);
-				blinkTimeout = 0;
-				caretBlink = false;
-			}
+			if (blinkTimeout == 0)
+				return;
+			GLib.Source.Remove (blinkTimeout);
+			blinkTimeout = 0;
+			caretBlink = false;
 		}
 
 		bool UpdateCaret ()
 		{
-			lock (caretLock) {
-				caretBlink = !caretBlink;
-				int multiplier = caretBlink ? cursorOnMultiplier : cursorOffMultiplier;
-				if (Caret.IsVisible)
-					DrawCaret (textEditor.GdkWindow);
-				blinkTimeout = GLib.Timeout.Add ((uint)(Gtk.Settings.Default.CursorBlinkTime * multiplier / cursorDivider), UpdateCaret);
-				return false;
-			}
+			caretBlink = !caretBlink;
+			int multiplier = caretBlink ? cursorOnMultiplier : cursorOffMultiplier;
+			if (Caret.IsVisible)
+				DrawCaret (textEditor.GdkWindow);
+			return true;
 		}
 		#endregion
 
