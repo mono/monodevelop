@@ -636,6 +636,11 @@ namespace Mono.TextEditor
 			MainSelection = new Selection (anchor, lead);
 		}
 
+		public void SetSelection (int anchorLine, int anchorColumn, int leadLine, int leadColumn)
+		{
+			SetSelection (new DocumentLocation (anchorLine, anchorColumn), new DocumentLocation (leadLine, leadColumn));
+		}
+
 		public void ExtendSelectionTo (int offset)
 		{
 			ExtendSelectionTo (document.OffsetToLocation (offset));

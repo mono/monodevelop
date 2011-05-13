@@ -1662,6 +1662,11 @@ namespace Mono.TextEditor
 		{
 			this.textEditorData.SetSelection (anchor, lead);
 		}
+			
+		public void SetSelection (int anchorLine, int anchorColumn, int leadLine, int leadColumn)
+		{
+			this.textEditorData.SetSelection (anchorLine, anchorColumn, leadLine, leadColumn);
+		}
 		
 		public void ExtendSelectionTo (DocumentLocation location)
 		{
