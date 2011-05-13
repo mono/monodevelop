@@ -43,8 +43,7 @@ namespace MonoDevelop.CSharp.Completion
 {
 	public class MemberCompletionData : MonoDevelop.Ide.CodeCompletion.MemberCompletionData
 	{
-		MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy;
-		TextEditorData editor;
+		CSharpTextEditorCompletion editorCompletion;
 		OutputFlags flags;
 		bool hideExtensionParameter = true;
 		static CSharpAmbience ambience = new CSharpAmbience ();
@@ -54,6 +53,18 @@ namespace MonoDevelop.CSharp.Completion
 		string displayText;
 		
 		Dictionary<string, CompletionData> overloads;
+		
+		Mono.TextEditor.TextEditorData Editor {
+			get {
+				return editorCompletion.textEditorData;
+			}
+		}
+		
+		MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
+			get {
+				return editorCompletion.policy;
+			}
+		}
 		
 		public override string Description {
 			get {
@@ -99,10 +110,9 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public bool IsDelegateExpected { get; set; }
 		
-		public MemberCompletionData (MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy, TextEditorData editor, INode member, OutputFlags flags)
+		public MemberCompletionData (CSharpTextEditorCompletion  editorCompletion, INode member, OutputFlags flags)
 		{
-			this.policy = policy;
-			this.editor = editor;
+			this.editorCompletion = editorCompletion;
 			this.flags = flags;
 			SetMember (member);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
@@ -116,21 +126,22 @@ namespace MonoDevelop.CSharp.Completion
 			string text = CompletionText;
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
+			bool runParameterCompletionCommand = false;
 			
 			if (!IsDelegateExpected && Member is IMethod && PropertyService.Get ("AutoInsertMatchingBracket", false)) {
 				IMethod method = (IMethod)Member;
-				var line = editor.GetLine (editor.Caret.Line);
-				string textToEnd = editor.GetTextBetween (window.CodeCompletionContext.TriggerOffset + partialWord.Length, line.Offset + line.EditableLength);
-				if (policy.BeforeMethodCallParentheses)
+				var line = Editor.GetLine (Editor.Caret.Line);
+				string textToEnd = Editor.GetTextBetween (window.CodeCompletionContext.TriggerOffset + partialWord.Length, line.Offset + line.EditableLength);
+				if (Policy.BeforeMethodCallParentheses)
 					text += " ";
 				int exprStart = window.CodeCompletionContext.TriggerOffset;
 				while (exprStart > line.Offset) {
-					char ch = editor.GetCharAt (exprStart);
+					char ch = Editor.GetCharAt (exprStart);
 					if (ch != '.' && ch != '_' && /*ch != '<' && ch != '>' && */!char.IsLetterOrDigit (ch))
 						break;
 					exprStart--;
 				}
-				string textBefore = editor.GetTextBetween (line.Offset, exprStart);
+				string textBefore = Editor.GetTextBetween (line.Offset, exprStart);
 				
 				bool insertSemicolon = false;
 				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
@@ -152,6 +163,7 @@ namespace MonoDevelop.CSharp.Completion
 						text += "(|)";
 						skipChars = 1;
 					}
+					runParameterCompletionCommand = true;
 				} else {
 					if (insertSemicolon) {
 						text += "();|";
@@ -160,9 +172,9 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 				if (keyChar == '(') {
-					var skipChar = editor.SkipChars.LastOrDefault ();
+					var skipChar = Editor.SkipChars.LastOrDefault ();
 					if (skipChar != null && skipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && skipChar.Char == ')')
-						editor.Remove (skipChar.Offset, 1);
+						Editor.Remove (skipChar.Offset, 1);
 				}
 				
 				ka |= KeyActions.Ignore;
@@ -172,11 +184,14 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
-			int offset = editor.Caret.Offset;
+			int offset = Editor.Caret.Offset;
 			for (int i = 0; i < skipChars; i++) {
-				editor.SetSkipChar (offset, editor.GetCharAt (offset));
+				Editor.SetSkipChar (offset, Editor.GetCharAt (offset));
 				offset++;
 			}
+			
+			if (runParameterCompletionCommand)
+				editorCompletion.RunParameterCompletionCommand ();
 		}
 		
 		void SetMember (INode member)

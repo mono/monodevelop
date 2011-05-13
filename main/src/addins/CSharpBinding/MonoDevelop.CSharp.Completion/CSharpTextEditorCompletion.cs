@@ -59,8 +59,8 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		ProjectDom dom;
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
-		MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy;
-		Mono.TextEditor.TextEditorData textEditorData;
+		internal MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy;
+		internal Mono.TextEditor.TextEditorData textEditorData;
 		
 		public ProjectDom Dom {
 			get { return this.dom; }
@@ -1529,7 +1529,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			MemberCompletionData AddMemberCompletionData (object member, OutputFlags flags)
 			{
-				var newData = new MemberCompletionData (editorCompletion.policy, editorCompletion.textEditorData, member as INode, flags);
+				var newData = new MemberCompletionData (editorCompletion, member as INode, flags);
 				newData.HideExtensionParameter = HideExtensionParameter;
 				string memberKey = newData.CompletionText;
 				if (memberKey == null)
