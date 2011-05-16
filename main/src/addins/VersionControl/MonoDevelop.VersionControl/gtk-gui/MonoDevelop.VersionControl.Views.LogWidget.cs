@@ -25,7 +25,7 @@ namespace MonoDevelop.VersionControl.Views
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.TextView textviewDetails;
 		private global::Gtk.ScrolledWindow scrolledwindowFiles;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
