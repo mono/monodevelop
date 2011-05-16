@@ -1079,10 +1079,10 @@ namespace MonoDevelop.CSharp.Completion
 				if (result.ExpressionContext == ExpressionContext.InheritableType) {
 					IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
-					List<string> namespaceList = GetUsedNamespaces ();
+					List<string > namespaceList = GetUsedNamespaces ();
 					var col = new CSharpTextEditorCompletion.CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, null, location);
 					bool isInterface = false;
-					HashSet<string> baseTypeNames = new HashSet<string> ();
+					HashSet<string > baseTypeNames = new HashSet<string> ();
 					if (cls != null) {
 						baseTypeNames.Add (cls.Name);
 						if (cls.ClassType == ClassType.Struct)
@@ -1090,14 +1090,14 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					int tokenIndex = completionContext.TriggerOffset;
 
-										// Search base types " : [Type1, ... ,TypeN,] <Caret>"
+					// Search base types " : [Type1, ... ,TypeN,] <Caret>"
 					string token = null;
 					do {
 						token = GetPreviousToken (ref tokenIndex, false);
 						if (string.IsNullOrEmpty (token))
 							break;
 						token = token.Trim ();
-						if (Char.IsLetterOrDigit (token[0]) || token[0] == '_') {
+						if (Char.IsLetterOrDigit (token [0]) || token [0] == '_') {
 							IType baseType = dom.SearchType (Document.CompilationUnit, cls, result.Region.Start, token);
 							if (baseType != null) {
 								if (baseType.ClassType != ClassType.Interface)
@@ -1116,7 +1116,7 @@ namespace MonoDevelop.CSharp.Completion
 						col.Add (o);
 					}
 					// Add inner classes
-					Stack<IType> innerStack = new Stack<IType> ();
+					Stack<IType > innerStack = new Stack<IType> ();
 					innerStack.Push (cls);
 					while (innerStack.Count > 0) {
 						IType curType = innerStack.Pop ();
@@ -1165,7 +1165,7 @@ namespace MonoDevelop.CSharp.Completion
 								AddAsCompletionData (col, type);
 							}
 						}
-						List<string> namespaceList = GetUsedNamespaces ();
+						List<string > namespaceList = GetUsedNamespaces ();
 						foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 							if (o is IType) {
 								IType type = (IType)o;
@@ -1199,6 +1199,10 @@ namespace MonoDevelop.CSharp.Completion
 					} else
 						break;
 				}
+				var line = Editor.GetLineText (Editor.Caret.Line).Trim ();
+				if (line.Length != Editor.Caret.Column - 3)
+					return null;
+				
 				IType overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (overrideCls == null)
 					overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine - 1, 1));
@@ -1221,6 +1225,10 @@ namespace MonoDevelop.CSharp.Completion
 					} else
 						break;
 				}
+				line = Editor.GetLineText (Editor.Caret.Line).Trim ();
+				if (line.Length != Editor.Caret.Column - 3)
+					return null;
+				
 				overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (overrideCls != null && (overrideCls.ClassType == ClassType.Class || overrideCls.ClassType == ClassType.Struct)) {
 					string modifiers = textEditorData.GetTextBetween (firstMod, wordStart);
@@ -1242,7 +1250,7 @@ namespace MonoDevelop.CSharp.Completion
 						resolver.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 						IReturnType returnType = resolver.CallingMember.ReturnType;
 						if (yieldToken == "yield" && returnType.GenericArguments.Count > 0)
-							returnType = returnType.GenericArguments[0];
+							returnType = returnType.GenericArguments [0];
 						if (resolver.CallingMember != null)
 							return CreateTypeCompletionData (location, callingType, newExactContext, null, returnType);
 					}
