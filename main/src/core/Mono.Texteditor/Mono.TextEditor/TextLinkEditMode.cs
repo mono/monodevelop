@@ -411,11 +411,13 @@ namespace Mono.TextEditor
 				if (link != null && !link.IsIdentifier)
 					goto default;
 				if ((modifier & Gdk.ModifierType.ShiftMask) == 0)
-					GotoNextLink (link); else
+					GotoNextLink (link);
+				else
 					GotoPreviousLink (link);
 				return;
 			case Gdk.Key.Escape:
 			case Gdk.Key.Return:
+			case Gdk.Key.KP_Enter:
 				if ((modifier & Gdk.ModifierType.ControlMask) != 0)
 				if (link != null && !link.IsIdentifier)
 					goto default;
