@@ -29,8 +29,15 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (VersionControlItem item in items) {
 				if (!item.IsDirectory) {
 					var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-					DiffView.AttachViewContents (document, item);
-					document.Window.SwitchView (document.Window.FindView (typeof(LogView)));
+					if (document != null) {
+						DiffView.AttachViewContents (document, item);
+						document.Window.SwitchView (document.Window.FindView (typeof(LogView)));
+					} else {
+						VersionControlDocumentInfo info = new VersionControlDocumentInfo (null, item, item.Repository);
+						LogView logView = new LogView (info);
+						info.Document = IdeApp.Workbench.OpenDocument (logView, true);
+						logView.Selected ();
+					}
 				} else if (item.VersionInfo.CanLog) {
 					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
 				}
