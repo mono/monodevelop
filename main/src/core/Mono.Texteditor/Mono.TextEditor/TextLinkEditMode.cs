@@ -259,6 +259,7 @@ namespace Mono.TextEditor
 			if (SelectPrimaryLink)
 				Setlink (firstLink);
 			Editor.Document.CommitUpdateAll ();
+			editor.Document.OptimizeTypedUndo ();
 			this.undoDepth = Editor.Document.GetCurrentUndoDepth ();
 			ShowHelpWindow ();
 		}
