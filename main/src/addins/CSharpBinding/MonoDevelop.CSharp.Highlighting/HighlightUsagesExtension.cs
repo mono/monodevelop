@@ -55,6 +55,13 @@ namespace MonoDevelop.CSharp.Highlighting
 			textEditorData = base.Document.Editor;
 			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
+			textEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
+		}
+
+		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
+		{
+			RemoveMarkers (false);
+			
 		}
 
 		void HandleTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
@@ -64,6 +71,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		public override void Dispose ()
 		{
+			textEditorData.SelectionChanged -= HandleTextEditorDataSelectionChanged;
 			textEditorData.Caret.PositionChanged -= HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced -= HandleTextEditorDataDocumentTextReplaced;
 			base.Dispose ();
@@ -214,10 +222,9 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		void RemoveMarkers (bool updateLine)
 		{
-			textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = false;
 			if (markers.Count == 0)
 				return;
-			
+			textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = false;
 			foreach (var pair in markers) {
 				textEditorData.Document.RemoveMarker (pair.Value, true);
 			}
