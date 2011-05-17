@@ -65,6 +65,9 @@ namespace MonoDevelop.Refactoring.Tests
 ");
 		}
 		
+		/// <summary>
+		/// Bug 693855 - Extracting variable from ELSE IF puts it in the wrong place
+		/// </summary>
 		[Test()]
 		public void DeclareLocalexpressionTest ()
 		{
@@ -84,6 +87,43 @@ namespace MonoDevelop.Refactoring.Tests
 	}
 }
 ");
+		}
+		
+		/// <summary>
+		/// Bug 693855 - Extracting variable from ELSE IF puts it in the wrong place
+		/// </summary>
+		[Test()]
+		public void TestBug693855 ()
+		{
+			TestDeclareLocal (@"class TestClass
+{
+	void Test ()
+	{
+		string str = ""test"";
+		if (str == ""something"") {
+			//do A
+		} else if (<-str == ""other""->) {
+			//do B
+		} else {
+			//do C
+		}
+	}
+}", 
+@"class TestClass
+{
+	void Test ()
+	{
+		string str = ""test"";
+		bool b = str == ""other"";
+		if (str == ""something"") {
+			//do A
+		} else if (b) {
+			//do B
+		} else {
+			//do C
+		}
+	}
+}");
 		}
 	}
 }

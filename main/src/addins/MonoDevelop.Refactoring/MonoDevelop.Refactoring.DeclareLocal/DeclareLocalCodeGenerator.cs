@@ -142,7 +142,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		{
 			varCount = 0;
 			selectionStart = selectionEnd = -1;
-			List<Change> result = new List<Change> ();
+			List<Change > result = new List<Change> ();
 			IResolver resolver = options.GetResolver ();
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (resolver == null || provider == null)
@@ -198,6 +198,9 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				var node = unit.GetNodeAt (endPoint.Line, endPoint.Column);
 				
 				var containing = node.Parent;
+				while (!(containing.Parent is BlockStatement)) {
+					containing = containing.Parent;
+				}
 				
 				{
 					if (containing is BlockStatement) {
@@ -206,7 +209,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 						lineSegment = data.Document.GetLine (containing.StartLocation.Line);
 					}
 					insert.Offset = lineSegment.Offset;
-					insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl) + data.EolMarker;
+					insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl);
 					insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + provider.OutputNode (options.Dom, varDecl.Type).Length + " ".Length;
 
 					TextReplaceChange replace = new TextReplaceChange ();
@@ -312,7 +315,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			case "System.UInt64":
 				return new [] { "i", "j", "k", "l" };
 				
-			case "System.Bool":
+			case "System.Boolean":
 				return new [] {"b"};
 				
 			case "System.DateTime":
