@@ -104,7 +104,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				} else {
 					searchedMember = member;
 				}
-				this.IncludeXmlDocumentation = false;
 				
 				if (searchedMember is IMethod) {
 					IMethod method = (IMethod)searchedMember;
@@ -174,10 +173,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			return member;
 		}
 
-		static readonly Regex paramRegex = new Regex ("\\<param\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
-		static readonly Regex paramRefRegex = new Regex ("\\<paramref\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
-		static readonly Regex seeRegex = new Regex ("\\<see\\s+cref\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
-		static readonly Regex seeAlsoRegRegex = new Regex ("\\<seealso\\s+cref\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
+		static readonly Regex paramRegex = new Regex ("\\<param\\s+name\\s*=\\s*[\"'](.*)[\"']", RegexOptions.Compiled);
+		static readonly Regex paramRefRegex = new Regex ("\\<paramref\\s+name\\s*=\\s*[\"'](.*)[\"']", RegexOptions.Compiled);
+		static readonly Regex seeRegex = new Regex ("\\<see\\s+cref\\s*=\\s*[\"'](.*)[\"']", RegexOptions.Compiled);
+		static readonly Regex seeAlsoRegRegex = new Regex ("\\<seealso\\s+cref\\s*=\\s*[\"'](.*)[\"']", RegexOptions.Compiled);
 		
 		public bool FileContainsMemberName ()
 		{
@@ -226,7 +225,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var p in parsers)
 				VisitCompilationUnit (p.CompilationUnit, null);
 			var parser = parsers.First ();
-			
 			if (IncludeXmlDocumentation && searchedMembers.Count > 0) {
 				var searchedMember = searchedMembers.First ().Item1;
 				if (searchedMember is IParameter) {
