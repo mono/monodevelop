@@ -80,12 +80,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpFormattingPolicy Clone ()
 		{
-			return new CSharpFormattingPolicy (options.Clone ());
-		}
-		
-		protected CSharpFormattingPolicy (CSharpFormattingOptions options)
-		{
-			this.options = options;
+			return (CSharpFormattingPolicy)MemberwiseClone ();
 		}
 		
 		
@@ -909,7 +904,6 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpFormattingPolicy ()
 		{
-			this.options = new CSharpFormattingOptions ();
 			
 			IndentNamespaceBody = true;
 			IndentClassBody = IndentInterfaceBody = IndentStructBody = IndentEnumBody = true;
