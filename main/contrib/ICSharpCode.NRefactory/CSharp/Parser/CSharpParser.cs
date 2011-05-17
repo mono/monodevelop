@@ -2929,22 +2929,32 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public CompilationUnit Parse (TextReader reader)
+		public CompilationUnit Parse (TextReader reader, int line = 0)
 		{
 			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
 			using (MemoryStream stream = new MemoryStream ()) {
-				StreamWriter w = new StreamWriter(stream, Encoding.UTF8);
+				StreamWriter w = new StreamWriter (stream, Encoding.UTF8);
 				char[] buffer = new char[2048];
 				int read;
 				while ((read = reader.ReadBlock(buffer, 0, buffer.Length)) > 0)
-					w.Write(buffer, 0, read);
-				w.Flush(); // we can't close the StreamWriter because that would also close the MemoryStream
+					w.Write (buffer, 0, read);
+				w.Flush (); // we can't close the StreamWriter because that would also close the MemoryStream
 				stream.Position = 0;
-				return Parse(stream);
+				return Parse (stream, line);
+			}
+		}
+
+		public static void AdjustLineLocations (AstNode node, int line)
+		{
+			if (node is IRelocationable) {
+				((IRelocationable)node).SetStartLocation (new AstLocation (node.StartLocation.Line + line, node.StartLocation.Column));
+			}
+			foreach (var child in node.Children) {
+				AdjustLineLocations (child, line);
 			}
 		}
 		
-		public CompilationUnit Parse (Stream stream)
+		public CompilationUnit Parse (Stream stream, int line)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
 				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", errorReportPrinter);
@@ -2953,24 +2963,33 @@ namespace ICSharpCode.NRefactory.CSharp
 				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
 				top.UsingsBag.Global.Accept (conversionVisitor);
 				InsertComments (top, conversionVisitor);
+				if (line != 0)
+					AdjustLineLocations (conversionVisitor.Unit, line);
 				return conversionVisitor.Unit;
 			}
 		}
-		
-		public IEnumerable<AttributedNode> ParseTypeMembers(TextReader reader)
+
+		public CompilationUnit Parse (Stream stream)
 		{
-			string code = "unsafe partial class MyClass { " + reader.ReadToEnd() + "}";
-			var cu = Parse(new StringReader(code));
-			var td = cu.Children.FirstOrDefault() as TypeDeclaration;
+			return Parse (stream, 1);
+		}
+		
+		public IEnumerable<AttributedNode> ParseTypeMembers (TextReader reader, int lineModifier = 0)
+		{
+			string code = "unsafe partial class MyClass { " + Environment.NewLine + reader.ReadToEnd () + "}";
+			var cu = Parse (new StringReader (code), -1 + lineModifier);
+			if (cu == null)
+				return Enumerable.Empty<AttributedNode> ();
+			var td = cu.Children.FirstOrDefault () as TypeDeclaration;
 			if (td != null)
 				return td.Members;
 			return Enumerable.Empty<AttributedNode> ();
 		}
 		
-		public IEnumerable<Statement> ParseStatements(TextReader reader)
+		public IEnumerable<Statement> ParseStatements(TextReader reader, int lineModifier = 0)
 		{
-			string code = "void M() { " + reader.ReadToEnd() + "}";
-			var members = ParseTypeMembers(new StringReader(code));
+			string code = "void M() { " + Environment.NewLine + reader.ReadToEnd() + "}";
+			var members = ParseTypeMembers(new StringReader(code), lineModifier - 1);
 			var method = members.FirstOrDefault() as MethodDeclaration;
 			if (method != null && method.Body != null)
 				return method.Body.Statements;
@@ -2990,7 +3009,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstNode ParseExpression(TextReader reader)
 		{
-			var es = ParseStatements(new StringReader("tmp = " + reader.ReadToEnd() + ";")).FirstOrDefault() as ExpressionStatement;
+			var es = ParseStatements(new StringReader("tmp = " + Environment.NewLine + reader.ReadToEnd() + ";"), -1).FirstOrDefault() as ExpressionStatement;
 			if (es != null) {
 				AssignmentExpression ae = es.Expression as AssignmentExpression;
 				if (ae != null)

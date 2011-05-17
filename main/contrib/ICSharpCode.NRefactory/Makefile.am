@@ -73,6 +73,7 @@ FILES =  \
 	CSharp/Ast/GeneralScope/UsingDeclaration.cs \
 	CSharp/Ast/IAstVisitor.cs \
 	CSharp/Ast/Identifier.cs \
+	CSharp/Ast/IRelocationable.cs \
 	CSharp/Ast/MemberType.cs \
 	CSharp/Ast/Modifiers.cs \
 	CSharp/Ast/NodeType.cs \

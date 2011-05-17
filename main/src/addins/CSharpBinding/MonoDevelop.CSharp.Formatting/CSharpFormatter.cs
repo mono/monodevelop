@@ -94,8 +94,11 @@ namespace MonoDevelop.CSharp.Formatting
 			TextEditorData data, int startOffset, int endOffset)
 		{
 			var parser = new CSharpParser ();
-			var compilationUnit = parser.Parse (data);
-
+			var compilationUnit = parser.ParseSnippet (data);
+			if (compilationUnit == null) {
+				Console.WriteLine ("couldn't parse : " + data.Text);
+				return;
+			}
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (data);
 			
@@ -104,9 +107,7 @@ namespace MonoDevelop.CSharp.Formatting
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
-			
 			var changes = new List<ICSharpCode.NRefactory.Change> ();
-
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
 
@@ -162,7 +163,7 @@ namespace MonoDevelop.CSharp.Formatting
 					end += c.InsertedText.Length;
 			}
 			
-			/*			System.Console.WriteLine ("-----");
+		/*			System.Console.WriteLine ("-----");
 			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
 			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));

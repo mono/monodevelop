@@ -49,6 +49,7 @@ using ICSharpCode.OldNRefactory;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Completion;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp
 {
@@ -67,6 +68,26 @@ namespace MonoDevelop.CSharp
 		
 		public static ICSharpCode.NRefactory.CSharp.CompilationUnit Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
 		{
+			using (var stream = data.OpenStream ()) {
+				return parser.Parse (stream);
+			}
+		}
+		
+		public static AstNode ParseSnippet (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
+		{
+			using (var stream = new  StreamReader (data.OpenStream ())) {
+				var result = parser.ParseExpression (stream);
+				if (!parser.HasErrors)
+					return result;
+			}
+			parser.ErrorPrinter.Reset ();
+			using (var stream = new  StreamReader (data.OpenStream ())) {
+				var result = parser.ParseStatements (stream);
+				if (!parser.HasErrors)
+					return result.First ();
+			}
+			parser.ErrorPrinter.Reset ();
+			
 			using (var stream = data.OpenStream ()) {
 				return parser.Parse (stream);
 			}

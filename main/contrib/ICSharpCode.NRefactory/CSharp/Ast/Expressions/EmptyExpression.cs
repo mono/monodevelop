@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Type&lt;[EMPTY]&gt;
 	/// </summary>
-	public class EmptyExpression : Expression
+	public class EmptyExpression : Expression, IRelocationable
 	{
 		AstLocation location;
 
@@ -39,7 +39,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				return location;
 			}
 		}
-
+		
+		#region IRelocationable implementation
+		void IRelocationable.SetStartLocation (AstLocation startLocation)
+		{
+			this.location = startLocation;
+		}
+		#endregion
+		
 		public override AstLocation EndLocation {
 			get {
 				return location;

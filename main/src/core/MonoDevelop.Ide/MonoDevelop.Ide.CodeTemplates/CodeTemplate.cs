@@ -37,6 +37,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using Mono.TextEditor.PopupWindow;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -145,15 +146,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return start;
 		}
 		
-//		static string GetLeadingWhiteSpace (MonoDevelop.Ide.Gui.TextEditor editor, int lineNr)
-//		{
-//			string lineText = editor.GetLineText (lineNr);
-//			int index = 0;
-//			while (index < lineText.Length && Char.IsWhiteSpace (lineText[index]))
-//				index++;
-//			return index > 0 ? lineText.Substring (0, index) : "";
-//		}
-		
 		static Regex variableRegEx = new Regex ("\\$([^$]*)\\$", RegexOptions.Compiled);
 		
 		public List<string> ParseVariables (string code)
@@ -210,10 +202,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			StringBuilder sb = new StringBuilder ();
 			int lastOffset = 0;
 			string code = context.Document.Editor.FormatString (context.InsertPosition, context.TemplateCode);
-			
 			result.TextLinks = new List<TextLink> ();
 			foreach (Match match in variableRegEx.Matches (code)) {
-				string name = match.Groups[1].Value;
+				string name = match.Groups [1].Value;
 				sb.Append (code.Substring (lastOffset, match.Index - lastOffset));
 				lastOffset = match.Index + match.Length;
 				if (string.IsNullOrEmpty (name)) { // $$ is interpreted as $
@@ -232,30 +223,30 @@ namespace MonoDevelop.Ide.CodeTemplates
 				TextLink link = result.TextLinks.Find (l => l.Name == name);
 				bool isNew = link == null;
 				if (isNew) {
-					link         = new TextLink (name);
-					if (!string.IsNullOrEmpty (variableDecarations[name].ToolTip))
-						link.Tooltip = GettextCatalog.GetString (variableDecarations[name].ToolTip);
-					link.Values  = new CodeTemplateListDataProvider (variableDecarations[name].Values);
-					if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
-						link.Values  = expansion.RunFunction (context, null, variableDecarations[name].Function);
+					link = new TextLink (name);
+					if (!string.IsNullOrEmpty (variableDecarations [name].ToolTip))
+						link.Tooltip = GettextCatalog.GetString (variableDecarations [name].ToolTip);
+					link.Values = new CodeTemplateListDataProvider (variableDecarations [name].Values);
+					if (!string.IsNullOrEmpty (variableDecarations [name].Function)) {
+						link.Values = expansion.RunFunction (context, null, variableDecarations [name].Function);
 					}
 					result.TextLinks.Add (link);
 				}
-				link.IsEditable = variableDecarations[name].IsEditable;
-				link.IsIdentifier = variableDecarations[name].IsIdentifier;
-				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
-					IListDataProvider<string> functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
+				link.IsEditable = variableDecarations [name].IsEditable;
+				link.IsIdentifier = variableDecarations [name].IsIdentifier;
+				if (!string.IsNullOrEmpty (variableDecarations [name].Function)) {
+					IListDataProvider<string > functionResult = expansion.RunFunction (context, null, variableDecarations [name].Function);
 					if (functionResult != null && functionResult.Count > 0) {
-						string s = (string)functionResult[functionResult.Count - 1];
+						string s = (string)functionResult [functionResult.Count - 1];
 						if (s == null) {
 							if (variableDecarations.ContainsKey (name)) 
-								s = variableDecarations[name].Default;
+								s = variableDecarations [name].Default;
 						}
 						if (s != null) {
 							link.AddLink (new Segment (sb.Length, s.Length));
 							if (isNew) {
 								link.GetStringFunc = delegate (Func<string, string> callback) {
-									return expansion.RunFunction (context, callback, variableDecarations[name].Function);
+									return expansion.RunFunction (context, callback, variableDecarations [name].Function);
 								};
 							}
 							sb.Append (s);
@@ -263,12 +254,36 @@ namespace MonoDevelop.Ide.CodeTemplates
 					} else {
 						AddDefaultValue (sb, link, name);
 					}
-				} else  {
+				} else {
 					AddDefaultValue (sb, link, name);
 				}
 			}
 			sb.Append (code.Substring (lastOffset, code.Length - lastOffset));
-			result.Code = sb.ToString ();
+			
+			// format & indent template code
+			TextEditorData data = new TextEditorData ();
+			data.Text = sb.ToString ();
+			data.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
+				int delta = -e.Count + (e.Value != null ? e.Value.Length : 0);
+				foreach (var link in result.TextLinks) {
+					foreach (var segment in link.Links) {
+						if (segment.Offset > e.Offset) {
+							segment.Offset += delta;
+						}
+					}
+				}
+				if (result.CaretEndOffset > e.Offset)
+					result.CaretEndOffset += delta;
+			};
+			
+			var formatter = CodeFormatterService.GetFormatter (context.Document.Editor.Document.MimeType);
+			if (formatter != null && context.Document.HasProject) {
+				formatter.OnTheFlyFormat (context.Document.Project.Policies, data, 0, data.Length);
+			}
+			
+			IndentCode (data, context.LineIndent);
+			result.Code = data.Text;
+			data.Dispose ();
 			return result;
 		}
 
@@ -301,7 +316,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			return result.ToString ();
 		}
-		
+
+		static void IndentCode (TextEditorData data, string lineIndent)
+		{
+			for (int i = 1; i < data.LineCount; i++) {
+				var line = data.GetLine (i + 1);
+				if (line.EditableLength > 0)
+					data.Insert (line.Offset, lineIndent);
+			}
+		}
 		
 		string GetIndent (StringBuilder sb)
 		{
@@ -373,7 +396,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				ParsedDocument = doc,
 				InsertPosition = data.Caret.Location,
 				LineIndent = data.Document.GetLineIndent (data.Caret.Line),
-				TemplateCode = IndentCode (Code, document.Editor.EolMarker, data.Document.GetLineIndent (data.Caret.Line))
+				TemplateCode = Code
 			};
 
 			if (data.IsSomethingSelected) {
@@ -405,7 +428,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				document.Editor.Caret.Offset = offset + template.Code.Length; 
 			}
 			
-			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+/*			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				string mt = DesktopService.GetMimeTypeForUri (document.FileName);
 				var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
 				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
@@ -414,7 +437,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						document.Editor, offset, offset + length);
 					document.Editor.Document.EndAtomicUndo ();
 				}
-			}
+			}*/
 			return template;
 		}
 
