@@ -523,7 +523,7 @@ namespace MonoDevelop.SourceEditor
 			
 			for (int i = 0; i < layouts.Count; i++) {
 				var layout = layouts [i];
-				x2 = right - layout.Width - border - cache.errorPixbuf.Width;
+				x2 = right - layout.Width - border - (ShowIconsInBubble ? cache.errorPixbuf.Width : 0);
 				if (i == 0)
 					x2 -= errorCounterWidth;
 				x2 = System.Math.Max (x2, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
@@ -557,7 +557,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				g.Color = (HslColor)(selected == 0 ? gc : cache.gcSelected);
 				g.Save ();
-				g.Translate (x2 + cache.errorPixbuf.Width + border, y + (editor.LineHeight - layout.Height) / 2 + layout.Height % 2);
+				g.Translate (x2 + (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) + border, y + (editor.LineHeight - layout.Height) / 2 + layout.Height % 2);
 				g.ShowLayout (layout.Layout);
 				g.Restore ();
 				y += editor.LineHeight;
