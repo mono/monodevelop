@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>MonoAndroid View</_Name>
+		<_Name>Mono for Android View</_Name>
 		<Icon>md-text-file-icon</Icon>
-		<_Category>MonoAndroid</_Category>
+		<_Category>Mono for Android</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>MonoDroid</ProjectType>
 		<_Description>Creates a Mono for Android View.</_Description>
@@ -23,6 +23,7 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 
