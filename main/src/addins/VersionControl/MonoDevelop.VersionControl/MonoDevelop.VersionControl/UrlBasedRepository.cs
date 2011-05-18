@@ -58,6 +58,10 @@ namespace MonoDevelop.VersionControl
 		
 		public abstract string[] SupportedProtocols { get; }
 		
+		public virtual string[] SupportedNonUrlProtocols {
+			get { return new string[0]; }
+		}
+		
 		public virtual bool IsUrlValid (string url)
 		{
 			if (!Uri.IsWellFormedUriString (url, UriKind.Absolute))
@@ -81,6 +85,15 @@ namespace MonoDevelop.VersionControl
 		
 		internal Uri Uri {
 			get { return uri; }
+		}
+		
+		public virtual string Protocol {
+			get {
+				if (uri != null)
+					return uri.Scheme;
+				else
+					return null;
+			}
 		}
 
 	}

@@ -2,6 +2,7 @@
 using System;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
@@ -9,12 +10,15 @@ namespace MonoDevelop.VersionControl
 	{
 		UrlBasedRepository repo;
 		bool updating;
-		string[] protocols;
+		List<string> protocols = new List<string> ();
+		int altProtocolIndex;
 		
 		public UrlBasedRepositoryEditor (UrlBasedRepository repo)
 		{
 			Build ();
-			protocols = repo.SupportedProtocols;
+			protocols = new List<string> (repo.SupportedProtocols);
+			altProtocolIndex = protocols.Count;
+			protocols.AddRange (repo.SupportedNonUrlProtocols);
 				
 			this.repo = repo;
 			foreach (string p in protocols)
@@ -50,18 +54,20 @@ namespace MonoDevelop.VersionControl
 				repositoryPortSpin.Value = repo.Uri.Port;
 				repositoryPathEntry.Text = repo.Uri.PathAndQuery;
 				repositoryUserEntry.Text = repo.Uri.UserInfo;
-				comboProtocol.Active = Array.IndexOf (protocols, repo.Uri.Scheme);
+				comboProtocol.Active = protocols.IndexOf (repo.Uri.Scheme);
 			} else {
-				string prot = protocols.FirstOrDefault (p => repo.Url.StartsWith (p + "://"));
+				// The url may have a scheme, but it may be an incomplete or incorrect url. Do the best to select
+				// the correct value in the protocol combo
+				string prot = repo.SupportedProtocols.FirstOrDefault (p => repo.Url.StartsWith (p + "://"));
 				if (prot != null) {
 					repositoryServerEntry.Text = string.Empty;
 					repositoryPortSpin.Value = 0;
 					repositoryPathEntry.Text = string.Empty;
 					repositoryUserEntry.Text = string.Empty;
-					comboProtocol.Active = Array.IndexOf (protocols, prot);
+					comboProtocol.Active = protocols.IndexOf (prot);
 				}
 				else
-					comboProtocol.Active = -1;
+					comboProtocol.Active = protocols.IndexOf (repo.Protocol);
 			}
 		}
 
@@ -88,7 +94,7 @@ namespace MonoDevelop.VersionControl
 		
 		void UpdateControls ()
 		{
-			if (repo.Uri != null || protocols.Any (p => repositoryUrlEntry.Text.StartsWith (p + "://"))) {
+			if (repo.Uri != null || repo.SupportedProtocols.Any (p => repositoryUrlEntry.Text.StartsWith (p + "://"))) {
 				repositoryPathEntry.Sensitive = true;
 				bool isUrl = Protocol != "file";
 				repositoryServerEntry.Sensitive = isUrl;
@@ -104,6 +110,10 @@ namespace MonoDevelop.VersionControl
 		
 		void SetRepoUrl ()
 		{
+			if (!repo.SupportedProtocols.Contains (Protocol)) {
+				repo.Url = string.Empty;
+				return;
+			}
 			UriBuilder ub = new UriBuilder ();
 			ub.Host = repositoryServerEntry.Text;
 			ub.Scheme = Protocol;
