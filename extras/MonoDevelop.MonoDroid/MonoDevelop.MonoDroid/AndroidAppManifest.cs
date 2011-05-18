@@ -264,7 +264,7 @@ namespace MonoDevelop.MonoDroid
 
 		void FileChangedInProject (object sender, ProjectFileEventArgs args)
 		{
-			foreach (ProjectFileRenamedEventInfo e in args)
+			foreach (ProjectFileEventInfo e in args)
 				cache.Remove (e.ProjectFile.Name);
 		}
 		
