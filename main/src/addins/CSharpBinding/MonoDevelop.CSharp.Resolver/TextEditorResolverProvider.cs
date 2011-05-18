@@ -117,7 +117,6 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 				if (identifer.Length > 0) {
 					expressionResult.Expression = identifer.ToString ();
-					Console.WriteLine (expressionResult.Expression);
 					resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, int.MaxValue));
 					if (resolveResult != null) {
 						resolveResult = new MemberResolveResult (dom.GetType (resolveResult.ResolvedType));

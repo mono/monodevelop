@@ -62,8 +62,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Value = value;
 			this.startLocation = startLocation;
 			this.length = length;
-			System.Console.WriteLine ("val:" + value);
-			System.Console.WriteLine ("start:" + startLocation  + " --- " + EndLocation);
 		}
 		
 		#region IRelocationable implementation

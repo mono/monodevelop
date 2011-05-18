@@ -137,7 +137,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 			} while (t != null);
 			DomLocation lastLoc = DomLocation.Empty;
 			foreach (IUsing us in declaringType.CompilationUnit.Usings.Where (u => u.IsFromNamespace && u.ValidRegion.Contains (declaringType.Location))) {
-				Console.WriteLine (us);
 				if (lastLoc == us.Region.Start)
 					continue;
 				lastLoc = us.Region.Start;

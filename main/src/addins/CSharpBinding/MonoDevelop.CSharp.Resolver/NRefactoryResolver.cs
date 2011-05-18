@@ -905,16 +905,16 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 				bool includeProtected = true;
 				// filter members
-				if (this.CallingMember != null) {
-					for (int i = 0; i < members.Count; i++) {
-						if (this.CallingMember.IsStatic && !members [i].IsStatic || !members [i].IsAccessibleFrom (dom, callingType, this.CallingMember, includeProtected)) {
-							members.RemoveAt (i);
-							i--;
-							continue;
-						}
-					}
-				}
-				
+// be more gentle when resolving non accessible members - see: Bug 693949 - Create method uses the wrong type for param
+//				if (this.CallingMember != null) {
+//					for (int i = 0; i < members.Count; i++) {
+//						if (this.CallingMember.IsStatic && !members [i].IsStatic || !members [i].IsAccessibleFrom (dom, callingType, this.CallingMember, includeProtected)) {
+//							members.RemoveAt (i);
+//							i--;
+//							continue;
+//						}
+//					}
+//				}
 				if (members.Count > 0) {
 					if (members [0] is IMethod) {
 						result = new MethodResolveResult (members);

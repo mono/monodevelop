@@ -75,10 +75,6 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var data = options.GetTextEditorData ();
 			var target = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
-			foreach (var c in target.Children) {
-				Console.WriteLine (c.GetType () + "=" + c + "/" + "  " + c.StartLocation + "-" + c.EndLocation);
-			}
-//			Console.WriteLine ("target:" + target + "/" + data.Caret.Line  + "/" + data.Caret.Column + "/" + target.StartLocation + "-" + target.EndLocation);
 			if (target == null)
 				return false;
 			if (target.Parent is MemberReferenceExpression && ((MemberReferenceExpression)target.Parent).GetChildByRole (MemberReferenceExpression.Roles.Identifier) == target) {
@@ -90,7 +86,11 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				declaringType = options.Dom.GetType (targetResult.ResolvedType);
 				methodName = memberReference.MemberName;
 			} else if (target is Identifier) {
-				declaringType = options.ResolveResult.CallingType;
+				if (options.ResolveResult != null) {
+					declaringType = options.ResolveResult.CallingType;
+				} else {
+					declaringType = options.Document.CompilationUnit.GetTypeAt (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+				}
 				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
 			}
 			if (declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation)) {
@@ -217,11 +217,17 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				modifiers = MonoDevelop.Projects.Dom.Modifiers.None;
 			} else {
 				bool isStatic = (modifiers & MonoDevelop.Projects.Dom.Modifiers.Static) != 0;
-				modifiers = options.ResolveResult.CallingMember.Modifiers;
-				if (declaringType.DecoratedFullName != options.ResolveResult.CallingType.DecoratedFullName) {
-					modifiers = MonoDevelop.Projects.Dom.Modifiers.Public;
-	//				if (options.ResolveResult.CallingMember.IsStatic)
-	//					isStatic = true;
+				if (options.ResolveResult != null) {
+					modifiers = options.ResolveResult.CallingMember.Modifiers;
+					if (declaringType.DecoratedFullName != options.ResolveResult.CallingType.DecoratedFullName) {
+						modifiers = MonoDevelop.Projects.Dom.Modifiers.Public;
+		//				if (options.ResolveResult.CallingMember.IsStatic)
+		//					isStatic = true;
+					}
+				} else {
+					var member = options.Document.CompilationUnit.GetMemberAt (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+					if (member != null)
+						modifiers = member.Modifiers;
 				}
 				if (isStatic)
 					modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
@@ -373,7 +379,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				}
 				
 				string argExpression = options.GetTextEditorData ().GetTextBetween (argument.StartLocation.Line, argument.StartLocation.Column, argument.EndLocation.Line, argument.EndLocation.Column);
-				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), resolvePosition);
+				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), new DomLocation (argument.StartLocation.Line, argument.StartLocation.Column));
 				
 				if (argument is MemberReferenceExpression) {
 					arg.Name = ((MemberReferenceExpression)argument).MemberName;
