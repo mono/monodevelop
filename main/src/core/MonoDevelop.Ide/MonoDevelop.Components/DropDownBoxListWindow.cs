@@ -412,8 +412,8 @@ namespace MonoDevelop.Components
 
 				int n = 0;
 				while (ypos < winHeight - margin && (page + n) < win.DataProvider.IconCount) {
-					string text = win.DataProvider.GetText (page + n) ?? "<null>";
-					layout.SetText (text);
+					string text = win.DataProvider.GetMarkup (page + n) ?? "&lt;null&gt;";
+					layout.SetMarkup (text);
 
 					Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
 					int iconHeight = icon != null ? icon.Height : 24;
@@ -506,16 +506,16 @@ namespace MonoDevelop.Components
 				if (win.DataProvider.IconCount == 0)
 					return 0;
 				int longest = 0;
-				string longestText = win.DataProvider.GetText (0) ?? "";
+				string longestText = win.DataProvider.GetMarkup (0) ?? "";
 				
 				for (int i = 1; i < win.DataProvider.IconCount; i++) {
-					string curText = win.DataProvider.GetText (i) ?? "";
+					string curText = win.DataProvider.GetMarkup (i) ?? "";
 					if (curText.Length > longestText.Length) {
 						longestText = curText;
 						longest = i;
 					}
 				}
-				layout.SetText (win.DataProvider.GetText (longest) ?? "<null>");
+				layout.SetMarkup (win.DataProvider.GetMarkup (longest) ?? "&lt;null&gt;");
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (longest);
@@ -562,7 +562,7 @@ namespace MonoDevelop.Components
 				get;
 			}
 			void Reset ();
-			string GetText (int n);
+			string GetMarkup (int n);
 			Gdk.Pixbuf GetIcon (int n);
 			object GetTag (int n);
 			

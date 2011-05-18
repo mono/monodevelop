@@ -47,7 +47,7 @@ namespace MonoDevelop.Components
 			private set;
 		}
 		
-		public string Text {
+		public string Markup {
 			get;
 			private set;
 		}
@@ -67,15 +67,15 @@ namespace MonoDevelop.Components
 			set;
 		}
 		
-		public PathEntry (Gdk.Pixbuf icon, string text)
+		public PathEntry (Gdk.Pixbuf icon, string markup)
 		{
 			this.Icon = icon;
-			this.Text = text;
+			this.Markup = markup;
 		}
 		
-		public PathEntry (string text)
+		public PathEntry (string markup)
 		{
-			this.Text = text;
+			this.Markup = markup;
 		}
 		
 		public override bool Equals (object obj)
@@ -87,13 +87,13 @@ namespace MonoDevelop.Components
 			if (obj.GetType () != typeof(PathEntry))
 				return false;
 			MonoDevelop.Components.PathEntry other = (MonoDevelop.Components.PathEntry)obj;
-			return Icon == other.Icon && Text == other.Text;
+			return Icon == other.Icon && Markup == other.Markup;
 		}
 
 		public override int GetHashCode ()
 		{
 			unchecked {
-				return (Icon != null ? Icon.GetHashCode () : 0) ^ (Text != null ? Text.GetHashCode () : 0);
+				return (Icon != null ? Icon.GetHashCode () : 0) ^ (Markup != null ? Markup.GetHashCode () : 0);
 			}
 		}
 	}
@@ -228,7 +228,7 @@ namespace MonoDevelop.Components
 				}
 				
 				layout.Attributes = (i == activeIndex) ? boldAtts : null;
-				layout.SetText (leftPath [i].Text);
+				layout.SetMarkup (leftPath [i].Markup);
 				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", x + textOffset, ypos, layout);
 				if (!last) {
 					if (leftPath [i].IsPathEnd) {
@@ -271,7 +271,7 @@ namespace MonoDevelop.Components
 				}
 				
 				layout.Attributes = (i == activeIndex) ? boldAtts : null;
-				layout.SetText (rightPath [i].Text);
+				layout.SetMarkup (rightPath [i].Markup);
 				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", x + textOffset, ypos, layout);
 			}
 			
@@ -465,7 +465,7 @@ namespace MonoDevelop.Components
 			var result = new int[path.Length];
 			for (int i = 0; i < path.Length; i++) {
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
-				layout.SetText (path[i].Text);
+				layout.SetMarkup (path[i].Markup);
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 				height = Math.Max (h, height);

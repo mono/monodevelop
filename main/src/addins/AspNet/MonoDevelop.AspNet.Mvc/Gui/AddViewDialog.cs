@@ -290,9 +290,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				//called when the list is shown
 			}
 			
-			public string GetText (int n)
+			public string GetMarkup (int n)
 			{
-				return ambience.GetString (List[n], OutputFlags.IncludeGenerics | OutputFlags.UseFullName);
+				return ambience.GetString (List[n], OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.IncludeMarkup);
 			}
 			
 			public Gdk.Pixbuf GetIcon (int n)

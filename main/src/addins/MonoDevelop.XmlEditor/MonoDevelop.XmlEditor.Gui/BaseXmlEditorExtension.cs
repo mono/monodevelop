@@ -739,7 +739,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			PathEntry[] path = new PathEntry[l.Count];
 			for (int i = 0; i < l.Count; i++) {
 				if (l[i].FriendlyPathRepresentation == null) System.Console.WriteLine(l[i].GetType ());
-				path[i] = new PathEntry (l[i].FriendlyPathRepresentation ?? "<>");
+				path[i] = new PathEntry (GLib.Markup.EscapeText (l[i].FriendlyPathRepresentation ?? "<>"));
 			}
 			
 			PathEntry[] oldPath = currentPath;

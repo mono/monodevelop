@@ -2421,10 +2421,13 @@ namespace MonoDevelop.CSharp.Completion
 				return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
 			}
 			
-			public string GetText (int n)
+			public string GetMarkup (int n)
 			{
-				return GetString (amb, memberList[n]);
+				if (memberList[n].IsObsolete)
+					return "<s>" + GLib.Markup.EscapeText (GetString (amb, memberList[n])) + "</s>";
+				return GLib.Markup.EscapeText (GetString (amb, memberList[n]));
 			}
+
 
 			public Gdk.Pixbuf GetIcon (int n)
 			{
@@ -2470,9 +2473,9 @@ namespace MonoDevelop.CSharp.Completion
 			{
 			}
 			
-			public string GetText (int n)
+			public string GetMarkup (int n)
 			{
-				return Document.ParsedDocument.UserRegions.ElementAt (n).Name;
+				return GLib.Markup.EscapeText (Document.ParsedDocument.UserRegions.ElementAt (n).Name);
 			}
 			
 			internal static Gdk.Pixbuf Pixbuf {
@@ -2558,11 +2561,13 @@ namespace MonoDevelop.CSharp.Completion
 						entry = new PathEntry (GettextCatalog.GetString ("No region"));
 					} else {
 						entry = new PathEntry (CompilationUnitDataProvider.Pixbuf,
-						                       reg.Name);
+						                       GLib.Markup.EscapeText (reg.Name));
 					}
 					entry.Position = EntryPosition.Right;
 				} else {
-					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates));
+					var m = (IMember)node;
+					string markup = amb.GetString (m, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
+					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, IconSize.Menu), m.IsObsolete ? "<s>" + markup + "</s>" : markup);
 				}
 				entry.Tag = node;
 				result.Insert (0, entry);

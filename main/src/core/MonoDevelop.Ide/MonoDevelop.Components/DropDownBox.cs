@@ -44,7 +44,7 @@ namespace MonoDevelop.Components
 				return layout.Text;
 			}
 			set {
-				layout.SetText (value);
+				layout.SetMarkup (value);
 //				QueueResize ();
 			}
 		}
@@ -134,7 +134,7 @@ namespace MonoDevelop.Components
 		
 		public void SetItem (int i)
 		{
-			SetItem (DataProvider.GetText (i), DataProvider.GetIcon (i), DataProvider.GetTag (i));
+			SetItem (DataProvider.GetMarkup (i), DataProvider.GetIcon (i), DataProvider.GetTag (i));
 		}
 		
 		protected override void OnDestroyed ()

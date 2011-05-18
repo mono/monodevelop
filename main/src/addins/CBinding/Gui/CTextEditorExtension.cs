@@ -704,11 +704,11 @@ namespace CBinding
 					if (reg == null) {
 						entry = new PathEntry (GettextCatalog.GetString ("No region"));
 					} else {
-						entry = new PathEntry (CompilationUnitDataProvider.Pixbuf, reg.Name);
+						entry = new PathEntry (CompilationUnitDataProvider.Pixbuf, GLib.Markup.EscapeText (reg.Name));
 					}
 					entry.Position = EntryPosition.Right;
 				} else {
-					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, Gtk.IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates));
+					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, Gtk.IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup));
 				}
 				entry.Tag = node;
 				result.Insert (0, entry);

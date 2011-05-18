@@ -213,14 +213,14 @@ namespace MonoDevelop.VersionControl.Views
 			{
 			}
 	
-			public string GetText (int n)
+			public string GetMarkup (int n)
 			{
 				if (n == 0)
 					return "Local";
 				if (n == 1)
 					return "Base";
 				Revision rev = widget.info.History[n - 2];
-				return rev.ToString () + "\t" + rev.Time.ToString () + "\t" + rev.Author;
+				return GLib.Markup.EscapeText (rev.ToString () + "\t" + rev.Time.ToString () + "\t" + rev.Author);
 			}
 
 			public Pixbuf GetIcon (int n)

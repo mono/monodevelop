@@ -54,9 +54,9 @@ namespace CBinding.Parser
 		#region IListDataProvider implementation
 		public void Reset () { }
 		
-		public string GetText (int n)
+		public string GetMarkup (int n)
 		{
-			return Document.ParsedDocument.UserRegions.ElementAt (n).Name;
+			return GLib.Markup.EscapeText (Document.ParsedDocument.UserRegions.ElementAt (n).Name);
 		}
 		
 		internal static Gdk.Pixbuf Pixbuf
