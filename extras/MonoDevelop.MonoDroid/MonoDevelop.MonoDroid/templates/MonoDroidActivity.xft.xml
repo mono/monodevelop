@@ -26,9 +26,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace ${Namespace}$
+namespace ${Namespace}
 {
-	[Activity (Label = "My Activity")]			
+	[Activity (Label = "${Name}")]			
 	public class ${Name} : Activity
 	{
 		protected override void OnCreate (Bundle bundle)
