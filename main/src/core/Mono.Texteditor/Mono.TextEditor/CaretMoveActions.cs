@@ -312,12 +312,10 @@ namespace Mono.TextEditor
 				data.ClearSelection ();
 			data.Caret.Offset = data.Document.Length;
 		}
-		
-		public static double LineHeight { get; set; }
-		
+				
 		public static void PageUp (TextEditorData data)
 		{
-			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % LineHeight)) / LineHeight);
+			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight)) / data.LineHeight);
 			int visualLine = data.LogicalToVisualLine (data.Caret.Line);
 			visualLine -= pageLines;
 			int line = System.Math.Max (data.VisualToLogicalLine (visualLine), DocumentLocation.MinLine);
@@ -328,10 +326,9 @@ namespace Mono.TextEditor
 		
 		public static void PageDown (TextEditorData data)
 		{
-			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % LineHeight)) / LineHeight);
+			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight)) / data.LineHeight);
 			int visualLine = data.LogicalToVisualLine (data.Caret.Line);
 			visualLine += pageLines;
-			
 			int line = System.Math.Min (data.VisualToLogicalLine (visualLine), data.Document.LineCount);
 			int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 			ScrollActions.PageDown (data);
