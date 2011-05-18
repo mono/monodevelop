@@ -14,7 +14,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		private global::Gtk.Label label2;
 		private global::Gtk.Button button29;
 		private global::Gtk.Button buttonCommit;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -21,7 +21,7 @@ namespace MonoDevelop.VersionControl
 		private global::Gtk.Entry repositoryServerEntry;
 		private global::Gtk.Entry repositoryUrlEntry;
 		private global::Gtk.Entry repositoryUserEntry;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

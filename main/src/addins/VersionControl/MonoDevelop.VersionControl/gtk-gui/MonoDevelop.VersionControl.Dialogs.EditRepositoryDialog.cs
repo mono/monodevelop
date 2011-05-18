@@ -14,7 +14,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		private global::Gtk.EventBox repoEditorContainer;
 		private global::Gtk.Button button10;
 		private global::Gtk.Button buttonOk;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

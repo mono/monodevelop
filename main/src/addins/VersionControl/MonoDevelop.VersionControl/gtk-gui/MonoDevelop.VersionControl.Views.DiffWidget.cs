@@ -17,7 +17,7 @@ namespace MonoDevelop.VersionControl.Views
 		private global::Gtk.Label label1;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.Label label3;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
