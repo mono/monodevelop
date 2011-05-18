@@ -27,7 +27,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public interface IRelocationable
+	public interface IRelocatable
 	{
 		void SetStartLocation (AstLocation startLocation);
 	}

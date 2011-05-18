@@ -1,4 +1,4 @@
-﻿// 
+// 
 // TokenNode.cs
 //  
 // Author:
@@ -27,7 +27,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class CSharpTokenNode : AstNode, IRelocationable
+	public class CSharpTokenNode : AstNode, IRelocatable
 	{
 		public static new readonly CSharpTokenNode Null = new NullCSharpTokenNode ();
 		class NullCSharpTokenNode : CSharpTokenNode
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		#region IRelocationable implementation
-		void IRelocationable.SetStartLocation (AstLocation startLocation)
+		void IRelocatable.SetStartLocation (AstLocation startLocation)
 		{
 			this.startLocation = startLocation;
 		}

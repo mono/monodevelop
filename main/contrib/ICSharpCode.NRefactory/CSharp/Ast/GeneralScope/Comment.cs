@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Comment.cs
 //  
 // Author:
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		Documentation
 	}
 	
-	public class Comment : AstNode, IRelocationable
+	public class Comment : AstNode, IRelocatable
 	{
 		public override NodeType NodeType {
 			get {
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		#region IRelocationable implementation
-		void IRelocationable.SetStartLocation (AstLocation startLocation)
+		void IRelocatable.SetStartLocation (AstLocation startLocation)
 		{
 			int lineDelta = startLocation.Line - this.startLocation.Line;
 			endLocation = new AstLocation (endLocation.Line + lineDelta, lineDelta != 0 ? endLocation.Column : endLocation.Column + startLocation.Column - this.startLocation.Column);

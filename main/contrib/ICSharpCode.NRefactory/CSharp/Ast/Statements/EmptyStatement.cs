@@ -1,4 +1,4 @@
-﻿// 
+// 
 // EmptyStatement.cs
 //  
 // Author:
@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// ;
 	/// </summary>
-	public class EmptyStatement : Statement, IRelocationable
+	public class EmptyStatement : Statement, IRelocatable
 	{
 		public AstLocation Location {
 			get;
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		#region IRelocationable implementation
-		void IRelocationable.SetStartLocation (AstLocation startLocation)
+		void IRelocatable.SetStartLocation (AstLocation startLocation)
 		{
 			this.Location = startLocation;
 		}

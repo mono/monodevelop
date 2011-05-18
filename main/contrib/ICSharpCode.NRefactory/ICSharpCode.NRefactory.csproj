@@ -357,7 +357,7 @@
     <Compile Include="CSharp\Formatter\CSharpFormattingOptions.cs" />
     <Compile Include="CSharp\Ast\Expressions\AnonymousTypeCreateExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\UndocumentedExpression.cs" />
-    <Compile Include="CSharp\Ast\IRelocationable.cs" />
+    <Compile Include="CSharp\Ast\IRelocatable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
