@@ -93,6 +93,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			if (declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation)) {
 				if (declaringType.HasParts)
 					declaringType = declaringType.Parts.FirstOrDefault (t => t.CompilationUnit.FileName == options.Document.FileName) ?? declaringType;
+				if (declaringType == null || declaringType.CompilationUnit == null)
+					return false;
 				var doc = ProjectDomService.GetParsedDocument (declaringType.SourceProjectDom, declaringType.CompilationUnit.FileName);
 				declaringType = doc.CompilationUnit.GetTypeAt (declaringType.Location) ?? declaringType;
 				return true;

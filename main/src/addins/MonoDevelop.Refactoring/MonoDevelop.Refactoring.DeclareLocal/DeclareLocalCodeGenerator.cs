@@ -78,17 +78,20 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 					return false;
 				if (options.ResolveResult.CallingMember == null || !options.ResolveResult.CallingMember.BodyRegion.Contains (endPoint.Line, endPoint.Column))
 					return false;
-				return options.ResolveResult.ResolvedType != null && !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName) && options.ResolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
+			} else {
+				LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
+				string line = data.Document.GetTextAt (lineSegment);
+				Expression expression = provider.ParseExpression (line);
+				BlockStatement block = provider.ParseText (line) as BlockStatement;
+				if (expression == null || (block != null && block.Statements.FirstOrDefault ()  is VariableDeclarationStatement))
+					return false;
+				
+				options.ResolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
 			}
-			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
-			string line = data.Document.GetTextAt (lineSegment);
-			Expression expression = provider.ParseExpression (line);
-			BlockStatement block = provider.ParseText (line) as BlockStatement;
-			if (expression == null || (block != null && block.Statements.FirstOrDefault ()  is VariableDeclarationStatement))
-				return false;
 			
-			options.ResolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
-			return options.ResolveResult.ResolvedType != null && !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName) && options.ResolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
+			return options.ResolveResult.ResolvedType != null && !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName) && 
+				(options.ResolveResult.ResolvedType.FullName != DomReturnType.Void.FullName || 
+				(options.ResolveResult is MethodResolveResult && !((MethodResolveResult)options.ResolveResult).GetsInvoked ));
 		}
 		
 		public override void Run (RefactoringOptions options)
@@ -138,6 +141,35 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		
 		string varName;
 		int varCount;
+		
+		public IReturnType GetResolvedType (RefactoringOptions options, ResolveResult resolveResult)
+		{
+			var result = resolveResult.ResolvedType;
+			if (result == null || string.IsNullOrEmpty (result.Name))
+				result = DomReturnType.Object;
+			if (resolveResult is MethodResolveResult) {
+				var mrr = (MethodResolveResult)resolveResult;
+				if (!mrr.GetsInvoked) {
+					var method = options.SelectedItem as IMethod ?? mrr.MostLikelyMethod;
+					
+					DomReturnType type;
+					if (method.ReturnType == null || method.ReturnType.FullName == DomReturnType.Void.FullName) {
+						type = new DomReturnType ("System.Action");
+					} else {
+						type = new DomReturnType ("System.Func");
+					}
+						
+					foreach (var param in method.Parameters)
+						type.AddTypeParameter (param.ReturnType);
+					
+					if (method.ReturnType != null && method.ReturnType.FullName != DomReturnType.Void.FullName)
+						type.AddTypeParameter (method.ReturnType);
+					result = type;
+				}
+			}
+			return result;
+		}
+		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			varCount = 0;
@@ -181,16 +213,16 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				resolveResult = resolver.Resolve (expressionResult, new DomLocation (endPoint.Line, endPoint.Column));
 				if (resolveResult == null)
 					return result;
-				IReturnType resolvedType = resolveResult.ResolvedType;
-				if (resolvedType == null || string.IsNullOrEmpty (resolvedType.Name))
-					resolvedType = DomReturnType.Object;
-				varName = CreateVariableName (resolvedType, visitor);
+				IReturnType resolvedType = GetResolvedType (options, resolveResult); 
+				
 				AstType returnType;
 				if (resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.Name)) {
 					returnType = new SimpleType ("var");
 				} else {
-					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
+					returnType = options.ShortenTypeName (resolvedType).ConvertToTypeReference ();
 				}
+				
+				varName = CreateVariableName (resolvedType, visitor);
 				options.ParseMember (resolveResult.CallingMember);
 				
 				TextReplaceChange insert = new TextReplaceChange ();
@@ -334,6 +366,10 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				return new [] {"e"};
 			case "System.Object":
 				return new [] {"obj", "o"};
+			case "System.Func":
+				return new [] {"func", "f"};
+			case "System.Action":
+				return new [] {"action", "act"};
 			}
 			if (Char.IsLower (returnType.Name [0]))
 				return new [] { "a" + Char.ToUpper (returnType.Name[0]) + returnType.Name.Substring (1) };

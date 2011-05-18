@@ -125,5 +125,41 @@ namespace MonoDevelop.Refactoring.Tests
 	}
 }");
 		}
+		
+		
+		/// <summary>
+		/// Bug 693875 - Extract Local on just method name leaves brackets in wrong place
+		/// </summary>
+		[Test()]
+		public void TestBug693875 ()
+		{
+			TestDeclareLocal (@"class TestClass
+{
+	void DoStuff() 
+	{
+		if (<-GetInt->() == 0) {
+		}
+	}
+	
+	int GetInt()
+	{
+		return 1;
+	}
+}", 
+@"class TestClass
+{
+	void DoStuff() 
+	{
+		System.Func<int> func = GetInt;
+		if (func() == 0) {
+		}
+	}
+	
+	int GetInt()
+	{
+		return 1;
+	}
+}");
+		}
 	}
 }
