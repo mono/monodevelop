@@ -83,6 +83,12 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
+		public override string[] SupportedNonUrlProtocols {
+			get {
+				return new string[] {"ssh/scp"};
+			}
+		}
+		
 		public override bool IsUrlValid (string url)
 		{
 			try {
@@ -92,6 +98,15 @@ namespace MonoDevelop.VersionControl.Git
 			} catch {
 			}
 			return base.IsUrlValid (url);
+		}
+		
+		public override string Protocol {
+			get {
+				string p = base.Protocol;
+				if (p != null)
+					return p;
+				return IsUrlValid (Url) ? "ssh/scp" : null;
+			}
 		}
 
 		public FilePath RootPath {
