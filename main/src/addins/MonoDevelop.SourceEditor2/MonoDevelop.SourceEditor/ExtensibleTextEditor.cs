@@ -323,7 +323,7 @@ namespace MonoDevelop.SourceEditor
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
 				}
-				return false;
+				return false; 
 			}
 
 			if (Document == null)
@@ -360,7 +360,6 @@ namespace MonoDevelop.SourceEditor
 				if (c == '"' || c == '\'')
 					inStringOrComment = inChar = inString = true;
 			}
-			Document.BeginAtomicUndo ();
 
 			// insert template when space is typed (currently disabled - it's annoying).
 			bool templateInserted = false;
@@ -372,7 +371,7 @@ namespace MonoDevelop.SourceEditor
 			int braceIndex = openBrackets.IndexOf ((char)ch);
 			var skipChars = GetTextEditorData ().SkipChars;
 			var skipChar = skipChars.Find (sc => sc.Char == (char)ch && sc.Offset == Caret.Offset);
-			
+			bool startedAtomicOperation = false;
 
 			// special handling for escape chars inside ' and "
 			if (Caret.Offset > 0) {
@@ -396,6 +395,8 @@ namespace MonoDevelop.SourceEditor
 					}
 
 					if (count >= 0) {
+						startedAtomicOperation = true;
+						Document.BeginAtomicUndo ();
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						
 						int offset = Caret.Offset;
@@ -407,6 +408,8 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
 					if (!inString && !inComment && !inChar && ch == '"' && charBefore != '\\') {
+						startedAtomicOperation = true;
+						Document.BeginAtomicUndo ();
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						insertionChar = '"';
 						int offset = Caret.Offset;
@@ -433,14 +436,9 @@ namespace MonoDevelop.SourceEditor
 						HitReturn ();
 				}
 			}
-			
-			if (templateInserted) {
+			if (startedAtomicOperation)
 				Document.EndAtomicUndo ();
-				return true;
-			}
-				
-			Document.EndAtomicUndo ();
-			return result;
+			return templateInserted || result;
 		}
 		
 		void HitReturn ()
