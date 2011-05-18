@@ -37,6 +37,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
 using System.Linq;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -109,14 +110,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public AstNode ParseText (string text)
 		{
-			text = text.Trim ();
-			var parser = new CSharpParser ();
-
-			using (var reader = new StringReader (text)) {
-				var result = parser.ParseStatements (reader).FirstOrDefault ();
-				if (result != null)
-					result.Remove ();
-				return result;
+			using (TextEditorData data = new TextEditorData()) {
+				data.Text = text;
+				var parser = new CSharpParser ();
+				return parser.ParseSnippet (data);
 			}
 		}
 		

@@ -87,7 +87,6 @@ namespace MonoDevelop.CSharp
 					return result.First ();
 			}
 			parser.ErrorPrinter.Reset ();
-			
 			using (var stream = data.OpenStream ()) {
 				return parser.Parse (stream);
 			}

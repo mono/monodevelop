@@ -75,6 +75,10 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var data = options.GetTextEditorData ();
 			var target = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
+			foreach (var c in target.Children) {
+				Console.WriteLine (c.GetType () + "=" + c + "/" + "  " + c.StartLocation + "-" + c.EndLocation);
+			}
+//			Console.WriteLine ("target:" + target + "/" + data.Caret.Line  + "/" + data.Caret.Column + "/" + target.StartLocation + "-" + target.EndLocation);
 			if (target == null)
 				return false;
 			if (target.Parent is MemberReferenceExpression && ((MemberReferenceExpression)target.Parent).GetChildByRole (MemberReferenceExpression.Roles.Identifier) == target) {
@@ -89,7 +93,6 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				declaringType = options.ResolveResult.CallingType;
 				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
 			}
-			
 			if (declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation)) {
 				if (declaringType.HasParts)
 					declaringType = declaringType.Parts.FirstOrDefault (t => t.CompilationUnit.FileName == options.Document.FileName) ?? declaringType;
@@ -200,7 +203,6 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			
 			if (!AnalyzeTargetExpression (options, unit))
 				return false;
-			
 			invocation = GetInvocation (unit, data);
 			if (invocation != null) 
 				return AnalyzeInvocation (options);

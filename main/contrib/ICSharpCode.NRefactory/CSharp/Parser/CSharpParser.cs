@@ -1205,7 +1205,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				if (init is StatementList) {
 					foreach (var stmt in ((StatementList)init).Statements) {
-						Console.WriteLine ("stmt:" + stmt);
 						forStatement.AddChild ((Statement)stmt.Accept (this), role);
 					}
 				} else if (init is Mono.CSharp.EmptyStatement) {
@@ -1707,7 +1706,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (MemberAccess memberAccess)
 			{
 				Expression result;
-				Console.WriteLine (memberAccess.LeftExpression  + "/" + memberAccess.Name);
 				if (memberAccess.LeftExpression is Indirection) {
 					var ind = memberAccess.LeftExpression as Indirection;
 					result = new PointerReferenceExpression ();
@@ -2629,7 +2627,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				var currentClause = queryExpression.next;
 				
 				while (currentClause != null) {
-					Console.WriteLine (currentClause);
 					QueryClause clause = (QueryClause)currentClause.Accept (this);
 					if (clause is QueryContinuationClause) {
 						// insert preceding query at beginning of QueryContinuationClause
@@ -2954,7 +2951,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public CompilationUnit Parse (Stream stream, int line)
+		public CompilationUnit Parse (Stream stream, int line = 0)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
 				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", errorReportPrinter);
@@ -2969,11 +2966,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public CompilationUnit Parse (Stream stream)
-		{
-			return Parse (stream, 1);
-		}
-		
 		public IEnumerable<AttributedNode> ParseTypeMembers (TextReader reader, int lineModifier = 0)
 		{
 			string code = "unsafe partial class MyClass { " + Environment.NewLine + reader.ReadToEnd () + "}";
@@ -3001,7 +2993,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			string code = reader.ReadToEnd() + " a;";
 			var members = ParseTypeMembers(new StringReader(code));
 			var field = members.FirstOrDefault() as FieldDeclaration;
-			Console.WriteLine ("field : " +field.ReturnType);
 			if (field != null)
 				return field.ReturnType;
 			return AstType.Null;

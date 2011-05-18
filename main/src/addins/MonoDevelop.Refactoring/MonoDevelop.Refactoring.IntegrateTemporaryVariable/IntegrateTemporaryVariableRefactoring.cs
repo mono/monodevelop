@@ -68,7 +68,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 //				Console.WriteLine("!!!Provider not found!");
 				return null;
 			}
-			return provider.ParseText (memberBody);
+			return provider.ParseText (memberBody.Trim ());
 		}
 
 		public override bool IsValid (RefactoringOptions options)
@@ -170,11 +170,14 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
 							change.FileName = options.Options.Document.FileName;
 							int lineNumber = localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line;
+							Console.WriteLine (localVariableDeclaration.StartLocation  + "/" + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start);
 							change.Offset = options.Options.Document.Editor.Document.LocationToOffset (lineNumber, localVariableDeclaration.StartLocation.Column);
 							int end = options.Options.Document.Editor.Document.LocationToOffset (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.EndLocation.Column);
 							change.RemovedChars = end - change.Offset;
 							// check if whole line can be removed.
 							var line = options.Options.Document.Editor.GetLine (lineNumber);
+							Console.WriteLine (line.GetIndentation (options.Options.Document.Editor.Document).Length  + "/" + localVariableDeclaration.StartLocation.Column);
+							Console.WriteLine (options.Options.Document.Editor.GetTextAt (line));
 							if (line.GetIndentation (options.Options.Document.Editor.Document).Length == localVariableDeclaration.StartLocation.Column - 1) {
 								bool isEmpty = true;
 								for (int i = end; i < line.EndOffset; i++) {
