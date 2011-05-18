@@ -78,7 +78,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 					return false;
 				if (options.ResolveResult.CallingMember == null || !options.ResolveResult.CallingMember.BodyRegion.Contains (endPoint.Line, endPoint.Column))
 					return false;
-				return true;
+				return options.ResolveResult.ResolvedType != null && !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName) && options.ResolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
 			}
 			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
@@ -160,6 +160,10 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
 			var unit = provider.ParseFile (data.Document.Text);
+			if (unit == null) {
+				LoggingService.LogError ("Declare local error: parese file == null");
+				return result;
+			}
 			var visitor = new VariableLookupVisitor (resolver, new DomLocation (endPoint.Line, endPoint.Column));
 			if (options.ResolveResult == null) {
 				LoggingService.LogError ("Declare local error: resolve result == null");
@@ -556,7 +560,6 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				if (isInitialUse && directionExpression.FieldDirection == FieldDirection.Out)
 					variables[left.Identifier].GetsAssigned = true;
 			}
-			
 			return result;
 		}
 		
