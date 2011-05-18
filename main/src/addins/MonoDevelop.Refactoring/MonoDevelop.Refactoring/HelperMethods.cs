@@ -147,7 +147,10 @@ namespace MonoDevelop.Refactoring
 			} else if (typeRef is PrimitiveType) {
 				var pt = (PrimitiveType)typeRef;
 				result = new DomReturnType (pt.Keyword);
-			}else { 
+			} else if (typeRef.IsNull) {
+				return null;
+
+			} else { 
 				throw new InvalidOperationException ("unknown AstType:" + typeRef);
 			}
 			

@@ -466,6 +466,36 @@ namespace MonoDevelop.Refactoring.Tests
 ");
 		}
 		
+		
+		/// <summary>
+		/// Bug 693944 - Extracted method returns void instead of the correct type
+		/// </summary>
+		[Test()]
+		public void TestBug693944 ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	void TestMethod ()
+	{
+		TestMethod (<-""Hello""->);
+	}
+}
+", @"class TestClass
+{
+	void TestMethod ()
+	{
+		TestMethod (NewMethod ());
+	}
+	
+	string NewMethod ()
+	{
+		return ""Hello"";
+	}
+}
+");
+		}
+		
+		
 		/* Currently not possible to implement, would cause serve bugs:
 		[Test()]
 		public void ExtractMethodMultiVariableWithLocalReturnVariableTest ()

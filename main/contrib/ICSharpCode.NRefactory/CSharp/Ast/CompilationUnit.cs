@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					next = node.NextSibling;
 					yield return node;
 				} else {
-					if (node.EndLocation < start) {
+					if (node.EndLocation <= start) {
 						next = node.NextSibling; 
 					} else {
 						next = node.FirstChild;

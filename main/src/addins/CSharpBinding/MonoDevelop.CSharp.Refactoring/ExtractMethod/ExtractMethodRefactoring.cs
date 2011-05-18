@@ -276,7 +276,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			param.StartOffset = startOffset;
 			param.EndOffset = endOffset;
 			param.Nodes = new List<AstNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
-			
 			string text = options.Document.Editor.GetTextBetween (startLocation, endLocation);
 			
 			param.Text = RemoveIndent (text, GetIndent (data.GetTextBetween (data.GetLine (startLocation.Line).Offset, data.GetLine (endLocation.Line).EndOffset))).TrimEnd ('\n', '\r');
