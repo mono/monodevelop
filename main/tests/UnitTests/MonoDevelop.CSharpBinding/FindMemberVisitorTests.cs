@@ -765,13 +765,13 @@ object item)
 			LocalVariable localVariable = new LocalVariable (null,
 			                                  "obj",
 			                                  DomReturnType.Int32,
-			                                  new DomRegion (5, 3, 8, 3));
+			                                  new DomRegion (6, 3, 8, 3));
 			RunTest (
 @"class FooBar
 {
 	public static void Main (string[] args)
 	{
-		foreach (object @obj in new object[3])
+		foreach (object $@obj in new object[3])
 		{
 			Console.WriteLine (@obj.GetType());
 		}
