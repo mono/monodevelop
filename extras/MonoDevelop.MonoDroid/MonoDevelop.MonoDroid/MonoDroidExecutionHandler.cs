@@ -60,10 +60,18 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var cmd = (MonoDroidExecutionCommand) command;
-			var launchOp = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity);
 
+			var chop = new ChainedAsyncOperationSequence (
+				new ChainedAsyncOperation () {
+					Create = () => new AdbKillProcessOperation (cmd.Device, cmd.PackageName)
+				},
+				new ChainedAsyncOperation () {
+					Create = () => MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity)
+				}
+			);
+			chop.Start ();
 			return new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, 
-				console.Out.Write, console.Error.Write, launchOp, false);
+				console.Out.Write, console.Error.Write, chop, false);
 		}
 	}
 
