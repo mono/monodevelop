@@ -180,6 +180,7 @@
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="CreateMethod" class = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 		<Class id="ExtractMethod" class = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
+		<Class id="DeclareLocal" class = "MonoDevelop.CSharp.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
@@ -187,9 +188,13 @@
 				defaultHandler = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodHandler"
 				_label = "Create Method"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ExtractMethod"
-					defaultHandler = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodHandler"
-					_label = "Extract Method"
-					shortcut = "Control|Alt|M"/>
+				defaultHandler = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodHandler"
+				_label = "Extract Method"
+				shortcut = "Control|Alt|M"/>
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.DeclareLocal"
+				defaultHandler = "MonoDevelop.CSharp.Refactoring.DeclareLocal.DeclareLocalHandler"
+				_label = "_Declare Local" 
+				shortcut = "Control+dead_circumflex"/> 
 	</Extension>
 
 	<Module>

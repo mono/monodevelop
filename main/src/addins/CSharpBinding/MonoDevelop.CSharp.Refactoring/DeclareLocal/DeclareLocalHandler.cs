@@ -28,8 +28,9 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.Refactoring.DeclareLocal
+namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 {
 	public class DeclareLocalHandler : AbstractRefactoringCommandHandler
 	{

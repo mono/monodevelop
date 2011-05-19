@@ -223,6 +223,8 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\TextEditorDataAdapter.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -255,5 +257,6 @@
     <Folder Include="MonoDevelop.CSharp.Completion\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\CreateMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
   </ItemGroup>
 </Project>

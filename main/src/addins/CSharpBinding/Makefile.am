@@ -74,6 +74,8 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpRefactorer.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
+	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalCodeGenerator.cs \
+	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalHandler.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodAstTransformer.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodHandler.cs \

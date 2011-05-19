@@ -3000,7 +3000,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstNode ParseExpression(TextReader reader)
 		{
-			var es = ParseStatements(new StringReader("tmp = " + Environment.NewLine + reader.ReadToEnd() + ";"), -1).FirstOrDefault() as ExpressionStatement;
+			var es = ParseStatements(new StringReader ("tmp = " + Environment.NewLine + reader.ReadToEnd() + ";"), -1).FirstOrDefault() as ExpressionStatement;
 			if (es != null) {
 				AssignmentExpression ae = es.Expression as AssignmentExpression;
 				if (ae != null)

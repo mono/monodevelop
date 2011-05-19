@@ -40,7 +40,6 @@
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename.RenameRefactoring" />
 		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
-		<Class id="DeclareLocal" class = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
 		<Class id="IntroduceConstant" class = "MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantRefactoring" />
 		<Class id="CreateClass" class = "MonoDevelop.Refactoring.CreateClass.CreateClassCodeGenerator" />
 		<Class id="CreateStruct" class = "MonoDevelop.Refactoring.CreateClass.CreateStructCodeGenerator" />
@@ -89,10 +88,6 @@
 				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"
 				_label = "Refactory Operations" /> 
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.DeclareLocal"
-				defaultHandler = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalHandler"
-				_label = "_Declare Local" 
-				shortcut = "Control+dead_circumflex"/> 
 		
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"

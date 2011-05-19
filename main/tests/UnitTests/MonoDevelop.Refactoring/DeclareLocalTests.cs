@@ -27,8 +27,8 @@
 using System;
 using NUnit.Framework;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Refactoring.DeclareLocal;
 using System.Collections.Generic;
+using MonoDevelop.CSharp.Refactoring.DeclareLocal;
 
 namespace MonoDevelop.Refactoring.Tests
 {
