@@ -367,13 +367,16 @@ namespace MonoDevelop.DocFood
 				
 				if (type != null) {
 					IType resolvedType = type.SourceProjectDom.SearchType (type.CompilationUnit, type, type.Location, exceptionType);
-					string sentence = AmbienceService.GetDocumentationSummary (resolvedType).Trim ();
-					if (sentence.StartsWith ("<para>") && sentence.EndsWith ("</para>"))
-						sentence = sentence.Substring ("<para>".Length, sentence.Length - "<para>".Length - "</para>".Length).Trim ();
-					if (sentence.StartsWith ("Represents the error that occurs when"))
-						sentence = "Is thrown when" + sentence.Substring ("Represents the error that occurs when".Length);
-					if (!string.IsNullOrEmpty (sentence))
-						Set ("exception", curName, sentence);
+					string sentence = AmbienceService.GetDocumentationSummary (resolvedType);
+					if (! string.IsNullOrEmpty(sentence)) {
+						sentence = sentence.Trim ();
+						if (sentence.StartsWith ("<para>") && sentence.EndsWith ("</para>"))
+							sentence = sentence.Substring ("<para>".Length, sentence.Length - "<para>".Length - "</para>".Length).Trim ();
+						if (sentence.StartsWith ("Represents the error that occurs when"))
+							sentence = "Is thrown when" + sentence.Substring ("Represents the error that occurs when".Length);
+						if (!string.IsNullOrEmpty (sentence))
+							Set ("exception", curName, sentence);
+					}
 				}
 				
 				DocConfig.Instance.Rules.ForEach (r => r.Run (this));
