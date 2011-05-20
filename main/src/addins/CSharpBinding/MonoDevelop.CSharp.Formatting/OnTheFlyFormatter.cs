@@ -72,12 +72,11 @@ namespace MonoDevelop.CSharp.Formatting
 			DomRegion validRegion = DomRegion.Empty;
 			foreach (var u in data.ParsedDocument.CompilationUnit.Usings.Where (us => us.IsFromNamespace)) {
 				// the dom parser breaks A.B.C into 3 namespaces with the same region, this is filtered here
-				if (u.ValidRegion == validRegion)
+				if (u.ValidRegion == validRegion || !u.ValidRegion.Contains (location))
 					continue;
 				// indicates a parser error on namespace level.
 				if (u.Namespaces.FirstOrDefault () == "<invalid>")
 					continue;
-				
 				validRegion = u.ValidRegion;
 				sb.Append ("namespace Stub {");
 				closingBrackets++;
@@ -90,7 +89,6 @@ namespace MonoDevelop.CSharp.Formatting
 				parent = parent.DeclaringType;
 			}
 			sb.AppendLine ();
-			
 			int startOffset = sb.Length;
 			int memberStart = data.Editor.LocationToOffset (member.Location.Line, 1);
 			int memberEnd = data.Editor.LocationToOffset (member.BodyRegion.End.Line + (runAferCR ? 1 : 0), member.BodyRegion.End.Column);
@@ -117,7 +115,7 @@ namespace MonoDevelop.CSharp.Formatting
 			changes.AddRange (domSpacingVisitor.Changes.Where (c => startOffset < c.Offset && c.Offset < endOffset));
 			
 			int delta = data.Editor.LocationToOffset (member.Location.Line, 1) - startOffset;
-			HashSet<int> lines = new HashSet<int> ();
+			HashSet<int > lines = new HashSet<int> ();
 			foreach (var change in changes) {
 				change.Offset += delta;
 				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
@@ -127,11 +125,14 @@ namespace MonoDevelop.CSharp.Formatting
 				var lastOffset = data.Editor.Caret.Offset;
 				changes.RemoveAll (c => c.Offset > lastOffset);
 			}
-			
-			new TextEditorDataAdapter (data.Editor).AcceptChanges (changes);
-			
-			foreach (int line in lines)
-				data.Editor.Document.CommitLineUpdate (line);
+			try {
+				data.Editor.Document.BeginAtomicUndo ();
+				new TextEditorDataAdapter (data.Editor).AcceptChanges (changes);
+				foreach (int line in lines)
+					data.Editor.Document.CommitLineUpdate (line);
+			} finally {
+				data.Editor.Document.EndAtomicUndo ();
+			}
 			stubData.Dispose ();
 		}
 	}
