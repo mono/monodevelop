@@ -181,6 +181,11 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
+		internal Document GetDocument ()
+		{
+			return Document;
+		}
+		
 		bool tryToForceCompletion = false;
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{

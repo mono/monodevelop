@@ -137,6 +137,30 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 		
+		static bool HasNonMethodMembersWithSameName (MonoDevelop.Projects.Dom.IMember member)
+		{
+			var type = member.DeclaringType;
+			bool anyOverloadWithParameters = false;
+			foreach (var t in type.SourceProjectDom.GetInheritanceTree (type)) {
+				if (t.SearchMember (member.Name, true).Any (m => m.MemberType != MonoDevelop.Projects.Dom.MemberType.Method)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool HasAnyOverloadWithParameters (IMethod method)
+		{
+			var type = method.DeclaringType;
+			List<IType > accessibleExtTypes = DomType.GetAccessibleExtensionTypes (editorCompletion.Dom, editorCompletion.GetDocument ().CompilationUnit);
+			
+			foreach (var t in type.SourceProjectDom.GetInheritanceTree (type)) {
+				if (t.Methods.Concat (t.GetExtensionMethods (accessibleExtTypes)).Any (m => m.Name == method.Name && m.Parameters.Count > 0))
+					return true;
+			}
+			return false;
+		}
+		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			string text = CompletionText;
@@ -144,7 +168,7 @@ namespace MonoDevelop.CSharp.Completion
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 			
-			if (!IsDelegateExpected && Member is IMethod && PropertyService.Get ("AutoInsertMatchingBracket", false)) {
+			if (!IsDelegateExpected && Member is IMethod && PropertyService.Get ("AutoInsertMatchingBracket", false) && !HasNonMethodMembersWithSameName ((IMember)Member)) {
 				int pos;
 				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
 					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
@@ -189,15 +213,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
 					insertSemicolon = true;
 				
-				var type = method.DeclaringType;
-				bool anyOverloadWithParameters = false;
-				foreach (var t in type.SourceProjectDom.GetInheritanceTree (type)) {
-					if (t.Methods.Any (m => m.Name == method.Name && m.Parameters.Count > 0)) {
-						anyOverloadWithParameters = true;
-						break;
-					}
-				}
-				if (anyOverloadWithParameters) {
+				if (HasAnyOverloadWithParameters (method)) {
 					if (insertSemicolon) {
 						text += "(|);";
 						skipChars = 2;
