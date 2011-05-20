@@ -24,6 +24,9 @@
 		<Import file = "templates/MonoDroidApplication/Main.axml" />
 		<Import file = "templates/MonoDroidApplication/Resource.cs" />
 		<Import file = "templates/MonoDroidApplicationProject.xpt.xml" />
+		<Import file = "templates/MonoDroidBroadcastReceiver.xft.xml" />
+		<Import file = "templates/MonoDroidClass.xft.xml" />
+		<Import file = "templates/MonoDroidInterface.xft.xml" />
 		<Import file = "templates/MonoDroidLibraryProject.xpt.xml" />
 		<Import file = "templates/MonoDroidOpenGLProject.xpt.xml" />
 		<Import file = "templates/MonoDroidView.xft.xml" />
@@ -48,6 +51,12 @@
 			              file = "templates/MonoDroidView.xft.xml"/>
 			<FileTemplate id   = "MonoDroidActivity"
 			              file = "templates/MonoDroidActivity.xft.xml"/>
+			<FileTemplate id   = "MonoDroidBroadcastReceiver"
+			              file = "templates/MonoDroidBroadcastReceiver.xft.xml"/>
+			<FileTemplate id   = "MonoDroidClass"
+			              file = "templates/MonoDroidClass.xft.xml"/>
+			<FileTemplate id   = "MonoDroidInterface"
+			              file = "templates/MonoDroidInterface.xft.xml"/>
 		</Condition>
 	</Extension>
 

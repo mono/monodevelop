@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Mono for Android View</_Name>
+		<_Name>Android View</_Name>
 		<Icon>md-text-file-icon</Icon>
 		<_Category>Mono for Android</_Category>
 		<LanguageName>C#</LanguageName>
