@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Android Activity</_Name>
+		<_Name>Broadcast Receiver</_Name>
 		<Icon>md-text-file-icon</Icon>
 		<_Category>Mono for Android</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>MonoDroid</ProjectType>
-		<_Description>Creates a Mono for Android Activity.</_Description>
+		<_Description>An empty Android broadcast receiver.  A broadcast receiver receives and reacts to announcements sent by Android processes.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>
@@ -28,20 +28,15 @@ using Android.Widget;
 
 namespace ${Namespace}
 {
-	[Activity (Label = "${Name}")]			
-	public class ${Name} : Activity
+	[BroadcastReceiver]
+	public class ${Name} : BroadcastReceiver
 	{
-		protected override void OnCreate (Bundle bundle)
+		public override void OnReceive (Context context, Intent intent)
 		{
-			base.OnCreate (bundle);
-
-			// Create your application here
+			Toast.MakeText (context, "Received intent!", ToastLength.Short).Show ();
 		}
 	}
 }
 ]]></File>
 	</TemplateFiles>
 </Template>
-
-
-
