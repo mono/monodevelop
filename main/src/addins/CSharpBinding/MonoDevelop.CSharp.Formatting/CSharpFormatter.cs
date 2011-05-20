@@ -110,8 +110,12 @@ namespace MonoDevelop.CSharp.Formatting
 			var changes = new List<ICSharpCode.NRefactory.Change> ();
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-
-			adapter.AcceptChanges (changes);
+			try {
+				data.Document.BeginAtomicUndo ();
+				adapter.AcceptChanges (changes);
+			} finally {
+				data.Document.EndAtomicUndo ();
+			}
 		}
 
 		public string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
