@@ -44,7 +44,13 @@ namespace Sharpen
 		
 		public virtual void Destroy()
 		{
-			proc.Kill ();
+			if (!proc.HasExited) {
+				try {
+					proc.Kill ();
+				} catch (InvalidOperationException) {
+					// Already exited. Do nothing
+				}
+			}
 		}
 
 		public virtual int WaitFor()
