@@ -35,6 +35,7 @@ using System.IO;
 using MonoDevelop.Core.Serialization;
 using System.Reflection;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {
@@ -446,6 +447,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		static void WriteInternal (BinaryWriter writer, INameEncoder nameTable, IType type)
 		{
 			Debug.Assert (type != null);
+			if (type is DomTypeProxy)
+				type = ((DomTypeProxy)type).WrappedType;
 			if (type is CompoundType && ((CompoundType)type).PartsCount > 1) {
 				CompoundType compoundType = type as CompoundType;
 				writer.Write ((uint)compoundType.PartsCount);
@@ -460,6 +463,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Write (writer, nameTable, type.BodyRegion);
 			
 			if (type.CompilationUnit != null) {
+				if (string.IsNullOrEmpty (type.CompilationUnit.FileName)) {
+					LoggingService.LogError ("compilation unit file name == null. Can't write invalid data for:" + type.Name);
+					throw new InvalidDataException ("compilation unit file name == null. Can't write invalid data for:" + type.Name);
+				}
 				WriteString (type.CompilationUnit.FileName, writer, nameTable);
 			} else {
 				WriteString (null, writer, nameTable);

@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		ClassEntry entry;
 		bool isLoaded = false;
 		IType wrappedType = null;
-		IType WrappedType {
+		public IType WrappedType {
 			get {
 				if (!isLoaded) {
 					isLoaded = true;
