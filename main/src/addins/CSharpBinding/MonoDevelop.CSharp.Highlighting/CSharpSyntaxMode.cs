@@ -227,10 +227,13 @@ namespace MonoDevelop.CSharp.Highlighting
 							}
 							break;
 						case "var": 
-							var vds = node.Parent != null ? node.Parent.Parent as VariableDeclarationStatement : null;
-							if (vds != null && node.StartLocation == vds.Type.StartLocation) {
-								base.AddRealChunk (chunk);
-								return;
+							if (node.Parent != null) {
+								var vds = node.Parent.Parent as VariableDeclarationStatement;
+								if (node.Parent.Parent is ForeachStatement && ((ForeachStatement)node.Parent.Parent).VariableType.StartLocation == node.StartLocation ||
+									vds != null && node.StartLocation == vds.Type.StartLocation) {
+									base.AddRealChunk (chunk);
+									return;
+								}
 							}
 							break;
 						}
