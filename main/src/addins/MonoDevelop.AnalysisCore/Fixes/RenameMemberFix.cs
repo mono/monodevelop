@@ -37,10 +37,13 @@ namespace MonoDevelop.AnalysisCore.Fixes
 	public class RenameMemberFix : IAnalysisFix
 	{
 		public string NewName { get; private set; }
-		public IMember Item { get; private set; }
+		public string OldName { get; private set; }
 		
-		public RenameMemberFix (IMember item, string newName)
+		public IBaseMember Item { get; private set; }
+		
+		public RenameMemberFix (IBaseMember item, string oldName, string newName)
 		{
+			this.OldName = oldName;
 			this.NewName = newName;
 			this.Item = item;
 		}
@@ -54,28 +57,38 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		//maybe the item's type's SourceProject is null?
 		public IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
 		{
-			var renameFix = (RenameMemberFix) fix;
+			var renameFix = (RenameMemberFix)fix;
 			var refactoring = new RenameRefactoring ();
 			var options = new RefactoringOptions () {
 				Document = doc,
 				Dom = doc.Dom,
 				SelectedItem = renameFix.Item,
 			};
-			if (!refactoring.IsValid (options))
+			
+			if (!string.IsNullOrEmpty (renameFix.NewName) && !refactoring.IsValid (options))
 				yield break;
 			
 			var prop = new RenameRefactoring.RenameProperties () {
 				NewName = renameFix.NewName,
 			};
-			
+			if (string.IsNullOrEmpty (renameFix.NewName)) {
+				yield return new RenameFixAction () {
+					Label = GettextCatalog.GetString ("Rename '{0}'...", renameFix.OldName),
+					Refactoring = refactoring,
+					Options = options,
+					Properties = prop,
+					Preview = false,
+				};
+				yield break;
+			}
 			yield return new RenameFixAction () {
-				Label = GettextCatalog.GetString ("Rename '{0}' to '{1}'", renameFix.Item.Name, renameFix.NewName),
+				Label = GettextCatalog.GetString ("Rename '{0}' to '{1}'", renameFix.OldName, renameFix.NewName),
 				Refactoring = refactoring,
 				Options = options,
 				Properties = prop,
 				Preview = false,
 			};
-				
+			
 			yield return new RenameFixAction () {
 				Label = GettextCatalog.GetString ("Rename '{0}' to '{1}' with preview",
 					renameFix.Item.Name, renameFix.NewName),
@@ -96,6 +109,16 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			
 			public void Fix ()
 			{
+				if (string.IsNullOrEmpty (Properties.NewName)) {
+					INode item;
+					ResolveResult resolveResult;
+					var editor = Options.Document.GetContent<MonoDevelop.Ide.Gui.Content.ITextBuffer> ();
+					CurrentRefactoryOperationsHandler.GetItem (Options.Dom, Options.Document, editor, out resolveResult, out item);
+					Options.SelectedItem = item;
+					Refactoring.Run (Options);
+					return;
+				}
+				
 				//FIXME: performchanges should probably use a monitor too, as it can be slow
 				var changes = Refactoring.PerformChanges (Options, Properties);
 				if (Preview) {

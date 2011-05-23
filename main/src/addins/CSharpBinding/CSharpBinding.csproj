@@ -84,6 +84,10 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.AnalysisCore\MonoDevelop.AnalysisCore.csproj">
+      <Project>{D0E64746-DE6D-4383-9A3B-B406B29828AB}</Project>
+      <Name>MonoDevelop.AnalysisCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -225,6 +229,11 @@
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionSettingsDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionSettingsDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -258,5 +267,6 @@
     <Folder Include="MonoDevelop.CSharp.Refactoring\CreateMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
+    <Folder Include="MonoDevelop.CSharp.Analysis\" />
   </ItemGroup>
 </Project>

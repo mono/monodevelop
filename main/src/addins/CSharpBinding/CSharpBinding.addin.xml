@@ -13,6 +13,7 @@
 		<Addin id="Ide" version="2.6"/>
 		<Addin id="SourceEditor2" version="2.6"/>
 		<Addin id="Refactoring" version="2.6"/>
+		<Addin id="AnalysisCore" version="2.6"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -197,6 +198,11 @@
 				shortcut = "Control+dead_circumflex"/> 
 	</Extension>
 
+	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
+		<Rule _name="C# Naming Conventions" input="ParsedDocument" 
+			func="MonoDevelop.CSharp.Analysis.NamingConventions.CheckNaming" />
+	</Extension>-->
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>

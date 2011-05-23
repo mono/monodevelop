@@ -42,7 +42,7 @@ namespace MonoDevelop.AnalysisCore.Rules
 						new DomRegion (start, new DomLocation (start.Line, start.Column + type.Name.Length)),
 						"Type names should begin with an uppercase letter",
 						ResultLevel.Warning, ResultCertainty.High, ResultImportance.Medium,
-						new RenameMemberFix (type, newName));
+						new RenameMemberFix (type, type.Name, newName));
 				}
 			}
 		}

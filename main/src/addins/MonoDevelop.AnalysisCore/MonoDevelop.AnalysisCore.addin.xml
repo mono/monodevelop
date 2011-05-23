@@ -89,8 +89,8 @@
 		<Adaptor func="MonoDevelop.AnalysisCore.Rules.Adapters.GetCompilationUnit"
 			input="ParsedDocument" output="CompilationUnit" />
 		<Category _name="Design Guidelines" id="Design">
-			<Rule _name="Naming Conventions" input="CompilationUnit" 
-				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />
+<!--			<Rule _name="Naming Conventions" input="CompilationUnit" 
+				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />-->
 		</Category>
 	</Extension>
 	
