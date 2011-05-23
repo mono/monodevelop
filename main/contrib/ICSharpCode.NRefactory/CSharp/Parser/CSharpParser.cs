@@ -898,7 +898,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					newProperty.AddChild (setAccessor, PropertyDeclaration.SetterRole);
 				}
-				if (location != null)
+				if (location != null && location.Count > 1)
 					newProperty.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RBrace);
 				
 				typeStack.Peek ().AddChild (newProperty, TypeDeclaration.MemberRole);
