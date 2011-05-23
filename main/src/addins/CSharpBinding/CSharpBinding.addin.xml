@@ -13,7 +13,6 @@
 		<Addin id="Ide" version="2.6"/>
 		<Addin id="SourceEditor2" version="2.6"/>
 		<Addin id="Refactoring" version="2.6"/>
-		<Addin id="AnalysisCore" version="2.6"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">

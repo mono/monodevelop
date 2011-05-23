@@ -151,6 +151,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 				}
 			}
 			
+			if (Editor == null || Editor.Document == null)
+				return true;
+			
 			//clear the old results out at the same rate we add in the new ones
 			for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
 				Editor.Document.RemoveMarker (markers.Dequeue ());
@@ -160,7 +163,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			//add in the new markers
 			int targetIndex = updateIndex + UPDATE_COUNT;
 			for (; updateIndex < targetIndex && updateIndex < currentResults.Count; updateIndex++) {
-				var marker = new ResultMarker (currentResults[updateIndex]);
+				var marker = new ResultMarker (currentResults [updateIndex]);
 				Editor.Document.AddMarker (marker.Line, marker);
 				markers.Enqueue (marker);
 			}

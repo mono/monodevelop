@@ -91,7 +91,8 @@ namespace MonoDevelop.AnalysisCore
 		
 		protected override void Run (object dataItem)
 		{
-			var action = (IAnalysisFixAction) dataItem;
+			Console.WriteLine ("run !!!!");
+			var action = (IAnalysisFixAction)dataItem;
 			action.Fix ();
 		}
 		
