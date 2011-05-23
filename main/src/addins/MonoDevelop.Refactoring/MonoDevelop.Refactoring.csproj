@@ -54,6 +54,7 @@
     <Reference Include="System.Core">
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
