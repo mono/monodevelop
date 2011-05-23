@@ -214,8 +214,9 @@ namespace MonoDevelop.CSharp.Highlighting
 					var node = unit.GetNodeAt (loc.Line, loc.Column);
 					if (node is Identifier) {
 						
-						// highlight 'value' in property setters.
-						if (((Identifier)node).Name == "value") {
+						switch (((Identifier)node).Name) {
+						case "value":
+							// highlight 'value' in property setters.
 							var n = node.Parent;
 							while (n != null) {
 								if (n is Accessor && n.Role == PropertyDeclaration.SetterRole) {
@@ -224,7 +225,16 @@ namespace MonoDevelop.CSharp.Highlighting
 								}
 								n = n.Parent;
 							}
+							break;
+						case "var": 
+							var vds = node.Parent != null ? node.Parent.Parent as VariableDeclarationStatement : null;
+							if (vds != null && node.StartLocation == vds.Type.StartLocation) {
+								base.AddRealChunk (chunk);
+								return;
+							}
+							break;
 						}
+						
 							
 						chunk.Style = "text";
 					}
