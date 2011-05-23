@@ -95,6 +95,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
 			var doc = Document.ParsedDocument;
+			if (doc == null)
+				return;
 			var treeType = new RuleTreeType ("ParsedDocument", Path.GetExtension (doc.FileName));
 			AnalysisService.QueueAnalysis (doc, treeType, UpdateResults);
 		}
