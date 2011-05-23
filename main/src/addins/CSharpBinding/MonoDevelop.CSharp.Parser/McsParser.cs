@@ -1,4 +1,3 @@
-using Mono.CSharp;
 // 
 // McsParser.cs
 //  
@@ -26,19 +25,17 @@ using Mono.CSharp;
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
-using Mono.CSharp;
 using System.Text;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using Mono.CSharp;
+using MonoDevelop.CSharp.Project;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Projects;
-using MonoDevelop.CSharp.Project;
-using System.CodeDom;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -48,7 +45,7 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			return new NewCSharpExpressionFinder (dom);
 		}
-
+		
 		public override IResolver CreateResolver (ProjectDom dom, object editor, string fileName)
 		{
 			MonoDevelop.Ide.Gui.Document doc = (MonoDevelop.Ide.Gui.Document)editor;
@@ -86,7 +83,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (string.IsNullOrEmpty (content))
 					return null;
 				var tagComments = ProjectDomService.SpecialCommentTags.GetNames ();
-				List<string> compilerArguments = new List<string> ();
+				List<string > compilerArguments = new List<string> ();
 				if (dom != null && dom.Project != null && MonoDevelop.Ide.IdeApp.Workspace != null) {
 					DotNetProjectConfiguration configuration = dom.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 					CSharpCompilerParameters par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
@@ -99,7 +96,7 @@ namespace MonoDevelop.CSharp.Parser
 						if (par.TreatWarningsAsErrors)
 							compilerArguments.Add ("-warnaserror");
 						if (!string.IsNullOrEmpty (par.NoWarnings))
-							compilerArguments.Add ("-nowarn:"+ string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
+							compilerArguments.Add ("-nowarn:" + string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
 						compilerArguments.Add ("-warn:" + par.WarningLevel);
 						compilerArguments.Add ("-langversion:" + GetLangString (par.LangVersion));
 						if (par.GenerateOverflowChecks)
@@ -107,7 +104,7 @@ namespace MonoDevelop.CSharp.Parser
 					}
 				}
 				
-				var unit =  new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
+				var unit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				var result = new ParsedDocument (fileName);
 				result.CompilationUnit = unit;
 				
@@ -137,6 +134,7 @@ namespace MonoDevelop.CSharp.Parser
 				} catch (Exception ex) {
 					System.Console.WriteLine (ex);
 				}
+				result.LanguageAST = new ICSharpCode.NRefactory.CSharp.CSharpParser().Parse (top, 0);
 				// parser errorse
 				errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
 				return result;

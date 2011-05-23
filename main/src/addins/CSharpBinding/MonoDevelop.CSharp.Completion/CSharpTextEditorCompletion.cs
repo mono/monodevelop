@@ -85,16 +85,28 @@ namespace MonoDevelop.CSharp.Completion
 			textEditorData = Document.Editor;
 			
 			InitTracker ();
-			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			IEnumerable<string > types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			if (dom != null && dom.Project != null)
 				policy = dom.Project.Policies.Get<CSharpFormattingPolicy> (types);
 			UpdatePath (null, null);
 			textEditorData.Caret.PositionChanged += UpdatePath;
 			Document.DocumentParsed += HandleDocumentDocumentParsed;
 		}
-
+		
+		public ICSharpCode.NRefactory.CSharp.CompilationUnit LanguageAST {
+			get;
+			set;
+		}
+		
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)
 		{
+			var unit = Document.ParsedDocument;
+			if (unit != null) {
+				LanguageAST = unit.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+				Editor.Parent.TextViewMargin.PurgeLayoutCache ();
+				Editor.Parent.RedrawMarginLines (Editor.Parent.TextViewMargin, 1, Editor.LineCount);
+			}
+			
 			UpdatePath (null, null);
 		}
 

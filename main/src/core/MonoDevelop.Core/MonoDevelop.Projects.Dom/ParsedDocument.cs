@@ -123,6 +123,11 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public object LanguageAST {
+			get;
+			set;
+		}
+		
 		public ICompilationUnit CompilationUnit { get; set; }
 		
 		public virtual IEnumerable<FoldingRegion> GenerateFolds ()

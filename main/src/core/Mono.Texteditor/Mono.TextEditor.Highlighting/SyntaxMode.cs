@@ -482,7 +482,7 @@ namespace Mono.TextEditor.Highlighting
 			Chunk startChunk = null;
 			Chunk endChunk;
 
-			void AddRealChunk (Chunk chunk)
+			protected virtual void AddRealChunk (Chunk chunk)
 			{
 				if (startChunk == null) {
 					startChunk = endChunk = chunk;

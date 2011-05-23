@@ -947,25 +947,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 	
 				parserOutput = parser.Parse (dom, fileName, fileContent);
 				
-	/*			ParseInformation parseInformation = GetCachedParseInformation (fileName);
-				bool newInfo = false;
-				
-				if (parseInformation == null) {
-					parseInformation = new ParseInformation();
-					newInfo = true;
-				}
-				
-				if (parserOutput.Errors != null && parserOutput.Errors.Count > 0) {
-					parseInformation.DirtyCompilationUnit = parserOutput;
-				} else {
-					parseInformation.ValidCompilationUnit = parserOutput;
-					parseInformation.DirtyCompilationUnit = null;
-				}
-				
-				if (newInfo) {
-					AddToCache (parseInformation, fileName);
-				}
-	*/
 				if (parserOutput != null) {
 					AddToCache (parserOutput);
 					OnParsedDocumentUpdated (new ParsedDocumentEventArgs (parserOutput));
