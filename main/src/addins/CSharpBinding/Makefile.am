@@ -6,7 +6,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
 PARSE = parse.exe
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/AnalysisCore/MonoDevelop.AnalysisCore.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
@@ -17,6 +16,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/OldNRefactory.dll
+
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \

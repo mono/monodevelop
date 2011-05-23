@@ -1,12 +1,13 @@
 
+
 SUBDIRS = \
 	MacPlatform \
 	GnomePlatform \
 	MonoDevelop.DesignerSupport \
 	MonoDevelop.Debugger \
 	Deployment \
-	MonoDevelop.Refactoring \
 	MonoDevelop.SourceEditor2 \
+	MonoDevelop.Refactoring \
 	VersionControl \
 	MonoDevelop.Autotools \
 	MonoDevelop.Gettext \

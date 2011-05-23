@@ -103,35 +103,5 @@
       <LogicalName>MonoDevelop.AnalysisCore.addin.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AnalysisService.cs" />
-    <Compile Include="Result.cs" />
-    <Compile Include="AnalysisExtensions.cs" />
-    <Compile Include="AnalysisCommands.cs" />
-    <Compile Include="FixableResult.cs" />
-    <Compile Include="AnalysisOptions.cs" />
-    <Compile Include="Extensions\AnalysisTypeExtensionNode.cs" />
-    <Compile Include="Extensions\FixHandlerExtensionNode.cs" />
-    <Compile Include="Extensions\AnalysisRuleAddinNode.cs" />
-    <Compile Include="Gui\ResultsEditorExtension.cs" />
-    <Compile Include="Gui\ResultTooltipProvider.cs" />
-    <Compile Include="RuleTree.cs" />
-    <Compile Include="RuleTreeType.cs" />
-    <Compile Include="Gui\AnalysisOptionsPanel.cs" />
-    <Compile Include="Gui\ResultMarker.cs" />
-    <Compile Include="Rules\Adaptors.cs" />
-    <Compile Include="Fixes\RenameMemberFix.cs" />
-    <Compile Include="Rules\NamingConventions.cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <None Include="README.txt" />
-    <None Include="TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-    <Folder Include="Gui\" />
-    <Folder Include="Rules\" />
-    <Folder Include="Fixes\" />
-  </ItemGroup>
 </Project>

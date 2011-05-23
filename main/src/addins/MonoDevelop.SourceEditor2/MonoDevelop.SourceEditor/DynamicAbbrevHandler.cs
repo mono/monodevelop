@@ -29,7 +29,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.SourceEditor
 {

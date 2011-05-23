@@ -120,6 +120,24 @@
     <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ReferencesFinder.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultsEditorExtension.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultTooltipProvider.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Gui\AnalysisOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultMarker.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Fixes\RenameMemberFix.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Extensions\AnalysisTypeExtensionNode.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Extensions\FixHandlerExtensionNode.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Extensions\AnalysisRuleAddinNode.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\AnalysisCommands.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\AnalysisExtensions.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\AnalysisOptions.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\AnalysisService.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\FixableResult.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Rules\Adaptors.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Rules\NamingConventions.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Result.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -133,6 +151,7 @@
     <Folder Include="MonoDevelop.Refactoring.RefactorImports\" />
     <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />
     <Folder Include="MonoDevelop.Refactoring.ConvertPropery\" />
+    <Folder Include="MonoDevelop.AnalysisCore\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">
@@ -167,6 +186,10 @@
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -186,5 +209,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <None Include="ChangeLog" />
+    <None Include="MonoDevelop.AnalysisCore\README.txt" />
+    <None Include="MonoDevelop.AnalysisCore\TODO.txt" />
   </ItemGroup>
 </Project>

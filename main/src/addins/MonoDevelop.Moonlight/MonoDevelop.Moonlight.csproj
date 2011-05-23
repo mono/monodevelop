@@ -161,5 +161,6 @@
     <Content Include="Templates\framework_SL_3_0.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Templates\framework_SL_4_0.xml" />
   </ItemGroup>
 </Project>

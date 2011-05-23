@@ -84,10 +84,6 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.AnalysisCore\MonoDevelop.AnalysisCore.csproj">
-      <Project>{D0E64746-DE6D-4383-9A3B-B406B29828AB}</Project>
-      <Name>MonoDevelop.AnalysisCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

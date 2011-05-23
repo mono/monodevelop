@@ -163,7 +163,7 @@ namespace MonoDevelop.SourceEditor
 				switch (key) {
 				case Gdk.Key.bracketright:
 					// ctrl-] => Go to declaration	
-					IdeApp.CommandService.DispatchCommand (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration);
+//					IdeApp.CommandService.DispatchCommand (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration);
 					return;
 				}
 			}// ctrl+key		
