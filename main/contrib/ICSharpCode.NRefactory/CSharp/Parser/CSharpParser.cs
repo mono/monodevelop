@@ -152,6 +152,18 @@ namespace ICSharpCode.NRefactory.CSharp
 					return result;
 				}
 				
+				if (typeName is SpecialContraintExpr) {
+					var sce = (SpecialContraintExpr)typeName;
+					switch (sce.Constraint) {
+					case SpecialConstraint.Class:
+						return new PrimitiveType ("class", Convert (sce.Location));
+					case SpecialConstraint.Struct:
+						return new PrimitiveType ("struct", Convert (sce.Location));
+					case SpecialConstraint.Constructor:
+						return new PrimitiveType ("new", Convert (sce.Location));
+					}
+				}
+				
 				System.Console.WriteLine ("Error while converting :" + typeName + " - unknown type name");
 				System.Console.WriteLine (Environment.StackTrace);
 				return new SimpleType ("unknown");
@@ -2950,19 +2962,24 @@ namespace ICSharpCode.NRefactory.CSharp
 				AdjustLineLocations (child, line);
 			}
 		}
+
+		public CompilationUnit Parse (CompilerCompilationUnit top, int line)
+		{
+			if (top == null)
+				return null;
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			top.UsingsBag.Global.Accept (conversionVisitor);
+			InsertComments (top, conversionVisitor);
+			if (line != 0)
+				AdjustLineLocations (conversionVisitor.Unit, line);
+			return conversionVisitor.Unit;
+		}
 		
 		public CompilationUnit Parse (Stream stream, int line = 0)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
 				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", errorReportPrinter);
-				if (top == null)
-					return null;
-				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
-				top.UsingsBag.Global.Accept (conversionVisitor);
-				InsertComments (top, conversionVisitor);
-				if (line != 0)
-					AdjustLineLocations (conversionVisitor.Unit, line);
-				return conversionVisitor.Unit;
+				return Parse (top, line);
 			}
 		}
 
