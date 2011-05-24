@@ -31,12 +31,26 @@ using Gdk;
 
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
+using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
 	public abstract class DebugTextMarker : StyleTextMarker, IIconBarMarker
 	{
 		protected Mono.TextEditor.TextEditor editor;
+		
+		public override StyleFlag IncludedStyles {
+			get {
+				// check, if a message bubble is active in that line.
+				if (LineSegment != null && LineSegment.Markers.Any (m => m != this && (m is IExtendingTextMarker)))
+					return StyleFlag.None;
+				return base.IncludedStyles;
+			}
+			set {
+				base.IncludedStyles = value;
+			}
+		}
+		
 		
 		public DebugTextMarker (Mono.TextEditor.TextEditor editor)
 		{
