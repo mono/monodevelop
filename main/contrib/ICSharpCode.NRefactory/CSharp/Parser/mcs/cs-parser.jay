@@ -143,6 +143,7 @@ namespace Mono.CSharp
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
+		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
 %}
 
 %token EOF
@@ -2694,9 +2695,13 @@ opt_type_argument_list
 	| OP_GENERICS_LT type_arguments OP_GENERICS_GT
 	  {
 		if (lang_version < LanguageVersion.ISO_2)
-			FeatureIsNotAvailable (GetLocation ($1), "generics");	  
-	  
-		$$ = $2;
+			FeatureIsNotAvailable (GetLocation ($1), "generics");
+		var list = locationListStack.Pop ();
+		list.Add (GetLocation ($1));
+		list.Add (GetLocation ($2));
+		lbag.AddLocation ($2, list);
+	
+		$$ = $2;;
 	  }
 	| OP_GENERICS_LT error
 	  {
@@ -2711,13 +2716,15 @@ type_arguments
 		TypeArguments type_args = new TypeArguments ();
 		type_args.Add ((FullNamedExpression) $1);
 		$$ = type_args;
+		locationListStack.Push (new List<Location> ());
 	  }
 	| type_arguments COMMA type
 	  {
 		TypeArguments type_args = (TypeArguments) $1;
 		type_args.Add ((FullNamedExpression) $3);
 		$$ = type_args;
-	  }	  
+		locationListStack.Peek ().Add (GetLocation ($2));
+	  }
 	;
 
 //

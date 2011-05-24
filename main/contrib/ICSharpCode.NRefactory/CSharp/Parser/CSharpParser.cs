@@ -71,9 +71,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				if (texpr.TypeArguments == null || texpr.TypeArguments.Args == null)
 					return;
+				var loc = LocationsBag.GetLocations (texpr.TypeArguments);
+				if (loc != null && loc.Count >= 2)
+					result.AddChild (new CSharpTokenNode (Convert (loc [loc.Count - 2]), 1), AstType.Roles.LChevron);
+				int i = 0;
 				foreach (var arg in texpr.TypeArguments.Args) {
 					result.AddChild (ConvertToType (arg), AstType.Roles.TypeArgument);
+					if (loc != null && i < loc.Count - 2)
+						result.AddChild (new CSharpTokenNode (Convert (loc [i++]), 1), AstType.Roles.Comma);
 				}
+				if (loc != null && loc.Count >= 2)
+					result.AddChild (new CSharpTokenNode (Convert (loc [loc.Count - 1]), 1), AstType.Roles.RChevron);
 			}
 			
 			AstType ConvertToType (MemberName memberName)
@@ -95,6 +103,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 			AstType ConvertToType (Mono.CSharp.Expression typeName)
 			{
+				Console.WriteLine (typeName);
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
 					return new PrimitiveType (typeExpr.GetSignatureForError (), Convert (typeExpr.Location));
@@ -2962,7 +2971,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AdjustLineLocations (child, line);
 			}
 		}
-
+		
 		public CompilationUnit Parse (CompilerCompilationUnit top, int line)
 		{
 			if (top == null)
@@ -3017,7 +3026,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstNode ParseExpression(TextReader reader)
 		{
-			var es = ParseStatements(new StringReader ("tmp = " + Environment.NewLine + reader.ReadToEnd() + ";"), -1).FirstOrDefault() as ExpressionStatement;
+			var es = ParseStatements(new StringReader("tmp = " + Environment.NewLine + reader.ReadToEnd() + ";"), -1).FirstOrDefault() as ExpressionStatement;
 			if (es != null) {
 				AssignmentExpression ae = es.Expression as AssignmentExpression;
 				if (ae != null)

@@ -7141,9 +7141,7 @@ namespace Mono.CSharp
 		FullNamedExpression texpr;
 		
 		public FullNamedExpression FullNamedExpression {
-			get {
-				return texpr;
-			}
+			get { return texpr;}
 		}
 		
 		public RefValueExpr (Expression expr, FullNamedExpression texpr, Location loc)

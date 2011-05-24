@@ -1,5 +1,5 @@
 // 
-// EmptyExpression.cs
+// QuickFixService.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,53 +24,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using MonoDevelop.Projects.Dom;
+using System.Threading;
+using System.Linq;
+using MonoDevelop.Core;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace MonoDevelop.QuickFix
 {
-	/// <summary>
-	/// Type&lt;[EMPTY]&gt;
-	/// </summary>
-	public class EmptyExpression : Expression, IRelocatable
+	public static class QuickFixService
 	{
-		AstLocation location;
-
-		public override AstLocation StartLocation {
-			get {
-				return location;
-			}
-		}
+		static List<QuickFix> quickFixes = new List<QuickFix> ();
 		
-		public override AstLocation EndLocation {
-			get {
-				return location;
-			}
-		}
-
-		public EmptyExpression ()
+		//TODO: proper job scheduler and discarding superseded jobs
+		public static void QueueAnalysis <T> (ParsedDocument doc, DomLocation loc, Action<List<QuickFix>> callback)
 		{
-		}
-
-		public EmptyExpression (AstLocation location)
-		{
-			this.location = location;
-		}
-		
-		#region IRelocationable implementation
-		void IRelocatable.SetStartLocation (AstLocation startLocation)
-		{
-			this.location = startLocation;
-		}
-		#endregion
-		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitEmptyExpression (this, data);
-		}
-
-		protected internal override bool DoMatch (AstNode other, PatternMatching.Match match)
-		{
-			var o = other as EmptyExpression;
-			return o != null;
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					List<QuickFix > availableFixes = new List<QuickFix> (quickFixes.Where (fix => fix.IsValid (doc, loc)));
+					callback (availableFixes);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error in analysis service", ex);
+				}
+			});
 		}
 	}
 }
+

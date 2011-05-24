@@ -734,7 +734,7 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		{
 			if (element == null)
 				return null;
-			List<Location> found;
+			List<Location > found;
 			simple_locs.TryGetValue (element, out found);
 			return found;
 		}

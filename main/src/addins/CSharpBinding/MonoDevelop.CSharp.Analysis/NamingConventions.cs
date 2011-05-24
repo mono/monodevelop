@@ -58,8 +58,8 @@ namespace MonoDevelop.CSharp.Analysis
 	
 	public enum NamingStyle {
 		None,
-		UpperCamelCase,
-		LowerCamelCase,
+		PascalCase,
+		CamelCase,
 		AllUpper,
 		AllLower,
 		FirstUpper
@@ -97,11 +97,11 @@ namespace MonoDevelop.CSharp.Analysis
 			if (Prefix != null)
 				result.Append (Prefix);
 			switch (NamingStyle) {
-			case NamingStyle.UpperCamelCase:
-				result.Append ("UpperCamelCase");
+			case NamingStyle.PascalCase:
+				result.Append ("PascalCase");
 				break;
-			case NamingStyle.LowerCamelCase:
-				result.Append ("lowerCamelCase");
+			case NamingStyle.CamelCase:
+				result.Append ("camelCase");
 				break;
 			case NamingStyle.AllUpper:
 				result.Append ("ALL_UPPER");
@@ -144,9 +144,9 @@ namespace MonoDevelop.CSharp.Analysis
 				return !id.Any (ch => char.IsLetter (ch) && char.IsUpper (ch));
 			case NamingStyle.AllUpper:
 				return !id.Any (ch => char.IsLetter (ch) && char.IsLower (ch));
-			case NamingStyle.LowerCamelCase:
+			case NamingStyle.CamelCase:
 				return id.Length == 0 || char.IsLower (id [0]);
-			case NamingStyle.UpperCamelCase:
+			case NamingStyle.PascalCase:
 				return id.Length == 0 || char.IsUpper (id [0]);
 			case NamingStyle.FirstUpper:
 				return id.Length == 0 && char.IsUpper (id [0]) && !id.Take (1).Any (ch => char.IsLetter (ch) && char.IsUpper (ch));
@@ -177,11 +177,11 @@ namespace MonoDevelop.CSharp.Analysis
 				if (id.Any (ch => char.IsLetter (ch) && char.IsLower (ch)))
 					return string.Format (GettextCatalog.GetString ("'{0}' contains lower case letters."), name);
 				break;
-			case NamingStyle.LowerCamelCase:
+			case NamingStyle.CamelCase:
 				if (id.Length > 0 && char.IsUpper (id [0]))
 					return string.Format (GettextCatalog.GetString ("'{0}' should start with a lower case letter."), name);
 				break;
-			case NamingStyle.UpperCamelCase:
+			case NamingStyle.PascalCase:
 				if (id.Length > 0 && char.IsLower (id [0]))
 					return string.Format (GettextCatalog.GetString ("'{0}' should start with an upper case letter."), name);
 				break;
@@ -308,22 +308,22 @@ namespace MonoDevelop.CSharp.Analysis
 		
 		public CSharpNamingPolicy ()
 		{
-			Namespace = new NamingRule (NamingStyle.UpperCamelCase);
-			Type = new NamingRule (NamingStyle.UpperCamelCase);
-			Interface = new NamingRule ("I", NamingStyle.UpperCamelCase, null);
-			TypeParameter = new NamingRule (NamingStyle.UpperCamelCase);
-			Method = new NamingRule (NamingStyle.UpperCamelCase);
-			Property = new NamingRule (NamingStyle.UpperCamelCase);
-			Event = new NamingRule (NamingStyle.UpperCamelCase);
-			LocalVariable = new NamingRule (NamingStyle.LowerCamelCase);
-			LocalConstant = new NamingRule (NamingStyle.LowerCamelCase);
-			Parameter = new NamingRule (NamingStyle.LowerCamelCase);
-			Field = new NamingRule (NamingStyle.UpperCamelCase);
-			InstanceField = new NamingRule (NamingStyle.LowerCamelCase);
-			InstanceStaticField = new NamingRule (NamingStyle.UpperCamelCase);
-			Constant = new NamingRule (NamingStyle.UpperCamelCase);
-			InstanceConstant = new NamingRule (NamingStyle.UpperCamelCase);
-			EnumMember = new NamingRule (NamingStyle.UpperCamelCase);
+			Namespace = new NamingRule (NamingStyle.PascalCase);
+			Type = new NamingRule (NamingStyle.PascalCase);
+			Interface = new NamingRule ("I", NamingStyle.PascalCase, null);
+			TypeParameter = new NamingRule (NamingStyle.PascalCase);
+			Method = new NamingRule (NamingStyle.PascalCase);
+			Property = new NamingRule (NamingStyle.PascalCase);
+			Event = new NamingRule (NamingStyle.PascalCase);
+			LocalVariable = new NamingRule (NamingStyle.CamelCase);
+			LocalConstant = new NamingRule (NamingStyle.CamelCase);
+			Parameter = new NamingRule (NamingStyle.CamelCase);
+			Field = new NamingRule (NamingStyle.PascalCase);
+			InstanceField = new NamingRule (NamingStyle.CamelCase);
+			InstanceStaticField = new NamingRule (NamingStyle.PascalCase);
+			Constant = new NamingRule (NamingStyle.PascalCase);
+			InstanceConstant = new NamingRule (NamingStyle.PascalCase);
+			EnumMember = new NamingRule (NamingStyle.PascalCase);
 		}
 	}
 	
@@ -376,10 +376,10 @@ namespace MonoDevelop.CSharp.Analysis
 		{
 			switch (typeDeclaration.ClassType) {
 			case ICSharpCode.NRefactory.TypeSystem.ClassType.Interface:
-				Check (policy.Interface, typeDeclaration.NameIdentifier.StartLocation, typeDeclaration.Name);
+				Check (policy.Interface, typeDeclaration.NameToken.StartLocation, typeDeclaration.Name);
 				break;
 			default:
-				Check (policy.Type, typeDeclaration.NameIdentifier.StartLocation, typeDeclaration.Name);
+				Check (policy.Type, typeDeclaration.NameToken.StartLocation, typeDeclaration.Name);
 				break;
 			}
 			return base.VisitTypeDeclaration (typeDeclaration, data);
@@ -402,14 +402,17 @@ namespace MonoDevelop.CSharp.Analysis
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			NamingRule namingRule;
+			
+			bool isPrivate = (fieldDeclaration.Modifiers & (ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Internal)) == 0; 
+			
 			if ((fieldDeclaration.Modifiers & ICSharpCode.NRefactory.CSharp.Modifiers.Const) == ICSharpCode.NRefactory.CSharp.Modifiers.Const) {
-				if ((fieldDeclaration.Modifiers & ICSharpCode.NRefactory.CSharp.Modifiers.Private) == ICSharpCode.NRefactory.CSharp.Modifiers.Private) {
+				if (isPrivate) {
 					namingRule = policy.InstanceConstant;
 				} else {
 					namingRule = policy.Constant;
 				}
 			} else {
-				if ((fieldDeclaration.Modifiers & ICSharpCode.NRefactory.CSharp.Modifiers.Private) == ICSharpCode.NRefactory.CSharp.Modifiers.Private) {
+				if (isPrivate) {
 					if ((fieldDeclaration.Modifiers & ICSharpCode.NRefactory.CSharp.Modifiers.Static) == ICSharpCode.NRefactory.CSharp.Modifiers.Static) {
 						namingRule = policy.InstanceStaticField;
 					} else {
