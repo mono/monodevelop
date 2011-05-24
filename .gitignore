@@ -129,6 +129,8 @@ autom4te.cache/
 /main/contrib/NGit/Makefile
 /main/contrib/NSch/Makefile
 /main/contrib/Sharpen/Makefile
+/main/contrib/ICSharpCode.Decompiler/Makefile
+/main/contrib/ICSharpCode.NRefactory/Makefile
 
 # extras configure junk
 /extras/MonoDevelop.Database/INSTALL
@@ -163,3 +165,4 @@ autom4te.cache/
 
 #other extras generated stuff
 /extras/JavaBinding/monodevelop-java.pc
+/extras/PyBinding/PyBinding/*.pc
