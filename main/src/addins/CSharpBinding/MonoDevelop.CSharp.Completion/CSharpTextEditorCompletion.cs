@@ -780,7 +780,8 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (")");
 			sbWithoutTypes.Append (")");
 			completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + delegateEndString);
-			completionList.Add (sbWithoutTypes.ToString (), "md-keyword", GettextCatalog.GetString ("Creates lambda expression."), sbWithoutTypes + " => |" + (addSemicolon ? ";" : ""));
+			if (!completionList.Any (data => data.DisplayText == sbWithoutTypes.ToString ()))
+				completionList.Add (sbWithoutTypes.ToString (), "md-keyword", GettextCatalog.GetString ("Creates lambda expression."), sbWithoutTypes + " => |" + (addSemicolon ? ";" : ""));
 			
 			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('
 			// otherwise we would end up with () => )
