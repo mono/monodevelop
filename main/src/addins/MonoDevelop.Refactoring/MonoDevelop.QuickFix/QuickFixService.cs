@@ -36,8 +36,14 @@ namespace MonoDevelop.QuickFix
 	{
 		static List<QuickFix> quickFixes = new List<QuickFix> ();
 		
+		
+		static QuickFixService ()
+		{
+			quickFixes.Add (new ConvertDecToHexQuickFix ());
+		}
+		
 		//TODO: proper job scheduler and discarding superseded jobs
-		public static void QueueAnalysis <T> (ParsedDocument doc, DomLocation loc, Action<List<QuickFix>> callback)
+		public static void QueueAnalysis (ParsedDocument doc, DomLocation loc, Action<List<QuickFix>> callback)
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {

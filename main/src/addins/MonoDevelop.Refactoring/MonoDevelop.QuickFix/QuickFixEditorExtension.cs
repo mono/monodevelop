@@ -25,13 +25,53 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Dom;
+using Gtk;
+using Mono.TextEditor;
+using System.Collections.Generic;
 
 namespace MonoDevelop.QuickFix
 {
 	public class QuickFixEditorExtension : TextEditorExtension
 	{
+		QuickFixWidget widget;
+		
+		public void RemoveWidget ()
+		{
+			if (widget == null)
+				return;
+			TextEditor editor = Document.Editor.Parent;
+			var container = editor.Parent as TextEditorContainer;
+			if (container == null)
+				return;
+			container.Remove (widget);
+			widget.Destroy ();
+			widget = null;
+		}
+		
+		public override void Dispose ()
+		{
+			RemoveWidget ();
+			base.Dispose ();
+		}
+		
 		public override void CursorPositionChanged ()
 		{
+			RemoveWidget ();
+			
+			QuickFixService.QueueAnalysis (Document.ParsedDocument, new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column), delegate(List<QuickFix> fixes) {
+				if (fixes.Count == 0)
+					return;
+				Application.Invoke (delegate {
+					TextEditor editor = Document.Editor.Parent;
+					widget = new QuickFixWidget (editor, fixes);
+					var container = editor.Parent as TextEditorContainer;
+					if (container == null)
+						return;
+					container.AddTopLevelWidget (widget, (int)editor.TextViewMargin.XOffset, (int)editor.LineToY (editor.Caret.Line));
+					widget.Show ();
+				});
+			});
 			base.CursorPositionChanged ();
 		}
 		
