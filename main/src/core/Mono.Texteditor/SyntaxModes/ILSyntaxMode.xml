@@ -561,4 +561,14 @@
 		<Word>alignment</Word>
 		<Word>.imagebase</Word>
 	</Keywords>
+
+
+	<Rule name = "Comment">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
+		</Keywords>	
+	</Rule>
 </SyntaxMode>
