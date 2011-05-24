@@ -139,6 +139,9 @@
     <Compile Include="MonoDevelop.AnalysisCore\Result.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
+    <Compile Include="MonoDevelop.QuickFix\QuickFixEditorExtension.cs" />
+    <Compile Include="MonoDevelop.QuickFix\QuickFixService.cs" />
+    <Compile Include="MonoDevelop.QuickFix\QuickFix.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -153,6 +156,7 @@
     <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />
     <Folder Include="MonoDevelop.Refactoring.ConvertPropery\" />
     <Folder Include="MonoDevelop.AnalysisCore\" />
+    <Folder Include="MonoDevelop.QuickFix\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">

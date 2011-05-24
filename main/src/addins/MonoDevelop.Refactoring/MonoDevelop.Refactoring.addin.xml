@@ -187,6 +187,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.Refactoring.Rename.RenameTextEditorExtension" />
+		<Class class = "MonoDevelop.QuickFix.QuickFixEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
