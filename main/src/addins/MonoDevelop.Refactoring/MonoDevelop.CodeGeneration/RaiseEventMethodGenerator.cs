@@ -104,8 +104,11 @@ namespace MonoDevelop.CodeGeneration
 					methodDeclaration.Body = new BlockStatement ();
 
 					IType type = Options.Dom.SearchType (Options.Document.ParsedDocument.CompilationUnit, member.DeclaringType, member.Location, member.ReturnType);
-					IMethod invokeMethod = type.Methods.First ();
-
+					IMethod invokeMethod = type.Methods.Where (m => m.Name == "Invoke").FirstOrDefault ();
+					
+					if (invokeMethod == null)
+						continue;
+					
 					methodDeclaration.Parameters.Add (new ParameterDeclaration (Options.ShortenTypeName (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference ()), invokeMethod.Parameters[1].Name));
 					const string handlerName = "handler";
 					
