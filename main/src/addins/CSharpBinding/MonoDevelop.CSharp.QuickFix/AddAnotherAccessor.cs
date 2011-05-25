@@ -49,9 +49,9 @@ namespace MonoDevelop.CSharp.QuickFix
 			return astNode.Parent as PropertyDeclaration;
 		}
 		
-		public override bool IsValid (ParsedDocument doc, DomLocation loc)
+		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			var pDecl = GetPropertyDeclaration (doc, loc);
+			var pDecl = GetPropertyDeclaration (document.ParsedDocument, loc);
 			if (pDecl == null)
 				return false;
 			return pDecl.Setter.IsNull || pDecl.Getter.IsNull;

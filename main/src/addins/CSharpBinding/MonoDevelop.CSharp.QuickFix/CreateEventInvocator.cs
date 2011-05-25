@@ -60,12 +60,12 @@ namespace MonoDevelop.CSharp.QuickFix
 			return astNode as EventDeclaration;
 		}
 		
-		public override bool IsValid (ParsedDocument doc, DomLocation loc)
+		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			var eventDeclaration = GetEventDeclaration (doc, loc);
+			var eventDeclaration = GetEventDeclaration (document.ParsedDocument, loc);
 			if (eventDeclaration == null)
 				return false;
-			var member = doc.CompilationUnit.GetMemberAt (loc) as IEvent;
+			var member = document.CompilationUnit.GetMemberAt (loc) as IEvent;
 			if (member == null)
 				return false;
 			return !member.DeclaringType.Methods.Any (m => m.Name == "On" + member.Name);

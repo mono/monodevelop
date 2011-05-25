@@ -52,9 +52,9 @@ namespace MonoDevelop.CSharp.QuickFix
 			return (astNode as ForeachStatement) ?? astNode.Parent as ForeachStatement;
 		}
 		
-		public override bool IsValid (ParsedDocument doc, DomLocation loc)
+		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			var foreachStatement = GetForeachStatement (doc, loc);
+			var foreachStatement = GetForeachStatement (document.ParsedDocument, loc);
 			return foreachStatement != null;
 		}
 
@@ -111,7 +111,6 @@ namespace MonoDevelop.CSharp.QuickFix
 			
 			text = text.Insert (i, foreachBlockText);
 			editor.Replace (offset, endOffset - offset + 1, text.Trim ());
-			
 			
 			// start text link edit mode
 			TextLink link = new TextLink ("name");

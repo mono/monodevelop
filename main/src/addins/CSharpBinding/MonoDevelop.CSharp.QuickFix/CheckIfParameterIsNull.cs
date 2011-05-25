@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			
 			var statement = new IfElseStatement () {
 				Condition = new BinaryOperatorExpression (new IdentifierExpression (pDecl.Name), BinaryOperatorType.Equality, new NullReferenceExpression ()),
-				TrueStatement = new ThrowStatement (new ObjectCreateExpression (new SimpleType ("System.ArgumentNullException"), new PrimitiveExpression (pDecl.Name)))
+				TrueStatement = new ThrowStatement (new ObjectCreateExpression (ShortenTypeName (document, "System.ArgumentNullException"), new PrimitiveExpression (pDecl.Name)))
 			};
 			var editor = document.Editor;
 			var offset = editor.LocationToOffset (bodyStatement.StartLocation.Line, bodyStatement.StartLocation.Column + 1);
@@ -106,9 +106,9 @@ namespace MonoDevelop.CSharp.QuickFix
 			return astNode as ParameterDeclaration;
 		}
 		
-		public override bool IsValid (ParsedDocument doc, DomLocation loc)
+		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			var pDecl = GetParameterDeclaration (doc, loc);
+			var pDecl = GetParameterDeclaration (document.ParsedDocument, loc);
 			if (pDecl == null)
 				return false;
 			

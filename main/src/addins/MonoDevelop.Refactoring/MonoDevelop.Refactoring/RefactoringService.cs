@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 		
-		public static void QueueQuickFixAnalysis (ParsedDocument doc, DomLocation loc, Action<List<QuickFix>> callback)
+		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, DomLocation loc, Action<List<QuickFix>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {

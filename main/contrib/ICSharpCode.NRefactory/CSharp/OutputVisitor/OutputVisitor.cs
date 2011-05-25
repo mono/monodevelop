@@ -1608,37 +1608,52 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(returnStatement);
 		}
 		
-		public object VisitSwitchStatement(SwitchStatement switchStatement, object data)
+		public object VisitSwitchStatement (SwitchStatement switchStatement, object data)
 		{
-			StartNode(switchStatement);
-			WriteKeyword("switch");
-			Space(policy.SpaceBeforeSwitchParentheses);
-			LPar();
-			Space(policy.SpacesWithinSwitchParentheses);
-			switchStatement.Expression.AcceptVisitor(this, data);
-			Space(policy.SpacesWithinSwitchParentheses);
-			RPar();
-			OpenBrace(policy.StatementBraceStyle);
+			StartNode (switchStatement);
+			WriteKeyword ("switch");
+			Space (policy.SpaceBeforeSwitchParentheses);
+			LPar ();
+			Space (policy.SpacesWithinSwitchParentheses);
+			switchStatement.Expression.AcceptVisitor (this, data);
+			Space (policy.SpacesWithinSwitchParentheses);
+			RPar ();
+			OpenBrace (policy.StatementBraceStyle);
+			if (!policy.IndentSwitchBody)
+				formatter.Unindent ();
+			
 			foreach (var section in switchStatement.SwitchSections)
-				section.AcceptVisitor(this, data);
-			CloseBrace(policy.StatementBraceStyle);
-			NewLine();
-			return EndNode(switchStatement);
+				section.AcceptVisitor (this, data);
+			
+			if (!policy.IndentSwitchBody)
+				formatter.Indent ();
+			CloseBrace (policy.StatementBraceStyle);
+			NewLine ();
+			return EndNode (switchStatement);
 		}
 		
-		public object VisitSwitchSection(SwitchSection switchSection, object data)
+		public object VisitSwitchSection (SwitchSection switchSection, object data)
 		{
-			StartNode(switchSection);
+			StartNode (switchSection);
 			bool first = true;
 			foreach (var label in switchSection.CaseLabels) {
 				if (!first)
-					NewLine();
-				label.AcceptVisitor(this, data);
+					NewLine ();
+				label.AcceptVisitor (this, data);
 				first = false;
 			}
-			foreach (var statement in switchSection.Statements)
-				statement.AcceptVisitor(this, data);
-			return EndNode(switchSection);
+			if (policy.IndentCaseBody)
+				formatter.Indent ();
+			
+			foreach (var statement in switchSection.Statements) {
+				NewLine ();
+				statement.AcceptVisitor (this, data);
+			}
+			
+			if (policy.IndentCaseBody)
+				formatter.Unindent ();
+			
+			return EndNode (switchSection);
 		}
 		
 		public object VisitCaseLabel(CaseLabel caseLabel, object data)

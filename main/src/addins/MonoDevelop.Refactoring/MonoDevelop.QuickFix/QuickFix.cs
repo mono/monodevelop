@@ -50,8 +50,7 @@ namespace MonoDevelop.QuickFix
 		}
 		
 		public abstract void Run (MonoDevelop.Ide.Gui.Document editor, DomLocation loc);
-	
-		public abstract bool IsValid (ParsedDocument doc, DomLocation loc);
+		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
 		
 		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)
 		{

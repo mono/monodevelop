@@ -41,9 +41,9 @@ namespace MonoDevelop.CSharp.QuickFix
 			
 		}
 		
-		public override bool IsValid (MonoDevelop.Projects.Dom.ParsedDocument doc, MonoDevelop.Projects.Dom.DomLocation loc)
+		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
 		{
-			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+			var unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
 			if (unit == null)
 				return false;
 			var pExpr = unit.GetNodeAt (loc.Line, loc.Column) as PrimitiveExpression;

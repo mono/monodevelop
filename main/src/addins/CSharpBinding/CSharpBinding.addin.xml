@@ -150,6 +150,7 @@
 		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertDecToHex" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertForeachToFor" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.CreateEventInvocator" />
+		<Class class = "MonoDevelop.CSharp.QuickFix.GenerateSwitchLabels" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

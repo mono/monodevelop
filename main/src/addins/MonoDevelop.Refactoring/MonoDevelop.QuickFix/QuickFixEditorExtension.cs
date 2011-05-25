@@ -64,7 +64,7 @@ namespace MonoDevelop.QuickFix
 			
 			if (Document.ParsedDocument != null) {
 				DomLocation loc = new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
-				RefactoringService.QueueQuickFixAnalysis (Document.ParsedDocument, loc, delegate(List<QuickFix> fixes) {
+				RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<QuickFix> fixes) {
 					if (fixes.Count == 0)
 						return;
 					Application.Invoke (delegate {
