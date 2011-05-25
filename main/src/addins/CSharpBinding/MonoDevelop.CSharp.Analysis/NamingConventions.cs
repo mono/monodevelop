@@ -43,7 +43,6 @@ namespace MonoDevelop.CSharp.Analysis
 		public static IEnumerable<Result> CheckNaming (ParsedDocument input)
 		{
 			var unit = input != null ? input.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit : null;
-			Console.WriteLine ("check: " + unit);
 			if (unit == null)
 				return System.Linq.Enumerable.Empty<Result> ();
 			

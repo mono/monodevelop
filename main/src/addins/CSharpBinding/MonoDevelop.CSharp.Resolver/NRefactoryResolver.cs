@@ -463,6 +463,11 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 		}
 		
+		public ResolveResult Resolve (string expression, DomLocation resolvePosition)
+		{
+			return Resolve (new ExpressionResult (expression), resolvePosition);
+		}
+
 		public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
 		{
 			this.SetupResolver (resolvePosition);

@@ -29,9 +29,9 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.QuickFix
 {
-	public class ConvertDecToHexQuickFix : CSharpQuickFix
+	public class ConvertDecToHex : CSharpQuickFix
 	{
-		public ConvertDecToHexQuickFix ()
+		public ConvertDecToHex ()
 		{
 			MenuText = Description = "Convert hex to dec.";
 		}
@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.QuickFix
 		{
 			
 		}
-	
+		
 		public override bool IsValid (MonoDevelop.Projects.Dom.ParsedDocument doc, MonoDevelop.Projects.Dom.DomLocation loc)
 		{
 			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;

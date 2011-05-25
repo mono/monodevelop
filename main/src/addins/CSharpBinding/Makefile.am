@@ -74,9 +74,12 @@ FILES =  \
 	MonoDevelop.CSharp.Project/CSharpCompilerParameters.cs \
 	MonoDevelop.CSharp.Project/CSharpProjectParameters.cs \
 	MonoDevelop.CSharp.Project/CSharpResourceIdBuilder.cs \
-	MonoDevelop.CSharp.QuickFix/CheckIfParameterIsNullQuickFix.cs \
-	MonoDevelop.CSharp.QuickFix/ConvertDecToHexQuickFix.cs \
+	MonoDevelop.CSharp.QuickFix/AddAnotherAccessor.cs \
+	MonoDevelop.CSharp.QuickFix/CheckIfParameterIsNull.cs \
+	MonoDevelop.CSharp.QuickFix/ConvertDecToHex.cs \
+	MonoDevelop.CSharp.QuickFix/ConvertForeachToFor.cs \
 	MonoDevelop.CSharp.QuickFix/CSharpQuickFix.cs \
+	MonoDevelop.CSharp.QuickFix/StringBuilderOutputFormatter.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodHandler.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \

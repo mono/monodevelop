@@ -62,21 +62,23 @@ namespace MonoDevelop.QuickFix
 		{
 			RemoveWidget ();
 			
-			DomLocation loc = new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
-			RefactoringService.QueueQuickFixAnalysis (Document.ParsedDocument, loc, delegate(List<QuickFix> fixes) {
-				if (fixes.Count == 0)
-					return;
-				Application.Invoke (delegate {
-					widget = new QuickFixWidget (Document, loc, fixes);
-					var container = Document.Editor.Parent.Parent as TextEditorContainer;
-					if (container == null)
+			if (Document.ParsedDocument != null) {
+				DomLocation loc = new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+				RefactoringService.QueueQuickFixAnalysis (Document.ParsedDocument, loc, delegate(List<QuickFix> fixes) {
+					if (fixes.Count == 0)
 						return;
-					container.AddTopLevelWidget (widget,
-						2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
-						-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
-					widget.Show ();
+					Application.Invoke (delegate {
+						widget = new QuickFixWidget (Document, loc, fixes);
+						var container = Document.Editor.Parent.Parent as TextEditorContainer;
+						if (container == null)
+							return;
+						container.AddTopLevelWidget (widget,
+							2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
+							-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
+						widget.Show ();
+					});
 				});
-			});
+			}
 			base.CursorPositionChanged ();
 		}
 		

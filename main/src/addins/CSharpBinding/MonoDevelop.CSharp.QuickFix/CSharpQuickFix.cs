@@ -29,23 +29,35 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.QuickFix
 {
 	public abstract class CSharpQuickFix : MonoDevelop.QuickFix.QuickFix
 	{
-		protected static string OutputNode (ProjectDom dom, AstNode node, string indent)
+		protected static string GetSingleIndent (Mono.TextEditor.TextEditorData editor)
 		{
-			var w = new System.IO.StringWriter ();
+			return editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
+		}
+		
+		protected static string OutputNode (ProjectDom dom, AstNode node, string indent, Action<int, AstNode> outputStarted = null)
+		{
 			var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;
 			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-			var formatter = new TextWriterOutputFormatter (w);
+			var formatter = new StringBuilderOutputFormatter ();
 			int col = MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider.GetColumn (indent, 0, 4);
 			formatter.Indentation = 1 + System.Math.Max (0, col / 4);
 			OutputVisitor visitor = new OutputVisitor (formatter, codePolicy.CreateOptions ());
+			if (outputStarted != null)
+				visitor.OutputStarted += (sender, e) => outputStarted (formatter.Length, e.AstNode);
 			node.AcceptVisitor (visitor, null);
-			return w.ToString ().TrimEnd ();
+			return formatter.ToString ().TrimEnd ();
+		}
+		
+		public static NRefactoryResolver GetResolver (MonoDevelop.Ide.Gui.Document doc)
+		{
+			return new NRefactoryResolver (doc.Dom, doc.CompilationUnit, doc.Editor, doc.FileName); 
 		}
 	}
 }

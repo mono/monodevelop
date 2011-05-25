@@ -103,7 +103,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 			AstType ConvertToType (Mono.CSharp.Expression typeName)
 			{
-				Console.WriteLine (typeName);
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
 					return new PrimitiveType (typeExpr.GetSignatureForError (), Convert (typeExpr.Location));
@@ -2105,8 +2104,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					TypeParameterDeclaration tp = new TypeParameterDeclaration();
 					// TODO: attributes
-					if (arg.Variance != Variance.None)
-						throw new NotImplementedException(); // TODO: variance
+//					if (arg.Variance != Variance.None)
+//						throw new NotImplementedException(); // TODO: variance
 					tp.AddChild (new Identifier (arg.Name, Convert (arg.Location)), InvocationExpression.Roles.Identifier);
 					parent.AddChild (tp, InvocationExpression.Roles.TypeParameter);
 				}

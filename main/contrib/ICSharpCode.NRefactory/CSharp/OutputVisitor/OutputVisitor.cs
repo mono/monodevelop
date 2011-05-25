@@ -63,16 +63,40 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		#region StartNode/EndNode
-		void StartNode(AstNode node)
+		public event EventHandler<AstNodeEventArgs> OutputStarted;
+		
+		protected virtual void OnOutputStarted (AstNodeEventArgs e)
+		{
+			EventHandler<AstNodeEventArgs> handler = this.OutputStarted;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		[Serializable]
+		public sealed class AstNodeEventArgs : EventArgs
+		{
+			public AstNode AstNode {
+				get;
+				private set;
+			}
+			
+			public AstNodeEventArgs (AstNode node)
+			{
+				this.AstNode = node;
+			}
+		}
+		
+		void StartNode (AstNode node)
 		{
 			// Ensure that nodes are visited in the proper nested order.
 			// Jumps to different subtrees are allowed only for the child of a placeholder node.
-			Debug.Assert(containerStack.Count == 0 || node.Parent == containerStack.Peek() || containerStack.Peek().NodeType == NodeType.Pattern);
+			Debug.Assert (containerStack.Count == 0 || node.Parent == containerStack.Peek () || containerStack.Peek ().NodeType == NodeType.Pattern);
 			if (positionStack.Count > 0)
-				WriteSpecialsUpToNode(node);
-			containerStack.Push(node);
-			positionStack.Push(node.FirstChild);
-			formatter.StartNode(node);
+				WriteSpecialsUpToNode (node);
+			containerStack.Push (node);
+			positionStack.Push (node.FirstChild);
+			OnOutputStarted (new AstNodeEventArgs (node));
+			formatter.StartNode (node);
 		}
 		
 		object EndNode(AstNode node)

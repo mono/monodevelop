@@ -230,9 +230,12 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionSettingsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\CheckIfParameterIsNullQuickFix.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\CSharpQuickFix.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertDecToHexQuickFix.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\AddAnotherAccessor.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertForeachToFor.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\CheckIfParameterIsNull.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertDecToHex.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\StringBuilderOutputFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

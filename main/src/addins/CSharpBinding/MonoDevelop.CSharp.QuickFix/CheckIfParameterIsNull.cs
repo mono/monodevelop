@@ -31,22 +31,17 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.QuickFix
 {
-	public class CheckIfParameterIsNullQuickFix : CSharpQuickFix
+	public class CheckIfParameterIsNull : CSharpQuickFix
 	{
-		public CheckIfParameterIsNullQuickFix ()
+		public CheckIfParameterIsNull ()
 		{
 			MenuText = GettextCatalog.GetString ("Check if parameter is null");
-			Description = GettextCatalog.GetString ("Checks function parameter is not null");
+			Description = GettextCatalog.GetString ("Checks function parameter is not null.");
 		}
 		
 		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			var unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
-			while (astNode != null && !(astNode is ParameterDeclaration)) {
-				astNode = astNode.Parent;
-			}
-			var pDecl = astNode as ParameterDeclaration;
+			var pDecl = GetParameterDeclaration (document.ParsedDocument, loc);
 			
 			var bodyStatement = pDecl.Parent.GetChildByRole (AstNode.Roles.Body);
 			
@@ -94,24 +89,26 @@ namespace MonoDevelop.CSharp.QuickFix
 					}
 				}
 				
-				
 				return base.VisitIfElseStatement (ifElseStatement, data);
 			}
-			
 		}
 		
-	
-		public override bool IsValid (ParsedDocument doc, DomLocation loc)
+		ParameterDeclaration GetParameterDeclaration (ParsedDocument doc, DomLocation loc)
 		{
 			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
 			if (unit == null)
-				return false;
+				return null;
 			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
 			while (astNode != null && !(astNode is ParameterDeclaration)) {
 				astNode = astNode.Parent;
 			}
 			
-			var pDecl = astNode as ParameterDeclaration;
+			return astNode as ParameterDeclaration;
+		}
+		
+		public override bool IsValid (ParsedDocument doc, DomLocation loc)
+		{
+			var pDecl = GetParameterDeclaration (doc, loc);
 			if (pDecl == null)
 				return false;
 			
