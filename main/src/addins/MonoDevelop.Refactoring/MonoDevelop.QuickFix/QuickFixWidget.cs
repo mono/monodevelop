@@ -73,6 +73,7 @@ namespace MonoDevelop.QuickFix
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (fix.MenuText);
 				menuItem.Activated += delegate {
 					fix.Run (document, loc);
+					menu.Destroy ();
 				};
 				menu.Add (menuItem);
 			}
