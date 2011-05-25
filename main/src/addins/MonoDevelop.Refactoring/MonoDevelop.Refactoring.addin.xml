@@ -35,6 +35,9 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/QuickFixes" name = "QuickFix">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
@@ -148,7 +151,6 @@
 					_label = "_Introduce Constant..."/>
 		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"
-					defaultHandler = "MonoDevelop.Refactoring.QuickFixHandler"
 					_label = "Quick fix..."
 					shortcut = "Alt|Return"
 					macShortcut = "Alt|Return" />

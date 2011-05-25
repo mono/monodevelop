@@ -32,14 +32,20 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CodeGeneration;
+using MonoDevelop.Projects.Dom;
+using System.Linq;
+
 
 namespace MonoDevelop.Refactoring
 {
+	using MonoDevelop.QuickFix;
+
 	public static class RefactoringService
 	{
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
 		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
 		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
+		static List<QuickFix> quickFixes = new List<QuickFix> ();
 		
 		static RefactoringService ()
 		{
@@ -72,6 +78,17 @@ namespace MonoDevelop.Refactoring
 					break;
 				case ExtensionChange.Remove:
 					codeGenerators.Remove ((ICodeGenerator)args.ExtensionObject);
+					break;
+				}
+			});
+			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/QuickFixes", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					quickFixes.Add ((QuickFix)args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					quickFixes.Remove ((QuickFix)args.ExtensionObject);
 					break;
 				}
 			});
@@ -154,5 +171,17 @@ namespace MonoDevelop.Refactoring
 			}
 			return null;
 		}
+		
+		public static void QueueQuickFixAnalysis (ParsedDocument doc, DomLocation loc, Action<List<QuickFix>> callback)
+		{
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					List<QuickFix > availableFixes = new List<QuickFix> (quickFixes.Where (fix => fix.IsValid (doc, loc)));
+					callback (availableFixes);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error in analysis service", ex);
+				}
+			});
+		}	
 	}
 }

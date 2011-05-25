@@ -140,7 +140,6 @@
     <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
     <Compile Include="MonoDevelop.QuickFix\QuickFixEditorExtension.cs" />
-    <Compile Include="MonoDevelop.QuickFix\QuickFixService.cs" />
     <Compile Include="MonoDevelop.QuickFix\QuickFix.cs" />
     <Compile Include="MonoDevelop.QuickFix\QuickFixWidget.cs" />
   </ItemGroup>

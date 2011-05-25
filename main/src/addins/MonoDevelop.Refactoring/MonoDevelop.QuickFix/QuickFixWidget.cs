@@ -28,54 +28,103 @@ using MonoDevelop.Ide;
 using Mono.TextEditor;
 using MonoDevelop.Components.Commands;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.QuickFix
 {
 	public class QuickFixWidget : Gtk.EventBox
 	{
-		TextEditor editor;
+		MonoDevelop.Ide.Gui.Document document;
 		List<QuickFix> fixes;
+		DomLocation loc;
+		Gdk.Pixbuf icon;
 		
-		public QuickFixWidget (TextEditor editor, List<QuickFix> fixes)
+		public QuickFixWidget (MonoDevelop.Ide.Gui.Document document, DomLocation loc, List<QuickFix> fixes)
 		{
-			this.editor = editor;
+			this.document = document;
+			this.loc = loc;
 			this.fixes = fixes;
 			Events = Gdk.EventMask.AllEventsMask;
-			Gtk.Image image = new Gtk.Image ();
-			image.Pixbuf = ImageService.GetPixbuf ("md-text-editor-behavior", Gtk.IconSize.Menu);
-			Add (image);
-			this.SetSizeRequest (image.Pixbuf.Width, (int)editor.LineHeight);
+			icon = ImageService.GetPixbuf ("md-text-quickfix", Gtk.IconSize.Menu);
+			this.SetSizeRequest (Math.Max ((int)document.Editor.LineHeight , icon.Width) + 4, (int)document.Editor.LineHeight + 4);
 			ShowAll ();
+			document.Editor.Parent.EditorOptionsChanged += HandleDocumentEditorParentEditorOptionsChanged;
+			;
+		}
+
+		void HandleDocumentEditorParentEditorOptionsChanged (object sender, EventArgs e)
+		{
+			var container = this.Parent as TextEditorContainer;
+			HeightRequest = (int)document.Editor.LineHeight;
+		//	container.MoveTopLevelWidget (this, (int)document.Editor.Parent.TextViewMargin.XOffset + 4, (int)document.Editor.Parent.LineToY (loc.Line));
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			document.Editor.Parent.EditorOptionsChanged -= HandleDocumentEditorParentEditorOptionsChanged;
+			base.OnDestroyed ();
+		}
+
+		public void PopupQuickFixMenu ()
+		{
+			Gtk.Menu menu = new Gtk.Menu ();
+				
+			foreach (QuickFix fix in fixes) {
+				Gtk.MenuItem menuItem = new Gtk.MenuItem (fix.MenuText);
+				menuItem.Activated += delegate {
+					fix.Run (document, loc);
+				};
+				menu.Add (menuItem);
+			}
+			menu.ShowAll ();
+			int dx, dy;
+			this.ParentWindow.GetOrigin (out dx, out dy);
+			dx += ((TextEditorContainer.EditorContainerChild)(this.document.Editor.Parent.Parent as TextEditorContainer) [this]).X;
+			dy += ((TextEditorContainer.EditorContainerChild)(this.document.Editor.Parent.Parent as TextEditorContainer) [this]).Y;
+					
+			menu.Popup (null, null, delegate (Gtk.Menu menu2, out int x, out int y, out bool pushIn) {
+				x = dx; 
+				y = dy + Allocation.Height; 
+				pushIn = false;
+			}, 0, Gtk.Global.CurrentEventTime);
+			menu.SelectFirst (true);
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1) {
-				Gtk.Menu menu = new Gtk.Menu ();
-				
-				foreach (QuickFix fix in fixes) {
-					Gtk.MenuItem menuItem = new Gtk.MenuItem (fix.MenuText);
-					menuItem.Activated += delegate {
-						fix.Run ();
-					};
-					menu.Add (menuItem);
-				}
-				menu.ShowAll ();
-				int dx, dy;
-				this.ParentWindow.GetOrigin (out dx, out dy);
-				dx += ((TextEditorContainer.EditorContainerChild)(this.editor.Parent as TextEditorContainer) [this]).X;
-				dy += ((TextEditorContainer.EditorContainerChild)(this.editor.Parent as TextEditorContainer) [this]).Y;
-					
-				menu.Popup (null, null, delegate (Gtk.Menu menu2, out int x, out int y, out bool pushIn) {
-					x = dx; 
-					y = dy + Allocation.Height; 
-					pushIn = false;
-				}, 0, Gtk.Global.CurrentEventTime);
-				menu.SelectFirst (true);
-			}
+			if (evnt.Button == 1)
+				PopupQuickFixMenu ();
 			return base.OnButtonPressEvent (evnt);
 		}
 		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			var alloc = Allocation;
+			double border = 1.0;
+			var halfBorder = border / 2.0;
+			
+			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
+				cr.LineWidth = border;
+				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+				cr.Color = document.Editor.ColorStyle.Default.CairoBackgroundColor;
+				cr.Fill ();
+				
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr,
+					true, true,
+					0, 0, Allocation.Width / 2, 
+					Allocation.Width, Allocation.Height);
+				cr.Color = document.Editor.ColorStyle.FoldLine.CairoColor;
+				cr.Stroke ();
+				
+				evnt.Window.DrawPixbuf (Style.BaseGC (State), icon, 
+					0, 0, 
+					(Allocation.Width - icon.Width) / 2, (Allocation.Height - icon.Height) / 2, 
+					icon.Width, icon.Height, 
+					Gdk.RgbDither.None, 0, 0);
+			}
+			
+			return true;
+		}
 	}
 }
 

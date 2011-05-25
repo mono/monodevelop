@@ -23,8 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.QuickFix
 {
@@ -49,38 +48,8 @@ namespace MonoDevelop.QuickFix
 			set;
 		}
 		
-		public abstract void Run ();
+		public abstract void Run (MonoDevelop.Ide.Gui.Document editor, DomLocation loc);
 	
-		public abstract bool IsValid (MonoDevelop.Projects.Dom.ParsedDocument doc, MonoDevelop.Projects.Dom.DomLocation loc);
+		public abstract bool IsValid (ParsedDocument doc, DomLocation loc);
 	}
-	
-	
-	public class ConvertDecToHexQuickFix : QuickFix
-	{
-		public ConvertDecToHexQuickFix ()
-		{
-			MenuText = Description = "Convert hex to dec.";
-			
-		}
-		
-		public override void Run ()
-		{
-			
-		}
-	
-		public override bool IsValid (MonoDevelop.Projects.Dom.ParsedDocument doc, MonoDevelop.Projects.Dom.DomLocation loc)
-		{
-			var unit = doc.LanguageAST as CompilationUnit;
-			if (unit == null)
-				return false;
-			var node = unit.GetNodeAt (loc.Line, loc.Column) as PrimitiveExpression;
-			if (node == null)
-				return false;
-			Console.WriteLine (node.Value);
-			Console.WriteLine (node.Value.GetType ());
-			return (node.Value is int);
-		}
-	}
-	
 }
-
