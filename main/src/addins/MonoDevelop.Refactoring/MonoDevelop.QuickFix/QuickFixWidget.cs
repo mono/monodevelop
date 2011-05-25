@@ -81,7 +81,7 @@ namespace MonoDevelop.QuickFix
 			int dx, dy;
 			this.ParentWindow.GetOrigin (out dx, out dy);
 			dx += ((TextEditorContainer.EditorContainerChild)(this.document.Editor.Parent.Parent as TextEditorContainer) [this]).X;
-			dy += ((TextEditorContainer.EditorContainerChild)(this.document.Editor.Parent.Parent as TextEditorContainer) [this]).Y;
+			dy += ((TextEditorContainer.EditorContainerChild)(this.document.Editor.Parent.Parent as TextEditorContainer) [this]).Y - (int)document.Editor.VAdjustment.Value;
 					
 			menu.Popup (null, null, delegate (Gtk.Menu menu2, out int x, out int y, out bool pushIn) {
 				x = dx; 
