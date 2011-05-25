@@ -78,6 +78,7 @@ FILES =  \
 	MonoDevelop.CSharp.QuickFix/CheckIfParameterIsNull.cs \
 	MonoDevelop.CSharp.QuickFix/ConvertDecToHex.cs \
 	MonoDevelop.CSharp.QuickFix/ConvertForeachToFor.cs \
+	MonoDevelop.CSharp.QuickFix/CreateEventInvocator.cs \
 	MonoDevelop.CSharp.QuickFix/CSharpQuickFix.cs \
 	MonoDevelop.CSharp.QuickFix/StringBuilderOutputFormatter.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodCodeGenerator.cs \

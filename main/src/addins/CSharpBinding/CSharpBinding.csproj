@@ -236,6 +236,7 @@
     <Compile Include="MonoDevelop.CSharp.QuickFix\CheckIfParameterIsNull.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertDecToHex.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\StringBuilderOutputFormatter.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\CreateEventInvocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
