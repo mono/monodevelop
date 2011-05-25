@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.QuickFix
 {
@@ -51,5 +52,16 @@ namespace MonoDevelop.QuickFix
 		public abstract void Run (MonoDevelop.Ide.Gui.Document editor, DomLocation loc);
 	
 		public abstract bool IsValid (ParsedDocument doc, DomLocation loc);
+		
+		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)
+		{
+			return doc.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullyQualifiedTypeName), doc.Editor.Caret.Line, doc.Editor.Caret.Column).ConvertToTypeReference ();
+		}
+		
+		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, IReturnType fullyQualifiedTypeName)
+		{
+			return doc.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, doc.Editor.Caret.Line, doc.Editor.Caret.Column).ConvertToTypeReference ();
+		}
+		
 	}
 }
