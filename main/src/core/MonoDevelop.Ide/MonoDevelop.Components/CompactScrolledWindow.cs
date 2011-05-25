@@ -79,8 +79,7 @@ namespace MonoDevelop.Components
 				Gdk.CairoHelper.Region (cr, evnt.Region);
 				cr.Clip ();
 				
-				var borderCol = Convert (Style.Dark (Gtk.StateType.Normal));
-				cr.Color = borderCol;
+				cr.Color = (HslColor)Style.Dark (Gtk.StateType.Normal);
 				cr.LineWidth = border;
 				cr.Translate (alloc.X, alloc.Y);
 				cr.Rectangle (halfBorder, halfBorder, alloc.Width - border, alloc.Height - border);
@@ -88,14 +87,6 @@ namespace MonoDevelop.Components
 			}
 			
 			return ret;
-		}
-		
-		static Cairo.Color Convert (Gdk.Color color)
-		{
-			return new Cairo.Color (
-				color.Red   / (double) ushort.MaxValue,
-				color.Green / (double) ushort.MaxValue,
-				color.Blue  / (double) ushort.MaxValue);
 		}
 	}
 }

@@ -873,6 +873,7 @@ RES =  \
 	icons/text-editor-22.png \
 	icons/text-editor-behavior-16.png \
 	icons/text-editor-behavior-24.png \
+	icons/text-quickfix-16.png \
 	icons/tools-external-tools-16.png \
 	icons/tools-external-tools-24.png \
 	icons/uncomment.png \
