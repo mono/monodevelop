@@ -230,6 +230,9 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionSettingsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionSettingsDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\CheckIfParameterIsNullQuickFix.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\CSharpQuickFix.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertDecToHexQuickFix.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -264,5 +267,6 @@
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
     <Folder Include="MonoDevelop.CSharp.Analysis\" />
+    <Folder Include="MonoDevelop.CSharp.QuickFix\" />
   </ItemGroup>
 </Project>

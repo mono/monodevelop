@@ -144,6 +144,11 @@
 		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Refactoring/QuickFixes">
+		<Class class = "MonoDevelop.CSharp.QuickFix.CheckIfParameterIsNullQuickFix" />
+		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertDecToHexQuickFix" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
 	</Extension>

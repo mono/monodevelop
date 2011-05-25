@@ -420,15 +420,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		void WriteEmbeddedStatement(Statement embeddedStatement)
+		void WriteEmbeddedStatement (Statement embeddedStatement)
 		{
 			if (embeddedStatement.IsNull)
 				return;
 			BlockStatement block = embeddedStatement as BlockStatement;
 			if (block != null)
-				VisitBlockStatement(block, null);
-			else
-				embeddedStatement.AcceptVisitor(this, null);
+				VisitBlockStatement (block, null);
+			else {
+				NewLine ();
+				formatter.Indent ();
+				embeddedStatement.AcceptVisitor (this, null);
+				formatter.Unindent ();
+			}
 		}
 		
 		void WriteMethodBody(BlockStatement body)
@@ -2216,7 +2220,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			Space();
 			LPar();
 			NewLine();
-			formatter.Indent();
+			formatter.Indent ();
 			foreach (INode alternative in choice) {
 				VisitNodeInPattern(alternative, data);
 				if (alternative != choice.Last())
