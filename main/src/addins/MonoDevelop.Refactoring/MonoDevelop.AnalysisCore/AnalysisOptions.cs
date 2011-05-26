@@ -68,7 +68,7 @@ namespace MonoDevelop.AnalysisCore
 		
 		static void LoadProperties ()
 		{
-			analysisEnabled = properties.Get ("AnalysisEnabled", false);
+			analysisEnabled = properties.Get ("AnalysisEnabled", true);
 		}
 		
 		static bool analysisEnabled;
