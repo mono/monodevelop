@@ -31,6 +31,7 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.AnalysisCore.Gui;
 
 namespace MonoDevelop.QuickFix
 {

@@ -69,10 +69,15 @@ namespace MonoDevelop.QuickFix
 		{
 			Gtk.Menu menu = new Gtk.Menu ();
 				
+			Dictionary<Gtk.MenuItem, QuickFix> fixTable = new Dictionary<Gtk.MenuItem, QuickFix> ();
 			foreach (QuickFix fix in fixes) {
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (fix.GetMenuText (document, loc));
-				menuItem.Activated += delegate {
-					fix.Run (document, loc);
+				fixTable [menuItem] = fix;
+				menuItem.Activated += delegate(object sender, EventArgs e) {
+					var runFix = fixTable [(Gtk.MenuItem)sender];
+					runFix.Run (document, loc);
+					
+					document.Editor.Document.CommitUpdateAll ();
 					menu.Destroy ();
 				};
 				menu.Add (menuItem);

@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.CodeGeneration;
 using MonoDevelop.Projects.Dom;
 using System.Linq;
+using MonoDevelop.AnalysisCore;
 
 
 namespace MonoDevelop.Refactoring
@@ -177,6 +178,18 @@ namespace MonoDevelop.Refactoring
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					List<QuickFix > availableFixes = new List<QuickFix> (quickFixes.Where (fix => fix.IsValid (doc, loc)));
+					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
+					if (ext != null) {
+						foreach (var result in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc.Line, loc.Column))) {
+							var fresult = result as FixableResult;
+							if (fresult == null)
+								continue;
+							foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
+								availableFixes.Add (new AnalysisQuickFix (result, action));
+							}
+						}
+					}
+					
 					callback (availableFixes);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
