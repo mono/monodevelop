@@ -168,7 +168,7 @@ namespace MonoDevelop.CSharp.Completion
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 			
-			if (!IsDelegateExpected && Member is IMethod && PropertyService.Get ("AutoInsertMatchingBracket", false) && !HasNonMethodMembersWithSameName ((IMember)Member)) {
+			if (!IsDelegateExpected && Member is IMethod /* && PropertyService.Get ("AutoInsertMatchingBracket", false) */&& !HasNonMethodMembersWithSameName ((IMember)Member)) {
 				int pos;
 				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
 					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
