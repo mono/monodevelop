@@ -655,6 +655,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 		
+		public bool Contains (int line, int column)
+		{
+			return Contains (new AstLocation (line, column));
+		}
+
+		public bool Contains (AstLocation location)
+		{
+			return this.StartLocation <= location && location < this.EndLocation;
+		}
+		
 		// the Root role must be available when creating the null nodes, so we can't put it in the Roles class
 		static readonly Role<AstNode> RootRole = new Role<AstNode>("Root");
 		
