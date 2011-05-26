@@ -248,6 +248,7 @@
     <Compile Include="MonoDevelop.CSharp.QuickFix\FlipOperatorArguments.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\UseVarKeyword.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\UseExplicitType.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\ReplaceEmptyString.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -154,6 +154,7 @@
 		<Class class = "MonoDevelop.CSharp.QuickFix.FlipOperatorArguments" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.UseVarKeyword" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.UseExplicitType" />
+		<Class class = "MonoDevelop.CSharp.QuickFix.ReplaceEmptyString" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

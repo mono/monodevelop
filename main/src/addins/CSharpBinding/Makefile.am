@@ -89,6 +89,7 @@ FILES =  \
 	MonoDevelop.CSharp.QuickFix/CSharpQuickFix.cs \
 	MonoDevelop.CSharp.QuickFix/FlipOperatorArguments.cs \
 	MonoDevelop.CSharp.QuickFix/GenerateSwitchLabels.cs \
+	MonoDevelop.CSharp.QuickFix/ReplaceEmptyString.cs \
 	MonoDevelop.CSharp.QuickFix/StringBuilderOutputFormatter.cs \
 	MonoDevelop.CSharp.QuickFix/UseExplicitType.cs \
 	MonoDevelop.CSharp.QuickFix/UseVarKeyword.cs \
