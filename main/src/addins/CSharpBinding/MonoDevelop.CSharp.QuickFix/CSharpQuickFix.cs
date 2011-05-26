@@ -35,12 +35,12 @@ namespace MonoDevelop.CSharp.QuickFix
 {
 	public abstract class CSharpQuickFix : MonoDevelop.QuickFix.QuickFix
 	{
-		protected static string GetSingleIndent (Mono.TextEditor.TextEditorData editor)
+		internal static string GetSingleIndent (Mono.TextEditor.TextEditorData editor)
 		{
 			return editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
 		}
 		
-		protected static string OutputNode (ProjectDom dom, AstNode node, string indent, Action<int, AstNode> outputStarted = null)
+		internal static string OutputNode (ProjectDom dom, AstNode node, string indent, Action<int, AstNode> outputStarted = null)
 		{
 			var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;
 			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);

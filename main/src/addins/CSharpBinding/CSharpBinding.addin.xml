@@ -207,9 +207,13 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Rule _name="C# Naming Conventions" input="ParsedDocument" 
-			func="MonoDevelop.CSharp.Analysis.NamingConventions.CheckNaming" />
-	</Extension>-->
+		<Rule _name="C# Code Analysis" input="ParsedDocument" 
+			func="MonoDevelop.CSharp.Analysis.CodeAnalysis.Check" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
+		<Handler fixName="UseStringIsNullOrEmptyFix" class = "MonoDevelop.CSharp.Analysis.UseStringIsNullOrEmptyFixHandler" />
+	</Extension>
 	
 	<Module>
 	    <Runtime>

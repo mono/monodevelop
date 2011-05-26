@@ -225,7 +225,6 @@
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventions.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionSettingsDialog.cs" />
@@ -238,6 +237,13 @@
     <Compile Include="MonoDevelop.CSharp.QuickFix\StringBuilderOutputFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\CreateEventInvocator.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\GenerateSwitchLabels.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\CSharpNamingPolicy.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\NamingStyle.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\NamingRule.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\CodeAnalysis.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\CSharpInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\NamingInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\StringIsNullOrEmptyInspector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

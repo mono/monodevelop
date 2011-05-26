@@ -77,6 +77,7 @@ FILES =  \
 	CSharp/Ast/MemberType.cs \
 	CSharp/Ast/Modifiers.cs \
 	CSharp/Ast/NodeType.cs \
+	CSharp/Ast/ObservableAstVisitor.cs \
 	CSharp/Ast/PrimitiveType.cs \
 	CSharp/Ast/Role.cs \
 	CSharp/Ast/SimpleType.cs \
