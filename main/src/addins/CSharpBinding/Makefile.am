@@ -41,6 +41,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.Analysis/CodeAnalysis.cs \
+	MonoDevelop.CSharp.Analysis/ConditionalToNullCoalescingInspector.cs \
 	MonoDevelop.CSharp.Analysis/CSharpInspector.cs \
 	MonoDevelop.CSharp.Analysis/CSharpNamingPolicy.cs \
 	MonoDevelop.CSharp.Analysis/NamingConventionPanelWidget.cs \

@@ -244,6 +244,7 @@
     <Compile Include="MonoDevelop.CSharp.Analysis\CSharpInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\StringIsNullOrEmptyInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\ConditionalToNullCoalescingInspector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

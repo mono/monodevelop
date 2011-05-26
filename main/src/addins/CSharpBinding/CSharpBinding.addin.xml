@@ -213,6 +213,7 @@
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
 		<Handler fixName="UseStringIsNullOrEmptyFix" class = "MonoDevelop.CSharp.Analysis.UseStringIsNullOrEmptyFixHandler" />
+		<Handler fixName="ConditionalToNullCoalescingFix" class = "MonoDevelop.CSharp.Analysis.ConditionalToNullCoalescingFixHandler" />
 	</Extension>
 	
 	<Module>

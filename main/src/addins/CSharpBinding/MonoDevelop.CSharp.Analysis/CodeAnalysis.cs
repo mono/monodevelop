@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharp.Analysis
 			List<CSharpInspector> inspectors = new List<CSharpInspector> ();
 			inspectors.Add (new NamingInspector (input.CompilationUnit));
 			inspectors.Add (new StringIsNullOrEmptyInspector ());
-			
+			inspectors.Add (new ConditionalToNullCoalescingInspector ());
 			
 			foreach (var inspector in inspectors) {
 				inspector.Attach (visitor);
