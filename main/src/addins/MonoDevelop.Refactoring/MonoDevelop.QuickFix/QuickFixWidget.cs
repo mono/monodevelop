@@ -70,7 +70,7 @@ namespace MonoDevelop.QuickFix
 			Gtk.Menu menu = new Gtk.Menu ();
 				
 			foreach (QuickFix fix in fixes) {
-				Gtk.MenuItem menuItem = new Gtk.MenuItem (fix.MenuText);
+				Gtk.MenuItem menuItem = new Gtk.MenuItem (fix.GetMenuText (document, loc));
 				menuItem.Activated += delegate {
 					fix.Run (document, loc);
 					menu.Destroy ();

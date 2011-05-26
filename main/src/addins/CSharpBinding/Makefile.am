@@ -87,6 +87,7 @@ FILES =  \
 	MonoDevelop.CSharp.QuickFix/ConvertForeachToFor.cs \
 	MonoDevelop.CSharp.QuickFix/CreateEventInvocator.cs \
 	MonoDevelop.CSharp.QuickFix/CSharpQuickFix.cs \
+	MonoDevelop.CSharp.QuickFix/FlipOperatorArguments.cs \
 	MonoDevelop.CSharp.QuickFix/GenerateSwitchLabels.cs \
 	MonoDevelop.CSharp.QuickFix/StringBuilderOutputFormatter.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodCodeGenerator.cs \

@@ -36,7 +36,6 @@ namespace MonoDevelop.CSharp.QuickFix
 	{
 		public AddAnotherAccessor ()
 		{
-			MenuText = GettextCatalog.GetString ("Add another accessor");
 			Description = GettextCatalog.GetString ("Adds second accessor to a property.");
 		}
 		
@@ -47,6 +46,11 @@ namespace MonoDevelop.CSharp.QuickFix
 				return null;
 			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
 			return astNode.Parent as PropertyDeclaration;
+		}
+		
+		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		{
+			return GettextCatalog.GetString ("Add another accessor");
 		}
 		
 		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)

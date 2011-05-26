@@ -33,7 +33,12 @@ namespace MonoDevelop.CSharp.QuickFix
 	{
 		public ConvertDecToHex ()
 		{
-			MenuText = Description = "Convert hex to dec.";
+			Description = "Convert hex to dec.";
+		}
+		
+		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		{
+			return "Convert hex to dec.";
 		}
 		
 		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)

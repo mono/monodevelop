@@ -39,8 +39,12 @@ namespace MonoDevelop.CSharp.QuickFix
 	{
 		public ConvertForeachToFor ()
 		{
-			MenuText = GettextCatalog.GetString ("Convert 'foreach' loop to 'for'");
 			Description = GettextCatalog.GetString ("Works on 'foreach' loops that allow direct access to its elements.");
+		}
+		
+		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		{
+			return GettextCatalog.GetString ("Convert 'foreach' loop to 'for'");
 		}
 		
 		ForeachStatement GetForeachStatement (ParsedDocument doc, DomLocation loc)

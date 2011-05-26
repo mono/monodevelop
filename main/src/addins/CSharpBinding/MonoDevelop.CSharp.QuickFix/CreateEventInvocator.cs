@@ -42,10 +42,14 @@ namespace MonoDevelop.CSharp.QuickFix
 	{
 		public CreateEventInvocator ()
 		{
-			MenuText = GettextCatalog.GetString ("Create event invocator");
 			Description = GettextCatalog.GetString ("Creates a standard OnXXX event method.");
 		}
 		
+		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		{
+			return GettextCatalog.GetString ("Create event invocator");
+		}
+
 		EventDeclaration GetEventDeclaration (ParsedDocument doc, DomLocation loc)
 		{
 			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;

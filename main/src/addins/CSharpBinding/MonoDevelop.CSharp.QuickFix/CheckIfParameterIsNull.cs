@@ -35,8 +35,12 @@ namespace MonoDevelop.CSharp.QuickFix
 	{
 		public CheckIfParameterIsNull ()
 		{
-			MenuText = GettextCatalog.GetString ("Check if parameter is null");
 			Description = GettextCatalog.GetString ("Checks function parameter is not null.");
+		}
+		
+		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		{
+			return GettextCatalog.GetString ("Check if parameter is null");
 		}
 		
 		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)

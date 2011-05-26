@@ -39,17 +39,13 @@ namespace MonoDevelop.QuickFix
 	
 	public abstract class QuickFix
 	{
-		public string MenuText {
-			get;
-			set; 
-		}
-		
 		public string Description {
 			get;
-			set;
+			protected set;
 		}
 		
-		public abstract void Run (MonoDevelop.Ide.Gui.Document editor, DomLocation loc);
+		public abstract string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
+		public abstract void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
 		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
 		
 		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)

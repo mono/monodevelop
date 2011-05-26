@@ -39,10 +39,14 @@ namespace MonoDevelop.CSharp.QuickFix
 	{
 		public GenerateSwitchLabels ()
 		{
-			MenuText = GettextCatalog.GetString ("Generate switch labels");
 			Description = GettextCatalog.GetString ("Creates switch lables for enumerations.");
 		}
 		
+		public override string GetMenuText (MonoDevelop.Ide.Gui.Document editor, DomLocation loc)
+		{
+			return GettextCatalog.GetString ("Generate switch labels");
+		}
+
 		SwitchStatement GetSwitchStatement (ParsedDocument doc, DomLocation loc)
 		{
 			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;

@@ -151,6 +151,7 @@
 		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertForeachToFor" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.CreateEventInvocator" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.GenerateSwitchLabels" />
+		<Class class = "MonoDevelop.CSharp.QuickFix.FlipOperatorArguments" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
