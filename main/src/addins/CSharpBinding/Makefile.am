@@ -90,6 +90,8 @@ FILES =  \
 	MonoDevelop.CSharp.QuickFix/FlipOperatorArguments.cs \
 	MonoDevelop.CSharp.QuickFix/GenerateSwitchLabels.cs \
 	MonoDevelop.CSharp.QuickFix/StringBuilderOutputFormatter.cs \
+	MonoDevelop.CSharp.QuickFix/UseExplicitType.cs \
+	MonoDevelop.CSharp.QuickFix/UseVarKeyword.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodHandler.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \

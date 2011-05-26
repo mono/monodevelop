@@ -246,6 +246,8 @@
     <Compile Include="MonoDevelop.CSharp.Analysis\StringIsNullOrEmptyInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\ConditionalToNullCoalescingInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\FlipOperatorArguments.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\UseVarKeyword.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\UseExplicitType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

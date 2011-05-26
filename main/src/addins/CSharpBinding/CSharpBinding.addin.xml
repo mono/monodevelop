@@ -152,6 +152,8 @@
 		<Class class = "MonoDevelop.CSharp.QuickFix.CreateEventInvocator" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.GenerateSwitchLabels" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.FlipOperatorArguments" />
+		<Class class = "MonoDevelop.CSharp.QuickFix.UseVarKeyword" />
+		<Class class = "MonoDevelop.CSharp.QuickFix.UseExplicitType" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
