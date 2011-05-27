@@ -77,6 +77,10 @@ namespace MonoDevelop.CSharp.QuickFix
 		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			var switchStatement = GetSwitchStatement (document.ParsedDocument, loc);
+			
+			if (switchStatement == null)
+				return;
+			
 			var resolver = GetResolver (document);
 			
 			var result = resolver.Resolve (switchStatement.Expression.ToString (), new DomLocation (switchStatement.StartLocation.Line, switchStatement.StartLocation.Column));

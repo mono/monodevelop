@@ -58,12 +58,18 @@ namespace MonoDevelop.CSharp.QuickFix
 			var pDecl = GetPropertyDeclaration (document.ParsedDocument, loc);
 			if (pDecl == null)
 				return false;
+			var type = pDecl.Parent as TypeDeclaration;
+			if (type != null && type.ClassType == ClassType.Interface)
+				return false;
+			
 			return pDecl.Setter.IsNull || pDecl.Getter.IsNull;
 		}
 		
 		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			var pDecl = GetPropertyDeclaration (document.ParsedDocument, loc);
+			if (pDecl == null)
+				return;
 			
 			Accessor accessor = new Accessor () {
 				Body = new BlockStatement {

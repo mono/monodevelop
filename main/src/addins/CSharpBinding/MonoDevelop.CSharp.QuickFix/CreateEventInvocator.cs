@@ -79,6 +79,8 @@ namespace MonoDevelop.CSharp.QuickFix
 		{
 			var eventDeclaration = GetEventDeclaration (document.ParsedDocument, loc);
 			var member = document.CompilationUnit.GetMemberAt (loc) as IEvent;
+			if (eventDeclaration == null || member == null)
+				return;
 			
 			MethodDeclaration methodDeclaration = new MethodDeclaration ();
 			methodDeclaration.Name = "On" + member.Name;

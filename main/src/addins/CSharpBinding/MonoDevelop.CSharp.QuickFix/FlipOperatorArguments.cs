@@ -85,7 +85,8 @@ namespace MonoDevelop.CSharp.QuickFix
 		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			var binop = GetBinaryOperatorExpression (document.ParsedDocument, loc);
-			
+			if (binop == null)
+				return;
 			int leftOffset = document.Editor.LocationToOffset (binop.Left.StartLocation.Line, binop.Left.StartLocation.Column);
 			int leftEndOffset = document.Editor.LocationToOffset (binop.Left.EndLocation.Line, binop.Left.EndLocation.Column);
 			

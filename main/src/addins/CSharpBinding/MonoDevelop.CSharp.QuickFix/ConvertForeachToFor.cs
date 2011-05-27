@@ -65,7 +65,8 @@ namespace MonoDevelop.CSharp.QuickFix
 		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			var foreachStatement = GetForeachStatement (document.ParsedDocument, loc);
-			
+			if (foreachStatement == null)
+				return;
 			var resolver = GetResolver (document);
 			
 			var result = resolver.Resolve (foreachStatement.InExpression.ToString (), new DomLocation (foreachStatement.InExpression.StartLocation.Line, foreachStatement.InExpression.StartLocation.Column));
