@@ -179,13 +179,13 @@ namespace MonoDevelop.CSharp.Completion
 					char charBeforeBracket = bracketOffset > 1 ? Editor.GetCharAt (bracketOffset - 2) : '\0';
 					if (Policy.BeforeMethodCallParentheses) {
 						if (charBeforeBracket != ' ') {
-							Editor.Insert (bracketOffset - 2, " ");
+							Editor.Insert (bracketOffset - 1, " ");
 							bracketOffset++;
 						}
 					} else { 
 						if (char.IsWhiteSpace (charBeforeBracket)) {
 							while (bracketOffset > 1 && char.IsWhiteSpace (Editor.GetCharAt (bracketOffset - 2))) {
-								Editor.Remove (bracketOffset - 2, 1);
+								Editor.Remove (bracketOffset - 1, 1);
 								bracketOffset--;
 							}
 						}
