@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			
 			var target = new TypeReferenceExpression (ShortenTypeName (document, result.ResolvedType));
 			foreach (var field in type.Fields) {
-				if (field.IsSpecialName)
+				if (!(field.IsLiteral || field.IsConst))
 					continue;
 				switchStatement.SwitchSections.Add (new SwitchSection () {
 					CaseLabels = {
