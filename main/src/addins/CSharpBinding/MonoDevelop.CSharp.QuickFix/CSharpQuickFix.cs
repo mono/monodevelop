@@ -30,6 +30,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Resolver;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.CSharp.QuickFix
 {
@@ -40,14 +41,16 @@ namespace MonoDevelop.CSharp.QuickFix
 			return editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
 		}
 		
-		internal static string OutputNode (ProjectDom dom, AstNode node, string indent, Action<int, AstNode> outputStarted = null)
+		internal static string OutputNode (Document doc, AstNode node, string indent, Action<int, AstNode> outputStarted = null)
 		{
+			var dom = doc.Dom;
 			var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;
 			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 			var formatter = new StringBuilderOutputFormatter ();
 			int col = MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider.GetColumn (indent, 0, 4);
 			formatter.Indentation = 1 + System.Math.Max (0, col / 4);
+			formatter.EolMarker = doc.Editor.EolMarker;
 			OutputVisitor visitor = new OutputVisitor (formatter, codePolicy.CreateOptions ());
 			if (outputStarted != null)
 				visitor.OutputStarted += (sender, e) => outputStarted (formatter.Length, e.AstNode);

@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.Analysis
 			
 			Expression expr = new BinaryOperatorExpression (expressions.Item1.Clone (), BinaryOperatorType.NullCoalescing, expressions.Item2.Clone ());
 			
-			string text = CSharpQuickFix.OutputNode (document.Dom, expr, "").Trim ();
+			string text = CSharpQuickFix.OutputNode (document, expr, "").Trim ();
 				
 			int offset = document.Editor.LocationToOffset (fix.ConditionalExpression.StartLocation.Line, fix.ConditionalExpression.StartLocation.Column);
 			int endOffset = document.Editor.LocationToOffset (fix.ConditionalExpression.EndLocation.Line, fix.ConditionalExpression.EndLocation.Column);

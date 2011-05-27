@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			
 			int offset = document.Editor.LocationToOffset (varDecl.Type.StartLocation.Line, varDecl.Type.StartLocation.Column);
 			int endOffset = document.Editor.LocationToOffset (varDecl.Type.EndLocation.Line, varDecl.Type.EndLocation.Column);
-			string text = OutputNode (document.Dom, ShortenTypeName (document, resolveResult.ResolvedType), "").Trim ();
+			string text = OutputNode (document, ShortenTypeName (document, resolveResult.ResolvedType), "").Trim ();
 			document.Editor.Replace (offset, endOffset - offset, text);
 			document.Editor.Caret.Offset = offset + text.Length;
 			document.Editor.Document.CommitUpdateAll ();

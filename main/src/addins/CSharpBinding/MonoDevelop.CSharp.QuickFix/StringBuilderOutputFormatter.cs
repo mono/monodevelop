@@ -50,6 +50,11 @@ namespace MonoDevelop.CSharp.QuickFix
 			}
 		}
 		
+		public string EolMarker {
+			get;
+			set;
+		}
+		
 		public override string ToString ()
 		{
 			return sb.ToString ();
@@ -107,7 +112,7 @@ namespace MonoDevelop.CSharp.QuickFix
 		
 		public void NewLine()
 		{
-			sb.AppendLine();
+			sb.Append (EolMarker);
 			needsIndent = true;
 		}
 		

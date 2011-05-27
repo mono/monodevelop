@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 				if (iCArgs.Success) {
-					iCArgs.InsertionPoint.Insert (document.Editor, OutputNode (document.Dom, methodDeclaration, ""));
+					iCArgs.InsertionPoint.Insert (document.Editor, OutputNode (document, methodDeclaration, ""));
 				}
 			};
 		}

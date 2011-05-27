@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			
 			var editor = document.Editor;
 			var offset = editor.LocationToOffset (pDecl.RBraceToken.StartLocation.Line, pDecl.RBraceToken.StartLocation.Column - 1);
-			string text = OutputNode (document.Dom, accessor, editor.GetLineIndent (pDecl.StartLocation.Line)) + editor.EolMarker;
+			string text = OutputNode (document, accessor, editor.GetLineIndent (pDecl.StartLocation.Line)) + editor.EolMarker;
 			
 			editor.Insert (offset, text);
 			int i1 = text.IndexOf ("throw");

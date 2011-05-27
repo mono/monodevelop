@@ -113,7 +113,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			var offset = editor.LocationToOffset (switchStatement.StartLocation.Line, switchStatement.StartLocation.Column);
 			var endOffset = editor.LocationToOffset (switchStatement.RBraceToken.EndLocation.Line, switchStatement.RBraceToken.EndLocation.Column + 1);
 			
-			string text = OutputNode (document.Dom, switchStatement, editor.GetLineIndent (switchStatement.Parent.StartLocation.Line));
+			string text = OutputNode (document, switchStatement, editor.GetLineIndent (switchStatement.Parent.StartLocation.Line));
 			editor.Replace (offset, endOffset - offset + 1, text.Trim () + editor.EolMarker);
 		}
 	}

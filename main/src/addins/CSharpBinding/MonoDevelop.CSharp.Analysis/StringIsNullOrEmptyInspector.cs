@@ -188,7 +188,7 @@ namespace MonoDevelop.CSharp.Analysis
 			if (UseStringIsNullOrEmptyFix.IsNegated)
 				invocation = new UnaryOperatorExpression (UnaryOperatorType.Not, invocation);
 			
-			string text = CSharpQuickFix.OutputNode (Document.Dom, invocation, "").Trim ();
+			string text = CSharpQuickFix.OutputNode (Document, invocation, "").Trim ();
 				
 			int offset = Document.Editor.LocationToOffset (UseStringIsNullOrEmptyFix.BinaryOperatorExpression.StartLocation.Line, UseStringIsNullOrEmptyFix.BinaryOperatorExpression.StartLocation.Column);
 			int endOffset = Document.Editor.LocationToOffset (UseStringIsNullOrEmptyFix.BinaryOperatorExpression.EndLocation.Line, UseStringIsNullOrEmptyFix.BinaryOperatorExpression.EndLocation.Column);

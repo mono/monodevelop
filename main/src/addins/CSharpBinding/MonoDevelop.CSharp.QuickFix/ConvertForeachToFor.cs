@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			var offset = editor.LocationToOffset (foreachStatement.StartLocation.Line, foreachStatement.StartLocation.Column);
 			var endOffset = editor.LocationToOffset (foreachStatement.EndLocation.Line, foreachStatement.EndLocation.Column);
 			var offsets = new List<int> ();
-			string text = OutputNode (document.Dom, forStatement, editor.GetLineIndent (foreachStatement.Parent.StartLocation.Line), delegate(int nodeOffset, AstNode astNode) {
+			string text = OutputNode (document, forStatement, editor.GetLineIndent (foreachStatement.Parent.StartLocation.Line), delegate(int nodeOffset, AstNode astNode) {
 				if (astNode is VariableDeclarationStatement && ((VariableDeclarationStatement)astNode).Variables.First ().Name == "i")
 					offsets.Add (nodeOffset + "int ".Length);
 				if (astNode is IdentifierExpression && ((IdentifierExpression)astNode).Identifier == "i") {

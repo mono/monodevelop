@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			var editor = document.Editor;
 			var offset = editor.LocationToOffset (bodyStatement.StartLocation.Line, bodyStatement.StartLocation.Column + 1);
 			
-			string text = editor.EolMarker + OutputNode (document.Dom, statement, editor.GetLineIndent (bodyStatement.StartLocation.Line));
+			string text = editor.EolMarker + OutputNode (document, statement, editor.GetLineIndent (bodyStatement.StartLocation.Line));
 			
 			editor.Insert (offset, text);
 		}
