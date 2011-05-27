@@ -238,10 +238,18 @@ namespace Mono.TextEditor.Highlighting
 					if (keywords.IgnoreCase) {
 						if (keywordTableIgnoreCase == null)
 							keywordTableIgnoreCase = new Dictionary<string, Keywords> (StringComparer.InvariantCultureIgnoreCase);
+						if (keywordTableIgnoreCase.ContainsKey (word)) {
+							Console.WriteLine ("Error: duplicate keyword " + word);
+							continue;
+						}
 						keywordTableIgnoreCase.Add (word, keywords);
 					} else {
 						if (keywordTable == null)
 							keywordTable = new Dictionary<string, Keywords> ();
+						if (keywordTable.ContainsKey (word)) {
+							Console.WriteLine ("Error: duplicate keyword " + word);
+							continue;
+						}
 						keywordTable.Add (word, keywords);
 					}
 				}

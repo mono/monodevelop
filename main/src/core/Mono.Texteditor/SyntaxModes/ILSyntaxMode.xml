@@ -327,7 +327,6 @@
 		<Word>class</Word>
 		<Word>const</Word>
 		<Word>vararg</Word>
-		<Word>default</Word>
 		<Word>stdcall</Word>
 		<Word>thiscall</Word>
 		<Word>fastcall</Word>
@@ -386,9 +385,6 @@
 		<Word>lasterr</Word>
 		<Word>winapi</Word>
 		<Word>cdecl</Word>
-		<Word>stdcall</Word>
-		<Word>thiscall</Word>
-		<Word>fastcall</Word>
 		<Word>as</Word>
 		<Word>pinned</Word>
 		<Word>modreq</Word>
