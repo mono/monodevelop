@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			if (pDecl == null)
 				return false;
 			var type = pDecl.Parent as TypeDeclaration;
-			if (type != null && type.ClassType == ClassType.Interface)
+			if (type != null && type.ClassType == ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
 				return false;
 			
 			return pDecl.Setter.IsNull || pDecl.Getter.IsNull;
