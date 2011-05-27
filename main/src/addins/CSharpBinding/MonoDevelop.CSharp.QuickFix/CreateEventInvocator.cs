@@ -56,12 +56,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			if (unit == null)
 				return null;
 			
-			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
-			while (astNode != null && !(astNode is EventDeclaration)) {
-				astNode = astNode.Parent;
-			}
-			
-			return astNode as EventDeclaration;
+			return unit.GetNodeAt<EventDeclaration> (loc.Line, loc.Column);
 		}
 		
 		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)

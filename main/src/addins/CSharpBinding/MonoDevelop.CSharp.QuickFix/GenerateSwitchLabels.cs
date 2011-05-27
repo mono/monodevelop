@@ -52,12 +52,10 @@ namespace MonoDevelop.CSharp.QuickFix
 			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
 			if (unit == null)
 				return null;
-			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
-			
-			var result = (astNode as SwitchStatement) ?? astNode.Parent as SwitchStatement;
-			if (result == null && astNode.Parent != null)
-				result = astNode.Parent.Parent as SwitchStatement;
-			return result;
+			var switchStatment = unit.GetNodeAt<SwitchStatement> (loc.Line, loc.Column);
+			if (switchStatment != null && switchStatment.SwitchSections.Count == 0)
+				return switchStatment;
+			return null;
 		}
 		
 		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
