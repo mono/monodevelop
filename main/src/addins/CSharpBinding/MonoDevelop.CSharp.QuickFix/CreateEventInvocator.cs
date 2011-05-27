@@ -93,8 +93,23 @@ namespace MonoDevelop.CSharp.QuickFix
 					
 			if (invokeMethod == null)
 				return;
-					
-			methodDeclaration.Parameters.Add (new ParameterDeclaration (ShortenTypeName (document, invokeMethod.Parameters [1].ReturnType), invokeMethod.Parameters [1].Name));
+			
+			bool hasSenderParam = false;
+			IEnumerable<IParameter> pars = invokeMethod.Parameters;
+			if (invokeMethod.Parameters.Any ()) {
+				var first = invokeMethod.Parameters [0];
+				if (first.Name == "sender" && first.ReturnType.FullName == "System.Object") {
+					hasSenderParam = true;
+					pars = invokeMethod.Parameters.Skip (1);
+				}
+			}
+			
+			foreach (var par in pars) {
+				var typeName = ShortenTypeName (document, par.ReturnType);
+				var decl = new ParameterDeclaration (typeName, par.Name);
+				methodDeclaration.Parameters.Add (decl);
+			}
+			
 			const string handlerName = "handler";
 					
 			var handlerVariable = new VariableDeclarationStatement (ShortenTypeName (document, member.ReturnType),
@@ -105,8 +120,11 @@ namespace MonoDevelop.CSharp.QuickFix
 			IfElseStatement ifStatement = new IfElseStatement ();
 			ifStatement.Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null));
 			List<Expression> arguments = new List<Expression> ();
-			arguments.Add (new ThisReferenceExpression ());
-			arguments.Add (new IdentifierExpression (invokeMethod.Parameters [1].Name));
+			if (hasSenderParam)
+				arguments.Add (new ThisReferenceExpression ());
+			foreach (var par in pars)
+				arguments.Add (new IdentifierExpression (par.Name));
+			
 			ifStatement.TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments));
 			methodDeclaration.Body.Statements.Add (ifStatement);
 			
