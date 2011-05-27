@@ -97,7 +97,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				this.matches = baseMode.Matches;
 				this.prevMarker = baseMode.PrevMarker;
 				this.SemanticRules = new List<SemanticRule> (baseMode.SemanticRules);
-				this.table = baseMode.Table;
+				this.keywordTable = baseMode.keywordTable;
+				this.keywordTableIgnoreCase = baseMode.keywordTableIgnoreCase;
 				this.properties = baseMode.Properties;
 			}
 			
@@ -116,7 +117,6 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			return new CSharpChunkParser (spanParser, doc, style, mode, line);
 		}
-
 		
 		abstract class AbstractBlockSpan : Span
 		{
@@ -195,6 +195,23 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			HashSet<string> tags = new HashSet<string> ();
 			ParsedDocument parsedDocument;
+			static HashSet<string> contextualKeywords = new HashSet<string> ();
+			
+			static CSharpChunkParser ()
+			{
+				contextualKeywords.Add ("get");
+				contextualKeywords.Add ("set");
+				contextualKeywords.Add ("value");
+				
+				contextualKeywords.Add ("add");
+				contextualKeywords.Add ("remove");
+				
+				contextualKeywords.Add ("var");
+				
+				contextualKeywords.Add ("where");
+				contextualKeywords.Add ("global");
+				contextualKeywords.Add ("partial");
+			}
 			
 			public CSharpChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, Style style, SyntaxMode mode, LineSegment line) : base (spanParser, doc, style, mode, line)
 			{
@@ -208,41 +225,44 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			protected override void AddRealChunk (Chunk chunk)
 			{
-				if (parsedDocument != null && parsedDocument.LanguageAST != null) {
-					var unit = parsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-					var loc = doc.OffsetToLocation (chunk.Offset);
-					var node = unit.GetNodeAt (loc.Line, loc.Column);
-					if (node is Identifier) {
-						
-						switch (((Identifier)node).Name) {
-						case "value":
-							// highlight 'value' in property setters.
-							var n = node.Parent;
-							while (n != null) {
-								if (n is Accessor && n.Role == PropertyDeclaration.SetterRole) {
-									base.AddRealChunk (chunk);
-									return;
+				if (contextualKeywords.Contains (wordbuilder.ToString ())) {
+					if (parsedDocument != null && parsedDocument.LanguageAST != null) {
+						var unit = parsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+						var loc = doc.OffsetToLocation (chunk.Offset);
+						var node = unit.GetNodeAt (loc.Line, loc.Column);
+						if (node is Identifier) {
+							switch (((Identifier)node).Name) {
+							case "value":
+								// highlight 'value' in property setters and event add/remove
+								var n = node.Parent;
+								while (n != null) {
+									if (n is Accessor && n.Role != PropertyDeclaration.GetterRole) {
+										base.AddRealChunk (chunk);
+										return;
+									}
+									n = n.Parent;
 								}
-								n = n.Parent;
-							}
-							break;
-						case "var": 
-							if (node.Parent != null) {
-								var vds = node.Parent.Parent as VariableDeclarationStatement;
-								if (node.Parent.Parent is ForeachStatement && ((ForeachStatement)node.Parent.Parent).VariableType.StartLocation == node.StartLocation ||
-									vds != null && node.StartLocation == vds.Type.StartLocation) {
-									base.AddRealChunk (chunk);
-									return;
+								break;
+							case "var": 
+								if (node.Parent != null) {
+									var vds = node.Parent.Parent as VariableDeclarationStatement;
+									if (node.Parent.Parent is ForeachStatement && ((ForeachStatement)node.Parent.Parent).VariableType.StartLocation == node.StartLocation ||
+										vds != null && node.StartLocation == vds.Type.StartLocation) {
+										base.AddRealChunk (chunk);
+										return;
+									}
 								}
+								break;
 							}
-							break;
 						}
-						
-							
-						chunk.Style = "text";
+						if (node is CSharpTokenNode) {
+							base.AddRealChunk (chunk);
+							return;
+						}
 					}
+					chunk.Style = "text";
 				}
-							
+				
 				base.AddRealChunk (chunk);
 			}
 			

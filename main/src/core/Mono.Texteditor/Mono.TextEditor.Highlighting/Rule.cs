@@ -149,6 +149,10 @@ namespace Mono.TextEditor.Highlighting
 			return String.Format ("[Rule: Name={0}, #Keywords={1}]", Name, keywords.Count);
 		}
 		
+		public Dictionary<string, Keywords> keywordTable = null;
+		public Dictionary<string, Keywords> keywordTableIgnoreCase = null;
+		
+		/*
 		public class KeyTable 
 		{
 			public Keywords   keywords = null;
@@ -193,8 +197,18 @@ namespace Mono.TextEditor.Highlighting
 			if (idx >= tableLength || curTable[idx] == null)
 				return null;
 			return curTable[idx].keywords;
-		}
+		}*/
 		
+		public Keywords GetKeyword (string word)
+		{
+			Keywords result = null;
+			if (keywordTable != null && keywordTable.TryGetValue (word, out result))
+				return result;
+			
+			if (keywordTableIgnoreCase != null && keywordTableIgnoreCase.TryGetValue (word, out result))
+				return result;
+			return null;
+		}
 		
 		protected bool ReadNode (XmlReader reader, List<Match> matchList, List<Span> spanList, List<Marker> prevMarkerList)
 		{
@@ -203,12 +217,12 @@ namespace Mono.TextEditor.Highlighting
 				this.Delimiter = reader.ReadElementString ();
 				return true;
 			case "Property":
-				string name  = reader.GetAttribute ("name");
+				string name = reader.GetAttribute ("name");
 				string value = reader.ReadElementString ();
 				
 				if (!properties.ContainsKey (name))
-					properties[name] = new List<string> ();
-				properties[name].Add (value);
+					properties [name] = new List<string> ();
+				properties [name].Add (value);
 				return true;
 			case Match.Node:
 				matchList.Add (Match.Read (reader));
@@ -221,7 +235,15 @@ namespace Mono.TextEditor.Highlighting
 				Keywords keywords = Mono.TextEditor.Highlighting.Keywords.Read (reader, IgnoreCase);
 				this.keywords.Add (keywords);
 				foreach (string word in keywords.Words) {
-					AddToTable (keywords, (keywords.IgnoreCase ? word.ToUpper () :  word).ToCharArray ());
+					if (keywords.IgnoreCase) {
+						if (keywordTableIgnoreCase == null)
+							keywordTableIgnoreCase = new Dictionary<string, Keywords> (StringComparer.InvariantCultureIgnoreCase);
+						keywordTableIgnoreCase.Add (word, keywords);
+					} else {
+						if (keywordTable == null)
+							keywordTable = new Dictionary<string, Keywords> ();
+						keywordTable.Add (word, keywords);
+					}
 				}
 				return true;
 			case Marker.PrevMarker:

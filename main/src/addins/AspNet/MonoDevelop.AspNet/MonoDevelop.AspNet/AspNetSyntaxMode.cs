@@ -50,7 +50,8 @@ namespace MonoDevelop.AspNet
 				this.matches = baseMode.Matches;
 				this.prevMarker = baseMode.PrevMarker;
 				this.SemanticRules = new List<SemanticRule> (baseMode.SemanticRules);
-				this.table = baseMode.Table;
+				this.keywordTable = baseMode.keywordTable;
+				this.keywordTableIgnoreCase = baseMode.keywordTableIgnoreCase;
 			}
 		}
 		
