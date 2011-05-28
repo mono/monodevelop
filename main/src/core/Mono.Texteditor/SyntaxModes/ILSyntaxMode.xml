@@ -471,9 +471,6 @@
 		<Word>.hash</Word>
 		<Word>.assembly</Word>
 		<Word>implicitcom</Word>
-		<Word>noappdomain</Word>
-		<Word>noprocess</Word>
-		<Word>nomachine</Word>
 		<Word>.publickey</Word>
 		<Word>.publickeytoken</Word>
 		<Word>algorithm</Word>
