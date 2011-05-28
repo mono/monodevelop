@@ -249,6 +249,7 @@
     <Compile Include="MonoDevelop.CSharp.QuickFix\UseVarKeyword.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\UseExplicitType.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\ReplaceEmptyString.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\NotImplementedExceptionInspector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

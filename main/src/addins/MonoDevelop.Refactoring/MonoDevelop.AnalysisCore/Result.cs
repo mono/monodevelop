@@ -55,7 +55,8 @@ namespace MonoDevelop.AnalysisCore
 	{
 		Error,
 		Warning,
-		Suggestion
+		Suggestion,
+		Todo // not shown with text marker
 	}
 	
 	public enum ResultCertainty

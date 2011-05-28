@@ -211,7 +211,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Rule _name="C# Code Analysis" input="ParsedDocument" 
+		<Rule _name="C# Code Analysis" input="Document" 
 			func="MonoDevelop.CSharp.Analysis.CodeAnalysis.Check" />
 	</Extension>
 	

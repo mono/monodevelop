@@ -55,9 +55,18 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		static string GetColor (Result result)
 		{
-			return result.Level == ResultLevel.Error
-				? Mono.TextEditor.Highlighting.Style.ErrorUnderlineString
-				: Mono.TextEditor.Highlighting.Style.WarningUnderlineString;
+			switch (result.Level) {
+			case ResultLevel.Error:
+				return Mono.TextEditor.Highlighting.Style.ErrorUnderlineString;
+			case ResultLevel.Warning:
+				return Mono.TextEditor.Highlighting.Style.WarningUnderlineString;
+			case ResultLevel.Suggestion:
+				return Mono.TextEditor.Highlighting.Style.SuggestionUnderlineString;
+			case ResultLevel.Todo:
+				return Mono.TextEditor.Highlighting.Style.CaretString;
+			default:
+				throw new System.ArgumentOutOfRangeException ();
+			}
 		}
 	}
 }

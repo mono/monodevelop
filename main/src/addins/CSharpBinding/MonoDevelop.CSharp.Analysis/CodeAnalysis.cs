@@ -35,6 +35,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Text;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.CSharp.Analysis
 {
@@ -46,9 +47,9 @@ namespace MonoDevelop.CSharp.Analysis
 			
 		}
 		
-		public static IEnumerable<Result> Check (ParsedDocument input)
+		public static IEnumerable<Result> Check (Document input)
 		{
-			var unit = input != null ? input.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit : null;
+			var unit = input != null ? input.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit : null;
 			if (unit == null)
 				yield break;
 			
@@ -58,6 +59,7 @@ namespace MonoDevelop.CSharp.Analysis
 			inspectors.Add (new NamingInspector (input.CompilationUnit));
 			inspectors.Add (new StringIsNullOrEmptyInspector ());
 			inspectors.Add (new ConditionalToNullCoalescingInspector ());
+			inspectors.Add (new NotImplementedExceptionInspector (input));
 			
 			foreach (var inspector in inspectors) {
 				inspector.Attach (visitor);

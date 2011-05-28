@@ -49,6 +49,7 @@ FILES =  \
 	MonoDevelop.CSharp.Analysis/NamingInspector.cs \
 	MonoDevelop.CSharp.Analysis/NamingRule.cs \
 	MonoDevelop.CSharp.Analysis/NamingStyle.cs \
+	MonoDevelop.CSharp.Analysis/NotImplementedExceptionInspector.cs \
 	MonoDevelop.CSharp.Analysis/StringIsNullOrEmptyInspector.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \

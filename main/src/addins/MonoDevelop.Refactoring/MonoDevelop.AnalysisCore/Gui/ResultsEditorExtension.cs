@@ -98,8 +98,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			var doc = Document.ParsedDocument;
 			if (doc == null)
 				return;
-			var treeType = new RuleTreeType ("ParsedDocument", Path.GetExtension (doc.FileName));
-			AnalysisService.QueueAnalysis (doc, treeType, UpdateResults);
+			var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
+			AnalysisService.QueueAnalysis (Document, treeType, UpdateResults);
 		}
 		
 		void UpdateResults (IList<Result> results)
@@ -168,6 +168,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			int targetIndex = updateIndex + UPDATE_COUNT;
 			for (; updateIndex < targetIndex && updateIndex < currentResults.Count; updateIndex++) {
 				var marker = new ResultMarker (currentResults [updateIndex]);
+				// Don't show todo level markers
+				marker.IsVisible = currentResults [updateIndex].Level != ResultLevel.Todo;
 				Editor.Document.AddMarker (marker.Line, marker);
 				markers.Enqueue (marker);
 			}
@@ -175,21 +177,20 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return true;
 		}
 		
-		//FIXME; use a less naive lookup 
-		//this would be faster if the currentResults were sorted by line in the analysis thread,
-		//so we could binary search.
 		public IList<Result> GetResultsAtOffset (int offset)
 		{
 			var location = Editor.Document.OffsetToLocation (offset);
+			var line = Editor.GetLineByOffset (offset);
 			
 			var list = new List<Result> ();
-			foreach (var marker in markers) {
-				if (marker.Line != location.Line)
+			foreach (var marker in line.Markers) {
+				var resultMarker = marker as ResultMarker;
+				if (resultMarker == null || resultMarker.Line != location.Line)
 					continue;
-				int cs = marker.ColStart, ce = marker.ColEnd;
+				int cs = resultMarker.ColStart, ce = resultMarker.ColEnd;
 				if ((cs >= 0 && cs > location.Column) || (ce >= 0 && ce < location.Column))
 					continue;
-				list.Add (marker.Result);
+				list.Add (resultMarker.Result);
 			}
 			return list;
 		}
@@ -232,12 +233,16 @@ namespace MonoDevelop.AnalysisCore.Gui
 				case MonoDevelop.AnalysisCore.ResultLevel.Suggestion:
 					severity = QuickTaskSeverity.Suggestion;
 					break;
+				case MonoDevelop.AnalysisCore.ResultLevel.Todo:
+					severity = QuickTaskSeverity.Todo;
+					break;
 				default:
 					throw new ArgumentOutOfRangeException ();
 				}
 				QuickTask newTask = new QuickTask (result.Message, result.Region.Start, severity);
 				tasks.Add (newTask);
 			}
+			
 			OnTasksUpdated (EventArgs.Empty);
 		}
 		

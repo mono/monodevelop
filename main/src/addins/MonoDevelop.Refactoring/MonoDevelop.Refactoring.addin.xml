@@ -221,13 +221,13 @@
 	<!-- Extensions to the addin points defined by this addin -->
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Types">
-		<Type name="ParsedDocument" class="MonoDevelop.Projects.Dom.ParsedDocument" />
+		<Type name="Document" class="MonoDevelop.Ide.Gui.Document" />
 		<Type name="CompilationUnit" class="MonoDevelop.Projects.Dom.ICompilationUnit" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Adaptor func="MonoDevelop.AnalysisCore.Rules.Adapters.GetCompilationUnit"
-			input="ParsedDocument" output="CompilationUnit" />
+			input="Document" output="CompilationUnit" />
 		<Category _name="Design Guidelines" id="Design">
 <!--			<Rule _name="Naming Conventions" input="CompilationUnit" 
 				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />-->

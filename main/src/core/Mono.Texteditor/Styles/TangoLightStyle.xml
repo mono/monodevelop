@@ -106,10 +106,11 @@
 		
 		<Style name="bookmark.color1" color="white"/>
 		<Style name="bookmark.color2" color="skyblue1"/>
-		<Style name="underline" color="scarletred1">
+<!--		<Style name="underline" color="scarletred1">
 			<Style name="error" color="scarletred1"/>
-			<Style name="warning" color="butter2"/>
-		</Style>
+			<Style name="warning" color="butter3"/>
+			<Style name="warning" color="butter3"/>
+		</Style>-->
 		
 		<Style name="template">
 			<Style name="primary_template" color="chameleon3" bgColor="chameleon2"/>

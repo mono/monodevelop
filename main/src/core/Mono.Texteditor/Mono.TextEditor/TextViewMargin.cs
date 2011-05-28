@@ -1407,7 +1407,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			foreach (TextMarker marker in line.Markers) {
+			foreach (TextMarker marker in line.Markers.Where (m => m.IsVisible)) {
 				marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
 

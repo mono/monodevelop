@@ -28,12 +28,13 @@ using System;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AnalysisCore.Rules
 {
 	public static class Adapters
 	{
-		public static ICompilationUnit GetCompilationUnit (ParsedDocument input)
+		public static ICompilationUnit GetCompilationUnit (Document input)
 		{
 			return input.CompilationUnit;
 		}

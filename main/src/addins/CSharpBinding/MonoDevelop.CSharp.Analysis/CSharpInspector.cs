@@ -33,7 +33,7 @@ namespace MonoDevelop.CSharp.Analysis
 {
 	public abstract class CSharpInspector
 	{
-		public readonly List<FixableResult> results = new List<FixableResult> ();
+		public readonly List<Result> results = new List<Result> ();
 
 		public abstract void Attach (ObservableAstVisitor visitior);
 	}
