@@ -32,10 +32,12 @@ using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.AnalysisCore.Gui;
+using MonoDevelop.SourceEditor;
+using System.Linq;
 
 namespace MonoDevelop.QuickFix
 {
-	public class QuickFixEditorExtension : TextEditorExtension
+	public class QuickFixEditorExtension : TextEditorExtension 
 	{
 		QuickFixWidget widget;
 		
@@ -58,6 +60,21 @@ namespace MonoDevelop.QuickFix
 			base.Dispose ();
 		}
 		
+		public void CreateWidget (List<QuickFix> fixes, DomLocation loc)
+		{
+			if (!fixes.Any ())
+				return;
+			
+			widget = new QuickFixWidget (Document, loc, fixes);
+			var container = Document.Editor.Parent.Parent as TextEditorContainer;
+			if (container == null) 
+				return;
+			container.AddTopLevelWidget (widget,
+				2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
+				-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
+			widget.Show ();
+		}
+		
 		public override void CursorPositionChanged ()
 		{
 			RemoveWidget ();
@@ -65,18 +82,9 @@ namespace MonoDevelop.QuickFix
 			if (Document.ParsedDocument != null) {
 				DomLocation loc = new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 				RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<QuickFix> fixes) {
-					if (fixes.Count == 0)
-						return;
 					Application.Invoke (delegate {
 						RemoveWidget ();
-						widget = new QuickFixWidget (Document, loc, fixes);
-						var container = Document.Editor.Parent.Parent as TextEditorContainer;
-						if (container == null)
-							return;
-						container.AddTopLevelWidget (widget,
-							2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
-							-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
-						widget.Show ();
+						CreateWidget (fixes, loc);
 					});
 				});
 			}
@@ -101,6 +109,7 @@ namespace MonoDevelop.QuickFix
 				return;
 			widget.PopupQuickFixMenu ();
 		}
+
 	}
 }
 

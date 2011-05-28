@@ -37,6 +37,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs \
 	MonoDevelop.SourceEditor/PinnedWatchWidget.cs \
 	MonoDevelop.SourceEditor/PrintSettingsWidget.cs \
+	MonoDevelop.SourceEditor/QuickTaskStrip.cs \
 	MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs \
 	MonoDevelop.SourceEditor/SourceEditorCommands.cs \
 	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \

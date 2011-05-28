@@ -150,6 +150,7 @@
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleHighlightPopupWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCache.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\QuickTaskStrip.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

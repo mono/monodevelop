@@ -47,7 +47,7 @@ using System.ComponentModel;
 namespace MonoDevelop.SourceEditor
 {
 	
-	class SourceEditorWidget : ITextEditorExtension
+	class SourceEditorWidget : ITextEditorExtension, IQuickTaskProvider
 	{
 		SourceEditorView view;
 		DecoratedScrolledWindow mainsw;
@@ -90,6 +90,16 @@ namespace MonoDevelop.SourceEditor
 				return AmbienceService.GetAmbienceForFile (fileName);
 			}
 		}
+		
+		List<IQuickTaskProvider> quickTaskProvider = new List<IQuickTaskProvider> ();
+		public void AddQuickTaskProvider (IQuickTaskProvider provider)
+		{
+			quickTaskProvider.Add (provider);
+			mainsw.AddQuickTaskStrip (provider); 
+			if (secondsw != null)
+				secondsw.AddQuickTaskStrip (provider);
+		}
+		
 		#region ITextEditorExtension
 		
 		ITextEditorExtension ITextEditorExtension.Next {
@@ -135,10 +145,12 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		
-		class DecoratedScrolledWindow : VBox
+		class DecoratedScrolledWindow : HBox
 		{
 			SourceEditorWidget parent;
 			SmartScrolledWindow scrolledWindow;
+			
+			QuickTaskStrip strip;
 			
 			public Adjustment Hadjustment {
 				get {
@@ -155,6 +167,7 @@ namespace MonoDevelop.SourceEditor
 			public DecoratedScrolledWindow (SourceEditorWidget parent)
 			{
 				this.parent = parent;
+				this.strip = new QuickTaskStrip ();
 				/*
 				Border border = new Border ();
 				border.HeightRequest = 1;
@@ -188,6 +201,15 @@ namespace MonoDevelop.SourceEditor
 //				scrolledWindow.ShadowType = ShadowType.In;
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
 				PackStart (scrolledWindow, true, true, 0);
+				PackStart (strip, false, true, 0);
+				strip.Visible = parent.quickTaskProvider.Count > 0;
+				parent.quickTaskProvider.ForEach (p => AddQuickTaskStrip (p));
+			}
+
+			public void AddQuickTaskStrip (IQuickTaskProvider p)
+			{
+				strip.Visible = true;
+				p.TasksUpdated += (sender, e) => strip.Update (p);
 			}
 			
 			protected override void OnDestroyed ()
@@ -207,6 +229,7 @@ namespace MonoDevelop.SourceEditor
 			public void SetTextEditor (TextEditorContainer container)
 			{
 				scrolledWindow.Child = container;
+				this.strip.TextEditor = container.TextEditorWidget;
 //				container.TextEditorWidget.EditorOptionsChanged += OptionsChanged;
 				container.TextEditorWidget.Caret.ModeChanged += parent.UpdateLineColOnEventHandler;
 				container.TextEditorWidget.Caret.PositionChanged += parent.CaretPositionChanged;
@@ -492,8 +515,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!options.UnderlineErrors || parsedDocument == null)
 				return;
-			
+				
 			Application.Invoke (delegate {
+				if (!quickTaskProvider.Contains (this))
+					AddQuickTaskProvider (this);
 				if (resetTimerId > 0) {
 					GLib.Source.Remove (resetTimerId);
 					resetTimerId = 0;
@@ -516,6 +541,7 @@ namespace MonoDevelop.SourceEditor
 					resetTimerId = 0;
 					return false;
 				});
+				UpdateQuickTasks (parsedDocument);
 			});
 		}
 		
@@ -1495,6 +1521,42 @@ namespace MonoDevelop.SourceEditor
 		
 		#endregion
 		
+		#region IQuickTaskProvider implementation
+		List<QuickTask> tasks = new List<QuickTask> ();
+
+		public event EventHandler TasksUpdated;
+
+		protected virtual void OnTasksUpdated (EventArgs e)
+		{
+			EventHandler handler = this.TasksUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public IEnumerable<QuickTask> QuickTasks {
+			get {
+				return tasks;
+			}
+		}
+		
+		void UpdateQuickTasks (ParsedDocument doc)
+		{
+			tasks.Clear ();
+			
+			foreach (var cmt in doc.TagComments) {
+				QuickTask newTask = new QuickTask (cmt.Text, cmt.Region.Start, QuickTaskSeverity.Todo);
+				tasks.Add (newTask);
+			}
+			
+			foreach (var error in doc.Errors) {
+				QuickTask newTask = new QuickTask (error.Message, error.Region.Start, error.ErrorType == ErrorType.Error ? QuickTaskSeverity.Error : QuickTaskSeverity.Warning);
+				tasks.Add (newTask);
+			}
+			
+			OnTasksUpdated (EventArgs.Empty);
+		}
+		#endregion
+	
 	}
 
 	class ErrorMarker : UnderlineMarker

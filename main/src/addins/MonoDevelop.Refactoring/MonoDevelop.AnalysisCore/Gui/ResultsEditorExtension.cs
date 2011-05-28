@@ -34,10 +34,11 @@ using System.IO;
 using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
-	public class ResultsEditorExtension : TextEditorExtension
+	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;
 		
@@ -147,12 +148,15 @@ namespace MonoDevelop.AnalysisCore.Gui
 				if (currentResults.Count == updateIndex && oldMarkers == 0) {
 					currentResults = null;
 					updaterRunning = false;
+					UpdateQuickTasks ();
 					return false;
 				}
 			}
 			
-			if (Editor == null || Editor.Document == null)
+			if (Editor == null || Editor.Document == null) {
+				UpdateQuickTasks ();
 				return true;
+			}
 			
 			//clear the old results out at the same rate we add in the new ones
 			for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
@@ -167,7 +171,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				Editor.Document.AddMarker (marker.Line, marker);
 				markers.Enqueue (marker);
 			}
-			
+			UpdateQuickTasks ();
 			return true;
 		}
 		
@@ -189,5 +193,54 @@ namespace MonoDevelop.AnalysisCore.Gui
 			}
 			return list;
 		}
+		
+		public IEnumerable<Result> GetResults ()
+		{
+			return markers.Select (m => m.Result);
+		}
+
+		#region IQuickTaskProvider implementation
+		List<QuickTask> tasks = new List<QuickTask> ();
+
+		public event EventHandler TasksUpdated;
+
+		protected virtual void OnTasksUpdated (EventArgs e)
+		{
+			EventHandler handler = this.TasksUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public IEnumerable<QuickTask> QuickTasks {
+			get {
+				return tasks;
+			}
+		}
+		
+		void UpdateQuickTasks ()
+		{
+			tasks.Clear ();
+			foreach (var result in GetResults ()) {
+				QuickTaskSeverity severity;
+				switch (result.Level) {
+				case MonoDevelop.AnalysisCore.ResultLevel.Error:
+					severity = QuickTaskSeverity.Error;
+					break;
+				case MonoDevelop.AnalysisCore.ResultLevel.Warning:
+					severity = QuickTaskSeverity.Warning;
+					break;
+				case MonoDevelop.AnalysisCore.ResultLevel.Suggestion:
+					severity = QuickTaskSeverity.Suggestion;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException ();
+				}
+				QuickTask newTask = new QuickTask (result.Message, result.Region.Start, severity);
+				tasks.Add (newTask);
+			}
+			OnTasksUpdated (EventArgs.Empty);
+		}
+		
+		#endregion
 	}
 }
