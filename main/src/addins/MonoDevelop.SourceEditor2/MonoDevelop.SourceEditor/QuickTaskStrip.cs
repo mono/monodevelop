@@ -165,7 +165,7 @@ namespace MonoDevelop.SourceEditor
 				} else if (warnings == 0) {
 					text = string.Format (GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors), errors);
 				} else {
-					text = string.Format (GettextCatalog.GetString ("{0} erroro and {1} warnings"), errors, warnings);
+					text = string.Format (GettextCatalog.GetString ("{0} errors and {1} warnings"), errors, warnings);
 				}
 				this.TooltipText = text;
 			} else {
@@ -239,7 +239,8 @@ namespace MonoDevelop.SourceEditor
 						severity = QuickTaskSeverity.Error;
 						break;
 					case QuickTaskSeverity.Warning:
-						severity = QuickTaskSeverity.Warning;
+						if (severity == QuickTaskSeverity.None)
+							severity = QuickTaskSeverity.Warning;
 						break;
 					}
 				}
