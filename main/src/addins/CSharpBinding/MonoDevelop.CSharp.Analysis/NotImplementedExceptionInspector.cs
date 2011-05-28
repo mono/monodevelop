@@ -63,7 +63,8 @@ namespace MonoDevelop.CSharp.Analysis
 						GettextCatalog.GetString ("NotImplemented exception thrown"),
 						ResultLevel.Todo, 
 						ResultCertainty.High, 
-						ResultImportance.Low)
+						ResultImportance.Low,
+						false)
 					);
 				}
 			};

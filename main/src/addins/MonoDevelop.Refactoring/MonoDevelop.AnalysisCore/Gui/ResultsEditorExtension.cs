@@ -168,8 +168,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			int targetIndex = updateIndex + UPDATE_COUNT;
 			for (; updateIndex < targetIndex && updateIndex < currentResults.Count; updateIndex++) {
 				var marker = new ResultMarker (currentResults [updateIndex]);
-				// Don't show todo level markers
-				marker.IsVisible = currentResults [updateIndex].Level != ResultLevel.Todo;
+				marker.IsVisible = currentResults [updateIndex].IsVisible;
 				Editor.Document.AddMarker (marker.Line, marker);
 				markers.Enqueue (marker);
 			}
