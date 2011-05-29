@@ -435,41 +435,41 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (LineNumberString, 172, 168, 153, 255, 255, 255);
 			SetStyle (LineNumberFgHighlightedString, 122, 118, 103);
 			
-			SetStyle (IconBarBgString,        255, 255, 255);
+			SetStyle (IconBarBgString, 255, 255, 255);
 			SetStyle (IconBarSeperatorString, 172, 168, 153);
 			
 			SetStyle (FoldLineString, LineNumberString);
 			SetStyle (FoldLineHighlightedString, IconBarSeperatorString);
 			SetStyle (FoldToggleMarkerString, DefaultString);
 			
-			SetStyle (LineDirtyBgString,   255, 238, 98);
+			SetStyle (LineDirtyBgString, 255, 238, 98);
 			SetStyle (LineChangedBgString, 108, 226, 108);
 			
-			SetStyle (SelectionString,     255, 255, 255, 96, 87, 210);
-			SetStyle (InactiveSelectionString,     255, 255, 255, 196, 196, 196);
+			SetStyle (SelectionString, 255, 255, 255, 96, 87, 210);
+			SetStyle (InactiveSelectionString, 255, 255, 255, 196, 196, 196);
 			
-			SetStyle (LineMarkerString,    200, 255, 255);
-			SetStyle (RulerString,         187, 187, 187);
+			SetStyle (LineMarkerString, 200, 255, 255);
+			SetStyle (RulerString, 187, 187, 187);
 			SetStyle (WhitespaceMarkerString, RulerString);
 			
-			SetStyle (InvalidLineMarkerString,     210,   0,   0);
+			SetStyle (InvalidLineMarkerString, 210, 0, 0);
 			
-			SetStyle (BreakpointString,            255, 255, 255, 125, 0, 0);
+			SetStyle (BreakpointString, 255, 255, 255, 125, 0, 0);
 			
 			SetStyle (BreakpointMarkerColor1String, 255, 255, 255);
 			SetStyle (BreakpointMarkerColor2String, 125, 0, 0);
 
-			SetStyle (DisabledBreakpointBgString,   237, 220, 220);
+			SetStyle (DisabledBreakpointBgString, 237, 220, 220);
 			
-			SetStyle (CurrentDebugLineString,               0,   0,   0, 255, 255, 0);
-			SetStyle (CurrentDebugLineMarkerColor1String, 255, 255,   0);
+			SetStyle (CurrentDebugLineString, 0, 0, 0, 255, 255, 0);
+			SetStyle (CurrentDebugLineMarkerColor1String, 255, 255, 0);
 			SetStyle (CurrentDebugLineMarkerColor2String, 255, 255, 204);
-			SetStyle (CurrentDebugLineMarkerBorderString, 102, 102,   0);
+			SetStyle (CurrentDebugLineMarkerBorderString, 102, 102, 0);
 			
-			SetStyle (DebugStackLineString,               0,   0,   0, 128, 255, 128);
+			SetStyle (DebugStackLineString, 0, 0, 0, 128, 255, 128);
 			SetStyle (DebugStackLineMarkerColor1String, 128, 255, 128);
 			SetStyle (DebugStackLineMarkerColor2String, 204, 255, 204);
-			SetStyle (DebugStackLineMarkerBorderString,  51, 102,  51); 
+			SetStyle (DebugStackLineMarkerBorderString, 51, 102, 51); 
 			
 			SetStyle (InvalidBreakpointBgString, 237, 220, 220);
 			SetStyle (InvalidBreakpointMarkerColor1String, 237, 220, 220);
@@ -486,52 +486,25 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (WarningUnderlineString, 255, 165, 0);
 			SetStyle (SuggestionUnderlineString, 143, 198, 143);
 			
-			SetStyle ("diff.line-added",          0, 0x8B, 0x8B, ChunkProperties.None);
-			SetStyle ("diff.line-removed",     0x6A, 0x5A, 0xCD, ChunkProperties.None);
-			SetStyle ("diff.line-changed",     "text.preprocessor");
-			SetStyle ("diff.header",              0, 128,     0, BOLD);
-			SetStyle ("diff.header-seperator",    0,   0,   255);
-			SetStyle ("diff.header-oldfile",   "diff.header");
-			SetStyle ("diff.header-newfile",   "diff.header");
-			SetStyle ("diff.location",         "keyword.misc");
+			SetStyle ("diff.line-added", 0, 0x8B, 0x8B, ChunkProperties.None);
+			SetStyle ("diff.line-removed", 0x6A, 0x5A, 0xCD, ChunkProperties.None);
+			SetStyle ("diff.line-changed", "text.preprocessor");
+			SetStyle ("diff.header", 0, 128, 0, BOLD);
+			SetStyle ("diff.header-seperator", 0, 0, 255);
+			SetStyle ("diff.header-oldfile", "diff.header");
+			SetStyle ("diff.header-newfile", "diff.header");
+			SetStyle ("diff.location", "keyword.misc");
 			
 			SetStyle (PrimaryTemplateColorString, 0xB4, 0xE4, 0xB4, 0xB4, 0xE4, 0xB4);
 			SetStyle (PrimaryTemplateHighlightedColorString, 0, 0, 0, 0xB4, 0xE4, 0xB4);
 			 
-			SetStyle (SecondaryTemplateColorString,            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+			SetStyle (SecondaryTemplateColorString, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 			SetStyle (SecondaryTemplateHighlightedColorString, 0x7F, 0x7F, 0x7F, 0xFF, 0xFF, 0xFF);
 			
-			SetStyle ("bubble.error.text",             0,    0,   0);
+			SetStyle ("bubble.error.text", 0, 0, 0);
 			
-			SetStyleFromWeb ("bubble.warning.light.color1", "#fbf7eb");
-			SetStyleFromWeb ("bubble.warning.light.color2", "#f4eeda");
-			SetStyleFromWeb ("bubble.warning.dark.color1", "#f5eed8");
-			SetStyleFromWeb ("bubble.warning.dark.color2", "#eadebb");
-			SetStyleFromWeb ("bubble.warning.line.top", "#e5e3dd");
-			SetStyleFromWeb ("bubble.warning.line.bottom", "#d3cdba");
-			SetStyleFromWeb ("bubble.warning.text", "black");
-			
-			SetStyleFromWeb ("bubble.inactive.warning.light.color1", "#fbfbfb");
-			SetStyleFromWeb ("bubble.inactive.warning.light.color2", "#f5f3ed");
-			SetStyleFromWeb ("bubble.inactive.warning.dark.color1", "#f7f7f7");
-			SetStyleFromWeb ("bubble.inactive.warning.dark.color2", "#ece7dd");
-			SetStyleFromWeb ("bubble.inactive.warning.line.top", "#f2f2f2");
-			SetStyleFromWeb ("bubble.inactive.warning.line.bottom", "#eceae6");
-			
-			SetStyleFromWeb ("bubble.error.light.color1", "#faf2f0");
-			SetStyleFromWeb ("bubble.error.light.color2", "#f5eae7");
-			SetStyleFromWeb ("bubble.error.dark.color1", "#f6e6e2");
-			SetStyleFromWeb ("bubble.error.dark.color2", "#ead7d2");
-			SetStyleFromWeb ("bubble.error.line.top", "#e5e0e0");
-			SetStyleFromWeb ("bubble.error.line.bottom", "#cfc6c4");
-			SetStyleFromWeb ("bubble.error.text", "black");
-			
-			SetStyleFromWeb ("bubble.inactive.error.light.color1", "#fcfcfc");
-			SetStyleFromWeb ("bubble.inactive.error.light.color2", "#f5f4f3");
-			SetStyleFromWeb ("bubble.inactive.error.dark.color1", "#f9f9f9");
-			SetStyleFromWeb ("bubble.inactive.error.dark.color2", "#ebe8e6");
-			SetStyleFromWeb ("bubble.inactive.error.line.top", "#f2f2f2");
-			SetStyleFromWeb ("bubble.inactive.error.line.bottom", "#eceaea");
+			SetStyleFromWeb ("bubble.warning", "black", "#f4eeda");
+			SetStyleFromWeb ("bubble.error", "black", "#f5eae7");
 			
 			//regions in ASP.NET, T4, etc.
 			SetStyle ("template",           "text");
@@ -620,6 +593,17 @@ namespace Mono.TextEditor.Highlighting
 			if (!Gdk.Color.Parse (colorString, ref color)) 
 				throw new Exception ("Can't parse color: " + colorString);
 			SetStyle (name, new ChunkStyle (color));
+		}
+
+		void SetStyleFromWeb (string name, string colorString, string bgColorString)
+		{
+			Gdk.Color color = new Color ();
+			if (!Gdk.Color.Parse (colorString, ref color)) 
+				throw new Exception ("Can't parse color: " + colorString);
+			Gdk.Color bgColor = new Color ();
+			if (!Gdk.Color.Parse (bgColorString, ref color)) 
+				throw new Exception ("Can't parse color: " + bgColorString);
+			SetStyle (name, new ChunkStyle (color, bgColor));
 		}
 		
 		void SetStyle (string name, byte r, byte g, byte b, byte bg_r, byte bg_g, byte bg_b)

@@ -118,35 +118,8 @@
 	</Style>
 	
 	<Style name="bubble">
-		<Style name="warning.light.color1" color="#fbf7eb"/>
-		<Style name="warning.light.color2" color="#f4eeda"/>
-		<Style name="warning.dark.color1" color="#f5eed8"/>
-		<Style name="warning.dark.color2" color="#eadebb"/>
-		<Style name="warning.line.top" color="#e5e3dd"/>
-		<Style name="warning.line.bottom" color="#d3cdba"/>
-		<Style name="warning.text" color="black"/>
-		
-		<Style name="inactive.warning.light.color1" color="#fbfbfb"/>
-		<Style name="inactive.warning.light.color2" color="#f5f3ed"/>
-		<Style name="inactive.warning.dark.color1" color="#f7f7f7"/>
-		<Style name="inactive.warning.dark.color2" color="#ece7dd"/>
-		<Style name="inactive.warning.line.top" color="#f2f2f2"/>
-		<Style name="inactive.warning.line.bottom" color="#eceae6"/>
-		
-		<Style name="error.light.color1" color="#faf2f0"/>
-		<Style name="error.light.color2" color="#f5eae7"/>
-		<Style name="error.dark.color1" color="#f6e6e2"/>
-		<Style name="error.dark.color2" color="#ead7d2"/>
-		<Style name="error.line.top" color="#e5e0e0"/>
-		<Style name="error.line.bottom" color="#cfc6c4"/>
-		<Style name="error.text" color="black"/>
-		
-		<Style name="inactive.error.light.color1" color="#fcfcfc"/>
-		<Style name="inactive.error.light.color2" color="#f5f4f3"/>
-		<Style name="inactive.error.dark.color1" color="#f9f9f9"/>
-		<Style name="inactive.error.dark.color2" color="#ebe8e6"/>
-		<Style name="inactive.error.line.top" color="#f2f2f2"/>
-		<Style name="inactive.error.line.bottom" color="#eceaea"/>
+		<Style name="warning" color="black" bgColor="#f4eeda"/>
+		<Style name="error" color="black" bgColor="#f5eae7"/>
 	</Style>
 	
 	<Style name="linenumber" color="aluminium4" bgColor="white">

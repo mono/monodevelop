@@ -112,8 +112,8 @@ namespace MonoDevelop.SourceEditor
 			ColorSheme style = editor.ColorStyle;
 			if (style == null)
 				style = new DefaultStyle (editor.Style);
-			errorGc = (HslColor)(style.GetChunkStyle ("bubble.error.text").Color);
-			warningGc = (HslColor)(style.GetChunkStyle ("bubble.warning.text").Color);
+			errorGc = (HslColor)(style.GetChunkStyle ("bubble.error").Color);
+			warningGc = (HslColor)(style.GetChunkStyle ("bubble.warning").Color);
 			errorMatrix = CreateColorMatrix (editor, true);
 			warningMatrix = CreateColorMatrix (editor, false);
 			
@@ -128,6 +128,31 @@ namespace MonoDevelop.SourceEditor
 			OnChanged (EventArgs.Empty);
 		}	
 		
+		static void AdjustColorMatrix (Cairo.Color[,,,,] colorMatrix , int side, Cairo.Color baseColor)
+		{
+			var hsl = (HslColor)baseColor;
+			hsl.L *= 1.3;
+			colorMatrix [side, 0, 0, 0, 0] = (hsl); // light top
+			colorMatrix [side, 1, 0, 0, 0] = baseColor; // light below
+			
+			hsl = (HslColor)baseColor;
+			hsl.L *= 1.05;
+			colorMatrix [side, 0, 1, 0, 0] = hsl; // dark top
+			
+			hsl = (HslColor)baseColor;
+			hsl.L *= 0.95;
+			colorMatrix [side, 1, 1, 0, 0] = hsl; // dark below
+			
+			hsl = (HslColor)baseColor;
+			hsl.L *= 0.98;
+			colorMatrix [side, 0, 2, 0, 0] = hsl; // line top 
+			
+			hsl = (HslColor)baseColor;
+			hsl.L *= 0.92;
+			colorMatrix [side, 1, 2, 0, 0] = hsl; // line below
+			
+		}
+		
 		static Cairo.Color[,,,,] CreateColorMatrix (TextEditor editor, bool isError)
 		{
 			string typeString = isError ? "error" : "warning";
@@ -137,23 +162,14 @@ namespace MonoDevelop.SourceEditor
 			if (style == null)
 				style = new DefaultStyle (editor.Style);
 			
-			colorMatrix [0, 0, 0, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble." + typeString + ".light.color1").Color);
-			colorMatrix [0, 1, 0, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble." + typeString + ".light.color2").Color);
+			var baseColor = style.GetChunkStyle ("bubble." + typeString + "").CairoBackgroundColor;
 			
-			colorMatrix [0, 0, 1, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble." + typeString + ".dark.color1").Color);
-			colorMatrix [0, 1, 1, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble." + typeString + ".dark.color2").Color);
+			AdjustColorMatrix (colorMatrix, 0, baseColor);
 			
-			colorMatrix [0, 0, 2, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble." + typeString + ".line.top").Color);
-			colorMatrix [0, 1, 2, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble." + typeString + ".line.bottom").Color);
-			
-			colorMatrix [1, 0, 0, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble.inactive." + typeString + ".light.color1").Color);
-			colorMatrix [1, 1, 0, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble.inactive." + typeString + ".light.color2").Color);
-			
-			colorMatrix [1, 0, 1, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble.inactive." + typeString + ".dark.color1").Color);
-			colorMatrix [1, 1, 1, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble.inactive." + typeString + ".dark.color2").Color);
-			
-			colorMatrix [1, 0, 2, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble.inactive." + typeString + ".line.top").Color);
-			colorMatrix [1, 1, 2, 0, 0] = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (style.GetChunkStyle ("bubble.inactive." + typeString + ".line.bottom").Color);
+			var hsl = (HslColor)baseColor;
+			hsl.S *= 0.6;
+			baseColor = hsl;
+			AdjustColorMatrix (colorMatrix, 1, hsl);
 			
 			double factor = 1.03;
 			for (int i = 0; i < 2; i++) {
