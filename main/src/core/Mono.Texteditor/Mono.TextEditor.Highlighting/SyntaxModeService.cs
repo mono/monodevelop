@@ -42,6 +42,7 @@ namespace Mono.TextEditor.Highlighting
 		static Dictionary<string, Style>      styles      = new Dictionary<string, Style> ();
 		static Dictionary<string, IXmlProvider> syntaxModeLookup = new Dictionary<string, IXmlProvider> ();
 		static Dictionary<string, IXmlProvider> styleLookup      = new Dictionary<string, IXmlProvider> ();
+		static Dictionary<string, string> isLoadedFromFile = new Dictionary<string, string> ();
 		
 		public static string[] Styles {
 			get {
@@ -56,6 +57,14 @@ namespace Mono.TextEditor.Highlighting
 				}
 				return result.ToArray ();
 			}
+		}
+		
+		public static string GetFileNameForStyle (Style style)
+		{
+			string result;
+			if (!isLoadedFromFile.TryGetValue (style.Name, out result))
+				return null;
+			return result;
 		}
 		
 		public static void InstallSyntaxMode (string mimeType, SyntaxMode mode)
@@ -392,6 +401,7 @@ namespace Mono.TextEditor.Highlighting
 					using (XmlTextReader reader =  new XmlTextReader (file)) {
 						string styleName = Scan (reader, Style.NameAttribute);
 						styleLookup [styleName] = new UrlXmlProvider (file);
+						isLoadedFromFile [styleName] = file;
 					}
 				}
 			}

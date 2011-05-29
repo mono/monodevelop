@@ -28,7 +28,7 @@ namespace MonoDevelop.SourceEditor
 		private global::Gtk.EventBox eventbox6;
 		private global::Gtk.Image image6;
 		private global::Gtk.Label label1;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

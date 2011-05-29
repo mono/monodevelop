@@ -21,7 +21,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.CheckButton showSpacesCheckbutton;
 		private global::Gtk.CheckButton showTabsCheckbutton;
 		private global::Gtk.CheckButton showEolCheckbutton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

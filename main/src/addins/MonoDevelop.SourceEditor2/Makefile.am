@@ -6,17 +6,21 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs \
+	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs \
+	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.NewColorShemeDialog.cs \
 	gtk-gui/MonoDevelop.SourceEditor.PrintSettingsWidget.cs \
 	gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs \
 	MonoDevelop.SourceEditor.Extension/TemplateCodon.cs \
 	MonoDevelop.SourceEditor.Extension/TemplateExtensionNodeLoader.cs \
 	MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs \
+	MonoDevelop.SourceEditor.OptionPanels/ColorShemeEditor.cs \
 	MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
+	MonoDevelop.SourceEditor.OptionPanels/NewColorShemeDialog.cs \
 	MonoDevelop.SourceEditor/AutoSave.cs \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
 	MonoDevelop.SourceEditor/Counters.cs \

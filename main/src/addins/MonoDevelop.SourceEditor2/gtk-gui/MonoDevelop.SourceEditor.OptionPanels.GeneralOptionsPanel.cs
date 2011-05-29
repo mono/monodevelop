@@ -24,7 +24,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.CheckButton foldingCheckbutton;
 		private global::Gtk.CheckButton foldregionsCheckbutton;
 		private global::Gtk.CheckButton foldCommentsCheckbutton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

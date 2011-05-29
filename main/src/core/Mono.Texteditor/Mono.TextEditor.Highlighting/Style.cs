@@ -38,6 +38,12 @@ namespace Mono.TextEditor.Highlighting
 		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
 		
+		public IEnumerable<string> ColorNames {
+			get {
+				return styleLookupTable.Keys;
+			}
+		}
+		
 		public Cairo.Color GetColorFromDefinition (string colorName)
 		{
 			return this.GetChunkStyle (colorName).CairoColor;
@@ -667,7 +673,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void SetChunkStyle (string name, string weight, string foreColor, string backColor)
 		{
-			Cairo.Color color   = !string.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
+			Cairo.Color color = !string.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
 			Cairo.Color bgColor = !string.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : new Cairo.Color (0, 0, 0);
 			ChunkProperties properties = ChunkProperties.None;
 			if (weight != null) {
@@ -678,7 +684,12 @@ namespace Mono.TextEditor.Highlighting
 				if (weight.ToUpper ().IndexOf ("UNDERLINE") >= 0)
 					properties |= ChunkProperties.Underline;
 			}
-			SetStyle (name,  !string.IsNullOrEmpty (backColor) ? new ChunkStyle (color, bgColor, properties) : new ChunkStyle (color, properties));
+			SetStyle (name, !string.IsNullOrEmpty (backColor) ? new ChunkStyle (color, bgColor, properties) : new ChunkStyle (color, properties));
+		}
+		
+		public void SetChunkStyle (string name, ChunkStyle style)
+		{
+			SetStyle (name, style);
 		}
 		
 		static int GetNumber (string str, int offset)
@@ -744,11 +755,11 @@ namespace Mono.TextEditor.Highlighting
 			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {
 				switch (reader.LocalName) {
 				case "EditorStyle":
-					result.Name        = reader.GetAttribute (NameAttribute);
+					result.Name = reader.GetAttribute (NameAttribute);
 					result.Description = reader.GetAttribute ("_description");
 					return true;
 				case "Color":
-					result.customPalette[reader.GetAttribute ("name")] = reader.GetAttribute ("value");
+					result.customPalette [reader.GetAttribute ("name")] = reader.GetAttribute ("value");
 					return true;
 				case "Style":
 					ReadStyleTree (reader, result, null, null, null, null);
@@ -758,6 +769,53 @@ namespace Mono.TextEditor.Highlighting
 			});
 			result.GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
 			return result;
+		}
+		
+		static string GetColorString (double c)
+		{
+			int conv = (int)(c * 255.0);
+			return string.Format ("{0:X2}", conv);
+		}
+		
+		static string GetColorString (Cairo.Color cairoColor)
+		{
+			var result = new System.Text.StringBuilder ();
+			result.Append ("#");
+			if (cairoColor.A != 1.0)
+				result.Append (GetColorString (cairoColor.A));
+			result.Append (GetColorString (cairoColor.R));
+			result.Append (GetColorString (cairoColor.G));
+			result.Append (GetColorString (cairoColor.B));
+			
+			return result.ToString ();
+		}
+		
+		public void Save (string fileName)
+		{
+			XmlTextWriter writer = new XmlTextWriter (fileName, System.Text.UTF8Encoding.UTF8);
+			writer.Formatting = Formatting.Indented;
+			
+			writer.WriteStartElement ("EditorStyle");
+			writer.WriteAttributeString (NameAttribute, Name);
+			writer.WriteAttributeString ("_description", Description);
+			
+			foreach (var style in new Dictionary<string, ChunkStyle> (this.styleLookupTable)) {
+				writer.WriteStartElement ("Style");
+				writer.WriteAttributeString ("name", style.Key);
+				if ((style.Value.ChunkProperties & (ChunkProperties.Bold | ChunkProperties.Italic)) != 0)
+					writer.WriteAttributeString ("weight", style.Value.ChunkProperties.ToString ());
+				writer.WriteAttributeString ("color", GetColorString (style.Value.CairoColor));
+				writer.WriteAttributeString ("bgColor", GetColorString (style.Value.CairoBackgroundColor));
+				writer.WriteEndElement ();
+			}
+			
+			writer.WriteEndElement ();
+			writer.Close ();
+		}
+		
+		public Style Clone ()
+		{
+			return (Style)MemberwiseClone ();
 		}
 		
 		public virtual void UpdateFromGtkStyle (Gtk.Style style)

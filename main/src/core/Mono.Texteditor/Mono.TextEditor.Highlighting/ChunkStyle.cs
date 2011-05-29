@@ -155,7 +155,7 @@ namespace Mono.TextEditor
 			this.CairoColor           = color;
 			this.ChunkProperties = chunkProperties;
 		}
-		
+
 		public override string ToString ()
 		{
 			return string.Format ("[ChunkStyle: Color={0}, BackgroundColor={1}, TransparentBackround={2}, ChunkProperties={3}, Link={4}]", CairoColor, CairoBackgroundColor, TransparentBackround, ChunkProperties, Link);

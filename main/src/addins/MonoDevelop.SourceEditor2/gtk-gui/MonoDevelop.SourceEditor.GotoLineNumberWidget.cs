@@ -12,7 +12,7 @@ namespace MonoDevelop.SourceEditor
 		private global::Gtk.Button closeButton;
 		private global::Gtk.EventBox eventbox1;
 		private global::Gtk.Image image1;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -29,7 +29,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.HBox hbox3;
 		private global::Gtk.Label label2;
 		private global::Gtk.ComboBox controlLeftRightCombobox;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

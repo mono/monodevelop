@@ -13,12 +13,17 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.Label GtkLabel5;
 		private global::Gtk.Alignment GtkAlignment;
 		private global::Gtk.VBox vbox5;
+		private global::Gtk.HBox hbox1;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.TreeView styleTreeview;
+		private global::Gtk.VBox vbox1;
+		private global::Gtk.Button buttonNew;
+		private global::Gtk.Button buttonEdit;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Button addButton;
 		private global::Gtk.Button removeButton;
-
+		private global::Gtk.Button buttonExport;
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -98,6 +103,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.vbox5.Name = "vbox5";
 			this.vbox5.Spacing = 6;
 			// Container child vbox5.Gtk.Box+BoxChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow1.CanFocus = true;
 			this.scrolledwindow1.Name = "scrolledwindow1";
@@ -112,9 +121,44 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.styleTreeview.HeadersVisible = false;
 			w7.Add (this.styleTreeview);
 			this.scrolledwindow1.Add (w7);
-			this.vbox5.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.scrolledwindow1]));
+			this.hbox1.Add (this.scrolledwindow1);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.scrolledwindow1]));
 			w10.Position = 0;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.vbox1 = new global::Gtk.VBox ();
+			this.vbox1.Name = "vbox1";
+			this.vbox1.Spacing = 6;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.buttonNew = new global::Gtk.Button ();
+			this.buttonNew.CanFocus = true;
+			this.buttonNew.Name = "buttonNew";
+			this.buttonNew.UseStock = true;
+			this.buttonNew.UseUnderline = true;
+			this.buttonNew.Label = "gtk-new";
+			this.vbox1.Add (this.buttonNew);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.buttonNew]));
+			w11.Position = 0;
+			w11.Expand = false;
+			w11.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.buttonEdit = new global::Gtk.Button ();
+			this.buttonEdit.CanFocus = true;
+			this.buttonEdit.Name = "buttonEdit";
+			this.buttonEdit.UseUnderline = true;
+			this.buttonEdit.Label = global::Mono.Unix.Catalog.GetString ("_Edit");
+			this.vbox1.Add (this.buttonEdit);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.buttonEdit]));
+			w12.Position = 1;
+			w12.Expand = false;
+			w12.Fill = false;
+			this.hbox1.Add (this.vbox1);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox1]));
+			w13.Position = 1;
+			w13.Expand = false;
+			w13.Fill = false;
+			this.vbox5.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox1]));
+			w14.Position = 0;
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.Name = "hbox2";
@@ -127,10 +171,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.addButton.UseUnderline = true;
 			this.addButton.Label = "gtk-add";
 			this.hbox2.Add (this.addButton);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.addButton]));
-			w11.Position = 1;
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.addButton]));
+			w15.PackType = ((global::Gtk.PackType)(1));
+			w15.Position = 0;
+			w15.Expand = false;
+			w15.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.removeButton = new global::Gtk.Button ();
 			this.removeButton.CanFocus = true;
@@ -139,19 +184,33 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.removeButton.UseUnderline = true;
 			this.removeButton.Label = "gtk-remove";
 			this.hbox2.Add (this.removeButton);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.removeButton]));
-			w12.Position = 2;
-			w12.Expand = false;
-			w12.Fill = false;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.removeButton]));
+			w16.PackType = ((global::Gtk.PackType)(1));
+			w16.Position = 1;
+			w16.Expand = false;
+			w16.Fill = false;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.buttonExport = new global::Gtk.Button ();
+			this.buttonExport.CanFocus = true;
+			this.buttonExport.Name = "buttonExport";
+			this.buttonExport.UseUnderline = true;
+			this.buttonExport.Label = global::Mono.Unix.Catalog.GetString ("Export");
+			this.hbox2.Add (this.buttonExport);
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonExport]));
+			w17.PackType = ((global::Gtk.PackType)(1));
+			w17.Position = 2;
+			w17.Expand = false;
+			w17.Fill = false;
 			this.vbox5.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox2]));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox2]));
+			w18.PackType = ((global::Gtk.PackType)(1));
+			w18.Position = 1;
+			w18.Expand = false;
+			w18.Fill = false;
 			this.GtkAlignment.Add (this.vbox5);
 			this.vbox4.Add (this.GtkAlignment);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.GtkAlignment]));
-			w15.Position = 3;
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.GtkAlignment]));
+			w20.Position = 3;
 			this.Add (this.vbox4);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
