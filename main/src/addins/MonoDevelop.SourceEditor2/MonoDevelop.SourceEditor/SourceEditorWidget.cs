@@ -60,8 +60,8 @@ namespace MonoDevelop.SourceEditor
 		
 		const uint CHILD_PADDING = 0;
 		
-		bool shouldShowclassBrowser;
-		bool canShowClassBrowser;
+//		bool shouldShowclassBrowser;
+//		bool canShowClassBrowser;
 		ISourceEditorOptions options;
 		
 		bool isDisposed = false;

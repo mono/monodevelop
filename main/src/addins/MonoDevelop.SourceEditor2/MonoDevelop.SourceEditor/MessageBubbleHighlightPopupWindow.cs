@@ -36,7 +36,7 @@ namespace MonoDevelop.SourceEditor
 	public class MessageBubbleHighlightPopupWindow : BounceFadePopupWindow
 	{
 		MessageBubbleTextMarker marker;
-		Gdk.Rectangle bounds;
+//		new Gdk.Rectangle bounds;
 		
 		public MessageBubbleHighlightPopupWindow (SourceEditorView view, MessageBubbleTextMarker marker)
 			: base (view.TextEditor)

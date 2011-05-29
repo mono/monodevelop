@@ -92,7 +92,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			Gtk.TreeIter iter;
 			if (!this.treeviewColors.Selection.GetSelected (out iter))
 				return;
-			var chunkStyle = (ChunkStyle)colorStore.GetValue (iter, 1);
 			ChunkProperties prop = ChunkProperties.None;
 			if (checkbuttonBold.Active)
 				prop |= ChunkProperties.Bold;

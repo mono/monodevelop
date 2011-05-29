@@ -50,7 +50,7 @@ namespace MonoDevelop.SourceEditor
 	
 	public class IdeViMode : Mono.TextEditor.Vi.ViEditMode
 	{
-		ExtensibleTextEditor editor;
+		new ExtensibleTextEditor editor;
 		TabAction tabAction;
 		
 		public IdeViMode (ExtensibleTextEditor editor)
