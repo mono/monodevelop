@@ -392,6 +392,7 @@
 		<Word>serializable</Word>
 		<Word>at</Word>
 		<Word>tls</Word>
+		<Word>retargetable</Word>
 		<Word>x86</Word>
 		<Word>amd64</Word>
 		<Word>ia64</Word>
