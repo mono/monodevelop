@@ -450,6 +450,11 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		public static void AddStyle (string fileName, Style style)
+		{
+			isLoadedFromFile [style.Name] = fileName;
+			styles [style.Name] = style;
+		}
 		public static void AddStyle (IXmlProvider provider)
 		{
 			using (XmlReader reader = provider.Open ()) {

@@ -76,7 +76,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			string fileName = System.IO.Path.Combine (path, baseName + "Style.xml");
 			try {
 				style.Save (fileName);
-				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (new Mono.TextEditor.Highlighting.UrlXmlProvider (fileName));
+				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (fileName, style);
 			} catch (Exception ex) {
 				MonoDevelop.Ide.MessageService.ShowException (ex);
 			}
