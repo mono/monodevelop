@@ -159,19 +159,17 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		void RemoveColorScheme (object sender, EventArgs args)
 		{
-			string styleName = null;
 			TreeIter selectedIter;
-			if (styleTreeview.Selection.GetSelected (out selectedIter)) 
-				styleName = ((Mono.TextEditor.Highlighting.ColorSheme)this.styleStore.GetValue (selectedIter, 1)).Name;
-			var style = LoadStyle (styleName, false);
-			UrlXmlProvider provider = Mono.TextEditor.Highlighting.SyntaxModeService.GetProvider (style) as UrlXmlProvider;
-			if (provider != null) {
-				if (provider.Url.StartsWith (SourceEditorDisplayBinding.SyntaxModePath)) {
-					Mono.TextEditor.Highlighting.SyntaxModeService.Remove (style);
-					File.Delete (provider.Url);
-					SourceEditorDisplayBinding.LoadCustomStylesAndModes ();
-					ShowStyles ();
-				}
+			if (!styleTreeview.Selection.GetSelected (out selectedIter)) 
+				return;
+			var sheme = (Mono.TextEditor.Highlighting.ColorSheme)this.styleStore.GetValue (selectedIter, 1);
+			
+			string fileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileNameForStyle (sheme);
+			
+			if (fileName != null && fileName.StartsWith (SourceEditorDisplayBinding.SyntaxModePath)) {
+				Mono.TextEditor.Highlighting.SyntaxModeService.Remove (sheme);
+				File.Delete (fileName);
+				ShowStyles ();
 			}
 		}
 		
