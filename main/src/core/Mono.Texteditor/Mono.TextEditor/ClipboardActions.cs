@@ -123,11 +123,11 @@ namespace Mono.TextEditor
 	
 			public Document copiedDocument;
 			public Document monoDocument; // has a slightly different format !!!
-			public Mono.TextEditor.Highlighting.Style docStyle;
+			public Mono.TextEditor.Highlighting.ColorSheme docStyle;
 			ITextEditorOptions options;
 			Mono.TextEditor.Highlighting.SyntaxMode mode;
 			
-			static string GenerateRtf (Document doc, Mono.TextEditor.Highlighting.SyntaxMode mode, Mono.TextEditor.Highlighting.Style style, ITextEditorOptions options)
+			static string GenerateRtf (Document doc, Mono.TextEditor.Highlighting.SyntaxMode mode, Mono.TextEditor.Highlighting.ColorSheme style, ITextEditorOptions options)
 			{
 				StringBuilder rtfText = new StringBuilder ();
 				List<Gdk.Color> colorList = new List<Gdk.Color> ();

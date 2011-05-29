@@ -71,7 +71,7 @@ namespace Mono.TextEditor.Highlighting
 				set;
 			}
 			
-			public override ChunkStyle GetChunkStyle (Style style)
+			public override ChunkStyle GetChunkStyle (ColorSheme style)
 			{
 				return ChunkStyle;
 			}
@@ -110,7 +110,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		static ChunkStyle GetChunkStyle (Style style, IEnumerable<Tag> tagStack)
+		static ChunkStyle GetChunkStyle (ColorSheme style, IEnumerable<Tag> tagStack)
 		{
 			ChunkStyle result = new ChunkStyle ();
 			if (style == null)
@@ -153,7 +153,7 @@ namespace Mono.TextEditor.Highlighting
 			return result;
 		}
 		
-		public override string GetTextWithoutMarkup (Document doc, Style style, int offset, int length)
+		public override string GetTextWithoutMarkup (Document doc, ColorSheme style, int offset, int length)
 		{
 			StringBuilder result = new StringBuilder ();
 			
@@ -170,7 +170,7 @@ namespace Mono.TextEditor.Highlighting
 			return result.ToString ();
 		}
 		
-		public override Chunk GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
+		public override Chunk GetChunks (Document doc, ColorSheme style, LineSegment line, int offset, int length)
 		{
 			int endOffset = System.Math.Min (offset + length, doc.Length);
 			Stack<Tag> tagStack = new Stack<Tag> ();

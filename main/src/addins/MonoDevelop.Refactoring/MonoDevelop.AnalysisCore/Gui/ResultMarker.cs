@@ -57,13 +57,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			switch (result.Level) {
 			case ResultLevel.Error:
-				return Mono.TextEditor.Highlighting.Style.ErrorUnderlineString;
+				return Mono.TextEditor.Highlighting.ColorSheme.ErrorUnderlineString;
 			case ResultLevel.Warning:
-				return Mono.TextEditor.Highlighting.Style.WarningUnderlineString;
+				return Mono.TextEditor.Highlighting.ColorSheme.WarningUnderlineString;
 			case ResultLevel.Suggestion:
-				return Mono.TextEditor.Highlighting.Style.SuggestionUnderlineString;
+				return Mono.TextEditor.Highlighting.ColorSheme.SuggestionUnderlineString;
 			case ResultLevel.Todo:
-				return Mono.TextEditor.Highlighting.Style.CaretString;
+				return Mono.TextEditor.Highlighting.ColorSheme.CaretString;
 			default:
 				throw new System.ArgumentOutOfRangeException ();
 			}

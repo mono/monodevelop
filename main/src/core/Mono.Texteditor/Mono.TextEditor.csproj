@@ -88,7 +88,6 @@
     <Compile Include="Mono.TextEditor.Highlighting\ChunkStyle.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Match.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Span.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\Style.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\SyntaxMode.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\SyntaxModeService.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\XmlReadHelper.cs" />
@@ -182,6 +181,7 @@
     <Compile Include="Mono.TextEditor\SegmentTree.cs" />
     <Compile Include="Mono.TextEditor.Utils\RedBlackTree.cs" />
     <Compile Include="Mono.TextEditor\HeightTree.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\ColorSheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

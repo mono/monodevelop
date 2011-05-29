@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		const int SearchResultColumn = 0;
 		const int DidReadColumn      = 1;
 		
-		Mono.TextEditor.Highlighting.Style highlightStyle;
+		Mono.TextEditor.Highlighting.ColorSheme highlightStyle;
 		
 		public string BasePath {
 			get;
@@ -457,7 +457,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				int pos2 = FindPosition (markup, col + searchResult.Length, out tag);
 				if (pos1 >= 0 && pos2 >= 0) {
 					markup = tag.StartsWith ("span") ? markup.Insert (pos2, "</span></span><" + tag + ">") : markup.Insert (pos2, "</span>");
-					Color searchColor = Mono.TextEditor.Highlighting.Style.ToGdkColor (highlightStyle.SearchTextBg);
+					Color searchColor = Mono.TextEditor.Highlighting.ColorSheme.ToGdkColor (highlightStyle.SearchTextBg);
 					double b1 = HslColor.Brightness (searchColor);
 					double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
 					double delta = Math.Abs (b1 - b2);

@@ -21,6 +21,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/Chunk.cs \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
 	Mono.TextEditor.Highlighting/CloneableStack.cs \
+	Mono.TextEditor.Highlighting/ColorSheme.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
 	Mono.TextEditor.Highlighting/HighlightingPartitioner.cs \
 	Mono.TextEditor.Highlighting/IXmlProvider.cs \
@@ -33,7 +34,6 @@ FILES =  \
 	Mono.TextEditor.Highlighting/Rule.cs \
 	Mono.TextEditor.Highlighting/SemanticRule.cs \
 	Mono.TextEditor.Highlighting/Span.cs \
-	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \
 	Mono.TextEditor.Highlighting/SyntaxModeService.cs \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \

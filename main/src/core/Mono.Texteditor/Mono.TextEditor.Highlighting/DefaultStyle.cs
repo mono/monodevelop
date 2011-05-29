@@ -29,7 +29,7 @@ using Gtk;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class DefaultStyle : Style
+	public class DefaultStyle : ColorSheme
 	{
 		ChunkStyle defaultStyle;
 		public override ChunkStyle Default {

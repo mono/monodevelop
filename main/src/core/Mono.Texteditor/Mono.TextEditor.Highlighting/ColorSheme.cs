@@ -33,7 +33,7 @@ using System.Globalization;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class Style
+	public class ColorSheme
 	{
 		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
@@ -423,7 +423,7 @@ namespace Mono.TextEditor.Highlighting
 			                        alpha);
 		}
 		
-		protected Style ()
+		protected ColorSheme ()
 		{
 			SetStyle (DefaultString, 0, 0, 0, 255, 255, 255);
 			SetStyle (ReadOnlyTextBgString, 0xFA, 0xFA, 0xF8);
@@ -724,7 +724,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public const string NameAttribute = "name";
 		
-		static void ReadStyleTree (XmlReader reader, Style result, string curName, string curWeight, string curColor, string curBgColor)
+		static void ReadStyleTree (XmlReader reader, ColorSheme result, string curName, string curWeight, string curColor, string curBgColor)
 		{
 			string name    = reader.GetAttribute ("name"); 
 			string weight  = reader.GetAttribute ("weight") ?? curWeight;
@@ -749,9 +749,9 @@ namespace Mono.TextEditor.Highlighting
 			});
 		}
 		
-		public static Style LoadFrom (XmlReader reader)
+		public static ColorSheme LoadFrom (XmlReader reader)
 		{
-			Style result = new Style ();
+			ColorSheme result = new ColorSheme ();
 			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {
 				switch (reader.LocalName) {
 				case "EditorStyle":
@@ -813,9 +813,9 @@ namespace Mono.TextEditor.Highlighting
 			writer.Close ();
 		}
 		
-		public Style Clone ()
+		public ColorSheme Clone ()
 		{
-			return (Style)MemberwiseClone ();
+			return (ColorSheme)MemberwiseClone ();
 		}
 		
 		public virtual void UpdateFromGtkStyle (Gtk.Style style)

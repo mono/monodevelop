@@ -113,7 +113,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			return new CSharpSpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
 		}
 		
-		public override ChunkParser CreateChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, Style style, SyntaxMode mode, LineSegment line)
+		public override ChunkParser CreateChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, ColorSheme style, SyntaxMode mode, LineSegment line)
 		{
 			return new CSharpChunkParser (spanParser, doc, style, mode, line);
 		}
@@ -213,7 +213,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				contextualKeywords.Add ("partial");
 			}
 			
-			public CSharpChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, Style style, SyntaxMode mode, LineSegment line) : base (spanParser, doc, style, mode, line)
+			public CSharpChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, ColorSheme style, SyntaxMode mode, LineSegment line) : base (spanParser, doc, style, mode, line)
 			{
 				ProjectDom dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
 				parsedDocument = ProjectDomService.GetParsedDocument (dom, doc.FileName);

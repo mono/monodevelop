@@ -58,7 +58,7 @@ namespace Mono.TextEditor.Highlighting
 			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
 		}
 
-		public bool Validate (Style style)
+		public bool Validate (ColorSheme style)
 		{
 			if (!GetIsValid (style)) {
 				return false;
@@ -71,7 +71,7 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 
-		public virtual Chunk GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
+		public virtual Chunk GetChunks (Document doc, ColorSheme style, LineSegment line, int offset, int length)
 		{
 			SpanParser spanParser = CreateSpanParser (doc, this, line, null);
 			ChunkParser chunkParser = CreateChunkParser (spanParser, doc, style, this, line);
@@ -109,12 +109,12 @@ namespace Mono.TextEditor.Highlighting
 			return result;
 		}
 
-		public virtual string GetTextWithoutMarkup (Document doc, Style style, int offset, int length)
+		public virtual string GetTextWithoutMarkup (Document doc, ColorSheme style, int offset, int length)
 		{
 			return doc.GetTextAt (offset, length);
 		}
 
-		public string GetMarkup (Document doc, ITextEditorOptions options, Style style, int offset, int length, bool removeIndent)
+		public string GetMarkup (Document doc, ITextEditorOptions options, ColorSheme style, int offset, int length, bool removeIndent)
 		{
 			return GetMarkup (doc, options, style, offset, length, removeIndent, true, true);
 		}
@@ -124,7 +124,7 @@ namespace Mono.TextEditor.Highlighting
 			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
 		}
 
-		public string GetMarkup (Document doc, ITextEditorOptions options, Style style, int offset, int length, bool removeIndent, bool useColors, bool replaceTabs)
+		public string GetMarkup (Document doc, ITextEditorOptions options, ColorSheme style, int offset, int length, bool removeIndent, bool useColors, bool replaceTabs)
 		{
 			int indentLength = GetIndentLength (doc, offset, length, false);
 			int curOffset = offset;
@@ -225,7 +225,7 @@ namespace Mono.TextEditor.Highlighting
 			return new SpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
 		}
 
-		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, Document doc, Style style, SyntaxMode mode, LineSegment line)
+		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, Document doc, ColorSheme style, SyntaxMode mode, LineSegment line)
 		{
 			return new ChunkParser (spanParser, doc, style, mode, line);
 		}
@@ -466,7 +466,7 @@ namespace Mono.TextEditor.Highlighting
 			internal int lineOffset;
 			protected SyntaxMode mode;
 
-			public ChunkParser (SpanParser spanParser, Document doc, Style style, SyntaxMode mode, LineSegment line)
+			public ChunkParser (SpanParser spanParser, Document doc, ColorSheme style, SyntaxMode mode, LineSegment line)
 			{
 				this.mode = mode;
 				this.doc = doc;

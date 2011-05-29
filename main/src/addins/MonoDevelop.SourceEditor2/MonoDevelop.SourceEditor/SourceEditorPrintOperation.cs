@@ -91,7 +91,7 @@ namespace MonoDevelop.SourceEditor
 		double pageWidth, pageHeight;
 		
 		Pango.Layout layout;
-		Mono.TextEditor.Highlighting.Style style;
+		Mono.TextEditor.Highlighting.ColorSheme style;
 		
 		string headerText;
 		string footerText;

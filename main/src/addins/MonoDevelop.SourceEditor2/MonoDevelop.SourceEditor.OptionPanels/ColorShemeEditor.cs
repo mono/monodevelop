@@ -34,7 +34,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class ColorShemeEditor : Gtk.Dialog
 	{
 		TextEditor textEditor;
-		Style colorSheme;
+		ColorSheme colorSheme;
 		Gtk.TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof (ChunkStyle));
 		string fileName;
 		HighlightingPanel panel;
@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 		}
 
-		void ApplyStyle (Style sheme)
+		void ApplyStyle (ColorSheme sheme)
 		{
 			sheme.Name = entryName.Text;
 			sheme.Description = entryDescription.Text;
@@ -131,7 +131,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.checkbuttonItalic.Sensitive = true;
 		}
 		
-		public void SetSheme (Style style)
+		public void SetSheme (ColorSheme style)
 		{
 			if (style == null)
 				throw new ArgumentNullException ("style");

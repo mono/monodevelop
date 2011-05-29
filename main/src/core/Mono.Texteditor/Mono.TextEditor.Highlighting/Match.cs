@@ -50,7 +50,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public virtual bool GetIsValid (Style style)
+		public virtual bool GetIsValid (ColorSheme style)
 		{
 			return style.GetChunkStyle (Color) != null;
 		}
@@ -118,7 +118,7 @@ namespace Mono.TextEditor.Highlighting
 			return false;
 		}
 		
-		public override bool GetIsValid (Style style)
+		public override bool GetIsValid (ColorSheme style)
 		{
 			return true;
 		}

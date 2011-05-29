@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 {
 	public class Chunk : Segment
 	{
-		public virtual ChunkStyle GetChunkStyle (Style style)
+		public virtual ChunkStyle GetChunkStyle (ColorSheme style)
 		{
 			if (style == null)
 				return null;

@@ -193,7 +193,7 @@ namespace MonoDevelop.SourceEditor
 			set { throw new NotSupportedException (); }
 		}
 
-		public Mono.TextEditor.Highlighting.Style GetColorStyle (Gtk.Style widgetStyle)
+		public Mono.TextEditor.Highlighting.ColorSheme GetColorStyle (Gtk.Style widgetStyle)
 		{
 			return DefaultSourceEditorOptions.Instance.GetColorStyle (widgetStyle);
 		}

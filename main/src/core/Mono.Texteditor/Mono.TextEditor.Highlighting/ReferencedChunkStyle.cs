@@ -30,7 +30,7 @@ namespace Mono.TextEditor.Highlighting
 {
 	class ReferencedChunkStyle : ChunkStyle
 	{
-		Style style;
+		ColorSheme style;
 		string referencedStyle;
 		public override Cairo.Color CairoColor {
 			get {
@@ -56,7 +56,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public ReferencedChunkStyle (Style style, string referencedStyle)
+		public ReferencedChunkStyle (ColorSheme style, string referencedStyle)
 		{
 			this.style           = style;
 			this.referencedStyle = referencedStyle;
