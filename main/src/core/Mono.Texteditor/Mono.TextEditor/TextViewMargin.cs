@@ -592,7 +592,7 @@ namespace Mono.TextEditor
 		bool UpdateCaret ()
 		{
 			caretBlink = !caretBlink;
-			int multiplier = caretBlink ? cursorOnMultiplier : cursorOffMultiplier;
+//			int multiplier = caretBlink ? cursorOnMultiplier : cursorOffMultiplier;
 			if (Caret.IsVisible)
 				DrawCaret (textEditor.GdkWindow);
 			return true;

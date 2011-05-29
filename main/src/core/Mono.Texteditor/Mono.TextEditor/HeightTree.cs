@@ -119,7 +119,7 @@ namespace Mono.TextEditor
 			int remainingLineCount;
 			
 			if (nodeStartLine == lineNumber) {
-				double nodeHeight = node.height;
+//				double nodeHeight = node.height;
 				remainingLineCount = node.count - 1;
 				ChangeHeight (node, 1, height);
 				if (remainingLineCount > 0) {

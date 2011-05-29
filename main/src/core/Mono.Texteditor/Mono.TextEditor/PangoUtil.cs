@@ -159,7 +159,7 @@ namespace Mono.TextEditor
 		[StructLayout (LayoutKind.Sequential)]
 		struct PangoAttribute
 		{
-			IntPtr klass;
+			public IntPtr klass;
 			public uint start_index;
 			public uint end_index;
 		}
