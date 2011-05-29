@@ -30,8 +30,6 @@
 	
 	<Style name="text.link" color="blue"/>
 	
-	<Style name="caret" color="#97A0EF" bgColor="#3F3FDF"/>
-	
 	<Style name="marker.line" color="#0088FF"/>
 	<Style name="marker.line.changed" color="yellow"/>	
 	<Style name="marker.line.dirty" color="green"/>	
@@ -92,7 +90,6 @@
 	<Style name="comment.keyword" color="white" weight="bold"/>	
 	<Style name="comment.keyword.todo" color="white" weight="italic"/>
 	
-	<Style name="text.literal" color="white"/>
 	<Style name="text.punctuation" color="white"/>
 	<Style name="text.preprocessor" color="white"/>
 	<Style name="text.preprocessor.keyword" weight="bold" color="white"/>

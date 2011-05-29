@@ -63,7 +63,6 @@
 		<Style name="selection" color="aluminium1" bgColor="skyblue1"/>
 		<Style name="selection.inactive" color="aluminium1" bgColor="aluminium3"/>
 		<Style name="link" color="blue"/>
-		<Style name="literal" color="plum2"/>
 		<Style name="punctuation" color="aluminium6"/>
 		<Style name="preprocessor" color="orange2">
 			<Style name="keyword" weight="bold"/>
@@ -89,8 +88,6 @@
 		
 		<Style name="location" color="plum2" weight="bold"/>
 	</Style>
-	
-	<Style name="caret" color="black" bgColor="white"/>
 	
 	<Style name="marker">
 		<Style name="line" color="aluminium1"/>

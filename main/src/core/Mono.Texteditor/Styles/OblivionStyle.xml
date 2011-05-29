@@ -64,8 +64,6 @@
 	<Style name="text.background.searchresult-main" color="#008080"/>
 	<Style name="text.link" color="butter2"/>
 	
-	<Style name="caret" color="aluminium2" bgColor="aluminium6"/>
-	
 	<Style name="marker.line" color="aluminium7"/>
 	<Style name="marker.line.changed" color="chameleon2"/>
 	<Style name="marker.line.dirty" color="butter2"/>
@@ -166,7 +164,6 @@
 	<Style name="comment.keyword" color="aluminium4" weight="bold" />
 	<Style name="comment.tag" color="aluminium4"/>
 	
-	<Style name="text.literal" color="butter2"/>
 	<Style name="text.punctuation" color="butter2"/>
 	<Style name="text.preprocessor" color="skyblue1" weight="italic"/>
 	<Style name="text.preprocessor.keyword" color="skyblue1" weight="bold"/>

@@ -47,8 +47,6 @@
 	
 	<Style name="text.link" color="skyblue"/>
 	
-	<Style name="caret" color="black" bgColor="white"/>
-	
 	<Style name="marker.line" color="aluminium1"/>
 	
 	<Style name="marker.ruler" color="aluminium3"/>

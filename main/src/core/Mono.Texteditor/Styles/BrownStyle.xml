@@ -72,9 +72,7 @@
 	<Style name="text.background.searchresult" color="yellow"/>
 	
 	<Style name="text.link" color="blue"/>
-	
-	<Style name="caret" color="black" bgcolor="white"/>
-	
+		
 	<Style name="marker.line" color="accent_yellow_highlight"/>
 	<Style name="marker.line.changed" color="yellow"/>	
 	<Style name="marker.line.dirty" color="accent_yellow_highlight"/>	
@@ -135,7 +133,6 @@
 	<Style name="comment.keyword" color="accent_green_base" weight="bold"/>	
 	<Style name="comment.keyword.todo" color="accent_green_base" weight="italic"/>		
 	
-	<Style name="text.literal" color="accent_magenta"/>
 	<Style name="text.punctuation" color="accent_magenta"/>
 	<Style name="text.preprocessor" color="environmental_blue_base"/>
 	<Style name="text.preprocessor.keyword" color="environmental_blue_base" weight="bold"/>

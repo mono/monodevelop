@@ -88,8 +88,6 @@
 	<Style name="text.background.searchresult" color="VisualBGVim"/>
 	<Style name="text.link" color="butter2"/>
 	
-	<Style name="caret" color="BlackVim" bgColor="CursorLineBGVim"/>
-	
 	<Style name="marker.line" color="CursorLineBGVim"/>
 	<Style name="marker.line.changed" color="StringVim"/>
 	<Style name="marker.line.dirty" color="butter2"/>
@@ -167,7 +165,6 @@
 	<Style name="comment.keyword" color="TodoVim" weight="bold" />
 	<Style name="comment.tag" color="TodoVim"/>
 	
-	<Style name="text.literal" color="StringVim"/>
 	<Style name="text.punctuation" color="StringVim"/>
 	<Style name="text.preprocessor" color="PreProcVim" weight="italic"/>
 	<Style name="text.preprocessor.keyword" color="PreProcVim" weight="bold"/>
