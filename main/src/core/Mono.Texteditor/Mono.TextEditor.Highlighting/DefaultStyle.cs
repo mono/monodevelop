@@ -37,13 +37,7 @@ namespace Mono.TextEditor.Highlighting
 				return defaultStyle;
 			}
 		}
-		
-		public override ChunkStyle Caret {
-			get {
-				return Default;
-			}
-		}
-		
+				
 		ChunkStyle lineNumberStyle;
 		public override ChunkStyle LineNumber {
 			get {

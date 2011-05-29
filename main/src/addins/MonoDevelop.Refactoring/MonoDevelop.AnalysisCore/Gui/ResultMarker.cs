@@ -63,7 +63,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			case ResultLevel.Suggestion:
 				return Mono.TextEditor.Highlighting.ColorSheme.SuggestionUnderlineString;
 			case ResultLevel.Todo:
-				return Mono.TextEditor.Highlighting.ColorSheme.CaretString;
+				return Mono.TextEditor.Highlighting.ColorSheme.DefaultString;
 			default:
 				throw new System.ArgumentOutOfRangeException ();
 			}

@@ -57,13 +57,6 @@ namespace Mono.TextEditor.Highlighting
 				return GetChunkStyle (DefaultString);
 			}
 		}
-		
-		public const string CaretString = "caret";
-		public virtual ChunkStyle Caret {
-			get {
-				return GetChunkStyle (CaretString);
-			}
-		}
 
 		public const string LineNumberString = "linenumber";
 		public virtual ChunkStyle LineNumber {
@@ -429,8 +422,6 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (ReadOnlyTextBgString, 0xFA, 0xFA, 0xF8);
 			
 			GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
-			
-			SetStyle (CaretString, DefaultString);
 
 			SetStyle (LineNumberString, 172, 168, 153, 255, 255, 255);
 			SetStyle (LineNumberFgHighlightedString, 122, 118, 103);
@@ -507,8 +498,8 @@ namespace Mono.TextEditor.Highlighting
 			SetStyleFromWeb ("bubble.error", "black", "#f5eae7");
 			
 			//regions in ASP.NET, T4, etc.
-			SetStyle ("template",           "text");
-			SetStyle ("template.tag",       "constant.language");
+			SetStyle ("template", "text");
+			SetStyle ("template.tag", "constant.language");
 			SetStyle ("template.directive", "constant.language");
 			
 		}
@@ -547,7 +538,6 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("keyword.semantic.type", 0, 0x8A , 0x8C);
 			
 			SetStyle ("keyword", 0, 0, 0, BOLD);
-			
 			SetStyle ("keyword.access",      165,  42,  42, BOLD);
 			SetStyle ("keyword.operator",    165,  42,  42, BOLD);
 			SetStyle ("keyword.operator.declaration", 165,  42,  42, BOLD);
