@@ -68,5 +68,52 @@ namespace MonoDevelop.AnalysisCore.Gui
 				throw new System.ArgumentOutOfRangeException ();
 			}
 		}
+		
+		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		{
+			int markerStart = LineSegment.Offset + System.Math.Max (StartCol - 1, 0);
+			int markerEnd = LineSegment.Offset + (EndCol < 1 ? LineSegment.EditableLength : EndCol - 1);
+			if (markerEnd < startOffset || markerStart > endOffset) 
+				return; 
+	
+			double @from;
+			double to;
+				
+			if (markerStart < startOffset && endOffset < markerEnd) {
+					@from = startXPos;
+				to = endXPos;
+			} else {
+				int start = startOffset < markerStart ? markerStart : startOffset;
+				int end = endOffset < markerEnd ? endOffset : markerEnd;
+				int /*lineNr,*/ x_pos;
+				
+				x_pos = layout.IndexToPos (start - startOffset).X;
+					@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+	
+				x_pos = layout.IndexToPos (end - startOffset).X;
+	
+				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+			}
+				@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
+			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
+			if (@from >= to) {
+				return;
+			}
+			double height = editor.LineHeight / 5;
+			cr.Color = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
+			if (result.Level == ResultLevel.Warning && result.Importance == ResultImportance.Low) {
+				cr.Rectangle (@from, y, to - from, editor.LineHeight);
+				var color = editor.ColorStyle.Default.CairoBackgroundColor;
+				color.A = 0.6;
+				cr.Color = color;
+				cr.Fill ();
+			} else if (Wave) {	
+				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
+			} else {
+				cr.MoveTo (@from, y + editor.LineHeight - 1);
+				cr.LineTo (to, y + editor.LineHeight - 1);
+				cr.Stroke ();
+			}
+		}
 	}
 }

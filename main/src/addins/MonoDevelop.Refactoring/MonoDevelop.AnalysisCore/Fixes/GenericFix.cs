@@ -1,10 +1,10 @@
 // 
-// FixableResult.cs
+// GenericFix.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,40 +23,64 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Fixes
 {
-	public class FixableResult : Result
+	public class GenericResults : FixableResult
 	{
-		public FixableResult (DomRegion region, string message, ResultLevel level,
-			ResultCertainty certainty, ResultImportance importance, params IAnalysisFix[] fixes)
+		public GenericResults (DomRegion region, string message, ResultLevel level,
+			ResultCertainty certainty, ResultImportance importance, params GenericFix[] fixes)
 			: base (region, message, level, certainty, importance)
 		{
 			this.Fixes = fixes;
 		}
+	}
+	
+	public class GenericFix : IAnalysisFix, IAnalysisFixAction
+	{
+		Action fix;
+		string label;
 		
-		public IAnalysisFix[] Fixes { get; protected set; }
+		public GenericFix (string label, Action fix)
+		{
+			this.fix = fix;
+			this.label = label;
+		}
+
+		
+		#region IAnalysisFix implementation
+		public string FixType {
+			get {
+				return "Generic";
+			}
+		}
+		#endregion
+		
+		#region IAnalysisFixAction implementation
+		public void Fix ()
+		{
+			fix ();
+		}
+
+		public string Label {
+			get {
+				return label;
+			}
+		}
+		#endregion
 	}
 	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
+	public class GenericFixHandler : IFixHandler
 	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
+		#region IFixHandler implementation
+		public IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
+		{
+			yield return (GenericFix)fix;
+		}
+		#endregion
 	}
 }
 

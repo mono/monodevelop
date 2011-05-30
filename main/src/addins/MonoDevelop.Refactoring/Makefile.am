@@ -37,6 +37,7 @@ FILES =  \
 	MonoDevelop.AnalysisCore/Extensions/AnalysisTypeExtensionNode.cs \
 	MonoDevelop.AnalysisCore/Extensions/FixHandlerExtensionNode.cs \
 	MonoDevelop.AnalysisCore/FixableResult.cs \
+	MonoDevelop.AnalysisCore/Fixes/GenericFix.cs \
 	MonoDevelop.AnalysisCore/Fixes/RenameMemberFix.cs \
 	MonoDevelop.AnalysisCore/Gui/AnalysisOptionsPanel.cs \
 	MonoDevelop.AnalysisCore/Gui/ResultMarker.cs \

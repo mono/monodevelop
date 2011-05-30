@@ -47,8 +47,10 @@ namespace MonoDevelop.QuickFix
 				return;
 			TextEditor editor = Document.Editor.Parent;
 			var container = editor.Parent as TextEditorContainer;
-			if (container != null)
+			if (container != null) {
 				container.Remove (widget);
+				container.QueueDraw ();
+			}
 			widget.Destroy ();
 			widget = null;
 		}
@@ -65,7 +67,7 @@ namespace MonoDevelop.QuickFix
 			if (!fixes.Any ())
 				return;
 			
-			widget = new QuickFixWidget (Document, loc, fixes);
+			widget = new QuickFixWidget (this, Document, loc, fixes);
 			var container = Document.Editor.Parent.Parent as TextEditorContainer;
 			if (container == null) 
 				return;

@@ -34,13 +34,15 @@ namespace MonoDevelop.QuickFix
 {
 	public class QuickFixWidget : Gtk.EventBox
 	{
+		QuickFixEditorExtension ext;
 		MonoDevelop.Ide.Gui.Document document;
 		List<QuickFix> fixes;
 		DomLocation loc;
 		Gdk.Pixbuf icon;
 		
-		public QuickFixWidget (MonoDevelop.Ide.Gui.Document document, DomLocation loc, List<QuickFix> fixes)
+		public QuickFixWidget (QuickFixEditorExtension ext, MonoDevelop.Ide.Gui.Document document, DomLocation loc, List<QuickFix> fixes)
 		{
+			this.ext = ext;
 			this.document = document;
 			this.loc = loc;
 			this.fixes = fixes;
@@ -54,7 +56,7 @@ namespace MonoDevelop.QuickFix
 
 		void HandleDocumentEditorParentEditorOptionsChanged (object sender, EventArgs e)
 		{
-			var container = this.Parent as TextEditorContainer;
+//			var container = this.Parent as TextEditorContainer;
 			HeightRequest = (int)document.Editor.LineHeight;
 		//	container.MoveTopLevelWidget (this, (int)document.Editor.Parent.TextViewMargin.XOffset + 4, (int)document.Editor.Parent.LineToY (loc.Line));
 		}
@@ -68,10 +70,15 @@ namespace MonoDevelop.QuickFix
 		public void PopupQuickFixMenu ()
 		{
 			Gtk.Menu menu = new Gtk.Menu ();
-				
+			
 			Dictionary<Gtk.MenuItem, QuickFix> fixTable = new Dictionary<Gtk.MenuItem, QuickFix> ();
+			int mnemonic = 1;
 			foreach (QuickFix fix in fixes) {
-				Gtk.MenuItem menuItem = new Gtk.MenuItem (fix.GetMenuText (document, loc));
+				var label = (mnemonic <= 10)
+						? "_" + (mnemonic++ % 10).ToString () + " " + fix.GetMenuText (document, loc)
+						: "  " + fix.GetMenuText (document, loc);
+				
+				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
 				fixTable [menuItem] = fix;
 				menuItem.Activated += delegate(object sender, EventArgs e) {
 					var runFix = fixTable [(Gtk.MenuItem)sender];

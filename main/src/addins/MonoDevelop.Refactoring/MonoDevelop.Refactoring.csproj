@@ -143,6 +143,7 @@
     <Compile Include="MonoDevelop.QuickFix\QuickFix.cs" />
     <Compile Include="MonoDevelop.QuickFix\QuickFixWidget.cs" />
     <Compile Include="MonoDevelop.QuickFix\AnalysisQuickFix.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
