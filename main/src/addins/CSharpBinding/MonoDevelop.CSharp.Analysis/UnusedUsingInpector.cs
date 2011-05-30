@@ -1,5 +1,5 @@
 // 
-// NamingConventions.cs
+// UnusedUsingInpector.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -23,58 +23,56 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Linq;
-using MonoDevelop.AnalysisCore;
-using MonoDevelop.Projects.Dom;
-using System.Collections.Generic;
-using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Policies;
+using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Serialization;
-using System.Text;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.QuickFix;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.Gui;
+using Mono.CSharp;
+using MonoDevelop.Refactoring.RefactorImports;
+using MonoDevelop.Refactoring;
+using MonoDevelop.AnalysisCore.Fixes;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Analysis
 {
-	public static class CodeAnalysis
+	public class UnusedUsingInpector : CSharpInspector
 	{
-		static CodeAnalysis ()
+		Document doc;
+		CallGraph cg;
+
+		public UnusedUsingInpector (Document doc, CallGraph cg)
 		{
+			this.doc = doc;
+			this.cg = cg;
 		}
 		
-		public static IEnumerable<Result> Check (Document input)
+		public override void Attach (ObservableAstVisitor visitor)
 		{
-			var unit = input != null ? input.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit : null;
-			if (unit == null)
-				yield break;
-			
-			var cg = new CallGraph ();
-			cg.Inpect (input, CSharpQuickFix.GetResolver (input), unit);
-			
-			
-			var visitor = new ObservableAstVisitor ();
-			
-			List<CSharpInspector> inspectors = new List<CSharpInspector> ();
-			inspectors.Add (new NamingInspector (input.CompilationUnit));
-			inspectors.Add (new StringIsNullOrEmptyInspector ());
-			inspectors.Add (new ConditionalToNullCoalescingInspector ());
-			inspectors.Add (new NotImplementedExceptionInspector (input));
-			inspectors.Add (new UnusedUsingInpector (input, cg));
-	
-			foreach (var inspector in inspectors) {
-				inspector.Attach (visitor);
+			visitor.UsingDeclarationVisited += HandleVisitorUsingDeclarationVisited;
+		}
+
+		void HandleVisitorUsingDeclarationVisited (UsingDeclaration node)
+		{
+			if (!cg.UsedUsings.Contains (node.Namespace)) {
+				results.Add (
+					new GenericResults (
+						new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
+						GettextCatalog.GetString ("Using directive is not required."),
+						ResultLevel.Warning, 
+						ResultCertainty.High, 
+						ResultImportance.Low,
+						new GenericFix (GettextCatalog.GetString ("Remove unused usings"), delegate {
+						RefactoringOptions options = new RefactoringOptions () { Document = doc, Dom = doc.Dom};
+						new RemoveUnusedImportsRefactoring ().Run (options);
+					})
+					)
+				);
 			}
-			
-			unit.AcceptVisitor (visitor, null);
-			foreach (var inspector in inspectors) {
-				foreach (var fix in inspector.results)
-					yield return fix;
-			}
-			
 		}
 	}
 }
+

@@ -40,6 +40,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
+	MonoDevelop.CSharp.Analysis/CallGraph.cs \
 	MonoDevelop.CSharp.Analysis/CodeAnalysis.cs \
 	MonoDevelop.CSharp.Analysis/ConditionalToNullCoalescingInspector.cs \
 	MonoDevelop.CSharp.Analysis/CSharpInspector.cs \
@@ -51,6 +52,7 @@ FILES =  \
 	MonoDevelop.CSharp.Analysis/NamingStyle.cs \
 	MonoDevelop.CSharp.Analysis/NotImplementedExceptionInspector.cs \
 	MonoDevelop.CSharp.Analysis/StringIsNullOrEmptyInspector.cs \
+	MonoDevelop.CSharp.Analysis/UnusedUsingInpector.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
