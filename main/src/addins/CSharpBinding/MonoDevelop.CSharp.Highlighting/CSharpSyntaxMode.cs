@@ -260,7 +260,8 @@ namespace MonoDevelop.CSharp.Highlighting
 							return;
 						}
 					}
-					chunk.Style = "text";
+				
+					chunk.Style = spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
 				}
 				
 				base.AddRealChunk (chunk);
