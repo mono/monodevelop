@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
-					memberType.MemberName = ma.Name;
+					memberType.MemberNameToken = new Identifier (ma.Name, Convert (ma.Location));
 					
 					AddTypeArguments (ma, memberType);
 					return memberType;
