@@ -28,6 +28,7 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using Gtk;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -224,7 +225,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.scrolledwindowTextEditor.Child = textEditor;
 			textEditor.ShowAll ();
 			
-			this.treeviewColors.AppendColumn (GettextCatalog.GetString ("Name"), new Gtk.CellRendererText (), "text", 0);
+			this.treeviewColors.AppendColumn (GettextCatalog.GetString ("Name"), new Gtk.CellRendererText (), new CellLayoutDataFunc (SyntaxCellRenderer));
+			this.treeviewColors.HeadersVisible = false;
 			this.treeviewColors.Model = colorStore;
 			this.treeviewColors.Selection.Changed += HandleTreeviewColorsSelectionChanged;
 			this.colorbuttonFg.ColorSet += Stylechanged;
@@ -238,6 +240,29 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 		}
 
+		void SyntaxCellRenderer (Gtk.CellLayout cell_layout, Gtk.CellRenderer cell, Gtk.TreeModel tree_model, Gtk.TreeIter iter)
+		{
+			var renderer = (Gtk.CellRendererText)cell;
+			var data = (ColorMetaData)colorStore.GetValue (iter, 2);
+			var style = (ChunkStyle)colorStore.GetValue (iter, 1);
+			string markup = GLib.Markup.EscapeText (data.Description);
+			if (style.Bold)
+				markup = "<b>" + markup + "</b>";
+			if (style.Italic)
+				markup = "<i>" + markup + "</i>";
+			renderer.Markup = markup;
+			if (data.ColorsAvailable == ColorsAvailable.Text || data.ColorsAvailable == ColorsAvailable.FgBg) {
+				renderer.ForegroundGdk = style.Color;
+				renderer.BackgroundGdk = style.GotBackgroundColorAssigned ? style.BackgroundColor : Style.Base (StateType.Normal);
+			} else {
+				var b = Math.Abs (HslColor.Brightness (style.Color) - HslColor.Brightness (Style.Text (StateType.Normal)));
+				Console.WriteLine (data.Description  + ":" + b);
+				renderer.ForegroundGdk = b < 0.4 ? Style.Background (StateType.Normal) : Style.Text (StateType.Normal);
+				renderer.BackgroundGdk = style.Color;
+			}
+			
+		}
+
 		void ApplyStyle (ColorSheme sheme)
 		{
 			sheme.Name = entryName.Text;
@@ -246,7 +271,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			Gtk.TreeIter iter;
 			if (colorStore.GetIterFirst (out iter)) {
 				do {
-					var data  = (ColorMetaData)colorStore.GetValue (iter, 2);
+					var data = (ColorMetaData)colorStore.GetValue (iter, 2);
 					var style = (ChunkStyle)colorStore.GetValue (iter, 1);
 					sheme.SetChunkStyle (data.Name, style);
 				} while (colorStore.IterNext (ref iter));
@@ -326,7 +351,18 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.colorSheme = style;
 			this.entryName.Text = style.Name;
 			this.entryDescription.Text = style.Description;
+			this.textEditor.Document.MimeType = "text/x-csharp";
 			this.textEditor.GetTextEditorData ().ColorStyle = style;
+			this.textEditor.Text = @"using System;
+
+// This is an example
+class Example
+{
+	public static void Main (string[] args)
+	{
+		Console.WriteLine (""Hello World"");
+	}
+}";
 			foreach (var data in metaData) {
 				colorStore.AppendValues (data.Description, style.GetChunkStyle (data.Name), data);
 			}
