@@ -61,6 +61,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Database/ContextMenu/DataGrid">
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
+		<SeparatorItem id = "CopySelecSectionEnd" />
 		<ItemSet id = "MonoDevelop.Database.Components.VisualizeAs" _label = "Visualize Data">
 			<CommandItem id = "MonoDevelop.Database.Components.DataGridCommands.VisualizeAsList" />
 		</ItemSet>
