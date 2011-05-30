@@ -35,12 +35,12 @@ namespace MonoDevelop.CSharp.QuickFix
 	{
 		public ReplaceEmptyString ()
 		{
-			Description = "Replaces \"\" with string.Empty";
+			Description = GettextCatalog.GetString ("Replaces \"\" with string.Empty");
 		}
 		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			return "Use string.Empty";
+			return GettextCatalog.GetString ("Use string.Empty");
 		}
 		
 		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
