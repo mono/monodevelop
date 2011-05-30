@@ -291,9 +291,11 @@
 	
 	<Keywords color = "keyword.type">
 		<Word>void</Word>
+		<Word>object</Word>
 		<Word>bool</Word>
 		<Word>char</Word>
 		<Word>wchar</Word>
+		<Word>string</Word>
 		<Word>int</Word>
 		<Word>int8</Word>
 		<Word>int16</Word>
@@ -318,8 +320,6 @@
 		<Word>virtual</Word>
 		<Word>refany</Word>
 		<Word>typedref</Word>
-		<Word>object</Word>
-		<Word>string</Word>
 		<Word>native</Word>
 		<Word>unsigned</Word>
 		<Word>value</Word>
@@ -392,6 +392,12 @@
 		<Word>serializable</Word>
 		<Word>at</Word>
 		<Word>tls</Word>
+		<Word>retargetable</Word>
+		<Word>x86</Word>
+		<Word>amd64</Word>
+		<Word>ia64</Word>
+		<Word>legacy</Word>
+		<Word>library</Word>
 	</Keywords>
 	
 	<Keywords color = "constant.language">
