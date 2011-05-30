@@ -229,6 +229,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.treeviewColors.Selection.Changed += HandleTreeviewColorsSelectionChanged;
 			this.colorbuttonFg.ColorSet += Stylechanged;
 			this.colorbuttonBg.ColorSet += Stylechanged;
+			colorbuttonBg.UseAlpha = true;
 			this.checkbuttonBold.Toggled += Stylechanged;
 			this.checkbuttonItalic.Toggled += Stylechanged;
 			
@@ -273,7 +274,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				prop |= ChunkProperties.Bold;
 			if (checkbuttonItalic.Active)
 				prop |= ChunkProperties.Italic;
-			colorStore.SetValue (iter, 1, new ChunkStyle (colorbuttonFg.Color, colorbuttonBg.Color, prop));
+			ChunkStyle oldStyle = (ChunkStyle)colorStore.GetValue (iter, 1);
+			bool useBgColor = colorbuttonBg.Alpha > 0 && (colorbuttonBg.Color.Pixel != oldStyle.BackgroundColor.Pixel || oldStyle.GotBackgroundColorAssigned);
+			colorStore.SetValue (iter, 1, useBgColor? new ChunkStyle (colorbuttonFg.Color, colorbuttonBg.Color, prop) : new ChunkStyle (colorbuttonFg.Color, prop));
 			
 			var newStyle = colorSheme.Clone ();
 			ApplyStyle (newStyle);
@@ -301,11 +304,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			checkbuttonBold.Active = chunkStyle.Bold;
 			checkbuttonItalic.Active = chunkStyle.Italic;
 			
-			this.label5.Visible = this.colorbuttonBg.Visible = (data.ColorsAvailable & ColorsAvailable.Bg) != 0;
-			this.colorbuttonBg.Sensitive = true;
-			
 			this.label4.Visible = this.colorbuttonFg.Visible = (data.ColorsAvailable & ColorsAvailable.Fg) != 0;
 			this.colorbuttonFg.Sensitive = true;
+			
+			this.label5.Visible = this.colorbuttonBg.Visible = (data.ColorsAvailable & ColorsAvailable.Bg) != 0;
+			this.colorbuttonBg.Sensitive = true;
+			this.colorbuttonBg.Alpha = chunkStyle.GotBackgroundColorAssigned ? ushort.MaxValue : (ushort)0;
 			
 			this.checkbuttonBold.Visible = (data.ColorsAvailable & ColorsAvailable.FontAttributes) != 0;
 			this.checkbuttonBold.Sensitive = true;

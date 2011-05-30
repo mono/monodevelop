@@ -776,10 +776,11 @@ namespace Mono.TextEditor.Highlighting
 			foreach (var style in new Dictionary<string, ChunkStyle> (this.styleLookupTable)) {
 				writer.WriteStartElement ("Style");
 				writer.WriteAttributeString ("name", style.Key);
+				writer.WriteAttributeString ("color", GetColorString (style.Value.CairoColor));
+				if (style.Value.GotBackgroundColorAssigned)
+					writer.WriteAttributeString ("bgColor", GetColorString (style.Value.CairoBackgroundColor));
 				if ((style.Value.ChunkProperties & (ChunkProperties.Bold | ChunkProperties.Italic)) != 0)
 					writer.WriteAttributeString ("weight", style.Value.ChunkProperties.ToString ());
-				writer.WriteAttributeString ("color", GetColorString (style.Value.CairoColor));
-				writer.WriteAttributeString ("bgColor", GetColorString (style.Value.CairoBackgroundColor));
 				writer.WriteEndElement ();
 			}
 			

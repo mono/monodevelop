@@ -57,6 +57,12 @@ namespace Mono.TextEditor
 			set { cairoBackgroundColor = value; backColorIsZero = false; }
 		}
 		
+		public bool GotBackgroundColorAssigned {
+			get {
+				return !backColorIsZero;
+			}
+		}
+		
 		public Gdk.Color BackgroundColor {
 			get {
 				return (HslColor)CairoBackgroundColor;
