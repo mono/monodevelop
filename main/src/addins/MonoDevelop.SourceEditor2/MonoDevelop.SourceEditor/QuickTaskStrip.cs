@@ -172,7 +172,7 @@ namespace MonoDevelop.SourceEditor
 				foreach (var tasks in providerTasks.Values) {
 					foreach (var task in tasks) {
 						int y = Allocation.Height * task.Location.Line / TextEditor.LineCount;
-						if (Math.Abs (y - evnt.Y) < 2) {
+						if (Math.Abs (y - evnt.Y) < 3) {
 							hoverTask = task;
 						}
 					}
@@ -186,7 +186,7 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Button == 1 && hoverTask != null) {
-				TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, hoverTask.Location.Column);
+				TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
 				TextEditor.CenterToCaret ();
 			} 
 			return base.OnButtonPressEvent (evnt);
@@ -231,9 +231,16 @@ namespace MonoDevelop.SourceEditor
 				foreach (var task in AllTasks) {
 					int y = Allocation.Height * task.Location.Line / TextEditor.LineCount;
 						
-					cr.Color = GetBarColor (task.Severity);
-					cr.Rectangle (3, y, Allocation.Width - 6, 2);
-					cr.Fill ();
+					var color = (HslColor)GetBarColor (task.Severity);
+					cr.Color = color;
+					cr.Rectangle (3, y - 1, Allocation.Width - 6, 4);
+					cr.FillPreserve ();
+					
+					color.L *= 0.7;
+					cr.Color = color;
+					cr.Rectangle (3, y - 1, Allocation.Width - 6, 4);
+					cr.Stroke ();
+					
 					switch (task.Severity) {
 					case QuickTaskSeverity.Error:
 						severity = QuickTaskSeverity.Error;
