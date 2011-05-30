@@ -252,6 +252,7 @@
     <Compile Include="MonoDevelop.CSharp.Analysis\NotImplementedExceptionInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\CallGraph.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\UnusedUsingInpector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Analysis\UseVarKeywordInspector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

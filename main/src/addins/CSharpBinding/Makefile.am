@@ -53,6 +53,7 @@ FILES =  \
 	MonoDevelop.CSharp.Analysis/NotImplementedExceptionInspector.cs \
 	MonoDevelop.CSharp.Analysis/StringIsNullOrEmptyInspector.cs \
 	MonoDevelop.CSharp.Analysis/UnusedUsingInpector.cs \
+	MonoDevelop.CSharp.Analysis/UseVarKeywordInspector.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
