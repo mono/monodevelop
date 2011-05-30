@@ -199,12 +199,12 @@ namespace MonoDevelop.SourceEditor
 			var darkColor = (HslColor)GetIndicatorColor (severity);
 			darkColor.L *= 0.5;
 			
-			var pattern = new Cairo.LinearGradient (0, 0, Allocation.Width - 3, Allocation.Width - 3);
-			pattern.AddColorStop (0, darkColor);
-			pattern.AddColorStop (1, GetIndicatorColor (severity));
-			cr.Pattern = pattern;
-			cr.FillPreserve ();
-			pattern.Dispose ();
+			using (var pattern = new Cairo.LinearGradient (0, 0, Allocation.Width - 3, Allocation.Width - 3)) {
+				pattern.AddColorStop (0, darkColor);
+				pattern.AddColorStop (1, GetIndicatorColor (severity));
+				cr.Pattern = pattern;
+				cr.FillPreserve ();
+			}
 			
 			cr.Color = darkColor;
 			cr.Stroke ();
