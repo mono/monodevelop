@@ -204,7 +204,8 @@ namespace MonoDevelop.SourceEditor
 			pattern.AddColorStop (1, GetIndicatorColor (severity));
 			cr.Pattern = pattern;
 			cr.FillPreserve ();
-			pattern.Dispose ();
+			IDisposable dispPattern = pattern;
+			dispPattern.Dispose ();
 			
 			cr.Color = darkColor;
 			cr.Stroke ();
