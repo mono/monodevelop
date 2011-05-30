@@ -53,11 +53,7 @@ namespace MonoDevelop.CSharp.QuickFix
 			if (unit == null)
 				return null;
 			
-			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
-			while (astNode != null && !(astNode is VariableDeclarationStatement)) {
-				astNode = astNode.Parent;
-			}
-			var result = astNode as VariableDeclarationStatement;
+			var result = unit.GetNodeAt<VariableDeclarationStatement> (loc.Line, loc.Column);
 			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (loc.Line, loc.Column) && result.Type.IsMatch (new SimpleType ("var"))) {
 				var resolver = GetResolver (doc);
 				var resolveResult = resolver.Resolve (result.Variables.First ().Initializer.ToString (), loc);
