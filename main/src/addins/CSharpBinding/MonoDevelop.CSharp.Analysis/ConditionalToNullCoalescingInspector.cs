@@ -57,11 +57,11 @@ namespace MonoDevelop.CSharp.Analysis
 				if (condition.Operator == BinaryOperatorType.Equality) 
 					return false;
 				// a != null ? a : other
-				return true;
+				return compareNode.IsMatch (node.TrueExpression);
 			} else {
 				// a == null ? other : a
 				if (condition.Operator == BinaryOperatorType.Equality)
-					return true;
+					return compareNode.IsMatch (node.FalseExpression);
 				// a != null ? other : a
 				return false;
 			}
