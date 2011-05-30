@@ -492,10 +492,11 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (SecondaryTemplateColorString, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 			SetStyle (SecondaryTemplateHighlightedColorString, 0x7F, 0x7F, 0x7F, 0xFF, 0xFF, 0xFF);
 			
-			SetStyle ("bubble.error.text", 0, 0, 0);
 			
 			SetStyleFromWeb ("bubble.warning", "black", "#f4eeda");
+			SetStyle ("bubble.warning.text", 0, 0, 0);
 			SetStyleFromWeb ("bubble.error", "black", "#f5eae7");
+			SetStyle ("bubble.error.text", 0, 0, 0);
 			
 			//regions in ASP.NET, T4, etc.
 			SetStyle ("template", "text");
@@ -579,7 +580,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		void SetStyleFromWeb (string name, string colorString)
 		{
-			Gdk.Color color = new Color ();
+			var color = new Color ();
 			if (!Gdk.Color.Parse (colorString, ref color)) 
 				throw new Exception ("Can't parse color: " + colorString);
 			SetStyle (name, new ChunkStyle (color));
@@ -587,11 +588,11 @@ namespace Mono.TextEditor.Highlighting
 
 		void SetStyleFromWeb (string name, string colorString, string bgColorString)
 		{
-			Gdk.Color color = new Color ();
+			var color = new Color ();
 			if (!Gdk.Color.Parse (colorString, ref color)) 
 				throw new Exception ("Can't parse color: " + colorString);
-			Gdk.Color bgColor = new Color ();
-			if (!Gdk.Color.Parse (bgColorString, ref color)) 
+			var bgColor = new Color ();
+			if (!Gdk.Color.Parse (bgColorString, ref bgColor)) 
 				throw new Exception ("Can't parse color: " + bgColorString);
 			SetStyle (name, new ChunkStyle (color, bgColor));
 		}
@@ -647,9 +648,9 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void SetChunkStyle (string name, string weight, string foreColor, string backColor)
 		{
-			Cairo.Color color = !string.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
-			Cairo.Color bgColor = !string.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : new Cairo.Color (0, 0, 0);
-			ChunkProperties properties = ChunkProperties.None;
+			var color = !string.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
+			var bgColor = !string.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : new Cairo.Color (0, 0, 0);
+			var properties = ChunkProperties.None;
 			if (weight != null) {
 				if (weight.ToUpper ().IndexOf ("BOLD") >= 0)
 					properties |= ChunkProperties.Bold;
@@ -690,7 +691,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 				throw new ArgumentException ("colorString", "colorString must either be #RRGGBB (length 7) or #AARRGGBB (length 9) your string " + colorString + " is invalid because it has a length of " + colorString.Length);
 			} 
-			Gdk.Color color = new Gdk.Color ();
+			var color = new Gdk.Color ();
 			if (Gdk.Color.Parse (colorString, ref color))
 				return (Cairo.Color)((HslColor)color);
 			throw new Exception ("Failed to parse color or find named color '" + colorString + "'");
@@ -725,7 +726,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static ColorSheme LoadFrom (XmlReader reader)
 		{
-			ColorSheme result = new ColorSheme ();
+			var result = new ColorSheme ();
 			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {
 				switch (reader.LocalName) {
 				case "EditorStyle":
@@ -766,7 +767,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void Save (string fileName)
 		{
-			XmlTextWriter writer = new XmlTextWriter (fileName, System.Text.UTF8Encoding.UTF8);
+			var writer = new XmlTextWriter (fileName, System.Text.UTF8Encoding.UTF8);
 			writer.Formatting = Formatting.Indented;
 			
 			writer.WriteStartElement ("EditorStyle");

@@ -247,7 +247,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				DefaultSourceEditorOptions.Instance.ColorScheme = ((Mono.TextEditor.Highlighting.ColorSheme)this.styleStore.GetValue (selectedIter, 1)).Name;
+				ColorSheme sheme = ((Mono.TextEditor.Highlighting.ColorSheme)this.styleStore.GetValue (selectedIter, 1));
+				DefaultSourceEditorOptions.Instance.ColorScheme = sheme != null ? sheme.Name : null;
 			}
 		}
 		OptionsDialog dialog;
