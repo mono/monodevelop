@@ -101,8 +101,14 @@ namespace MonoDevelop.QuickFix
 				x = dx; 
 				y = dy + Allocation.Height; 
 				pushIn = false;
+				menuPushed = true;
+				QueueDraw ();
 			}, 0, Gtk.Global.CurrentEventTime);
 			menu.SelectFirst (true);
+			menu.Destroyed += delegate {
+				menuPushed = false;
+				QueueDraw ();
+			};
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
@@ -112,11 +118,28 @@ namespace MonoDevelop.QuickFix
 			return base.OnButtonPressEvent (evnt);
 		}
 		
+		bool isMouseInside, menuPushed;
+		
+		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			isMouseInside = true;
+			QueueDraw ();
+			return base.OnEnterNotifyEvent (evnt);
+		}
+		
+		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			isMouseInside = false;
+			QueueDraw ();
+			return base.OnLeaveNotifyEvent (evnt);
+		}
+		
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			var alloc = Allocation;
+//			var alloc = Allocation;
 			double border = 1.0;
-			var halfBorder = border / 2.0;
+//			var halfBorder = border / 2.0;
 			
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.LineWidth = border;
@@ -128,7 +151,7 @@ namespace MonoDevelop.QuickFix
 					true, true,
 					0, 0, Allocation.Width / 2, 
 					Allocation.Width, Allocation.Height);
-				cr.Color = document.Editor.ColorStyle.FoldLine.CairoColor;
+				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.Default.CairoColor : document.Editor.ColorStyle.FoldLine.CairoColor;
 				cr.Stroke ();
 				
 				evnt.Window.DrawPixbuf (Style.BaseGC (State), icon, 
