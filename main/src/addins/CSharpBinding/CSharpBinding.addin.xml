@@ -155,6 +155,7 @@
 		<Class class = "MonoDevelop.CSharp.QuickFix.UseVarKeyword" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.UseExplicitType" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.ReplaceEmptyString" />
+		<Class class = "MonoDevelop.CSharp.QuickFix.InvertIf" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public object Value {
 			get;
-			private set;
+			set;
 		}
 		
 		public PrimitiveExpression (object value)

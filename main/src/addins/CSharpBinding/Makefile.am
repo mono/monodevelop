@@ -87,12 +87,14 @@ FILES =  \
 	MonoDevelop.CSharp.Project/CSharpResourceIdBuilder.cs \
 	MonoDevelop.CSharp.QuickFix/AddAnotherAccessor.cs \
 	MonoDevelop.CSharp.QuickFix/CheckIfParameterIsNull.cs \
+	MonoDevelop.CSharp.QuickFix/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.QuickFix/ConvertDecToHex.cs \
 	MonoDevelop.CSharp.QuickFix/ConvertForeachToFor.cs \
 	MonoDevelop.CSharp.QuickFix/CreateEventInvocator.cs \
 	MonoDevelop.CSharp.QuickFix/CSharpQuickFix.cs \
 	MonoDevelop.CSharp.QuickFix/FlipOperatorArguments.cs \
 	MonoDevelop.CSharp.QuickFix/GenerateSwitchLabels.cs \
+	MonoDevelop.CSharp.QuickFix/InvertIf.cs \
 	MonoDevelop.CSharp.QuickFix/ReplaceEmptyString.cs \
 	MonoDevelop.CSharp.QuickFix/StringBuilderOutputFormatter.cs \
 	MonoDevelop.CSharp.QuickFix/UseExplicitType.cs \

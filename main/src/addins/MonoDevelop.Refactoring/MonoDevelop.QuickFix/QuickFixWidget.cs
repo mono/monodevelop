@@ -81,6 +81,8 @@ namespace MonoDevelop.QuickFix
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
 				fixTable [menuItem] = fix;
 				menuItem.Activated += delegate(object sender, EventArgs e) {
+					// ensure that the Ast is recent.
+					document.UpdateParseDocument ();
 					var runFix = fixTable [(Gtk.MenuItem)sender];
 					runFix.Run (document, loc);
 					
