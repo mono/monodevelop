@@ -373,7 +373,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 					continue;
 				DateTime modified;
 				if (trackedFiles.TryGetValue (target, out modified) && File.GetLastWriteTime (target) > modified)
-					File.Copy (target, file.FilePath);
+					File.Copy (target, file.FilePath, true);
 			}
 		}
 		
