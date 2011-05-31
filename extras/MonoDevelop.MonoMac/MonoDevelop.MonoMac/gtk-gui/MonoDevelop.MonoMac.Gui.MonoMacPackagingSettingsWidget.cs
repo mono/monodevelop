@@ -32,7 +32,7 @@ namespace MonoDevelop.MonoMac.Gui
 		private global::Gtk.Label packageSigningLabel;
 		private global::MonoDevelop.Components.FileEntry productDefinitionFileEntry;
 		private global::Gtk.Label productDefinitionLabel;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
