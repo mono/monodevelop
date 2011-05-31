@@ -36,10 +36,11 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using System.Reflection;
 using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.XcodeIntegration;
 
 namespace MonoDevelop.MonoMac
 {
-	public class MonoMacProject : DotNetProject
+	public class MonoMacProject : DotNetProject, IXcodeTrackedProject
 	{
 		public override string ProjectType {
 			get { return "MonoMac"; }
@@ -74,9 +75,22 @@ namespace MonoDevelop.MonoMac
 			*/
 		}
 		
+		XcodeProjectTracker projectTracker;
+		
+		XcodeProjectTracker IXcodeTrackedProject.XcodeProjectTracker { get { return projectTracker; } }
+			
 		void Init ()
 		{
-			CodeBehindGenerator = new MonoMacCodeBehind (this);
+			if (!XcodeProjectTracker.TrackerEnabled)
+				CodeBehindGenerator = new MonoMacCodeBehind (this);
+		}
+		
+		protected override void OnEndLoad ()
+		{
+			base.OnEndLoad ();
+			
+			if (XcodeProjectTracker.TrackerEnabled)
+				projectTracker = new XcodeProjectTracker (this, "MonoMac");
 		}
 		
 		public override bool SupportsFormat (FileFormat format)
