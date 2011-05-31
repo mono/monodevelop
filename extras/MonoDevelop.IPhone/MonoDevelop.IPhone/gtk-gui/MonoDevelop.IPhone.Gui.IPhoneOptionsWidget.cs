@@ -52,7 +52,7 @@ namespace MonoDevelop.IPhone.Gui
 		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry settingsIconPicker;
 		private global::Gtk.Label settingsIconSizeLabel;
 		private global::Gtk.Label label4;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

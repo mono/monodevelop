@@ -19,7 +19,7 @@ namespace MonoDevelop.IPhone.Gui
 		private global::Gtk.Label label9;
 		private global::MonoDevelop.MacDev.SigningIdentityCombo provisioningCombo;
 		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry resourceRulesEntry;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

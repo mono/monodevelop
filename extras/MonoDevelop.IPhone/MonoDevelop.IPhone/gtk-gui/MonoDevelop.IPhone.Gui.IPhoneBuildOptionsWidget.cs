@@ -56,7 +56,7 @@ namespace MonoDevelop.IPhone.Gui
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView i18nTreeView;
 		private global::Gtk.Label label12;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
