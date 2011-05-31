@@ -148,6 +148,7 @@
 		<Class class = "MonoDevelop.CSharp.QuickFix.AddAnotherAccessor" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.CheckIfParameterIsNull" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertDecToHex" />
+		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertHexToDec" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertForeachToFor" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.CreateEventInvocator" />
 		<Class class = "MonoDevelop.CSharp.QuickFix.GenerateSwitchLabels" />

@@ -418,7 +418,7 @@ namespace Mono.CSharp
 			return ParseFile (args, input, inputFile, new StreamReportPrinter (reportStream));
 		}
 		
-		internal static object parseLock = new object ();
+		public static object parseLock = new object ();
 
 		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, ReportPrinter reportPrinter)
 		{

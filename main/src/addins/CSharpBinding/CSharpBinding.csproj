@@ -255,6 +255,7 @@
     <Compile Include="MonoDevelop.CSharp.Analysis\UseVarKeywordInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\InvertIf.cs" />
     <Compile Include="MonoDevelop.CSharp.QuickFix\ContextActionExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertHexToDec.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

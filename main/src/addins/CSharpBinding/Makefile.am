@@ -90,6 +90,7 @@ FILES =  \
 	MonoDevelop.CSharp.QuickFix/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.QuickFix/ConvertDecToHex.cs \
 	MonoDevelop.CSharp.QuickFix/ConvertForeachToFor.cs \
+	MonoDevelop.CSharp.QuickFix/ConvertHexToDec.cs \
 	MonoDevelop.CSharp.QuickFix/CreateEventInvocator.cs \
 	MonoDevelop.CSharp.QuickFix/CSharpQuickFix.cs \
 	MonoDevelop.CSharp.QuickFix/FlipOperatorArguments.cs \

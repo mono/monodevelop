@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Projects.Dom;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.QuickFix
 {
@@ -33,17 +34,19 @@ namespace MonoDevelop.CSharp.QuickFix
 	{
 		public ConvertDecToHex ()
 		{
-			Description = "Convert hex to dec.";
+			Description = GettextCatalog.GetString ("Convert dec to hex.");
 		}
 		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			return "Convert hex to dec.";
+			return GettextCatalog.GetString ("Convert dec to hex.");
 		}
 		
 		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			
+			var unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+			var pExpr = unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
+			pExpr.Replace (document, string.Format ("0x{0:x}", pExpr.Value));
 		}
 		
 		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
@@ -51,8 +54,8 @@ namespace MonoDevelop.CSharp.QuickFix
 			var unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
 			if (unit == null)
 				return false;
-			var pExpr = unit.GetNodeAt (loc.Line, loc.Column) as PrimitiveExpression;
-			if (pExpr == null)
+			var pExpr = unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
+			if (pExpr == null || pExpr.LiteralValue.ToUpper ().StartsWith ("0X"))
 				return false;
 			return (pExpr.Value is int) || (pExpr.Value is long) || (pExpr.Value is short) || (pExpr.Value is sbyte) ||
 				(pExpr.Value is uint) || (pExpr.Value is ulong) || (pExpr.Value is ushort) || (pExpr.Value is byte);

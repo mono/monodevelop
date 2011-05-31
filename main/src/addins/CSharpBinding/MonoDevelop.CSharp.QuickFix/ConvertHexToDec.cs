@@ -1,5 +1,5 @@
 // 
-// ContextActionExtensions.cs
+// ConvertHexToDec.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,36 +24,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.QuickFix
 {
-	public static class ContextActionExtensions
+	public class ConvertHexToDec : CSharpQuickFix
 	{
-		public static void Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, AstNode replaceWith)
+		public ConvertHexToDec ()
 		{
-			string text = CSharpQuickFix.OutputNode (doc, replaceWith, "").Trim ();
-		
-			int offset = doc.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
-			int endOffset = doc.Editor.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
-				
-			doc.Editor.Replace (offset, endOffset - offset, text);
+			Description = GettextCatalog.GetString ("Convert hex to dec.");
 		}
 		
-		public static void Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, string text)
+		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			int offset = doc.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
-			int endOffset = doc.Editor.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
-				
-			doc.Editor.Replace (offset, endOffset - offset, text);
+			return GettextCatalog.GetString ("Convert hex to dec.");
 		}
 		
-		public static void FormatText (this AstNode node, MonoDevelop.Ide.Gui.Document doc)
+		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
-			doc.UpdateParseDocument ();
-			MonoDevelop.CSharp.Formatting.OnTheFlyFormatter.Format (doc, doc.Dom, new DomLocation (node.StartLocation.Line, node.StartLocation.Column));
+			var unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+			var pExpr = unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
+			pExpr.Replace (document, pExpr.Value.ToString ());
+		}
+		
+		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		{
+			var unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+			if (unit == null)
+				return false;
+			var pExpr = unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
+			if (pExpr == null || !pExpr.LiteralValue.ToUpper ().StartsWith ("0X"))
+				return false;
+			return (pExpr.Value is int) || (pExpr.Value is long) || (pExpr.Value is short) || (pExpr.Value is sbyte) ||
+				(pExpr.Value is uint) || (pExpr.Value is ulong) || (pExpr.Value is ushort) || (pExpr.Value is byte);
 		}
 	}
 }

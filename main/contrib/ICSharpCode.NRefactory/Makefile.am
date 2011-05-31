@@ -138,6 +138,7 @@ FILES =  \
 	CSharp/Parser/mcs/argument.cs \
 	CSharp/Parser/mcs/assembly.cs \
 	CSharp/Parser/mcs/assign.cs \
+	CSharp/Parser/mcs/async.cs \
 	CSharp/Parser/mcs/attribute.cs \
 	CSharp/Parser/mcs/cfold.cs \
 	CSharp/Parser/mcs/class.cs \

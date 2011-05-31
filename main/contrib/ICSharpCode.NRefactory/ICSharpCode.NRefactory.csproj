@@ -360,6 +360,7 @@
     <Compile Include="CSharp\Ast\IRelocatable.cs" />
     <Compile Include="CSharp\Ast\ObservableAstVisitor.cs" />
     <Compile Include="CSharp\Ast\CSharpUtil.cs" />
+    <Compile Include="CSharp\Parser\mcs\async.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
