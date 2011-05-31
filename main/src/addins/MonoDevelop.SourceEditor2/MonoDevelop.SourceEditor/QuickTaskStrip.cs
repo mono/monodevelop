@@ -216,6 +216,7 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
 				TextEditor.CenterToCaret ();
 				TextEditor.StartCaretPulseAnimation ();
+				TextEditor.GrabFocus ();
 			} 
 			
 			MouseMove (evnt.Y);
