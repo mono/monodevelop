@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using ICSharpCode.NRefactory.CSharp;
 
@@ -32,6 +31,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	public static class CSharpUtil
 	{
 		public static Expression InvertCondition (Expression condition)
+		{
+			return InvertConditionInternal (condition.Clone ());
+		}
+		
+		static Expression InvertConditionInternal (Expression condition)
 		{
 			if (condition is ParenthesizedExpression) {
 				((ParenthesizedExpression)condition).Expression = InvertCondition (((ParenthesizedExpression)condition).Expression);
@@ -67,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					bOp.Operator = BinaryOperatorType.GreaterThan;
 					return bOp;
 				default:
-					return new UnaryOperatorExpression (UnaryOperatorType.Not, new ParenthesizedExpression (condition.Clone ()));
+					return new UnaryOperatorExpression (UnaryOperatorType.Not, new ParenthesizedExpression (condition));
 				}
 			}
 			
@@ -84,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			return new UnaryOperatorExpression (UnaryOperatorType.Not, new ParenthesizedExpression (condition.Clone ()));
+			return new UnaryOperatorExpression (UnaryOperatorType.Not, condition);
 		}
 	}
 }

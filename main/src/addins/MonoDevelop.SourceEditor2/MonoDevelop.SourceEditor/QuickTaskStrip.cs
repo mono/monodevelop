@@ -83,6 +83,18 @@ namespace MonoDevelop.SourceEditor
 	
 	public class QuickTaskStrip : DrawingArea
 	{
+		Adjustment adj;
+
+		public Adjustment VAdjustment {
+			get {
+				return this.adj;
+			}
+			set {
+				adj = value;
+				adj.ValueChanged += (sender, e) => QueueDraw ();
+			}
+		}
+		
 		public TextEditor TextEditor {
 			get;
 			set;
@@ -101,7 +113,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public QuickTaskStrip ()
 		{
-			WidthRequest = 17;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.PointerMotionMask;
 		}
 		
@@ -145,7 +156,10 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
-			if (evnt.Y < Allocation.Width - 3) {
+			if (button != 0)
+				MouseMove (evnt.Y);
+			
+			if (evnt.Y > Allocation.Height - (Allocation.Width + 3)) {
 				int errors = 0, warnings = 0;
 				foreach (var task in AllTasks) {
 					switch (task.Severity) {
@@ -183,18 +197,41 @@ namespace MonoDevelop.SourceEditor
 			return base.OnMotionNotifyEvent (evnt);
 		}
 		
+		public void MouseMove (double y)
+		{
+			if (button != 1)
+				return;
+			double position = (y / Allocation.Height) * adj.Upper - (double)adj.PageSize / 2;
+			position = Math.Max (0, Math.Min (position, adj.Upper - adj.PageSize));
+			adj.Value = position;
+		}
+		
+		uint button;
+
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			button |= evnt.Button;
+			
 			if (evnt.Button == 1 && hoverTask != null) {
 				TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
 				TextEditor.CenterToCaret ();
+				TextEditor.StartCaretPulseAnimation ();
 			} 
+			
+			MouseMove (evnt.Y);
+			
 			return base.OnButtonPressEvent (evnt);
 		}
 		
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			button &= ~evnt.Button;
+			return base.OnButtonReleaseEvent (evnt);
+		}
+
 		public void DrawIndicator (Cairo.Context cr, QuickTaskSeverity severity)
 		{
-			cr.Rectangle (3, 3, Allocation.Width - 6, Allocation.Width - 6);
+			cr.Rectangle (3, Allocation.Height - Allocation.Width + 3, Allocation.Width - 6, Allocation.Width - 6);
 			
 			var darkColor = (HslColor)GetIndicatorColor (severity);
 			darkColor.L *= 0.5;
@@ -208,6 +245,12 @@ namespace MonoDevelop.SourceEditor
 			
 			cr.Color = darkColor;
 			cr.Stroke ();
+		}
+		
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			requisition.Width = 17;
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
@@ -233,12 +276,12 @@ namespace MonoDevelop.SourceEditor
 						
 					var color = (HslColor)GetBarColor (task.Severity);
 					cr.Color = color;
-					cr.Rectangle (3, y - 1, Allocation.Width - 6, 4);
+					cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
 					cr.FillPreserve ();
 					
 					color.L *= 0.7;
 					cr.Color = color;
-					cr.Rectangle (3, y - 1, Allocation.Width - 6, 4);
+					cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
 					cr.Stroke ();
 					
 					switch (task.Severity) {
@@ -253,6 +296,25 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				DrawIndicator (cr, severity);
+				
+				if (adj != null && adj.Upper > adj.PageSize) {
+					int h = Allocation.Height - Allocation.Width - 3;
+					cr.Rectangle (1.5,
+						              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
+						              Allocation.Width - 2,
+						              h * (adj.PageSize / adj.Upper));
+					cr.Color = new Cairo.Color (0, 0, 0, 0.5);
+					cr.StrokePreserve ();
+	
+					cr.Color = new Cairo.Color (0, 0, 0, 0.03);
+					cr.Fill ();
+				}
+				// draw border
+				//	cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
+				cr.MoveTo (0.5, 0);
+				cr.LineTo (0.5, Allocation.Height);
+				cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+				cr.Stroke ();
 			}
 			
 			return true;

@@ -12,7 +12,7 @@ namespace Mono.TextEditor.Theatrics
 	public class SmartScrolledWindow : Bin
 	{
 		Adjustment vAdjustment;
-		Gtk.VScrollbar vScrollBar;
+		Gtk.Widget vScrollBar;
 		
 		Adjustment hAdjustment;
 		Gtk.HScrollbar hScrollBar;
@@ -55,7 +55,6 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 		
-		
 		protected override void OnMapped ()
 		{
 			base.OnMapped ();
@@ -66,14 +65,14 @@ namespace Mono.TextEditor.Theatrics
 		{
 		}
 		
-		public SmartScrolledWindow ()
+		public SmartScrolledWindow (Gtk.Widget vScrollBar = null)
 		{
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
 			
-			vScrollBar = new VScrollbar (vAdjustment);
-			vScrollBar.Parent = this;
-			vScrollBar.Show ();
+			this.vScrollBar = vScrollBar ?? new VScrollbar (vAdjustment);
+			this.vScrollBar.Parent = this;
+			this.vScrollBar.Show ();
 			
 			hAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			hAdjustment.Changed += HandleAdjustmentChanged;
@@ -81,7 +80,15 @@ namespace Mono.TextEditor.Theatrics
 			hScrollBar = new HScrollbar (hAdjustment);
 			hScrollBar.Parent = this;
 			hScrollBar.Show ();
-			
+		}
+		
+		public void ReplaceVScrollBar (Gtk.Widget widget)
+		{
+			vScrollBar.Unparent ();
+			vScrollBar.Destroy ();
+			this.vScrollBar = widget;
+			this.vScrollBar.Parent = this;
+			this.vScrollBar.Show ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -106,8 +113,10 @@ namespace Mono.TextEditor.Theatrics
 		
 		void HandleAdjustmentChanged (object sender, EventArgs e)
 		{
-			Adjustment adjustment = (Adjustment)sender;
-			Scrollbar scrollbar = adjustment == vAdjustment ? (Scrollbar)vScrollBar : hScrollBar;
+			var adjustment = (Adjustment)sender;
+			var scrollbar = adjustment == vAdjustment ? vScrollBar : hScrollBar;
+			if (!(scrollbar is Scrollbar))
+				return;
 			bool newVisible = adjustment.Upper - adjustment.Lower > adjustment.PageSize;
 			if (scrollbar.Visible != newVisible) {
 				scrollbar.Visible = newVisible;
@@ -163,10 +172,9 @@ namespace Mono.TextEditor.Theatrics
 			
 			int vwidth = vScrollBar.Visible ? vScrollBar.Requisition.Width : 0;
 			int hheight = hScrollBar.Visible ? hScrollBar.Requisition.Height : 0; 
-			Rectangle childRectangle = new Rectangle (allocation.X + 1, allocation.Y + 1, allocation.Width - vwidth - 1, allocation.Height - hheight - 1);
+			var childRectangle = new Rectangle (allocation.X + 1, allocation.Y + 1, allocation.Width - vwidth - 1, allocation.Height - hheight - 1);
 			if (Child != null) 
 				Child.SizeAllocate (childRectangle);
-			
 			if (vScrollBar.Visible) {
 				int right = childRectangle.Right;
 				int vChildTopHeight = -1;
@@ -174,9 +182,9 @@ namespace Mono.TextEditor.Theatrics
 					child.Child.SizeAllocate (new Rectangle (right, childRectangle.Y + vChildTopHeight, allocation.Width - vwidth, child.Child.Requisition.Height));
 					vChildTopHeight += child.Child.Requisition.Height;
 				}
-				int v = hScrollBar.Visible ? hScrollBar.Requisition.Height : 0;
+				int v = vScrollBar is Scrollbar && hScrollBar.Visible ? hScrollBar.Requisition.Height : 0;
 				vScrollBar.SizeAllocate (new Rectangle (right, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight - 1));
-				vScrollBar.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vScrollBar.Value), vAdjustment.Lower);
+				vAdjustment.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vAdjustment.Value), vAdjustment.Lower);
 			}
 			
 			if (hScrollBar.Visible) {
@@ -186,24 +194,25 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 		
-		static double GetWheelDelta (Scrollbar scrollbar, ScrollDirection direction)
+		static double GetWheelDelta (Adjustment adj, ScrollDirection direction, bool inverted = false)
 		{
-			double delta = System.Math.Pow (scrollbar.Adjustment.PageSize, 2.0 / 3.0);
+			double delta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
 			if (direction == ScrollDirection.Up || direction == ScrollDirection.Left)
 				delta = -delta;
-			if (scrollbar.Inverted)
+			if (inverted)
 				delta = -delta;
 			return delta;
 		}
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			Scrollbar scrollWidget = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? (Scrollbar)vScrollBar : hScrollBar;
+			var scrollWidget = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vScrollBar : hScrollBar;
+			var adj = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
 			
 			if (scrollWidget.Visible) {
-				double newValue = scrollWidget.Adjustment.Value + GetWheelDelta (scrollWidget, evnt.Direction);
-				newValue = System.Math.Max (System.Math.Min (scrollWidget.Adjustment.Upper  - scrollWidget.Adjustment.PageSize, newValue), scrollWidget.Adjustment.Lower);
-				scrollWidget.Adjustment.Value = newValue;
+				double newValue = adj.Value + GetWheelDelta (adj, evnt.Direction, scrollWidget is Scrollbar ?  ((Scrollbar)scrollWidget).Inverted : false);
+				newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
+				adj.Value = newValue;
 			}
 			return base.OnScrollEvent (evnt);
 		}

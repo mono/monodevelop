@@ -976,6 +976,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			uint button;
+
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				button |= evnt.Button;
