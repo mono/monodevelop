@@ -92,6 +92,7 @@ namespace MonoDevelop.SourceEditor
 			set {
 				adj = value;
 				adj.ValueChanged += (sender, e) => QueueDraw ();
+				adj.Changed += (sender, e) => QueueDraw ();
 			}
 		}
 		
