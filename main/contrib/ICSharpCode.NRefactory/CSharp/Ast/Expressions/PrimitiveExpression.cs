@@ -31,19 +31,20 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class PrimitiveExpression : Expression, IRelocatable
 	{
-		public static readonly object AnyValue = new object();
-		
+		public static readonly object AnyValue = new object ();
 		AstLocation startLocation;
+
 		public override AstLocation StartLocation {
 			get {
 				return startLocation;
 			}
 		}
 		
-		int length;
+		string literalValue;
+
 		public override AstLocation EndLocation {
 			get {
-				return new AstLocation (StartLocation.Line, StartLocation.Column + length);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + literalValue.Length);
 			}
 		}
 		
@@ -52,16 +53,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		public string LiteralValue {
+			get {
+				return literalValue;
+			}
+		}
+		
 		public PrimitiveExpression (object value)
 		{
 			this.Value = value;
 		}
 		
-		public PrimitiveExpression (object value, AstLocation startLocation, int length)
+		public PrimitiveExpression (object value, AstLocation startLocation, string literalValue)
 		{
 			this.Value = value;
 			this.startLocation = startLocation;
-			this.length = length;
+			this.literalValue = literalValue ?? "";
 		}
 		
 		#region IRelocationable implementation
@@ -69,6 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.startLocation = startLocation;
 		}
+
 		#endregion
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
@@ -76,10 +84,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitPrimitiveExpression (this, data);
 		}
 		
-		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+		protected internal override bool DoMatch (AstNode other, PatternMatching.Match match)
 		{
 			PrimitiveExpression o = other as PrimitiveExpression;
-			return o != null && (this.Value == AnyValue || object.Equals(this.Value, o.Value));
+			return o != null && (this.Value == AnyValue || object.Equals (this.Value, o.Value));
 		}
 	}
 }

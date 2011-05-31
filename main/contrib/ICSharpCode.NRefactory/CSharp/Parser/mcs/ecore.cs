@@ -588,9 +588,9 @@ namespace Mono.CSharp {
 							continue;
 					}
 
-					if (non_method == null || member is MethodSpec) {
+					if (non_method == null || member is MethodSpec || non_method.IsNotCSharpCompatible) {
 						non_method = member;
-					} else if (!errorMode) {
+					} else if (!errorMode && !member.IsNotCSharpCompatible) {
 						ambig_non_method = member;
 					}
 				}
@@ -1873,18 +1873,18 @@ namespace Mono.CSharp {
 			this.loc = expr.Location;
 		}
 
-		public override Expression CreateExpressionTree (ResolveContext ec)
+		public override Expression CreateExpressionTree (ResolveContext rc)
 		{
-			return expr.CreateExpressionTree (ec);
+			return expr.CreateExpressionTree (rc);
 		}
 
 		public Expression Child {
 			get { return expr; }
 		}
 
-		protected override Expression DoResolve (ResolveContext ec)
+		protected override Expression DoResolve (ResolveContext rc)
 		{
-			expr = expr.Resolve (ec);
+			expr = expr.Resolve (rc);
 			if (expr != null) {
 				type = expr.Type;
 				eclass = expr.eclass;
@@ -1915,6 +1915,12 @@ namespace Mono.CSharp {
 			this.expr = expr;
 		}
 
+		public Expression Expr {
+			get {
+				return expr;
+			}
+		}
+
 		protected override void CloneTo (CloneContext clonectx, Expression t)
 		{
 			if (expr == null)
@@ -1934,9 +1940,6 @@ namespace Mono.CSharp {
 			throw new InternalErrorException ("Missing Resolve call");
 		}
 
-		public Expression Expr {
-			get { return expr; }
-		}
 	}
 
 	//
@@ -2313,10 +2316,13 @@ namespace Mono.CSharp {
 
 						e = rc.LookupNamespaceOrType (Name, -System.Math.Max (1, Arity), LookupMode.Probing, loc);
 						if (e != null) {
-							Error_TypeArgumentsCannotBeUsed (rc, e.Type, Arity, loc);
-						} else {
-							rc.Report.Error (103, loc, "The name `{0}' does not exist in the current context", Name);
+							if (!(e is TypeExpr) || (restrictions & MemberLookupRestrictions.InvocableOnly) == 0 || !e.Type.IsDelegate) {
+								Error_TypeArgumentsCannotBeUsed (rc, e.Type, Arity, loc);
+								return e;
+							}
 						}
+
+						rc.Report.Error (103, loc, "The name `{0}' does not exist in the current context", Name);
 					}
 
 					return ErrorExpression.Instance;
@@ -2329,7 +2335,6 @@ namespace Mono.CSharp {
 				}
 
 				lookup_arity = 0;
-				restrictions &= ~MemberLookupRestrictions.InvocableOnly;
 				errorMode = true;
 			}
 		}
@@ -2525,7 +2530,6 @@ namespace Mono.CSharp {
 			get;
 		}
 
-		// TODO: Not needed
 		protected abstract TypeSpec DeclaringType {
 			get;
 		}
@@ -5370,7 +5374,7 @@ namespace Mono.CSharp {
 		{
 			eclass = ExprClass.PropertyAccess;
 
-			if (best_candidate.IsNotRealProperty) {
+			if (best_candidate.IsNotCSharpCompatible) {
 				Error_PropertyNotValid (rc);
 			}
 

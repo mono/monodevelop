@@ -28,7 +28,7 @@ namespace Mono.CSharp {
 		///   Resolves the statement, true means that all sub-statements
 		///   did resolve ok.
 		//  </summary>
-		public virtual bool Resolve (BlockContext ec)
+		public virtual bool Resolve (BlockContext bc)
 		{
 			return true;
 		}
@@ -797,10 +797,16 @@ namespace Mono.CSharp {
 					return false;
 				}
 
-				var l = am as AnonymousMethodBody;
-				if (l != null && l.ReturnTypeInference != null && Expr != null) {
-					l.ReturnTypeInference.AddCommonTypeBound (Expr.Type);
-					return true;
+				if (am is AsyncInitializer) {
+					ec.Report.Error (1997, loc,
+						"`{0}': A return keyword must not be followed by an expression when method is async",
+						ec.GetSignatureForError ());
+				} else {
+					var l = am as AnonymousMethodBody;
+					if (l != null && l.ReturnTypeInference != null && Expr != null) {
+						l.ReturnTypeInference.AddCommonTypeBound (Expr.Type);
+						return true;
+					}
 				}
 			}
 
@@ -1843,7 +1849,8 @@ namespace Mono.CSharp {
 			HasCapturedVariable = 64,
 			HasCapturedThis = 1 << 7,
 			IsExpressionTree = 1 << 8,
-			CompilerGenerated = 1 << 9
+			CompilerGenerated = 1 << 9,
+			IsAsync = 1 << 10
 		}
 
 		public Block Parent;
@@ -2517,6 +2524,16 @@ namespace Mono.CSharp {
 
 		#region Properties
 
+		public bool IsAsync
+		{
+			get {
+				return (flags & Flags.IsAsync) != 0;
+			}
+			set {
+				flags = value ? flags | Flags.IsAsync : flags & ~Flags.IsAsync;
+			}
+		}
+
 		//
 		// Block has been converted to expression tree
 		//
@@ -2663,7 +2680,7 @@ namespace Mono.CSharp {
 			if (rc.ReturnType.Kind != MemberKind.Void && !unreachable) {
 				if (rc.CurrentAnonymousMethod == null) {
 					// FIXME: Missing FlowAnalysis for generated iterator MoveNext method
-					if (md is IteratorMethod) {
+					if (md is StateMachineMethod) {
 						unreachable = true;
 					} else {
 						rc.Report.Error (161, md.Location, "`{0}': not all code paths return a value", md.GetSignatureForError ());
@@ -2706,6 +2723,20 @@ namespace Mono.CSharp {
 
 			statements = new List<Statement> (1);
 			AddStatement (new Return (iterator, iterator.Location));
+		}
+
+		public AsyncInitializer WrapIntoAsyncTask (TypeContainer host, TypeSpec returnType)
+		{
+			ParametersBlock pb = new ParametersBlock (this, ParametersCompiled.EmptyReadOnlyParameters, StartLocation);
+			pb.EndLocation = EndLocation;
+			pb.statements = statements;
+
+			var initializer = new AsyncInitializer (pb, host, returnType);
+			am_storey = new AsyncTaskStorey (initializer);
+
+			statements = new List<Statement> (1);
+			AddStatement (new StatementExpression (initializer));
+			return initializer;
 		}
 	}
 
@@ -2750,6 +2781,16 @@ namespace Mono.CSharp {
 		{
 			this.compiler = source.TopBlock.compiler;
 			top_block = this;
+		}
+
+		public bool IsIterator
+		{
+			get {
+				return (flags & Flags.IsIterator) != 0;
+			}
+			set {
+				flags = value ? flags | Flags.IsIterator : flags & ~Flags.IsIterator;
+			}
 		}
 
 		public override void AddLocalName (string name, INamedBlockVariable li)
@@ -3005,11 +3046,6 @@ namespace Mono.CSharp {
 			}
 
 			return this_variable;
-		}
-
-		public bool IsIterator {
-			get { return (flags & Flags.IsIterator) != 0; }
-			set { flags = value ? flags | Flags.IsIterator : flags & ~Flags.IsIterator; }
 		}
 
 		public bool IsThisAssigned (BlockContext ec)
@@ -3963,7 +3999,8 @@ namespace Mono.CSharp {
 		{
 			return end;
 		}
-		public virtual void EmitForDispose (EmitContext ec, Iterator iterator, Label end, bool have_dispatcher)
+
+		public virtual void EmitForDispose (EmitContext ec, LocalBuilder pc, Label end, bool have_dispatcher)
 		{
 		}
 	}
@@ -4004,7 +4041,7 @@ namespace Mono.CSharp {
 			EmitPreTryBody (ec);
 
 			if (resume_points != null) {
-				ec.EmitInt ((int) Iterator.State.Running);
+				ec.EmitInt ((int) IteratorStorey.State.Running);
 				ec.Emit (OpCodes.Stloc, iter.CurrentPC);
 			}
 
@@ -4080,7 +4117,7 @@ namespace Mono.CSharp {
 			return dispose_try_block;
 		}
 
-		public override void EmitForDispose (EmitContext ec, Iterator iterator, Label end, bool have_dispatcher)
+		public override void EmitForDispose (EmitContext ec, LocalBuilder pc, Label end, bool have_dispatcher)
 		{
 			if (emitted_dispose)
 				return;
@@ -4099,7 +4136,7 @@ namespace Mono.CSharp {
 
 			Label [] labels = null;
 			for (int i = 0; i < resume_points.Count; ++i) {
-				ResumableStatement s = (ResumableStatement) resume_points [i];
+				ResumableStatement s = resume_points [i];
 				Label ret = s.PrepareForDispose (ec, end_of_try);
 				if (ret.Equals (end_of_try) && labels == null)
 					continue;
@@ -4120,7 +4157,7 @@ namespace Mono.CSharp {
 
 				if (emit_dispatcher) {
 					//SymbolWriter.StartIteratorDispatcher (ec.ig);
-					ec.Emit (OpCodes.Ldloc, iterator.CurrentPC);
+					ec.Emit (OpCodes.Ldloc, pc);
 					ec.EmitInt (first_resume_pc);
 					ec.Emit (OpCodes.Sub);
 					ec.Emit (OpCodes.Switch, labels);
@@ -4128,7 +4165,7 @@ namespace Mono.CSharp {
 				}
 
 				foreach (ResumableStatement s in resume_points)
-					s.EmitForDispose (ec, iterator, end_of_try, emit_dispatcher);
+					s.EmitForDispose (ec, pc, end_of_try, emit_dispatcher);
 			}
 
 			ec.MarkLabel (end_of_try);

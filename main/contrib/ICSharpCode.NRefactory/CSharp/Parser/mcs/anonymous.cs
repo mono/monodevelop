@@ -1228,7 +1228,7 @@ namespace Mono.CSharp {
 	//
 	// Abstract expression for any block which requires variables hoisting
 	//
-	public abstract class AnonymousExpression : Expression
+	public abstract class AnonymousExpression : ExpressionStatement
 	{
 		protected class AnonymousMethodMethod : Method
 		{
@@ -1627,6 +1627,11 @@ namespace Mono.CSharp {
 				ec.MarkLabel (l_initialized);
 				ec.Emit (OpCodes.Ldsfld, am_cache.Spec);
 			}
+		}
+
+		public override void EmitStatement (EmitContext ec)
+		{
+			throw new NotImplementedException ();
 		}
 
 		//
