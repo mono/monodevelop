@@ -78,9 +78,15 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		public override object VisitAttribute (ICSharpCode.NRefactory.CSharp.Attribute attribute, object data)
 		{
 			possibleTypeReferences.Add (attribute.Type);
-			//
-			//possibleTypeReferences.Add (new SimpleType (attribute.Name + "Attribute"));
-			return base.VisitAttribute(attribute, data);
+			var t = attribute.Type.Clone ();
+			if (t is SimpleType) {
+				((SimpleType)t).IdentifierToken.Name += "Attribute";
+				possibleTypeReferences.Add (t);
+			} else if (t is ICSharpCode.NRefactory.CSharp.MemberType) {
+				((ICSharpCode.NRefactory.CSharp.MemberType)t).MemberNameToken.Name += "Attribute";
+				possibleTypeReferences.Add (t);
+			}
+			return base.VisitAttribute (attribute, data);
 		}
 		
 		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)

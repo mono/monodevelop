@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Analysis
 		
 		public void Inpect (MonoDevelop.Ide.Gui.Document doc, IResolver resolver, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
 		{
-			var findTypeReferencesVisitor = new FindTypeReferencesVisitor (doc.Editor, resolver);
+			var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
 			unit.AcceptVisitor (findTypeReferencesVisitor, null);
 			this.PossibleTypeReferences = findTypeReferencesVisitor.PossibleTypeReferences;
 			
@@ -155,74 +155,6 @@ namespace MonoDevelop.CSharp.Analysis
 			
 		}
 		
-		class FindTypeReferencesVisitor : DepthFirstAstVisitor<object, object>
-		{
-			TextEditorData data;
-			IResolver resolver;
-			List<AstType> possibleTypeReferences = new List<AstType> ();
-		
-			public List<AstType> PossibleTypeReferences {
-				get { return this.possibleTypeReferences; }
-			}
-		
-			public FindTypeReferencesVisitor (TextEditorData data, IResolver resolver)
-			{
-				this.data = data;
-				this.resolver = resolver;
-			}
-		
-			public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
-			{
-				possibleTypeReferences.Add (new SimpleType (identifierExpression.Identifier));
-			
-				return base.VisitIdentifierExpression (identifierExpression, data);
-			}
-		
-			public override object VisitComposedType (ComposedType composedType, object data)
-			{
-				possibleTypeReferences.Add (composedType);
-				return null;
-			}
-		
-			public override object VisitMemberType (ICSharpCode.NRefactory.CSharp.MemberType memberType, object data)
-			{
-				possibleTypeReferences.Add (memberType);
-				return null;
-			}
-		
-			public override object VisitSimpleType (SimpleType simpleType, object data)
-			{
-				possibleTypeReferences.Add (simpleType);
-				return null;
-			}
-		
-			public override object VisitAttribute (ICSharpCode.NRefactory.CSharp.Attribute attribute, object data)
-			{
-				possibleTypeReferences.Add (attribute.Type);
-				//
-				//possibleTypeReferences.Add (new SimpleType (attribute.Name + "Attribute"));
-				return base.VisitAttribute (attribute, data);
-			}
-		
-			public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
-			{
-				string invocation = "";
-				if (!invocationExpression.StartLocation.IsEmpty && !invocationExpression.EndLocation.IsEmpty) {
-					invocation = this.data.Document.GetTextBetween (this.data.Document.LocationToOffset (invocationExpression.StartLocation.Line, invocationExpression.StartLocation.Column),
-				                                                this.data.Document.LocationToOffset (invocationExpression.EndLocation.Line, invocationExpression.EndLocation.Column));
-				}
-				base.VisitInvocationExpression (invocationExpression, data);
-			
-				MethodResolveResult mrr = resolver.Resolve (new ExpressionResult (invocation), new DomLocation (invocationExpression.StartLocation.Line, invocationExpression.StartLocation.Column)) as MethodResolveResult;
-				if (mrr != null && mrr.MostLikelyMethod != null && mrr.MostLikelyMethod is ExtensionMethod) {
-					IMethod originalMethod = ((ExtensionMethod)mrr.MostLikelyMethod).OriginalMethod;
-					possibleTypeReferences.Add (new SimpleType (originalMethod.DeclaringType.Name));
-				}
-				return null;
-			}
-
-		
-		
 		class CallgraphVisitor : DepthFirstAstVisitor<object, object>
 		{
 			Context curContext;
@@ -302,7 +234,6 @@ namespace MonoDevelop.CSharp.Analysis
 				binaryOperatorExpression
 				return base.VisitBinaryOperatorExpression (binaryOperatorExpression, data);
 			}*/
-			}
 			
 		}
 	}
