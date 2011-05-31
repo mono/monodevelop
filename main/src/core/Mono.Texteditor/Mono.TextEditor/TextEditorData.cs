@@ -1142,6 +1142,12 @@ namespace Mono.TextEditor
 			internal set;
 		}
 		
+		public int VisibleLineCount {
+			get {
+				return heightTree.VisibleLineCount;
+			}
+		}
+		
 		internal HeightTree heightTree;
 		
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)

@@ -186,7 +186,7 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				foreach (var tasks in providerTasks.Values) {
 					foreach (var task in tasks) {
-						int y = Allocation.Height * task.Location.Line / TextEditor.LineCount;
+						int y = Allocation.Height * TextEditor.GetTextEditorData ().LogicalToVisualLine (task.Location.Line) / TextEditor.GetTextEditorData ().VisibleLineCount;
 						if (Math.Abs (y - evnt.Y) < 3) {
 							hoverTask = task;
 						}
@@ -274,7 +274,7 @@ namespace MonoDevelop.SourceEditor
 				QuickTaskSeverity severity = QuickTaskSeverity.None;
 
 				foreach (var task in AllTasks) {
-					int y = Allocation.Height * task.Location.Line / TextEditor.LineCount;
+					int y = Allocation.Height * TextEditor.GetTextEditorData ().LogicalToVisualLine (task.Location.Line) / TextEditor.GetTextEditorData ().VisibleLineCount;
 						
 					var color = (HslColor)GetBarColor (task.Severity);
 					cr.Color = color;
