@@ -194,10 +194,12 @@ namespace CBinding.Parser
 				fullpath = findFileInPath (filename, project.BaseDirectory);
 				if (string.Empty != fullpath) return fullpath;
 
-				// Check project's additional configuration includes
-				foreach (string p in conf.Includes) {
-					fullpath = findFileInPath (filename, p);
-					if (string.Empty != fullpath) return fullpath;
+				if (conf != null) {
+					// Check project's additional configuration includes
+					foreach (string p in conf.Includes) {
+						fullpath = findFileInPath (filename, p);
+						if (string.Empty != fullpath) return fullpath;
+					}
 				}
 			}
 			
