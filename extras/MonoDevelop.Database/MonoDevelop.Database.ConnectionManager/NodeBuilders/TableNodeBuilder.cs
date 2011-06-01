@@ -338,17 +338,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SQL.SchemaType.Table, SchemaActions.Alter);
 		}
 		
-		[CommandHandler (ConnectionManagerCommands.QuerySelectInCurrentWindow)]
-		protected void OnSelectQueryOnCurrentWindow ()
-		{
-			TableNode node = CurrentNode.DataItem as TableNode;
-			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
-			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetSelectQuery (node.Table));
-			else
-				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
-		}
-		
 		[CommandHandler (ConnectionManagerCommands.QuerySelectInNewWindow)]
 		protected void OnSelectQueryOnNewWindow ()
 		{
@@ -369,17 +358,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			clp.Text = schemaProvider.GetSelectQuery (node.Table);
 			MessageService.ShowMessage (AddinCatalog.GetString ("SELECT statement has been copied to Clipboard."));
 		}		
-
-		[CommandHandler (ConnectionManagerCommands.QueryUpdateInCurrentWindow)]
-		protected void OnUpdateQueryOnCurrentWindow ()
-		{
-			TableNode node = CurrentNode.DataItem as TableNode;
-			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
-			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetUpdateQuery (node.Table));
-			else
-				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
-		}
 		
 		[CommandHandler (ConnectionManagerCommands.QueryUpdateInNewWindow)]
 		protected void OnUpdateQueryOnNewWindow ()
@@ -402,17 +380,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			MessageService.ShowMessage (AddinCatalog.GetString ("UPDATE Statement has been copied to Clipboard."));
 		}		
 		
-		[CommandHandler (ConnectionManagerCommands.QueryInsertInCurrentWindow)]
-		protected void OnInsertQueryOnCurrentWindow ()
-		{
-			TableNode node = CurrentNode.DataItem as TableNode;
-			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
-			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetInsertQuery (node.Table));
-			else
-				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
-		}
-		
 		[CommandHandler (ConnectionManagerCommands.QueryInsertInNewWindow)]
 		protected void OnInsertQueryOnNewWindow ()
 		{
@@ -434,17 +401,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			MessageService.ShowMessage (AddinCatalog.GetString ("INSERT INTO Statement has been copied to Clipboard."));
 		}		
 		
-		[CommandHandler (ConnectionManagerCommands.QueryDeleteInCurrentWindow)]
-		protected void OnDeleteQueryOnCurrentWindow ()
-		{
-			TableNode node = CurrentNode.DataItem as TableNode;
-			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
-			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetDeleteQuery (node.Table));
-			else
-				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
-		}
-		
 		[CommandHandler (ConnectionManagerCommands.QueryDeleteInNewWindow)]
 		protected void OnDeleteQueryOnNewWindow ()
 		{
@@ -465,17 +421,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			clp.Text = schemaProvider.GetDeleteQuery (node.Table);
 			MessageService.ShowMessage (AddinCatalog.GetString ("DELETE Statement has been copied to Clipboard."));
 		}		
-		
-		[CommandHandler (ConnectionManagerCommands.ShowTableDefinitionInCurrentWindow)]
-		protected void OnShowDefinitionOnCurrentWindow ()
-		{
-			TableNode node = CurrentNode.DataItem as TableNode;
-			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
-			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetTableCreateStatement (node.Table));
-			else
-				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
-		}
 		
 		[CommandHandler (ConnectionManagerCommands.ShowTableDefinitionInNewWindow)]
 		protected void OnShowDefinitionOnNewWindow ()

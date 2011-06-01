@@ -413,29 +413,30 @@ namespace MonoDevelop.Database.Components
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Copy)]
-                protected void CopyCommand ()
-                {
-                        Gtk.TreePath[] selectedRows = grid.Selection.GetSelectedRows ();
-                        string result = String.Empty;
-                        TreeIter iter;
-                        for (int i = 0; i < selectedRows.Length; i++) {
-                                store.GetIter (out iter,selectedRows[i]);
-                                string [] row = new string[columnCount];
-                                for (int j = 0; j < columnCount; j++) {
-                                        row[j] = store.GetValue (iter,j).ToString ();
-                                }
-                                result += String.Join ("\t",row);
-                                result += System.Environment.NewLine;
-                        }
-                        Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-                        clipboard.Text = result;
-                }
+		protected void CopyCommand ()
+		{
+			Gtk.TreePath[] selectedRows = grid.Selection.GetSelectedRows ();
+			string result = String.Empty;
+			TreeIter iter;
+			for (int i = 0; i < selectedRows.Length; i++) {
+				store.GetIter (out iter,selectedRows[i]);
+				string [] row = new string[columnCount];
+				for (int j = 0; j < columnCount; j++) {
+					object val = store.GetValue (iter,j);
+					row[j] =  val != null ? val.ToString (): String.Empty;
+				}
+				result += String.Join ("\t",row);
+				result += System.Environment.NewLine;
+			}
+			Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = result;
+		}
 
-                [CommandHandler (MonoDevelop.Ide.Commands.EditCommands.SelectAll)]
-                protected void SelectAllCommand ()
-                {
-                        grid.Selection.SelectAll ();
-                }
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.SelectAll)]
+		protected void SelectAllCommand ()
+		{
+			grid.Selection.SelectAll ();
+		}
 		
 		[CommandHandler (DataGridCommands.VisualizeAsList)]
 		protected void VisualizeAsListCommand (object obj)
