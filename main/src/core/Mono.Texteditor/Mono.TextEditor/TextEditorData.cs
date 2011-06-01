@@ -1146,6 +1146,13 @@ namespace Mono.TextEditor
 			get {
 				return heightTree.VisibleLineCount;
 			}
+		}	
+		
+		
+		public double TotalHeight {
+			get {
+				return heightTree.TotalHeight;
+			}
 		}
 		
 		internal HeightTree heightTree;

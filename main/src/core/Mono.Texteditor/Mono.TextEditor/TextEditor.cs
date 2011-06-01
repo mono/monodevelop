@@ -1366,6 +1366,8 @@ namespace Mono.TextEditor
 			SetAdjustments (Allocation);
 		}
 		
+		public const int EditorLineThreshold = 5;
+
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
 			SetHAdjustment ();
@@ -1373,7 +1375,7 @@ namespace Mono.TextEditor
 			if (this.textEditorData.VAdjustment != null) {
 				double maxY = textEditorData.heightTree.TotalHeight;
 				if (maxY > allocation.Height)
-					maxY += 5 * this.LineHeight;
+					maxY += EditorLineThreshold * this.LineHeight;
 				
 				this.textEditorData.VAdjustment.SetBounds (0, 
 				                                           maxY, 

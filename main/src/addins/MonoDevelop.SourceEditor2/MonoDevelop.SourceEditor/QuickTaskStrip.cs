@@ -189,7 +189,7 @@ namespace MonoDevelop.SourceEditor
 				TextEditorData editorData = TextEditor.GetTextEditorData ();
 				foreach (var tasks in providerTasks.Values) {
 					foreach (var task in tasks) {
-						int y = h * editorData.LogicalToVisualLine (task.Location.Line) / editorData.VisibleLineCount;
+						double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
 						if (Math.Abs (y - evnt.Y) < 3) {
 							hoverTask = task;
 						}
@@ -258,7 +258,6 @@ namespace MonoDevelop.SourceEditor
 			base.OnSizeRequested (ref requisition);
 			requisition.Width = 17;
 		}
-		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
@@ -281,7 +280,7 @@ namespace MonoDevelop.SourceEditor
 				int h = Allocation.Height - Allocation.Width - 6;
 
 				foreach (var task in AllTasks) {
-					int y = h * editorData.LogicalToVisualLine (task.Location.Line) / editorData.VisibleLineCount;
+					double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
 						
 					var color = (HslColor)GetBarColor (task.Severity);
 					cr.Color = color;
