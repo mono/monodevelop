@@ -87,6 +87,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				sw.WriteLine (modificationWarning);
 				sw.WriteLine ();
 				
+				//FIXME: fix these imports for MonoMac
 				sw.WriteLine ("#import <UIKit/UIKit.h>");
 				foreach (var reference in UserTypeReferences) {
 					sw.WriteLine ("#import \"{0}.h\"", reference);

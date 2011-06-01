@@ -48,7 +48,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		PBXResourcesBuildPhase resourcesBuildPhase;
 		PBXSourcesBuildPhase sourcesBuildPhase;
 
-		public XcodeProject (string name)
+		public XcodeProject (string name, string sdkRoot, string configName)
 		{
 			this.name = name;
 			this.group = new PBXGroup ("CustomTemplate");
@@ -60,8 +60,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			this.target = new PBXFileReference (name, string.Format ("{0}.app", name), "BUILT_PRODUCTS_DIR");
 			this.nativeConfigurationList = new XCConfigurationList ();
 			this.projectConfigurationList = new XCConfigurationList ();
-			this.nativeBuildConfiguration = new XCBuildConfiguration ("MonoTouch");
-			this.projectBuildConfiguration = new XCBuildConfiguration ("MonoTouch");
+			this.nativeBuildConfiguration = new XCBuildConfiguration (configName);
+			this.projectBuildConfiguration = new XCBuildConfiguration (configName);
 			this.nativeTarget = new PBXNativeTarget (name, nativeConfigurationList, target);
 			this.project = new PBXProject (projectConfigurationList, group);
 
@@ -76,12 +76,12 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			this.nativeConfigurationList.AddBuildConfiguration (nativeBuildConfiguration);
 
 			projectBuildConfiguration.AddSetting ("ARCHS", "\"$(ARCHS_STANDARD_32_BIT)\"");
-			projectBuildConfiguration.AddSetting ("\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\"", "\"iPhone Developer\"");
+			//projectBuildConfiguration.AddSetting ("\"CODE_SIGN_IDENTITY[sdk=" + sdkRoot + "*]\"", "\"IPhone Developer\"");
 			projectBuildConfiguration.AddSetting ("GCC_C_LANGUAGE_STANDARD", "c99");
 			projectBuildConfiguration.AddSetting ("GCC_WARN_ABOUT_RETURN_TYPE", "YES");
 			projectBuildConfiguration.AddSetting ("GCC_WARN_UNUSED_VARIABLE", "YES");
 			projectBuildConfiguration.AddSetting ("PREBINDING", "NO");
-			projectBuildConfiguration.AddSetting ("SDKROOT", "iphoneos");
+			projectBuildConfiguration.AddSetting ("SDKROOT", sdkRoot);
 			projectBuildConfiguration.AddSetting ("OTHER_CFLAGS", "\"\"");
 			projectBuildConfiguration.AddSetting ("OTHER_LDFLAGS", "\"\"");
 

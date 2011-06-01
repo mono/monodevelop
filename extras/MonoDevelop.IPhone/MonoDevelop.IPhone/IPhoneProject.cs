@@ -346,7 +346,22 @@ namespace MonoDevelop.IPhone
 			base.OnEndLoad ();
 			
 			if (XcodeProjectTracker.TrackerEnabled)
-				projectTracker = new XcodeProjectTracker (this, "MonoTouch");
+				projectTracker = new IPhoneXcodeProjectTracker (this);
+		}
+		
+		class IPhoneXcodeProjectTracker : XcodeProjectTracker
+		{
+			static MonoDevelop.MacDev.ObjCIntegration.NSObjectInfoService infoService =
+				new MonoDevelop.MacDev.ObjCIntegration.NSObjectInfoService ("MonoTouch");
+			
+			public IPhoneXcodeProjectTracker (IPhoneProject project) : base (project, infoService)
+			{
+			}
+			
+			protected override XcodeProject CreateProject (string name)
+			{
+				return new XcodeProject (name, "iphoneos", "MonoTouch");
+			}
 		}
 		
 		// HACK: Using older MD, C# projects may have become created with the wrong platform target

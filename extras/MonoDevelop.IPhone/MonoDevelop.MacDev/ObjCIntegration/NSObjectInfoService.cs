@@ -35,21 +35,21 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
-	public static class NSObjectInfoService
+	public class NSObjectInfoService
 	{
 		static readonly Regex ibRegex = new Regex ("(- \\(IBAction\\)|IBOutlet)([^;]*);", RegexOptions.Compiled);
 		static readonly char[] colonChar = { ':' };
 		static readonly char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
 		static readonly char[] splitActionParamsChars = { ' ', '\t', '\n', '\r', '*', '(', ')' };
 		
-		static readonly IReturnType nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType;
+		readonly IReturnType nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType;
 		
 		static Dictionary<ProjectDom,NSObjectProjectInfo> infos = new Dictionary<ProjectDom, NSObjectProjectInfo> ();
 		
-		static NSObjectInfoService ()
+		public NSObjectInfoService (string wrapperRoot)
 		{
-			string wrapperRootNamespace = "MonoTouch";
-			string foundation = wrapperRootNamespace + ".Foundation";
+			this.WrapperRoot = wrapperRoot;
+			string foundation = wrapperRoot + ".Foundation";
 			connectAttType = new DomReturnType (foundation, "ConnectAttribute");
 			exportAttType = new DomReturnType (foundation, "ExportAttribute");
 			registerAttType = new DomReturnType (foundation, "RegisterAttribute");
@@ -57,7 +57,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			nsobjectType = new DomReturnType (foundation, "NSObject");
 		}
 		
-		public static NSObjectProjectInfo GetProjectInfo (DotNetProject project)
+		public string WrapperRoot { get; private set; }
+		
+		public NSObjectProjectInfo GetProjectInfo (DotNetProject project)
 		{
 			var dom = ProjectDomService.GetProjectDom (project);
 			if (dom == null)
@@ -68,7 +70,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return GetProjectInfo (dom);
 		}
 		
-		public static NSObjectProjectInfo GetProjectInfo (ProjectDom dom)
+		public NSObjectProjectInfo GetProjectInfo (ProjectDom dom)
 		{
 			NSObjectProjectInfo info;
 			
@@ -83,7 +85,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					return null;
 				}
 				
-				info = new NSObjectProjectInfo (dom);
+				info = new NSObjectProjectInfo (dom, this);
 				infos[dom] = info;
 				dom.Unloaded += HandleDomUnloaded;
 				dom.ReferencesUpdated += HandleDomReferencesUpdated;
@@ -112,7 +114,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 		}
 		
-		internal static IEnumerable<NSObjectTypeInfo> GetRegisteredObjects (ProjectDom dom)
+		internal IEnumerable<NSObjectTypeInfo> GetRegisteredObjects (ProjectDom dom)
 		{
 			var nso = dom.GetType (nsobjectType);
 			
@@ -129,7 +131,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 		}
 		
-		static NSObjectTypeInfo ConvertType (ProjectDom dom, IType type)
+		NSObjectTypeInfo ConvertType (ProjectDom dom, IType type)
 		{
 			string objcName = null;
 			bool isModel = false;
@@ -167,7 +169,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return info;
 		}
 		
-		static void UpdateTypeMembers (ProjectDom dom, NSObjectTypeInfo info, IType type)
+		void UpdateTypeMembers (ProjectDom dom, NSObjectTypeInfo info, IType type)
 		{
 			info.Actions.Clear ();
 			info.Outlets.Clear ();

@@ -90,7 +90,33 @@ namespace MonoDevelop.MonoMac
 			base.OnEndLoad ();
 			
 			if (XcodeProjectTracker.TrackerEnabled)
-				projectTracker = new XcodeProjectTracker (this, "MonoMac");
+				projectTracker = new MonoMacXcodeProjectTracker (this);
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (projectTracker != null) {
+				projectTracker.Dispose ();
+				projectTracker = null;
+			}
+		}
+		
+		class MonoMacXcodeProjectTracker : XcodeProjectTracker
+		{
+			static MonoDevelop.MacDev.ObjCIntegration.NSObjectInfoService infoService =
+				new MonoDevelop.MacDev.ObjCIntegration.NSObjectInfoService ("MonoMac");
+			
+			public MonoMacXcodeProjectTracker (MonoMacProject project) : base (project, infoService)
+			{
+			}
+			
+			protected override XcodeProject CreateProject (string name)
+			{
+				var proj = new XcodeProject (name, "macosx", "MonoMac");
+				proj.AddFramework ("Cocoa");
+				return proj;
+			}
 		}
 		
 		public override bool SupportsFormat (FileFormat format)

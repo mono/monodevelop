@@ -41,9 +41,9 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		XcodeProjectTracker XcodeProjectTracker { get; }
 	}
 	
-	public class XcodeProjectTracker : IDisposable
+	public abstract class XcodeProjectTracker : IDisposable
 	{
-		string wrapperName;
+		NSObjectInfoService infoService;
 		DotNetProject dnp;
 		HashSet<string> userClasses = new HashSet<string> ();
 		Dictionary<string,DateTime> trackedFiles = new Dictionary<string,DateTime> ();
@@ -65,10 +65,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			}
 		}
 		
-		public XcodeProjectTracker (DotNetProject dnp, string wrapperName)
+		public XcodeProjectTracker (DotNetProject dnp, NSObjectInfoService infoService)
 		{
 			this.dnp = dnp;
-			this.wrapperName = wrapperName;
+			this.infoService = infoService;
 		}
 		
 		void EnableSyncing ()
@@ -239,7 +239,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		void UpdateTypes (bool rescan)
 		{
-			var pinfo = NSObjectInfoService.GetProjectInfo (dnp);
+			var pinfo = infoService.GetProjectInfo (dnp);
 			pinfo.Update (rescan);
 			
 			var currentUTs = new Dictionary<string,NSObjectTypeInfo> ();
@@ -305,6 +305,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				File.Delete (impl);
 		}
 		
+		protected abstract XcodeProject CreateProject (string name);
+		
 		//FIXME: report errors
 		void UpdateXcodeProject ()
 		{
@@ -319,7 +321,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			trackedFiles.Clear ();
 			
 			//FIXME: use resource directories in Xcode
-			var xcp = new XcodeProject (dnp.Name);
+			var xcp = CreateProject (dnp.Name);
 			foreach (var file in dnp.Files.Where (IsPageOrContent)) {
 				string pvp = file.ProjectVirtualPath;
 				xcp.AddResource (pvp);
@@ -383,7 +385,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			var parsed = NSObjectInfoService.ParseHeader (hFile);
 			
 			if (pinfo == null)
-				pinfo = NSObjectInfoService.GetProjectInfo (dnp);
+				pinfo = infoService.GetProjectInfo (dnp);
 			
 			var objcType = pinfo.GetType (hFile.FileNameWithoutExtension);
 			if (objcType == null) {
@@ -497,7 +499,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				System.CodeDom.CodeTypeDeclaration type;
 				string nsName;
 				System.CodeDom.CodeNamespace ns;
-				t.GenerateCodeTypeDeclaration (provider, options, wrapperName, out type, out nsName);
+				t.GenerateCodeTypeDeclaration (provider, options, infoService.WrapperRoot, out type, out nsName);
 				if (!namespaces.TryGetValue (nsName, out ns)) {
 					namespaces[nsName] = ns = new System.CodeDom.CodeNamespace (nsName);
 					ccu.Namespaces.Add (ns);

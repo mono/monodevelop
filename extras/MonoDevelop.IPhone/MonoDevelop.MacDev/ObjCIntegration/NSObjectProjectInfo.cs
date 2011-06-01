@@ -38,11 +38,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		Dictionary<string,NSObjectTypeInfo> objcTypes = new Dictionary<string,NSObjectTypeInfo> ();
 		Dictionary<string,NSObjectTypeInfo> cliTypes = new Dictionary<string,NSObjectTypeInfo> ();
 		
+		NSObjectInfoService infoService;
 		ProjectDom dom;
 		bool needsUpdating;
 		
-		public NSObjectProjectInfo (ProjectDom dom)
+		public NSObjectProjectInfo (ProjectDom dom, NSObjectInfoService infoService)
 		{
+			this.infoService = infoService;
 			this.dom = dom;
 			needsUpdating = true;
 		}
@@ -64,7 +66,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				return;
 			
 			foreach (var r in dom.References) {
-				var info = NSObjectInfoService.GetProjectInfo (r);
+				var info = infoService.GetProjectInfo (r);
 				if (info != null)
 					info.Update ();
 			}
@@ -72,7 +74,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			objcTypes.Clear ();
 			cliTypes.Clear ();
 			
-			foreach (var type in NSObjectInfoService.GetRegisteredObjects (dom)) {
+			foreach (var type in infoService.GetRegisteredObjects (dom)) {
 				objcTypes.Add (type.ObjCName, type);
 				cliTypes.Add (type.CliName, type);
 			}
@@ -108,7 +110,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (cliTypes.TryGetValue (cliType, out resolved))
 				return true;
 			foreach (var r in dom.References) {
-				var rDom = NSObjectInfoService.GetProjectInfo (r);
+				var rDom = infoService.GetProjectInfo (r);
 				if (rDom != null && rDom.cliTypes.TryGetValue (cliType, out resolved))
 					return true;
 			}
@@ -121,7 +123,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (objcTypes.TryGetValue (objcType, out resolved))
 				return true;
 			foreach (var r in dom.References) {
-				var rDom = NSObjectInfoService.GetProjectInfo (r);
+				var rDom = infoService.GetProjectInfo (r);
 				if (rDom != null && rDom.objcTypes.TryGetValue (objcType, out resolved))
 					return true;
 			}
