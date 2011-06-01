@@ -28,13 +28,13 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
 	public static class ContextActionExtensions
 	{
 		public static void Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, AstNode replaceWith)
 		{
-			string text = CSharpQuickFix.OutputNode (doc, replaceWith, "").Trim ();
+			string text = CSharpContextAction.OutputNode (doc, replaceWith, "").Trim ();
 		
 			int offset = doc.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
 			int endOffset = doc.Editor.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);

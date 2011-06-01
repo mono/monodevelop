@@ -29,7 +29,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.CSharp.QuickFix;
+using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 
@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Analysis
 				if (node.Expression is MemberReferenceExpression && ((MemberReferenceExpression)node.Expression).MemberName != "NotImplementedException")
 					return;
 				// may be a not implemented exception, to get 100% sure we need to make a resolve.
-				var resolver = CSharpQuickFix.GetResolver (doc);
+				var resolver = CSharpContextAction.GetResolver (doc);
 				var result = resolver.Resolve (node.Expression.ToString (), new DomLocation (node.StartLocation.Line, node.EndLocation.Column));
 				if (result != null && result.ResolvedType.FullName != null && result.ResolvedType.FullName == "System.NotImplementedException") {
 					results.Add (new Result (

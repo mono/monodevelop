@@ -35,11 +35,11 @@ using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
 using System.Linq;
 
-namespace MonoDevelop.QuickFix
+namespace MonoDevelop.ContextAction
 {
-	public class QuickFixEditorExtension : TextEditorExtension 
+	public class ContextActionEditorExtension : TextEditorExtension 
 	{
-		QuickFixWidget widget;
+		ContextActionWidget widget;
 		
 		public void RemoveWidget ()
 		{
@@ -62,12 +62,12 @@ namespace MonoDevelop.QuickFix
 			base.Dispose ();
 		}
 		
-		public void CreateWidget (List<QuickFix> fixes, DomLocation loc)
+		public void CreateWidget (List<ContextAction> fixes, DomLocation loc)
 		{
 			if (!fixes.Any ())
 				return;
 			
-			widget = new QuickFixWidget (this, Document, loc, fixes);
+			widget = new ContextActionWidget (this, Document, loc, fixes);
 			var container = Document.Editor.Parent.Parent as TextEditorContainer;
 			if (container == null) 
 				return;
@@ -83,7 +83,7 @@ namespace MonoDevelop.QuickFix
 			
 			if (Document.ParsedDocument != null) {
 				DomLocation loc = new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
-				RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<QuickFix> fixes) {
+				RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<ContextAction> fixes) {
 					Application.Invoke (delegate {
 						RemoveWidget ();
 						CreateWidget (fixes, loc);

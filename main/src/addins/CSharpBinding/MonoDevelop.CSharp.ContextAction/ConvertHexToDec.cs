@@ -28,9 +28,9 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
-	public class ConvertHexToDec : CSharpQuickFix
+	public class ConvertHexToDec : CSharpContextAction
 	{
 		public ConvertHexToDec ()
 		{

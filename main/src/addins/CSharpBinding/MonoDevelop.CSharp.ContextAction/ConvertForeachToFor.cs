@@ -33,9 +33,9 @@ using System.Collections.Generic;
 using Mono.TextEditor;
 using System.Linq;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
-	public class ConvertForeachToFor : CSharpQuickFix
+	public class ConvertForeachToFor : CSharpContextAction
 	{
 		public ConvertForeachToFor ()
 		{

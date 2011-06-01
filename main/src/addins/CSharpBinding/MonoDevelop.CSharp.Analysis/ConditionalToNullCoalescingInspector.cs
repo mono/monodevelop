@@ -28,7 +28,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.CSharp.QuickFix;
+using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Analysis
@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.Analysis
 			
 			Expression expr = new BinaryOperatorExpression (expressions.Item1.Clone (), BinaryOperatorType.NullCoalescing, expressions.Item2.Clone ());
 			
-			string text = CSharpQuickFix.OutputNode (document, expr, "").Trim ();
+			string text = CSharpContextAction.OutputNode (document, expr, "").Trim ();
 				
 			int offset = document.Editor.LocationToOffset (fix.ConditionalExpression.StartLocation.Line, fix.ConditionalExpression.StartLocation.Column);
 			int endOffset = document.Editor.LocationToOffset (fix.ConditionalExpression.EndLocation.Line, fix.ConditionalExpression.EndLocation.Column);

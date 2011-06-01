@@ -39,14 +39,14 @@ using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.Refactoring
 {
-	using MonoDevelop.QuickFix;
+	using MonoDevelop.ContextAction;
 
 	public static class RefactoringService
 	{
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
 		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
 		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
-		static List<QuickFix> quickFixes = new List<QuickFix> ();
+		static List<ContextAction> contextActions = new List<ContextAction> ();
 		
 		static RefactoringService ()
 		{
@@ -83,13 +83,13 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/QuickFixes", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					quickFixes.Add ((QuickFix)args.ExtensionObject);
+					contextActions.Add ((ContextAction)args.ExtensionObject);
 					break;
 				case ExtensionChange.Remove:
-					quickFixes.Remove ((QuickFix)args.ExtensionObject);
+					contextActions.Remove ((ContextAction)args.ExtensionObject);
 					break;
 				}
 			});
@@ -173,11 +173,11 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 		
-		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, DomLocation loc, Action<List<QuickFix>> callback)
+		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, DomLocation loc, Action<List<ContextAction>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					List<QuickFix > availableFixes = new List<QuickFix> (quickFixes.Where (fix => fix.IsValid (doc, loc)));
+					var availableFixes = new List<ContextAction> (contextActions.Where (fix => fix.IsValid (doc, loc)));
 					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 					if (ext != null) {
 						foreach (var result in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc.Line, loc.Column))) {
@@ -185,7 +185,7 @@ namespace MonoDevelop.Refactoring
 							if (fresult == null)
 								continue;
 							foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
-								availableFixes.Add (new AnalysisQuickFix (result, action));
+								availableFixes.Add (new AnalysisContextAction (result, action));
 							}
 						}
 					}

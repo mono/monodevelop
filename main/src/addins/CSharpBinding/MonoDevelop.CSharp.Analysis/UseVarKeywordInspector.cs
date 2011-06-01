@@ -29,7 +29,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.CSharp.QuickFix;
+using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using System.Linq;

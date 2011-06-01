@@ -29,9 +29,9 @@ using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
-	public class CheckIfParameterIsNull : CSharpQuickFix
+	public class CheckIfParameterIsNull : CSharpContextAction
 	{
 		public CheckIfParameterIsNull ()
 		{

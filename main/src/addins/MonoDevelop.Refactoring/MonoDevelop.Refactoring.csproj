@@ -139,11 +139,11 @@
     <Compile Include="MonoDevelop.AnalysisCore\Result.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
-    <Compile Include="MonoDevelop.QuickFix\QuickFixEditorExtension.cs" />
-    <Compile Include="MonoDevelop.QuickFix\QuickFix.cs" />
-    <Compile Include="MonoDevelop.QuickFix\QuickFixWidget.cs" />
-    <Compile Include="MonoDevelop.QuickFix\AnalysisQuickFix.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
+    <Compile Include="MonoDevelop.ContextAction\AnalysisContextAction.cs" />
+    <Compile Include="MonoDevelop.ContextAction\ContextAction.cs" />
+    <Compile Include="MonoDevelop.ContextAction\ContextActionEditorExtension.cs" />
+    <Compile Include="MonoDevelop.ContextAction\ContextActionWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -157,7 +157,7 @@
     <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />
     <Folder Include="MonoDevelop.Refactoring.ConvertPropery\" />
     <Folder Include="MonoDevelop.AnalysisCore\" />
-    <Folder Include="MonoDevelop.QuickFix\" />
+    <Folder Include="MonoDevelop.ContextAction\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">

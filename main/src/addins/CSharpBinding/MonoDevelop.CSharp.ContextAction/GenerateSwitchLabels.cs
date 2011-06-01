@@ -33,9 +33,9 @@ using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
-	public class GenerateSwitchLabels : CSharpQuickFix
+	public class GenerateSwitchLabels : CSharpContextAction
 	{
 		public GenerateSwitchLabels ()
 		{

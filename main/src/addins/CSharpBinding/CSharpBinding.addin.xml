@@ -144,19 +144,19 @@
 		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Refactoring/QuickFixes">
-		<Class class = "MonoDevelop.CSharp.QuickFix.AddAnotherAccessor" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.CheckIfParameterIsNull" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertDecToHex" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertHexToDec" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.ConvertForeachToFor" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.CreateEventInvocator" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.GenerateSwitchLabels" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.FlipOperatorArguments" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.UseVarKeyword" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.UseExplicitType" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.ReplaceEmptyString" />
-		<Class class = "MonoDevelop.CSharp.QuickFix.InvertIf" />
+	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
+		<Class class = "MonoDevelop.CSharp.ContextAction.AddAnotherAccessor" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.CheckIfParameterIsNull" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.ConvertDecToHex" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.ConvertHexToDec" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.ConvertForeachToFor" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.CreateEventInvocator" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.GenerateSwitchLabels" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.FlipOperatorArguments" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.UseVarKeyword" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.UseExplicitType" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.ReplaceEmptyString" />
+		<Class class = "MonoDevelop.CSharp.ContextAction.InvertIf" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

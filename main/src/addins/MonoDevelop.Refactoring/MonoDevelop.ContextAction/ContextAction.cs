@@ -1,5 +1,5 @@
 // 
-// AnalysisQuickFix.cs
+// Result.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -23,44 +23,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.AnalysisCore;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.QuickFix
+namespace MonoDevelop.ContextAction
 {
-	public class AnalysisQuickFix : QuickFix
+	public enum ContextActionType 
 	{
-		public Result Result {
+		Hidden,
+		Error,
+		Warning,
+		Suggestion,
+		Hint
+	}
+	
+	public abstract class ContextAction
+	{
+		public string Description {
 			get;
-			private set;
+			protected set;
 		}
 		
-		public IAnalysisFixAction Action {
-			get;
-			private set;
-		}
+		public abstract string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
+		public abstract void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
+		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
 		
-		public AnalysisQuickFix (Result result, IAnalysisFixAction action)
+		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)
 		{
-			this.Result = result;
-			this.Action = action;
-			this.Description = result.Message;
+			return doc.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullyQualifiedTypeName), doc.Editor.Caret.Line, doc.Editor.Caret.Column).ConvertToTypeReference ();
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, IReturnType fullyQualifiedTypeName)
 		{
-			return true;
+			return doc.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, doc.Editor.Caret.Line, doc.Editor.Caret.Column).ConvertToTypeReference ();
 		}
 		
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
-		{
-			return Action.Label;
-		}
-		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
-		{
-			Action.Fix ();
-		}
 	}
 }
-

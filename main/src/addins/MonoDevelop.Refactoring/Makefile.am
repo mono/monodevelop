@@ -62,10 +62,10 @@ FILES =  \
 	MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs \
 	MonoDevelop.CodeGeneration/ToStringGenerator.cs \
 	MonoDevelop.CodeGeneration/WriteLineGenerator.cs \
-	MonoDevelop.QuickFix/AnalysisQuickFix.cs \
-	MonoDevelop.QuickFix/QuickFix.cs \
-	MonoDevelop.QuickFix/QuickFixEditorExtension.cs \
-	MonoDevelop.QuickFix/QuickFixWidget.cs \
+	MonoDevelop.ContextAction/AnalysisContextAction.cs \
+	MonoDevelop.ContextAction/ContextAction.cs \
+	MonoDevelop.ContextAction/ContextActionEditorExtension.cs \
+	MonoDevelop.ContextAction/ContextActionWidget.cs \
 	MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs \
 	MonoDevelop.Refactoring.ConvertPropery/PropertyVisitor.cs \
 	MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs \

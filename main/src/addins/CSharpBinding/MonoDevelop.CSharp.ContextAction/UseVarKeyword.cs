@@ -34,9 +34,9 @@ using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
-	public class UseVarKeyword : CSharpQuickFix
+	public class UseVarKeyword : CSharpContextAction
 	{
 		public UseVarKeyword ()
 		{

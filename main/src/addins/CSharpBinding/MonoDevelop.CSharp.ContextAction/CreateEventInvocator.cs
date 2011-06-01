@@ -36,9 +36,9 @@ using MonoDevelop.Ide;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
-	public class CreateEventInvocator : CSharpQuickFix
+	public class CreateEventInvocator : CSharpContextAction
 	{
 		public CreateEventInvocator ()
 		{

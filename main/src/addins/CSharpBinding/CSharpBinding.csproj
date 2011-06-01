@@ -229,14 +229,6 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionSettingsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\CSharpQuickFix.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\AddAnotherAccessor.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertForeachToFor.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\CheckIfParameterIsNull.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertDecToHex.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\StringBuilderOutputFormatter.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\CreateEventInvocator.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\GenerateSwitchLabels.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\CSharpNamingPolicy.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingStyle.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingRule.cs" />
@@ -245,17 +237,25 @@
     <Compile Include="MonoDevelop.CSharp.Analysis\NamingInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\StringIsNullOrEmptyInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\ConditionalToNullCoalescingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\FlipOperatorArguments.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\UseVarKeyword.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\UseExplicitType.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\ReplaceEmptyString.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\NotImplementedExceptionInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\CallGraph.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\UnusedUsingInpector.cs" />
     <Compile Include="MonoDevelop.CSharp.Analysis\UseVarKeywordInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\InvertIf.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\ContextActionExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.QuickFix\ConvertHexToDec.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\AddAnotherAccessor.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\ConvertForeachToFor.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\CheckIfParameterIsNull.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\ConvertDecToHex.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\StringBuilderOutputFormatter.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\CreateEventInvocator.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\GenerateSwitchLabels.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\FlipOperatorArguments.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\UseVarKeyword.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\UseExplicitType.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\ReplaceEmptyString.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\InvertIf.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\ConvertHexToDec.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\CSharpContextAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -290,6 +290,6 @@
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
     <Folder Include="MonoDevelop.CSharp.Analysis\" />
-    <Folder Include="MonoDevelop.CSharp.QuickFix\" />
+    <Folder Include="MonoDevelop.CSharp.ContextAction\" />
   </ItemGroup>
 </Project>

@@ -28,7 +28,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.CSharp.QuickFix;
+using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Analysis
@@ -188,7 +188,7 @@ namespace MonoDevelop.CSharp.Analysis
 			if (UseStringIsNullOrEmptyFix.IsNegated)
 				invocation = new UnaryOperatorExpression (UnaryOperatorType.Not, invocation);
 			
-			string text = CSharpQuickFix.OutputNode (Document, invocation, "").Trim ();
+			string text = CSharpContextAction.OutputNode (Document, invocation, "").Trim ();
 				
 			int offset = Document.Editor.LocationToOffset (UseStringIsNullOrEmptyFix.BinaryOperatorExpression.StartLocation.Line, UseStringIsNullOrEmptyFix.BinaryOperatorExpression.StartLocation.Column);
 			int endOffset = Document.Editor.LocationToOffset (UseStringIsNullOrEmptyFix.BinaryOperatorExpression.EndLocation.Line, UseStringIsNullOrEmptyFix.BinaryOperatorExpression.EndLocation.Column);

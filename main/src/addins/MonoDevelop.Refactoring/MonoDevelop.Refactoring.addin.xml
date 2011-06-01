@@ -35,7 +35,7 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Refactoring/QuickFixes" name = "QuickFix">
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/ContextActions" name = "ContextAction">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	<!-- Extensions -->
@@ -189,7 +189,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.Refactoring.Rename.RenameTextEditorExtension" />
-		<Class class = "MonoDevelop.QuickFix.QuickFixEditorExtension" />
+		<Class class = "MonoDevelop.ContextAction.ContextActionEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">

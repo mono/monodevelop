@@ -27,7 +27,7 @@ using System;
 using System.Text;
 using ICSharpCode.NRefactory.CSharp;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
 	public class StringBuilderOutputFormatter : IOutputFormatter
 	{

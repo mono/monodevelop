@@ -32,9 +32,9 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.CSharp.QuickFix
+namespace MonoDevelop.CSharp.ContextAction
 {
-	public abstract class CSharpQuickFix : MonoDevelop.QuickFix.QuickFix
+	public abstract class CSharpContextAction : MonoDevelop.ContextAction.ContextAction
 	{
 		internal static string GetSingleIndent (Mono.TextEditor.TextEditorData editor)
 		{

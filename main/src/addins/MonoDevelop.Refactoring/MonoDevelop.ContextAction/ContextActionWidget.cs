@@ -30,17 +30,17 @@ using MonoDevelop.Components.Commands;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
 
-namespace MonoDevelop.QuickFix
+namespace MonoDevelop.ContextAction
 {
-	public class QuickFixWidget : Gtk.EventBox
+	public class ContextActionWidget : Gtk.EventBox
 	{
-		QuickFixEditorExtension ext;
+		ContextActionEditorExtension ext;
 		MonoDevelop.Ide.Gui.Document document;
-		List<QuickFix> fixes;
+		List<ContextAction> fixes;
 		DomLocation loc;
 		Gdk.Pixbuf icon;
 		
-		public QuickFixWidget (QuickFixEditorExtension ext, MonoDevelop.Ide.Gui.Document document, DomLocation loc, List<QuickFix> fixes)
+		public ContextActionWidget (ContextActionEditorExtension ext, MonoDevelop.Ide.Gui.Document document, DomLocation loc, List<ContextAction> fixes)
 		{
 			this.ext = ext;
 			this.document = document;
@@ -71,9 +71,9 @@ namespace MonoDevelop.QuickFix
 		{
 			Gtk.Menu menu = new Gtk.Menu ();
 			
-			Dictionary<Gtk.MenuItem, QuickFix> fixTable = new Dictionary<Gtk.MenuItem, QuickFix> ();
+			Dictionary<Gtk.MenuItem, ContextAction> fixTable = new Dictionary<Gtk.MenuItem, ContextAction> ();
 			int mnemonic = 1;
-			foreach (QuickFix fix in fixes) {
+			foreach (ContextAction fix in fixes) {
 				var label = (mnemonic <= 10)
 						? "_" + (mnemonic++ % 10).ToString () + " " + fix.GetMenuText (document, loc)
 						: "  " + fix.GetMenuText (document, loc);
