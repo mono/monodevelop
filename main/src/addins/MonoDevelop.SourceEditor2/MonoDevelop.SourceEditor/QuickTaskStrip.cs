@@ -278,7 +278,7 @@ namespace MonoDevelop.SourceEditor
 				QuickTaskSeverity severity = QuickTaskSeverity.None;
 				
 				TextEditorData editorData = TextEditor.GetTextEditorData ();
-				int h = Allocation.Height - Allocation.Width - 3;
+				int h = Allocation.Height - Allocation.Width - 6;
 
 				foreach (var task in AllTasks) {
 					int y = h * editorData.LogicalToVisualLine (task.Location.Line) / editorData.VisibleLineCount;
@@ -311,12 +311,12 @@ namespace MonoDevelop.SourceEditor
 						              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
 						              Allocation.Width - 2,
 						              h * (adj.PageSize / adj.Upper));
-					Cairo.Color color = (HslColor)Style.Dark (StateType.Normal);
-					color.A = 0.8;
+					Cairo.Color color = (HslColor)Style.Text (StateType.Normal);
+					color.A = 0.5;
 					cr.Color = color;
 					cr.StrokePreserve ();
 	
-					color.A = 0.1;
+					color.A = 0.05;
 					cr.Color = color;
 					cr.Fill ();
 				}
