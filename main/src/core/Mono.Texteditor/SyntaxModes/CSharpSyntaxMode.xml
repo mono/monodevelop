@@ -101,6 +101,7 @@
 		<Word>__arglist</Word>
 		<Word>__makeref</Word>
 		<Word>__reftype</Word>
+		<Word>__refvalue</Word>
 		<Word>by</Word>
 		<Word>descending</Word>
 		<Word>from</Word>
