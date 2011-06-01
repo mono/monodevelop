@@ -55,22 +55,22 @@ namespace MonoDevelop.CSharp.Analysis
 		
 		public void Inpect (MonoDevelop.Ide.Gui.Document doc, IResolver resolver, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
 		{
-			var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
-			unit.AcceptVisitor (findTypeReferencesVisitor, null);
-			this.PossibleTypeReferences = findTypeReferencesVisitor.PossibleTypeReferences;
-			
-			foreach (var r in PossibleTypeReferences) {
-				if (r is PrimitiveType)
-					continue;
-				var loc = new DomLocation (r.StartLocation.Line, r.StartLocation.Column);
-				IType type = doc.Dom.SearchType (doc.CompilationUnit,
-					doc.CompilationUnit.GetTypeAt (loc), 
-					loc,
-					r.ConvertToReturnType ());
-				
-				if (type != null)
-					usedUsings.Add (type.Namespace);
-			}
+//			var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
+//			unit.AcceptVisitor (findTypeReferencesVisitor, null);
+//			this.PossibleTypeReferences = findTypeReferencesVisitor.PossibleTypeReferences;
+//			
+//			foreach (var r in PossibleTypeReferences) {
+//				if (r is PrimitiveType)
+//					continue;
+//				var loc = new DomLocation (r.StartLocation.Line, r.StartLocation.Column);
+//				IType type = doc.Dom.SearchType (doc.CompilationUnit,
+//					doc.CompilationUnit.GetTypeAt (loc), 
+//					loc,
+//					r.ConvertToReturnType ());
+//				
+//				if (type != null)
+//					usedUsings.Add (type.Namespace);
+//			}
 		}
 		
 		

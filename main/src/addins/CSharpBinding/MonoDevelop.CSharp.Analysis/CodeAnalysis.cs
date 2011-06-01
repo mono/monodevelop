@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Analysis
 			inspectors.Add (new StringIsNullOrEmptyInspector ());
 			inspectors.Add (new ConditionalToNullCoalescingInspector ());
 			inspectors.Add (new NotImplementedExceptionInspector (input));
-			inspectors.Add (new UnusedUsingInpector (input, cg));
+//			inspectors.Add (new UnusedUsingInpector (input, cg));
 			inspectors.Add (new UseVarKeywordInspector ());
 	
 			foreach (var inspector in inspectors) {
