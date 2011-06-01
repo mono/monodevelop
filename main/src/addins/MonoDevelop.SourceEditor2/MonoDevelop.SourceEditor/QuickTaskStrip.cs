@@ -310,10 +310,13 @@ namespace MonoDevelop.SourceEditor
 						              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
 						              Allocation.Width - 2,
 						              h * (adj.PageSize / adj.Upper));
-					cr.Color = new Cairo.Color (0, 0, 0, 0.5);
+					Cairo.Color color = (HslColor)Style.Dark (StateType.Normal);
+					color.A = 0.8;
+					cr.Color = color;
 					cr.StrokePreserve ();
 	
-					cr.Color = new Cairo.Color (0, 0, 0, 0.03);
+					color.A = 0.1;
+					cr.Color = color;
 					cr.Fill ();
 				}
 				// draw border
