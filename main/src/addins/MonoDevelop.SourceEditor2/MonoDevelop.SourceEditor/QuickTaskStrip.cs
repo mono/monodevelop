@@ -160,7 +160,9 @@ namespace MonoDevelop.SourceEditor
 			if (button != 0)
 				MouseMove (evnt.Y);
 			
-			if (evnt.Y > Allocation.Height - (Allocation.Width + 3)) {
+			int h = Allocation.Height - Allocation.Width - 3;
+			
+			if (evnt.Y > h) {
 				int errors = 0, warnings = 0;
 				foreach (var task in AllTasks) {
 					switch (task.Severity) {
@@ -184,9 +186,10 @@ namespace MonoDevelop.SourceEditor
 				}
 				this.TooltipText = text;
 			} else {
+				TextEditorData editorData = TextEditor.GetTextEditorData ();
 				foreach (var tasks in providerTasks.Values) {
 					foreach (var task in tasks) {
-						int y = Allocation.Height * TextEditor.GetTextEditorData ().LogicalToVisualLine (task.Location.Line) / TextEditor.GetTextEditorData ().VisibleLineCount;
+						int y = h * editorData.LogicalToVisualLine (task.Location.Line) / editorData.VisibleLineCount;
 						if (Math.Abs (y - evnt.Y) < 3) {
 							hoverTask = task;
 						}
@@ -272,9 +275,12 @@ namespace MonoDevelop.SourceEditor
 					return true;
 				
 				QuickTaskSeverity severity = QuickTaskSeverity.None;
+				
+				TextEditorData editorData = TextEditor.GetTextEditorData ();
+				int h = Allocation.Height - Allocation.Width - 3;
 
 				foreach (var task in AllTasks) {
-					int y = Allocation.Height * TextEditor.GetTextEditorData ().LogicalToVisualLine (task.Location.Line) / TextEditor.GetTextEditorData ().VisibleLineCount;
+					int y = h * editorData.LogicalToVisualLine (task.Location.Line) / editorData.VisibleLineCount;
 						
 					var color = (HslColor)GetBarColor (task.Severity);
 					cr.Color = color;
@@ -300,7 +306,6 @@ namespace MonoDevelop.SourceEditor
 				DrawIndicator (cr, severity);
 				
 				if (adj != null && adj.Upper > adj.PageSize) {
-					int h = Allocation.Height - Allocation.Width - 3;
 					cr.Rectangle (1.5,
 						              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
 						              Allocation.Width - 2,
