@@ -2257,17 +2257,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (NewAnonymousType newAnonymousType)
 			{
 				var result = new AnonymousTypeCreateExpression ();
-				foreach (var par in newAnonymousType.Parameters) {
-					var location = LocationsBag.GetLocations (par);
-
-					if (location == null) {
-						result.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
-					} else {
-						var namedArgument = new NamedArgumentExpression ();
-						namedArgument.AddChild (new Identifier (par.Name, Convert (par.Location)), AnonymousTypeCreateExpression.Roles.Identifier);
-						namedArgument.AddChild (new CSharpTokenNode (Convert (location [0]), 1), AnonymousTypeCreateExpression.Roles.Assign);
-						namedArgument.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
-						result.AddChild (namedArgument, AnonymousTypeCreateExpression.Roles.Expression);
+				if (newAnonymousType.Parameters != null) {
+					foreach (var par in newAnonymousType.Parameters) {
+						var location = LocationsBag.GetLocations (par);
+	
+						if (location == null) {
+							result.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
+						} else {
+							var namedArgument = new NamedArgumentExpression ();
+							namedArgument.AddChild (new Identifier (par.Name, Convert (par.Location)), AnonymousTypeCreateExpression.Roles.Identifier);
+							namedArgument.AddChild (new CSharpTokenNode (Convert (location [0]), 1), AnonymousTypeCreateExpression.Roles.Assign);
+							namedArgument.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
+							result.AddChild (namedArgument, AnonymousTypeCreateExpression.Roles.Expression);
+						}
 					}
 				}
 				return result;
