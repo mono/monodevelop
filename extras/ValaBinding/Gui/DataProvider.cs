@@ -84,7 +84,7 @@ namespace MonoDevelop.ValaBinding
 			return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
 		}// GetString
 		
-		public string GetText (int n)
+		public string GetMarkup (int n)
 		{
 			return GetString (amb, memberList[n]);
 		}// GetText
