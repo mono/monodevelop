@@ -598,7 +598,7 @@ namespace MonoDevelop.Projects.Dom
 				if (result.Length > 0)
 					result.Append ('.');
 				result.Append (part.ToInvariantString ());
-							}
+			}
 			if (this.IsNullable)
 				result.Append ('?');
 
@@ -607,7 +607,8 @@ namespace MonoDevelop.Projects.Dom
 			for (int i = 0; i < ArrayDimensions; i++) {
 				result.Append ('[');
 				int dimension = this.GetDimension (i);
-				if (dimension > 0)
+				 // setting upper limit to prevent out of memory exceptions on false data.
+				if (dimension > 0 && dimension < 4096)
 					result.Append (',', dimension);
 				result.Append (']');
 			}
