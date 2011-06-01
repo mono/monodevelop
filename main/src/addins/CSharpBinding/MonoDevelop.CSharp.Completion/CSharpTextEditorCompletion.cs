@@ -886,7 +886,10 @@ namespace MonoDevelop.CSharp.Completion
 // Start calculating the parameter offset from the beginning of the
 // current member, instead of the beginning of the file. 
 			cpos = textEditorData.Caret.Offset - 1;
-			IMember mem = Document.ParsedDocument.CompilationUnit.GetMemberAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
+			ParsedDocument parsedDocument = Document.ParsedDocument;
+			if (parsedDocument == null || parsedDocument.CompilationUnit == null)
+				return false;
+			IMember mem = parsedDocument.CompilationUnit.GetMemberAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (mem == null || (mem is IType))
 				return false;
 			int startPos = GetMemberStartPosition (mem);
