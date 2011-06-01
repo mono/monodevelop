@@ -205,8 +205,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (button != 1)
 				return;
-			double position = (y / Allocation.Height) * adj.Upper - (double)adj.PageSize / 2;
-			position = Math.Max (0, Math.Min (position, adj.Upper - adj.PageSize));
+			int markerHeight = Allocation.Width + 6;
+			double position = (y / (Allocation.Height - markerHeight)) * adj.Upper - adj.PageSize / 2;
+			position = Math.Max (adj.Lower, Math.Min (position, adj.Upper - adj.PageSize));
 			adj.Value = position;
 		}
 		
