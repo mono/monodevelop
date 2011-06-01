@@ -54,7 +54,7 @@ namespace MonoDevelop.ValaBinding
 		#region IListDataProvider implementation
 		public void Reset () { }
 		
-		public string GetText (int n)
+		public string GetMarkup (int n)
 		{
 			return Document.ParsedDocument.UserRegions.ElementAt (n).Name;
 		}// GetText
