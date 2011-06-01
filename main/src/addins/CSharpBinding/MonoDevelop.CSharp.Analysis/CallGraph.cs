@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Analysis
 		
 		public void Inpect (MonoDevelop.Ide.Gui.Document doc, IResolver resolver, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
 		{
-	/*		var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
+			var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
 			unit.AcceptVisitor (findTypeReferencesVisitor, null);
 			this.PossibleTypeReferences = findTypeReferencesVisitor.PossibleTypeReferences;
 			
@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Analysis
 				
 				if (type != null)
 					usedUsings.Add (type.Namespace);
-			}*/
+			}
 		}
 		
 		

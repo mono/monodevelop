@@ -150,7 +150,7 @@ namespace Mono.TextEditor
 			set {
 				if (!SuppressHighlightUpdate)
 					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
-				ReplaceEventArgs args = new ReplaceEventArgs (0, Length, value);
+				var args = new ReplaceEventArgs (0, Length, value);
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
 				splitter.Initalize (value);
@@ -200,7 +200,7 @@ namespace Mono.TextEditor
 		//			Debug.Assert (count >= 0);
 		//			Debug.Assert (0 <= offset && offset + count <= Length);
 			int oldLineCount = this.LineCount;
-			ReplaceEventArgs args = new ReplaceEventArgs (offset, count, value);
+			var args = new ReplaceEventArgs (offset, count, value);
 			if (Partitioner != null)
 				Partitioner.TextReplacing (args);
 			OnTextReplacing (args);
@@ -716,7 +716,7 @@ namespace Mono.TextEditor
 			}
 			if (undoStack.Count == 0 || !(undoStack.Peek () is KeyboardStackUndo)) 
 				undoStack.Push (new KeyboardStackUndo ());
-			KeyboardStackUndo keyUndo = (KeyboardStackUndo)undoStack.Pop ();
+			var keyUndo = (KeyboardStackUndo)undoStack.Pop ();
 			if (keyUndo.IsClosed) {
 				undoStack.Push (keyUndo);
 				keyUndo = new KeyboardStackUndo ();
@@ -739,7 +739,7 @@ namespace Mono.TextEditor
 		{
 			if (undoStack.Count == depth)
 				return;
-			AtomicUndoOperation atomicUndo = new AtomicUndoOperation ();
+			var atomicUndo = new AtomicUndoOperation ();
 			while (undoStack.Count > depth) {
 				atomicUndo.Operations.Insert (0, undoStack.Pop ());
 			}
@@ -749,7 +749,7 @@ namespace Mono.TextEditor
 		public void MergeUndoOperations (int number)
 		{
 			number = System.Math.Min (number, undoStack.Count);
-			AtomicUndoOperation atomicUndo = new AtomicUndoOperation ();
+			var atomicUndo = new AtomicUndoOperation ();
 			while (number-- > 0) {
 				atomicUndo.Insert (0, undoStack.Pop ());
 			}
@@ -966,7 +966,7 @@ namespace Mono.TextEditor
 		/// </summary>
 		public void UpdateFoldSegmentWorker (object sender, DoWorkEventArgs e)
 		{
-			BackgroundWorker worker = sender as BackgroundWorker;
+			var worker = sender as BackgroundWorker;
 			var newSegments = (List<FoldSegment>)e.Argument;
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
@@ -1507,7 +1507,7 @@ namespace Mono.TextEditor
 		/// </param>
 		public void UnRegisterVirtualTextMarker (IExtendingTextMarker marker)
 		{
-			List<int> keys = new List<int> (from pair in virtualTextMarkers where pair.Value == marker select pair.Key);
+			var keys = new List<int> (from pair in virtualTextMarkers where pair.Value == marker select pair.Key);
 			keys.ForEach (key => { virtualTextMarkers.Remove (key); CommitLineUpdate (key); });
 		}
 		
@@ -1516,7 +1516,7 @@ namespace Mono.TextEditor
 		int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary)
 		{
 			int i = 0;
-			int[] result = new int[LineCount];
+			var result = new int[LineCount];
 			foreach (LineSegment line in Lines) {
 				string lineText = buffer.GetTextAt (line.Offset, line.EditableLength);
 				int curCode;
@@ -1531,7 +1531,7 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<Hunk> Diff (Document changedDocument)
 		{
-			Dictionary<string, int> codeDictionary = new Dictionary<string, int> ();
+			var codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;
 			return Mono.TextEditor.Utils.Diff.GetDiff<int> (this.GetDiffCodes (ref codeCounter, codeDictionary),
 				changedDocument.GetDiffCodes (ref codeCounter, codeDictionary));

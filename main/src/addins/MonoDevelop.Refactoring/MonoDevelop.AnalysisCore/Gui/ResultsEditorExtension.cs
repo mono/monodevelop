@@ -153,10 +153,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 				}
 			}
 			
-			if (Editor == null || Editor.Document == null) {
-				UpdateQuickTasks ();
-				return true;
-			}
+			if (Editor == null || Editor.Document == null) 
+				return false; // prevents endless idle loop
 			
 			//clear the old results out at the same rate we add in the new ones
 			for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
@@ -172,7 +170,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 				Editor.Document.AddMarker (marker.Line, marker);
 				markers.Enqueue (marker);
 			}
-			UpdateQuickTasks ();
 			return true;
 		}
 		
@@ -238,7 +235,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				default:
 					throw new ArgumentOutOfRangeException ();
 				}
-				QuickTask newTask = new QuickTask (result.Message, result.Region.Start, severity);
+				var newTask = new QuickTask (result.Message, result.Region.Start, severity);
 				tasks.Add (newTask);
 			}
 			
