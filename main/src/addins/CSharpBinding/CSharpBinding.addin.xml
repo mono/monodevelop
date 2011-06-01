@@ -145,18 +145,55 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
-		<Class class = "MonoDevelop.CSharp.ContextAction.AddAnotherAccessor" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.CheckIfParameterIsNull" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.ConvertDecToHex" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.ConvertHexToDec" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.ConvertForeachToFor" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.CreateEventInvocator" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.GenerateSwitchLabels" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.FlipOperatorArguments" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.UseVarKeyword" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.UseExplicitType" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.ReplaceEmptyString" />
-		<Class class = "MonoDevelop.CSharp.ContextAction.InvertIf" />
+		<Action mimeType="text/x-csharp"
+			_title = "Add another accessor"
+			_description = "Adds second accessor to a property."
+			class = "MonoDevelop.CSharp.ContextAction.AddAnotherAccessor" />
+			
+		<Action mimeType="text/x-csharp"
+			_title = "Check if parameter is null"
+			_description = "Checks function parameter is not null."
+			class = "MonoDevelop.CSharp.ContextAction.CheckIfParameterIsNull" />
+		<Action mimeType="text/x-csharp"
+			_title = "Convert dec to hex."
+			_description = "Convert dec to hex."
+			class = "MonoDevelop.CSharp.ContextAction.ConvertDecToHex" />
+		<Action mimeType="text/x-csharp"
+			_title = "Convert hex to dec."
+			_description = "Convert hex to dec."
+			class = "MonoDevelop.CSharp.ContextAction.ConvertHexToDec" />
+		<Action mimeType="text/x-csharp"
+			_title = "Convert 'foreach' loop to 'for'"
+			_description = "Works on 'foreach' loops that allow direct access to its elements."
+			class = "MonoDevelop.CSharp.ContextAction.ConvertForeachToFor" />
+		<Action mimeType="text/x-csharp"
+			_title = "Create event invocator"
+			_description = "Creates a standard OnXXX event method."
+			class = "MonoDevelop.CSharp.ContextAction.CreateEventInvocator" />
+		<Action mimeType="text/x-csharp"
+			_title = "Generate switch labels"
+			_description = "Creates switch lables for enumerations."
+			class = "MonoDevelop.CSharp.ContextAction.GenerateSwitchLabels" />
+		<Action mimeType="text/x-csharp"
+			_title = "Swaps left and right arguments."
+			_description = "Swaps left and right arguments."
+			class = "MonoDevelop.CSharp.ContextAction.FlipOperatorArguments" />
+		<Action mimeType="text/x-csharp"
+			_title = "Use 'var' keyword"
+			_description = "Converts local variable declaration to be implicit typed."
+			class = "MonoDevelop.CSharp.ContextAction.UseVarKeyword" />
+		<Action mimeType="text/x-csharp"
+			_title = "Use explicit type"
+			_description = "Converts local variable declaration to be explicit typed."
+			class = "MonoDevelop.CSharp.ContextAction.UseExplicitType" />
+		<Action mimeType="text/x-csharp"
+			_title = "Use string.Empty"
+			_description = 'Replaces "" with string.Empty'
+			class = "MonoDevelop.CSharp.ContextAction.ReplaceEmptyString" />
+		<Action mimeType="text/x-csharp"
+			_title = "Invert if"
+			_description = "Inverts an 'if ... else' expression."
+			class = "MonoDevelop.CSharp.ContextAction.InvertIf" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

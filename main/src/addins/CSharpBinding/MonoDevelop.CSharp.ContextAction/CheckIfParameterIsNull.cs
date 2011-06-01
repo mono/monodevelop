@@ -33,11 +33,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class CheckIfParameterIsNull : CSharpContextAction
 	{
-		public CheckIfParameterIsNull ()
-		{
-			Description = GettextCatalog.GetString ("Checks function parameter is not null.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Check if parameter is null");

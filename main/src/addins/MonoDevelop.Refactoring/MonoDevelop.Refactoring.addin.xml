@@ -36,7 +36,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ContextActions" name = "ContextAction">
-		<ExtensionNode name="Class"/>
+		<ExtensionNode name="Action" type ="MonoDevelop.ContextAction.ContextActionAddinNode"/>
 	</ExtensionPoint>
 	<!-- Extensions -->
 	
@@ -212,6 +212,13 @@
 	</Extension>
 	
 	<!-- Options panels -->
+	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
+		<Section id = "C#" _label = "C#">
+			<Section id = "ContextActions" _label = "Context Actions" fill="true"
+				class="MonoDevelop.ContextAction.ContextActionPanel"/>
+		</Section>
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
 		<Section id = "Analysis" _label = "Source Analysis" fill="true"

@@ -32,11 +32,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class ConvertDecToHex : CSharpContextAction
 	{
-		public ConvertDecToHex ()
-		{
-			Description = GettextCatalog.GetString ("Convert dec to hex.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Convert dec to hex.");

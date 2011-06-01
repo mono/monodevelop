@@ -37,11 +37,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class ConvertForeachToFor : CSharpContextAction
 	{
-		public ConvertForeachToFor ()
-		{
-			Description = GettextCatalog.GetString ("Works on 'foreach' loops that allow direct access to its elements.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Convert 'foreach' loop to 'for'");

@@ -38,11 +38,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class UseVarKeyword : CSharpContextAction
 	{
-		public UseVarKeyword ()
-		{
-			Description = GettextCatalog.GetString ("Converts local variable declaration to be implicit typed.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Use 'var' keyword");

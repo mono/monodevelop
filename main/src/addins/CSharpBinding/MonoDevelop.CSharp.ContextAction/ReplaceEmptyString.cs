@@ -33,11 +33,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class ReplaceEmptyString : CSharpContextAction
 	{
-		public ReplaceEmptyString ()
-		{
-			Description = GettextCatalog.GetString ("Replaces \"\" with string.Empty");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Use string.Empty");

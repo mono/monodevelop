@@ -38,11 +38,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class FlipOperatorArguments : CSharpContextAction
 	{
-		public FlipOperatorArguments ()
-		{
-			Description = GettextCatalog.GetString ("Swaps left and right arguments.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			var binop = GetBinaryOperatorExpression (document.ParsedDocument, loc);

@@ -40,11 +40,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class CreateEventInvocator : CSharpContextAction
 	{
-		public CreateEventInvocator ()
-		{
-			Description = GettextCatalog.GetString ("Creates a standard OnXXX event method.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Create event invocator");

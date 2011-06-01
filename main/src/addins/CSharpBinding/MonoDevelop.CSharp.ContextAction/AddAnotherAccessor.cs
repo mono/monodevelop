@@ -34,11 +34,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class AddAnotherAccessor : CSharpContextAction
 	{
-		public AddAnotherAccessor ()
-		{
-			Description = GettextCatalog.GetString ("Adds second accessor to a property.");
-		}
-		
 		PropertyDeclaration GetPropertyDeclaration (ParsedDocument doc, DomLocation loc)
 		{
 			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;

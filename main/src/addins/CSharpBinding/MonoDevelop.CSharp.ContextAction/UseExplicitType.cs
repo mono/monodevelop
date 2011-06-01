@@ -37,11 +37,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class UseExplicitType : CSharpContextAction
 	{
-		public UseExplicitType ()
-		{
-			Description = GettextCatalog.GetString ("Converts local variable declaration to be explicit typed.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Use explicit type");

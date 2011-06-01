@@ -37,11 +37,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class GenerateSwitchLabels : CSharpContextAction
 	{
-		public GenerateSwitchLabels ()
-		{
-			Description = GettextCatalog.GetString ("Creates switch lables for enumerations.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document editor, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Generate switch labels");

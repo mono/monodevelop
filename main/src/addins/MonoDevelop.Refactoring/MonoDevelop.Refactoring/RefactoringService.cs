@@ -46,7 +46,13 @@ namespace MonoDevelop.Refactoring
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
 		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
 		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
-		static List<ContextAction> contextActions = new List<ContextAction> ();
+		static List<ContextActionAddinNode> contextActions = new List<ContextActionAddinNode> ();
+		
+		public static IEnumerable<ContextActionAddinNode> ContextAddinNodes {
+			get {
+				return contextActions;
+			}
+		} 
 		
 		static RefactoringService ()
 		{
@@ -86,10 +92,10 @@ namespace MonoDevelop.Refactoring
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					contextActions.Add ((ContextAction)args.ExtensionObject);
+					contextActions.Add ((ContextActionAddinNode)args.ExtensionNode);
 					break;
 				case ExtensionChange.Remove:
-					contextActions.Remove ((ContextAction)args.ExtensionObject);
+					contextActions.Remove ((ContextActionAddinNode)args.ExtensionNode);
 					break;
 				}
 			});
@@ -177,7 +183,9 @@ namespace MonoDevelop.Refactoring
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					var availableFixes = new List<ContextAction> (contextActions.Where (fix => fix.IsValid (doc, loc)));
+					string disabledNodes = PropertyService.Get ("ContextActions." + doc.Editor.Document.MimeType, "") ?? "";
+					
+					var availableFixes = new List<ContextAction> (contextActions.Where (fix => disabledNodes.IndexOf (fix.Type.FullName) < 0 && fix.Action.IsValid (doc, loc)).Select (fix => fix.Action));
 					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 					if (ext != null) {
 						foreach (var result in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc.Line, loc.Column))) {

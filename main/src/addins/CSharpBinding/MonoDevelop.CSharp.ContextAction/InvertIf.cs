@@ -37,11 +37,6 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class InvertIf : CSharpContextAction
 	{
-		public InvertIf ()
-		{
-			Description = GettextCatalog.GetString ("Inverts an 'if ... else' expression.");
-		}
-		
 		public override string GetMenuText (MonoDevelop.Ide.Gui.Document editor, DomLocation loc)
 		{
 			return GettextCatalog.GetString ("Invert if");
