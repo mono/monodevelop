@@ -220,7 +220,7 @@ namespace MonoDevelop.AssemblyBrowser
 				                               typeof (IMember)
 			                                  );
 			CreateColumns ();
-			SetInpectWidget ();
+			SetInspectWidget ();
 //			this.searchEntry.Changed += SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated += SearchTreeviewhandleRowActivated;
 			this.searchentry1.ShowAll ();
@@ -285,7 +285,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			this.notebook1.Page = 1;
 			PropertyService.Set ("AssemblyBrowser.InspectLanguage", this.languageCombobox.Active);
-			SetInpectWidget ();
+			SetInspectWidget ();
 			FillInspectLabel ();
 		}
 
@@ -819,7 +819,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		void SetInpectWidget ()
+		void SetInspectWidget ()
 		{
 			if (this.scrolledwindow3.Child != null)
 				this.scrolledwindow3.Remove (this.scrolledwindow3.Child);

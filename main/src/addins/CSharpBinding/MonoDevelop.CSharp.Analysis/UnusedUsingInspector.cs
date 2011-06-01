@@ -1,5 +1,5 @@
 // 
-// UnusedUsingInpector.cs
+// UnusedUsingInspector.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -39,12 +39,12 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Analysis
 {
-	public class UnusedUsingInpector : CSharpInspector
+	public class UnusedUsingInspector : CSharpInspector
 	{
 		Document doc;
 		CallGraph cg;
 
-		public UnusedUsingInpector (Document doc, CallGraph cg)
+		public UnusedUsingInspector (Document doc, CallGraph cg)
 		{
 			this.doc = doc;
 			this.cg = cg;

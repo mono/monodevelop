@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Analysis
 				yield break;
 			
 			var cg = new CallGraph ();
-			cg.Inpect (input, CSharpContextAction.GetResolver (input), unit);
+			cg.Inspect (input, CSharpContextAction.GetResolver (input), unit);
 			
 			
 			var visitor = new ObservableAstVisitor ();
@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Analysis
 			inspectors.Add (new StringIsNullOrEmptyInspector ());
 			inspectors.Add (new ConditionalToNullCoalescingInspector ());
 			inspectors.Add (new NotImplementedExceptionInspector (input));
-//			inspectors.Add (new UnusedUsingInpector (input, cg));
+//			inspectors.Add (new UnusedUsingInspector (input, cg));
 			inspectors.Add (new UseVarKeywordInspector ());
 	
 			foreach (var inspector in inspectors) {

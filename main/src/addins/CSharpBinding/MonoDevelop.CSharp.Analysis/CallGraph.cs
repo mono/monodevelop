@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Analysis
 		{
 		}
 		
-		public void Inpect (MonoDevelop.Ide.Gui.Document doc, IResolver resolver, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
+		public void Inspect (MonoDevelop.Ide.Gui.Document doc, IResolver resolver, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
 		{
 //			var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
 //			unit.AcceptVisitor (findTypeReferencesVisitor, null);
