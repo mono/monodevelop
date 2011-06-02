@@ -6,7 +6,8 @@ using System.Diagnostics;
 namespace MonoDevelop.Core.Execution
 {
 	public delegate void ProcessEventHandler(object sender, string message);
-	
+
+	[System.ComponentModel.DesignerCategory ("Code")]
 	public class ProcessWrapper : Process, IProcessAsyncOperation
 	{
 		private Thread captureOutputThread;
