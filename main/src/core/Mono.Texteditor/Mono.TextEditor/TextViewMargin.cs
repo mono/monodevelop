@@ -2012,11 +2012,25 @@ namespace Mono.TextEditor
 			}
 		}
 
+		ISegment mainSearchResult;
 		public ISegment MainSearchResult {
-			get;
-			set;
+			get {
+				return mainSearchResult;
+			}
+			set {
+				mainSearchResult = value;
+				OnMainSearchResultChanged (EventArgs.Empty);
+			}
 		}
-
+		
+		public event EventHandler MainSearchResultChanged;
+		protected virtual void OnMainSearchResultChanged (EventArgs e)
+		{
+			EventHandler handler = this.MainSearchResultChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		Cairo.Color defaultBgColor;
 		
 		public int TextStartPosition {

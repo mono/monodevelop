@@ -96,10 +96,21 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		Mono.TextEditor.TextEditor textEditor;
 		public TextEditor TextEditor {
-			get;
-			set;
+			get {
+				return textEditor;
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException ();
+				textEditor = value;
+				textEditor.HighlightSearchPatternChanged += (sender, e) => QueueDraw ();
+				textEditor.TextViewMargin.SearchRegionsUpdated += (sender, e) => QueueDraw ();
+				textEditor.TextViewMargin.MainSearchResultChanged += (sender, e) => QueueDraw ();
+			}
 		}
+		
 		Dictionary<IQuickTaskProvider, List<QuickTask>> providerTasks = new Dictionary<IQuickTaskProvider, List<QuickTask>> ();
 		
 		IEnumerable<QuickTask> AllTasks {
@@ -161,47 +172,51 @@ namespace MonoDevelop.SourceEditor
 				MouseMove (evnt.Y);
 			
 			int h = Allocation.Height - Allocation.Width - 3;
-			
-			if (evnt.Y > h) {
-				int errors = 0, warnings = 0;
-				foreach (var task in AllTasks) {
-					switch (task.Severity) {
-					case QuickTaskSeverity.Error:
-						errors++;
-						break;
-					case QuickTaskSeverity.Warning:
-						warnings++;
-						break;
-					}
-				}
-				string text = null;
-				if (errors == 0 && warnings == 0) {
-					text = GettextCatalog.GetString ("No errors or warnings");
-				} else if (errors == 0) {
-					text = string.Format (GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", warnings), warnings);
-				} else if (warnings == 0) {
-					text = string.Format (GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors), errors);
-				} else {
-					text = string.Format (GettextCatalog.GetString ("{0} errors and {1} warnings"), errors, warnings);
-				}
-				this.TooltipText = text;
-			} else {
-				TextEditorData editorData = TextEditor.GetTextEditorData ();
-				foreach (var tasks in providerTasks.Values) {
-					foreach (var task in tasks) {
-						double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
-						if (Math.Abs (y - evnt.Y) < 3) {
-							hoverTask = task;
+			if (TextEditor.HighlightSearchPattern) {
+				if (evnt.Y > h)
+					this.TooltipText = string.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", TextEditor.TextViewMargin.SearchResultMatchCount), TextEditor.TextViewMargin.SearchResultMatchCount);
+			} else { 
+				if (evnt.Y > h) {
+					int errors = 0, warnings = 0;
+					foreach (var task in AllTasks) {
+						switch (task.Severity) {
+						case QuickTaskSeverity.Error:
+							errors++;
+							break;
+						case QuickTaskSeverity.Warning:
+							warnings++;
+							break;
 						}
 					}
+					string text = null;
+					if (errors == 0 && warnings == 0) {
+						text = GettextCatalog.GetString ("No errors or warnings");
+					} else if (errors == 0) {
+						text = string.Format (GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", warnings), warnings);
+					} else if (warnings == 0) {
+						text = string.Format (GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors), errors);
+					} else {
+						text = string.Format (GettextCatalog.GetString ("{0} errors and {1} warnings"), errors, warnings);
+					}
+					this.TooltipText = text;
+				} else {
+					TextEditorData editorData = TextEditor.GetTextEditorData ();
+					foreach (var tasks in providerTasks.Values) {
+						foreach (var task in tasks) {
+							double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
+							if (Math.Abs (y - evnt.Y) < 3) {
+								hoverTask = task;
+							}
+						}
+					}
+					base.TooltipText = hoverTask != null ? hoverTask.Description : null;
 				}
-				base.TooltipText = hoverTask != null ? hoverTask.Description : null;
 			}
 			
 			return base.OnMotionNotifyEvent (evnt);
 		}
 		
-		public void MouseMove (double y)
+		void MouseMove (double y)
 		{
 			if (button != 1)
 				return;
@@ -235,7 +250,7 @@ namespace MonoDevelop.SourceEditor
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
-		public void DrawIndicator (Cairo.Context cr, QuickTaskSeverity severity)
+		void DrawIndicator (Cairo.Context cr, QuickTaskSeverity severity)
 		{
 			cr.Rectangle (3, Allocation.Height - Allocation.Width + 3, Allocation.Width - 6, Allocation.Width - 6);
 			
@@ -252,11 +267,92 @@ namespace MonoDevelop.SourceEditor
 			cr.Color = darkColor;
 			cr.Stroke ();
 		}
-		
+
+		void DrawSearchIndicator (Cairo.Context cr)
+		{
+			int x1 = 1 + Allocation.Width / 2;
+			int y1 = Allocation.Height - Allocation.Width + (Allocation.Width + 3) / 2;
+			cr.Arc (x1, 
+				y1, 
+				(Allocation.Width - 5) / 2, 
+				0, 
+				2 * Math.PI);
+			
+			var darkColor = (HslColor)TextEditor.ColorStyle.SearchTextBg;
+			darkColor.L *= 0.5;
+			
+			using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
+				pattern.AddColorStop (0, darkColor);
+				pattern.AddColorStop (1, TextEditor.ColorStyle.SearchTextMainBg);
+				cr.Pattern = pattern;
+				cr.FillPreserve ();
+			}
+			
+			cr.Color = darkColor;
+			cr.Stroke ();
+		}
+
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
 			requisition.Width = 17;
+		}
+
+		QuickTaskSeverity DrawQuickTasks (Cairo.Context cr)
+		{
+			QuickTaskSeverity severity = QuickTaskSeverity.None;
+			int h = Allocation.Height - Allocation.Width - 6;
+			foreach (var task in AllTasks) {
+				double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * TextEditor.LineHeight + TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height);
+					
+				var color = (HslColor)GetBarColor (task.Severity);
+				cr.Color = color;
+				cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
+				cr.FillPreserve ();
+				
+				color.L *= 0.7;
+				cr.Color = color;
+				cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
+				cr.Stroke ();
+				
+				switch (task.Severity) {
+				case QuickTaskSeverity.Error:
+					severity = QuickTaskSeverity.Error;
+					break;
+				case QuickTaskSeverity.Warning:
+					if (severity == QuickTaskSeverity.None)
+						severity = QuickTaskSeverity.Warning;
+					break;
+				}
+			}
+			return severity;
+		}
+
+		void DrawLeftBorder (Cairo.Context cr)
+		{
+			cr.MoveTo (0.5, 0);
+			cr.LineTo (0.5, Allocation.Height);
+			cr.Color = TextEditor.ColorStyle.FoldLine.CairoColor;
+			cr.Stroke ();
+		}
+
+		void DrawBar (Cairo.Context cr)
+		{
+			if (adj == null || adj.Upper <= adj.PageSize) 
+				return;
+			int h = Allocation.Height - Allocation.Width - 6;
+			cr.Rectangle (1.5,
+				              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
+				              Allocation.Width - 2,
+				              h * (adj.PageSize / adj.Upper));
+			Cairo.Color color = TextEditor.ColorStyle.Default.CairoColor;
+			color.A = 0.5;
+			cr.Color = color;
+			cr.StrokePreserve ();
+			
+			color.A = 0.05;
+			cr.Color = color;
+			cr.Fill ();
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
@@ -275,57 +371,30 @@ namespace MonoDevelop.SourceEditor
 				if (TextEditor == null)
 					return true;
 				
-				QuickTaskSeverity severity = QuickTaskSeverity.None;
-				
-				TextEditorData editorData = TextEditor.GetTextEditorData ();
-				int h = Allocation.Height - Allocation.Width - 6;
-				
-				foreach (var task in AllTasks) {
-					double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
+				if (TextEditor.HighlightSearchPattern) {
+					int h = Allocation.Height;
+					foreach (var region in TextEditor.TextViewMargin.SearchResults) {
+						int line = TextEditor.OffsetToLineNumber (region.Offset);
+						double y = h * TextEditor.LineToY (line) / Math.Max (TextEditor.EditorLineThreshold * TextEditor.LineHeight + TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height);
 						
-					var color = (HslColor)GetBarColor (task.Severity);
-					cr.Color = color;
-					cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
-					cr.FillPreserve ();
-					
-					color.L *= 0.7;
-					cr.Color = color;
-					cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
-					cr.Stroke ();
-					
-					switch (task.Severity) {
-					case QuickTaskSeverity.Error:
-						severity = QuickTaskSeverity.Error;
-						break;
-					case QuickTaskSeverity.Warning:
-						if (severity == QuickTaskSeverity.None)
-							severity = QuickTaskSeverity.Warning;
-						break;
+						var color = (HslColor)(region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset ? TextEditor.ColorStyle.SearchTextMainBg : TextEditor.ColorStyle.SearchTextBg);
+						cr.Color = color;
+						cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
+						cr.FillPreserve ();
+				
+						color.L *= 0.7;
+						cr.Color = color;
+						cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
+						cr.Stroke ();
 					}
+					DrawSearchIndicator (cr);
+				} else {
+					var severity = DrawQuickTasks (cr);
+					DrawIndicator (cr, severity);
 				}
 				
-				DrawIndicator (cr, severity);
-				
-				if (adj != null && adj.Upper > adj.PageSize) {
-					cr.Rectangle (1.5,
-						              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
-						              Allocation.Width - 2,
-						              h * (adj.PageSize / adj.Upper));
-					Cairo.Color color = TextEditor.ColorStyle.Default.CairoColor;
-					color.A = 0.5;
-					cr.Color = color;
-					cr.StrokePreserve ();
-					
-					color.A = 0.05;
-					cr.Color = color;
-					cr.Fill ();
-				}
-				// draw border
-				//	cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
-				cr.MoveTo (0.5, 0);
-				cr.LineTo (0.5, Allocation.Height);
-				cr.Color = TextEditor.ColorStyle.FoldLine.CairoColor;
-				cr.Stroke ();
+				DrawBar (cr);
+				DrawLeftBorder (cr);
 			}
 			
 			return true;
