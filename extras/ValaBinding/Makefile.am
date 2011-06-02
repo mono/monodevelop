@@ -1,5 +1,6 @@
 ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.ValaBinding.dll
+ASSEMBLY_CONFIG = MonoDevelop.ValaBinding.dll.config
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -88,9 +89,10 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(LOCAL_PKGCONFIG) $(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
+	cp $(ASSEMBLY_CONFIG) $(ADDIN_BUILD)
 
 valabindinglibdir = $(prefix)/lib/monodevelop/AddIns/BackendBindings
-valabindinglib_DATA = $(ASSEMBLY)
+valabindinglib_DATA = $(ASSEMBLY) $(ASSEMBLY_CONFIG)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
