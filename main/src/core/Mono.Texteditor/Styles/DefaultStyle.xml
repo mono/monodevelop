@@ -122,18 +122,18 @@
 	</Style>
 	
 	<Style name="bubble">
-		<Style name="warning" color="black" bgColor="#e0dac9"/>
+		<Style name="warning" color="black" bgColor="#f4eeda"/>
 		<Style name="error" color="black" bgColor="#ead5d4"/>
 	</Style>
 
-	<Style name="linenumber" color="aluminium4" bgColor="LightYellow">
+	<Style name="linenumber" color="aluminium4" bgColor="#FDFDFF">
 		<Style name="highlight" color="aluminium5"/>
 	</Style>
 	
-	<Style name="iconbar" color="LightYellow"/>
+	<Style name="iconbar" color="#FDFDFF"/>
 	<Style name="iconbar.separator" color="aluminium3"/>
 
-	<Style name="fold" color="aluminium3" bgColor="LightYellow"/>
+	<Style name="fold" color="aluminium3" bgColor="#FDFDFF"/>
 	<Style name="fold.highlight" color="aluminium5"/>
 	<Style name="fold.togglemarker" color="black"/>
 	
