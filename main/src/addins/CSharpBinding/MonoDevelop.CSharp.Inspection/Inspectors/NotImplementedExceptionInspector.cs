@@ -1,8 +1,8 @@
-// 
-// UnusedUsingInspector.cs
-//  
-// Author:
-//       Mike Krüger <mkrueger@novell.com>
+//// 
+//// NotImplementedExceptionInspector.cs
+////  
+//// Author:
+////       Mike Krüger <mkrueger@novell.com>
 // 
 // Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
@@ -31,48 +32,34 @@ using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
-using Mono.CSharp;
-using MonoDevelop.Refactoring.RefactorImports;
-using MonoDevelop.Refactoring;
-using MonoDevelop.AnalysisCore.Fixes;
-using System.Collections.Generic;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
-	public class UnusedUsingInspector : CSharpInspector
+	public class NotImplementedExceptionInspector : CSharpInspector
 	{
-		Document doc;
-		CallGraph cg;
-
-		public UnusedUsingInspector (Document doc, CallGraph cg)
+		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitior)
 		{
-			this.doc = doc;
-			this.cg = cg;
-		}
-		
-		public override void Attach (ObservableAstVisitor visitor)
-		{
-			visitor.UsingDeclarationVisited += HandleVisitorUsingDeclarationVisited;
-		}
-
-		void HandleVisitorUsingDeclarationVisited (UsingDeclaration node)
-		{
-			if (!cg.UsedUsings.Contains (node.Namespace)) {
-				results.Add (
-					new GenericResults (
+			visitior.ThrowStatementVisited += delegate(ThrowStatement node, InspectionData data) {
+				if (node.Expression.IsNull)
+					return;
+				if (node.Expression is IdentifierExpression && ((IdentifierExpression)node.Expression).Identifier != "NotImplementedException")
+					return;
+				if (node.Expression is MemberReferenceExpression && ((MemberReferenceExpression)node.Expression).MemberName != "NotImplementedException")
+					return;
+				// may be a not implemented exception, to get 100% sure we need to make a resolve.
+				var resolver = data.Resolver;
+				var result = resolver.Resolve (node.Expression.ToString (), new DomLocation (node.StartLocation.Line, node.EndLocation.Column));
+				if (result != null && result.ResolvedType.FullName != null && result.ResolvedType.FullName == "System.NotImplementedException") {
+					data.Add (new Result (
 						new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
-						GettextCatalog.GetString ("Using directive is not required."),
-						ResultLevel.Warning, 
-						ResultCertainty.High, 
+						GettextCatalog.GetString ("NotImplemented exception thrown"),
+						MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion,
+						ResultCertainty.High,
 						ResultImportance.Low,
-						new GenericFix (GettextCatalog.GetString ("Remove unused usings"), delegate {
-						RefactoringOptions options = new RefactoringOptions () { Document = doc, Dom = doc.Dom};
-						new RemoveUnusedImportsRefactoring ().Run (options);
-					})
-					)
-				);
-			}
+						false)
+					);
+				}
+			};
 		}
 	}
 }
-

@@ -1,5 +1,5 @@
 // 
-// CSharpInspector.cs
+// NamingConventionPanelWidget.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,18 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp;
-using GLib;
-using System.Collections.Generic;
-using MonoDevelop.AnalysisCore;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
-	public abstract class CSharpInspector
+	[System.ComponentModel.ToolboxItem(true)]
+	public partial class NamingConventionPanelWidget : Gtk.Bin
 	{
-		public readonly List<Result> results = new List<Result> ();
-
-		public abstract void Attach (ObservableAstVisitor visitior);
+		public NamingConventionPanelWidget ()
+		{
+		//	this.Build ();	
+		}
 	}
 }
 

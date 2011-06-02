@@ -31,7 +31,7 @@ using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Projects.Dom;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
 	public class StringIsNullOrEmptyInspector : CSharpInspector
 	{
@@ -98,111 +98,50 @@ namespace MonoDevelop.CSharp.Analysis
 				left.Right.IsMatch (right.Right) || left.Right.IsMatch (right.Left);
 		}
 		
-		public override void Attach (ICSharpCode.NRefactory.CSharp.ObservableAstVisitor visitior)
+		static Expression GetParameter (BinaryOperatorExpression binOp)
 		{
-			visitior.BinaryOperatorExpressionVisited += delegate(BinaryOperatorExpression binOp) {
+			var left = binOp.Left as BinaryOperatorExpression;
+			var right = binOp.Right as BinaryOperatorExpression;
+			
+			if (left.Left.IsMatch (right.Right))
+				return left.Left.Clone ();
+			if (left.Right.IsMatch (right.Right))
+				return left.Right.Clone ();
+			if (left.Left.IsMatch (right.Left))
+				return left.Left.Clone ();
+			return left.Right.Clone ();
+		}
+		
+		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitior)
+		{
+			visitior.BinaryOperatorExpressionVisited += delegate(BinaryOperatorExpression binOp, InspectionData data) {
 				foreach (var match in Matches) {
 					if (match.IsMatch (binOp) && ComparesEqualNodes (binOp)) {
-						results.Add (new FixableResult (
+						AddResult (data,
 							new DomRegion (binOp.StartLocation.Line, binOp.StartLocation.Column, binOp.EndLocation.Line, binOp.EndLocation.Column),
 							GettextCatalog.GetString ("Use string.IsNullOrEmpty"),
-							ResultLevel.Suggestion, ResultCertainty.High, ResultImportance.Medium,
-							new UseStringIsNullOrEmptyFix (binOp)));
-						
+							delegate {
+							Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
+							binOp.Replace (data.Document, invocation);	
+						}
+						);
 					}
 				}
 				foreach (var match in NegatedMatches) {
 					if (match.IsMatch (binOp) && ComparesEqualNodes (binOp)) {
-						results.Add (new FixableResult (
+						AddResult (data,
 							new DomRegion (binOp.StartLocation.Line, binOp.StartLocation.Column, binOp.EndLocation.Line, binOp.EndLocation.Column),
 							GettextCatalog.GetString ("Use string.IsNullOrEmpty"),
-							ResultLevel.Suggestion, ResultCertainty.High, ResultImportance.Medium,
-							new UseStringIsNullOrEmptyFix (binOp, true)));
-						
+							delegate {
+								Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
+								invocation = new UnaryOperatorExpression (UnaryOperatorType.Not, invocation);
+								binOp.Replace (data.Document, invocation);	
+							}
+						);
 					}
 				}
 			};
 		}
-		
-		internal class UseStringIsNullOrEmptyFix : IAnalysisFix
-		{
-			public BinaryOperatorExpression BinaryOperatorExpression { get; private set; }
-			public bool IsNegated { get; private set; }
-			
-			public UseStringIsNullOrEmptyFix (BinaryOperatorExpression binaryOperatorExpression, bool negated = false)
-			{
-				this.BinaryOperatorExpression = binaryOperatorExpression;
-				this.IsNegated = negated;
-			}
-			
-			public Expression GetParameter ()
-			{
-				var left = BinaryOperatorExpression.Left as BinaryOperatorExpression;
-				var right = BinaryOperatorExpression.Right as BinaryOperatorExpression;
-			
-				if (left.Left.IsMatch (right.Right))
-					return left.Left.Clone ();
-				if (left.Right.IsMatch (right.Right))
-					return left.Right.Clone ();
-				if (left.Left.IsMatch (right.Left))
-					return left.Left.Clone ();
-				return left.Right.Clone ();
-			}
-			
-			#region IAnalysisFix implementation
-			public string FixType {
-				get {
-					return "UseStringIsNullOrEmptyFix";
-				}
-			}
-			#endregion
-			
-		}
 	}
-	class UseStringIsNullOrEmptyFixHandler : IFixHandler
-	{
-			#region IFixHandler implementation
-		public System.Collections.Generic.IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
-		{
-			var useStringIsNullOrEmptyFix = fix as StringIsNullOrEmptyInspector.UseStringIsNullOrEmptyFix;
-				
-			yield return new UseStringIsNullOrEmptyFixAction () {
-					Document = doc,
-					UseStringIsNullOrEmptyFix = useStringIsNullOrEmptyFix
-				};
-				
-		}
-			#endregion
-	}
-		
-	class UseStringIsNullOrEmptyFixAction : IAnalysisFixAction
-	{
-		internal MonoDevelop.Ide.Gui.Document Document;
-		internal StringIsNullOrEmptyInspector.UseStringIsNullOrEmptyFix UseStringIsNullOrEmptyFix;
-			
-		#region IAnalysisFixAction implementation
-		public void Fix ()
-		{
-			Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), UseStringIsNullOrEmptyFix.GetParameter ());
-			
-			if (UseStringIsNullOrEmptyFix.IsNegated)
-				invocation = new UnaryOperatorExpression (UnaryOperatorType.Not, invocation);
-			
-			string text = CSharpContextAction.OutputNode (Document, invocation, "").Trim ();
-				
-			int offset = Document.Editor.LocationToOffset (UseStringIsNullOrEmptyFix.BinaryOperatorExpression.StartLocation.Line, UseStringIsNullOrEmptyFix.BinaryOperatorExpression.StartLocation.Column);
-			int endOffset = Document.Editor.LocationToOffset (UseStringIsNullOrEmptyFix.BinaryOperatorExpression.EndLocation.Line, UseStringIsNullOrEmptyFix.BinaryOperatorExpression.EndLocation.Column);
-				
-			Document.Editor.Replace (offset, endOffset - offset, text);
-			Document.Editor.Document.CommitUpdateAll ();
-		}
-			
-		public string Label {
-			get {
-				return GettextCatalog.GetString ("Use string.IsNullOrEmpty");
-			}
-		}
-		#endregion
-	}	
 }
 

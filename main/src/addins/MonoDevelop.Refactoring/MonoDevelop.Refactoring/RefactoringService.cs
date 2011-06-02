@@ -35,7 +35,7 @@ using MonoDevelop.CodeGeneration;
 using MonoDevelop.Projects.Dom;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
-
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.Refactoring
 {
@@ -47,6 +47,7 @@ namespace MonoDevelop.Refactoring
 		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
 		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
 		static List<ContextActionAddinNode> contextActions = new List<ContextActionAddinNode> ();
+		static List<InspectorAddinNode> inspectors = new List<InspectorAddinNode> ();
 		
 		public static IEnumerable<ContextActionAddinNode> ContextAddinNodes {
 			get {
@@ -99,6 +100,18 @@ namespace MonoDevelop.Refactoring
 					break;
 				}
 			});
+			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					inspectors.Add ((InspectorAddinNode)args.ExtensionNode);
+					break;
+				case ExtensionChange.Remove:
+					inspectors.Remove ((InspectorAddinNode)args.ExtensionNode);
+					break;
+				}
+			});
+			
 		}
 		
 		public static IEnumerable<RefactoringOperation> Refactorings {
@@ -124,7 +137,7 @@ namespace MonoDevelop.Refactoring
 			{
 				foreach (FileCopyEventInfo args in e) {
 					foreach (Change change in changes) {
-						TextReplaceChange replaceChange = change as TextReplaceChange;
+						var replaceChange = change as TextReplaceChange;
 						if (replaceChange == null)
 							continue;
 						if (args.SourceFile == replaceChange.FileName)
@@ -141,16 +154,16 @@ namespace MonoDevelop.Refactoring
 		
 		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
 		{
-			RefactorerContext rctx = new RefactorerContext (dom, fileProvider, null);
-			RenameHandler handler = new RenameHandler (changes);
+			var rctx = new RefactorerContext (dom, fileProvider, null);
+			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
 			for (int i = 0; i < changes.Count; i++) {
 				changes[i].PerformChange (monitor, rctx);
-				TextReplaceChange replaceChange = changes[i] as TextReplaceChange;
+				var replaceChange = changes[i] as TextReplaceChange;
 				if (replaceChange == null)
 					continue;
 				for (int j = i + 1; j < changes.Count; j++) {
-					TextReplaceChange change = changes[j] as TextReplaceChange;
+					var change = changes[j] as TextReplaceChange;
 					if (change == null)
 						continue;
 					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
@@ -177,6 +190,11 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			return null;
+		}
+		
+		public static IEnumerable<InspectorAddinNode> GetInspectors (string mimeTye)
+		{
+			return inspectors.Where (i => i.MimeType == mimeTye);
 		}
 		
 		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, DomLocation loc, Action<List<ContextAction>> callback)

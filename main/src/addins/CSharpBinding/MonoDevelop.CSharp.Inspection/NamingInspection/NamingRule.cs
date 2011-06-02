@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Text;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
 	public class NamingRule
 	{
@@ -173,7 +173,8 @@ namespace MonoDevelop.CSharp.Analysis
 			return new FixableResult (
 				new DomRegion (location.Line, location.Column, location.Line, location.Column + name.Length),
 				GetErrorMessage (name),
-				ResultLevel.Warning, ResultCertainty.High, ResultImportance.Medium,
+				MonoDevelop.SourceEditor.QuickTaskSeverity.Warning,
+				ResultCertainty.High, ResultImportance.Medium,
 				new RenameMemberFix (node, name, null));
 		}
 	}

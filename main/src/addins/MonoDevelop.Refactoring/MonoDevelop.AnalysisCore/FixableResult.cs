@@ -27,12 +27,13 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class FixableResult : Result
 	{
-		public FixableResult (DomRegion region, string message, ResultLevel level,
+		public FixableResult (DomRegion region, string message, QuickTaskSeverity level,
 			ResultCertainty certainty, ResultImportance importance, params IAnalysisFix[] fixes)
 			: base (region, message, level, certainty, importance)
 		{

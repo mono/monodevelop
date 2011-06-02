@@ -225,21 +225,8 @@
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\NamingConventionSettingsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\CSharpNamingPolicy.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\NamingStyle.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\NamingRule.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\CodeAnalysis.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\CSharpInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\NamingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\StringIsNullOrEmptyInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\ConditionalToNullCoalescingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\NotImplementedExceptionInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\CallGraph.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\UseVarKeywordInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\AddAnotherAccessor.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\ConvertForeachToFor.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\CheckIfParameterIsNull.cs" />
@@ -255,7 +242,20 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionExtensions.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\ConvertHexToDec.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\CSharpContextAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Analysis\UnusedUsingInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\CodeAnalysis.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\CSharpInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\CallGraph.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\CSharpNamingPolicy.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionSettingsDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingRule.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingStyle.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\ConditionalToNullCoalescingInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UseVarKeywordInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UnusedUsingInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\StringIsNullOrEmptyInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\NotImplementedExceptionInspector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -289,7 +289,20 @@
     <Folder Include="MonoDevelop.CSharp.Refactoring\CreateMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
-    <Folder Include="MonoDevelop.CSharp.Analysis\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\NamingInspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\" />
+    <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
   </ItemGroup>
 </Project>

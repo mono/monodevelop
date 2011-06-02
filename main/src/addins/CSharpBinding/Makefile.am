@@ -40,20 +40,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
-	MonoDevelop.CSharp.Analysis/CallGraph.cs \
-	MonoDevelop.CSharp.Analysis/CodeAnalysis.cs \
-	MonoDevelop.CSharp.Analysis/ConditionalToNullCoalescingInspector.cs \
-	MonoDevelop.CSharp.Analysis/CSharpInspector.cs \
-	MonoDevelop.CSharp.Analysis/CSharpNamingPolicy.cs \
-	MonoDevelop.CSharp.Analysis/NamingConventionPanelWidget.cs \
-	MonoDevelop.CSharp.Analysis/NamingConventionSettingsDialog.cs \
-	MonoDevelop.CSharp.Analysis/NamingInspector.cs \
-	MonoDevelop.CSharp.Analysis/NamingRule.cs \
-	MonoDevelop.CSharp.Analysis/NamingStyle.cs \
-	MonoDevelop.CSharp.Analysis/NotImplementedExceptionInspector.cs \
-	MonoDevelop.CSharp.Analysis/StringIsNullOrEmptyInspector.cs \
-	MonoDevelop.CSharp.Analysis/UnusedUsingInspector.cs \
-	MonoDevelop.CSharp.Analysis/UseVarKeywordInspector.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
@@ -94,6 +80,20 @@ FILES =  \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
 	MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs \
+	MonoDevelop.CSharp.Inspection/CallGraph.cs \
+	MonoDevelop.CSharp.Inspection/CodeAnalysis.cs \
+	MonoDevelop.CSharp.Inspection/CSharpInspector.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/ConditionalToNullCoalescingInspector.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/NotImplementedExceptionInspector.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/StringIsNullOrEmptyInspector.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/UnusedUsingInspector.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/UseVarKeywordInspector.cs \
+	MonoDevelop.CSharp.Inspection/NamingInspection/CSharpNamingPolicy.cs \
+	MonoDevelop.CSharp.Inspection/NamingInspection/NamingConventionPanelWidget.cs \
+	MonoDevelop.CSharp.Inspection/NamingInspection/NamingConventionSettingsDialog.cs \
+	MonoDevelop.CSharp.Inspection/NamingInspection/NamingInspector.cs \
+	MonoDevelop.CSharp.Inspection/NamingInspection/NamingRule.cs \
+	MonoDevelop.CSharp.Inspection/NamingInspection/NamingStyle.cs \
 	MonoDevelop.CSharp.Parser/McsParser.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
 	MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs \

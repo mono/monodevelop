@@ -30,8 +30,9 @@ using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.CSharp.Analysis;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
 	public class ConditionalToNullCoalescingInspector : CSharpInspector
 	{
@@ -67,97 +68,40 @@ namespace MonoDevelop.CSharp.Analysis
 			}
 		}
 		
-		public override void Attach (ObservableAstVisitor visitior)
+		public Tuple<Expression, Expression> GetExpressions (ConditionalExpression cond)
 		{
-			visitior.ConditionalExpressionVisited += delegate(ConditionalExpression node) {
+			var condition = cond.Condition as BinaryOperatorExpression;
+			var compareNode = condition.Left is NullReferenceExpression ? condition.Right : condition.Left;
+
+			if (compareNode.IsMatch (cond.TrueExpression)) {
+				// a != null ? a : other
+				return new Tuple<Expression, Expression> (cond.TrueExpression, cond.FalseExpression);
+			}
+
+			// a == null ? other : a
+			return new Tuple<Expression, Expression> (cond.FalseExpression, cond.TrueExpression);
+		}
+		
+		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitior)
+		{
+			visitior.ConditionalExpressionVisited += delegate(ConditionalExpression node, InspectionData data) {
 				foreach (var match in Matches) {
 					if (match.IsMatch (node) && IsCandidate (node)) {
-						results.Add (new FixableResult (
-							new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
-							GettextCatalog.GetString ("'?:' expression can be converted to '??' expression"),
-							ResultLevel.Suggestion, ResultCertainty.High, ResultImportance.Medium,
-							new UseNullableOperatorFix (node)));
 						
+						AddResult (data,
+							new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
+							GettextCatalog.GetString ("Convert to '??' expression"),
+							delegate {
+								var expressions = GetExpressions (node);
+										
+								Expression expr = new BinaryOperatorExpression (expressions.Item1.Clone (), BinaryOperatorType.NullCoalescing, expressions.Item2.Clone ());
+								node.Replace (data.Document, expr);
+							}
+						);
 					}
 				}
 			};
 		}
-		
-		internal class UseNullableOperatorFix : IAnalysisFix
-		{
-			public ConditionalExpression ConditionalExpression { get; private set; }
-
-			public UseNullableOperatorFix (ConditionalExpression conditionalExpression)
-			{
-				this.ConditionalExpression = conditionalExpression;
-			}
-			
-			public Tuple<Expression, Expression> GetExpressions ()
-			{
-				var condition = ConditionalExpression.Condition as BinaryOperatorExpression;
-				var compareNode = condition.Left is NullReferenceExpression ? condition.Right : condition.Left;
-			
-				if (compareNode.IsMatch (ConditionalExpression.TrueExpression)) {
-					// a != null ? a : other
-					return new Tuple<Expression, Expression> (ConditionalExpression.TrueExpression, ConditionalExpression.FalseExpression);
-				}
-				
-				// a == null ? other : a
-				return new Tuple<Expression, Expression> (ConditionalExpression.FalseExpression, ConditionalExpression.TrueExpression);
-			}
-			
-			#region IAnalysisFix implementation
-			public string FixType {
-				get {
-					return "ConditionalToNullCoalescingFix";
-				}
-			}
-			#endregion
-			
-		}
-	}
-	
-	class ConditionalToNullCoalescingFixHandler : IFixHandler
-	{
-		#region IFixHandler implementation
-		public System.Collections.Generic.IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
-		{
-			yield return new ConditionalToNullCoalescingFixAction () {
-				document = doc,
-				fix = fix as ConditionalToNullCoalescingInspector.UseNullableOperatorFix
-			};
-				
-		}
-		#endregion
-	}
-	
-	class ConditionalToNullCoalescingFixAction : IAnalysisFixAction
-	{
-		internal MonoDevelop.Ide.Gui.Document document;
-		internal ConditionalToNullCoalescingInspector.UseNullableOperatorFix fix;
-			
-		#region IAnalysisFixAction implementation
-		public void Fix ()
-		{
-			var expressions = fix.GetExpressions ();
-			
-			Expression expr = new BinaryOperatorExpression (expressions.Item1.Clone (), BinaryOperatorType.NullCoalescing, expressions.Item2.Clone ());
-			
-			string text = CSharpContextAction.OutputNode (document, expr, "").Trim ();
-				
-			int offset = document.Editor.LocationToOffset (fix.ConditionalExpression.StartLocation.Line, fix.ConditionalExpression.StartLocation.Column);
-			int endOffset = document.Editor.LocationToOffset (fix.ConditionalExpression.EndLocation.Line, fix.ConditionalExpression.EndLocation.Column);
-				
-			document.Editor.Replace (offset, endOffset - offset, text);
-			document.Editor.Document.CommitUpdateAll ();
-		}
-			
-		public string Label {
-			get {
-				return GettextCatalog.GetString ("Convert to '??' expression");
-			}
-		}
-		#endregion
 	}
 }
 

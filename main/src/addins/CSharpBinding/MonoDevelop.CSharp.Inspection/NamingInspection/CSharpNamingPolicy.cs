@@ -34,7 +34,8 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Text;
-namespace MonoDevelop.CSharp.Analysis
+
+namespace MonoDevelop.CSharp.Inspection
 {
 	[PolicyType ("C# naming")]
 	public class CSharpNamingPolicy // : IEquatable<CSharpNamingPolicy>

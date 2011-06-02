@@ -196,6 +196,35 @@
 			class = "MonoDevelop.CSharp.ContextAction.InvertIf" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Refactoring/Inspectors">
+		<Inspector mimeType="text/x-csharp"
+			_title = "'?:' expression can be converted to '??' expression"
+			_description = "'?:' expression can be converted to '??' expression."
+			severity = "Suggestion"
+			class = "MonoDevelop.CSharp.Inspection.ConditionalToNullCoalescingInspector" />
+		<Inspector mimeType="text/x-csharp"
+			_title = "Remove unused usings"
+			_description = "Removes used declarations that are not required."
+			severity = "Warning"
+			class = "MonoDevelop.CSharp.Inspection.UnusedUsingInspector" />
+		<Inspector mimeType="text/x-csharp"
+			_title = "Show NotImplementedException"
+			_description = "Shows NotImplementedException throws in the quick task bar."
+			severity = "Suggestion"
+			class = "MonoDevelop.CSharp.Inspection.NotImplementedExceptionInspector" />
+		<Inspector mimeType="text/x-csharp"
+			_title = "Use string.IsNullOrEmpty"
+			_description = "Uses shorter string.IsNullOrEmpty call instead of a longer condition."
+			severity = "Suggestion"
+			class = "MonoDevelop.CSharp.Inspection.StringIsNullOrEmptyInspector" />
+			
+		<Inspector mimeType="text/x-csharp"
+			_title = "Use implicitly typed local variable decaration"
+			_description = "Use implicitly typed local variable decaration"
+			severity = "Suggestion"
+			class = "MonoDevelop.CSharp.Inspection.UseVarKeywordInspector" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
 	</Extension>
@@ -251,12 +280,7 @@
 
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Rule _name="C# Code Analysis" input="Document" 
-			func="MonoDevelop.CSharp.Analysis.CodeAnalysis.Check" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
-		<Handler fixName="UseStringIsNullOrEmptyFix" class = "MonoDevelop.CSharp.Analysis.UseStringIsNullOrEmptyFixHandler" />
-		<Handler fixName="ConditionalToNullCoalescingFix" class = "MonoDevelop.CSharp.Analysis.ConditionalToNullCoalescingFixHandler" />
+			func="MonoDevelop.CSharp.Inspection.CodeAnalysis.Check" />
 	</Extension>
 	
 	<Module>

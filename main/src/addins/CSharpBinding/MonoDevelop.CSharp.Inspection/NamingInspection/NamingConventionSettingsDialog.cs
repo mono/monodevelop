@@ -1,5 +1,5 @@
 // 
-// NamingConventionPanelWidget.cs
+// NamingConventionSettingsDialog.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,14 +25,14 @@
 // THE SOFTWARE.
 using System;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class NamingConventionPanelWidget : Gtk.Bin
+	public partial class NamingConventionSettingsDialog : Gtk.Window
 	{
-		public NamingConventionPanelWidget ()
+		public NamingConventionSettingsDialog () : 
+				base(Gtk.WindowType.Toplevel)
 		{
-		//	this.Build ();	
+		//	this.Build ();
 		}
 	}
 }

@@ -37,45 +37,69 @@ using MonoDevelop.Core.Serialization;
 using System.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.ContextAction;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Inspection;
+using Mono.Addins;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
+	public class InspectionData	
+	{
+		readonly List<Result> results = new List<Result> ();
+		
+		public IEnumerable<Result> Results {
+			get { return results; }
+		}
+		
+		public CallGraph Graph { get; set; }
+		public Document Document { get; set; }
+		
+		public MonoDevelop.CSharp.Resolver.NRefactoryResolver Resolver {
+			get {
+				return CSharpContextAction.GetResolver (Document);
+			}
+		}
+		
+		public void Add (Result result)
+		{
+			results.Add (result);
+		}
+	}
+	
 	public static class CodeAnalysis
 	{
+		static List<InspectorAddinNode> inspectorNodes = new List<InspectorAddinNode> ();
+		static ObservableAstVisitor<InspectionData, object> visitor = new ObservableAstVisitor<InspectionData, object> ();
+		
 		static CodeAnalysis ()
 		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
+				InspectorAddinNode node = (InspectorAddinNode)args.ExtensionNode;
+				if (node.MimeType != "text/x-csharp")
+					return;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					inspectorNodes.Add (node);
+					((CSharpInspector)node.Inspector).Attach (node, visitor);
+					break;
+				}
+			});
+			
+			NamingInspector inspector = new NamingInspector ();
+			inspector.Attach (null, visitor);
 		}
 		
 		public static IEnumerable<Result> Check (Document input)
 		{
 			var unit = input != null ? input.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit : null;
 			if (unit == null)
-				yield break;
-			
+				return Enumerable.Empty<Result> ();
+				
 			var cg = new CallGraph ();
 			cg.Inspect (input, CSharpContextAction.GetResolver (input), unit);
-			
-			
-			var visitor = new ObservableAstVisitor ();
-			
-			List<CSharpInspector> inspectors = new List<CSharpInspector> ();
-			inspectors.Add (new NamingInspector (input.CompilationUnit));
-			inspectors.Add (new StringIsNullOrEmptyInspector ());
-			inspectors.Add (new ConditionalToNullCoalescingInspector ());
-			inspectors.Add (new NotImplementedExceptionInspector (input));
-//			inspectors.Add (new UnusedUsingInspector (input, cg));
-			inspectors.Add (new UseVarKeywordInspector ());
-	
-			foreach (var inspector in inspectors) {
-				inspector.Attach (visitor);
-			}
-			
-			unit.AcceptVisitor (visitor, null);
-			foreach (var inspector in inspectors) {
-				foreach (var fix in inspector.results)
-					yield return fix;
-			}
-			
+			var data = new InspectionData () { Graph = cg, Document = input };
+			unit.AcceptVisitor (visitor, data);
+			return data.Results;
 		}
 	}
 }

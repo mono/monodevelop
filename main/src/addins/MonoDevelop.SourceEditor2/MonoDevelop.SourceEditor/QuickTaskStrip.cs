@@ -38,8 +38,8 @@ namespace MonoDevelop.SourceEditor
 		None,
 		Error,
 		Warning,
-		Suggestion,
-		Todo
+		Hint,
+		Suggestion
 	}
 	
 	public interface IQuickTaskProvider
@@ -132,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 				return new Cairo.Color (1, 0.65, 0);
 			case QuickTaskSeverity.Suggestion:
 				return new Cairo.Color (34 / 255.0, 139 / 255.0, 34 / 255.0);
-			case QuickTaskSeverity.Todo:
+			case QuickTaskSeverity.Hint:
 				return new Cairo.Color (173 / 255.0, 216 / 255.0, 230 / 255.0);
 			case QuickTaskSeverity.None:
 				return new Cairo.Color (75 / 255.0, 255 / 255.0, 75 / 255.0);

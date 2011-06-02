@@ -1,5 +1,5 @@
 // 
-// NamingConventionSettingsDialog.cs
+// CSharpInspector.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,16 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using ICSharpCode.NRefactory.CSharp;
+using GLib;
+using System.Collections.Generic;
+using MonoDevelop.AnalysisCore;
+using MonoDevelop.Inspection;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.AnalysisCore.Fixes;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
-	public partial class NamingConventionSettingsDialog : Gtk.Window
+	public abstract class CSharpInspector
 	{
-		public NamingConventionSettingsDialog () : 
-				base(Gtk.WindowType.Toplevel)
+		InspectorAddinNode node;
+		
+		protected void AddResult (InspectionData data, DomRegion region, string menuText, Action fix)
 		{
-		//	this.Build ();
+			data.Add (
+				new GenericResults (
+					region,
+					node.Title,
+					node.Severity, 
+					ResultCertainty.High, 
+					ResultImportance.Low,
+					new GenericFix (menuText, fix)
+				)
+			);
 		}
+		
+		public void Attach (InspectorAddinNode node, ObservableAstVisitor<InspectionData, object> visitior)
+		{
+			if (visitior == null)
+				throw new ArgumentNullException ("visitior");
+			this.node = node;
+			Attach (visitior);
+		}
+		
+		protected abstract void Attach (ObservableAstVisitor<InspectionData, object> visitior);
 	}
 }
-

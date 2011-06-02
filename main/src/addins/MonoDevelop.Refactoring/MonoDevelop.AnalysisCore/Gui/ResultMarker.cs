@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using Mono.TextEditor;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -56,14 +57,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 		static string GetColor (Result result)
 		{
 			switch (result.Level) {
-			case ResultLevel.Error:
+			case QuickTaskSeverity.Error:
 				return Mono.TextEditor.Highlighting.ColorSheme.ErrorUnderlineString;
-			case ResultLevel.Warning:
+			case QuickTaskSeverity.Warning:
 				return Mono.TextEditor.Highlighting.ColorSheme.WarningUnderlineString;
-			case ResultLevel.Suggestion:
+			case QuickTaskSeverity.Suggestion:
 				return Mono.TextEditor.Highlighting.ColorSheme.SuggestionUnderlineString;
-			case ResultLevel.Todo:
-				return Mono.TextEditor.Highlighting.ColorSheme.DefaultString;
+			case QuickTaskSeverity.Hint:
+				return Mono.TextEditor.Highlighting.ColorSheme.HintUnderlineString;
 			default:
 				throw new System.ArgumentOutOfRangeException ();
 			}
@@ -101,7 +102,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			}
 			double height = editor.LineHeight / 5;
 			cr.Color = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
-			if (result.Level == ResultLevel.Warning && result.Importance == ResultImportance.Low) {
+			if (result.Level == QuickTaskSeverity.Warning && result.Importance == ResultImportance.Low) {
 				cr.Rectangle (@from, y, to - from, editor.LineHeight);
 				var color = editor.ColorStyle.Default.CairoBackgroundColor;
 				color.A = 0.6;

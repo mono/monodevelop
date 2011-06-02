@@ -27,39 +27,45 @@
 using System;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.AnalysisCore.Extensions;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class Result
 	{
-		public Result (DomRegion region, string message, ResultLevel level,
-			ResultCertainty certainty, ResultImportance importance, bool isVisible = true)
+		public Result (DomRegion region, string message, bool underLine = true)
+		{
+			this.Region = region;
+			this.Message = message;
+			this.Underline = underLine;
+		}
+		
+		public Result (DomRegion region, string message, QuickTaskSeverity level, ResultCertainty certainty, ResultImportance importance, bool underline = true)
 		{
 			this.Region = region;
 			this.Message = message;
 			this.Level = level;
 			this.Certainty = certainty;
 			this.Importance = importance;
-			this.IsVisible = isVisible;
+			this.Underline = underline;
+		}
+		 
+		public void SetSeverity (QuickTaskSeverity level, ResultCertainty certainty, ResultImportance importance)
+		{
+			this.Level = level;
+			this.Certainty = certainty;
+			this.Importance = importance;
 		}
 		
 		public string Message { get; private set; }
-		public ResultLevel Level { get; private set; }
+		public QuickTaskSeverity Level { get; private set; }
 		public ResultCertainty Certainty { get; private set; }
 		public ResultImportance Importance { get; private set; }
 		public DomRegion Region { get; private set; }
 		
-		public bool IsVisible { get; private set; }
+		public bool Underline { get; private set; }
 		
 		internal AnalysisRuleAddinNode Source { get; set; }
-	}
-	
-	public enum ResultLevel
-	{
-		Error,
-		Warning,
-		Suggestion,
-		Todo // not shown with text marker
 	}
 	
 	public enum ResultCertainty

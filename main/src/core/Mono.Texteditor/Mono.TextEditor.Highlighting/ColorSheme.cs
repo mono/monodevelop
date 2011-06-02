@@ -348,6 +348,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		public const string HintUnderlineString = "marker.underline.hint";
+		public Cairo.Color HintUnderline {
+			get {
+				return GetColorFromDefinition (HintUnderlineString);
+			}
+		}
+		
 		public const string SuggestionUnderlineString = "marker.underline.suggestion";
 		public Cairo.Color SuggestionUnderline {
 			get {
@@ -476,6 +483,7 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (ErrorUnderlineString, 255, 0, 0);
 			SetStyle (WarningUnderlineString, 255, 165, 0);
 			SetStyle (SuggestionUnderlineString, 143, 198, 143);
+			SetStyle (HintUnderlineString, 143, 143, 198);
 			
 			SetStyle ("diff.line-added", 0, 0x8B, 0x8B, ChunkProperties.None);
 			SetStyle ("diff.line-removed", 0x6A, 0x5A, 0xCD, ChunkProperties.None);

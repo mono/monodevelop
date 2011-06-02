@@ -35,31 +35,25 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Text;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
 	class NamingInspector : CSharpInspector
 	{
 		CSharpNamingPolicy policy = new CSharpNamingPolicy ();
-		MonoDevelop.Projects.Dom.ICompilationUnit unit;
 		
-		public NamingInspector (MonoDevelop.Projects.Dom.ICompilationUnit unit)
-		{
-			this.unit = unit;
-		}
-		
-		void Check (NamingRule rule, AstLocation loc, string name)
+		void Check (InspectionData data, NamingRule rule, AstLocation loc, string name)
 		{
 			if (!rule.IsValid (name))
-				results.Add (rule.GetFixableResult (loc, null, name));
+				data.Add (rule.GetFixableResult (loc, null, name));
 		}
 		
-		void Check (NamingRule rule, AstLocation loc, string name, IBaseMember member)
+		void Check (InspectionData data, NamingRule rule, AstLocation loc, string name, IBaseMember member)
 		{
 			if (!rule.IsValid (name))
-				results.Add (rule.GetFixableResult (loc, member, name));
+				data.Add (rule.GetFixableResult (loc, member, name));
 		}
 		
-		public override void Attach (ObservableAstVisitor visitor)
+		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
 		{
 			visitor.VariableDeclarationStatementVisited += HandleVisitorVariableDeclarationStatementVisited;
 			visitor.FixedFieldDeclarationVisited += HandleVisitorFixedFieldDeclarationVisited;
@@ -75,37 +69,37 @@ namespace MonoDevelop.CSharp.Analysis
 			visitor.EnumMemberDeclarationVisited += HandleVisitorEnumMemberDeclarationVisited;
 		}
 
-		void HandleVisitorVariableDeclarationStatementVisited (VariableDeclarationStatement variableDeclarationStatement)
+		void HandleVisitorVariableDeclarationStatementVisited (VariableDeclarationStatement variableDeclarationStatement, InspectionData data)
 		{
-			var member = unit.GetMemberAt (variableDeclarationStatement.StartLocation.Line, variableDeclarationStatement.StartLocation.Column);
+			var member = data.Document.CompilationUnit.GetMemberAt (variableDeclarationStatement.StartLocation.Line, variableDeclarationStatement.StartLocation.Column);
 			foreach (var var in variableDeclarationStatement.Variables) {
 				var v = new LocalVariable (member, var.Name, DomReturnType.Void, new DomRegion (variableDeclarationStatement.StartLocation.Line, variableDeclarationStatement.StartLocation.Column, variableDeclarationStatement.EndLocation.Line, variableDeclarationStatement.EndLocation.Column));
 				if ((variableDeclarationStatement.Modifiers & ICSharpCode.NRefactory.CSharp.Modifiers.Const) == ICSharpCode.NRefactory.CSharp.Modifiers.Const) {
-					Check (policy.LocalConstant, var.StartLocation, var.Name, v);
+					Check (data, policy.LocalConstant, var.StartLocation, var.Name, v);
 				} else {
-					Check (policy.LocalVariable, var.StartLocation, var.Name, v);
+					Check (data, policy.LocalVariable, var.StartLocation, var.Name, v);
 				}
 			}
 		}
 
-		void HandleVisitorFixedFieldDeclarationVisited (FixedFieldDeclaration fixedFieldDeclaration)
+		void HandleVisitorFixedFieldDeclarationVisited (FixedFieldDeclaration fixedFieldDeclaration, InspectionData data)
 		{
 			foreach (var var in fixedFieldDeclaration.Variables) {
-				Check (policy.Field, var.StartLocation, var.Name);
+				Check (data, policy.Field, var.StartLocation, var.Name);
 			}
 		}
 
-		void HandleVisitorParameterDeclarationVisited (ParameterDeclaration parameterDeclaration)
+		void HandleVisitorParameterDeclarationVisited (ParameterDeclaration parameterDeclaration, InspectionData data)
 		{
-			Check (policy.Parameter, parameterDeclaration.NameToken.StartLocation, parameterDeclaration.Name);
+			Check (data, policy.Parameter, parameterDeclaration.NameToken.StartLocation, parameterDeclaration.Name);
 		}
 
-		void HandleVisitorPropertyDeclarationVisited (PropertyDeclaration propertyDeclaration)
+		void HandleVisitorPropertyDeclarationVisited (PropertyDeclaration propertyDeclaration, InspectionData data)
 		{
-			Check (policy.Property, propertyDeclaration.NameToken.StartLocation, propertyDeclaration.Name);
+			Check (data, policy.Property, propertyDeclaration.NameToken.StartLocation, propertyDeclaration.Name);
 		}
 
-		void HandleVisitorFieldDeclarationVisited (FieldDeclaration fieldDeclaration)
+		void HandleVisitorFieldDeclarationVisited (FieldDeclaration fieldDeclaration, InspectionData data)
 		{
 			NamingRule namingRule;
 			
@@ -130,51 +124,51 @@ namespace MonoDevelop.CSharp.Analysis
 			}
 			
 			foreach (var var in fieldDeclaration.Variables) {
-				Check (namingRule, var.StartLocation, var.Name);
+				Check (data, namingRule, var.StartLocation, var.Name);
 			}
 		}
 
-		void HandleVisitorCustomEventDeclarationVisited (CustomEventDeclaration eventDeclaration)
+		void HandleVisitorCustomEventDeclarationVisited (CustomEventDeclaration eventDeclaration, InspectionData data)
 		{
-			Check (policy.Event, eventDeclaration.NameToken.StartLocation, eventDeclaration.Name);
+			Check (data, policy.Event, eventDeclaration.NameToken.StartLocation, eventDeclaration.Name);
 		}
 
-		void HandleVisitorEventDeclarationVisited (EventDeclaration eventDeclaration)
+		void HandleVisitorEventDeclarationVisited (EventDeclaration eventDeclaration, InspectionData data)
 		{
 			foreach (var var in eventDeclaration.Variables) {
-				Check (policy.Event, var.StartLocation, var.Name);
+				Check (data, policy.Event, var.StartLocation, var.Name);
 			}
 		}
 
-		void HandleVisitorTypeDeclarationVisited (TypeDeclaration typeDeclaration)
+		void HandleVisitorTypeDeclarationVisited (TypeDeclaration typeDeclaration, InspectionData data)
 		{
 			switch (typeDeclaration.ClassType) {
 			case ICSharpCode.NRefactory.TypeSystem.ClassType.Interface:
-				Check (policy.Interface, typeDeclaration.NameToken.StartLocation, typeDeclaration.Name);
+				Check (data, policy.Interface, typeDeclaration.NameToken.StartLocation, typeDeclaration.Name);
 				break;
 			default:
-				Check (policy.Type, typeDeclaration.NameToken.StartLocation, typeDeclaration.Name);
+				Check (data, policy.Type, typeDeclaration.NameToken.StartLocation, typeDeclaration.Name);
 				break;
 			}
 			
 		}
 
-		void HandleVisitorEnumMemberDeclarationVisited (EnumMemberDeclaration node)
+		void HandleVisitorEnumMemberDeclarationVisited (EnumMemberDeclaration node, InspectionData data)
 		{
 			// TODO
 		}
 
-		void HandleVisitorTypeParameterDeclarationVisited (TypeParameterDeclaration node)
+		void HandleVisitorTypeParameterDeclarationVisited (TypeParameterDeclaration node, InspectionData data)
 		{
 			// TODO
 		}
 
-		void HandleVisitorNamespaceDeclarationVisited (NamespaceDeclaration node)
+		void HandleVisitorNamespaceDeclarationVisited (NamespaceDeclaration node, InspectionData data)
 		{
 			// TODO
 		}
 
-		void HandleVisitorDelegateDeclarationVisited (DelegateDeclaration node)
+		void HandleVisitorDelegateDeclarationVisited (DelegateDeclaration node, InspectionData data)
 		{
 			// TODO
 		}

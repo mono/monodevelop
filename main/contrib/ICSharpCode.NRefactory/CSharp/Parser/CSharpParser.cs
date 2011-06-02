@@ -1769,7 +1769,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					return new NullReferenceExpression (Convert (constant.Location));
 				string literalValue;
 				if (constant is ILiteralConstant) {
-					literalValue = new string (((ILiteralConstant)constant).ParsedValue);
+					if (constant.GetValue () == "") {
+						literalValue = "\"\"";
+					} else {
+						literalValue = new string (((ILiteralConstant)constant).ParsedValue);
+					}
 				} else {
 					literalValue = constant.GetValueAsLiteral ();
 				}
@@ -2110,8 +2114,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					TypeParameterDeclaration tp = new TypeParameterDeclaration ();
 					// TODO: attributes
-					if (arg.Variance != Variance.None)
-						throw new NotImplementedException (); // TODO: variance
+//					if (arg.Variance != Variance.None)
+//						throw new NotImplementedException (); // TODO: variance
 					tp.AddChild (new Identifier (arg.Name, Convert (arg.Location)), InvocationExpression.Roles.Identifier);
 					parent.AddChild (tp, InvocationExpression.Roles.TypeParameter);
 				}

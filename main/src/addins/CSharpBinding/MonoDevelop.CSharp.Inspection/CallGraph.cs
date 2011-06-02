@@ -33,7 +33,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
 	public class CallGraph
 	{

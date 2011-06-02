@@ -69,6 +69,7 @@ FILES =  \
 	MonoDevelop.ContextAction/ContextActionEditorExtension.cs \
 	MonoDevelop.ContextAction/ContextActionPanelWidget.cs \
 	MonoDevelop.ContextAction/ContextActionWidget.cs \
+	MonoDevelop.Inspection/InspectorAddinNode.cs \
 	MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs \
 	MonoDevelop.Refactoring.ConvertPropery/PropertyVisitor.cs \
 	MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs \

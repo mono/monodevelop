@@ -1,5 +1,5 @@
 // 
-// NamingConventions.cs
+// UnusedUsingInspector.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,23 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
-using MonoDevelop.AnalysisCore;
-using MonoDevelop.Projects.Dom;
-using System.Collections.Generic;
-using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Policies;
+using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Serialization;
-using System.Text;
-namespace MonoDevelop.CSharp.Analysis {
-	public enum NamingStyle {
-		None,
-		PascalCase,
-		CamelCase,
-		AllUpper,
-		AllLower,
-		FirstUpper
+using MonoDevelop.AnalysisCore;
+using MonoDevelop.CSharp.ContextAction;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.Gui;
+using Mono.CSharp;
+using MonoDevelop.Refactoring.RefactorImports;
+using MonoDevelop.Refactoring;
+using MonoDevelop.AnalysisCore.Fixes;
+using System.Collections.Generic;
+
+
+namespace MonoDevelop.CSharp.Inspection
+{
+	public class UnusedUsingInspector : CSharpInspector
+	{
+		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
+		{
+			visitor.UsingDeclarationVisited += HandleVisitorUsingDeclarationVisited;
+		}
+		
+		void HandleVisitorUsingDeclarationVisited (UsingDeclaration node, InspectionData data)
+		{
+			if (!data.Graph.UsedUsings.Contains (node.Namespace)) {
+				AddResult (data,
+					new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
+					GettextCatalog.GetString ("Remove unused usings"),
+					delegate {
+					RefactoringOptions options = new RefactoringOptions () { Document = data.Document, Dom = data.Document.Dom};
+					new RemoveUnusedImportsRefactoring ().Run (options);
+				}
+				);
+			}
+		}
 	}
 }
+

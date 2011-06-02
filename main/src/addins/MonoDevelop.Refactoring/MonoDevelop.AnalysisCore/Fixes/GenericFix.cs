@@ -26,12 +26,13 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
 	public class GenericResults : FixableResult
 	{
-		public GenericResults (DomRegion region, string message, ResultLevel level,
+		public GenericResults (DomRegion region, string message, QuickTaskSeverity level,
 			ResultCertainty certainty, ResultImportance importance, params GenericFix[] fixes)
 			: base (region, message, level, certainty, importance)
 		{

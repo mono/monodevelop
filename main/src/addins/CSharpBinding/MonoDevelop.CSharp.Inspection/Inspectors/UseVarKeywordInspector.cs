@@ -34,16 +34,16 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
 
-namespace MonoDevelop.CSharp.Analysis
+namespace MonoDevelop.CSharp.Inspection
 {
-	public class UseVarKeywordInspector : CSharpInspector
+	public class UseVarKeywordInspector	 : CSharpInspector
 	{
-		public override void Attach (ObservableAstVisitor visitior)
+		protected override void Attach (ObservableAstVisitor<InspectionData, object>  visitior)
 		{
 			visitior.VariableDeclarationStatementVisited += HandleVisitiorVariableDeclarationStatementVisited;
 		}
 
-		void HandleVisitiorVariableDeclarationStatementVisited (VariableDeclarationStatement node)
+		void HandleVisitiorVariableDeclarationStatementVisited (VariableDeclarationStatement node, InspectionData data)
 		{
 			if (node.Type is PrimitiveType)
 				return;
@@ -83,18 +83,18 @@ namespace MonoDevelop.CSharp.Analysis
 					return;
 				}
 				return;
-			};
+			}
+			;
 			
-			results.Add (new Result (
+			data.Add (new Result (
 					new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
 					GettextCatalog.GetString ("Use implicitly typed local variable decaration"),
-					ResultLevel.Suggestion, 
+					MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion,
 					ResultCertainty.High, 
 					ResultImportance.Medium,
 					false)
 				);
 		}
-
 	}
 }
 

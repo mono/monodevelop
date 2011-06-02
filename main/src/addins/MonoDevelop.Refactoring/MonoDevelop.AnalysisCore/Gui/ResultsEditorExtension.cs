@@ -166,7 +166,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			int targetIndex = updateIndex + UPDATE_COUNT;
 			for (; updateIndex < targetIndex && updateIndex < currentResults.Count; updateIndex++) {
 				var marker = new ResultMarker (currentResults [updateIndex]);
-				marker.IsVisible = currentResults [updateIndex].IsVisible;
+				marker.IsVisible = currentResults [updateIndex].Underline;
 				Editor.Document.AddMarker (marker.Line, marker);
 				markers.Enqueue (marker);
 			}
@@ -218,24 +218,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			tasks.Clear ();
 			foreach (var result in GetResults ()) {
-				QuickTaskSeverity severity;
-				switch (result.Level) {
-				case MonoDevelop.AnalysisCore.ResultLevel.Error:
-					severity = QuickTaskSeverity.Error;
-					break;
-				case MonoDevelop.AnalysisCore.ResultLevel.Warning:
-					severity = QuickTaskSeverity.Warning;
-					break;
-				case MonoDevelop.AnalysisCore.ResultLevel.Suggestion:
-					severity = QuickTaskSeverity.Suggestion;
-					break;
-				case MonoDevelop.AnalysisCore.ResultLevel.Todo:
-					severity = QuickTaskSeverity.Todo;
-					break;
-				default:
-					throw new ArgumentOutOfRangeException ();
-				}
-				var newTask = new QuickTask (result.Message, result.Region.Start, severity);
+				var newTask = new QuickTask (result.Message, result.Region.Start, result.Level);
 				tasks.Add (newTask);
 			}
 			

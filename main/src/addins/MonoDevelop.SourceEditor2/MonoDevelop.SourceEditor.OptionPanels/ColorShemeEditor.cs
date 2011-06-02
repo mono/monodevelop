@@ -141,6 +141,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			new ColorMetaData ("marker.underline.error", GettextCatalog.GetString ("Error underline"), ColorsAvailable.Fg),
 			new ColorMetaData ("marker.underline.warning", GettextCatalog.GetString ("Warning underline"), ColorsAvailable.Fg),
 			new ColorMetaData ("marker.underline.suggestion", GettextCatalog.GetString ("Suggestion underline"), ColorsAvailable.Fg),
+			new ColorMetaData ("marker.underline.hint", GettextCatalog.GetString ("Hint underline"), ColorsAvailable.Fg),
 			
 			new ColorMetaData ("marker.template.primary_template", GettextCatalog.GetString ("Primary link (text link mode)"), ColorsAvailable.FgBg),
 			new ColorMetaData ("marker.template.secondary_template", GettextCatalog.GetString ("Secondary link (text link mode)"), ColorsAvailable.FgBg),

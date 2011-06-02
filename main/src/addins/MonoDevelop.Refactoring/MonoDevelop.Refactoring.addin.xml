@@ -38,6 +38,10 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ContextActions" name = "ContextAction">
 		<ExtensionNode name="Action" type ="MonoDevelop.ContextAction.ContextActionAddinNode"/>
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/Inspectors" name = "Inspector">
+		<ExtensionNode name="Inspector" type ="MonoDevelop.Inspection.InspectorAddinNode"/>
+	</ExtensionPoint>
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">

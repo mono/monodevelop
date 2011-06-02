@@ -1,10 +1,10 @@
 // 
-// Adaptors.cs
+// NamingConventions.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,29 +23,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using System.Linq;
+using MonoDevelop.AnalysisCore;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
-using MonoDevelop.SourceEditor;
-namespace MonoDevelop.AnalysisCore.Rules
+using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Projects.Policies;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
+using System.Text;
+
+namespace MonoDevelop.CSharp.Inspection
 {
-	public static class NamingConventions
-	{
-		public static IEnumerable<Result> ClassNaming (ICompilationUnit input)
-		{
-			foreach (var type in input.Types) {
-				if (!char.IsUpper (type.Name[0])) {
-					var start = type.Location;
-					var newName = char.ToUpper (type.Name[0]).ToString () + type.Name.Substring (1);
-					yield return new FixableResult (
-						new DomRegion (start, new DomLocation (start.Line, start.Column + type.Name.Length)),
-						"Type names should begin with an uppercase letter",
-						QuickTaskSeverity.Warning, ResultCertainty.High, ResultImportance.Medium,
-						new RenameMemberFix (type, type.Name, newName));
-				}
-			}
-		}
+	public enum NamingStyle {
+		None,
+		PascalCase,
+		CamelCase,
+		AllUpper,
+		AllLower,
+		FirstUpper
 	}
 }
