@@ -78,7 +78,6 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			fileName = document.FileName;
 			this.text = document;
-			this.resolver = resolver;
 			if (searchedMember != null)
 				Init (searchedMember);
 		}

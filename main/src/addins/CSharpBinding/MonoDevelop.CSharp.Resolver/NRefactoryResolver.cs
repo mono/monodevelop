@@ -908,7 +908,7 @@ namespace MonoDevelop.CSharp.Resolver
 				foreach (IType type in dom.GetInheritanceTree (callingType)) {
 					members.AddRange (type.SearchMember (identifier, true));
 				}
-				bool includeProtected = true;
+//				bool includeProtected = true;
 				// filter members
 // be more gentle when resolving non accessible members - see: Bug 693949 - Create method uses the wrong type for param
 //				if (this.CallingMember != null) {

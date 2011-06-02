@@ -140,7 +140,6 @@ namespace MonoDevelop.CSharp.Completion
 		static bool HasNonMethodMembersWithSameName (MonoDevelop.Projects.Dom.IMember member)
 		{
 			var type = member.DeclaringType;
-			bool anyOverloadWithParameters = false;
 			foreach (var t in type.SourceProjectDom.GetInheritanceTree (type)) {
 				if (t.SearchMember (member.Name, true).Any (m => m.MemberType != MonoDevelop.Projects.Dom.MemberType.Method)) {
 					return true;
