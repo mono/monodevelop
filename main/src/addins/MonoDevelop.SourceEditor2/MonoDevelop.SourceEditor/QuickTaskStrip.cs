@@ -355,6 +355,27 @@ namespace MonoDevelop.SourceEditor
 			cr.Fill ();
 		}
 		
+		void DrawSearchResults (Cairo.Context cr)
+		{
+			int h = Allocation.Height - Allocation.Width - 6;
+			foreach (var region in TextEditor.TextViewMargin.SearchResults) {
+				int line = TextEditor.OffsetToLineNumber (region.Offset);
+				double y = h * TextEditor.LineToY (line) / Math.Max (TextEditor.EditorLineThreshold * TextEditor.LineHeight + TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height);
+				bool isMainSelection = false;
+				if (TextEditor.TextViewMargin.MainSearchResult != null)
+					isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
+				var color = (HslColor)(isMainSelection ? TextEditor.ColorStyle.SearchTextMainBg : TextEditor.ColorStyle.SearchTextBg);
+				cr.Color = color;
+				cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
+				cr.FillPreserve ();
+			
+				color.L *= 0.7;
+				cr.Color = color;
+				cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
+				cr.Stroke ();
+			}
+		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
@@ -372,21 +393,7 @@ namespace MonoDevelop.SourceEditor
 					return true;
 				
 				if (TextEditor.HighlightSearchPattern) {
-					int h = Allocation.Height;
-					foreach (var region in TextEditor.TextViewMargin.SearchResults) {
-						int line = TextEditor.OffsetToLineNumber (region.Offset);
-						double y = h * TextEditor.LineToY (line) / Math.Max (TextEditor.EditorLineThreshold * TextEditor.LineHeight + TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height);
-						
-						var color = (HslColor)(region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset ? TextEditor.ColorStyle.SearchTextMainBg : TextEditor.ColorStyle.SearchTextBg);
-						cr.Color = color;
-						cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
-						cr.FillPreserve ();
-				
-						color.L *= 0.7;
-						cr.Color = color;
-						cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
-						cr.Stroke ();
-					}
+					DrawSearchResults (cr);
 					DrawSearchIndicator (cr);
 				} else {
 					var severity = DrawQuickTasks (cr);
