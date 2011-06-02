@@ -25,6 +25,8 @@ namespace MonoDevelop.Platform
 
             foreach (string a in BuildActions)
             {
+				if (a == "--") // Ignore separators for now
+					continue;
                 comboActions.Items.Add(a);
             }
             comboActions.SelectedIndex = 0;
