@@ -214,8 +214,8 @@ namespace Mono.TextEditor
 			
 			foldLineHighlightedGCBg = hslColor;
 			foldToggleMarkerGC = editor.ColorStyle.FoldToggleMarker;
-			lineStateChangedGC = new Cairo.Color (108 / 255.0, 226 / 255.0, 108 / 255.0);
-			lineStateDirtyGC = new Cairo.Color (255 / 255.0, 238 / 255.0, 98 / 255.0);
+			lineStateChangedGC = editor.ColorStyle.LineChangedBg;
+			lineStateDirtyGC = editor.ColorStyle.LineDirtyBg;
 			
 			marginWidth = editor.LineHeight;
 		}

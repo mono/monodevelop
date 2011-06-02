@@ -131,8 +131,8 @@ namespace MonoDevelop.SourceEditor
 		static void AdjustColorMatrix (Cairo.Color[,,,,] colorMatrix , int side, Cairo.Color baseColor)
 		{
 			var hsl = (HslColor)baseColor;
-			hsl.L *= 1.3;
-			colorMatrix [side, 0, 0, 0, 0] = (hsl); // light top
+			hsl.L *= 1.2;
+			colorMatrix [side, 0, 0, 0, 0] = hsl; // light top
 			colorMatrix [side, 1, 0, 0, 0] = baseColor; // light below
 			
 			hsl = (HslColor)baseColor;

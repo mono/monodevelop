@@ -332,7 +332,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			cr.MoveTo (0.5, 0);
 			cr.LineTo (0.5, Allocation.Height);
-			cr.Color = TextEditor.ColorStyle.FoldLine.CairoColor;
+			if (TextEditor.ColorStyle != null)
+				cr.Color = TextEditor.ColorStyle.FoldLine.CairoColor;
 			cr.Stroke ();
 		}
 
@@ -345,7 +346,7 @@ namespace MonoDevelop.SourceEditor
 				              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
 				              Allocation.Width - 2,
 				              h * (adj.PageSize / adj.Upper));
-			Cairo.Color color = TextEditor.ColorStyle.Default.CairoColor;
+			Cairo.Color color = (TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0);
 			color.A = 0.5;
 			cr.Color = color;
 			cr.StrokePreserve ();
@@ -381,7 +382,8 @@ namespace MonoDevelop.SourceEditor
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
+				if (TextEditor.ColorStyle != null)
+					cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
 				cr.Fill ();
 				
 				cr.Color = (HslColor)Style.Dark (State);

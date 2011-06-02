@@ -1,0 +1,154 @@
+<!-- DefaultStyle.xml
+
+	Author:
+		Mike Krüger <mkrueger@novell.com>
+
+ Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ <EditorStyle name="Default" _description="Default style.">
+ 
+	<!-- tango palette -->
+	<Color name="butter1" value="#fce94f"/>
+	<Color name="butter2" value="#edd400"/>
+	<Color name="butter3" value="#c4a000"/>
+	<Color name="orange1" value="#fcaf3e"/>
+	<Color name="orange2" value="#f57900"/>
+	<Color name="orange3" value="#ce5c00"/>
+	<Color name="chocolate1" value="#e9b96e"/>
+	<Color name="chocolate2" value="#c17d11"/>
+	<Color name="chocolate3" value="#8f5902"/>
+	<Color name="chameleon1" value="#8ae234"/>
+	<Color name="chameleon2" value="#73d216"/>
+	<Color name="chameleon3" value="#4e9a06"/>
+	<Color name="skyblue1" value="#729fcf"/>
+	<Color name="skyblue2" value="#3465a4"/>
+	<Color name="skyblue3" value="#204a87"/>
+	<Color name="plum1" value="#ad7fa8"/>
+	<Color name="plum2" value="#75507b"/>
+	<Color name="plum3" value="#5c3566"/>
+	<Color name="scarletred1" value="#ef2929"/>
+	<Color name="scarletred2" value="#cc0000"/>
+	<Color name="scarletred3" value="#a40000"/>
+	<Color name="aluminium1" value="#eeeeec"/>
+	<Color name="aluminium2" value="#d3d7cf"/>
+	<Color name="aluminium3" value="#babdb6"/>
+	<Color name="aluminium4" value="#888a85"/>
+	<Color name="aluminium5" value="#555753"/>
+	<Color name="aluminium6" value="#2e3436"/>
+	
+	<Color name="Zombie" value="#A8FBA8"/>
+	<Color name="Lawn" value="#58EB58"/>
+	
+	<!-- color styles -->
+	<Style name="text" color="black" bgColor="white">
+		<Style name="background" color="white">
+			<Style name="readonly" color="Linen"/>
+			<Style name="searchresult-main" color="#f3d647"/>
+			<Style name="searchresult" color="#ffe2b9"/>
+		</Style>
+		<Style name="selection" color="aluminium1" bgColor="skyblue1"/>
+		<Style name="selection.inactive" color="aluminium1" bgColor="aluminium3"/>
+		<Style name="link" color="blue"/>
+		<Style name="punctuation" color="aluminium6"/>
+		<Style name="preprocessor" color="orange2">
+			<Style name="keyword" color="orange3" />
+		</Style>
+		<Style name="markup" color="skyblue3">
+			<Style name="tag"/>
+		</Style>
+	</Style>
+	
+	<Style name="template" color ="black" bgColor="#fdfaed">
+		<Style name="tag" color ="black" bgColor="#fdf0bd"/>
+	</Style>
+	
+	<Style name="diff">
+		<Style name="line-added" color="Blue"/>
+		<Style name="line-removed" color="Red"/>
+		<Style name="line-changed" color="Green"/>
+		
+		<Style name="header" color="Magenta"/>
+		<Style name="header-seperator" color="Magenta"/>
+		<Style name="header-oldfile" color="Red"/>
+		<Style name="header-newfile" color="Blue"/>
+		
+		<Style name="location" color="Magenta"/>
+	</Style>
+	
+	<Style name="marker">
+		<Style name="line" color="aluminium1"/>
+		<Style name="line.changed" color="#90EE90"/>
+		<Style name="line.dirty" color="#EEEE50"/>
+	
+		<Style name="ruler" color="aluminium3"/>
+		<Style name="whitespace" color="aluminium3"> 
+			<Style name="eol" color="aluminium2"/> 
+		</Style>
+		<Style name="invalidline" color="scarletred2"/>
+		<Style name="bracket" color="aluminium2" bgColor="aluminium1"/>
+		
+		<Style name="bookmark.color1" color="white"/>
+		<Style name="bookmark.color2" color="skyblue1"/>
+<!--		<Style name="underline" color="scarletred1">
+			<Style name="error" color="scarletred1"/>
+			<Style name="warning" color="butter3"/>
+			<Style name="warning" color="butter3"/>
+		</Style>-->
+		
+		<Style name="template">
+			<Style name="primary_template" color="aluminium2" bgColor="Zombie"/>
+			<Style name="primary_highlighted_template" color="Zombie" bgColor="Lawn"/>
+			
+			<Style name="secondary_template" color="aluminium2" bgColor="white"/>
+			<Style name="secondary_highlighted_template" color="aluminium3" bgColor="aluminium1"/>
+		</Style>
+	</Style>
+	
+	<Style name="bubble">
+		<Style name="warning" color="black" bgColor="#e0dac9"/>
+		<Style name="error" color="black" bgColor="#ead5d4"/>
+	</Style>
+
+	<Style name="linenumber" color="aluminium4" bgColor="LightYellow">
+		<Style name="highlight" color="aluminium5"/>
+	</Style>
+	
+	<Style name="iconbar" color="LightYellow"/>
+	<Style name="iconbar.separator" color="aluminium3"/>
+
+	<Style name="fold" color="aluminium3" bgColor="LightYellow"/>
+	<Style name="fold.highlight" color="aluminium5"/>
+	<Style name="fold.togglemarker" color="black"/>
+	
+	<Style name="comment"  weight="italic" color="#339900">
+		<Style name="keyword" color="#229000"/>
+	</Style>
+	
+	<Style name="constant" color="#FF00FE">
+		<Style name="language.void" color = "Blue"/>
+	</Style>
+	
+	<Style name="string" color="#FF00FE" />
+	
+	<Style name="keyword" color="Blue">
+		<Style name="semantic.type" color="#3399CC"/>
+	</Style>
+</EditorStyle>
+

@@ -135,8 +135,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		internal void ShowStyles ()
 		{
 			styleStore.Clear ();
-			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color scheme.")), "Default");
+			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color scheme.")), LoadStyle ("Default"));
 			foreach (string styleName in Mono.TextEditor.Highlighting.SyntaxModeService.Styles) {
+				if (styleName == "Default")
+					continue;
 				var style = LoadStyle (styleName);
 				string name = style.Name ?? "";
 				string description = style.Description ?? "";
@@ -149,7 +151,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					} catch {
 					}
 				}
-				Console.WriteLine (name + "/" + description);
 				TreeIter iter = styleStore.AppendValues (GetMarkup (name, description), style);
 				if (style.Name == DefaultSourceEditorOptions.Instance.ColorScheme)
 					selectedIter = iter;

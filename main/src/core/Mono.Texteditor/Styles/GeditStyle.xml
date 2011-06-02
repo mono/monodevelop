@@ -1,0 +1,128 @@
+<!-- GeditStyle.xml
+
+	Author:
+		Mike Krüger <mkrueger@novell.com>
+
+ Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+
+<EditorStyle name="GEdit" _description="GEdit like style.">
+  <Style name="text" color="#000000" bgColor="#FFFFFF"/>
+  <Style name="text.background.readonly" color="#F9F9F8" />
+  <Style name="linenumber" color="#ABA799" bgColor="#FFFFFF" />
+  <Style name="linenumber.highlight" color="#7A7666" />
+  <Style name="iconbar" color="#FFFFFF" />
+  <Style name="iconbar.separator" color="#ABA799" />
+  <Style name="fold" color="#ABA799" bgColor="#FFFFFF"/>
+  <Style name="fold.highlight" color="#ABA799" />
+  <Style name="fold.togglemarker" color="#000000" />
+  <Style name="marker.line.dirty" color="#FFEE61" />
+  <Style name="marker.line.changed" color="#6CE16C" />
+  <Style name="text.selection" color="#FFFFFF" bgColor="#5F56D2" />
+  <Style name="text.selection.inactive" color="#FFFFFF" bgColor="#C4C4C4" />
+  <Style name="marker.line" color="#C7FFFF" />
+  <Style name="marker.ruler" color="#BBBBBB" />
+  <Style name="marker.whitespace" color="#BBBBBB" />
+  <Style name="marker.invalidline" color="#D20000" />
+  <Style name="marker.breakpoint" color="#FFFFFF" bgColor="#7D0000" />
+  <Style name="marker.breakpoint.color1" color="#FFFFFF" />
+  <Style name="marker.breakpoint.color2" color="#7D0000" />
+  <Style name="marker.breakpoint.disabled.background" color="#EDDCDC" />
+  <Style name="marker.debug.currentline" color="#000000" bgColor="#FEFF00" />
+  <Style name="marker.debug.currentline.color1" color="#FEFF00" />
+  <Style name="marker.debug.currentline.color2" color="#FEFECC" />
+  <Style name="marker.debug.currentline.border" color="#656600" />
+  <Style name="marker.debug.stackline" color="#000000" bgColor="#80FF80" />
+  <Style name="marker.debug.stackline.color1" color="#80FF80" />
+  <Style name="marker.debug.stackline.color2" color="#CCFECC" />
+  <Style name="marker.debug.stackline.border" color="#336633" />
+  <Style name="marker.breakpoint.invalid.background" color="#EDDCDC" />
+  <Style name="marker.breakpoint.invalid.color1" color="#EDDCDC" />
+  <Style name="marker.breakpoint.invalid.border" color="#7D0000" />
+  <Style name="text.background.searchresult" color="#FFE2B9" />
+  <Style name="text.background.searchresult-main" color="#F3DD48" />
+  <Style name="marker.bracket" color="#D3D7CE" bgColor="#EEEEEC" />
+  <Style name="marker.bookmark.color1" color="#FFFFFF" />
+  <Style name="marker.bookmark.color2" color="#689BEB" />
+  <Style name="marker.underline.error" color="#FF0000" />
+  <Style name="marker.underline.warning" color="#FFA500" />
+  <Style name="marker.underline.suggestion" color="#8FC68F" />
+  <Style name="marker.underline.hint" color="#8F8FC6" />
+  <Style name="diff.line-added" color="#008A8B" />
+  <Style name="diff.line-removed" color="#6A59CD" />
+  <Style name="diff.line-changed" color="#008000" />
+  <Style name="diff.header" color="#008000" weight="Bold" />
+  <Style name="diff.header-seperator" color="#0000FF" />
+  <Style name="diff.header-oldfile" color="#008000" weight="Bold" />
+  <Style name="diff.header-newfile" color="#008000" weight="Bold" />
+  <Style name="diff.location" color="#A52929" weight="Bold" />
+  <Style name="marker.template.primary_template" color="#B4E3B4" bgColor="#B4E3B4" />
+  <Style name="marker.template.primary_highlighted_template" color="#000000" bgColor="#B4E3B4" />
+  <Style name="marker.template.secondary_template" color="#FFFFFF" bgColor="#FFFFFF" />
+  <Style name="marker.template.secondary_highlighted_template" color="#7F7F7F" bgColor="#FFFFFF" />
+  <Style name="bubble.warning" color="#000000" bgColor="#F3EEDA" />
+  <Style name="bubble.warning.text" color="#000000" />
+  <Style name="bubble.error" color="#000000" bgColor="#F4EAE7" />
+  <Style name="bubble.error.text" color="#000000" />
+  <Style name="template" color="#000000" bgColor="#F0F0D0" />
+  <Style name="template.tag" color="#6A59CD" bgColor="#F0F0D0" />
+  <Style name="template.directive" color="#6A59CD" bgColor="#F0F0D0" />
+  <Style name="text.punctuation" color="#000000" />
+  <Style name="text.link" color="#0000FF" />
+  <Style name="text.preprocessor" color="#008000" />
+  <Style name="text.preprocessor.keyword" color="#008000" weight="Bold" />
+  <Style name="text.markup" color="#008A8C" />
+  <Style name="text.markup.tag" color="#6A59CD" />
+  <Style name="comment" color="#0000FF" />
+  <Style name="comment.line" color="#0000FF" />
+  <Style name="comment.block" color="#0000FF" />
+  <Style name="comment.doc" color="#0000FF" />
+  <Style name="comment.tag" color="#808080" weight="Bold" />
+  <Style name="comment.tag.line" color="#808080" weight="Bold" />
+  <Style name="comment.tag.block" color="#808080" weight="Bold" />
+  <Style name="comment.tag.doc" color="#808080" weight="Bold" />
+  <Style name="comment.keyword" color="#0000FF" weight="Bold" />
+  <Style name="comment.keyword.todo" color="#0000FF" weight="Bold" />
+  <Style name="constant" color="#FF00FE" />
+  <Style name="constant.digit" color="#FF00FE" />
+  <Style name="constant.language" color="#A52929" weight="Bold" />
+  <Style name="constant.language.void" color="#A52929" weight="Bold" />
+  <Style name="string" color="#FF00FE" />
+  <Style name="string.single" color="#FF00FE" />
+  <Style name="string.double" color="#FF00FE" />
+  <Style name="string.other" color="#FF00FE" />
+  <Style name="keyword.semantic.type" color="#008A8C" />
+  <Style name="keyword" color="#000000" weight="Bold" />
+  <Style name="keyword.access" color="#A52929" weight="Bold" />
+  <Style name="keyword.operator" color="#A52929" weight="Bold" />
+  <Style name="keyword.operator.declaration" color="#A52929" weight="Bold" />
+  <Style name="keyword.selection" color="#A52929" weight="Bold" />
+  <Style name="keyword.iteration" color="#A52929" weight="Bold" />
+  <Style name="keyword.jump" color="#A52929" weight="Bold" />
+  <Style name="keyword.context" color="#A52929" weight="Bold" />
+  <Style name="keyword.exceptions" color="#A52929" weight="Bold" />
+  <Style name="keyword.modifier" color="#A52929" weight="Bold" />
+  <Style name="keyword.type" color="#2E8A57" weight="Bold" />
+  <Style name="keyword.namespace" color="#A52929" weight="Bold" />
+  <Style name="keyword.property" color="#A52929" weight="Bold" />
+  <Style name="keyword.declaration" color="#A52929" weight="Bold" />
+  <Style name="keyword.parameter" color="#A52929" weight="Bold" />
+  <Style name="keyword.misc" color="#A52929" weight="Bold" />
+</EditorStyle>

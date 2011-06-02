@@ -274,6 +274,12 @@
     <EmbeddedResource Include="SyntaxModes\JaySyntaxMode.xml">
       <LogicalName>JaySyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Styles\DefaultStyle.xml">
+      <LogicalName>DefaultStyle.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\GeditStyle.xml">
+      <LogicalName>GeditStyle.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
