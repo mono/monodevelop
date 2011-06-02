@@ -6,6 +6,7 @@ using System.Web.Services.Discovery;
 namespace MonoDevelop.WebReferences
 {
 	/// <summary>Provides support for programmatically invoking XML Web services discovery.</summary>
+	[System.ComponentModel.DesignerCategory ("Code")]
 	public class DiscoveryProtocol : System.Web.Services.Discovery.DiscoveryClientProtocol
 	{
 		/// <summary>
