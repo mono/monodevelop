@@ -127,15 +127,15 @@ namespace MonoDevelop.SourceEditor
 		{
 			switch (severity) {
 			case QuickTaskSeverity.Error:
-				return new Cairo.Color (1, 0, 0);
+				return TextEditor.ColorStyle.ErrorUnderline;
 			case QuickTaskSeverity.Warning:
-				return new Cairo.Color (1, 0.65, 0);
+				return TextEditor.ColorStyle.WarningUnderline;
 			case QuickTaskSeverity.Suggestion:
-				return new Cairo.Color (34 / 255.0, 139 / 255.0, 34 / 255.0);
+				return TextEditor.ColorStyle.SuggestionUnderline;
 			case QuickTaskSeverity.Hint:
-				return new Cairo.Color (173 / 255.0, 216 / 255.0, 230 / 255.0);
+				return TextEditor.ColorStyle.HintUnderline;
 			case QuickTaskSeverity.None:
-				return new Cairo.Color (75 / 255.0, 255 / 255.0, 75 / 255.0);
+				return TextEditor.ColorStyle.Default.CairoColor;
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -258,12 +258,13 @@ namespace MonoDevelop.SourceEditor
 			base.OnSizeRequested (ref requisition);
 			requisition.Width = 17;
 		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				cr.Color = (HslColor)Style.Base (StateType.Normal);
+				cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
 				cr.Fill ();
 				
 				cr.Color = (HslColor)Style.Dark (State);
@@ -278,7 +279,7 @@ namespace MonoDevelop.SourceEditor
 				
 				TextEditorData editorData = TextEditor.GetTextEditorData ();
 				int h = Allocation.Height - Allocation.Width - 6;
-
+				
 				foreach (var task in AllTasks) {
 					double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
 						
@@ -310,11 +311,11 @@ namespace MonoDevelop.SourceEditor
 						              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
 						              Allocation.Width - 2,
 						              h * (adj.PageSize / adj.Upper));
-					Cairo.Color color = (HslColor)Style.Text (StateType.Normal);
+					Cairo.Color color = TextEditor.ColorStyle.Default.CairoColor;
 					color.A = 0.5;
 					cr.Color = color;
 					cr.StrokePreserve ();
-	
+					
 					color.A = 0.05;
 					cr.Color = color;
 					cr.Fill ();
@@ -323,7 +324,7 @@ namespace MonoDevelop.SourceEditor
 				//	cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
 				cr.MoveTo (0.5, 0);
 				cr.LineTo (0.5, Allocation.Height);
-				cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+				cr.Color = TextEditor.ColorStyle.FoldLine.CairoColor;
 				cr.Stroke ();
 			}
 			
