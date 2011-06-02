@@ -42,6 +42,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Execution
 {
+	[System.ComponentModel.DesignerCategory ("Code")]
 	internal class ProcessHostController: MarshalByRefObject, IProcessHostController
 	{
 		int references;

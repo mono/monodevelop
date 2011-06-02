@@ -40,6 +40,7 @@ using ICSharpCode.OldNRefactory.Visitors;
 
 namespace MonoDevelop.CSharp
 {
+	[System.ComponentModel.DesignerCategory ("Code")]
 	public class CSharpEnhancedCodeProvider : CSharpCodeProvider
 	{
 		private ICodeParser codeParser;
