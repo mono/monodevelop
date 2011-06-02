@@ -30,7 +30,6 @@ using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.CSharp.Analysis;
 
 namespace MonoDevelop.CSharp.Inspection
 {

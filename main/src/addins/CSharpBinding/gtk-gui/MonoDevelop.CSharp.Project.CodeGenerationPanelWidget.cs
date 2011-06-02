@@ -37,7 +37,7 @@ namespace MonoDevelop.CSharp.Project
 		private global::Gtk.HBox hbox6;
 		private global::Gtk.Label label88;
 		private global::Gtk.Entry additionalArgsEntry;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

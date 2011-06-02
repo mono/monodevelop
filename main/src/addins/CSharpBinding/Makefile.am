@@ -32,11 +32,11 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget.cs \
-	gtk-gui/MonoDevelop.CSharp.Analysis.NamingConventionSettingsDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs \
+	gtk-gui/MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs \
+	gtk-gui/MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \

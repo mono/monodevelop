@@ -225,8 +225,6 @@
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Analysis.NamingConventionSettingsDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\AddAnotherAccessor.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\ConvertForeachToFor.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\CheckIfParameterIsNull.cs" />
@@ -256,6 +254,8 @@
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UnusedUsingInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\StringIsNullOrEmptyInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\NotImplementedExceptionInspector.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

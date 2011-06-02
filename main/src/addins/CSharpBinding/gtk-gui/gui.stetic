@@ -11,7 +11,6 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" />
-    <widget-library name="../../../../build/AddIns/AnalysisCore/MonoDevelop.AnalysisCore.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CodeGenerationPanelWidget" design-size="365 448">
@@ -2047,7 +2046,7 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -2104,7 +2103,7 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="MonoDevelop.CSharp.Analysis.NamingConventionSettingsDialog" design-size="388 238">
+  <widget class="Gtk.Window" id="MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog" design-size="388 238">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Edit rule set</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -2209,6 +2208,7 @@ Itanium</property>
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">_UpperCamelCase</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>

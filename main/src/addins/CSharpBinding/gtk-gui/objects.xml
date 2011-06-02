@@ -3,7 +3,7 @@
     <itemgroups />
     <signals />
   </object>
-  <object type="MonoDevelop.CSharp.Analysis.NamingConventionPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+  <object type="MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
   </object>
