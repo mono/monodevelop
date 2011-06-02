@@ -793,7 +793,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		
 		internal List<T> ToTypedList<T> (Func<IntPtr,T> factory)
 		{
-			List<T> list = new List<T> (Count);
+			List<T> list = new List<T> (Math.Max (0, Count));
 			foreach (IntPtr item in this) {
 				list.Add (factory (item));
 			}
