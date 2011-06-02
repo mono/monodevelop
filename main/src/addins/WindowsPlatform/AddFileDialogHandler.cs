@@ -15,13 +15,12 @@ namespace MonoDevelop.Platform
         {
             CustomAddFilesDialog adlg = new CustomAddFilesDialog();
             adlg.StartLocation = AddonWindowLocation.Bottom;
-            adlg.OpenDialog.InitialDirectory = data.CurrentFolder;
-            adlg.OpenDialog.AddExtension = true;
             adlg.BuildActions = data.BuildActions;
-//            adlg.OpenDialog.Filter = "Image Files(*.bmp;*.jpg;*.gif;*.png)|*.bmp;*.jpg;*.gif;*.png";
             WinFormsRunner runner = new WinFormsRunner();
             bool result = false;
-
+			
+			SelectFileDialogHandler.SetCommonFormProperties (data, adlg.OpenDialog);
+			
             Timer t = new Timer();
             t.Interval = 20;
             try

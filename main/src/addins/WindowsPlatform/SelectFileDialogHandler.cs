@@ -15,12 +15,10 @@ namespace MonoDevelop.Platform
             if (data.Action == Gtk.FileChooserAction.Open)
                 dlg = new OpenFileDialog();
             else if (data.Action == Gtk.FileChooserAction.Save)
-                dlg = new SaveFileDialog();
-
-            dlg.InitialDirectory = data.CurrentFolder;
-            if (!string.IsNullOrEmpty (data.InitialFileName))
-                dlg.FileName = data.InitialFileName;
-
+                dlg = new SaveFileDialog();		
+			
+			SetCommonFormProperties (data, dlg);
+			
             bool result = false;
             try
             {
@@ -43,5 +41,20 @@ namespace MonoDevelop.Platform
 
             return result;
         }
+		
+		internal static void SetCommonFormProperties (SelectFileDialogData data, FileDialog dialog)
+		{
+			if (!string.IsNullOrEmpty (data.Title))
+				dialog.Title = data.Title;
+			
+			dialog.AddExtension = true;
+			dialog.InitialDirectory = data.CurrentFolder;
+            if (!string.IsNullOrEmpty (data.InitialFileName))
+                dialog.FileName = data.InitialFileName;
+			
+			OpenFileDialog openDialog = dialog as OpenFileDialog;
+			if (openDialog != null)
+				openDialog.Multiselect = data.SelectMultiple;
+		}
     }
 }
