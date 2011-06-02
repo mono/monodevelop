@@ -202,11 +202,11 @@
 			_description = "'?:' expression can be converted to '??' expression."
 			severity = "Suggestion"
 			class = "MonoDevelop.CSharp.Inspection.ConditionalToNullCoalescingInspector" />
-		<Inspector mimeType="text/x-csharp"
+<!--		<Inspector mimeType="text/x-csharp"
 			_title = "Remove unused usings"
 			_description = "Removes used declarations that are not required."
 			severity = "Warning"
-			class = "MonoDevelop.CSharp.Inspection.UnusedUsingInspector" />
+			class = "MonoDevelop.CSharp.Inspection.UnusedUsingInspector" />-->
 		<Inspector mimeType="text/x-csharp"
 			_title = "Show NotImplementedException"
 			_description = "Shows NotImplementedException throws in the quick task bar."
