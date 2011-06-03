@@ -294,13 +294,16 @@
 		<Word>object</Word>
 		<Word>bool</Word>
 		<Word>char</Word>
-		<Word>wchar</Word>
 		<Word>string</Word>
 		<Word>int</Word>
 		<Word>int8</Word>
 		<Word>int16</Word>
 		<Word>int32</Word>
 		<Word>int64</Word>
+		<Word>uint8</Word>
+		<Word>uint16</Word>
+		<Word>uint32</Word>
+		<Word>uint64</Word>
 		<Word>float</Word>
 		<Word>float32</Word>
 		<Word>float64</Word>
@@ -435,6 +438,11 @@
 
 		<Word>.permission</Word>
 		<Word>.permissionset</Word>
+		<Word>.this</Word>
+		<Word>.base</Word>
+		<Word>.nester</Word>
+		<Word>.typelist</Word>
+		<Word>.mscorlib</Word>
 	</Keywords>
 	<Keywords color = "keyword.context">
 		<Word>request</Word>
