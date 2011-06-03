@@ -530,7 +530,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						pref = new ProjectReference (ReferenceType.Gac, asm);
 					}
 					pref.Condition = buildItem.Condition;
-					pref.SpecificVersion = !buildItem.GetMetadataIsFalse ("SpecificVersion");
+					string specificVersion = buildItem.GetMetadata ("SpecificVersion");
+					if (string.IsNullOrWhiteSpace(specificVersion)) {
+						// If the SpecificVersion element isn't present, check if the Assembly Reference specifies a Version
+						int commaPos = buildItem.Include.IndexOf(",");
+						pref.SpecificVersion = (commaPos != -1) && buildItem.Include.Substring(commaPos).Contains("Version");
+					}
+					else {
+						bool value;
+						// if we can't parse the value, default to false which is more permissive
+						pref.SpecificVersion = bool.TryParse (specificVersion, out value) && value;
+					}
 					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					return pref;
 				}
