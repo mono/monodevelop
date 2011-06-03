@@ -48,6 +48,9 @@ namespace MonoDevelop.Platform
 				dialog.Title = data.Title;
 			
 			dialog.AddExtension = true;
+			dialog.Filter = GetFilterFromData (data.Filters);
+			dialog.FilterIndex = data.DefaultFilter == null ? 0 : data.Filters.IndexOf (data.DefaultFilter);
+			
 			dialog.InitialDirectory = data.CurrentFolder;
             if (!string.IsNullOrEmpty (data.InitialFileName))
                 dialog.FileName = data.InitialFileName;
@@ -55,6 +58,29 @@ namespace MonoDevelop.Platform
 			OpenFileDialog openDialog = dialog as OpenFileDialog;
 			if (openDialog != null)
 				openDialog.Multiselect = data.SelectMultiple;
+		}
+		
+		static string GetFilterFromData (IList<SelectFileDialogFilter> filters)
+		{
+			if (filters == null || filters.Count == 0)
+				return null;
+			
+			var sb = new StringBuilder ();
+			foreach (var f in filters) {
+				if (sb.Length > 0)
+					sb.Append ('|');
+				
+				sb.Append (f.Name);
+				sb.Append ('|');
+				for (int i = 0; i < f.Patterns.Count; i++) {
+					if (i > 0)
+						sb.Append (';');
+				
+					sb.Append (f.Patterns [i]);
+				}
+			}
+			
+			return sb.ToString ();
 		}
     }
 }
