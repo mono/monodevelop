@@ -873,7 +873,13 @@ namespace Mono.Debugging.Soft
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
 			ctx.AssertTargetInvokeAllowed ();
 			
-			TypeMirror type = target != null ? ((ObjectMirror) target).Type : (TypeMirror) targetType;
+			TypeMirror type;
+			if (target is ObjectMirror)
+				type = ((ObjectMirror) target).Type;
+			else if (target is StructMirror)
+				type = ((StructMirror) target).Type;
+			else
+				type = (TypeMirror) targetType;
 			
 			TypeMirror[] types = new TypeMirror [argTypes.Length];
 			for (int n=0; n<argTypes.Length; n++)
