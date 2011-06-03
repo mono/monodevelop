@@ -519,7 +519,7 @@ namespace MonoDevelop.Projects
 
 		void PopulateSupportFileListInternal (FileCopySet list, ConfigurationSelector configuration)
 		{
-			if (supportReferDistance < 2)
+			if (supportReferDistance <= 2)
 				base.PopulateSupportFileList (list, configuration);
 
 			//rename the app.config file
