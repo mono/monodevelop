@@ -865,23 +865,26 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		Dictionary<IType, List<IMethod>> extensionMethods = new Dictionary<IType, List<IMethod>> ();
-		public IEnumerable<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes)
+		public IEnumerable<IMethod> GetAllExtensionMethods (List<IType> accessibleExtensionTypes)
 		{
 			List<IMethod> result = new List<IMethod> ();
 			foreach (IType staticType in accessibleExtensionTypes) {
-				List<IMethod> methods;
-				if (!extensionMethods.TryGetValue (staticType, out methods)) {
-					methods = new List<IMethod> ();
-					foreach (IMethod method in staticType.Methods) {
-						IMethod extMethod = method.Extends (this.SourceProjectDom, this);
-						if (extMethod != null)
-							methods.Add (extMethod);
-					} 
-					extensionMethods [staticType] = methods;
-				}
-				foreach (var method in methods)
-					yield return method;
+				foreach (IMethod method in staticType.Methods) {
+					IMethod extMethod = method.Extends (this.SourceProjectDom, this);
+					if (extMethod != null)
+						yield return extMethod;
+				} 
+			}
+		}
+		public IEnumerable<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes, string methodName)
+		{
+			List<IMethod> result = new List<IMethod> ();
+			foreach (IType staticType in accessibleExtensionTypes) {
+				foreach (IMethod method in staticType.Methods.Where (m => m.Name == methodName)) {
+					IMethod extMethod = method.Extends (this.SourceProjectDom, this);
+					if (extMethod != null)
+						yield return extMethod;
+				} 
 			}
 		}
 

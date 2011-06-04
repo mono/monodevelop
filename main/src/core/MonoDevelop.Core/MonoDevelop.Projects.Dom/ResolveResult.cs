@@ -286,7 +286,7 @@ namespace MonoDevelop.Projects.Dom
 
 			bool includeProtected = callingMember != null ? DomType.IncludeProtected (dom, type, callingMember.DeclaringType) : false;
 			if (accessibleStaticTypes != null) {
-				foreach (IMethod extensionMethod in type.GetExtensionMethods (accessibleStaticTypes))
+				foreach (IMethod extensionMethod in type.GetAllExtensionMethods (accessibleStaticTypes))
 					result.Add (extensionMethod);
 			}
 			foreach (IType curType in dom.GetInheritanceTree (type)) {

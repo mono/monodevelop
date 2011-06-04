@@ -154,7 +154,7 @@ namespace MonoDevelop.CSharp.Completion
 			List<IType > accessibleExtTypes = DomType.GetAccessibleExtensionTypes (editorCompletion.Dom, editorCompletion.GetDocument ().CompilationUnit);
 			
 			foreach (var t in type.SourceProjectDom.GetInheritanceTree (type)) {
-				if (t.Methods.Concat (t.GetExtensionMethods (accessibleExtTypes)).Any (m => m.Name == method.Name && m.Parameters.Count > 0))
+				if (t.Methods.Concat (t.GetExtensionMethods (accessibleExtTypes, method.Name)).Any (m => m.Parameters.Count > 0))
 					return true;
 			}
 			return false;

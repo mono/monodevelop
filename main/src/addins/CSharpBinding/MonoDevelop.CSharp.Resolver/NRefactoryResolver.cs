@@ -93,11 +93,6 @@ namespace MonoDevelop.CSharp.Resolver
 				return unit;
 			}
 		}
-
-		public bool SkipExtensionMethods {
-			get;
-			set;
-		}
 		
 		public static IType GetTypeAtCursor (IType outerType, string fileName, DomLocation position)
 		{
