@@ -867,7 +867,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		public IEnumerable<IMethod> GetAllExtensionMethods (List<IType> accessibleExtensionTypes)
 		{
-			List<IMethod> result = new List<IMethod> ();
 			foreach (IType staticType in accessibleExtensionTypes) {
 				foreach (IMethod method in staticType.Methods) {
 					IMethod extMethod = method.Extends (this.SourceProjectDom, this);
@@ -878,7 +877,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		public IEnumerable<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes, string methodName)
 		{
-			List<IMethod> result = new List<IMethod> ();
 			foreach (IType staticType in accessibleExtensionTypes) {
 				foreach (IMethod method in staticType.Methods.Where (m => m.Name == methodName)) {
 					IMethod extMethod = method.Extends (this.SourceProjectDom, this);
