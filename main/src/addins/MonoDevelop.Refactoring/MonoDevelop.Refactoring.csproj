@@ -148,6 +148,8 @@
     <Compile Include="gtk-gui\MonoDevelop.ContextAction.ContextActionPanelWidget.cs" />
     <Compile Include="MonoDevelop.ContextAction\ContextActionAddinNode.cs" />
     <Compile Include="MonoDevelop.Inspection\InspectorAddinNode.cs" />
+    <Compile Include="MonoDevelop.Inspection\InspectionPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Inspection.InspectionPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

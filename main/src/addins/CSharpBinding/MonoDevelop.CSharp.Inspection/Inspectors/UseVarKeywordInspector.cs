@@ -49,7 +49,9 @@ namespace MonoDevelop.CSharp.Inspection
 				return;
 			if (node.Type is SimpleType && ((SimpleType)node.Type).Identifier == "var") 
 				return;
-			
+			var severity = base.node.GetSeverity ();
+			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
+				return;
 			//only checks for cases where the type would be obvious - assignment of new, cast, etc.
 			//also check the type actually matches else the user might want to assign different subclasses later
 			foreach (var v in node.Variables) {
@@ -84,15 +86,14 @@ namespace MonoDevelop.CSharp.Inspection
 				}
 				return;
 			}
-			;
 			
 			data.Add (new Result (
-					new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
+					new DomRegion (node.Type.StartLocation.Line, node.Type.StartLocation.Column, node.Type.EndLocation.Line, node.Type.EndLocation.Column),
 					GettextCatalog.GetString ("Use implicitly typed local variable decaration"),
-					MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion,
+					severity,
 					ResultCertainty.High, 
 					ResultImportance.Medium,
-					false)
+					severity != MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion)
 				);
 		}
 	}

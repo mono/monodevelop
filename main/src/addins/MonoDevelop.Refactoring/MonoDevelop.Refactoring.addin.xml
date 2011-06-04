@@ -219,6 +219,8 @@
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
 		<Section id = "C#" _label = "C#">
+			<Section id = "Inspection" _label = "Code inspection" fill="true"
+				class="MonoDevelop.Inspection.InspectionPanel"/>
 			<Section id = "ContextActions" _label = "Context Actions" fill="true"
 				class="MonoDevelop.ContextAction.ContextActionPanel"/>
 		</Section>

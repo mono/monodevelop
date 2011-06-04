@@ -25,6 +25,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs \
 	gtk-gui/MonoDevelop.ContextAction.ContextActionPanelWidget.cs \
+	gtk-gui/MonoDevelop.Inspection.InspectionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Refactoring.EncapsulateFieldDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.OverridesImplementsDialog.cs \
@@ -69,6 +70,7 @@ FILES =  \
 	MonoDevelop.ContextAction/ContextActionEditorExtension.cs \
 	MonoDevelop.ContextAction/ContextActionPanelWidget.cs \
 	MonoDevelop.ContextAction/ContextActionWidget.cs \
+	MonoDevelop.Inspection/InspectionPanelWidget.cs \
 	MonoDevelop.Inspection/InspectorAddinNode.cs \
 	MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs \
 	MonoDevelop.Refactoring.ConvertPropery/PropertyVisitor.cs \

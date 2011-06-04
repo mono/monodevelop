@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.SourceEditor;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Inspection
 {
@@ -66,7 +67,6 @@ namespace MonoDevelop.Inspection
 			}
 		}
 		
-		
 		object inspector;
 		public object Inspector {
 			get {
@@ -74,6 +74,16 @@ namespace MonoDevelop.Inspection
 					inspector = CreateInstance ();
 				return inspector;
 			}
+		}
+		
+		public QuickTaskSeverity GetSeverity ()
+		{
+			return PropertyService.Get<QuickTaskSeverity> ("refactoring.inspectors." + MimeType + "." + Type.FullName, Severity);
+		}
+		
+		public void SetSeverity (QuickTaskSeverity severity)
+		{
+			PropertyService.Set ("refactoring.inspectors." + MimeType + "." + Type.FullName, severity);
 		}
 	}
 }

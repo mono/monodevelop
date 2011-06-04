@@ -36,15 +36,18 @@ namespace MonoDevelop.CSharp.Inspection
 {
 	public abstract class CSharpInspector
 	{
-		InspectorAddinNode node;
+		protected InspectorAddinNode node;
 		
 		protected void AddResult (InspectionData data, DomRegion region, string menuText, Action fix)
 		{
+			var severity = node.GetSeverity ();
+			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
+				return;
 			data.Add (
 				new GenericResults (
 					region,
 					node.Title,
-					node.Severity, 
+					severity, 
 					ResultCertainty.High, 
 					ResultImportance.Low,
 					new GenericFix (menuText, fix)
