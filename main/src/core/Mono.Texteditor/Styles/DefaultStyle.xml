@@ -59,7 +59,7 @@
 	<!-- color styles -->
 	<Style name="text" color="black" bgColor="white">
 		<Style name="background" color="white">
-			<Style name="readonly" color="Linen"/>
+			<Style name="readonly" color="#FAFAFA"/>
 			<Style name="searchresult-main" color="#f3d647"/>
 			<Style name="searchresult" color="#ffe2b9"/>
 		</Style>
@@ -141,11 +141,11 @@
 		<Style name="keyword" color="#229000"/>
 	</Style>
 	
-	<Style name="constant" color="#FF00FE">
+	<Style name="constant" color="#CC00CC">
 		<Style name="language.void" color = "Blue"/>
 	</Style>
 	
-	<Style name="string" color="#FF00FE" />
+	<Style name="string" color="#CC00CC" />
 	
 	<Style name="keyword" color="Blue">
 		<Style name="semantic.type" color="#3399CC"/>
