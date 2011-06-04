@@ -72,6 +72,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				return;
 			
 			Run (context);
+			context.Document.Editor.Document.CommitUpdateAll ();
 		}
 	}
 }

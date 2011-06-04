@@ -65,11 +65,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			}) + context.Document.Editor.EolMarker;
 	
 			// create property with backing field getter/setters
-			var newProperty = context.GetNode<PropertyDeclaration> ();
-			newProperty.Modifiers = property.Modifiers;
-			newProperty.Name = property.Name;
-//			newProperty.Attributes = property.Attributes.Clone ();
-			newProperty.ReturnType = property.ReturnType;
+			var newProperty = (PropertyDeclaration)property.Clone ();
 			if (!property.Getter.IsNull) {
 				newProperty.Getter = new Accessor () {
 					Modifiers = property.Getter.Modifiers,
@@ -94,9 +90,10 @@ namespace MonoDevelop.CSharp.ContextAction
 				if (astNode is IdentifierExpression && ((IdentifierExpression)astNode).Identifier == backingStoreName)
 					offsets.Add (fieldOutput.Length + nodeOffset);
 			});
-			
+			context.Document.Editor.Document.BeginAtomicUndo ();
 			property.Replace (context.Document, propertyOutput);
 			context.Document.Editor.Insert (offset, fieldOutput);
+			context.Document.Editor.Document.EndAtomicUndo ();
 			
 			context.StartTextLinkMode (offset, backingStoreName.Length, offsets);
 		}
@@ -105,6 +102,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
 			return propertyDeclaration != null && 
+				!propertyDeclaration.Getter.IsNull && !propertyDeclaration.Setter.IsNull && // automatic properties always need getter & setter
 				propertyDeclaration.Getter.Body.IsNull &&
 				propertyDeclaration.Setter.Body.IsNull;
 		}

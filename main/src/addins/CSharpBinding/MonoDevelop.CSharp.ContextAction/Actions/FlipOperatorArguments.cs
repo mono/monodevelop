@@ -89,7 +89,6 @@ namespace MonoDevelop.CSharp.ContextAction
 			context.Document.Editor.Replace (rightOffset, rightEndOffset - rightOffset, leftText);
 			context.Document.Editor.Replace (leftOffset, leftEndOffset - leftOffset, rightText);
 			context.Document.Editor.Document.EndAtomicUndo ();
-			context.Document.Editor.Document.CommitUpdateAll ();
 		}
 	}
 }

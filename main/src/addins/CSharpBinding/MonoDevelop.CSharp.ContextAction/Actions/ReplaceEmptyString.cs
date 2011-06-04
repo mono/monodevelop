@@ -53,7 +53,6 @@ namespace MonoDevelop.CSharp.ContextAction
 			string text = "string.Empty";
 			context.Document.Editor.Replace (offset, endOffset - offset, text);
 			context.Document.Editor.Caret.Offset = offset + text.Length;
-			context.Document.Editor.Document.CommitUpdateAll ();
 		}
 		
 		PrimitiveExpression GetEmptyString (CSharpContext context)

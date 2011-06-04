@@ -72,7 +72,6 @@ namespace MonoDevelop.CSharp.ContextAction
 			string text = context.OutputNode (ShortenTypeName (context.Document, resolveResult.ResolvedType), 0).Trim ();
 			context.Document.Editor.Replace (offset, endOffset - offset, text);
 			context.Document.Editor.Caret.Offset = offset + text.Length;
-			context.Document.Editor.Document.CommitUpdateAll ();
 		}
 	}
 }
