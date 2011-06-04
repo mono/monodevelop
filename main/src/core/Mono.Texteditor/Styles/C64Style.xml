@@ -123,4 +123,7 @@
 	<Style name="keyword.operator.declaration" weight="bold" color="white"/>
 	<Style name="keyword.misc" weight="bold" color="white"/>
 	
+	<Style name="keyword.semantic.type" color="#97A0EF" weight="bold"/>
+	<Style name="keyword.semantic.field" color="#97A0EF" weight="Italic"/>
+	
 </EditorStyle>

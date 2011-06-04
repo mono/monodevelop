@@ -166,4 +166,7 @@
 	<Style name="keyword.exceptions" color="accent_orange" weight="bold"/>
 	<Style name="keyword.parameter" color="orange_base" weight="bold"/>
 	<Style name="keyword.misc" color="orange_base"/>
+	
+	<Style name="keyword.semantic.type" color="accent_green_highlight" weight="normal"/>
+	<Style name="keyword.semantic.field" color="black" weight="Italic"/>
 </EditorStyle>

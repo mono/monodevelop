@@ -149,6 +149,7 @@
 	
 	<Style name="keyword" color="Blue">
 		<Style name="semantic.type" color="#3399CC"/>
+		<Style name="semantic.field" color="black" weight="Italic"/>
 	</Style>
 </EditorStyle>
 

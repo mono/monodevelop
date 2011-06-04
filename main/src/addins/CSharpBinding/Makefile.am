@@ -80,7 +80,6 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs \
 	MonoDevelop.CSharp.Formatting/TextEditorDataAdapter.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
-	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
 	MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs \
 	MonoDevelop.CSharp.Inspection/CallGraph.cs \
