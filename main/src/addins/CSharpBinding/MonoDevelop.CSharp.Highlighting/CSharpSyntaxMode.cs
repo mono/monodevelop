@@ -223,15 +223,23 @@ namespace MonoDevelop.CSharp.Highlighting
 				foreach (var tag in ProjectDomService.SpecialCommentTags) {
 					tags.Add (tag.Tag);
 				}
+				
+				ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = null;
 				if (document != null && document.ParsedDocument != null) {
 					resolver = document.GetResolver ();
-					if (!document.ParsedDocument.Tags.ContainsKey ("NRefactoryUnit")) {
-						using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, document.Editor.Document.OpenTextReader ())) {
-							parser.Parse ();
-							document.ParsedDocument.Tags ["NRefactoryUnit"] = parser.CompilationUnit;
+					if (!document.ParsedDocument.TryGetTag (out unit)) {
+						try {
+							using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, document.Editor.Document.OpenTextReader ())) {
+								parser.Parse ();
+								unit = parser.CompilationUnit;
+								document.ParsedDocument.SetTag (unit);
+							}
+						} catch (Exception) {
+							resolver = null;
+							return;
 						}
 					}
-					resolver.SetupParsedCompilationUnit (document.ParsedDocument.Tags ["NRefactoryUnit"] as ICSharpCode.OldNRefactory.Ast.CompilationUnit);
+					resolver.SetupParsedCompilationUnit (unit);
 				}
 			}
 			
