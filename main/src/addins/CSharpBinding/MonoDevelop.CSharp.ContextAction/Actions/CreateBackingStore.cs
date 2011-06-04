@@ -47,9 +47,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			var property = context.GetNode<PropertyDeclaration> ();
 			
 			string backingStoreName = GetBackingStoreName (context, property.Name);
-//			string indent = context.Document.Editor.GetLineIndent (property.StartLocation.Line);
 			
-		
 			var offsets = new List<int> ();
 			
 			// create field
@@ -63,28 +61,15 @@ namespace MonoDevelop.CSharp.ContextAction
 				if (node is VariableInitializer)
 					offsets.Add (nodeOffset);
 			}) + context.Document.Editor.EolMarker;
-	
-			// create property with backing field getter/setters
-			var newProperty = (PropertyDeclaration)property.Clone ();
-			if (!property.Getter.IsNull) {
-				newProperty.Getter = new Accessor () {
-					Modifiers = property.Getter.Modifiers,
-//					Attributes = proprty.Getter.Attributes.Clone,
-					Body = new BlockStatement () {
-						new ReturnStatement (new IdentifierExpression (backingStoreName))
-					}
-				};
-			}
 			
-			if (!property.Setter.IsNull) {
-				newProperty.Setter = new Accessor () {
-					Modifiers = property.Setter.Modifiers,
-//					Attributes = proprty.Setter.Attributes.Clone,
-					Body = new BlockStatement () {
-						new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (backingStoreName),AssignmentOperatorType.Assign, new IdentifierExpression ("value")))
-					}
-				};
-			}
+			// create new property & implement the get/set bodies
+			var newProperty = (PropertyDeclaration)property.Clone ();
+			newProperty.Getter.Body = new BlockStatement () {
+				new ReturnStatement (new IdentifierExpression (backingStoreName))
+			};
+			newProperty.Setter.Body = new BlockStatement () {
+				new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (backingStoreName),AssignmentOperatorType.Assign, new IdentifierExpression ("value")))
+			};
 			
 			string propertyOutput = context.OutputNode (newProperty, context.GetIndentLevel (property), delegate(int nodeOffset, AstNode astNode) {
 				if (astNode is IdentifierExpression && ((IdentifierExpression)astNode).Identifier == backingStoreName)
@@ -132,12 +117,11 @@ namespace MonoDevelop.CSharp.ContextAction
 			} while (nameInUse);
 			return GenNumberedName (baseName, number);
 		}
-
+		
 		static string GenNumberedName (string baseName, int number)
 		{
 			return baseName + (number > 0 ? (number + 1).ToString () : "");
 		}
-		
 	}
 }
 
