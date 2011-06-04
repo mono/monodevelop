@@ -235,7 +235,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}
 			
-			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk)
+			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
 			{
 				var unit = parsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
 				if (unit == null)
@@ -267,32 +267,43 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					if (node is CSharpTokenNode) 
 						return null;
+					endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
 					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
 				} else {
 					var type = unit.GetNodeAt<AstType> (loc.Line, loc.Column);
 					if ((type is SimpleType || type is ICSharpCode.NRefactory.CSharp.MemberType)) {
-						if (unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null)
+						if (unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
+							endOffset = doc.LocationToOffset (type.EndLocation.Line, type.EndLocation.Column);
 							return "keyword.semantic.type";
+						}
 						return null;
 					}
 					
 					var node = unit.GetNodeAt (loc.Line, loc.Column);
 					if (node is Identifier) {
-						if (node.Parent is TypeDeclaration && node.Role == TypeDeclaration.Roles.Identifier)
+						if (node.Parent is TypeDeclaration && node.Role == TypeDeclaration.Roles.Identifier) {
+							endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
 							return "keyword.semantic.type";
+						}
 						
-						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration || node.Parent is FixedVariableInitializer || node.Parent is EnumMemberDeclaration)
+						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration || node.Parent is FixedVariableInitializer || node.Parent is EnumMemberDeclaration) {
+							endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
 							return "keyword.semantic.field";
+						}
 					}
 					var identifierExpression = unit.GetNodeAt<IdentifierExpression> (loc.Line, loc.Column);
 					if (identifierExpression != null) {
 						var result = identifierExpression.ResolveExpression (document, resolver, loc);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).ResolvedMember;
-							if (member is IField)
+							if (member is IField) {
+								endOffset = doc.LocationToOffset (identifierExpression.EndLocation.Line, identifierExpression.EndLocation.Column);
 								return "keyword.semantic.field";
-							if (member == null && result.ResolvedType != null && !string.IsNullOrEmpty (result.ResolvedType.FullName))
+							}
+							if (member == null && result.ResolvedType != null && !string.IsNullOrEmpty (result.ResolvedType.FullName)) {
+								endOffset = doc.LocationToOffset (identifierExpression.EndLocation.Line, identifierExpression.EndLocation.Column);
 								return "keyword.semantic.type";
+							}
 						}
 					}
 					
@@ -304,10 +315,14 @@ namespace MonoDevelop.CSharp.Highlighting
 						var result = memberReferenceExpression.ResolveExpression (document, resolver, loc);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).ResolvedMember;
-							if (member is IField)
+							if (member is IField) {
+								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
 								return "keyword.semantic.field";
-							if (member == null && result.ResolvedType != null && !string.IsNullOrEmpty (result.ResolvedType.FullName))
+							}
+							if (member == null && result.ResolvedType != null && !string.IsNullOrEmpty (result.ResolvedType.FullName)) {
+								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
 								return "keyword.semantic.type";
+							}
 						}
 					}
 				}
@@ -318,9 +333,16 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				var parsedDocument = document != null ? document.ParsedDocument : null;
 				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
-					string semanticStyle = GetSemanticStyle (parsedDocument, chunk);
-					if (semanticStyle != null)
+					int endLoc = -1;
+					string semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
+					if (semanticStyle != null) {
+						if (endLoc < chunk.EndOffset) {
+							base.AddRealChunk (new Chunk (chunk.Offset, endLoc - chunk.Offset, semanticStyle));
+							AddRealChunk (new Chunk (endLoc, chunk.EndOffset - endLoc, chunk.Style));
+							return;
+						}
 						chunk.Style = semanticStyle;
+					}
 				}
 				
 				base.AddRealChunk (chunk);
