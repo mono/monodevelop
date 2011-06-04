@@ -279,9 +279,18 @@ namespace MonoDevelop.CSharp.Highlighting
 					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
 				} else {
 					var type = unit.GetNodeAt<AstType> (loc.Line, loc.Column);
-					if ((type is SimpleType || type is ICSharpCode.NRefactory.CSharp.MemberType)) {
-						if (unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
-							endOffset = doc.LocationToOffset (type.EndLocation.Line, type.EndLocation.Column);
+					if (type is SimpleType) {
+						var st = (SimpleType)type;
+						if (st.IdentifierToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
+							endOffset = doc.LocationToOffset (st.IdentifierToken.EndLocation.Line, st.IdentifierToken.EndLocation.Column);
+							return "keyword.semantic.type";
+						}
+						return null;
+					}
+					if (type is ICSharpCode.NRefactory.CSharp.MemberType) {
+						var mt = (ICSharpCode.NRefactory.CSharp.MemberType)type;
+						if (mt.MemberNameToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
+							endOffset = doc.LocationToOffset (mt.MemberNameToken.EndLocation.Line, mt.MemberNameToken.EndLocation.Column);
 							return "keyword.semantic.type";
 						}
 						return null;
