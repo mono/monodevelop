@@ -128,6 +128,13 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
+		Dictionary<object, object> tags = new Dictionary<object, object> ();
+		public Dictionary<object, object> Tags {
+			get {
+				return tags;
+			}
+		}
+		
 		public ICompilationUnit CompilationUnit { get; set; }
 		
 		public virtual IEnumerable<FoldingRegion> GenerateFolds ()
