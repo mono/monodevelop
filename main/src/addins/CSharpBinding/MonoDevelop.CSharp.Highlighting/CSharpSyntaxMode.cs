@@ -225,6 +225,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 				if (document != null && document.ParsedDocument != null) {
 					resolver = document.GetResolver ();
+					resolver.SkipExtensionMethods = true;
 					if (!document.ParsedDocument.Tags.ContainsKey ("NRefactoryUnit")) {
 						using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, document.Editor.Document.OpenTextReader ())) {
 							parser.Parse ();

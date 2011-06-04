@@ -573,11 +573,13 @@ namespace MonoDevelop.CSharp.Resolver
 			//Console.WriteLine ("Resolve member: " + memberReferenceExpression.MemberName + " on " + type);
 			
 			List<IMember> member = new List<IMember> ();
-			List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
-			// Inheritance of extension methods is handled in DomType
-			foreach (IMethod method in type.GetExtensionMethods (accessibleExtTypes)) {
-				if (method.Name == memberReferenceExpression.MemberName) {
-					member.Add (method);
+			if (!resolver.SkipExtensionMethods) {
+				List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
+				// Inheritance of extension methods is handled in DomType
+				foreach (IMethod method in type.GetExtensionMethods (accessibleExtTypes)) {
+					if (method.Name == memberReferenceExpression.MemberName) {
+						member.Add (method);
+					}
 				}
 			}
 			bool includeProtected = true;
