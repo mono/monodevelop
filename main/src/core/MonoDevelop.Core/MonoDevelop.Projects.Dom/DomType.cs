@@ -864,19 +864,25 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return result;
 		}
-
-		public List<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes)
+		
+		Dictionary<IType, List<IMethod>> extensionMethods = new Dictionary<IType, List<IMethod>> ();
+		public IEnumerable<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes)
 		{
 			List<IMethod> result = new List<IMethod> ();
 			foreach (IType staticType in accessibleExtensionTypes) {
-				foreach (IMethod method in staticType.Methods) {
-					IMethod extMethod = method.Extends (this.SourceProjectDom, this);
-					if (extMethod != null) {
-						result.Add (extMethod);
-					}
+				List<IMethod> methods;
+				if (!extensionMethods.TryGetValue (staticType, out methods)) {
+					methods = new List<IMethod> ();
+					foreach (IMethod method in staticType.Methods) {
+						IMethod extMethod = method.Extends (this.SourceProjectDom, this);
+						if (extMethod != null)
+							methods.Add (extMethod);
+					} 
+					extensionMethods [staticType] = methods;
 				}
+				foreach (var method in methods)
+					yield return method;
 			}
-			return result;
 		}
 
 		public static bool IncludeProtected (ProjectDom dom, IType type, IType callingType)

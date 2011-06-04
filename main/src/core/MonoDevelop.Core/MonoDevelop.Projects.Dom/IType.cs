@@ -165,7 +165,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		List<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes);
+		IEnumerable<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes);
 	
 		TypeKind Kind {
 			get;

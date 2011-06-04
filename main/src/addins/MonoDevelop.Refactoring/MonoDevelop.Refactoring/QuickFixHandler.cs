@@ -56,8 +56,7 @@ namespace MonoDevelop.Refactoring
 				IType type = unresolvedMemberResolveResult.TargetResolveResult != null ? options.Dom.GetType (unresolvedMemberResolveResult.TargetResolveResult.ResolvedType) : null;
 				if (type != null) {
 					List<IType> allExtTypes = DomType.GetAccessibleExtensionTypes (options.Dom, null);
-					List<IMethod> extensionMethods = type.GetExtensionMethods (allExtTypes);
-					foreach (ExtensionMethod method in extensionMethods) {
+					foreach (ExtensionMethod method in type.GetExtensionMethods (allExtTypes)) {
 						if (method.Name == unresolvedMemberResolveResult.MemberName) {
 							string ns = method.OriginalMethod.DeclaringType.Namespace;
 							if (!namespaces.Contains (ns) && !options.Document.CompilationUnit.Usings.Any (u => u.Namespaces.Contains (ns)))
