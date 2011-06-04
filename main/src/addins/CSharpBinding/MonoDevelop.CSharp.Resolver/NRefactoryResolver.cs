@@ -473,8 +473,7 @@ namespace MonoDevelop.CSharp.Resolver
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result;
-//			System.Console.WriteLine("expressionResult:" + expressionResult);
-
+			
 			if (unit != null && expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
 				string attributeName = NewCSharpExpressionFinder.FindAttributeName (editor, unit, unit.FileName);
 				if (attributeName != null) {
@@ -811,18 +810,20 @@ namespace MonoDevelop.CSharp.Resolver
 						
 						QueryExpressionGroupClause grouBy = query.SelectOrGroupClause as QueryExpressionGroupClause;
 						DomLocation old = resolvePosition;
-						try {
-							resolvePosition = new DomLocation (lookupVariableLine + grouBy.Projection.StartLocation.Line, 
-							                                   grouBy.Projection.StartLocation.Column);
-							ResolveResult initializerResolve = visitor.Resolve (grouBy.Projection);
-							ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
-							DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
-								DomType.GetComponentType (dom, initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
-							varTypeUnresolved = varType = resolved;
-						} finally {
-							resolvePosition = old;
-						}
 						
+						if (grouBy != null && grouBy.Projection != null) {
+							try {
+								resolvePosition = new DomLocation (lookupVariableLine + grouBy.Projection.StartLocation.Line, 
+								                                   grouBy.Projection.StartLocation.Column);
+								ResolveResult initializerResolve = visitor.Resolve (grouBy.Projection);
+								ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
+								DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
+									DomType.GetComponentType (dom, initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
+								varTypeUnresolved = varType = resolved;
+							} finally {
+								resolvePosition = old;
+							}
+						}
 					} else if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
 						if (var.ParentLambdaExpression != null) {
 							ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
