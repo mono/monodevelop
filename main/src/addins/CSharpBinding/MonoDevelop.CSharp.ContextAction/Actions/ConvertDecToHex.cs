@@ -1,5 +1,5 @@
 // 
-// ConvertHexToDec.cs
+// ConvertDecToHexQuickFix.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,37 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class ConvertHexToDec : CSharpContextAction
+	public class ConvertDecToHex : CSharpContextAction
 	{
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
-			return GettextCatalog.GetString ("Convert hex to dec.");
+			return GettextCatalog.GetString ("Convert dec to hex.");
 		}
 		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override void Run (CSharpContext context)
 		{
-			var unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			var pExpr = unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
-			pExpr.Replace (document, pExpr.Value.ToString ());
+			var pExpr = context.GetNode<PrimitiveExpression> ();
+			pExpr.Replace (context.Document, string.Format ("0x{0:x}", pExpr.Value));
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		protected override bool IsValid (CSharpContext context)
 		{
-			var unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
-				return false;
-			var pExpr = unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
-			if (pExpr == null || !pExpr.LiteralValue.ToUpper ().StartsWith ("0X"))
+			var pExpr = context.GetNode<PrimitiveExpression> ();
+			if (pExpr == null || pExpr.LiteralValue.ToUpper ().StartsWith ("0X"))
 				return false;
 			return (pExpr.Value is int) || (pExpr.Value is long) || (pExpr.Value is short) || (pExpr.Value is sbyte) ||
 				(pExpr.Value is uint) || (pExpr.Value is ulong) || (pExpr.Value is ushort) || (pExpr.Value is byte);
 		}
 	}
+	
 }
 

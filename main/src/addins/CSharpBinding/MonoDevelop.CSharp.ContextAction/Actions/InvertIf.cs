@@ -37,47 +37,41 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class InvertIf : CSharpContextAction
 	{
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document editor, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
 			return GettextCatalog.GetString ("Invert if");
 		}
 		
-		IfElseStatement GetIfElseStatement (ParsedDocument doc, DomLocation loc)
+		IfElseStatement GetIfElseStatement (CSharpContext context)
 		{
-			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
-				return null;
-			var result = unit.GetNodeAt<IfElseStatement> (loc.Line, loc.Column);
-			if (result != null && result.IfToken.Contains (loc.Line, loc.Column))
+			var result = context.GetNode<IfElseStatement> ();
+			if (result != null && result.IfToken.Contains (context.Location.Line, context.Location.Column))
 				return result;
 			return null;
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override bool IsValid (CSharpContext context)
 		{
-			var ifStatement = GetIfElseStatement (document.ParsedDocument, loc);
+			var ifStatement = GetIfElseStatement (context);
 			return ifStatement != null && !ifStatement.TrueStatement.IsNull && !ifStatement.FalseStatement.IsNull;
 		}
 		// TODO: Invert if without else
 		// ex. if (cond) DoSomething () == if (!cond) return; DoSomething ()
 		// beware of loop contexts return should be continue then.
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override void Run (CSharpContext context)
 		{
-			var ifStatement = GetIfElseStatement (document.ParsedDocument, loc);
-			
-			if (ifStatement == null)
-				return;
-			document.Editor.Document.BeginAtomicUndo ();
+			var ifStatement = GetIfElseStatement (context);
+			context.Document.Editor.Document.BeginAtomicUndo ();
 			try {
 				if (!ifStatement.FalseStatement.IsNull) {
-					ifStatement.FalseStatement.Replace (document, ifStatement.TrueStatement);
-					ifStatement.TrueStatement.Replace (document, ifStatement.FalseStatement);
+					ifStatement.FalseStatement.Replace (context.Document, ifStatement.TrueStatement);
+					ifStatement.TrueStatement.Replace (context.Document, ifStatement.FalseStatement);
 				}
-				ifStatement.Condition.Replace (document, CSharpUtil.InvertCondition (ifStatement.Condition));
+				ifStatement.Condition.Replace (context.Document, CSharpUtil.InvertCondition (ifStatement.Condition));
 				
-				ifStatement.FormatText (document);
+				ifStatement.FormatText (context.Document);
 			} finally {
-				document.Editor.Document.EndAtomicUndo ();
+				context.Document.Editor.Document.EndAtomicUndo ();
 			}
 		}
 		

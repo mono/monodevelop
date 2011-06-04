@@ -152,8 +152,8 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 
 		static string GetBackingStoreName (MonoDevelop.Projects.Dom.IProperty property)
 		{
-			string baseName = char.ToLower (property.Name[0]) + property.Name.Substring (1);
-			int    number   = -1;
+			string baseName = char.ToLower (property.Name [0]) + property.Name.Substring (1);
+			int number = -1;
 			IType type = property.DeclaringType;
 			if (type != null) {
 				List<IMember> members;

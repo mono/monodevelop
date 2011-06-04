@@ -37,49 +37,42 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class GenerateSwitchLabels : CSharpContextAction
 	{
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document editor, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
 			return GettextCatalog.GetString ("Generate switch labels");
 		}
 
-		SwitchStatement GetSwitchStatement (ParsedDocument doc, DomLocation loc)
+		SwitchStatement GetSwitchStatement (CSharpContext context)
 		{
-			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
-				return null;
-			var switchStatment = unit.GetNodeAt<SwitchStatement> (loc.Line, loc.Column);
+			var switchStatment = context.GetNode<SwitchStatement> ();
 			if (switchStatment != null && switchStatment.SwitchSections.Count == 0)
 				return switchStatment;
 			return null;
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override bool IsValid (CSharpContext context)
 		{
-			var switchStatement = GetSwitchStatement (document.ParsedDocument, loc);
-			if (switchStatement == null || switchStatement.SwitchSections.Count > 0)
+			var switchStatement = GetSwitchStatement (context);
+			if (switchStatement == null)
 				return false;
-			var resolver = GetResolver (document);
+			var resolver = context.Resolver;
 			var result = resolver.Resolve (switchStatement.Expression.ToString (), new DomLocation (switchStatement.StartLocation.Line, switchStatement.StartLocation.Column));
 			if (result == null || result.ResolvedType == null)
 				return false;
-			var type = document.Dom.GetType (result.ResolvedType);
+			var type = context.Document.Dom.GetType (result.ResolvedType);
 			
 			return type != null && type.ClassType == ClassType.Enum;
 		}
 		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override void Run (CSharpContext context)
 		{
-			var switchStatement = GetSwitchStatement (document.ParsedDocument, loc);
-			
-			if (switchStatement == null)
-				return;
-			
-			var resolver = GetResolver (document);
+			var switchStatement = GetSwitchStatement (context);
+			var resolver = context.Resolver;
 			
 			var result = resolver.Resolve (switchStatement.Expression.ToString (), new DomLocation (switchStatement.StartLocation.Line, switchStatement.StartLocation.Column));
-			var type = document.Dom.GetType (result.ResolvedType);
+			var type = context.Document.Dom.GetType (result.ResolvedType);
 			
-			var target = new TypeReferenceExpression (ShortenTypeName (document, result.ResolvedType));
+			var target = new TypeReferenceExpression (ShortenTypeName (context.Document, result.ResolvedType));
 			foreach (var field in type.Fields) {
 				if (!(field.IsLiteral || field.IsConst))
 					continue;
@@ -98,15 +91,15 @@ namespace MonoDevelop.CSharp.ContextAction
 					new CaseLabel ()
 				},
 				Statements = {
-					new ThrowStatement (new ObjectCreateExpression (ShortenTypeName (document, "System.ArgumentOutOfRangeException")))
+					new ThrowStatement (new ObjectCreateExpression (ShortenTypeName (context.Document, "System.ArgumentOutOfRangeException")))
 				}
 			});
 			
-			var editor = document.Editor;
+			var editor = context.Document.Editor;
 			var offset = editor.LocationToOffset (switchStatement.StartLocation.Line, switchStatement.StartLocation.Column);
 			var endOffset = editor.LocationToOffset (switchStatement.RBraceToken.EndLocation.Line, switchStatement.RBraceToken.EndLocation.Column + 1);
 			
-			string text = OutputNode (document, switchStatement, editor.GetLineIndent (switchStatement.Parent.StartLocation.Line));
+			string text = context.OutputNode (switchStatement, context.GetIndentLevel (switchStatement) + 1);
 			editor.Replace (offset, endOffset - offset + 1, text.Trim () + editor.EolMarker);
 		}
 	}

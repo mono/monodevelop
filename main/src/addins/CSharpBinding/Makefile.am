@@ -48,21 +48,23 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
-	MonoDevelop.CSharp.ContextAction/AddAnotherAccessor.cs \
-	MonoDevelop.CSharp.ContextAction/CheckIfParameterIsNull.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/AddAnotherAccessor.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/CheckIfParameterIsNull.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/ConvertDecToHex.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/ConvertForeachToFor.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/ConvertHexToDec.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/CreateBackingStore.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/CreateEventInvocator.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/FlipOperatorArguments.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/GenerateSwitchLabels.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/InvertIf.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/ReplaceEmptyString.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/UseExplicitType.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/UseVarKeyword.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
-	MonoDevelop.CSharp.ContextAction/ConvertDecToHex.cs \
-	MonoDevelop.CSharp.ContextAction/ConvertForeachToFor.cs \
-	MonoDevelop.CSharp.ContextAction/ConvertHexToDec.cs \
-	MonoDevelop.CSharp.ContextAction/CreateEventInvocator.cs \
+	MonoDevelop.CSharp.ContextAction/CSharpContext.cs \
 	MonoDevelop.CSharp.ContextAction/CSharpContextAction.cs \
-	MonoDevelop.CSharp.ContextAction/FlipOperatorArguments.cs \
-	MonoDevelop.CSharp.ContextAction/GenerateSwitchLabels.cs \
-	MonoDevelop.CSharp.ContextAction/InvertIf.cs \
-	MonoDevelop.CSharp.ContextAction/ReplaceEmptyString.cs \
 	MonoDevelop.CSharp.ContextAction/StringBuilderOutputFormatter.cs \
-	MonoDevelop.CSharp.ContextAction/UseExplicitType.cs \
-	MonoDevelop.CSharp.ContextAction/UseVarKeyword.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicyPanel.cs \

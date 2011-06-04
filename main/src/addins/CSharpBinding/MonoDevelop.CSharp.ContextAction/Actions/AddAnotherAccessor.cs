@@ -34,23 +34,22 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class AddAnotherAccessor : CSharpContextAction
 	{
-		PropertyDeclaration GetPropertyDeclaration (ParsedDocument doc, DomLocation loc)
-		{
-			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
-				return null;
-			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
-			return astNode.Parent as PropertyDeclaration;
-		}
-		
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
 			return GettextCatalog.GetString ("Add another accessor");
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		PropertyDeclaration GetPropertyDeclaration (CSharpContext context)
 		{
-			var pDecl = GetPropertyDeclaration (document.ParsedDocument, loc);
+			var astNode = context.GetNode ();
+			if (astNode == null)
+				return null;
+			return astNode.Parent as PropertyDeclaration;
+		}
+		
+		protected override bool IsValid (CSharpContext context)
+		{
+			var pDecl = GetPropertyDeclaration (context);
 			if (pDecl == null)
 				return false;
 			var type = pDecl.Parent as TypeDeclaration;
@@ -60,11 +59,9 @@ namespace MonoDevelop.CSharp.ContextAction
 			return pDecl.Setter.IsNull || pDecl.Getter.IsNull;
 		}
 		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override void Run (CSharpContext context)
 		{
-			var pDecl = GetPropertyDeclaration (document.ParsedDocument, loc);
-			if (pDecl == null)
-				return;
+			var pDecl = GetPropertyDeclaration (context);
 			
 			Accessor accessor = new Accessor () {
 				Body = new BlockStatement {
@@ -73,9 +70,9 @@ namespace MonoDevelop.CSharp.ContextAction
 			};
 			pDecl.AddChild (accessor, pDecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole);
 			
-			var editor = document.Editor;
+			var editor = context.Document.Editor;
 			var offset = editor.LocationToOffset (pDecl.RBraceToken.StartLocation.Line, pDecl.RBraceToken.StartLocation.Column - 1);
-			string text = OutputNode (document, accessor, editor.GetLineIndent (pDecl.StartLocation.Line)) + editor.EolMarker;
+			string text = context.OutputNode (accessor, context.GetIndentLevel (pDecl) + 1) + editor.EolMarker;
 			
 			editor.Insert (offset, text);
 			int i1 = text.IndexOf ("throw");

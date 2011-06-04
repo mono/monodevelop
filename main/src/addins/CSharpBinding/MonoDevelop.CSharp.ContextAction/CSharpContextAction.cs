@@ -41,26 +41,37 @@ namespace MonoDevelop.CSharp.ContextAction
 			return editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
 		}
 		
-		internal static string OutputNode (Document doc, AstNode node, string indent, Action<int, AstNode> outputStarted = null)
+		protected abstract string GetMenuText (CSharpContext context);
+		
+		public sealed override string GetMenuText (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
 		{
-			var dom = doc.Dom;
-			var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;
-			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-			var formatter = new StringBuilderOutputFormatter ();
-			int col = MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider.GetColumn (indent, 0, 4);
-			formatter.Indentation = 1 + System.Math.Max (0, col / 4);
-			formatter.EolMarker = doc.Editor.EolMarker;
-			OutputVisitor visitor = new OutputVisitor (formatter, codePolicy.CreateOptions ());
-			if (outputStarted != null)
-				visitor.OutputStarted += (sender, e) => outputStarted (formatter.Length, e.AstNode);
-			node.AcceptVisitor (visitor, null);
-			return formatter.ToString ().TrimEnd ();
+			var context = new CSharpContext (document, loc);
+			if (!context.IsValid)
+				return "invalid";
+			return GetMenuText (context);
 		}
 		
-		public static NRefactoryResolver GetResolver (MonoDevelop.Ide.Gui.Document doc)
+		protected abstract bool IsValid (CSharpContext context);
+		
+		public sealed override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
 		{
-			return new NRefactoryResolver (doc.Dom, doc.CompilationUnit, doc.Editor, doc.FileName); 
+			var context = new CSharpContext (document, loc);
+			if (!context.IsValid)
+				return false;
+			return IsValid (context);
+		}
+		
+		protected abstract void Run (CSharpContext context);
+		
+		public sealed override void Run (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		{
+			var context = new CSharpContext (document, loc);
+			if (!context.IsValid)
+				return;
+			if (!IsValid (context))
+				return;
+			
+			Run (context);
 		}
 	}
 }

@@ -37,32 +37,29 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class ConvertForeachToFor : CSharpContextAction
 	{
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
 			return GettextCatalog.GetString ("Convert 'foreach' loop to 'for'");
 		}
 		
-		ForeachStatement GetForeachStatement (ParsedDocument doc, DomLocation loc)
+		ForeachStatement GetForeachStatement (CSharpContext context)
 		{
-			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
+			var astNode = context.GetNode ();
+			if (astNode == null)
 				return null;
-			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
 			return (astNode as ForeachStatement) ?? astNode.Parent as ForeachStatement;
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override bool IsValid (CSharpContext context)
 		{
-			var foreachStatement = GetForeachStatement (document.ParsedDocument, loc);
-			return foreachStatement != null;
+			return GetForeachStatement (context) != null;
 		}
 
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override void Run (CSharpContext context)
 		{
-			var foreachStatement = GetForeachStatement (document.ParsedDocument, loc);
-			if (foreachStatement == null)
-				return;
-			var resolver = GetResolver (document);
+			var foreachStatement = GetForeachStatement (context);
+			
+			var resolver = context.Resolver;
 			
 			var result = resolver.Resolve (foreachStatement.InExpression.ToString (), new DomLocation (foreachStatement.InExpression.StartLocation.Line, foreachStatement.InExpression.StartLocation.Column));
 			string itemNumberProperty = "Count";
@@ -83,14 +80,14 @@ namespace MonoDevelop.CSharp.ContextAction
 				}
 			};
 			
-			var editor = document.Editor;
+			var editor = context.Document.Editor;
 			var offset = editor.LocationToOffset (foreachStatement.StartLocation.Line, foreachStatement.StartLocation.Column);
 			var endOffset = editor.LocationToOffset (foreachStatement.EndLocation.Line, foreachStatement.EndLocation.Column);
 			var offsets = new List<int> ();
 			string lineIndent = editor.GetLineIndent (foreachStatement.Parent.StartLocation.Line);
-			string text = OutputNode (document, forStatement, lineIndent, delegate(int nodeOffset, AstNode astNode) {
-				if (astNode is VariableDeclarationStatement && ((VariableDeclarationStatement)astNode).Variables.First ().Name == "i")
-					offsets.Add (nodeOffset + "int ".Length);
+			string text = context.OutputNode (forStatement, context.Document.CalcIndentLevel (lineIndent) + 1, delegate(int nodeOffset, AstNode astNode) {
+				if (astNode is VariableInitializer && ((VariableInitializer)astNode).Name == "i")
+					offsets.Add (nodeOffset);
 				if (astNode is IdentifierExpression && ((IdentifierExpression)astNode).Identifier == "i") {
 					offsets.Add (nodeOffset);
 				}
@@ -114,22 +111,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			text = text.Insert (i, foreachBlockText).TrimEnd ();
 			string trimmedText = text.TrimStart ();
 			editor.Replace (offset, endOffset - offset + 1, trimmedText);
-			
-			// start text link edit mode
-			TextLink link = new TextLink ("name");
-			foreach (var o in offsets) {
-				link.AddLink (new Segment (o - (text.Length - trimmedText.Length), "i".Length));
-			}
-			List<TextLink > links = new List<TextLink> ();
-			links.Add (link);
-			TextLinkEditMode tle = new TextLinkEditMode (editor.Parent, offset, links);
-			tle.SetCaretPosition = false;
-			if (tle.ShouldStartTextLinkMode) {
-				tle.OldMode = editor.CurrentMode;
-				tle.StartMode ();
-				editor.CurrentMode = tle;
-			}
-			
+			context.StartTextLinkMode (offset, "i".Length, offsets.Select (o => o - (text.Length - trimmedText.Length)));
 		}
 	}
 }

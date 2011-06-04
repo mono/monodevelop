@@ -37,6 +37,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public int Length {
 			get {
+				WriteIndentation ();
 				return sb.Length;
 			}
 		}
@@ -100,7 +101,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			sb.Append('}');
 		}
 		
-		void WriteIndentation()
+		void WriteIndentation ()
 		{
 			if (needsIndent) {
 				needsIndent = false;

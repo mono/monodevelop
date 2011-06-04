@@ -40,37 +40,31 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class CreateEventInvocator : CSharpContextAction
 	{
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
 			return GettextCatalog.GetString ("Create event invocator");
 		}
 
-		EventDeclaration GetEventDeclaration (ParsedDocument doc, DomLocation loc)
+		EventDeclaration GetEventDeclaration (CSharpContext context)
 		{
-			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
-				return null;
-			
-			return unit.GetNodeAt<EventDeclaration> (loc.Line, loc.Column);
+			return context.GetNode<EventDeclaration> ();
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override bool IsValid (CSharpContext context)
 		{
-			var eventDeclaration = GetEventDeclaration (document.ParsedDocument, loc);
+			var eventDeclaration = GetEventDeclaration (context);
 			if (eventDeclaration == null)
 				return false;
-			var member = document.CompilationUnit.GetMemberAt (loc) as IEvent;
+			var member = context.Document.CompilationUnit.GetMemberAt (context.Location) as IEvent;
 			if (member == null)
 				return false;
 			return !member.DeclaringType.Methods.Any (m => m.Name == "On" + member.Name);
 		}
 		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override void Run (CSharpContext context)
 		{
-			var eventDeclaration = GetEventDeclaration (document.ParsedDocument, loc);
-			var member = document.CompilationUnit.GetMemberAt (loc) as IEvent;
-			if (eventDeclaration == null || member == null)
-				return;
+			var eventDeclaration = GetEventDeclaration (context);
+			var member = context.Document.CompilationUnit.GetMemberAt (context.Location) as IEvent;
 			
 			MethodDeclaration methodDeclaration = new MethodDeclaration ();
 			methodDeclaration.Name = "On" + member.Name;
@@ -78,7 +72,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Virtual;
 			methodDeclaration.Body = new BlockStatement ();
 
-			IType type = document.Dom.SearchType (document.ParsedDocument.CompilationUnit, member.DeclaringType, member.Location, member.ReturnType);
+			IType type = context.Document.Dom.SearchType (context.Document.ParsedDocument.CompilationUnit, member.DeclaringType, member.Location, member.ReturnType);
 			IMethod invokeMethod = type.Methods.Where (m => m.Name == "Invoke").FirstOrDefault ();
 					
 			if (invokeMethod == null)
@@ -95,14 +89,14 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 			
 			foreach (var par in pars) {
-				var typeName = ShortenTypeName (document, par.ReturnType);
+				var typeName = ShortenTypeName (context.Document, par.ReturnType);
 				var decl = new ParameterDeclaration (typeName, par.Name);
 				methodDeclaration.Parameters.Add (decl);
 			}
 			
 			const string handlerName = "handler";
 					
-			var handlerVariable = new VariableDeclarationStatement (ShortenTypeName (document, member.ReturnType),
+			var handlerVariable = new VariableDeclarationStatement (ShortenTypeName (context.Document, member.ReturnType),
 						handlerName,
 						new MemberReferenceExpression (new ThisReferenceExpression (), member.Name));
 			methodDeclaration.Body.Statements.Add (handlerVariable);
@@ -118,8 +112,8 @@ namespace MonoDevelop.CSharp.ContextAction
 			ifStatement.TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments));
 			methodDeclaration.Body.Statements.Add (ifStatement);
 			
-			var editor = document.Editor.Parent;
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (document, member.DeclaringType));
+			var editor = context.Document.Editor.Parent;
+			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (context.Document, member.DeclaringType));
 			ModeHelpWindow helpWindow = new ModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("<b>Create event invocator -- Targeting</b>");
@@ -133,7 +127,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 				if (iCArgs.Success) {
-					iCArgs.InsertionPoint.Insert (document.Editor, OutputNode (document, methodDeclaration, ""));
+					iCArgs.InsertionPoint.Insert (context.Document.Editor, context.OutputNode (methodDeclaration, 0));
 				}
 			};
 		}

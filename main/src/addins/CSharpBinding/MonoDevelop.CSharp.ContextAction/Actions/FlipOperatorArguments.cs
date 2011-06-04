@@ -38,9 +38,9 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class FlipOperatorArguments : CSharpContextAction
 	{
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
-			var binop = GetBinaryOperatorExpression (document.ParsedDocument, loc);
+			var binop = GetBinaryOperatorExpression (context);
 			string op;
 			switch (binop.Operator) {
 			case BinaryOperatorType.Equality:
@@ -55,12 +55,9 @@ namespace MonoDevelop.CSharp.ContextAction
 			return string.Format (GettextCatalog.GetString ("Flip '{0}' operator arguments"), op);
 		}
 
-		BinaryOperatorExpression GetBinaryOperatorExpression (ParsedDocument doc, DomLocation loc)
+		BinaryOperatorExpression GetBinaryOperatorExpression (CSharpContext context)
 		{
-			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
-				return null;
-			var node = unit.GetNodeAt (loc.Line, loc.Column);
+			var node = context.GetNode ();
 			
 			if (node is CSharpTokenNode)
 				node = node.Parent;
@@ -71,30 +68,28 @@ namespace MonoDevelop.CSharp.ContextAction
 			return result;
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override bool IsValid (CSharpContext context)
 		{
-			var binop = GetBinaryOperatorExpression (document.ParsedDocument, loc);
-			return binop != null;
+			return GetBinaryOperatorExpression (context) != null;
 		}
 		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override void Run (CSharpContext context)
 		{
-			var binop = GetBinaryOperatorExpression (document.ParsedDocument, loc);
-			if (binop == null)
-				return;
-			int leftOffset = document.Editor.LocationToOffset (binop.Left.StartLocation.Line, binop.Left.StartLocation.Column);
-			int leftEndOffset = document.Editor.LocationToOffset (binop.Left.EndLocation.Line, binop.Left.EndLocation.Column);
+			var binop = GetBinaryOperatorExpression (context);
 			
-			int rightOffset = document.Editor.LocationToOffset (binop.Right.StartLocation.Line, binop.Right.StartLocation.Column);
-			int rightEndOffset = document.Editor.LocationToOffset (binop.Right.EndLocation.Line, binop.Right.EndLocation.Column);
+			int leftOffset = context.Document.Editor.LocationToOffset (binop.Left.StartLocation.Line, binop.Left.StartLocation.Column);
+			int leftEndOffset = context.Document.Editor.LocationToOffset (binop.Left.EndLocation.Line, binop.Left.EndLocation.Column);
 			
-			string rightText = document.Editor.GetTextBetween (rightOffset, rightEndOffset);
-			string leftText = document.Editor.GetTextBetween (leftOffset, leftEndOffset);
-			document.Editor.Document.BeginAtomicUndo ();
-			document.Editor.Replace (rightOffset, rightEndOffset - rightOffset, leftText);
-			document.Editor.Replace (leftOffset, leftEndOffset - leftOffset, rightText);
-			document.Editor.Document.EndAtomicUndo ();
-			document.Editor.Document.CommitUpdateAll ();
+			int rightOffset = context.Document.Editor.LocationToOffset (binop.Right.StartLocation.Line, binop.Right.StartLocation.Column);
+			int rightEndOffset = context.Document.Editor.LocationToOffset (binop.Right.EndLocation.Line, binop.Right.EndLocation.Column);
+			
+			string rightText = context.Document.Editor.GetTextBetween (rightOffset, rightEndOffset);
+			string leftText = context.Document.Editor.GetTextBetween (leftOffset, leftEndOffset);
+			context.Document.Editor.Document.BeginAtomicUndo ();
+			context.Document.Editor.Replace (rightOffset, rightEndOffset - rightOffset, leftText);
+			context.Document.Editor.Replace (leftOffset, leftEndOffset - leftOffset, rightText);
+			context.Document.Editor.Document.EndAtomicUndo ();
+			context.Document.Editor.Document.CommitUpdateAll ();
 		}
 	}
 }

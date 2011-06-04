@@ -194,6 +194,12 @@
 			_title = "Invert if"
 			_description = "Inverts an 'if ... else' expression."
 			class = "MonoDevelop.CSharp.ContextAction.InvertIf" />
+			
+		<Action mimeType="text/x-csharp"
+			_title = "Create backing store for auto property"
+			_description = "Creates a backing field for an auto property."
+			class = "MonoDevelop.CSharp.ContextAction.CreateBackingStore" />
+			
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/Inspectors">

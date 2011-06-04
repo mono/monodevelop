@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public MonoDevelop.CSharp.Resolver.NRefactoryResolver Resolver {
 			get {
-				return CSharpContextAction.GetResolver (Document);
+				return Document.GetResolver ();
 			}
 		}
 		
@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp.Inspection
 				return Enumerable.Empty<Result> ();
 				
 			var cg = new CallGraph ();
-			cg.Inspect (input, CSharpContextAction.GetResolver (input), unit);
+			cg.Inspect (input, input.GetResolver (), unit);
 			var data = new InspectionData () { Graph = cg, Document = input };
 			unit.AcceptVisitor (visitor, data);
 			return data.Results;

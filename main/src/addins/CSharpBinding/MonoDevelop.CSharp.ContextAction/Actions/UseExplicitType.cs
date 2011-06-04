@@ -37,21 +37,17 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class UseExplicitType : CSharpContextAction
 	{
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
 			return GettextCatalog.GetString ("Use explicit type");
 		}
 
-		VariableDeclarationStatement GetVariableDeclarationStatement (MonoDevelop.Ide.Gui.Document doc, DomLocation loc)
+		VariableDeclarationStatement GetVariableDeclarationStatement (CSharpContext context)
 		{
-			var unit = doc.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
-				return null;
-			
-			var result = unit.GetNodeAt<VariableDeclarationStatement> (loc.Line, loc.Column);
-			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (loc.Line, loc.Column) && result.Type.IsMatch (new SimpleType ("var"))) {
-				var resolver = GetResolver (doc);
-				var resolveResult = resolver.Resolve (result.Variables.First ().Initializer.ToString (), loc);
+			var result = context.GetNode<VariableDeclarationStatement> ();
+			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (new SimpleType ("var"))) {
+				var resolver = context.Resolver;
+				var resolveResult = resolver.Resolve (result.Variables.First ().Initializer.ToString (), context.Location);
 				if (resolveResult == null || resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.FullName))
 					return null;
 				return result;
@@ -60,26 +56,23 @@ namespace MonoDevelop.CSharp.ContextAction
 			return null;
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override bool IsValid (CSharpContext context)
 		{
-			return GetVariableDeclarationStatement (document, loc) != null;
+			return GetVariableDeclarationStatement (context) != null;
 		}
 		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override void Run (CSharpContext context)
 		{
-			var varDecl = GetVariableDeclarationStatement (document, loc);
-			if (varDecl == null)
-				return;
+			var varDecl = GetVariableDeclarationStatement (context);
+			var resolver = context.Resolver;
+			var resolveResult = resolver.Resolve (varDecl.Variables.First ().Initializer.ToString (), context.Location);
 			
-			var resolver = GetResolver (document);
-			var resolveResult = resolver.Resolve (varDecl.Variables.First ().Initializer.ToString (), loc);
-			
-			int offset = document.Editor.LocationToOffset (varDecl.Type.StartLocation.Line, varDecl.Type.StartLocation.Column);
-			int endOffset = document.Editor.LocationToOffset (varDecl.Type.EndLocation.Line, varDecl.Type.EndLocation.Column);
-			string text = OutputNode (document, ShortenTypeName (document, resolveResult.ResolvedType), "").Trim ();
-			document.Editor.Replace (offset, endOffset - offset, text);
-			document.Editor.Caret.Offset = offset + text.Length;
-			document.Editor.Document.CommitUpdateAll ();
+			int offset = context.Document.Editor.LocationToOffset (varDecl.Type.StartLocation.Line, varDecl.Type.StartLocation.Column);
+			int endOffset = context.Document.Editor.LocationToOffset (varDecl.Type.EndLocation.Line, varDecl.Type.EndLocation.Column);
+			string text = context.OutputNode (ShortenTypeName (context.Document, resolveResult.ResolvedType), 0).Trim ();
+			context.Document.Editor.Replace (offset, endOffset - offset, text);
+			context.Document.Editor.Caret.Offset = offset + text.Length;
+			context.Document.Editor.Document.CommitUpdateAll ();
 		}
 	}
 }

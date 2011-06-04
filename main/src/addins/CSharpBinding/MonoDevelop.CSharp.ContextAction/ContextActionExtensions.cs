@@ -27,14 +27,42 @@ using System;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
 	public static class ContextActionExtensions
 	{
+		public static int CalcIndentLevel (this MonoDevelop.Ide.Gui.Document doc, string indent)
+		{
+			int col = MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider.GetColumn (indent, 0, doc.Editor.Options.TabSize);
+			return System.Math.Max (0, col / doc.Editor.Options.TabSize);
+		}
+		
+		public static string OutputNode (this MonoDevelop.Ide.Gui.Document doc, AstNode node, int indentLevel, Action<int, AstNode> outputStarted = null)
+		{
+			var dom = doc.Dom;
+			var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			var formatter = new StringBuilderOutputFormatter ();
+			formatter.Indentation = indentLevel;
+			formatter.EolMarker = doc.Editor.EolMarker;
+			var visitor = new OutputVisitor (formatter, codePolicy.CreateOptions ());
+			if (outputStarted != null)
+				visitor.OutputStarted += (sender, e) => outputStarted (formatter.Length, e.AstNode);
+			node.AcceptVisitor (visitor, null);
+			return formatter.ToString ().TrimEnd ();
+		}
+		
+		public static NRefactoryResolver GetResolver (this MonoDevelop.Ide.Gui.Document doc)
+		{
+			return new NRefactoryResolver (doc.Dom, doc.CompilationUnit, doc.Editor, doc.FileName); 
+		}
+		
 		public static void Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, AstNode replaceWith)
 		{
-			string text = CSharpContextAction.OutputNode (doc, replaceWith, "").Trim ();
+			string text = doc.OutputNode (replaceWith, 0).Trim ();
 		
 			int offset = doc.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
 			int endOffset = doc.Editor.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);

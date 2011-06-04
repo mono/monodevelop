@@ -33,29 +33,47 @@ namespace MonoDevelop.CSharp.ContextAction
 {
 	public class CheckIfParameterIsNull : CSharpContextAction
 	{
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override string GetMenuText (CSharpContext context)
 		{
 			return GettextCatalog.GetString ("Check if parameter is null");
 		}
 		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		protected override bool IsValid (CSharpContext context)
 		{
-			var pDecl = GetParameterDeclaration (document.ParsedDocument, loc);
+			var pDecl = GetParameterDeclaration (context);
+			if (pDecl == null)
+				return false;
+			
+			if (pDecl.Type is PrimitiveType)
+				return (((PrimitiveType)pDecl.Type).Keyword == "object" || ((PrimitiveType)pDecl.Type).Keyword == "string") && !HasNullCheck (pDecl);
+			
+			// TODO: check for structs
+			return !HasNullCheck (pDecl);
+		}
+		
+		protected override void Run (CSharpContext context)
+		{
+			var pDecl = GetParameterDeclaration (context);
 			
 			var bodyStatement = pDecl.Parent.GetChildByRole (AstNode.Roles.Body);
 			
 			var statement = new IfElseStatement () {
 				Condition = new BinaryOperatorExpression (new IdentifierExpression (pDecl.Name), BinaryOperatorType.Equality, new NullReferenceExpression ()),
-				TrueStatement = new ThrowStatement (new ObjectCreateExpression (ShortenTypeName (document, "System.ArgumentNullException"), new PrimitiveExpression (pDecl.Name)))
+				TrueStatement = new ThrowStatement (new ObjectCreateExpression (ShortenTypeName (context.Document, "System.ArgumentNullException"), new PrimitiveExpression (pDecl.Name)))
 			};
-			var editor = document.Editor;
+			var editor = context.Document.Editor;
 			var offset = editor.LocationToOffset (bodyStatement.StartLocation.Line, bodyStatement.StartLocation.Column + 1);
 			
-			string text = editor.EolMarker + OutputNode (document, statement, editor.GetLineIndent (bodyStatement.StartLocation.Line));
+			string text = editor.EolMarker + context.OutputNode (statement, context.GetIndentLevel (bodyStatement) + 1);
 			
 			editor.Insert (offset, text);
 		}
 		
+		ICSharpCode.NRefactory.CSharp.ParameterDeclaration GetParameterDeclaration (CSharpContext context)
+		{
+			return context.GetNode<ICSharpCode.NRefactory.CSharp.ParameterDeclaration> ();
+		}
+
 		public bool HasNullCheck (ParameterDeclaration pDecl)
 		{
 			var visitor = new CheckNullVisitor (pDecl);
@@ -91,33 +109,5 @@ namespace MonoDevelop.CSharp.ContextAction
 				return base.VisitIfElseStatement (ifElseStatement, data);
 			}
 		}
-		
-		ParameterDeclaration GetParameterDeclaration (ParsedDocument doc, DomLocation loc)
-		{
-			var unit = doc.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-			if (unit == null)
-				return null;
-			AstNode astNode = unit.GetNodeAt (loc.Line, loc.Column);
-			while (astNode != null && !(astNode is ParameterDeclaration)) {
-				astNode = astNode.Parent;
-			}
-			
-			return astNode as ParameterDeclaration;
-		}
-		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
-		{
-			var pDecl = GetParameterDeclaration (document.ParsedDocument, loc);
-			if (pDecl == null)
-				return false;
-			
-			if (pDecl.Type is PrimitiveType) {
-				return (((PrimitiveType)pDecl.Type).Keyword == "object" || ((PrimitiveType)pDecl.Type).Keyword == "string") && !HasNullCheck (pDecl);
-			}
-			
-			// todo: check for structs
-			return !HasNullCheck (pDecl);
-		}
 	}
 }
-
