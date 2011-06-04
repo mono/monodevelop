@@ -42,6 +42,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.ContextAction;
+using MonoDevelop.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -196,6 +197,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			HashSet<string> tags = new HashSet<string> ();
 			MonoDevelop.Ide.Gui.Document document;
 			static HashSet<string> contextualKeywords = new HashSet<string> ();
+			NRefactoryResolver resolver;
+
 			
 			static CSharpChunkParser ()
 			{
@@ -219,6 +222,16 @@ namespace MonoDevelop.CSharp.Highlighting
 				
 				foreach (var tag in ProjectDomService.SpecialCommentTags) {
 					tags.Add (tag.Tag);
+				}
+				if (document != null && document.ParsedDocument != null) {
+					resolver = document.GetResolver ();
+					if (!document.ParsedDocument.Tags.ContainsKey ("NRefactoryUnit")) {
+						using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, document.Editor.Document.OpenTextReader ())) {
+							parser.Parse ();
+							document.ParsedDocument.Tags ["NRefactoryUnit"] = parser.CompilationUnit;
+						}
+					}
+					resolver.SetupParsedCompilationUnit (document.ParsedDocument.Tags ["NRefactoryUnit"] as ICSharpCode.OldNRefactory.Ast.CompilationUnit);
 				}
 			}
 			
@@ -273,7 +286,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					var identifierExpression = unit.GetNodeAt<IdentifierExpression> (loc.Line, loc.Column);
 					if (identifierExpression != null) {
-						var result = identifierExpression.Resolve (document);
+						var result = identifierExpression.ResolveExpression (document, resolver, loc);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).ResolvedMember;
 							if (member is IField)
@@ -288,7 +301,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (!memberReferenceExpression.MemberNameToken.Contains (loc.Line, loc.Column)) 
 							return null;
 						
-						var result = memberReferenceExpression.Resolve (document);
+						var result = memberReferenceExpression.ResolveExpression (document, resolver, loc);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).ResolvedMember;
 							if (member is IField)

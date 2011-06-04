@@ -64,7 +64,38 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			return doc.GetResolver ().Resolve (node.ToString (), new DomLocation (node.StartLocation.Line, node.StartLocation.Column));
 		}
-	
+		public static ResolveResult ResolveExpression (this AstNode node, MonoDevelop.Ide.Gui.Document doc, NRefactoryResolver resolver, DocumentLocation loc)
+		{
+			if (resolver == null)
+				return null;
+			resolver.SetupResolver (new DomLocation (loc.Line, loc.Column));
+			return resolver.ResolveExpression (node.AcceptVisitor (exVisitor, null), new DomLocation (node.StartLocation.Line, node.StartLocation.Column));
+		}
+		static ExpressionVisitor exVisitor = new ExpressionVisitor ();
+		class ExpressionVisitor : DepthFirstAstVisitor<object, ICSharpCode.OldNRefactory.Ast.Expression>
+		{
+			public override ICSharpCode.OldNRefactory.Ast.Expression VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
+			{
+				return new ICSharpCode.OldNRefactory.Ast.IdentifierExpression (identifierExpression.Identifier);
+			}
+			
+			public override ICSharpCode.OldNRefactory.Ast.Expression VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
+			{
+				return new ICSharpCode.OldNRefactory.Ast.MemberReferenceExpression (memberReferenceExpression.Target.AcceptVisitor (this, null), memberReferenceExpression.MemberName);
+			}
+			
+			public override ICSharpCode.OldNRefactory.Ast.Expression VisitThisReferenceExpression (ThisReferenceExpression thisReferenceExpression, object data)
+			{
+				return new ICSharpCode.OldNRefactory.Ast.ThisReferenceExpression ();
+			}
+			
+			public override ICSharpCode.OldNRefactory.Ast.Expression VisitBaseReferenceExpression (BaseReferenceExpression baseReferenceExpression, object data)
+			{
+				return new ICSharpCode.OldNRefactory.Ast.BaseReferenceExpression ();
+			}
+			
+			
+		}
 		public static MonoDevelop.Refactoring.Change Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, AstNode replaceWith)
 		{
 			string text = doc.OutputNode (replaceWith, 0).Trim ();

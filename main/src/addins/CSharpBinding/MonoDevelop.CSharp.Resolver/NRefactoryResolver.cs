@@ -189,9 +189,10 @@ namespace MonoDevelop.CSharp.Resolver
 					callingMember = GetMemberAt (callingType, fileName, posAbove);
 				}
 			}
-			if (memberCompilationUnit != null)
+			if (memberCompilationUnit != null) {
 				return;
-			if (callingMember != null && !setupLookupTableVisitor ) {
+			}
+			if (callingMember != null && !setupLookupTableVisitor) {
 				string wrapper = CreateWrapperClassForMember (callingMember, fileName, editor);
 				using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
 					parser.Parse ();
