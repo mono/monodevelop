@@ -72,9 +72,6 @@ FILES =  \
 	MonoDevelop.ContextAction/ContextActionWidget.cs \
 	MonoDevelop.Inspection/InspectionPanelWidget.cs \
 	MonoDevelop.Inspection/InspectorAddinNode.cs \
-	MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs \
-	MonoDevelop.Refactoring.ConvertPropery/PropertyVisitor.cs \
-	MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateStructCodeGenerator.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \

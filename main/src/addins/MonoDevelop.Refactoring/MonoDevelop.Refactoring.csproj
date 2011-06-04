@@ -104,9 +104,6 @@
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\RaiseEventMethodGenerator.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ConvertPropery\CreateBackingStore.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ConvertPropery\RemoveBackingStore.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ConvertPropery\PropertyVisitor.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\NullCheckGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeSearchVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
@@ -161,7 +158,6 @@
     <Folder Include="MonoDevelop.CodeGeneration\" />
     <Folder Include="MonoDevelop.Refactoring.RefactorImports\" />
     <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />
-    <Folder Include="MonoDevelop.Refactoring.ConvertPropery\" />
     <Folder Include="MonoDevelop.AnalysisCore\" />
     <Folder Include="MonoDevelop.ContextAction\" />
     <Folder Include="MonoDevelop.Inspection\" />
