@@ -95,12 +95,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				}
 			});
 			
-			var editor = context.Document.Editor;
-			var offset = editor.LocationToOffset (switchStatement.StartLocation.Line, switchStatement.StartLocation.Column);
-			var endOffset = editor.LocationToOffset (switchStatement.RBraceToken.EndLocation.Line, switchStatement.RBraceToken.EndLocation.Column + 1);
-			
-			string text = context.OutputNode (switchStatement, context.GetIndentLevel (switchStatement) + 1);
-			editor.Replace (offset, endOffset - offset + 1, text.Trim () + editor.EolMarker);
+			context.Do (switchStatement.Replace (context.Document, switchStatement));
 		}
 	}
 }

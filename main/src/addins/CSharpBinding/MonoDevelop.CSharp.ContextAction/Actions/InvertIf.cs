@@ -64,11 +64,11 @@ namespace MonoDevelop.CSharp.ContextAction
 			context.Document.Editor.Document.BeginAtomicUndo ();
 			try {
 				if (!ifStatement.FalseStatement.IsNull) {
-					ifStatement.FalseStatement.Replace (context.Document, ifStatement.TrueStatement);
-					ifStatement.TrueStatement.Replace (context.Document, ifStatement.FalseStatement);
+					context.Do (ifStatement.FalseStatement.Replace (context.Document, ifStatement.TrueStatement));
+					context.Do (ifStatement.TrueStatement.Replace (context.Document, ifStatement.FalseStatement));
 				}
-				ifStatement.Condition.Replace (context.Document, CSharpUtil.InvertCondition (ifStatement.Condition));
-				
+				context.Do (ifStatement.Condition.Replace (context.Document, CSharpUtil.InvertCondition (ifStatement.Condition)));
+				context.CommitChanges ();
 				ifStatement.FormatText (context.Document);
 			} finally {
 				context.Document.Editor.Document.EndAtomicUndo ();

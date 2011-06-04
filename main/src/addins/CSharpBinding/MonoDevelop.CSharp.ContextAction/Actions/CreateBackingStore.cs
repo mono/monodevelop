@@ -75,11 +75,8 @@ namespace MonoDevelop.CSharp.ContextAction
 				if (astNode is IdentifierExpression && ((IdentifierExpression)astNode).Identifier == backingStoreName)
 					offsets.Add (fieldOutput.Length + nodeOffset);
 			});
-			context.Document.Editor.Document.BeginAtomicUndo ();
-			property.Replace (context.Document, propertyOutput);
-			context.Document.Editor.Insert (offset, fieldOutput);
-			context.Document.Editor.Document.EndAtomicUndo ();
-			
+			context.Do (property.Replace (context.Document, propertyOutput));
+			context.DoInsert (offset, fieldOutput);
 			context.StartTextLinkMode (offset, backingStoreName.Length, offsets);
 		}
 		

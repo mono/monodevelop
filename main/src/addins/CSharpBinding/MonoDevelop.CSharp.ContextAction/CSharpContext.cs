@@ -29,6 +29,9 @@ using MonoDevelop.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp;
 using System.Collections.Generic;
 using Mono.TextEditor;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -64,6 +67,20 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 		}
 		
+		public bool HasCSharp3Support {
+			get {
+				var project = Document.Project as DotNetProject;
+				switch (project.TargetFramework.ClrVersion) {
+				case ClrVersion.Net_1_1:
+				case ClrVersion.Net_2_0:
+				case ClrVersion.Clr_2_1:
+					return false;
+				default:
+					return true;
+				}
+			}
+		}
+		
 		public CSharpContext (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
 		{
 			if (document == null)
@@ -95,6 +112,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public void StartTextLinkMode (int baseOffset, int replaceLength, IEnumerable<int> offsets)
 		{
+			CommitChanges ();
 			var link = new TextLink ("name");
 			foreach (var o in offsets) {
 				link.AddLink (new Segment (o, replaceLength));
@@ -108,6 +126,48 @@ namespace MonoDevelop.CSharp.ContextAction
 				tle.StartMode ();
 				Document.Editor.CurrentMode = tle;
 			}
+		}
+		
+		List<MonoDevelop.Refactoring.Change> changes = new List<MonoDevelop.Refactoring.Change> ();
+		public void Do (MonoDevelop.Refactoring.Change change)
+		{
+			changes.Add (change);
+		}
+
+		public void DoInsert (int offset, string text)
+		{
+			Do (new MonoDevelop.Refactoring.TextReplaceChange () {
+				FileName = Document.FileName,
+				Offset = offset,
+				RemovedChars = 0,
+				InsertedText = text
+			});
+		}
+
+		public void DoRemove (int offset, int length)
+		{
+			Do (new MonoDevelop.Refactoring.TextReplaceChange () {
+				FileName = Document.FileName,
+				Offset = offset,
+				RemovedChars = length,
+				InsertedText = null
+			});
+		}
+
+		public void DoReplace (int offset, int length, string text)
+		{
+			Do (new MonoDevelop.Refactoring.TextReplaceChange () {
+				FileName = Document.FileName,
+				Offset = offset,
+				RemovedChars = length,
+				InsertedText = text
+			});
+		}
+		
+		public void CommitChanges ()
+		{
+			RefactoringService.AcceptChanges (null, Document.Dom, changes);
+			changes.Clear ();
 		}
 	}
 }

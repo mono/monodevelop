@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		protected override void Run (CSharpContext context)
 		{
 			var pExpr = context.GetNode<PrimitiveExpression> ();
-			pExpr.Replace (context.Document, pExpr.Value.ToString ());
+			context.Do (pExpr.Replace (context.Document, pExpr.Value.ToString ()));
 		}
 		
 		protected override bool IsValid (CSharpContext context)

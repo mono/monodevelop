@@ -51,7 +51,8 @@ namespace MonoDevelop.CSharp.ContextAction
 			int endOffset = context.Document.Editor.LocationToOffset (expr.EndLocation.Line, expr.EndLocation.Column);
 			
 			string text = "string.Empty";
-			context.Document.Editor.Replace (offset, endOffset - offset, text);
+			context.DoReplace (offset, endOffset - offset, text);
+			context.CommitChanges ();
 			context.Document.Editor.Caret.Offset = offset + text.Length;
 		}
 		

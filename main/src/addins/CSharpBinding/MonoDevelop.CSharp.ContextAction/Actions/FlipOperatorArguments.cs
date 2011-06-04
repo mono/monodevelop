@@ -77,18 +77,8 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			var binop = GetBinaryOperatorExpression (context);
 			
-			int leftOffset = context.Document.Editor.LocationToOffset (binop.Left.StartLocation.Line, binop.Left.StartLocation.Column);
-			int leftEndOffset = context.Document.Editor.LocationToOffset (binop.Left.EndLocation.Line, binop.Left.EndLocation.Column);
-			
-			int rightOffset = context.Document.Editor.LocationToOffset (binop.Right.StartLocation.Line, binop.Right.StartLocation.Column);
-			int rightEndOffset = context.Document.Editor.LocationToOffset (binop.Right.EndLocation.Line, binop.Right.EndLocation.Column);
-			
-			string rightText = context.Document.Editor.GetTextBetween (rightOffset, rightEndOffset);
-			string leftText = context.Document.Editor.GetTextBetween (leftOffset, leftEndOffset);
-			context.Document.Editor.Document.BeginAtomicUndo ();
-			context.Document.Editor.Replace (rightOffset, rightEndOffset - rightOffset, leftText);
-			context.Document.Editor.Replace (leftOffset, leftEndOffset - leftOffset, rightText);
-			context.Document.Editor.Document.EndAtomicUndo ();
+			context.Do (binop.Left.Replace (context.Document, binop.Right));
+			context.Do (binop.Right.Replace (context.Document, binop.Left));
 		}
 	}
 }

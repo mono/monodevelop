@@ -70,7 +70,8 @@ namespace MonoDevelop.CSharp.ContextAction
 			int offset = context.Document.Editor.LocationToOffset (varDecl.Type.StartLocation.Line, varDecl.Type.StartLocation.Column);
 			int endOffset = context.Document.Editor.LocationToOffset (varDecl.Type.EndLocation.Line, varDecl.Type.EndLocation.Column);
 			string text = context.OutputNode (ShortenTypeName (context.Document, resolveResult.ResolvedType), 0).Trim ();
-			context.Document.Editor.Replace (offset, endOffset - offset, text);
+			context.DoReplace (offset, endOffset - offset, text);
+			context.CommitChanges ();
 			context.Document.Editor.Caret.Offset = offset + text.Length;
 		}
 	}

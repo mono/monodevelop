@@ -58,6 +58,7 @@ FILES =  \
 	MonoDevelop.CSharp.ContextAction/Actions/FlipOperatorArguments.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/GenerateSwitchLabels.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/InvertIf.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/RemoveBackingStore.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/ReplaceEmptyString.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/UseExplicitType.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/UseVarKeyword.cs \

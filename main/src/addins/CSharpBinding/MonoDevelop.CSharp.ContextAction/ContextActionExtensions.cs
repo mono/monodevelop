@@ -60,22 +60,37 @@ namespace MonoDevelop.CSharp.ContextAction
 			return new NRefactoryResolver (doc.Dom, doc.CompilationUnit, doc.Editor, doc.FileName); 
 		}
 		
-		public static void Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, AstNode replaceWith)
+		public static ResolveResult Resolve (this AstNode node, MonoDevelop.Ide.Gui.Document doc)
+		{
+			return doc.GetResolver ().Resolve (node.ToString (), new DomLocation (node.StartLocation.Line, node.StartLocation.Column));
+		}
+	
+		public static MonoDevelop.Refactoring.Change Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, AstNode replaceWith)
 		{
 			string text = doc.OutputNode (replaceWith, 0).Trim ();
 		
 			int offset = doc.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
 			int endOffset = doc.Editor.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
 				
-			doc.Editor.Replace (offset, endOffset - offset, text);
+			return new MonoDevelop.Refactoring.TextReplaceChange () {
+				FileName = doc.FileName,
+				Offset = offset,
+				RemovedChars = endOffset - offset,
+				InsertedText = text
+			};
 		}
 		
-		public static void Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, string text)
+		public static MonoDevelop.Refactoring.Change Replace (this AstNode node, MonoDevelop.Ide.Gui.Document doc, string text)
 		{
 			int offset = doc.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
 			int endOffset = doc.Editor.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
 				
-			doc.Editor.Replace (offset, endOffset - offset, text);
+			return new MonoDevelop.Refactoring.TextReplaceChange () {
+				FileName = doc.FileName,
+				Offset = offset,
+				RemovedChars = endOffset - offset,
+				InsertedText = text
+			};
 		}
 		
 		public static void FormatText (this AstNode node, MonoDevelop.Ide.Gui.Document doc)
