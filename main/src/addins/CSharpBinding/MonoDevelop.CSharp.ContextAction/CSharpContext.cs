@@ -196,5 +196,14 @@ namespace MonoDevelop.CSharp.ContextAction
 			return new Segment (startOffset, endOffset - startOffset);
 		}
 		
+		public void FormatText (Func<CSharpContext, AstNode> update)
+		{
+			Document.UpdateParseDocument ();
+			this.Unit = Document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+			
+			var node = update (this);
+			if (node != null)
+				node.FormatText (Document);
+		}
 	}
 }

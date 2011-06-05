@@ -101,7 +101,6 @@ namespace MonoDevelop.CSharp.ContextAction
 			if (!context.HasCSharp3Support || propertyDeclaration.IsAbstract || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
 				return null;
 			var getterField = ScanGetter (context, propertyDeclaration);
-			Console.WriteLine ("!!" + getterField);
 			if (getterField == null)
 				return null;
 			var setterField = ScanSetter (context, propertyDeclaration);
@@ -112,7 +111,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return getterField;
 		}
 		
-		protected IField ScanGetter (CSharpContext context, PropertyDeclaration propertyDeclaration)
+		internal static IField ScanGetter (CSharpContext context, PropertyDeclaration propertyDeclaration)
 		{
 			if (propertyDeclaration.Getter.Body.Statements.Count != 1)
 				return null;
@@ -125,7 +124,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return result.ResolvedMember as IField;
 		}
 		
-		protected IField ScanSetter (CSharpContext context, PropertyDeclaration propertyDeclaration)
+		internal static IField ScanSetter (CSharpContext context, PropertyDeclaration propertyDeclaration)
 		{
 			if (propertyDeclaration.Setter.Body.Statements.Count != 1)
 				return null;

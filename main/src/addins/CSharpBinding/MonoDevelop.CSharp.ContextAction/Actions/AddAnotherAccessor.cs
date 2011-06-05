@@ -63,22 +63,50 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			var pDecl = GetPropertyDeclaration (context);
 			
+			Statement accessorStatement = null;
+			
+			if (pDecl.Setter.IsNull && !pDecl.Getter.IsNull) {
+				var field = RemoveBackingStore.ScanGetter (context, pDecl);
+				if (field != null) 
+					accessorStatement = new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (field.Name), AssignmentOperatorType.Assign, new IdentifierExpression ("value")));
+			}
+			
+			if (!pDecl.Setter.IsNull && pDecl.Getter.IsNull) {
+				var field = RemoveBackingStore.ScanSetter (context, pDecl);
+				if (field != null) 
+					accessorStatement = new ReturnStatement (new IdentifierExpression (field.Name));
+			}
+			
+			if (accessorStatement == null)
+				accessorStatement = new ThrowStatement (new ObjectCreateExpression (new SimpleType ("System.NotImplementedException")));
+			
 			Accessor accessor = new Accessor () {
 				Body = new BlockStatement {
-					new ThrowStatement (new ObjectCreateExpression (new SimpleType ("System.NotImplementedException")))
+					accessorStatement 
 				}
 			};
+			
 			pDecl.AddChild (accessor, pDecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole);
 			
 			var editor = context.Document.Editor;
 			var offset = editor.LocationToOffset (pDecl.RBraceToken.StartLocation.Line, pDecl.RBraceToken.StartLocation.Column - 1);
 			string text = context.OutputNode (accessor, context.GetIndentLevel (pDecl) + 1) + editor.EolMarker;
 			
+			editor.Document.BeginAtomicUndo ();
+			
 			editor.Insert (offset, text);
-			int i1 = text.IndexOf ("throw");
+			
+			int i1 = text.IndexOf ("{");
 			int i2 = text.IndexOf (";") + 1;
+			
+			i1++;
+			while (i1 < i2 && char.IsWhiteSpace (text[i1]))
+				i1++;
 			editor.Caret.Offset = offset + i2;
 			editor.SetSelection (offset + i1, offset + i2);
+			
+			context.FormatText (ctx => GetPropertyDeclaration (context));
+			editor.Document.EndAtomicUndo ();
 		}
 	}
 }
