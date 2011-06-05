@@ -287,6 +287,7 @@
 		<Word>ldelem.u8</Word>
 		<Word>ldc.i4.M1</Word>
 		<Word>endfault</Word>
+		<Word>mdtoken</Word>
 	</Keywords>
 	
 	<Keywords color = "keyword.type">
