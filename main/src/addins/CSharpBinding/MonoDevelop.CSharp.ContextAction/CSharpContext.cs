@@ -143,6 +143,19 @@ namespace MonoDevelop.CSharp.ContextAction
 				InsertedText = text
 			});
 		}
+		
+		public void DoRemove (AstNode node)
+		{
+			var startOffset = Document.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
+			var endOffset   = Document.Editor.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+			
+			Do (new MonoDevelop.Refactoring.TextReplaceChange () {
+				FileName = Document.FileName,
+				Offset = startOffset,
+				RemovedChars = endOffset - startOffset,
+				InsertedText = null
+			});
+		}
 
 		public void DoRemove (int offset, int length)
 		{
@@ -169,5 +182,19 @@ namespace MonoDevelop.CSharp.ContextAction
 			RefactoringService.AcceptChanges (null, Document.Dom, changes);
 			changes.Clear ();
 		}
+		
+		public string GetText (AstNode node)
+		{
+			return Document.Editor.GetTextAt (GetSegment (node));
+		}
+		
+		public ISegment GetSegment (AstNode node)
+		{
+			var startOffset = Document.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
+			var endOffset   = Document.Editor.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+			
+			return new Segment (startOffset, endOffset - startOffset);
+		}
+		
 	}
 }

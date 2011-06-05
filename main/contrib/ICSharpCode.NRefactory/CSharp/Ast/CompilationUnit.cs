@@ -42,6 +42,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
+		public IEnumerable<TypeDeclaration> GetTypes (bool includeInnerTypes = false)
+		{
+			Stack<AstNode> nodeStack = new Stack<AstNode> ();
+			nodeStack.Push (this);
+			while (nodeStack.Count > 0) {
+				var curNode = nodeStack.Pop ();
+				if (curNode is TypeDeclaration)
+					yield return (TypeDeclaration)curNode;
+				foreach (var child in curNode.Children) {
+					if (!(child is Statement || child is Expression) &&
+						 (child.Role != TypeDeclaration.MemberRole || (child is TypeDeclaration && includeInnerTypes)))
+						nodeStack.Push (child);
+				}
+			}
+		}
+		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			CompilationUnit o = other as CompilationUnit;

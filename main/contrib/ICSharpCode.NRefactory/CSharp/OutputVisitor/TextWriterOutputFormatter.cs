@@ -14,6 +14,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		readonly TextWriter textWriter;
 		int indentation;
 		bool needsIndent = true;
+
+		public int Indentation {
+			get {
+				return this.indentation;
+			}
+			set {
+				this.indentation = value;
+			}
+		}
 		
 		public string IndentationString { get; set; }
 		

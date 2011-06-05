@@ -258,6 +258,7 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\UseExplicitType.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\UseVarKeyword.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBackingStore.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

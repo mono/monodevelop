@@ -202,6 +202,12 @@
 			_title = "Remove backing store for property"
 			_description = "Removes the backing store of a property and creates an auto property."
 			class = "MonoDevelop.CSharp.ContextAction.RemoveBackingStore" />
+		<Action mimeType="text/x-csharp"
+			_title = "Move type to another file"
+			_description = "Moves current type to another file that matches the name of the type."
+			class = "MonoDevelop.CSharp.ContextAction.MoveTypeToFile" />
+			
+			
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/Inspectors">
