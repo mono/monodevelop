@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 
@@ -32,20 +31,31 @@ namespace ICSharpCode.NRefactory
 	public interface ITextEditorAdapter
 	{
 		bool TabsToSpaces { get; }
+
 		int TabSize { get; }
+
 		string EolMarker { get; }
 		
-		string Text { get;  }
+		string Text { get; }
+
 		int Length { get; }
-		int LocationToOffset (int line, int col);
-		char GetCharAt (int offset);
+
+		int LocationToOffset (int line, int col)
+;
+		char GetCharAt (int offset)
+;
 		string GetTextAt (int offset, int length);
 		
 		int LineCount { get; }
-		int GetEditableLength (int lineNumber);
-		string GetIndentation (int lineNumber);
-		int GetLineOffset (int lineNumber);
-		int GetLineLength (int lineNumber);
+
+		int GetEditableLength (int lineNumber)
+;
+		string GetIndentation (int lineNumber)
+;
+		int GetLineOffset (int lineNumber)
+;
+		int GetLineLength (int lineNumber)
+;
 		int GetLineEndOffset (int lineNumber);
 		
 		void Replace (int offset, int count, string text);

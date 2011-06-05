@@ -27,7 +27,6 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-
 	public class ObservableAstVisitor<T, S>: IAstVisitor<T, S>
 	{
 		S VisitChildren (AstNode node, T data)

@@ -53,10 +53,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitAttribute (this, data);
 		}
 		
-		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+		protected internal override bool DoMatch (AstNode other, PatternMatching.Match match)
 		{
 			Attribute o = other as Attribute;
-			return o != null && this.Type.DoMatch(o.Type, match) && this.Arguments.DoMatch(o.Arguments, match);
+			return o != null && this.Type.DoMatch (o.Type, match) && this.Arguments.DoMatch (o.Arguments, match);
+		}
+		
+		public override string ToString ()
+		{
+			if (IsNull)
+				return "Null";
+			var w = new System.IO.StringWriter ();
+			AcceptVisitor (new OutputVisitor (w, new CSharpFormattingOptions ()), null);
+			return w.ToString ();
 		}
 	}
 }

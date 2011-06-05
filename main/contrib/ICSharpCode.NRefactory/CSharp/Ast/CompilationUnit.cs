@@ -48,7 +48,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return o != null && GetChildrenByRole(MemberRole).DoMatch(o.GetChildrenByRole(MemberRole), match);
 		}
 		
-		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCompilationUnit (this, data);

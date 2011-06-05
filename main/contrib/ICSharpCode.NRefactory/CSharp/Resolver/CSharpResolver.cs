@@ -1622,13 +1622,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						NamespaceResolveResult ns = u.ResolveNamespace(context);
 						if (ns != null) {
 							def = context.GetClass(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
-							if (firstResult == null) {
-								if (k == 0)
-									firstResult = def;
-								else
-									firstResult = new ParameterizedType(def, typeArguments);
-							} else {
-								return new AmbiguousTypeResolveResult(firstResult);
+							if (def != null) {
+								if (firstResult == null) {
+									if (k == 0)
+										firstResult = def;
+									else
+										firstResult = new ParameterizedType(def, typeArguments);
+								} else {
+									return new AmbiguousTypeResolveResult(firstResult);
+								}
 							}
 						}
 					}
@@ -1637,10 +1639,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				// if we didn't find anything: repeat lookup with parent namespace
 			}
-			if (typeArguments.Count == 0)
-				return new UnknownIdentifierResolveResult(identifier);
-			else
+			if (typeArguments.Count == 0) {
+				if (identifier == "dynamic")
+					return new TypeResolveResult(SharedTypes.Dynamic);
+				else
+					return new UnknownIdentifierResolveResult(identifier);
+			} else {
 				return ErrorResult;
+			}
 		}
 		
 		/// <summary>
@@ -1761,9 +1767,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return
 				from c in context.GetClasses(namespaceName, StringComparer.Ordinal)
-				where c.IsStatic
+				where c.IsStatic && c.HasExtensionMethods
 				from m in c.Methods
-				where (m.IsExtensionMethod)
+				where m.IsExtensionMethod
 				select m;
 		}
 		#endregion

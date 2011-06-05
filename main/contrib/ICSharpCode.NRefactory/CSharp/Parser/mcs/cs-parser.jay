@@ -655,7 +655,7 @@ attribute_sections
 	  {
 		var sect = (List<Attribute>) $1;
 		$$ = new Attributes (sect);
-		lbag.AddLocation ($$, savedOpenLocation, savedCloseLocation);
+		lbag.AddLocation (sect, savedOpenLocation, savedCloseLocation);
 	  }
 	| attribute_sections attribute_section
 	  {
@@ -665,6 +665,7 @@ attribute_sections
 			attrs = new Attributes (sect);
 		else
 			attrs.AddAttributes (sect);
+		lbag.AddLocation (sect, savedOpenLocation, savedCloseLocation);
 		$$ = attrs;
 	  }
 	;

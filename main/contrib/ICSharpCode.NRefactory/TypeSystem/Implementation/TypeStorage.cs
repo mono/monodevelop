@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public bool Equals(FullNameAndTypeParameterCount x, FullNameAndTypeParameterCount y)
 			{
-				return x.TypeParameterCount == y.TypeParameterCount 
+				return x.TypeParameterCount == y.TypeParameterCount
 					&& NameComparer.Equals(x.Name, y.Name)
 					&& NameComparer.Equals(x.Namespace, y.Namespace);
 			}
@@ -110,11 +110,29 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#region Namespace Storage
 		class NamespaceEntry
 		{
+			/// <summary>
+			/// Full namespace name
+			/// </summary>
 			public readonly string Name;
+			
+			/// <summary>
+			/// Parent namespace
+			/// </summary>
+			public readonly NamespaceEntry Parent;
+			
+			/// <summary>
+			/// Number of classes in this namespace (not in sub-namespaces)
+			/// </summary>
 			public int ClassCount;
 			
-			public NamespaceEntry(string name)
+			/// <summary>
+			/// Number of sub-namespaces.
+			/// </summary>
+			public int SubNamespaceCount;
+			
+			public NamespaceEntry(NamespaceEntry parent, string name)
 			{
+				this.Parent = parent;
 				this.Name = name;
 			}
 		}
@@ -145,9 +163,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 				
 				// now create new dict
-				var newDict = _typeDicts[0].Values.GroupBy(c => c.Namespace, nameComparer)
-					.Select(g => new NamespaceEntry(g.Key) { ClassCount = g.Count() })
-					.ToDictionary(d => d.Name);
+				var newDict = new Dictionary<string, NamespaceEntry>(nameComparer);
+				foreach (ITypeDefinition type in _typeDicts[0].Values) {
+					NamespaceEntry ne = GetOrCreateNamespaceEntry(newDict, type.Namespace);
+					ne.ClassCount++;
+				}
 				
 				// add the new dict to the array of dicts
 				var newNamespaceDicts = new Dictionary<string, NamespaceEntry>[namespaceDicts.Length + 1];
@@ -156,6 +176,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				this._namespaceDicts = newNamespaceDicts;
 				return newDict;
 			}
+		}
+		
+		NamespaceEntry GetOrCreateNamespaceEntry(Dictionary<string, NamespaceEntry> dict, string ns)
+		{
+			NamespaceEntry ne;
+			if (!dict.TryGetValue(ns, out ne)) {
+				NamespaceEntry parentEntry;
+				if (string.IsNullOrEmpty(ns)) {
+					parentEntry = null;
+				} else {
+					int pos = ns.LastIndexOf('.');
+					string parentNS = pos < 0 ? string.Empty : ns.Substring(0, pos);
+					parentEntry = GetOrCreateNamespaceEntry(dict, parentNS);
+					parentEntry.SubNamespaceCount++;
+				}
+				ne = new NamespaceEntry(parentEntry, ns);
+				dict.Add(ns, ne);
+			}
+			return ne;
 		}
 		#endregion
 		
@@ -257,10 +296,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				foreach (var dict in _namespaceDicts) {
 					NamespaceEntry ns;
 					if (dict.TryGetValue(typeDefinition.Namespace, out ns)) {
-						if (--ns.ClassCount == 0)
-							dict.Remove(typeDefinition.Namespace);
+						ns.ClassCount--;
+						RemoveNamespaceIfPossible(dict, ns);
 					}
 				}
+			}
+		}
+		
+		void RemoveNamespaceIfPossible(Dictionary<string, NamespaceEntry> dict, NamespaceEntry ns)
+		{
+			while (ns.ClassCount == 0 && ns.SubNamespaceCount == 0) {
+				dict.Remove(ns.Name);
+				ns = ns.Parent;
+				if (ns == null)
+					break;
+				ns.SubNamespaceCount--;
 			}
 		}
 		#endregion
@@ -281,12 +331,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			if (isNew) {
 				foreach (var dict in _namespaceDicts) {
-					NamespaceEntry ns;
-					if (dict.TryGetValue(typeDefinition.Namespace, out ns)) {
-						++ns.ClassCount;
-					} else {
-						dict.Add(typeDefinition.Namespace, new NamespaceEntry(typeDefinition.Namespace) { ClassCount = 1 });
-					}
+					NamespaceEntry ns = GetOrCreateNamespaceEntry(dict, typeDefinition.Namespace);
+					++ns.ClassCount;
 				}
 			}
 		}

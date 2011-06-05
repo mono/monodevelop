@@ -35,6 +35,7 @@ namespace ICSharpCode.NRefactory
 		}
 		
 		int removedChars;
+
 		public int RemovedChars {
 			get { 
 				return removedChars; 

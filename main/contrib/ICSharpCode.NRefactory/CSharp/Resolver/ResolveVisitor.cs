@@ -241,7 +241,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult VisitFieldOrEventDeclaration(AttributedNode fieldOrEventDeclaration)
 		{
-			int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count();
+			int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count;
 			ResolveResult result = null;
 			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
@@ -939,7 +939,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			                                        firstInitializer != null ? firstInitializer.Initializer : null,
 			                                        false);
 			
-			int initializerCount = variableDeclarationStatement.Variables.Count();
+			int initializerCount = variableDeclarationStatement.Variables.Count;
 			ResolveResult result = null;
 			for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
@@ -1078,11 +1078,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Using Declaration
 		public override ResolveResult VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
+			ScanChildren(usingDeclaration);
 			return null;
 		}
 		
 		public override ResolveResult VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
+			ScanChildren(usingDeclaration);
 			return null;
 		}
 		#endregion

@@ -31,9 +31,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class PrimitiveExpression : Expression, IRelocatable
 	{
-		public static readonly object AnyValue = new object ();
+		public static readonly object AnyValue = new object();
+		
 		AstLocation startLocation;
-
 		public override AstLocation StartLocation {
 			get {
 				return startLocation;
@@ -41,7 +41,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		string literalValue;
-
 		public override AstLocation EndLocation {
 			get {
 				return new AstLocation (StartLocation.Line, StartLocation.Column + literalValue.Length);
@@ -76,7 +75,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.startLocation = startLocation;
 		}
-
 		#endregion
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
@@ -84,10 +82,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitPrimitiveExpression (this, data);
 		}
 		
-		protected internal override bool DoMatch (AstNode other, PatternMatching.Match match)
+		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			PrimitiveExpression o = other as PrimitiveExpression;
-			return o != null && (this.Value == AnyValue || object.Equals (this.Value, o.Value));
+			return o != null && (this.Value == AnyValue || object.Equals(this.Value, o.Value));
 		}
 	}
 }
