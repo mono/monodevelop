@@ -150,11 +150,22 @@
 			_title = "Create event invocator"
 			_description = "Creates a standard OnXXX event method."
 			class = "MonoDevelop.CSharp.ContextAction.CreateEventInvocator" />
-		
 		<Action mimeType="text/x-csharp"
 			_title = "Generate getter"
 			_description = "Generates a getter for a field."
 			class = "MonoDevelop.CSharp.ContextAction.GenerateGetter" />
+		<Action mimeType="text/x-csharp"
+			_title = "Create local variable"
+			_description = "Creates a local variable for a undefined variable."
+			class = "MonoDevelop.CSharp.ContextAction.CreateLocalVariable" />
+		<Action mimeType="text/x-csharp"
+			_title = "Create field"
+			_description = "Creates a field for a undefined variable."
+			class = "MonoDevelop.CSharp.ContextAction.CreateField" />
+		<Action mimeType="text/x-csharp"
+			_title = "Create property"
+			_description = "Creates a property for a undefined variable."
+			class = "MonoDevelop.CSharp.ContextAction.CreateProperty" />
 		
 		<!-- Context actions -->
 		<Action mimeType="text/x-csharp"

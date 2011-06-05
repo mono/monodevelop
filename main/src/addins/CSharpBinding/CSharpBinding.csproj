@@ -264,6 +264,9 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBraces.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\InsertAnonymousMethodSignature.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\GenerateGetter.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateField.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateProperty.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateLocalVariable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -271,5 +271,20 @@ namespace MonoDevelop.CSharp.ContextAction
 					iCArgs.InsertionPoint.Insert (Document.Editor, func ());
 			};
 		}
+		
+		Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> resolveCache = new Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> ();
+		public MonoDevelop.Projects.Dom.ResolveResult Resolve (AstNode node)
+		{
+			MonoDevelop.Projects.Dom.ResolveResult result;
+			if (!resolveCache.TryGetValue (node, out result))
+				resolveCache [node] = result = Resolver.Resolve (node.ToString (), Location);
+			return result;
+		}
+
+		public bool IsUnresolved (AstNode node)
+		{
+			var resolveResult = Resolve (node);
+			return resolveResult == null || resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.FullName);
+		}
 	}
 }
