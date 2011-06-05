@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			// automatic properties always need getter & setter
 			if (propertyDeclaration == null || propertyDeclaration.Getter.IsNull || propertyDeclaration.Setter.IsNull || propertyDeclaration.Getter.Body.IsNull || propertyDeclaration.Setter.Body.IsNull)
 				return null;
-			if (!context.HasCSharp3Support || propertyDeclaration.IsAbstract || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
+			if (!context.HasCSharp3Support || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
 				return null;
 			var getterField = ScanGetter (context, propertyDeclaration);
 			if (getterField == null)
