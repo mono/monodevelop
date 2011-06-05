@@ -349,7 +349,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			protected override void AddRealChunk (Chunk chunk)
 			{
 				var parsedDocument = document != null ? document.ParsedDocument : null;
-				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
+				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
 					int endLoc = -1;
 					string semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
 					if (semanticStyle != null) {

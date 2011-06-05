@@ -61,6 +61,7 @@ FILES =  \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/RemoveBackingStore.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/ReplaceEmptyString.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/SplitString.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/UseExplicitType.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/UseVarKeyword.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \

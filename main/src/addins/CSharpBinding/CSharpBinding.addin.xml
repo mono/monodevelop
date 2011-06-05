@@ -206,8 +206,10 @@
 			_title = "Move type to another file"
 			_description = "Moves current type to another file that matches the name of the type."
 			class = "MonoDevelop.CSharp.ContextAction.MoveTypeToFile" />
-			
-			
+		<Action mimeType="text/x-csharp"
+			_title = "Split string literal"
+			_description = "Splits string literal into two."
+			class = "MonoDevelop.CSharp.ContextAction.SplitString" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/Inspectors">
