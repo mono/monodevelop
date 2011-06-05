@@ -145,11 +145,22 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
+		<!--- Member generators -->
+		<Action mimeType="text/x-csharp"
+			_title = "Create event invocator"
+			_description = "Creates a standard OnXXX event method."
+			class = "MonoDevelop.CSharp.ContextAction.CreateEventInvocator" />
+		
+		<Action mimeType="text/x-csharp"
+			_title = "Generate getter"
+			_description = "Generates a getter for a field."
+			class = "MonoDevelop.CSharp.ContextAction.GenerateGetter" />
+		
+		<!-- Context actions -->
 		<Action mimeType="text/x-csharp"
 			_title = "Add another accessor"
 			_description = "Adds second accessor to a property."
 			class = "MonoDevelop.CSharp.ContextAction.AddAnotherAccessor" />
-			
 		<Action mimeType="text/x-csharp"
 			_title = "Check if parameter is null"
 			_description = "Checks function parameter is not null."
@@ -166,10 +177,6 @@
 			_title = "Convert 'foreach' loop to 'for'"
 			_description = "Works on 'foreach' loops that allow direct access to its elements."
 			class = "MonoDevelop.CSharp.ContextAction.ConvertForeachToFor" />
-		<Action mimeType="text/x-csharp"
-			_title = "Create event invocator"
-			_description = "Creates a standard OnXXX event method."
-			class = "MonoDevelop.CSharp.ContextAction.CreateEventInvocator" />
 		<Action mimeType="text/x-csharp"
 			_title = "Generate switch labels"
 			_description = "Creates switch lables for enumerations."

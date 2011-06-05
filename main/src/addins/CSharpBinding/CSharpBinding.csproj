@@ -263,6 +263,7 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\SplitDeclarationAndAssignment.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBraces.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\InsertAnonymousMethodSignature.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\GenerateGetter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -312,5 +313,6 @@
     <Folder Include="MonoDevelop.CSharp.Inspection\" />
     <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
+    <Folder Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\" />
   </ItemGroup>
 </Project>

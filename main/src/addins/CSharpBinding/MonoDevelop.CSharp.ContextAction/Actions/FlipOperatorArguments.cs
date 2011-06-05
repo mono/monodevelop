@@ -77,8 +77,8 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			var binop = GetBinaryOperatorExpression (context);
 			
-			context.Do (binop.Left.Replace (context.Document, binop.Right));
-			context.Do (binop.Right.Replace (context.Document, binop.Left));
+			context.DoReplace (binop.Left, binop.Right);
+			context.DoReplace (binop.Right, binop.Left);
 		}
 	}
 }

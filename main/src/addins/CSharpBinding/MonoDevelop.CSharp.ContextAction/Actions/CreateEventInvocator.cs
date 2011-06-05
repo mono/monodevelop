@@ -112,24 +112,8 @@ namespace MonoDevelop.CSharp.ContextAction
 			ifStatement.TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments));
 			methodDeclaration.Body.Statements.Add (ifStatement);
 			
-			var editor = context.Document.Editor.Parent;
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (context.Document, member.DeclaringType));
-			ModeHelpWindow helpWindow = new ModeHelpWindow ();
-			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
-			helpWindow.TitleText = GettextCatalog.GetString ("<b>Create event invocator -- Targeting</b>");
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare event invocator implementation</b> at target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this quick fix.")));
-			mode.HelpWindow = helpWindow;
-			mode.CurIndex = mode.InsertionPoints.Count - 1;
-			mode.StartMode ();
-			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
-				if (iCArgs.Success) {
-					iCArgs.InsertionPoint.Insert (context.Document.Editor, context.OutputNode (methodDeclaration, 0));
-				}
-			};
+			context.InsertionMode (GettextCatalog.GetString ("<b>Create event invocator -- Targeting</b>"), 
+				() => context.OutputNode (methodDeclaration, context.GetIndentLevel (eventDeclaration)));
 		}
 		
 	}

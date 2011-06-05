@@ -211,5 +211,65 @@ namespace MonoDevelop.CSharp.ContextAction
 			if (node != null)
 				node.FormatText (Document);
 		}
+		
+		
+		public string GetNewMemberName (CSharpContext context, string name, bool camelCase = true)
+		{
+			string baseName = (camelCase ? char.ToLower (name [0]) : char.ToUpper (name [0])) + name.Substring (1);
+			int number = -1;
+			
+			var type = context.GetNode<TypeDeclaration> ();
+			
+			bool nameInUse;
+			do { 
+				nameInUse = false;
+				string proposedName = GenNumberedName (baseName, number);
+				
+				foreach (var member in type.Members) {
+					var memberName = member.GetChildByRole (AstNode.Roles.Identifier);
+					if (memberName == null)
+						continue;
+					if (memberName.Name == proposedName) {
+						nameInUse = true;
+						number++;
+						break;
+					}
+				}
+			} while (nameInUse);
+			return GenNumberedName (baseName, number);
+		}
+		
+		string GenNumberedName (string baseName, int number)
+		{
+			return baseName + (number > 0 ? (number + 1).ToString () : "");
+		}
+
+		public void InsertionMode (string title, Func<string> func)
+		{
+			var editor = Document.Editor.Parent;
+			var mode = new InsertionCursorEditMode (editor, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (Document, Document.CompilationUnit.GetTypeAt (Location)));
+			var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
+			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
+			helpWindow.TitleText = title;
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Accept</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this operation.")));
+			mode.HelpWindow = helpWindow;
+			mode.CurIndex = mode.InsertionPoints.Count - 1;
+			for (int i = 0; i < mode.InsertionPoints.Count; i++) {
+				if (mode.InsertionPoints[i].Location > new DocumentLocation (Location.Line, Location.Column)) {
+					mode.CurIndex = i;
+					break;
+				}
+			}
+			
+			mode.StartMode ();
+			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
+				if (iCArgs.Success)
+					iCArgs.InsertionPoint.Insert (Document.Editor, func ());
+			};
+		}
 	}
 }

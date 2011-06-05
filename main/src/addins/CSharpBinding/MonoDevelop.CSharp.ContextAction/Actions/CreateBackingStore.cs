@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			var property = context.GetNode<PropertyDeclaration> ();
 			
-			string backingStoreName = GetBackingStoreName (context, property.Name);
+			string backingStoreName = context.GetNewMemberName (context, property.Name);
 			
 			var offsets = new List<int> ();
 			
@@ -89,36 +89,6 @@ namespace MonoDevelop.CSharp.ContextAction
 				propertyDeclaration.Setter.Body.IsNull;
 		}
 		
-		static string GetBackingStoreName (CSharpContext context, string name)
-		{
-			string baseName = char.ToLower (name [0]) + name.Substring (1);
-			int number = -1;
-			
-			var type = context.GetNode<TypeDeclaration> ();
-			
-			bool nameInUse;
-			do { 
-				nameInUse = false;
-				string proposedName = GenNumberedName (baseName, number);
-				
-				foreach (var member in type.Members) {
-					var memberName = member.GetChildByRole (AstNode.Roles.Identifier);
-					if (memberName == null)
-						continue;
-					if (memberName.Name == proposedName) {
-						nameInUse = true;
-						number++;
-						break;
-					}
-				}
-			} while (nameInUse);
-			return GenNumberedName (baseName, number);
-		}
-		
-		static string GenNumberedName (string baseName, int number)
-		{
-			return baseName + (number > 0 ? (number + 1).ToString () : "");
-		}
 	}
 }
 
