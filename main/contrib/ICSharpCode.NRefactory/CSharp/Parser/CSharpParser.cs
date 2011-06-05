@@ -1081,7 +1081,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						result.AddChild (init, VariableDeclarationStatement.Roles.Variable);
 					}
 				}
-				if (location != null)
+				if (location != null && blockVariableDeclaration.Initializer == null || location.Count > 1)
 					result.AddChild (new CSharpTokenNode (Convert (location[location.Count - 1]), 1), VariableDeclarationStatement.Roles.Semicolon);
 				return result;
 			}

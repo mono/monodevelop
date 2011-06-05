@@ -210,6 +210,10 @@
 			_title = "Split string literal"
 			_description = "Splits string literal into two."
 			class = "MonoDevelop.CSharp.ContextAction.SplitString" />
+		<Action mimeType="text/x-csharp"
+			_title = "Split local variable declaration and assignment"
+			_description = "Splits local variable declaration and assignment."
+			class = "MonoDevelop.CSharp.ContextAction.SplitDeclarationAndAssignment" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/Inspectors">

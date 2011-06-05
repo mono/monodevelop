@@ -51,7 +51,6 @@ namespace MonoDevelop.CSharp.ContextAction
 			return pExpr.Value is string;
 		}
 		
-		
 		protected override void Run (CSharpContext context)
 		{
 			var pExpr = context.GetNode<PrimitiveExpression> ();

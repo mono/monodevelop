@@ -177,6 +177,12 @@ namespace MonoDevelop.CSharp.ContextAction
 			});
 		}
 		
+		public void DoReplace (AstNode node, AstNode replaceWith)
+		{
+			var segment = GetSegment (node);
+			DoReplace (segment.Offset, segment.Length, OutputNode (replaceWith, GetIndentLevel (node)).Trim ());
+		}
+		
 		public void CommitChanges ()
 		{
 			RefactoringService.AcceptChanges (null, Document.Dom, changes);
