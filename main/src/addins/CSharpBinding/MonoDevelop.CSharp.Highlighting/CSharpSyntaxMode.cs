@@ -225,7 +225,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 				
 				ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = null;
-				if (document != null && document.ParsedDocument != null) {
+				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
 					resolver = document.GetResolver ();
 					if (!document.ParsedDocument.TryGetTag (out unit)) {
 						try {
