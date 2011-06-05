@@ -214,6 +214,11 @@
 			_title = "Split local variable declaration and assignment"
 			_description = "Splits local variable declaration and assignment."
 			class = "MonoDevelop.CSharp.ContextAction.SplitDeclarationAndAssignment" />
+			
+		<Action mimeType="text/x-csharp"
+			_title = "Remove braces"
+			_description = "Removes redundant braces around a statement."
+			class = "MonoDevelop.CSharp.ContextAction.RemoveBraces" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/Inspectors">

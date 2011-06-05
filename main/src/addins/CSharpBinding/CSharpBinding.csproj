@@ -261,6 +261,7 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\SplitString.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\SplitDeclarationAndAssignment.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBraces.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

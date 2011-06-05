@@ -60,6 +60,7 @@ FILES =  \
 	MonoDevelop.CSharp.ContextAction/Actions/InvertIf.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/RemoveBackingStore.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/RemoveBraces.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/ReplaceEmptyString.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/SplitDeclarationAndAssignment.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/SplitString.cs \
