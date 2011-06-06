@@ -402,6 +402,7 @@
 		<Word>ia64</Word>
 		<Word>legacy</Word>
 		<Word>library</Word>
+		<Word>flags</Word>
 	</Keywords>
 	
 	<Keywords color = "constant.language">
