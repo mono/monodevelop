@@ -39,12 +39,21 @@ namespace MonoDevelop.ContextAction
 	
 	public abstract class ContextAction
 	{
+		public ContextActionAddinNode Node {
+			get;
+			internal set;
+		}
+		
 		public string Description {
 			get;
 			protected set;
 		}
 		
-		public abstract string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
+		public virtual string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		{
+			return Node.Title;
+		}
+		
 		public abstract void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
 		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
 		

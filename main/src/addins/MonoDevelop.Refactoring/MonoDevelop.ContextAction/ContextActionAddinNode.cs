@@ -60,8 +60,11 @@ namespace MonoDevelop.ContextAction
 		ContextAction action;
 		public ContextAction Action {
 			get {
-				if (action == null)
+				if (action == null) {
 					action = (ContextAction)CreateInstance ();
+					action.Node = this;
+				}
+				
 				return action;
 			}
 		}
