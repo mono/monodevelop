@@ -39,6 +39,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public Identifier NameToken {
+			get {
+				return GetChildByRole (Roles.Identifier);
+			}
+			set {
+				SetChildByRole(Roles.Identifier, value);
+			}
+		}
+		
 		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitTypeParameterDeclaration(this, data);

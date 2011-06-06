@@ -40,6 +40,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public Identifier NameToken {
+			get {
+				return GetChildByRole (Roles.Identifier);
+			}
+			set {
+				SetChildByRole (Roles.Identifier, value);
+			}
+		}
+		
 		public Expression Initializer {
 			get { return GetChildByRole (InitializerRole); }
 			set { SetChildByRole (InitializerRole, value); }

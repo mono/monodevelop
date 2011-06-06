@@ -54,6 +54,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public Identifier NameToken {
+			get {
+				return GetChildByRole (Roles.Identifier);
+			}
+			set {
+				SetChildByRole(Roles.Identifier, value);
+			}
+		}
+		
 		public AstNodeCollection<TypeParameterDeclaration> TypeParameters {
 			get { return GetChildrenByRole (Roles.TypeParameter); }
 		}
