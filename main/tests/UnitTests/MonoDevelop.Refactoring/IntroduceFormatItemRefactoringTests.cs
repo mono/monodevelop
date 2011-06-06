@@ -28,10 +28,11 @@ using System;
 using NUnit.Framework;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
-using MonoDevelop.Refactoring.IntroduceFormat;
+//using MonoDevelop.Refactoring.IntroduceFormat;
 
 namespace MonoDevelop.Refactoring.Tests
 {
+	/*
 	[TestFixture()]
 	public class IntroduceFormatItemRefactoringTests : UnitTests.TestBase
 	{
@@ -83,4 +84,5 @@ namespace MonoDevelop.Refactoring.Tests
 		}
 		
 	}
+*/
 }
