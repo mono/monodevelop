@@ -241,9 +241,9 @@
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\NotImplementedExceptionInspector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\CSharpContextAction.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContext.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionWrappers.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

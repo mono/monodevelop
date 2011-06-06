@@ -50,8 +50,8 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionWrappers.cs \
-	MonoDevelop.CSharp.ContextAction/CSharpContextAction.cs \
 	MonoDevelop.CSharp.ContextAction/MDRefactoringContext.cs \
+	MonoDevelop.CSharp.ContextAction/MDRefactoringContextAction.cs \
 	MonoDevelop.CSharp.ContextAction/MDRefactoringContextAction.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs \
