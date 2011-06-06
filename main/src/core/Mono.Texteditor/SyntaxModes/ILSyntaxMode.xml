@@ -335,6 +335,7 @@
 		<Word>thiscall</Word>
 		<Word>fastcall</Word>
 		<Word>unmanaged</Word>
+		<Word>callconv</Word>
 		<Word>not_in_gc_heap</Word>
 		<Word>beforefieldinit</Word>
 		<Word>instance</Word>
