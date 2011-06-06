@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.ContextAction
 						continue;
 						
 					if (context.IsUnresolved (identifier) && GuessType (context, identifier) != null)
-						expressions.Add (identifier);
+						expressions.Insert (0, identifier);
 				}
 			}
 			return expressions;
