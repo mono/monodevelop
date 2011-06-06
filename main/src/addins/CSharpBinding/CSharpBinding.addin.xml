@@ -229,6 +229,10 @@
 			_description = "Splits string literal into two."
 			class = "MonoDevelop.CSharp.ContextAction.SplitString" />
 		<Action mimeType="text/x-csharp"
+			_title = "Introduce format item"
+			_description = "Creates a string.format call with the selection as parameter."
+			class = "MonoDevelop.CSharp.ContextAction.IntroduceFormatItem" />
+		<Action mimeType="text/x-csharp"
 			_title = "Split local variable declaration and assignment"
 			_description = "Splits local variable declaration and assignment."
 			class = "MonoDevelop.CSharp.ContextAction.SplitDeclarationAndAssignment" />

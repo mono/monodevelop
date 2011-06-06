@@ -97,6 +97,7 @@ namespace MonoDevelop.ContextAction
 		{
 			base.Initialize ();
 			document.DocumentParsed += HandleDocumentDocumentParsed;
+			document.Editor.SelectionChanged += (sender, e) => CursorPositionChanged ();
 		}
 		
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)

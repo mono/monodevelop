@@ -63,6 +63,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Value = value;
 		}
 		
+		public PrimitiveExpression (object value, string literalValue)
+		{
+			this.Value = value;
+			this.literalValue = literalValue ?? "";
+		}
+		
 		public PrimitiveExpression (object value, AstLocation startLocation, string literalValue)
 		{
 			this.Value = value;

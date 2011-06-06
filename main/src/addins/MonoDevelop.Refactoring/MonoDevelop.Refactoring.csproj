@@ -80,7 +80,6 @@
     <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\HelperMethods.cs" />
-    <Compile Include="MonoDevelop.Refactoring.IntroduceFormatItem\IntroduceFormatItemRefactoring.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\GenerateCodeWindow.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\CodeGenerationCommands.cs" />
@@ -150,7 +149,6 @@
     <Folder Include="MonoDevelop.Refactoring.Rename\" />
     <Folder Include="MonoDevelop.Refactoring.IntroduceConstant\" />
     <Folder Include="MonoDevelop.Refactoring.CreateClass\" />
-    <Folder Include="MonoDevelop.Refactoring.IntroduceFormatItem\" />
     <Folder Include="MonoDevelop.CodeGeneration\" />
     <Folder Include="MonoDevelop.Refactoring.RefactorImports\" />
     <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />

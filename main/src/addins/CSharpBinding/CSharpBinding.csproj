@@ -267,6 +267,7 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateField.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateProperty.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateLocalVariable.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\IntroduceFormatItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

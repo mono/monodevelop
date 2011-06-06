@@ -872,7 +872,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitPrimitiveExpression (PrimitiveExpression primitiveExpression, object data)
 		{
 			StartNode (primitiveExpression);
-			WritePrimitiveValue (primitiveExpression.Value);
+			if (!string.IsNullOrEmpty (primitiveExpression.LiteralValue)) {
+				formatter.WriteToken (primitiveExpression.LiteralValue);
+			} else {
+				WritePrimitiveValue (primitiveExpression.Value);
+			}
 			return EndNode (primitiveExpression);
 		}
 		

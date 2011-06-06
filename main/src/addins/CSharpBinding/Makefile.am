@@ -58,6 +58,7 @@ FILES =  \
 	MonoDevelop.CSharp.ContextAction/Actions/FlipOperatorArguments.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/GenerateSwitchLabels.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/InsertAnonymousMethodSignature.cs \
+	MonoDevelop.CSharp.ContextAction/Actions/IntroduceFormatItem.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/InvertIf.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/RemoveBackingStore.cs \

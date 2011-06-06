@@ -82,7 +82,6 @@ FILES =  \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantDialog.cs \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantHandler.cs \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs \
-	MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs \
 	MonoDevelop.Refactoring.RefactorImports/FindTypeReferencesVisitor.cs \
 	MonoDevelop.Refactoring.RefactorImports/RefactorImportsHandler.cs \
 	MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs \
