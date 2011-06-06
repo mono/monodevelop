@@ -350,7 +350,6 @@
     <Compile Include="CSharp\Ast\Expressions\EmptyExpression.cs" />
     <Compile Include="CSharp\Formatter\AstFormattingVisitor.cs" />
     <Compile Include="CSharp\Formatter\ITextEditorAdapter.cs" />
-    <Compile Include="CSharp\Formatter\Change.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\FixedFieldDeclaration.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\FixedVariableInitializer.cs" />
     <Compile Include="CSharp\Ast\GeneralScope\ExternAliasDeclaration.cs" />
@@ -361,9 +360,42 @@
     <Compile Include="CSharp\Ast\ObservableAstVisitor.cs" />
     <Compile Include="CSharp\Ast\CSharpUtil.cs" />
     <Compile Include="CSharp\Parser\mcs\async.cs" />
+    <Compile Include="CSharp\Refactoring\RefactoringContext.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\IntroduceFormatItem.cs" />
+    <Compile Include="CSharp\Refactoring\StringBuilderOutputFormatter.cs" />
+    <Compile Include="CSharp\Refactoring\Action.cs" />
+    <Compile Include="CSharp\Refactoring\Script.cs" />
+    <Compile Include="CSharp\Refactoring\IActionFactory.cs" />
+    <Compile Include="CSharp\Refactoring\NodeOutputAction.cs" />
+    <Compile Include="CSharp\Refactoring\TextReplaceAction.cs" />
+    <Compile Include="CSharp\Refactoring\NodeSelectionAction.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\AddAnotherAccessor.cs" />
+    <Compile Include="CSharp\Refactoring\FormatTextAction.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CheckIfParameterIsNull.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\ConvertDecToHex.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\ConvertHexToDec.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\ConvertForeachToFor.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\GenerateSwitchLabels.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\FlipOperatorArguments.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\InsertAnonymousMethodSignature.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\RemoveBraces.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\SplitString.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\ReplaceEmptyString.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\UseVarKeyword.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\UseExplicitType.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\InvertIf.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateBackingStore.cs" />
+    <Compile Include="CSharp\Refactoring\CreateLinkAction.cs" />
+    <Compile Include="CSharp\Refactoring\IContextAction.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\SplitDeclarationAndAssignment.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
+    <Folder Include="CSharp\Refactoring\" />
+    <Folder Include="CSharp\Formatter\" />
+    <Folder Include="CSharp\Formatter\" />
+    <Folder Include="CSharp\Refactoring\ContextAction\" />
+    <Folder Include="EditorInterfaces\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Cecil\Mono.Cecil.csproj">

@@ -125,7 +125,6 @@ FILES =  \
 	CSharp/Ast/TypeMembers/PropertyDeclaration.cs \
 	CSharp/Ast/TypeMembers/VariableInitializer.cs \
 	CSharp/Formatter/AstFormattingVisitor.cs \
-	CSharp/Formatter/Change.cs \
 	CSharp/Formatter/CSharpFormattingOptions.cs \
 	CSharp/Formatter/Indent.cs \
 	CSharp/Formatter/ITextEditorAdapter.cs \
@@ -193,6 +192,34 @@ FILES =  \
 	CSharp/Parser/mcs/visit.cs \
 	CSharp/Parser/ParsedFile.cs \
 	CSharp/Parser/TypeSystemConvertVisitor.cs \
+	CSharp/Refactoring/Action.cs \
+	CSharp/Refactoring/ContextAction/AddAnotherAccessor.cs \
+	CSharp/Refactoring/ContextAction/CheckIfParameterIsNull.cs \
+	CSharp/Refactoring/ContextAction/ConvertDecToHex.cs \
+	CSharp/Refactoring/ContextAction/ConvertForeachToFor.cs \
+	CSharp/Refactoring/ContextAction/ConvertHexToDec.cs \
+	CSharp/Refactoring/ContextAction/CreateBackingStore.cs \
+	CSharp/Refactoring/ContextAction/FlipOperatorArguments.cs \
+	CSharp/Refactoring/ContextAction/GenerateSwitchLabels.cs \
+	CSharp/Refactoring/ContextAction/InsertAnonymousMethodSignature.cs \
+	CSharp/Refactoring/ContextAction/IntroduceFormatItem.cs \
+	CSharp/Refactoring/ContextAction/InvertIf.cs \
+	CSharp/Refactoring/ContextAction/RemoveBraces.cs \
+	CSharp/Refactoring/ContextAction/ReplaceEmptyString.cs \
+	CSharp/Refactoring/ContextAction/SplitDeclarationAndAssignment.cs \
+	CSharp/Refactoring/ContextAction/SplitString.cs \
+	CSharp/Refactoring/ContextAction/UseExplicitType.cs \
+	CSharp/Refactoring/ContextAction/UseVarKeyword.cs \
+	CSharp/Refactoring/CreateLinkAction.cs \
+	CSharp/Refactoring/FormatTextAction.cs \
+	CSharp/Refactoring/IActionFactory.cs \
+	CSharp/Refactoring/IContextAction.cs \
+	CSharp/Refactoring/NodeOutputAction.cs \
+	CSharp/Refactoring/NodeSelectionAction.cs \
+	CSharp/Refactoring/RefactoringContext.cs \
+	CSharp/Refactoring/Script.cs \
+	CSharp/Refactoring/StringBuilderOutputFormatter.cs \
+	CSharp/Refactoring/TextReplaceAction.cs \
 	CSharp/Resolver/AliasNamespaceReference.cs \
 	CSharp/Resolver/AmbiguousResolveResult.cs \
 	CSharp/Resolver/ByReferenceResolveResult.cs \

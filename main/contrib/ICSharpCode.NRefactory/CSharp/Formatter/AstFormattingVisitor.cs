@@ -28,6 +28,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -35,7 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		CSharpFormattingOptions policy;
 		ITextEditorAdapter data;
-		List<Change> changes = new List<Change> ();
+		IActionFactory factory;
+		List<TextReplaceAction> changes = new List<TextReplaceAction> ();
 		Indent curIndent = new Indent ();
 
 		public int IndentLevel {
@@ -52,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public List<Change> Changes {
+		public List<TextReplaceAction> Changes {
 			get { return this.changes; }
 		}
 
@@ -66,12 +68,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public AstFormattingVisitor (CSharpFormattingOptions policy, ITextEditorAdapter data)
+		public AstFormattingVisitor (CSharpFormattingOptions policy, ITextEditorAdapter data, IActionFactory factory)
 		{
+			if (factory == null)
+				throw new ArgumentNullException ("factory");
 			this.policy = policy;
 			this.data = data;
 			this.curIndent.TabsToSpaces = this.data.TabsToSpaces;
 			this.curIndent.TabSize = this.data.TabSize;
+			this.factory = factory;
 			CorrectBlankLines = true;
 		}
 
@@ -963,7 +968,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\t", "\\t").Replace (" ", "."));
 			//Console.WriteLine (Environment.StackTrace);
 			
-			changes.Add (new Change (offset, removedChars, insertedText));
+			changes.Add (factory.CreateTextReplaceAction (offset, removedChars, insertedText));
 		}
 
 		public bool IsLineIsEmptyUpToEol (AstLocation startLocation)

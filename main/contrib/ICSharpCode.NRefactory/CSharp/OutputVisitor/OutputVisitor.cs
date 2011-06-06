@@ -70,6 +70,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				handler (this, e);
 		}
 		
+		public event EventHandler<AstNodeEventArgs> OutputFinished;
+		
+		protected virtual void OnOutputFinished (AstNodeEventArgs e)
+		{
+			EventHandler<AstNodeEventArgs> handler = this.OutputFinished;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		[Serializable]
 		public sealed class AstNodeEventArgs : EventArgs
 		{
@@ -104,6 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			Debug.Assert (pos == null || pos.Parent == node);
 			WriteSpecials (pos, null);
 			containerStack.Pop ();
+			OnOutputFinished (new AstNodeEventArgs (node));
 			formatter.EndNode (node);
 			return null;
 		}

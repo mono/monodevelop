@@ -61,6 +61,7 @@ namespace ICSharpCode.NRefactory
 		void Replace (int offset, int count, string text);
 	}
 	
+	/*
 	public static class ITextEditorAdapterHelperMethods
 	{
 		public static void AcceptChanges (this ITextEditorAdapter adapter, List<Change> changes)
@@ -83,6 +84,6 @@ namespace ICSharpCode.NRefactory
 				}
 			}
 		}		
-	}
+	}*/
 }
 
