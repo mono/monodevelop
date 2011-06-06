@@ -65,7 +65,15 @@ namespace MonoDevelop.AnalysisCore.Fixes
 				SelectedItem = renameFix.Item,
 			};
 			
-			if (!string.IsNullOrEmpty (renameFix.NewName) && !refactoring.IsValid (options))
+			if (renameFix.Item == null) {
+				INode item;
+				ResolveResult resolveResult;
+				var editor = options.Document.GetContent<MonoDevelop.Ide.Gui.Content.ITextBuffer> ();
+				CurrentRefactoryOperationsHandler.GetItem (options.Dom, options.Document, editor, out resolveResult, out item);
+				options.SelectedItem = item;
+			}
+			
+			if (!refactoring.IsValid (options))
 				yield break;
 			
 			var prop = new RenameRefactoring.RenameProperties () {
@@ -91,7 +99,7 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			
 			yield return new RenameFixAction () {
 				Label = GettextCatalog.GetString ("Rename '{0}' to '{1}' with preview",
-					renameFix.Item.Name, renameFix.NewName),
+					renameFix.OldName, renameFix.NewName),
 				Refactoring = refactoring,
 				Options = options,
 				Properties = prop,
@@ -110,11 +118,6 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			public void Fix ()
 			{
 				if (string.IsNullOrEmpty (Properties.NewName)) {
-					INode item;
-					ResolveResult resolveResult;
-					var editor = Options.Document.GetContent<MonoDevelop.Ide.Gui.Content.ITextBuffer> ();
-					CurrentRefactoryOperationsHandler.GetItem (Options.Dom, Options.Document, editor, out resolveResult, out item);
-					Options.SelectedItem = item;
 					Refactoring.Run (Options);
 					return;
 				}

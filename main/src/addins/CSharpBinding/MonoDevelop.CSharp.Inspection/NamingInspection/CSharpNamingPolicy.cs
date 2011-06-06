@@ -25,136 +25,62 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
+using System.Text;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
-using System.Text;
+using ICS = ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	[PolicyType ("C# naming")]
 	public class CSharpNamingPolicy // : IEquatable<CSharpNamingPolicy>
 	{
-		[ItemProperty]
-		public NamingRule Namespace {
-			get;
-			set;
-		}
+		List<NamingRule> rules = new List<NamingRule> ();
 		
-		[ItemProperty]
-		public NamingRule Type {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule Interface {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule TypeParameter {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule Method {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule Property{
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule Event {
-			get;
-			set;
-		}
-		
-		
-		[ItemProperty]
-		public NamingRule LocalVariable {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule LocalConstant {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule Parameter {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule Field {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule InstanceField {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule InstanceStaticField {
-			get;
-			set;
-		}
-		 
-		[ItemProperty]
-		public NamingRule Constant {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule InstanceConstant {
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public NamingRule EnumMember {
-			get;
-			set;
+		public IList<NamingRule> Rules {
+			get { return rules; }
 		}
 		
 		public CSharpNamingPolicy ()
 		{
-			Namespace = new NamingRule (NamingStyle.PascalCase);
-			Type = new NamingRule (NamingStyle.PascalCase);
-			Interface = new NamingRule ("I", NamingStyle.PascalCase, null);
-			TypeParameter = new NamingRule (NamingStyle.PascalCase);
-			Method = new NamingRule (NamingStyle.PascalCase);
-			Property = new NamingRule (NamingStyle.PascalCase);
-			Event = new NamingRule (NamingStyle.PascalCase);
-			LocalVariable = new NamingRule (NamingStyle.CamelCase);
-			LocalConstant = new NamingRule (NamingStyle.CamelCase);
-			Parameter = new NamingRule (NamingStyle.CamelCase);
-			Field = new NamingRule (NamingStyle.PascalCase);
-			InstanceField = new NamingRule (NamingStyle.CamelCase);
-			InstanceStaticField = new NamingRule (NamingStyle.PascalCase);
-			Constant = new NamingRule (NamingStyle.PascalCase);
-			InstanceConstant = new NamingRule (NamingStyle.PascalCase);
-			EnumMember = new NamingRule (NamingStyle.PascalCase);
+			rules.Add (new NamingRule () {
+				Kind = DeclarationKinds.LocalVariable | DeclarationKinds.Field,
+				Modifiers = ICS.Modifiers.Const,
+				NamingStyle = NamingStyle.AllUpper,
+			});
+			rules.Add (new NamingRule () {
+				Kind = DeclarationKinds.LocalVariable,
+				NamingStyle = NamingStyle.CamelCase,
+			});
+			rules.Add (new NamingRule () {
+				Kind = DeclarationKinds.Parameter,
+				NamingStyle = NamingStyle.CamelCase,
+			});
+			
+			rules.Add (new NamingRule () {
+				Kind = DeclarationKinds.TypeParameter,
+				NamingStyle = NamingStyle.PascalCase,
+				RequiredPrefixes = new [] { "T" },
+			});
+			rules.Add (new NamingRule () {
+				Kind = DeclarationKinds.Interface,
+				NamingStyle = NamingStyle.PascalCase,
+				RequiredPrefixes = new [] { "I" },
+			});
+			rules.Add (new NamingRule () {
+				Kind = DeclarationKinds.Field,
+				Modifiers = ICS.Modifiers.Private,
+				NamingStyle = NamingStyle.CamelCase,
+			});
+			rules.Add (new NamingRule () {
+				Kind = DeclarationKinds.Type | DeclarationKinds.Member,
+				NamingStyle = NamingStyle.PascalCase,
+			});
 		}
 	}
 }

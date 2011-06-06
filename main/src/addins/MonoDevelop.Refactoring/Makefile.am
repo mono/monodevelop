@@ -47,7 +47,6 @@ FILES =  \
 	MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs \
 	MonoDevelop.AnalysisCore/Result.cs \
 	MonoDevelop.AnalysisCore/Rules/Adaptors.cs \
-	MonoDevelop.AnalysisCore/Rules/NamingConventions.cs \
 	MonoDevelop.AnalysisCore/RuleTree.cs \
 	MonoDevelop.AnalysisCore/RuleTreeType.cs \
 	MonoDevelop.CodeGeneration/AbstractGenerateAction.cs \

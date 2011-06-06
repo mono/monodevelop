@@ -128,7 +128,6 @@
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisService.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\FixableResult.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Rules\Adaptors.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Rules\NamingConventions.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Result.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />

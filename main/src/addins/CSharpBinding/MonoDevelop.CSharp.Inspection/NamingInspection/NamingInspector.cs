@@ -41,18 +41,6 @@ namespace MonoDevelop.CSharp.Inspection
 	{
 		CSharpNamingPolicy policy = new CSharpNamingPolicy ();
 		
-		void Check (InspectionData data, NamingRule rule, AstLocation loc, string name)
-		{
-			if (!rule.IsValid (name))
-				data.Add (rule.GetFixableResult (loc, null, name));
-		}
-		
-		void Check (InspectionData data, NamingRule rule, AstLocation loc, string name, IBaseMember member)
-		{
-			if (!rule.IsValid (name))
-				data.Add (rule.GetFixableResult (loc, member, name));
-		}
-		
 		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
 		{
 			visitor.VariableDeclarationStatementVisited += HandleVisitorVariableDeclarationStatementVisited;
@@ -69,108 +57,100 @@ namespace MonoDevelop.CSharp.Inspection
 			visitor.EnumMemberDeclarationVisited += HandleVisitorEnumMemberDeclarationVisited;
 		}
 
-		void HandleVisitorVariableDeclarationStatementVisited (VariableDeclarationStatement variableDeclarationStatement, InspectionData data)
+		void HandleVisitorVariableDeclarationStatementVisited (VariableDeclarationStatement node, InspectionData data)
 		{
-			var member = data.Document.CompilationUnit.GetMemberAt (variableDeclarationStatement.StartLocation.Line, variableDeclarationStatement.StartLocation.Column);
-			foreach (var var in variableDeclarationStatement.Variables) {
-				var v = new LocalVariable (member, var.Name, DomReturnType.Void, new DomRegion (variableDeclarationStatement.StartLocation.Line, variableDeclarationStatement.StartLocation.Column, variableDeclarationStatement.EndLocation.Line, variableDeclarationStatement.EndLocation.Column));
-				if ((variableDeclarationStatement.Modifiers & ICSharpCode.NRefactory.CSharp.Modifiers.Const) == ICSharpCode.NRefactory.CSharp.Modifiers.Const) {
-					Check (data, policy.LocalConstant, var.StartLocation, var.Name, v);
-				} else {
-					Check (data, policy.LocalVariable, var.StartLocation, var.Name, v);
-				}
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckVariableDeclaration (node, data))
+					return;
 			}
 		}
 
-		void HandleVisitorFixedFieldDeclarationVisited (FixedFieldDeclaration fixedFieldDeclaration, InspectionData data)
+		void HandleVisitorFixedFieldDeclarationVisited (FixedFieldDeclaration node, InspectionData data)
 		{
-			foreach (var var in fixedFieldDeclaration.Variables) {
-				Check (data, policy.Field, var.StartLocation, var.Name);
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckField (node, data))
+					return;
 			}
 		}
 
-		void HandleVisitorParameterDeclarationVisited (ParameterDeclaration parameterDeclaration, InspectionData data)
+		void HandleVisitorParameterDeclarationVisited (ParameterDeclaration node, InspectionData data)
 		{
-			Check (data, policy.Parameter, parameterDeclaration.NameToken.StartLocation, parameterDeclaration.Name);
-		}
-
-		void HandleVisitorPropertyDeclarationVisited (PropertyDeclaration propertyDeclaration, InspectionData data)
-		{
-			Check (data, policy.Property, propertyDeclaration.NameToken.StartLocation, propertyDeclaration.Name);
-		}
-
-		void HandleVisitorFieldDeclarationVisited (FieldDeclaration fieldDeclaration, InspectionData data)
-		{
-			NamingRule namingRule;
-			
-			bool isPrivate = (fieldDeclaration.Modifiers & (ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Internal)) == 0; 
-			
-			if ((fieldDeclaration.Modifiers & ICSharpCode.NRefactory.CSharp.Modifiers.Const) == ICSharpCode.NRefactory.CSharp.Modifiers.Const) {
-				if (isPrivate) {
-					namingRule = policy.InstanceConstant;
-				} else {
-					namingRule = policy.Constant;
-				}
-			} else {
-				if (isPrivate) {
-					if ((fieldDeclaration.Modifiers & ICSharpCode.NRefactory.CSharp.Modifiers.Static) == ICSharpCode.NRefactory.CSharp.Modifiers.Static) {
-						namingRule = policy.InstanceStaticField;
-					} else {
-						namingRule = policy.InstanceField;
-					}
-				} else {
-					namingRule = policy.Field;
-				}
-			}
-			
-			foreach (var var in fieldDeclaration.Variables) {
-				Check (data, namingRule, var.StartLocation, var.Name);
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckParameter (node, data))
+					return;
 			}
 		}
 
-		void HandleVisitorCustomEventDeclarationVisited (CustomEventDeclaration eventDeclaration, InspectionData data)
+		void HandleVisitorPropertyDeclarationVisited (PropertyDeclaration node, InspectionData data)
 		{
-			Check (data, policy.Event, eventDeclaration.NameToken.StartLocation, eventDeclaration.Name);
-		}
-
-		void HandleVisitorEventDeclarationVisited (EventDeclaration eventDeclaration, InspectionData data)
-		{
-			foreach (var var in eventDeclaration.Variables) {
-				Check (data, policy.Event, var.StartLocation, var.Name);
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckProperty (node, data))
+					return;
 			}
 		}
 
-		void HandleVisitorTypeDeclarationVisited (TypeDeclaration typeDeclaration, InspectionData data)
+		void HandleVisitorFieldDeclarationVisited (FieldDeclaration node, InspectionData data)
 		{
-			switch (typeDeclaration.ClassType) {
-			case ICSharpCode.NRefactory.TypeSystem.ClassType.Interface:
-				Check (data, policy.Interface, typeDeclaration.NameToken.StartLocation, typeDeclaration.Name);
-				break;
-			default:
-				Check (data, policy.Type, typeDeclaration.NameToken.StartLocation, typeDeclaration.Name);
-				break;
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckField (node, data))
+					return;
 			}
-			
+		}
+
+		void HandleVisitorCustomEventDeclarationVisited (CustomEventDeclaration node, InspectionData data)
+		{
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckEvent (node, data))
+					return;
+			}
+		}
+
+		void HandleVisitorEventDeclarationVisited (EventDeclaration node, InspectionData data)
+		{
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckEvent (node, data))
+					return;
+			}
+		}
+
+		void HandleVisitorTypeDeclarationVisited (TypeDeclaration node, InspectionData data)
+		{
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckType (node, data))
+					return;
+			}
 		}
 
 		void HandleVisitorEnumMemberDeclarationVisited (EnumMemberDeclaration node, InspectionData data)
 		{
-			// TODO
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckEnumMember (node, data))
+					return;
+			}
 		}
 
 		void HandleVisitorTypeParameterDeclarationVisited (TypeParameterDeclaration node, InspectionData data)
 		{
-			// TODO
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckTypeParameter (node, data))
+					return;
+			}
 		}
 
 		void HandleVisitorNamespaceDeclarationVisited (NamespaceDeclaration node, InspectionData data)
 		{
-			// TODO
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckNamespace (node, data))
+					return;
+			}
 		}
 
 		void HandleVisitorDelegateDeclarationVisited (DelegateDeclaration node, InspectionData data)
 		{
-			// TODO
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckDelegate (node, data))
+					return;
+			}
 		}
 
 	}
