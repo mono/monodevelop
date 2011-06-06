@@ -36,30 +36,30 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class RemoveBackingStore : CSharpContextAction
+	public class RemoveBackingStore : MDRefactoringContextAction
 	{
-		protected override string GetMenuText (CSharpContext context)
+		protected override string GetMenuText (MDRefactoringContext context)
 		{
 			return GettextCatalog.GetString ("Remove backing store");
 		}
 
-		protected override void Run (CSharpContext context)
+		protected override void Run (MDRefactoringContext context)
 		{
-			var property = context.GetNode<PropertyDeclaration> ();
-			var field = GetBackingField (context);
-			
-			RemoveBackingField (context, field);
-			ReplaceBackingFieldReferences (context, field, property);
-			
-			// create new auto property 
-			var newProperty = (PropertyDeclaration)property.Clone ();	
-			newProperty.Getter.Body = BlockStatement.Null;
-			newProperty.Setter.Body = BlockStatement.Null;
-			
-			context.Do (property.Replace (context.Document, context.OutputNode (newProperty, context.GetIndentLevel (property)).Trim ()));
+//			var property = context.GetNode<PropertyDeclaration> ();
+//			var field = GetBackingField (context);
+//			
+//			RemoveBackingField (context, field);
+//			ReplaceBackingFieldReferences (context, field, property);
+//			
+//			// create new auto property 
+//			var newProperty = (PropertyDeclaration)property.Clone ();	
+//			newProperty.Getter.Body = BlockStatement.Null;
+//			newProperty.Setter.Body = BlockStatement.Null;
+//			
+//			context.Do (property.Replace (context.Document, context.OutputNode (newProperty, context.GetIndentLevel (property)).Trim ()));
 		}
 		
-		void RemoveBackingField (CSharpContext context, IField backingField)
+		void RemoveBackingField (MDRefactoringContext context, IField backingField)
 		{
 			FieldDeclaration field = context.Unit.GetNodeAt<FieldDeclaration> (backingField.Location.Line, backingField.Location.Column);
 			
@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			context.DoRemove (startLine.Offset, endLine.EndOffset - startLine.Offset);
 		}
 		
-		void ReplaceBackingFieldReferences (CSharpContext context, IField backingStore, PropertyDeclaration property)
+		void ReplaceBackingFieldReferences (MDRefactoringContext context, IField backingStore, PropertyDeclaration property)
 		{
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 				foreach (var memberRef in MonoDevelop.Ide.FindInFiles.ReferenceFinder.FindReferences (backingStore, monitor)) {
@@ -87,12 +87,12 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 		}
 		
-		protected override bool IsValid (CSharpContext context)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
 			return GetBackingField (context) != null;
 		}
 		
-		IField GetBackingField (CSharpContext context)
+		IField GetBackingField (MDRefactoringContext context)
 		{
 			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
 			// automatic properties always need getter & setter
@@ -111,7 +111,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return getterField;
 		}
 		
-		internal static IField ScanGetter (CSharpContext context, PropertyDeclaration propertyDeclaration)
+		internal static IField ScanGetter (MDRefactoringContext context, PropertyDeclaration propertyDeclaration)
 		{
 			if (propertyDeclaration.Getter.Body.Statements.Count != 1)
 				return null;
@@ -124,7 +124,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return result.ResolvedMember as IField;
 		}
 		
-		internal static IField ScanSetter (CSharpContext context, PropertyDeclaration propertyDeclaration)
+		internal static IField ScanSetter (MDRefactoringContext context, PropertyDeclaration propertyDeclaration)
 		{
 			if (propertyDeclaration.Setter.Body.Statements.Count != 1)
 				return null;

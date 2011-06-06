@@ -38,14 +38,14 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class GenerateGetter : CSharpContextAction
+	public class GenerateGetter : MDRefactoringContextAction
 	{
-		protected override string GetMenuText (CSharpContext context)
+		protected override string GetMenuText (MDRefactoringContext context)
 		{
 			return GettextCatalog.GetString ("Generate getter");
 		}
 		
-		protected override bool IsValid (CSharpContext context)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
 			var initializer = GetVariableInitializer (context);
 			if (initializer == null || !initializer.NameToken.Contains (context.Location.Line, context.Location.Column))
@@ -60,15 +60,15 @@ namespace MonoDevelop.CSharp.ContextAction
 			return initializer.Parent is FieldDeclaration;
 		}
 		
-		protected override void Run (CSharpContext context)
+		protected override void Run (MDRefactoringContext context)
 		{
 			var initializer = GetVariableInitializer (context);
 			var field = initializer.Parent as FieldDeclaration;
-			context.InsertionMode (GettextCatalog.GetString ("<b>Create getter -- Targeting</b>"), 
-				() => context.OutputNode (GeneratePropertyDeclaration (context, field, initializer), context.GetIndentLevel (field)));
+//			context.InsertionMode (GettextCatalog.GetString ("<b>Create getter -- Targeting</b>"), 
+//				() => context.OutputNode (GeneratePropertyDeclaration (context, field, initializer), context.GetIndentLevel (field)));
 		}
 		
-		static PropertyDeclaration GeneratePropertyDeclaration (CSharpContext context, FieldDeclaration field, VariableInitializer initializer)
+		static PropertyDeclaration GeneratePropertyDeclaration (MDRefactoringContext context, FieldDeclaration field, VariableInitializer initializer)
 		{
 			var mod = ICSharpCode.NRefactory.CSharp.Modifiers.Public;
 			if (field.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Static))
@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				ret.Expression.IsMatch (new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name));
 		}
 		
-		VariableInitializer GetVariableInitializer (CSharpContext context)
+		VariableInitializer GetVariableInitializer (MDRefactoringContext context)
 		{
 			return context.GetNode<VariableInitializer> ();
 		}

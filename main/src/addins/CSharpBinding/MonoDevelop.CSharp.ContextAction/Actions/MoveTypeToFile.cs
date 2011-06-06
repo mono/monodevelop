@@ -38,9 +38,9 @@ using MonoDevelop.Ide.StandardHeader;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class MoveTypeToFile : CSharpContextAction
+	public class MoveTypeToFile : MDRefactoringContextAction
 	{
-		protected override string GetMenuText (CSharpContext context)
+		protected override string GetMenuText (MDRefactoringContext context)
 		{
 			var type = GetTypeDeclaration (context);
 			if (IsSingleType (context))
@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return String.Format (GettextCatalog.GetString ("_Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
 		}
 		
-		protected override bool IsValid (CSharpContext context)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
 			var type = GetTypeDeclaration (context);
 			if (type == null)
@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return Path.GetFileNameWithoutExtension (context.Document.FileName) != type.Name;
 		}
 		
-		protected override void Run (CSharpContext context)
+		protected override void Run (MDRefactoringContext context)
 		{
 			var type = GetTypeDeclaration (context);
 			string correctFileName = GetCorrectFileName (context, type);
@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			context.DoRemove (type);
 		}
 		
-		void CreateNewFile (CSharpContext context, TypeDeclaration type, string correctFileName)
+		void CreateNewFile (MDRefactoringContext context, TypeDeclaration type, string correctFileName)
 		{
 			var content = context.Document.Editor.Text;
 			
@@ -125,12 +125,12 @@ namespace MonoDevelop.CSharp.ContextAction
 			return doc.Text;
 		}
 		
-		bool IsSingleType (CSharpContext context)
+		bool IsSingleType (MDRefactoringContext context)
 		{
 			return context.Unit.GetTypes ().Count () == 1;
 		}
 		
-		TypeDeclaration GetTypeDeclaration (CSharpContext context)
+		TypeDeclaration GetTypeDeclaration (MDRefactoringContext context)
 		{
 			var result = context.GetNode<TypeDeclaration> ();
 			if (result == null || result.Parent is TypeDeclaration)
@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return null;
 		}
 		
-		string GetCorrectFileName (CSharpContext context, TypeDeclaration type)
+		string GetCorrectFileName (MDRefactoringContext context, TypeDeclaration type)
 		{
 			return Path.Combine (Path.GetDirectoryName (context.Document.FileName), type.Name + Path.GetExtension (context.Document.FileName));
 		}

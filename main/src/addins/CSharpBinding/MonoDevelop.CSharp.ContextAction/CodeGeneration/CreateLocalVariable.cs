@@ -37,9 +37,9 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class CreateLocalVariable : CSharpContextAction
+	public class CreateLocalVariable : MDRefactoringContextAction
 	{
-		protected override string GetMenuText (CSharpContext context)
+		protected override string GetMenuText (MDRefactoringContext context)
 		{
 			if (GetUnresolvedArguments (context).Count > 0)
 				return GettextCatalog.GetString ("Create local variable declarations for arguments");
@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return string.Format (GettextCatalog.GetString ("Create local variable '{0}'"), identifier);
 		}
 		
-		List<IdentifierExpression> GetUnresolvedArguments (CSharpContext context)
+		List<IdentifierExpression> GetUnresolvedArguments (MDRefactoringContext context)
 		{
 			var expressions = new List<IdentifierExpression> ();
 			
@@ -73,7 +73,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return expressions;
 		}
 		
-		protected override bool IsValid (CSharpContext context)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
 			if (GetUnresolvedArguments (context).Count > 0)
 				return true;
@@ -88,25 +88,25 @@ namespace MonoDevelop.CSharp.ContextAction
 			return false;
 		}
 		
-		protected override void Run (CSharpContext context)
+		protected override void Run (MDRefactoringContext context)
 		{
-			var stmt = context.GetNode<Statement> ();
-			var unresolvedArguments = GetUnresolvedArguments (context);
-			if (unresolvedArguments.Count > 0) {
-				foreach (var id in unresolvedArguments) {
-					context.DoInsert (context.Document.Editor.LocationToOffset (stmt.StartLocation.Line, 1), 
-						context.OutputNode (GenerateLocalVariableDeclaration (context, id), context.GetIndentLevel (stmt)) + context.Document.Editor.EolMarker);
-				}
-				return;
-			}
-			
-			var identifier = GetIdentifier (context);
-			
-			context.DoInsert (context.Document.Editor.LocationToOffset (stmt.StartLocation.Line, 1), 
-				context.OutputNode (GenerateLocalVariableDeclaration (context, identifier), context.GetIndentLevel (stmt)) + context.Document.Editor.EolMarker);
+//			var stmt = context.GetNode<Statement> ();
+//			var unresolvedArguments = GetUnresolvedArguments (context);
+//			if (unresolvedArguments.Count > 0) {
+//				foreach (var id in unresolvedArguments) {
+//					context.DoInsert (context.Document.Editor.LocationToOffset (stmt.StartLocation.Line, 1), 
+//						context.OutputNode (GenerateLocalVariableDeclaration (context, id), context.GetIndentLevel (stmt)) + context.Document.Editor.EolMarker);
+//				}
+//				return;
+//			}
+//			
+//			var identifier = GetIdentifier (context);
+//			
+//			context.DoInsert (context.Document.Editor.LocationToOffset (stmt.StartLocation.Line, 1), 
+//				context.OutputNode (GenerateLocalVariableDeclaration (context, identifier), context.GetIndentLevel (stmt)) + context.Document.Editor.EolMarker);
 		}
 		
-		AstNode GenerateLocalVariableDeclaration (CSharpContext context, IdentifierExpression identifier)
+		AstNode GenerateLocalVariableDeclaration (MDRefactoringContext context, IdentifierExpression identifier)
 		{
 			return new VariableDeclarationStatement () {
 				Type = GuessType (context, identifier),
@@ -114,17 +114,17 @@ namespace MonoDevelop.CSharp.ContextAction
 			};
 		}
 		
-		IdentifierExpression GetIdentifier (CSharpContext context)
+		IdentifierExpression GetIdentifier (MDRefactoringContext context)
 		{
 			return context.GetNode<IdentifierExpression> ();
 		}
 		
-		InvocationExpression GetInvocation (CSharpContext context)
+		InvocationExpression GetInvocation (MDRefactoringContext context)
 		{
 			return context.GetNode<InvocationExpression> ();
 		}
 
-		AstType GuessType (CSharpContext context, IdentifierExpression identifier)
+		AstType GuessType (MDRefactoringContext context, IdentifierExpression identifier)
 		{
 			AstType type = CreateField.GuessType (context, identifier);
 			if (type != null)

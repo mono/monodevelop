@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharp.Inspection
 								var expressions = GetExpressions (node);
 										
 								Expression expr = new BinaryOperatorExpression (expressions.Item1.Clone (), BinaryOperatorType.NullCoalescing, expressions.Item2.Clone ());
-								node.Replace (data.Document, expr);
+//								node.Replace (data.Document, expr);
 							}
 						);
 					}

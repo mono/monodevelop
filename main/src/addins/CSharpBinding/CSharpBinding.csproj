@@ -224,9 +224,7 @@
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\StringBuilderOutputFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\CSharpContextAction.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\CodeAnalysis.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\CSharpInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\CallGraph.cs" />
@@ -243,35 +241,20 @@
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\NotImplementedExceptionInspector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\CSharpContext.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\AddAnotherAccessor.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\CheckIfParameterIsNull.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\ConvertDecToHex.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\ConvertForeachToFor.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\ConvertHexToDec.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\CreateBackingStore.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\CreateEventInvocator.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\FlipOperatorArguments.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\GenerateSwitchLabels.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\InvertIf.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\ReplaceEmptyString.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\UseExplicitType.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\UseVarKeyword.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBackingStore.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\SplitString.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\SplitDeclarationAndAssignment.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBraces.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\InsertAnonymousMethodSignature.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\GenerateGetter.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateField.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateProperty.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateLocalVariable.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\IntroduceFormatItem.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\CSharpContextAction.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContext.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionWrappers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
+    <None Include="MonoDevelop.CSharp.ContextAction\Actions\CreateEventInvocator.cs" />
+    <None Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBackingStore.cs" />
+    <None Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\GenerateGetter.cs" />
+    <None Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateField.cs" />
+    <None Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateProperty.cs" />
+    <None Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateLocalVariable.cs" />
+    <None Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -37,6 +37,8 @@ using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using System.Linq;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.CSharp.ContextAction;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -106,28 +108,29 @@ namespace MonoDevelop.CSharp.Formatting
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (stubData);
 			
-			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), adapter) {
+			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data.Editor)) {
 				HadErrors = hadErrors
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			var changes = new List<ICSharpCode.NRefactory.Change> ();
-			changes.AddRange (domSpacingVisitor.Changes.Where (c => startOffset < c.Offset && c.Offset < endOffset));
+			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
+			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
 			
 			int delta = data.Editor.LocationToOffset (member.Location.Line, 1) - startOffset;
 			HashSet<int > lines = new HashSet<int> ();
-			foreach (var change in changes) {
+			foreach (TextReplaceAction change in changes) {
 				change.Offset += delta;
 				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
 			}
 			// be sensible in documents with parser errors - only correct up to the caret position.
 			if (hadErrors || data.ParsedDocument.Errors.Any (e => e.ErrorType == ErrorType.Error)) {
 				var lastOffset = data.Editor.Caret.Offset;
-				changes.RemoveAll (c => c.Offset > lastOffset);
+				changes.RemoveAll (c => ((TextReplaceAction)c).Offset > lastOffset);
 			}
 			try {
 				data.Editor.Document.BeginAtomicUndo ();
-				new TextEditorDataAdapter (data.Editor).AcceptChanges (changes);
+				MDRefactoringContext.MdScript.RunActions (changes, null);
+				
 				foreach (int line in lines)
 					data.Editor.Document.CommitLineUpdate (line);
 			} finally {

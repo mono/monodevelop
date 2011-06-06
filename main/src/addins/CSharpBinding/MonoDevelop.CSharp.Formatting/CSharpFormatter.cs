@@ -47,9 +47,43 @@ using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.CSharp.ContextAction;
 
 namespace MonoDevelop.CSharp.Formatting
 {
+	class FormattingActionFactory : AbstractActionFactory
+	{
+		Mono.TextEditor.TextEditorData data;
+		
+		class ConcreteTextReplaceAction : TextReplaceAction
+		{
+			Mono.TextEditor.TextEditorData data;
+			
+			public ConcreteTextReplaceAction (Mono.TextEditor.TextEditorData data, int offset, int removedChars, string insertedText) : base (offset, removedChars, insertedText)
+			{
+				this.data = data;
+			}
+			
+			public override void Perform (Script script)
+			{
+				data.Replace (Offset, RemovedChars, InsertedText);
+			}
+		}
+		
+		public FormattingActionFactory (Mono.TextEditor.TextEditorData data)
+		{
+			if (data == null)
+				throw new ArgumentNullException ("data");
+			this.data = data;
+		}
+		
+		public override TextReplaceAction CreateTextReplaceAction (int offset, int removedChars, string insertedText)
+		{
+			return new ConcreteTextReplaceAction (data, offset, removedChars, insertedText);
+		}
+	}
+	
 	public class CSharpFormatter : AbstractAdvancedFormatter
 	{
 		static internal readonly string MimeType = "text/x-csharp";
@@ -102,17 +136,17 @@ namespace MonoDevelop.CSharp.Formatting
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (data);
 			
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter) {
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data)) {
 				HadErrors =  parser.HasErrors
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
-			var changes = new List<ICSharpCode.NRefactory.Change> ();
+			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
 			try {
 				data.Document.BeginAtomicUndo ();
-				adapter.AcceptChanges (changes);
+				MDRefactoringContext.MdScript.RunActions (changes, null);
 			} finally {
 				data.Document.EndAtomicUndo ();
 			}
@@ -146,22 +180,22 @@ namespace MonoDevelop.CSharp.Formatting
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
 			var adapter = new TextEditorDataAdapter (data);
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter) {
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data)) {
 				HadErrors = hadErrors
 			};
 			
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
 			
-			var changes = new List<ICSharpCode.NRefactory.Change> ();
+			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
 			
-			adapter.AcceptChanges (changes);
+			MDRefactoringContext.MdScript.RunActions (changes, null);
 			
 			int end = endOffset;
-			foreach (var c in changes) {
+			foreach (TextReplaceAction c in changes) {
 				end -= c.RemovedChars;
 				if (c.InsertedText != null)
 					end += c.InsertedText.Length;

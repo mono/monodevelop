@@ -37,15 +37,15 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class CreateProperty : CSharpContextAction
+	public class CreateProperty : MDRefactoringContextAction
 	{
-		protected override string GetMenuText (CSharpContext context)
+		protected override string GetMenuText (MDRefactoringContext context)
 		{
 			var identifier = GetIdentifier (context);
 			return string.Format (GettextCatalog.GetString ("Create property '{0}'"), identifier);
 		}
 		
-		protected override bool IsValid (CSharpContext context)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
 			var identifier = GetIdentifier (context);
 			if (identifier == null)
@@ -56,14 +56,14 @@ namespace MonoDevelop.CSharp.ContextAction
 			return false;
 		}
 		
-		protected override void Run (CSharpContext context)
+		protected override void Run (MDRefactoringContext context)
 		{
-			var identifier = GetIdentifier (context);
-			context.InsertionMode (GettextCatalog.GetString ("<b>Create property -- Targeting</b>"), 
-				() => context.OutputNode (GeneratePropertyDeclaration (context, identifier), context.GetIndentLevel (identifier) - 1));
+//			var identifier = GetIdentifier (context);
+//			context.InsertionMode (GettextCatalog.GetString ("<b>Create property -- Targeting</b>"), 
+//				() => context.OutputNode (GeneratePropertyDeclaration (context, identifier), context.GetIndentLevel (identifier) - 1));
 		}
 		
-		AstNode GeneratePropertyDeclaration (CSharpContext context, IdentifierExpression identifier)
+		AstNode GeneratePropertyDeclaration (MDRefactoringContext context, IdentifierExpression identifier)
 		{
 			return new PropertyDeclaration () {
 				ReturnType = CreateField.GuessType (context, identifier),
@@ -73,7 +73,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			};
 		}
 		
-		IdentifierExpression GetIdentifier (CSharpContext context)
+		IdentifierExpression GetIdentifier (MDRefactoringContext context)
 		{
 			return context.GetNode<IdentifierExpression> ();
 		}

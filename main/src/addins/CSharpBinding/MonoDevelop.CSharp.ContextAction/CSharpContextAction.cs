@@ -34,46 +34,47 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public abstract class CSharpContextAction : MonoDevelop.ContextAction.ContextAction
+	public abstract class MDRefactoringContextAction : MonoDevelop.ContextAction.ContextAction
 	{
 		internal static string GetSingleIndent (Mono.TextEditor.TextEditorData editor)
 		{
 			return editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
 		}
 		
-		protected abstract string GetMenuText (CSharpContext context);
+		protected virtual string GetMenuText (MDRefactoringContext context)
+		{
+			return Node.Title;
+		}
 		
 		public sealed override string GetMenuText (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
 		{
-			var context = new CSharpContext (document, loc);
-			if (!context.IsValid)
+			var context = new MDRefactoringContext (document, loc);
+			if (context.Unit == null)
 				return "invalid";
 			return GetMenuText (context);
 		}
 		
-		protected abstract bool IsValid (CSharpContext context);
+		protected abstract bool IsValid (MDRefactoringContext context);
 		
 		public sealed override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
 		{
-			var context = new CSharpContext (document, loc);
-			if (!context.IsValid)
+			var context = new MDRefactoringContext (document, loc);
+			if (context.Unit == null)
 				return false;
 			return IsValid (context);
 		}
 		
-		protected abstract void Run (CSharpContext context);
+		protected abstract void Run (MDRefactoringContext context);
 		
 		public sealed override void Run (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
 		{
-			var context = new CSharpContext (document, loc);
-			if (!context.IsValid)
+			var context = new MDRefactoringContext (document, loc);
+			if (context.Unit == null)
 				return;
 			if (!IsValid (context))
 				return;
 			
 			Run (context);
-			context.CommitChanges ();
-			context.Document.Editor.Document.CommitUpdateAll ();
 		}
 	}
 }

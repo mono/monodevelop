@@ -38,19 +38,19 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class CreateEventInvocator : CSharpContextAction
+	public class CreateEventInvocator : MDRefactoringContextAction
 	{
-		protected override string GetMenuText (CSharpContext context)
+		protected override string GetMenuText (MDRefactoringContext context)
 		{
 			return GettextCatalog.GetString ("Create event invocator");
 		}
 
-		EventDeclaration GetEventDeclaration (CSharpContext context)
+		EventDeclaration GetEventDeclaration (MDRefactoringContext context)
 		{
 			return context.GetNode<EventDeclaration> ();
 		}
 		
-		protected override bool IsValid (CSharpContext context)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
 			var eventDeclaration = GetEventDeclaration (context);
 			if (eventDeclaration == null)
@@ -61,59 +61,59 @@ namespace MonoDevelop.CSharp.ContextAction
 			return !member.DeclaringType.Methods.Any (m => m.Name == "On" + member.Name);
 		}
 		
-		protected override void Run (CSharpContext context)
+		protected override void Run (MDRefactoringContext context)
 		{
-			var eventDeclaration = GetEventDeclaration (context);
-			var member = context.Document.CompilationUnit.GetMemberAt (context.Location) as IEvent;
-			
-			MethodDeclaration methodDeclaration = new MethodDeclaration ();
-			methodDeclaration.Name = "On" + member.Name;
-			methodDeclaration.ReturnType = eventDeclaration.ReturnType.Clone ();
-			methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Virtual;
-			methodDeclaration.Body = new BlockStatement ();
-
-			IType type = context.Document.Dom.SearchType (context.Document.ParsedDocument.CompilationUnit, member.DeclaringType, member.Location, member.ReturnType);
-			IMethod invokeMethod = type.Methods.Where (m => m.Name == "Invoke").FirstOrDefault ();
-					
-			if (invokeMethod == null)
-				return;
-			
-			bool hasSenderParam = false;
-			IEnumerable<IParameter> pars = invokeMethod.Parameters;
-			if (invokeMethod.Parameters.Any ()) {
-				var first = invokeMethod.Parameters [0];
-				if (first.Name == "sender" && first.ReturnType.FullName == "System.Object") {
-					hasSenderParam = true;
-					pars = invokeMethod.Parameters.Skip (1);
-				}
-			}
-			
-			foreach (var par in pars) {
-				var typeName = ShortenTypeName (context.Document, par.ReturnType);
-				var decl = new ParameterDeclaration (typeName, par.Name);
-				methodDeclaration.Parameters.Add (decl);
-			}
-			
-			const string handlerName = "handler";
-					
-			var handlerVariable = new VariableDeclarationStatement (ShortenTypeName (context.Document, member.ReturnType),
-						handlerName,
-						new MemberReferenceExpression (new ThisReferenceExpression (), member.Name));
-			methodDeclaration.Body.Statements.Add (handlerVariable);
-					
-			IfElseStatement ifStatement = new IfElseStatement ();
-			ifStatement.Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null));
-			List<Expression> arguments = new List<Expression> ();
-			if (hasSenderParam)
-				arguments.Add (new ThisReferenceExpression ());
-			foreach (var par in pars)
-				arguments.Add (new IdentifierExpression (par.Name));
-			
-			ifStatement.TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments));
-			methodDeclaration.Body.Statements.Add (ifStatement);
-			
-			context.InsertionMode (GettextCatalog.GetString ("<b>Create event invocator -- Targeting</b>"), 
-				() => context.OutputNode (methodDeclaration, context.GetIndentLevel (eventDeclaration)));
+//			var eventDeclaration = GetEventDeclaration (context);
+//			var member = context.Document.CompilationUnit.GetMemberAt (context.Location) as IEvent;
+//			
+//			MethodDeclaration methodDeclaration = new MethodDeclaration ();
+//			methodDeclaration.Name = "On" + member.Name;
+//			methodDeclaration.ReturnType = eventDeclaration.ReturnType.Clone ();
+//			methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Virtual;
+//			methodDeclaration.Body = new BlockStatement ();
+//
+//			IType type = context.Document.Dom.SearchType (context.Document.ParsedDocument.CompilationUnit, member.DeclaringType, member.Location, member.ReturnType);
+//			IMethod invokeMethod = type.Methods.Where (m => m.Name == "Invoke").FirstOrDefault ();
+//					
+//			if (invokeMethod == null)
+//				return;
+//			
+//			bool hasSenderParam = false;
+//			IEnumerable<IParameter> pars = invokeMethod.Parameters;
+//			if (invokeMethod.Parameters.Any ()) {
+//				var first = invokeMethod.Parameters [0];
+//				if (first.Name == "sender" && first.ReturnType.FullName == "System.Object") {
+//					hasSenderParam = true;
+//					pars = invokeMethod.Parameters.Skip (1);
+//				}
+//			}
+//			
+//			foreach (var par in pars) {
+//				var typeName = ShortenTypeName (context.Document, par.ReturnType);
+//				var decl = new ParameterDeclaration (typeName, par.Name);
+//				methodDeclaration.Parameters.Add (decl);
+//			}
+//			
+//			const string handlerName = "handler";
+//					
+//			var handlerVariable = new VariableDeclarationStatement (ShortenTypeName (context.Document, member.ReturnType),
+//						handlerName,
+//						new MemberReferenceExpression (new ThisReferenceExpression (), member.Name));
+//			methodDeclaration.Body.Statements.Add (handlerVariable);
+//					
+//			IfElseStatement ifStatement = new IfElseStatement ();
+//			ifStatement.Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null));
+//			List<Expression> arguments = new List<Expression> ();
+//			if (hasSenderParam)
+//				arguments.Add (new ThisReferenceExpression ());
+//			foreach (var par in pars)
+//				arguments.Add (new IdentifierExpression (par.Name));
+//			
+//			ifStatement.TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments));
+//			methodDeclaration.Body.Statements.Add (ifStatement);
+//			
+//			context.InsertionMode (GettextCatalog.GetString ("<b>Create event invocator -- Targeting</b>"), 
+//				() => context.OutputNode (methodDeclaration, context.GetIndentLevel (eventDeclaration)));
 		}
 		
 	}

@@ -122,7 +122,7 @@ namespace MonoDevelop.CSharp.Inspection
 							GettextCatalog.GetString ("Use string.IsNullOrEmpty"),
 							delegate {
 							Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
-							binOp.Replace (data.Document, invocation);	
+//							binOp.Replace (data.Document, invocation);	
 						}
 						);
 					}
@@ -135,7 +135,7 @@ namespace MonoDevelop.CSharp.Inspection
 							delegate {
 								Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
 								invocation = new UnaryOperatorExpression (UnaryOperatorType.Not, invocation);
-								binOp.Replace (data.Document, invocation);	
+//								binOp.Replace (data.Document, invocation);	
 							}
 						);
 					}

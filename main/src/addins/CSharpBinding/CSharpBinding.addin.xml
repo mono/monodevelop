@@ -146,7 +146,7 @@
 	
 	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
 		<!--- Member generators -->
-		<Action mimeType="text/x-csharp"
+<!--		<Action mimeType="text/x-csharp"
 			_title = "Create event invocator"
 			_description = "Creates a standard OnXXX event method."
 			class = "MonoDevelop.CSharp.ContextAction.CreateEventInvocator" />
@@ -166,8 +166,8 @@
 			_title = "Create property"
 			_description = "Creates a property for a undefined variable."
 			class = "MonoDevelop.CSharp.ContextAction.CreateProperty" />
-		
-		<!-- Context actions -->
+		-->
+		<!-- Context actions --> 
 		<Action mimeType="text/x-csharp"
 			_title = "Add another accessor"
 			_description = "Adds second accessor to a property."
@@ -197,6 +197,12 @@
 			_description = "Swaps left and right arguments."
 			class = "MonoDevelop.CSharp.ContextAction.FlipOperatorArguments" />
 		<Action mimeType="text/x-csharp"
+			_title = "Use string.Empty"
+			_description = 'Replaces "" with string.Empty'
+			class = "MonoDevelop.CSharp.ContextAction.ReplaceEmptyString" />
+			
+			
+		<Action mimeType="text/x-csharp"
 			_title = "Use 'var' keyword"
 			_description = "Converts local variable declaration to be implicit typed."
 			class = "MonoDevelop.CSharp.ContextAction.UseVarKeyword" />
@@ -205,25 +211,21 @@
 			_description = "Converts local variable declaration to be explicit typed."
 			class = "MonoDevelop.CSharp.ContextAction.UseExplicitType" />
 		<Action mimeType="text/x-csharp"
-			_title = "Use string.Empty"
-			_description = 'Replaces "" with string.Empty'
-			class = "MonoDevelop.CSharp.ContextAction.ReplaceEmptyString" />
-		<Action mimeType="text/x-csharp"
 			_title = "Invert if"
 			_description = "Inverts an 'if ... else' expression."
 			class = "MonoDevelop.CSharp.ContextAction.InvertIf" />
 		<Action mimeType="text/x-csharp"
 			_title = "Create backing store for auto property"
 			_description = "Creates a backing field for an auto property."
-			class = "MonoDevelop.CSharp.ContextAction.CreateBackingStore" />
+			class = "MonoDevelop.CSharp.ContextAction.CreateBackingStore" /><!--
 		<Action mimeType="text/x-csharp"
 			_title = "Remove backing store for property"
 			_description = "Removes the backing store of a property and creates an auto property."
-			class = "MonoDevelop.CSharp.ContextAction.RemoveBackingStore" />
-		<Action mimeType="text/x-csharp"
+			class = "MonoDevelop.CSharp.ContextAction.RemoveBackingStore" /> -->
+<!--		<Action mimeType="text/x-csharp"
 			_title = "Move type to another file"
 			_description = "Moves current type to another file that matches the name of the type."
-			class = "MonoDevelop.CSharp.ContextAction.MoveTypeToFile" />
+			class = "MonoDevelop.CSharp.ContextAction.MoveTypeToFile" />-->
 		<Action mimeType="text/x-csharp"
 			_title = "Split string literal"
 			_description = "Splits string literal into two."
@@ -243,7 +245,7 @@
 		<Action mimeType="text/x-csharp"
 			_title = "Insert anonymous method signature"
 			_description = "Inserts a signature to parameterless anonymous methods."
-			class = "MonoDevelop.CSharp.ContextAction.InsertAnonymousMethodSignature" />
+			class = "MonoDevelop.CSharp.ContextAction.InsertAnonymousMethodSignature" /> 
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/Inspectors">

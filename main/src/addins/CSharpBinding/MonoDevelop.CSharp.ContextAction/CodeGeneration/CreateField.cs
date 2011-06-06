@@ -38,15 +38,15 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class CreateField : CSharpContextAction
+	public class CreateField : MDRefactoringContextAction
 	{
-		protected override string GetMenuText (CSharpContext context)
+		protected override string GetMenuText (MDRefactoringContext context)
 		{
 			var identifier = GetIdentifier (context);
 			return string.Format (GettextCatalog.GetString ("Create field '{0}'"), identifier);
 		}
 		
-		protected override bool IsValid (CSharpContext context)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
 			var identifier = GetIdentifier (context);
 			if (identifier == null)
@@ -57,14 +57,14 @@ namespace MonoDevelop.CSharp.ContextAction
 			return false;
 		}
 		
-		protected override void Run (CSharpContext context)
+		protected override void Run (MDRefactoringContext context)
 		{
-			var identifier = GetIdentifier (context);
-			context.InsertionMode (GettextCatalog.GetString ("<b>Create field -- Targeting</b>"), 
-				() => context.OutputNode (GenerateFieldDeclaration (context, identifier), context.GetIndentLevel (identifier) - 1));
+//			var identifier = GetIdentifier (context);
+//			context.InsertionMode (GettextCatalog.GetString ("<b>Create field -- Targeting</b>"), 
+//				() => context.OutputNode (GenerateFieldDeclaration (context, identifier), context.GetIndentLevel (identifier) - 1));
 		}
 		
-		AstNode GenerateFieldDeclaration (CSharpContext context, IdentifierExpression identifier)
+		AstNode GenerateFieldDeclaration (MDRefactoringContext context, IdentifierExpression identifier)
 		{
 			return new FieldDeclaration () {
 				ReturnType = GuessType (context, identifier),
@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			};
 		}
 		
-		internal static AstType GuessType (CSharpContext context, IdentifierExpression identifier)
+		internal static AstType GuessType (MDRefactoringContext context, IdentifierExpression identifier)
 		{
 			if (identifier.Parent is AssignmentExpression) {
 				var assign = (AssignmentExpression)identifier.Parent;
@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return null;
 		}
 		
-		IdentifierExpression GetIdentifier (CSharpContext context)
+		IdentifierExpression GetIdentifier (MDRefactoringContext context)
 		{
 			return context.GetNode<IdentifierExpression> ();
 		}
