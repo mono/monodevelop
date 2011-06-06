@@ -968,10 +968,9 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (dom == null || (completionChar != '(' && completionChar != '<' && completionChar != '['))
 				return null;
-
+			stateTracker.UpdateEngine (completionContext.TriggerOffset);
 			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 				return null;
-
 			ExpressionResult result = FindExpression (dom, completionContext, -1);
 			if (result == null)
 				return null;
@@ -979,7 +978,6 @@ namespace MonoDevelop.CSharp.Completion
 
 			//DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
 			NRefactoryResolver resolver = CreateResolver ();
-
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
 				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (textEditorData, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
 			
