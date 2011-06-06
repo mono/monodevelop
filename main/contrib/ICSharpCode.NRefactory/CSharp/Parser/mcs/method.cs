@@ -597,6 +597,13 @@ namespace Mono.CSharp {
 //					MethodBase mb = new PartialMethodDefinitionInfo (this);
 
 					spec = new MethodSpec (kind, Parent.Definition, this, ReturnType, null, parameters, ModFlags);
+					if (MemberName.Arity > 0) {
+						spec.IsGeneric = true;
+
+						// TODO: Have to move DefineMethod after Define (ideally to Emit)
+						throw new NotImplementedException ("Generic partial methods");
+					}
+
 					Parent.MemberCache.AddMember (spec);
 				}
 
@@ -1083,7 +1090,7 @@ namespace Mono.CSharp {
 					continue;
 				}
 				
-				if (MethodData.implementing != null) {
+				if (MethodData != null && MethodData.implementing != null) {
 					var base_tp = MethodData.implementing.Constraints[i];
 					if (!tp.Type.HasSameConstraintsImplementation (base_tp)) {
 						Report.SymbolRelatedToPreviousError (MethodData.implementing);
@@ -1144,16 +1151,7 @@ namespace Mono.CSharp {
 				}
 
 				if ((ModFlags & Modifiers.ASYNC) != 0) {
-					if (ReturnType.Kind != MemberKind.Void && ReturnType != Module.PredefinedTypes.Task.TypeSpec && ReturnType != Module.PredefinedTypes.TaskGeneric.TypeSpec) {
-						Report.Error (1983, type_expr.Location, "The return type of an async method `{0}' must be void, Task, or Task<T>",
-							GetSignatureForError ());
-					}
-
-					if (!block.IsAsync) {
-						// TODO: Warning
-					}
-
-					AsyncInitializer.Create (block, Parent.PartialContainer, ReturnType);
+					AsyncInitializer.Create (block, parameters, Parent.PartialContainer, ReturnType, Location);
 				}
 			}
 

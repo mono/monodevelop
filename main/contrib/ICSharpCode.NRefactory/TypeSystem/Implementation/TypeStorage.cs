@@ -121,7 +121,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public readonly NamespaceEntry Parent;
 			
 			/// <summary>
-			/// Number of classes in this namespace (not in sub-namespaces)
+			/// Number of classes in this namespace (not in sub-namespaces).
+			/// Note: this always refers to the number of classes from the ordinal typeDict that map
+			/// to this namespace when compared with the appropriate StringComparer.
+			/// The actual number of classes in the typeDict matching this StringComparer might be lower.
 			/// </summary>
 			public int ClassCount;
 			
@@ -287,7 +290,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				ITypeDefinition defInDict;
 				if (dict.TryGetValue(key, out defInDict)) {
 					if (defInDict == typeDefinition) {
-						wasRemoved = true;
+						if (dict.Comparer == FullNameAndTypeParameterCountComparer.Ordinal) {
+							// Set wasRemoved flag only on removal in the ordinal comparison.
+							// This keeps the ClassCount consistent when there are name clashes.
+							wasRemoved = true;
+						}
 						dict.Remove(key);
 					}
 				}
@@ -325,6 +332,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
 			var key = new FullNameAndTypeParameterCount(typeDefinition.Namespace, typeDefinition.Name, typeDefinition.TypeParameterCount);
+			// Set isNew on addition in the ordinal comparison.
+			// This keeps the ClassCount consistent when there are name clashes.
 			bool isNew = !_typeDicts[0].ContainsKey(key);
 			foreach (var dict in _typeDicts) {
 				dict[key] = typeDefinition;

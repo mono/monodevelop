@@ -685,7 +685,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				typeStack.Peek ().AddChild (newOperator, TypeDeclaration.MemberRole);
 			}
 			
-			public void AddAttributeSection (AttributedNode parent, Attributable a)
+			public void AddAttributeSection (AstNode parent, Attributable a)
 			{
 				if (a.OptAttributes == null)
 					return;
@@ -1081,7 +1081,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						result.AddChild (init, VariableDeclarationStatement.Roles.Variable);
 					}
 				}
-				if (location != null && blockVariableDeclaration.Initializer == null || location.Count > 1)
+				if (location != null && (blockVariableDeclaration.Initializer == null || location.Count > 1))
 					result.AddChild (new CSharpTokenNode (Convert (location[location.Count - 1]), 1), VariableDeclarationStatement.Roles.Semicolon);
 				return result;
 			}
@@ -2044,6 +2044,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var location = LocationsBag.GetLocations (p);
 					
 					ParameterDeclaration parameterDeclarationExpression = new ParameterDeclaration ();
+					AddAttributeSection (parameterDeclarationExpression, p);
 					switch (p.ModFlags) {
 					case Parameter.Modifier.OUT:
 						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Out;
@@ -2900,6 +2901,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top == null)
 				return null;
 			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
 			return conversionVisitor.Unit;
@@ -2967,6 +2969,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top == null)
 				return null;
 			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
 			if (line != 0)

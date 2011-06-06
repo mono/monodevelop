@@ -649,13 +649,21 @@ namespace Mono.CSharp
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
-			storey = (StateMachine) block.TopBlock.AnonymousMethodStorey;
+			storey = (StateMachine) block.Parent.ParametersBlock.AnonymousMethodStorey;
 
 			BlockContext ctx = new BlockContext (ec, block, ReturnType);
 			ctx.CurrentAnonymousMethod = this;
 
 			ctx.StartFlowBranching (this, ec.CurrentBranching);
 			Block.Resolve (ctx);
+
+			//
+			// Explicit return is required for Task<T> state machine
+			//
+			var task_storey = storey as AsyncTaskStorey;
+			if (task_storey == null || !task_storey.ReturnType.IsGenericTask)
+				ctx.CurrentBranching.CurrentUsageVector.Goto ();
+
 			ctx.EndFlowBranching ();
 
 			var move_next = new StateMachineMethod (storey, this, new TypeExpression (ReturnType, loc), Modifiers.PUBLIC, new MemberName ("MoveNext", loc));
@@ -740,9 +748,10 @@ namespace Mono.CSharp
 
 			ec.MarkLabel (move_next_error);
 
-			if (ReturnType.Kind != MemberKind.Void)
+			if (ReturnType.Kind != MemberKind.Void) {
 				ec.EmitInt (0);
-			ec.Emit (OpCodes.Ret);
+				ec.Emit (OpCodes.Ret);
+			}
 		}
 
 		void EmitMoveNext (EmitContext ec)
@@ -796,23 +805,30 @@ namespace Mono.CSharp
 
 			SymbolWriter.StartIteratorDispatcher (ec);
 
-			ec.Emit (OpCodes.Ldarg_0);
-			ec.EmitInt ((int) IteratorStorey.State.After);
-			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
+			EmitMoveNextEpilogue (ec);
 
 			ec.MarkLabel (move_next_error);
 
-			if (ReturnType.Kind != MemberKind.Void)
+			if (ReturnType.Kind != MemberKind.Void) {
 				ec.EmitInt (0);
-			ec.Emit (OpCodes.Ret);
+				ec.Emit (OpCodes.Ret);
+			}
 
 			ec.MarkLabel (move_next_ok);
 
-			if (ReturnType.Kind != MemberKind.Void)
+			if (ReturnType.Kind != MemberKind.Void) {
 				ec.EmitInt (1);
-			ec.Emit (OpCodes.Ret);
+				ec.Emit (OpCodes.Ret);
+			}
 
 			SymbolWriter.EndIteratorDispatcher (ec);
+		}
+
+		protected virtual void EmitMoveNextEpilogue (EmitContext ec)
+		{
+			ec.Emit (OpCodes.Ldarg_0);
+			ec.EmitInt ((int) IteratorStorey.State.After);
+			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
 		}
 
 		//

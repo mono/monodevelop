@@ -1559,9 +1559,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
 					// look for type parameter with that name
-					foreach (ITypeParameter tp in t.TypeParameters) {
-						if (tp.Name == identifier)
-							return new TypeResolveResult(tp);
+					var typeParameters = t.TypeParameters;
+					// only look at type parameters defined directly on this type, not at those copied from outer classes
+					for (int i = (t.DeclaringTypeDefinition != null ? t.DeclaringTypeDefinition.TypeParameterCount : 0); i < typeParameters.Count; i++) {
+						if (typeParameters[i].Name == identifier)
+							return new TypeResolveResult(typeParameters[i]);
 					}
 				}
 				

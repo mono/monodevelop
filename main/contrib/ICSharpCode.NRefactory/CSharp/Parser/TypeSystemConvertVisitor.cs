@@ -496,6 +496,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		IAccessor ConvertAccessor(Accessor accessor, Accessibility defaultAccessibility)
 		{
+			if (accessor.IsNull)
+				return null;
 			DefaultAccessor a = new DefaultAccessor();
 			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? defaultAccessibility;
 			a.Region = MakeRegion(accessor);
@@ -660,7 +662,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						string name = ((IdentifierExpression)ae.Left).Identifier;
 						if (namedArguments == null)
 							namedArguments = new List<KeyValuePair<string, IConstantValue>>();
-						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(nae.Expression)));
+						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(ae.Right)));
 					} else {
 						if (positionalArguments == null)
 							positionalArguments = new List<IConstantValue>();

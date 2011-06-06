@@ -1308,9 +1308,14 @@ method_header
 	| opt_attributes
 	  opt_modifiers
 	  PARTIAL
-	  VOID method_declaration_name
+	  VOID
+	  {
+		lexer.parsing_generic_declaration = true;
+	  }
+	  method_declaration_name
 	  OPEN_PARENS
 	  {
+		lexer.parsing_generic_declaration = false;
 	  	valid_param_mod = ParameterModifierType.All;
 	  }
 	  opt_formal_parameter_list CLOSE_PARENS 
@@ -1322,10 +1327,10 @@ method_header
 		lexer.ConstraintsParsing = false;
 		valid_param_mod = 0;
 
-		MemberName name = (MemberName) $5;
-		current_local_parameters = (ParametersCompiled) $8;
+		MemberName name = (MemberName) $6;
+		current_local_parameters = (ParametersCompiled) $9;
 
-		if ($10 != null && name.TypeArguments == null)
+		if ($11 != null && name.TypeArguments == null)
 			report.Error (80, lexer.Location,
 				      "Constraints are not allowed on non-generic declarations");
 
@@ -1340,7 +1345,6 @@ method_header
 		}
 
 		var modifiers = (Modifiers) $2;
-
 
 		const Modifiers invalid_partial_mod = Modifiers.AccessibilityMask | Modifiers.ABSTRACT | Modifiers.EXTERN |
 			Modifiers.NEW | Modifiers.OVERRIDE | Modifiers.SEALED | Modifiers.VIRTUAL;
@@ -1364,9 +1368,8 @@ method_header
 		if (doc_support)
 			method.DocComment = Lexer.consume_doc_comment ();
 
-		// TODO: lbag, push void
 		StoreModifierLocation (Modifiers.PARTIAL, GetLocation ($3));
-		lbag.AddMember (method, GetModifierLocations (), GetLocation ($6), GetLocation ($9));
+		lbag.AddMember (method, mod_locations, GetLocation ($7), GetLocation ($10));
 		$$ = method;
 	  }
 	| opt_attributes
@@ -3738,7 +3741,7 @@ pointer_member_access
 anonymous_method_expression
 	: DELEGATE opt_anonymous_method_signature
 	  {
-		start_anonymous (false, (ParametersCompiled) $2, GetLocation ($1));
+		start_anonymous (false, (ParametersCompiled) $2, false, GetLocation ($1));
 	  }
 	  block
 	  {
@@ -3748,6 +3751,14 @@ anonymous_method_expression
 		} else {
 			lbag.AddLocation ($$, GetLocation ($1));
 		}
+	  }
+	| ASYNC DELEGATE opt_anonymous_method_signature
+	  {
+		start_anonymous (false, (ParametersCompiled) $3, true, GetLocation ($1));
+	  }
+	  block
+	  {
+		$$ = end_anonymous ((ParametersBlock) $5);
 	  }
 	;
 
@@ -4144,31 +4155,53 @@ expression_or_error
 lambda_expression
 	: IDENTIFIER ARROW 
 	  {
-		var lt = (Tokenizer.LocatedToken) $1;
+		var lt = (Tokenizer.LocatedToken) $1;	
 		Parameter p = new ImplicitLambdaParameter (lt.Value, lt.Location);
-		start_anonymous (true, new ParametersCompiled (p), GetLocation ($1));
+		start_anonymous (true, new ParametersCompiled (p), false, lt.Location);
 	  }
 	  lambda_expression_body
 	  {
 		$$ = end_anonymous ((ParametersBlock) $4);
 		lbag.AddLocation ($$, GetLocation ($2));
 	  }
+	| ASYNC IDENTIFIER ARROW
+	  {
+		var lt = (Tokenizer.LocatedToken) $2;
+		Parameter p = new ImplicitLambdaParameter (lt.Value, lt.Location);
+		start_anonymous (true, new ParametersCompiled (p), true, lt.Location);
+	  }
+	  lambda_expression_body
+	  {
+		$$ = end_anonymous ((ParametersBlock) $5);
+		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
+	  }
 	| OPEN_PARENS_LAMBDA
 	  {
-		if (lang_version <= LanguageVersion.ISO_2)
-			FeatureIsNotAvailable (GetLocation ($1), "lambda expressions");
-	  
 	  	valid_param_mod = ParameterModifierType.Ref | ParameterModifierType.Out;
 	  }
 	  opt_lambda_parameter_list CLOSE_PARENS ARROW 
 	  {
 	  	valid_param_mod = 0;
-		start_anonymous (true, (ParametersCompiled) $3, GetLocation ($1));
+		start_anonymous (true, (ParametersCompiled) $3, false, GetLocation ($1));
 	  }
-	  lambda_expression_body 
+	  lambda_expression_body
 	  {
 		$$ = end_anonymous ((ParametersBlock) $7);
 		lbag.AddLocation ($$, GetLocation ($4), GetLocation ($5));
+	  }
+	| ASYNC OPEN_PARENS_LAMBDA
+	  {
+	  	valid_param_mod = ParameterModifierType.Ref | ParameterModifierType.Out;	  
+	  }
+	  opt_lambda_parameter_list CLOSE_PARENS ARROW 
+	  {
+	  	valid_param_mod = 0;
+		start_anonymous (true, (ParametersCompiled) $4, true, GetLocation ($1));
+	  }
+	  lambda_expression_body
+	  {
+		$$ = end_anonymous ((ParametersBlock) $8);
+		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($5), GetLocation ($6));
 	  }
 	;
 
@@ -4381,7 +4414,7 @@ modifier
 		StoreModifierLocation ($$, GetLocation ($1));
 	  }
 	;
-
+	
 opt_class_base
 	: /* empty */
 	| COLON type_list
@@ -4939,12 +4972,8 @@ statement_expression
 	  {
 		ExpressionStatement s = $1 as ExpressionStatement;
 		if (s == null) {
-			if ($1 is Statement) {
-				$$ = $1;
-			} else {
-				Expression.Error_InvalidExpressionStatement (report, GetLocation ($1));
-				$$ = new StatementExpression (EmptyExpressionStatement.Instance);
-			}
+			Expression.Error_InvalidExpressionStatement (report, GetLocation ($1));
+			$$ = new StatementExpression (EmptyExpressionStatement.Instance);
 		} else {
 			$$ = new StatementExpression (s);
 		}
@@ -6511,21 +6540,24 @@ end_block (Location loc)
 	return retval;
 }
 
-void start_anonymous (bool lambda, ParametersCompiled parameters, Location loc)
+void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync, Location loc)
 {
-	if (lang_version == LanguageVersion.ISO_1){
-		FeatureIsNotAvailable (loc, "anonymous methods");
-	}
-
 	oob_stack.Push (current_anonymous_method);
 	oob_stack.Push (current_local_parameters);
 	oob_stack.Push (current_variable);
 
 	current_local_parameters = parameters;
+	if (isLambda) {
+		if (lang_version <= LanguageVersion.ISO_2)
+			FeatureIsNotAvailable (loc, "lambda expressions");
 
-	current_anonymous_method = lambda 
-		? new LambdaExpression (loc) 
-		: new AnonymousMethodExpression (loc);
+		current_anonymous_method = new LambdaExpression (isAsync, loc);
+	} else {
+		if (lang_version == LanguageVersion.ISO_1)
+			FeatureIsNotAvailable (loc, "anonymous methods");
+			
+		current_anonymous_method = new AnonymousMethodExpression (isAsync, loc);
+	}
 
 	// Force the next block to be created as a ToplevelBlock
 	parsing_anonymous_method = true;
@@ -6556,6 +6588,8 @@ void Error_SyntaxError (int token)
 
 void Error_SyntaxError (int error_code, int token, string msg)
 {
+	Lexer.CompleteOnEOF = false;
+
 	// An error message has been reported by tokenizer
 	if (token == Token.ERROR)
 		return;

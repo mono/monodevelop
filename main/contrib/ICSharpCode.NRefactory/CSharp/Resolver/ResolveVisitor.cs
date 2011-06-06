@@ -140,6 +140,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
+		protected override ResolveResult VisitChildren(AstNode node, object data)
+		{
+			ScanChildren(node);
+			return null;
+		}
+		
 		void ScanChildren(AstNode node)
 		{
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
@@ -403,6 +409,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
+		public override ResolveResult VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, object data)
+		{
+			ScanChildren(typeParameterDeclaration);
+			if (resolverEnabled) {
+				string name = typeParameterDeclaration.Name;
+				IMethod m = resolver.CurrentMember as IMethod;
+				if (m != null) {
+					foreach (var tp in m.TypeParameters) {
+						if (tp.Name == name)
+							return new TypeResolveResult(tp);
+					}
+				}
+				if (resolver.CurrentTypeDefinition != null) {
+					var typeParameters = resolver.CurrentTypeDefinition.TypeParameters;
+					// look backwards so that TPs in the current type take precedence over those copied from outer types
+					for (int i = typeParameters.Count - 1; i >= 0; i--) {
+						if (typeParameters[i].Name == name)
+							return new TypeResolveResult(typeParameters[i]);
+					}
+				}
+				return errorResult;
+			} else {
+				return null;
+			}
+		}
+		
 		public override ResolveResult VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
 		{
 			try {
@@ -419,6 +451,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} finally {
 				resolver.CurrentMember = null;
 			}
+		}
+		
+		public override ResolveResult VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
+		{
+			throw new NotImplementedException();
 		}
 		#endregion
 		
@@ -497,11 +534,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			throw new NotImplementedException();
 		}
 		
-		public override ResolveResult VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression, object data)
+		public override ResolveResult VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
 		{
-			// TODO: ? 
-			ScanChildren(undocumentedExpression);
-			return new ResolveResult(resolver.Context.GetClass(typeof(RuntimeArgumentHandle)) ?? SharedTypes.UnknownType);
+			throw new NotImplementedException();
 		}
 		
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
@@ -596,6 +631,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(directionExpression);
 				return null;
 			}
+		}
+		
+		public override ResolveResult VisitEmptyExpression(EmptyExpression emptyExpression, object data)
+		{
+			return errorResult;
 		}
 		
 		public override ResolveResult VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
@@ -756,6 +796,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 		}
 		
+		public override ResolveResult VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
+		{
+			if (resolverEnabled) {
+				return Resolve(typeReferenceExpression.Type);
+			} else {
+				Scan(typeReferenceExpression.Type);
+				return null;
+			}
+		}
+		
 		public override ResolveResult VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			if (resolverEnabled) {
@@ -763,6 +813,38 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return resolver.ResolveUnaryOperator(unaryOperatorExpression.Operator, expr);
 			} else {
 				ScanChildren(unaryOperatorExpression);
+				return null;
+			}
+		}
+		
+		public override ResolveResult VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression, object data)
+		{
+			ScanChildren(undocumentedExpression);
+			if (resolverEnabled) {
+				ITypeReference resultType;
+				switch (undocumentedExpression.UndocumentedExpressionType) {
+					case UndocumentedExpressionType.ArgListAccess:
+					case UndocumentedExpressionType.ArgList:
+						resultType = typeof(RuntimeArgumentHandle).ToTypeReference();
+						break;
+					case UndocumentedExpressionType.RefValue:
+						var tre = undocumentedExpression.Arguments.ElementAtOrDefault(1) as TypeReferenceExpression;
+						if (tre != null)
+							resultType = MakeTypeReference(tre.Type);
+						else
+							resultType = SharedTypes.UnknownType;
+						break;
+					case UndocumentedExpressionType.RefType:
+						resultType = systemType;
+						break;
+					case UndocumentedExpressionType.MakeRef:
+						resultType = typeof(TypedReference).ToTypeReference();
+						break;
+					default:
+						throw new InvalidOperationException("Invalid value for UndocumentedExpressionType");
+				}
+				return new ResolveResult(resultType.Resolve(resolver.Context));
+			} else {
 				return null;
 			}
 		}
@@ -788,7 +870,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
 			resolver.PushBlock();
-			ScanChildren(fixedStatement);
+			
+			VariableInitializer firstInitializer = fixedStatement.Variables.FirstOrDefault();
+			ITypeReference type = MakeTypeReference(fixedStatement.Type,
+			                                        firstInitializer != null ? firstInitializer.Initializer : null,
+			                                        false);
+			
+			for (AstNode node = fixedStatement.FirstChild; node != null; node = node.NextSibling) {
+				if (node.Role == FixedStatement.Roles.Variable) {
+					VariableInitializer vi = (VariableInitializer)node;
+					resolver.AddVariable(type, ((VariableInitializer)node).Name);
+				}
+				Scan(node);
+			}
 			resolver.PopBlock();
 			return null;
 		}
@@ -809,112 +903,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			resolver.AddVariable(type, foreachStatement.VariableName);
 			ScanChildren(foreachStatement);
 			resolver.PopBlock();
-			return null;
-		}
-		#endregion
-		
-		#region Simple Statements (only ScanChildren)
-		public override ResolveResult VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
-		{
-			ScanChildren(expressionStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitBreakStatement(BreakStatement breakStatement, object data)
-		{
-			ScanChildren(breakStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitContinueStatement(ContinueStatement continueStatement, object data)
-		{
-			ScanChildren(continueStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitEmptyStatement(EmptyStatement emptyStatement, object data)
-		{
-			ScanChildren(emptyStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitGotoStatement(GotoStatement gotoStatement, object data)
-		{
-			ScanChildren(gotoStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
-		{
-			ScanChildren(ifElseStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitLabelStatement(LabelStatement labelStatement, object data)
-		{
-			ScanChildren(labelStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitLockStatement(LockStatement lockStatement, object data)
-		{
-			ScanChildren(lockStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitReturnStatement(ReturnStatement returnStatement, object data)
-		{
-			ScanChildren(returnStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitSwitchStatement(SwitchStatement switchStatement, object data)
-		{
-			ScanChildren(switchStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitSwitchSection(SwitchSection switchSection, object data)
-		{
-			ScanChildren(switchSection);
-			return null;
-		}
-		
-		public override ResolveResult VisitCaseLabel(CaseLabel caseLabel, object data)
-		{
-			ScanChildren(caseLabel);
-			return null;
-		}
-		
-		public override ResolveResult VisitThrowStatement(ThrowStatement throwStatement, object data)
-		{
-			ScanChildren(throwStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
-		{
-			ScanChildren(unsafeStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitWhileStatement(WhileStatement whileStatement, object data)
-		{
-			ScanChildren(whileStatement);
-			return null;
-		}
-		
-		public override ResolveResult VisitYieldStatement(YieldStatement yieldStatement, object data)
-		{
-			ScanChildren(yieldStatement);
-			return null;
-		}
-		#endregion
-		
-		#region Try / Catch
-		public override ResolveResult VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
-		{
-			ScanChildren(tryCatchStatement);
 			return null;
 		}
 		
@@ -942,7 +930,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			int initializerCount = variableDeclarationStatement.Variables.Count;
 			ResolveResult result = null;
 			for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
-				if (node.Role == FieldDeclaration.Roles.Variable) {
+				if (node.Role == VariableDeclarationStatement.Roles.Variable) {
 					VariableInitializer vi = (VariableInitializer)node;
 					
 					IConstantValue cv = null;
@@ -1067,23 +1055,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			throw new NotImplementedException();
 		}
-		
-		public override ResolveResult VisitAttributeSection(AttributeSection attributeSection, object data)
-		{
-			ScanChildren(attributeSection);
-			return null;
-		}
 		#endregion
 		
 		#region Using Declaration
 		public override ResolveResult VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
+			// TODO: set isInUsingDeclaration
 			ScanChildren(usingDeclaration);
 			return null;
 		}
 		
 		public override ResolveResult VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
+			// TODO: set isInUsingDeclaration
 			ScanChildren(usingDeclaration);
 			return null;
 		}
@@ -1127,59 +1111,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Query Expressions
-		/*
-		public override ResolveResult VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data)
+		public override ResolveResult VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
 			throw new NotImplementedException();
 		}
-		
-		public override ResolveResult VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public override ResolveResult VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public override ResolveResult VisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public override ResolveResult VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public override ResolveResult VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public override ResolveResult VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public override ResolveResult VisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data)
-		{
-			throw new NotImplementedException();
-		}
-		 */
 		#endregion
-		
-		public override ResolveResult VisitIdentifier(Identifier identifier, object data)
-		{
-			return null;
-		}
-		
-		public override ResolveResult VisitConstraint(Constraint constraint, object data)
-		{
-			ScanChildren(constraint);
-			return null;
-		}
 		
 		public override ResolveResult VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
@@ -1187,10 +1123,38 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return null;
 		}
 		
-		public override ResolveResult VisitAccessor(Accessor accessor, object data)
+		public override ResolveResult VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
-			ScanChildren(accessor);
+			// TODO: array initializers are valid expressions if the parent node is a variable/field declaration
+			// that explicitly defines an array type
+			return errorResult;
+		}
+		
+		public override ResolveResult VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public override ResolveResult VisitFixedVariableInitializer(FixedVariableInitializer fixedVariableInitializer, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		#region Token Nodes
+		public override ResolveResult VisitIdentifier(Identifier identifier, object data)
+		{
 			return null;
 		}
+		
+		public override ResolveResult VisitComment(Comment comment, object data)
+		{
+			return null;
+		}
+		
+		public override ResolveResult VisitCSharpTokenNode(CSharpTokenNode cSharpTokenNode, object data)
+		{
+			return null;
+		}
+		#endregion
 	}
 }
