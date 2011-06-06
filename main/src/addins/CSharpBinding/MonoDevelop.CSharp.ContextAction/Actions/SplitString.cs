@@ -45,19 +45,24 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		protected override bool IsValid (CSharpContext context)
 		{
-			var pExpr = context.GetNode<PrimitiveExpression> ();
-			if (pExpr == null)
+			if (context.Document.Editor.IsSomethingSelected)
 				return false;
-			return pExpr.Value is string;
+			var pExpr = context.GetNode<PrimitiveExpression> ();
+			if (pExpr == null || !(pExpr.Value is string))
+				return false;
+			if (pExpr.LiteralValue.StartsWith ("@"))
+				return pExpr.StartLocation < new AstLocation (context.Location.Line, context.Location.Column - 2) &&
+					new AstLocation (context.Location.Line, context.Location.Column + 2) < pExpr.EndLocation;
+			return pExpr.StartLocation < new AstLocation (context.Location.Line, context.Location.Column - 1) &&
+				new AstLocation (context.Location.Line, context.Location.Column + 1) < pExpr.EndLocation;
 		}
 		
 		protected override void Run (CSharpContext context)
 		{
 			var pExpr = context.GetNode<PrimitiveExpression> ();
-			// TODO: string literals currently don't work.
-			Console.WriteLine ("literal:" + pExpr.LiteralValue);
-			Console.WriteLine ("value:" + pExpr.Value);
-			Console.WriteLine ("location:" + pExpr.StartLocation + " -- " + pExpr.EndLocation);
+			if (pExpr.LiteralValue.StartsWith ("@"))
+				context.DoInsert (context.Document.Editor.LocationToOffset (context.Location.Line, context.Location.Column), "\" + @\"");
+			context.DoInsert (context.Document.Editor.LocationToOffset (context.Location.Line, context.Location.Column), "\" + \"");
 		}	
 	}
 }
