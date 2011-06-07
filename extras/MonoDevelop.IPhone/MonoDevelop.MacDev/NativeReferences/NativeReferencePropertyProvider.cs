@@ -1,5 +1,5 @@
 // 
-// NativeReference.cs
+// NativeReferencePropertyProvider.cs
 //  
 // Author:
 //       Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -25,36 +25,44 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.DesignerSupport;
 
 namespace MonoDevelop.MacDev.NativeReferences
 {
-	public class NativeReference : ProjectItem
+	class NativeReferencePropertyProvider: IPropertyProvider
 	{
-		[ProjectPathItemProperty ("Include")]
-		public FilePath Path { get; set; }
-		
-		public override bool Equals (object obj)
+		public object CreateProvider (object obj)
 		{
-			var nr = obj as NativeReference;
-			return nr != null && nr.Path == Path;
+			return new NativeReferenceDescriptor ((NativeReference)obj);
 		}
-		
-		public override int GetHashCode ()
+
+		public bool SupportsObject (object obj)
 		{
-			return Path == null? 0 : Path.GetHashCode ();
+			return obj is NativeReference;
 		}
 	}
 	
-	public class NativeReferenceFolder
+	class NativeReferenceDescriptor: CustomDescriptor
 	{
-		public NativeReferenceFolder (DotNetProject project)
+		NativeReference nr;
+		
+		public NativeReferenceDescriptor (NativeReference nr)
 		{
-			Project = project;
+			this.nr = nr;
 		}
 		
-		public DotNetProject Project { get; private set; }
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Path")]
+		[LocalizedDescription ("Path of the reference.")]
+		public string Path {
+			get { return nr.Path; }
+		}
+		
+		protected override bool IsReadOnly (string propertyName)
+		{
+			return false;
+		}
 	}
 }
 

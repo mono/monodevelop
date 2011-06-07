@@ -25,6 +25,7 @@
 	    <Addin id="Ide" version="2.6"/>
 	    <Addin id="Core" version="2.6"/>
 	    <Addin id="MacPlatform" version="2.6"/>
+	    <Addin id="DesignerSupport" version="2.6"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
@@ -75,6 +76,10 @@
 		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.ProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.NativeReferenceFolderNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.NativeReferenceNodeBuilder"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders" extension-nodes="Class">
+		<Class class = "MonoDevelop.MacDev.NativeReferences.NativeReferencePropertyProvider"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
