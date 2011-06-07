@@ -40,6 +40,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get;
 			set;
 		}
+
+		public void Trim ()
+		{
+			for (int i = 0; i < Text.Length; i++) {
+				char ch = Text [i];
+				if (ch != ' ' && ch != '\t') {
+					if (i > 0) {
+						Text = Text.Substring (i);
+						foreach (var seg in NodeSegments.Values) {
+							seg.Offset -= i;
+						}
+					}
+					break;
+				}
+			}
+		}
 		
 		public class Segment : ISegment
 		{

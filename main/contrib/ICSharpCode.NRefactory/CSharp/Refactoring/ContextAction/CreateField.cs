@@ -25,46 +25,29 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Core;
-using System.Collections.Generic;
-using Mono.TextEditor;
 using System.Linq;
-using MonoDevelop.Ide;
-using Mono.TextEditor.PopupWindow;
-using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.CSharp.ContextAction
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class CreateField : MDRefactoringContextAction
+	public class CreateField : IContextAction
 	{
-		protected override string GetMenuText (MDRefactoringContext context)
-		{
-			var identifier = GetIdentifier (context);
-			return string.Format (GettextCatalog.GetString ("Create field '{0}'"), identifier);
-		}
-		
-		protected override bool IsValid (MDRefactoringContext context)
+		public bool IsValid (RefactoringContext context)
 		{
 			var identifier = GetIdentifier (context);
 			if (identifier == null)
 				return false;
-			var result = context.Resolve (identifier);
-			if (result == null || result.ResolvedType == null || string.IsNullOrEmpty (result.ResolvedType.DecoratedFullName))
-				return GuessType (context, identifier) != null;
-			return false;
+			return context.ResolveType (identifier) == null && GuessType (context, identifier) != null;
 		}
 		
-		protected override void Run (MDRefactoringContext context)
+		public void Run (RefactoringContext context)
 		{
 //			var identifier = GetIdentifier (context);
 //			context.InsertionMode (GettextCatalog.GetString ("<b>Create field -- Targeting</b>"), 
 //				() => context.OutputNode (GenerateFieldDeclaration (context, identifier), context.GetIndentLevel (identifier) - 1));
 		}
 		
-		AstNode GenerateFieldDeclaration (MDRefactoringContext context, IdentifierExpression identifier)
+		static AstNode GenerateFieldDeclaration (RefactoringContext context, IdentifierExpression identifier)
 		{
 			return new FieldDeclaration () {
 				ReturnType = GuessType (context, identifier),
@@ -72,20 +55,17 @@ namespace MonoDevelop.CSharp.ContextAction
 			};
 		}
 		
-		internal static AstType GuessType (MDRefactoringContext context, IdentifierExpression identifier)
+		internal static AstType GuessType (RefactoringContext context, IdentifierExpression identifier)
 		{
 			if (identifier.Parent is AssignmentExpression) {
 				var assign = (AssignmentExpression)identifier.Parent;
 				var other = assign.Left == identifier ? assign.Right : assign.Left;
-				var result = context.Resolve (other);
-				if (result == null || result.ResolvedType == null || string.IsNullOrEmpty (result.ResolvedType.FullName))
-					return null;
-				return ShortenTypeName (context.Document, result.ResolvedType);
+				return context.ResolveType (other);
 			}
 			return null;
 		}
 		
-		IdentifierExpression GetIdentifier (MDRefactoringContext context)
+		IdentifierExpression GetIdentifier (RefactoringContext context)
 		{
 			return context.GetNode<IdentifierExpression> ();
 		}

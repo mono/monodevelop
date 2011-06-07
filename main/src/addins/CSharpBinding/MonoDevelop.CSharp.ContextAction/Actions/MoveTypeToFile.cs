@@ -61,12 +61,15 @@ namespace MonoDevelop.CSharp.ContextAction
 			var type = GetTypeDeclaration (context);
 			string correctFileName = GetCorrectFileName (context, type);
 			if (IsSingleType (context)) {
-				context.Do (new RenameFileChange (context.Document.FileName, correctFileName));
+				FileService.RenameFile (context.Document.FileName, correctFileName);
+//				context.Do (new RenameFileChange ());
 				return;
 			}
 			
 			CreateNewFile (context, type, correctFileName);
-			context.DoRemove (type);
+			using (var script = context.StartScript ()) {
+				script.Remove (type);
+			}
 		}
 		
 		void CreateNewFile (MDRefactoringContext context, TypeDeclaration type, string correctFileName)
@@ -77,8 +80,9 @@ namespace MonoDevelop.CSharp.ContextAction
 			types.Sort ((x, y) => y.StartLocation.CompareTo (x.StartLocation));
 			
 			foreach (var removeType in types) {
-				var seg = context.GetSegment (removeType);
-				content = content.Remove (seg.Offset, seg.Length);
+				var start = context.GetOffset (removeType.StartLocation);
+				var end = context.GetOffset (removeType.EndLocation);
+				content = content.Remove (start, end - start);
 			}
 			
 			if (context.Document.Project is MonoDevelop.Projects.DotNetProject) {
@@ -87,7 +91,10 @@ namespace MonoDevelop.CSharp.ContextAction
 					content = header + context.Document.Editor.EolMarker + StripHeader (content);
 			}
 			content = StripDoubleBlankLines (content);
-			context.Do (new CreateFileChange (correctFileName, content));
+			
+			File.WriteAllText (correctFileName, content);
+			context.Document.Project.AddFile (correctFileName);
+			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.Document.Project);
 		}
 
 		static bool IsBlankLine (Document doc, int i)

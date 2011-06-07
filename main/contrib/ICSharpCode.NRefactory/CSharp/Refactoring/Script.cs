@@ -62,8 +62,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public void InsertBefore (AstNode node, AstNode insertNode)
 		{
-			var startOffset = Context.GetOffset (node.StartLocation);
+			var startOffset = Context.GetOffset (node.StartLocation.Line, 1);
 			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
+			
+			if (!(insertNode is Expression || insertNode is AstType))
+				output.Text += Context.EolMarker;
+			
 			Queue (Context.CreateNodeOutputAction (startOffset, 0, output));
 		}
 
@@ -106,9 +110,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var startOffset = Context.GetOffset (node.StartLocation);
 			var endOffset = Context.GetOffset (node.EndLocation);
 			int level = 0;
-			if (!(replaceWith is Expression))
+			if (!(replaceWith is Expression) && !(replaceWith is AstType))
 				level = GetIndentLevelAt (startOffset);
-			Queue (Context.CreateNodeOutputAction (startOffset, endOffset - startOffset, OutputNode (level, replaceWith)));
+			NodeOutput output = OutputNode (level, replaceWith);
+			output.Trim ();
+			Queue (Context.CreateNodeOutputAction (startOffset, endOffset - startOffset, output));
 		}
 
 		public void FormatText (Func<RefactoringContext, AstNode> callback)
@@ -139,8 +145,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var formatter = new StringBuilderOutputFormatter ();
 			formatter.Indentation = indentLevel;
 			formatter.EolMarker = Context.EolMarker;
-			if (node is Statement)
-				formatter.NewLine ();
 			var visitor = new OutputVisitor (formatter, Context.FormattingOptions);
 			visitor.OutputStarted += (sender, e) => {
 				result.NodeSegments [e.AstNode] = new NodeOutput.Segment (formatter.Length);

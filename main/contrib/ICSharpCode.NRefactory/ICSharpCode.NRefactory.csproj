@@ -388,6 +388,10 @@
     <Compile Include="CSharp\Refactoring\CreateLinkAction.cs" />
     <Compile Include="CSharp\Refactoring\IContextAction.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\SplitDeclarationAndAssignment.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateField.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateLocalVariable.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateProperty.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\GenerateGetter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

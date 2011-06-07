@@ -25,27 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Core;
-using System.Collections.Generic;
-using Mono.TextEditor;
 using System.Linq;
-using MonoDevelop.Ide;
-using Mono.TextEditor.PopupWindow;
-using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.CSharp.ContextAction
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class GenerateGetter : MDRefactoringContextAction
+	public class GenerateGetter : IContextAction
 	{
-		protected override string GetMenuText (MDRefactoringContext context)
-		{
-			return GettextCatalog.GetString ("Generate getter");
-		}
-		
-		protected override bool IsValid (MDRefactoringContext context)
+		public bool IsValid (RefactoringContext context)
 		{
 			var initializer = GetVariableInitializer (context);
 			if (initializer == null || !initializer.NameToken.Contains (context.Location.Line, context.Location.Column))
@@ -60,7 +47,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return initializer.Parent is FieldDeclaration;
 		}
 		
-		protected override void Run (MDRefactoringContext context)
+		public void Run (RefactoringContext context)
 		{
 			var initializer = GetVariableInitializer (context);
 			var field = initializer.Parent as FieldDeclaration;
@@ -68,7 +55,7 @@ namespace MonoDevelop.CSharp.ContextAction
 //				() => context.OutputNode (GeneratePropertyDeclaration (context, field, initializer), context.GetIndentLevel (field)));
 		}
 		
-		static PropertyDeclaration GeneratePropertyDeclaration (MDRefactoringContext context, FieldDeclaration field, VariableInitializer initializer)
+		static PropertyDeclaration GeneratePropertyDeclaration (RefactoringContext context, FieldDeclaration field, VariableInitializer initializer)
 		{
 			var mod = ICSharpCode.NRefactory.CSharp.Modifiers.Public;
 			if (field.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Static))
@@ -76,7 +63,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			
 			return new PropertyDeclaration () {
 				Modifiers = mod,
-				Name = context.GetNewMemberName (context, initializer.Name, false),
+				Name = context.GetNameProposal (initializer.Name, false),
 				ReturnType = field.ReturnType.Clone (),
 				Getter = new Accessor () {
 					Body = new BlockStatement () {
@@ -97,7 +84,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				ret.Expression.IsMatch (new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name));
 		}
 		
-		VariableInitializer GetVariableInitializer (MDRefactoringContext context)
+		VariableInitializer GetVariableInitializer (RefactoringContext context)
 		{
 			return context.GetNode<VariableInitializer> ();
 		}

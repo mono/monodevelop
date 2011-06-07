@@ -126,5 +126,39 @@ namespace MonoDevelop.CSharp.ContextAction
 	public class SplitDeclarationAndAssignment : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.SplitDeclarationAndAssignment>
 	{
 	}
+	
+	public class CreateField : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.CreateField>
+	{
+		protected override string GetMenuText (MDRefactoringContext context)
+		{
+			var identifier = action.GetIdentifier (context);
+			return string.Format (GettextCatalog.GetString ("Create field '{0}'"), identifier);
+		}
+	}
+	
+	public class CreateProperty : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.CreateProperty>
+	{
+		protected override string GetMenuText (MDRefactoringContext context)
+		{
+			var identifier = action.GetIdentifier (context);
+			return string.Format (GettextCatalog.GetString ("Create property '{0}'"), identifier);
+		}
+	}
+	
+	public class CreateLocalVariable : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.CreateLocalVariable>
+	{
+		protected override string GetMenuText (MDRefactoringContext context)
+		{
+			if (action.GetUnresolvedArguments (context).Count > 0)
+				return GettextCatalog.GetString ("Create local variable declarations for arguments");
+			
+			var identifier = action.GetIdentifier (context);
+			return string.Format (GettextCatalog.GetString ("Create local variable '{0}'"), identifier);
+		}
+	}
+	
+	public class GenerateGetter : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.GenerateGetter>
+	{
+	}
 }
 

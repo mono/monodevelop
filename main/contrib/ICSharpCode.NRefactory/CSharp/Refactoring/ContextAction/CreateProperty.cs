@@ -24,46 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Core;
-using System.Collections.Generic;
-using Mono.TextEditor;
 using System.Linq;
-using MonoDevelop.Ide;
-using Mono.TextEditor.PopupWindow;
-using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.CSharp.ContextAction
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class CreateProperty : MDRefactoringContextAction
+	public class CreateProperty : IContextAction
 	{
-		protected override string GetMenuText (MDRefactoringContext context)
-		{
-			var identifier = GetIdentifier (context);
-			return string.Format (GettextCatalog.GetString ("Create property '{0}'"), identifier);
-		}
-		
-		protected override bool IsValid (MDRefactoringContext context)
+		public bool IsValid (RefactoringContext context)
 		{
 			var identifier = GetIdentifier (context);
 			if (identifier == null)
 				return false;
-			var result = context.Resolve (identifier);
-			if (result == null || result.ResolvedType == null || string.IsNullOrEmpty (result.ResolvedType.DecoratedFullName))
-				return CreateField.GuessType (context, identifier) != null;
-			return false;
+			return context.ResolveType (identifier) == null && CreateField.GuessType (context, identifier) != null;
 		}
 		
-		protected override void Run (MDRefactoringContext context)
+		public void Run (RefactoringContext context)
 		{
 //			var identifier = GetIdentifier (context);
 //			context.InsertionMode (GettextCatalog.GetString ("<b>Create property -- Targeting</b>"), 
 //				() => context.OutputNode (GeneratePropertyDeclaration (context, identifier), context.GetIndentLevel (identifier) - 1));
 		}
 		
-		AstNode GeneratePropertyDeclaration (MDRefactoringContext context, IdentifierExpression identifier)
+		AstNode GeneratePropertyDeclaration (RefactoringContext context, IdentifierExpression identifier)
 		{
 			return new PropertyDeclaration () {
 				ReturnType = CreateField.GuessType (context, identifier),
@@ -73,7 +56,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			};
 		}
 		
-		IdentifierExpression GetIdentifier (MDRefactoringContext context)
+		IdentifierExpression GetIdentifier (RefactoringContext context)
 		{
 			return context.GetNode<IdentifierExpression> ();
 		}

@@ -24,31 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Core;
-using System.Collections.Generic;
-using Mono.TextEditor;
 using System.Linq;
-using MonoDevelop.Ide;
-using Mono.TextEditor.PopupWindow;
-using MonoDevelop.Refactoring;
+using System.Collections.Generic;
 
-namespace MonoDevelop.CSharp.ContextAction
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class CreateLocalVariable : MDRefactoringContextAction
+	public class CreateLocalVariable : IContextAction
 	{
-		protected override string GetMenuText (MDRefactoringContext context)
-		{
-			if (GetUnresolvedArguments (context).Count > 0)
-				return GettextCatalog.GetString ("Create local variable declarations for arguments");
-			
-			var identifier = GetIdentifier (context);
-			return string.Format (GettextCatalog.GetString ("Create local variable '{0}'"), identifier);
-		}
-		
-		List<IdentifierExpression> GetUnresolvedArguments (MDRefactoringContext context)
+		List<IdentifierExpression> GetUnresolvedArguments (RefactoringContext context)
 		{
 			var expressions = new List<IdentifierExpression> ();
 			
@@ -66,14 +50,14 @@ namespace MonoDevelop.CSharp.ContextAction
 					if (identifier == null)
 						continue;
 						
-					if (context.IsUnresolved (identifier) && GuessType (context, identifier) != null)
+					if (context.ResolveType (identifier) == null && GuessType (context, identifier) != null)
 						expressions.Insert (0, identifier);
 				}
 			}
 			return expressions;
 		}
 		
-		protected override bool IsValid (MDRefactoringContext context)
+		public bool IsValid (RefactoringContext context)
 		{
 			if (GetUnresolvedArguments (context).Count > 0)
 				return true;
@@ -82,13 +66,10 @@ namespace MonoDevelop.CSharp.ContextAction
 				return false;
 			if (context.GetNode<Statement> () == null)
 				return false;
-			var result = context.Resolve (identifier);
-			if (result == null || result.ResolvedType == null || string.IsNullOrEmpty (result.ResolvedType.DecoratedFullName))
-				return GuessType (context, identifier) != null;
-			return false;
+			return context.ResolveType (identifier) == null && GuessType (context, identifier) != null;
 		}
 		
-		protected override void Run (MDRefactoringContext context)
+		public void Run (RefactoringContext context)
 		{
 //			var stmt = context.GetNode<Statement> ();
 //			var unresolvedArguments = GetUnresolvedArguments (context);
@@ -106,7 +87,7 @@ namespace MonoDevelop.CSharp.ContextAction
 //				context.OutputNode (GenerateLocalVariableDeclaration (context, identifier), context.GetIndentLevel (stmt)) + context.Document.Editor.EolMarker);
 		}
 		
-		AstNode GenerateLocalVariableDeclaration (MDRefactoringContext context, IdentifierExpression identifier)
+		AstNode GenerateLocalVariableDeclaration (RefactoringContext context, IdentifierExpression identifier)
 		{
 			return new VariableDeclarationStatement () {
 				Type = GuessType (context, identifier),
@@ -114,22 +95,22 @@ namespace MonoDevelop.CSharp.ContextAction
 			};
 		}
 		
-		IdentifierExpression GetIdentifier (MDRefactoringContext context)
+		IdentifierExpression GetIdentifier (RefactoringContext context)
 		{
 			return context.GetNode<IdentifierExpression> ();
 		}
 		
-		InvocationExpression GetInvocation (MDRefactoringContext context)
+		InvocationExpression GetInvocation (RefactoringContext context)
 		{
 			return context.GetNode<InvocationExpression> ();
 		}
 
-		AstType GuessType (MDRefactoringContext context, IdentifierExpression identifier)
+		AstType GuessType (RefactoringContext context, IdentifierExpression identifier)
 		{
 			AstType type = CreateField.GuessType (context, identifier);
 			if (type != null)
 				return type;
-			
+			/*TODO:
 			if (identifier != null && (identifier.Parent is InvocationExpression || identifier.Parent.Parent is InvocationExpression)) {
 				var invocation = (identifier.Parent as InvocationExpression) ?? (identifier.Parent.Parent as InvocationExpression);
 				var result = context.Resolve (invocation) as MethodResolveResult;
@@ -144,7 +125,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				if (result.MostLikelyMethod == null || result.MostLikelyMethod.Parameters == null || result.MostLikelyMethod.Parameters.Count < i)
 					return null;
 				return ShortenTypeName (context.Document, result.MostLikelyMethod.Parameters[i].ReturnType);
-			}
+			}*/
 			return null;
 		}
 	}

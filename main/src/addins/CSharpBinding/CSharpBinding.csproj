@@ -244,17 +244,13 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContext.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionWrappers.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextAction.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.CSharp.ContextAction\Actions\CreateEventInvocator.cs" />
     <None Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBackingStore.cs" />
-    <None Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\GenerateGetter.cs" />
-    <None Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateField.cs" />
-    <None Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateProperty.cs" />
-    <None Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\CreateLocalVariable.cs" />
-    <None Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -300,6 +296,5 @@
     <Folder Include="MonoDevelop.CSharp.Inspection\" />
     <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
-    <Folder Include="MonoDevelop.CSharp.ContextAction\CodeGeneration\" />
   </ItemGroup>
 </Project>

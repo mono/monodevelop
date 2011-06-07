@@ -52,8 +52,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			newVarDecl.Variables.First ().Initializer = Expression.Null;
 			
 			using (var script = context.StartScript ()) {
-				script.Replace (varDecl, varDecl.Parent is ForStatement ? (AstNode)assign : new ExpressionStatement (assign));
 				script.InsertBefore (varDecl, newVarDecl);
+				script.Replace (varDecl, varDecl.Parent is ForStatement ? (AstNode)assign : new ExpressionStatement (assign));
 			}
 		}
 		

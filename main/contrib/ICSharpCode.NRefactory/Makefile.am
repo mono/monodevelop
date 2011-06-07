@@ -199,7 +199,11 @@ FILES =  \
 	CSharp/Refactoring/ContextAction/ConvertForeachToFor.cs \
 	CSharp/Refactoring/ContextAction/ConvertHexToDec.cs \
 	CSharp/Refactoring/ContextAction/CreateBackingStore.cs \
+	CSharp/Refactoring/ContextAction/CreateField.cs \
+	CSharp/Refactoring/ContextAction/CreateLocalVariable.cs \
+	CSharp/Refactoring/ContextAction/CreateProperty.cs \
 	CSharp/Refactoring/ContextAction/FlipOperatorArguments.cs \
+	CSharp/Refactoring/ContextAction/GenerateGetter.cs \
 	CSharp/Refactoring/ContextAction/GenerateSwitchLabels.cs \
 	CSharp/Refactoring/ContextAction/InsertAnonymousMethodSignature.cs \
 	CSharp/Refactoring/ContextAction/IntroduceFormatItem.cs \
