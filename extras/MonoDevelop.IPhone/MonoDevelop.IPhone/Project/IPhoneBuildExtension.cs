@@ -1304,7 +1304,7 @@ namespace MonoDevelop.IPhone
 			
 			int i = virtualPath.IndexOf (Path.DirectorySeparatorChar);
 			if (i < 0)
-				return false;
+				return true;
 			string rootDir = virtualPath.Substring (0, i);
 			if (forbiddenContentFolders.Contains (rootDir)) {
 				if (result != null)
@@ -1320,7 +1320,7 @@ namespace MonoDevelop.IPhone
 		{
 			int i = virtualPath.IndexOf (Path.DirectorySeparatorChar);
 			if (i < 0)
-				return false;
+				return true;
 			string rootDir = virtualPath.Substring (0, i);
 			if (forbiddenContentFolders.Contains (rootDir)) {
 				if (result != null)
