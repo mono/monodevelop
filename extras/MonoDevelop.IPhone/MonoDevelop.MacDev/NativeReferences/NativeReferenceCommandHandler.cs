@@ -25,12 +25,69 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.MacDev.NativeReferences
 {
-	public class NativeReferenceCommandHandler : NodeCommandHandler
+	public enum NativeReferenceCommands
 	{
+		Add,
+		Delete,
+	}
+	
+	class NativeReferenceFolderCommandHandler : NodeCommandHandler
+	{
+		[CommandHandler (NativeReferenceCommands.Add)]
+		public void Add ()
+		{
+			var project = (DotNetProject) CurrentNode.GetParentDataItem (typeof(DotNetProject), true);
+			
+			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select Native Library"), Gtk.FileChooserAction.Open);
+			dlg.SelectMultiple = true;
+			dlg.AddAllFilesFilter ();
+			//FIXME: add more filters, amke correct for platform
+			dlg.AddFilter (GettextCatalog.GetString ("Static Library"), ".a");
+			
+			if (!dlg.Run ())
+				return;
+			
+			foreach (var file in dlg.SelectedFiles) {
+				var item = new NativeReference () { Path = file };
+				project.Items.Add (item);
+			}
+			
+			IdeApp.ProjectOperations.Save (project);
+		}
+	}
+		
+	class NativeReferenceCommandHandler : NodeCommandHandler
+	{
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
+		public void UpdateDelete (CommandInfo info)
+		{
+			info.Text = GettextCatalog.GetString ("Remove");
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
+		public void Delete ()
+		{
+			var item = (NativeReference) CurrentNode.DataItem;
+			string question = GettextCatalog.GetString (
+				"Are you sure you want to remove the native reference '{0}'?", item.Path.FileName);
+			
+			if (!MessageService.Confirm (question, AlertButton.Remove))
+				return;
+			
+			var project = (DotNetProject) CurrentNode.GetParentDataItem (typeof(DotNetProject), true);
+			project.Items.Remove (item);
+			
+			IdeApp.ProjectOperations.Save (project);
+		}
 	}
 }

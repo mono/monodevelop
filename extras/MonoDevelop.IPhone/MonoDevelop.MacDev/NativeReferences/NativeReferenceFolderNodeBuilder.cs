@@ -53,7 +53,7 @@ namespace MonoDevelop.MacDev.NativeReferences
 		
 		public override Type CommandHandlerType
 		{
-			get { return typeof (NativeReferenceCommandHandler); }
+			get { return typeof (NativeReferenceFolderCommandHandler); }
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label,

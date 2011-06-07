@@ -93,4 +93,27 @@
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.MacDev.NativeReferences.NativeReference" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "Native Reference" id = "NativeReferences">
+		<Command id = "MonoDevelop.MacDev.NativeReferences.NativeReferenceCommands.Add"
+			_label = "Add Native Reference" />
+		</Category>
+	</Extension>
+		
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="DotNetProject">
+			<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+			<CommandItem id = "MonoDevelop.MacDev.NativeReferences.NativeReferenceCommands.Add"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReferenceFolder">
+		<CommandItem id = "MonoDevelop.MacDev.NativeReferences.NativeReferenceCommands.Add" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReference">
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+	
 </Addin>

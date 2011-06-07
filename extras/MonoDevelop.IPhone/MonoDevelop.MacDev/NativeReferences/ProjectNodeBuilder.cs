@@ -44,6 +44,11 @@ namespace MonoDevelop.MacDev.NativeReferences
 				&& typeof (DotNetProject).IsAssignableFrom (dataType);
 		}
 		
+		public override Type CommandHandlerType
+		{
+			get { return typeof (NativeReferenceFolderCommandHandler); }
+		}
+		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var project = (DotNetProject) dataObject;

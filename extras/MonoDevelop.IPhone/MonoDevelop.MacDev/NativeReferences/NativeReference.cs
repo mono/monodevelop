@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.MacDev.NativeReferences
 {
@@ -34,6 +35,15 @@ namespace MonoDevelop.MacDev.NativeReferences
 	{
 		[ProjectPathItemProperty ("Include")]
 		public FilePath Path { get; set; }
+		
+		public NativeReference ()
+		{
+		}
+		
+		public NativeReference (FilePath path)
+		{
+			this.Path = path;
+		}
 		
 		public override bool Equals (object obj)
 		{

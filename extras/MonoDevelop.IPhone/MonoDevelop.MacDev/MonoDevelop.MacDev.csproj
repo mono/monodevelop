@@ -127,12 +127,12 @@
     <Compile Include="ObjCIntegration\NSObjectInfoService.cs" />
     <Compile Include="ObjCIntegration\NSObjectProjectInfo.cs" />
     <Compile Include="XcodeInterfaceBuilderDisplayBinding.cs" />
-    <Compile Include="NativeReferences\NativeReference.cs" />
     <Compile Include="NativeReferences\ProjectNodeBuilder.cs" />
     <Compile Include="NativeReferences\NativeReferenceFolderNodeBuilder.cs" />
     <Compile Include="NativeReferences\NativeReferenceNodeBuilder.cs" />
     <Compile Include="NativeReferences\NativeReferencePropertyProvider.cs" />
     <Compile Include="NativeReferences\NativeReferenceCommandHandler.cs" />
+    <Compile Include="NativeReferences\NativeReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
