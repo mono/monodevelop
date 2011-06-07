@@ -79,18 +79,63 @@ namespace MonoDevelop.CSharp.Inspection
 	
 	public class NamingRule
 	{
+		/// <summary>
+		/// If set, matches only on these kinds of nodes.
+		/// </summary>
 		public DeclarationKinds MatchKind { get; set; }
 		
+		/// <summary>
+		/// If set, matches on nodes with all of these modifiers.
+		/// </summary>
 		public ICS.Modifiers MatchAnyModifiers { get; set; }
+		
+		/// <summary>
+		/// If set, matches on nodes with any of these modifiers.
+		/// </summary>
 		public ICS.Modifiers MatchAllModifiers { get; set; }
+		
+		/// <summary>
+		/// If set, identifiers are required to be prefixed with one of these values.
+		/// </summary>
 		public string[] RequiredPrefixes { get; set; }
+		
+		/// <summary>
+		/// If set, identifiers are required to be suffixed with one of these values.
+		/// </summary>
 		public string[] RequiredSuffixes { get; set; }
+		
+		/// <summary>
+		/// If set, identifiers cannot be prefixed by any of these values.
+		/// </summary>
+		
 		public string[] ForbiddenPrefixes { get; set; }
+		/// <summary>
+		/// If set, identifiers cannot be suffixed by with any of these values.
+		/// </summary
 		public string[] ForbiddenSuffixes { get; set; }
+		
+		/// <summary>
+		/// The way that the identifier is cased and that words are separated.
+		/// </summary
 		public NamingStyle NamingStyle { get; set; }
-//		public bool LowercaseThreeLetterAcronyms { get; set; }
-//		public RequiredPhraseKind RequiredPhraseKind { get; set; }
-//		public bool RequireCorrectSpelling { get; set; }
+		
+		/// <summary>
+		/// NOT IMPLEMENTED. Requires that acronyms of three or more letters are cased like words.
+		/// </summary>
+		//FIXME: Implement
+		public bool CaseThreeLetterAcronymsAsWords { get; set; }
+		
+		/// <summary>
+		/// NOT IMPLEMENTED. Requires that the identifier uses a particular kind of word or phrase.
+		/// </summary>
+		//FIXME: Implement
+		public RequiredPhraseKind RequiredPhraseKind { get; set; }
+		
+		/// <summary>
+		/// NOT IMPLEMENTED. Requires that the identifier is composed of correctly spelled words.
+		/// </summary>
+		//FIXME: Implement
+		public bool RequireCorrectSpelling { get; set; }
 		
 		public NamingRule ()
 		{
