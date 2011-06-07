@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
+using ICSharpCode.NRefactory.PatternMatching;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -37,7 +39,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public void Run (RefactoringContext context)
 		{
 			var varDecl = GetVariableDeclarationStatement (context);
-			var resolver = context.Resolver;
 			
 			using (var script = context.StartScript ()) {
 				script.Replace (varDecl.Type, context.ResolveType (varDecl.Variables.First ().Initializer));
