@@ -78,10 +78,11 @@ namespace MonoDevelop.CSharp.Inspection
 	}
 	
 	public class NamingRule
-	{		
-		public DeclarationKinds Kind { get; set; }
-		public ICS.Modifiers Modifiers { get; set; }
+	{
+		public DeclarationKinds MatchKind { get; set; }
 		
+		public ICS.Modifiers MatchAnyModifiers { get; set; }
+		public ICS.Modifiers MatchAllModifiers { get; set; }
 		public string[] RequiredPrefixes { get; set; }
 		public string[] RequiredSuffixes { get; set; }
 		public string[] ForbiddenPrefixes { get; set; }
@@ -114,18 +115,21 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		bool CheckModifiers (ICS.Modifiers mods, ICS.Modifiers defaultVisibility)
 		{
-			var vis = (Modifiers & ICS.Modifiers.VisibilityMask);
-			if (vis != 0 && ((mods | defaultVisibility) & vis) == 0)
+			if ((mods & ICS.Modifiers.VisibilityMask) == 0)
+				mods = mods | defaultVisibility;
+			
+			if (MatchAnyModifiers != 0 && (MatchAnyModifiers & mods) == 0)
 				return false;
-			var flags = (Modifiers & (ICS.Modifiers.Readonly | ICS.Modifiers.Static | ICS.Modifiers.Const));
-			if (flags != 0 && (mods & flags) != flags)
+			
+			if (MatchAllModifiers != 0 && (MatchAllModifiers & mods) != MatchAllModifiers)
 				return false;
+			
 			return true;
 		}
 		
 		public bool CheckVariableDeclaration (ICS.VariableDeclarationStatement node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.LocalVariable) == 0) || !CheckModifiers (node.Modifiers, ICS.Modifiers.Private))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.LocalVariable) == 0) || !CheckModifiers (node.Modifiers, ICS.Modifiers.Private))
 				return false;
 			var member = data.Document.CompilationUnit.GetMemberAt (node.StartLocation.Line, node.StartLocation.Column);
 			foreach (var var in node.Variables) {
@@ -143,7 +147,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckProperty (ICS.PropertyDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.Property) ==  0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.Property) ==  0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
 				return false;
 			
 			string name = node.Name;
@@ -156,7 +160,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckMethod (ICS.MethodDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.Method) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.Method) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
 				return false;
 			
 			string name = node.Name;
@@ -169,7 +173,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckParameter (ICS.ParameterDeclaration node, InspectionData data)
 		{
-			if (Kind != 0 && (Kind & DeclarationKinds.Parameter) == 0)
+			if (MatchKind != 0 && (MatchKind & DeclarationKinds.Parameter) == 0)
 				return false;
 			
 			string name = node.Name;
@@ -182,7 +186,10 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckField (ICS.FixedFieldDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.Field) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.Field) == 0))
+				return false;
+			
+			if (!CheckAttributedNode (node, ICS.Modifiers.Private))
 				return false;
 			
 			foreach (var v in node.Variables) {
@@ -197,7 +204,10 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckField (ICS.FieldDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.Field) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.Field) == 0))
+				return false;
+			
+			if (!CheckAttributedNode (node, ICS.Modifiers.Private))
 				return false;
 			
 			foreach (var v in node.Variables) {
@@ -212,7 +222,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckEvent (ICS.EventDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.Event) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.Event) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
 				return false;
 			
 			foreach (var v in node.Variables) {
@@ -227,7 +237,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckEvent (ICS.CustomEventDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.Event) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.Event) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Private))
 				return false;
 			
 			var name = node.Name;
@@ -240,8 +250,8 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckType (ICS.TypeDeclaration node, InspectionData data)
 		{
-			if (Kind != 0) {
-				switch (Kind) {
+			if (MatchKind != 0) {
+				switch (MatchKind) {
 				case DeclarationKinds.Class:
 					if (node.ClassType != ICSharpCode.NRefactory.TypeSystem.ClassType.Class)
 						return false;
@@ -280,7 +290,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckDelegate (ICS.DelegateDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.Delegate) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Internal))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.Delegate) == 0) || !CheckAttributedNode (node, ICS.Modifiers.Internal))
 				return false;
 			
 			string name = node.Name;
@@ -293,7 +303,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckTypeParameter (ICS.TypeParameterDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.TypeParameter) == 0))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.TypeParameter) == 0))
 				return false;
 			
 			string name = node.Name;
@@ -306,7 +316,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckEnumMember (ICS.EnumMemberDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.EnumMember) == 0))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.EnumMember) == 0))
 				return false;
 			
 			string name = node.Name;
@@ -319,7 +329,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public bool CheckNamespace (ICS.NamespaceDeclaration node, InspectionData data)
 		{
-			if ((Kind != 0 && (Kind & DeclarationKinds.Namespace) == 0))
+			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.Namespace) == 0))
 				return false;
 			
 			string name = node.Name;

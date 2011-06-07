@@ -49,36 +49,36 @@ namespace MonoDevelop.CSharp.Inspection
 		public CSharpNamingPolicy ()
 		{
 			rules.Add (new NamingRule () {
-				Kind = DeclarationKinds.LocalVariable | DeclarationKinds.Field,
-				Modifiers = ICS.Modifiers.Const,
+				MatchKind = DeclarationKinds.LocalVariable | DeclarationKinds.Field,
+				MatchAllModifiers = ICS.Modifiers.Const,
 				NamingStyle = NamingStyle.AllUpper,
 			});
 			rules.Add (new NamingRule () {
-				Kind = DeclarationKinds.LocalVariable,
+				MatchKind = DeclarationKinds.LocalVariable,
 				NamingStyle = NamingStyle.CamelCase,
 			});
 			rules.Add (new NamingRule () {
-				Kind = DeclarationKinds.Parameter,
+				MatchKind = DeclarationKinds.Parameter,
 				NamingStyle = NamingStyle.CamelCase,
 			});
 			
 			rules.Add (new NamingRule () {
-				Kind = DeclarationKinds.TypeParameter,
+				MatchKind = DeclarationKinds.TypeParameter,
 				NamingStyle = NamingStyle.PascalCase,
 				RequiredPrefixes = new [] { "T" },
 			});
 			rules.Add (new NamingRule () {
-				Kind = DeclarationKinds.Interface,
+				MatchKind = DeclarationKinds.Interface,
 				NamingStyle = NamingStyle.PascalCase,
 				RequiredPrefixes = new [] { "I" },
 			});
 			rules.Add (new NamingRule () {
-				Kind = DeclarationKinds.Field,
-				Modifiers = ICS.Modifiers.Private,
+				MatchKind = DeclarationKinds.Field,
+				MatchAllModifiers = ICS.Modifiers.Private,
 				NamingStyle = NamingStyle.CamelCase,
 			});
 			rules.Add (new NamingRule () {
-				Kind = DeclarationKinds.Type | DeclarationKinds.Member,
+				MatchKind = DeclarationKinds.Type | DeclarationKinds.Member,
 				NamingStyle = NamingStyle.PascalCase,
 			});
 		}
