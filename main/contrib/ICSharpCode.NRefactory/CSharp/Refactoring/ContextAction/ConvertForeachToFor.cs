@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -37,64 +38,46 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return GetForeachStatement (context) != null;
 		}
 
-		public void Run (RefactoringContext context)
-		{ // TODO: Missing resolver!
+		static string GetCountProperty (AstType type)
+		{
+			if (type is ComposedType && ((ComposedType)type).ArraySpecifiers.Count > 0)
+				return "Length";
+			return "Count";
+		}
 
-//			var foreachStatement = GetForeachStatement (context);
-//			
-//			var resolver = context.Resolver;
-//			
-//			var result = resolver.Resolve (foreachStatement.InExpression.ToString (), new DomLocation (foreachStatement.InExpression.StartLocation.Line, foreachStatement.InExpression.StartLocation.Column));
-//			string itemNumberProperty = "Count";
-//			
-//			if (result != null && result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0)
-//				itemNumberProperty = "Length";
-//			
-//			ForStatement forStatement = new ForStatement () {
-//				Initializers = {
-//					new VariableDeclarationStatement (new PrimitiveType ("int"), "i", new PrimitiveExpression (0))
-//				},
-//				Condition = new BinaryOperatorExpression (new IdentifierExpression ("i"), BinaryOperatorType.LessThan, new MemberReferenceExpression (foreachStatement.InExpression.Clone (), itemNumberProperty)),
-//				Iterators = {
-//					new ExpressionStatement (new UnaryOperatorExpression (UnaryOperatorType.PostIncrement, new IdentifierExpression ("i")))
-//				},
-//				EmbeddedStatement = new BlockStatement {
-//					new VariableDeclarationStatement (foreachStatement.VariableType.Clone (), foreachStatement.VariableName, new IndexerExpression (foreachStatement.InExpression.Clone (), new IdentifierExpression ("i")))
-//				}
-//			};
-//			
-//			var editor = context.Document.Editor;
-//			var offset = editor.LocationToOffset (foreachStatement.StartLocation.Line, foreachStatement.StartLocation.Column);
-//			var endOffset = editor.LocationToOffset (foreachStatement.EndLocation.Line, foreachStatement.EndLocation.Column);
-//			var offsets = new List<int> ();
-//			string lineIndent = editor.GetLineIndent (foreachStatement.Parent.StartLocation.Line);
-//			string text = context.OutputNode (forStatement, context.Document.CalcIndentLevel (lineIndent) + 1, delegate(int nodeOffset, AstNode astNode) {
-//				if (astNode is VariableInitializer && ((VariableInitializer)astNode).Name == "i")
-//					offsets.Add (nodeOffset);
-//				if (astNode is IdentifierExpression && ((IdentifierExpression)astNode).Identifier == "i") {
-//					offsets.Add (nodeOffset);
-//				}
-//			});
-//			string foreachBlockText;
-//			
-//			if (foreachStatement.EmbeddedStatement is BlockStatement) {
-//				foreachBlockText = editor.GetTextBetween (foreachStatement.EmbeddedStatement.StartLocation.Line, foreachStatement.EmbeddedStatement.StartLocation.Column + 1,
-//						foreachStatement.EmbeddedStatement.EndLocation.Line, foreachStatement.EmbeddedStatement.EndLocation.Column - 1);
-//			} else {
-//				foreachBlockText = editor.GetTextBetween (foreachStatement. EmbeddedStatement.StartLocation.Line, foreachStatement.EmbeddedStatement.StartLocation.Column,
-//					foreachStatement.EmbeddedStatement.EndLocation.Line, foreachStatement.EmbeddedStatement.EndLocation.Column);
-//			}
-//			string singeleIndent = GetSingleIndent (editor);
-//			string indent = lineIndent + singeleIndent;
-//			foreachBlockText = indent + foreachBlockText.TrimEnd () + editor.EolMarker;
-//			int i = text.LastIndexOf ('}');
-//			while (i > 1 && text[i - 1] == ' ' || text[i - 1] == '\t')
-//				i--;
-//			
-//			text = text.Insert (i, foreachBlockText).TrimEnd ();
-//			string trimmedText = text.TrimStart ();
-//			editor.Replace (offset, endOffset - offset + 1, trimmedText);
-//			context.StartTextLinkMode (offset, "i".Length, offsets.Select (o => o - (text.Length - trimmedText.Length)));
+		public void Run (RefactoringContext context)
+		{
+			var foreachStatement = GetForeachStatement (context);
+			
+			var result = context.ResolveType (foreachStatement.InExpression);
+			var countProperty = GetCountProperty (result);
+			
+			var initializer = new VariableDeclarationStatement (new PrimitiveType ("int"), "i", new PrimitiveExpression (0));
+			var id1 = new IdentifierExpression ("i");
+			var id2 = id1.Clone ();
+			var id3 = id1.Clone ();
+			
+			var forStatement = new ForStatement () {
+				Initializers = { initializer },
+				Condition = new BinaryOperatorExpression (id1, BinaryOperatorType.LessThan, new MemberReferenceExpression (foreachStatement.InExpression.Clone (), countProperty)),
+				Iterators = { new ExpressionStatement (new UnaryOperatorExpression (UnaryOperatorType.PostIncrement, id2)) },
+				EmbeddedStatement = new BlockStatement {
+					new VariableDeclarationStatement (foreachStatement.VariableType.Clone (), foreachStatement.VariableName, new IndexerExpression (foreachStatement.InExpression.Clone (), id3))
+				}
+			};
+			
+			if (foreachStatement.EmbeddedStatement is BlockStatement) {
+				foreach (var child in ((BlockStatement)foreachStatement.EmbeddedStatement).Statements) {
+					forStatement.EmbeddedStatement.AddChild (child.Clone (), BlockStatement.StatementRole);
+				}
+			} else {
+				forStatement.EmbeddedStatement.AddChild (foreachStatement.EmbeddedStatement.Clone (), BlockStatement.StatementRole);
+			}
+			
+			using (var script = context.StartScript ()) {
+				script.Replace (foreachStatement, forStatement);
+				script.Link (initializer.Variables.First ().NameToken, id1, id2, id3);
+			}
 		}
 		
 		static ForeachStatement GetForeachStatement (RefactoringContext context)
@@ -102,7 +85,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var astNode = context.GetNode ();
 			if (astNode == null)
 				return null;
-			return (astNode as ForeachStatement) ?? astNode.Parent as ForeachStatement;
+			var result = (astNode as ForeachStatement) ?? astNode.Parent as ForeachStatement;
+			if (result == null || context.ResolveType (result.InExpression) == null)
+				return null;
+			return result;
 		}
 	}
 }

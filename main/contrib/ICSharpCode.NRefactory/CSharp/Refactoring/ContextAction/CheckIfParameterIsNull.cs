@@ -63,10 +63,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				TrueStatement = new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.ArgumentNullException"), new PrimitiveExpression (parameter.Name)))
 			};
 			
-			var offset = context.GetOffset (bodyStatement.StartLocation) + 1;
-			
 			using (var script = context.StartScript ()) {
-				script.Insert (offset, statement);
+				script.AddTo (bodyStatement, statement);
 			}
 		}
 		

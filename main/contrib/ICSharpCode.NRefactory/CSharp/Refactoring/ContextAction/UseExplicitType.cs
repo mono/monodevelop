@@ -34,36 +34,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return GetVariableDeclarationStatement (context) != null;
 		}
 		
-		// TODO: Resolving
 		public void Run (RefactoringContext context)
 		{
-//			var varDecl = GetVariableDeclarationStatement (context);
-//			var resolver = context.Resolver;
-//			var resolveResult = resolver.Resolve (varDecl.Variables.First ().Initializer.ToString (), context.Location);
-//			
-//			int offset = context.Document.Editor.LocationToOffset (varDecl.Type.StartLocation.Line, varDecl.Type.StartLocation.Column);
-//			int endOffset = context.Document.Editor.LocationToOffset (varDecl.Type.EndLocation.Line, varDecl.Type.EndLocation.Column);
-//			string text = context.OutputNode (ShortenTypeName (context.Document, resolveResult.ResolvedType), 0).Trim ();
-//			context.DoReplace (offset, endOffset - offset, text);
-//			context.CommitChanges ();
-//			context.Document.Editor.Caret.Offset = offset + text.Length;
+			var varDecl = GetVariableDeclarationStatement (context);
+			var resolver = context.Resolver;
+			
+			using (var script = context.StartScript ()) {
+				script.Replace (varDecl.Type, context.ResolveType (varDecl.Variables.First ().Initializer));
+			}
 		}
 		
 		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context)
 		{
-//			var result = context.GetNode<VariableDeclarationStatement> ();
-//			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (new SimpleType ("var"))) {
-//				var resolver = context.Resolver;
-//				var resolveResult = resolver.Resolve (result.Variables.First ().Initializer.ToString (), context.Location);
-//				if (resolveResult == null || resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.FullName))
-//					return null;
-//				return result;
-//				
-//			}
+			var result = context.GetNode<VariableDeclarationStatement> ();
+			if (result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (new SimpleType ("var"))) {
+				if (context.ResolveType (result.Variables.First ().Initializer) == null)
+					return null;
+				return result;
+			}
 			return null;
 		}
-		
-
 	}
 }
 

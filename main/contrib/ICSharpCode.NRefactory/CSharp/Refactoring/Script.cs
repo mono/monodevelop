@@ -55,17 +55,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			changes.Add (change);
 		}
 		
-		public void Insert (int offset, string text)
+		public void InsertText (int offset, string text)
 		{
 			Queue (Context.CreateTextReplaceAction (offset, 0, text));
 		}
 		
-		public void Insert (int offset, AstNode node)
+		public void InsertBefore (AstNode node, AstNode insertNode)
 		{
-			var output = OutputNode (GetIndentLevelAt (offset), node);
-			Queue (Context.CreateNodeOutputAction (offset, 0, output));
+			var startOffset = Context.GetOffset (node.StartLocation);
+			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
+			Queue (Context.CreateNodeOutputAction (startOffset, 0, output));
 		}
 
+		public void AddTo (BlockStatement bodyStatement, AstNode insertNode)
+		{
+			var startOffset = Context.GetOffset (bodyStatement.LBraceToken.StartLocation) + 1;
+			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
+			Queue (Context.CreateNodeOutputAction (startOffset, 0, output));
+		}
+		
 		public void Link (params AstNode[] nodes)
 		{
 			Queue (Context.CreateLinkAction (nodes));
@@ -83,12 +91,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			Remove (startOffset, endOffset - startOffset);
 		}
 		
-		public void Remove (int offset, int length)
+		void Remove (int offset, int length)
 		{
 			Queue (Context.CreateTextReplaceAction (offset, length, null));
 		}
 		
-		public void Replace (int offset, int length, string text)
+		void Replace (int offset, int length, string text)
 		{
 			Queue (Context.CreateTextReplaceAction (offset, length, text));
 		}
@@ -98,8 +106,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var startOffset = Context.GetOffset (node.StartLocation);
 			var endOffset = Context.GetOffset (node.EndLocation);
 			int level = 0;
-//			if (!(replaceWith is Expression))
-//				level = GetIndentLevelAt (startOffset);
+			if (!(replaceWith is Expression))
+				level = GetIndentLevelAt (startOffset);
 			Queue (Context.CreateNodeOutputAction (startOffset, endOffset - startOffset, OutputNode (level, replaceWith)));
 		}
 

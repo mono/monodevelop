@@ -54,11 +54,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			pdecl.AddChild (accessor, pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole);
 			
-			var offset = context.GetOffset (pdecl.RBraceToken.StartLocation) - 1;
-			
 			using (var script = context.StartScript ()) {
 				script.Select (accessorStatement);
-				script.Insert (offset, accessor);
+				script.InsertBefore (pdecl.RBraceToken, accessor);
 				script.FormatText (ctx => GetPropertyDeclaration (context));
 			}
 		}

@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			using (var script = context.StartScript ()) {
 				script.Replace (varDecl, varDecl.Parent is ForStatement ? (AstNode)assign : new ExpressionStatement (assign));
-				script.Insert (context.GetOffset (varDecl.StartLocation.Line, 1), newVarDecl);
+				script.InsertBefore (varDecl, newVarDecl);
 			}
 		}
 		

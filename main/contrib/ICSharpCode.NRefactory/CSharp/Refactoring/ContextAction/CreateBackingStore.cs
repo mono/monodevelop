@@ -63,16 +63,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			};
 			
 			using (var script = context.StartScript ()) {
-				
 				script.Replace (property, newProperty);
-				
-				int offset = context.GetOffset (property.StartLocation.Line, 1);
-				script.Insert (offset, backingStore);
-				
+				script.InsertBefore (property, backingStore);
 				script.Link (initializer, id1, id2);
 			}
 		}
-		
 	}
 }
 

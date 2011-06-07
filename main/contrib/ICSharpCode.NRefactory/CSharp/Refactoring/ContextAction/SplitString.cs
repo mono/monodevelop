@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var pexpr = context.GetNode<PrimitiveExpression> ();
 			int offset = context.GetOffset (context.Location);
 			using (var script = context.StartScript ()) {
-				script.Insert (offset, pexpr.LiteralValue.StartsWith ("@") ? "\" + @\"" : "\" + \"");
+				script.InsertText (offset, pexpr.LiteralValue.StartsWith ("@") ? "\" + @\"" : "\" + \"");
 			}
 		}	
 	}
