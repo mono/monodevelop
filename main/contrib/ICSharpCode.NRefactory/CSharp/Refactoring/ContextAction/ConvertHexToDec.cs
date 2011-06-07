@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public bool IsValid (RefactoringContext context)
 		{
 			var pexpr = context.GetNode<PrimitiveExpression> ();
-			if (pexpr == null || !pexpr.LiteralValue.StartsWith ("0X", System.StringComparison.InvariantCultureIgnoreCase))
+			if (pexpr == null || !pexpr.LiteralValue.StartsWith ("0X", System.StringComparison.OrdinalIgnoreCase))
 				return false;
 			return (pexpr.Value is int) || (pexpr.Value is long) || (pexpr.Value is short) || (pexpr.Value is sbyte) ||
 			(pexpr.Value is uint) || (pexpr.Value is ulong) || (pexpr.Value is ushort) || (pexpr.Value is byte);
