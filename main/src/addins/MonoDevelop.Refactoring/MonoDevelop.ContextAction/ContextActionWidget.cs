@@ -74,10 +74,10 @@ namespace MonoDevelop.ContextAction
 			Dictionary<Gtk.MenuItem, ContextAction> fixTable = new Dictionary<Gtk.MenuItem, ContextAction> ();
 			int mnemonic = 1;
 			foreach (ContextAction fix in fixes) {
+				var escapedLabel = fix.GetMenuText (document, loc).Replace ("_", "__");
 				var label = (mnemonic <= 10)
-						? "_" + (mnemonic++ % 10).ToString () + " " + fix.GetMenuText (document, loc)
-						: "  " + fix.GetMenuText (document, loc);
-				
+						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+						: "  " + escapedLabel;
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
 				fixTable [menuItem] = fix;
 				menuItem.Activated += delegate(object sender, EventArgs e) {

@@ -141,9 +141,10 @@ namespace MonoDevelop.AnalysisCore
 						}, null);
 						firstAction = false;
 					}
+					var escapedLabel = action.Label.Replace ("_", "__");
 					var label = (mnemonic <= 10)
-						? "_" + (mnemonic++ % 10).ToString () + " " + action.Label
-						: "  " + action.Label;
+						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+						: "  " + escapedLabel;
 					infos.Add (label, action);
 				}
 			}
