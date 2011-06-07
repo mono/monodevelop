@@ -443,9 +443,9 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.AllUpper:
 				return !id.Any (ch => char.IsLetter (ch) && char.IsLower (ch));
 			case NamingStyle.CamelCase:
-				return id.Length == 0 || char.IsLower (id [0]);
+				return id.Length == 0 || (char.IsLower (id [0]) && id.IndexOf ('_') < 0);
 			case NamingStyle.PascalCase:
-				return id.Length == 0 || char.IsUpper (id [0]);
+				return id.Length == 0 || (char.IsUpper (id [0]) && id.IndexOf ('_') < 0);
 			case NamingStyle.FirstUpper:
 				return id.Length == 0 && char.IsUpper (id [0]) && !id.Skip (1).Any (ch => char.IsLetter (ch) && char.IsUpper (ch));
 			}
@@ -518,6 +518,8 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.CamelCase:
 				if (id.Length > 0 && char.IsUpper (id [0])) {
 					errorMessage = GettextCatalog.GetString ("'{0}' should start with a lower case letter.", name);
+				} else if (id.IndexOf ('_') >= 0) {
+					errorMessage = GettextCatalog.GetString ("'{0}' should not separate words with an underscore.", name);
 				} else {
 					suggestedNames.Add (id);
 					break;
@@ -527,6 +529,8 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.PascalCase:
 				if (id.Length > 0 && char.IsLower (id [0])) {
 					errorMessage = GettextCatalog.GetString ("'{0}' should start with an upper case letter.", name);
+				} else if (id.IndexOf ('_') >= 0) {
+					errorMessage = GettextCatalog.GetString ("'{0}' should not separate words with an underscore.", name);
 				} else {
 					suggestedNames.Add (id);
 					break;
