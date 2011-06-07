@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class CreateLocalVariable : IContextAction
 	{
-		List<IdentifierExpression> GetUnresolvedArguments (RefactoringContext context)
+		public List<IdentifierExpression> GetUnresolvedArguments (RefactoringContext context)
 		{
 			var expressions = new List<IdentifierExpression> ();
 			
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (GetUnresolvedArguments (context).Count > 0)
 				return true;
-			var identifier = GetIdentifier (context);
+			var identifier = CreateField.GetIdentifier (context);
 			if (identifier == null)
 				return false;
 			if (context.GetNode<Statement> () == null)
@@ -93,11 +93,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Type = GuessType (context, identifier),
 				Variables = { new VariableInitializer (identifier.Identifier) }
 			};
-		}
-		
-		IdentifierExpression GetIdentifier (RefactoringContext context)
-		{
-			return context.GetNode<IdentifierExpression> ();
 		}
 		
 		InvocationExpression GetInvocation (RefactoringContext context)

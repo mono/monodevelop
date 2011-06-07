@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return null;
 		}
 		
-		IdentifierExpression GetIdentifier (RefactoringContext context)
+		public static IdentifierExpression GetIdentifier (RefactoringContext context)
 		{
 			return context.GetNode<IdentifierExpression> ();
 		}

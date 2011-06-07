@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public bool IsValid (RefactoringContext context)
 		{
-			var identifier = GetIdentifier (context);
+			var identifier = CreateField.GetIdentifier (context);
 			if (identifier == null)
 				return false;
 			return context.ResolveType (identifier) == null && CreateField.GuessType (context, identifier) != null;

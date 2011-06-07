@@ -131,7 +131,7 @@ namespace MonoDevelop.CSharp.ContextAction
 	{
 		protected override string GetMenuText (MDRefactoringContext context)
 		{
-			var identifier = action.GetIdentifier (context);
+			var identifier = ICSharpCode.NRefactory.CSharp.Refactoring.CreateField.GetIdentifier (context);
 			return string.Format (GettextCatalog.GetString ("Create field '{0}'"), identifier);
 		}
 	}
@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharp.ContextAction
 	{
 		protected override string GetMenuText (MDRefactoringContext context)
 		{
-			var identifier = action.GetIdentifier (context);
+			var identifier = ICSharpCode.NRefactory.CSharp.Refactoring.CreateField.GetIdentifier (context);
 			return string.Format (GettextCatalog.GetString ("Create property '{0}'"), identifier);
 		}
 	}
@@ -152,7 +152,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			if (action.GetUnresolvedArguments (context).Count > 0)
 				return GettextCatalog.GetString ("Create local variable declarations for arguments");
 			
-			var identifier = action.GetIdentifier (context);
+			var identifier = ICSharpCode.NRefactory.CSharp.Refactoring.CreateField.GetIdentifier (context);
 			return string.Format (GettextCatalog.GetString ("Create local variable '{0}'"), identifier);
 		}
 	}
