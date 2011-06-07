@@ -132,6 +132,7 @@
     <Compile Include="NativeReferences\NativeReferenceFolderNodeBuilder.cs" />
     <Compile Include="NativeReferences\NativeReferenceNodeBuilder.cs" />
     <Compile Include="NativeReferences\NativeReferencePropertyProvider.cs" />
+    <Compile Include="NativeReferences\NativeReferenceCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

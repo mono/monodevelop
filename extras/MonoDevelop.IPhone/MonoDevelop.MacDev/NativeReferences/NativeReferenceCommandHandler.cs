@@ -1,5 +1,5 @@
 // 
-// NativeReferenceNodeBuilder.cs
+// NativeReferenceCommandHandler.cs
 //  
 // Author:
 //       Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -25,47 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.MacDev.NativeReferences
 {
-	class NativeReferenceNodeBuilder : TypeNodeBuilder
+	public class NativeReferenceCommandHandler : NodeCommandHandler
 	{
-		public override Type NodeDataType 
-		{
-			get { return typeof (NativeReference); }
-		}
-		
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
-		{
-			return "NativeReference";
-		}
-		
-		public override string ContextMenuAddinPath {
-			get {
-				return "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReference";
-			}
-		}
-		
-		public override Type CommandHandlerType
-		{
-			get { return typeof (NativeReferenceCommandHandler); }
-		}
-		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label,
-			ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
-		{
-			var reference = (NativeReference) dataObject;
-			label = reference.Path.FileName;
-			//TODO: better icons
-			icon = Context.GetIcon (Stock.Reference);
-			closedIcon = Context.GetIcon (Stock.Reference);
-		}
-		
-		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
-		{
-			return false;
-		}
 	}
 }

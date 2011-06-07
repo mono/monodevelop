@@ -28,6 +28,14 @@
 	    <Addin id="DesignerSupport" version="2.6"/>
 	</Dependencies>
 	
+	<ExtensionPoint path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReferenceFolder">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReference">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="application/vnd.apple-plist" _description="Mac Property List" isText="false">
 			<File pattern="*.plist" />

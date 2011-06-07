@@ -45,6 +45,17 @@ namespace MonoDevelop.MacDev.NativeReferences
 			return "NativeReferenceFolder";
 		}
 		
+		public override string ContextMenuAddinPath {
+			get {
+				return "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReferenceFolder";
+			}
+		}
+		
+		public override Type CommandHandlerType
+		{
+			get { return typeof (NativeReferenceCommandHandler); }
+		}
+		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label,
 			ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
