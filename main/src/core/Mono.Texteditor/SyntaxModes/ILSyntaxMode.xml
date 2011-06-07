@@ -389,6 +389,7 @@
 		<Word>nomangle</Word>
 		<Word>lasterr</Word>
 		<Word>winapi</Word>
+		<Word>platformapi</Word>
 		<Word>cdecl</Word>
 		<Word>as</Word>
 		<Word>pinned</Word>
@@ -493,6 +494,7 @@
 		<Word>algorithm</Word>
 		<Word>.ver</Word>
 		<Word>.locale</Word>
+		<Word>.culture</Word>
 		<Word>extern</Word>
 		<Word>.export</Word>
 		<Word>.manifestres</Word>
