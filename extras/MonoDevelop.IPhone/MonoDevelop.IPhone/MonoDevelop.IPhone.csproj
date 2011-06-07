@@ -82,15 +82,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="IPhoneProject.cs" />
-    <Compile Include="IPhoneProjectConfiguration.cs" />
-    <Compile Include="IPhoneProjectBinding.cs" />
-    <Compile Include="IPhoneBuildExtension.cs" />
-    <Compile Include="IPhoneFrameworkBackend.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Gui\IPhoneOptionsPanel.cs" />
-    <Compile Include="IPhoneExecutionCommand.cs" />
-    <Compile Include="IPhoneExecutionHandler.cs" />
     <Compile Include="Gui\IPhoneSigningKeyPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs" />
     <Compile Include="IPhoneCommands.cs" />
@@ -98,24 +91,28 @@
     <Compile Include="MobileProvision.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="DataConverter.cs" />
-    <Compile Include="IPhoneExecutionModeSet.cs" />
-    <Compile Include="IPhoneFramework.cs" />
-    <Compile Include="IPhoneSdkVersion.cs" />
-    <Compile Include="IPhoneSimulatorTarget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs" />
     <Compile Include="IPhoneSettings.cs" />
     <Compile Include="Orientation.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneBuildOptionsWidget.cs" />
     <Compile Include="IPhoneCodeBehind.cs" />
-    <Compile Include="IPhoneProjectStringTagProvider.cs" />
     <Compile Include="IPhoneDeviceLogPad.cs" />
+    <Compile Include="Execution\IPhoneExecutionCommand.cs" />
+    <Compile Include="Execution\IPhoneExecutionHandler.cs" />
+    <Compile Include="Execution\IPhoneExecutionModeSet.cs" />
+    <Compile Include="Execution\IPhoneSimulatorTarget.cs" />
+    <Compile Include="Project\IPhoneProject.cs" />
+    <Compile Include="Project\IPhoneProjectBinding.cs" />
+    <Compile Include="Project\IPhoneProjectStringTagProvider.cs" />
+    <Compile Include="Project\IPhoneProjectConfiguration.cs" />
+    <Compile Include="Project\IPhoneBuildExtension.cs" />
+    <Compile Include="Framework\IPhoneFramework.cs" />
+    <Compile Include="Framework\IPhoneFrameworkBackend.cs" />
+    <Compile Include="Framework\IPhoneSdkVersion.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">
       <LogicalName>MonoDevelop.IPhone.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="framework_IPhone.xml">
-      <LogicalName>framework_IPhone.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
@@ -123,11 +120,17 @@
     <EmbeddedResource Include="icons\information.png">
       <LogicalName>information.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Framework\framework_IPhone.xml">
+      <LogicalName>framework_IPhone.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
     <Folder Include="icons\" />
     <Folder Include="templates\" />
+    <Folder Include="Execution\" />
+    <Folder Include="Project\" />
+    <Folder Include="Framework\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
