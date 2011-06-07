@@ -55,23 +55,23 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		Local = LocalVariable | Parameter,
 		LocalVariable = 1 << 0,
-		Parameter     = 1 << 3,
+		Parameter     = 1 << 1,
 		
 		Member = Property | Method | Field | Event | EnumMember,
-		Property      = 1 << 1,
-		Method        = 1 << 2,
+		Property      = 1 << 2,
+		Method        = 1 << 3,
 		Field         = 1 << 4,
 		Event         = 1 << 5,
-		EnumMember    = 1 << 12,
+		EnumMember    = 1 << 6,
 		
 		Type = Class | Delegate | Struct | Interface | Enum,
-		Class         = 1 << 6,
-		Delegate      = 1 << 9,
-		Struct        = 1 << 8,
-		Interface     = 1 << 7,
+		Class         = 1 << 7,
+		Delegate      = 1 << 8,
+		Struct        = 1 << 9,
+		Interface     = 1 << 10,
 		Enum          = 1 << 11,
 		
-		TypeParameter = 1 << 10,
+		TypeParameter = 1 << 12,
 		Namespace     = 1 << 13,
 		
 		All = Local | Member | Type | Namespace,

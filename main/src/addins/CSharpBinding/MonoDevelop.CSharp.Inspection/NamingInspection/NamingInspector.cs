@@ -47,6 +47,7 @@ namespace MonoDevelop.CSharp.Inspection
 			visitor.FixedFieldDeclarationVisited += HandleVisitorFixedFieldDeclarationVisited;
 			visitor.ParameterDeclarationVisited += HandleVisitorParameterDeclarationVisited;
 			visitor.PropertyDeclarationVisited += HandleVisitorPropertyDeclarationVisited;
+			visitor.MethodDeclarationVisited += HandleVisitorMethodDeclarationVisited;
 			visitor.FieldDeclarationVisited += HandleVisitorFieldDeclarationVisited;
 			visitor.CustomEventDeclarationVisited += HandleVisitorCustomEventDeclarationVisited;
 			visitor.EventDeclarationVisited += HandleVisitorEventDeclarationVisited;
@@ -85,6 +86,14 @@ namespace MonoDevelop.CSharp.Inspection
 		{
 			foreach (var rule in policy.Rules) {
 				if (rule.CheckProperty (node, data))
+					return;
+			}
+		}
+		
+		void HandleVisitorMethodDeclarationVisited (MethodDeclaration node, InspectionData data)
+		{
+			foreach (var rule in policy.Rules) {
+				if (rule.CheckMethod (node, data))
 					return;
 			}
 		}

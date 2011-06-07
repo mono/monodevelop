@@ -61,7 +61,6 @@ namespace MonoDevelop.CSharp.Inspection
 				MatchKind = DeclarationKinds.Parameter,
 				NamingStyle = NamingStyle.CamelCase,
 			});
-			
 			rules.Add (new NamingRule () {
 				MatchKind = DeclarationKinds.TypeParameter,
 				NamingStyle = NamingStyle.PascalCase,
@@ -78,7 +77,7 @@ namespace MonoDevelop.CSharp.Inspection
 				NamingStyle = NamingStyle.CamelCase,
 			});
 			rules.Add (new NamingRule () {
-				MatchKind = DeclarationKinds.Type | DeclarationKinds.Member,
+				MatchKind = DeclarationKinds.Type | DeclarationKinds.Member | DeclarationKinds.Namespace,
 				NamingStyle = NamingStyle.PascalCase,
 			});
 		}
