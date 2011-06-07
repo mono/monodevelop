@@ -502,8 +502,7 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.AllLower:
 				if (id.Any (ch => char.IsLetter (ch) && char.IsUpper (ch))) {
 					errorMessage = GettextCatalog.GetString ("'{0}' contains upper case letters.", name);
-					//TODO: camel/pascal/ALL_UPPER/First_upper->all_lower conversion
-					suggestedNames.Add (id);
+					suggestedNames.Add (LowerCaseIdentifier (BreakWords (id)));
 				} else {
 					suggestedNames.Add (id);
 				}
@@ -511,8 +510,7 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.AllUpper:
 				if (id.Any (ch => char.IsLetter (ch) && char.IsLower (ch))) {
 					errorMessage = GettextCatalog.GetString ("'{0}' contains lower case letters.", name);
-					//TODO: camel/pascal/all_lower/First_upper->all_upper conversion
-					suggestedNames.Add (id);
+					suggestedNames.Add (UpperCaseIdentifier (BreakWords (id)));
 				} else {
 					suggestedNames.Add (id);
 				}
@@ -520,20 +518,20 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.CamelCase:
 				if (id.Length > 0 && char.IsUpper (id [0])) {
 					errorMessage = GettextCatalog.GetString ("'{0}' should start with a lower case letter.", name);
-					//TODO: camel/pascal/all_lower/First_upper->all_upper conversion
-					suggestedNames.Add (id);
 				} else {
 					suggestedNames.Add (id);
+					break;
 				}
+				suggestedNames.Add (CamelCaseIdentifier (BreakWords (id)));
 				break;
 			case NamingStyle.PascalCase:
 				if (id.Length > 0 && char.IsLower (id [0])) {
 					errorMessage = GettextCatalog.GetString ("'{0}' should start with an upper case letter.", name);
-					//TODO: camel/pascal/all_lower/First_upper->all_upper conversion
-					suggestedNames.Add (id);
 				} else {
 					suggestedNames.Add (id);
+					break;
 				}
+				suggestedNames.Add (PascalCaseIdentifier (BreakWords (id)));
 				break;
 			case NamingStyle.FirstUpper:
 				if (id.Length > 0 && char.IsLower (id [0])) {
@@ -544,8 +542,7 @@ namespace MonoDevelop.CSharp.Inspection
 					suggestedNames.Add (id);
 					break;
 				}
-				//TODO: camel/pascal/all_lower/First_upper->all_upper conversion
-				suggestedNames.Add (id);
+				suggestedNames.Add (FirstUpperIdentifier (BreakWords (id)));
 				break;
 			}
 			
@@ -590,6 +587,90 @@ namespace MonoDevelop.CSharp.Inspection
 			return errorMessage
 				// should never happen.
 				?? "no known errors.";
+		}
+		
+		static List<string> BreakWords (string identifier)
+		{
+			var words = new List<string> ();
+			int wordStart = 0;
+			bool lastWasLower = false;
+			for (int i = 0; i < identifier.Length; i++) {
+				char c = identifier[i];
+				if (lastWasLower && Char.IsUpper (c)) {
+					words.Add (identifier.Substring (wordStart, i - wordStart));
+					wordStart = i;
+					lastWasLower = false;
+				} else if (c == '_') {
+					if (i > 0)
+						words.Add (identifier.Substring (wordStart, i - wordStart));
+					i++;
+					wordStart = i;
+					lastWasLower = false;
+				} else {
+					lastWasLower = Char.IsLower (c);
+				}
+			}
+			if (wordStart < identifier.Length)
+				words.Add (identifier.Substring (wordStart));
+			return words;
+		}
+		
+		static string CamelCaseIdentifier (List<string> words)
+		{
+			var sb = new StringBuilder ();
+			sb.Append (words[0].ToLower ());
+			for (int i = 1; i < words.Count; i++) {
+				AppendCapitalized (words[i], sb);
+			}
+			return sb.ToString ();
+		}
+		
+		static string PascalCaseIdentifier (List<string> words)
+		{
+			var sb = new StringBuilder ();
+			for (int i = 0; i < words.Count; i++) {
+				AppendCapitalized (words[i], sb);
+			}
+			return sb.ToString ();
+		}
+		
+		static string LowerCaseIdentifier (List<string> words)
+		{
+			var sb = new StringBuilder ();
+			sb.Append (words[0].ToLower ());
+			for (int i = 1; i < words.Count; i++) {
+				sb.Append ('_');
+				sb.Append (words[i].ToLower ());
+			}
+			return sb.ToString ();
+		}
+		
+		static string UpperCaseIdentifier (List<string> words)
+		{
+			var sb = new StringBuilder ();
+			sb.Append (words[0].ToUpper ());
+			for (int i = 1; i < words.Count; i++) {
+				sb.Append ('_');
+				sb.Append (words[i].ToUpper ());
+			}
+			return sb.ToString ();
+		}
+		
+		static string FirstUpperIdentifier (List<string> words)
+		{
+			var sb = new StringBuilder ();
+			AppendCapitalized (words[0], sb);
+			for (int i = 1; i < words.Count; i++) {
+				sb.Append ('_');
+				sb.Append (words[i].ToLower ());
+			}
+			return sb.ToString ();
+		}
+		
+		static void AppendCapitalized (string word, StringBuilder sb)
+		{
+			sb.Append (word.ToLower ());
+			sb[sb.Length - word.Length] = char.ToUpper (sb[sb.Length - word.Length]);
 		}
 		
 		public FixableResult GetFixableResult (ICS.AstLocation location, IBaseMember node, string name)
