@@ -69,4 +69,15 @@
 			insertafter ="DefaultDisplayBinding"
 			class = "MonoDevelop.MacDev.XcodeInterfaceBuilderDisplayBinding" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+		<!--<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.ProjectFolderNodeBuilderExtension"/>-->
+		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.ProjectNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.NativeReferenceFolderNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.NativeReferenceNodeBuilder"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "MonoDevelop.MacDev.NativeReferences.NativeReference" />
+	</Extension>
 </Addin>

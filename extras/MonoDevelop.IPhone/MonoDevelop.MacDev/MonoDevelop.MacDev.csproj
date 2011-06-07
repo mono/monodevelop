@@ -79,6 +79,7 @@
     <Folder Include="MonoDevelop.MacDev.InterfaceBuilder\" />
     <Folder Include="icons\" />
     <Folder Include="ObjCIntegration\" />
+    <Folder Include="NativeReferences\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -126,6 +127,10 @@
     <Compile Include="ObjCIntegration\NSObjectInfoService.cs" />
     <Compile Include="ObjCIntegration\NSObjectProjectInfo.cs" />
     <Compile Include="XcodeInterfaceBuilderDisplayBinding.cs" />
+    <Compile Include="NativeReferences\NativeReference.cs" />
+    <Compile Include="NativeReferences\ProjectNodeBuilder.cs" />
+    <Compile Include="NativeReferences\NativeReferenceFolderNodeBuilder.cs" />
+    <Compile Include="NativeReferences\NativeReferenceNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

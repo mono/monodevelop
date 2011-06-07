@@ -39,6 +39,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.MacDev.Plist;
 using MonoDevelop.MacDev.XcodeIntegration;
 using MonoDevelop.Projects;
+using MonoDevelop.MacDev.NativeReferences;
 
 namespace MonoDevelop.IPhone
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.IPhone
 		IPhoneAndIPad = IPhone | IPad,
 	}
 
-	public class IPhoneProject : DotNetProject, IXcodeTrackedProject
+	public class IPhoneProject : DotNetProject, IXcodeTrackedProject, INativeReferencingProject
 	{
 		internal const string PLAT_IPHONE = "iPhone";
 		internal const string PLAT_SIM = "iPhoneSimulator";
