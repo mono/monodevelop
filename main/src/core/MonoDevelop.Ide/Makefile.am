@@ -215,6 +215,7 @@ FILES =  \
 	MonoDevelop.Components.PropertyGrid.Editors/EnumerationEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/EventEditor.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/ExpandableObjectEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/FilePathEditor.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/FlagsEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/FlagsSelectorDialog.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/FloatRange.cs \
