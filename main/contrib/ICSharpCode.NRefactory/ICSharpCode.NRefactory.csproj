@@ -391,6 +391,8 @@
     <Compile Include="CSharp\Refactoring\ContextAction\CreateLocalVariable.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\CreateProperty.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\GenerateGetter.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateEventInvocator.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\RemoveBackingStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

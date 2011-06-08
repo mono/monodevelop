@@ -136,7 +136,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public abstract void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition);
 
-		int GetIndentLevelAt (int offset)
+		protected int GetIndentLevelAt (int offset)
 		{
 			var node = Context.Unit.GetNodeAt (Context.GetLocation (offset));
 			int level = 0;
@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return level;
 		}
 		
-		NodeOutput OutputNode (int indentLevel, AstNode node, bool startWithNewLine = false)
+		protected NodeOutput OutputNode (int indentLevel, AstNode node, bool startWithNewLine = false)
 		{
 			NodeOutput result = new NodeOutput ();
 			var stringWriter = new System.IO.StringWriter ();

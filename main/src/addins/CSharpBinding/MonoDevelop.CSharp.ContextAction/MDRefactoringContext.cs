@@ -274,8 +274,11 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public class MdScript : Script
 		{
+			MDRefactoringContext ctx;
+			
 			public MdScript (MDRefactoringContext ctx) : base(ctx)
 			{
+				this.ctx = ctx;
 			}
 
 			public static void RunActions (IList<ICSharpCode.NRefactory.CSharp.Refactoring.Action> actions, Script script)
@@ -309,6 +312,53 @@ namespace MonoDevelop.CSharp.ContextAction
 			{
 				RunActions (changes, this);
 			}
+			
+			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+			{
+				var editor = ctx.Document.Editor;
+				var mode = new InsertionCursorEditMode (editor.Parent, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.CompilationUnit.GetTypeAt (ctx.Location.Line, ctx.Location.Column)));
+				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
+				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
+				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Accept</b> target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this operation.")));
+				mode.HelpWindow = helpWindow;
+				
+				switch (defaultPosition) {
+				case InsertPosition.Start:
+					mode.CurIndex = 0;
+					break;
+				case InsertPosition.End:
+					mode.CurIndex = mode.InsertionPoints.Count - 1;
+					break;
+				case InsertPosition.Before:
+					for (int i = 0; i < mode.InsertionPoints.Count; i++) {
+						if (mode.InsertionPoints [i].Location < new DocumentLocation (ctx.Location.Line, ctx.Location.Column))
+							mode.CurIndex = i;
+					}
+					break;
+				case InsertPosition.After:
+					for (int i = 0; i < mode.InsertionPoints.Count; i++) {
+						if (mode.InsertionPoints [i].Location > new DocumentLocation (ctx.Location.Line, ctx.Location.Column)) {
+							mode.CurIndex = i;
+							break;
+						}
+					}
+					break;
+				}
+				
+				mode.StartMode ();
+				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
+					if (iCArgs.Success) {
+						var output = OutputNode (GetIndentLevelAt (editor.LocationToOffset (iCArgs.InsertionPoint.Location)), node);
+						iCArgs.InsertionPoint.Insert (editor, output.Text);
+					}
+				};
+			}
+			
 		}
 		
 		public override Script StartScript ()
@@ -335,6 +385,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, fullTypeName);
 		}
 		
+		
 		NRefactoryResolver resolver;
 		public NRefactoryResolver Resolver {
 			get {
@@ -359,6 +410,12 @@ namespace MonoDevelop.CSharp.ContextAction
 			if (resolveResult == null || resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.FullName))
 				return null;
 			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, resolveResult.ResolvedType);
+		}
+		
+		public override ICSharpCode.NRefactory.TypeSystem.ITypeDefinition GetDefinition (AstType resolvedType)
+		{
+			// TODO: Implement get type definition.
+			return null;
 		}
 		
 		/*
@@ -424,33 +481,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		}
 		
 		
-		public void InsertionMode (string title, Func<string> func)
-		{
-			var editor = Document.Editor.Parent;
-			var mode = new InsertionCursorEditMode (editor, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (Document, Document.CompilationUnit.GetTypeAt (Location)));
-			var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
-			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
-			helpWindow.TitleText = title;
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Accept</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this operation.")));
-			mode.HelpWindow = helpWindow;
-			mode.CurIndex = mode.InsertionPoints.Count - 1;
-			for (int i = 0; i < mode.InsertionPoints.Count; i++) {
-				if (mode.InsertionPoints[i].Location > new DocumentLocation (Location.Line, Location.Column)) {
-					mode.CurIndex = i;
-					break;
-				}
-			}
-			
-			mode.StartMode ();
-			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
-				if (iCArgs.Success)
-					iCArgs.InsertionPoint.Insert (Document.Editor, func ());
-			};
-		}
+		
 		
 
 		*/

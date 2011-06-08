@@ -199,6 +199,7 @@ FILES =  \
 	CSharp/Refactoring/ContextAction/ConvertForeachToFor.cs \
 	CSharp/Refactoring/ContextAction/ConvertHexToDec.cs \
 	CSharp/Refactoring/ContextAction/CreateBackingStore.cs \
+	CSharp/Refactoring/ContextAction/CreateEventInvocator.cs \
 	CSharp/Refactoring/ContextAction/CreateField.cs \
 	CSharp/Refactoring/ContextAction/CreateLocalVariable.cs \
 	CSharp/Refactoring/ContextAction/CreateProperty.cs \
@@ -208,6 +209,7 @@ FILES =  \
 	CSharp/Refactoring/ContextAction/InsertAnonymousMethodSignature.cs \
 	CSharp/Refactoring/ContextAction/IntroduceFormatItem.cs \
 	CSharp/Refactoring/ContextAction/InvertIf.cs \
+	CSharp/Refactoring/ContextAction/RemoveBackingStore.cs \
 	CSharp/Refactoring/ContextAction/RemoveBraces.cs \
 	CSharp/Refactoring/ContextAction/ReplaceEmptyString.cs \
 	CSharp/Refactoring/ContextAction/SplitDeclarationAndAssignment.cs \

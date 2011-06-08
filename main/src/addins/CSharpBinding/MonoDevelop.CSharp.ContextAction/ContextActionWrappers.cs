@@ -160,5 +160,13 @@ namespace MonoDevelop.CSharp.ContextAction
 	public class GenerateGetter : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.GenerateGetter>
 	{
 	}
+	
+	public class CreateEventInvocator : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.CreateEventInvocator>
+	{
+	}
+	
+	public class RemoveBackingStore : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBackingStore>
+	{
+	}
 }
 

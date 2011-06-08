@@ -249,8 +249,6 @@
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.CSharp.ContextAction\Actions\CreateEventInvocator.cs" />
-    <None Include="MonoDevelop.CSharp.ContextAction\Actions\RemoveBackingStore.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
