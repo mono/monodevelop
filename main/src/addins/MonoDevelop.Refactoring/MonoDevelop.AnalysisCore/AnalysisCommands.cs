@@ -136,7 +136,7 @@ namespace MonoDevelop.AnalysisCore
 				foreach (var action in GetActions (doc, result)) {
 					if (firstAction) {
 						//FIXME: make this header item insensitive but not greyed out
-						infos.Add (new CommandInfo (result.Message, false, false) {
+						infos.Add (new CommandInfo (result.Message.Replace ("_", "__"), false, false) {
 							Icon = GetIcon (result.Level)
 						}, null);
 						firstAction = false;
