@@ -37,10 +37,11 @@ namespace MonoDevelop.Debugger
 	public partial class AttachToProcessDialog : Gtk.Dialog
 	{
 		List<DebuggerEngine> currentDebEngines;
-		Dictionary<long, List<DebuggerEngine>> procEngines = new Dictionary<long,List<DebuggerEngine>> ();
-		List<ProcessInfo> procs = new List<ProcessInfo> ();
+		Dictionary<long, List<DebuggerEngine>> procEngines;
+		List<ProcessInfo> procs;
 		Gtk.ListStore store;
 		TreeViewState state;
+		uint timeoutHandler;
 		
 		public AttachToProcessDialog()
 		{
@@ -51,12 +52,40 @@ namespace MonoDevelop.Debugger
 			tree.AppendColumn ("PID", new Gtk.CellRendererText (), "text", 1);
 			tree.AppendColumn ("Process Name", new Gtk.CellRendererText (), "text", 2);
 			
-			DebuggerEngine[] debEngines = DebuggingService.GetDebuggerEngines ();
-			foreach (DebuggerEngine de in debEngines) {
+			state = new TreeViewState (tree, 1);
+			
+			Refresh ();
+			
+			comboDebs.Sensitive = false;
+			buttonOk.Sensitive = false;
+			tree.Selection.UnselectAll ();
+			tree.Selection.Changed += OnSelectionChanged;
+			
+			Gtk.TreeIter it;
+			if (store.GetIterFirst (out it))
+				tree.Selection.SelectIter (it);
+			
+			timeoutHandler = GLib.Timeout.Add (3000, Refresh);
+		}
+		
+		public override void Destroy ()
+		{
+			if (timeoutHandler != 0)
+				GLib.Source.Remove (timeoutHandler);
+			base.Destroy ();
+		}
+		
+		bool Refresh ()
+		{
+			procEngines = new Dictionary<long,List<DebuggerEngine>> ();
+			procs = new List<ProcessInfo> ();
+			
+			foreach (DebuggerEngine de in DebuggingService.GetDebuggerEngines ()) {
 				if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
 					continue;
 				try {
-					foreach (ProcessInfo pi in de.GetAttachableProcesses ()) {
+					var infos = de.GetAttachableProcesses ();
+					foreach (ProcessInfo pi in infos) {
 						List<DebuggerEngine> engs;
 						if (!procEngines.TryGetValue (pi.Id, out engs)) {
 							engs = new List<DebuggerEngine> ();
@@ -66,22 +95,13 @@ namespace MonoDevelop.Debugger
 						engs.Add (de);
 					}
 				} catch (Exception ex) {
-					LoggingService.LogError ("Could not get attachablbe processes.", ex);
+					LoggingService.LogError ("Could not get attachable processes.", ex);
 				}
 				comboDebs.AppendText (de.Name);
 			}
-			
-			state = new TreeViewState (tree, 1);
-			
 			FillList ();
 			
-			comboDebs.Sensitive = false;
-			buttonOk.Sensitive = false;
-			tree.Selection.Changed += OnSelectionChanged;
-			
-			Gtk.TreeIter it;
-			if (store.GetIterFirst (out it))
-				tree.Selection.SelectIter (it);
+			return true;
 		}
 		
 		void FillList ()
@@ -128,6 +148,11 @@ namespace MonoDevelop.Debugger
 		protected virtual void OnEntryFilterChanged (object sender, System.EventArgs e)
 		{
 			FillList ();
+		}
+		
+		protected virtual void OnRowActivated (object o, Gtk.RowActivatedArgs args)
+		{
+			Respond (Gtk.ResponseType.Ok);
 		}
 		
 		public ProcessInfo SelectedProcess {

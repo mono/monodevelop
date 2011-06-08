@@ -34,6 +34,7 @@ using Mono.Debugging.Client;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Evaluation;
 using MDB = Mono.Debugger.Soft;
+using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Reflection;
@@ -494,7 +495,8 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnAttachToProcess (long processId)
 		{
-			throw new System.NotImplementedException ();
+			long port = 56000 + (processId % 1000);
+			ConnectionStarted (VirtualMachineManager.Connect (new IPEndPoint (IPAddress.Loopback, (int)port)));
 		}
 
 		protected override void OnContinue ()
@@ -514,7 +516,9 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnDetach ()
 		{
-			throw new System.NotImplementedException ();
+			EndLaunch ();
+			vm.Disconnect ();
+			vm.Dispose ();
 		}
 
 		protected override void OnExit ()
@@ -868,7 +872,11 @@ namespace Mono.Debugging.Soft
 				if (es.Events.Length != 1)
 					throw new InvalidOperationException ("EventSet has unexpected combination of events");
 				HandleEvent (es[0]);
-				vm.Resume ();
+				try {
+					vm.Resume ();
+				} catch (InvalidOperationException) {
+					// The VM is not suspended!
+				}
 			}
 		}
 		

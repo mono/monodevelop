@@ -32,6 +32,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
 using System.IO;
 using System.Reflection;
+using System.Diagnostics;
 using Mono.Debugging.Soft;
 using MDLS = MonoDevelop.Core.LoggingService;
 
@@ -91,12 +92,38 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public ProcessInfo[] GetAttachableProcesses ()
 		{
-			return new ProcessInfo [0];
+			var infos = new List<ProcessInfo> ();
+			string baseProcessName;
+			
+			foreach (var process in Process.GetProcesses ()) {
+				try {
+					baseProcessName = Path.GetFileName (process.ProcessName);
+					if (baseProcessName.Equals ("mono", StringComparison.OrdinalIgnoreCase))
+						infos.Add (new ProcessInfo (process.Id, string.Format ("{0} ({1})", process.MainWindowTitle, baseProcessName)));
+				} catch {
+					// This can fail, but it doesn't matter
+				}
+			}
+			return infos.ToArray ();
 		}
 		
 		public DebuggerSession CreateSession ()
 		{
 			return new SoftDebuggerSession ();
+		}
+		
+		public DebuggerFeatures SupportedFeatures {
+			get {
+				return DebuggerFeatures.Breakpoints | 
+					   DebuggerFeatures.Pause | 
+					   DebuggerFeatures.Stepping | 
+					   DebuggerFeatures.DebugFile |
+					   DebuggerFeatures.ConditionalBreakpoints |
+					   DebuggerFeatures.Tracepoints |
+					   DebuggerFeatures.Catchpoints | 
+					   DebuggerFeatures.Disassembly | 
+					   DebuggerFeatures.Attaching;
+			}
 		}
 		
 		public static void SetUserAssemblyNames (SoftDebuggerStartInfo dsi, IList<string> files)
