@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
+using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.NativeReferences
 {
@@ -53,10 +54,35 @@ namespace MonoDevelop.MacDev.NativeReferences
 		}
 		
 		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Name")]
+		[LocalizedDescription ("Name of the reference.")]
+		public string Name {
+			get { return nr.Name; }
+			set { nr.Name = value; }
+		}
+		
+		[LocalizedCategory ("Reference")]
 		[LocalizedDisplayName ("Path")]
-		[LocalizedDescription ("Path of the reference.")]
-		public string Path {
-			get { return nr.Path; }
+		[LocalizedDescription ("Path searched for the reference.")]
+		public FilePath LibPath {
+			get { return nr.LibPath; }
+			set { nr.LibPath = value; }
+		}
+		
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Is C++")]
+		[LocalizedDescription ("Whether the library is a C++ library.")]
+		public bool IsCxx {
+			get { return nr.IsCxx; }
+			set { nr.IsCxx = value; }
+		}
+		
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Kind")]
+		[LocalizedDescription ("The kind of native reference.")]
+		public NativeReferenceKind Kind {
+			get { return nr.Kind; }
+			set { nr.Kind = value; }
 		}
 		
 		protected override bool IsReadOnly (string propertyName)

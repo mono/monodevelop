@@ -58,7 +58,7 @@ namespace MonoDevelop.MacDev.NativeReferences
 				return;
 			
 			foreach (var file in dlg.SelectedFiles) {
-				var item = new NativeReference () { Path = file };
+				var item = new NativeReference (file);
 				project.Items.Add (item);
 			}
 			
@@ -79,7 +79,7 @@ namespace MonoDevelop.MacDev.NativeReferences
 		{
 			var item = (NativeReference) CurrentNode.DataItem;
 			string question = GettextCatalog.GetString (
-				"Are you sure you want to remove the native reference '{0}'?", item.Path.FileName);
+				"Are you sure you want to remove the native reference '{0}'?", item.Name);
 			
 			if (!MessageService.Confirm (question, AlertButton.Remove))
 				return;

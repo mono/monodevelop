@@ -57,7 +57,7 @@ namespace MonoDevelop.MacDev.NativeReferences
 			ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			var reference = (NativeReference) dataObject;
-			label = reference.Path.FileName;
+			label = reference.Name;
 			//TODO: better icons
 			icon = Context.GetIcon (Stock.Reference);
 			closedIcon = Context.GetIcon (Stock.Reference);

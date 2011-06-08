@@ -28,13 +28,24 @@ using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.NativeReferences
 {
+	[DataItem]
 	public class NativeReference : ProjectItem
 	{
-		[ProjectPathItemProperty ("Include")]
-		public FilePath Path { get; set; }
+		[ItemProperty ("Include")]
+		public string Name { get; set; }
+		
+		[ProjectPathItemProperty ("LibPath", Scope="*")]
+		public FilePath LibPath { get; set; }
+		
+		[ItemProperty ("IsCxx")]
+		public bool IsCxx { get; set; }
+		
+		[ItemProperty ("Kind")]
+		public NativeReferenceKind Kind { get; set; }
 		
 		public NativeReference ()
 		{
@@ -42,19 +53,35 @@ namespace MonoDevelop.MacDev.NativeReferences
 		
 		public NativeReference (FilePath path)
 		{
-			this.Path = path;
+			this.Name = path.FileNameWithoutExtension;
+			this.LibPath = path.ParentDirectory;
 		}
 		
 		public override bool Equals (object obj)
 		{
 			var nr = obj as NativeReference;
-			return nr != null && nr.Path == Path;
+			//fixme: check include paths too?
+			return nr != null && nr.Name == Name && nr.IsCxx == IsCxx && nr.Kind == Kind;
 		}
 		
 		public override int GetHashCode ()
 		{
-			return Path == null? 0 : Path.GetHashCode ();
+			int hash = 0;
+			if (Name != null)
+				hash ^= Name.GetHashCode ();
+			if (IsCxx != null)
+				hash ^= IsCxx.GetHashCode ();
+			if (Kind != null)
+				hash ^= Kind.GetHashCode ();
+			return hash;
 		}
+	}
+	
+	public enum NativeReferenceKind
+	{
+		Static,
+		Dynamic,
+		Framework
 	}
 	
 	public class NativeReferenceFolder
