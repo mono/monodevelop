@@ -64,6 +64,7 @@ namespace MonoDevelop.MacDev.NativeReferences
 		[LocalizedCategory ("Reference")]
 		[LocalizedDisplayName ("Path")]
 		[LocalizedDescription ("Path searched for the reference.")]
+		[MonoDevelop.Components.PropertyGrid.PropertyEditors.FilePathIsFolder]
 		public FilePath LibPath {
 			get { return nr.LibPath; }
 			set { nr.LibPath = value; }
