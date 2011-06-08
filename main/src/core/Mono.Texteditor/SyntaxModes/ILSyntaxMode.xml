@@ -423,7 +423,6 @@
 		<Word>.locals</Word>
 		<Word>.entrypoint</Word>
 		<Word>.zeroinit</Word>
-		<Word>.pdirect</Word>
 		<Word>.data</Word>
 
 		<Word>.event</Word>
@@ -488,7 +487,6 @@
 		<Word>nometadata</Word>
 		<Word>.hash</Word>
 		<Word>.assembly</Word>
-		<Word>implicitcom</Word>
 		<Word>.publickey</Word>
 		<Word>.publickeytoken</Word>
 		<Word>algorithm</Word>
@@ -497,9 +495,7 @@
 		<Word>.culture</Word>
 		<Word>extern</Word>
 		<Word>.export</Word>
-		<Word>.manifestres</Word>
 		<Word>.mresource</Word>
-		<Word>.localized</Word>
 		<Word>.module</Word>
 		
 		<!-- Field marshaling keywords -->
