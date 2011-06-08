@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public void AddTo (BlockStatement bodyStatement, AstNode insertNode)
 		{
 			var startOffset = Context.GetOffset (bodyStatement.LBraceToken.StartLocation) + 1;
-			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
+			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode, true);
 			Queue (Context.CreateNodeOutputAction (startOffset, 0, output));
 		}
 		
@@ -139,12 +139,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return level;
 		}
 		
-		NodeOutput OutputNode (int indentLevel, AstNode node)
+		NodeOutput OutputNode (int indentLevel, AstNode node, bool startWithNewLine = false)
 		{
 			NodeOutput result = new NodeOutput ();
 			var formatter = new StringBuilderOutputFormatter ();
 			formatter.Indentation = indentLevel;
 			formatter.EolMarker = Context.EolMarker;
+			if (startWithNewLine)
+				formatter.NewLine ();
 			var visitor = new OutputVisitor (formatter, Context.FormattingOptions);
 			visitor.OutputStarted += (sender, e) => {
 				result.NodeSegments [e.AstNode] = new NodeOutput.Segment (formatter.Length);

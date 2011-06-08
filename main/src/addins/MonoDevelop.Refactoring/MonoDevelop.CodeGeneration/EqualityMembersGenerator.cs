@@ -108,18 +108,18 @@ namespace MonoDevelop.CodeGeneration
 				ifStatement = new IfElseStatement ();
 				List<Expression> arguments = new List<Expression> ();
 				arguments.Add (new ThisReferenceExpression ());
-				arguments.Add (paramId);
+				arguments.Add (paramId.Clone ());
 				ifStatement.Condition = new InvocationExpression (new IdentifierExpression ("ReferenceEquals"), arguments);
 				ifStatement.TrueStatement = new ReturnStatement (new PrimitiveExpression (true));
 				methodDeclaration.Body.Statements.Add (ifStatement);
 
 				ifStatement = new IfElseStatement ();
-				ifStatement.Condition = new BinaryOperatorExpression (new InvocationExpression (new MemberReferenceExpression (paramId, "GetType")), BinaryOperatorType.InEquality, new TypeOfExpression (new SimpleType (Options.EnclosingType.Name)));
+				ifStatement.Condition = new BinaryOperatorExpression (new InvocationExpression (new MemberReferenceExpression (paramId.Clone (), "GetType")), BinaryOperatorType.InEquality, new TypeOfExpression (new SimpleType (Options.EnclosingType.Name)));
 				ifStatement.TrueStatement = new ReturnStatement (new PrimitiveExpression (false));
 				methodDeclaration.Body.Statements.Add (ifStatement);
 
 				AstType varType = new DomReturnType (Options.EnclosingType).ConvertToTypeReference ();
-				var varDecl = new VariableDeclarationStatement (varType, "other", new CastExpression (varType, paramId));
+				var varDecl = new VariableDeclarationStatement (varType, "other", new CastExpression (varType.Clone (), paramId.Clone ()));
 				methodDeclaration.Body.Statements.Add (varDecl);
 				
 				IdentifierExpression otherId = new IdentifierExpression ("other");
