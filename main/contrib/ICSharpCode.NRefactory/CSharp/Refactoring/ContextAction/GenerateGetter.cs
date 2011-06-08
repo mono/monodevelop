@@ -51,8 +51,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var initializer = GetVariableInitializer (context);
 			var field = initializer.Parent as FieldDeclaration;
-//			context.InsertionMode (GettextCatalog.GetString ("<b>Create getter -- Targeting</b>"), 
-//				() => context.OutputNode (GeneratePropertyDeclaration (context, field, initializer), context.GetIndentLevel (field)));
+			
+			using (var script = context.StartScript ()) {
+				script.InsertWithCursor ("Create getter", GeneratePropertyDeclaration (context, field, initializer), Script.InsertPosition.After);
+			}
 		}
 		
 		static PropertyDeclaration GeneratePropertyDeclaration (RefactoringContext context, FieldDeclaration field, VariableInitializer initializer)

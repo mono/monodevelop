@@ -42,9 +42,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public void Run (RefactoringContext context)
 		{
-//			var identifier = GetIdentifier (context);
-//			context.InsertionMode (GettextCatalog.GetString ("<b>Create field -- Targeting</b>"), 
-//				() => context.OutputNode (GenerateFieldDeclaration (context, identifier), context.GetIndentLevel (identifier) - 1));
+			var identifier = GetIdentifier (context);
+			
+			using (var script = context.StartScript ()) {
+				script.InsertWithCursor ("Create field", GenerateFieldDeclaration (context, identifier), Script.InsertPosition.Before);
+			}
 		}
 		
 		static AstNode GenerateFieldDeclaration (RefactoringContext context, IdentifierExpression identifier)

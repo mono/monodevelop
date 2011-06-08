@@ -41,9 +41,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public void Run (RefactoringContext context)
 		{
-//			var identifier = GetIdentifier (context);
-//			context.InsertionMode (GettextCatalog.GetString ("<b>Create property -- Targeting</b>"), 
-//				() => context.OutputNode (GeneratePropertyDeclaration (context, identifier), context.GetIndentLevel (identifier) - 1));
+			var identifier = GetIdentifier (context);
+			using (var script = context.StartScript ()) {
+				script.InsertWithCursor ("Create property", GeneratePropertyDeclaration (context, identifier), Script.InsertPosition.Before);
+			}
 		}
 		
 		AstNode GeneratePropertyDeclaration (RefactoringContext context, IdentifierExpression identifier)

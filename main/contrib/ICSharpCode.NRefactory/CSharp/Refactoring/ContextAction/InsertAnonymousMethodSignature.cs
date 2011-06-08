@@ -24,66 +24,71 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class InsertAnonymousMethodSignature : IContextAction
 	{
-		//TODO: Resolve
 		public bool IsValid (RefactoringContext context)
 		{
-			return false;
-//			IType type;
-//			return GetAnonymousMethodExpression (context, out type) != null;
+			ITypeDefinition type;
+			return GetAnonymousMethodExpression (context, out type) != null;
 		}
 		
 		public void Run (RefactoringContext context)
 		{
-//			IType type;
-//			var anonymousMethodExpression = GetAnonymousMethodExpression (context, out type);
-//			
-//			var delegateMethod = type.Methods.First ();
-//			
-//			var sb = new StringBuilder ("(");
-//			for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
-//				if (k > 0)
-//					sb.Append (", ");
-//				var parameterType = context.Document.Dom.GetType (delegateMethod.Parameters [k].ReturnType);
-//				IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters [k].ReturnType;
-//				sb.Append (context.OutputNode (ShortenTypeName (context.Document, returnType), 0));
-//				sb.Append (" ");
-//				sb.Append (delegateMethod.Parameters [k].Name);
-//			}
-//			sb.Append (")");
-//			
-//			context.DoInsert (context.Document.Editor.LocationToOffset (anonymousMethodExpression.DelegateToken.EndLocation.Line, anonymousMethodExpression.DelegateToken.EndLocation.Column), sb.ToString ());
+			ITypeDefinition type;
+			var anonymousMethodExpression = GetAnonymousMethodExpression (context, out type);
+			
+			var delegateMethod = type.Methods.First ();
+			
+			var sb = new StringBuilder ("(");
+			for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
+				if (k > 0)
+					sb.Append (", ");
+				
+				var paramType = delegateMethod.Parameters [k].Type;
+				
+				sb.Append (paramType.ToString ());
+				sb.Append (" ");
+				sb.Append (delegateMethod.Parameters [k].Name);
+			}
+			sb.Append (")");
+			
+			using (var script = context.StartScript ()) {
+				script.InsertText (context.GetOffset (anonymousMethodExpression.DelegateToken.EndLocation), sb.ToString ());
+			}
 		}
 		
-//		AnonymousMethodExpression GetAnonymousMethodExpression (RefactoringContext context, out IType delegateType)
-//		{
-//			delegateType = null;
-//			
-//			var anonymousMethodExpression = context.GetNode<AnonymousMethodExpression> ();
-//			if (anonymousMethodExpression == null || !anonymousMethodExpression.DelegateToken.Contains (context.Location.Line, context.Location.Column) || anonymousMethodExpression.HasParameterList)
-//				return null;
-//			MonoDevelop.Projects.Dom.ResolveResult resolveResult = null;
-//			var parent = anonymousMethodExpression.Parent;
-//			if (parent is AssignmentExpression) {
-//				resolveResult = context.Resolver.Resolve (((AssignmentExpression)parent).Left.ToString (), context.Location);
-//			} else if (parent is VariableDeclarationStatement) {
-//				resolveResult = context.Resolver.Resolve (((VariableDeclarationStatement)parent).Type.ToString (), context.Location);
-//			} else if (parent is InvocationExpression) {
-//				// TODO: handle invocations
-//			}
-//			
-//			if (resolveResult == null || resolveResult.ResolvedType == null)
-//				return null;
-//			delegateType = context.Document.Dom.GetType (resolveResult.ResolvedType);
-//			if (delegateType == null || delegateType.ClassType != ClassType.Delegate) 
-//				return null;
-//			
-//			return anonymousMethodExpression;
-//		}
+		static AnonymousMethodExpression GetAnonymousMethodExpression (RefactoringContext context, out ITypeDefinition delegateType)
+		{
+			delegateType = null;
+			
+			var anonymousMethodExpression = context.GetNode<AnonymousMethodExpression> ();
+			if (anonymousMethodExpression == null || !anonymousMethodExpression.DelegateToken.Contains (context.Location.Line, context.Location.Column) || anonymousMethodExpression.HasParameterList)
+				return null;
+			
+			AstType resolvedType = null;
+			var parent = anonymousMethodExpression.Parent;
+			if (parent is AssignmentExpression) {
+				resolvedType = context.ResolveType (((AssignmentExpression)parent).Left);
+			} else if (parent is VariableDeclarationStatement) {
+				resolvedType = context.ResolveType (((VariableDeclarationStatement)parent).Type);
+			} else if (parent is InvocationExpression) {
+				// TODO: handle invocations
+			}
+			
+			if (resolvedType == null)
+				return null;
+			delegateType = context.GetDefinition (resolvedType);
+			if (delegateType == null || delegateType.ClassType != ClassType.Delegate) 
+				return null;
+			
+			return anonymousMethodExpression;
+		}
 	}
 }
 

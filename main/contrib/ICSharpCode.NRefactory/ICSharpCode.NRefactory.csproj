@@ -362,7 +362,6 @@
     <Compile Include="CSharp\Parser\mcs\async.cs" />
     <Compile Include="CSharp\Refactoring\RefactoringContext.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\IntroduceFormatItem.cs" />
-    <Compile Include="CSharp\Refactoring\StringBuilderOutputFormatter.cs" />
     <Compile Include="CSharp\Refactoring\Action.cs" />
     <Compile Include="CSharp\Refactoring\Script.cs" />
     <Compile Include="CSharp\Refactoring\IActionFactory.cs" />

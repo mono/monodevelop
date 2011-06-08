@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -51,6 +52,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public abstract AstType CreateShortType (AstType fullType);
 		
 		public abstract AstType CreateShortType (string fullTypeName);
+
+		public abstract ITypeDefinition GetDefinition (AstType resolvedType);
 		
 		public AstNode GetNode ()
 		{

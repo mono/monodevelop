@@ -55,8 +55,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			pdecl.AddChild (accessor, pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole);
 			
 			using (var script = context.StartScript ()) {
-				script.Select (accessorStatement);
 				script.InsertBefore (pdecl.RBraceToken, accessor);
+				script.Select (accessorStatement);
 				script.FormatText (ctx => GetPropertyDeclaration (context));
 			}
 		}

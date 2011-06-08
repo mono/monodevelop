@@ -222,7 +222,6 @@ FILES =  \
 	CSharp/Refactoring/NodeSelectionAction.cs \
 	CSharp/Refactoring/RefactoringContext.cs \
 	CSharp/Refactoring/Script.cs \
-	CSharp/Refactoring/StringBuilderOutputFormatter.cs \
 	CSharp/Refactoring/TextReplaceAction.cs \
 	CSharp/Resolver/AliasNamespaceReference.cs \
 	CSharp/Resolver/AmbiguousResolveResult.cs \

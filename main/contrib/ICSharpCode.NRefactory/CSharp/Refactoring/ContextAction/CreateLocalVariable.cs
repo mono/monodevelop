@@ -71,20 +71,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public void Run (RefactoringContext context)
 		{
-//			var stmt = context.GetNode<Statement> ();
-//			var unresolvedArguments = GetUnresolvedArguments (context);
-//			if (unresolvedArguments.Count > 0) {
-//				foreach (var id in unresolvedArguments) {
-//					context.DoInsert (context.Document.Editor.LocationToOffset (stmt.StartLocation.Line, 1), 
-//						context.OutputNode (GenerateLocalVariableDeclaration (context, id), context.GetIndentLevel (stmt)) + context.Document.Editor.EolMarker);
-//				}
-//				return;
-//			}
-//			
-//			var identifier = GetIdentifier (context);
-//			
-//			context.DoInsert (context.Document.Editor.LocationToOffset (stmt.StartLocation.Line, 1), 
-//				context.OutputNode (GenerateLocalVariableDeclaration (context, identifier), context.GetIndentLevel (stmt)) + context.Document.Editor.EolMarker);
+			var stmt = context.GetNode<Statement> ();
+			var unresolvedArguments = GetUnresolvedArguments (context);
+			if (unresolvedArguments.Count > 0) {
+				using (var script = context.StartScript ()) {
+					foreach (var id in unresolvedArguments) {
+						script.InsertBefore (stmt, GenerateLocalVariableDeclaration (context, id));
+					}
+				}
+				return;
+			}
+			
+			using (var script = context.StartScript ()) {
+				script.InsertBefore (stmt, GenerateLocalVariableDeclaration (context, CreateField.GetIdentifier (context)));
+			}
 		}
 		
 		AstNode GenerateLocalVariableDeclaration (RefactoringContext context, IdentifierExpression identifier)

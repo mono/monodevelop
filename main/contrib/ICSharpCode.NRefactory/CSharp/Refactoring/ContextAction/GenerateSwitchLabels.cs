@@ -24,60 +24,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class GenerateSwitchLabels : IContextAction
 	{
-		// TODO: Resolver!
-		
 		public bool IsValid (RefactoringContext context)
 		{
-			return false;
-//			var switchStatement = GetSwitchStatement (context);
-//			if (switchStatement == null)
-//				return false;
-//			var resolver = context.Resolver;
-//			var result = resolver.Resolve (switchStatement.Expression.ToString (), new DomLocation (switchStatement.StartLocation.Line, switchStatement.StartLocation.Column));
-//			if (result == null || result.ResolvedType == null)
-//				return false;
-//			var type = context.Document.Dom.GetType (result.ResolvedType);
-//			
-//			return type != null && type.ClassType == ClassType.Enum;
+			var switchStatement = GetSwitchStatement (context);
+			if (switchStatement == null)
+				return false;
+			var result = context.ResolveType (switchStatement.Expression);
+			if (result == null)
+				return false;
+			var type = context.GetDefinition (result);
+			return type != null && type.ClassType == ClassType.Enum;
 		}
 		
 		public void Run (RefactoringContext context)
 		{
-//			var switchStatement = GetSwitchStatement (context);
-//			var resolver = context.Resolver;
-//			
-//			var result = resolver.Resolve (switchStatement.Expression.ToString (), new DomLocation (switchStatement.StartLocation.Line, switchStatement.StartLocation.Column));
-//			var type = context.Document.Dom.GetType (result.ResolvedType);
-//			
-//			var target = new TypeReferenceExpression (ShortenTypeName (context.Document, result.ResolvedType));
-//			foreach (var field in type.Fields) {
-//				if (!(field.IsLiteral || field.IsConst))
-//					continue;
-//				switchStatement.SwitchSections.Add (new SwitchSection () {
-//					CaseLabels = {
-//						new CaseLabel (new MemberReferenceExpression ( target.Clone (), field.Name))
-//					},
-//					Statements = {
-//						new BreakStatement ()
-//					}
-//				});
-//			}
-//			
-//			switchStatement.SwitchSections.Add (new SwitchSection () {
-//				CaseLabels = {
-//					new CaseLabel ()
-//				},
-//				Statements = {
-//					new ThrowStatement (new ObjectCreateExpression (ShortenTypeName (context.Document, "System.ArgumentOutOfRangeException")))
-//				}
-//			});
-//			
-//			context.Do (switchStatement.Replace (context.Document, switchStatement));
+			var switchStatement = GetSwitchStatement (context);
+			
+			var result = context.ResolveType (switchStatement.Expression);
+			var type = context.GetDefinition (result);
+			
+			var newSwitch = (SwitchStatement)switchStatement.Clone ();
+			
+			var target = new TypeReferenceExpression (context.CreateShortType (result));
+			foreach (var field in type.Fields) {
+				if (field.IsSynthetic || !field.IsConst)
+					continue;
+				newSwitch.SwitchSections.Add (new SwitchSection () {
+					CaseLabels = {
+						new CaseLabel (new MemberReferenceExpression (target.Clone (), field.Name))
+					},
+					Statements = {
+						new BreakStatement ()
+					}
+				});
+			}
+			
+			newSwitch.SwitchSections.Add (new SwitchSection () {
+				CaseLabels = {
+					new CaseLabel ()
+				},
+				Statements = {
+					new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.ArgumentOutOfRangeException")))
+				}
+			});
+			
+			using (var script = context.StartScript ()) {
+				script.Replace (switchStatement, newSwitch);
+			}
 		}
 		
 		static SwitchStatement GetSwitchStatement (RefactoringContext context)
@@ -89,4 +88,3 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 	}
 }
-

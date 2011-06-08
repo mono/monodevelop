@@ -126,6 +126,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			Queue (Context.CreateNodeSelectionAction (node));
 		}
+		
+		public enum InsertPosition {
+			Start,
+			Before,
+			After,
+			End
+		}
+		
+		public abstract void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition);
 
 		int GetIndentLevelAt (int offset)
 		{
@@ -142,17 +151,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		NodeOutput OutputNode (int indentLevel, AstNode node, bool startWithNewLine = false)
 		{
 			NodeOutput result = new NodeOutput ();
-			var formatter = new StringBuilderOutputFormatter ();
+			var stringWriter = new System.IO.StringWriter ();
+			var formatter = new TextWriterOutputFormatter (stringWriter);
 			formatter.Indentation = indentLevel;
-			formatter.EolMarker = Context.EolMarker;
+			stringWriter.NewLine = Context.EolMarker;
 			if (startWithNewLine)
 				formatter.NewLine ();
 			var visitor = new OutputVisitor (formatter, Context.FormattingOptions);
 			visitor.OutputStarted += (sender, e) => {
-				result.NodeSegments [e.AstNode] = new NodeOutput.Segment (formatter.Length);
+				result.NodeSegments [e.AstNode] = new NodeOutput.Segment (stringWriter.GetStringBuilder ().Length);
 			};
 			visitor.OutputFinished += (sender, e) => {
-				result.NodeSegments [e.AstNode].EndOffset = formatter.Length;
+				result.NodeSegments [e.AstNode].EndOffset = stringWriter.GetStringBuilder ().Length;
 			};
 			node.AcceptVisitor (visitor, null);
 			result.Text = formatter.ToString ().TrimEnd ();
