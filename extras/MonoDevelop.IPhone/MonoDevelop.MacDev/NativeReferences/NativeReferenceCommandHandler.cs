@@ -79,7 +79,7 @@ namespace MonoDevelop.MacDev.NativeReferences
 		{
 			var item = (NativeReference) CurrentNode.DataItem;
 			string question = GettextCatalog.GetString (
-				"Are you sure you want to remove the native reference '{0}'?", item.Name);
+				"Are you sure you want to remove the native reference '{0}'?", item.Path.FileNameWithoutExtension);
 			
 			if (!MessageService.Confirm (question, AlertButton.Remove))
 				return;

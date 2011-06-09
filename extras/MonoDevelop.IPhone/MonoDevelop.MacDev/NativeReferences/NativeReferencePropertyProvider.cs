@@ -57,17 +57,16 @@ namespace MonoDevelop.MacDev.NativeReferences
 		[LocalizedDisplayName ("Name")]
 		[LocalizedDescription ("Name of the reference.")]
 		public string Name {
-			get { return nr.Name; }
-			set { nr.Name = value; }
+			get { return nr.Path.FileNameWithoutExtension; }
 		}
 		
 		[LocalizedCategory ("Reference")]
 		[LocalizedDisplayName ("Path")]
-		[LocalizedDescription ("Path searched for the reference.")]
+		[LocalizedDescription ("Path of the reference.")]
 		[MonoDevelop.Components.PropertyGrid.PropertyEditors.FilePathIsFolder]
 		public FilePath LibPath {
-			get { return nr.LibPath; }
-			set { nr.LibPath = value; }
+			get { return nr.Path; }
+			set { nr.Path = value; }
 		}
 		
 		[LocalizedCategory ("Reference")]
@@ -85,11 +84,5 @@ namespace MonoDevelop.MacDev.NativeReferences
 			get { return nr.Kind; }
 			set { nr.Kind = value; }
 		}
-		
-		protected override bool IsReadOnly (string propertyName)
-		{
-			return false;
-		}
 	}
 }
-

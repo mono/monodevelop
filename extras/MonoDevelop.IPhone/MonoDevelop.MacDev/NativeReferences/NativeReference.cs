@@ -35,11 +35,8 @@ namespace MonoDevelop.MacDev.NativeReferences
 	[DataItem]
 	public class NativeReference : ProjectItem
 	{
-		[ItemProperty ("Include")]
-		public string Name { get; set; }
-		
-		[ProjectPathItemProperty ("LibPath", Scope="*")]
-		public FilePath LibPath { get; set; }
+		[ProjectPathItemProperty ("Include")]
+		public FilePath Path { get; set; }
 		
 		[ItemProperty ("IsCxx")]
 		public bool IsCxx { get; set; }
@@ -53,22 +50,32 @@ namespace MonoDevelop.MacDev.NativeReferences
 		
 		public NativeReference (FilePath path)
 		{
-			this.Name = path.FileNameWithoutExtension;
-			this.LibPath = path.ParentDirectory;
+			this.Path = path;
+			switch (path.Extension) {
+			case ".a":
+				Kind = NativeReferenceKind.Static;
+				break;
+			case ".framework":
+				Kind = NativeReferenceKind.Framework;
+				break;
+			case ".lib":
+				Kind = NativeReferenceKind.Dynamic;
+				break;
+			}
 		}
 		
 		public override bool Equals (object obj)
 		{
 			var nr = obj as NativeReference;
 			//fixme: check include paths too?
-			return nr != null && nr.Name == Name && nr.IsCxx == IsCxx && nr.Kind == Kind;
+			return nr != null && nr.Path == Path && nr.IsCxx == IsCxx && nr.Kind == Kind;
 		}
 		
 		public override int GetHashCode ()
 		{
 			int hash = 0;
-			if (Name != null)
-				hash ^= Name.GetHashCode ();
+			if (Path != null)
+				hash ^= Path.GetHashCode ();
 			if (IsCxx != null)
 				hash ^= IsCxx.GetHashCode ();
 			if (Kind != null)
