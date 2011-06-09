@@ -123,7 +123,7 @@
 	
 	<Style name="bubble">
 		<Style name="warning" color="black" bgColor="#f4eeda"/>
-		<Style name="error" color="black" bgColor="#ead5d4"/>
+		<Style name="error" color="black" bgColor="#f5eae7"/>
 	</Style>
 
 	<Style name="linenumber" color="aluminium4" bgColor="#FDFDFF">
