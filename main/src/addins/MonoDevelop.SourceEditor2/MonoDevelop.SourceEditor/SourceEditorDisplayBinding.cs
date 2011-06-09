@@ -35,6 +35,8 @@ namespace MonoDevelop.SourceEditor
 {
 	public class SourceEditorDisplayBinding : IViewDisplayBinding
 	{
+		static bool IsInitialized = false;
+
 		public static FilePath SyntaxModePath {
 			get {
 				return PropertyService.DataPath.Combine ("HighlightingSchemes");
@@ -43,6 +45,15 @@ namespace MonoDevelop.SourceEditor
 		
 		static SourceEditorDisplayBinding ()
 		{
+			InitSourceEditor ();
+		}
+
+		public static void InitSourceEditor ()
+		{
+			if (IsInitialized)
+				return;
+			IsInitialized = true;
+			
 			MonoDevelop.SourceEditor.Extension.TemplateExtensionNodeLoader.Init ();
 			DefaultSourceEditorOptions.Init ();
 			SyntaxModeService.EnsureLoad ();

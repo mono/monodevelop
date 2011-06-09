@@ -37,6 +37,12 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		CSharpFormattingPolicyPanelWidget panel;
 		
+		static CSharpFormattingPolicyPanel ()
+		{
+			// ensure that custom text editor shemes are loaded.
+			MonoDevelop.SourceEditor.SourceEditorDisplayBinding.InitSourceEditor ();
+		}
+		
 		public override Widget CreatePanelWidget ()
 		{
 			return panel = new CSharpFormattingPolicyPanelWidget ();
