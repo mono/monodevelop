@@ -384,6 +384,17 @@ namespace MonoDevelop.CSharp.Inspection
 			data.Add (GetFixableResult (node.Identifiers.First ().StartLocation, null, name));
 			return true;
 		}
+
+		bool NoUnderscoreWithoutNumber (string id)
+		{
+			int idx = id.IndexOf ('_');
+			while (idx >= 0 && idx < id.Length) {
+				if ((idx + 2 >= id.Length || !char.IsDigit (id[idx+1])) && (idx == 0 || !char.IsDigit (id[idx-1])))
+					return false;
+				idx = id.IndexOf ('_', idx + 1);
+			}
+			return true;
+		}
 		
 		public string GetPreview ()
 		{
@@ -443,9 +454,9 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.AllUpper:
 				return !id.Any (ch => char.IsLetter (ch) && char.IsLower (ch));
 			case NamingStyle.CamelCase:
-				return id.Length == 0 || (char.IsLower (id [0]) && id.IndexOf ('_') < 0);
+				return id.Length == 0 || (char.IsLower (id [0]) && NoUnderscoreWithoutNumber (id));
 			case NamingStyle.PascalCase:
-				return id.Length == 0 || (char.IsUpper (id [0]) && id.IndexOf ('_') < 0);
+				return id.Length == 0 || (char.IsUpper (id [0]) && NoUnderscoreWithoutNumber (id));
 			case NamingStyle.FirstUpper:
 				return id.Length == 0 && char.IsUpper (id [0]) && !id.Skip (1).Any (ch => char.IsLetter (ch) && char.IsUpper (ch));
 			}
@@ -518,7 +529,7 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.CamelCase:
 				if (id.Length > 0 && char.IsUpper (id [0])) {
 					errorMessage = GettextCatalog.GetString ("'{0}' should start with a lower case letter.", name);
-				} else if (id.IndexOf ('_') >= 0) {
+				} else if (!NoUnderscoreWithoutNumber (id)) {
 					errorMessage = GettextCatalog.GetString ("'{0}' should not separate words with an underscore.", name);
 				} else {
 					suggestedNames.Add (id);
@@ -529,7 +540,7 @@ namespace MonoDevelop.CSharp.Inspection
 			case NamingStyle.PascalCase:
 				if (id.Length > 0 && char.IsLower (id [0])) {
 					errorMessage = GettextCatalog.GetString ("'{0}' should start with an upper case letter.", name);
-				} else if (id.IndexOf ('_') >= 0) {
+				} else if (!NoUnderscoreWithoutNumber (id)) {
 					errorMessage = GettextCatalog.GetString ("'{0}' should not separate words with an underscore.", name);
 				} else {
 					suggestedNames.Add (id);
@@ -624,6 +635,8 @@ namespace MonoDevelop.CSharp.Inspection
 			var sb = new StringBuilder ();
 			sb.Append (words[0].ToLower ());
 			for (int i = 1; i < words.Count; i++) {
+				if (sb.Length > 0 && (char.IsDigit (sb[sb.Length-1]) || char.IsDigit (words[i][0])))
+					sb.Append ('_');
 				AppendCapitalized (words[i], sb);
 			}
 			return sb.ToString ();
@@ -633,6 +646,8 @@ namespace MonoDevelop.CSharp.Inspection
 		{
 			var sb = new StringBuilder ();
 			for (int i = 0; i < words.Count; i++) {
+				if (sb.Length > 0 && (char.IsDigit (sb[sb.Length-1]) || char.IsDigit (words[i][0])))
+					sb.Append ('_');
 				AppendCapitalized (words[i], sb);
 			}
 			return sb.ToString ();
