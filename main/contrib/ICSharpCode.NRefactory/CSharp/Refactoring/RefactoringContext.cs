@@ -69,7 +69,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public abstract ITypeDefinition GetDefinition (AstType resolvedType);
 
-		public abstract void ReplaceReferences (IMember member, MemberDeclaration member);
+		public abstract void ReplaceReferences (IMember member, MemberDeclaration replaceWidth);
 		
 		public AstNode GetNode ()
 		{
