@@ -107,15 +107,23 @@ namespace MonoDevelop.WelcomePage
 		{
 			string localCachedNewsFile = NewsFile;
 			
-			Stream stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("WelcomePageContent.xml");
-			XmlDocument contentDoc = new XmlDocument ();
-			using (XmlTextReader reader = new XmlTextReader (stream))
+			//allow DTD but not try to resolve it from web
+			var settings = new XmlReaderSettings () {
+				CloseInput = true,
+				ProhibitDtd = false,
+				XmlResolver = null,
+			};
+			
+			var stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("WelcomePageContent.xml");
+			var contentDoc = new XmlDocument ();
+			using (var reader = XmlReader.Create (stream, settings))
 				contentDoc.Load (reader);
 			
 			try {
 				if (File.Exists (localCachedNewsFile)) {
-					XmlDocument updateDoc = new XmlDocument (); 
-					using (XmlTextReader reader = new XmlTextReader (localCachedNewsFile))
+					var updateDoc = new XmlDocument ();
+
+					using (var reader = XmlReader.Create (localCachedNewsFile, settings))
 						updateDoc.Load (reader);
 					
 					XmlNode oNodeWhereInsert =
