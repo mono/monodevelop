@@ -393,6 +393,7 @@
     <Compile Include="CSharp\Refactoring\ContextAction\GenerateGetter.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\CreateEventInvocator.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\RemoveBackingStore.cs" />
+    <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

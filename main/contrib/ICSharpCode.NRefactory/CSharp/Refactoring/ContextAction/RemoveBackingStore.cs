@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -31,36 +33,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public bool  IsValid (RefactoringContext context)
 		{
-			return false;
-//			return GetBackingField (context) != null;
+			return GetBackingField (context) != null;
 		}
 		
 		public void Run (RefactoringContext context)
 		{
-//			var property = context.GetNode<PropertyDeclaration> ();
-//			var field = GetBackingField (context);
-//			
-//			RemoveBackingField (context, field);
-//			ReplaceBackingFieldReferences (context, field, property);
-//			
-//			// create new auto property 
-//			var newProperty = (PropertyDeclaration)property.Clone ();	
-//			newProperty.Getter.Body = BlockStatement.Null;
-//			newProperty.Setter.Body = BlockStatement.Null;
-//			
-//			context.Do (property.Replace (context.Document, context.OutputNode (newProperty, context.GetIndentLevel (property)).Trim ()));
+			var property = context.GetNode<PropertyDeclaration> ();
+			var field = GetBackingField (context);
+			
+			context.ReplaceReferences (field, property);
+			
+			// create new auto property 
+			var newProperty = (PropertyDeclaration)property.Clone ();	
+			newProperty.Getter.Body = BlockStatement.Null;
+			newProperty.Setter.Body = BlockStatement.Null;
+			
+			using (var script = context.StartScript ()) {
+				script.Remove (context.Unit.GetNodeAt<FieldDeclaration> (field.Region.BeginLine, field.Region.BeginColumn));
+				script.Replace (property, newProperty);
+			}
+			
 		}
 		
-//		void RemoveBackingField (MDRefactoringContext context, IField backingField)
-//		{
-//			FieldDeclaration field = context.Unit.GetNodeAt<FieldDeclaration> (backingField.Location.Line, backingField.Location.Column);
-//			
-//			var startLine = context.Document.Editor.GetLine (field.StartLocation.Line);
-//			var endLine = context.Document.Editor.GetLine (field.EndLocation.Line);
-//			
-//			context.DoRemove (startLine.Offset, endLine.EndOffset - startLine.Offset);
-//		}
-//		
 //		void ReplaceBackingFieldReferences (MDRefactoringContext context, IField backingStore, PropertyDeclaration property)
 //		{
 //			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
@@ -79,52 +73,50 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 //			}
 //		}
 //		
-//		IField GetBackingField (MDRefactoringContext context)
-//		{
-//			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
-//			// automatic properties always need getter & setter
-//			if (propertyDeclaration == null || propertyDeclaration.Getter.IsNull || propertyDeclaration.Setter.IsNull || propertyDeclaration.Getter.Body.IsNull || propertyDeclaration.Setter.Body.IsNull)
-//				return null;
-//			if (!context.HasCSharp3Support || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
-//				return null;
-//			var getterField = ScanGetter (context, propertyDeclaration);
-//			if (getterField == null)
-//				return null;
-//			var setterField = ScanSetter (context, propertyDeclaration);
-//			if (setterField == null)
-//				return null;
-//			if (getterField.Location != setterField.Location)
-//				return null;
-//			return getterField;
-//		}
-//		
-//		internal static IField ScanGetter (MDRefactoringContext context, PropertyDeclaration propertyDeclaration)
-//		{
-//			if (propertyDeclaration.Getter.Body.Statements.Count != 1)
-//				return null;
-//			var returnStatement = propertyDeclaration.Getter.Body.Statements.First () as ReturnStatement;
-//			
-//			var result = returnStatement.Expression.Resolve (context.Document) as MemberResolveResult;
-//			Console.WriteLine (returnStatement.Expression.Resolve (context.Document));
-//			if (result == null)
-//				return null;
-//			return result.ResolvedMember as IField;
-//		}
-//		
-//		internal static IField ScanSetter (MDRefactoringContext context, PropertyDeclaration propertyDeclaration)
-//		{
-//			if (propertyDeclaration.Setter.Body.Statements.Count != 1)
-//				return null;
-//			var setAssignment = propertyDeclaration.Setter.Body.Statements.First () as ExpressionStatement;
-//			var assignment = setAssignment != null ? setAssignment.Expression as AssignmentExpression : null;
-//			if (assignment == null || assignment.Operator != AssignmentOperatorType.Assign)
-//				return null;
-//			var result = assignment.Left.Resolve (context.Document) as MemberResolveResult;
-//			if (result == null)
-//				return null;
-//			return result.ResolvedMember as IField;
-//			
-//		}
+		static IField GetBackingField (RefactoringContext context)
+		{
+			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
+			// automatic properties always need getter & setter
+			if (propertyDeclaration == null || propertyDeclaration.Getter.IsNull || propertyDeclaration.Setter.IsNull || propertyDeclaration.Getter.Body.IsNull || propertyDeclaration.Setter.Body.IsNull)
+				return null;
+			if (!context.HasCSharp3Support || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
+				return null;
+			var getterField = ScanGetter (context, propertyDeclaration);
+			if (getterField == null)
+				return null;
+			var setterField = ScanSetter (context, propertyDeclaration);
+			if (setterField == null)
+				return null;
+			if (getterField.Region != setterField.Region)
+				return null;
+			return getterField;
+		}
+		
+		internal static IField ScanGetter (RefactoringContext context, PropertyDeclaration propertyDeclaration)
+		{
+			if (propertyDeclaration.Getter.Body.Statements.Count != 1)
+				return null;
+			var returnStatement = propertyDeclaration.Getter.Body.Statements.First () as ReturnStatement;
+			
+			var result = context.ResolveMember (returnStatement.Expression);
+			if (result == null)
+				return null;
+			return result.FirstOrDefault () as IField;
+		}
+		
+		internal static IField ScanSetter (RefactoringContext context, PropertyDeclaration propertyDeclaration)
+		{
+			if (propertyDeclaration.Setter.Body.Statements.Count != 1)
+				return null;
+			var setAssignment = propertyDeclaration.Setter.Body.Statements.First () as ExpressionStatement;
+			var assignment = setAssignment != null ? setAssignment.Expression as AssignmentExpression : null;
+			if (assignment == null || assignment.Operator != AssignmentOperatorType.Assign)
+				return null;
+			var result = context.ResolveMember (assignment.Left);
+			if (result == null)
+				return null;
+			return result.FirstOrDefault () as IField;
+		}
 	}
 }
 

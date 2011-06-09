@@ -63,18 +63,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		static Statement BuildAccessorStatement (RefactoringContext context, PropertyDeclaration pdecl)
 		{
-// TODO:
-//			if (pdecl.Setter.IsNull && !pdecl.Getter.IsNull) {
-//				var field = RemoveBackingStore.ScanGetter (context, pdecl);
-//				if (field != null) 
-//					return new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (field.Name), AssignmentOperatorType.Assign, new IdentifierExpression ("value")));
-//			}
-//			
-//			if (!pdecl.Setter.IsNull && pdecl.Getter.IsNull) {
-//				var field = RemoveBackingStore.ScanSetter (context, pdecl);
-//				if (field != null) 
-//					return new ReturnStatement (new IdentifierExpression (field.Name));
-//			}
+			if (pdecl.Setter.IsNull && !pdecl.Getter.IsNull) {
+				var field = RemoveBackingStore.ScanGetter (context, pdecl);
+				if (field != null) 
+					return new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (field.Name), AssignmentOperatorType.Assign, new IdentifierExpression ("value")));
+			}
+			
+			if (!pdecl.Setter.IsNull && pdecl.Getter.IsNull) {
+				var field = RemoveBackingStore.ScanSetter (context, pdecl);
+				if (field != null) 
+					return new ReturnStatement (new IdentifierExpression (field.Name));
+			}
 			
 			return new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.NotImplementedException")));
 		}

@@ -150,7 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		protected NodeOutput OutputNode (int indentLevel, AstNode node, bool startWithNewLine = false)
 		{
-			NodeOutput result = new NodeOutput ();
+			var result = new NodeOutput ();
 			var stringWriter = new System.IO.StringWriter ();
 			var formatter = new TextWriterOutputFormatter (stringWriter);
 			formatter.Indentation = indentLevel;

@@ -27,6 +27,7 @@ using System;
 using ICSharpCode.NRefactory.PatternMatching;
 using System.Linq;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -99,17 +100,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return context.GetNode<InvocationExpression> ();
 		}
-
+		
 		AstType GuessType (RefactoringContext context, IdentifierExpression identifier)
 		{
-			AstType type = CreateField.GuessType (context, identifier);
+			var type = CreateField.GuessType (context, identifier);
 			if (type != null)
 				return type;
-			/*TODO:
+			
 			if (identifier != null && (identifier.Parent is InvocationExpression || identifier.Parent.Parent is InvocationExpression)) {
 				var invocation = (identifier.Parent as InvocationExpression) ?? (identifier.Parent.Parent as InvocationExpression);
-				var result = context.Resolve (invocation) as MethodResolveResult;
-				if (result == null || result.ResolvedType == null || string.IsNullOrEmpty (result.ResolvedType.FullName))
+				var result = context.ResolveMember (invocation).FirstOrDefault () as IMethod;
+				if (result == null)
 					return null;
 				int i = 0;
 				foreach (var arg in invocation.Arguments) {
@@ -117,10 +118,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						break;
 					i++;
 				}
-				if (result.MostLikelyMethod == null || result.MostLikelyMethod.Parameters == null || result.MostLikelyMethod.Parameters.Count < i)
+				if (result.Parameters.Count < i)
 					return null;
-				return ShortenTypeName (context.Document, result.MostLikelyMethod.Parameters[i].ReturnType);
-			}*/
+				return context.CreateShortType (result.Parameters[i].Type.Resolve (context.TypeResolveContext));
+			}
 			return null;
 		}
 	}

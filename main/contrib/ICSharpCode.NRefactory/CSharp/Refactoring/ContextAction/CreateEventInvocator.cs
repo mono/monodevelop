@@ -26,6 +26,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -53,29 +54,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return;
 			
 			bool hasSenderParam = false;
-			// TODO:
-/*			var pars = invokeMethod.Parameters;
+			IEnumerable<IParameter> pars = invokeMethod.Parameters;
 			if (invokeMethod.Parameters.Any ()) {
 				var first = invokeMethod.Parameters [0];
-				if (first.Name == "sender" && first.Type.FullName == "System.Object") {
+				if (first.Name == "sender" /*&& first.Type == "System.Object"*/) {
 					hasSenderParam = true;
 					pars = invokeMethod.Parameters.Skip (1);
 				}
 			}
-			
-			foreach (var par in pars) {
-				var typeName = ShortenTypeName (context.Document, par.ReturnType);
-				var decl = new ParameterDeclaration (typeName, par.Name);
-				methodDeclaration.Parameters.Add (decl);
-			}*/
-			
 			const string handlerName = "handler";
 					
 			var arguments = new List<Expression> ();
 			if (hasSenderParam)
 				arguments.Add (new ThisReferenceExpression ());
-//			foreach (var par in pars)
-//				arguments.Add (new IdentifierExpression (par.Name));
+			foreach (var par in pars)
+				arguments.Add (new IdentifierExpression (par.Name));
 			
 			var methodDeclaration = new MethodDeclaration () {
 				Name = "On" + initializer.Name,
@@ -89,6 +82,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 				}
 			};
+			
+			foreach (var par in pars) {
+				var typeName = context.CreateShortType (par.Type.Resolve (context.TypeResolveContext));
+				var decl = new ParameterDeclaration (typeName, par.Name);
+				methodDeclaration.Parameters.Add (decl);
+			}
 			
 			using (var script = context.StartScript ()) {
 				script.InsertWithCursor ("Create event invocator", methodDeclaration, Script.InsertPosition.After);

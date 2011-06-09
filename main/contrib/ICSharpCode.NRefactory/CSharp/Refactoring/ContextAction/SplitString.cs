@@ -35,7 +35,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return false;
 			var pexpr = context.GetNode<PrimitiveExpression> ();
 			if (pexpr == null || !(pexpr.Value is string))
-
 				return false;
 			if (pexpr.LiteralValue.StartsWith ("@"))
 				return pexpr.StartLocation < new AstLocation (context.Location.Line, context.Location.Column - 2) &&

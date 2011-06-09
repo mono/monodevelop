@@ -225,6 +225,7 @@ FILES =  \
 	CSharp/Refactoring/RefactoringContext.cs \
 	CSharp/Refactoring/Script.cs \
 	CSharp/Refactoring/TextReplaceAction.cs \
+	CSharp/Refactoring/TypeSystemAstBuilder.cs \
 	CSharp/Resolver/AliasNamespaceReference.cs \
 	CSharp/Resolver/AmbiguousResolveResult.cs \
 	CSharp/Resolver/ByReferenceResolveResult.cs \
