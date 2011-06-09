@@ -165,7 +165,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				result.NodeSegments [e.AstNode].EndOffset = stringWriter.GetStringBuilder ().Length;
 			};
 			node.AcceptVisitor (visitor, null);
-			result.Text = formatter.ToString ().TrimEnd ();
+			result.Text = stringWriter.ToString ().TrimEnd ();
 			if (node is FieldDeclaration)
 				result.Text += Context.EolMarker;
 

@@ -33,6 +33,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -54,6 +57,31 @@ namespace MonoDevelop.CSharp.ContextAction
 				default:
 					return true;
 				}
+			}
+		}
+		
+		SimpleProjectContent content;
+		public override ITypeResolveContext TypeResolveContext {
+			get {
+				return new SimpleProjectContent ();
+/*				if (content == null) {
+					content = new SimpleProjectContent ();
+					var newTypes = new List<ITypeDefinition> ();
+					
+					foreach (var file in Document.Project.Files) {
+						if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
+							continue;
+						var visitor = new TypeSystemConvertVisitor (content, file.FilePath);
+						CSharpParser parser = new CSharpParser ();
+						using (var stream = System.IO.File.OpenRead (file.FilePath)) {
+							var unit = parser.Parse (stream);
+							unit.AcceptVisitor (visitor, null);
+						}
+						Console.WriteLine (file.FilePath + ": add:" + visitor.ParsedFile.TopLevelTypeDefinitions.Count);
+						content.UpdateProjectContent (null, visitor.ParsedFile.TopLevelTypeDefinitions, null, null);
+					}
+				}
+				return content;*/
 			}
 		}
 		
@@ -412,10 +440,50 @@ namespace MonoDevelop.CSharp.ContextAction
 			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, resolveResult.ResolvedType);
 		}
 		
+		
+		ParsedFile ParsedFile {
+			get {
+				var visitor = new TypeSystemConvertVisitor ((IProjectContent) TypeResolveContext, Document.FileName);
+				Unit.AcceptVisitor (visitor, null);
+				return visitor.ParsedFile;
+			}
+		}
+		
+		public override IEnumerable<ICSharpCode.NRefactory.TypeSystem.IMember> ResolveMember (Expression expression)
+		{
+			var pf = ParsedFile;
+			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
+			var navigator = new NodeListResolveVisitorNavigator (new[] { expression });
+			
+			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, pf, navigator);
+		
+			visitor.VisitCompilationUnit (Unit, null);
+			var resolveResult = visitor.Resolve (expression);
+			if (resolveResult == null)
+				yield break;
+			if (resolveResult is MemberResolveResult) {
+				yield return ((MemberResolveResult)resolveResult).Member;
+			} else if (resolveResult is MethodGroupResolveResult) {
+				var mgg = (MethodGroupResolveResult)resolveResult;
+				foreach (var m in mgg.Methods)
+					yield return m;
+			}
+		}
+		
+		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, MemberDeclaration replaceWidth)
+		{
+			// TODO
+		}
+		
 		public override ICSharpCode.NRefactory.TypeSystem.ITypeDefinition GetDefinition (AstType resolvedType)
 		{
-			// TODO: Implement get type definition.
-			return null;
+			var rr = Resolve (resolvedType);
+			if (rr == null)
+				return null;
+			var type = Document.Dom.GetType (rr.ResolvedType);
+			if (type == null)
+				return null;
+			return TypeResolveContext.GetClass (type.Namespace, type.Name, type.TypeParameters.Count, StringComparer.InvariantCulture);
 		}
 		
 		/*
