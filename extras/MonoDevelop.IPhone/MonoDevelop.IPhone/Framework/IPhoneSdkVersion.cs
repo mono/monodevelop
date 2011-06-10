@@ -40,7 +40,7 @@ namespace MonoDevelop.IPhone
 	{
 		public static IPhoneSdkVersion GetDefault (bool sim)
 		{
-			var v = IPhoneFramework.GetInstalledSdkVersions (sim);
+			var v = IPhoneSdks.Native.GetInstalledSdkVersions (sim);
 			return v.Count > 0? v[v.Count - 1] : UseDefault;
 		}
 		

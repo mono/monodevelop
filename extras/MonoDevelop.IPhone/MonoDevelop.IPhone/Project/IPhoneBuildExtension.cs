@@ -56,7 +56,7 @@ namespace MonoDevelop.IPhone
 			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
 				return base.Build (monitor, item, configuration);
 			
-			IPhoneFramework.CheckInfoCaches ();
+			IPhoneSdks.CheckInfoCaches ();
 			
 			//prebuild
 			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
@@ -67,21 +67,21 @@ namespace MonoDevelop.IPhone
 				return br;
 			}
 			
-			if (IPhoneFramework.SimOnly && !isSim) {
+			if (IPhoneSdks.MonoTouch.IsEvaluation && !isSim) {
 				//if in the GUI, show a dialog too
 				if (MonoDevelop.Ide.IdeApp.IsInitialized)
-					Gtk.Application.Invoke (delegate { IPhoneFramework.ShowSimOnlyDialog (); } );
-				return IPhoneFramework.GetSimOnlyError ();
+					Gtk.Application.Invoke (delegate { IPhoneSdks.MonoTouch.ShowEvaluationDialog (); } );
+				return IPhoneSdks.GetSimOnlyError ();
 			}
 			
 			var result = new BuildResult ();
 			
 			var sdkVersion = conf.MtouchSdkVersion.ResolveIfDefault (isSim);
 			
-			if (!IPhoneFramework.SdkIsInstalled (sdkVersion, isSim)) {
-				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion, isSim);
+			if (!IPhoneSdks.Native.SdkIsInstalled (sdkVersion, isSim)) {
+				sdkVersion = IPhoneSdks.Native.GetClosestInstalledSdk (sdkVersion, isSim);
 				
-				if (sdkVersion.IsUseDefault || !IPhoneFramework.SdkIsInstalled (sdkVersion, isSim)) {
+				if (sdkVersion.IsUseDefault || !IPhoneSdks.Native.SdkIsInstalled (sdkVersion, isSim)) {
 					if (conf.MtouchSdkVersion.IsUseDefault)
 						result.AddError (
 							GettextCatalog.GetString ("The Apple iPhone SDK is not installed."));
@@ -180,7 +180,7 @@ namespace MonoDevelop.IPhone
 			}
 			
 			//unpack nibs and content from dll resources (MT 4+ only)
-			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99))
+			if (IPhoneSdks.MonoTouch.Version >= new IPhoneSdkVersion (3, 99))
 				if (result.Append (UnpackContent (monitor, conf, assemblyRefs)).ErrorCount > 0)
 					return result;
 			
@@ -230,7 +230,7 @@ namespace MonoDevelop.IPhone
 			var toProcess = new List<string> ();
 			for (int i = 0; i < assemblies.Count; i++) {
 				var asm = assemblies[i];
-				if (!asm.StartsWith ("/Developer/MonoTouch/usr/lib/mono/2.1") && asm != "mscorlib")
+				if (!asm.StartsWith (IPhoneSdks.MonoTouch.LibDir.Combine ("mono", "2.1")) && asm != "mscorlib")
 					toProcess.Add (asm);
 			}
 			//optimize the case where there are no non-framework references
@@ -363,7 +363,7 @@ namespace MonoDevelop.IPhone
 			if (conf.MtouchMinimumOSVersion != "3.0")
 				args.AddQuotedFormat ("-targetver={0}", conf.MtouchMinimumOSVersion);
 			
-			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99)) {
+			if (IPhoneSdks.MonoTouch.Version >= new IPhoneSdkVersion (3, 99)) {
 				if (conf.MtouchUseSGen)
 					args.Add ("--sgen");
 				if (conf.MtouchUseLlvm) {
@@ -535,8 +535,8 @@ namespace MonoDevelop.IPhone
 				bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 				bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 				
-				var sdkSettings = IPhoneFramework.GetSdkSettings (sdkVersion, sim);
-				var dtSettings = IPhoneFramework.GetDTSettings ();
+				var sdkSettings = IPhoneSdks.Native.GetSdkSettings (sdkVersion, sim);
+				var dtSettings = IPhoneSdks.Native.GetDTSettings ();
 				
 				SetIfNotPresent (dict, "BuildMachineOSBuild", dtSettings.BuildMachineOSBuild);
 				
@@ -870,7 +870,7 @@ namespace MonoDevelop.IPhone
 			bool isSim = cfg.IsSimPlatform;
 			
 			if (proj.CompileTarget == CompileTarget.Library) {
-				if (IPhoneFramework.MonoTouchVersion < new IPhoneSdkVersion (3, 99))
+				if (IPhoneSdks.MonoTouch.Version < new IPhoneSdkVersion (3, 99))
 					return base.Compile (monitor, item, buildData);
 				
 				//pack nibs and content into the dll resources (MT 4+ only)
@@ -885,8 +885,8 @@ namespace MonoDevelop.IPhone
 			string appDir = cfg.AppDirectory;
 			
 			var sdkVersion = cfg.MtouchSdkVersion.ResolveIfDefault (isSim);
-			if (!IPhoneFramework.SdkIsInstalled (sdkVersion, isSim))
-				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion, isSim);
+			if (!IPhoneSdks.Native.SdkIsInstalled (sdkVersion, isSim))
+				sdkVersion = IPhoneSdks.Native.GetClosestInstalledSdk (sdkVersion, isSim);
 			
 			var result = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, projFiles);
 			if (result.ErrorCount > 0)
@@ -995,8 +995,8 @@ namespace MonoDevelop.IPhone
 			monitor.BeginTask (GettextCatalog.GetString ("Compressing resources"), 0);
 			
 			var optTool = new ProcessStartInfo (
-				"/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/iphoneos-optimize",
-				 ProcessArgumentBuilder.Quote (conf.AppDirectory));
+				IPhoneSdks.Native.DevicePlatform.Combine ("Developer/usr/bin/iphoneos-optimize"),
+				ProcessArgumentBuilder.Quote (conf.AppDirectory));
 			
 			monitor.Log.WriteLine (optTool.FileName + " " + optTool.Arguments);
 			string errorOutput;
@@ -1239,8 +1239,7 @@ namespace MonoDevelop.IPhone
 					return BuildError ("Entitlements file \"" + conf.CodesignEntitlements + "\" not found.");
 				srcFile = conf.CodesignEntitlements;
 			} else {
-				srcFile = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + sdkVersion.ToString ()
-					+ ".sdk/Entitlements.plist";
+				srcFile = IPhoneSdks.Native.GetSdkPath (sdkVersion, false).Combine ("Entitlements.plist");
 			}
 			
 			var doc = new PlistDocument ();
@@ -1344,10 +1343,9 @@ namespace MonoDevelop.IPhone
 			if (File.Exists (resRulesFile))
 				File.Delete (resRulesFile);
 			
-			string resRulesSrc = String.IsNullOrEmpty (conf.CodesignResourceRules)
-				? "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS"
-					+ sdkVersion.ToString () + ".sdk/ResourceRules.plist"
-				: (string) conf.CodesignResourceRules;
+			FilePath resRulesSrc = String.IsNullOrEmpty (conf.CodesignResourceRules)
+				? IPhoneSdks.Native.GetSdkPath (sdkVersion, false).Combine ("ResourceRules.plist")
+				: conf.CodesignResourceRules;
 			if (File.Exists (resRulesSrc)) {
 				File.Copy (resRulesSrc, resRulesFile, true);
 			} else {
@@ -1383,7 +1381,7 @@ namespace MonoDevelop.IPhone
 			
 			monitor.Log.WriteLine ("codesign " + psi.Arguments);
 			psi.EnvironmentVariables.Add ("CODESIGN_ALLOCATE",
-				"/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
+				IPhoneSdks.Native.DevicePlatform.Combine ("Developer/usr/bin/codesign_allocate"));
 			string output;
 			if ((signResultCode = MacBuildUtilities.ExecuteCommand (monitor, psi, out output)) != 0) {
 				monitor.Log.WriteLine (output);

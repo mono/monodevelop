@@ -68,7 +68,7 @@ namespace MonoDevelop.IPhone
 			if (projSetting == null)
 				def.Checked  = true;
 			
-			foreach (var st in IPhoneFramework.GetSimulatorTargets (IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion), proj.SupportedDevices)) {
+			foreach (var st in IPhoneSdks.Native.GetSimulatorTargets (IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion), proj.SupportedDevices)) {
 				var i = info.Add (st.ToString (), st);
 				if (projSetting != null && projSetting.Equals (st))
 					i.Checked  = true;
@@ -103,8 +103,8 @@ namespace MonoDevelop.IPhone
 		
 		protected override void Run ()
 		{
-			if (IPhoneFramework.SimOnly) {
-				IPhoneFramework.ShowSimOnlyDialog ();
+			if (IPhoneSdks.MonoTouch.IsEvaluation) {
+				IPhoneSdks.MonoTouch.ShowEvaluationDialog ();
 				return;
 			}
 			

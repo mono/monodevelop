@@ -87,7 +87,7 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public IPhoneBuildOptionsWidget ()
 		{
-			IPhoneFramework.CheckInfoCaches ();
+			IPhoneSdks.CheckInfoCaches ();
 			
 			this.Build ();
 			extraArgsEntry.AddOptions (menuOptions);
@@ -115,7 +115,7 @@ namespace MonoDevelop.IPhone.Gui
 				UpdateArches ();
 			};
 			
-			enableMtouch4Features = IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99);
+			enableMtouch4Features = IPhoneSdks.MonoTouch.Version >= new IPhoneSdkVersion (3, 99);
 			if (enableMtouch4Features) {
 				useLlvmCheck.Toggled += UpdateCodegenCheckSensitivity;
 				archCombo.Changed += UpdateCodegenCheckSensitivity;
@@ -176,7 +176,7 @@ namespace MonoDevelop.IPhone.Gui
 			((ListStore)minOSComboEntry.Model).Clear ();
 			var sdkVer = GetSdkValue ().ResolveIfDefault (isSim);
 			
-			foreach (var v in IPhoneFramework.KnownOSVersions)
+			foreach (var v in IPhoneSdks.Native.KnownOSVersions)
 				if (v.CompareTo (sdkVer) <= 0)
 					minOSComboEntry.AppendText (v.ToString ());
 		}
@@ -226,7 +226,7 @@ namespace MonoDevelop.IPhone.Gui
 			sdkStore.AppendValues (GettextCatalog.GetString ("Default"), IPhoneSdkVersion.UseDefault);
 			
 			int idx = 0;
-			var sdks = IPhoneFramework.GetInstalledSdkVersions (isSim);
+			var sdks = IPhoneSdks.Native.GetInstalledSdkVersions (isSim);
 			for (int i = 0; i < sdks.Count; i++) {
 				var v = sdks[i];
 				if (selectedVersion.Equals (v))

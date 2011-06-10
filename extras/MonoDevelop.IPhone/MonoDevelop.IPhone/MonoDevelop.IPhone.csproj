@@ -106,9 +106,11 @@
     <Compile Include="Project\IPhoneProjectStringTagProvider.cs" />
     <Compile Include="Project\IPhoneProjectConfiguration.cs" />
     <Compile Include="Project\IPhoneBuildExtension.cs" />
-    <Compile Include="Framework\IPhoneFramework.cs" />
     <Compile Include="Framework\IPhoneFrameworkBackend.cs" />
     <Compile Include="Framework\IPhoneSdkVersion.cs" />
+    <Compile Include="Framework\MonoTouchSdk.cs" />
+    <Compile Include="Framework\IPhoneSdks.cs" />
+    <Compile Include="Framework\AppleIPhoneSdk.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">

@@ -46,7 +46,7 @@ namespace MonoDevelop.IPhone
 		//FIXME: would prefer to look these up inside the MD type DB, if possible, instead of using reflection
 		static void InitializeTypeNameMap ()
 		{
-			var asm = System.Reflection.Assembly.LoadFile ("/Developer/MonoTouch/usr/lib/mono/2.1/monotouch.dll");
+			var asm = System.Reflection.Assembly.LoadFile (IPhoneSdks.MonoTouch.LibDir.Combine ("mono/2.1/monotouch.dll"));
 			var nsobj = asm.GetType ("MonoTouch.Foundation.NSObject");
 			var registerAtt = asm.GetType ("MonoTouch.Foundation.RegisterAttribute");
 			var prop = registerAtt.GetProperty ("Name");

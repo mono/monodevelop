@@ -1,5 +1,5 @@
 // 
-// MeeGoExecutionHandler.cs
+// IPhoneFrameworkBackend.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,45 +25,53 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Execution;
-using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Collections.Generic;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core;
+using Mono.Addins;
+using MonoDevelop.Ide;
+using Gtk;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.MacDev.Plist;
+
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.IPhone
 {
-	public class IPhoneExecutionModeSet : IExecutionModeSet
+	public static class IPhoneSdks
 	{
-		public string Name { get { return "IPhone";  } }
+		public static AppleIPhoneSdk Native { get; private set; }
+		public static MonoTouchSdk MonoTouch { get; private set; }
 		
-		public IEnumerable<IExecutionMode> ExecutionModes {
-			get {
-				return IPhoneSdks.Native.GetSimulatorTargets ().Select (t => (IExecutionMode) new IPhoneExecutionMode (t));
-			}
+		static IPhoneSdks ()
+		{
+			Native = new AppleIPhoneSdk ("/Developer");
+			MonoTouch = new MonoTouchSdk ("/Developer");
+		}
+		
+		public static MonoDevelop.Projects.BuildResult GetSimOnlyError ()
+		{
+			var res = new MonoDevelop.Projects.BuildResult ();
+			res.AddError (GettextCatalog.GetString (
+				"The evaluation version of MonoTouch does not support targeting the device. " + 
+				"Please go to http://monotouch.net to purchase the full version."));
+			return res;
+		}
+		
+		public static void CheckInfoCaches ()
+		{
+			Native.CheckCaches ();
+			MonoTouch.CheckCaches ();
 		}
 	}
 	
-	class IPhoneExecutionMode : IExecutionMode
+	public class MonoTouchInstalledCondition : ConditionType
 	{
-		public IPhoneExecutionMode (IPhoneSimulatorTarget target)
+		public override bool Evaluate (NodeElement conditionNode)
 		{
-			this.Target = target;
-		}
-		
-		IPhoneExecutionHandler handler;
-		
-		public string Name {
-			get {
-				return (Target.Device == TargetDevice.IPad? "iPad Simulator " : "iPhone Simulator ") + Target.Version;
-			}
-		}
-		
-		public string Id { get { return "IPhoneExecutionMode"; } }
-		public IPhoneSimulatorTarget Target { get; private set; }
-		
-		public IExecutionHandler ExecutionHandler {
-			get {
-				return handler ?? (handler = new IPhoneExecutionHandler (Target));
-			}
+			return IPhoneSdks.MonoTouch.IsInstalled;
 		}
 	}
 }

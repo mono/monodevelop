@@ -40,20 +40,18 @@ namespace MonoDevelop.IPhone
 {
 	public class IPhoneFrameworkBackend : MonoFrameworkBackend
 	{
-		const string SDK_ROOT = "/Developer/MonoTouch";
-		
-		string sdkDir;
-		string sdkBin;
+		FilePath sdkDir;
+		FilePath sdkBin;
 		
 		public IPhoneFrameworkBackend ()
 		{
-			if (Directory.Exists (SDK_ROOT)) {
+			if (Directory.Exists (IPhoneSdks.MonoTouch.SdkDir)) {
 				try {
-					sdkDir = SDK_ROOT + "/usr/lib/mono/2.1";
-					sdkBin = SDK_ROOT + "/usr/bin";
-					if (!File.Exists (Path.Combine (sdkDir, "mscorlib.dll"))) {
+					sdkDir = IPhoneSdks.MonoTouch.LibDir.Combine ("mono/2.1");
+					sdkBin = IPhoneSdks.MonoTouch.BinDir;
+					if (!File.Exists (sdkDir.Combine ("mscorlib.dll"))) {
 						sdkDir = null;
-					    throw new Exception ("Missing mscorlib in iPhone SDK " + SDK_ROOT);
+					    throw new Exception ("Missing mscorlib in iPhone SDK " + IPhoneSdks.MonoTouch.SdkDir);
 					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unexpected error finding iPhone SDK directory", ex);

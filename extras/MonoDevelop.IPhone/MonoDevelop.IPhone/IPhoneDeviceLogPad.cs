@@ -105,7 +105,7 @@ namespace MonoDevelop.IPhone
 		void Connect ()
 		{
 			log.WriteConsoleLogText ("Connecting...\n");
-			var mtouch = "/Developer/MonoTouch/usr/bin/mtouch";
+			var mtouch = IPhoneSdks.MonoTouch.BinDir.Combine ("mtouch");
 			var psi = new ProcessStartInfo (mtouch, "-logdev") {
 				UseShellExecute = false,
 				RedirectStandardOutput = true,
