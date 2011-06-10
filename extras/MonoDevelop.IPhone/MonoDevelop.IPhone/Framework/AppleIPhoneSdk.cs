@@ -190,7 +190,7 @@ namespace MonoDevelop.IPhone
 			settings.DeviceFamilies = deviceFamilies;
 			
 			var sdkPath = GetSdkPath (sdk.ToString (), isSim);
-			settings.DTSDKBuild = GrabRootString ("/" + SYSTEM_VERSION_PLIST, "ProductBuildVersion");
+			settings.DTSDKBuild = GrabRootString (sdkPath.Combine (SYSTEM_VERSION_PLIST), "ProductBuildVersion");
 			
 			return settings;
 		}
