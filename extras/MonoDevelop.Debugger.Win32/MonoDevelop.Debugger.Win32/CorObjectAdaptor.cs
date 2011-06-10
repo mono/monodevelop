@@ -1022,6 +1022,12 @@ namespace MonoDevelop.Debugger.Win32
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object gtype)
 		{
 			CorType type = (CorType) gtype;
+			bool buildData = false;
+			string proxyType = null;
+			string nameDisplayString = null;
+			string typeDisplayString = null;
+			string valueDisplayString = null;
+			Dictionary<string, DebuggerBrowsableState> memberData = null;
 			TypeDisplayData td = null;
 
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
@@ -1032,16 +1038,16 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (object att in t.GetCustomAttributes (false)) {
 				DebuggerTypeProxyAttribute patt = att as DebuggerTypeProxyAttribute;
 				if (patt != null) {
-					if (td == null) td = new TypeDisplayData ();
-					td.ProxyType = patt.ProxyTypeName;
+					buildData = true;
+					proxyType = patt.ProxyTypeName;
 					continue;
 				}
 				DebuggerDisplayAttribute datt = att as DebuggerDisplayAttribute;
 				if (datt != null) {
-					if (td == null) td = new TypeDisplayData ();
-					td.NameDisplayString = datt.Name;
-					td.TypeDisplayString = datt.Type;
-					td.ValueDisplayString = datt.Value;
+					buildData = true;
+					nameDisplayString = datt.Name;
+					typeDisplayString = datt.Type;
+					valueDisplayString = datt.Value;
 					continue;
 				}
 			}
@@ -1058,12 +1064,15 @@ namespace MonoDevelop.Debugger.Win32
 						atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
 				}
 				if (atts.Length > 0) {
-					if (td == null) td = new TypeDisplayData ();
-					if (td.MemberData == null) td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
+					buildData = true;
+					if (memberData == null) memberData = new Dictionary<string, DebuggerBrowsableState> ();
 					td.MemberData[m.Name] = ((DebuggerBrowsableAttribute) atts[0]).State;
 				}
 			}
-			return td;
+			if (buildData)
+				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, false, memberData);
+			else
+				return null;
 		}
 	}
 }
