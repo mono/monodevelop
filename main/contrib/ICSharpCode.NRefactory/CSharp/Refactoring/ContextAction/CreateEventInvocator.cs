@@ -46,10 +46,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			VariableInitializer initializer;
 			var eventDeclaration = GetEventDeclaration (context, out initializer);
-			var type = context.GetDefinition (context.ResolveType (eventDeclaration.ReturnType));
+			var type = context.Resolve (eventDeclaration.ReturnType).Type;
 			if (type == null)
 				return;
-			var invokeMethod = type.Methods.Where (m => m.Name == "Invoke").FirstOrDefault ();
+			var invokeMethod = type.GetDelegateInvokeMethod ();
 			if (invokeMethod == null)
 				return;
 			

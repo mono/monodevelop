@@ -34,16 +34,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public bool IsValid (RefactoringContext context)
 		{
-			ITypeDefinition type;
+			IType type;
 			return GetAnonymousMethodExpression (context, out type) != null;
 		}
 		
 		public void Run (RefactoringContext context)
 		{
-			ITypeDefinition type;
+			IType type;
 			var anonymousMethodExpression = GetAnonymousMethodExpression (context, out type);
 			
-			var delegateMethod = type.Methods.First ();
+			var delegateMethod = type.GetDelegateInvokeMethod ();
 			
 			var sb = new StringBuilder ("(");
 			for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		static AnonymousMethodExpression GetAnonymousMethodExpression (RefactoringContext context, out ITypeDefinition delegateType)
+		static AnonymousMethodExpression GetAnonymousMethodExpression (RefactoringContext context, out IType delegateType)
 		{
 			delegateType = null;
 			
@@ -71,20 +71,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (anonymousMethodExpression == null || !anonymousMethodExpression.DelegateToken.Contains (context.Location.Line, context.Location.Column) || anonymousMethodExpression.HasParameterList)
 				return null;
 			
-			AstType resolvedType = null;
+			IType resolvedType = null;
 			var parent = anonymousMethodExpression.Parent;
 			if (parent is AssignmentExpression) {
-				resolvedType = context.ResolveType (((AssignmentExpression)parent).Left);
+				resolvedType = context.Resolve (((AssignmentExpression)parent).Left).Type;
 			} else if (parent is VariableDeclarationStatement) {
-				resolvedType = context.ResolveType (((VariableDeclarationStatement)parent).Type);
+				resolvedType = context.Resolve (((VariableDeclarationStatement)parent).Type).Type;
 			} else if (parent is InvocationExpression) {
 				// TODO: handle invocations
 			}
 			
 			if (resolvedType == null)
 				return null;
-			delegateType = context.GetDefinition (resolvedType);
-			if (delegateType == null || delegateType.ClassType != ClassType.Delegate) 
+			delegateType = resolvedType;
+			if (!delegateType.IsDelegate ()) 
 				return null;
 			
 			return anonymousMethodExpression;

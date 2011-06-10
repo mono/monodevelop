@@ -165,9 +165,8 @@ namespace Mono.CSharp {
 
 			int required_buffer_size = read_ahead_length * 2;
 
-			if (buffer == null || buffer.Length < required_buffer_size) {
+			if (buffer == null || buffer.Length < required_buffer_size)
 				buffer = new char [required_buffer_size];
-			}
 
 			stream.Position = 0;
 			buffer_start = char_count = pos = 0;
@@ -242,7 +241,7 @@ namespace Mono.CSharp {
 		{
 			char[] chars = new char[toPosition - fromPosition];
 			if (buffer_start <= fromPosition && toPosition < buffer_start + buffer.Length) {
-				Array.Copy (buffer, fromPosition - buffer_start, chars, 0, chars.Length);
+				Array.Copy (buffer, fromPosition, chars, 0, chars.Length);
 			} else {
 				throw new NotImplementedException ();
 			}

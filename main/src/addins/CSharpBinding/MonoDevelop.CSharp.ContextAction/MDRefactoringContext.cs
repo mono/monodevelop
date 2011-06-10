@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -402,7 +403,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				return resolver;
 			}
 		}
-		
+		/*
 		Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> resolveCache = new Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> ();
 		MonoDevelop.Projects.Dom.ResolveResult Resolve (AstNode node)
 		{
@@ -410,60 +411,28 @@ namespace MonoDevelop.CSharp.ContextAction
 			if (!resolveCache.TryGetValue (node, out result))
 				resolveCache [node] = result = Resolver.Resolve (node.ToString (), new  MonoDevelop.Projects.Dom.DomLocation (Location.Line, Location.Column));
 			return result;
-		}
+		}*/
 		
-		public override AstType ResolveType (AstNode node)
-		{
-			var resolveResult = Resolve (node);
-			if (resolveResult == null || resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.FullName))
-				return null;
-			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, resolveResult.ResolvedType);
-		}
-		
-		
-		ParsedFile ParsedFile {
+		IParsedFile ParsedFile {
 			get {
-				var visitor = new TypeSystemConvertVisitor (ParsedFile);
-				Unit.AcceptVisitor (visitor, null);
-				return visitor.ParsedFile;
+				return Document.ParsedFile;
 			}
 		}
 		
-		public override IEnumerable<ICSharpCode.NRefactory.TypeSystem.IMember> ResolveMember (Expression expression)
+		public override ResolveResult Resolve (AstNode node)
 		{
-			var pf = ParsedFile;
+			var pf = (ParsedFile)ParsedFile;
 			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
-			var navigator = new NodeListResolveVisitorNavigator (new[] { expression });
+			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
 			
 			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, pf, navigator);
-		
-			visitor.VisitCompilationUnit (Unit, null);
-			var resolveResult = visitor.Resolve (expression);
-			if (resolveResult == null)
-				yield break;
-			if (resolveResult is MemberResolveResult) {
-				yield return ((MemberResolveResult)resolveResult).Member;
-			} else if (resolveResult is MethodGroupResolveResult) {
-				var mgg = (MethodGroupResolveResult)resolveResult;
-				foreach (var m in mgg.Methods)
-					yield return m;
-			}
+			Unit.AcceptVisitor (visitor, null);
+			return visitor.Resolve (node);
 		}
 		
 		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, MemberDeclaration replaceWidth)
 		{
 			// TODO
-		}
-		
-		public override ICSharpCode.NRefactory.TypeSystem.ITypeDefinition GetDefinition (AstType resolvedType)
-		{
-			var rr = Resolve (resolvedType);
-			if (rr == null)
-				return null;
-			var type = Document.Dom.GetType (rr.ResolvedType);
-			if (type == null)
-				return null;
-			return TypeResolveContext.GetClass (type.Namespace, type.Name, type.TypeParameters.Count, StringComparer.InvariantCulture);
 		}
 		
 		/*

@@ -26,11 +26,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		internal readonly CancellationToken cancellationToken;
 		
 		#region Constructor
-		public CSharpResolver(ITypeResolveContext context)
+		public CSharpResolver (ITypeResolveContext context)
 		{
 			if (context == null)
-				throw new ArgumentNullException("context");
+				throw new ArgumentNullException ("context");
 			this.context = context;
+			this.cancellationToken = CancellationToken.None;
 		}
 		
 		public CSharpResolver(ITypeResolveContext context, CancellationToken cancellationToken)
@@ -1536,11 +1537,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			                                  isUsingDeclaration ? SimpleNameLookupMode.TypeInUsingDeclaration : SimpleNameLookupMode.Type);
 		}
 		
-		ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode)
+		ResolveResult LookupSimpleNameOrTypeName (string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode)
 		{
 			// C# 4.0 spec: §3.8 Namespace and type names; §7.6.2 Simple Names
-			
-			cancellationToken.ThrowIfCancellationRequested();
+			cancellationToken.ThrowIfCancellationRequested ();
 			
 			int k = typeArguments.Count;
 			
@@ -1550,11 +1550,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (m != null) {
 					foreach (ITypeParameter tp in m.TypeParameters) {
 						if (tp.Name == identifier)
-							return new TypeResolveResult(tp);
+							return new TypeResolveResult (tp);
 					}
 				}
 			}
-			
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1562,57 +1561,60 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					var typeParameters = t.TypeParameters;
 					// only look at type parameters defined directly on this type, not at those copied from outer classes
 					for (int i = (t.DeclaringTypeDefinition != null ? t.DeclaringTypeDefinition.TypeParameterCount : 0); i < typeParameters.Count; i++) {
-						if (typeParameters[i].Name == identifier)
-							return new TypeResolveResult(typeParameters[i]);
+						if (typeParameters [i].Name == identifier)
+							return new TypeResolveResult (typeParameters [i]);
 					}
 				}
 				
-				MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
+				MemberLookup lookup = new MemberLookup (context, t, t.ProjectContent);
 				ResolveResult r;
+				Console.WriteLine (lookupMode);
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
-					r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
+					r = lookup.Lookup (t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
-					r = lookup.LookupType(t, identifier, typeArguments);
+					r = lookup.LookupType (t, identifier, typeArguments);
 				}
 				if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
 					return r;
 			}
+			Console.WriteLine ("using scope: " + UsingScope);
 			// look in current namespace definitions
 			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
+				Console.WriteLine ("scope:" + n);
 				// first look for a namespace
 				if (k == 0) {
-					string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
-					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null) {
-						if (n.HasAlias(identifier))
-							return new AmbiguousTypeResolveResult(SharedTypes.UnknownType);
-						return new NamespaceResolveResult(fullName);
+					string fullName = NamespaceDeclaration.BuildQualifiedName (n.NamespaceName, identifier);
+					if (context.GetNamespace (fullName, StringComparer.Ordinal) != null) {
+						if (n.HasAlias (identifier))
+							return new AmbiguousTypeResolveResult (SharedTypes.UnknownType);
+						return new NamespaceResolveResult (fullName);
 					}
 				}
 				// then look for a type
-				ITypeDefinition def = context.GetClass(n.NamespaceName, identifier, k, StringComparer.Ordinal);
+				ITypeDefinition def = context.GetClass (n.NamespaceName, identifier, k, StringComparer.Ordinal);
 				if (def != null) {
 					IType result = def;
 					if (k != 0) {
-						result = new ParameterizedType(def, typeArguments);
+						result = new ParameterizedType (def, typeArguments);
 					}
-					if (n.HasAlias(identifier))
-						return new AmbiguousTypeResolveResult(result);
+					if (n.HasAlias (identifier))
+						return new AmbiguousTypeResolveResult (result);
 					else
-						return new TypeResolveResult(result);
+						return new TypeResolveResult (result);
 				}
 				// then look for aliases:
 				if (k == 0) {
-					if (n.ExternAliases.Contains(identifier)) {
-						return ResolveExternAlias(identifier);
+					if (n.ExternAliases.Contains (identifier)) {
+						return ResolveExternAlias (identifier);
 					}
 					if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.UsingScope) {
 						foreach (var pair in n.UsingAliases) {
 							if (pair.Key == identifier) {
-								NamespaceResolveResult ns = pair.Value.ResolveNamespace(context);
+								NamespaceResolveResult ns = pair.Value.ResolveNamespace (context);
 								if (ns != null)
 									return ns;
 								else
-									return new TypeResolveResult(pair.Value.Resolve(context));
+									return new TypeResolveResult (pair.Value.Resolve (context));
 							}
 						}
 					}
@@ -1621,31 +1623,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.UsingScope) {
 					IType firstResult = null;
 					foreach (var u in n.Usings) {
-						NamespaceResolveResult ns = u.ResolveNamespace(context);
+						NamespaceResolveResult ns = u.ResolveNamespace (context);
 						if (ns != null) {
-							def = context.GetClass(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
+							def = context.GetClass (ns.NamespaceName, identifier, k, StringComparer.Ordinal);
 							if (def != null) {
 								if (firstResult == null) {
 									if (k == 0)
 										firstResult = def;
 									else
-										firstResult = new ParameterizedType(def, typeArguments);
+										firstResult = new ParameterizedType (def, typeArguments);
 								} else {
-									return new AmbiguousTypeResolveResult(firstResult);
+									return new AmbiguousTypeResolveResult (firstResult);
 								}
 							}
 						}
 					}
 					if (firstResult != null)
-						return new TypeResolveResult(firstResult);
+						return new TypeResolveResult (firstResult);
 				}
 				// if we didn't find anything: repeat lookup with parent namespace
 			}
 			if (typeArguments.Count == 0) {
 				if (identifier == "dynamic")
-					return new TypeResolveResult(SharedTypes.Dynamic);
+					return new TypeResolveResult (SharedTypes.Dynamic);
 				else
-					return new UnknownIdentifierResolveResult(identifier);
+					return new UnknownIdentifierResolveResult (identifier);
 			} else {
 				return ErrorResult;
 			}

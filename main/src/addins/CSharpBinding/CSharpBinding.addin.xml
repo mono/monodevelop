@@ -310,6 +310,10 @@
 		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
+		<Provider class="MonoDevelop.CSharp.Parser.TypeSystemProvider" mimeType = "text/x-csharp" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="CreateMethod" class = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 		<Class id="ExtractMethod" class = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodRefactoring" />

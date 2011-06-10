@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -67,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		
-		public abstract ITypeDefinition GetDefinition (AstType resolvedType);
+//		public abstract IType GetDefinition (AstType resolvedType);
 
 		public abstract void ReplaceReferences (IMember member, MemberDeclaration replaceWidth);
 		
@@ -100,8 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Resolving
-		public abstract AstType ResolveType (AstNode node);
-		public abstract IEnumerable<IMember> ResolveMember (Expression expression);
+		public abstract ResolveResult Resolve (AstNode expression);
 		#endregion
 		
 		public string GetNameProposal (string name, bool camelCase = true)
@@ -124,6 +124,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return baseName + (number > 0 ? (number + 1).ToString () : "");
 		}
+	}
+	
+	public static class ExtensionMethods
+	{
+		#region ConvertTypes
+		public static ICSharpCode.NRefactory.CSharp.AstType ConvertToAstType (this IType type)
+		{
+			var builder = new TypeSystemAstBuilder ();
+			return builder.ConvertType (type);
+		}
+		#endregion
 	}
 }
 

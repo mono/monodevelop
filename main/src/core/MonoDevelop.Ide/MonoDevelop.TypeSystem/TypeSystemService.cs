@@ -70,18 +70,18 @@ namespace MonoDevelop.TypeSystem
 			return provider != null ? provider.Provider : null;
 		}
 		
-		public static ParsedFile ParseFile (string fileName, string mimeType, TextReader content)
+		public static IParsedFile ParseFile (IProjectContent projectContent, string fileName, string mimeType, TextReader content)
 		{
 			var provider = GetProvider (mimeType);
 			if (provider == null)
 				return null;
-			return provider.Parse (fileName, content);
+			return provider.Parse (projectContent, fileName, content);
 		}
 		
-		public static ParsedFile ParseFile (string fileName, string mimeType, string content)
+		public static IParsedFile ParseFile (IProjectContent projectContent, string fileName, string mimeType, string content)
 		{
 			using (var reader = new StringReader (content))
-				return ParseFile (fileName, mimeType, reader);
+				return ParseFile (projectContent, fileName, mimeType, reader);
 		}
 		
 		#region Project loading
@@ -107,7 +107,6 @@ namespace MonoDevelop.TypeSystem
 
 		public static IProjectContent LoadContent (Project project)
 		{
-			DateTime start = DateTime.Now;
 			var content = new SimpleProjectContent ();
 					
 			foreach (var file in project.Files) {
@@ -119,11 +118,10 @@ namespace MonoDevelop.TypeSystem
 					continue;
 				
 				using (var stream = new System.IO.StreamReader (file.FilePath)) {
-					var parsedFile = provider.Parse (file.FilePath, stream);
-					content.UpdateProjectContent (null, parsedFile.TopLevelTypeDefinitions, null, null);
+					var parsedFile = provider.Parse (content, file.FilePath, stream);
+					content.UpdateProjectContent (null, parsedFile);
 				}
 			}
-			Console.WriteLine ("parsed :" + project.Name + " in " + (DateTime.Now - start));
 			return content;
 		}
 		
@@ -286,6 +284,13 @@ namespace MonoDevelop.TypeSystem
 			return new CompositeTypeResolveContext (contexts);
 		}
 		
+		public static IProjectContent GetProjectContext (Project project)
+		{
+			IProjectContent content;
+			projectContents.TryGetValue (project, out content);
+			return content;
+		}
+		
 		public static ITypeResolveContext GetContext (Project project)
 		{
 			List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
@@ -314,8 +319,13 @@ namespace MonoDevelop.TypeSystem
 					}
 					string refId = "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
 					ITypeResolveContext ctx;
-					if (!assemblyContents.TryGetValue (refId, out ctx))
-						assemblyContents [refId] = ctx = LoadAssemblyContext (fileName);
+					if (!assemblyContents.TryGetValue (refId, out ctx)) {
+						try {
+							assemblyContents [refId] = ctx = LoadAssemblyContext (fileName);
+						} catch (Exception) {
+						}
+					}
+					
 					if (ctx != null)
 						contexts.Add (ctx);
 				}

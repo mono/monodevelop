@@ -27,6 +27,7 @@
 using System;
 using ICSharpCode.NRefactory.PatternMatching;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -37,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var identifier = GetIdentifier (context);
 			if (identifier == null)
 				return false;
-			return context.ResolveType (identifier) == null && GuessType (context, identifier) != null;
+			return context.Resolve (identifier) == null && GuessType (context, identifier) != null;
 		}
 		
 		public void Run (RefactoringContext context)
@@ -62,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (identifier.Parent is AssignmentExpression) {
 				var assign = (AssignmentExpression)identifier.Parent;
 				var other = assign.Left == identifier ? assign.Right : assign.Left;
-				return context.ResolveType (other);
+				return context.Resolve (other).Type.ConvertToAstType ();
 			}
 			return null;
 		}

@@ -196,6 +196,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public ICSharpCode.NRefactory.TypeSystem.IParsedFile ParsedFile {
+			get {
+				return MonoDevelop.TypeSystem.TypeSystemService.ParseFile (MonoDevelop.TypeSystem.TypeSystemService.GetProjectContext (Project), FileName, Editor.Document.MimeType, Editor.Document.Text);
+			}
+		}
+		
 		public string PathRelativeToProject {
 			get { return Window.ViewContent.PathRelativeToProject; }
 		}

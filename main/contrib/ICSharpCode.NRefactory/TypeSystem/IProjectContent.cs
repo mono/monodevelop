@@ -15,7 +15,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	#endif
 	public interface IProjectContent : ITypeResolveContext
 	{
+		/// <summary>
+		/// Gets the list of all assembly attributes in the project.
+		/// </summary>
 		IList<IAttribute> AssemblyAttributes { get; }
+		
+		/// <summary>
+		/// Gets a parsed file by its file name.
+		/// </summary>
+		IParsedFile GetFile(string fileName);
 	}
 	
 	#if WITH_CONTRACTS
@@ -27,6 +35,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				Contract.Ensures(Contract.Result<IList<IAttribute>>() != null);
 				return null;
 			}
+		}
+		
+		IParsedFile IProjectContent.GetFile(string fileName)
+		{
+			Contract.Requires(fileName != null);
+			return;
 		}
 	}
 	#endif

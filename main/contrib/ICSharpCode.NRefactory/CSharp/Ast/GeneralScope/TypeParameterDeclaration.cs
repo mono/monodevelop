@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier);
 			}
 			set {
-				SetChildByRole(Roles.Identifier, value);
+				SetChildByRole (Roles.Identifier, value);
 			}
 		}
 		

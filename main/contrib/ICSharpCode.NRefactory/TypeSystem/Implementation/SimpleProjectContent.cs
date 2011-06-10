@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		readonly TypeStorage types = new TypeStorage();
 		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
+		readonly Dictionary<string, IParsedFile> fileDict = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
 		
 		#region AssemblyAttributes
 		readonly List<IAttribute> assemblyAttributes = new List<IAttribute>(); // mutable assembly attribute storage
@@ -35,13 +36,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		/// <inheritdoc/>
 		public IList<IAttribute> AssemblyAttributes {
-			get { return readOnlyAssemblyAttributes; }
+			get { return readOnlyAssemblyAttributes;  }
 		}
 		
 		void AddRemoveAssemblyAttributes(ICollection<IAttribute> addedAttributes, ICollection<IAttribute> removedAttributes)
 		{
 			// API uses ICollection instead of IEnumerable to discourage users from evaluating
 			// the list inside the lock (this method is called inside the write lock)
+			// [[not an issue anymore; the user now passes IParsedFile]]
 			bool hasChanges = false;
 			if (removedAttributes != null && removedAttributes.Count > 0) {
 				if (assemblyAttributes.RemoveAll(removedAttributes.Contains) > 0)
@@ -80,31 +82,35 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		#region UpdateProjectContent
 		/// <summary>
-		/// Removes oldTypes from the project, adds newTypes.
-		/// Removes oldAssemblyAttributes, adds newAssemblyAttributes.
+		/// Removes types and attributes from oldFile from the project, and adds those from newFile.
 		/// </summary>
 		/// <remarks>
 		/// The update is done inside a write lock; when other threads access this project content
 		/// from within a <c>using (Synchronize())</c> block, they will not see intermediate (inconsistent) state.
 		/// </remarks>
-		public void UpdateProjectContent(ICollection<ITypeDefinition> oldTypes = null,
-		                                 ICollection<ITypeDefinition> newTypes = null,
-		                                 ICollection<IAttribute> oldAssemblyAttributes = null,
-		                                 ICollection<IAttribute> newAssemblyAttributes = null)
+		public void UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile)
 		{
+			if (oldFile != null && newFile != null) {
+				if (!Platform.FileNameComparer.Equals(oldFile.FileName, newFile.FileName))
+					throw new ArgumentException("When both oldFile and newFile are specified, they must use the same file name.");
+			}
 			readerWriterLock.EnterWriteLock();
 			try {
-				if (oldTypes != null) {
-					foreach (var element in oldTypes) {
+				if (oldFile != null) {
+					foreach (var element in oldFile.TopLevelTypeDefinitions) {
 						RemoveType(element);
 					}
-				}
-				if (newTypes != null) {
-					foreach (var element in newTypes) {
-						AddType(element);
+					if (newFile == null) {
+						fileDict.Remove(oldFile.FileName);
 					}
 				}
-				AddRemoveAssemblyAttributes(oldAssemblyAttributes, newAssemblyAttributes);
+				if (newFile != null) {
+					foreach (var element in newFile.TopLevelTypeDefinitions) {
+						AddType(element);
+					}
+					fileDict[newFile.FileName] = newFile;
+				}
+				AddRemoveAssemblyAttributes(oldFile != null ? oldFile.AssemblyAttributes : null, newFile != null ? newFile.AssemblyAttributes : null);
 			} finally {
 				readerWriterLock.ExitWriteLock();
 			}
@@ -160,6 +166,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			readerWriterLock.EnterReadLock();
 			try {
 				return types.GetNamespace(nameSpace, nameComparer);
+			} finally {
+				readerWriterLock.ExitReadLock();
+			}
+		}
+		
+		public IParsedFile GetFile(string fileName)
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				IParsedFile file;
+				if (fileDict.TryGetValue(fileName, out file))
+					return file;
+				else
+					return null;
 			} finally {
 				readerWriterLock.ExitReadLock();
 			}

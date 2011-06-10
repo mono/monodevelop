@@ -1,5 +1,5 @@
 // 
-// UseExplicitType.cs
+// TypeSystemProvider.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,36 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
-using ICSharpCode.NRefactory.PatternMatching;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Refactoring
+namespace MonoDevelop.CSharp.Parser
 {
-	public class UseExplicitType: IContextAction
+	public class TypeSystemProvider : ITypeSystemProvider
 	{
-		public bool IsValid (RefactoringContext context)
+		public IParsedFile Parse (IProjectContent projectContent, string fileName, System.IO.TextReader content)
 		{
-			return GetVariableDeclarationStatement (context) != null;
-		}
-		
-		public void Run (RefactoringContext context)
-		{
-			var varDecl = GetVariableDeclarationStatement (context);
-			
-			using (var script = context.StartScript ()) {
-				script.Replace (varDecl.Type, context.CreateShortType (context.Resolve (varDecl.Variables.First ().Initializer).Type.ConvertToAstType ()));
-			}
-		}
-		
-		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context)
-		{
-			var result = context.GetNode<VariableDeclarationStatement> ();
-			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (new SimpleType ("var"))) {
-				if (context.Resolve (result.Variables.First ().Initializer) == null)
-					return null;
-				return result;
-			}
-			return null;
+			var visitor = new TypeSystemConvertVisitor (projectContent, fileName);
+			var unit = new CSharpParser ().Parse (content);
+			unit.AcceptVisitor (visitor, null);
+			return visitor.ParsedFile;
 		}
 	}
 }

@@ -394,6 +394,8 @@
     <Compile Include="CSharp\Refactoring\ContextAction\CreateEventInvocator.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\RemoveBackingStore.cs" />
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
+    <Compile Include="TypeSystem\IParsedFile.cs" />
+    <Compile Include="Utils\Platform.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

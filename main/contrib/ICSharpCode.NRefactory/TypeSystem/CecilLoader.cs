@@ -151,6 +151,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				// Disposing the synchronization context has no effect
 			}
 			
+			public IParsedFile GetFile(string fileName)
+			{
+				return null;
+			}
+			
 			string IDocumentationProvider.GetDocumentation(IEntity entity)
 			{
 				if (documentationProvider != null)

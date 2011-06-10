@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SetChildByRole (Roles.Identifier, new Identifier (value, AstLocation.Empty));
 			}
 		}
-
+		
 		public Identifier NameToken {
 			get {
 				return GetChildByRole (Roles.Identifier);
@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SetChildByRole (Roles.Identifier, value);
 			}
 		}
-
+		
 		public CSharpTokenNode LBracketToken {
 			get { return GetChildByRole (Roles.LBracket); }
 		}

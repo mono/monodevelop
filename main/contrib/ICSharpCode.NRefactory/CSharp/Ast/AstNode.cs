@@ -746,7 +746,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public bool Contains (AstLocation location)
 		{
-			return this.StartLocation <= location && location <= this.EndLocation;
+			return this.StartLocation <= location && location < this.EndLocation;
 		}
 		
 		// the Root role must be available when creating the null nodes, so we can't put it in the Roles class

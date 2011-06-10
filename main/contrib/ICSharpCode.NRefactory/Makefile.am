@@ -321,6 +321,7 @@ FILES =  \
 	TypeSystem/IntersectionType.cs \
 	TypeSystem/IParameter.cs \
 	TypeSystem/IParameterizedMember.cs \
+	TypeSystem/IParsedFile.cs \
 	TypeSystem/IProjectContent.cs \
 	TypeSystem/IProperty.cs \
 	TypeSystem/ISupportsInterning.cs \
@@ -348,6 +349,7 @@ FILES =  \
 	Utils/EmptyList.cs \
 	Utils/ExtensionMethods.cs \
 	Utils/GraphVizGraph.cs \
+	Utils/Platform.cs \
 	Utils/TreeTraversal.cs 
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

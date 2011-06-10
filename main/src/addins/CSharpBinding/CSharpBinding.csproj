@@ -245,6 +245,7 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionWrappers.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextAction.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\TypeSystemProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

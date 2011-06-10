@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Represents a file that was parsed and converted for the type system.
 	/// </summary>
-	public sealed class ParsedFile : AbstractFreezable
+	public sealed class ParsedFile : AbstractFreezable, IParsedFile
 	{
 		readonly string fileName;
 		readonly UsingScope rootUsingScope;
@@ -51,6 +51,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return usingScopes; }
 		}
 		
+		public IProjectContent ProjectContent {
+			get { return rootUsingScope.ProjectContent; }
+		}
+		
 		public IList<ITypeDefinition> TopLevelTypeDefinitions {
 			get { return topLevelTypeDefinitions; }
 		}
@@ -70,9 +74,37 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public ITypeDefinition GetTopLevelTypeDefinition(AstLocation location)
 		{
-			foreach (ITypeDefinition typeDef in topLevelTypeDefinitions) {
-				if (typeDef.Region.IsInside(location.Line, location.Column))
-					return typeDef;
+			return FindEntity(topLevelTypeDefinitions, location);
+		}
+		
+		public ITypeDefinition GetTypeDefinition(AstLocation location)
+		{
+			ITypeDefinition parent = null;
+			ITypeDefinition type = GetTopLevelTypeDefinition(location);
+			while (type != null) {
+				parent = type;
+				type = FindEntity(parent.InnerClasses, location);
+			}
+			return parent;
+		}
+		
+		public IMember GetMember(AstLocation location)
+		{
+			ITypeDefinition type = GetTypeDefinition(location);
+			if (type == null)
+				return null;
+			return FindEntity(type.Methods, location)
+				?? FindEntity(type.Fields, location)
+				?? FindEntity(type.Properties, location)
+				?? (IMember)FindEntity(type.Events, location);
+		}
+		
+		static T FindEntity<T>(IList<T> list, AstLocation location) where T : class, IEntity
+		{
+			// This could be improved using a binary search
+			foreach (T entity in list) {
+				if (entity.Region.IsInside(location.Line, location.Column))
+					return entity;
 			}
 			return null;
 		}

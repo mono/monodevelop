@@ -34,30 +34,35 @@ namespace ICSharpCode.Decompiler.Ast
 			this.AssemblyAttributes = assemblyAttributes.AsReadOnly();
 		}
 		
-		ITypeDefinition GetClass(TypeDefinition cecilType)
+		ITypeDefinition GetClass (TypeDefinition cecilType)
 		{
 			lock (dict) {
 				WeakReference wr;
 				ITypeDefinition type;
-				if (dict.TryGetValue(cecilType, out wr)) {
+				if (dict.TryGetValue (cecilType, out wr)) {
 					type = (ITypeDefinition)wr.Target;
 				} else {
 					wr = null;
 					type = null;
 				}
 				if (type == null) {
-					type = loader.LoadType(cecilType, this);
+					type = loader.LoadType (cecilType, this);
 				}
 				if (wr == null) {
 					if (--countUntilNextCleanup <= 0)
-						CleanupDict();
-					wr = new WeakReference(type);
-					dict.Add(cecilType, wr);
+						CleanupDict ();
+					wr = new WeakReference (type);
+					dict.Add (cecilType, wr);
 				} else {
 					wr.Target = type;
 				}
 				return type;
 			}
+		}
+		
+		public IParsedFile GetFile (string fileName)
+		{
+			return null;
 		}
 		
 		void CleanupDict()

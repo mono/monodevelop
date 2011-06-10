@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TypeSystem
 {
 	public interface ITypeSystemProvider
 	{
-		ParsedFile Parse (string fileName, TextReader content);
+		IParsedFile Parse (IProjectContent projectContent, string fileName, TextReader content);
 	}
 }
 

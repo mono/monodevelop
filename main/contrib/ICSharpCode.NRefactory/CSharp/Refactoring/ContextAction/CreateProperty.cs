@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var identifier = CreateField.GetIdentifier (context);
 			if (identifier == null)
 				return false;
-			return context.ResolveType (identifier) == null && CreateField.GuessType (context, identifier) != null;
+			return context.Resolve (identifier) == null && CreateField.GuessType (context, identifier) != null;
 		}
 		
 		public void Run (RefactoringContext context)

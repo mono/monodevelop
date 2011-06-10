@@ -610,7 +610,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (newField, f);
 				AddModifiers (newField, location);
 				if (location != null)
-					newField.AddChild (new CSharpModifierToken (Convert (location[0]), Modifiers.Const), AttributedNode.ModifierRole);
+					newField.AddChild (new CSharpModifierToken (Convert (location [0]), Modifiers.Const), AttributedNode.ModifierRole);
 				newField.AddChild (ConvertToType (f.TypeName), FieldDeclaration.Roles.Type);
 				
 				VariableInitializer variable = new VariableInitializer ();

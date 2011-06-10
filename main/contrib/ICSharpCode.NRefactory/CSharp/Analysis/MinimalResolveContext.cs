@@ -112,5 +112,10 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			// exit from Synchronize() block
 		}
+		
+		IParsedFile IProjectContent.GetFile(string fileName)
+		{
+			return null;
+		}
 	}
 }
