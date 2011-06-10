@@ -381,7 +381,125 @@ namespace MonoDevelop.IPhone
 				}
 			}
 			
+			string mtouchExtraArgs = conf.MtouchExtraArgs;
+			var cb = new ProcessArgumentBuilder ();
+			if (BuildNativeReferenceFlags (cb, proj)) {
+				args.Add ("-gcc_flags");
+				if (!string.IsNullOrEmpty (mtouchExtraArgs)) {
+					string gccFlags = ExtractGccFlags (ref mtouchExtraArgs);
+					if (gccFlags != null)
+						cb.Add (gccFlags);
+				}
+				args.AddQuoted (cb.ToString ());
+			}
+			
 			AddExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
+		}
+		
+		static bool BuildNativeReferenceFlags (ProcessArgumentBuilder cb, IPhoneProject proj)
+		{
+			bool hasNativeReferences = false;
+			var nativeRefs = proj.Items.GetAll<MonoDevelop.MacDev.NativeReferences.NativeReference> ();
+			//TODO: warn about bad native references
+			foreach (var item in nativeRefs) {
+				hasNativeReferences = true;
+				if (item.Kind == MonoDevelop.MacDev.NativeReferences.NativeReferenceKind.Static) {
+					if (item.Path.IsNullOrEmpty)
+						cb.AddQuoted ("-L" + item.Path.ParentDirectory);
+					cb.AddQuoted ("-l" + item.Path.FileNameWithoutExtension);
+					cb.Add ("-force_load");
+					cb.AddQuoted (item.Path);
+				} else if (item.Kind == MonoDevelop.MacDev.NativeReferences.NativeReferenceKind.Framework) {
+					cb.Add ("-framework");
+					cb.AddQuoted (item.Path.FileNameWithoutExtension);
+				}
+			}
+			return hasNativeReferences;
+		}
+		
+		static string ExtractGccFlags (ref string mtouchArgs)
+		{
+			int start = 0;
+			while ((start = GetNextNonWhitespace (mtouchArgs, start)) > -1) {
+				int end = GetArgumentEndPos (mtouchArgs, start);
+				Console.WriteLine ("{0} {1}", start, end);
+				if ((end - start) == "-gcc_flags".Length && SubstringIsEqual (mtouchArgs, start, "-gcc_flags")) {
+					int gccStart = start;
+					start += "-gcc_flags".Length;
+					start = GetNextNonWhitespace (mtouchArgs, start);
+					if (start < 0) {
+						throw new FormatException ("No value for gcc_flags in monotouch options");
+					}
+					end = GetArgumentEndPos (mtouchArgs, start);
+					if (end < 0) {
+						throw new FormatException ("Could not parse value for gcc_flags in monotouch options");
+					}
+					var gccFlags = mtouchArgs.Substring (start, end - start);
+					string filteredArgs = mtouchArgs.Substring (0, gccStart);
+					int nextArgStart = GetNextNonWhitespace (mtouchArgs, end);
+					if (nextArgStart > 0)
+						filteredArgs += mtouchArgs.Substring (nextArgStart);
+					mtouchArgs = filteredArgs;
+					return gccFlags;
+				}
+				start = end;
+			}
+			return null;
+		}
+		
+		static bool SubstringIsEqual (string str, int start, string substring)
+		{
+			if (start + substring.Length > str.Length)
+				return false;
+			for (int i = 0; i < substring.Length; i++)
+				if (str[i + start] != substring[i])
+					return false;
+			return true;
+		}
+		
+		static int GetArgumentEndPos (string str, int start)
+		{
+			bool isQuoted = str[start] == '"';
+			for (int i = start + 1; i < str.Length; i++) {
+				char c =  str[i];
+				if (c == '\\') {
+					i++;
+					continue;
+				}
+				if (isQuoted) {
+					if (c == '"')
+						return i + 1;
+				} else if (char.IsWhiteSpace (str[i])) {
+					return i;
+				}
+			}
+			return str.Length;
+		}
+		
+		static int GetNextNonWhitespace (string str, int start)
+		{
+			for (int i = start; i < str.Length; i++) {
+				if (!char.IsWhiteSpace (str[i]))
+					return i;
+			}
+			return -1;
+		}
+		
+		static string UnquoteArgument (string quoted)
+		{
+			if (quoted[0] != '"')
+				return quoted;
+			
+			var sb = new StringBuilder ();
+			for (int i = 1; i < quoted.Length - 1; i++) {
+				char c =  quoted[i];
+				if (c == '\\') {
+					i++;
+					continue;
+				}
+				sb.Append (c);
+			}
+			return sb.ToString ();
 		}
 		
 		static void AddExtraArgs (ProcessArgumentBuilder args, string extraArgs, IPhoneProject proj,
