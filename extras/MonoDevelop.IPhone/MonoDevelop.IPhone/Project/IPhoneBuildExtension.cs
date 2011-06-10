@@ -52,7 +52,7 @@ namespace MonoDevelop.IPhone
 		
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
-			IPhoneProject proj = item as IPhoneProject;
+			var proj = item as IPhoneProject;
 			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
 				return base.Build (monitor, item, configuration);
 			
@@ -227,7 +227,7 @@ namespace MonoDevelop.IPhone
 			bool isDevice = cfg.IsDevicePlatform;
 			
 			//remove framework references, they don't contain embedded content
-			List<string> toProcess = new List<string> ();
+			var toProcess = new List<string> ();
 			for (int i = 0; i < assemblies.Count; i++) {
 				var asm = assemblies[i];
 				if (!asm.StartsWith ("/Developer/MonoTouch/usr/lib/mono/2.1") && asm != "mscorlib")
@@ -589,7 +589,7 @@ namespace MonoDevelop.IPhone
 			if (base.GetNeedsBuilding (item, configuration))
 				return true;
 			
-			IPhoneProject proj = item as IPhoneProject;
+			var proj = item as IPhoneProject;
 			if (proj == null)
 				return false;
 			
@@ -647,7 +647,7 @@ namespace MonoDevelop.IPhone
 		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			base.Clean (monitor, item, configuration);
-			IPhoneProject proj = item as IPhoneProject;
+			var proj = item as IPhoneProject;
 			if (proj == null)
 				return;
 			
@@ -742,7 +742,7 @@ namespace MonoDevelop.IPhone
 		
 		protected override BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
 		{
-			IPhoneProject proj = item as IPhoneProject;
+			var proj = item as IPhoneProject;
 			if (proj == null || (proj.CompileTarget != CompileTarget.Exe && proj.CompileTarget != CompileTarget.Library))
 				return base.Compile (monitor, item, buildData);
 			
@@ -845,7 +845,7 @@ namespace MonoDevelop.IPhone
 			if (!isDevice)
 				return null;
 			
-			BuildResult result = new BuildResult ();
+			var result = new BuildResult ();
 			
 			var pkgInfo = conf.AppDirectory.Combine ("PkgInfo");
 			if (!File.Exists (pkgInfo))
@@ -1208,7 +1208,7 @@ namespace MonoDevelop.IPhone
 			var buf = Encoding.UTF8.GetBytes (sb.ToString ());
 			
 			//write the xcent file with the magic header, length, and the plist
-			byte[] magic = new byte[] { 0xfa, 0xde, 0x71, 0x71 };
+			var magic = new byte[] { 0xfa, 0xde, 0x71, 0x71 };
 			byte[] fileLen = Mono.DataConverter.BigEndian.GetBytes ((uint)buf.Length + 8); // 8 = magic.length + magicLen.Length
 			using (var fs = File.Open (file, FileMode.Create)) {
 				fs.Write (magic, 0, magic.Length);
