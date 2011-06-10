@@ -334,6 +334,12 @@ namespace MonoDevelop.SourceEditor
 		
 		void DisposeErrorMarkers ()
 		{
+			//the window has a reference to the markers we're destroying
+			//so if the error markers get cleared out while it's running, its expose will
+			//NRE and bring down MD
+			if (messageBubbleHighlightPopupWindow != null)
+				messageBubbleHighlightPopupWindow.Destroy ();
+			
 			currentErrorMarkers.ForEach (em => {
 				widget.Document.RemoveMarker (em);
 				em.Dispose ();
