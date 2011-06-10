@@ -451,11 +451,7 @@ FILES =  \
 	MonoDevelop.Projects/WorkspaceItem.cs \
 	MonoDevelop.Projects/WorkspaceItemCollection.cs \
 	MonoDevelop.Projects/WorkspaceItemEventArgs.cs \
-	MonoDevelop.Projects/WorkspaceItemRenamedEventArgs.cs \
-	MonoDevelop.TypeSystem/ITypeSystemProvider.cs \
-	MonoDevelop.TypeSystem/ProjectContentEventArgs.cs \
-	MonoDevelop.TypeSystem/TypeSystemProviderNode.cs \
-	MonoDevelop.TypeSystem/TypeSystemService.cs
+	MonoDevelop.Projects/WorkspaceItemRenamedEventArgs.cs
 
 RES =  \
 	frameworks/framework_NET_1_1.xml \
@@ -470,8 +466,6 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
-	-r:../../../build/bin/ICSharpCode.Decompiler.dll \
-	-r:../../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:../../../build/bin/Mono.Cecil.dll \
 	-r:../../../build/bin/Mono.Cecil.Mdb.dll \
 	-r:../../../build/bin/MonoDevelop.Projects.Formats.MSBuild.exe \

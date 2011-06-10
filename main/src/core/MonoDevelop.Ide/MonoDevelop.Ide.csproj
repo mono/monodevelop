@@ -90,6 +90,18 @@
       <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
+      <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
+      <Name>ICSharpCode.Decompiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\AppConfigFile.xft.xml">
@@ -1453,6 +1465,10 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\PriorityList.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.PriorityList.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FilePathEditor.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\ITypeSystemProvider.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\ProjectContentEventArgs.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\TypeSystemProviderNode.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\TypeSystemService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1520,5 +1536,6 @@
     <Folder Include="MonoDevelop.Ide.Updater\" />
     <Folder Include="MonoDevelop.Ide.Codons\" />
     <Folder Include="ExtensionModel\" />
+    <Folder Include="MonoDevelop.TypeSystem\" />
   </ItemGroup>
 </Project>

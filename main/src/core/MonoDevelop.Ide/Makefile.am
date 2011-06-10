@@ -1,5 +1,8 @@
 
 DEPS =  \
+	$(top_builddir)/build/bin/ICSharpCode.Decompiler.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
+	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
@@ -699,7 +702,11 @@ FILES =  \
 	MonoDevelop.Ide/ProjectOperations.cs \
 	MonoDevelop.Ide/RootWorkspace.cs \
 	MonoDevelop.Ide/Services.cs \
-	MonoDevelop.Ide/WebBrowserService.cs
+	MonoDevelop.Ide/WebBrowserService.cs \
+	MonoDevelop.TypeSystem/ITypeSystemProvider.cs \
+	MonoDevelop.TypeSystem/ProjectContentEventArgs.cs \
+	MonoDevelop.TypeSystem/TypeSystemProviderNode.cs \
+	MonoDevelop.TypeSystem/TypeSystemService.cs
 
 RES =  \
 	ExtensionModel/Commands.addin.xml \

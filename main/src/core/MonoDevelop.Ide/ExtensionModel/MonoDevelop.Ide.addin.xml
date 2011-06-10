@@ -155,8 +155,12 @@
 		<Description>Update tags for the Updater service</Description>
 		<ExtensionNode name="Tag" type="Mono.Addins.ExtensionNode"/>
 	</ExtensionPoint>
-
-		<!-- Extensions -->
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/TypeSystemProvider" name = "TypeSystemProvider">
+		<ExtensionNode name="Provider" type="MonoDevelop.TypeSystem.TypeSystemProviderNode"/>
+	</ExtensionPoint>
+	
+	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"

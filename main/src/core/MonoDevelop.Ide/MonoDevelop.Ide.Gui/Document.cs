@@ -190,6 +190,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext TypeResolveContext {
+			get {
+				return MonoDevelop.TypeSystem.TypeSystemService.GetContext (Project);
+			}
+		}
+		
 		public string PathRelativeToProject {
 			get { return Window.ViewContent.PathRelativeToProject; }
 		}

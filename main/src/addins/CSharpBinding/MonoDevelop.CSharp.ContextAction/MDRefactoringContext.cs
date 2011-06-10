@@ -60,28 +60,9 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 		}
 		
-		SimpleProjectContent content;
 		public override ITypeResolveContext TypeResolveContext {
 			get {
-				return new SimpleProjectContent ();
-/*				if (content == null) {
-					content = new SimpleProjectContent ();
-					var newTypes = new List<ITypeDefinition> ();
-					
-					foreach (var file in Document.Project.Files) {
-						if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
-							continue;
-						var visitor = new TypeSystemConvertVisitor (content, file.FilePath);
-						CSharpParser parser = new CSharpParser ();
-						using (var stream = System.IO.File.OpenRead (file.FilePath)) {
-							var unit = parser.Parse (stream);
-							unit.AcceptVisitor (visitor, null);
-						}
-						Console.WriteLine (file.FilePath + ": add:" + visitor.ParsedFile.TopLevelTypeDefinitions.Count);
-						content.UpdateProjectContent (null, visitor.ParsedFile.TopLevelTypeDefinitions, null, null);
-					}
-				}
-				return content;*/
+				return Document.TypeResolveContext;
 			}
 		}
 		
@@ -413,7 +394,6 @@ namespace MonoDevelop.CSharp.ContextAction
 			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, fullTypeName);
 		}
 		
-		
 		NRefactoryResolver resolver;
 		public NRefactoryResolver Resolver {
 			get {
@@ -443,7 +423,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		ParsedFile ParsedFile {
 			get {
-				var visitor = new TypeSystemConvertVisitor ((IProjectContent) TypeResolveContext, Document.FileName);
+				var visitor = new TypeSystemConvertVisitor (ParsedFile);
 				Unit.AcceptVisitor (visitor, null);
 				return visitor.ParsedFile;
 			}

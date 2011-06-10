@@ -31,6 +31,11 @@ using MonoDevelop.Projects;
 using ICSharpCode.Decompiler.Ast;
 using Mono.Cecil;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
+using Mono.Addins;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -38,12 +43,12 @@ namespace MonoDevelop.TypeSystem
 	{
 		static List<TypeSystemProviderNode> parsers;
 		
-		static IEnumerable<ParserNode> Parsers {
+		static IEnumerable<TypeSystemProviderNode> Parsers {
 			get {
 				if (parsers == null) {
-					Counters.ParserServiceInitialization.BeginTiming ();
-					parsers = new List<ParserNode> ();
-					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TypeSystemProvider", delegate (object sender, ExtensionNodeEventArgs args) {
+//					Counters.ParserServiceInitialization.BeginTiming ();
+					parsers = new List<TypeSystemProviderNode> ();
+					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/TypeSystemProvider", delegate (object sender, ExtensionNodeEventArgs args) {
 						switch (args.Change) {
 						case ExtensionChange.Add:
 							parsers.Add ((TypeSystemProviderNode)args.ExtensionNode);
@@ -53,7 +58,7 @@ namespace MonoDevelop.TypeSystem
 							break;
 						}
 					});
-					Counters.ParserServiceInitialization.EndTiming ();
+//					Counters.ParserServiceInitialization.EndTiming ();
 				}
 				return parsers;
 			}
@@ -99,6 +104,28 @@ namespace MonoDevelop.TypeSystem
 		
 		static Dictionary<Project, IProjectContent> projectContents = new Dictionary<Project, IProjectContent> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
+
+		public static IProjectContent LoadContent (Project project)
+		{
+			DateTime start = DateTime.Now;
+			var content = new SimpleProjectContent ();
+					
+			foreach (var file in project.Files) {
+				if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
+					continue;
+				
+				var provider = GetProvider (DesktopService.GetMimeTypeForUri (file.FilePath));
+				if (provider == null)
+					continue;
+				
+				using (var stream = new System.IO.StreamReader (file.FilePath)) {
+					var parsedFile = provider.Parse (file.FilePath, stream);
+					content.UpdateProjectContent (null, parsedFile.TopLevelTypeDefinitions, null, null);
+				}
+			}
+			Console.WriteLine ("parsed :" + project.Name + " in " + (DateTime.Now - start));
+			return content;
+		}
 		
 		public static void Load (Project project)
 		{
@@ -108,7 +135,7 @@ namespace MonoDevelop.TypeSystem
 				if (projectContents.ContainsKey (project))
 					return;
 				try {
-					IProjectContent content = LoadContent (project);
+					var content = LoadContent (project);
 					projectContents [project] = content;
 					referenceCounter [project] = 1;
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, content));
@@ -123,11 +150,11 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		public static event EventHandler<ProjectContentEventArgs> ProjectContentLoaded;
-		static EventHandler<ProjectContentEventArgs> OnProjectContentLoaded (ProjectContentEventArgs e)
+		static void OnProjectContentLoaded (ProjectContentEventArgs e)
 		{
-			EventHandler<ProjectContentEventArgs> handler = this.ProjectContentLoaded;
+			var handler = ProjectContentLoaded;
 			if (handler != null)
-				handler (this, e);
+				handler (null, e);
 		}
 		
 		public static void Unload (WorkspaceItem item)
@@ -202,7 +229,7 @@ namespace MonoDevelop.TypeSystem
 
 		#region Reference Counting
 		static Dictionary<object,int> loadCount = new Dictionary<object,int> ();
-		object rwLock = new object ();
+		static object rwLock = new object ();
 		
 		static int DecLoadCount (object ob)
 		{
@@ -237,12 +264,12 @@ namespace MonoDevelop.TypeSystem
 		}
 		#endregion
 		
-		Dictionary<string, ITypeResolveContext> assemblyContents = new Dictionary<string, ITypeResolveContext> ();
+		static Dictionary<string, ITypeResolveContext> assemblyContents = new Dictionary<string, ITypeResolveContext> ();
 		
 		static AssemblyDefinition ReadAssembly (string fileName)
 		{
 			ReaderParameters parameters = new ReaderParameters ();
-			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
+//			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
 				return AssemblyDefinition.ReadAssembly (stream, parameters);
 			}
@@ -253,7 +280,7 @@ namespace MonoDevelop.TypeSystem
 			List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
-				return;
+				return null;
 			foreach (var module in asm.Modules) 
 				contexts.Add (new CecilTypeResolveContext (module));
 			return new CompositeTypeResolveContext (contexts);
@@ -265,14 +292,14 @@ namespace MonoDevelop.TypeSystem
 			
 			IProjectContent content;
 			if (projectContents.TryGetValue (project, out content))
-				contexts.Add (contexts);
+				contexts.Add (content);
 			
-			foreach (var pr in netProject.GetReferencedItems (ConfigurationSelector.Default)) {
+			foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
 				var referencedProject = pr as Project;
 				if (referencedProject == null)
 					continue;
 				if (projectContents.TryGetValue (referencedProject, out content))
-					contexts.Add (contexts);
+					contexts.Add (content);
 			}
 			
 			if (project is DotNetProject) {
@@ -288,7 +315,7 @@ namespace MonoDevelop.TypeSystem
 					string refId = "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
 					ITypeResolveContext ctx;
 					if (!assemblyContents.TryGetValue (refId, out ctx))
-						assemblyContents [refId] = ctx = new CecilTypeResolveContext ();
+						assemblyContents [refId] = ctx = LoadAssemblyContext (fileName);
 					if (ctx != null)
 						contexts.Add (ctx);
 				}

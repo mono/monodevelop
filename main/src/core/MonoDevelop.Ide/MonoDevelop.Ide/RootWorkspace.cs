@@ -1008,6 +1008,7 @@ namespace MonoDevelop.Ide
 			try {
 //				Mono.Profiler.RuntimeControls.EnableProfiler ();
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
+				MonoDevelop.TypeSystem.TypeSystemService.Load (item);
 //				Mono.Profiler.RuntimeControls.DisableProfiler ();
 //				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
 			} catch (Exception ex) {
@@ -1066,6 +1067,7 @@ namespace MonoDevelop.Ide
 				WorkspaceItemClosed (this, args);
 			
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.Unload (item);
+			MonoDevelop.TypeSystem.TypeSystemService.Unload (item);
 //			ParserDatabase.Unload (item);
 			
 			NotifyDescendantItemRemoved (this, args);
