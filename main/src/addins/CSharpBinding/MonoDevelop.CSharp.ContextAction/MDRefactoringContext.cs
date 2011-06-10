@@ -49,6 +49,8 @@ namespace MonoDevelop.CSharp.ContextAction
 		public override bool HasCSharp3Support {
 			get {
 				var project = Document.Project as DotNetProject;
+				if (project == null)
+					return true;
 				switch (project.TargetFramework.ClrVersion) {
 				case ClrVersion.Net_1_1:
 				case ClrVersion.Net_2_0:
