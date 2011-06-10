@@ -146,8 +146,8 @@ namespace MonoDevelop.Autotools
 					string resgen = "resgen";
 					if (System.Environment.Version.Major >= 2) {
 						switch (dotnetProject.TargetFramework.ClrVersion) {
-							case ClrVersion.Net_2_0: resgen = "resgen2"; break;
 							case ClrVersion.Net_1_1: resgen = "resgen1"; break;
+							default: resgen = "resgen2"; break;
 						}
 					}
 					templateEngine.Variables ["RESGEN"] = resgen;
