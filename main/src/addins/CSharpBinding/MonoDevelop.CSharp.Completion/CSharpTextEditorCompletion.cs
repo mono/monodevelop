@@ -84,10 +84,10 @@ namespace MonoDevelop.CSharp.Completion
 			dom = Document.Dom;
 			textEditorData = Document.Editor;
 			
-			InitTracker ();
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			if (dom != null && dom.Project != null)
 				policy = dom.Project.Policies.Get<CSharpFormattingPolicy> (types);
+			InitTracker ();
 			UpdatePath (null, null);
 			textEditorData.Caret.PositionChanged += UpdatePath;
 			Document.DocumentParsed += HandleDocumentDocumentParsed;
@@ -240,9 +240,12 @@ namespace MonoDevelop.CSharp.Completion
 					if (stateTracker.Engine.IsInsideDocLineComment) {
 						string lineText = textEditorData.GetLineText (completionContext.TriggerLine);
 						int startIndex = Math.Min (completionContext.TriggerLineOffset - 1, lineText.Length - 1);
+
 					
 						while (startIndex >= 0 && lineText [startIndex] != '<') {
+
 							--startIndex;
+
 							if (lineText [startIndex] == '/') { // already closed.
 								startIndex = -1;
 								break;
@@ -261,6 +264,7 @@ namespace MonoDevelop.CSharp.Completion
 								return null;
 							}
 						}
+
 					}
 					return null;
 /* Disabled because it gives problems when declaring arrays - for example string [] should not pop up code completion.
@@ -1900,6 +1904,7 @@ namespace MonoDevelop.CSharp.Completion
 					col.Add (keyword, "md-keyword");
 				}
 			}
+
 		}
 		
 		CompletionDataList CreateCtrlSpaceCompletionData (CodeCompletionContext ctx, ExpressionResult expressionResult)
@@ -1968,12 +1973,16 @@ namespace MonoDevelop.CSharp.Completion
 				col.Add ("remove", "md-keyword");
 			} //else if (expressionResult.ExpressionContext == ExpressionContext.FullyQualifiedType) {} 
 			else if (expressionResult.ExpressionContext == ExpressionContext.Default) {
+
 				col.Add ("global", "md-keyword");
 				col.Add ("var", "md-keyword");
 				AddPrimitiveTypes (col);
 				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionStart);
+
 				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionContent);
+
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
+
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
 				AddNRefactoryKeywords (col, ICSharpCode.NRefactory.Parser.CSharp.Tokens.GlobalLevel);
 				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
@@ -2150,10 +2159,15 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			public override object VisitSwitchStatement (ICSharpCode.NRefactory.Ast.SwitchStatement switchStatement, object data)
+
 			{
+
 //				if (switchStatement.StartLocation < caretLocation && caretLocation < switchStatement.EndLocation)
+
 					this.switchStatement = switchStatement;
+
 				return base.VisitSwitchStatement(switchStatement, data);
+
 			}
 
 		}
@@ -2212,6 +2226,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (insideClass.Members != null) {
 				foreach (IMember m in insideClass.Methods) {
 					if (m.BodyRegion.Contains (line, column)) 
+
 						return false;
 				}
 			}
@@ -2249,9 +2264,11 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			if (method.ReturnType != null && method.ReturnType.FullName != "System.Void") {
+
 				builder.Append (Environment.NewLine);
 				builder.Append (indent);
 				builder.Append("/// <returns>\n");
+
 				builder.Append (indent);
 				builder.Append ("/// A <see cref=\"");
 				builder.Append (ambience.GetString (method.ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseNETTypeNames));
@@ -2259,6 +2276,7 @@ namespace MonoDevelop.CSharp.Completion
 				builder.Append (indent);
 				builder.Append ("/// </returns>");
 			}
+
 		}
 		
 		void AppendPropertyComment (StringBuilder builder, string indent, IProperty property)
@@ -2292,6 +2310,7 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (IMember m in c.Members) {
 				if (m.Location.Line < startLine && m.Location.Line > line) {
 					startLine = m.Location.Line;
+
 					member = m;
 				}
 			}
@@ -2338,6 +2357,7 @@ namespace MonoDevelop.CSharp.Completion
 			cp.Add ("typeparamref", "md-literal", GettextCatalog.GetString ("Identify that a word is a type parameter name"));
 			cp.Add ("value", "md-literal", GettextCatalog.GetString ("Describe a property"));
 			
+
 			return cp;
 		}
 		#endregion
