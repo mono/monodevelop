@@ -47,8 +47,11 @@ namespace MonoDevelop.IPhone
 		
 		static IPhoneSdks ()
 		{
-			Native = new AppleIPhoneSdk ("/Developer");
-			MonoTouch = new MonoTouchSdk ("/Developer");
+			var mtRoot = Environment.GetEnvironmentVariable ("MD_MTOUCH_SDK_ROOT");
+			var devRoot = Environment.GetEnvironmentVariable ("MD_IPHONE_SDK_ROOT");
+			
+			Native = new AppleIPhoneSdk (devRoot ?? "/Developer");
+			MonoTouch = new MonoTouchSdk (mtRoot ?? "/Developer");
 		}
 		
 		public static MonoDevelop.Projects.BuildResult GetSimOnlyError ()
