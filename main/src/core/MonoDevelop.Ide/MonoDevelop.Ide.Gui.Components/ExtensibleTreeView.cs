@@ -2157,6 +2157,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (zoom == 1)
 				return value;
 			
+			//this can happen during solution deserialization if the project is unrecognized
+			//because a line is added into the treeview with no icon
+			if (value == null)
+				return null;
+
 			Gdk.Pixbuf resized;
 			if (resizedCache.TryGetValue (value, out resized))
 				return resized;
