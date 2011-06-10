@@ -73,13 +73,9 @@ namespace MonoDevelop.MacDev.NativeReferences
 		
 		public override int GetHashCode ()
 		{
-			int hash = 0;
+			int hash = IsCxx.GetHashCode () ^ Kind.GetHashCode ();
 			if (Path != null)
 				hash ^= Path.GetHashCode ();
-			if (IsCxx != null)
-				hash ^= IsCxx.GetHashCode ();
-			if (Kind != null)
-				hash ^= Kind.GetHashCode ();
 			return hash;
 		}
 	}
