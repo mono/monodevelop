@@ -503,6 +503,10 @@
     <Compile Include="MonoDevelop.Core\IApplicationInfo.cs" />
     <Compile Include="MonoDevelop.Core\ApplicationService.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressStatusMonitor.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\TypeSystemService.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\ITypeSystemProvider.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\TypeSystemProviderNode.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\ProjectContentEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -562,6 +566,7 @@
     <Folder Include="MonoDevelop.Projects.Extensions\" />
     <Folder Include="MonoDevelop.Core.Setup\" />
     <Folder Include="MonoDevelop.Core\" />
+    <Folder Include="MonoDevelop.TypeSystem\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">
@@ -576,6 +581,14 @@
       <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
+      <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
+      <Name>ICSharpCode.Decompiler</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
