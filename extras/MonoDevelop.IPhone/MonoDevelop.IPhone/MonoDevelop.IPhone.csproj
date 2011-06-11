@@ -111,6 +111,8 @@
     <Compile Include="Framework\MonoTouchSdk.cs" />
     <Compile Include="Framework\IPhoneSdks.cs" />
     <Compile Include="Framework\AppleIPhoneSdk.cs" />
+    <Compile Include="Gui\IPhoneSdkSettings.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneSdkSettingsWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">

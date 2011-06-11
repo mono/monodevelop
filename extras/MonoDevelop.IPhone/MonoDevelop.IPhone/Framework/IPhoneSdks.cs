@@ -48,10 +48,12 @@ namespace MonoDevelop.IPhone
 		static IPhoneSdks ()
 		{
 			var mtRoot = Environment.GetEnvironmentVariable ("MD_MTOUCH_SDK_ROOT");
+			
+			//FIXME: find a way to pass this through to mtouch too 
 			var devRoot = Environment.GetEnvironmentVariable ("MD_IPHONE_SDK_ROOT");
 			
-			Native = new AppleIPhoneSdk (devRoot ?? "/Developer");
-			MonoTouch = new MonoTouchSdk (mtRoot ?? "/Developer");
+			Native = new AppleIPhoneSdk (devRoot ?? GetConfiguredNativeSdkRoot () ?? "/Developer");
+			MonoTouch = new MonoTouchSdk (mtRoot ?? GetConfiguredMonoTouchSdkRoot () ?? "/Developer");
 		}
 		
 		public static MonoDevelop.Projects.BuildResult GetSimOnlyError ()
@@ -67,6 +69,41 @@ namespace MonoDevelop.IPhone
 		{
 			Native.CheckCaches ();
 			MonoTouch.CheckCaches ();
+		}
+		
+		const string NATIVE_SDK_KEY = "MonoDevelop.IPhone.NativeSdkRoot";
+		const string MTOUCH_SDK_KEY = "MonoDevelop.IPhone.MonoTouchSdkRoot";
+		
+		internal static string GetConfiguredNativeSdkRoot ()
+		{
+			return PropertyService.Get<string> (NATIVE_SDK_KEY, null);
+		}
+		
+		internal static void SetConfiguredNativeSdkRoot (string value)
+		{
+			if (value == "/Developer")
+				value = null;
+			if (value == PropertyService.Get<string> (NATIVE_SDK_KEY))
+				return;
+			PropertyService.Set (NATIVE_SDK_KEY, value);
+			if (Environment.GetEnvironmentVariable ("MD_IPHONE_SDK_ROOT") != null)
+				Native = new AppleIPhoneSdk (value ?? "/Developer");
+		}
+		
+		internal static string GetConfiguredMonoTouchSdkRoot ()
+		{
+			return PropertyService.Get<string> (MTOUCH_SDK_KEY, null);
+		}
+		
+		internal static void SetConfiguredMonoTouchSdkRoot (string value)
+		{
+			if (value == "/Developer")
+				value = null;
+			if (value == PropertyService.Get<string> (MTOUCH_SDK_KEY))
+				return;
+			PropertyService.Set (MTOUCH_SDK_KEY, value);
+			if (Environment.GetEnvironmentVariable ("MD_MTOUCH_SDK_ROOT") != null)
+				MonoTouch = new MonoTouchSdk (value ?? "/Developer");
 		}
 	}
 	

@@ -79,6 +79,11 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
+		internal static bool ValidateSdkLocation (FilePath devRoot)
+		{
+			return File.Exists (devRoot.Combine (VERSION_PLIST));
+		}
+		
 		public bool IsInstalled { get; private set; }
 		public IPhoneSdkVersion[] InstalledSdkVersions { get; private set; }
 		public IPhoneSdkVersion[] InstalledSimVersions { get; private set; }

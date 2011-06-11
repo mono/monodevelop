@@ -141,6 +141,11 @@
 		</Condition>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+		<Section id = "IPhoneSdkSettings" _label = "MonoTouch SDKs"
+			         class="MonoDevelop.IPhone.Gui.IPhoneSdkSettings"/>
+	</Extension>
+	    	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
 		<Condition id="MonoTouchInstalled">
 			<ExecutionHandler id="IPhone" class = "MonoDevelop.IPhone.IPhoneExecutionHandler"/>

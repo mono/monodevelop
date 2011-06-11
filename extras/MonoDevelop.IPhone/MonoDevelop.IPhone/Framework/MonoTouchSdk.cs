@@ -72,6 +72,11 @@ namespace MonoDevelop.IPhone
 			return new IPhoneSdkVersion ();
 		}
 		
+		internal static bool ValidateSdkLocation (FilePath devRoot)
+		{
+			return File.Exists (devRoot.Combine ("MonoTouch/usr/bin/mtouch"));
+		}
+		
 		public bool IsInstalled { get; private set; }
 		public bool IsEvaluation { get; private set; }
 		public IPhoneSdkVersion Version { get; private set; }
