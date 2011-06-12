@@ -15,11 +15,13 @@ namespace Mono.Debugging.Client
 		int index;
 		bool isExternalCode;
 		bool hasDebugInfo;
+		string fullModuleName;
+		string fullTypeName;
 		
 		[NonSerialized]
 		DebuggerSession session;
 
-		public StackFrame (long address, string addressSpace, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo)
+		public StackFrame (long address, string addressSpace, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo, string fullModuleName, string fullTypeName)
 		{
 			this.address = address;
 			this.addressSpace = addressSpace;
@@ -27,10 +29,12 @@ namespace Mono.Debugging.Client
 			this.language = language;
 			this.isExternalCode = isExternalCode;
 			this.hasDebugInfo = hasDebugInfo;
+			this.fullModuleName = fullModuleName;
+			this.fullTypeName = fullTypeName;
 		}
 		
 		public StackFrame (long address, string addressSpace, SourceLocation location, string language)
-			: this (address, addressSpace, location, language, string.IsNullOrEmpty (location.FileName), true)
+			: this (address, addressSpace, location, language, string.IsNullOrEmpty (location.FileName), true, "", "")
 		{
 		}
 
@@ -40,17 +44,12 @@ namespace Mono.Debugging.Client
 		}
 
 		public StackFrame (long address, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo)
-			: this (address, "", location, language, string.IsNullOrEmpty (location.FileName), true)
+			: this (address, "", location, language, string.IsNullOrEmpty (location.FileName), true, "", "")
 		{
 		}
 		
 		public StackFrame (long address, SourceLocation location, string language)
-			: this (address, "", location, language, string.IsNullOrEmpty (location.FileName), true)
-		{
-		}
-
-		public StackFrame (long address, string module, string method, string filename, int line, string language)
-			: this (address, "", new SourceLocation (method, filename, line), language)
+			: this (address, "", location, language, string.IsNullOrEmpty (location.FileName), true, "", "")
 		{
 		}
 
@@ -99,6 +98,14 @@ namespace Mono.Debugging.Client
 		
 		public bool HasDebugInfo {
 			get { return this.hasDebugInfo; }
+		}
+		
+		public string FullModuleName {
+			get { return this.fullModuleName; }
+		}
+		
+		public string FullTypeName {
+			get { return this.fullTypeName; }
 		}
 		
 		public ObjectValue[] GetLocalVariables ()
