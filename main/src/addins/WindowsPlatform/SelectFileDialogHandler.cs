@@ -11,35 +11,38 @@ namespace MonoDevelop.Platform
     {
         public bool Run(SelectFileDialogData data)
         {
-            FileDialog dlg = null;
+            CommonDialog dlg = null;
             if (data.Action == Gtk.FileChooserAction.Open)
                 dlg = new OpenFileDialog();
             else if (data.Action == Gtk.FileChooserAction.Save)
-                dlg = new SaveFileDialog();		
+                dlg = new SaveFileDialog();
+			else if (data.Action == Gtk.FileChooserAction.SelectFolder)
+				dlg = new FolderBrowserDialog ();
 			
-			SetCommonFormProperties (data, dlg);
+			if (dlg is FileDialog)
+				SetCommonFormProperties (data, dlg as FileDialog);
+			else
+				SetFolderBrowserProperties (data, dlg as FolderBrowserDialog);
 			
-            bool result = false;
-            try
-            {
+
+			using (dlg) {
                 WinFormsRoot root = new WinFormsRoot();
                 if (dlg.ShowDialog(root) == DialogResult.Cancel)
-                    result = false;
-                else
-                {
-					FilePath[] paths = new FilePath [dlg.FileNames.Length];
-					for (int n=0; n<dlg.FileNames.Length; n++)
-						paths [n] = dlg.FileNames [n];
-                    data.SelectedFiles = paths;
-                    result = true;
-                }
-            }
-            finally
-            {
-                dlg.Dispose();
-            }
+                    return false;
+				
+				if (dlg is FileDialog) {
+					var fileDlg = dlg as OpenFileDialog;
+					FilePath[] paths = new FilePath [fileDlg.FileNames.Length];
+					for (int n=0; n < fileDlg.FileNames.Length; n++)
+						paths [n] = fileDlg.FileNames [n];
+                    data.SelectedFiles = paths;    
+				} else {
+					var folderDlg = dlg as FolderBrowserDialog;
+					data.SelectedFiles = new [] { new FilePath (folderDlg.SelectedPath) };
+				}
 
-            return result;
+				return true;
+			}
         }
 		
 		internal static void SetCommonFormProperties (SelectFileDialogData data, FileDialog dialog)
@@ -58,6 +61,14 @@ namespace MonoDevelop.Platform
 			OpenFileDialog openDialog = dialog as OpenFileDialog;
 			if (openDialog != null)
 				openDialog.Multiselect = data.SelectMultiple;
+		}
+				
+		static void SetFolderBrowserProperties (SelectFileDialogData data, FolderBrowserDialog dialog)
+		{
+			if (!string.IsNullOrEmpty (data.Title))
+				dialog.Description = data.Title;
+			
+			dialog.SelectedPath = data.CurrentFolder;
 		}
 		
 		static string GetFilterFromData (IList<SelectFileDialogFilter> filters)
