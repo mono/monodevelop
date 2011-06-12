@@ -78,12 +78,14 @@ namespace Mono.Debugging.Soft
 		
 		DC.StackFrame CreateStackFrame (MDB.StackFrame frame)
 		{
-			string method = frame.Method.Name;
-			if (frame.Method.DeclaringType != null)
-				method = frame.Method.DeclaringType.FullName + "." + method;
-			var location = new DC.SourceLocation (method, SoftDebuggerSession.NormalizePath (frame.FileName), frame.LineNumber);
-			var lang = frame.Method != null? "Managed" : "Native";
-			return new DC.StackFrame (frame.ILOffset, frame.Method.FullName, location, lang, session.IsExternalCode (frame), true);
+			MDB.MethodMirror method = frame.Method;
+			MDB.TypeMirror type = method.DeclaringType;
+			string methodName = method.Name;
+			if (type != null)
+				methodName = type.FullName + "." + methodName;
+			var location = new DC.SourceLocation (methodName, SoftDebuggerSession.NormalizePath (frame.FileName), frame.LineNumber);
+			var lang = frame.Method != null ? "Managed" : "Native";
+			return new DC.StackFrame (frame.ILOffset, method.FullName, location, lang, session.IsExternalCode (frame), true, type.Module.FullyQualifiedName, type.FullName);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)

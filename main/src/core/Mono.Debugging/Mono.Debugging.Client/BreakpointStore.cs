@@ -109,6 +109,22 @@ namespace Mono.Debugging.Client
 			return true;
 		}
 		
+		public bool RemoveCatchpoint (string exceptionName)
+		{
+			if (IsReadOnly)
+				return false;
+
+			for (int n=0; n<breakpoints.Count; n++) {
+				Catchpoint cp = breakpoints [n] as Catchpoint;
+				if (cp != null && cp.ExceptionName == exceptionName) {
+					breakpoints.RemoveAt (n);
+					OnBreakEventRemoved (cp);
+					n--;
+				}
+			}
+			return true;
+		}
+		
 		public bool Remove (BreakEvent bp)
 		{
 			if (!IsReadOnly && breakpoints.Remove (bp)) {
