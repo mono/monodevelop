@@ -55,7 +55,7 @@ namespace MonoDevelop.IPhone
 		
 		public FilePath DeveloperRoot { get; private set; }
 		public FilePath DevicePlatform { get { return DeveloperRoot.Combine ("Platforms/iPhoneOS.platform"); } }
-		public FilePath SimPlatform { get { return DeveloperRoot.Combine ("Platforms/iPhoneOS.platform"); } }
+		public FilePath SimPlatform { get { return DeveloperRoot.Combine ("Platforms/iPhoneSimulator.platform"); } }
 		
 		const string VERSION_PLIST = "Library/version.plist";
 		const string SYSTEM_VERSION_PLIST = "/System/Library/CoreServices/SystemVersion.plist";
@@ -128,9 +128,9 @@ namespace MonoDevelop.IPhone
 		public FilePath GetSdkPath (string version, bool sim)
 		{
 			if (sim)
-				return DeveloperRoot.Combine ("Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + version + ".sdk");
+				return SimPlatform.Combine ("Developer/SDKs/iPhoneSimulator" + version + ".sdk");
 			else
-				return DeveloperRoot.Combine ("Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + version + ".sdk");
+				return DevicePlatform.Combine ("Developer/SDKs/iPhoneOS" + version + ".sdk");
 		}
 		
 		string GetSdkPlistFilename (string version, bool sim)
