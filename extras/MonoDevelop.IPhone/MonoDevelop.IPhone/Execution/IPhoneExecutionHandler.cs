@@ -111,7 +111,7 @@ namespace MonoDevelop.IPhone
 			return psi;
 		}
 		
-		const string DoNotShowAgainKey = "DoNotShowAgain";
+		const string DO_NOT_SHOW_AGAIN_KEY = "DoNotShowAgain";
 
 		void TellUserToStartApplication ()
 		{
@@ -124,16 +124,16 @@ namespace MonoDevelop.IPhone
 				DefaultButton = 0,
 			};
 			
-			message.AddOption (DoNotShowAgainKey, GettextCatalog.GetString ("Do not show this message again"),
+			message.AddOption (DO_NOT_SHOW_AGAIN_KEY, GettextCatalog.GetString ("Do not show this message again"),
 			                   !IPhoneSettings.ShowStartOnDeviceMessage);
 			message.Buttons.Add (AlertButton.Ok);
 			MessageService.GenericAlert (message);
-			IPhoneSettings.ShowStartOnDeviceMessage = !message.GetOptionValue (DoNotShowAgainKey);
+			IPhoneSettings.ShowStartOnDeviceMessage = !message.GetOptionValue (DO_NOT_SHOW_AGAIN_KEY);
 		}
 		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			IPhoneExecutionCommand cmd = (IPhoneExecutionCommand) command;
+			var cmd = (IPhoneExecutionCommand) command;
 			if (!cmd.Simulator) {
 				if (IPhoneSettings.ShowStartOnDeviceMessage) {
 					Gtk.Application.Invoke (delegate {
@@ -203,7 +203,7 @@ namespace MonoDevelop.IPhone
 			FileStream fs = null;
 			try {
 				fs = File.Open (file, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
-				byte[] buffer = new byte [1024];
+				var buffer = new byte [1024];
 				var encoding = System.Text.Encoding.UTF8;
 				while (!finish) {
 					Thread.Sleep (500);
