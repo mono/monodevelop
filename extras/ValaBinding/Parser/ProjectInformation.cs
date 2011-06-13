@@ -305,8 +305,8 @@ namespace MonoDevelop.ValaBinding.Parser
 				Afrodite.SourceFile file = parseTree.LookupSourceFile (filename);
 				if (null != file) {
 					Afrodite.Symbol parent;
-					foreach (Afrodite.Symbol directive in file.UsingDirectives) {
-						Afrodite.Symbol ns = parseTree.Lookup (directive.FullyQualifiedName, out parent);
+					foreach (Afrodite.DataType directive in file.UsingDirectives) {
+						Afrodite.Symbol ns = parseTree.Lookup (directive.Symbol.FullyQualifiedName, out parent);
 						if (null != ns) {
 							containers = new List<Afrodite.Symbol> ();
 							AddResults (new Afrodite.Symbol[]{ ns }, results);
