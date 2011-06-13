@@ -81,10 +81,13 @@ namespace MonoDevelop.IPhone
 			} catch (IOException) {}
 			
 			var cb = new ProcessArgumentBuilder ();
-			cb.AddQuotedFormat ("-launchsim={0}", cmd.AppPath);
+			cb.Add ("-launchsim");
+			cb.AddQuoted (cmd.AppPath);
 			if (logSimOutput) {
-				cb.AddQuotedFormat ("-stderr={0}", errLog);
-				cb.AddQuotedFormat ("-stdout={0}", outLog);
+				cb.Add ("-stderr");
+				cb.AddQuoted (errLog);
+				cb.Add ("-stdout");
+				cb.AddQuoted (outLog);
 			}
 			
 			if (forceTarget != null) {
@@ -97,7 +100,8 @@ namespace MonoDevelop.IPhone
 				}
 				
 				if (!version.IsUseDefault)
-					cb.AddQuotedFormat ("-sdk={0}", forceTarget.Version);
+					cb.Add ("-sdk");
+					cb.AddQuoted (forceTarget.Version.ToString ());
 				
 				if (forceTarget.Device == TargetDevice.IPad)
 					cb.Add ("-device=2");

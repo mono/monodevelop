@@ -233,9 +233,15 @@ namespace MonoDevelop.IPhone
 			string mtouchPath = GetMtouchPath (runtime, fx);
 			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
 				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
-			console.Log.WriteLine (String.Format ("{0} -installdev=\"{1}\"", mtouchPath, appBundle));
-			return Runtime.ProcessService.StartConsoleProcess (mtouchPath,
-				String.Format ("-installdev=\"{0}\"", appBundle), appBundle.ParentDirectory, console, null);
+			
+			var pb = new ProcessArgumentBuilder ();
+			pb.Add ("-installdev");
+			pb.AddQuoted (appBundle);
+			string args = pb.ToString ();
+			
+			console.Log.WriteLine ("{0} {1}", mtouchPath, args);
+			return Runtime.ProcessService.StartConsoleProcess (mtouchPath, args, appBundle.ParentDirectory,
+				console, null);
 		}
 
 		public static string GetMtouchPath (TargetRuntime runtime, TargetFramework fx)

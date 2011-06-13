@@ -139,8 +139,10 @@ namespace MonoDevelop.IPhone
 				args.Add (isSim? "-sim" : "-dev");
 				args.AddQuoted (conf.AppDirectory);
 				
-				foreach (string asm in assemblyRefs)
-					args.AddQuotedFormat ("-r={0}", asm);
+				foreach (string asm in assemblyRefs) {
+					args.Add ("-r");
+					args.AddQuoted (asm);
+				}
 				
 				IPhoneSdkVersion osVersion = IPhoneSdkVersion.V3_0;
 				try {
@@ -357,11 +359,15 @@ namespace MonoDevelop.IPhone
 				args.AddQuotedFormat ("-i18n={0}", conf.MtouchI18n);
 			}
 			
-			if (!sdkVersion.Equals (IPhoneSdkVersion.V3_0))
-				args.AddQuotedFormat ("-sdk={0}", sdkVersion);
+			if (!sdkVersion.Equals (IPhoneSdkVersion.V3_0)) {
+				args.Add ("-sdk");
+				args.AddQuoted (sdkVersion.ToString ());
+			}
 			
-			if (conf.MtouchMinimumOSVersion != "3.0")
-				args.AddQuotedFormat ("-targetver={0}", conf.MtouchMinimumOSVersion);
+			if (conf.MtouchMinimumOSVersion != "3.0") {
+				args.Add ("-targetver");
+				args.AddQuoted (conf.MtouchMinimumOSVersion);
+			}
 			
 			if (IPhoneSdks.MonoTouch.Version >= new IPhoneSdkVersion (3, 99)) {
 				if (conf.MtouchUseSGen)
