@@ -72,11 +72,11 @@ namespace MonoDevelop.IPhone.Gui
 			FilePath location = CleanPath (iphoneSdkFolderEntry.Path);
 			if (!location.IsNullOrEmpty) {
 				if (AppleIPhoneSdk.ValidateSdkLocation (location)) {
-					iphoneLocationMessage.Text = GettextCatalog.GetString ("No SDK found at specified location.");
-					iphoneLocationIcon.Stock = Gtk.Stock.Cancel;
-				} else {
 					iphoneLocationMessage.Text = GettextCatalog.GetString ("SDK found at specified location.");
 					iphoneLocationIcon.Stock = Gtk.Stock.Apply;
+				} else {
+					iphoneLocationMessage.Text = GettextCatalog.GetString ("No SDK found at specified location.");
+					iphoneLocationIcon.Stock = Gtk.Stock.Cancel;
 				}
 			} else if (AppleIPhoneSdk.ValidateSdkLocation ("/Developer")) {
 				iphoneLocationMessage.Text = GettextCatalog.GetString ("SDK found at default location.");
@@ -89,11 +89,11 @@ namespace MonoDevelop.IPhone.Gui
 			FilePath location = CleanPath (monoTouchSdkFolderEntry.Path);
 			if (!location.IsNullOrEmpty) {
 				if (MonoTouchSdk.ValidateSdkLocation (location)) {
-					monotouchLocationMessage.Text = GettextCatalog.GetString ("No SDK found at specified location.");
-					monotouchLocationIcon.Stock = Gtk.Stock.Cancel;
-				} else {
 					monotouchLocationMessage.Text = GettextCatalog.GetString ("SDK found at specified location.");
 					monotouchLocationIcon.Stock = Gtk.Stock.Apply;
+				} else {
+					monotouchLocationMessage.Text = GettextCatalog.GetString ("No SDK found at specified location.");
+					monotouchLocationIcon.Stock = Gtk.Stock.Cancel;
 				}
 			} else if (MonoTouchSdk.ValidateSdkLocation ("/Developer")) {
 				monotouchLocationMessage.Text = GettextCatalog.GetString ("SDK found at default location.");
