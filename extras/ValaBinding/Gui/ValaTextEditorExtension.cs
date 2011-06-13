@@ -111,7 +111,7 @@ namespace MonoDevelop.ValaBinding
 			string lineText = null;
 			ProjectInformation parser = Parser;
 			var loc = Editor.Document.OffsetToLocation (completionContext.TriggerOffset);
-			int line = loc.Line + 1, column = loc.Column + 1;
+			int line = loc.Line, column = loc.Column;
 			switch (completionChar) {
 			case '.': // foo.[complete]
 				lineText = Editor.GetLineText (line);
