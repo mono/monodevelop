@@ -71,9 +71,8 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// </returns>
 		public Ast TryAcquireAst ()
 		{
-			IntPtr astInstance = IntPtr.Zero;
-			bool success = afrodite_completion_engine_try_acquire_ast (instance, out astInstance, 10);
-			return (success)? new Ast (astInstance, this): null;
+			IntPtr ast = afrodite_completion_engine_get_ast (instance);
+			return (ast == IntPtr.Zero)? null: new Ast (ast, this);
 		}
 		
 		/// <summary>
@@ -81,7 +80,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// </summary>
 		public void ReleaseAst (Ast ast)
 		{
-			afrodite_completion_engine_release_ast (instance, ast.Instance);
+			// Obsolete
 		}
 			
 		#region P/Invokes
@@ -96,10 +95,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		                                                                bool is_vapi, bool is_glib);
 		                                                                
 		[DllImport("afrodite")]
-		static extern bool afrodite_completion_engine_try_acquire_ast (IntPtr instance, out IntPtr ast, int retry_count);
-		
-		[DllImport("afrodite")]
-		static extern bool afrodite_completion_engine_release_ast (IntPtr instance, IntPtr ast);
+		static extern IntPtr afrodite_completion_engine_get_ast (IntPtr instance);
 		
 		#endregion
 	}
@@ -123,7 +119,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 				IntPtr children = afrodite_symbol_get_children (instance);
 				
 				if (IntPtr.Zero != children) {
-					list = new ValaList (children).ToTypedList (delegate (IntPtr item){ return new Symbol (item); });
+					list = new ValaList (children).ToTypedList (item => new Symbol (item));
 				}
 				
 				return list;
@@ -134,14 +130,20 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// The type of this symbol
 		/// </summary>
 		public DataType DataType {
-			get { return new DataType (afrodite_symbol_get_symbol_type (instance)); }
+			get { 
+				IntPtr datatype = afrodite_symbol_get_symbol_data_type (instance);
+				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_data_type (instance));
+			}
 		}
 		
 		/// <summary>
 		/// The return type of this symbol, if applicable
 		/// </summary>
 		public DataType ReturnType {
-			get{ return new DataType (afrodite_symbol_get_return_type (instance)); }
+			get { 
+				IntPtr datatype = afrodite_symbol_get_return_type (instance);
+				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_data_type (instance));
+			}
 		}
 		
 		/// <summary>
@@ -177,7 +179,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 				IntPtr refs = afrodite_symbol_get_source_references (instance);
 				
 				if (IntPtr.Zero != refs) {
-					list = new ValaList (refs).ToTypedList (delegate (IntPtr item){ return new SourceReference (item); });
+					list = new ValaList (refs).ToTypedList (item => new SourceReference (item));
 				}
 				
 				return list;
@@ -188,7 +190,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// The symbol type (class, method, ...) of this symbol
 		/// </summary>
 		public string SymbolType {
-			get{ return Marshal.PtrToStringAuto (afrodite_symbol_get_type_name (instance)); }
+			get{ return Utils.GetSymbolType (afrodite_symbol_get_symbol_type (instance)); }
 		}
 		
 		/// <summary>
@@ -250,15 +252,15 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			{ "class", Stock.Class },
 			{ "struct", Stock.Struct },
 			{ "enum", Stock.Enum },
-			{ "errordomain", Stock.Enum },
+			{ "error domain", Stock.Enum },
 			{ "field", Stock.Field },
 			{ "method", Stock.Method },
 			{ "constructor", Stock.Method },
 			{ "creationmethod", Stock.Method },
 			{ "property", Stock.Property },
 			{ "constant", Stock.Literal },
-			{ "enumvalue", Stock.Literal },
-			{ "errorcode", Stock.Literal },
+			{ "enum value", Stock.Literal },
+			{ "error code", Stock.Literal },
 			{ "signal", Stock.Event },
 			{ "delegate", Stock.Delegate },
 			{ "interface", Stock.Interface },
@@ -270,15 +272,15 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			{ "class", Stock.PrivateClass },
 			{ "struct", Stock.PrivateStruct },
 			{ "enum", Stock.PrivateEnum },
-			{ "errordomain", Stock.PrivateEnum },
+			{ "error domain", Stock.PrivateEnum },
 			{ "field", Stock.PrivateField },
 			{ "method", Stock.PrivateMethod },
 			{ "constructor", Stock.PrivateMethod },
 			{ "creationmethod", Stock.PrivateMethod },
 			{ "property", Stock.PrivateProperty },
 			{ "constant", Stock.Literal },
-			{ "enumvalue", Stock.Literal },
-			{ "errorcode", Stock.Literal },
+			{ "enum value", Stock.Literal },
+			{ "error code", Stock.Literal },
 			{ "signal", Stock.PrivateEvent },
 			{ "delegate", Stock.PrivateDelegate },
 			{ "interface", Stock.PrivateInterface },
@@ -290,15 +292,15 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			{ "class", Stock.ProtectedClass },
 			{ "struct", Stock.ProtectedStruct },
 			{ "enum", Stock.ProtectedEnum },
-			{ "errordomain", Stock.ProtectedEnum },
+			{ "error domain", Stock.ProtectedEnum },
 			{ "field", Stock.ProtectedField },
 			{ "method", Stock.ProtectedMethod },
 			{ "constructor", Stock.ProtectedMethod },
 			{ "creationmethod", Stock.ProtectedMethod },
 			{ "property", Stock.ProtectedProperty },
 			{ "constant", Stock.Literal },
-			{ "enumvalue", Stock.Literal },
-			{ "errorcode", Stock.Literal },
+			{ "enum value", Stock.Literal },
+			{ "error code", Stock.Literal },
 			{ "signal", Stock.ProtectedEvent },
 			{ "delegate", Stock.ProtectedDelegate },
 			{ "interface", Stock.ProtectedInterface },
@@ -350,7 +352,10 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		static extern IntPtr afrodite_symbol_get_parameters (IntPtr instance);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_symbol_get_symbol_type (IntPtr instance);
+		static extern int afrodite_symbol_get_symbol_type (IntPtr instance);
+		
+		[DllImport("afrodite")]
+		static extern IntPtr afrodite_symbol_get_symbol_data_type (IntPtr instance);
 		
 		[DllImport("afrodite")]
 		static extern IntPtr afrodite_symbol_get_return_type (IntPtr instance);
@@ -874,13 +879,13 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// <summary>
 		/// Using directives in this source file
 		/// </summary>
-		public List<Symbol> UsingDirectives {
+		public List<DataType> UsingDirectives {
 			get {
-				List<Symbol> list = new List<Symbol> ();
+				List<DataType> list = new List<DataType> ();
 				IntPtr symbols = afrodite_source_file_get_using_directives (instance);
 				
 				if (IntPtr.Zero != symbols) {
-					list = new ValaList (symbols).ToTypedList (delegate (IntPtr item){ return new Symbol (item); });
+					list = new ValaList (symbols).ToTypedList (item => new DataType (item));
 				}
 				
 				return list;
@@ -950,9 +955,11 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 				if (IsGeneric) {
 					text.Append ("<");
 					List<DataType> parameters = GenericTypes;
-					text.Append (parameters[0].TypeName);
-					for (int i = 0; i < parameters.Count; i++) {
-						text.AppendFormat (",{0}", parameters[i].TypeName);
+					if (parameters != null && parameters.Count > 0) {
+						text.Append (parameters[0].TypeName);
+						for (int i = 0; i < parameters.Count; i++) {
+							text.AppendFormat (",{0}", parameters[i].TypeName);
+						}
 					}
 					text.Append (">");
 				}
@@ -1026,7 +1033,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 				IntPtr types = afrodite_data_type_get_generic_types (instance);
 				
 				if (IntPtr.Zero != types) {
-					list = new ValaList (types).ToTypedList (delegate (IntPtr item){ return new DataType (item); });
+					list = new ValaList (types).ToTypedList (item => new DataType (item));
 				}
 				
 				return list;
@@ -1154,9 +1161,16 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			return list;
 		}
 		
+		public static string GetSymbolType (int symbolType)
+		{
+			return Marshal.PtrToStringAuto (afrodite_utils_symbols_get_symbol_type_description (symbolType));
+		}
+		
 		[DllImport("afrodite")]
 		static extern IntPtr afrodite_utils_get_package_paths (string package, IntPtr codeContext, string[] vapiDirs);
 		
+		[DllImport("afrodite")]
+		static extern IntPtr afrodite_utils_symbols_get_symbol_type_description (int symbolType);
 	}
 }
 

@@ -138,6 +138,7 @@ namespace MonoDevelop.ValaBinding
 			
 			int len = function.FullyQualifiedName.LastIndexOf (".");
 			string prename = null;
+			string returnType = (function.ReturnType == null)? string.Empty: function.ReturnType.TypeName;
 			
 			if (len > 0)
 				prename = function.FullyQualifiedName.Substring (0, len + 1);
@@ -149,7 +150,7 @@ namespace MonoDevelop.ValaBinding
 
 			return string.Format ("{2} {3}<b>{0}</b>({1})", GLib.Markup.EscapeText (function.Name), 
 			                                                paramTxt, 
-			                                                GLib.Markup.EscapeText (function.ReturnType.TypeName), 
+			                                                GLib.Markup.EscapeText (returnType), 
 			                                                GLib.Markup.EscapeText (prename));
 			// return prename + "<b>" + function.Name + "</b>" + " (" + paramTxt + ")" + cons;
 		}
