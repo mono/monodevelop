@@ -389,24 +389,27 @@ namespace MonoDevelop.IPhone
 			
 			string mtouchExtraArgs = conf.MtouchExtraArgs;
 			var cb = new ProcessArgumentBuilder ();
-			if (BuildNativeReferenceFlags (cb, proj)) {
-				args.Add ("-gcc_flags");
+			bool hasCxx;
+			if (BuildNativeReferenceFlags (cb, proj, out hasCxx)) {
+				args.Add ("--gcc_flags");
 				if (!string.IsNullOrEmpty (mtouchExtraArgs)) {
 					string gccFlags = ExtractGccFlags (ref mtouchExtraArgs);
 					if (gccFlags != null)
 						cb.Add (gccFlags);
 				}
 				args.AddQuoted (cb.ToString ());
+				if (hasCxx)
+					args.Add ("--cxx");
 			}
 			
 			AddExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
 		}
 		
-		static bool BuildNativeReferenceFlags (ProcessArgumentBuilder cb, IPhoneProject proj)
+		static bool BuildNativeReferenceFlags (ProcessArgumentBuilder cb, IPhoneProject proj, out bool hasCxx)
 		{
+			hasCxx = false;
 			bool hasNativeReferences = false;
 			var nativeRefs = proj.Items.GetAll<MonoDevelop.MacDev.NativeReferences.NativeReference> ();
-			//TODO: warn about bad native references
 			foreach (var item in nativeRefs) {
 				hasNativeReferences = true;
 				if (item.Kind == MonoDevelop.MacDev.NativeReferences.NativeReferenceKind.Static) {
@@ -415,9 +418,13 @@ namespace MonoDevelop.IPhone
 					cb.AddQuoted ("-l" + item.Path.FileNameWithoutExtension);
 					cb.Add ("-force_load");
 					cb.AddQuoted (item.Path);
+					if (item.IsCxx)
+						hasCxx = true;
 				} else if (item.Kind == MonoDevelop.MacDev.NativeReferences.NativeReferenceKind.Framework) {
 					cb.Add ("-framework");
 					cb.AddQuoted (item.Path.FileNameWithoutExtension);
+				} else {
+					//TODO: warn about bad native references
 				}
 			}
 			return hasNativeReferences;
