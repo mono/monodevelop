@@ -20,7 +20,7 @@
 		<DebuggerEngine
 			id="Mono.Debugger.Soft"
 			name="Mono Soft Debugger"
-			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Disassembly"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching, Disassembly"
 			type="MonoDevelop.Debugger.Soft.SoftDebuggerEngine" />
 	</Extension>
 	

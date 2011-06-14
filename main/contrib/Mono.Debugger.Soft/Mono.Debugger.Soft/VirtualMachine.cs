@@ -224,6 +224,10 @@ namespace Mono.Debugger.Soft
 			return req;
 		}
 
+		public void Disconnect () {
+			conn.Close ();
+		}
+
 		public void ClearAllBreakpoints () {
 			conn.ClearAllBreakpoints ();
 		}
