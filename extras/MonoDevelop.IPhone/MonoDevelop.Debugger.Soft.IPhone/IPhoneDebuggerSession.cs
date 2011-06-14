@@ -103,16 +103,16 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		
 		void EndSimProcess ()
 		{
-			if (simProcess == null)
+			var process = simProcess;
+			if (process == null || process.HasExited)
 				return;
-			if (!simProcess.HasExited) {
-				try {
-					simProcess.StandardInput.WriteLine ();
-				} catch {}
-			}
+			try {
+				process.StandardInput.WriteLine ();
+			} catch {}
 			GLib.Timeout.Add (10000, delegate {
-				if (!simProcess.HasExited)
-					simProcess.Kill ();
+				var p = simProcess;
+				if (p != null && !p.HasExited)
+					p.Kill ();
 				return false;
 			});
 		}
