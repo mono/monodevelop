@@ -14,7 +14,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.HSeparator hseparator1;
 		private global::Gtk.HBox hbox47;
 		private global::Gtk.Button managerButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

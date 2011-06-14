@@ -5,17 +5,12 @@ namespace MonoDevelop.Ide.Gui.Components
 	public partial class PriorityList
 	{
 		private global::Gtk.HBox hbox;
-
 		private global::Gtk.ScrolledWindow scrolledWindow;
-
 		private global::Gtk.TreeView treeview;
-
 		private global::Gtk.VBox controls;
-
 		private global::Gtk.Button buttonUp;
-
 		private global::Gtk.Button buttonDown;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -37,7 +32,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			this.treeview.HeadersVisible = false;
 			this.scrolledWindow.Add (this.treeview);
 			this.hbox.Add (this.scrolledWindow);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox[this.scrolledWindow]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox [this.scrolledWindow]));
 			w2.Position = 0;
 			// Container child hbox.Gtk.Box+BoxChild
 			this.controls = new global::Gtk.VBox ();
@@ -51,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			this.buttonUp.UseUnderline = true;
 			this.buttonUp.Label = "gtk-go-up";
 			this.controls.Add (this.buttonUp);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.controls[this.buttonUp]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.controls [this.buttonUp]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -63,12 +58,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			this.buttonDown.UseUnderline = true;
 			this.buttonDown.Label = "gtk-go-down";
 			this.controls.Add (this.buttonDown);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.controls[this.buttonDown]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.controls [this.buttonDown]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
 			this.hbox.Add (this.controls);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox[this.controls]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox [this.controls]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;

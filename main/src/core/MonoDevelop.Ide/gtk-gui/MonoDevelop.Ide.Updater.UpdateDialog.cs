@@ -18,7 +18,7 @@ namespace MonoDevelop.Ide.Updater
 		private global::Gtk.ComboBox updateLevelCombo;
 		private global::Gtk.CheckButton checkAutomaticallyCheck;
 		private global::Gtk.Button buttonOk;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

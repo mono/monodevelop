@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		private global::Gtk.Button buttonClose;
 		private global::Gtk.Button buttonReplace;
 		private global::Gtk.Button buttonSearch;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

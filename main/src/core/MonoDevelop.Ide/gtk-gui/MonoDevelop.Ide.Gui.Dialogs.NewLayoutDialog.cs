@@ -12,7 +12,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		private global::Gtk.Label validationMessage;
 		private global::Gtk.Button button309;
 		private global::Gtk.Button newButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

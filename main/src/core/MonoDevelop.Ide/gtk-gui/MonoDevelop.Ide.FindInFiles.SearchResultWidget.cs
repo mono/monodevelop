@@ -15,7 +15,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		private global::Gtk.TextView textviewLog;
 		private global::Gtk.Label labelStatus;
 		private global::Gtk.Toolbar toolbar;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

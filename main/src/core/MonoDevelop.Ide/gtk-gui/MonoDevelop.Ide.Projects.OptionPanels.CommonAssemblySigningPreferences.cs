@@ -9,7 +9,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label strongNameFileLabel;
 		private global::MonoDevelop.Components.FileEntry strongNameFileEntry;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

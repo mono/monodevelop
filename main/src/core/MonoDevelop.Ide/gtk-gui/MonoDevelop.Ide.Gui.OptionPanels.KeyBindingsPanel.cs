@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.Label labelEditBinding;
 		private global::Gtk.Entry accelEntry;
 		private global::Gtk.Button updateButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

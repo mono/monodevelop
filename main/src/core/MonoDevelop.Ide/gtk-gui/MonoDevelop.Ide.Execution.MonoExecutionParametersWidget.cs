@@ -9,7 +9,7 @@ namespace MonoDevelop.Ide.Execution
 		private global::Gtk.VBox vbox4;
 		private global::Gtk.Button buttonReset;
 		private global::Gtk.Button buttonPreview;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

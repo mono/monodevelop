@@ -23,7 +23,7 @@ namespace MonoDevelop.Ide
 		private global::Gtk.Image image10;
 		private global::Gtk.Button cancelbutton1;
 		private global::Gtk.Button okbutton1;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
