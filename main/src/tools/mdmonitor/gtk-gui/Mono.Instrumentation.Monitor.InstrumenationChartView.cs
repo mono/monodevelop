@@ -21,7 +21,7 @@ namespace Mono.Instrumentation.Monitor
 		private global::Gtk.Button buttonAddCounter;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
 		private global::Gtk.TreeView listSeries;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

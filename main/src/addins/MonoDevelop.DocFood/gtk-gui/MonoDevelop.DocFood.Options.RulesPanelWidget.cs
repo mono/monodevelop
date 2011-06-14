@@ -9,7 +9,7 @@ namespace MonoDevelop.DocFood.Options
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Button button3;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

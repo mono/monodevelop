@@ -31,7 +31,7 @@ namespace MonoDevelop.AssemblyBrowser
 		private global::Gtk.VBox searchWidget;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.TreeView searchTreeview;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

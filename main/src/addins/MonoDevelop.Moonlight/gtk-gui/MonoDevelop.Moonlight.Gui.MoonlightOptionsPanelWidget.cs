@@ -34,7 +34,7 @@ namespace MonoDevelop.Moonlight.Gui
 		private global::Gtk.VBox vbox6;
 		private global::Gtk.CheckButton validateXamlCheck;
 		private global::Gtk.CheckButton throwXamlErrorsCheck;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

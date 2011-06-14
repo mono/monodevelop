@@ -35,7 +35,7 @@ namespace MonoDevelop.RegexToolkit
 		private global::Gtk.HButtonBox hbuttonbox2;
 		private global::Gtk.Button buttonUpdate;
 		private global::Gtk.Button buttonCancel;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

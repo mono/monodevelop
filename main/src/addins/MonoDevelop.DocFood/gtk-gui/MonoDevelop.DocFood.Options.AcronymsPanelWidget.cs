@@ -18,7 +18,7 @@ namespace MonoDevelop.DocFood.Options
 		private global::Gtk.Label label2;
 		private global::Gtk.Entry entry1;
 		private global::Gtk.Button button1;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

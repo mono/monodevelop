@@ -27,7 +27,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		private global::Gtk.Entry tbxReferenceName;
 		private global::Gtk.Button btnCancel;
 		private global::Gtk.Button btnOK;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

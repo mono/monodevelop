@@ -14,7 +14,7 @@ namespace ILAsmBinding
 		private global::Gtk.ComboBox compileTargetCombo;
 		private global::Gtk.CheckButton checkbuttonIncludeDebugInfo;
 		private global::Gtk.Label GtkLabel1;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

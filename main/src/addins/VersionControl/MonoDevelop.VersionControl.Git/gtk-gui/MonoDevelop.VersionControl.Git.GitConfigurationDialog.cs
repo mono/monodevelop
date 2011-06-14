@@ -27,7 +27,7 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.Button buttonTrackRemote;
 		private global::Gtk.Label label2;
 		private global::Gtk.Button buttonOk;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -38,7 +38,7 @@ namespace MonoDevelop.AspNet.Gui
 		private global::Gtk.Label label12;
 		private global::Gtk.Label label13;
 		private global::Gtk.Label label14;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

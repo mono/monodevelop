@@ -26,7 +26,7 @@ namespace Mono.Instrumentation.Monitor
 		private global::Gtk.Button buttonSaveAs;
 		private global::Gtk.Button buttonDelete;
 		private global::Gtk.Alignment viewBox;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

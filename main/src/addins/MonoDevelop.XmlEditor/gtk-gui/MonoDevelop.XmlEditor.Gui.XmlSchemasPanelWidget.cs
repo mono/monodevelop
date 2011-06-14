@@ -20,7 +20,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		private global::Gtk.VBox vbox3;
 		private global::Gtk.Button defaultAssociationsAddButton;
 		private global::Gtk.Button defaultAssociationsRemoveButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

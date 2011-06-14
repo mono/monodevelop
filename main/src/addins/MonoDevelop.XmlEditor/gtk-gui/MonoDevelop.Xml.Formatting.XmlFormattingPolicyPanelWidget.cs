@@ -18,7 +18,7 @@ namespace MonoDevelop.Xml.Formatting
 		private global::MonoDevelop.Components.PropertyGrid.PropertyGrid propertyGrid;
 		private global::Gtk.HBox hbox3;
 		private global::Gtk.Button buttonAdvanced;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

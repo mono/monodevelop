@@ -15,7 +15,7 @@ namespace MonoDevelop.DocFood.Options
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.Button button1;
 		private global::Gtk.Button button2;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

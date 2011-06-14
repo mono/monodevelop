@@ -10,7 +10,7 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.ComboBox comboHandlers;
 		private global::Gtk.HSeparator hseparator1;
 		private global::Gtk.EventBox editorBox;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

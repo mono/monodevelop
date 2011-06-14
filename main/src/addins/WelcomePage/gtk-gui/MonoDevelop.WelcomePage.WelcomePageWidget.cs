@@ -35,7 +35,7 @@ namespace MonoDevelop.WelcomePage
 		private global::Gtk.HBox hbox7;
 		private global::Gtk.Label label9;
 		private global::Gtk.VBox newsLinkBox;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

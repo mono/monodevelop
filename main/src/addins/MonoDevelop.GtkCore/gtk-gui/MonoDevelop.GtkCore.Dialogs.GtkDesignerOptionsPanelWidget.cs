@@ -6,7 +6,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 	{
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.CheckButton checkSwitchLayout;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

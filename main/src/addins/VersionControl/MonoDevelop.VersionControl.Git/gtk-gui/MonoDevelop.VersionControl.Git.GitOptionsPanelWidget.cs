@@ -11,7 +11,7 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.VBox vbox3;
 		private global::Gtk.CheckButton checkRebase;
 		private global::Gtk.CheckButton checkStashUpdate;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

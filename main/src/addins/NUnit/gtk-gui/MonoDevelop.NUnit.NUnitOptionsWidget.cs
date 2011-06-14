@@ -23,7 +23,7 @@ namespace MonoDevelop.NUnit
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.Button addButton;
 		private global::Gtk.Button removeButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

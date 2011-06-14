@@ -31,7 +31,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		private global::Gtk.RadioButton radioNotAccept;
 		private global::Gtk.Button button98;
 		private global::Gtk.Button button104;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -14,7 +14,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		private global::Gtk.CheckButton checkSave;
 		private global::Gtk.Button button23;
 		private global::Gtk.Button button28;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -18,7 +18,7 @@ namespace Mono.Instrumentation.Monitor
 		private global::Gtk.Label label2;
 		private global::Gtk.Button buttonResetScale;
 		private global::Gtk.VScale vscaleScale;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
