@@ -79,6 +79,11 @@
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MonoDevelop.MacDev, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.MacDev\MonoDevelop.MacDev.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -214,19 +219,9 @@
     <None Include="icons\iphone-project-options-panel-16.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="icons\application-x-mono-develop-xib-16.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="templates\IPhonePlist.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="icons\README.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MonoDevelop.MacDev\MonoDevelop.MacDev.csproj">
-      <Project>{150AC48A-E4AE-4232-9959-28D240537906}</Project>
-      <Name>MonoDevelop.MacDev</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
 </Project>

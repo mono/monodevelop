@@ -36,6 +36,7 @@ autom4te.cache/
 /main/mdtool
 /main/monodevelop
 /main/monodevelop-core-addins.pc
+/main/monodevelop-core-mac-addins.pc
 /main/monodevelop.pc
 /main/monodevelop.spec
 /profiles/default
@@ -71,6 +72,7 @@ autom4te.cache/
 /main/src/addins/GnomePlatform/Makefile
 /main/src/addins/ILAsmBinding/Makefile
 /main/src/addins/MacPlatform/Makefile
+/main/src/addins/MonoDevelop.MacDev/Makefile
 /main/src/addins/Makefile
 /main/src/addins/MonoDevelop.AssemblyBrowser/Makefile
 /main/src/addins/MonoDevelop.Autotools/Makefile

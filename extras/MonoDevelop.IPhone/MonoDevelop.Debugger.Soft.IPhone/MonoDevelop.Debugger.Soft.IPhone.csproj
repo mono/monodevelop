@@ -75,6 +75,11 @@
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MonoDevelop.MacDev, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.MacDev\MonoDevelop.MacDev.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
