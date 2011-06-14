@@ -85,14 +85,19 @@ namespace MonoDevelop.CSharp.Inspection
 		public DeclarationKinds MatchKind { get; set; }
 		
 		/// <summary>
-		/// If set, matches on nodes with all of these modifiers.
+		/// If set, matches only on nodes with at least one of these modifiers.
 		/// </summary>
 		public ICS.Modifiers MatchAnyModifiers { get; set; }
 		
 		/// <summary>
-		/// If set, matches on nodes with any of these modifiers.
+		/// If set, matches only on nodes with all of these modifiers.
 		/// </summary>
 		public ICS.Modifiers MatchAllModifiers { get; set; }
+		
+		/// <summary>
+		/// If set, matches only on nodes with none of these modifiers.
+		/// </summary>
+		public ICS.Modifiers MatchNoModifiers { get; set; }
 		
 		/// <summary>
 		/// If set, identifiers are required to be prefixed with one of these values.
@@ -164,6 +169,9 @@ namespace MonoDevelop.CSharp.Inspection
 				mods = mods | defaultVisibility;
 			
 			if (MatchAnyModifiers != 0 && (MatchAnyModifiers & mods) == 0)
+				return false;
+			
+			if ((MatchNoModifiers & mods) != 0)
 				return false;
 			
 			if (MatchAllModifiers != 0 && (MatchAllModifiers & mods) != MatchAllModifiers)
