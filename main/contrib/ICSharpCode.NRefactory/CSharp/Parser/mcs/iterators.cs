@@ -647,12 +647,18 @@ namespace Mono.CSharp
 			throw new NotSupportedException ("ET");
 		}
 
+		protected virtual BlockContext CreateBlockContext (ResolveContext rc)
+		{
+			var ctx = new BlockContext (rc, block, ((BlockContext) rc).ReturnType);
+			ctx.CurrentAnonymousMethod = this;
+			return ctx;
+		}
+
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			storey = (StateMachine) block.Parent.ParametersBlock.AnonymousMethodStorey;
 
-			BlockContext ctx = new BlockContext (ec, block, ReturnType);
-			ctx.CurrentAnonymousMethod = this;
+			var ctx = CreateBlockContext (ec);
 
 			ctx.StartFlowBranching (this, ec.CurrentBranching);
 			Block.Resolve (ctx);
@@ -661,14 +667,16 @@ namespace Mono.CSharp
 			// Explicit return is required for Task<T> state machine
 			//
 			var task_storey = storey as AsyncTaskStorey;
-			if (task_storey == null || !task_storey.ReturnType.IsGenericTask)
+			if (task_storey == null || (task_storey.ReturnType != null && !task_storey.ReturnType.IsGenericTask))
 				ctx.CurrentBranching.CurrentUsageVector.Goto ();
 
 			ctx.EndFlowBranching ();
 
-			var move_next = new StateMachineMethod (storey, this, new TypeExpression (ReturnType, loc), Modifiers.PUBLIC, new MemberName ("MoveNext", loc));
-			move_next.Block.AddStatement (new MoveNextBodyStatement (this));
-			storey.AddEntryMethod (move_next);
+			if (!ec.IsInProbingMode) {
+				var move_next = new StateMachineMethod (storey, this, new TypeExpression (ReturnType, loc), Modifiers.PUBLIC, new MemberName ("MoveNext", loc));
+				move_next.Block.AddStatement (new MoveNextBodyStatement (this));
+				storey.AddEntryMethod (move_next);
+			}
 
 			eclass = ExprClass.Value;
 			return this;
@@ -746,6 +754,8 @@ namespace Mono.CSharp
 			original_block.Emit (ec);
 			SymbolWriter.EndIteratorBody (ec);
 
+			EmitMoveNextEpilogue (ec);
+
 			ec.MarkLabel (move_next_error);
 
 			if (ReturnType.Kind != MemberKind.Void) {
@@ -805,6 +815,10 @@ namespace Mono.CSharp
 
 			SymbolWriter.StartIteratorDispatcher (ec);
 
+			ec.Emit (OpCodes.Ldarg_0);
+			ec.EmitInt ((int) IteratorStorey.State.After);
+			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
+
 			EmitMoveNextEpilogue (ec);
 
 			ec.MarkLabel (move_next_error);
@@ -826,9 +840,6 @@ namespace Mono.CSharp
 
 		protected virtual void EmitMoveNextEpilogue (EmitContext ec)
 		{
-			ec.Emit (OpCodes.Ldarg_0);
-			ec.EmitInt ((int) IteratorStorey.State.After);
-			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
 		}
 
 		//

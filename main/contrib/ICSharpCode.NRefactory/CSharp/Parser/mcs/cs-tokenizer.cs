@@ -2724,17 +2724,20 @@ namespace Mono.CSharp
 					ILiteralConstant res = new StringLiteral (context.BuiltinTypes, s, start_location);
 					val = res;
 #if FULL_AST
-          res.ParsedValue = quoted ?
-            reader.ReadChars (reader_pos - 2, reader.Position - 1) :
-            reader.ReadChars (reader_pos - 1, reader.Position);
+					res.ParsedValue = quoted ?
+						reader.ReadChars (reader_pos - 2, reader.Position - 1) :
+						reader.ReadChars (reader_pos - 1, reader.Position);
 #endif
 
 					return Token.LITERAL;
 				}
 
 				if (c == '\n') {
-					if (!quoted)
+					if (!quoted) {
 						Report.Error (1010, Location, "Newline in constant");
+						val = new StringLiteral (context.BuiltinTypes, new string (value_builder, 0, pos), start_location);
+						return Token.LITERAL;
+					}
 				} else if (c == '\\' && !quoted) {
 					int surrogate;
 					c = escape (c, out surrogate);

@@ -22,13 +22,20 @@ namespace Mono.CSharp
 {
 	class Await : ExpressionStatement
 	{
-		readonly Expression expr;
+		Expression expr;
 		AwaitStatement stmt;
 
 		public Await (Expression expr, Location loc)
 		{
 			this.expr = expr;
 			this.loc = loc;
+		}
+
+		protected override void CloneTo (CloneContext clonectx, Expression target)
+		{
+			var t = (Await) target;
+
+			t.expr = expr.Clone (clonectx);
 		}
 
 		public override Expression CreateExpressionTree (ResolveContext ec)
@@ -72,7 +79,8 @@ namespace Mono.CSharp
 			}
 
 			stmt = new AwaitStatement (expr, loc);
-			stmt.Resolve (bc);
+			if (!stmt.Resolve (bc))
+				return null;
 
 			type = stmt.ResultType;
 			eclass = ExprClass.Variable;
@@ -81,6 +89,14 @@ namespace Mono.CSharp
 
 		public override void Emit (EmitContext ec)
 		{
+			stmt.EmitPrologue (ec);
+			stmt.Emit (ec);
+		}
+
+		public void EmitAssign (EmitContext ec, FieldExpr field)
+		{
+			stmt.EmitPrologue (ec);
+			field.InstanceExpression.Emit (ec);
 			stmt.Emit (ec);
 		}
 
@@ -143,6 +159,20 @@ namespace Mono.CSharp
 			fe_awaiter.InstanceExpression = new CompilerGeneratedThis (ec.CurrentType, loc);
 
 			//
+			// result = awaiter.GetResult ();
+			//
+			var mg_result = MethodGroupExpr.CreatePredefined (get_result, fe_awaiter.Type, loc);
+			mg_result.InstanceExpression = fe_awaiter;
+
+			mg_result.EmitCall (ec, new Arguments (0));
+		}
+
+		public void EmitPrologue (EmitContext ec)
+		{
+			var fe_awaiter = new FieldExpr (awaiter, loc);
+			fe_awaiter.InstanceExpression = new CompilerGeneratedThis (ec.CurrentType, loc);
+
+			//
 			// awaiter = expr.GetAwaiter ();
 			//
 			fe_awaiter.EmitAssign (ec, expr, false, false);
@@ -166,18 +196,11 @@ namespace Mono.CSharp
 			mg_completed.EmitCall (ec, args);
 
 			base.DoEmit (ec);
-
-			//
-			// result = awaiter.GetResult ();
-			//
-			var mg_result = MethodGroupExpr.CreatePredefined (get_result, fe_awaiter.Type, loc);
-			mg_result.InstanceExpression = fe_awaiter;
-
-			mg_result.EmitCall (ec, new Arguments (0));
 		}
 
 		public void EmitStatement (EmitContext ec)
 		{
+			EmitPrologue (ec);
 			Emit (ec);
 
 			if (ResultType.Kind != MemberKind.Void) {
@@ -295,10 +318,14 @@ namespace Mono.CSharp
 
 	public class AsyncInitializer : StateMachineInitializer
 	{
+		TypeInferenceContext return_inference;
+
 		public AsyncInitializer (ParametersBlock block, TypeContainer host, TypeSpec returnType)
 			: base (block, host, returnType)
 		{
 		}
+
+		#region Properties
 
 		public override string ContainerType {
 			get {
@@ -312,9 +339,23 @@ namespace Mono.CSharp
 			}
 		}
 
+		public Block OriginalBlock {
+			get {
+				return block.Parent;
+			}
+		}
+
+		public TypeInferenceContext ReturnTypeInference {
+			get {
+				return return_inference;
+			}
+		}
+
+		#endregion
+
 		public static void Create (ParametersBlock block, ParametersCompiled parameters, TypeContainer host, TypeSpec returnType, Location loc)
 		{
-			if (returnType.Kind != MemberKind.Void &&
+			if (returnType != null && returnType.Kind != MemberKind.Void &&
 				returnType != host.Module.PredefinedTypes.Task.TypeSpec &&
 				!returnType.IsGenericTask) {
 				host.Compiler.Report.Error (1983, loc, "The return type of an async method must be void, Task, or Task<T>");
@@ -351,6 +392,16 @@ namespace Mono.CSharp
 			block.WrapIntoAsyncTask (host, returnType);
 		}
 
+		protected override BlockContext CreateBlockContext (ResolveContext rc)
+		{
+			var ctx = base.CreateBlockContext (rc);
+			var lambda = rc.CurrentAnonymousMethod as LambdaMethod;
+			if (lambda != null)
+				return_inference = lambda.ReturnTypeInference;
+
+			return ctx;
+		}
+
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
 			return base.CreateExpressionTree (ec);
@@ -363,8 +414,6 @@ namespace Mono.CSharp
 
 		protected override void EmitMoveNextEpilogue (EmitContext ec)
 		{
-			base.EmitMoveNextEpilogue (ec);
-
 			var storey = (AsyncTaskStorey) Storey;
 			storey.EmitSetResult (ec);
 		}
@@ -408,7 +457,7 @@ namespace Mono.CSharp
 		LocalVariable hoisted_return;
 
 		public AsyncTaskStorey (AsyncInitializer initializer, TypeSpec type)
-			: base (initializer.Block, initializer.Host, null, null, "async")
+			: base (initializer.OriginalBlock, initializer.Host, null, null, "async")
 		{
 			return_type = type;
 		}

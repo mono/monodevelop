@@ -3422,6 +3422,28 @@ namespace Mono.CSharp {
 				if (q.Kind == MemberKind.Void) {
 					return p.Kind != MemberKind.Void ? 1: 0;
 				}
+
+				//
+				// When anonymous method is an asynchronous, and P has a return type Task<Y1>, and Q has a return type Task<Y2>
+				// better conversion is performed between underlying types Y1 and Y2
+				//
+				if (p.IsGenericTask || q.IsGenericTask) {
+					if (p.IsGenericTask != q.IsGenericTask) {
+						return 0;
+					}
+
+					var async_am = a.Expr as AnonymousMethodExpression;
+					if (async_am == null || !async_am.IsAsync)
+						return 0;
+
+					q = q.TypeArguments[0];
+					p = p.TypeArguments[0];
+				}
+
+				//
+				// The parameters are identicial and return type is not void, use better type conversion
+				// on return type to determine better one
+				//
 			} else {
 				if (argument_type == p)
 					return 1;
@@ -5088,11 +5110,21 @@ namespace Mono.CSharp {
 
 		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load)
 		{
-			prepared = prepare_for_load && !(source is DynamicExpressionStatement);
-			if (IsInstance)
-				EmitInstance (ec, prepared);
+			var await_expr = source as Await;
+			if (await_expr != null) {
+				//
+				// Await is not ordinary expression (it contains jump), hence the usual flow cannot be used
+				// to emit instance load before expression
+				//
+				await_expr.EmitAssign (ec, this);
+			} else {
+				prepared = prepare_for_load && !(source is DynamicExpressionStatement);
+				if (IsInstance)
+					EmitInstance (ec, prepared);
 
-			source.Emit (ec);
+				source.Emit (ec);
+			}
+
 			if (leave_copy) {
 				ec.Emit (OpCodes.Dup);
 				if (!IsStatic) {
