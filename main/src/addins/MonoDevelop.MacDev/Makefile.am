@@ -50,9 +50,9 @@ FILES =  \
 	ObjCIntegration/IBAction.cs \
 	ObjCIntegration/IBActionParameter.cs \
 	ObjCIntegration/IBOutlet.cs \
-	ObjCIntegration/NSObjectInfo.cs \
 	ObjCIntegration/NSObjectInfoService.cs \
 	ObjCIntegration/NSObjectProjectInfo.cs \
+	ObjCIntegration/NSObjectTypeInfo.cs \
 	SigningIdentityCombo.cs \
 	XcodeIntegration/PBXBuildFile.cs \
 	XcodeIntegration/PBXFileReference.cs \

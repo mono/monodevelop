@@ -85,7 +85,6 @@
     <Compile Include="XibCodeBehind.cs" />
     <Compile Include="Keychain.cs" />
     <Compile Include="SigningIdentityCombo.cs" />
-    <Compile Include="ObjCIntegration\NSObjectInfo.cs" />
     <Compile Include="ObjCIntegration\IBOutlet.cs" />
     <Compile Include="ObjCIntegration\IBAction.cs" />
     <Compile Include="ObjCIntegration\IBActionParameter.cs" />
@@ -113,6 +112,7 @@
     <Compile Include="NativeReferences\NativeReferencePropertyProvider.cs" />
     <Compile Include="NativeReferences\NativeReferenceCommandHandler.cs" />
     <Compile Include="NativeReferences\NativeReference.cs" />
+    <Compile Include="ObjCIntegration\NSObjectTypeInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

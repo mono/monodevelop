@@ -233,8 +233,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			string wrapperName, out CodeTypeDeclaration ctd, out string ns)
 		{
 			var registerAtt = new CodeTypeReference (wrapperName + ".Foundation.RegisterAttribute");
-			var connectAtt = new CodeTypeReference (wrapperName + ".Foundation.ConnectAttribute");
-			var exportAtt = new CodeTypeReference (wrapperName + ".Foundation.ExportAttribute");
 			
 			ctd = new System.CodeDom.CodeTypeDeclaration () {
 				IsPartial = true,
@@ -254,16 +252,24 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (IsRegisteredInDesigner)
 				AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
 			
+			GenerateActionsOutlets (provider, ctd, wrapperName);
+		}
+		
+		void GenerateActionsOutlets (CodeDomProvider provider, CodeTypeDeclaration type, string wrapperName)
+		{
+			var outletAtt = new CodeTypeReference (wrapperName + ".Foundation.IBOutletAttribute");
+			var actionAtt = new CodeTypeReference (wrapperName + ".Foundation.IBActionAttribute");
+			
 			foreach (var a in Actions)
 				if (a.IsDesigner)
-					GenerateAction (exportAtt, ctd, a, provider, generatorOptions);
+					GenerateAction (actionAtt, type, a, provider);
 			
 			foreach (var o in Outlets)
 				if (o.IsDesigner)
-					AddOutletProperty (connectAtt, ctd, o.CliName, new CodeTypeReference (o.CliType));
+					AddOutletProperty (outletAtt, type, o.CliName, new CodeTypeReference (o.CliType));
 		}
 		
-		static void AddOutletProperty (CodeTypeReference connectAtt, CodeTypeDeclaration type, string name,
+		static void AddOutletProperty (CodeTypeReference outletAtt, CodeTypeDeclaration type, string name,
 			CodeTypeReference typeRef)
 		{
 			var fieldName = "__impl_" + name;
@@ -273,20 +279,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				Name = name,
 				Type = typeRef
 			};
-			AddAttribute (prop.CustomAttributes, connectAtt, name);
+			AddAttribute (prop.CustomAttributes, outletAtt, name);
 			
 			var setValue = new CodePropertySetValueReferenceExpression ();
 			var thisRef = new CodeThisReferenceExpression ();
 			var fieldRef = new CodeFieldReferenceExpression (thisRef, fieldName);
-			var setNativeRef = new CodeMethodReferenceExpression (thisRef, "SetNativeField");
-			var getNativeRef = new CodeMethodReferenceExpression (thisRef, "GetNativeField");
-			var namePrimitive = new CodePrimitiveExpression (name);
-			var invokeGetNative = new CodeMethodInvokeExpression (getNativeRef, namePrimitive);
 			
 			prop.SetStatements.Add (new CodeAssignStatement (fieldRef, setValue));
-			prop.SetStatements.Add (new CodeMethodInvokeExpression (setNativeRef, namePrimitive, setValue));
-			
-			prop.GetStatements.Add (new CodeAssignStatement (fieldRef, new CodeCastExpression (typeRef, invokeGetNative)));
 			prop.GetStatements.Add (new CodeMethodReturnStatement (fieldRef));
 			
 			prop.Attributes = field.Attributes = (prop.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
@@ -306,37 +305,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				type.Members.Add (new CodeSnippetTypeMember ("#pragma warning disable 0169")); // unused member
 			}
 		}
-
-		static void GenerateAction (CodeTypeReference exportAtt, CodeTypeDeclaration type, IBAction action, 
-			CodeDomProvider provider, CodeGeneratorOptions generatorOptions)
+		
+		static void GenerateAction (CodeTypeReference actionAtt, CodeTypeDeclaration type, IBAction action, 
+			CodeDomProvider provider)
 		{
-			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
-				type.Members.Add (new CodeSnippetTypeMember ("[" + exportAtt.BaseType + "(\"" + action.GetObjcFullName ()  + "\")]"));
-				
-				var sb = new System.Text.StringBuilder ();
-				sb.Append ("partial void ");
-				sb.Append (provider.CreateEscapedIdentifier (action.CliName));
-				sb.Append (" (");
-				if (action.Parameters != null) {
-					bool isFirst = true;
-					foreach (var p in action.Parameters) {
-						if (!isFirst) {
-							sb.Append (", ");
-						} else {
-							isFirst = false;
-						}
-						sb.Append (p.CliType);
-						sb.Append (" ");
-						sb.Append (provider.CreateEscapedIdentifier (p.Name));
-					}
-				}
-				sb.Append (");");
-				
-				type.Members.Add (new CodeSnippetTypeMember (sb.ToString ()));
-				return;
-			}
-			
-			var m = CreateEventMethod (exportAtt, action);
+			var m = CreateEventMethod (actionAtt, action);
 			type.Members.Add (m);
 			
 			if (provider.FileExtension == "pas") {
