@@ -87,6 +87,24 @@ namespace MonoDevelop.DesignerSupport
 				return openFiles;
 			}
 		}
+		
+		public void Write (string contents, FilePath path)
+		{
+			if (OpenFiles.Contains (path)) {
+				filesToWrite.Add (new KeyValuePair<FilePath, string> (path, contents));
+			} else {
+				try {
+					File.WriteAllText (path, contents);
+					//mark the file as changed so it gets reparsed
+					Gtk.Application.Invoke (delegate {
+						FileService.NotifyFileChanged (path);
+					});
+					WrittenCount++;
+				} catch (IOException ex) {
+					monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				}
+			}
+		}
 
 		public void Write (System.CodeDom.CodeCompileUnit ccu, FilePath path)
 		{
