@@ -1,6 +1,5 @@
 
 DEPS =  \
-	$(top_builddir)/build/bin/ICSharpCode.Decompiler.dll \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
@@ -492,22 +491,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ReferenceNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FileOperationsBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs \
@@ -646,8 +629,11 @@ FILES =  \
 	MonoDevelop.Ide.Projects/TemplatePickerWidget.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
+	MonoDevelop.Ide.Tasks/CommentTag.cs \
+	MonoDevelop.Ide.Tasks/CommentTasksChangedEventHandler.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
 	MonoDevelop.Ide.Tasks/ITaskListView.cs \
+	MonoDevelop.Ide.Tasks/Tag.cs \
 	MonoDevelop.Ide.Tasks/Task.cs \
 	MonoDevelop.Ide.Tasks/TaskPriority.cs \
 	MonoDevelop.Ide.Tasks/TaskService.cs \
@@ -689,6 +675,7 @@ FILES =  \
 	MonoDevelop.Ide.WebBrowser/TitleChangedEventArgs.cs \
 	MonoDevelop.Ide/AddEntryEventHandler.cs \
 	MonoDevelop.Ide/CodeGenerationService.cs \
+	MonoDevelop.Ide/CodeGenerator.cs \
 	MonoDevelop.Ide/DesktopService.cs \
 	MonoDevelop.Ide/DispatchService.cs \
 	MonoDevelop.Ide/ExitEventHandler.cs \
@@ -703,8 +690,21 @@ FILES =  \
 	MonoDevelop.Ide/RootWorkspace.cs \
 	MonoDevelop.Ide/Services.cs \
 	MonoDevelop.Ide/WebBrowserService.cs \
+	MonoDevelop.TypeSystem/Ambience.cs \
+	MonoDevelop.TypeSystem/AmbienceService.cs \
+	MonoDevelop.TypeSystem/Comment.cs \
+	MonoDevelop.TypeSystem/ConditionalRegion.cs \
+	MonoDevelop.TypeSystem/FoldingRegion.cs \
 	MonoDevelop.TypeSystem/ITypeSystemProvider.cs \
+	MonoDevelop.TypeSystem/MarkupUtilities.cs \
+	MonoDevelop.TypeSystem/NetAmbience.cs \
+	MonoDevelop.TypeSystem/OutputFlags.cs \
+	MonoDevelop.TypeSystem/OutputSettings.cs \
+	MonoDevelop.TypeSystem/ParsedDocument.cs \
+	MonoDevelop.TypeSystem/PreProcessorDefine.cs \
 	MonoDevelop.TypeSystem/ProjectContentEventArgs.cs \
+	MonoDevelop.TypeSystem/StockIcons.cs \
+	MonoDevelop.TypeSystem/Tag.cs \
 	MonoDevelop.TypeSystem/TypeSystemProviderNode.cs \
 	MonoDevelop.TypeSystem/TypeSystemService.cs
 
@@ -912,7 +912,6 @@ RES =  \
 	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassPadContextMenu.addin.xml \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml \
 	MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \

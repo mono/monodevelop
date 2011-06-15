@@ -30,11 +30,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor.PopupWindow;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -44,12 +42,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			get;
 			set;
 		}
-		public ProjectDom ProjectDom {
+		public ITypeResolveContext ITypeResolveContext {
 			get;
 			set;
 		}
 		
-		public ParsedDocument ParsedDocument {
+		public IParsedFile ParsedDocument {
 			get;
 			set;
 		}
@@ -91,7 +89,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (CurrentContext.ParsedDocument == null)
 				return null;
-			IType type = CurrentContext.ParsedDocument.CompilationUnit.GetTypeAt (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			var type = CurrentContext.ParsedDocument.GetTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			if (type == null)
 				return null;
 			return type.Name;
@@ -101,7 +99,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (CurrentContext.ParsedDocument == null)
 				return null;
-			IType type = CurrentContext.ParsedDocument.CompilationUnit.GetTypeAt (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			var type = CurrentContext.ParsedDocument.GetTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			if (type == null)
 				return "";
 			return type.IsStatic ? "static " : "public ";
@@ -116,8 +114,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				ResolveResult result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column), var);
-				if (result != null && result.ResolvedType != null && (result.ResolvedType.ArrayDimensions > 0 || result.ResolvedType.FullName == DomReturnType.String.FullName))
+				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column), var);
+				if (!result.Type.IsReferenceType.Value)
 					return "Length";
 			}
 			return "Count";
@@ -131,13 +129,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 			string var = callback (varName);
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				ResolveResult result =  textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Caret.Offset, var);
+				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Caret.Offset, var);
 				if (result != null) {
-					IReturnType componentType =  DomType.GetComponentType (CurrentContext.ProjectDom, result.ResolvedType);
+					// TODO: Type system conversion.
+/*					var componentType = DomType.GetComponentType (CurrentContext.ITypeResolveContext, result.ResolvedType);
 					if (componentType != null) {
 						Ambience ambience = AmbienceService.GetAmbience (CurrentContext.Template.MimeType);
-						return ambience != null ? ambience.GetString (componentType, OutputFlags.IncludeGenerics) :  componentType.ToInvariantString ();
-					}
+						return ambience != null ? ambience.GetString (componentType, OutputFlags.IncludeGenerics) : componentType.ToInvariantString ();
+					}*/
 				}
 			}
 
@@ -159,8 +158,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 					
 					if (data.Member is IMember) {
 						IMember m = data.Member as IMember;
-						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
-							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
+//						if (DomType.GetComponentType (CurrentContext.ITypeResolveContext, m.ReturnType) != null)
+//							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
 					}
 				}
 				
@@ -170,8 +169,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 						continue;
 					if (data.Member is IParameter) {
 						IParameter m = data.Member as IParameter;
-						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
-							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
+//						if (DomType.GetComponentType (CurrentContext.ITypeResolveContext, m.ReturnType) != null)
+//							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
 					}
 				}
 				
@@ -179,11 +178,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 					MonoDevelop.Ide.CodeCompletion.MemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.MemberCompletionData;
 					if (data == null)
 						continue;
-					if (data.Member is LocalVariable) {
+/*					if (data.Member is LocalVariable) {
 						LocalVariable m = data.Member as LocalVariable;
-						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
+						if (DomType.GetComponentType (CurrentContext.ITypeResolveContext, m.ReturnType) != null)
 							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
-					}
+					}*/
 				}
 			}
 			return new CodeTemplateListDataProvider (result);
@@ -191,16 +190,17 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetSimpleTypeName (string fullTypeName)
 		{
-			if (CurrentContext.ParsedDocument == null)
-				return fullTypeName;
-			DomReturnType returnType;
-			int idx = fullTypeName.IndexOf ('#');
-			if (idx < 0) {
-				returnType = new DomReturnType (fullTypeName);
-			} else {
-				returnType = new DomReturnType (fullTypeName.Substring (0, idx), fullTypeName.Substring (idx + 1));
-			}
-			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (returnType, CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column).FullName;
+			return fullTypeName;
+//			if (CurrentContext.ParsedDocument == null)
+//				return fullTypeName;
+//			ITypeReference returnType;
+//			int idx = fullTypeName.IndexOf ('#');
+//			if (idx < 0) {
+//				returnType = new DomReturnType (fullTypeName);
+//			} else {
+//				returnType = new DomReturnType (fullTypeName.Substring (0, idx), fullTypeName.Substring (idx + 1));
+//			}
+//			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (returnType, CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column).FullName;
 		}
 		
 		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);

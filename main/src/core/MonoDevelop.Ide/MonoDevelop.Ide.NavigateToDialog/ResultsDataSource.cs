@@ -33,13 +33,10 @@ using System.Threading;
 using Gdk;
 using Gtk;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Ide.NavigateToDialog

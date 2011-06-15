@@ -35,8 +35,6 @@ using System.IO;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -50,6 +48,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
 using Mono.TextEditor;
 using System.Diagnostics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide
 {
@@ -213,84 +212,17 @@ namespace MonoDevelop.Ide
 			return (GetDeclaredFile(item) != null);
 		}*/
 		
-		public bool CanJumpToDeclaration (MonoDevelop.Projects.Dom.INode visitable)
+		public bool CanJumpToDeclaration (IEntity visitable)
 		{
-			if (visitable is MonoDevelop.Projects.Dom.IType) 
-				return ((MonoDevelop.Projects.Dom.IType)visitable).CompilationUnit != null;
-			if (visitable is LocalVariable)
-				return true;
-			if (visitable is IParameter)
-				return true;
-			IMember member = visitable as MonoDevelop.Projects.Dom.IMember;
-			if (member == null || member.DeclaringType == null) 
-				return false ;
-			return member.DeclaringType.CompilationUnit != null;
+			return visitable != null && !visitable.Region.IsEmpty;
 		}
 
-		public void JumpToDeclaration (MonoDevelop.Projects.Dom.INode visitable)
+		public void JumpToDeclaration (IEntity visitable)
 		{
-			if (visitable is LocalVariable) {
-				LocalVariable localVar = (LocalVariable)visitable;
-				IdeApp.Workbench.OpenDocument (localVar.FileName,
-				                               localVar.Region.Start.Line,
-				                               localVar.Region.Start.Column);
-				return;
-			}
-			
-			if (visitable is IParameter) {
-				IParameter para = (IParameter)visitable;
-				IdeApp.Workbench.OpenDocument (para.DeclaringMember.DeclaringType.CompilationUnit.FileName,
-				                               para.Location.Line,
-				                               para.Location.Column);
-				return;
-			}
-			
-			IMember member = visitable as MonoDevelop.Projects.Dom.IMember;
-			if (member == null) 
-				return;
-			string fileName;
-			if (member is MonoDevelop.Projects.Dom.IType) {
-				try {
-					fileName = ((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName;
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't get file name for type:" + member + ". Try to restart monodevelop.", e);
-					fileName = null;
-				}
-			} else {
-				if (member.DeclaringType == null) 
-					return;
-				IType declaringType = SearchContainingPart (member);
-				fileName = declaringType.CompilationUnit.FileName;
-			}
-			var doc = IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column);
-			if (doc != null) {
-				doc.RunWhenLoaded (delegate {
-					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
-					if (handler != null)
-						handler.Open (member.HelpUrl);
-				});
-			}
+			IdeApp.Workbench.OpenDocument (visitable.Region.FileName,
+			                               visitable.Region.BeginLine,
+			                               visitable.Region.BeginColumn);
 		}
-
-		static IType SearchContainingPart (IMember member)
-		{
-			IType declaringType = member.DeclaringType;
-			if (member is ExtensionMethod)
-				declaringType = ((ExtensionMethod)member).OriginalMethod.DeclaringType;
-			
-			if (declaringType is InstantiatedType)
-				declaringType = ((InstantiatedType)declaringType).UninstantiatedType;
-			if (declaringType.HasParts) {
-				foreach (IType part in declaringType.Parts) {
-					IMember searchedMember = part.SearchMember (member.Name, true).FirstOrDefault (m => m.Location == member.Location);
-					if (searchedMember != null) 
-						return part;
-				}
-			}
-			
-			return declaringType;
-		}
-
 		
 		public void RenameItem (IWorkspaceFileObject item, string newName)
 		{

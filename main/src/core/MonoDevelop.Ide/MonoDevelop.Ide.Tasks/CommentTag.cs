@@ -1,10 +1,10 @@
 // 
-// MemberCompletionData.cs
+// CommentTag.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.Ide.CodeCompletion
+namespace MonoDevelop.Ide.Tasks
 {
-	public class MemberCompletionData : CompletionData
+	public class CommentTag
 	{
-		public IEntity Member {
-			get;
-			set;
+		public CommentTag (string tag, int priority)
+		{
+			Tag = tag;
+			Priority = priority;
 		}
+		
+		public string Tag { get; internal set; }
+
+		public int Priority { get; internal set; }
 	}
 }
+

@@ -33,9 +33,8 @@ using Monodoc;
 using MonoDevelop.Core.Execution;
 using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.Ide
 {

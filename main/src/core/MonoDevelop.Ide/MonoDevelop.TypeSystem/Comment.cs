@@ -1,10 +1,10 @@
 //
-// ClassData.cs
+// Comment.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,59 +25,57 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
 using System;
-using System.IO;
-using System.Collections;
-
-using MonoDevelop.Projects;
-using MonoDevelop.Core;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.Ide.Gui.Pads.ClassPad
+namespace MonoDevelop.TypeSystem
 {
-	public class ClassData
+	[Serializable]
+	public class Comment
 	{
-		IType cls;
-		Project project;
+		public string OpenTag {
+			get;
+			set;
+		}
+
+		public string ClosingTag {
+			get;
+			set;
+		}
+
+		public string Text {
+			get;
+			set;
+		}
+
+		public DomRegion Region {
+			get;
+			set;
+		}
+
+		public bool IsDocumentation {
+			get;
+			set;
+		}
 		
-		public ClassData (Project p, IType c)
+		public bool CommentStartsLine {
+			get;
+			set;
+		}
+		
+		public CommentType CommentType {
+			get;
+			set;
+		}
+		
+		public Comment ()
 		{
-			cls = c;
-			project = p;
 		}
 		
-		public IType Class {
-			get { return cls; }
-		}
-		
-		public Project Project {
-			get { return project; }
-		}
-		
-		internal void UpdateFrom (ClassData cd)
+		public Comment (string text)
 		{
-			cls = cd.cls;
-			project = cd.project;
-		}
-		
-		public override bool Equals (object ob)
-		{
-			ClassData other = ob as ClassData;
-			return (other != null && cls.FullName == other.cls.FullName &&
-					project == other.project);
-		}
-		
-		public override int GetHashCode ()
-		{
-			if (project == null)
-				return cls.FullName.GetHashCode ();
-			return (cls.FullName + project.Name).GetHashCode ();
-		}
-		
-		public override string ToString ()
-		{
-			return base.ToString () + " [" + cls.FullName + ", " + (project != null ? project.Name : "null")+ "]";
+			this.Text = text;
 		}
 	}
 }

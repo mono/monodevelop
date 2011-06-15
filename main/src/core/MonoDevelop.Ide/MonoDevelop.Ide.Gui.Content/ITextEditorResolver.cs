@@ -27,13 +27,13 @@
 //
 
 using System;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.TextEditor;
 using Mono.Addins;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -45,10 +45,10 @@ namespace MonoDevelop.Ide.Gui.Content
 	
 	public interface ITextEditorResolverProvider
 	{
-		ResolveResult GetLanguageItem (ProjectDom dom, TextEditorData data, int offset);
-		ResolveResult GetLanguageItem (ProjectDom dom, TextEditorData data, int offset, string expression);
+		ResolveResult GetLanguageItem (ITypeResolveContext dom, TextEditorData data, int offset);
+		ResolveResult GetLanguageItem (ITypeResolveContext dom, TextEditorData data, int offset, string expression);
 		
-		string CreateTooltip (ProjectDom dom, ICompilationUnit unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
+		string CreateTooltip (ITypeResolveContext dom, IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
 	}
 	
 	public static class TextEditorResolverService

@@ -36,7 +36,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
 using System.Runtime.CompilerServices;
@@ -160,13 +159,6 @@ namespace MonoDevelop.Ide
 			get { return Items.Count > 0; }
 		}
 		
-		public CodeRefactorer GetCodeRefactorer (Solution solution) 
-		{
-			CodeRefactorer refactorer = new CodeRefactorer (solution);
-			refactorer.TextFileProvider = TextFileProvider.Instance;
-			return refactorer;
-		}
-
 		IDictionary IExtendedDataItem.ExtendedProperties {
 			get {
 				throw new NotSupportedException ("Root namespace can't have extended properties.");
@@ -1007,7 +999,6 @@ namespace MonoDevelop.Ide
 		{
 			try {
 //				Mono.Profiler.RuntimeControls.EnableProfiler ();
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
 				MonoDevelop.TypeSystem.TypeSystemService.Load (item);
 //				Mono.Profiler.RuntimeControls.DisableProfiler ();
 //				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
@@ -1066,7 +1057,6 @@ namespace MonoDevelop.Ide
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
 			
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.Unload (item);
 			MonoDevelop.TypeSystem.TypeSystemService.Unload (item);
 //			ParserDatabase.Unload (item);
 			

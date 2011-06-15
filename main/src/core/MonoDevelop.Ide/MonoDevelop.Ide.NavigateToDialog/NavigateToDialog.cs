@@ -42,8 +42,8 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		void StartCollectThreads ()
 		{
 			members = new List<IMember> ();
-			types = new List<IType> ();
+			types = new List<Tuple<ITypeResolveContext, IType>> ();
 			
 			StartCollectFiles ();
 			StartCollectTypes ();
@@ -195,10 +195,22 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					getMembersTimer.BeginTiming ();
 					try {
 						lock (members) {
-							foreach (IType type in types) {
-								foreach (IMember m in type.Members) {
-									if (m is IType)
-										continue;
+							foreach (var pair in types) {
+								var ctx = pair.Item1;
+								var type = pair.Item2;
+								foreach (var m in type.GetMethods (ctx)) {
+									members.Add (m);
+								}
+								
+								foreach (var m in type.GetFields (ctx)) {
+									members.Add (m);
+								}
+								
+								foreach (var m in type.GetProperties (ctx)) {
+									members.Add (m);
+								}
+								
+								foreach (var m in type.GetEvents (ctx)) {
 									members.Add (m);
 								}
 							}
@@ -310,7 +322,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		class WorkerResult 
 		{
 			public List<ProjectFile> filteredFiles = null;
-			public List<IType> filteredTypes = null;
+			public List<Tuple<ITypeResolveContext, IType>> filteredTypes = null;
 			public List<IMember> filteredMembers  = null;
 			
 			public string pattern = null;
@@ -359,7 +371,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			internal SearchResult CheckMember (IMember member)
 			{
 				int rank;
-				bool useDeclaringTypeName = member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsFinalizer);
+				bool useDeclaringTypeName = member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsDestructor);
 				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
 				if (MatchName (memberName, out rank))
 					return new MemberSearchResult (pattern, memberName, rank, member, false);
@@ -386,7 +398,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		IEnumerable<ProjectFile> files;
-		List<IType> types;
+		List<Tuple<ITypeResolveContext, IType>> types;
 		List<IMember> members;
 		
 		WorkerResult lastResult;
@@ -450,14 +462,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			// Search Types
 			if (newResult.IncludeTypes) {
-				newResult.filteredTypes = new List<IType> ();
+				newResult.filteredTypes = new List<Tuple<ITypeResolveContext, IType>> ();
 				lock (types) {
 					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
-					List<IType> allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
-					foreach (IType type in allTypes) {
+					List<Tuple<ITypeResolveContext, IType>> allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
+					foreach (var type in allTypes) {
 						if (worker.CancellationPending)
 							yield break;
-						SearchResult curResult = newResult.CheckType (type);
+						SearchResult curResult = newResult.CheckType (type.Item2);
 						if (curResult != null) {
 							newResult.filteredTypes.Add (type);
 							yield return curResult;
@@ -547,10 +559,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						// of the open combine.  Otherwise, it will get
 						// checked down below.
 						if (doc.Project == null && doc.IsFile) {
-							ICompilationUnit info = doc.CompilationUnit;
+							var info = doc.ParsedFile;
 							if (info != null) {
-								foreach (IType c in info.Types) {
-									types.Add (c);
+								foreach (var c in info.TopLevelTypeDefinitions) {
+									types.Add (Tuple.Create (doc.TypeResolveContext, (IType)c));
 								}
 							}
 						}
@@ -559,11 +571,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
 		
 					foreach (Project p in projects) {
-						ProjectDom dom = ProjectDomService.GetProjectDom (p);
+						var dom = TypeSystemService.GetProjectContext (p);
 						if (dom == null)
 							continue;
-						foreach (IType c in dom.Types)
-							AddType (c, types);
+						foreach (var c in dom.GetClasses ())
+							AddType (c, dom, types);
 					}
 				} finally {
 					getTypesTimer.EndTiming ();
@@ -571,11 +583,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 
-		void AddType (IType c, List<IType> list)
+		void AddType (IType c, ITypeResolveContext ctx, List<Tuple<ITypeResolveContext, IType>> list)
 		{
-			list.Add (c);
-			foreach (IType ct in c.InnerTypes)
-				AddType (ct, list);
+			list.Add (Tuple.Create (ctx, c));
+			foreach (var ct in c.GetNestedTypes (ctx))
+				AddType (ct, ctx, list);
 		}
 		
 		struct MatchResult 

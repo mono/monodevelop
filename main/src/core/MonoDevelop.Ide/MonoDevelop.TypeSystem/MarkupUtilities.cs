@@ -1,11 +1,11 @@
-//
-// MemberNodeCommandHandler.cs
-//
+// 
+// DocumentationService.cs
+// 
 // Author:
-//   Lluis Sanchez Gual
-//
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
-//
+//   Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -27,20 +27,46 @@
 //
 
 using System;
-using System.IO;
+using System.Text;
 
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Components;
-
-namespace MonoDevelop.Ide.Gui.Pads.ClassPad
+namespace MonoDevelop.TypeSystem
 {
-	public class MemberNodeCommandHandler: NodeCommandHandler
+	internal static class MarkupUtilities
 	{
-		public override void ActivateItem ()
-		{			
-			IMember member = CurrentNode.DataItem as IMember;
-			IdeApp.ProjectOperations.JumpToDeclaration(member);
+		static string EscapedLessThan = "&lt;";
+		static string EscapedGreaterThan = "&gt;";
+		static string EscapedAmpersand = "&amp;";
+		static string EscapedApostrophe = "&apos;";
+		static string EscapedQuote = "&quot;";
+		
+		public static void AppendEscapedString (StringBuilder builder, string toEscape)
+		{
+			if (toEscape == null)
+				return;
+			
+			for (int i = 0; i < toEscape.Length; i++) {
+				char c = toEscape[i];
+				switch (c) {
+				case '<':
+					builder.Append (EscapedLessThan);
+					break;
+				case '>':
+					builder.Append (EscapedGreaterThan);
+					break;
+				case '&':
+					builder.Append (EscapedAmpersand);
+					break;
+				case '\'':
+					builder.Append (EscapedApostrophe);
+					break;
+				case '"':
+					builder.Append (EscapedQuote);
+					break;
+				default:
+					builder.Append (c);
+					break;
+				}
+			}
 		}
 	}
 }

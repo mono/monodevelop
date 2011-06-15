@@ -32,10 +32,9 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -95,11 +94,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void AddProjectContent (ITreeBuilder builder)
 		{
 			if (project != null) {
-				ProjectDom dom = ProjectDomService.GetProjectDom (Project);
+				ITypeResolveContext dom = TypeSystemService.GetProjectDom (Project);
 				AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
 			} else {
 				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-					ProjectDom dom = ProjectDomService.GetProjectDom (p);
+					ITypeResolveContext dom = TypeSystemService.GetProjectDom (p);
 					AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
 				}
 			}
@@ -144,9 +143,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	
 	public class CompilationUnitNamespaceData : NamespaceData
 	{
-		ICompilationUnit unit;
+		IParsedFile unit;
 		
-		public CompilationUnitNamespaceData (ICompilationUnit unit, string fullNamespace) : base (fullNamespace)
+		public CompilationUnitNamespaceData (IParsedFile unit, string fullNamespace) : base (fullNamespace)
 		{
 			this.unit = unit;
 		}

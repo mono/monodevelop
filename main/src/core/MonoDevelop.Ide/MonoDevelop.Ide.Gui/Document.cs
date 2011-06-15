@@ -41,12 +41,14 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Tasks;
 using Mono.Addins;
 using MonoDevelop.Ide.Extensions;
 using System.Linq;
+using System.Threading;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -130,17 +132,17 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
-			ProjectDomService.DomRegistered += UpdateRegisteredDom;
+//			TypeSystemService.DomRegistered += UpdateRegisteredDom;
 		}
 
-		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
+/*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
 		{
 			if (dom == null || dom.Project == null)
 				return;
-			var project = e.ProjectDom != null ? e.ProjectDom.Project : null;
+			var project = e.ITypeResolveContext != null ? e.ITypeResolveContext.Project : null;
 			if (project != null && project.FileName == dom.Project.FileName)
-				dom = e.ProjectDom;
-		}
+				dom = e.ITypeResolveContext;
+		}*/
 
 		public FilePath FileName {
 			get {
@@ -167,26 +169,6 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.Project; }
 			set { 
 				Window.ViewContent.Project = value; 
-				dom = null;
-			}
-		}
-		
-		ProjectDom dom;
-		bool isFileDom;
-		public ProjectDom Dom {
-			get {
-				if (dom == null) {
-					isFileDom = false;
-					dom = ProjectDomService.GetProjectDom (Project);
-					if (dom == null) {
-						dom = ProjectDomService.GetFileDom (FileName);
-						isFileDom = true;
-					}
-				}
-				return dom ?? ProjectDom.Empty;
-			}
-			set {
-				dom = value;
 			}
 		}
 		
@@ -196,9 +178,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public ICSharpCode.NRefactory.TypeSystem.IParsedFile ParsedFile {
+		ParsedDocument parsedFile;
+		public ParsedDocument ParsedFile {
 			get {
-				return MonoDevelop.TypeSystem.TypeSystemService.ParseFile (MonoDevelop.TypeSystem.TypeSystemService.GetProjectContext (Project), FileName, Editor.Document.MimeType, Editor.Document.Text);
+				return parsedFile;
 			}
 		}
 		
@@ -431,7 +414,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnClosed (object s, EventArgs a)
 		{
 			isClosed = true;
-			ProjectDomService.DomRegistered -= UpdateRegisteredDom;
+//			TypeSystemService.DomRegistered -= UpdateRegisteredDom;
 			CancelParseTimeout ();
 			ClearTasks ();
 			
@@ -463,47 +446,20 @@ namespace MonoDevelop.Ide.Gui
 			// Parse the file when the document is closed. In this way if the document
 			// is closed without saving the changes, the saved compilation unit
 			// information will be restored
-			if (currentParseFile != null) {
-				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
-					ProjectDomService.Parse (curentParseProject, currentParseFile);
+/*			if (currentParseFile != null) {
+				TypeSystemService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
+					TypeSystemService.Parse (curentParseProject, currentParseFile);
 				}, FileName);
 			}
 			if (isFileDom) {
-				ProjectDomService.RemoveFileDom (FileName);
+				TypeSystemService.RemoveFileDom (FileName);
 				dom = null;
-			}
+			}*/
 			
 			Counters.OpenDocuments--;
 		}
 #region document tasks
 		object lockObj = new object ();
-		
-		ParsedDocument lastErrorFreeParsedDocument;
-		
-		ParsedDocument parsedDocument;
-		public ParsedDocument ParsedDocument {
-			get {
-				return parsedDocument;
-			}
-			set {
-				// for unit testing purposes
-				parsedDocument = value;
-			}
-		}
-		
-		public ICompilationUnit CompilationUnit {
-			get {
-				if (parsedDocument == null)
-					return null;
-				var unit = parsedDocument.CompilationUnit;
-				if (unit == null)
-					return null;
-				// HACK: The parser sometimes doesn't send back >any< info on the file on certain errors, this code detects if the last error free parsed document is the better best-fit.
-				if (parsedDocument.HasErrors && !unit.Types.Any () && lastErrorFreeParsedDocument != null && lastErrorFreeParsedDocument.CompilationUnit.Types.Any ())
-					return lastErrorFreeParsedDocument.CompilationUnit;
-				return unit;
-			}
-		}
 		
 		void ClearTasks ()
 		{
@@ -639,7 +595,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <returns>
 		/// A <see cref="ParsedDocument"/> that contains the current dom.
 		/// </returns>
-		public ParsedDocument UpdateParseDocument ()
+		public IParsedFile UpdateParseDocument ()
 		{
 			try {
 				string currentParseFile = FileName;
@@ -647,14 +603,14 @@ namespace MonoDevelop.Ide.Gui
 				if (editor == null)
 					return null;
 				string currentParseText = editor.Text;
-				Project curentParseProject = Project;
-				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
-				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
-					this.lastErrorFreeParsedDocument = parsedDocument;
+				var ctx = TypeSystemService.GetProjectContext (Project);
+				if (ctx == null)
+					ctx = new SimpleProjectContent ();
+				this.parsedFile = TypeSystemService.ParseFile (ctx, currentParseFile, editor.Document.MimeType, currentParseText);
 			} finally {
 				OnDocumentParsed (EventArgs.Empty);
 			}
-			return this.parsedDocument;
+			return this.parsedFile;
 		}
 		
 		uint parseTimeout = 0;
@@ -667,20 +623,22 @@ namespace MonoDevelop.Ide.Gui
 			CancelParseTimeout ();
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				string currentParseText = Editor.Text;
+				string mimeType = Editor.Document.MimeType;
 				Project curentParseProject = Project;
-				// parser revice queue takes care of the locking
-				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
-					var currentParsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
+				
+				ThreadPool.QueueUserWorkItem (delegate {
+					var currentParsedDocument = TypeSystemService.ParseFile (TypeSystemService.GetProjectContext (Project), currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 						if (isClosed)
 							return;
-						this.parsedDocument = currentParsedDocument;
-						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
-							this.lastErrorFreeParsedDocument = parsedDocument;
+						this.parsedFile = currentParsedDocument;
+//						this.parsedDocument = currentParsedDocument;
+//						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
+//							this.lastErrorFreeParsedDocument = parsedDocument;
 						OnDocumentParsed (EventArgs.Empty);
 					});
-				}, FileName);
+				});
 				parseTimeout = 0;
 				return false;
 			});
@@ -695,12 +653,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public ParsedDocument LastErrorFreeParsedDocument {
-			get {
-				return lastErrorFreeParsedDocument;
-			}
-		}
-		
 		void OnEntryRemoved (object sender, SolutionItemEventArgs args)
 		{
 			if (args.SolutionItem == window.ViewContent.Project)
@@ -756,11 +708,11 @@ namespace MonoDevelop.Ide.Gui
 				return null;
 		}
 	
-		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()
-		{
-			return MonoDevelop.Projects.CodeGeneration.CodeGenerator.CreateGenerator (Editor.Document.MimeType, 
-				Editor.Options.TabsToSpaces, Editor.Options.TabSize, Editor.EolMarker);
-		}
+//		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()
+//		{
+//			return MonoDevelop.Projects.CodeGeneration.CodeGenerator.CreateGenerator (Editor.Document.MimeType, 
+//				Editor.Options.TabsToSpaces, Editor.Options.TabSize, Editor.EolMarker);
+//		}
 
 	}
 	

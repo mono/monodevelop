@@ -37,8 +37,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -80,8 +78,8 @@ namespace MonoDevelop.Ide.Tasks
 			
 			ReloadPriorities ();
 			
-			ProjectDomService.CommentTasksChanged += OnCommentTasksChanged;
-			ProjectDomService.SpecialCommentTagsChanged += OnCommentTagsChanged;
+			TaskService.CommentTasksChanged += OnCommentTasksChanged;
+			TaskService.SpecialCommentTagsChanged += OnCommentTagsChanged;
 			IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			
@@ -198,11 +196,11 @@ namespace MonoDevelop.Ide.Tasks
 			
 			// Load all tags that are stored in pidb files
 			foreach (Project p in sln.GetAllProjects ()) {
-				ProjectDom pContext = ProjectDomService.GetProjectDom (p);
-				if (pContext == null)
-					continue;
+//				ITypeResolveContext pContext = TypeSystemService. (p);
+//				if (pContext == null)
+//					continue;
 				foreach (ProjectFile file in p.Files) {
-					IList<Tag> tags = pContext.GetSpecialComments (file.Name);
+					IList<Tag> tags = TaskService.GetSpecialComments (file.Name);
 					if (tags != null && tags.Count > 0)
 						UpdateCommentTags (sln, file.Name, tags);
 				}
@@ -254,7 +252,7 @@ namespace MonoDevelop.Ide.Tasks
 							desc = tag.Key + ": " + desc;
 					}
 					
-					Task t = new Task (fileName, desc, tag.Region.Start.Column, tag.Region.Start.Line,
+					Task t = new Task (fileName, desc, tag.Region.BeginColumn, tag.Region.BeginLine,
 					                   TaskSeverity.Information, priorities[tag.Key], wob);
 					newTasks.Add (t);
 				}
@@ -290,7 +288,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ReloadPriorities ()
 		{
 			priorities.Clear ();
-			foreach (CommentTag tag in ProjectDomService.SpecialCommentTags)
+			foreach (var tag in TaskService.SpecialCommentTags)
 				priorities.Add (tag.Tag, (TaskPriority) tag.Priority);
 		}		
 		

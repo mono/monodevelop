@@ -8968,7 +8968,7 @@
 	  MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Ide.Dom.Parser/IParser.cs,
 	  MonoDevelop.Ide.Dom.Parser/ProjectDomEventArgs.cs,
-	  MonoDevelop.Ide.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Ide.Dom.Parser/ITypeResolveContext.cs,
 	  MonoDevelop.Ide.Dom.Output,
 	  MonoDevelop.Ide.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Ide.Dom.Output/Ambience.cs,
@@ -8999,7 +8999,7 @@
 	  MonoDevelop.Ide.Dom/IReturnType.cs, MonoDevelop.Ide.Dom/IEvent.cs,
 	  MonoDevelop.Ide.Dom/AbstractMember.cs,
 	  MonoDevelop.Ide.Dom/IField.cs, MonoDevelop.Ide.Dom/CommentType.cs,
-	  MonoDevelop.Ide.Dom/DomLocation.cs,
+	  MonoDevelop.Ide.Dom/AstLocation.cs,
 	  MonoDevelop.Ide.Dom/AttributeTarget.cs: Removed dead code.
 
 2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
@@ -10320,7 +10320,7 @@
 	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs,
 	  MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Ide.Dom.Parser/ProjectDomEventArgs.cs,
-	  MonoDevelop.Ide.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Ide.Dom.Parser/ITypeResolveContext.cs,
 	  MonoDevelop.Ide.Dom/IMember.cs,
 	  MonoDevelop.Ide.Dom/DomReturnType.cs,
 	  MonoDevelop.Ide.Dom/DomType.cs, MonoDevelop.Ide.Dom/DomMethod.cs,
@@ -10328,7 +10328,7 @@
 	  MonoDevelop.Ide.Dom/DomEvent.cs, MonoDevelop.Ide.Dom/DomField.cs,
 	  MonoDevelop.Ide.Dom/DomProperty.cs, MonoDevelop.Ide.Dom/IType.cs,
 	  MonoDevelop.Ide.Dom/AbstractMember.cs,
-	  MonoDevelop.Ide.Dom/DomLocation.cs, MonoDevelop.Ide.mdp,
+	  MonoDevelop.Ide.Dom/AstLocation.cs, MonoDevelop.Ide.mdp,
 	  gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs:
 	  Worked on mcs integration/class browser
 
@@ -10358,7 +10358,7 @@
 
 2008-04-14  Mike Krüger <mkrueger@novell.com> 
 
-	* MonoDevelop.Ide.Dom/DomRegion.cs, MonoDevelop.Ide.Dom/DomLocation.cs:
+	* MonoDevelop.Ide.Dom/DomRegion.cs, MonoDevelop.Ide.Dom/AstLocation.cs:
 	  Changed the region/location model.
 
 2008-04-14  Mike Krüger <mkrueger@novell.com> 
@@ -11120,7 +11120,7 @@
 
 	* MonoDevelop.Dom.Parser/AbstractParser.cs,
 	  MonoDevelop.Dom.Parser/ProjectParserService.cs,
-	  MonoDevelop.Dom.Parser/IParser.cs, MonoDevelop.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Dom.Parser/IParser.cs, MonoDevelop.Dom.Parser/ITypeResolveContext.cs,
 	  MonoDevelop.Dom.Output/Ambience.cs,
 	  MonoDevelop.Dom.Output/NetAmbience.cs, MonoDevelop.Dom/IMember.cs,
 	  MonoDevelop.Dom/DomReturnType.cs, MonoDevelop.Dom/DomType.cs,
@@ -11160,7 +11160,7 @@
 
 	* MonoDevelop.Dom.Parser, MonoDevelop.Dom.Parser/AbstractParser.cs,
 	  MonoDevelop.Dom.Parser/ProjectParserService.cs,
-	  MonoDevelop.Dom.Parser/IParser.cs, MonoDevelop.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Dom.Parser/IParser.cs, MonoDevelop.Dom.Parser/ITypeResolveContext.cs,
 	  MonoDevelop.Dom.Output, MonoDevelop.Dom.Output/Ambience.cs,
 	  MonoDevelop.Dom.Output/NetAmbience.cs, MonoDevelop.Dom/DomType.cs,
 	  MonoDevelop.Dom/ClassType.cs, MonoDevelop.Dom/ICompilationUnit.cs,

@@ -31,7 +31,15 @@ namespace MonoDevelop.TypeSystem
 {
 	public interface ITypeSystemProvider
 	{
-		IParsedFile Parse (IProjectContent projectContent, string fileName, TextReader content);
+		ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader content);
+	}
+	
+	public abstract class AbstractTypeSystemProvider : ITypeSystemProvider
+	{
+		public virtual ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader content)
+		{
+			return null;
+		}
 	}
 }
 

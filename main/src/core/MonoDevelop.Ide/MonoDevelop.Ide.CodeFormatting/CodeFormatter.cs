@@ -26,10 +26,10 @@
 
 using System;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -84,17 +84,17 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// A <see cref="System.Object"/> that must be from type Mono.TextEditorData.
 		/// </param>
 		/// <param name="dom">
-		/// A <see cref="ProjectDom"/>
+		/// A <see cref="ITypeResolveContext"/>
 		/// </param>
 		/// <param name="unit">
-		/// A <see cref="ICompilationUnit"/>
+		/// A <see cref="IParsedFile"/>
 		/// </param>
 		/// <param name="caretLocation">
-		/// A <see cref="DomLocation"/> that should be the end location to which the parsing should occur.
+		/// A <see cref="AstLocation"/> that should be the end location to which the parsing should occur.
 		/// </param>
 		public void OnTheFlyFormat (PolicyContainer policyParent, TextEditorData data,
-			IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit,
-			DomLocation endLocation)
+			IType callingType, IMember callingMember, ITypeResolveContext dom, IParsedFile unit,
+			AstLocation endLocation)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsOnTheFlyFormatting)

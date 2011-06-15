@@ -160,6 +160,11 @@
 		<ExtensionNode name="Provider" type="MonoDevelop.TypeSystem.TypeSystemProviderNode"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Ambiences" name = "Language ambiences">
+		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
+		<ExtensionNode name="Ambience" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

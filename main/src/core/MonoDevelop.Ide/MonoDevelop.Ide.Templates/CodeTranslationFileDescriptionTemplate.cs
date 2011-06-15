@@ -41,7 +41,6 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Templates
 {

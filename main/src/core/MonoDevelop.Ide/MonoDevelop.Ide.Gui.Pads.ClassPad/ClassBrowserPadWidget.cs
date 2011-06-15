@@ -33,8 +33,6 @@ using System.Collections.Generic;
 using Gdk;
 using Gtk;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -187,7 +185,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			if (!IdeApp.Workspace.IsOpen)
 				return;
 			foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
-				ProjectDom dom = ProjectDomService.GetProjectDom (project);
+				ITypeResolveContext dom = TypeSystemService.GetProjectDom (project);
 				if (dom == null)
 					continue;
 				foreach (IType type in dom.Types) {

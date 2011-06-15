@@ -34,7 +34,6 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.CodeGeneration;
 
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
@@ -59,33 +58,34 @@ namespace MonoDevelop.Ide.Templates
 		
 		public override string CreateContent (Project project, Dictionary<string, string> tags, string language)
 		{
-			if (language == null || language == "")
-				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
-			
-			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
-			
-			CodeDomProvider provider = null;
-			if (binding != null)
-				provider = binding.GetCodeDomProvider ();
-			
-			if (provider == null)
-				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
-
-			XmlCodeDomReader xcd = new XmlCodeDomReader ();
-			CodeCompileUnit cu = xcd.ReadCompileUnit (domContent);
-			
-			foreach (CodeNamespace cns in cu.Namespaces)
-				cns.Name = StripImplicitNamespace (project, tags, cns.Name);
-			
-			CodeGeneratorOptions options = new CodeGeneratorOptions ();
-			options.IndentString = TextEditorProperties.IndentString;
-			options.BracingStyle = "C";
-			
-			StringWriter sw = new StringWriter ();
-			provider.GenerateCodeFromCompileUnit (cu, sw, options);
-			sw.Close ();
-			
-			return StripHeaderAndBlankLines (sw.ToString (), provider);
+//			if (language == null || language == "")
+//				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
+//			
+//			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+//			
+//			CodeDomProvider provider = null;
+//			if (binding != null)
+//				provider = binding.GetCodeDomProvider ();
+//			
+//			if (provider == null)
+//				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
+//
+//			var xcd = new XmlCodeDomReader ();
+//			var cu = xcd.ReadCompileUnit (domContent);
+//			
+//			foreach (CodeNamespace cns in cu.Namespaces)
+//				cns.Name = StripImplicitNamespace (project, tags, cns.Name);
+//			
+//			CodeGeneratorOptions options = new CodeGeneratorOptions ();
+//			options.IndentString = TextEditorProperties.IndentString;
+//			options.BracingStyle = "C";
+//			
+//			StringWriter sw = new StringWriter ();
+//			provider.GenerateCodeFromCompileUnit (cu, sw, options);
+//			sw.Close ();
+//			
+//			return StripHeaderAndBlankLines (sw.ToString (), provider);
+			return "Todo: CodeDomFileDescriptionTemplate";
 		}
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)

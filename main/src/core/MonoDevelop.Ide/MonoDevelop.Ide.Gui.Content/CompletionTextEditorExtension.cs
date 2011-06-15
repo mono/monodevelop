@@ -29,9 +29,6 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
@@ -373,9 +370,9 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			
 			// If there is a parser context, try resolving by calling CtrlSpace.
-			ProjectDom ctx = GetParserContext();
+			var ctx = GetParserContext();
 			if (ctx != null) {
-// TODO:
+// TODO: Type system conversion.
 				//CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (ctx, GetAmbience ());
 				//completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, 
 //						completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);

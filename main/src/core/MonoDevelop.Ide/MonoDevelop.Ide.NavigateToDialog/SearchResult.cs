@@ -31,8 +31,8 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -95,24 +95,63 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	
 	class TypeSearchResult : MemberSearchResult
 	{
+		IType type;
+			
 		public override string File {
-			get { return ((IType)member).CompilationUnit.FileName; }
+			get { return type.GetDefinition ().Region.FileName; }
+		}
+		
+		public override Gdk.Pixbuf Icon {
+			get {
+				return ImageService.GetPixbuf (type.GetStockIcon (), IconSize.Menu);
+			}
+		}
+		
+		public override int Row {
+			get { return type.GetDefinition ().Region.BeginLine; }
+		}
+		
+		public override int Column {
+			get { return type.GetDefinition ().Region.BeginColumn; }
+		}
+		
+		public override string PlainText {
+			get {
+				return Ambience.GetString (type.GetDefinition (), Flags);
+			}
 		}
 		
 		public override string Description {
 			get {
-				IType type = (IType)member;
-				if (useFullName) 
-					return type.SourceProject != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), type.SourceProject.Name ?? "") : String.Format (GettextCatalog.GetString ("from \"{0}\""), (string)type.CompilationUnit.FileName ?? "");
-				if (type.SourceProject != null)
-					return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), type.SourceProject.Name ?? "", type.Namespace ?? "");
-				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), (string)type.CompilationUnit.FileName ?? "", type.Namespace ?? "");
+				//			if (useFullName) 
+				//				return type.GetSourceProject () != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), type.GetSourceProject ().Name ?? "") : String.Format (GettextCatalog.GetString ("from \"{0}\""), (string)type.GetDefinition ().Region.FileName ?? "");
+				//			if (type.GetSourceProject () != null)
+				//				return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), type.GetSourceProject ().Name ?? "", type.Namespace ?? "");
+				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), File ?? "", type.Namespace ?? "");
 			}
 		}
 		
-		
-		public TypeSearchResult (string match, string matchedString, int rank, IType type, bool useFullName) : base (match, matchedString, rank, type, useFullName)
+		public override string GetMarkupText (Widget widget)
 		{
+			if (useFullName)
+				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
+			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
+			settings.EmitNameCallback = delegate (object domVisitable, ref string outString) {
+				if (type == domVisitable)
+					outString = HighlightMatch (widget, outString, match);
+			};
+			return Ambience.GetString (type, settings);
+		}
+		
+		public TypeSearchResult (string match, string matchedString, int rank, IType type, bool useFullName) : base (match, matchedString, rank, null, useFullName)
+		{
+			this.type = type;
+		}
+		
+		protected override Ambience Ambience { 
+			get {
+				return AmbienceService.GetAmbienceForFile (type.GetDefinition ().Region.FileName);
+			}
 		}
 	}
 	
@@ -174,18 +213,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public override string GetMarkupText (Widget widget)
-		{
-			if (useFullName)
-				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
-			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
-			settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
-				if (domVisitable == member)
-					outString = HighlightMatch (widget, outString, match);
-			};
-			return Ambience.GetString (member, settings);
-		}
-		
 			/*	
 		public override string MarkupText {
 			get {
@@ -201,21 +228,21 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		public override string File {
-			get { return member.DeclaringType.CompilationUnit.FileName; }
+			get { return member.DeclaringType.GetDefinition ().Region.FileName; }
 		}
 
 		public override Gdk.Pixbuf Icon {
 			get {
-				return ImageService.GetPixbuf (member.StockIcon, IconSize.Menu);
+				return ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu);
 			}
 		}
 		
 		public override int Row {
-			get { return member.Location.Line; }
+			get { return member.Region.BeginLine; }
 		}
 		
 		public override int Column {
-			get { return member.Location.Column; }
+			get { return member.Region.BeginColumn; }
 		}
 		
 		public override string Description {
@@ -230,12 +257,21 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.useFullName = useFullName;
 		}
 		
-		protected Ambience Ambience { 
+		public override string GetMarkupText (Widget widget)
+		{
+			if (useFullName)
+				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
+			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
+			settings.EmitNameCallback = delegate (object domVisitable, ref string outString) {
+				if (member == domVisitable)
+					outString = HighlightMatch (widget, outString, match);
+			};
+			return Ambience.GetString (member, settings);
+		}
+		
+		protected virtual Ambience Ambience { 
 			get {
-				IType type = member is IType ? (IType)member : member.DeclaringType;
-				if (type.SourceProject is DotNetProject)
-					return ((DotNetProject)type.SourceProject).Ambience;
-				return AmbienceService.DefaultAmbience;
+				return AmbienceService.GetAmbienceForFile (member.DeclaringType.GetDefinition ().Region.FileName);
 			}
 		}
 	}

@@ -197,8 +197,8 @@ namespace MonoDevelop.Ide
 			};
 
 			// Perser service initialization
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.TrackFileChanges = true;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
+//			TypeSystemService.TrackFileChanges = true;
+//			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
 			
 			// Startup commands
@@ -445,7 +445,7 @@ namespace MonoDevelop.Ide
 				IdeApp.Workbench.CurrentLayout = "Default";
 				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad> ().Visible = false;
 				IdeApp.Workbench.GetPad<FileScout> ().Visible = false;
-				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad> ().Visible = false;
+//				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad> ().Visible = false;
 				foreach (Pad p in IdeApp.Workbench.Pads) {
 					if (p.Visible)
 						p.AutoHide = true;

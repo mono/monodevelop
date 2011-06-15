@@ -45,7 +45,6 @@ using Mono.Addins;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -287,7 +286,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			//Template can match all CodeDom .NET languages with a "*"
 			if (list.Contains ("*")) {
-				foreach (ILanguageBinding lb in LanguageBindingService.LanguageBindings) {
+				foreach (var lb in LanguageBindingService.LanguageBindings) {
 					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
 					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
 						list.Add (dnlang.Language);

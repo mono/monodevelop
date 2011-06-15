@@ -39,7 +39,6 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Templates

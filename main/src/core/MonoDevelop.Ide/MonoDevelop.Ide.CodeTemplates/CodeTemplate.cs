@@ -33,11 +33,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Ide.CodeFormatting;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -382,17 +381,17 @@ namespace MonoDevelop.Ide.CodeTemplates
 		/// </summary>
 		public TemplateResult InsertTemplateContents (MonoDevelop.Ide.Gui.Document document)
 		{
-			ProjectDom dom = document.Dom;
-			ParsedDocument doc = document.ParsedDocument ?? MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (dom, document.FileName);
+			var dom = document.TypeResolveContext;
+			var doc = document.ParsedFile;
 			Mono.TextEditor.TextEditorData data = document.Editor;
-
+			
 			int offset = data.Caret.Offset;
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
 			
 			TemplateContext context = new TemplateContext {
 				Template = this,
 				Document = document,
-				ProjectDom = dom,
+				ITypeResolveContext = dom,
 				ParsedDocument = doc,
 				InsertPosition = data.Caret.Location,
 				LineIndent = data.Document.GetLineIndent (data.Caret.Line),

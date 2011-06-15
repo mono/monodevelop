@@ -25,14 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -67,31 +66,31 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 		
 		
-		public static IEnumerable<MemberReference> FindReferences (INode member, IProgressMonitor monitor = null)
+		public static IEnumerable<DomRegion> FindReferences (IEntity member, IProgressMonitor monitor = null)
 		{
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, monitor);
 		}
 		
 		
-		static IEnumerable<Tuple<ProjectDom, FilePath>> GetFileNames (Solution solution, ProjectDom dom, ICompilationUnit unit, INode member, IProgressMonitor monitor)
+		static IEnumerable<Tuple<ITypeResolveContext, FilePath>> GetFileNames (Solution solution, IProjectContent dom, IParsedFile unit, IEntity member, IProgressMonitor monitor)
 		{
 			var scope = GetScope (member);
 			switch (scope) {
 			case RefactoryScope.File:
 			case RefactoryScope.DeclaringType:
 				if (dom != null && unit != null)
-					yield return Tuple.Create (dom, unit.FileName);
+					yield return Tuple.Create<ITypeResolveContext, FilePath> (dom, unit.FileName);
 				break;
 			case RefactoryScope.Project:
 				if (dom == null)
 					yield break;
 				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Search reference in project..."), dom.Project.Files.Count);
+					monitor.BeginTask (GettextCatalog.GetString ("Search reference in project..."), dom.GetProject ().Files.Count);
 				int counter = 0;
-				foreach (var file in dom.Project.Files) {
+				foreach (var file in dom.GetProject ().Files) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
-					yield return Tuple.Create (dom, file.FilePath);
+					yield return Tuple.Create<ITypeResolveContext, FilePath> (dom, file.FilePath);
 					if (monitor != null) {
 						if (counter % 10 == 0)
 							monitor.Step (10);
@@ -107,11 +106,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (var project in solution.GetAllProjects ()) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
-					var currentDom = ProjectDomService.GetProjectDom (project);
+					var currentDom = TypeSystemService.GetProjectContext (project);
 					foreach (var file in project.Files) {
 						if (monitor != null && monitor.IsCancelRequested)
 							yield break;
-						yield return Tuple.Create (currentDom, file.FilePath);
+						yield return Tuple.Create<ITypeResolveContext, FilePath> (currentDom, file.FilePath);
 					}
 					if (monitor != null)
 						monitor.Step (1);
@@ -122,26 +121,28 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, INode member, IProgressMonitor monitor = null)
+		public static IEnumerable<DomRegion> FindReferences (Solution solution, IEntity member, IProgressMonitor monitor = null)
 		{
-			ProjectDom dom = null;
-			ICompilationUnit unit = null;
-			IEnumerable<INode > searchNodes = new INode[] { member };
-			if (member is LocalVariable) {
-				dom = ((LocalVariable)member).DeclaringMember.DeclaringType.SourceProjectDom;
-				unit = ((LocalVariable)member).CompilationUnit;
+			ITypeResolveContext dom = null;
+			IParsedFile unit = null;
+			IEnumerable<IEntity> searchNodes = new IEntity[] { member };
+			// TODO: Type system conversion.
+			/*if (member is IVariable) { 
+				dom = ((IVariable)member).DeclaringMember.DeclaringTyp
+					e.GetProjectContent ();
+				unit = ((IVariable)member).CompilationUnit;
 			} else if (member is IParameter) {
-				dom = ((IParameter)member).DeclaringMember.DeclaringType.SourceProjectDom;
+				dom = ((IParameter)member).DeclaringMember.DeclaringType.GetProjectContent ();
 				unit = ((IParameter)member).DeclaringMember.DeclaringType.CompilationUnit;
 			} else if (member is IType) {
-				dom = ((IType)member).SourceProjectDom;
+				dom = ((IType)member).GetDefinition ().ProjectContent;
 				unit = ((IType)member).CompilationUnit;
 			} else if (member is IMember) {
-				dom = ((IMember)member).DeclaringType.SourceProjectDom;
+				dom = ((IMember)member).DeclaringType.GetProjectContent ();
 				unit = ((IMember)member).DeclaringType.CompilationUnit;
 				searchNodes = CollectMembers (dom, (IMember)member);
 			}
-
+			
 			string currentMime = null;
 			ReferenceFinder finder = null;
 			
@@ -160,31 +161,34 @@ namespace MonoDevelop.Ide.FindInFiles
 						yield break;
 					yield return foundReference;
 				}
-			}
+			} */ 
+			yield break;
 		}
 		
-		public abstract IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, IEnumerable<INode> searchedMembers);
+		public abstract IEnumerable<DomRegion> FindReferences (ITypeResolveContext dom, FilePath fileName, IEnumerable<IEntity> searchedMembers);
 		
-		internal static IEnumerable<INode> CollectMembers (ProjectDom dom, IMember member)
+		internal static IEnumerable<IEntity> CollectMembers (ITypeResolveContext dom, IMember member)
 		{
-			if (member is IMethod && ((IMethod)member).IsConstructor) {
+			yield break;
+			// TODO: Type system conversion.
+		/*	if (member is IMethod && ((IMethod)member).IsConstructor) {
 				yield return member;
 			} else {
-				bool isOverrideable = member.DeclaringType.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract;
+				bool isOverrideable = member.DeclaringType.GetDefinition ().ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract;
 				bool isLastMember = false;
 				// for members we need to collect the whole 'class' of members (overloads & implementing types)
 				HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
-				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
-					if (type.ClassType == ClassType.Interface || isOverrideable || type.DecoratedFullName == member.DeclaringType.DecoratedFullName) {
+				foreach (var type in member.DeclaringType.GetAllBaseTypes (dom)) {
+					if (type.GetDefinition ().ClassType == ClassType.Interface || isOverrideable || type.Equals (member.DeclaringType)) {
 						// search in the class for the member
-						foreach (IMember interfaceMember in type.SearchMember (member.Name, true)) {
+						foreach (var interfaceMember in type.SearchMember (member.Name, true)) {
 							if (interfaceMember.MemberType == member.MemberType)
 								yield return interfaceMember;
 						}
 						
 						// now search in all subclasses of this class for the member
 						isLastMember = !member.IsOverride;
-						foreach (IType implementingType in dom.GetSubclasses (type)) {
+						foreach (var implementingType in dom.GetSubclasses (type)) {
 							string name = implementingType.DecoratedFullName;
 							if (alreadyVisitedTypes.Contains (name))
 								continue;
@@ -202,22 +206,25 @@ namespace MonoDevelop.Ide.FindInFiles
 							break;
 					}
 				}
-			}
+			}*/
 		}
-		
-		static RefactoryScope GetScope (INode node)
+		public enum RefactoryScope{ File, DeclaringType, Solution, Project}
+		static RefactoryScope GetScope (IEntity node)
 		{
 			IMember member = node as IMember;
 			if (member == null)
 				return RefactoryScope.DeclaringType;
 			
-			if (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface)
-				return GetScope (member.DeclaringType);
+			if (node.DeclaringTypeDefinition != null && node.DeclaringTypeDefinition.ClassType == ClassType.Interface)
+				return GetScope (member.DeclaringTypeDefinition);
 			
-			if (member.IsPublic)
+			if ((member.Accessibility & Accessibility.Public) == Accessibility.Public)
 				return RefactoryScope.Solution;
 			
-			if (member.IsProtected || member.IsInternal || member.DeclaringType == null)
+			// TODO: RefactoringsScope.Hierarchy
+			if ((member.Accessibility & Accessibility.Protected) == Accessibility.Protected)
+				return RefactoryScope.Solution;
+			if ((member.Accessibility & Accessibility.Internal) == Accessibility.Protected)
 				return RefactoryScope.Project;
 			return RefactoryScope.DeclaringType;
 		}

@@ -33,8 +33,6 @@ using System.Collections.Generic;
 using System.Text;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -53,11 +51,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		protected override void Initialize ()
 		{
 			compilationUnitUpdated = (EventHandler<TypeUpdateInformationEventArgs>) DispatchService.GuiDispatch (new EventHandler<TypeUpdateInformationEventArgs> (OnClassInformationChanged));
-			ProjectDomService.TypesUpdated += compilationUnitUpdated;
+			TypeSystemService.TypesUpdated += compilationUnitUpdated;
 		}
 		public override void Dispose ()
 		{
-			ProjectDomService.TypesUpdated -= compilationUnitUpdated;
+			TypeSystemService.TypesUpdated -= compilationUnitUpdated;
 		}
 		
 		public override Type NodeDataType {
@@ -104,7 +102,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				builder.AddChild (((DotNetProject)project).References);
 			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			ITypeResolveContext dom = TypeSystemService.GetProjectDom (project);
 			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			foreach (IMember ob in dom.GetNamespaceContents ("", false, false)) {
 				if (ob is Namespace) {
@@ -121,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public static void FillNamespaces (ITreeBuilder builder, Project project, string ns)
 		{
-			ProjectDom dom = ProjectDomService.GetProjectDom (project);
+			ITypeResolveContext dom = TypeSystemService.GetProjectDom (project);
 			List<IMember> members = dom.GetNamespaceContents (ns, false, false);
 			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			if (members.Count > 0) {

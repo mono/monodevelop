@@ -26,7 +26,6 @@
 
 using System;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 

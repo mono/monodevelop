@@ -31,8 +31,6 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -85,7 +83,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
-				ICompilationUnit unit = DomCecilCompilationUnit.Load (fileName, false, true);
+				IParsedFile unit = DomCecilCompilationUnit.Load (fileName, false, true);
 				if (unit == null)
 					continue;
 				foreach (IType type in unit.Types) {
