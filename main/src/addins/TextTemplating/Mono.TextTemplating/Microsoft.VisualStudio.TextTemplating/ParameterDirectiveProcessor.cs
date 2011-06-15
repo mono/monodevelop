@@ -242,7 +242,10 @@ namespace Microsoft.VisualStudio.TextTemplating
 			var cgInit = cgType.GetMethod ("InitOutput", BindingFlags.NonPublic | BindingFlags.Instance);
 			var cgFieldGen = cgType.GetMethod ("GenerateField", BindingFlags.NonPublic | BindingFlags.Instance);
 			var cgPropGen = cgType.GetMethod ("GenerateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+			
+#pragma warning disable 0618
 			var generator = (CodeGenerator) provider.CreateGenerator ();
+#pragma warning restore 0618
 			var dummy = new CodeTypeDeclaration ("Foo");
 			
 			foreach (CodeTypeMember member in members) {
