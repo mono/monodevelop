@@ -10,6 +10,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeSetNode.cs \
 	MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs \
+	MonoDevelop.Core.AddIns/MimeTypeExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
 	MonoDevelop.Core.AddIns/PlatformCondition.cs \
@@ -171,124 +172,6 @@ FILES =  \
 	MonoDevelop.Core/UserDataMigrationService.cs \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/XmlReadHelper.cs \
-	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
-	MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs \
-	MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs \
-	MonoDevelop.Projects.CodeGeneration/INameValidator.cs \
-	MonoDevelop.Projects.CodeGeneration/IRefactorer.cs \
-	MonoDevelop.Projects.CodeGeneration/MimeTypeExtensionNode.cs \
-	MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
-	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
-	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
-	MonoDevelop.Projects.Dom.MemoryDatabase/AssemblyProjectDom.cs \
-	MonoDevelop.Projects.Dom.MemoryDatabase/MemoryDatabase.cs \
-	MonoDevelop.Projects.Dom.MemoryDatabase/MemoryProjectDom.cs \
-	MonoDevelop.Projects.Dom.MemoryDatabase/NamespaceEntry.cs \
-	MonoDevelop.Projects.Dom.MemoryDatabase/ProjectMemoryProjectDom.cs \
-	MonoDevelop.Projects.Dom.Output/Ambience.cs \
-	MonoDevelop.Projects.Dom.Output/AmbienceService.cs \
-	MonoDevelop.Projects.Dom.Output/DocumentationService.cs \
-	MonoDevelop.Projects.Dom.Output/NetAmbience.cs \
-	MonoDevelop.Projects.Dom.Output/OutputFlags.cs \
-	MonoDevelop.Projects.Dom.Output/OutputSettings.cs \
-	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \
-	MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs \
-	MonoDevelop.Projects.Dom.Parser/CommentTag.cs \
-	MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs \
-	MonoDevelop.Projects.Dom.Parser/IDomObjectTable.cs \
-	MonoDevelop.Projects.Dom.Parser/IParser.cs \
-	MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs \
-	MonoDevelop.Projects.Dom.Parser/IResolver.cs \
-	MonoDevelop.Projects.Dom.Parser/ITypeNameResolver.cs \
-	MonoDevelop.Projects.Dom.Parser/ProjectDom.cs \
-	MonoDevelop.Projects.Dom.Parser/ProjectDomDecorator.cs \
-	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
-	MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs \
-	MonoDevelop.Projects.Dom.Parser/ProjectDomStats.cs \
-	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
-	MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs \
-	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Dom.Serialization/AttributeEntry.cs \
-	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
-	MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs \
-	MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs \
-	MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs \
-	MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs \
-	MonoDevelop.Projects.Dom.Serialization/FileEntry.cs \
-	MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs \
-	MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs \
-	MonoDevelop.Projects.Dom.Serialization/StatsVisitor.cs \
-	MonoDevelop.Projects.Dom/AbstractMember.cs \
-	MonoDevelop.Projects.Dom/AbstractTypeParameterMember.cs \
-	MonoDevelop.Projects.Dom/AnonymousType.cs \
-	MonoDevelop.Projects.Dom/AttributeTarget.cs \
-	MonoDevelop.Projects.Dom/ClassType.cs \
-	MonoDevelop.Projects.Dom/Comment.cs \
-	MonoDevelop.Projects.Dom/CommentType.cs \
-	MonoDevelop.Projects.Dom/CompilationUnit.cs \
-	MonoDevelop.Projects.Dom/CompoundType.cs \
-	MonoDevelop.Projects.Dom/ConditionalRegion.cs \
-	MonoDevelop.Projects.Dom/CopyDomVisitor.cs \
-	MonoDevelop.Projects.Dom/DomAttribute.cs \
-	MonoDevelop.Projects.Dom/DomCecilAttribute.cs \
-	MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs \
-	MonoDevelop.Projects.Dom/DomCecilEvent.cs \
-	MonoDevelop.Projects.Dom/DomCecilField.cs \
-	MonoDevelop.Projects.Dom/DomCecilMethod.cs \
-	MonoDevelop.Projects.Dom/DomCecilParameter.cs \
-	MonoDevelop.Projects.Dom/DomCecilProperty.cs \
-	MonoDevelop.Projects.Dom/DomCecilType.cs \
-	MonoDevelop.Projects.Dom/DomEvent.cs \
-	MonoDevelop.Projects.Dom/DomField.cs \
-	MonoDevelop.Projects.Dom/DomLocation.cs \
-	MonoDevelop.Projects.Dom/DomMemberDecorator.cs \
-	MonoDevelop.Projects.Dom/DomMethod.cs \
-	MonoDevelop.Projects.Dom/DomOutputVisitor.cs \
-	MonoDevelop.Projects.Dom/DomParameter.cs \
-	MonoDevelop.Projects.Dom/DomProperty.cs \
-	MonoDevelop.Projects.Dom/DomRegion.cs \
-	MonoDevelop.Projects.Dom/DomReturnType.cs \
-	MonoDevelop.Projects.Dom/DomType.cs \
-	MonoDevelop.Projects.Dom/DomUsing.cs \
-	MonoDevelop.Projects.Dom/Error.cs \
-	MonoDevelop.Projects.Dom/ExpressionContext.cs \
-	MonoDevelop.Projects.Dom/ExpressionResult.cs \
-	MonoDevelop.Projects.Dom/ExtensionMethod.cs \
-	MonoDevelop.Projects.Dom/FoldingRegion.cs \
-	MonoDevelop.Projects.Dom/IAttribute.cs \
-	MonoDevelop.Projects.Dom/IBaseMember.cs \
-	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
-	MonoDevelop.Projects.Dom/IDomVisitor.cs \
-	MonoDevelop.Projects.Dom/IEvent.cs \
-	MonoDevelop.Projects.Dom/IExpressionFinder.cs \
-	MonoDevelop.Projects.Dom/IField.cs \
-	MonoDevelop.Projects.Dom/IMember.cs \
-	MonoDevelop.Projects.Dom/IMethod.cs \
-	MonoDevelop.Projects.Dom/INode.cs \
-	MonoDevelop.Projects.Dom/InstantiatedMethod.cs \
-	MonoDevelop.Projects.Dom/InstantiatedParameterType.cs \
-	MonoDevelop.Projects.Dom/InstantiatedType.cs \
-	MonoDevelop.Projects.Dom/IParameter.cs \
-	MonoDevelop.Projects.Dom/IProperty.cs \
-	MonoDevelop.Projects.Dom/IReturnType.cs \
-	MonoDevelop.Projects.Dom/IType.cs \
-	MonoDevelop.Projects.Dom/ITypeParameter.cs \
-	MonoDevelop.Projects.Dom/ITypeParameterMember.cs \
-	MonoDevelop.Projects.Dom/IUsing.cs \
-	MonoDevelop.Projects.Dom/LocalVariable.cs \
-	MonoDevelop.Projects.Dom/Modifiers.cs \
-	MonoDevelop.Projects.Dom/Namespace.cs \
-	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
-	MonoDevelop.Projects.Dom/ParsedDocument.cs \
-	MonoDevelop.Projects.Dom/ParsedDocumentEventArgs.cs \
-	MonoDevelop.Projects.Dom/PreProcessorDefine.cs \
-	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
-	MonoDevelop.Projects.Dom/ResolveResult.cs \
-	MonoDevelop.Projects.Dom/Tag.cs \
-	MonoDevelop.Projects.Dom/TypeParameter.cs \
-	MonoDevelop.Projects.Dom/TypeUpdateInformation.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
 	MonoDevelop.Projects.Extensions/DotNetProjectNode.cs \
 	MonoDevelop.Projects.Extensions/DotNetProjectSubtypeNode.cs \
@@ -303,7 +186,6 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/ItemTypeNode.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/MonoDocSourceNode.cs \
-	MonoDevelop.Projects.Extensions/ParserNode.cs \
 	MonoDevelop.Projects.Extensions/PolicyNode.cs \
 	MonoDevelop.Projects.Extensions/PolicySetNode.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \
@@ -466,6 +348,7 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
+	-r:../../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:../../../build/bin/Mono.Cecil.dll \
 	-r:../../../build/bin/Mono.Cecil.Mdb.dll \
 	-r:../../../build/bin/MonoDevelop.Projects.Formats.MSBuild.exe \

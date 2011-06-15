@@ -217,7 +217,6 @@
     <Compile Include="MonoDevelop.Projects\ProjectReferenceCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectCreateInformation.cs" />
     <Compile Include="MonoDevelop.Projects\IProjectBinding.cs" />
-    <Compile Include="MonoDevelop.Projects\ILanguageBinding.cs" />
     <Compile Include="MonoDevelop.Projects\IDotNetLanguageBinding.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemConfigurationCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ConfigurationEventHandler.cs" />
@@ -267,7 +266,6 @@
     <Compile Include="MonoDevelop.Projects\IFileItem.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectParameters.cs" />
     <Compile Include="MonoDevelop.Projects\ConfigurationParameters.cs" />
-    <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
     <Compile Include="MonoDevelop.Projects\CyclicDependencyException.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectParameters.cs" />
@@ -278,117 +276,6 @@
     <Compile Include="MonoDevelop.Projects\HelpService.cs" />
     <Compile Include="MonoDevelop.Projects\CompiledAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects\IAssemblyProject.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\BaseRefactorer.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\CodeRefactorer.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\IRefactorer.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\RefactorerContext.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\RefactorOperations.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\XmlCodeDomReader.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\INameValidator.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\AbstractMember.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\AttributeTarget.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ClassType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\Comment.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\CommentType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\CompilationUnit.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ParsedDocumentEventArgs.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomEvent.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomField.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomLocation.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomMethod.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomParameter.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomProperty.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomRegion.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomReturnType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomUsing.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\Error.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ICompilationUnit.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IDomVisitor.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IEvent.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IField.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IMember.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IMethod.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IParameter.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IProperty.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IReturnType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IUsing.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\Modifiers.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ParameterModifiers.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\TypeParameter.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\Tag.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\TypeUpdateInformation.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ReferenceEntry.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\Namespace.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\CompoundType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomCecilType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomCecilProperty.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomCecilParameter.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomCecilMethod.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomCecilField.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomCecilEvent.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomCecilAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomCecilCompilationUnit.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IExpressionFinder.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ExpressionResult.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ExpressionContext.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ResolveResult.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ParsedDocument.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\FoldingRegion.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\PreProcessorDefine.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ConditionalRegion.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\LocalVariable.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\InstantiatedType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomMemberDecorator.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\InstantiatedParameterType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\CopyDomVisitor.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ITypeParameter.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\InstantiatedMethod.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ExtensionMethod.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\AnonymousType.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\IBaseMember.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\INode.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\AbstractTypeParameterMember.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\ITypeParameterMember.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryProjectDom.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\AssemblyProjectDom.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\NamespaceEntry.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\ProjectMemoryProjectDom.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Output\Ambience.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Output\AmbienceService.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Output\NetAmbience.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Output\OutputFlags.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Output\DocumentationService.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Output\OutputSettings.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\AbstractParser.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\IParser.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDom.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomEventArgs.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomService.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\IResolver.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\IParserDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\CommentTasksChangedEventHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\AssemblyInformationEventHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\ITypeNameResolver.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\TypeNameResolver.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\TypeResolverVisitor.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\CommentTag.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomDecorator.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\DomPersistence.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\AssemblyCodeCompletionDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\CodeCompletionDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\ClassEntry.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\ProjectCodeCompletionDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\SimpleCodeCompletionDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\FileEntry.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\DomTypeProxy.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\DatabaseProjectDom.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\ParserDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\ClassInformationEventHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ItemPropertyCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\LanguageBindingCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\DataTypeCodon.cs" />
@@ -470,10 +357,7 @@
     <Compile Include="MonoDevelop.Core.StringParsing\StringTagModel.cs" />
     <Compile Include="MonoDevelop.Core.StringParsing\StringTagModelDescription.cs" />
     <Compile Include="MonoDevelop.Core.StringParsing\IStringTagModel.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\CodeGenerator.cs" />
-    <Compile Include="MonoDevelop.Projects.CodeGeneration\MimeTypeExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExecutionEnvironment.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\ParserNode.cs" />
     <Compile Include="MonoDevelop.Projects\AuthorInformation.cs" />
     <Compile Include="MonoDevelop.Core.Text\StringMatcher.cs" />
     <Compile Include="MonoDevelop.Core.Text\LaneStringMatcher.cs" />
@@ -485,17 +369,12 @@
     <Compile Include="MonoDevelop.Projects.Policies\IPolicyProvider.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectItemEventArgs.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\TargetFrameworkMoniker.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\AttributeEntry.cs" />
     <Compile Include="MonoDevelop.Core\UserDataLocations.cs" />
     <Compile Include="MonoDevelop.Core\UserDataMigrationService.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\UserDataMigrationNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\IDomObjectTable.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\IDataItemAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectModelDataItemAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomOutputVisitor.cs" />
     <Compile Include="MonoDevelop.Core\FilePath.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\StatsVisitor.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomStats.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyTypeAttribute.cs" />
     <Compile Include="MonoDevelop.Core.Setup\UpdateLevel.cs" />
     <Compile Include="MonoDevelop.Core.Setup\AddinSetupService.cs" />
@@ -503,6 +382,9 @@
     <Compile Include="MonoDevelop.Core\IApplicationInfo.cs" />
     <Compile Include="MonoDevelop.Core\ApplicationService.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressStatusMonitor.cs" />
+    <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\MimeTypeExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Projects\ILanguageBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -556,9 +438,6 @@
     <Folder Include="MonoDevelop.Core.StringParsing\" />
     <Folder Include="MonoDevelop.Core.Text\" />
     <Folder Include="MonoDevelop.Projects.Text\" />
-    <Folder Include="MonoDevelop.Projects.Dom.Parser\" />
-    <Folder Include="MonoDevelop.Projects.Dom\" />
-    <Folder Include="MonoDevelop.Projects.Dom.Serialization\" />
     <Folder Include="MonoDevelop.Projects.Extensions\" />
     <Folder Include="MonoDevelop.Core.Setup\" />
     <Folder Include="MonoDevelop.Core\" />
@@ -576,6 +455,10 @@
       <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

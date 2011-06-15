@@ -37,7 +37,6 @@ using MonoDevelop;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom.Output;
 
 
 namespace MonoDevelop.Projects
@@ -140,13 +139,6 @@ namespace MonoDevelop.Projects
 		}
 		IconId stockIcon = "md-project";
 		
-		/// <summary>
-		/// Ambience to use to show information about the project
-		/// </summary>
-		public virtual Ambience Ambience {
-			get { return new NetAmbience (); }
-		}
-
 		/// <summary>
 		/// List of languages that this project supports
 		/// </summary>

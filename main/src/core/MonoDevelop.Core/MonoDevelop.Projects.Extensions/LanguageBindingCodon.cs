@@ -50,9 +50,9 @@ namespace MonoDevelop.Projects.Extensions
 			}
 		}
 		
-		public ILanguageBinding LanguageBinding {
+		public IDotNetLanguageBinding LanguageBinding {
 			get {
-				return (ILanguageBinding) GetInstance ();
+				return (IDotNetLanguageBinding) GetInstance ();
 			}
 		}
 	}

@@ -24,8 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
@@ -47,15 +46,7 @@ namespace MonoDevelop.Projects
 			get; 
 		}
 		
-		IParser Parser {
-			get;
-		}
-		
-		IRefactorer Refactorer {
-			get;
-		}
-		
-		bool IsSourceCodeFile (string fileName);
-		string GetFileName (string fileNameWithoutExtension);
+		bool IsSourceCodeFile (FilePath fileName);
+		FilePath GetFileName (FilePath fileNameWithoutExtension);
 	}
 }

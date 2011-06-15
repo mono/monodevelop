@@ -63,11 +63,6 @@
 		<ExtensionNode name="Migration" type="MonoDevelop.Core.AddIns.UserDataMigrationNode" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Ambiences" name = "Language ambiences">
-		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
-		<ExtensionNode name="Class" />
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectBindings" name = "Project bindings">
 		<Description>Project bindings</Description>
 		<ExtensionNode name="ProjectBinding" type="MonoDevelop.Projects.Extensions.ProjectBindingCodon">

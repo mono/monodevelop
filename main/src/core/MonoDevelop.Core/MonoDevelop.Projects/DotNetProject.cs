@@ -38,7 +38,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
@@ -159,15 +158,6 @@ namespace MonoDevelop.Projects
 
 		public override string ProjectType {
 			get { return "DotNet"; }
-		}
-
-		private Ambience ambience;
-		public override Ambience Ambience {
-			get {
-				if (ambience == null)
-					ambience = AmbienceService.GetAmbienceForLanguage (LanguageName);
-				return ambience;
-			}
 		}
 
 		private string languageName;

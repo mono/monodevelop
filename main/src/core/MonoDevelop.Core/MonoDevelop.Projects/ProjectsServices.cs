@@ -26,9 +26,6 @@
 //
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using System;
 
 namespace MonoDevelop.Projects
