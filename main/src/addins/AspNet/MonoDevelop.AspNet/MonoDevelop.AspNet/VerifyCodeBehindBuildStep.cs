@@ -125,7 +125,7 @@ namespace MonoDevelop.AspNet
 				if (ccu == null)
 					continue;
 				
-				writer.Write (ccu, designerFile.FilePath);
+				writer.WriteFile (designerFile.FilePath, ccu);
 			}
 			
 			writer.WriteOpenFiles ();

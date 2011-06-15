@@ -122,7 +122,7 @@ namespace MonoDevelop.MacDev
 		internal void GenerateDesignerCode (CodeBehindWriter writer, ProjectFile xibFile, ProjectFile designerFile)
 		{
 			var ccu = Generate (xibFile, writer.Provider, writer.GeneratorOptions);
-			writer.Write (ccu, designerFile.FilePath);
+			writer.WriteFile (designerFile.FilePath, ccu);
 		}
 		
 		public abstract CodeCompileUnit Generate (ProjectFile xibFile, CodeDomProvider provider, 

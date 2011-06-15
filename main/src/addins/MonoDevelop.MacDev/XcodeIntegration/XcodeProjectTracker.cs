@@ -461,10 +461,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 							WrapperNamespace = infoService.WrapperRoot,
 							Provider = provider,
 						};
-						writer.Write (cs.TransformText (), df.Key);
+						writer.WriteFile (df.Key, cs.TransformText ());
 					} else {
 						var ccu = GenerateCompileUnit (provider, options, df.Key, df.Value);
-						writer.Write (ccu, df.Key);
+						writer.WriteFile (df.Key, ccu);
 					}
 				}
 				writer.WriteOpenFiles ();

@@ -88,55 +88,60 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		public void Write (string contents, FilePath path)
+		public void WriteFile (FilePath path, Action<TextWriter> write)
 		{
 			if (OpenFiles.Contains (path)) {
-				filesToWrite.Add (new KeyValuePair<FilePath, string> (path, contents));
-			} else {
-				try {
-					File.WriteAllText (path, contents);
-					//mark the file as changed so it gets reparsed
-					Gtk.Application.Invoke (delegate {
-						FileService.NotifyFileChanged (path);
-					});
-					WrittenCount++;
-				} catch (IOException ex) {
-					monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+				using (var sw = new StringWriter ()) {
+					write (sw);
+					filesToWrite.Add (new KeyValuePair<FilePath, string> (path, sw.ToString ()));
 				}
+				return;
+			}
+			
+			try {
+				var tempPath = path.ParentDirectory.Combine (".#" + path.FileName);
+				using (var sw = new StreamWriter (tempPath)) {
+					write (sw);
+				}
+				FileService.SystemRename (tempPath, path);
+				//mark the file as changed so it gets reparsed
+				Gtk.Application.Invoke (delegate {
+					FileService.NotifyFileChanged (path);
+				});
+				WrittenCount++;
+			} catch (IOException ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
 			}
 		}
 
-		public void Write (System.CodeDom.CodeCompileUnit ccu, FilePath path)
+		public void WriteFile (FilePath path, System.CodeDom.CodeCompileUnit ccu)
 		{
-			//no? just write out to disc
-			if (!OpenFiles.Contains (path)) {
-				try {
-					using (var sw = new StreamWriter (path)) {
-						provider.GenerateCodeFromCompileUnit (ccu, sw, options);
-					}
-					//mark the file as changed so it gets reparsed
-					Gtk.Application.Invoke (delegate {
-						FileService.NotifyFileChanged (path);
-					});
-					WrittenCount++;
-				} catch (IOException ex) {
-					monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
-				} catch (Exception ex) {
-					monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
-				}
+			WriteFile (path, (TextWriter tw) => provider.GenerateCodeFromCompileUnit (ccu, tw, options));
+		}
+		
+		public void WriteFile (FilePath path, string contents)
+		{
+			if (OpenFiles.Contains (path)) {
+				using (var sw = new StringWriter ())
+					filesToWrite.Add (new KeyValuePair<FilePath, string> (path, contents));
+				return;
 			}
-			//file is open, so generate code and queue up for a write in the GUI thread
-			else {
-				try {
-					using (StringWriter sw = new StringWriter ()) {
-						provider.GenerateCodeFromCompileUnit (ccu, sw, options);
-						filesToWrite.Add (new KeyValuePair<FilePath, string> (
-							path, sw.ToString ()));
-					}
-				} catch (Exception ex) {
-					monitor.ReportError (
-						GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path),	ex);
-				}
+			
+			try {
+				var tempPath = path.ParentDirectory.Combine (".#" + path.FileName);
+				File.WriteAllText (tempPath, contents);
+				FileService.SystemRename (tempPath, path);
+				//mark the file as changed so it gets reparsed
+				Gtk.Application.Invoke (delegate {
+					FileService.NotifyFileChanged (path);
+				});
+				WrittenCount++;
+			} catch (IOException ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Failed to generate code for file '{0}'.", path), ex);
 			}
 		}
 		
