@@ -42,7 +42,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		static readonly char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
 		static readonly char[] splitActionParamsChars = { ' ', '\t', '\n', '\r', '*', '(', ')' };
 		
-		readonly IReturnType nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType;
+		readonly IReturnType nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType,
+			iboutletAttType, ibactionAttType;
 		
 		static Dictionary<ProjectDom,NSObjectProjectInfo> infos = new Dictionary<ProjectDom, NSObjectProjectInfo> ();
 		
@@ -52,6 +53,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			string foundation = wrapperRoot + ".Foundation";
 			connectAttType = new DomReturnType (foundation, "ConnectAttribute");
 			exportAttType = new DomReturnType (foundation, "ExportAttribute");
+			iboutletAttType = new DomReturnType (foundation, "IBOutletAttribute");
+			ibactionAttType = new DomReturnType (foundation, "IBActionAttribute");
 			registerAttType = new DomReturnType (foundation, "RegisterAttribute");
 			modelAttType = new DomReturnType (foundation, "ModelAttribute");
 			nsobjectType = new DomReturnType (foundation, "NSObject");
@@ -176,8 +179,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			foreach (var prop in type.Properties) {
 				foreach (var att in prop.Attributes) {
-					if (att.AttributeType.FullName != connectAttType.FullName)
-						continue;
+					bool isIBOutlet = att.AttributeType.FullName == iboutletAttType.FullName;
+					if (!isIBOutlet) {
+						if (att.AttributeType.FullName != connectAttType.FullName)
+							continue;
+					}
 					string name = null;
 					if (att.PositionalArguments.Count == 1)
 						name = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
@@ -193,8 +199,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			foreach (var meth in type.Methods) {
 				foreach (var att in meth.Attributes) {
-					if (att.AttributeType.FullName != exportAttType.FullName)
+					bool isIBAction = att.AttributeType.FullName == ibactionAttType.FullName;
+					if (!isIBAction) {
+						if (att.AttributeType.FullName != exportAttType.FullName)
+							continue;
+					}
+					bool isDesigner =  MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (
+						meth.DeclaringType.CompilationUnit.FileName);
+					//only support Export from old designer files, user code must be IBAction
+					if (!isDesigner && !isIBAction)
 						continue;
+					
 					string[] name = null;
 					if (att.PositionalArguments.Count == 1) {
 						var n = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
