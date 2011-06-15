@@ -257,8 +257,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		void GenerateActionsOutlets (CodeDomProvider provider, CodeTypeDeclaration type, string wrapperName)
 		{
-			var outletAtt = new CodeTypeReference (wrapperName + ".Foundation.IBOutletAttribute");
-			var actionAtt = new CodeTypeReference (wrapperName + ".Foundation.IBActionAttribute");
+			var outletAtt = new CodeTypeReference (wrapperName + ".Foundation.OutletAttribute");
+			var actionAtt = new CodeTypeReference (wrapperName + ".Foundation.ActionAttribute");
 			
 			foreach (var a in Actions)
 				if (a.IsDesigner)

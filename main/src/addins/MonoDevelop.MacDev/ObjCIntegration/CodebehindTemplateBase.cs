@@ -107,5 +107,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			return Provider.CreateEscapedIdentifier (unescaped);
 		}
+		
+		protected void BlankLine (ref bool first)
+		{
+			if (first)
+				first = false;
+			else
+				GenerationEnvironment.AppendLine ();
+		}
 	}
 }

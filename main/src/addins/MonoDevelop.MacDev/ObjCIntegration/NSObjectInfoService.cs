@@ -53,8 +53,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			string foundation = wrapperRoot + ".Foundation";
 			connectAttType = new DomReturnType (foundation, "ConnectAttribute");
 			exportAttType = new DomReturnType (foundation, "ExportAttribute");
-			iboutletAttType = new DomReturnType (foundation, "IBOutletAttribute");
-			ibactionAttType = new DomReturnType (foundation, "IBActionAttribute");
+			iboutletAttType = new DomReturnType (foundation, "OutletAttribute");
+			ibactionAttType = new DomReturnType (foundation, "ActionAttribute");
 			registerAttType = new DomReturnType (foundation, "RegisterAttribute");
 			modelAttType = new DomReturnType (foundation, "ModelAttribute");
 			nsobjectType = new DomReturnType (foundation, "NSObject");
