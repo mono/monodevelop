@@ -30,8 +30,6 @@ using System.Xml;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 
 namespace ILAsmBinding
 {
@@ -49,7 +47,7 @@ namespace ILAsmBinding
 			}
 		}
 		
-		public bool IsSourceCodeFile (string fileName)
+		public bool IsSourceCodeFile (FilePath fileName)
 		{
 			return string.Compare (Path.GetExtension (fileName), ".il", true) == 0;
 		}
@@ -78,21 +76,9 @@ namespace ILAsmBinding
 			return null;
 		}
 		
-		public string GetFileName (string baseName)
+		public FilePath GetFileName (FilePath baseName)
 		{
 			return baseName + ".il";
-		}
-			
-		public IParser Parser {
-			get { 
-				return null; 
-			}
-		}
-		
-		public IRefactorer Refactorer {
-			get { 
-				return null; 
-			}
 		}
 		
 		public ClrVersion[] GetSupportedClrVersions ()
