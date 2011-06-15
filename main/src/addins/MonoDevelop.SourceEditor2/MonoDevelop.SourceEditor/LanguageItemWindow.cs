@@ -32,10 +32,10 @@ using Gtk;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Fonts;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -43,28 +43,29 @@ namespace MonoDevelop.SourceEditor
 	{
 		public bool IsEmpty { get; set; }
 		
-		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, ICompilationUnit unit)
+		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, IParsedFile unit)
 		{
-			ProjectDom dom = ed.ProjectDom;
+			ITypeResolveContext dom = ed.ITypeResolveContext;
 			Ambience ambience = AmbienceService.GetAmbience (ed.Document.MimeType);
 			
 			string tooltip = null;
 			if (result != null && ed.TextEditorResolverProvider != null) {
 				tooltip = ed.TextEditorResolverProvider.CreateTooltip (dom, unit, result, errorInformations, ambience, modifierState);
-				if (result.ResolveErrors.Count > 0) {
-					StringBuilder sb = new StringBuilder ();
-					sb.Append (tooltip);
-					sb.AppendLine ();
-					sb.AppendLine ();
-					sb.AppendLine (GettextCatalog.GetPluralString ("Error:", "Errors:", result.ResolveErrors.Count));
-					for (int i = 0; i < result.ResolveErrors.Count; i++) {
-						sb.Append ('\t');
-						sb.Append (result.ResolveErrors[i]);
-						if (i + 1 < result.ResolveErrors.Count) 
-							sb.AppendLine ();
-					}
-					tooltip = sb.ToString ();
-				}
+// TODO: Type sysetm conversion. (btw. this isn't required because the analyzer should provide semantic error messages.)	
+//				if (result.ResolveErrors.Count > 0) {
+//					StringBuilder sb = new StringBuilder ();
+//					sb.Append (tooltip);
+//					sb.AppendLine ();
+//					sb.AppendLine ();
+//					sb.AppendLine (GettextCatalog.GetPluralString ("Error:", "Errors:", result.ResolveErrors.Count));
+//					for (int i = 0; i < result.ResolveErrors.Count; i++) {
+//						sb.Append ('\t');
+//						sb.Append (result.ResolveErrors[i]);
+//						if (i + 1 < result.ResolveErrors.Count) 
+//							sb.AppendLine ();
+//					}
+//					tooltip = sb.ToString ();
+//				}
 			} else {
 				tooltip = errorInformations;
 			}

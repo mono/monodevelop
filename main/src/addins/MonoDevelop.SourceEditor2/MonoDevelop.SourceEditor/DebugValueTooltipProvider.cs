@@ -31,10 +31,9 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Debugger;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -64,7 +63,7 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null)
 				return null;
 			
-			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
+			var ed = (ExtensibleTextEditor)editor;
 			
 			string expression = null;
 			int startOffset = 0, length = 0;
@@ -80,15 +79,16 @@ namespace MonoDevelop.SourceEditor
 						expression = mr.ResolvedType.FullName;
 				}
 				if (expression == null)*/
-				if (res != null && res.ResolvedExpression != null) {
-					MemberResolveResult mr = res as MemberResolveResult;
-					if (mr != null && mr.ResolvedMember == null && mr.ResolvedType != null)
-						expression = mr.ResolvedType.FullName;
+				if (!res.IsError) {
+					var mr = res as MemberResolveResult;
+					if (mr != null && mr.Member == null && mr.Type != null)
+						expression = mr.Type.FullName;
 					else {
-						expression = res.ResolvedExpression.Expression;
-						startOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.Start.Line, res.ResolvedExpression.Region.Start.Column);
-						int endOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.End.Line, res.ResolvedExpression.Region.End.Column);
-						length = endOffset - startOffset;
+// TODO: Type system conversion.
+//						expression = res.ResolvedExpression.Expression;
+//						startOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.BeginLine, res.ResolvedExpression.Region.BeginColumn);
+//						int endOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.EndLine, res.ResolvedExpression.Region.EndColumn);
+//						length = endOffset - startOffset;
 					}
 				}
 			}

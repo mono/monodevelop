@@ -33,10 +33,7 @@ using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.CodeTemplates;
@@ -45,6 +42,8 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.SourceEditor.Extension;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -468,11 +467,29 @@ namespace MonoDevelop.SourceEditor
 			return null;
 		}
 		
-		public ProjectDom ProjectDom {
+		public ITypeResolveContext ITypeResolveContext {
 			get {
-				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
+				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) 
-					return doc.Dom;
+					return doc.TypeResolveContext;
+				return null;
+			}
+		}
+		
+		internal IParsedFile ParsedFile {
+			get {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null) 
+					return doc.ParsedFile;
+				return null;
+			}
+		}
+		
+		public MonoDevelop.Projects.Project Project {
+			get {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null) 
+					return doc.Project;
 				return null;
 			}
 		}
@@ -488,7 +505,7 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ProjectDom, GetTextEditorData (), offset);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ITypeResolveContext, GetTextEditorData (), offset);
 			} else {
 				this.resolveResult = null;
 			}
@@ -497,19 +514,19 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public CodeTemplateContext GetTemplateContext ()
-		{
-			if (IsSomethingSelected) {
+		{ // TODO: Type system conversion.
+/*			if (IsSomethingSelected) {
 				string fileName = view.ContentName ?? view.UntitledName;
-				IParser parser = ProjectDomService.GetParser (fileName);
+				var parser = TypeSystemService.GetParser (fileName);
 				if (parser == null)
 					return CodeTemplateContext.Standard;
 
-				IExpressionFinder expressionFinder = parser.CreateExpressionFinder (ProjectDom);
+				IExpressionFinder expressionFinder = parser.CreateExpressionFinder (ITypeResolveContext);
 				if (expressionFinder == null) 
 					return CodeTemplateContext.Standard;
 				if (expressionFinder.IsExpression (Document.GetTextAt (SelectionRange)))
 					return CodeTemplateContext.InExpression;
-			}
+			}*/
 			return CodeTemplateContext.Standard;
 		}
 		
@@ -525,7 +542,7 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ProjectDom, GetTextEditorData (), offset, expression);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ITypeResolveContext, GetTextEditorData (), offset, expression);
 			} else {
 				this.resolveResult = null;
 			}
@@ -534,18 +551,18 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public string GetExpression (int offset)
-		{
-			string fileName = View.ContentName;
-			if (fileName == null)
-				fileName = View.UntitledName;
-			
-			IExpressionFinder expressionFinder = ProjectDomService.GetExpressionFinder (fileName);
-			string expression = expressionFinder == null ? GetExpressionBeforeOffset (offset) : expressionFinder.FindFullExpression (GetTextEditorData () , offset).Expression;
-			
-			if (expression == null)
-				return string.Empty;
-			else
-				return expression.Trim ();
+		{ // TODO: Type system conversion
+			return string.Empty;
+//			string fileName = View.ContentName;
+//			if (fileName == null)
+//				fileName = View.UntitledName;
+//			
+//			IExpressionFinder expressionFinder = TypeSystemService.GetExpressionFinder (fileName);
+//			string expression = expressionFinder == null ? GetExpressionBeforeOffset (offset) : expressionFinder.FindFullExpression (GetTextEditorData (), offset).Expression;
+//			
+//			if (expression == null)
+//				return string.Empty;
+//			return expression.Trim ();
 		}
 		
 		string GetExpressionBeforeOffset (int offset)
@@ -647,9 +664,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
-				if (prettyPrinter != null && ProjectDom != null && text != null) {
+				if (prettyPrinter != null && Project != null && text != null) {
 					try {
-						var policies = ProjectDom != null && ProjectDom.Project != null ? ProjectDom.Project.Policies : null;
+						var policies = Project.Policies;
 						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + text.Length);
 						if (!string.IsNullOrEmpty (newText)) {
 							Replace (insertionOffset, text.Length, newText);
@@ -991,11 +1008,11 @@ namespace MonoDevelop.SourceEditor
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CompleteStatement)]
 		internal void OnCompleteStatement ()
-		{
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			DomLocation caretLocation = refactorer.CompleteStatement (ProjectDom, Document.FileName, new DomLocation (Caret.Line, Caret.Column));
-			Caret.Line   = caretLocation.Line;
-			Caret.Column = caretLocation.Column;
+		{ // TODO: Type system conversion.
+//			var refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+//			AstLocation caretLocation = refactorer.CompleteStatement (ITypeResolveContext, Document.FileName, new AstLocation (Caret.Line, Caret.Column));
+//			Caret.Line   = caretLocation.Line;
+//			Caret.Column = caretLocation.Column;
 		}
 		
 		

@@ -31,9 +31,6 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Commands;
 using Document = Mono.TextEditor.Document;
@@ -43,6 +40,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
 using System.ComponentModel;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -66,7 +65,7 @@ namespace MonoDevelop.SourceEditor
 		
 		bool isDisposed = false;
 		
-		ParsedDocument parsedDocument;
+		IParsedFile parsedDocument;
 		
 		MonoDevelop.SourceEditor.ExtensibleTextEditor textEditor;
 		MonoDevelop.SourceEditor.ExtensibleTextEditor splittedTextEditor;
@@ -347,13 +346,13 @@ namespace MonoDevelop.SourceEditor
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
 			Document document = textEditorData.Document;
-			if (document == null || region.Start.Line <= 0 || region.End.Line <= 0 || region.Start.Line > document.LineCount || region.End.Line > document.LineCount)
+			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)
 			{
 				return null;
 			}
 			
-			int startOffset = document.LocationToOffset (region.Start.Line, region.Start.Column);
-			int endOffset   = document.LocationToOffset (region.End.Line, region.End.Column );
+			int startOffset = document.LocationToOffset (region.BeginLine, region.BeginColumn);
+			int endOffset   = document.LocationToOffset (region.EndLine, region.EndColumn );
 			FoldSegment result = new FoldSegment (document, text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
@@ -365,7 +364,7 @@ namespace MonoDevelop.SourceEditor
 		void HandleParseInformationUpdaterWorkerThreadDoWork (object sender, DoWorkEventArgs e)
 		{
 			BackgroundWorker worker = sender as BackgroundWorker;
-			ParsedDocument parsedDocument = (ParsedDocument)e.Argument;
+			var parsedDocument = (IParsedFile)e.Argument;
 			var doc = Document;
 			if (doc == null || parsedDocument == null)
 				return;
@@ -373,77 +372,78 @@ namespace MonoDevelop.SourceEditor
 			if (!options.ShowFoldMargin)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
-			if (doc.HasFoldSegments && parsedDocument.HasErrors)
+			if (doc.HasFoldSegments && parsedDocument.Errors.Any ())
 				return;
 			try {
-				List<FoldSegment > foldSegments = new List<FoldSegment> ();
-				bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
-				if (!updateSymbols) {
-					foreach (PreProcessorDefine define in parsedDocument.Defines) {
-						if (!symbols.Contains (define.Define)) {
-							updateSymbols = true;
-							break;
-						}
-					}
-				}
-				
-				if (updateSymbols) {
-					symbols.Clear ();
-					foreach (PreProcessorDefine define in parsedDocument.Defines) {
-						symbols.Add (define.Define);
-					}
-					doc.UpdateHighlighting ();
-				}
-				
-				foreach (FoldingRegion region in parsedDocument.GenerateFolds ()) {
-					if (worker != null && worker.CancellationPending)
-						return;
-					FoldingType type = FoldingType.None;
-					bool setFolded = false;
-					bool folded = false;
-					
-					//decide whether the regions should be folded by default
-					switch (region.Type) {
-					case FoldType.Member:
-						type = FoldingType.TypeMember;
-						break;
-					case FoldType.Type:
-						type = FoldingType.TypeDefinition;
-						break;
-					case FoldType.UserRegion:
-						type = FoldingType.Region;
-						setFolded = options.DefaultRegionsFolding;
-						folded = true;
-						break;
-					case FoldType.Comment:
-						setFolded = options.DefaultCommentFolding;
-						folded = true;
-						break;
-					case FoldType.CommentInsideMember:
-						setFolded = options.DefaultCommentFolding;
-						folded = false;
-						break;
-					case FoldType.Undefined:
-						setFolded = true;
-						folded = region.IsFoldedByDefault;
-						break;
-					}
-					
-					//add the region
-					FoldSegment marker = AddMarker (foldSegments, region.Name, 
-					                                       region.Region, type);
-					
-					//and, if necessary, set its fold state
-					if (marker != null && setFolded && worker == null) {
-						// only fold on document open, later added folds are NOT folded by default.
-						marker.IsFolded = folded;
-						continue;
-					}
-					if (marker != null && region.Region.Contains (textEditorData.Caret.Line, textEditorData.Caret.Column))
-						marker.IsFolded = false;
-					
-				}
-				doc.UpdateFoldSegmentWorker (sender, new DoWorkEventArgs (foldSegments));
+// TODO: Type system conversion
+//				List<FoldSegment > foldSegments = new List<FoldSegment> ();
+//				bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
+//				if (!updateSymbols) {
+//					foreach (PreProcessorDefine define in parsedDocument.Defines) {
+//						if (!symbols.Contains (define.Define)) {
+//							updateSymbols = true;
+//							break;
+//						}
+//					}
+//				}
+//				
+//				if (updateSymbols) {
+//					symbols.Clear ();
+//					foreach (PreProcessorDefine define in parsedDocument.Defines) {
+//						symbols.Add (define.Define);
+//					}
+//					doc.UpdateHighlighting ();
+//				}
+//				
+//				foreach (FoldingRegion region in parsedDocument.GenerateFolds ()) {
+//					if (worker != null && worker.CancellationPending)
+//						return;
+//					FoldingType type = FoldingType.None;
+//					bool setFolded = false;
+//					bool folded = false;
+//					
+//					//decide whether the regions should be folded by default
+//					switch (region.Type) {
+//					case FoldType.Member:
+//						type = FoldingType.TypeMember;
+//						break;
+//					case FoldType.Type:
+//						type = FoldingType.TypeDefinition;
+//						break;
+//					case FoldType.UserRegion:
+//						type = FoldingType.Region;
+//						setFolded = options.DefaultRegionsFolding;
+//						folded = true;
+//						break;
+//					case FoldType.Comment:
+//						setFolded = options.DefaultCommentFolding;
+//						folded = true;
+//						break;
+//					case FoldType.CommentInsideMember:
+//						setFolded = options.DefaultCommentFolding;
+//						folded = false;
+//						break;
+//					case FoldType.Undefined:
+//						setFolded = true;
+//						folded = region.IsFoldedByDefault;
+//						break;
+//					}
+//					
+//					//add the region
+//					FoldSegment marker = AddMarker (foldSegments, region.Name, 
+//					                                       region.Region, type);
+//					
+//					//and, if necessary, set its fold state
+//					if (marker != null && setFolded && worker == null) {
+//						// only fold on document open, later added folds are NOT folded by default.
+//						marker.IsFolded = folded;
+//						continue;
+//					}
+//					if (marker != null && region.Region.Contains (textEditorData.Caret.Line, textEditorData.Caret.Column))
+//						marker.IsFolded = false;
+//					
+//				}
+//				doc.UpdateFoldSegmentWorker (sender, new DoWorkEventArgs (foldSegments));
 				
 				if (reloadSettings) {
 					reloadSettings = false;
@@ -459,7 +459,7 @@ namespace MonoDevelop.SourceEditor
 		
 		BackgroundWorker parseInformationUpdaterWorkerThread;
 		
-		internal void UpdateParsedDocument (ParsedDocument document)
+		internal void UpdateParsedDocument (IParsedFile document)
 		{
 			if (this.isDisposed || document == null || this.view == null)
 				return;
@@ -472,7 +472,7 @@ namespace MonoDevelop.SourceEditor
 			SetParsedDocument (document, parsedDocument != null);
 		}
 		
-		public ParsedDocument ParsedDocument {
+		public IParsedFile ParsedDocument {
 			get {
 				return this.parsedDocument;
 			}
@@ -481,7 +481,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		internal void SetParsedDocument (ParsedDocument newDocument, bool runInThread)
+		internal void SetParsedDocument (IParsedFile newDocument, bool runInThread)
 		{
 			this.parsedDocument = newDocument;
 			if (parsedDocument == null || parseInformationUpdaterWorkerThread == null)
@@ -518,7 +518,7 @@ namespace MonoDevelop.SourceEditor
 		List<ErrorMarker> errors = new List<ErrorMarker> ();
 		uint resetTimerId;
 		
-		void UpdateErrorUndelines (ParsedDocument parsedDocument)
+		void UpdateErrorUndelines (IParsedFile parsedDocument)
 		{
 			if (!options.UnderlineErrors || parsedDocument == null)
 				return;
@@ -560,7 +560,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UnderLineError (Document doc, Error info)
 		{
-			LineSegment line = doc.GetLine (info.Region.Start.Line);
+			var line = doc.GetLine (info.Region.BeginLine);
 			// If the line is already underlined
 			if (errors.Any (em => em.LineSegment == line))
 				return;
@@ -1317,7 +1317,7 @@ namespace MonoDevelop.SourceEditor
 		#region Help
 		internal void MonodocResolver ()
 		{
-			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
+			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
 			string url = HelpService.GetMonoDocHelpUrl (res);
 			if (url != null)
 				IdeApp.HelpOperations.ShowHelp (url);
@@ -1325,7 +1325,7 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void MonodocResolverUpdate (CommandInfo cinfo)
 		{
-			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
+			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
 			if (res == null || !IdeApp.HelpOperations.CanShowHelp (res))
 				cinfo.Bypass = true;
 		}
@@ -1546,17 +1546,17 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void UpdateQuickTasks (ParsedDocument doc)
+		void UpdateQuickTasks (IParsedFile doc)
 		{
 			tasks.Clear ();
-			
-			foreach (var cmt in doc.TagComments) {
-				QuickTask newTask = new QuickTask (cmt.Text, cmt.Region.Start, QuickTaskSeverity.Hint);
-				tasks.Add (newTask);
-			}
-			
+// TODO: Type system conversion.
+//			foreach (var cmt in doc.TagComments) {
+//				var newTask = new QuickTask (cmt.Text, cmt.Region.Start, QuickTaskSeverity.Hint);
+//				tasks.Add (newTask);
+//			}
+//			
 			foreach (var error in doc.Errors) {
-				QuickTask newTask = new QuickTask (error.Message, error.Region.Start, error.ErrorType == ErrorType.Error ? QuickTaskSeverity.Error : QuickTaskSeverity.Warning);
+				var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? QuickTaskSeverity.Error : QuickTaskSeverity.Warning);
 				tasks.Add (newTask);
 			}
 			
@@ -1570,7 +1570,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		public Error Info { get; private set; }
 		
-		public ErrorMarker (MonoDevelop.Projects.Dom.Error info, LineSegment line)
+		public ErrorMarker (Error info, LineSegment line)
 		{
 			this.Info = info;
 			this.LineSegment = line; // may be null if no line is assigned to the error.
@@ -1578,9 +1578,9 @@ namespace MonoDevelop.SourceEditor
 			
 			ColorName = info.ErrorType == ErrorType.Warning ? Mono.TextEditor.Highlighting.ColorSheme.WarningUnderlineString : Mono.TextEditor.Highlighting.ColorSheme.ErrorUnderlineString;
 			
-			if (Info.Region.Start.Line == info.Region.End.Line) {
-				this.StartCol = Info.Region.Start.Column;
-				this.EndCol = Info.Region.End.Column;
+			if (Info.Region.BeginLine == info.Region.EndLine) {
+				this.StartCol = Info.Region.BeginColumn;
+				this.EndCol = Info.Region.EndColumn;
 			} else {
 				this.StartCol = this.EndCol = 0;
 			}

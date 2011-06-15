@@ -36,9 +36,6 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Commands;
@@ -50,6 +47,9 @@ using Services = MonoDevelop.Projects.Services;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -494,7 +494,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					
 					WorkbenchWindow.Document.DocumentParsed += delegate(object sender, EventArgs e) {
-						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedDocument);
+						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedFile);
 					};
 				};
 			};
@@ -683,19 +683,16 @@ namespace MonoDevelop.SourceEditor
 
 		}
 		
-		public ProjectDom GetParserContext ()
+		public ITypeResolveContext GetParserContext ()
 		{
 			//Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (Project != null)
-				return ProjectDomService.GetProjectDom (Project);
-			return ProjectDom.Empty;
+				return TypeSystemService.GetContext (Project);
+			return new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleProjectContent ();
 		}
 		
 		public Ambience GetAmbience ()
 		{
-			Project project = Project;
-			if (project != null)
-				return project.Ambience;
 			string file = this.IsUntitled ? this.UntitledName : this.ContentName;
 			return AmbienceService.GetAmbienceForFile (file);
 		}

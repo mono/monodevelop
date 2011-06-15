@@ -28,8 +28,8 @@ using Gtk;
 using Mono.TextEditor;
 using System.Collections.Generic;
 using Gdk;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 			private set;
 		}
 		
-		public DomLocation Location {
+		public AstLocation Location {
 			get;
 			private set;
 		}
@@ -68,7 +68,7 @@ namespace MonoDevelop.SourceEditor
 			private set;
 		}
 		
-		public QuickTask (string description, DomLocation location, QuickTaskSeverity severity)
+		public QuickTask (string description, AstLocation location, QuickTaskSeverity severity)
 		{
 			this.Description = description;
 			this.Location = location;
