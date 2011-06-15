@@ -98,7 +98,7 @@ namespace MonoDevelop.Projects
 			UpdateGacReference ();
 		}
 		
-		public ProjectReference(ReferenceType referenceType, string reference)
+		public ProjectReference (ReferenceType referenceType, string reference)
 		{
 			if (referenceType == ReferenceType.Assembly)
 				specificVersion = false;
@@ -111,12 +111,16 @@ namespace MonoDevelop.Projects
 		{
 			referenceType = ReferenceType.Project;
 			reference = referencedProject.Name;
+			specificVersion = localCopy = true;
 		}
 		
 		public ProjectReference (SystemAssembly asm)
 		{
 			referenceType = ReferenceType.Gac;
 			reference = asm.FullName;
+			localCopy = false;
+			if (asm.Package.IsFrameworkPackage)
+				specificVersion = false;
 			if (!asm.Package.IsGacPackage)
 				package = asm.Package.Name;
 			UpdateGacReference ();

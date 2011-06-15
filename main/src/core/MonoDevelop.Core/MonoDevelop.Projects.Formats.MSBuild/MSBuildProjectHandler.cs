@@ -528,6 +528,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						else if (asm == "system")
 							asm = "System";
 						pref = new ProjectReference (ReferenceType.Gac, asm);
+						pref.LocalCopy = false;
 					}
 					pref.Condition = buildItem.Condition;
 					string specificVersion = buildItem.GetMetadata ("SpecificVersion");
