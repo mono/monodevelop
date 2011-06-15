@@ -962,27 +962,17 @@ namespace MonoDevelop.Projects
 		// Make sure that the project references are valid for the target clr version.
 		void UpdateSystemReferences ()
 		{
-			ArrayList toDelete = new ArrayList ();
-			ArrayList toAdd = new ArrayList ();
-
 			foreach (ProjectReference pref in References) {
 				if (pref.ReferenceType == ReferenceType.Gac) {
 					string newRef = AssemblyContext.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
 					if (newRef == null) {
 						pref.ResetReference ();
 					} else if (newRef != pref.Reference) {
-						toDelete.Add (pref);
-						toAdd.Add (new ProjectReference (ReferenceType.Gac, newRef));
+						pref.Reference = newRef;
 					} else if (!pref.IsValid) {
 						pref.ResetReference ();
 					}
 				}
-			}
-			foreach (ProjectReference pref in toDelete) {
-				References.Remove (pref);
-			}
-			foreach (ProjectReference pref in toAdd) {
-				References.Add (pref);
 			}
 		}
 
