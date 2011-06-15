@@ -129,6 +129,20 @@ namespace Mono.TextEditor
 					OptionsChanged (null, null);
 			}
 		}
+		
+		
+		public string FileName {
+			get {
+				return Document.FileName;
+			}
+		}
+		
+		public string MimeType {
+			get {
+				return Document.MimeType;
+			}
+		}
+		
 		Dictionary<int, double> lineHeights = new Dictionary<int, double> ();
 		
 		public TextEditor () : this(new Document ())

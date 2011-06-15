@@ -81,6 +81,18 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		public string FileName {
+			get {
+				return Document.FileName;
+			}
+		}
+		
+		public string MimeType {
+			get {
+				return Document.MimeType;
+			}
+		}
+		
 		public TextEditorData () : this (new Document ())
 		{
 		}
