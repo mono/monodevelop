@@ -455,8 +455,17 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			
 			try {
 				foreach (var df in designerFile) {
-					var ccu = GenerateCompileUnit (provider, options, df.Key, df.Value);
-					writer.Write (ccu, df.Key);
+					if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+						var cs = new CSharpCodeCodebehind () {
+							Types = df.Value,
+							WrapperNamespace = infoService.WrapperRoot,
+							Provider = provider,
+						};
+						writer.Write (cs.TransformText (), df.Key);
+					} else {
+						var ccu = GenerateCompileUnit (provider, options, df.Key, df.Value);
+						writer.Write (ccu, df.Key);
+					}
 				}
 				writer.WriteOpenFiles ();
 				

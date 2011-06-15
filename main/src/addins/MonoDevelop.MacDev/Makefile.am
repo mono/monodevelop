@@ -47,6 +47,8 @@ FILES =  \
 	NativeReferences/NativeReferenceNodeBuilder.cs \
 	NativeReferences/NativeReferencePropertyProvider.cs \
 	NativeReferences/ProjectNodeBuilder.cs \
+	ObjCIntegration/CodebehindTemplateBase.cs \
+	ObjCIntegration/CSharpCodeCodebehind.cs \
 	ObjCIntegration/IBAction.cs \
 	ObjCIntegration/IBActionParameter.cs \
 	ObjCIntegration/IBOutlet.cs \

@@ -112,7 +112,11 @@
     <Compile Include="NativeReferences\NativeReferencePropertyProvider.cs" />
     <Compile Include="NativeReferences\NativeReferenceCommandHandler.cs" />
     <Compile Include="NativeReferences\NativeReference.cs" />
+    <Compile Include="ObjCIntegration\CSharpCodeCodebehind.cs">
+      <DependentUpon>CSharpCodeCodebehind.tt</DependentUpon>
+    </Compile>
     <Compile Include="ObjCIntegration\NSObjectTypeInfo.cs" />
+    <Compile Include="ObjCIntegration\CodebehindTemplateBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
@@ -149,6 +153,11 @@
     </None>
     <None Include="icons\xib-template-window.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ObjCIntegration\CSharpCodeCodebehind.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CSharpCodeCodebehind.cs</LastGenOutput>
+      <CustomToolNamespace>MonoDevelop.MacDev.ObjCIntegration</CustomToolNamespace>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
