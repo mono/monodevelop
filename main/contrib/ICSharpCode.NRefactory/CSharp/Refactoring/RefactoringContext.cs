@@ -57,16 +57,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get;
 		}
 
-		public abstract AstType CreateShortType (AstType fullType);
+		public abstract AstType CreateShortType (IType fullType);
 		
 		public abstract AstType CreateShortType (string fullTypeName);
 		
-		
-		public AstType CreateShortType (IType type)
+		public virtual AstType CreateShortType (AstType fullType)
 		{
-			return CreateShortType (new TypeSystemAstBuilder ().ConvertType (type));
+			return CreateShortType (Resolve (fullType).Type);
 		}
-		
 		
 //		public abstract IType GetDefinition (AstType resolvedType);
 

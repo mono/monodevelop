@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -216,6 +217,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public static IEnumerable<ITypeDefinition> GetAllClasses(this ITypeResolveContext context)
 		{
 			return TreeTraversal.PreOrder(context.GetClasses(), t => t.InnerClasses);
+		}
+		#endregion
+		
+		#region GetType/Member
+		/// <summary>
+		/// Gets the type (potentially a nested type) defined at the specified location.
+		/// Returns null if no type is defined at that location.
+		/// </summary>
+		public static ITypeDefinition GetTypeDefinition (this IParsedFile file, int line, int column)
+		{
+			return file.GetTypeDefinition (new AstLocation (line, column));
+		}
+		
+		/// <summary>
+		/// Gets the member defined at the specified location.
+		/// Returns null if no member is defined at that location.
+		/// </summary>
+		public static IMember GetMember (this IParsedFile file, int line, int column)
+		{
+			return file.GetMember (new AstLocation (line, column));
 		}
 		#endregion
 	}

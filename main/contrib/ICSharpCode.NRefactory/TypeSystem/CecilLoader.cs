@@ -833,7 +833,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							if (method.IsSpecialName) {
 								if (method.IsConstructor)
 									type = EntityType.Constructor;
-								else if (method.Name.StartsWith("op_", StringComparison.Ordinal))
+								else if (method.Name.StartsWith ("op_", StringComparison.Ordinal))
 									type = EntityType.Operator;
 								else
 									continue;
@@ -851,10 +851,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				if (typeDefinition.HasProperties) {
 					string defaultMemberName = null;
-					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
+					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault (
 						a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
 					if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
-						defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
+						defaultMemberName = defaultMemberAttribute.ConstructorArguments [0].Value as string;
 					}
 					foreach (PropertyDefinition property in typeDefinition.Properties) {
 						bool getterVisible = property.GetMethod != null && loader.IsVisible(property.GetMethod.Attributes);

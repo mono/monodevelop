@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -29,18 +30,29 @@ namespace ICSharpCode.NRefactory.CSharp
 			usingScopes = FreezeList(usingScopes);
 		}
 		
-		public ParsedFile(string fileName, UsingScope rootUsingScope)
+		public ParsedFile (string fileName, UsingScope rootUsingScope)
 		{
 			if (fileName == null)
-				throw new ArgumentNullException("fileName");
+				throw new ArgumentNullException ("fileName");
 			if (rootUsingScope == null)
-				throw new ArgumentNullException("rootUsingScope");
+				throw new ArgumentNullException ("rootUsingScope");
 			this.fileName = fileName;
 			this.rootUsingScope = rootUsingScope;
 		}
 		
+		readonly List<Error> errors = new List<Error> ();
+		public IList<Error> Errors { 
+			get {
+				return errors;
+			}
+		}
+		
 		public string FileName {
 			get { return fileName; }
+		}
+		
+		public CompilationUnit Unit {
+			get; set;
 		}
 		
 		public UsingScope RootUsingScope {

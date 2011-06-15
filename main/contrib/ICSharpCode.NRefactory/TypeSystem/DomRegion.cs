@@ -50,6 +50,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		public AstLocation Begin {
+			get {
+				return new AstLocation (beginLine, beginColumn);
+			}
+		}
+		
+		public AstLocation End {
+			get {
+				return new AstLocation (endLine, endColumn);
+			}
+		}
+		
 		/// <value>
 		/// if the end column is == -1 the end line is -1 too
 		/// this stands for an unknown end
@@ -60,24 +72,58 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public DomRegion(string fileName, int beginLine, int beginColumn, int endLine, int endColumn)
+		public DomRegion (int beginLine, int beginColumn, int endLine, int endColumn) : this (null, beginLine, beginColumn, endLine, endColumn)
 		{
-			this.fileName = fileName;
-			this.beginLine   = beginLine;
-			this.beginColumn = beginColumn;
-			this.endLine     = endLine;
-			this.endColumn   = endColumn;
 		}
 		
-		public DomRegion(string fileName, int beginLine, int beginColumn)
+		public DomRegion (string fileName, int beginLine, int beginColumn, int endLine, int endColumn)
 		{
 			this.fileName = fileName;
-			this.beginLine   = beginLine;
+			this.beginLine = beginLine;
+			this.beginColumn = beginColumn;
+			this.endLine = endLine;
+			this.endColumn = endColumn;
+		}
+		
+		public DomRegion (int beginLine, int beginColumn) : this (null, beginLine, beginColumn)
+		{
+		}
+		
+		public DomRegion (string fileName, int beginLine, int beginColumn)
+		{
+			this.fileName = fileName;
+			this.beginLine = beginLine;
 			this.beginColumn = beginColumn;
 			this.endLine = -1;
 			this.endColumn = -1;
 		}
 		
+		public DomRegion (AstLocation begin, AstLocation end) : this (null, begin, end)
+		{
+		}
+		
+		public DomRegion (string fileName, AstLocation begin, AstLocation end)
+		{
+			this.fileName = fileName;
+			this.beginLine = begin.Line;
+			this.beginColumn = begin.Column;
+			this.endLine = end.Line;
+			this.endColumn = end.Column;
+		}
+		
+		public DomRegion (AstLocation begin) : this (null, begin)
+		{
+		}
+		
+		public DomRegion (string fileName, AstLocation begin)
+		{
+			this.fileName = fileName;
+			this.beginLine = begin.Line;
+			this.beginColumn = begin.Column;
+			this.endLine = -1;
+			this.endColumn = -1;
+		}
+
 		/// <remarks>
 		/// Returns true, if the given coordinates (line, column) are in the region.
 		/// This method assumes that for an unknown end the end line is == -1
@@ -105,10 +151,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				fileName, beginLine, endLine, beginColumn, endColumn);
 		}
 		
-		public override bool Equals(object obj)
+		public override bool Equals (object obj)
 		{
-			return obj is DomRegion && Equals((DomRegion)obj);
+			return obj is DomRegion && Equals ((DomRegion)obj);
 		}
+		
 		
 		public override int GetHashCode()
 		{

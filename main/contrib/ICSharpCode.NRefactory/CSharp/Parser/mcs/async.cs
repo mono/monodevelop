@@ -72,7 +72,8 @@ namespace Mono.CSharp
 			}
 
 			stmt = new AwaitStatement (expr, loc);
-			stmt.Resolve (bc);
+			if (!stmt.Resolve (bc))
+				return null;
 
 			type = stmt.ResultType;
 			eclass = ExprClass.Variable;
@@ -81,6 +82,14 @@ namespace Mono.CSharp
 
 		public override void Emit (EmitContext ec)
 		{
+			stmt.EmitPrologue (ec);
+			stmt.Emit (ec);
+		}
+
+		public void EmitAssign (EmitContext ec, FieldExpr field)
+		{
+			stmt.EmitPrologue (ec);
+			field.InstanceExpression.Emit (ec);
 			stmt.Emit (ec);
 		}
 
@@ -143,6 +152,20 @@ namespace Mono.CSharp
 			fe_awaiter.InstanceExpression = new CompilerGeneratedThis (ec.CurrentType, loc);
 
 			//
+			// result = awaiter.GetResult ();
+			//
+			var mg_result = MethodGroupExpr.CreatePredefined (get_result, fe_awaiter.Type, loc);
+			mg_result.InstanceExpression = fe_awaiter;
+
+			mg_result.EmitCall (ec, new Arguments (0));
+		}
+
+		public void EmitPrologue (EmitContext ec)
+		{
+			var fe_awaiter = new FieldExpr (awaiter, loc);
+			fe_awaiter.InstanceExpression = new CompilerGeneratedThis (ec.CurrentType, loc);
+
+			//
 			// awaiter = expr.GetAwaiter ();
 			//
 			fe_awaiter.EmitAssign (ec, expr, false, false);
@@ -166,18 +189,11 @@ namespace Mono.CSharp
 			mg_completed.EmitCall (ec, args);
 
 			base.DoEmit (ec);
-
-			//
-			// result = awaiter.GetResult ();
-			//
-			var mg_result = MethodGroupExpr.CreatePredefined (get_result, fe_awaiter.Type, loc);
-			mg_result.InstanceExpression = fe_awaiter;
-
-			mg_result.EmitCall (ec, new Arguments (0));
 		}
 
 		public void EmitStatement (EmitContext ec)
 		{
+			EmitPrologue (ec);
 			Emit (ec);
 
 			if (ResultType.Kind != MemberKind.Void) {
@@ -312,6 +328,12 @@ namespace Mono.CSharp
 			}
 		}
 
+		public Block OriginalBlock {
+			get {
+				return block.Parent;
+			}
+		}
+
 		public static void Create (ParametersBlock block, ParametersCompiled parameters, TypeContainer host, TypeSpec returnType, Location loc)
 		{
 			if (returnType.Kind != MemberKind.Void &&
@@ -363,8 +385,6 @@ namespace Mono.CSharp
 
 		protected override void EmitMoveNextEpilogue (EmitContext ec)
 		{
-			base.EmitMoveNextEpilogue (ec);
-
 			var storey = (AsyncTaskStorey) Storey;
 			storey.EmitSetResult (ec);
 		}
@@ -408,7 +428,7 @@ namespace Mono.CSharp
 		LocalVariable hoisted_return;
 
 		public AsyncTaskStorey (AsyncInitializer initializer, TypeSpec type)
-			: base (initializer.Block, initializer.Host, null, null, "async")
+			: base (initializer.OriginalBlock, initializer.Host, null, null, "async")
 		{
 			return_type = type;
 		}

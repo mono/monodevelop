@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#region RemoveType
 		void RemoveType(ITypeDefinition typeDefinition)
 		{
-			throw new NotImplementedException();
+			types.RemoveType (typeDefinition); // <- Daniel: Correct ?
 		}
 		#endregion
 		

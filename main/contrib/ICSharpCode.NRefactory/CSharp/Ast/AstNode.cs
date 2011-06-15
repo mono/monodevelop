@@ -589,7 +589,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 		}
-
 		#endregion
 		
 		public abstract S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data);

@@ -307,6 +307,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return true; }
 			}
 			
+			bool IEntity.IsPrivate {
+				get { return false; }
+			}
+			
+			bool IEntity.IsPublic {
+				get { return true; }
+			}
+			
+			bool IEntity.IsProtected {
+				get { return false; }
+			}
+			
+			bool IEntity.IsInternal {
+				get { return false; }
+			}
+			
+			bool IEntity.IsProtectedOrInternal {
+				get { return false; }
+			}
+			
+			bool IEntity.IsProtectedAndInternal {
+				get { return false; }
+			}
+			
 			IProjectContent IEntity.ProjectContent {
 				get { throw new NotSupportedException(); }
 			}
@@ -1568,7 +1592,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				MemberLookup lookup = new MemberLookup (context, t, t.ProjectContent);
 				ResolveResult r;
-				Console.WriteLine (lookupMode);
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
 					r = lookup.Lookup (t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
@@ -1577,10 +1600,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
 					return r;
 			}
-			Console.WriteLine ("using scope: " + UsingScope);
+			
 			// look in current namespace definitions
 			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
-				Console.WriteLine ("scope:" + n);
 				// first look for a namespace
 				if (k == 0) {
 					string fullName = NamespaceDeclaration.BuildQualifiedName (n.NamespaceName, identifier);
