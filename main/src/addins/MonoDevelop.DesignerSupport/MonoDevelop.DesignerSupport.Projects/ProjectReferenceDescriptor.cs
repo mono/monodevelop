@@ -146,8 +146,11 @@ namespace MonoDevelop.DesignerSupport.Projects
 		
 		protected override bool IsReadOnly (string propertyName)
 		{
-			if (propertyName == "SpecificVersion" && (pref.ReferenceType == ReferenceType.Project || pref.ReferenceType == ReferenceType.Custom))
-				return true;
+			if (propertyName == "SpecificVersion")
+				return !pref.CanSetSpecificVersion;
+			if (propertyName == "LocalCopy")
+				return !pref.CanSetLocalCopy;
+			
 			return false;
 		}
 	}

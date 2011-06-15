@@ -172,6 +172,12 @@ namespace MonoDevelop.Projects
 				localCopy = value;
 			}
 		}
+		
+		public bool CanSetLocalCopy {
+			get {
+				return ReferenceType != ReferenceType.Gac;
+			}
+		}
 
 		internal string LoadedReference {
 			get {
@@ -188,6 +194,16 @@ namespace MonoDevelop.Projects
 					specificVersion = value;
 					OnStatusChanged ();
 				}
+			}
+		}
+		
+		public bool CanSetSpecificVersion {
+			get {
+				if (ReferenceType == ReferenceType.Project || ReferenceType == ReferenceType.Custom)
+					return false;
+				if (ReferenceType == ReferenceType.Gac && Package != null && Package.IsFrameworkPackage)
+					return false;
+				return true;
 			}
 		}
 
