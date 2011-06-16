@@ -32,9 +32,8 @@ using System.Xml.Serialization;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -218,7 +217,7 @@ namespace MonoDevelop.DesignerSupport
 		bool IsFinalizer (object node)
 		{
 			if (node is IMethod) {
-				return ((IMethod) node).IsFinalizer;
+				return ((IMethod) node).IsDestructor;
 			}
 
 			return false;
@@ -240,13 +239,15 @@ namespace MonoDevelop.DesignerSupport
 		/// </returns>
 		Group GetGroup (object node)
 		{
-			if (node is FoldingRegion) {
-				return Properties.FoldingRegionsGroup;
-			}
-			else if (node is Namespace)	{
-				return Properties.NamespacesGroup;
-			}
-			else if (node is IType) {
+		// TODO: Type system conversio
+		//	if (node is FoldingRegion) {
+		//		return Properties.FoldingRegionsGroup;
+		//	}
+		//	else if (node is Namespace)	{
+		//		return Properties.NamespacesGroup;
+		//	}
+		//	else 
+			if (node is IType) {
 				return Properties.TypesGroup;
 			}
 			else if (node is IField) {
@@ -261,7 +262,7 @@ namespace MonoDevelop.DesignerSupport
 			else if (node is IMethod) {
 				return Properties.MethodsGroup;
 			}
-			else if (node is LocalVariable) {
+			else if (node is IVariable) {
 				return Properties.LocalVariablesGroup;
 			}
 			else {
@@ -281,27 +282,19 @@ namespace MonoDevelop.DesignerSupport
 		/// </returns>
 		string GetSortName (object node)
 		{
-			if (node is IMember) {
-
+			if (node is IEntity) {
 				// Return the name without type or parameters
-
-				return ambience.GetString ((IMember)node, 0);
-
+				return ambience.GetString ((IEntity)node, 0);
 			} else if (node is FoldingRegion) {
-
 				// Return trimmed region name or fallback
-
 				string name = ((FoldingRegion)node).Name.Trim ();
-
 				//
 				// ClassOutlineTextEditorExtension uses a fallback name for regions
 				// so we do the same here with a slighty different name.
 				//
-
 				if (string.IsNullOrEmpty (name)) {
 					name = DEFAULT_REGION_NAME;
 				}
-
 				return name;
 			}
 
