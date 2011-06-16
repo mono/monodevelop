@@ -40,13 +40,13 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 
 using CBinding.Parser;
 using Mono.TextEditor;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace CBinding
 {
@@ -647,7 +647,7 @@ namespace CBinding
 			
 			object tag = path[index].Tag;
 			DropDownBoxListWindow.IListDataProvider provider = null;
-			if (tag is ICompilationUnit) {
+			if (tag is ParsedDocument) {
 				provider = new CompilationUnitDataProvider (Document);
 			} else {
 				provider = new DataProvider (Document, tag, GetAmbience ());
@@ -674,56 +674,38 @@ namespace CBinding
 		// Yoinked from C# binding
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
-			var unit = Document.CompilationUnit;
+			var unit = Document.ParsedFile;
 			if (unit == null)
 				return;
-				
-			var loc = textEditorData.Caret.Location;
-			IType type = unit.GetTypeAt (loc.Line, loc.Column);
-			List<PathEntry> result = new List<PathEntry> ();
-			Ambience amb = GetAmbience ();
-			IMember member = null;
-			INode node = (INode)unit;
 			
-			if (type != null && type.ClassType != ClassType.Delegate) {
-				member = type.GetMemberAt (loc.Line, loc.Column);
+			var loc = Document.Editor.Caret.Location;
+			
+			var result = new List<PathEntry> ();
+			var amb = GetAmbience ();
+			
+			var type = unit.GetTypeDefinition (loc.Line, loc.Column) ?? unit.TopLevelTypeDefinitions.FirstOrDefault ();
+			var curType = type;
+			object lastTag = unit;
+			while (curType != null) {
+				var markup = amb.GetString (curType, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
+				result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = lastTag });
+				lastTag = curType;
+				curType = curType.DeclaringTypeDefinition;
 			}
 			
-			if (null != member) {
-				node = member;
-			} else if (null != type) {
-				node = type;
-			}
-			
-			while (node != null) {
-				PathEntry entry;
-				if (node is ICompilationUnit) {
-					if (!Document.ParsedDocument.UserRegions.Any ())
-						break;
-					FoldingRegion reg = Document.ParsedDocument.UserRegions.Where (r => r.Region.Contains (loc.Line, loc.Column)).LastOrDefault ();
-					if (reg == null) {
-						entry = new PathEntry (GettextCatalog.GetString ("No region"));
-					} else {
-						entry = new PathEntry (CompilationUnitDataProvider.Pixbuf, GLib.Markup.EscapeText (reg.Name));
-					}
-					entry.Position = EntryPosition.Right;
-				} else {
-					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, Gtk.IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup));
-				}
-				entry.Tag = node;
-				result.Insert (0, entry);
-				node = node.Parent;
+			var member = type.Members.FirstOrDefault (m => m.Region.IsInside (loc.Line, loc.Column));
+			if (member != null) {
+				var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
+				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = lastTag });
 			}
 			
 			PathEntry noSelection = null;
 			if (type == null) {
-				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (Document.CompilationUnit) };
-			} else if (member == null && type.ClassType != ClassType.Delegate) 
-				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (type) };
-			if (noSelection != null) {
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
+			} else if (member == null && !type.IsDelegate ()) 
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = type };
+			if (noSelection != null) 
 				result.Add (noSelection);
-			}
-			
 			var prev = CurrentPath;
 			CurrentPath = result.ToArray ();
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));
@@ -736,15 +718,6 @@ namespace CBinding
 			UpdatePath (null, null);
 			textEditorData.Caret.PositionChanged += UpdatePath;
 			Document.DocumentParsed += delegate { UpdatePath (null, null); };
-		}
-		
-		// Yoinked from C# binding
-		class CustomNode : MonoDevelop.Projects.Dom.AbstractNode
-		{
-			public CustomNode (INode parent)
-			{
-				this.Parent = parent;
-			}
 		}
 		
 		/// <summary>
@@ -761,21 +734,22 @@ namespace CBinding
 			completionContext.TriggerOffset = i-1;
 			return accumulator+1;
 		}// ResetTriggerOffset
-		
-		[CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
-		public void GotoDeclaration ()
-		{
-			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
-			if (item != null)
-				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1);
-		}
-		
-		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
-		public void CanGotoDeclaration (CommandInfo item)
-		{
-			item.Visible = (GetLanguageItemAt (Editor.Caret.Location) != null);
-			item.Bypass = !item.Visible;
-		}
+
+// TODO: Type system conversion
+//		[CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
+//		public void GotoDeclaration ()
+//		{
+//			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
+//			if (item != null)
+//				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1);
+//		}
+//		
+//		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
+//		public void CanGotoDeclaration (CommandInfo item)
+//		{
+//			item.Visible = (GetLanguageItemAt (Editor.Caret.Location) != null);
+//			item.Bypass = !item.Visible;
+//		}
 		
 		private LanguageItem GetLanguageItemAt (DocumentLocation location)
 		{

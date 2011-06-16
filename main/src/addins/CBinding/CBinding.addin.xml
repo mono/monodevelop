@@ -250,9 +250,13 @@
 	</Module>
 -->
 	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Parser class = "CBinding.Parser.CDocumentParser" id = "CDocumentParser"
-			fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx,.m,.mm,.M" />
+	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
+		<Provider class="CBinding.Parser.CDocumentParser" mimeType = "text/x-csrc" />
+		<Provider class="CBinding.Parser.CDocumentParser" mimeType = "text/x-chdr" />
+		<Provider class="CBinding.Parser.CDocumentParser" mimeType = "text/x-c++src" />
+		<Provider class="CBinding.Parser.CDocumentParser" mimeType = "text/x-c++hdr" />
+		<Provider class="CBinding.Parser.CDocumentParser" mimeType = "text/x-objcsrc" />
+		<Provider class="CBinding.Parser.CDocumentParser" mimeType = "text/x-objc++src" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
