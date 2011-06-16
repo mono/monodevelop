@@ -61,7 +61,7 @@ namespace MonoDevelop.Refactoring
 			return Char.IsLetterOrDigit (ch) || ch == '_';
 		}
 		
-		public static DocumentLocation ToDocumentLocation (this DomLocation location, Document document)
+		public static DocumentLocation ToDocumentLocation (this AstLocation location, Document document)
 		{
 			return new DocumentLocation (location.Line, location.Column);
 		}

@@ -36,11 +36,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
@@ -48,6 +44,8 @@ using MonoDevelop.Refactoring.RefactorImports;
 using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
@@ -84,7 +82,7 @@ namespace MonoDevelop.Refactoring
 				return textEditorResolver.GetLanguageItem (editor.CursorPosition);
 			/* Fallback (currently not needed)
 			// Look for an identifier at the cursor position
-			IParser parser = ProjectDomService.GetParserByFileName (editor.Name);
+			IParser parser = TypeSystemService.GetParserByFileName (editor.Name);
 			if (parser == null)
 				return;
 			ExpressionResult id = new ExpressionResult (editor.SelectedText);
@@ -99,12 +97,12 @@ namespace MonoDevelop.Refactoring
 			IResolver resolver = parser.CreateResolver (ctx, doc, editor.Name);
 			if (resolver == null)
 				return;
-			return resolver.Resolve (id, new DomLocation (line, column));
+			return resolver.Resolve (id, new AstLocation (line, column));
 			 **/
 			return null;
 		}
 		
-		public static void GetItem (ProjectDom ctx, Document doc, ITextBuffer editor, out ResolveResult resolveResult, out INode item)
+		public static void GetItem (ITypeResolveContext ctx, Document doc, ITextBuffer editor, out ResolveResult resolveResult, out IEntity item)
 		{
 			resolveResult = GetResolveResult (doc, editor);
 			if (resolveResult is AggregatedResolveResult)
@@ -145,7 +143,7 @@ namespace MonoDevelop.Refactoring
 			bool added = false;
 			int line, column;
 			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ProjectDom ctx = doc.Dom;
+			ITypeResolveContext ctx = doc.Dom;
 			ResolveResult resolveResult;
 			INode item;
 			GetItem (ctx, doc, editor, out resolveResult, out item);
@@ -255,7 +253,7 @@ namespace MonoDevelop.Refactoring
 				ainfo.Add (ciset, null);
 				added = true;
 			}
-			ICompilationUnit pinfo = doc.CompilationUnit;
+			IParsedFile pinfo = doc.CompilationUnit;
 			if (pinfo == null)
 				return;
 			
@@ -269,7 +267,7 @@ namespace MonoDevelop.Refactoring
 					CompoundType ct = (CompoundType)item;
 					foreach (IType part in ct.Parts) {
 						Refactorer partRefactorer = new Refactorer (ctx, pinfo, eclass, part, null);
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.CompilationUnit.FileName), part.Location.Line), new RefactoryOperation (partRefactorer.GoToDeclaration));
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.GetDefinition ().Region.FileName), part.Location.Line), new RefactoryOperation (partRefactorer.GoToDeclaration));
 					}
 					ainfo.Add (declSet);
 				} else {
@@ -288,10 +286,10 @@ namespace MonoDevelop.Refactoring
 			if ((item is LocalVariable) || (item is IParameter)) {
 				canRename = true; 
 			} else if (item is IType) { 
-				canRename = ((IType)item).SourceProject != null; 
+				canRename = ((IType)item).GetSourceProject () != null; 
 			} else if (item is IMember) {
 				IType cls = ((IMember)item).DeclaringType;
-				canRename = cls != null && cls.SourceProject != null;
+				canRename = cls != null && cls.GetSourceProject () != null;
 			} else {
 				canRename = false;
 			}
@@ -336,7 +334,7 @@ namespace MonoDevelop.Refactoring
 					ainfo.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
 				}
 
-				if (cls.SourceProject != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
+				if (cls.GetSourceProject () != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
 				}
@@ -486,12 +484,12 @@ namespace MonoDevelop.Refactoring
 		
 		public class ResolveNameOperation
 		{
-			ProjectDom ctx;
+			ITypeResolveContext ctx;
 			Document doc;
 			string ns;
 			ResolveResult resolveResult;
 			
-			public ResolveNameOperation (ProjectDom ctx, Document doc, ResolveResult resolveResult, string ns)
+			public ResolveNameOperation (ITypeResolveContext ctx, Document doc, ResolveResult resolveResult, string ns)
 			{
 				this.ctx = ctx;
 				this.doc = doc;
@@ -512,7 +510,7 @@ namespace MonoDevelop.Refactoring
 			
 			public void ResolveName ()
 			{
-				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
+				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.BeginLine, resolveResult.ResolvedExpression.Region.BeginColumn);
 				if (pos < 0) {
 					LoggingService.LogError ("Invalie expression position: " + resolveResult.ResolvedExpression);
 					return;
@@ -520,17 +518,17 @@ namespace MonoDevelop.Refactoring
 				doc.Editor.Insert (pos, ns + ".");
 				if (doc.Editor.Caret.Offset >= pos)
 					doc.Editor.Caret.Offset += (ns + ".").Length;
-				doc.Editor.Document.CommitLineUpdate (resolveResult.ResolvedExpression.Region.Start.Line);
+				doc.Editor.Document.CommitLineUpdate (resolveResult.ResolvedExpression.Region.BeginLine);
 			}
 		}
 
-		bool IsModifiable (INode member)
+		bool IsModifiable (IEntity member)
 		{
 			IType t = member as IType;
 			if (t != null) {
 				if (t.CompilationUnit != null) {
 					ITextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <ITextBuffer>();
-					return t.CompilationUnit.FileName == editor.Name;
+					return t.GetDefinition ().Region.FileName == editor.Name;
 				}
 				else
 					return false;
@@ -544,7 +542,7 @@ namespace MonoDevelop.Refactoring
 		// public class Funkadelic : IAwesomeSauce, IRockOn { ...
 		//        ----------------   -------------
 		// finds this ^ if you clicked on this ^
-		internal static IType FindEnclosingClass (ProjectDom ctx, string fileName, int line, int col)
+		internal static IType FindEnclosingClass (ITypeResolveContext ctx, string fileName, int line, int col)
 		{
 			IType klass = null;
 			foreach (IType c in ctx.GetTypes (fileName)) {
@@ -586,7 +584,7 @@ namespace MonoDevelop.Refactoring
 			return fileName;
 		}
 		/*
-		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, INode item, bool includeModifyCommands)
+		CommandInfo BuildRefactoryMenuForItem (ITypeResolveContext ctx, IParsedFile pinfo, IType eclass, INode item, bool includeModifyCommands)
 		{
 			INode realItem = item;
 			if (item is InstantiatedType)
@@ -621,7 +619,7 @@ namespace MonoDevelop.Refactoring
 					CompoundType ct = (CompoundType)item;
 					foreach (IType part in ct.Parts) {
 						Refactorer partRefactorer = new Refactorer (ctx, pinfo, eclass, part, null);
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.CompilationUnit.FileName), part.Location.Line), new RefactoryOperation (partRefactorer.GoToDeclaration));
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.GetDefinition ().Region.FileName), part.Location.Line), new RefactoryOperation (partRefactorer.GoToDeclaration));
 					}
 					ciset.CommandInfos.Add (declSet);
 				} else {
@@ -638,10 +636,10 @@ namespace MonoDevelop.Refactoring
 			if ((item is LocalVariable) || (item is IParameter)) {
 				canRename = true; 
 			} else if (item is IType) { 
-				canRename = ((IType)item).SourceProject != null; 
+				canRename = ((IType)item).GetSourceProject () != null; 
 			} else if (item is IMember) {
 				IType cls = ((IMember)item).DeclaringType;
-				canRename = cls != null && cls.SourceProject != null;
+				canRename = cls != null && cls.GetSourceProject () != null;
 			}
 			
 			RefactoringOptions options = new RefactoringOptions () {
@@ -690,7 +688,7 @@ namespace MonoDevelop.Refactoring
 					ciset.CommandInfos.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
 				}
 
-				if (cls.SourceProject != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
+				if (cls.GetSourceProject () != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
 				}
@@ -782,7 +780,7 @@ namespace MonoDevelop.Refactoring
 			return ciset;
 		}
 		*/
-		public static bool ContainsAbstractMembers (MonoDevelop.Projects.Dom.IType cls)
+		public static bool ContainsAbstractMembers (IType cls)
 		{
 			if (cls == null)
 				return false;
@@ -793,7 +791,7 @@ namespace MonoDevelop.Refactoring
 			return false;
 		}
 		
-	/*	void AddRefactoryMenuForClass (ProjectDom ctx, ICompilationUnit pinfo, CommandInfoSet ciset, string className)
+	/*	void AddRefactoryMenuForClass (ITypeResolveContext ctx, IParsedFile pinfo, CommandInfoSet ciset, string className)
 		{
 			IType cls = ctx.GetType (className, null, true, true);
 			if (cls != null) {
@@ -810,13 +808,13 @@ namespace MonoDevelop.Refactoring
 	{
 		MemberReferenceCollection references;
 		ISearchProgressMonitor monitor;
-		ICompilationUnit pinfo;
-		ProjectDom ctx;
-		INode item;
+		IParsedFile pinfo;
+		ITypeResolveContext ctx;
+		IEntity item;
 		IType klass;
-		IReturnType hintReturnType;
+		ITypeReference hintReturnType;
 		
-		public Refactorer (ProjectDom ctx, ICompilationUnit pinfo, IType klass, INode item, IReturnType hintReturnType)
+		public Refactorer (ITypeResolveContext ctx, IParsedFile pinfo, IType klass, INode item, ITypeReference hintReturnType)
 		{
 			this.pinfo = pinfo;
 			this.klass = klass;
@@ -832,7 +830,7 @@ namespace MonoDevelop.Refactoring
 				monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 				using (monitor) {
 					foreach (IType part in compoundType.Parts) {
-						FileProvider provider = new FileProvider (part.CompilationUnit.FileName);
+						FileProvider provider = new FileProvider (part.GetDefinition ().Region.FileName);
 						Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 						System.IO.TextReader textReader = provider.Open ();
 						doc.Text = textReader.ReadToEnd ();
@@ -883,7 +881,7 @@ namespace MonoDevelop.Refactoring
 				foreach (IReturnType bc in cls.BaseTypes) {
 					IType bcls = ctx.GetType (bc);
 					if (bcls != null && bcls.ClassType != ClassType.Interface && !bcls.Location.IsEmpty) {
-						IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, bcls.Location.Line, bcls.Location.Column);
+						IdeApp.Workbench.OpenDocument (bcls.GetDefinition ().Region.FileName, bcls.Location.Line, bcls.Location.Column);
 						return;
 					}
 				}
@@ -902,7 +900,7 @@ namespace MonoDevelop.Refactoring
 							}
 						}
 						if (baseMethod != null)
-							IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, baseMethod.Location.Line, baseMethod.Location.Column);
+							IdeApp.Workbench.OpenDocument (bcls.GetDefinition ().Region.FileName, baseMethod.Location.Line, baseMethod.Location.Column);
 						return;
 					}
 				}
@@ -925,11 +923,11 @@ namespace MonoDevelop.Refactoring
 				CodeRefactorer cr = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				foreach (IType sub in cr.FindDerivedClasses (cls)) {
 					if (!sub.Location.IsEmpty) {
-						IEditableTextFile textFile = cr.TextFileProvider.GetEditableTextFile (sub.CompilationUnit.FileName);
+						IEditableTextFile textFile = cr.TextFileProvider.GetEditableTextFile (sub.GetDefinition ().Region.FileName);
 						if (textFile == null) 
-							textFile = new TextFile (sub.CompilationUnit.FileName);
+							textFile = new TextFile (sub.GetDefinition ().Region.FileName);
 						int position = textFile.GetPositionFromLineColumn (sub.Location.Line, sub.Location.Column);
-						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (sub.CompilationUnit.FileName, sub.SourceProject as Project), position, 0));
+						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (sub.GetDefinition ().Region.FileName, sub.GetSourceProject () as Project), position, 0));
 					}
 				}
 			}

@@ -28,11 +28,9 @@
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Projects.CodeGeneration;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -74,26 +72,22 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IBaseMember> GetValidMembers ()
+			protected override IEnumerable<IEntity> GetValidMembers ()
 			{
-				if (Options.EnclosingType == null || Options.EnclosingMember != null)
+//				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
-				HashSet<string> memberName = new HashSet<string> ();
-				foreach (IType type in Options.Dom.GetInheritanceTree (Options.EnclosingType)) {
-					if (type.Equals (Options.EnclosingType))
-						continue;
-					foreach (IMember member in type.Members) {
-						if (member.IsSpecialName)
-							continue;
-						if (type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface || member.IsAbstract || member.IsVirtual || member.IsOverride) {
-							string id = AmbienceService.DefaultAmbience.GetString (member, OutputFlags.ClassBrowserEntries);
-							if (memberName.Contains (id))
-								continue;
-							memberName.Add (id);
-							yield return member;
-						}
-					}
-				}
+//				HashSet<string> memberName = new HashSet<string> ();
+//				foreach (var member in Options.EnclosingType.GetMembers (Options.Dom)) {
+//					if (member.IsSynthetic)
+//						continue;
+//					if (type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface || member.IsAbstract || member.IsVirtual || member.IsOverride) {
+//						string id = AmbienceService.DefaultAmbience.GetString (member, OutputFlags.ClassBrowserEntries);
+//						if (memberName.Contains (id))
+//							continue;
+//						memberName.Add (id);
+//						yield return member;
+//					}
+//				}
 			}
 			
 			static ICSharpCode.NRefactory.CSharp.ParameterModifier GetModifier (IParameter para)
@@ -118,12 +112,13 @@ namespace MonoDevelop.CodeGeneration
 			
 			static readonly ThrowStatement throwNotImplemented = new ThrowStatement (new ObjectCreateExpression (new SimpleType ("System.NotImplementedException"), null));
 			
-			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers)
 			{
-				CodeGenerator generator = Options.Document.CreateCodeGenerator ();
-				
-				foreach (IMember member in includedMembers) 
-					yield return generator.CreateMemberImplementation (Options.EnclosingType, member, false).Code;
+				yield break;
+//				var generator = Options.Document.CreateCodeGenerator ();
+//				
+//				foreach (IMember member in includedMembers) 
+//					yield return generator.CreateMemberImplementation (Options.EnclosingType, member, false).Code;
 			}
 		}
 	}

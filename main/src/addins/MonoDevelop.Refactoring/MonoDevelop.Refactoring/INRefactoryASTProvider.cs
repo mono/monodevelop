@@ -27,14 +27,14 @@
 using System;
 using ICSharpCode.NRefactory.CSharp;
 using System.IO;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
 	public interface INRefactoryASTProvider
 	{
-		string OutputNode (ProjectDom dom, AstNode node);
-		string OutputNode (ProjectDom dom, AstNode node, string indent);
+		string OutputNode (ITypeResolveContext dom, AstNode node);
+		string OutputNode (ITypeResolveContext dom, AstNode node, string indent);
 		
 	/*	ICSharpCode.OldNRefactory.Parser.Errors LastErrors {
 			get;

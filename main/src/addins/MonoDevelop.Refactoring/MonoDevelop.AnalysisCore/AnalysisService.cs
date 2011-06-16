@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using System.Threading;
 

@@ -52,14 +52,14 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			FindTypeReferencesVisitor visitor = new FindTypeReferencesVisitor (options.GetTextEditorData (), options.GetResolver ());
 			visitor.VisitCompilationUnit (unit, null);
 
-			ProjectDom dom = options.Dom;
+			ITypeResolveContext dom = options.Dom;
 			
-			ICompilationUnit compilationUnit = options.ParseDocument ().CompilationUnit;
+			IParsedFile compilationUnit = options.ParseDocument ().CompilationUnit;
 			HashSet<string> usedUsings = new HashSet<string> ();
 			foreach (var r in visitor.PossibleTypeReferences) {
 				if (r is PrimitiveType)
 					continue;
-				IType type = dom.SearchType (compilationUnit, options.ResolveResult != null ? options.ResolveResult.CallingType : null, new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column), r.ConvertToReturnType ());
+				IType type = dom.SearchType (compilationUnit, options.ResolveResult != null ? options.ResolveResult.CallingType : null, new AstLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column), r.ConvertToReturnType ());
 				if (type != null) {
 					usedUsings.Add (type.Namespace);
 				}
@@ -73,8 +73,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 				if (!u.Aliases.Any () && u.Namespaces.All (name => currentUsings.Contains (name) || !usedUsings.Contains (name)) ) {
 					TextReplaceChange change = new TextReplaceChange ();
 					change.FileName = options.Document.FileName;
-					change.Offset = textEditorData.Document.LocationToOffset (u.Region.Start.Line, u.Region.Start.Column);
-					change.RemovedChars = textEditorData.Document.LocationToOffset (u.Region.End.Line, u.Region.End.Column) - change.Offset;
+					change.Offset = textEditorData.Document.LocationToOffset (u.Region.BeginLine, u.Region.BeginColumn);
+					change.RemovedChars = textEditorData.Document.LocationToOffset (u.Region.EndLine, u.Region.EndColumn) - change.Offset;
 					Mono.TextEditor.LineSegment line = textEditorData.Document.GetLineByOffset (change.Offset);
 					if (line != null && line.EditableLength == change.RemovedChars)
 						change.RemovedChars += line.DelimiterLength;

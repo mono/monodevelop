@@ -30,16 +30,16 @@ using System.Text;
 using Gtk;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
 	public abstract class AbstractGenerateAction : IGenerateAction
 	{
-		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IBaseMember));
+		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IEntity));
 		CodeGenerationOptions options;
 		
 		public CodeGenerationOptions Options {
@@ -77,8 +77,8 @@ namespace MonoDevelop.CodeGeneration
 
 			treeView.AppendColumn (column);
 			Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
-			foreach (IBaseMember member in GetValidMembers ()) {
-				Store.AppendValues (false, ImageService.GetPixbuf (member.StockIcon, IconSize.Menu), ambience.GetString (member, member.MemberType == MonoDevelop.Projects.Dom.MemberType.Parameter ? OutputFlags.IncludeParameterName : OutputFlags.ClassBrowserEntries), member);
+			foreach (var member in GetValidMembers ()) {
+				Store.AppendValues (false, ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member,/* member.EntityType == EntityType. ? OutputFlags.IncludeParameterName :*/ OutputFlags.ClassBrowserEntries), member);
 			}
 			
 			treeView.Model = store;
@@ -93,46 +93,43 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		protected abstract IEnumerable<IBaseMember> GetValidMembers ();
+		protected abstract IEnumerable<IEntity> GetValidMembers ();
 		
 		public bool IsValid ()
 		{
 			return GetValidMembers ().Any ();
 		}
 		
-		protected abstract IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers);
+		protected abstract IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers);
 		
 		public void GenerateCode ()
 		{
-			TreeIter iter;
-			if (!store.GetIterFirst (out iter))
-				return;
-			List<IBaseMember> includedMembers = new List<IBaseMember> ();
-			do {
-				bool include = (bool)store.GetValue (iter, 0);
-				if (include)
-					includedMembers.Add ((IBaseMember)store.GetValue (iter, 3));
-			} while (store.IterNext (ref iter));
-
-			INRefactoryASTProvider astProvider = options.GetASTProvider ();
-			if (astProvider == null)
-				return;
-			StringBuilder output = new StringBuilder ();
-			string indent = RefactoringOptions.GetIndent (options.Document, options.EnclosingMember != null ? options.EnclosingMember : options.EnclosingType) + "\t";
-			foreach (string nodeText in GenerateCode (astProvider, indent, includedMembers)) {
-				if (output.Length > 0) {
-					output.AppendLine ();
-					output.AppendLine ();
-				}
-				output.Append (nodeText);
-			}
-			
-			if (output.Length > 0) {
-				var data = options.Document.Editor;
-				int offset = data.Caret.Offset - indent.Length;
-				data.Replace (offset, indent.Length, output.ToString ());
-				data.Caret.Offset = offset + output.Length;
-			}
+//			TreeIter iter;
+//			if (!store.GetIterFirst (out iter))
+//				return;
+//			var includedMembers = new List<IEntity> ();
+//			do {
+//				bool include = (bool)store.GetValue (iter, 0);
+//				if (include)
+//					includedMembers.Add ((IEntity)store.GetValue (iter, 3));
+//			} while (store.IterNext (ref iter));
+//
+//			var output = new StringBuilder ();
+//			string indent = RefactoringOptions.GetIndent (options.Document, options.EnclosingMember != null ? options.EnclosingMember : options.EnclosingType) + "\t";
+//			foreach (string nodeText in GenerateCode (astProvider, indent, includedMembers)) {
+//				if (output.Length > 0) {
+//					output.AppendLine ();
+//					output.AppendLine ();
+//				}
+//				output.Append (nodeText);
+//			}
+//			
+//			if (output.Length > 0) {
+//				var data = options.Document.Editor;
+//				int offset = data.Caret.Offset - indent.Length;
+//				data.Replace (offset, indent.Length, output.ToString ());
+//				data.Caret.Offset = offset + output.Length;
+//			}
 		}
 	}
 }

@@ -101,7 +101,7 @@ namespace MonoDevelop.Refactoring.References
 				var textFile = TextFileProvider.Instance.GetEditableTextFile (fileInfo.FileName);
 				if (textFile.Text == null) // file not found
 					continue;
-				var expressionFinder = ProjectDomService.GetExpressionFinder (fileInfo.FileName);
+				var expressionFinder = TypeSystemService.GetExpressionFinder (fileInfo.FileName);
 				
 				foreach (var match in matcher.Search (textFile.Text)) {
 					var data = (textFile as ITextEditorDataProvider).GetTextEditorData ();
@@ -109,9 +109,9 @@ namespace MonoDevelop.Refactoring.References
 					if (expr.Expression == null) 
 						continue;
 					
-					var resolver = ProjectDomService.GetParser (fileInfo.FileName).CreateResolver (fileInfo.Dom, data, fileInfo.FileName);
+					var resolver = TypeSystemService.GetParser (fileInfo.FileName).CreateResolver (fileInfo.Dom, data, fileInfo.FileName);
 					var location = data.Document.OffsetToLocation (match.Offset);
-					ResolveResult resolveResult = resolver.Resolve (expr, new DomLocation (location.Line, location.Column));
+					ResolveResult resolveResult = resolver.Resolve (expr, new AstLocation (location.Line, location.Column));
 					
 					// TODO: Add IsReferenceTo in the resolve results - could could be taken from FindMemberAstVisitor
 					if (resolveResult != null && resolveResult.IsReferenceTo (member))

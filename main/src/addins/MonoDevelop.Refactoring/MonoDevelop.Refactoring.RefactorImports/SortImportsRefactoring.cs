@@ -67,17 +67,17 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			List<Change> result = new List<Change> ();
-			ICompilationUnit compilationUnit = options.ParseDocument ().CompilationUnit;
+			IParsedFile compilationUnit = options.ParseDocument ().CompilationUnit;
 			Mono.TextEditor.TextEditorData textEditorData = options.GetTextEditorData ();
 			int minOffset = int.MaxValue;
 			foreach (IUsing u in compilationUnit.Usings) {
 				if (u.IsFromNamespace)
 					continue;
-				int offset = textEditorData.Document.LocationToOffset (u.Region.Start.Line, u.Region.Start.Column);
+				int offset = textEditorData.Document.LocationToOffset (u.Region.BeginLine, u.Region.BeginColumn);
 				TextReplaceChange change = new TextReplaceChange () {
 					FileName = options.Document.FileName,
 					Offset = offset,
-					RemovedChars = textEditorData.Document.LocationToOffset (u.Region.End.Line, u.Region.End.Column) - offset
+					RemovedChars = textEditorData.Document.LocationToOffset (u.Region.EndLine, u.Region.EndColumn) - offset
 				};
 				Mono.TextEditor.LineSegment line = textEditorData.Document.GetLineByOffset (change.Offset);
 				if (line != null && line.EditableLength == change.RemovedChars)

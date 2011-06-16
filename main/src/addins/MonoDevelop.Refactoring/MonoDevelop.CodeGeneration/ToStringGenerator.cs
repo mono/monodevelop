@@ -28,12 +28,12 @@ using System;
 using MonoDevelop.Components;
 using Gtk;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -75,56 +75,57 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IBaseMember> GetValidMembers ()
+			protected override IEnumerable<IEntity> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
 				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSpecialName)
+					if (field.IsSynthetic)
 						continue;
 					yield return field;
 				}
 
 				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSpecialName)
+					if (property.IsSynthetic)
 						continue;
-					if (property.HasGet)
+					if (property.CanGet)
 						yield return property;
 				}
 			}
 			
-			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers)
 			{
-				StringBuilder format = new StringBuilder ();
-				format.Append ("[");
-				format.Append (Options.EnclosingType.Name);
-				format.Append (": ");
-				int i = 0;
-				foreach (IMember member in includedMembers) {
-					if (i > 0)
-						format.Append (", ");
-					format.Append (member.Name);
-					format.Append ("={");
-					format.Append (i++);
-					format.Append ("}");
-				}
-				format.Append ("]");
-
-				MethodDeclaration methodDeclaration = new MethodDeclaration ();
-				methodDeclaration.Name = "ToString";
-				methodDeclaration.ReturnType = DomReturnType.String.ConvertToTypeReference ();
-				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
-				methodDeclaration.Body = new BlockStatement ();
-				MemberReferenceExpression formatReference = new MemberReferenceExpression (new TypeReferenceExpression (methodDeclaration.ReturnType), "Format");
-				List<Expression> arguments = new List<Expression> ();
-				arguments.Add (new PrimitiveExpression (format.ToString ()));
-
-				foreach (IMember member in includedMembers) {
-					arguments.Add (new IdentifierExpression (member.Name));
-				}
-
-				methodDeclaration.Body.Statements.Add (new ReturnStatement (new InvocationExpression (formatReference, arguments)));
-				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
+				yield return "";
+//				StringBuilder format = new StringBuilder ();
+//				format.Append ("[");
+//				format.Append (Options.EnclosingType.Name);
+//				format.Append (": ");
+//				int i = 0;
+//				foreach (IMember member in includedMembers) {
+//					if (i > 0)
+//						format.Append (", ");
+//					format.Append (member.Name);
+//					format.Append ("={");
+//					format.Append (i++);
+//					format.Append ("}");
+//				}
+//				format.Append ("]");
+//
+//				MethodDeclaration methodDeclaration = new MethodDeclaration ();
+//				methodDeclaration.Name = "ToString";
+//				methodDeclaration.ReturnType = DomReturnType.String.ConvertToTypeReference ();
+//				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
+//				methodDeclaration.Body = new BlockStatement ();
+//				MemberReferenceExpression formatReference = new MemberReferenceExpression (new TypeReferenceExpression (methodDeclaration.ReturnType), "Format");
+//				List<Expression> arguments = new List<Expression> ();
+//				arguments.Add (new PrimitiveExpression (format.ToString ()));
+//
+//				foreach (IMember member in includedMembers) {
+//					arguments.Add (new IdentifierExpression (member.Name));
+//				}
+//
+//				methodDeclaration.Body.Statements.Add (new ReturnStatement (new InvocationExpression (formatReference, arguments)));
+//				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 			}
 		}
 	}

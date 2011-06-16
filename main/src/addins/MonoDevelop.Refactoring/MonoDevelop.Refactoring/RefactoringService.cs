@@ -27,24 +27,22 @@
 using System;
 using System.Collections.Generic;
 using Mono.Addins;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.CodeGeneration;
-using MonoDevelop.Projects.Dom;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.Inspection;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.CodeGeneration;
 
 namespace MonoDevelop.Refactoring
 {
 	using MonoDevelop.ContextAction;
-
+// TODO: Type system conversion.
 	public static class RefactoringService
 	{
-		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
+//		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
 		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
 		static List<ContextActionAddinNode> contextActions = new List<ContextActionAddinNode> ();
 		static List<InspectorAddinNode> inspectors = new List<InspectorAddinNode> ();
@@ -57,27 +55,16 @@ namespace MonoDevelop.Refactoring
 		
 		static RefactoringService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					refactorings.Add ((RefactoringOperation)args.ExtensionObject);
-					break;
-				case ExtensionChange.Remove:
-					refactorings.Remove ((RefactoringOperation)args.ExtensionObject);
-					break;
-				}
-			});
-
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ASTProvider", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					astProviders.Add ((INRefactoryASTProvider)args.ExtensionObject);
-					break;
-				case ExtensionChange.Remove:
-					astProviders.Remove ((INRefactoryASTProvider)args.ExtensionObject);
-					break;
-				}
-			});
+//			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
+//				switch (args.Change) {
+//				case ExtensionChange.Add:
+//					refactorings.Add ((RefactoringOperation)args.ExtensionObject);
+//					break;
+//				case ExtensionChange.Remove:
+//					refactorings.Remove ((RefactoringOperation)args.ExtensionObject);
+//					break;
+//				}
+//			});
 
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeGenerators", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
@@ -114,11 +101,11 @@ namespace MonoDevelop.Refactoring
 			
 		}
 		
-		public static IEnumerable<RefactoringOperation> Refactorings {
-			get {
-				return refactorings;
-			}
-		}
+//		public static IEnumerable<RefactoringOperation> Refactorings {
+//			get {
+//				return refactorings;
+//			}
+//		}
 		
 		public static IEnumerable<ICodeGenerator> CodeGenerators {
 			get {
@@ -126,78 +113,68 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		class RenameHandler 
-		{
-			IEnumerable<Change> changes;
-			public RenameHandler (IEnumerable<Change> changes)
-			{
-				this.changes = changes;
-			}
-			public void FileRename (object sender, FileCopyEventArgs e)
-			{
-				foreach (FileCopyEventInfo args in e) {
-					foreach (Change change in changes) {
-						var replaceChange = change as TextReplaceChange;
-						if (replaceChange == null)
-							continue;
-						if (args.SourceFile == replaceChange.FileName)
-							replaceChange.FileName = args.TargetFile;
-					}
-				}
-			}
-		}
-		
-		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes)
-		{
-			AcceptChanges (monitor, dom, changes, MonoDevelop.Ide.TextFileProvider.Instance);
-		}
-		
-		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
-		{
-			var rctx = new RefactorerContext (dom, fileProvider, null);
-			var handler = new RenameHandler (changes);
-			FileService.FileRenamed += handler.FileRename;
-			for (int i = 0; i < changes.Count; i++) {
-				changes[i].PerformChange (monitor, rctx);
-				var replaceChange = changes[i] as TextReplaceChange;
-				if (replaceChange == null)
-					continue;
-				for (int j = i + 1; j < changes.Count; j++) {
-					var change = changes[j] as TextReplaceChange;
-					if (change == null)
-						continue;
-					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
-						if (replaceChange.Offset < change.Offset) {
-							change.Offset -= replaceChange.RemovedChars;
-							if (!string.IsNullOrEmpty (replaceChange.InsertedText))
-								change.Offset += replaceChange.InsertedText.Length;
-						} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
-							change.RemovedChars -= replaceChange.RemovedChars;
-							change.Offset = replaceChange.Offset + (!string.IsNullOrEmpty (replaceChange.InsertedText) ? replaceChange.InsertedText.Length : 0);
-						}
-					}
-				}
-			}
-			FileService.FileRenamed -= handler.FileRename;
-			TextReplaceChange.FinishRefactoringOperation ();
-		}
-		
-		public static INRefactoryASTProvider GetASTProvider (string mimeType)
-		{
-			foreach (INRefactoryASTProvider provider in astProviders) {
-				if (provider.CanGenerateASTFrom (mimeType)) {
-					return provider;
-				}
-			}
-			return null;
-		}
+//		class RenameHandler 
+//		{
+//			IEnumerable<Change> changes;
+//			public RenameHandler (IEnumerable<Change> changes)
+//			{
+//				this.changes = changes;
+//			}
+//			public void FileRename (object sender, FileCopyEventArgs e)
+//			{
+//				foreach (FileCopyEventInfo args in e) {
+//					foreach (Change change in changes) {
+//						var replaceChange = change as TextReplaceChange;
+//						if (replaceChange == null)
+//							continue;
+//						if (args.SourceFile == replaceChange.FileName)
+//							replaceChange.FileName = args.TargetFile;
+//					}
+//				}
+//			}
+//		}
+//		
+//		public static void AcceptChanges (IProgressMonitor monitor, ITypeResolveContext dom, List<Change> changes)
+//		{
+//			AcceptChanges (monitor, dom, changes, MonoDevelop.Ide.TextFileProvider.Instance);
+//		}
+//		
+//		public static void AcceptChanges (IProgressMonitor monitor, ITypeResolveContext dom, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
+//		{
+//			var rctx = new RefactorerContext (dom, fileProvider, null);
+//			var handler = new RenameHandler (changes);
+//			FileService.FileRenamed += handler.FileRename;
+//			for (int i = 0; i < changes.Count; i++) {
+//				changes[i].PerformChange (monitor, rctx);
+//				var replaceChange = changes[i] as TextReplaceChange;
+//				if (replaceChange == null)
+//					continue;
+//				for (int j = i + 1; j < changes.Count; j++) {
+//					var change = changes[j] as TextReplaceChange;
+//					if (change == null)
+//						continue;
+//					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
+//						if (replaceChange.Offset < change.Offset) {
+//							change.Offset -= replaceChange.RemovedChars;
+//							if (!string.IsNullOrEmpty (replaceChange.InsertedText))
+//								change.Offset += replaceChange.InsertedText.Length;
+//						} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
+//							change.RemovedChars -= replaceChange.RemovedChars;
+//							change.Offset = replaceChange.Offset + (!string.IsNullOrEmpty (replaceChange.InsertedText) ? replaceChange.InsertedText.Length : 0);
+//						}
+//					}
+//				}
+//			}
+//			FileService.FileRenamed -= handler.FileRename;
+//			TextReplaceChange.FinishRefactoringOperation ();
+//		}
 		
 		public static IEnumerable<InspectorAddinNode> GetInspectors (string mimeTye)
 		{
 			return inspectors.Where (i => i.MimeType == mimeTye);
 		}
 		
-		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, DomLocation loc, Action<List<ContextAction>> callback)
+		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, AstLocation loc, Action<List<ContextAction>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {

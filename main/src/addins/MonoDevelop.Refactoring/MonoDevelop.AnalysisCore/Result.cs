@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.AnalysisCore.Extensions;
 using MonoDevelop.SourceEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -82,4 +82,3 @@ namespace MonoDevelop.AnalysisCore
 		Low
 	}
 }
-

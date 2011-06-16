@@ -26,8 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.SourceEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AnalysisCore
 {

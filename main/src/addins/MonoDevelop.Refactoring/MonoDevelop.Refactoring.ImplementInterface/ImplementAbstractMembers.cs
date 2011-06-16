@@ -55,7 +55,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			if (!CurrentRefactoryOperationsHandler.ContainsAbstractMembers (type))
 				return false;
 			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
-			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
+			IType declaringType = options.Document.GetType (location.Line, location.Column);
 			var missingAbstractMembers = type.Members.Where (member => member.IsAbstract && !member.IsSpecialName && !declaringType.Members.Any (m => member.Name == m.Name));
 			return missingAbstractMembers.Any ();
 		}
@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			TextEditor editor = document.Editor.Parent;
 			
 			DocumentLocation location = editor.Caret.Location;
-			IType declaringType = document.CompilationUnit.GetTypeAt (location.Line, location.Column);
+			IType declaringType = document.GetType (location.Line, location.Column);
 			
 			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (document, declaringType));
 			ModeHelpWindow helpWindow = new ModeHelpWindow ();

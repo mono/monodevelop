@@ -33,11 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
@@ -59,7 +55,7 @@ namespace MonoDevelop.Refactoring
 	{
 		Dictionary<string, GenerateNamespaceImport> cache = new Dictionary<string, GenerateNamespaceImport> ();
 		
-		public GenerateNamespaceImport GetResult (ProjectDom dom, ICompilationUnit unit, IType type, TextEditorData data)
+		public GenerateNamespaceImport GetResult (ITypeResolveContext dom, IParsedFile unit, IType type, TextEditorData data)
 		{
 			GenerateNamespaceImport result;
 			if (cache.TryGetValue (type.Namespace, out result))
@@ -69,7 +65,7 @@ namespace MonoDevelop.Refactoring
 			
 			result.InsertNamespace  = false;
 			
-			DomLocation location = new DomLocation (data.Caret.Line, data.Caret.Column);
+			AstLocation location = new AstLocation (data.Caret.Line, data.Caret.Column);
 			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
 				if (u.Namespaces.Any (ns => type.Namespace == ns)) {
 					result.GenerateUsing = false;
@@ -97,8 +93,8 @@ namespace MonoDevelop.Refactoring
 		TextEditorData data;
 		IType type;
 		Ambience ambience;
-		ICompilationUnit unit;
-		ProjectDom dom;
+		IParsedFile unit;
+		ITypeResolveContext dom;
 		MonoDevelop.Ide.Gui.Document doc;
 		ImportSymbolCache cache;
 		
@@ -106,7 +102,7 @@ namespace MonoDevelop.Refactoring
 			get { return this.type; }
 		}
 		
-		public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, ImportSymbolCache cache, ProjectDom dom, IType type)
+		public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, ImportSymbolCache cache, ITypeResolveContext dom, IType type)
 		{
 			this.doc = doc;
 			this.cache = cache;
@@ -212,7 +208,7 @@ namespace MonoDevelop.Refactoring
 			if (ext == null)
 				return;
 		
-			ProjectDom dom = doc.Dom;
+			ITypeResolveContext dom = doc.Dom;
 			ImportSymbolCache cache = new ImportSymbolCache ();
 			
 			List<ImportSymbolCompletionData> typeList = new List<ImportSymbolCompletionData> ();

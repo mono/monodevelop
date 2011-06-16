@@ -28,7 +28,7 @@ using MonoDevelop.Ide;
 using Mono.TextEditor;
 using MonoDevelop.Components.Commands;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.ContextAction
 {
@@ -37,10 +37,10 @@ namespace MonoDevelop.ContextAction
 		ContextActionEditorExtension ext;
 		MonoDevelop.Ide.Gui.Document document;
 		List<ContextAction> fixes;
-		DomLocation loc;
+		AstLocation loc;
 		Gdk.Pixbuf icon;
 		
-		public ContextActionWidget (ContextActionEditorExtension ext, MonoDevelop.Ide.Gui.Document document, DomLocation loc, List<ContextAction> fixes)
+		public ContextActionWidget (ContextActionEditorExtension ext, MonoDevelop.Ide.Gui.Document document, AstLocation loc, List<ContextAction> fixes)
 		{
 			this.ext = ext;
 			this.document = document;

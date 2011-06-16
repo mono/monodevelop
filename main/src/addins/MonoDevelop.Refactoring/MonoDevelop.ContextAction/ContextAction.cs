@@ -23,8 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.ContextAction
 {
@@ -49,23 +48,23 @@ namespace MonoDevelop.ContextAction
 			protected set;
 		}
 		
-		public virtual string GetMenuText (MonoDevelop.Ide.Gui.Document document, DomLocation loc)
+		public virtual string GetMenuText (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
 			return Node.Title;
 		}
 		
-		public abstract void Run (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
-		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, DomLocation loc);
+		public abstract void Run (MonoDevelop.Ide.Gui.Document document, AstLocation loc);
+		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, AstLocation loc);
 		
-		public static ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)
+/*		public static ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)
 		{
 			return doc.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullyQualifiedTypeName), doc.Editor.Caret.Line, doc.Editor.Caret.Column).ConvertToTypeReference ();
 		}
 		
-		public static ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, IReturnType fullyQualifiedTypeName)
+		public static ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, i fullyQualifiedTypeName)
 		{
 			return doc.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, doc.Editor.Caret.Line, doc.Editor.Caret.Column).ConvertToTypeReference ();
 		}
-		
+	*/	
 	}
 }

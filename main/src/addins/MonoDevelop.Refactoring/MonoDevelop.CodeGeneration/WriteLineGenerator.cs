@@ -28,12 +28,12 @@ using System;
 using MonoDevelop.Components;
 using Gtk;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -75,15 +75,12 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IBaseMember> GetValidMembers ()
+			protected override IEnumerable<IEntity> GetValidMembers ()
 			{
 				if (Options == null || Options.EnclosingType == null || Options.EnclosingMember == null || Options.Document == null)
 					yield break;
 				var editor = Options.Document.Editor;
 				if (editor == null)
-					yield break;
-				INRefactoryASTProvider provider = Options.GetASTProvider ();
-				if (provider == null)
 					yield break;
 				
 				// add local variables
@@ -101,45 +98,46 @@ namespace MonoDevelop.CodeGeneration
 //				}
 				
 				// add parameters
-				if (Options.EnclosingMember.CanHaveParameters) {
-					foreach (IParameter param in Options.EnclosingMember.Parameters)
-						yield return param;
-				}
+//				if (Options.EnclosingMember is IParameterizedMember) {
+//					foreach (IParameter param in ((IParameterizedMember)Options.EnclosingMember).Parameters)
+//						yield return param;
+//				}
 				
 				// add type members
 				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSpecialName)
+					if (field.IsSynthetic)
 						continue;
 					yield return field;
 				}
 
 				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSpecialName)
+					if (property.IsSynthetic)
 						continue;
-					if (property.HasGet)
+					if (property.CanGet)
 						yield return property;
 				}
 			}
 			
-			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode ( string indent, List<IEntity> includedMembers)
 			{
-				StringBuilder format = new StringBuilder ();
-				int i = 0;
-				foreach (IBaseMember member in includedMembers) {
-					if (i > 0)
-						format.Append (", ");
-					format.Append (member.Name);
-					format.Append ("={");
-					format.Append (i++);
-					format.Append ("}");
-				}
-
-				InvocationExpression invocationExpression = new InvocationExpression (new MemberReferenceExpression (new IdentifierExpression ("Console"), "WriteLine"));
-				invocationExpression.Arguments.Add (new PrimitiveExpression (format.ToString ()));
-				foreach (IBaseMember member in includedMembers) {
-					invocationExpression.Arguments.Add (new IdentifierExpression (member.Name));
-				}
-				yield return indent + astProvider.OutputNode (this.Options.Dom, new ExpressionStatement (invocationExpression), indent);
+				yield return "todo";
+//				StringBuilder format = new StringBuilder ();
+//				int i = 0;
+//				foreach (var member in includedMembers) {
+//					if (i > 0)
+//						format.Append (", ");
+//					format.Append (member.Name);
+//					format.Append ("={");
+//					format.Append (i++);
+//					format.Append ("}");
+//				}
+//
+//				InvocationExpression invocationExpression = new InvocationExpression (new MemberReferenceExpression (new IdentifierExpression ("Console"), "WriteLine"));
+//				invocationExpression.Arguments.Add (new PrimitiveExpression (format.ToString ()));
+//				foreach (var member in includedMembers) {
+//					invocationExpression.Arguments.Add (new IdentifierExpression (member.Name));
+//				}
+//				yield return indent + astProvider.OutputNode (this.Options.Dom, new ExpressionStatement (invocationExpression), indent);
 			}
 		}
 	}

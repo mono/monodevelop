@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.AnalysisCore;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.ContextAction
 {
@@ -47,17 +48,17 @@ namespace MonoDevelop.ContextAction
 			this.Description = result.Message;
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
 			return true;
 		}
 		
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
 			return Action.Label;
 		}
 		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public override void Run (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
 			Action.Fix ();
 		}

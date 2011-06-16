@@ -60,11 +60,11 @@ namespace MonoDevelop.Refactoring.Rename
 				return true;
 
 			if (options.SelectedItem is IType)
-				return ((IType)options.SelectedItem).SourceProject != null;
+				return ((IType)options.SelectedItem).GetSourceProject () != null;
 
 			if (options.SelectedItem is IMember) {
 				IType cls = ((IMember)options.SelectedItem).DeclaringType;
-				return cls != null && cls.SourceProject != null;
+				return cls != null && cls.GetSourceProject () != null;
 			}
 			return false;
 		}
@@ -157,13 +157,13 @@ namespace MonoDevelop.Refactoring.Rename
 					int currentPart = 1;
 					HashSet<string> alreadyRenamed = new HashSet<string> ();
 					foreach (IType part in cls.Parts) {
-						if (part.CompilationUnit.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
+						if (part.GetDefinition ().Region.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.GetDefinition ().Region.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
 							continue;
-						if (alreadyRenamed.Contains (part.CompilationUnit.FileName))
+						if (alreadyRenamed.Contains (part.GetDefinition ().Region.FileName))
 							continue;
-						alreadyRenamed.Add (part.CompilationUnit.FileName);
+						alreadyRenamed.Add (part.GetDefinition ().Region.FileName);
 							
-						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName);
+						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.GetDefinition ().Region.FileName);
 						string newFileName;
 						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper ()))
 							continue;
@@ -176,10 +176,10 @@ namespace MonoDevelop.Refactoring.Rename
 						}
 							
 						int t = 0;
-						while (System.IO.File.Exists (GetFullFileName (newFileName, part.CompilationUnit.FileName, t))) {
+						while (System.IO.File.Exists (GetFullFileName (newFileName, part.GetDefinition ().Region.FileName, t))) {
 							t++;
 						}
-						result.Add (new RenameFileChange (part.CompilationUnit.FileName, GetFullFileName (newFileName, part.CompilationUnit.FileName, t)));
+						result.Add (new RenameFileChange (part.GetDefinition ().Region.FileName, GetFullFileName (newFileName, part.GetDefinition ().Region.FileName, t)));
 					}
 				}
 				

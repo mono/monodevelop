@@ -69,7 +69,7 @@ namespace MonoDevelop.Refactoring.Rename
 					this.Title = GettextCatalog.GetString ("Rename Interface");
 				else
 					this.Title = GettextCatalog.GetString ("Rename Class");
-				this.fileName = type.CompilationUnit.FileName;
+				this.fileName = type.GetDefinition ().Region.FileName;
 			} else if (options.SelectedItem is IField) {
 				this.Title = GettextCatalog.GetString ("Rename Field");
 			} else if (options.SelectedItem is IProperty) {
@@ -94,7 +94,7 @@ namespace MonoDevelop.Refactoring.Rename
 				IMember member = (IMember)options.SelectedItem;
 				entry.Text = member.Name;
 				if (!(member is IType) && member.DeclaringType != null)
-					this.fileName = member.DeclaringType.CompilationUnit.FileName;
+					this.fileName = member.DeclaringType.GetDefinition ().Region.FileName;
 			} else if (options.SelectedItem is LocalVariable) {
 				LocalVariable lvar = (LocalVariable)options.SelectedItem;
 				entry.Text = lvar.Name;
@@ -103,7 +103,7 @@ namespace MonoDevelop.Refactoring.Rename
 				IParameter par = options.SelectedItem as IParameter;
 				if (par != null) {
 					entry.Text = par.Name;
-					this.fileName = par.DeclaringMember.DeclaringType.CompilationUnit.FileName;
+					this.fileName = par.DeclaringMember.DeclaringType.GetDefinition ().Region.FileName;
 				}
 			}
 			entry.SelectRegion (0, -1);

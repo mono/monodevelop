@@ -26,9 +26,7 @@
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
@@ -50,7 +48,7 @@ namespace MonoDevelop.Refactoring
 			if (editor == null)
 				return;
 			
-			ProjectDom dom = doc.Dom;
+			ITypeResolveContext dom = doc.Dom;
 			
 			ResolveResult result;
 			INode item;

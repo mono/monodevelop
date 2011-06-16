@@ -24,20 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
  
 using System.Text;
 using MonoDevelop.Projects.Text;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.Refactoring
 {
 	public class RefactoringOptions
 	{
-		public ProjectDom Dom {
+		public ITypeResolveContext Dom {
 			get;
 			set;
 		}
@@ -47,7 +47,7 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
-		public MonoDevelop.Projects.Dom.INode SelectedItem {
+		public IEntity SelectedItem {
 			get;
 			set;
 		}
@@ -89,7 +89,7 @@ namespace MonoDevelop.Refactoring
 		
 		public MonoDevelop.Projects.Dom.Parser.IParser GetParser ()
 		{
-			return ProjectDomService.GetParser (Document.FileName);
+			return TypeSystemService.GetParser (Document.FileName);
 		}
 		
 		public AstNode ParseMember (IMember member)
@@ -100,8 +100,8 @@ namespace MonoDevelop.Refactoring
 			if (provider == null) 
 				return null;
 			
-			int start = Document.Editor.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
-			int end = Document.Editor.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+			int start = Document.Editor.Document.LocationToOffset (member.BodyRegion.BeginLine, member.BodyRegion.BeginColumn);
+			int end = Document.Editor.Document.LocationToOffset (member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
 			string memberBody = Document.Editor.GetTextBetween (start, end);
 			return provider.ParseText (memberBody);
 		}
@@ -141,7 +141,7 @@ namespace MonoDevelop.Refactoring
 		
 		public ParsedDocument ParseDocument ()
 		{
-			return ProjectDomService.Parse (Dom.Project, Document.FileName, Document.Editor.Text);
+			return TypeSystemService.Parse (Dom.Project, Document.FileName, Document.Editor.Text);
 		}
 	}
 }

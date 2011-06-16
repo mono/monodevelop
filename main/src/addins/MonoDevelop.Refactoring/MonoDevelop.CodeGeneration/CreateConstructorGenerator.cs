@@ -28,8 +28,8 @@ using Gtk;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -72,20 +72,20 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IBaseMember> GetValidMembers ()
+			protected override IEnumerable<IEntity> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
 				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSpecialName)
+					if (field.IsSynthetic)
 						continue;
 					yield return field;
 				}
 
 				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSpecialName)
+					if (property.IsSynthetic)
 						continue;
-					if (property.GetRegion.Start.Line != property.GetRegion.End.Line || property.GetRegion.End.Column - property.GetRegion.Start.Column != 4)
+					if (property.CanGet && property.Getter != null)
 						continue;
 					yield return property;
 				}
@@ -98,24 +98,25 @@ namespace MonoDevelop.CodeGeneration
 				return member.Name;
 			}
 			
-			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers)
 			{
-				var parameters = new List<ParameterDeclaration> ();
-				foreach (IMember member in includedMembers) {
-					parameters.Add (new ParameterDeclaration (member.ReturnType.ConvertToTypeReference (), CreateParameterName (member)));
-				}
-
-				var constructorDeclaration = new ConstructorDeclaration ();
-				constructorDeclaration.Name = Options.EnclosingType.Name;
-				constructorDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public;
-				constructorDeclaration.Parameters.AddRange (parameters);
-				constructorDeclaration.Body = new BlockStatement ();
-				foreach (IMember member in includedMembers) {
-					MemberReferenceExpression memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
-					AssignmentExpression assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
-					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
-				}
-				yield return astProvider.OutputNode (this.Options.Dom, constructorDeclaration, indent);
+				yield return "todo";
+//				var parameters = new List<ParameterDeclaration> ();
+//				foreach (var member in includedMembers) {
+//					parameters.Add (new ParameterDeclaration (member.ReturnType.ConvertToTypeReference (), CreateParameterName (member)));
+//				}
+//
+//				var constructorDeclaration = new ConstructorDeclaration ();
+//				constructorDeclaration.Name = Options.EnclosingType.Name;
+//				constructorDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public;
+//				constructorDeclaration.Parameters.AddRange (parameters);
+//				constructorDeclaration.Body = new BlockStatement ();
+//				foreach (IMember member in includedMembers) {
+//					MemberReferenceExpression memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
+//					AssignmentExpression assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
+//					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
+//				}
+//				yield return astProvider.OutputNode (this.Options.Dom, constructorDeclaration, indent);
 			}
 		}
 	}

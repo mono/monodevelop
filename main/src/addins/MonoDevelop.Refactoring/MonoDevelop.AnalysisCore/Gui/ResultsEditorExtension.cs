@@ -26,8 +26,6 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using System.Threading;
 using System.Collections.Generic;
 using System.IO;
@@ -82,7 +80,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		void Enable ()
 		{
 			Document.DocumentParsed += OnDocumentParsed;
-			if (Document.ParsedDocument != null)
+			if (Document.ParsedFile != null)
 				OnDocumentParsed (null, null);
 		}
 		
@@ -95,7 +93,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
-			var doc = Document.ParsedDocument;
+			var doc = Document.ParsedFile;
 			if (doc == null)
 				return;
 			var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
@@ -218,7 +216,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			tasks.Clear ();
 			foreach (var result in GetResults ()) {
-				var newTask = new QuickTask (result.Message, result.Region.Start, result.Level);
+				var newTask = new QuickTask (result.Message, result.Region.Begin, result.Level);
 				tasks.Add (newTask);
 			}
 			

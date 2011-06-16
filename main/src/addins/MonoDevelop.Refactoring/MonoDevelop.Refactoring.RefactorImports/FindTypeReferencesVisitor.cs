@@ -28,8 +28,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring.RefactorImports
@@ -98,7 +96,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			}
 			base.VisitInvocationExpression (invocationExpression, data);
 			
-			MethodResolveResult mrr = resolver.Resolve (new ExpressionResult (invocation), new DomLocation (invocationExpression.StartLocation.Line, invocationExpression.StartLocation.Column)) as MethodResolveResult;
+			MethodResolveResult mrr = resolver.Resolve (new ExpressionResult (invocation), new AstLocation (invocationExpression.StartLocation.Line, invocationExpression.StartLocation.Column)) as MethodResolveResult;
 			if (mrr != null && mrr.MostLikelyMethod != null && mrr.MostLikelyMethod is ExtensionMethod) {
 				IMethod originalMethod = ((ExtensionMethod)mrr.MostLikelyMethod).OriginalMethod;
 				possibleTypeReferences.Add (new SimpleType (originalMethod.DeclaringType.Name));

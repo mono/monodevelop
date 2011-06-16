@@ -25,15 +25,15 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
 using Gtk;
 using Mono.TextEditor;
 using System.Collections.Generic;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.ContextAction
 {
@@ -62,7 +62,7 @@ namespace MonoDevelop.ContextAction
 			base.Dispose ();
 		}
 		
-		public void CreateWidget (List<ContextAction> fixes, DomLocation loc)
+		public void CreateWidget (List<ContextAction> fixes, AstLocation loc)
 		{
 			if (!fixes.Any ())
 				return;
@@ -81,8 +81,8 @@ namespace MonoDevelop.ContextAction
 		{
 			RemoveWidget ();
 			
-			if (Document.ParsedDocument != null) {
-				DomLocation loc = new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+			if (Document.ParsedFile != null) {
+				AstLocation loc = new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 				RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<ContextAction> fixes) {
 					Application.Invoke (delegate {
 						RemoveWidget ();
@@ -104,14 +104,14 @@ namespace MonoDevelop.ContextAction
 		{
 			CursorPositionChanged ();
 		}
-		
-		[CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.QuickFix)]
-		void OnQuickFixCommand ()
-		{
-			if (widget == null)
-				return;
-			widget.PopupQuickFixMenu ();
-		}
+//	TODO: Type system conversion. (commands not included atm.)
+//		[CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.QuickFix)]
+//		void OnQuickFixCommand ()
+//		{
+//			if (widget == null)
+//				return;
+//			widget.PopupQuickFixMenu ();
+//		}
 
 	}
 }

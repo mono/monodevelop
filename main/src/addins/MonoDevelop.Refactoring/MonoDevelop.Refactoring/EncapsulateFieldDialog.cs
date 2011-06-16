@@ -59,11 +59,11 @@ namespace MonoDevelop.Refactoring {
 		private const int colReadOnlyIndex = 4;
 		private const int colFieldIndex = 5;
 
-		public EncapsulateFieldDialog (MonoDevelop.Ide.Gui.Document editor, ProjectDom ctx, IType declaringType)
+		public EncapsulateFieldDialog (MonoDevelop.Ide.Gui.Document editor, ITypeResolveContext ctx, IType declaringType)
 			: this (editor, declaringType, null)
 		{}
 
-		public EncapsulateFieldDialog (MonoDevelop.Ide.Gui.Document editor, ProjectDom ctx, IField field)
+		public EncapsulateFieldDialog (MonoDevelop.Ide.Gui.Document editor, ITypeResolveContext ctx, IField field)
 			: this (editor, field.DeclaringType, field)
 		{}
 
@@ -420,7 +420,7 @@ namespace MonoDevelop.Refactoring {
 			mode.HelpWindow = helpWindow;
 			mode.CurIndex = mode.InsertionPoints.Count - 1;
 			int idx = -1, i = 0;
-			DomLocation lastLocation = DomLocation.Empty;
+			AstLocation lastLocation = AstLocation.Empty;
 			foreach (IMember member in declaringType.Members) {
 				if (lastLocation != member.Location && data.Any (d => d.Field.Location == member.Location))
 					idx = i;

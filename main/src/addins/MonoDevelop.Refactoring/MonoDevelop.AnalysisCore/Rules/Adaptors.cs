@@ -25,18 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide.Gui;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AnalysisCore.Rules
 {
 	public static class Adapters
 	{
-		public static ICompilationUnit GetCompilationUnit (Document input)
+		public static IParsedFile GetCompilationUnit (Document input)
 		{
-			return input.CompilationUnit;
+			return input.ParsedFile;
 		}
 	}
 }

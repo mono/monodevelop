@@ -43,7 +43,7 @@
 		<ExtensionNode name="Inspector" type ="MonoDevelop.Inspection.InspectorAddinNode"/>
 	</ExtensionPoint>
 	<!-- Extensions -->
-	
+	<!--
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename.RenameRefactoring" />
 		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
@@ -55,18 +55,14 @@
 		<Class id="ImplementExplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers" />
 	</Extension>
 	
+	-->
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
 		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.NullCheckGenerator" />
 	</Extension>
-	
 	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
@@ -90,9 +86,9 @@
 		<Description>Fix handlers. Classes must implement IAnalysisFixHandler.</Description>
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
-	
+
 	<!-- Text editor integration -->
-	
+<!--	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />
 	</Extension>
@@ -100,7 +96,7 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
-	
+	-->
 	
 	<!-- RefactoryCommands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -188,7 +184,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.Refactoring.Rename.RenameTextEditorExtension" />
+<!--		<Class class = "MonoDevelop.Refactoring.Rename.RenameTextEditorExtension" />-->
 		<Class class = "MonoDevelop.ContextAction.ContextActionEditorExtension" />
 	</Extension>
 	

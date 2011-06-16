@@ -28,8 +28,6 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
@@ -48,7 +46,7 @@ namespace MonoDevelop.Refactoring
 				return;
 			int line, column;
 			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ProjectDom ctx = doc.Dom;
+			ITypeResolveContext ctx = doc.Dom;
 			
 			ResolveResult resolveResult;
 			INode item;

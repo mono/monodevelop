@@ -26,11 +26,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs \
 	gtk-gui/MonoDevelop.ContextAction.ContextActionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Inspection.InspectionPanelWidget.cs \
-	gtk-gui/MonoDevelop.Refactoring.EncapsulateFieldDialog.cs \
-	gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs \
-	gtk-gui/MonoDevelop.Refactoring.OverridesImplementsDialog.cs \
-	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
-	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
 	MonoDevelop.AnalysisCore/AnalysisCommands.cs \
 	MonoDevelop.AnalysisCore/AnalysisExtensions.cs \
 	MonoDevelop.AnalysisCore/AnalysisOptions.cs \
@@ -56,11 +51,8 @@ FILES =  \
 	MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs \
 	MonoDevelop.CodeGeneration/GenerateCodeWindow.cs \
 	MonoDevelop.CodeGeneration/ICodeGenerator.cs \
-	MonoDevelop.CodeGeneration/NullCheckGenerator.cs \
 	MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs \
 	MonoDevelop.CodeGeneration/PropertyGenerator.cs \
-	MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs \
-	MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs \
 	MonoDevelop.CodeGeneration/ToStringGenerator.cs \
 	MonoDevelop.CodeGeneration/WriteLineGenerator.cs \
 	MonoDevelop.ContextAction/AnalysisContextAction.cs \
@@ -71,41 +63,7 @@ FILES =  \
 	MonoDevelop.ContextAction/ContextActionWidget.cs \
 	MonoDevelop.Inspection/InspectionPanelWidget.cs \
 	MonoDevelop.Inspection/InspectorAddinNode.cs \
-	MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs \
-	MonoDevelop.Refactoring.CreateClass/CreateStructCodeGenerator.cs \
-	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \
-	MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs \
-	MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs \
-	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableHandler.cs \
-	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs \
-	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantDialog.cs \
-	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantHandler.cs \
-	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs \
-	MonoDevelop.Refactoring.RefactorImports/FindTypeReferencesVisitor.cs \
-	MonoDevelop.Refactoring.RefactorImports/RefactorImportsHandler.cs \
-	MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs \
-	MonoDevelop.Refactoring.RefactorImports/SortImportsRefactoring.cs \
-	MonoDevelop.Refactoring.Rename/RenameHandler.cs \
-	MonoDevelop.Refactoring.Rename/RenameItemDialog.cs \
-	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
-	MonoDevelop.Refactoring.Rename/RenameTextEditorExtension.cs \
-	MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs \
-	MonoDevelop.Refactoring/Change.cs \
-	MonoDevelop.Refactoring/EncapsulateFieldDialog.cs \
-	MonoDevelop.Refactoring/FindDerivedClassesHandler.cs \
-	MonoDevelop.Refactoring/FindReferencesHandler.cs \
-	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
-	MonoDevelop.Refactoring/HelperMethods.cs \
-	MonoDevelop.Refactoring/ImportSymbolHandler.cs \
-	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
-	MonoDevelop.Refactoring/OverridesImplementsDialog.cs \
-	MonoDevelop.Refactoring/QuickFixHandler.cs \
-	MonoDevelop.Refactoring/RefactoringOperation.cs \
-	MonoDevelop.Refactoring/RefactoringOptions.cs \
-	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
-	MonoDevelop.Refactoring/RefactoringService.cs \
-	MonoDevelop.Refactoring/RefactoryCommands.cs \
-	MonoDevelop.Refactoring/ReferencesFinder.cs 
+	MonoDevelop.Refactoring/RefactoringService.cs 
 
 RES =  \
 	gtk-gui/gui.stetic \

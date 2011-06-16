@@ -50,7 +50,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			if (type == null || type.ClassType != MonoDevelop.Projects.Dom.ClassType.Interface)
 				return false;
 			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
-			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
+			IType declaringType = options.Document.GetType (location.Line, location.Column);
 			return declaringType != null && options.ResolveResult.ResolvedExpression.IsInInheritableTypeContext;
 		}
 		
@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 		{
 			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
 			IType interfaceType = options.Dom.GetType (options.ResolveResult.ResolvedType);
-			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
+			IType declaringType = options.Document.GetType (location.Line, location.Column);
 			
 			var editor = options.GetTextEditorData ().Parent;
 			
