@@ -36,6 +36,8 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Mono.TextEditor;
+using System.Threading;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -43,11 +45,7 @@ namespace MonoDevelop.TypeSystem
 	{
 		public static Project GetProject (this IProjectContent content)
 		{
-			foreach (var pair in TypeSystemService.projectContents) {
-				if (pair.Value == content)
-					return pair.Key;
-			}
-			return null;
+			return content.Annotation<Project> ();
 		}
 		
 		public static Project GetSourceProject (this ITypeDefinition type)
@@ -130,24 +128,33 @@ namespace MonoDevelop.TypeSystem
 			var provider = GetProvider (mimeType);
 			if (provider == null)
 				return null;
-			if (ParseOperationStarted != null)
-				ParseOperationStarted (null, EventArgs.Empty);
 			ParsedDocument result = null;
-			try {
-				IsParsing = true;
-				result = provider.Parse (projectContent, true, fileName, content);
-				((SimpleProjectContent)projectContent).UpdateProjectContent (projectContent.GetFile (fileName), result);
-				if (ParseOperationFinished != null)
-					ParseOperationFinished (null, EventArgs.Empty);
-			} finally {
-				IsParsing = false;
-			}
+			result = provider.Parse (projectContent, true, fileName, content);
+			((SimpleProjectContent)projectContent).UpdateProjectContent (projectContent.GetFile (fileName), result);
 			return result;
 		}
-		public static bool IsParsing = false;
+		
 		public static event EventHandler ParseOperationStarted;
+		
+		internal static void StartParseOperation ()
+		{
+			if ((parseStatus++) == 0) {
+				if (ParseOperationStarted != null)
+					ParseOperationStarted (null, EventArgs.Empty);
+			}
+		}
+		
 		public static event EventHandler ParseOperationFinished;
-
+		
+		internal static void EndParseOperation ()
+		{
+			if (parseStatus == 0)
+				return;
+			if (--parseStatus == 0) {
+				if (ParseOperationFinished != null)
+					ParseOperationFinished (null, EventArgs.Empty);
+			}
+		}
 		public static ParsedDocument ParseFile (IProjectContent projectContent, string fileName, string mimeType, string content)
 		{
 			using (var reader = new StringReader (content))
@@ -179,30 +186,8 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		internal static Dictionary<Project, IProjectContent> projectContents = new Dictionary<Project, IProjectContent> ();
+		static Dictionary<Project, IProjectContent> projectContents = new Dictionary<Project, IProjectContent> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
-
-		public static IProjectContent LoadContent (Project project)
-		{
-			DateTime start = DateTime.Now;
-			var content = new SimpleProjectContent ();
-			int files = 0;
-			foreach (var file in project.Files) {
-				if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
-					continue;
-				
-				var provider = GetProvider (DesktopService.GetMimeTypeForUri (file.FilePath));
-				if (provider == null)
-					continue;
-				files++;
-				using (var stream = new System.IO.StreamReader (file.FilePath)) {
-					var parsedFile = provider.Parse (content, false, file.FilePath, stream);
-					content.UpdateProjectContent (null, parsedFile);
-				}
-			}
-			Console.WriteLine (files + " project parse: " + (DateTime.Now - start).TotalMilliseconds);
-			return content;
-		}
 		
 		public static void Load (Project project)
 		{
@@ -212,10 +197,12 @@ namespace MonoDevelop.TypeSystem
 				if (projectContents.ContainsKey (project))
 					return;
 				try {
-					var content = LoadContent (project);
-					projectContents [project] = content;
+					var context = new SimpleProjectContent ();
+					QueueParseJob (context, null, project);
+					context.AddAnnotation (project);
+					projectContents [project] = context;
 					referenceCounter [project] = 1;
-					OnProjectContentLoaded (new ProjectContentEventArgs (project, content));
+					OnProjectContentLoaded (new ProjectContentEventArgs (project, context));
 					if (project is DotNetProject) {
 						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
 						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
@@ -244,12 +231,27 @@ namespace MonoDevelop.TypeSystem
 				ws.ItemRemoved -= OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
 				Solution solution = (Solution)item;
-				foreach (Project project in solution.GetAllProjects ()) {
+				StoreSolutionCache (solution);
+				foreach (var project in solution.GetAllProjects ()) {
 					Unload (project);
 				}
 				solution.SolutionItemAdded -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 			}
+		}
+		
+		static void StoreSolutionCache (Solution solution)
+		{
+// TODO: Caching!
+//			string fileName = Path.GetTempFileName ();
+//			using (var stream = File.Create (fileName)) {
+//				foreach (var projectContent in projectContents.Values) {
+//					var prj = projectContent.GetProject ();
+//					if (prj.ParentSolution != solution)
+//						continue;
+//				}
+//			}
+//			System.IO.File.Move (fileName, solution.FileName.ChangeExtension (".pidb"));
 		}
 		
 		public static void Unload (Project project)
@@ -435,6 +437,295 @@ namespace MonoDevelop.TypeSystem
 			}
 			return new CompositeTypeResolveContext (contexts);
 		}
+		
+		#region Parser queue
+		static bool threadRunning;
+		
+		public static IProgressMonitorFactory ParseProgressMonitorFactory {
+			get;
+			set;
+		}
+		
+			
+		class InternalProgressMonitor: NullProgressMonitor
+		{
+			public InternalProgressMonitor ()
+			{
+				StartParseOperation ();
+			}
+			
+			public override void Dispose ()
+			{
+				EndParseOperation ();
+			}
+		}
+
+		internal static IProgressMonitor GetParseProgressMonitor ()
+		{
+			IProgressMonitor mon;
+			if (ParseProgressMonitorFactory != null)
+				mon = ParseProgressMonitorFactory.CreateProgressMonitor ();
+			else
+				mon = new NullProgressMonitor ();
+			
+			return new AggregatedProgressMonitor (mon, new InternalProgressMonitor ());
+		}
+		
+		static Queue<ParsingJob> parseQueue = new Queue<ParsingJob>();
+		class ParsingJob
+		{
+			public SimpleProjectContent Context;
+			public Project Project;
+			public IEnumerable<ProjectFile> FileList;
+			public Action<string, IProgressMonitor> ParseCallback;
+			
+			public void Run (IProgressMonitor monitor)
+			{
+				foreach (var file in (FileList ?? Project.Files)) {
+					if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
+						continue;
+					
+					var provider = TypeSystemService.GetProvider (DesktopService.GetMimeTypeForUri (file.FilePath));
+					if (provider == null)
+						continue;
+					using (var stream = new System.IO.StreamReader (file.FilePath)) {
+						var parsedFile = provider.Parse (Context, false, file.FilePath, stream);
+						Context.UpdateProjectContent (null, parsedFile);
+					}
+					if (ParseCallback != null)
+						ParseCallback (file.FilePath, monitor);
+				}
+			}
+		}
+		static object parseQueueLock = new object ();
+		static AutoResetEvent parseEvent = new AutoResetEvent (false);
+		static ManualResetEvent queueEmptied = new ManualResetEvent (true);
+		static bool trackingFileChanges;
+		
+		public static bool TrackFileChanges {
+			get {
+				return trackingFileChanges;
+			}
+			set {
+				lock (parseQueueLock) {
+					if (value != trackingFileChanges) {
+						trackingFileChanges = value;
+						if (value)
+							StartParserThread ();
+					}
+				}
+			}
+		}
+		
+		static int parseStatus;
+		
+		public static bool IsParsing {
+			get { return parseStatus > 0; }
+		}
+		
+		static Dictionary<Project, ParsingJob> parseQueueIndex = new Dictionary<Project,ParsingJob>();
+		internal static int PendingJobCount {
+			get {
+				lock (parseQueueLock) {
+					return parseQueueIndex.Count;
+				}
+			}
+		}
+		
+		public static void QueueParseJob (SimpleProjectContent context, Action<string, IProgressMonitor> callback, Project project, IEnumerable<ProjectFile> fileList = null)
+		{
+			var job = new ParsingJob () {
+				Context = context,
+				ParseCallback = callback,
+				Project = project,
+				FileList = fileList
+			};
+			
+			lock (parseQueueLock)
+			{
+				RemoveParseJob (project);
+				parseQueueIndex [project] = job;
+				parseQueue.Enqueue (job);
+				parseEvent.Set ();
+				
+				if (parseQueueIndex.Count == 1)
+					queueEmptied.Reset ();
+			}
+		}
+		
+		static bool WaitForParseJob (int timeout)
+		{
+			return parseEvent.WaitOne (5000, true);
+		}
+		
+		static ParsingJob DequeueParseJob ()
+		{
+			lock (parseQueueLock)
+			{
+				while (parseQueue.Count > 0) {
+					var job = parseQueue.Dequeue ();
+					if (job.ParseCallback != null) {
+						parseQueueIndex.Remove (job.Project);
+						return job;
+					}
+				}
+				return null;
+			}
+		}
+		
+		internal static void WaitForParseQueue ()
+		{
+			queueEmptied.WaitOne ();
+		}
+		
+		static void RemoveParseJob (Project project)
+		{
+			lock (parseQueueLock)
+			{
+				ParsingJob job;
+				if (parseQueueIndex.TryGetValue (project, out job)) {
+					job.ParseCallback = null;
+					parseQueueIndex.Remove (project);
+				}
+			}
+		}
+		
+		static void RemoveParseJobs (IProjectContent context)
+		{
+			lock (parseQueueLock)
+			{
+				foreach (var pj in parseQueue) {
+					if (pj.Context == context) {
+						pj.ParseCallback = null;
+						parseQueueIndex.Remove (pj.Project);
+					}
+				}
+			}
+		}
+		
+		static void StartParserThread()
+		{
+			lock (parseQueueLock) {
+				if (!threadRunning) {
+					threadRunning = true;
+					var t = new Thread (new ThreadStart (ParserUpdateThread));
+					t.Name = "Background parser";
+					t.IsBackground  = true;
+					t.Priority = ThreadPriority.AboveNormal;
+					t.Start ();
+				}
+			}
+		}
+		
+		static void ParserUpdateThread()
+		{
+			try {
+				while (trackingFileChanges) {
+					if (!WaitForParseJob (5000))
+						CheckModifiedFiles ();
+					else if (trackingFileChanges)
+						ConsumeParsingQueue ();
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled error in parsing thread", ex);
+			}
+			lock (parseQueueLock) {
+				threadRunning = false;
+				if (trackingFileChanges)
+					StartParserThread ();
+			}
+		}
+		
+		static void CheckModifiedFiles ()
+		{ // TODO: Try it again with the file system watcher.
+			
+//			// Check databases following a bottom-up strategy in the dependency
+//			// tree. This will help resolving parsed classes.
+//			
+//			Set<SimpleProjectContent> list = new Set<SimpleProjectContent> ();
+//			lock (projectContents) {
+//				// There may be several uris for the same db
+//				foreach (var ob in projectContents.Values)
+//					list.Add (ob);
+//			}
+//			
+//			Set<SimpleProjectContent> done = new Set<SimpleProjectContent> ();
+//			while (list.Count > 0) 
+//			{
+//				SimpleProjectContent readydb = null;
+//				SimpleProjectContent bestdb = null;
+//				int bestRefCount = int.MaxValue;
+//				
+//				// Look for a db with all references resolved
+//				foreach (var db in list)
+//				{
+//					bool allDone = true;
+//					foreach (var refdb in db.References) {
+//						if (!done.Contains (refdb)) {
+//							allDone = false;
+//							break;
+//						}
+//					}
+//					
+//					if (allDone) {
+//						readydb = db;
+//						break;
+//					}
+//					else if (db.References.Count < bestRefCount) {
+//						bestdb = db;
+//						bestRefCount = db.References.Count;
+//						break;
+//					}
+//				}
+//
+//				// It may not find any db without resolved references if there
+//				// are circular dependencies. In this case, take the one with
+//				// less references
+//				
+//				if (readydb == null)
+//					readydb = bestdb;
+//				
+//				readydb.CheckModifiedFiles ();
+//				list.Remove (readydb);
+//				done.Add (readydb);
+//			}
+		}
+		
+		static void ConsumeParsingQueue ()
+		{
+			int pending = 0;
+			IProgressMonitor monitor = null;
+			
+			try {
+				do {
+					if (pending > 5 && monitor == null) {
+						monitor = GetParseProgressMonitor ();
+						monitor.BeginTask (GettextCatalog.GetString ("Generating database"), 0);
+					}
+					
+					var job = DequeueParseJob ();
+					
+					if (job != null) {
+						try {
+							job.Run (monitor);
+						} catch (Exception ex) {
+							if (monitor == null)
+								monitor = GetParseProgressMonitor ();
+							monitor.ReportError (null, ex);
+						}
+					}
+					
+					pending = PendingJobCount;
+					
+				} while (pending > 0);
+				
+				queueEmptied.Set ();
+			} finally {
+				if (monitor != null)
+					monitor.Dispose ();
+			}
+		}
+		#endregion
 	}
 }
 
