@@ -49,7 +49,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 				} else {
 					object val = Deserialize (child, constructors, resolver);
 					try {
-						OnPropertyDeserialized (keyStr, val);
+						OnPropertyDeserialized (keyStr, val, resolver);
 					} catch (Exception ex) {
 						MonoDevelop.Core.LoggingService.LogWarning (
 							"IB Parser: Error assigning {0}={1} to {2} in id {3}:\n{4}",
@@ -59,7 +59,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 			}
 		}
 		
-		protected virtual void OnPropertyDeserialized (string name, object value)
+		protected virtual void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			throw new InvalidOperationException (String.Format ("Unexpected property '{0}' of type '{1}' in type '{2}'",
 			                                                    name, value.GetType (), GetType ()));
@@ -184,14 +184,14 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		public string IBProxiedObjectIdentifier { get; set; }
 		public string TargetRuntimeIdentifier { get; set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == "IBProxiedObjectIdentifier")
 				IBProxiedObjectIdentifier = (string) value;
 			else if (name == "targetRuntimeIdentifier")
 				TargetRuntimeIdentifier = (string) value;
 			else
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 		}
 	}
 }

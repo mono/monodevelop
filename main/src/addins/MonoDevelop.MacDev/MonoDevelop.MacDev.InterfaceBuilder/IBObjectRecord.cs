@@ -43,7 +43,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		public object Parent { get; set; }
 		public string ObjectName { get; set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == "objectID")
 				ObjectId = (int) value;
@@ -56,7 +56,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 			else if (name == "parent")
 				Parent = value;
 			else
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 		}
 	}
 }

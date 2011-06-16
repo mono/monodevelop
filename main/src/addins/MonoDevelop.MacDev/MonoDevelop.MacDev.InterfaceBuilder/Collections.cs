@@ -44,12 +44,12 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 			}
 		}
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == null)
 				Values.Add (value);
 			else
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 		}
 	}
 	
@@ -59,7 +59,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 	
 	public class NSMutableDictionaryDirect : NSMutableDictionary
 	{
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			Values[name] = value;
 		}
@@ -67,39 +67,49 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 	
 	public class NSMutableDictionary : IBObject
 	{
-		List<object> sortedKeys = new List<object> ();
-		Dictionary<object, object> values = new Dictionary<object, object> ();
+		Unref<NSArray> sortedKeys, values;
+		Dictionary<object, object> dict;
+		List<object> nonCoderKeys;
 		
-		public Dictionary<object, object> Values { get { return values; } }
+		public Dictionary<object, object> Values {
+			get {
+				if (dict == null) {
+					List<object> k = sortedKeys.Value.Values;
+					List<object> v = values.Value.Values;
+					dict = new Dictionary<object, object> (k.Count);
+					for (int i = 0; i < k.Count; i++) {
+						dict[k[i]] = v[i];
+					}
+				}
+				return dict;
+			}
+		}
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (EncodedWithXMLCoder) {
 				if (name == "dict.sortedKeys") {
-					if (value is IBReference) {
-						//NOTE: sortedKeys refs seem to always ref an empty collection, so assume empty
-						return;
-					}
-					sortedKeys = ((NSArray)value).Values;
+					sortedKeys = new Unref<NSArray> (value);
 				} else if (name == "dict.values") {
-					List<object> dictValues = ((NSArray)value).Values;
-					for (int i = 0; i < dictValues.Count; i++) {
-						values[sortedKeys[i]] = dictValues[i];
-					}
+					values = new Unref<NSArray> (value);
 				} else {
-					base.OnPropertyDeserialized (name, value);
+					base.OnPropertyDeserialized (name, value, resolver);
 				}
 			} else {
+				if (nonCoderKeys == null) {
+					nonCoderKeys = new List<object> ();
+					dict = new Dictionary<object, object> ();
+				}
 				if (name.StartsWith ("NS.key.")) {
 					int idx = Int32.Parse (name.Substring ("NS.key.".Length));
-					while (sortedKeys.Count <= idx)
-						sortedKeys.Add (null);
-					sortedKeys[idx] = value;
+					while (nonCoderKeys.Count <= idx)
+						nonCoderKeys.Add (null);
+					nonCoderKeys[idx] = value;
 				} else if (name.StartsWith ("NS.object.")) {
 					int idx = Int32.Parse (name.Substring ("NS.object.".Length));
-					values[sortedKeys[idx]] = value;
+					dict[nonCoderKeys[idx]] = value;
 				} else {
-					base.OnPropertyDeserialized (name, value);
+					base.OnPropertyDeserialized (name, value, resolver);
 				}
 			}
 		}
@@ -117,12 +127,12 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 			}
 		}
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == "orderedObjects" && value is NSArray)
 				orderedObjects = ((NSArray)value).Values;
 			else
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 		}
 	}
 }

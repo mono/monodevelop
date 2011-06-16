@@ -34,14 +34,14 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		public int ConnectionId { get; set; }
 		public IBObject Connection { get; set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == "connectionID")
 				ConnectionId = (int) value;
 			else if (name == "connection")
 				Connection = (IBObject) value;
 			else
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 		}
 	}
 
@@ -51,7 +51,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		public IBReference Source { get; set; }
 		public IBReference Destination { get; set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == "label")
 				Label = (string) value;
@@ -60,7 +60,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 			else if (name == "destination")
 				Destination = (IBReference) value;
 			else
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 		}
 	}
 	
@@ -76,12 +76,12 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 	{
 		public int IBEventType { get; set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == "IBEventType")
 				IBEventType = (int) value;
 			else
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 		}
 	}
 	
@@ -94,14 +94,14 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		public string MajorKey { get; set; }
 		public string MinorKey { get; set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == "majorKey")
 				MajorKey = (string) value;
 			else if (name == "minorKey")
 				MinorKey = (string) value;
 			else
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 		}
 	}
 	
@@ -115,7 +115,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		public NSMutableDictionary ToOneOutletInfosByName { get; set; }
 		public NSMutableDictionary ActionInfosByName { get; set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			switch (name) {
 			case "className":
@@ -140,7 +140,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 				ActionInfosByName = (NSMutableDictionary) value;
 				break;
 			default:
-				base.OnPropertyDeserialized (name, value);
+				base.OnPropertyDeserialized (name, value, resolver);
 				break;
 			}
 		}

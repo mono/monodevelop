@@ -60,7 +60,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		
 		public string Class { get; private set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name != null)
 				Properties [name] = value;

@@ -83,7 +83,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		
 		public NSMutableArray RootObjects { get; set; }
 		
-		protected override void OnPropertyDeserialized (string name, object value)
+		protected override void OnPropertyDeserialized (string name, object value, IReferenceResolver resolver)
 		{
 			if (name == "IBDocument.RootObjects")
 				RootObjects = (NSMutableArray) value;
@@ -120,9 +120,17 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 			unresolvedReferences = stillUnresolved;
 		}
 		
-		public void Add (IBObject resolveable)
+		public object Resolve (int id)
 		{
-			identifiableObjects.Add (resolveable.Id.Value, resolveable);
+			object value;
+			if (IdentifiableObjects.TryGetValue (id, out value))
+				return value;
+			return null;
+		}
+		
+		public void Add (IBObject resolvable)
+		{
+			identifiableObjects.Add (resolvable.Id.Value, resolvable);
 		}
 		
 		public void Add (IBReference reference)
@@ -134,6 +142,5 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		{
 			identifiableObjects.Add (id, primitive);
 		}
-
 	}
 }

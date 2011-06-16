@@ -47,6 +47,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		void Add (IBObject resolveable);
 		void Add (IBReference reference);
 		void Add (int id, object primitive);
+		object Resolve (int id);
 	}
 	
 	public sealed class Unref<T> where T : class
@@ -67,7 +68,7 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		
 		static object ResolveIfReference (object o)
 		{
-			IBReference r = o as IBReference;
+			var r = o as IBReference;
 			if (r != null)
 				return ResolveIfReference (r.Reference);
 			else
