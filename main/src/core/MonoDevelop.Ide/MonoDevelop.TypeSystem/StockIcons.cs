@@ -43,7 +43,7 @@ namespace MonoDevelop.TypeSystem
 		static readonly IconId Property = "md-property";
 		static readonly IconId Struct = "md-struct";
 		static readonly IconId Delegate = "md-delegate";
-		static readonly IconId Namespace = "md-name-space";
+		public static readonly IconId Namespace = "md-name-space";
 		static readonly IconId InternalClass = "md-internal-class";
 		static readonly IconId InternalDelegate = "md-internal-delegate";
 		static readonly IconId InternalEnum = "md-internal-enum";

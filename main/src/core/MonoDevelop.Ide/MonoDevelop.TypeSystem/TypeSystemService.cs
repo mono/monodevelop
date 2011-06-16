@@ -400,9 +400,18 @@ namespace MonoDevelop.TypeSystem
 				if (projectContents.TryGetValue (referencedProject, out content))
 					contexts.Add (content);
 			}
-			
+				
+			ITypeResolveContext ctx;
 			if (project is DotNetProject) {
 				var netProject = (DotNetProject)project;
+				
+				// Add mscorlib reference
+				var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
+				if (!assemblyContents.TryGetValue (corLibRef.Location, out ctx))
+					assemblyContents [corLibRef.Location] = ctx = GetAssemblyContext (corLibRef.Location);
+				if (ctx != null)
+					contexts.Add (ctx);
+				
 				// Get the assembly references throught the project, since it may have custom references
 				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
 					string fileName;
@@ -412,7 +421,7 @@ namespace MonoDevelop.TypeSystem
 						fileName = Path.GetFullPath (file);
 					}
 					string refId = "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
-					ITypeResolveContext ctx;
+
 					if (!assemblyContents.TryGetValue (refId, out ctx)) {
 						try {
 							assemblyContents [refId] = ctx = GetAssemblyContext (fileName);

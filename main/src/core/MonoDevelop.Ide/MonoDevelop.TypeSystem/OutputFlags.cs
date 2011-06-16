@@ -55,6 +55,7 @@ namespace MonoDevelop.TypeSystem
 		GeneralizeGenerics       = 0x20000,
 		StaticUsage              = 0x40000, // to distinguish static usage for extension methods.
 		IncludeConstraints       = 0x80000,
+		CompletionListFomat      = 0x100000, // print "Name : type" instead of "type : Name" 
 		
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
 		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers

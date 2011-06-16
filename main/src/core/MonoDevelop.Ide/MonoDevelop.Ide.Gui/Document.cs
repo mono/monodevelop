@@ -595,7 +595,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <returns>
 		/// A <see cref="ParsedDocument"/> that contains the current dom.
 		/// </returns>
-		public IParsedFile UpdateParseDocument ()
+		public ParsedDocument UpdateParseDocument ()
 		{
 			try {
 				string currentParseFile = FileName;

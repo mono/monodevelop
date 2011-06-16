@@ -41,7 +41,13 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		List<Comment> comments = new List<Comment> ();
+		
 		List<Tag> tagComments = new List<Tag> ();
+		public IList<Tag> TagComments {
+			get {
+				return tagComments;
+			}
+		}
 		
 		List<FoldingRegion> folds = new List<FoldingRegion> ();
 		public IList<FoldingRegion> AdditionalFolds {

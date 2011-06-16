@@ -101,7 +101,7 @@ namespace MonoDevelop.TypeSystem
 			return text;
 		}
 		
-		public void PostProcess (INamedElement domVisitable, ref string outString)
+		public void PostProcess (object domVisitable, ref string outString)
 		{
 			if (PostProcessCallback != null)
 				PostProcessCallback (domVisitable, ref outString);
@@ -240,6 +240,12 @@ namespace MonoDevelop.TypeSystem
 		public bool IncludeConstraints {
 			get {
 				return (OutputFlags & OutputFlags.IncludeConstraints) != 0;
+			}
+		}
+		
+		public bool CompletionListFomat {
+			get {
+				return (OutputFlags & OutputFlags.CompletionListFomat) != 0;
 			}
 		}
 		

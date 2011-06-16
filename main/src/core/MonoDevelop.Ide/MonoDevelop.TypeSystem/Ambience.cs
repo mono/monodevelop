@@ -165,5 +165,18 @@ namespace MonoDevelop.TypeSystem
 		{
 			return GetString (type, new OutputSettings (flags) { Context = ctx });
 		}
+		
+		public string GetString (ITypeReference reference, OutputSettings settings)
+		{
+			var result = GetTypeReferenceString (reference, settings);
+			if (settings is OutputSettings) 
+				((OutputSettings)settings).PostProcess (reference, ref result);
+			return result;
+		}
+		
+		public string GetString (ITypeResolveContext ctx, ITypeReference reference, OutputFlags flags)
+		{
+			return GetString (reference, new OutputSettings (flags) { Context = ctx });
+		}
 	}
 }
