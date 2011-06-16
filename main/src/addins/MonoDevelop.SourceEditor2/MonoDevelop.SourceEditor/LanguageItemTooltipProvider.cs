@@ -43,19 +43,13 @@ namespace MonoDevelop.SourceEditor
 		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor)editor;
-			
-			var resolveResult = ed.GetLanguageItem (offset);
-			if (resolveResult.IsError)
+			ICSharpCode.NRefactory.TypeSystem.DomRegion region;
+			var resolveResult = ed.GetLanguageItem (offset, out region);
+			if (resolveResult == null || resolveResult.IsError)
 				return null;
-			// TODO: Type system conversion.
 			int startOffset = offset;
 			int endOffset = offset;
 			return new TooltipItem (resolveResult, startOffset, endOffset - startOffset);
-//			int startOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.BeginLine,
-//			                                                    resolveResult.ResolvedExpression.Region.BeginColumn);
-//			int endOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.EndLine, 
-//			                                                    resolveResult.ResolvedExpression.Region.EndColumn);
-//			return new TooltipItem (resolveResult, startOffset, endOffset - startOffset);
 		}
 		
 		ResolveResult lastResult = null;

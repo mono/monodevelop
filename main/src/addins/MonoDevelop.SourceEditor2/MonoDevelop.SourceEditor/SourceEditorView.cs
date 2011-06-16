@@ -1847,7 +1847,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public ResolveResult GetLanguageItem (int offset)
 		{
-			return this.SourceEditorWidget.TextEditor.GetLanguageItem (offset);
+			DomRegion region;
+			return this.SourceEditorWidget.TextEditor.GetLanguageItem (offset, out region);
 		}
 		
 		public ResolveResult GetLanguageItem (int offset, string expression)

@@ -72,7 +72,8 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				length = ed.SelectionRange.Length;
 			} else {
-				ResolveResult res = ed.GetLanguageItem (offset);
+				ICSharpCode.NRefactory.TypeSystem.DomRegion expressionRegion;
+				ResolveResult res = ed.GetLanguageItem (offset, out expressionRegion);
 /*				if (res is MemberResolveResult) {
 					MemberResolveResult mr = (MemberResolveResult) res;
 					if (mr.ResolvedMember == null && mr.ResolvedType != null)
@@ -84,11 +85,12 @@ namespace MonoDevelop.SourceEditor
 					if (mr != null && mr.Member == null && mr.Type != null)
 						expression = mr.Type.FullName;
 					else {
-// TODO: Type system conversion.
-//						expression = res.ResolvedExpression.Expression;
-//						startOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.BeginLine, res.ResolvedExpression.Region.BeginColumn);
-//						int endOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.EndLine, res.ResolvedExpression.Region.EndColumn);
-//						length = endOffset - startOffset;
+						var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
+						var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
+						expression = ed.GetTextBetween (start, end);
+						startOffset = editor.Document.LocationToOffset (start);
+						int endOffset = editor.Document.LocationToOffset (end);
+						length = endOffset - startOffset;
 					}
 				}
 			}

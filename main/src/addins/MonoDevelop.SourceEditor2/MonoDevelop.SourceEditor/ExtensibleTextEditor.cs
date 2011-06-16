@@ -496,7 +496,7 @@ namespace MonoDevelop.SourceEditor
 		
 		int           oldOffset = -1;
 		ResolveResult resolveResult = null;
-		public ResolveResult GetLanguageItem (int offset)
+		public ResolveResult GetLanguageItem (int offset, out DomRegion region)
 		{
 			
 			// we'll cache old results.
@@ -505,8 +505,9 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ITypeResolveContext, GetTextEditorData (), offset);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ITypeResolveContext, GetTextEditorData (), offset, out region);
 			} else {
+				region = DomRegion.Empty;
 				this.resolveResult = null;
 			}
 			
@@ -514,19 +515,12 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public CodeTemplateContext GetTemplateContext ()
-		{ // TODO: Type system conversion.
-/*			if (IsSomethingSelected) {
-				string fileName = view.ContentName ?? view.UntitledName;
-				var parser = TypeSystemService.GetParser (fileName);
-				if (parser == null)
-					return CodeTemplateContext.Standard;
-
-				IExpressionFinder expressionFinder = parser.CreateExpressionFinder (ITypeResolveContext);
-				if (expressionFinder == null) 
-					return CodeTemplateContext.Standard;
-				if (expressionFinder.IsExpression (Document.GetTextAt (SelectionRange)))
+		{
+			if (IsSomethingSelected) {
+				var result = GetLanguageItem (Caret.Offset, Document.GetTextAt (SelectionRange));
+				if (result != null && !result.IsError)
 					return CodeTemplateContext.InExpression;
-			}*/
+			}
 			return CodeTemplateContext.Standard;
 		}
 		
@@ -551,18 +545,10 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public string GetExpression (int offset)
-		{ // TODO: Type system conversion
+		{
+			if (textEditorResolverProvider != null) 
+				return textEditorResolverProvider.GetExpression (this.ITypeResolveContext, GetTextEditorData (), offset);
 			return string.Empty;
-//			string fileName = View.ContentName;
-//			if (fileName == null)
-//				fileName = View.UntitledName;
-//			
-//			IExpressionFinder expressionFinder = TypeSystemService.GetExpressionFinder (fileName);
-//			string expression = expressionFinder == null ? GetExpressionBeforeOffset (offset) : expressionFinder.FindFullExpression (GetTextEditorData (), offset).Expression;
-//			
-//			if (expression == null)
-//				return string.Empty;
-//			return expression.Trim ();
 		}
 		
 		string GetExpressionBeforeOffset (int offset)
