@@ -33,17 +33,16 @@ using System.Linq;
 using System.Xml;
 
 using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Moonlight
 {
-	public class MoonlightParser : AbstractParser
+	public class MoonlightParser : AbstractTypeSystemProvider
 	{
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
+		public override ParsedDocument Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
-			TextReader tr = new StringReader (fileContent);
 			try {
 				Parser xmlParser = new Parser (new XmlFreeState (), true);
 				xmlParser.Parse (tr);
@@ -58,10 +57,6 @@ namespace MonoDevelop.Moonlight
 			}
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xaml document", ex);
-			}
-			finally {
-				if (tr != null)
-					tr.Dispose ();
 			}
 			return doc;
 		}
@@ -83,55 +78,56 @@ namespace MonoDevelop.Moonlight
 			
 			string rootNamespace, rootType, rootAssembly;
 			XamlG.ParseXmlns (rootClass.Value, out rootType, out rootNamespace, out rootAssembly);
-			
-			CompilationUnit cu = new CompilationUnit (doc.FileName);
-			doc.CompilationUnit = cu;
 
-			DomRegion rootRegion = doc.XDocument.RootElement.Region;
-			if (doc.XDocument.RootElement.IsClosed)
-				rootRegion.End = doc.XDocument.RootElement.ClosingTag.Region.End;
+// TODO: Type system conversion.
+//			var cu = new ParsedDocument (doc.FileName);
+//			doc.CompilationUnit = cu;
+//
+//			DomRegion rootRegion = doc.XDocument.RootElement.Region;
+//			if (doc.XDocument.RootElement.IsClosed)
+//				rootRegion.End = doc.XDocument.RootElement.ClosingTag.Region.End;
+//			
+//			DomType declType = new DomType (cu, ClassType.Class, Modifiers.Partial | Modifiers.Public, rootType,
+//			                                doc.XDocument.RootElement.Region.Start, rootNamespace, rootRegion);
+//			cu.Add (declType);
+//			
+//			DomMethod initcomp = new DomMethod ();
+//			initcomp.Name = "InitializeComponent";
+//			initcomp.Modifiers = Modifiers.Public;
+//			initcomp.ReturnType = DomReturnType.Void;
+//			declType.Add (initcomp);
+//			
+//			DomField _contentLoaded = new DomField ("_contentLoaded");
+//			_contentLoaded.ReturnType = new DomReturnType ("System.Boolean");
+//
+//			if (isApplication)
+//				return;
+//			
+//			cu.Add (new DomUsing (DomRegion.Empty, "System"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Documents"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Input"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media.Animation"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Shapes"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls.Primitives"));
 			
-			DomType declType = new DomType (cu, ClassType.Class, Modifiers.Partial | Modifiers.Public, rootType,
-			                                doc.XDocument.RootElement.Region.Start, rootNamespace, rootRegion);
-			cu.Add (declType);
+	//		Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
+	//		namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";
 			
-			DomMethod initcomp = new DomMethod ();
-			initcomp.Name = "InitializeComponent";
-			initcomp.Modifiers = Modifiers.Public;
-			initcomp.ReturnType = DomReturnType.Void;
-			declType.Add (initcomp);
-			
-			DomField _contentLoaded = new DomField ("_contentLoaded");
-			_contentLoaded.ReturnType = new DomReturnType ("System.Boolean");
-
-			if (isApplication)
-				return;
-			
-			cu.Add (new DomUsing (DomRegion.Empty, "System"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Documents"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Input"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media.Animation"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Shapes"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls.Primitives"));
-			
-//			Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
-//			namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";
-			
-			XName nameAtt = new XName ("x", "Name");
-			
-			foreach (XElement el in doc.XDocument.RootElement.AllDescendentElements) {
-				XAttribute name = el.Attributes [nameAtt];
-				if (name != null && name.IsComplete) {
-					string type = ResolveType (el);
-					if (type == null || type.Length == 0)
-						doc.Add (new Error (ErrorType.Error, el.Region.Start, "Could not find namespace for '" + el.Name.FullName + "'."));
-					else
-						declType.Add (new DomField (name.Value, Modifiers.Internal, el.Region.Start, new DomReturnType (type)));
-				}
-			}
+//			XName nameAtt = new XName ("x", "Name");
+//			
+//			foreach (XElement el in doc.XDocument.RootElement.AllDescendentElements) {
+//				XAttribute name = el.Attributes [nameAtt];
+//				if (name != null && name.IsComplete) {
+//					string type = ResolveType (el);
+//					if (type == null || type.Length == 0)
+//						doc.Add (new Error (ErrorType.Error, el.Region.Begin, "Could not find namespace for '" + el.Name.FullName + "'."));
+//					else
+//						declType.Add (new DomField (name.Value, Modifiers.Internal, el.Region.Begin, new DomReturnType (type)));
+//				}
+//			}
 		}
 		
 		static string GetNamespace (XElement el)

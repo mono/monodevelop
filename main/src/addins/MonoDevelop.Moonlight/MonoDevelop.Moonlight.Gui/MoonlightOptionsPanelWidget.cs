@@ -27,8 +27,8 @@
 //
 
 using System;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Moonlight.Gui
 {
@@ -94,11 +94,11 @@ namespace MonoDevelop.Moonlight.Gui
 				return;
 			classesFilled = true;
 			try {
-				ProjectDom dom = ProjectDomService.GetProjectDom (project);
-				IType appType = dom.GetType ("System.Windows.Application", true);
+				var dom = TypeSystemService.GetContext (project);
+				IType appType = dom.GetClass ("System.Windows", "Application", 0, StringComparer.Ordinal);
 				if (appType == null)
 					return;
-				foreach (IType type in dom.GetSubclasses (appType, false))
+				foreach (IType type in appType.GetAllBaseTypes (dom))
 					classListStore.AppendValues (type.FullName);
 			} catch (InvalidOperationException) {
 				// Project not found in parser database
