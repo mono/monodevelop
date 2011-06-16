@@ -117,22 +117,22 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			}
 		}
 		
-		public DomLocation MemberLocation {
+		public AstLocation MemberLocation {
 			get;
 			set;
 		}
 		
 		IResolver resolver;
-		DomLocation position;
+		AstLocation position;
 		public DomRegion CutRegion {
 			get;
 			set;
 		}
-		public VariableLookupVisitor (IResolver resolver, DomLocation position)
+		public VariableLookupVisitor (IResolver resolver, AstLocation position)
 		{
 			this.resolver = resolver;
 			this.position = position;
-			this.MemberLocation = DomLocation.Empty;
+			this.MemberLocation = AstLocation.Empty;
 		}
 		
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
@@ -146,7 +146,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				if (varDecl.Initializer != null) {
 					if (isDefinedInsideCutRegion) {
 						descr.UsedInCutRegion = true;
-					} else if (variableDeclarationStatement.StartLocation < new AstLocation (CutRegion.Start.Line, CutRegion.Start.Column)) {
+					} else if (variableDeclarationStatement.StartLocation < new AstLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
 						descr.UsedBeforeCutRegion = !varDecl.Initializer.IsNull; 
 					} else {
 						descr.UsedAfterCutRegion = true;
@@ -173,7 +173,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (CutRegion.Contains (identifierExpression.StartLocation.Line, identifierExpression.StartLocation.Column)) {
 				if (!v.IsChangedInsideCutRegion)
 					v.UsedInCutRegion = true;
-			} else if (identifierExpression.StartLocation < new AstLocation (CutRegion.Start.Line, CutRegion.Start.Column)) {
+			} else if (identifierExpression.StartLocation < new AstLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
 				v.UsedBeforeCutRegion = true;
 			} else {
 				v.UsedAfterCutRegion = true;
@@ -192,7 +192,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				var v = variables[left.Identifier];
 				v.IsChangedInsideCutRegion = CutRegion.Contains (assignmentExpression.StartLocation.Line, assignmentExpression.StartLocation.Column);
 				if (!v.IsChangedInsideCutRegion) {
-					if (assignmentExpression.StartLocation < new AstLocation (CutRegion.Start.Line, CutRegion.Start.Column)) {
+					if (assignmentExpression.StartLocation < new AstLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
 						v.UsedBeforeCutRegion = true;
 					} else {
 						v.UsedAfterCutRegion = true;

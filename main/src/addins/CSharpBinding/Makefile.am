@@ -39,15 +39,9 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
-	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
-	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
-	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
+	MonoDevelop.CSharp.Completion/CSharpCompletionTextEditorExtension.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
-	MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs \
-	MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs \
-	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
-	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionWrappers.cs \
@@ -83,38 +77,20 @@ FILES =  \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingInspector.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingRule.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingStyle.cs \
-	MonoDevelop.CSharp.Parser/McsParser.cs \
 	MonoDevelop.CSharp.Parser/TypeSystemProvider.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
 	MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs \
 	MonoDevelop.CSharp.Project/CSharpCompilerParameters.cs \
 	MonoDevelop.CSharp.Project/CSharpProjectParameters.cs \
 	MonoDevelop.CSharp.Project/CSharpResourceIdBuilder.cs \
-	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodCodeGenerator.cs \
-	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodHandler.cs \
-	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
-	MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs \
-	MonoDevelop.CSharp.Refactoring/CSharpRefactorer.cs \
-	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
-	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalCodeGenerator.cs \
-	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalHandler.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodAstTransformer.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodDialog.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodHandler.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodRefactoring.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/VariableLookupVisitor.cs \
-	MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
-	MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs \
-	MonoDevelop.CSharp.Resolver/NRefactoryDocumentMetaInformation.cs \
-	MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs \
-	MonoDevelop.CSharp.Resolver/ResolveVisitor.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
 	MonoDevelop.CSharp/CSharpAmbience.cs \
 	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \
 	MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs \
 	MonoDevelop.CSharp/CSharpLanguageBinding.cs \
-	MonoDevelop.CSharp/ExpandSelectionHandler.cs
+	MonoDevelop.CSharp/ExpandSelectionHandler.cs \
+	MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs
 
 RES =  \
 	CSharpBinding.addin.xml \

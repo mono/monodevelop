@@ -26,7 +26,6 @@
 using System;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.CSharp;

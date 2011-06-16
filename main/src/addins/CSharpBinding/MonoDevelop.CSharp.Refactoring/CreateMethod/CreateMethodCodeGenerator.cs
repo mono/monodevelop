@@ -89,17 +89,17 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				if (options.ResolveResult != null) {
 					declaringType = options.ResolveResult.CallingType;
 				} else {
-					declaringType = options.Document.CompilationUnit.GetTypeAt (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+					declaringType = options.Document.GetType (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
 				}
 				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
 			}
 			if (declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation)) {
 				if (declaringType.HasParts)
-					declaringType = declaringType.Parts.FirstOrDefault (t => t.CompilationUnit.FileName == options.Document.FileName) ?? declaringType;
+					declaringType = declaringType.Parts.FirstOrDefault (t => t.GetDefinition ().Region.FileName == options.Document.FileName) ?? declaringType;
 				if (declaringType == null || declaringType.CompilationUnit == null)
 					return false;
-				var doc = ProjectDomService.GetParsedDocument (declaringType.SourceProjectDom, declaringType.CompilationUnit.FileName);
-				declaringType = doc.CompilationUnit.GetTypeAt (declaringType.Location) ?? declaringType;
+				var doc = TypeSystemService.GetParsedDocument (declaringType.GetProjectContent (), declaringType.GetDefinition ().Region.FileName);
+				declaringType = doc.GetType (declaringType.Location) ?? declaringType;
 				return true;
 			}
 			return false;
@@ -199,7 +199,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var unit = parser.Parse (data);
 			if (unit == null)
 				return false;
-			resolvePosition = new DomLocation (data.Caret.Line, data.Caret.Column);
+			resolvePosition = new AstLocation (data.Caret.Line, data.Caret.Column);
 			
 			if (!AnalyzeTargetExpression (options, unit))
 				return false;
@@ -237,7 +237,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			return true;
 		}
 		
-		DomLocation resolvePosition;
+		AstLocation resolvePosition;
 		
 		IType declaringType;
 		public IType DeclaringType {
@@ -268,7 +268,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		public override void Run (RefactoringOptions options)
 		{
-			fileName = declaringType.CompilationUnit.FileName;
+			fileName = declaringType.GetDefinition ().Region.FileName;
 			
 			var openDocument = IdeApp.Workbench.OpenDocument (fileName);
 			if (openDocument == null) {
@@ -352,7 +352,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		IMethod ConstructMethodFromDelegate (RefactoringOptions options)
 		{
-			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, DomLocation.Empty, DomRegion.Empty, returnType);
+			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, AstLocation.Empty, DomRegion.Empty, returnType);
 			result.DeclaringType = new DomType ("GeneratedType") { ClassType = declaringType.ClassType };
 			IMethod invocation = (IMethod)delegateType.SearchMember ("Invoke", true).First ();
 			foreach (var arg in invocation.Parameters) {
@@ -366,7 +366,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var resolver = options.GetResolver ();
 			
-			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, DomLocation.Empty, DomRegion.Empty, returnType);
+			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, AstLocation.Empty, DomRegion.Empty, returnType);
 			result.DeclaringType = new DomType ("GeneratedType") { ClassType = declaringType.ClassType };
 			int i = 1;
 			foreach (var curArg in invocation.Arguments) {
@@ -379,7 +379,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				}
 				
 				string argExpression = options.GetTextEditorData ().GetTextBetween (argument.StartLocation.Line, argument.StartLocation.Column, argument.EndLocation.Line, argument.EndLocation.Column);
-				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), new DomLocation (argument.StartLocation.Line, argument.StartLocation.Column));
+				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), new AstLocation (argument.StartLocation.Line, argument.StartLocation.Column));
 				
 				if (argument is MemberReferenceExpression) {
 					arg.Name = ((MemberReferenceExpression)argument).MemberName;

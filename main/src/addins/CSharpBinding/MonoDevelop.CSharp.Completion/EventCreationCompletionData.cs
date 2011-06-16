@@ -28,15 +28,13 @@ using System;
 using System.Text;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -77,7 +75,7 @@ namespace MonoDevelop.CSharp.Completion
 			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
 			
 			// Search opening bracket of member
-			int pos = callingMember != null ? editor.Document.LocationToOffset (callingMember.BodyRegion.Start.Line, callingMember.BodyRegion.Start.Column) : initialOffset;
+			int pos = callingMember != null ? editor.Document.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
 			while (pos < editor.Document.Length && editor.Document.GetCharAt (pos) != '{') {
 				pos++;
 			}

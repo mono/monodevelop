@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 
 		NRefactoryResolver resolver;
-		List<Tuple<MonoDevelop.Projects.Dom.INode, string, string, DomLocation>> searchedMembers = new List<Tuple<MonoDevelop.Projects.Dom.INode, string, string, DomLocation>> ();
+		List<Tuple<MonoDevelop.Projects.Dom.INode, string, string, AstLocation>> searchedMembers = new List<Tuple<MonoDevelop.Projects.Dom.INode, string, string, AstLocation>> ();
 		
 		string fileName;
 		Mono.TextEditor.Document text;
@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				MonoDevelop.Projects.Dom.INode searchedMember = null;
 				string SearchedMemberName = null;
 				string searchedMemberFile = null;
-				DomLocation searchedMemberLocation = DomLocation.Empty;
+				AstLocation searchedMemberLocation = AstLocation.Empty;
 				
 				if (member is IMember) {
 					searchedMember = GetUnderlyingMember ((IMember)member);
@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					SearchedMemberName = method.IsConstructor ? method.DeclaringType.Name : method.Name;
 					searchedMemberLocation = method.Location;
 					if (method.DeclaringType != null && method.DeclaringType.CompilationUnit != null)
-						searchedMemberFile = method.DeclaringType.CompilationUnit.FileName;
+						searchedMemberFile = method.DeclaringType.GetDefinition ().Region.FileName;
 				} else if (searchedMember is IMember) {
 					SearchedMemberName = ((IMember)searchedMember).Name;
 					searchedMemberLocation = ((IMember)searchedMember).Location;
@@ -123,18 +123,18 @@ namespace MonoDevelop.CSharp.Refactoring
 						}
 					} else {
 						if (((IMember)searchedMember).DeclaringType != null && ((IMember)searchedMember).DeclaringType.CompilationUnit != null)
-							searchedMemberFile = ((IMember)searchedMember).DeclaringType.CompilationUnit.FileName;
+							searchedMemberFile = ((IMember)searchedMember).DeclaringType.GetDefinition ().Region.FileName;
 					}
 				} else if (searchedMember is IParameter) {
 					SearchedMemberName = ((IParameter)searchedMember).Name;
 					searchedMemberLocation = ((IParameter)searchedMember).Location;
 					if (((IParameter)searchedMember).DeclaringMember.DeclaringType.CompilationUnit != null)
-						searchedMemberFile = ((IParameter)searchedMember).DeclaringMember.DeclaringType.CompilationUnit.FileName;
+						searchedMemberFile = ((IParameter)searchedMember).DeclaringMember.DeclaringType.GetDefinition ().Region.FileName;
 				} else if (members != null) {
 					SearchedMemberName = ((LocalVariable)searchedMember).Name;
 					searchedMemberLocation = ((LocalVariable)searchedMember).Region.Start;
 					if (((LocalVariable)searchedMember).CompilationUnit != null)
-						searchedMemberFile = ((LocalVariable)searchedMember).CompilationUnit.FileName;
+						searchedMemberFile = ((LocalVariable)searchedMember).GetDefinition ().Region.FileName;
 				}
 				searchedMembers.Add (Tuple.Create (searchedMember, SearchedMemberName, searchedMemberFile, searchedMemberLocation));
 			}
@@ -419,7 +419,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				
 				if (searchedMember is CompoundType) {
 					foreach (IType part in ((CompoundType)searchedMember).Parts) {
-						if (fileName == part.CompilationUnit.FileName &&
+						if (fileName == part.GetDefinition ().Region.FileName &&
 						    node.StartLocation.Line == part.Location.Line 
 //						&& node.StartLocation.Column == part.Location.Column
 							)
@@ -448,6 +448,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				return false;
 			
 			while (position + SearchedMemberName.Length < this.text.Length) {
+				char ch = this.text.GetCharAt (position);
+				if (ch == '{' || ch == '}' || ch == ';')
+					break;
 				bool isIdentifierStart = position <= 0 || !IsIdentifierPart (this.text.GetCharAt (position - 1));
 				
 				if (isIdentifierStart &&
@@ -500,7 +503,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var tuple in searchedMembers) {
 				var searchedMember = tuple.Item1;
 				if (searchedMember is IType) {
-					if (((IType)searchedMember).Parts.Any (t => t.CompilationUnit.FileName == fileName) &&
+					if (((IType)searchedMember).Parts.Any (t => t.GetDefinition ().Region.FileName == fileName) &&
 					    ((IType)searchedMember).FullName == CurrentTypeFullName &&
 					    ((IType)searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count &&
 					    IsSearchTextAt (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column))
@@ -523,7 +526,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var tuple in searchedMembers) {
 				var searchedMember = tuple.Item1;
 				if (searchedMember is IType) {
-					if (((IType)searchedMember).Parts.Any (t => t.CompilationUnit.FileName == fileName) &&
+					if (((IType)searchedMember).Parts.Any (t => t.GetDefinition ().Region.FileName == fileName) &&
 					    ((IType)searchedMember).FullName == CurrentTypeFullName && 
 					    ((IType)searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count && 
 					    IsSearchTextAt (destructorDeclaration.StartLocation.Line, destructorDeclaration.StartLocation.Column + 1)) // need to skip the '~'
@@ -622,9 +625,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			return base.VisitVariableDeclaration (variableDeclaration, data);
 		}
 
-		DomLocation ConvertLocation (Location loc)
+		AstLocation ConvertLocation (Location loc)
 		{
-			return new DomLocation (loc.Line, loc.Column);
+			return new AstLocation (loc.Line, loc.Column);
 		}
 
 		public override object VisitObjectCreateExpression (ICSharpCode.OldNRefactory.Ast.ObjectCreateExpression objectCreateExpression, object data)
@@ -729,8 +732,8 @@ namespace MonoDevelop.CSharp.Refactoring
 						LocalVariable var = ((LocalVariableResolveResult)result).LocalVariable;
 	
 						if (var != null && avar.DeclaringMember != null && var.DeclaringMember != null && avar.DeclaringMember.FullName == var.DeclaringMember.FullName) {
-							//						Console.WriteLine (avar.Region.Start.Line + "---" +  var.Region.Start.Line);
-							if (Math.Abs (avar.Region.Start.Line - var.Region.Start.Line) <= 1)
+							//						Console.WriteLine (avar.Region.BeginLine + "---" +  var.Region.BeginLine);
+							if (Math.Abs (avar.Region.BeginLine - var.Region.BeginLine) <= 1)
 								AddUniqueReference (line, col, idExp.Identifier);
 						}
 					} else if (searchedMember is IParameter && result is ParameterResolveResult) {

@@ -69,8 +69,8 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public override CSharpFormattingOptions FormattingOptions {
 			get {
-				var dom = Document.Dom;
-				var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;
+				var dom = Document.TypeResolveContext;
+				var policyParent = Document.Project != null ? Document.Project.Policies : null;
 				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 				var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 				return codePolicy.CreateOptions ();
@@ -223,7 +223,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void Perform (Script script)
 			{
 				ctx.Document.UpdateParseDocument ();
-				ctx.Unit = ctx.Document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+				ctx.Unit = ctx.Document.ParsedFile.Annotation<CompilationUnit> ();
 			
 				var node = Callback (ctx);
 				if (node != null)
@@ -326,7 +326,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
 			{
 				var editor = ctx.Document.Editor;
-				var mode = new InsertionCursorEditMode (editor.Parent, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.CompilationUnit.GetTypeAt (ctx.Location.Line, ctx.Location.Column)));
+				var mode = new InsertionCursorEditMode (editor.Parent, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedFile.GetTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
 				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
@@ -376,40 +376,34 @@ namespace MonoDevelop.CSharp.ContextAction
 			return new MdScript (this);
 		}
 		
-		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			this.Document = document;
 			this.Location = new AstLocation (loc.Line, loc.Column);
-			this.Unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+			this.Unit = document.ParsedFile.Annotation<CompilationUnit> ();
 		}
 		
-		public override AstType CreateShortType (AstType fullType)
+		public override AstType CreateShortType (IType fullType)
 		{
-			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, fullType.ConvertToReturnType ());
+			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
+			TypeSystemAstBuilder builder = new TypeSystemAstBuilder (csResolver);
+			return builder.ConvertType (fullType);
 		}
 		
 		public override AstType CreateShortType (string fullTypeName)
 		{
-			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, fullTypeName);
+			return CreateShortType (new SimpleType (fullTypeName));
 		}
 		
-		NRefactoryResolver resolver;
-		public NRefactoryResolver Resolver {
-			get {
-				if (resolver == null)
-					resolver = new NRefactoryResolver (Document.Dom, Document.CompilationUnit, Document.Editor, Document.FileName); 
-				return resolver;
-			}
-		}
 		/*
 		Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> resolveCache = new Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> ();
 		MonoDevelop.Projects.Dom.ResolveResult Resolve (AstNode node)
 		{
 			MonoDevelop.Projects.Dom.ResolveResult result;
 			if (!resolveCache.TryGetValue (node, out result))
-				resolveCache [node] = result = Resolver.Resolve (node.ToString (), new  MonoDevelop.Projects.Dom.DomLocation (Location.Line, Location.Column));
+				resolveCache [node] = result = Resolver.Resolve (node.ToString (), new  MonoDevelop.Projects.Dom.AstLocation (Location.Line, Location.Column));
 			return result;
 		}*/
 		

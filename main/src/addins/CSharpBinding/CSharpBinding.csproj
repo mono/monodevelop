@@ -50,11 +50,6 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
-      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
-      <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
@@ -75,14 +70,18 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -163,10 +162,6 @@
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\NRefactoryResolver.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\ResolveVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\NewCSharpExpressionFinder.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\NRefactoryDocumentMetaInformation.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSyntaxMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.cs" />
@@ -175,8 +170,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngineStack.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormatter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpNRefactoryASTProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberAstVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpCompilerParameters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectParameters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpResourceIdBuilder.cs" />
@@ -187,43 +180,20 @@
     <Compile Include="MonoDevelop.CSharp\CSharpBindingCompilerManager.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpEnhancedCodeProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpLanguageBinding.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightUsagesExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\MoveToUsagesHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CompletionTextLinkMode.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Parser\McsParser.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodAstTransformer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicyPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\NewFormattingProfileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProfileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
-    <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\TextEditorDataAdapter.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionExtensions.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\CodeAnalysis.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\CSharpInspector.cs" />
@@ -246,10 +216,36 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextAction.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\TypeSystemProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionTextLinkMode.cs" />
+    <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
+    <None Include="MonoDevelop.CSharp.Refactoring\CSharpNRefactoryASTProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\FindMemberAstVisitor.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodAstTransformer.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodDialog.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodHandler.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
+    <None Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

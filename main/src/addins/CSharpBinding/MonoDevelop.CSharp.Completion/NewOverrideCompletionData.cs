@@ -28,17 +28,13 @@ using System;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.CodeGeneration;
 using Mono.TextEditor;
-using MonoDevelop.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -52,7 +48,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public bool GenerateBody { get; set; }
 		
-		public NewOverrideCompletionData (ProjectDom dom, TextEditorData editor, int declarationBegin, IType type, IMember member) : base (null)
+		public NewOverrideCompletionData (ITypeResolveContext dom, TextEditorData editor, int declarationBegin, IType type, IMember member) : base (null)
 		{
 			this.editor = editor;
 			this.type   = type;

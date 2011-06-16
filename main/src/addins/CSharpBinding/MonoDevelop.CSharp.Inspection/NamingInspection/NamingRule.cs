@@ -26,7 +26,6 @@
 using System;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICS = ICSharpCode.NRefactory.CSharp;
@@ -34,6 +33,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Text;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -173,21 +173,22 @@ namespace MonoDevelop.CSharp.Inspection
 		}
 		
 		public bool CheckVariableDeclaration (ICS.VariableDeclarationStatement node, InspectionData data)
-		{
-			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.LocalVariable) == 0) || !CheckModifiers (node.Modifiers, ICS.Modifiers.Private))
-				return false;
-			var member = data.Document.CompilationUnit.GetMemberAt (node.StartLocation.Line, node.StartLocation.Column);
-			foreach (var var in node.Variables) {
-				string name = var.Name;
-				if (IsValid (name))
-					continue;
-				var v = new LocalVariable (member, name, DomReturnType.Void,
-					new DomRegion (node.StartLocation.Line, node.StartLocation.Column,
-					node.EndLocation.Line, node.EndLocation.Column));
-				data.Add (GetFixableResult (var.NameToken.StartLocation, v, name));
-			}
-			
-			return true;
+		{ // TODO: Type system conversion.
+			return false;
+//			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.LocalVariable) == 0) || !CheckModifiers (node.Modifiers, ICS.Modifiers.Private))
+//				return false;
+//			var member = data.Document.ParsedFile.GetMember (node.StartLocation);
+//			foreach (var var in node.Variables) {
+//				string name = var.Name;
+//				if (IsValid (name))
+//					continue;
+//				var v = new LocalVariable (member, name, DomReturnType.Void,
+//					new DomRegion (node.StartLocation.Line, node.StartLocation.Column,
+//					node.EndLocation.Line, node.EndLocation.Column));
+//				data.Add (GetFixableResult (var.NameToken.StartLocation, v, name));
+//			}
+//			
+//			return true;
 		}
 		
 		public bool CheckProperty (ICS.PropertyDeclaration node, InspectionData data)
@@ -692,7 +693,7 @@ namespace MonoDevelop.CSharp.Inspection
 			sb[sb.Length - word.Length] = char.ToUpper (sb[sb.Length - word.Length]);
 		}
 		
-		public FixableResult GetFixableResult (ICS.AstLocation location, IBaseMember node, string name)
+		public FixableResult GetFixableResult (ICS.AstLocation location, IEntity node, string name)
 		{
 			IList<string> suggestedFixes;
 			var error = GetErrorMessage (name, out suggestedFixes);
@@ -703,7 +704,7 @@ namespace MonoDevelop.CSharp.Inspection
 				fixes.AddRange (suggestedFixes.Select (f => new RenameMemberFix (node, name, f)));
 			
 			return new FixableResult (
-				new DomRegion (location.Line, location.Column, location.Line, location.Column + name.Length),
+				new DomRegion (null, location.Line, location.Column, location.Line, location.Column + name.Length),
 				error,
 				MonoDevelop.SourceEditor.QuickTaskSeverity.Warning,
 				ResultCertainty.High, ResultImportance.Medium,

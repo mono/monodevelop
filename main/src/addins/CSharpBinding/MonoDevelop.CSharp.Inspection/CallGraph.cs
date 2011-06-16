@@ -28,10 +28,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
-using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -53,8 +50,8 @@ namespace MonoDevelop.CSharp.Inspection
 		{
 		}
 		
-		public void Inspect (MonoDevelop.Ide.Gui.Document doc, IResolver resolver, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
-		{
+//		public void Inspect (MonoDevelop.Ide.Gui.Document doc, IResolver resolver, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
+//		{
 //			var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
 //			unit.AcceptVisitor (findTypeReferencesVisitor, null);
 //			this.PossibleTypeReferences = findTypeReferencesVisitor.PossibleTypeReferences;
@@ -62,16 +59,16 @@ namespace MonoDevelop.CSharp.Inspection
 //			foreach (var r in PossibleTypeReferences) {
 //				if (r is PrimitiveType)
 //					continue;
-//				var loc = new DomLocation (r.StartLocation.Line, r.StartLocation.Column);
+//				var loc = new AstLocation (r.StartLocation.Line, r.StartLocation.Column);
 //				IType type = doc.Dom.SearchType (doc.CompilationUnit,
-//					doc.CompilationUnit.GetTypeAt (loc), 
+//					doc.GetType (loc), 
 //					loc,
 //					r.ConvertToReturnType ());
 //				
 //				if (type != null)
 //					usedUsings.Add (type.Namespace);
 //			}
-		}
+//		}
 		
 		
 		public class VariableInfo 

@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.Gui;
@@ -46,7 +45,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return Node.Title;
 		}
 		
-		public sealed override string GetMenuText (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public sealed override string GetMenuText (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
 			var context = new MDRefactoringContext (document, loc);
 			if (context.Unit == null)
@@ -56,7 +55,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		protected abstract bool IsValid (MDRefactoringContext context);
 		
-		public sealed override bool IsValid (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public sealed override bool IsValid (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
 			var context = new MDRefactoringContext (document, loc);
 			if (context.Unit == null)
@@ -66,7 +65,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		protected abstract void Run (MDRefactoringContext context);
 		
-		public sealed override void Run (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public sealed override void Run (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
 			var context = new MDRefactoringContext (document, loc);
 			if (context.Unit == null)

@@ -32,12 +32,18 @@ namespace MonoDevelop.CSharp.Parser
 {
 	public class TypeSystemProvider : ITypeSystemProvider
 	{
-		public IParsedFile Parse (IProjectContent projectContent, string fileName, System.IO.TextReader content)
+		public ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, System.IO.TextReader content)
 		{
-			var visitor = new TypeSystemConvertVisitor (projectContent, fileName);
 			var unit = new CSharpParser ().Parse (content);
+			var visitor = new TypeSystemConvertVisitor (projectContent, fileName);
 			unit.AcceptVisitor (visitor, null);
-			return visitor.ParsedFile;
+			visitor.ParsedFile.Unit = unit;
+			var result = new ParsedDocumentDecorator (visitor.ParsedFile);
+			if (storeAst) {
+				result.AddAnnotation (unit);
+				result.AddAnnotation (visitor.ParsedFile);
+			}
+			return result;
 		}
 	}
 }

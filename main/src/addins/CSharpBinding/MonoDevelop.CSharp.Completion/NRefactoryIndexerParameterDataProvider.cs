@@ -32,15 +32,13 @@ using System.Xml;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
 
 using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {

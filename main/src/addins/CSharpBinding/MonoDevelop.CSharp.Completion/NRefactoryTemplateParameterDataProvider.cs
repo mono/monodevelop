@@ -30,8 +30,6 @@ using System.Text;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Resolver;
 using Mono.TextEditor;
@@ -43,7 +41,7 @@ namespace MonoDevelop.CSharp.Completion
 		List<ITypeParameterMember> types = new List<ITypeParameterMember> ();
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		
-		public NRefactoryTemplateParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, DomLocation loc)
+		public NRefactoryTemplateParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, AstLocation loc)
 		{
 //			this.editor = editor;
 			ResolveResult plainResolveResult = resolver.Resolve (expressionResult, loc);

@@ -48,12 +48,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			return mimeType == CSharpFormatter.MimeType;
 		}
 
-		public string OutputNode (ProjectDom dom, AstNode node)
+		public string OutputNode (ITypeResolveContext dom, AstNode node)
 		{
 			return OutputNode (dom, node, "");
 		}
 		
-		public string OutputNode (ProjectDom dom, AstNode node, string indent)
+		public string OutputNode (ITypeResolveContext dom, AstNode node, string indent)
 		{
 			StringWriter w = new StringWriter();
 			var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;

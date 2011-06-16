@@ -32,15 +32,14 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
 using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Resolver;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -51,7 +50,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		bool staticResolve = false;
 		
-		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (TextEditorData editor, MethodGroupResolveResult resolveResult)
 		{
 			this.staticResolve = resolveResult.StaticResolve;
 			bool includeProtected = true;
@@ -74,7 +73,7 @@ namespace MonoDevelop.CSharp.Completion
 			return left.Parameters.Count - right.Parameters.Count;
 		}
 		
-		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (TextEditorData editor, TypeResolveResult resolveResult)
 		{
 			HashSet<string> alreadyAdded = new HashSet<string> ();
 			if (resolveResult.CallingType != null) {
@@ -293,7 +292,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			if (curParameter != null) {
-				var returnType = curParameter.DeclaringMember.SourceProjectDom.GetType (curParameter.ReturnType);
+				var returnType = curParameter.DeclaringMember.GetProjectContent ().GetType (curParameter.ReturnType);
 				if (returnType != null && returnType.ClassType == ClassType.Delegate) {
 					sb.AppendLine ();
 					sb.AppendLine ();

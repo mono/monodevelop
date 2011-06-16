@@ -29,8 +29,8 @@ using GLib;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.Inspection;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.AnalysisCore.Fixes;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {

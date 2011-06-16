@@ -27,7 +27,6 @@ using System;
 using System.Linq;
 using System.Text;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Projects.Policies;

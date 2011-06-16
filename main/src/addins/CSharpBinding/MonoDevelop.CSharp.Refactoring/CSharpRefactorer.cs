@@ -157,11 +157,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			Regex expr;
 			string txt;
 			foreach (IType pclass in cls.Parts) {
-				if (pclass.BodyRegion.IsEmpty || (file = ctx.GetFile (pclass.CompilationUnit.FileName)) == null)
+				if (pclass.BodyRegion.IsEmpty || (file = ctx.GetFile (pclass.GetDefinition ().Region.FileName)) == null)
 					continue;
 				
-				begin = file.GetPositionFromLineColumn (pclass.BodyRegion.Start.Line, pclass.BodyRegion.Start.Column);
-				end = file.GetPositionFromLineColumn (pclass.BodyRegion.End.Line, pclass.BodyRegion.End.Column);
+				begin = file.GetPositionFromLineColumn (pclass.BodyRegion.BeginLine, pclass.BodyRegion.BeginColumn);
+				end = file.GetPositionFromLineColumn (pclass.BodyRegion.EndLine, pclass.BodyRegion.EndColumn);
 				
 				if (begin == -1 || end == -1)
 					continue;
@@ -193,12 +193,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				file.InsertText (pos, newName);
 			}
 			
-			file = ctx.GetFile (cls.CompilationUnit.FileName);
+			file = ctx.GetFile (cls.GetDefinition ().Region.FileName);
 			
 			return GetGeneratedClass (ctx, file, cls);
 		}
 		
-		public override DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation)
+		public override AstLocation CompleteStatement (RefactorerContext ctx, string fileName, AstLocation caretLocation)
 		{
 			IEditableTextFile file = ctx.GetFile (fileName);
 			int pos = file.GetPositionFromLineColumn (caretLocation.Line + 1, 1);
@@ -257,7 +257,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				
 				if (lastUsing != null)
-					pos = file.GetPositionFromLineColumn (lastUsing.Region.End.Line, lastUsing.Region.End.Column);
+					pos = file.GetPositionFromLineColumn (lastUsing.Region.EndLine, lastUsing.Region.EndColumn);
 			}
 			
 			if (pos != 0)
@@ -279,7 +279,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		public override void AddLocalNamespaceImport (RefactorerContext ctx, string fileName, string nsName, DomLocation caretLocation)
+		public override void AddLocalNamespaceImport (RefactorerContext ctx, string fileName, string nsName, AstLocation caretLocation)
 		{
 			IEditableTextFile file = ctx.GetFile (fileName);
 			int pos = 0;
@@ -295,7 +295,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				
 				if (containingUsing != null) {
-					indent = GetLineIndent (file, containingUsing.Region.Start.Line);
+					indent = GetLineIndent (file, containingUsing.Region.BeginLine);
 					
 					IUsing lastUsing = null;
 					foreach (IUsing u in parsedDocument.CompilationUnit.Usings) {
@@ -309,9 +309,9 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 					
 					if (lastUsing != null) {
-						pos = file.GetPositionFromLineColumn (lastUsing.Region.End.Line, lastUsing.Region.End.Column);
+						pos = file.GetPositionFromLineColumn (lastUsing.Region.EndLine, lastUsing.Region.EndColumn);
 					} else {
-						pos = file.GetPositionFromLineColumn (containingUsing.ValidRegion.Start.Line, containingUsing.ValidRegion.Start.Column);
+						pos = file.GetPositionFromLineColumn (containingUsing.ValidRegion.BeginLine, containingUsing.ValidRegion.BeginColumn);
 						// search line end
 						while (pos < file.Length) {
 							char ch = file.GetCharAt (pos);
@@ -427,7 +427,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls, bool includeXmlComment)
 		{
 			var editor = ((Mono.TextEditor.ITextEditorDataProvider)ctx.GetFile (fileName)).GetTextEditorData ();
-			var doc = ProjectDomService.GetParsedDocument (ctx.ParserContext, fileName);
+			var doc = TypeSystemService.GetParsedDocument (ctx.ParserContext, fileName);
 			if (doc == null || doc.CompilationUnit == null)
 				return null;
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
@@ -441,8 +441,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		protected override int GetVariableNamePosition (IEditableTextFile file, LocalVariable var)
 		{
-			int begin = file.GetPositionFromLineColumn (var.Region.Start.Line, var.Region.Start.Column);
-			int end = file.GetPositionFromLineColumn (var.Region.Start.Line, var.Region.End.Column);
+			int begin = file.GetPositionFromLineColumn (var.Region.BeginLine, var.Region.BeginColumn);
+			int end = file.GetPositionFromLineColumn (var.Region.BeginLine, var.Region.EndColumn);
 			
 			if (begin == -1 || end == -1)
 				return -1;
@@ -468,8 +468,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		protected override int GetParameterNamePosition (IEditableTextFile file, IParameter param)
 		{
 			IMember member = param.DeclaringMember;
-			int begin = file.GetPositionFromLineColumn (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
-			int end = file.GetPositionFromLineColumn (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+			int begin = file.GetPositionFromLineColumn (member.BodyRegion.BeginLine, member.BodyRegion.BeginColumn);
+			int end = file.GetPositionFromLineColumn (member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
 			
 			if (begin == -1 || end == -1)
 				return -1;
@@ -533,8 +533,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		protected override int GetMemberNamePosition (IEditableTextFile file, IMember member)
 		{
-			int begin = file.GetPositionFromLineColumn (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
-			int end = file.GetPositionFromLineColumn (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+			int begin = file.GetPositionFromLineColumn (member.BodyRegion.BeginLine, member.BodyRegion.BeginColumn);
+			int end = file.GetPositionFromLineColumn (member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
 			
 			if (begin == -1 || end == -1)
 				return -1;
@@ -640,8 +640,8 @@ namespace MonoDevelop.CSharp.Refactoring
 					file.GetLineColumnFromPosition (pos, out lineEnd, out colEnd);
 				} else {
 					// No fields after this...
-					colEnd = field.BodyRegion.End.Column - 1;  // don't include the ';'
-					lineEnd = field.BodyRegion.End.Line;
+					colEnd = field.BodyRegion.EndColumn - 1;  // don't include the ';'
+					lineEnd = field.BodyRegion.EndLine;
 				}
 			} else if (nextField != null  && nextField.Location.CompareTo (field.Location) == 0) {
 				// Field has other fields declared after it in the same statement
@@ -663,7 +663,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var editor = ((Mono.TextEditor.ITextEditorDataProvider)ctx.GetFile (fileName)).GetTextEditorData ();
 			
-			var doc = ProjectDomService.GetParsedDocument (ctx.ParserContext, fileName);
+			var doc = TypeSystemService.GetParsedDocument (ctx.ParserContext, fileName);
 			if (doc == null || doc.CompilationUnit == null)
 				return null;
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
@@ -704,11 +704,11 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override int AddFoldingRegion (RefactorerContext ctx, IType cls, string regionName)
 		{
-			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
+			IEditableTextFile buffer = ctx.GetFile (cls.GetDefinition ().Region.FileName);
 			int pos = GetNewMethodPosition (buffer, cls);
 			string eolMarker = Environment.NewLine;
-			if (cls.SourceProject != null) {
-				TextStylePolicy policy = cls.SourceProject.Policies.Get<TextStylePolicy> ();
+			if (cls.GetSourceProject () != null) {
+				TextStylePolicy policy = cls.GetSourceProject ().Policies.Get<TextStylePolicy> ();
 				if (policy != null)
 					eolMarker = policy.GetEolMarker ();
 			}

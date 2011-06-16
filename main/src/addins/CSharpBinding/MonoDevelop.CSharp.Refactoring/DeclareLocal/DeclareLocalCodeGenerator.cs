@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 				expressionResult.Expression = "(" + expressionResult.Expression + ")";
 			
 			var endPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Lead : data.MainSelection.Anchor; 
-			options.ResolveResult = resolver.Resolve (expressionResult, new DomLocation (endPoint.Line, endPoint.Column));
+			options.ResolveResult = resolver.Resolve (expressionResult, new AstLocation (endPoint.Line, endPoint.Column));
 			
 			if (options.ResolveResult == null)
 				return false;
@@ -226,7 +226,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 				LoggingService.LogError ("Declare local error: parese file == null");
 				return result;
 			}
-			var visitor = new VariableLookupVisitor (resolver, new DomLocation (endPoint.Line, endPoint.Column));
+			var visitor = new VariableLookupVisitor (resolver, new AstLocation (endPoint.Line, endPoint.Column));
 			if (options.ResolveResult == null) {
 				LoggingService.LogError ("Declare local error: resolve result == null");
 				return result;
@@ -239,7 +239,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			ExpressionResult expressionResult = new ExpressionResult (data.SelectedText.Trim ());
 			if (expressionResult.Expression.Contains (" ") || expressionResult.Expression.Contains ("\t"))
 				expressionResult.Expression = "(" + expressionResult.Expression + ")";
-			resolveResult = resolver.Resolve (expressionResult, new DomLocation (endPoint.Line, endPoint.Column));
+			resolveResult = resolver.Resolve (expressionResult, new AstLocation (endPoint.Line, endPoint.Column));
 			if (resolveResult == null)
 				return result;
 			IReturnType resolvedType = GetResolvedType (options, resolveResult); 
@@ -497,13 +497,13 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		}
 		
 		IResolver resolver;
-		DomLocation position;
+		AstLocation position;
 		public DomRegion CutRegion {
 			get;
 			set;
 		}
 		
-		public VariableLookupVisitor (IResolver resolver, DomLocation position)
+		public VariableLookupVisitor (IResolver resolver, AstLocation position)
 		{
 			this.resolver = resolver;
 			this.position = position;

@@ -3227,7 +3227,7 @@
 	  visitor so it can collect comments.
 
 	* Gui/CompilerOptionsPanelWidget.cs: Don't explode when
-	  ProjectDom is null.
+	  ITypeResolveContext is null.
 
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 

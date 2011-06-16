@@ -34,8 +34,6 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Text;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -47,7 +45,6 @@ using ICSharpCode.OldNRefactory.Parser;
 using ICSharpCode.OldNRefactory.Ast;
 using ICSharpCode.OldNRefactory;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Completion;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 

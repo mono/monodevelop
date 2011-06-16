@@ -35,9 +35,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
 
 using MonoDevelop.CSharp.Formatting;
@@ -45,7 +42,9 @@ using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.CSharp.Resolver;
-using MonoDevelop.CSharp.Completion;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -112,9 +111,9 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null && Document != null) {
 				//	textEditorData.Document.TextReplaced -= TextCut;
-				ProjectDom dom = Document.Dom;
-				DocumentLocation loc = textEditorData.Document.OffsetToLocation (offset);
-				DomLocation location = new DomLocation (loc.Line, loc.Column);
+				var dom = Document.TypeResolveContext;
+				var loc = textEditorData.Document.OffsetToLocation (offset);
+				var location = new AstLocation (loc.Line, loc.Column);
 				//	CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
 				OnTheFlyFormatter.Format (Document, dom, location);
 				//	textEditorData.Document.TextReplaced += TextCut;
@@ -166,14 +165,14 @@ namespace MonoDevelop.CSharp.Formatting
 		#region Sharing the tracker
 
 		void InitTracker ()
-		{
-			//if there's a CSharpTextEditorCompletion in the extension chain, we can reuse its stateTracker
-			CSharpTextEditorCompletion c = this.Document.GetContent<CSharpTextEditorCompletion> ();
-			if (c != null && c.StateTracker != null) {
-				stateTracker = c.StateTracker;
-			} else {
+		{ // TODO: Type system conversion
+//			//if there's a CSharpTextEditorCompletion in the extension chain, we can reuse its stateTracker
+//			CSharpTextEditorCompletion c = this.Document.GetContent<CSharpTextEditorCompletion> ();
+//			if (c != null && c.StateTracker != null) {
+//				stateTracker = c.StateTracker;
+//			} else {
 				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData);
-			}
+//			}
 		}
 
 		internal DocumentStateTracker<CSharpIndentEngine> StateTracker { get { return stateTracker; } }
@@ -516,11 +515,9 @@ namespace MonoDevelop.CSharp.Formatting
 			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
 				textEditorData.Paste -= TextEditorDataPaste;
 				//		textEditorData.Document.TextReplaced -= TextCut;
-				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
-				if (dom == null)
-					dom = ProjectDomService.GetFileDom (Document.FileName);
-
-				DomLocation location = new DomLocation (textEditorData.Caret.Location.Line + (lastCharInserted == '\n' ? -1 : 0), textEditorData.Caret.Location.Column);
+				
+				var dom = Document.TypeResolveContext;
+				AstLocation location = new AstLocation (textEditorData.Caret.Location.Line + (lastCharInserted == '\n' ? -1 : 0), textEditorData.Caret.Location.Column);
 				//				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
 				OnTheFlyFormatter.Format (Document, dom, location, lastCharInserted == '\n');
 
@@ -574,7 +571,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public void FormatBuffer ()
 		{
 			Console.WriteLine ("format buffer!");
-			ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
+			ITypeResolveContext dom = TypeSystemService.GetProjectDom (Document.Project);
 			OnTheFlyFormatter.Format (this.textEditorData, dom);
 		}*/
 	}

@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			IncludeDocumentation = true;
 		}
 
-		public override IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, IEnumerable<INode> searchedMembers)
+		public override IEnumerable<MemberReference> FindReferences (ITypeResolveContext dom, FilePath fileName, IEnumerable<INode> searchedMembers)
 		{
 			HashSet<int > positions = new HashSet<int> ();
 			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);
@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (!visitor.FileContainsMemberName ()) {
 				yield break;
 			}
-			var doc = ProjectDomService.ParseFile (dom, fileName, () => editor.Text);
+			var doc = TypeSystemService.ParseFile (dom, fileName, () => editor.Text);
 			if (doc == null || doc.CompilationUnit == null)
 				yield break;
 			var resolver = new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);

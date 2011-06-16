@@ -95,7 +95,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpTextEditorCompletion" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 	</Extension>
@@ -110,7 +111,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class id = "C#" class = "MonoDevelop.CSharp.CSharpAmbience" />
+		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

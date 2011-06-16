@@ -420,7 +420,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("public ");
 				} else if (member.IsProtectedAndInternal) {
 					result.Append ("protected internal ");
-				} else if (member.IsProtectedOrInternal && (member.DeclaringType != null && implementingType.SourceProjectDom == member.DeclaringType.SourceProjectDom)) {
+				} else if (member.IsProtectedOrInternal && (member.DeclaringType != null && implementingType.GetProjectContent () == member.DeclaringType.GetProjectContent ())) {
 					result.Append ("internal protected ");
 				} else if (member.IsProtected) {
 					result.Append ("protected ");
@@ -445,7 +445,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface) {
 					isFromInterface = true;
 					if (options.ImplementingType != null) {
-						foreach (IType type in options.ImplementingType.SourceProjectDom.GetInheritanceTree (options.ImplementingType)) {
+						foreach (IType type in options.ImplementingType.GetProjectContent ().GetInheritanceTree (options.ImplementingType)) {
 							if (type.ClassType == ClassType.Interface)
 								continue;
 							if (type.SearchMember (member.Name, true).Any (m => m.Name == member.Name && member.MemberType == m.MemberType && DomMethod.ParameterListEquals (member.Parameters, m.Parameters))) {

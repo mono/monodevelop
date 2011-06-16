@@ -37,18 +37,16 @@ using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
 using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.ContextAction;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -119,7 +117,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditorData data, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
+			TextEditorData data, IType type, IMember member, ITypeResolveContext dom, IParsedFile unit, AstLocation caretLocation)
 		{
 			//		OnTheFlyFormatter.Format (policyParent, mimeTypeChain, data, dom, caretLocation, true);
 		}

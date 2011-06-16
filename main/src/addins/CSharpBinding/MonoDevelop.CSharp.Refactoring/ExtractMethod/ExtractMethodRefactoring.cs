@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			
 			ExtractMethodParameters param = new ExtractMethodParameters () {
 				DeclaringMember = member,
-				Location = new DomLocation (buffer.Caret.Line, buffer.Caret.Column)
+				Location = new AstLocation (buffer.Caret.Line, buffer.Caret.Column)
 			};
 			Analyze (options, param, true);
 			return param;
@@ -156,7 +156,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				set;
 			}
 			
-			public DomLocation Location {
+			public AstLocation Location {
 				get;
 				set;
 			}
@@ -315,8 +315,8 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				// analyze the variables outside of the selected text
 				IMember member = param.DeclaringMember;
 			
-				int bodyStartOffset = data.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
-				int bodyEndOffset = data.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+				int bodyStartOffset = data.Document.LocationToOffset (member.BodyRegion.BeginLine, member.BodyRegion.BeginColumn);
+				int bodyEndOffset = data.Document.LocationToOffset (member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
 				if (startOffset < bodyStartOffset || bodyEndOffset < endOffset)
 					return false;
 				text = data.Document.GetTextBetween (bodyStartOffset, startOffset) + data.Document.GetTextBetween (endOffset, bodyEndOffset);
@@ -472,7 +472,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			IType callingType = null;
 			var cu = options.Document.CompilationUnit;
 			if (cu != null)
-				callingType = newMethod.DeclaringType = options.Document.CompilationUnit.GetTypeAt (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+				callingType = newMethod.DeclaringType = options.Document.GetType (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
 				
 			var createdMethod = codeGenerator.CreateMemberImplementation (callingType, newMethod, false);
 
@@ -568,7 +568,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
 			node.AcceptVisitor (transformer, null);
 			if (!param.OneChangedVariable && node is Expression) {
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new AstLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
 				if (resolveResult.ResolvedType != null)
 					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 			}

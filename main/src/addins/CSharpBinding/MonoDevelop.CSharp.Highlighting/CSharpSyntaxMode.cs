@@ -35,14 +35,15 @@ using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -57,6 +58,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 	}		
 
+	
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
 		public bool DisableConditionalHighlighting {
@@ -197,8 +199,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			HashSet<string> tags = new HashSet<string> ();
 			MonoDevelop.Ide.Gui.Document document;
 			static HashSet<string> contextualKeywords = new HashSet<string> ();
-			NRefactoryResolver resolver;
-
 			
 			static CSharpChunkParser ()
 			{
@@ -216,37 +216,59 @@ namespace MonoDevelop.CSharp.Highlighting
 				contextualKeywords.Add ("partial");
 			}
 			
+			sealed class SemanticResolveVisitorNavigator : IResolveVisitorNavigator
+			{
+				readonly Dictionary<AstNode, ResolveVisitorNavigationMode> dict = new Dictionary<AstNode, ResolveVisitorNavigationMode> ();
+				
+				public void AddNode (AstNode node)
+				{
+					dict [node] = ResolveVisitorNavigationMode.Resolve;
+					for (var ancestor = node.Parent; ancestor != null && !dict.ContainsKey(ancestor); ancestor = ancestor.Parent) {
+						dict.Add (ancestor, ResolveVisitorNavigationMode.Scan);
+					}
+				}
+				
+				public ResolveVisitorNavigationMode Scan (AstNode node)
+				{
+					ResolveVisitorNavigationMode mode;
+					if (dict.TryGetValue (node, out mode)) {
+						return mode;
+					} else {
+						return ResolveVisitorNavigationMode.Skip;
+					}
+				}
+				
+				public void Reset ()
+				{
+					dict.Clear ();
+				}
+			}
+			
 			public CSharpChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, ColorSheme style, SyntaxMode mode, LineSegment line) : base (spanParser, doc, style, mode, line)
 			{
 				document = IdeApp.Workbench.GetDocument (doc.FileName);
 				
-				foreach (var tag in ProjectDomService.SpecialCommentTags) {
+				foreach (var tag in TaskService.SpecialCommentTags) {
 					tags.Add (tag.Tag);
 				}
 				
-				ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = null;
-				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
-					resolver = document.GetResolver ();
-					if (!document.ParsedDocument.TryGetTag (out unit)) {
-						try {
-							using (ICSharpCode.OldNRefactory.IParser parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, document.Editor.Document.OpenTextReader ())) {
-								parser.Parse ();
-								unit = parser.CompilationUnit;
-								document.ParsedDocument.SetTag (unit);
-							}
-						} catch (Exception) {
-							resolver = null;
-							return;
-						}
+				if (document != null && document.ParsedFile != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
+					if (document.ParsedFile.Annotation <ResolveVisitor> () == null) {
+						var resolver = new CSharpResolver (document.TypeResolveContext, System.Threading.CancellationToken.None);
+						var navi    = new SemanticResolveVisitorNavigator ();
+						var visitor = new ResolveVisitor (resolver, document.ParsedFile.Annotation <ParsedFile> (), navi);
+						document.ParsedFile.AddAnnotation (navi);
+						document.ParsedFile.AddAnnotation (visitor);
 					}
-					resolver.SetupParsedCompilationUnit (unit);
 				}
 			}
 			
 			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
 			{
-				var unit = parsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
-				if (unit == null)
+				var unit = parsedDocument.Annotation<CompilationUnit> ();
+				var visitor = document.ParsedFile.Annotation<ResolveVisitor> ();
+				var navi = document.ParsedFile.Annotation<SemanticResolveVisitorNavigator> ();
+				if (unit == null || visitor == null)
 					return null;
 				
 				var loc = doc.OffsetToLocation (chunk.Offset);
@@ -310,14 +332,17 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					var identifierExpression = unit.GetNodeAt<IdentifierExpression> (loc.Line, loc.Column);
 					if (identifierExpression != null) {
-						var result = identifierExpression.ResolveExpression (document, resolver, loc);
+						navi.AddNode (identifierExpression);
+						unit.AcceptVisitor (visitor, null);
+						var result = visitor.VisitIdentifierExpression (identifierExpression, null);
+						navi.Reset ();
 						if (result is MemberResolveResult) {
-							var member = ((MemberResolveResult)result).ResolvedMember;
+							var member = ((MemberResolveResult)result).Member;
 							if (member is IField) {
 								endOffset = doc.LocationToOffset (identifierExpression.EndLocation.Line, identifierExpression.EndLocation.Column);
 								return "keyword.semantic.field";
 							}
-							if (member == null && result.ResolvedType != null && !string.IsNullOrEmpty (result.ResolvedType.FullName)) {
+							if (member == null && !result.IsError) {
 								endOffset = doc.LocationToOffset (identifierExpression.EndLocation.Line, identifierExpression.EndLocation.Column);
 								return "keyword.semantic.type";
 							}
@@ -329,14 +354,17 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (!memberReferenceExpression.MemberNameToken.Contains (loc.Line, loc.Column)) 
 							return null;
 						
-						var result = memberReferenceExpression.ResolveExpression (document, resolver, loc);
+						navi.AddNode (memberReferenceExpression);
+						unit.AcceptVisitor (visitor, null);
+						var result = memberReferenceExpression.AcceptVisitor (visitor, null);
+						navi.Reset ();
 						if (result is MemberResolveResult) {
-							var member = ((MemberResolveResult)result).ResolvedMember;
+							var member = ((MemberResolveResult)result).Member;
 							if (member is IField) {
 								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
 								return "keyword.semantic.field";
 							}
-							if (member == null && result.ResolvedType != null && !string.IsNullOrEmpty (result.ResolvedType.FullName)) {
+							if (member == null && !result.IsError) {
 								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
 								return "keyword.semantic.type";
 							}
@@ -348,7 +376,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			protected override void AddRealChunk (Chunk chunk)
 			{
-				var parsedDocument = document != null ? document.ParsedDocument : null;
+				var parsedDocument = document != null ? document.ParsedFile : null;
 				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
 					int endLoc = -1;
 					string semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
@@ -406,15 +434,16 @@ namespace MonoDevelop.CSharp.Highlighting
 						}
 					}
 					
-					var dom = ProjectDomService.GetProjectDom (project);
-					var parsedDocument = ProjectDomService.GetParsedDocument (dom, doc.FileName);
+					var dom = TypeSystemService.GetProjectContext (project);
+					var parsedDocument = TypeSystemService.ParseFile (dom, doc.FileName, doc.MimeType, doc.Text);
 /*					if (parsedDocument == null)
-						parsedDocument = ProjectDomService.ParseFile (dom, doc.FileName ?? "a.cs", delegate { return doc.Text; });*/
+						parsedDocument = TypeSystemService.ParseFile (dom, doc.FileName ?? "a.cs", delegate { return doc.Text; });
 					if (parsedDocument != null) {
 						foreach (PreProcessorDefine define in parsedDocument.Defines) {
 							symbols.Add (define.Define);
 						}
-					}
+						
+					}*/
 				}
 				
 				public override object VisitIdentifierExpression (ICSharpCode.OldNRefactory.Ast.IdentifierExpression identifierExpression, object data)

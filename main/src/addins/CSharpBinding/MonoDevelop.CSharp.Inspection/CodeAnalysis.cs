@@ -27,7 +27,6 @@
 using System;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.CSharp;
@@ -53,12 +52,6 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public CallGraph Graph { get; set; }
 		public Document Document { get; set; }
-		
-		public MonoDevelop.CSharp.Resolver.NRefactoryResolver Resolver {
-			get {
-				return Document.GetResolver ();
-			}
-		}
 		
 		public void Add (Result result)
 		{
@@ -91,14 +84,15 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public static IEnumerable<Result> Check (Document input)
 		{
-			var unit = input != null ? input.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit : null;
+			var unit = input != null ? input.ParsedFile : null;
 			if (unit == null)
 				return Enumerable.Empty<Result> ();
 				
 			var cg = new CallGraph ();
-			cg.Inspect (input, input.GetResolver (), unit);
+			// TODO: Type system conversion
+//			cg.Inspect (input, input.GetResolver (), unit);
 			var data = new InspectionData () { Graph = cg, Document = input };
-			unit.AcceptVisitor (visitor, data);
+//			unit.AcceptVisitor (visitor, data);
 			return data.Results;
 		}
 	}

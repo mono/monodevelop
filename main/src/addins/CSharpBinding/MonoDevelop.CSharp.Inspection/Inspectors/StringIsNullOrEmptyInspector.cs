@@ -29,7 +29,7 @@ using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -130,7 +130,7 @@ namespace MonoDevelop.CSharp.Inspection
 				foreach (var match in NegatedMatches) {
 					if (match.IsMatch (binOp) && ComparesEqualNodes (binOp)) {
 						AddResult (data,
-							new DomRegion (binOp.StartLocation.Line, binOp.StartLocation.Column, binOp.EndLocation.Line, binOp.EndLocation.Column),
+							new DomRegion (binOp.StartLocation, binOp.EndLocation),
 							GettextCatalog.GetString ("Use string.IsNullOrEmpty"),
 							delegate {
 								Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
