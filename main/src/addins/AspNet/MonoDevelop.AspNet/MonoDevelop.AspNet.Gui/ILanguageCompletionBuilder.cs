@@ -30,9 +30,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser;
@@ -43,6 +40,9 @@ using S = MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
 using System.Text;
 using Mono.TextEditor;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -95,8 +95,8 @@ namespace MonoDevelop.AspNet.Gui
 	/// </summary>
 	public class DocumentInfo
 	{
-		public DocumentInfo (ProjectDom dom, AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports,
-		                     IList<ProjectDom> references)
+		public DocumentInfo (ITypeResolveContext dom, AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports,
+		                     IList<ITypeResolveContext> references)
 		{
 			this.Dom = dom;
 			this.AspNetDocument = aspNetParsedDocument;
@@ -109,12 +109,12 @@ namespace MonoDevelop.AspNet.Gui
 		
 		IType codeBesideClass;
 		
-		public ProjectDom Dom { get; private set; }
+		public ITypeResolveContext Dom { get; private set; }
 		public AspNetParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
 		public List<ExpressionNode> Expressions { get; private set; }
 		public List<TagNode> ScriptBlocks { get; private set; }
-		public IList<ProjectDom> References { get; set; }
+		public IList<ITypeResolveContext> References { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
 		
 		public IType CodeBesideClass { get; set; }

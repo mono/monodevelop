@@ -31,22 +31,19 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.AspNet.StateEngine;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Html
 {
-	
-	
-	public class HtmlParser : AbstractParser
+	public class HtmlParser : AbstractTypeSystemProvider
 	{
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
+		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
 		{
-			XmlParsedDocument doc = new XmlParsedDocument (fileName);
-			doc.Flags = ParsedDocumentFlags.NonSerializable;
+			var doc = new XmlParsedDocument (fileName);
+//			doc.Flags = ParsedDocumentFlags.NonSerializable;
 			
-			TextReader tr = new StringReader (fileContent);
 			try {
 				Parser xmlParser = new Parser (
 					new XmlFreeState (new HtmlTagState (true), new HtmlClosingTagState (true)),
@@ -61,11 +58,6 @@ namespace MonoDevelop.Html
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing HTML document", ex);
 			}
-			finally {
-				if (tr != null)
-					tr.Dispose ();
-			}
-			
 			return doc;
 		}
 		

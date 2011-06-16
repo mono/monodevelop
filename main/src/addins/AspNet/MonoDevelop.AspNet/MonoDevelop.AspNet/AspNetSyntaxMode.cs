@@ -106,8 +106,8 @@ namespace MonoDevelop.AspNet
 			string GetDefaultMime ()
 			{
 				var ideDocument = doc.Tag as MonoDevelop.Ide.Gui.Document;
-				if (ideDocument != null && ideDocument.ParsedDocument != null) {
-					var parsedDocument = ideDocument.ParsedDocument as AspNetParsedDocument;
+				if (ideDocument != null && ideDocument.ParsedFile != null) {
+					var parsedDocument = ideDocument.ParsedFile as AspNetParsedDocument;
 					if (parsedDocument != null)
 						return GetMimeForLanguage (parsedDocument.Info.Language) ?? "text/x-csharp";
 				}

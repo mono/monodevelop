@@ -29,66 +29,64 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.AspNet.Parser.Dom;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	public class AspNetParser : AbstractParser
+	public class AspNetParser : AbstractTypeSystemProvider
 	{
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
+		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
 		{
-			using (var tr = new StringReader (fileContent)) {
 				var info = new PageInfo ();
-				var rootNode = new RootNode ();
-				var errors = new List<Error> ();
-				
-				try {
-					rootNode.Parse (fileName, tr);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
-					errors.Add (new Error (ErrorType.Error, 0, 0, "Unhandled error parsing ASP.NET document: " + ex.Message));
-				}
-				
-				
-				foreach (var pe in rootNode.ParseErrors)
-					errors.Add (new Error (ErrorType.Error, pe.Location.BeginLine, pe.Location.BeginColumn, pe.Message));
-				
-				info.Populate (rootNode, errors);
-				
-				var type = AspNetAppProject.DetermineWebSubtype (fileName);
-				if (type != info.Subtype) {
-					if (info.Subtype == WebSubtype.None) {
-						errors.Add (new Error (ErrorType.Error, 1, 1, "File directive is missing"));
-					} else {
-						type = info.Subtype;
-						errors.Add (new Error (ErrorType.Warning, 1, 1, "File directive does not match page extension"));
-					}
-				}
-				
-				var result = new AspNetParsedDocument (fileName, type, rootNode, info);
-				result.Add (errors);
-								
-				/*
-				if (MonoDevelop.Core.LoggingService.IsLevelEnabled (MonoDevelop.Core.Logging.LogLevel.Debug)) {
-					DebugStringVisitor dbg = new DebugStringVisitor ();
-					rootNode.AcceptVisit (dbg);
-					System.Text.StringBuilder sb = new System.Text.StringBuilder ();
-					sb.AppendLine ("Parsed AspNet file:");
-					sb.AppendLine (dbg.DebugString);
-					if (errors.Count > 0) {
-						sb.AppendLine ("Errors:");
-						foreach (ParserException ex in errors)
-							sb.AppendLine (ex.ToString ());
-					}
-					MonoDevelop.Core.LoggingService.LogDebug (sb.ToString ());
-				}*/
-				
-				return result;
+			var rootNode = new RootNode ();
+			var errors = new List<Error> ();
+			
+			try {
+				rootNode.Parse (fileName, tr);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
+				errors.Add (new Error (ErrorType.Error, 0, 0, "Unhandled error parsing ASP.NET document: " + ex.Message));
 			}
+			
+			
+			foreach (var pe in rootNode.ParseErrors)
+				errors.Add (new Error (ErrorType.Error, pe.Location.BeginLine, pe.Location.BeginColumn, pe.Message));
+			
+			info.Populate (rootNode, errors);
+			
+			var type = AspNetAppProject.DetermineWebSubtype (fileName);
+			if (type != info.Subtype) {
+				if (info.Subtype == WebSubtype.None) {
+					errors.Add (new Error (ErrorType.Error, 1, 1, "File directive is missing"));
+				} else {
+					type = info.Subtype;
+					errors.Add (new Error (ErrorType.Warning, 1, 1, "File directive does not match page extension"));
+				}
+			}
+			
+			var result = new AspNetParsedDocument (fileName, type, rootNode, info);
+			result.Add (errors);
+							
+			/*
+			if (MonoDevelop.Core.LoggingService.IsLevelEnabled (MonoDevelop.Core.Logging.LogLevel.Debug)) {
+				DebugStringVisitor dbg = new DebugStringVisitor ();
+				rootNode.AcceptVisit (dbg);
+				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+				sb.AppendLine ("Parsed AspNet file:");
+				sb.AppendLine (dbg.DebugString);
+				if (errors.Count > 0) {
+					sb.AppendLine ("Errors:");
+					foreach (ParserException ex in errors)
+						sb.AppendLine (ex.ToString ());
+				}
+				MonoDevelop.Core.LoggingService.LogDebug (sb.ToString ());
+			}*/
+			
+			return result;
 		}
 		
 		internal void AddError (ErrorType type, ILocation location, string message)

@@ -37,12 +37,12 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.DesignerSupport;
 
 using MonoDevelop.AspNet.Parser;
 using System.CodeDom;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.AspNet
 {
@@ -62,7 +62,7 @@ namespace MonoDevelop.AspNet
 		{
 			errors.Add (new CodeBehindWarning (GettextCatalog.GetString (
 					"Parser failed with error {0}. CodeBehind members for this file will not be added.", err.Message),
-					document.FileName, err.Region.Start.Line, err.Region.Start.Column));
+					document.FileName, err.Region.BeginLine, err.Region.BeginColumn));
 		}
 		
 		public static System.CodeDom.CodeCompileUnit GenerateCodeBehind (AspNetAppProject project,
@@ -118,7 +118,7 @@ namespace MonoDevelop.AspNet
 					ProjectFile resolvedMaster = project.ResolveVirtualPath (document.Info.MasterPageTypeVPath, document.FileName);
 					AspNetParsedDocument masterParsedDocument = null;
 					if (resolvedMaster != null)
-						masterParsedDocument = ProjectDomService.Parse (project, resolvedMaster.FilePath) as AspNetParsedDocument;
+						masterParsedDocument = TypeSystemService.ParseFile (project, resolvedMaster.FilePath) as AspNetParsedDocument;
 					if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.Info.InheritedClass)) {
 						masterTypeName = masterParsedDocument.Info.InheritedClass;
 					} else {
@@ -154,8 +154,8 @@ namespace MonoDevelop.AspNet
 			if (memberList.Members.Count == 0)
 				return ccu;
 			
-			var dom = refman.TypeCtx.ProjectDom;
-			var cls = dom.GetType (className);
+			var dom = refman.TypeCtx.TypeResolveContext;
+			var cls = dom.GetClass ("", className, 0, StringComparer.Ordinal);
 			var members = GetDesignerMembers (memberList.Members.Values, cls, filename, dom, dom);
 			
 			//add fields for each control in the page
@@ -171,26 +171,26 @@ namespace MonoDevelop.AspNet
 		/// <param name="members">Full list of CodeBehind members</param>
 		/// <param name="cls">The class to which these members' partial class will be added.</param>
 		/// <param name="designerFile">Members in this file will be ignored.</param>
-		/// <param name="resolveDom">The ProjectDom to use for resolving base types.</param>
-		/// <param name="internalDom">The ProjectDom to use for checking whether members are accessible as internal.</param>
+		/// <param name="resolveDom">The ITypeResolveContext to use for resolving base types.</param>
+		/// <param name="internalDom">The ITypeResolveContext to use for checking whether members are accessible as internal.</param>
 		/// <returns>The filtered list of non-conflicting members.</returns>
 		// TODO: check compatibilty with existing members
 		public static IEnumerable<CodeBehindMember> GetDesignerMembers (
-			IEnumerable<CodeBehindMember> members, IType cls, string designerFile, ProjectDom resolveDom,
-			ProjectDom internalDom)
+			IEnumerable<CodeBehindMember> members, IType cls, string designerFile, ITypeResolveContext resolveDom,
+			ITypeResolveContext internalDom)
 		{
 			var existingMembers = new HashSet<string> ();
 			while (cls != null) {
-				foreach (var member in cls.Members) {
-					if (member.IsPrivate || (member.IsInternal && member.DeclaringType.SourceProjectDom != internalDom))
+				foreach (var member in cls.GetDefinition ().Members) {
+					if (member.Accessibility == Accessibility.Private || (member.Accessibility == Accessibility.Internal && member.DeclaringType.GetProjectContent () != internalDom))
 					    continue;
-					if (member.DeclaringType.CompilationUnit.FileName == designerFile)
+					if (member.DeclaringType.GetDefinition ().Region.FileName == designerFile)
 						continue;
 					existingMembers.Add (member.Name);
 				}
-				if (cls.BaseType == null)
+				if (!cls.GetBaseTypes (internalDom).Any ())
 					break;
-				cls = resolveDom.GetType (cls.BaseType);
+				cls = cls.GetBaseTypes (internalDom).First ();
 			}
 			return members.Where (m => !existingMembers.Contains (m.Name));
 		}

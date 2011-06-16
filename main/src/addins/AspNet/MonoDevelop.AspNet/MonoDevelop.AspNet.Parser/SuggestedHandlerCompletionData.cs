@@ -31,8 +31,8 @@ using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.DesignerSupport;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {

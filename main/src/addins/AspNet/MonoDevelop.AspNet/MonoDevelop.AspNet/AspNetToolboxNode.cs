@@ -37,6 +37,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet
 {
@@ -123,20 +124,20 @@ namespace MonoDevelop.AspNet
 			//FIXME: only do this on the insert, not the preview - or remove it afterwards
 			RegisterReference (document.Project);
 			
-			var database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (document.Project);
+			var database = document.TypeResolveContext;
 			
-			var cls = database.GetType (Type.TypeName);
+			var cls = database.GetClass (Type.Load ());
 			if (cls == null)
 				return tag;
 			
-			var doc = document.ParsedDocument as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
+			var doc = document.ParsedFile as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 			if (doc == null)
 				return tag;
 			
 			var assemName = SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
 			
 			var refMan = new DocumentReferenceManager ((AspNetAppProject)document.Project) {
-				Doc = doc,
+				Doc = doc
 			};
 			
 			RegisterDirective directive;

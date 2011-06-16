@@ -29,8 +29,9 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -85,15 +86,15 @@ namespace MonoDevelop.AspNet.Gui
 		
 		void SelectNode (XNode n)
 		{
-			MonoDevelop.Projects.Dom.DomRegion region = n.Region;
+			var region = n.Region;
 			
 			XElement el = n as XElement;
 			if (el != null && el.IsClosed && el.ClosingTag.Region.End > region.End) {
-				region.End = el.ClosingTag.Region.End;
+				region = new DomRegion (region.Begin, el.ClosingTag.Region.End);
 			}
 			
-			int s = Editor.Document.LocationToOffset (region.Start.Line, region.Start.Column );
-			int e = Editor.Document.LocationToOffset (region.End.Line, region.End.Column);
+			int s = Editor.Document.LocationToOffset (region.BeginLine, region.BeginColumn );
+			int e = Editor.Document.LocationToOffset (region.EndLine, region.EndColumn);
 			if (e > s && s > -1)
 				Editor.SetSelection (s, e);
 		}

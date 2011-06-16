@@ -36,14 +36,13 @@ using System.Globalization;
 using MonoDevelop.Core;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using System.IO;
 using System.Linq;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -89,7 +88,7 @@ namespace MonoDevelop.AspNet.Parser
 				
 				var ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
-					ProjectDom dom = TypeCtx.ResolveAssembly (ard.Assembly);
+					ITypeResolveContext dom = TypeCtx.ResolveAssembly (ard.Assembly);
 					if (dom == null)
 						continue;
 					
@@ -150,7 +149,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
-			return GetControlCompletionData (new DomType ("System.Web.UI.Control"));
+			return GetControlCompletionData (TypeSystemService.GetContext (Project).GetClass ("System.Web.UI", "Control", 0, StringComparer.Ordinal));
 		}
 		
 		public IEnumerable<CompletionData> GetControlCompletionData (IType baseType)
@@ -211,7 +210,7 @@ namespace MonoDevelop.AspNet.Parser
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
 					string assembly = ard.Assembly;
-					ProjectDom dom = TypeCtx.ResolveAssembly (ard.Assembly);
+					ITypeResolveContext dom = TypeCtx.ResolveAssembly (ard.Assembly);
 					if (dom == null)
 						continue;
 					type = WebTypeContext.AssemblyTypeLookup (dom, ard.Namespace, tagName);
@@ -415,14 +414,14 @@ namespace MonoDevelop.AspNet.Parser
 			return usings;
 		}
 		
-		public IList<ProjectDom> GetDoms ()
+		public IList<ITypeResolveContext> GetDoms ()
 		{
 			var asms = new HashSet<string> (Project.RegistrationCache.GetAssembliesForPath (DirectoryPath));
 			foreach (var s in Doc.Info.Assemblies)
 				asms.Add (s.Name);
 			
-			var doms = new List<ProjectDom> ();
-			doms.Add (TypeCtx.ProjectDom);
+			var doms = new List<ITypeResolveContext> ();
+			doms.Add (TypeCtx.TypeResolveContext);
 			
 			foreach (var asmName in asms) {
 				var dom = TypeCtx.ResolveAssembly (asmName);
@@ -445,11 +444,12 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 		public override string Description {
-			get {
-				if (base.Description == null && cls != null)
-					base.Description = DocumentationService.GetCodeCompletionDescription (
-						cls, AmbienceService.DefaultAmbience);
-				return base.Description;
+			get { // TODO: Type system conversion.
+				return "todo";
+				//		if (base.Description == null && cls != null)
+				//			base.Description = DocumentationService.GetCodeCompletionDescription (
+				//				cls, AmbienceService.DefaultAmbience);
+				//		return base.Description;
 			}
 			set { base.Description = value;	}
 		}

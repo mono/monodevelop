@@ -31,12 +31,12 @@ using System.Collections.Generic;
 using PP = System.IO.Path;
 
 using MonoDevelop.AspNet.Gui;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -190,7 +190,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			if (!File.Exists (realPath))
 				return;
 			
-			var pd = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (project), realPath)
+			var pd = TypeSystemService.ParseFile (project, realPath)
 				as AspNetParsedDocument;
 			
 			if (pd != null) {
@@ -217,9 +217,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		#region Public properties
 		
-		public MonoDevelop.Projects.Dom.IType ViewDataType {
+		public IType ViewDataType {
 			get {
-				return (MonoDevelop.Projects.Dom.IType)dataClassCombo.CurrentItem;
+				return (IType)dataClassCombo.CurrentItem;
 			}
 		}
 		
@@ -272,15 +272,15 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		class TypeDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
-			MonoDevelop.Projects.Dom.Output.Ambience ambience;
+			Ambience ambience;
 			
-			public List<MonoDevelop.Projects.Dom.IType> List { get; private set; }
+			public List<IType> List { get; private set; }
 			
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
-				var dom = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
-				List = new List<MonoDevelop.Projects.Dom.IType> (dom.Types);
-				this.ambience = AmbienceService.GetAmbienceForLanguage (project.LanguageName);
+				var dom = TypeSystemService.GetContext (project);
+				List = new List<IType> (dom.GetClasses ());
+				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
 			}
 			
 			public int IconCount { get { return List.Count; } }
@@ -297,7 +297,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			public Gdk.Pixbuf GetIcon (int n)
 			{
-				return ImageService.GetPixbuf (List[n].StockIcon,Gtk.IconSize.Menu);
+				return ImageService.GetPixbuf (List[n].GetStockIcon (),Gtk.IconSize.Menu);
 			}
 			
 			public object GetTag (int n)

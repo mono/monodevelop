@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.AspNet.Parser.Dom;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
