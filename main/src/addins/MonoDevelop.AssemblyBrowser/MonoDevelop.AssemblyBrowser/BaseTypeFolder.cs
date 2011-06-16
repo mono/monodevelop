@@ -27,17 +27,19 @@
 //
 
 using System;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
+using Mono.Cecil;
+
 namespace MonoDevelop.AssemblyBrowser
 {
 	public class BaseTypeFolder : IDisposable
 	{
-		public IType Type {
+		public TypeDefinition Type {
 			get;
 			private set;
 		}
 		
-		public BaseTypeFolder (IType type)
+		public BaseTypeFolder (TypeDefinition type)
 		{
 			this.Type = type;
 		}

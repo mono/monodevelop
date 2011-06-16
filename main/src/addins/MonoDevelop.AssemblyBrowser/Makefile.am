@@ -19,7 +19,6 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/Error.cs \
 	MonoDevelop.AssemblyBrowser/ErrorNodeBuilder.cs \

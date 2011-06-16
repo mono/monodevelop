@@ -33,20 +33,19 @@ using System.Text;
 using Mono.Cecil;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class AssemblyNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(DomCecilCompilationUnit); }
+			get { return typeof(Tuple<AssemblyDefinition, IProjectContent>); }
 		}
 		
 		public AssemblyNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -55,20 +54,20 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)dataObject;
-			return compilationUnit.AssemblyDefinition.Name.Name;
+			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)dataObject).Item1;
+			return compilationUnit.Name.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)dataObject;
-			label = compilationUnit.AssemblyDefinition.Name.Name;
+			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)dataObject).Item1;
+			label = compilationUnit.Name.Name;
 			icon = Context.GetIcon (Stock.Reference);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)dataObject;
+			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)dataObject).Item1;
 			
 			foreach (var module in compilationUnit.Modules) {
 				ctx.AddChild (module);
@@ -77,7 +76,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)dataObject;
+			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)dataObject).Item1;
 			return compilationUnit.Modules.Any ();
 		}
 		
@@ -108,23 +107,23 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)navigator.DataItem;
+			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)navigator.DataItem).Item1;
 			StringBuilder result = new StringBuilder ();
-			PrintAssemblyHeader (result, compilationUnit.AssemblyDefinition);
+			PrintAssemblyHeader (result, compilationUnit);
 			
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"),
-			                              compilationUnit.AssemblyDefinition.Name.FullName));
+			                              compilationUnit.Name.FullName));
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Type:</b>\t{0}"),
-			                              GetTypeString (compilationUnit.AssemblyDefinition.MainModule.Kind)));
+			                              GetTypeString (compilationUnit.MainModule.Kind)));
 			result.AppendLine ();
 			return result.ToString ();
 		}
 
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)navigator.DataItem;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => b.AddAssembly (compilationUnit.AssemblyDefinition, true));
+			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)navigator.DataItem).Item1;
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => b.AddAssembly (compilationUnit, true));
 		}
 		
 		

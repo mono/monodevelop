@@ -30,8 +30,6 @@ using System;
 using System.Text;
 using System.Linq;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor;
 using System.Collections.Generic;
@@ -82,7 +80,7 @@ namespace MonoDevelop.AssemblyBrowser
 			StringBuilder result = new StringBuilder ();
 			if (!String.IsNullOrEmpty (ns.Name)) {
 				result.Append ("<span font_family=\"monospace\">");
-				result.Append (Ambience.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
+//				result.Append (Ambience.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
 				result.Append ("</span>");
 				result.AppendLine ();
 			}

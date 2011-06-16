@@ -29,8 +29,6 @@
 using System;
 using System.Text;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
@@ -39,13 +37,14 @@ using ICSharpCode.Decompiler;
 using System.Threading;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class DomPropertyNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IProperty); }
+			get { return typeof(PropertyDefinition); }
 		}
 		
 		public DomPropertyNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -55,52 +54,53 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			IProperty property = (IProperty)dataObject;
+			var property = (PropertyDefinition)dataObject;
 			return property.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IProperty property = (IProperty)dataObject;
-			label = Ambience.GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
-			if (property.IsPrivate || property.IsInternal)
-				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (property.StockIcon, Gtk.IconSize.Menu);
+			var property = (PropertyDefinition)dataObject;
+			label = property.Name;
+//			label = Ambience.GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+//			if (property.IsPrivate || property.IsInternal)
+//				label = DomMethodNodeBuilder.FormatPrivate (label);
+//			icon = ImageService.GetPixbuf (property.StockIcon, Gtk.IconSize.Menu);
 		}
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is IMethod)
+			if (otherNode.DataItem is MethodDefinition)
 				return 1;
 			if (otherNode.DataItem is BaseTypeFolder)
 				return 1;
-			if (otherNode.DataItem is IProperty)
-				return ((IProperty)thisNode.DataItem).Name.CompareTo (((IProperty)otherNode.DataItem).Name);
+			if (otherNode.DataItem is PropertyDefinition)
+				return ((PropertyDefinition)thisNode.DataItem).Name.CompareTo (((PropertyDefinition)otherNode.DataItem).Name);
 			return -1;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			DomCecilProperty property = (DomCecilProperty)dataObject;
-			if (property.HasGet && property.GetMethod != null)
+			var property = (PropertyDefinition)dataObject;
+			if (property.GetMethod != null)
 				ctx.AddChild (property.GetMethod);
-			if (property.HasSet && property.SetMethod != null)
+			if (property.SetMethod != null)
 				ctx.AddChild (property.SetMethod);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			IProperty property = (IProperty)dataObject;
-			return property.HasGet || property.HasSet;
+			var property = (PropertyDefinition)dataObject;
+			return property.GetMethod != null || property.SetMethod != null;
 		}
 		
 		
 		#region IAssemblyBrowserNodeBuilder
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			IProperty property = (IProperty)navigator.DataItem;
+			var property = (PropertyDefinition)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+//			result.Append (Ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -110,8 +110,8 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var property = (DomCecilProperty)navigator.DataItem;
-			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property.PropertyDefinition));
+			var property = (PropertyDefinition)navigator.DataItem;
+			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property));
 		}
 		
 		static string GetBody (string text)
@@ -129,26 +129,27 @@ namespace MonoDevelop.AssemblyBrowser
 
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var property = (DomCecilProperty)navigator.DataItem;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), ((DomCecilType)property.DeclaringType).TypeDefinition, b => b.AddProperty (property.PropertyDefinition));
+			var property = (PropertyDefinition)navigator.DataItem;
+			var parent = (TypeDefinition)navigator.GetParentDataItem (typeof(TypeDefinition), false);
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), parent, b => b.AddProperty (property));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			IProperty property = (IProperty)navigator.DataItem;
+			var property = (PropertyDefinition)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+//			result.Append (Ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
-			options.MaxLineLength = -1;
-			options.BigHeadings = true;
-			options.Ambience = Ambience;
+//			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
+//			options.MaxLineLength = -1;
+//			options.BigHeadings = true;
+//			options.Ambience = Ambience;
 			result.AppendLine ();
 			
-			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (property), options));
+//			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (property), options));
 			
 			return result.ToString ();
 		}

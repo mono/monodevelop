@@ -29,7 +29,6 @@
 using System;
 using Mono.Cecil;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
 

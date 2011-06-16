@@ -34,8 +34,6 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using ICSharpCode.Decompiler.Ast;
@@ -43,13 +41,15 @@ using ICSharpCode.Decompiler;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
 using Mono.TextEditor;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class DomMethodNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IMethod); }
+			get { return typeof(MethodDefinition); }
 		}
 		
 		public DomMethodNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -59,7 +59,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			IMethod method = (IMethod)dataObject;
+			var method = (MethodDefinition)dataObject;
 			return method.FullName;
 		}
 		
@@ -67,24 +67,24 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return "<span foreground= \"#666666\">" + label + "</span>";	
 		}
-		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IMethod method = (IMethod)dataObject;
+			var method = (MethodDefinition)dataObject;
+			var ctx = GetContent (treeBuilder);
+			label = method.Name;
+//			label = Ambience.GetString (ctx, method, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
+//			if (method.IsPrivate || method.IsInternal)
+//				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
-			label = Ambience.GetString (method, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
-			if (method.IsPrivate || method.IsInternal)
-				label = DomMethodNodeBuilder.FormatPrivate (label);
-			
-			icon = ImageService.GetPixbuf (method.StockIcon, Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (method.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is BaseTypeFolder)
+			if (otherNode.DataItem is MethodDefinition)
 				return 1;
 			if (otherNode.DataItem is IMethod)
-				return ((IMethod)thisNode.DataItem).Name.CompareTo (((IMethod)otherNode.DataItem).Name);
+				return ((MethodDefinition)thisNode.DataItem).Name.CompareTo (((MethodDefinition)otherNode.DataItem).Name);
 			
 			return -1;
 		}
@@ -102,10 +102,10 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			IMethod method = (IMethod)navigator.DataItem;
+			var method = (MethodDefinition)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+//			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			PrintDeclaringType (result, navigator);
@@ -121,14 +121,14 @@ namespace MonoDevelop.AssemblyBrowser
 		public static ModuleDefinition GetModule (ITreeNavigator navigator)
 		{
 			var nav = navigator.Clone ();
-			while (!(nav.DataItem is DomCecilCompilationUnit.Module) && !(nav.DataItem is DomCecilCompilationUnit)) {
+			while (!(nav.DataItem is ModuleDefinition) && !(nav.DataItem is Tuple<AssemblyDefinition, IProjectContent>)) {
 				if (!nav.MoveToParent ())
-					return ModuleDefinition.CreateModule ("", ModuleKind.Console);
+					return ModuleDefinition.CreateModule ("empty", ModuleKind.Console);
 			}
-			if (nav.DataItem is DomCecilCompilationUnit)
-				return ((DomCecilCompilationUnit)nav.DataItem).AssemblyDefinition.MainModule;
+			if (nav.DataItem is Tuple<AssemblyDefinition, IProjectContent>)
+				return ((Tuple<AssemblyDefinition, IProjectContent>)nav.DataItem).Item1.MainModule;
 				
-			return ((DomCecilCompilationUnit.Module)nav.DataItem).ModuleDefinition;
+			return (ModuleDefinition)nav.DataItem;
 		}
 
 		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
@@ -170,10 +170,10 @@ namespace MonoDevelop.AssemblyBrowser
 		internal static string GetAttributes (Ambience ambience, IEnumerable<IAttribute> attributes)
 		{
 			StringBuilder result = new StringBuilder ();
-			foreach (IAttribute attr in attributes) {
+			foreach (var attr in attributes) {
 				if (result.Length > 0)
 					result.AppendLine ();
-				result.Append (ambience.GetString (attr, OutputFlags.AssemblyBrowserDescription));
+	//			result.Append (ambience.GetString (attr, OutputFlags.AssemblyBrowserDescription));
 			}
 			if (result.Length > 0)
 				result.AppendLine ();
@@ -182,10 +182,9 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
-			if (method == null)
-				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), ((DomCecilType)method.DeclaringType).TypeDefinition, b => b.AddMethod (method.MethodDefinition));
+			var method = (MethodDefinition)navigator.DataItem;
+			var parent = (TypeDefinition)navigator.GetParentDataItem (typeof(TypeDefinition), false);
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), parent, b => b.AddMethod (method));
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -209,18 +208,18 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
+			var method = (MethodDefinition)navigator.DataItem;
 			if (method == null)
 				return null;
-			return Disassemble (data, rd => rd.DisassembleMethod (method.MethodDefinition));
+			return Disassemble (data, rd => rd.DisassembleMethod (method));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
+			var method = (MethodDefinition)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
+//			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
@@ -230,7 +229,7 @@ namespace MonoDevelop.AssemblyBrowser
 			options.Ambience = Ambience;
 			result.AppendLine ();
 			
-			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (method), options));
+//			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (method), options));
 			
 			return result.ToString ();
 		}

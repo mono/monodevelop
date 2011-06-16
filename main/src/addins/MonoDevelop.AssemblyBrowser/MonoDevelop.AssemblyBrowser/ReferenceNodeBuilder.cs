@@ -29,7 +29,6 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
 

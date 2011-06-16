@@ -32,8 +32,6 @@ using System.Collections.Generic;
 using Mono.Cecil;
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -63,7 +61,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			BaseTypeFolder baseTypeFolder = (BaseTypeFolder)dataObject;
+			var baseTypeFolder = (BaseTypeFolder)dataObject;
 			if (baseTypeFolder.Type != null && baseTypeFolder.Type.BaseType != null)
 				ctx.AddChild (baseTypeFolder.Type.BaseType);
 			// Todo: show implemented interfaces.

@@ -126,7 +126,6 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\ModuleReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolderNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\DomReturnTypeNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\IAssemblyBrowserNodeBuilder.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs" />

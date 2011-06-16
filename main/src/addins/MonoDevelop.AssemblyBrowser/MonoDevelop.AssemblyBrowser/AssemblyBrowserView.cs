@@ -28,8 +28,6 @@
 
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Refactoring;
 using System;
  
@@ -85,31 +83,32 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		#endregion 
-		
-		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindReferences)]
-		public void FindReferences ()
-		{
-			IMember member = widget.ActiveMember;
-			if (member == null)
-				return;
-			ProjectDom dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
-			if (dom == null)
-				return;
-			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
-			refactorer.FindReferences ();
-		}
-		
-		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses)]
-		public void FindDerivedClasses ()
-		{
-			IMember member = widget.ActiveMember;
-			if (member == null)
-				return;
-			ProjectDom dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
-			if (dom == null)
-				return;
-			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
-			refactorer.FindDerivedClasses ();
-		}
+
+// TODO: Type system conversion.
+//		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindReferences)]
+//		public void FindReferences ()
+//		{
+//			IMember member = widget.ActiveMember;
+//			if (member == null)
+//				return;
+//			ITypeResolveContext dom = TypeSystemService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
+//			if (dom == null)
+//				return;
+//			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
+//			refactorer.FindReferences ();
+//		}
+//		
+//		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses)]
+//		public void FindDerivedClasses ()
+//		{
+//			IMember member = widget.ActiveMember;
+//			if (member == null)
+//				return;
+//			ITypeResolveContext dom = TypeSystemService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
+//			if (dom == null)
+//				return;
+//			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
+//			refactorer.FindDerivedClasses ();
+//		}
 	}
 }
