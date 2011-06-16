@@ -7,7 +7,6 @@ using Gtk;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
  
