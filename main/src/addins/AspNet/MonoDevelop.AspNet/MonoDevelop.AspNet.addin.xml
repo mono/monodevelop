@@ -112,9 +112,9 @@
 		<ProjectBinding id = "AspNetApplication" class = "MonoDevelop.AspNet.AspNetAppProjectBinding" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Parser class = "MonoDevelop.AspNet.Parser.AspNetParser" fileExtensions=".aspx, .ascx, .master" />
-		<Parser class = "MonoDevelop.Html.HtmlParser" fileExtensions=".html, .htm, .spark" />
+	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
+		<Provider class = "MonoDevelop.AspNet.Parser.AspNetParser" mimeType="application/x-aspx, application/x-ascx, application/x-master-page" />
+		<Provider class = "MonoDevelop.Html.HtmlParser" mimeType=".text/html, application/x-spark" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
