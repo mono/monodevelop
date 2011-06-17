@@ -26,9 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextTemplating;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
@@ -36,9 +36,16 @@ namespace MonoDevelop.TextTemplating.Parser
 	
 	public class T4ParsedDocument : ParsedDocument
 	{
-		
-		public T4ParsedDocument (string fileName, List<ISegment> segments) : base (fileName)
+		string fileName;
+		public override string FileName {
+			get {
+				return FileName;
+			}
+		}
+
+		public T4ParsedDocument (string fileName, List<ISegment> segments)
 		{
+			this.fileName = fileName;
 			TemplateSegments = segments;
 		}
 		

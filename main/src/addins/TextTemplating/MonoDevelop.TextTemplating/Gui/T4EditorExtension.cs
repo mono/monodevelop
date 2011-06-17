@@ -26,11 +26,11 @@
 
 using System;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.TextTemplating.Parser;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TextTemplating.Gui
 {
@@ -48,11 +48,15 @@ namespace MonoDevelop.TextTemplating.Gui
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
-			parsedDoc = (T4ParsedDocument)Document.ParsedDocument;
-			if (parsedDoc != null) {
+			Document.DocumentParsed += HandleDocumentDocumentParsed;
+			HandleDocumentDocumentParsed (this, EventArgs.Empty);
+		}
+
+		void HandleDocumentDocumentParsed (object sender, EventArgs e)
+		{
+			parsedDoc = (T4ParsedDocument)Document.ParsedFile;
+			if (parsedDoc != null)
 				RefreshOutline ();
-			}
 		}
 		
 		public override void Dispose ()
@@ -60,17 +64,7 @@ namespace MonoDevelop.TextTemplating.Gui
 			if (disposed)
 				return;
 			disposed = true;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated
-				-= OnParseInformationChanged;
 			base.Dispose ();
-		}
-		
-		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Dom.ParsedDocumentEventArgs args)
-		{
-			if (FileName == args.FileName && args.ParsedDocument != null) {
-				parsedDoc = (T4ParsedDocument)args.ParsedDocument;
-				RefreshOutline ();
-			}
 		}
 		
 		#region Convenience accessors, from BaseXmlEditorExtension
@@ -98,8 +92,8 @@ namespace MonoDevelop.TextTemplating.Gui
 		protected string GetBufferText (DomRegion region)
 		{
 			MonoDevelop.Ide.Gui.Content.ITextBuffer buf = Buffer;
-			int start = buf.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
-			int end = buf.GetPositionFromLineColumn (region.End.Line, region.End.Column);
+			int start = buf.GetPositionFromLineColumn (region.BeginLine, region.BeginColumn);
+			int end = buf.GetPositionFromLineColumn (region.EndLine, region.EndColumn);
 			if (end > start && start >= 0)
 				return buf.GetText (start, end);
 			else

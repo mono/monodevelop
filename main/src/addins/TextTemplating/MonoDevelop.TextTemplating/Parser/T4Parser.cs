@@ -26,21 +26,19 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextTemplating;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
-	
-	
-	public class T4Parser : AbstractParser
+	public class T4Parser : AbstractTypeSystemProvider
 	{
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
+		public override ParsedDocument Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader content)
 		{
 			ParsedTemplate template = new ParsedTemplate (fileName);
 			try {
-				Tokeniser tk = new Tokeniser (fileName, content);
+				var tk = new Tokeniser (fileName, content.ReadToEnd ());
 				template.ParseWithoutIncludes (tk);
 			} catch (ParserException ex) {
 				template.LogError (ex.Message, ex.Location);

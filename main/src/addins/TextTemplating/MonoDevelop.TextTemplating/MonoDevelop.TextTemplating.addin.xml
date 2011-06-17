@@ -35,8 +35,8 @@
 		           extensions = "*.tt" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Parser class = "MonoDevelop.TextTemplating.Parser.T4Parser" fileExtensions=".tt" />
+	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
+		<Provider class = "MonoDevelop.TextTemplating.Parser.T4Parser" mimeType="application/t4-template" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
