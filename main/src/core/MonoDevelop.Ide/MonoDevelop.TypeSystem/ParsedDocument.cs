@@ -48,6 +48,11 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		List<Comment> comments = new List<Comment> ();
+		public IList<Comment> Comments {
+			get {
+				return comments;
+			}
+		}
 		
 		List<Tag> tagComments = new List<Tag> ();
 		public IList<Tag> TagComments {
@@ -123,6 +128,9 @@ namespace MonoDevelop.TypeSystem
 		public virtual string FileName {
 			get {
 				return fileName;
+			}
+			protected set {
+				fileName = value;
 			}
 		}
 
@@ -470,9 +478,18 @@ namespace MonoDevelop.TypeSystem
 	{
 		IParsedFile parsedFile;
 		
+		public IParsedFile ParsedFile {
+			get { return parsedFile; }
+			set { parsedFile = value; FileName = parsedFile.FileName; }
+		}
+		
 		public ParsedDocumentDecorator (IParsedFile parsedFile) : base (parsedFile.FileName)
 		{
 			this.parsedFile = parsedFile;
+		}
+		
+		public ParsedDocumentDecorator () : base ("")
+		{
 		}
 	
 		#region IParsedFile implementation
