@@ -29,7 +29,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -44,10 +44,10 @@ namespace MonoDevelop.CodeMetrics
 		/// <returns>
 		/// A <see cref="ClassProperties"/>
 		/// </returns>
-		internal ClassProperties GetInstanceOf (IType cls)
+		internal ClassProperties GetInstanceOf (ITypeDefinition cls)
 		{
 			try {
-				if(cls.BodyRegion.Start==cls.BodyRegion.End)
+				if(cls.BodyRegion.Begin==cls.BodyRegion.End)
 						return null;
 				foreach (var projprop in CodeMetricsWidget.widget.Projects)
 				{
@@ -68,7 +68,7 @@ namespace MonoDevelop.CodeMetrics
 			return null;
 		}
 		
-		private static ClassProperties RecursiveFindInstance (IType cls, ClassProperties prop)
+		private static ClassProperties RecursiveFindInstance (ITypeDefinition cls, ClassProperties prop)
 		{
 			foreach (var innercls in prop.InnerClasses) {
 				var ret = RecursiveFindInstance (cls, innercls.Value);

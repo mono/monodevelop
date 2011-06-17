@@ -35,21 +35,17 @@ using MonoDevelop.Core;
  
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
 
 namespace MonoDevelop.CodeMetrics
 {
 	public class DelegateProperties : IProperties
 	{
-		IType dlgte;
+		ITypeDefinition dlgte;
 		
-		public IType Delegate {
+		public ITypeDefinition Delegate {
 			get {
 				return dlgte;
 			}
@@ -89,12 +85,12 @@ namespace MonoDevelop.CodeMetrics
 			get; set;
 		}
 		
-		public DelegateProperties (IType i)
+		public DelegateProperties (ITypeDefinition i)
 		{
 			dlgte = i;
 			FullName = Delegate.FullName;
-			StartLine = Delegate.BodyRegion.Start.Line;
-			EndLine = Delegate.BodyRegion.End.Line;
+			StartLine = Delegate.BodyRegion.BeginLine;
+			EndLine = Delegate.BodyRegion.EndLine;
 			FilePath="";
 		}
 	}

@@ -36,25 +36,20 @@ using MonoDevelop.Core;
  
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
-
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeMetrics
 {
 	public class InterfaceProperties : IProperties
 	{
-		IType interfce;
+		ITypeDefinition interfce;
 		
 		//TODO Implement method properties for Interfaces
 		Dictionary<string, MethodProperties> Methods;
 		Dictionary<string, FieldProperties> Fields;
 		
-		public IType Interface {
+		public ITypeDefinition Interface {
 			get {
 				return interfce;
 			}
@@ -94,12 +89,12 @@ namespace MonoDevelop.CodeMetrics
 			get; set;
 		}
 		
-		public InterfaceProperties (IType i)
+		public InterfaceProperties (ITypeDefinition i)
 		{
 			interfce = i;
 			FullName = Interface.FullName;
-			StartLine = Interface.BodyRegion.Start.Line;
-			EndLine = Interface.BodyRegion.End.Line;
+			StartLine = Interface.BodyRegion.BeginLine;
+			EndLine = Interface.BodyRegion.EndLine;
 			FilePath="";
 		}
 	

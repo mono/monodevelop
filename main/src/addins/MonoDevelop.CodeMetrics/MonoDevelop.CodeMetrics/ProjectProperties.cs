@@ -33,10 +33,8 @@ using MonoDevelop.Core;
  
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -117,10 +115,10 @@ namespace MonoDevelop.CodeMetrics
 			project = p;
 		}
 		
-		internal void AddInstance (IType cls)
+		internal void AddInstance (ITypeDefinition cls)
 		{
 			// Do not include classes inherited from assemblies
-			if (cls.BodyRegion.Start == cls.BodyRegion.End)
+			if (cls.BodyRegion.Begin == cls.BodyRegion.End)
 				return;
 			StringBuilder key = new StringBuilder();
 			key.Append(cls.FullName);
@@ -142,22 +140,20 @@ namespace MonoDevelop.CodeMetrics
 			case ClassType.Struct:
 				AddStruct(cls, key);
 				break;
-			case ClassType.Unknown:
-				break;
 			}
 			
 		}
 		
-		private void AddClass (IType cls, StringBuilder key)
+		private void AddClass (ITypeDefinition cls, StringBuilder key)
 		{
 			if(cls.Namespace=="") {
 				lock(Classes)
-				{
-					foreach(var typeArg in cls.TypeParameters) {
-						foreach(var constraint in typeArg.Constraints) {
-							key.Append(constraint.Name);
-						}
-					}
+				{// TODO: Type system conversion
+//					foreach(var typeArg in cls.TypeParameters) {
+//						foreach(var constraint in typeArg.Constraints) {
+//							key.Append(constraint.Name);
+//						}
+//					}
 					if(Classes.ContainsKey(key.ToString()))
 						return;
 					Classes.Add(key.ToString(), new ClassProperties(cls));
@@ -167,16 +163,16 @@ namespace MonoDevelop.CodeMetrics
 			}
 		}
 		
-		private void AddStruct (IType strct, StringBuilder key)
+		private void AddStruct (ITypeDefinition strct, StringBuilder key)
 		{
 			if(strct.Namespace=="") {
 				lock(Structs)
-				{
-					foreach(var typeArg in strct.TypeParameters) {
-						foreach(var constraint in typeArg.Constraints) {
-							key.Append(constraint.Name);
-						}
-					}
+				{ // TODO: Type system conversion
+//					foreach(var typeArg in strct.TypeParameters) {
+//						foreach(var constraint in typeArg.Constraints) {
+//							key.Append(constraint.Name);
+//						}
+//					}
 					if(Structs.ContainsKey(key.ToString()))
 						return;
 					Structs.Add(key.ToString(), new StructProperties(strct));
@@ -186,16 +182,16 @@ namespace MonoDevelop.CodeMetrics
 			}
 		}
 		
-		private void AddInterface (IType interfce, StringBuilder key)
+		private void AddInterface (ITypeDefinition interfce, StringBuilder key)
 		{
 			if(interfce.Namespace=="") {
 				lock(Interfaces)
-				{
-					foreach(var typeArg in interfce.TypeParameters) {
-						foreach(var constraint in typeArg.Constraints) {
-							key.Append(constraint.Name);
-						}
-					}
+				{// TODO: type system conversion.
+//					foreach(var typeArg in interfce.TypeParameters) {
+//						foreach(var constraint in typeArg.Constraints) {
+//							key.Append(constraint.Name);
+//						}
+//					}
 					if(Interfaces.ContainsKey(key.ToString()))
 						return;
 					Interfaces.Add(key.ToString(), new InterfaceProperties(interfce));
@@ -205,16 +201,16 @@ namespace MonoDevelop.CodeMetrics
 			}
 		}
 		
-		private void AddEnum (IType enm, StringBuilder key)
+		private void AddEnum (ITypeDefinition enm, StringBuilder key)
 		{
 			if(enm.Namespace=="") {
 				lock(Enums)
-				{
-					foreach(var typeArg in enm.TypeParameters) {
-						foreach(var constraint in typeArg.Constraints) {
-							key.Append(constraint.Name);
-						}
-					}
+				{ // TODO: Type system conversion.
+//					foreach(var typeArg in enm.TypeParameters) {
+//						foreach(var constraint in typeArg.Constraints) {
+//							key.Append(constraint.Name);
+//						}
+//					}
 					if(Enums.ContainsKey(key.ToString()))
 						return;
 					Enums.Add(key.ToString(), new EnumProperties(enm));
@@ -224,16 +220,16 @@ namespace MonoDevelop.CodeMetrics
 			}
 		}
 		
-		private void AddDelegate (IType dlgte, StringBuilder key)
+		private void AddDelegate (ITypeDefinition dlgte, StringBuilder key)
 		{
 			if(dlgte.Namespace=="") {
 				lock(Delegates)
-				{
-					foreach(var typeArg in dlgte.TypeParameters) {
-						foreach(var constraint in typeArg.Constraints) {
-							key.Append(constraint.Name);
-						}
-					}
+				{ // TODO: Type system conversion.
+//					foreach(var typeArg in dlgte.TypeParameters) {
+//						foreach(var constraint in typeArg.Constraints) {
+//							key.Append(constraint.Name);
+//						}
+//					}
 					if(Delegates.ContainsKey(key.ToString()))
 						return;
 					Delegates.Add(key.ToString(), new DelegateProperties(dlgte));
@@ -243,7 +239,7 @@ namespace MonoDevelop.CodeMetrics
 			}
 		}
 		
-		private void AddNamespace (StringBuilder key, IType cls)
+		private void AddNamespace (StringBuilder key, ITypeDefinition cls)
 		{
 			lock(Namespaces)
 			{

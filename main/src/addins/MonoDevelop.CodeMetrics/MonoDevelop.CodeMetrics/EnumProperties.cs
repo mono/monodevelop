@@ -35,21 +35,17 @@ using MonoDevelop.Core;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
 
 namespace MonoDevelop.CodeMetrics
 {
 	public class EnumProperties : IProperties
 	{
-		IType enm;
+		ITypeDefinition enm;
 		
-		public IType Enum {
+		public ITypeDefinition Enum {
 			get {
 				return enm;
 			}
@@ -89,12 +85,12 @@ namespace MonoDevelop.CodeMetrics
 			get; set;
 		}
 		
-		public EnumProperties (IType i)
+		public EnumProperties (ITypeDefinition i)
 		{
 			enm = i;
 			FullName = Enum.FullName;
-			StartLine = Enum.BodyRegion.Start.Line;
-			EndLine = Enum.BodyRegion.End.Line;
+			StartLine = Enum.BodyRegion.BeginLine;
+			EndLine = Enum.BodyRegion.EndLine;
 			FilePath="";
 		}
 	}
