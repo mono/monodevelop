@@ -79,7 +79,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public override void SyncBack (XcodeSyncBackContext context)
 		{
 			string target = context.ProjectDir.Combine (targetRelative);
-			context.FileSyncJobs.Add (new XcodeSyncFileBackJob () { Original = target, Synced = source });
+			context.FileSyncJobs.Add (new XcodeSyncFileBackJob () { Original = source, Synced = target });
 		}
 		
 		public override void AddToProject (XcodeProject project, FilePath syncProjectDir)
