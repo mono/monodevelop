@@ -27,7 +27,6 @@
 //
 
 using System;
-using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Xml.StateEngine
 {

@@ -30,8 +30,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Xml.StateEngine
 		bool buildTree;
 		
 		int position;
-		DomLocation location;
+		AstLocation location;
 		int stateTag;
 		StringBuilder keywordBuilder;
 		int currentStateLength;
@@ -90,7 +91,7 @@ namespace MonoDevelop.Xml.StateEngine
 		#region IDocumentStateEngine
 		
 		public int Position { get { return position; } }
-		public DomLocation Location { get { return location; } }
+		public AstLocation Location { get { return location; } }
 		
 		public void Reset ()
 		{
@@ -98,8 +99,7 @@ namespace MonoDevelop.Xml.StateEngine
 			previousState = rootState;
 			position = 0;
 			stateTag = 0;
-			location.Line = 1;
-			location.Column = 1;
+			location = new AstLocation (1, 1);
 			keywordBuilder = new StringBuilder ();
 			currentStateLength = 0;
 			nodes = new NodeStack ();
@@ -236,8 +236,8 @@ namespace MonoDevelop.Xml.StateEngine
 				builder.AppendLine ("Errors=");
 				foreach (Error err in errors) {
 					builder.Append (' ', 4);
-					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Region.Start.Line,
-					                      err.Region.Start.Column, err.Message);
+					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Region.BeginLine,
+					                      err.Region.BeginColumn, err.Message);
 				}
 			}
 			
@@ -252,11 +252,11 @@ namespace MonoDevelop.Xml.StateEngine
 			set { stateTag = value; }
 		}
 		
-		DomLocation IParseContext.LocationMinus (int colOffset)
+		AstLocation IParseContext.LocationMinus (int colOffset)
 		{
 			int col = Location.Column - colOffset;
 			System.Diagnostics.Debug.Assert (col > 0);
-			return new DomLocation (Location.Line, col);
+			return new AstLocation (Location.Line, col);
 		}
 		
 		DomRegion LocationCurrentChar {
@@ -292,13 +292,13 @@ namespace MonoDevelop.Xml.StateEngine
 				InternalLogError (new Error (ErrorType.Warning, LocationCurrentChar, message));
 		}
 		
-		void IParseContext.LogError (string message, DomLocation location)
+		void IParseContext.LogError (string message, AstLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
 				InternalLogError (new Error (ErrorType.Error, location, message));
 		}
 		
-		void IParseContext.LogWarning (string message, DomLocation location)
+		void IParseContext.LogWarning (string message, AstLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
 				InternalLogError (new Error (ErrorType.Warning, location, message));
@@ -367,15 +367,15 @@ namespace MonoDevelop.Xml.StateEngine
 		int StateTag { get; set; }
 		StringBuilder KeywordBuilder { get; }
 		int CurrentStateLength { get; }
-		DomLocation Location { get; }
-		DomLocation LocationMinus (int colOffset);
+		AstLocation Location { get; }
+		AstLocation LocationMinus (int colOffset);
 		State PreviousState { get; }
 		NodeStack Nodes { get; }
 		bool BuildTree { get; }
 		void LogError (string message);
 		void LogWarning (string message);
-		void LogError (string message, DomLocation location);
-		void LogWarning (string message, DomLocation location);
+		void LogError (string message, AstLocation location);
+		void LogWarning (string message, AstLocation location);
 		void LogError (string message, DomRegion region);
 		void LogWarning (string message, DomRegion region);
 		void EndAll (bool pop);

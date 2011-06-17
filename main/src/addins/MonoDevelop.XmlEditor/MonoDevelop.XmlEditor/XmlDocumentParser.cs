@@ -33,28 +33,21 @@ using System.Linq;
 using System.Xml;
 
 using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.XmlEditor
 {
 	
 	
-	public class XmlDocumentParser : AbstractParser
+	public class XmlDocumentParser : ITypeSystemProvider
 	{
-		public override bool CanParse (string fileName)
-		{
-			return XmlTextEditorExtension.IsFileNameHandled (fileName);
-		}
-		
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
+		ParsedDocument ITypeSystemProvider.Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader content)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
-			TextReader tr = new StringReader (fileContent);
 			try {
 				Parser xmlParser = new Parser (new XmlFreeState (), true);
-				xmlParser.Parse (tr);
+				xmlParser.Parse (content);
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
 				doc.Add (xmlParser.Errors);
 				
@@ -65,10 +58,6 @@ namespace MonoDevelop.XmlEditor
 			}
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xml document", ex);
-			}
-			finally {
-				if (tr != null)
-					tr.Dispose ();
 			}
 			return doc;
 		}
