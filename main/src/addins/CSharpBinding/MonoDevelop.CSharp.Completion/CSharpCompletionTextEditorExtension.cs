@@ -122,7 +122,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		ResolveResult ResolveExpression (ParsedFile file, AstNode expr)
+		ResolveResult ResolveExpression (ParsedFile file, Expression expr)
 		{
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { expr });
@@ -131,28 +131,38 @@ namespace MonoDevelop.CSharp.Completion
 			return visitor.Resolve (expr);
 		}
 		
-		Tuple<ParsedFile, AstNode> GetExpressionBeforeCursor ()
+		Tuple<ParsedFile, Expression> GetExpressionBeforeCursor ()
 		{
-			var loc = new AstLocation (Document.Editor.Caret.Location.Line, Document.Editor.Caret.Location.Column);
-			
 			CSharpParser parser = new CSharpParser ();
-			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset) + "Foo (); }}}";
-			
+			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset);
 			var stream = new System.IO.StringReader (text);
-			
 			var completionUnit = parser.Parse (stream, 0);
 			stream.Close ();
-			
-			var expr = completionUnit.GetNodeAt (loc.Line, loc.Column - 1);
-			
-			while (expr != null && !(expr is Expression && !(expr is EmptyExpression))) {
-				expr = expr.GetPrevNode ();
-			}
-			
-			if (expr == null || !(expr is MemberReferenceExpression))
+			var expr = completionUnit.TopExpression as Expression;
+			if (expr == null)
 				return null;
-			expr = ((MemberReferenceExpression)expr).Target;
 			
+			text += " Console.WriteLine (\"a\"); } } }";
+			stream = new System.IO.StringReader (text);
+			parser = new CSharpParser ();
+			completionUnit = parser.Parse (stream, 0);
+			stream.Close ();
+			Console.WriteLine ("text:");
+			Console.WriteLine (text);
+			var type = completionUnit.GetTypes (true).LastOrDefault ();
+			Console.WriteLine ("type: " + type);
+			if (type == null)
+				return null;
+			var member = type.Members.LastOrDefault ();
+			Console.WriteLine ("member: " + member);
+			if (member == null)
+				return null;
+			if (member is MethodDeclaration) {
+				Console.WriteLine ("body:" + ((MethodDeclaration)member).Body);
+				((MethodDeclaration)member).Body.Add (new ExpressionStatement (expr));
+			} else {
+				return null;
+			}
 			var tsvisitor = new TypeSystemConvertVisitor (TypeSystemService.GetProjectContext (Document.Project), Document.FileName);
 			completionUnit.AcceptVisitor (tsvisitor, null);
 			tsvisitor.ParsedFile.Unit = completionUnit;
@@ -186,11 +196,11 @@ namespace MonoDevelop.CSharp.Completion
 				if (IsInsideComment () || IsInsideString ())
 					return null;
 				var expr = GetExpressionBeforeCursor ();
-				Console.WriteLine ("expr:" + expr);
+				
 				if (expr == null)
 					return null;
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2);
-				Console.WriteLine ("Resolve result:" + resolveResult);
+				
 				return CreateCompletionData (loc, resolveResult);
 			case '#':
 				if (IsInsideComment () || IsInsideString ())
