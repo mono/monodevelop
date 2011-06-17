@@ -31,9 +31,9 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide;
+using MonoDevelop.TypeSystem;
+using System;
 
 namespace MonoDevelop.NUnit
 {
@@ -63,16 +63,25 @@ namespace MonoDevelop.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
 		{
-			ProjectDom ctx = ProjectDomService.GetProjectDom (project);
-			IType cls = ctx.GetType (fullClassName);
+			var ctx = TypeSystemService.GetProjectContext (project);
+			string ns, name;
+			int idx = fullClassName.LastIndexOf ('.');
+			if (idx < 0) {
+				ns = "";
+				name = fullClassName;
+			} else {
+				ns = fullClassName.Substring (0, idx);
+				name = fullClassName.Substring (idx + 1);
+			}
+			var cls = ctx.GetClass (ns, name, 0, StringComparer.Ordinal);
 			if (cls == null)
 				return null;
 			
-			foreach (IMethod met in cls.Methods) {
+			foreach (var met in cls.GetMethods (ctx)) {
 				if (met.Name == methodName)
-					return new SourceCodeLocation (cls.CompilationUnit.FileName, met.Location.Line, met.Location.Column);
+					return new SourceCodeLocation (cls.GetDefinition ().Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
 			}
-			return new SourceCodeLocation (cls.CompilationUnit.FileName, cls.Location.Line, cls.Location.Column);
+			return new SourceCodeLocation (cls.GetDefinition ().Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn);
 		}
 		
 		public override void Dispose ()
