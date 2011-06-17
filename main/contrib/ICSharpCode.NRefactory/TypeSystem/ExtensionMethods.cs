@@ -99,7 +99,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets all sub type definitions defined in a context.
 		/// </summary>
-		public static IEnumerable<ITypeDefinition> GetSubTypeDefinitions (this IType baseType, ITypeResolveContext context)
+		public static IEnumerable<ITypeDefinition> GetSubTypeDefinitions (this ITypeDefinition baseType, ITypeResolveContext context)
 		{
 			foreach (var contextType in context.GetAllClasses ()) {
 				if (contextType.IsDerivedFrom (baseType, context))
