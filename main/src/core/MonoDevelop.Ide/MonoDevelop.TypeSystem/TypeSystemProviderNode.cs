@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.Addins;
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MonoDevelop.TypeSystem
@@ -42,7 +42,7 @@ namespace MonoDevelop.TypeSystem
 			set {
 				mimeType = value;
 			}
-		}		
+		}
 		
 		ITypeSystemProvider cachedInstance;
 		
@@ -50,6 +50,14 @@ namespace MonoDevelop.TypeSystem
 			get {
 				return cachedInstance ?? (cachedInstance = (ITypeSystemProvider)CreateInstance ());
 			}
+		}
+		
+		HashSet<string> mimeTypes;
+		public bool CanParse (string mimeType)
+		{
+			if (mimeTypes == null)
+				mimeTypes  = new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ()));
+			return mimeTypes.Contains (mimeType, StringComparer.Ordinal);
 		}
 	}
 }

@@ -33,6 +33,13 @@ using System.Threading;
 
 namespace MonoDevelop.TypeSystem
 {
+	[Flags]
+	public enum ParsedDocumentFlags
+	{
+		None            = 0,
+		NonSerializable = 1
+	}
+		
 	public class ParsedDocument : IParsedFile
 	{
 		DateTime parseTime = DateTime.Now;
@@ -74,6 +81,11 @@ namespace MonoDevelop.TypeSystem
 			get {
 				return conditionalRegions;
 			}
+		}
+		
+		public ParsedDocumentFlags Flags {
+			get;
+			set;
 		}
 		
 		public ParsedDocument ()

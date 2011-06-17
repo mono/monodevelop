@@ -112,7 +112,7 @@ namespace MonoDevelop.TypeSystem
 		
 		static ITypeSystemProvider GetProvider (string mimeType)
 		{
-			var provider = Parsers.FirstOrDefault (p => p.MimeType == mimeType);
+			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType));
 			return provider != null ? provider.Provider : null;
 		}
 		
@@ -128,9 +128,9 @@ namespace MonoDevelop.TypeSystem
 			var provider = GetProvider (mimeType);
 			if (provider == null)
 				return null;
-			ParsedDocument result = null;
-			result = provider.Parse (projectContent, true, fileName, content);
-			((SimpleProjectContent)projectContent).UpdateProjectContent (projectContent.GetFile (fileName), result);
+			var result = provider.Parse (projectContent, true, fileName, content);
+			if ((result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+				((SimpleProjectContent)projectContent).UpdateProjectContent (projectContent.GetFile (fileName), result);
 			return result;
 		}
 		
@@ -354,7 +354,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		public static ITypeResolveContext GetAssemblyContext (string fileName)
+		public static ITypeResolveContext LoadAssemblyContext (string fileName)
 		{
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
@@ -362,7 +362,7 @@ namespace MonoDevelop.TypeSystem
 			return new CecilLoader ().LoadAssembly (asm);
 		}
 		
-		public static ITypeResolveContext GetAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
+		public static ITypeResolveContext LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
 		{ // TODO: Runtimes
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
@@ -410,7 +410,7 @@ namespace MonoDevelop.TypeSystem
 				// Add mscorlib reference
 				var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
 				if (!assemblyContents.TryGetValue (corLibRef.Location, out ctx))
-					assemblyContents [corLibRef.Location] = ctx = GetAssemblyContext (corLibRef.Location);
+					assemblyContents [corLibRef.Location] = ctx = LoadAssemblyContext (corLibRef.Location);
 				if (ctx != null)
 					contexts.Add (ctx);
 				
@@ -426,7 +426,7 @@ namespace MonoDevelop.TypeSystem
 
 					if (!assemblyContents.TryGetValue (refId, out ctx)) {
 						try {
-							assemblyContents [refId] = ctx = GetAssemblyContext (fileName);
+							assemblyContents [refId] = ctx = LoadAssemblyContext (fileName);
 						} catch (Exception) {
 						}
 					}
