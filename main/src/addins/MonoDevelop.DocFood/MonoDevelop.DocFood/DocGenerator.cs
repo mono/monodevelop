@@ -59,11 +59,11 @@ namespace MonoDevelop.DocFood
 		
 		public static string GetBaseDocumentation (IMember member)
 		{
-			if (member.DeclaringType == null || member.DeclaringType.SourceProjectDom == null)
+			if (member.DeclaringType == null || member.DeclaringType.GetProjectContent () == null)
 				return null;
 			if (member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsFinalizer))
 				return null;
-			foreach (IType type in member.DeclaringType.SourceProjectDom.GetInheritanceTree (member.DeclaringType)) {
+			foreach (IType type in member.DeclaringType.GetProjectContent ().GetInheritanceTree (member.DeclaringType)) {
 				if (type.DecoratedFullName == member.DeclaringType.DecoratedFullName)
 					continue;
 				IMember documentMember = null;
@@ -366,7 +366,7 @@ namespace MonoDevelop.DocFood
 				SplitWords (exceptionType, exceptionType.Name);
 				
 				if (type != null) {
-					IType resolvedType = type.SourceProjectDom.SearchType (type.CompilationUnit, type, type.Location, exceptionType);
+					IType resolvedType = type.GetProjectContent ().SearchType (type.CompilationUnit, type, type.Location, exceptionType);
 					string sentence = AmbienceService.GetDocumentationSummary (resolvedType);
 					if (! string.IsNullOrEmpty(sentence)) {
 						sentence = sentence.Trim ();
@@ -386,9 +386,9 @@ namespace MonoDevelop.DocFood
 		void Init (IMember member)
 		{
 			FillDocumentation (GetBaseDocumentation (member));
-			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.End.Line > 1) {
+			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.EndLine > 1) {
 				LineSegment start = data.Document.GetLine (member.Location.Line);
-				LineSegment end = data.Document.GetLine (member.BodyRegion.End.Line);
+				LineSegment end = data.Document.GetLine (member.BodyRegion.EndLine);
 				if (start != null && end != null) {
 					var result = provider.ParseFile ("class A {" + data.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset) + "}");
 					result.AcceptVisitor (visitor, null);

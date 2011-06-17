@@ -112,8 +112,8 @@ namespace MonoDevelop.DocFood
 		
 		IMember GetMemberToDocument ()
 		{
-			var parsedDocument = ProjectDomService.Parse (Document.Project, Document.FileName, Document.Editor.Document.Text);
-			IType type = parsedDocument.CompilationUnit.GetTypeAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
+			var parsedDocument = TypeSystemService.Parse (Document.Project, Document.FileName, Document.Editor.Document.Text);
+			IType type = parsedDocument.GetType (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (type == null) {
 				foreach (var t in parsedDocument.CompilationUnit.Types) {
 					if (t.Location.Line > textEditorData.Caret.Line)
@@ -124,7 +124,7 @@ namespace MonoDevelop.DocFood
 			
 			IMember result = null;
 			foreach (IMember member in type.Members) {
-				if (member.Location > new DomLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Location < result.Location) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Location.Line)) {
+				if (member.Location > new AstLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Location < result.Location) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Location.Line)) {
 					result = member;
 				}
 			}
