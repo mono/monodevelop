@@ -46,7 +46,7 @@ namespace CBinding.Parser
 		public override ParsedDocument Parse (IProjectContent dom, bool storeAst, string fileName, TextReader reader)
 		{
 			var doc = new DefaultParsedDocument (fileName);
-//			doc.Flags |= ParsedDocumentFlags.NonSerializable;
+			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 			Project p = (null == dom || null == dom.GetProject ())? 
 				IdeApp.Workspace.GetProjectContainingFile (fileName):
 				dom.GetProject ();
