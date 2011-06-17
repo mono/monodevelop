@@ -62,20 +62,32 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return Directory.Exists (xcproj);
 		}
 		
-		public void UpdateProject (List<XcodeSyncedItem> syncList, XcodeProject emptyProject)
+		public void UpdateProject (List<XcodeSyncedItem> allItems, XcodeProject emptyProject)
 		{
-			items = syncList;
+			items = allItems;
 			
 			XC4Debug.Log ("Updating synced project with {0} items", items.Count);
 			
+			var ctx = new XcodeSyncContext (projectDir, syncTimeCache);
+			
 			var toRemove = new HashSet<string> (itemMap.Keys);
+			var toClose = new HashSet<string> ();
+			var syncList = new List<XcodeSyncedItem> ();
 			bool updateProject = false;
 			
 			foreach (var item in items) {
 				var files = item.GetTargetFileNames (projectDir);
+				bool needsSync = item.NeedsSyncOut (ctx);
+				if (needsSync)
+					syncList.Add (item);
+				
 				foreach (var f in files) {
 					toRemove.Remove (f);
-					updateProject = updateProject || !itemMap.ContainsKey (f);
+					if (!itemMap.ContainsKey (f)) {
+						updateProject = true;
+					} else if (needsSync) {
+						toClose.Add (f);
+					}
 					itemMap [f] = item;
 				}
 			}
@@ -85,6 +97,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				XC4Debug.Log ("Project file needs to be updated, closing and removing old project");
 				CloseProject ();
 				DeleteProjectArtifacts ();
+			} else {
+				foreach (var f in toClose)
+					CloseFile (f);
 			}
 			
 			foreach (var f in toRemove) {
@@ -94,16 +109,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					File.Delete (f);
 			}
 			
-			var ctx = new XcodeSyncContext (projectDir, syncTimeCache);
 			foreach (var item in items) {
 				if (updateProject)
 					item.AddToProject (emptyProject, projectDir);
-				if (item.NeedsSyncOut (ctx)) {
-					XC4Debug.Log ("Syncing item {0}", item.GetTargetFileNames (projectDir)[0]);
-					item.SyncOut (ctx);
-				} else {
-					XC4Debug.Log ("Skipping up to date item {0}", item.GetTargetFileNames (projectDir)[0]);
-				}
+			}
+			
+			foreach (var item in syncList) {
+				XC4Debug.Log ("Syncing item {0}", item.GetTargetFileNames (projectDir)[0]);
+				item.SyncOut (ctx);
 			}
 			
 			if (updateProject) {
@@ -172,8 +185,15 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public bool CloseProject ()
 		{
-			var success = AppleScript.Run (XCODE_CLOSE_WORKSPACE_IN_PATH, xcodePath, projectDir) == "true";
+			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, xcodePath, projectDir) == "true";
 			XC4Debug.Log ("Closing project: {0}", success);
+			return success;
+		}
+		
+		public bool CloseFile (string fileName)
+		{
+			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, xcodePath, fileName) == "true";
+			XC4Debug.Log ("Closing file {0}: {1}", fileName, success);
 			return success;
 		}
 		
@@ -196,12 +216,12 @@ set pp to ""{1}""
 	end repeat
 end tell";
 		
-		const string XCODE_CLOSE_WORKSPACE_IN_PATH =
+		const string XCODE_CLOSE_IN_PATH =
 @"tell application ""{0}""
 	set pp to ""{1}""
 	repeat with d in documents
 		set f to path of d
-		if f starts with pp and f ends with "".xcworkspace"" then
+		if f starts with pp then
 			close d
 			return true
 		end if
