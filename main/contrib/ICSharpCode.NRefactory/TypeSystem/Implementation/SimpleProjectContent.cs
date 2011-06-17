@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Compared with <see cref="TypeStorage"/>, this class adds support for the IProjectContent interface,
 	/// for partial classes, and for multi-threading.
 	/// </remarks>
-	public sealed class SimpleProjectContent : IProjectContent
+	public sealed class SimpleProjectContent : AbstractAnnotatable, IProjectContent
 	{
 		// This class is sealed by design:
 		// the synchronization story doesn't mix well with someone trying to extend this class.

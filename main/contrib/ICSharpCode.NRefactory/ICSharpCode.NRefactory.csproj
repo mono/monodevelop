@@ -396,6 +396,7 @@
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="TypeSystem\IParsedFile.cs" />
     <Compile Include="Utils\Platform.cs" />
+    <Compile Include="TypeSystem\IAnnotatable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

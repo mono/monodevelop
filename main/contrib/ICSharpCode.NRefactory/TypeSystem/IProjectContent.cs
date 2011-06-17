@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	#if WITH_CONTRACTS
 	[ContractClass(typeof(IProjectContentContract))]
 	#endif
-	public interface IProjectContent : ITypeResolveContext
+	public interface IProjectContent : IAnnotatable, ITypeResolveContext
 	{
 		/// <summary>
 		/// Gets the list of all assembly attributes in the project.

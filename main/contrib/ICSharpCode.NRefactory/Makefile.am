@@ -277,6 +277,7 @@ FILES =  \
 	TypeSystem/EntityType.cs \
 	TypeSystem/ExtensionMethods.cs \
 	TypeSystem/IAccessor.cs \
+	TypeSystem/IAnnotatable.cs \
 	TypeSystem/IAttribute.cs \
 	TypeSystem/IConstantValue.cs \
 	TypeSystem/IConversions.cs \

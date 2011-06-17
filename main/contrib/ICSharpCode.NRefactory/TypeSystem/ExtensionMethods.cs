@@ -95,6 +95,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
+		#region GetSubTypeDefinitions
+		/// <summary>
+		/// Gets all sub type definitions defined in a context.
+		/// </summary>
+		public static IEnumerable<ITypeDefinition> GetSubTypeDefinitions (this IType baseType, ITypeResolveContext context)
+		{
+			foreach (var contextType in context.GetAllClasses ()) {
+				if (contextType.IsDerivedFrom (baseType, context))
+					yield return contextType;
+			}
+		}
+		#endregion
+		
 		#region IsOpen / IsUnbound
 		sealed class TypeClassificationVisitor : TypeVisitor
 		{
