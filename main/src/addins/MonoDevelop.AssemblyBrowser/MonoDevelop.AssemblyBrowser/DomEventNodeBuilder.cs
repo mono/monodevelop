@@ -38,13 +38,14 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using Mono.Cecil;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class DomEventNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(EventDefinition); }
+			get { return typeof(IEvent); }
 		}
 		
 		public DomEventNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -53,36 +54,35 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var evt = (EventDefinition)dataObject;
+			var evt = (IEvent)dataObject;
 			return evt.FullName;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			var evt = (EventDefinition)dataObject;
-//			label = Ambience.GetString (evt, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
-			label = evt.Name;
-//			if (evt.IsPrivate || evt.IsInternal)
-//				label = DomMethodNodeBuilder.FormatPrivate (label);
+			var evt = (IEvent)dataObject;
+			label = Ambience.GetString (evt, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			if (evt.IsPrivate || evt.IsInternal)
+				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = ImageService.GetPixbuf (evt.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is EventDefinition)
-				return ((EventDefinition)thisNode.DataItem).Name.CompareTo (((EventDefinition)otherNode.DataItem).Name);
+			if (otherNode.DataItem is IEvent)
+				return ((IEvent)thisNode.DataItem).Name.CompareTo (((IEvent)otherNode.DataItem).Name);
 			return 1;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			var evt = (EventDefinition)dataObject;
-			if (evt.AddMethod != null)
-				ctx.AddChild (evt.AddMethod);
-			if (evt.RemoveMethod != null)
-				ctx.AddChild (evt.RemoveMethod);
-			if (evt.InvokeMethod != null)
-				ctx.AddChild (evt.InvokeMethod);
+			var evt = (IEvent)dataObject;
+			if (evt.CanAdd)
+				ctx.AddChild (evt.AddAccessor);
+			if (evt.CanRemove)
+				ctx.AddChild (evt.RemoveAccessor);
+			if (evt.CanInvoke)
+				ctx.AddChild (evt.InvokeAccessor);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -113,8 +113,7 @@ namespace MonoDevelop.AssemblyBrowser
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
 			var evt = (EventDefinition)navigator.DataItem;
-			var parent = (TypeDefinition)navigator.GetParentDataItem (typeof(TypeDefinition), false);
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), parent, b => b.AddEvent (evt));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), evt.DeclaringType, b => b.AddEvent (evt));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

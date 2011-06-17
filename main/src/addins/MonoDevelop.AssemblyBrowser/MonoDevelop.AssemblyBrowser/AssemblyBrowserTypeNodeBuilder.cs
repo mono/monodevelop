@@ -44,12 +44,18 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
+		internal CecilLoader CecilLoader {
+			get {
+				return Widget.CecilLoader;
+			}
+		}
+		
 		public AssemblyBrowserTypeNodeBuilder (AssemblyBrowserWidget assemblyBrowserWidget)
 		{
 			this.Widget = assemblyBrowserWidget;
 		}
 		
-		protected IProjectContent GetContent (ITreeBuilder treeBuilder)
+		protected IProjectContent GetContent (ITreeNavigator treeBuilder)
 		{
 			return ((Tuple<AssemblyDefinition, IProjectContent>)treeBuilder.GetParentDataItem (typeof(Tuple<AssemblyDefinition, IProjectContent>), true)).Item2;
 		}

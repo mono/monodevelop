@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor;
 using Mono.Cecil;
+using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -62,23 +63,23 @@ namespace MonoDevelop.AssemblyBrowser
 			closedIcon = Context.GetIcon (Stock.ClosedFolder);
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var module = (ModuleDefinition)dataObject;
 			Dictionary<string, Namespace> namespaces = new Dictionary<string, Namespace> ();
-			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			foreach (var type in module.Types) {
-				if (publicOnly && !type.IsPublic)
-					continue;
-				if (!namespaces.ContainsKey (type.Namespace))
-					namespaces [type.Namespace] = new Namespace (type.Namespace);
-				namespaces [type.Namespace].Types.Add (type);
+			bool publicOnly = builder.Options ["PublicApiOnly"];
+			var ctx = GetContent (builder);
+			foreach (var ns in ctx.GetNamespaces ()) {
+				var newSpace = new Namespace (ns);
+				newSpace.Types.AddRange (ctx.GetClasses (ns, StringComparer.Ordinal).Where (c => !publicOnly || c.IsPublic ));
+				if (newSpace.Types.Count > 0)
+					namespaces [ns] = newSpace;
 			}
-			ctx.AddChild (new ReferenceFolder (module));
+			builder.AddChild (new ReferenceFolder (module));
 			if (module.Resources.Count > 0)
-				ctx.AddChild (new ResourceFolder (module));
+				builder.AddChild (new ResourceFolder (module));
 			foreach (Namespace ns in namespaces.Values) {
-				ctx.AddChild (ns);
+				builder.AddChild (ns);
 			}
 		}
 		

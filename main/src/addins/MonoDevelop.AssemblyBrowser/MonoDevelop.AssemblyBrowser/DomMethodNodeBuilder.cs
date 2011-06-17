@@ -49,7 +49,7 @@ namespace MonoDevelop.AssemblyBrowser
 	class DomMethodNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(MethodDefinition); }
+			get { return typeof(IMethod); }
 		}
 		
 		public DomMethodNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -59,7 +59,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var method = (MethodDefinition)dataObject;
+			var method = (IMethod)dataObject;
 			return method.FullName;
 		}
 		
@@ -69,22 +69,21 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			var method = (MethodDefinition)dataObject;
+			var method = (IMethod)dataObject;
 			var ctx = GetContent (treeBuilder);
-			label = method.Name;
-//			label = Ambience.GetString (ctx, method, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
-//			if (method.IsPrivate || method.IsInternal)
-//				label = DomMethodNodeBuilder.FormatPrivate (label);
+			label = Ambience.GetString (ctx, method, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			if (method.IsPrivate || method.IsInternal)
+				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
 			icon = ImageService.GetPixbuf (method.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is MethodDefinition)
+			if (!(otherNode.DataItem is IMethod))
 				return 1;
 			if (otherNode.DataItem is IMethod)
-				return ((MethodDefinition)thisNode.DataItem).Name.CompareTo (((MethodDefinition)otherNode.DataItem).Name);
+				return ((IMethod)thisNode.DataItem).Name.CompareTo (((IMethod)otherNode.DataItem).Name);
 			
 			return -1;
 		}
@@ -92,7 +91,7 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintDeclaringType (StringBuilder result, ITreeNavigator navigator)
 		{
-			IType type = (IType)navigator.GetParentDataItem (typeof (IType), false);
+			var type = (IType)navigator.GetParentDataItem (typeof (IType), false);
 			if (type == null)
 				return;
 			
@@ -102,10 +101,10 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			var method = (MethodDefinition)navigator.DataItem;
+			var method = (IMethod)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-//			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			PrintDeclaringType (result, navigator);
@@ -130,7 +129,7 @@ namespace MonoDevelop.AssemblyBrowser
 				
 			return (ModuleDefinition)nav.DataItem;
 		}
-
+		
 		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
 		{
 			try {
@@ -166,7 +165,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 		
-		
 		internal static string GetAttributes (Ambience ambience, IEnumerable<IAttribute> attributes)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -182,9 +180,8 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var method = (MethodDefinition)navigator.DataItem;
-			var parent = (TypeDefinition)navigator.GetParentDataItem (typeof(TypeDefinition), false);
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), parent, b => b.AddMethod (method));
+			var method = CecilLoader.GetCecilObject ((IMethod)navigator.DataItem);
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), method.DeclaringType, b => b.AddMethod (method));
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -208,7 +205,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var method = (MethodDefinition)navigator.DataItem;
+			var method = CecilLoader.GetCecilObject ((IMethod)navigator.DataItem);
 			if (method == null)
 				return null;
 			return Disassemble (data, rd => rd.DisassembleMethod (method));
@@ -216,10 +213,10 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			var method = (MethodDefinition)navigator.DataItem;
+			var method = (IMethod)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-//			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
+			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
 			result.Append ("</big>");
 			result.AppendLine ();
 			

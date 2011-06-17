@@ -489,37 +489,34 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			BackgroundWorker worker = sender as BackgroundWorker;
 			try {
-				
 				string pattern = e.Argument.ToString ().ToUpper ();
 				int types = 0, curType = 0;
 				foreach (var unit in this.definitions) {
-					foreach (var module in unit.Value.Modules)
-						types += module.Types.Count;
+						types += unit.Value.GetClasses ().Count ();
 				}
-				var members = new List<IMemberDefinition> ();
+				var members = new List<IMember> ();
 				switch (searchMode) {
 				case SearchMode.Member:
 					foreach (var unit in this.definitions) {
-						foreach (var module in unit.Value.Modules)
-							foreach (var type in module.Types) {
+						foreach (var type in unit.Value.GetClasses ()) {
+							if (worker.CancellationPending)
+								return;
+							curType++;
+							foreach (var member in type.GetMembers (unit.Value)) {
 								if (worker.CancellationPending)
 									return;
-								curType++;
-								foreach (var member in type.Methods.Cast<IMemberDefinition> ().Concat (type.Properties).Concat (type.Fields).Concat (type.Events)) {
-									if (worker.CancellationPending)
-										return;
-									if (member.Name.ToUpper ().Contains (pattern)) {
-										members.Add (member);
-									}
+								if (member.Name.ToUpper ().Contains (pattern)) {
+									members.Add (member);
 								}
 							}
+						}
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 						foreach (var member in members) {
 							if (worker.CancellationPending)
 								return;
-							memberListStore.AppendValues ("", //ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+							memberListStore.AppendValues (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu),
 							                              member.Name,
 							                              member.DeclaringType.FullName,
 							                              "", //((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
@@ -532,20 +529,18 @@ namespace MonoDevelop.AssemblyBrowser
 						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 					});
 					foreach (var unit in this.definitions) {
-						foreach (var module in unit.Value.Modules)
-							foreach (var type in module.Types) {
+						foreach (var type in unit.Value.GetClasses ()) {
+							if (worker.CancellationPending)
+								return;
+							curType++;
+							foreach (var method in type.Methods) {
 								if (worker.CancellationPending)
 									return;
-								curType++;
-								foreach (var method in type.Methods) {
-									if (worker.CancellationPending)
-										return;
 //								if (DomMethodNodeBuilder.Disassemble (rd => rd.DisassembleMethod (method)).ToUpper ().Contains (pattern)) {
 //									members.Add (method);
 //								}
-								}
-
 							}
+						}
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
@@ -562,19 +557,17 @@ namespace MonoDevelop.AssemblyBrowser
 					break;
 				case SearchMode.Decompiler:
 					foreach (var unit in this.definitions) {
-						foreach (var module in unit.Value.Modules)
-							foreach (var type in module.Types) {
+						foreach (var type in unit.Value.GetClasses ()) {
+							if (worker.CancellationPending)
+								return;
+							curType++;
+							foreach (var method in type.Methods) {
 								if (worker.CancellationPending)
 									return;
-								curType++;
-								foreach (var method in type.Methods) {
-									if (worker.CancellationPending)
-										return;
 /*								if (DomMethodNodeBuilder.Decompile (domMethod, false).ToUpper ().Contains (pattern)) {
-									members.Add (method);
-								}*/
-								}
+									members.Add (method);*/
 							}
+						}
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
@@ -590,20 +583,20 @@ namespace MonoDevelop.AssemblyBrowser
 					});
 					break;
 				case SearchMode.Type:
+					var typeList = new List<IType> ();
 					foreach (var unit in this.definitions) {
-						foreach (var module in unit.Value.Modules)
-						foreach (var type in module.Types) {
+						foreach (var type in unit.Value.GetClasses ()) {
 							if (worker.CancellationPending)
 								return;
 							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
-								members.Add (type);
+								typeList.Add (type);
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						foreach (var type in members) {
+						foreach (var type in typeList) {
 							if (worker.CancellationPending)
 								return;
-							typeListStore.AppendValues ("", //ImageService.GetPixbuf (type.StockIcon, Gtk.IconSize.Menu),
+							typeListStore.AppendValues (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu),
 							                            type.Name,
 							                            type.FullName.Substring (0, type.FullName.Length - type.Name.Length),
 							                           "", // ((DomCecilCompilationUnit)type.CompilationUnit).AssemblyDefinition.Name.FullName,
@@ -957,7 +950,7 @@ namespace MonoDevelop.AssemblyBrowser
 			ITreeNavigator nav = SearchMember (url);
 			if (nav == null) {
 				foreach (var definition in definitions.ToArray ()) {
-					foreach (var assemblyNameReference in definition.Value.MainModule.AssemblyReferences) {
+					foreach (var assemblyNameReference in definition.Value.Annotation<AssemblyDefinition> ().MainModule.AssemblyReferences) {
 						string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
 						if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
 							AddReference (assemblyFile);
@@ -978,7 +971,7 @@ namespace MonoDevelop.AssemblyBrowser
 			AssemblyDefinition cu = null;
 			foreach (var unit in definitions) {
 				if (unit.Key == fileName)
-					cu = unit.Value;
+					cu = unit.Value.Annotation<AssemblyDefinition> ();
 			}
 			if (cu == null)
 				return;
@@ -1072,19 +1065,27 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		Dictionary<string, AssemblyDefinition> definitions = new Dictionary<string, AssemblyDefinition> ();
-		public AssemblyDefinition AddReference (string fileName)
+		CecilLoader loader = new CecilLoader (true);
+		internal CecilLoader CecilLoader {
+			get {
+				return loader;
+			}
+		} 
+		
+		Dictionary<string, IProjectContent> definitions = new Dictionary<string, IProjectContent> ();
+		public IProjectContent AddReference (string fileName)
 		{
-			AssemblyDefinition result;
+			IProjectContent result;
 			if (definitions.TryGetValue (fileName, out result))
 				return result;
-			definitions [fileName] = result = ReadAssembly (fileName);
-			
+			var assembly = ReadAssembly (fileName);
+			definitions [fileName] = result = loader.LoadAssembly (assembly);
+			result.AddAnnotation (assembly);
 			ITreeBuilder builder;
 			if (definitions.Count == 1) {
-				builder = TreeView.LoadTree (Tuple.Create (result, new CecilLoader ().LoadAssembly (result)));
+				builder = TreeView.LoadTree (Tuple.Create (assembly, result));
 			} else {
-				builder = TreeView.AddChild (Tuple.Create (result, new CecilLoader ().LoadAssembly (result)));
+				builder = TreeView.AddChild (Tuple.Create (assembly, result));
 			}
 			builder.MoveToFirstChild ();
 			builder.Expanded = true;

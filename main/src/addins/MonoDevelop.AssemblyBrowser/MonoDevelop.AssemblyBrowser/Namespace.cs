@@ -35,14 +35,14 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class Namespace : IDisposable
 	{
-		List<TypeDefinition> types = new List<TypeDefinition> ();
+		List<ITypeDefinition> types = new List<ITypeDefinition> ();
 		
 		public string Name {
 			get;
 			private set;
 		}
 
-		public List<TypeDefinition> Types {
+		public List<ITypeDefinition> Types {
 			get {
 				return types;
 			}
