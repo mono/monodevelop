@@ -169,12 +169,15 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.Project; }
 			set { 
 				Window.ViewContent.Project = value; 
+				if (value != null)
+					singleFileContext = null;
 			}
 		}
 		
+		IProjectContent singleFileContext;
 		public ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext TypeResolveContext {
 			get {
-				return MonoDevelop.TypeSystem.TypeSystemService.GetContext (Project);
+				return Project != null ? MonoDevelop.TypeSystem.TypeSystemService.GetContext (Project) : GetProjectContext ();
 			}
 		}
 		
@@ -603,14 +606,25 @@ namespace MonoDevelop.Ide.Gui
 				if (editor == null)
 					return null;
 				string currentParseText = editor.Text;
-				var ctx = TypeSystemService.GetProjectContext (Project);
-				if (ctx == null)
-					ctx = new SimpleProjectContent ();
+				IProjectContent ctx = GetProjectContext ();
 				this.parsedFile = TypeSystemService.ParseFile (ctx, currentParseFile, editor.Document.MimeType, currentParseText);
 			} finally {
 				OnDocumentParsed (EventArgs.Empty);
 			}
 			return this.parsedFile;
+		}
+
+		public IProjectContent GetProjectContext ()
+		{
+			IProjectContent ctx;
+			if (Project == null) {
+				if (singleFileContext == null)
+					singleFileContext = new SimpleProjectContent ();
+				ctx = singleFileContext;
+			} else {
+				ctx = TypeSystemService.GetProjectContext (Project);
+			}
+			return ctx;
 		}
 		
 		uint parseTimeout = 0;
@@ -621,13 +635,13 @@ namespace MonoDevelop.Ide.Gui
 			// be parsed at the same time.
 			string currentParseFile = FileName;
 			CancelParseTimeout ();
+			
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				string currentParseText = Editor.Text;
 				string mimeType = Editor.Document.MimeType;
-				Project curentParseProject = Project;
-				
+				IProjectContent ctx = GetProjectContext ();
 				ThreadPool.QueueUserWorkItem (delegate {
-					var currentParsedDocument = TypeSystemService.ParseFile (TypeSystemService.GetProjectContext (Project), currentParseFile, mimeType, currentParseText);
+					var currentParsedDocument = TypeSystemService.ParseFile (ctx, currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 						if (isClosed)
