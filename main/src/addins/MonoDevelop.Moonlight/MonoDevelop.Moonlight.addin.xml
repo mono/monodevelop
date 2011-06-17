@@ -63,8 +63,8 @@
 		</MimeType>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Parser class = "MonoDevelop.Moonlight.MoonlightParser" insertbefore="XmlParser" fileExtensions=".xaml" />
+	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
+		<Provider class = "MonoDevelop.Moonlight.MoonlightParser" insertbefore="XmlParser" mimeType="application/xaml+xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
