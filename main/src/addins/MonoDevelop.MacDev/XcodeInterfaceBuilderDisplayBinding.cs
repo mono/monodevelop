@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.MacDev.XcodeIntegration;
+using MonoDevelop.MacDev.XcodeSyncing;
 
 namespace MonoDevelop.MacDev
 {

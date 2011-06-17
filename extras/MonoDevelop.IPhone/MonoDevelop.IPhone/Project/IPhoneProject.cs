@@ -37,6 +37,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide;
 using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.XcodeSyncing;
 using MonoDevelop.MacDev.XcodeIntegration;
 using MonoDevelop.Projects;
 using MonoDevelop.MacDev.NativeReferences;

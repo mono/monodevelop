@@ -1,0 +1,128 @@
+// 
+// XcodeSyncedType.cs
+//  
+// Author:
+//       Michael Hutchinson <mhutch@xamarin.com>
+// 
+// Copyright (c) Xamarin, Inc. (http://xamarin.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
+using System.Linq;
+using System.IO;
+using System.Collections.Generic;
+
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.MacDev.ObjCIntegration;
+using System.Threading.Tasks;
+using MonoDevelop.MacDev.XcodeIntegration;
+
+namespace MonoDevelop.MacDev.XcodeSyncing
+{
+	
+	class XcodeSyncedType : XcodeSyncedItem
+	{
+		public NSObjectTypeInfo Type { get; set; }
+		
+		public XcodeSyncedType (NSObjectTypeInfo type)
+		{
+			this.Type = type;
+		}
+		
+		FilePath GetH (FilePath syncProjectDir)
+		{
+			return syncProjectDir.Combine (Type.ObjCName + ".h");
+		}
+		
+		FilePath GetM (FilePath syncProjectDir)
+		{
+			return syncProjectDir.Combine (Type.ObjCName + ".m");
+		}
+		
+		public override bool NeedsSyncOut (XcodeSyncContext context)
+		{
+			//FIXME: types dep on other types on project, need better regeneration skipping			
+			var target = GetH (context.ProjectDir);
+			if (File.Exists (target) && context.GetSyncTime (target) > Type.DefinedIn.Max (f => File.GetLastWriteTime (f)))
+				return false;
+			return true;
+		}
+		
+		public override void SyncOut (XcodeSyncContext context)
+		{
+			Type.GenerateObjcType (context.ProjectDir);
+			context.UpdateSyncTime (GetH (context.ProjectDir));
+			context.UpdateSyncTime (GetM (context.ProjectDir));
+		}
+		
+		public override bool NeedsSyncBack (XcodeSyncContext context)
+		{
+			var target = GetH (context.ProjectDir);
+			if (File.Exists (target) && File.GetLastWriteTime (target) > context.GetSyncTime (target))
+				return true;
+			return false;
+		}
+		
+		public override void SyncBack (XcodeSyncBackContext context)
+		{
+			FilePath hFile = GetH (context.ProjectDir);
+			var parsed = NSObjectInfoService.ParseHeader (hFile);
+			
+			var objcType = context.ProjectInfo.GetType (hFile.FileNameWithoutExtension);
+			if (objcType == null) {
+				context.ReportError ("Missing objc type {0}", hFile.FileNameWithoutExtension);
+				return;
+			}
+			if (parsed.ObjCName != objcType.ObjCName) {
+				context.ReportError ("Parsed type name {0} does not match original {1}", parsed.ObjCName, objcType.ObjCName);
+				return;
+			}
+			if (!objcType.IsUserType) {
+				context.ReportError ("Parsed type {0} is not a user type", objcType);
+				return;
+			}
+			
+			//FIXME: detect unresolved types
+			parsed.MergeCliInfo (objcType);
+			context.ProjectInfo.ResolveTypes (parsed);
+			
+			context.TypeSyncJobs.Add (new XcodeSyncObjcBackJob () {
+				HFile = hFile,
+				DesignerFile = objcType.GetDesignerFile (),
+				Type = parsed,
+			});
+		}
+		
+		public override void AddToProject (XcodeProject project, FilePath syncProjectDir)
+		{
+			project.AddSource (Type.ObjCName + ".h");
+			project.AddSource (Type.ObjCName + ".m");
+		}
+		
+		public override string[] GetTargetFileNames (FilePath syncProjectDir)
+		{
+			return new string [] {
+				GetH (syncProjectDir),
+				GetM (syncProjectDir),
+			};
+		}
+	}
+}

@@ -99,7 +99,7 @@ namespace MonoDevelop.MacDev
 		{
 			var result = new BuildResult ();
 			
-			if (XcodeIntegration.XcodeProjectTracker.TrackerEnabled)
+			if (XcodeSyncing.XcodeProjectTracker.TrackerEnabled)
 				return result;
 			
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (monitor, generator.Project);

@@ -36,6 +36,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using System.Reflection;
 using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.XcodeSyncing;
 using MonoDevelop.MacDev.XcodeIntegration;
 using MonoDevelop.MacDev.NativeReferences;
 

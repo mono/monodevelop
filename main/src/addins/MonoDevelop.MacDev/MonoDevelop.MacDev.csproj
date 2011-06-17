@@ -16,7 +16,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.MacDev</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>DEBUG,DEBUG_XCODE_SYNC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -60,6 +60,8 @@
     <Folder Include="icons\" />
     <Folder Include="ObjCIntegration\" />
     <Folder Include="NativeReferences\" />
+    <Folder Include="XcodeSyncing\" />
+    <Folder Include="XcodeIntegration\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -102,7 +104,6 @@
     <Compile Include="XcodeIntegration\XcodeObject.cs" />
     <Compile Include="XcodeIntegration\XcodeProject.cs" />
     <Compile Include="XcodeIntegration\XcodeType.cs" />
-    <Compile Include="XcodeIntegration\XcodeProjectTracker.cs" />
     <Compile Include="ObjCIntegration\NSObjectInfoService.cs" />
     <Compile Include="ObjCIntegration\NSObjectProjectInfo.cs" />
     <Compile Include="XcodeInterfaceBuilderDisplayBinding.cs" />
@@ -117,6 +118,13 @@
     </Compile>
     <Compile Include="ObjCIntegration\NSObjectTypeInfo.cs" />
     <Compile Include="ObjCIntegration\CodebehindTemplateBase.cs" />
+    <Compile Include="XcodeSyncing\XcodeProjectTracker.cs" />
+    <Compile Include="XcodeSyncing\XcodeMonitor.cs" />
+    <Compile Include="XcodeSyncing\XcodeSyncedType.cs" />
+    <Compile Include="XcodeSyncing\XcodeSyncedContent.cs" />
+    <Compile Include="XcodeSyncing\XcodeSyncedItem.cs" />
+    <Compile Include="XcodeSyncing\XcodeSyncBackContext.cs" />
+    <Compile Include="XcodeSyncing\XcodeSyncContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

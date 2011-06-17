@@ -69,9 +69,15 @@ FILES =  \
 	XcodeIntegration/XCConfigurationList.cs \
 	XcodeIntegration/XcodeObject.cs \
 	XcodeIntegration/XcodeProject.cs \
-	XcodeIntegration/XcodeProjectTracker.cs \
 	XcodeIntegration/XcodeType.cs \
 	XcodeInterfaceBuilderDisplayBinding.cs \
+	XcodeSyncing/XcodeMonitor.cs \
+	XcodeSyncing/XcodeProjectTracker.cs \
+	XcodeSyncing/XcodeSyncBackContext.cs \
+	XcodeSyncing/XcodeSyncContext.cs \
+	XcodeSyncing/XcodeSyncedContent.cs \
+	XcodeSyncing/XcodeSyncedItem.cs \
+	XcodeSyncing/XcodeSyncedType.cs \
 	XibCodeBehind.cs 
 
 RES = MonoDevelop.MacDev.addin.xml
