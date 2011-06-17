@@ -44,9 +44,15 @@ namespace MonoDevelop.CSharp.Completion
 		internal Mono.TextEditor.TextEditorData textEditorData;
 		internal ITypeResolveContext ctx;
 		
+		CompilationUnit unit;
+		static readonly CompilationUnit emptyUnit = new CompilationUnit ();
 		CompilationUnit Unit {
-			get;
-			set;
+			get {
+				return unit ?? emptyUnit;
+			}
+			set {
+				unit = value;
+			}
 		}
 		
 		ParsedFile ParsedFile {

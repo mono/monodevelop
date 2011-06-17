@@ -105,11 +105,6 @@
 		<SerializationMap resource="md1format.xml" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-<!--		<Parser class = "MonoDevelop.CSharp.Parser.NRefactoryParser" fileExtensions=".cs" /> -->
-		<Parser class = "MonoDevelop.CSharp.Parser.McsParser" fileExtensions=".cs" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
 		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
 	</Extension>
@@ -139,10 +134,6 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Refactoring/ASTProvider">
-		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
