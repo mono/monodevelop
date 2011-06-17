@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Cecil;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.Decompiler.Ast
 {
 	/// <summary>
 	/// ITypeResolveContext implementation that lazily loads types from Cecil.
 	/// </summary>
-	public class CecilTypeResolveContext : ISynchronizedTypeResolveContext, IProjectContent
+	public class CecilTypeResolveContext : AbstractAnnotatable, ISynchronizedTypeResolveContext, IProjectContent
 	{
 		readonly ModuleDefinition module;
 		readonly string[] namespaces;

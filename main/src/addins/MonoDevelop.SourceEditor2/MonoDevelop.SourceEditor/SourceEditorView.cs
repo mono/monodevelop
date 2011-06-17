@@ -494,7 +494,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					
 					WorkbenchWindow.Document.DocumentParsed += delegate(object sender, EventArgs e) {
-						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedFile);
+						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedDocument);
 					};
 				};
 			};

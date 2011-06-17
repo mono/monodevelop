@@ -181,10 +181,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		ParsedDocument parsedFile;
-		public ParsedDocument ParsedFile {
+		ParsedDocument parsedDocument;
+		public ParsedDocument ParsedDocument {
 			get {
-				return parsedFile;
+				return parsedDocument;
 			}
 		}
 		
@@ -607,11 +607,11 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 				string currentParseText = editor.Text;
 				IProjectContent ctx = GetProjectContext ();
-				this.parsedFile = TypeSystemService.ParseFile (ctx, currentParseFile, editor.Document.MimeType, currentParseText);
+				this.parsedDocument = TypeSystemService.ParseFile (ctx, currentParseFile, editor.Document.MimeType, currentParseText);
 			} finally {
 				OnDocumentParsed (EventArgs.Empty);
 			}
-			return this.parsedFile;
+			return this.parsedDocument;
 		}
 
 		public IProjectContent GetProjectContext ()
@@ -646,7 +646,7 @@ namespace MonoDevelop.Ide.Gui
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 						if (isClosed)
 							return;
-						this.parsedFile = currentParsedDocument;
+						this.parsedDocument = currentParsedDocument;
 //						this.parsedDocument = currentParsedDocument;
 //						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 //							this.lastErrorFreeParsedDocument = parsedDocument;

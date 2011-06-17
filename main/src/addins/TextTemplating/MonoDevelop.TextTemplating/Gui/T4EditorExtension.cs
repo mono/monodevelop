@@ -54,7 +54,7 @@ namespace MonoDevelop.TextTemplating.Gui
 
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)
 		{
-			parsedDoc = (T4ParsedDocument)Document.ParsedFile;
+			parsedDoc = (T4ParsedDocument)Document.ParsedDocument;
 			if (parsedDoc != null)
 				RefreshOutline ();
 		}

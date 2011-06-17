@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public static IEnumerable<Result> Check (Document input)
 		{
-			var unit = input != null ? input.ParsedFile : null;
+			var unit = input != null ? input.ParsedDocument : null;
 			if (unit == null)
 				return Enumerable.Empty<Result> ();
 				

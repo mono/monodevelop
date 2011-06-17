@@ -130,7 +130,7 @@ namespace MonoDevelop.AspNet
 			if (cls == null)
 				return tag;
 			
-			var doc = document.ParsedFile as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
+			var doc = document.ParsedDocument as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 			if (doc == null)
 				return tag;
 			

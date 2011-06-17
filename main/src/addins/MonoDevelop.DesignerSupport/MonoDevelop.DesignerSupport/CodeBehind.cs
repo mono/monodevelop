@@ -116,7 +116,7 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 		
-		public static IType GetNonDesignerClass (IType cls)
+		public static ITypeDefinition GetNonDesignerClass (IType cls)
 		{
 			if (cls.GetDefinition ().GetParts ().Count == 1)
 				return null;

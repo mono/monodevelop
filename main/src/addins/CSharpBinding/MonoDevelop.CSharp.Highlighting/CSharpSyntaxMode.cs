@@ -252,13 +252,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					tags.Add (tag.Tag);
 				}
 				
-				if (document != null && document.ParsedFile != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
-					if (document.ParsedFile.Annotation <ResolveVisitor> () == null) {
+				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
+					if (document.ParsedDocument.Annotation <ResolveVisitor> () == null) {
 						var resolver = new CSharpResolver (document.TypeResolveContext, System.Threading.CancellationToken.None);
 						var navi    = new SemanticResolveVisitorNavigator ();
-						var visitor = new ResolveVisitor (resolver, document.ParsedFile.Annotation <ParsedFile> (), navi);
-						document.ParsedFile.AddAnnotation (navi);
-						document.ParsedFile.AddAnnotation (visitor);
+						var visitor = new ResolveVisitor (resolver, document.ParsedDocument.Annotation <ParsedFile> (), navi);
+						document.ParsedDocument.AddAnnotation (navi);
+						document.ParsedDocument.AddAnnotation (visitor);
 					}
 				}
 			}
@@ -266,8 +266,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
 			{
 				var unit = parsedDocument.Annotation<CompilationUnit> ();
-				var visitor = document.ParsedFile.Annotation<ResolveVisitor> ();
-				var navi = document.ParsedFile.Annotation<SemanticResolveVisitorNavigator> ();
+				var visitor = document.ParsedDocument.Annotation<ResolveVisitor> ();
+				var navi = document.ParsedDocument.Annotation<SemanticResolveVisitorNavigator> ();
 				if (unit == null || visitor == null)
 					return null;
 				
@@ -376,7 +376,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			protected override void AddRealChunk (Chunk chunk)
 			{
-				var parsedDocument = document != null ? document.ParsedFile : null;
+				var parsedDocument = document != null ? document.ParsedDocument : null;
 				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
 					int endLoc = -1;
 					string semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);

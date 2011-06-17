@@ -80,11 +80,11 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			Document.DocumentParsed += delegate {
-				var unit = Document.ParsedFile;
+				var unit = Document.ParsedDocument;
 				if (unit == null) 
 					return;
-				this.Unit = document.ParsedFile.Annotation<CompilationUnit> ();
-				this.ParsedFile = document.ParsedFile.Annotation<ParsedFile> ();
+				this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
+				this.ParsedFile = document.ParsedDocument.Annotation<ParsedFile> ();
 				Editor.Parent.TextViewMargin.PurgeLayoutCache ();
 				Editor.Parent.RedrawMarginLines (Editor.Parent.TextViewMargin, 1, Editor.LineCount);
 			};

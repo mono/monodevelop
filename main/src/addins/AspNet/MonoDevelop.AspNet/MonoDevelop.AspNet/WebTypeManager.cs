@@ -84,7 +84,7 @@ namespace MonoDevelop.AspNet
 			file = runtime.AssemblyContext.GetAssemblyLocation (file, targetFramework);
 			if (string.IsNullOrEmpty (file))
 				throw new Exception ("System.Web assembly file not found for framework " + targetFramework.Id);
-			ITypeResolveContext dom = TypeSystemService.GetAssemblyContext (runtime, file);
+			ITypeResolveContext dom = TypeSystemService.LoadAssemblyContext (runtime, file);
 			if (dom == null)
 				throw new Exception ("System.Web parse database not found for framework " + targetFramework.Id + " file '" + file + "'");
 			return dom;

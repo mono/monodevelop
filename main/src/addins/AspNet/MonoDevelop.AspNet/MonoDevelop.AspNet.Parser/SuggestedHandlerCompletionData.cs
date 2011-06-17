@@ -40,10 +40,10 @@ namespace MonoDevelop.AspNet.Parser
 	{
 		Project project;
 		CodeMemberMethod methodInfo;
-		IType codeBehindClass;
-		IType codeBehindClassPart;
+		ITypeDefinition codeBehindClass;
+		ITypeDefinition codeBehindClassPart;
 		
-		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, IType codeBehindClass, IType codeBehindClassPart)
+		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, ITypeDefinition codeBehindClass, ITypeDefinition codeBehindClassPart)
 		{
 			this.project = project;
 			this.methodInfo = methodInfo;

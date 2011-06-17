@@ -55,7 +55,7 @@ namespace CBinding.Parser
 		
 		public string GetMarkup (int n)
 		{
-			return GLib.Markup.EscapeText (Document.ParsedFile.UserRegions.ElementAt (n).Name);
+			return GLib.Markup.EscapeText (Document.ParsedDocument.UserRegions.ElementAt (n).Name);
 		}
 		
 		internal static Gdk.Pixbuf Pixbuf
@@ -70,13 +70,13 @@ namespace CBinding.Parser
 		
 		public object GetTag (int n)
 		{
-			return Document.ParsedFile.UserRegions.ElementAt (n);
+			return Document.ParsedDocument.UserRegions.ElementAt (n);
 		}
 		
 		
 		public void ActivateItem (int n)
 		{
-			var reg = Document.ParsedFile.UserRegions.ElementAt (n);
+			var reg = Document.ParsedDocument.UserRegions.ElementAt (n);
 			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
 			if (extEditor != null)
 				extEditor.SetCaretTo (Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn);
@@ -85,9 +85,9 @@ namespace CBinding.Parser
 		public int IconCount
 		{
 			get {
-				if (Document.ParsedFile == null)
+				if (Document.ParsedDocument == null)
 					return 0;
-				return Document.ParsedFile.UserRegions.Count ();
+				return Document.ParsedDocument.UserRegions.Count ();
 			}
 		}
 		

@@ -559,7 +559,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						// of the open combine.  Otherwise, it will get
 						// checked down below.
 						if (doc.Project == null && doc.IsFile) {
-							var info = doc.ParsedFile;
+							var info = doc.ParsedDocument;
 							if (info != null) {
 								foreach (var c in info.TopLevelTypeDefinitions) {
 									types.Add (Tuple.Create (doc.TypeResolveContext, (IType)c));

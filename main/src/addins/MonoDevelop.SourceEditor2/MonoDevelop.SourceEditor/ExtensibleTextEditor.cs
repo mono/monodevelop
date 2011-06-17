@@ -44,6 +44,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.SourceEditor.Extension;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -476,11 +477,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		internal IParsedFile ParsedFile {
+		internal ParsedDocument ParsedDocument {
 			get {
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) 
-					return doc.ParsedFile;
+					return doc.ParsedDocument;
 				return null;
 			}
 		}

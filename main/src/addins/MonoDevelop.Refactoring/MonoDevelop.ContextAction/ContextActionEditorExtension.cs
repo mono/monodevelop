@@ -81,7 +81,7 @@ namespace MonoDevelop.ContextAction
 		{
 			RemoveWidget ();
 			
-			if (Document.ParsedFile != null) {
+			if (Document.ParsedDocument != null) {
 				AstLocation loc = new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 				RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<ContextAction> fixes) {
 					Application.Invoke (delegate {

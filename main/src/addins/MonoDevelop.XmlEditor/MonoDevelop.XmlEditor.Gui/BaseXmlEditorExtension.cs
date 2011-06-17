@@ -73,12 +73,12 @@ namespace MonoDevelop.XmlEditor.Gui
 			Parser parser = new Parser (CreateRootState (), false);
 			tracker = new DocumentStateTracker<Parser> (parser, Editor);
 			Document.DocumentParsed += delegate {
-				lastCU = Document.ParsedFile;
+				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			};
 			
-			if (Document.ParsedFile != null) {
-				lastCU = Document.ParsedFile;
+			if (Document.ParsedDocument != null) {
+				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			}
 		}

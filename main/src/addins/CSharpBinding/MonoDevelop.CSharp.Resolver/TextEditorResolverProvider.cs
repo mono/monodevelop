@@ -50,8 +50,8 @@ namespace MonoDevelop.CSharp.Resolver
 			if (doc == null)
 				return "";
 			var loc = data.OffsetToLocation (offset);
-			var unit       = doc.ParsedFile.Annotation<CompilationUnit> ();
-			var parsedFile = doc.ParsedFile.Annotation<ParsedFile> ();
+			var unit       = doc.ParsedDocument.Annotation<CompilationUnit> ();
+			var parsedFile = doc.ParsedDocument.Annotation<ParsedFile> ();
 			var node       = unit.GetNodeAt<Expression> (loc.Line, loc.Column);
 			if (unit == null || parsedFile == null || node == null)
 				return "";
@@ -76,8 +76,8 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			}
 			var loc = data.OffsetToLocation (offset);
-			var unit       = doc.ParsedFile.Annotation<CompilationUnit> ();
-			var parsedFile = doc.ParsedFile.Annotation<ParsedFile> ();
+			var unit       = doc.ParsedDocument.Annotation<CompilationUnit> ();
+			var parsedFile = doc.ParsedDocument.Annotation<ParsedFile> ();
 			var node       = unit.GetNodeAt<Expression> (loc.Line, loc.Column);
 			if (unit == null || parsedFile == null || node == null) {
 				expressionRegion = DomRegion.Empty;

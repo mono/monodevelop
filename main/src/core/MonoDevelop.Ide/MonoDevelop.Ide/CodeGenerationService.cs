@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			return GetInsertionPoints (document.Editor, document.ParsedFile, type);
+			return GetInsertionPoints (document.Editor, document.ParsedDocument, type);
 		}
 		
 		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, IParsedFile parsedDocument, IType type)

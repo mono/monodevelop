@@ -144,7 +144,7 @@ namespace MonoDevelop.DesignerSupport
 				JumpToDeclaration (true);
 			};
 
-			this.lastCU = Document.ParsedFile;
+			this.lastCU = Document.ParsedDocument;
 
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 
@@ -239,7 +239,7 @@ namespace MonoDevelop.DesignerSupport
 		uint refillOutlineStoreId;
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			lastCU = Document.ParsedFile;
+			lastCU = Document.ParsedDocument;
 			//limit update rate to 3s
 			if (!refreshingOutline) {
 				refreshingOutline = true;

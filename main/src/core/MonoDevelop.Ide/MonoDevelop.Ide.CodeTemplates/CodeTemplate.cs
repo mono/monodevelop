@@ -382,7 +382,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public TemplateResult InsertTemplateContents (MonoDevelop.Ide.Gui.Document document)
 		{
 			var dom = document.TypeResolveContext;
-			var doc = document.ParsedFile;
+			var doc = document.ParsedDocument;
 			Mono.TextEditor.TextEditorData data = document.Editor;
 			
 			int offset = data.Caret.Offset;

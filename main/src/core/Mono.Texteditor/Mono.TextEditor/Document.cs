@@ -265,7 +265,6 @@ namespace Mono.TextEditor
 			return GetTextBetween (LocationToOffset (startLine, startColumn), LocationToOffset (endLine, endColumn));
 		}
 		
-		
 		public string GetTextAt (int offset, int count)
 		{
 			if (offset < 0)

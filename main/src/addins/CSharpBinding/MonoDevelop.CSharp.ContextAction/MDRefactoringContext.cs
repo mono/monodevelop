@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -223,7 +224,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void Perform (Script script)
 			{
 				ctx.Document.UpdateParseDocument ();
-				ctx.Unit = ctx.Document.ParsedFile.Annotation<CompilationUnit> ();
+				ctx.Unit = ctx.Document.ParsedDocument.Annotation<CompilationUnit> ();
 			
 				var node = Callback (ctx);
 				if (node != null)
@@ -326,7 +327,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
 			{
 				var editor = ctx.Document.Editor;
-				var mode = new InsertionCursorEditMode (editor.Parent, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedFile.GetTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
+				var mode = new InsertionCursorEditMode (editor.Parent, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedDocument.GetTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
 				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
@@ -382,7 +383,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				throw new ArgumentNullException ("document");
 			this.Document = document;
 			this.Location = new AstLocation (loc.Line, loc.Column);
-			this.Unit = document.ParsedFile.Annotation<CompilationUnit> ();
+			this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
 		}
 		
 		public override AstType CreateShortType (IType fullType)
@@ -407,15 +408,15 @@ namespace MonoDevelop.CSharp.ContextAction
 			return result;
 		}*/
 		
-		IParsedFile ParsedFile {
+		ParsedDocument ParsedDocument {
 			get {
-				return Document.ParsedFile;
+				return Document.ParsedDocument;
 			}
 		}
 		
 		public override ResolveResult Resolve (AstNode node)
 		{
-			var pf = (ParsedFile)ParsedFile;
+			var pf = ParsedDocument.Annotation<ParsedFile> ();
 			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
 			

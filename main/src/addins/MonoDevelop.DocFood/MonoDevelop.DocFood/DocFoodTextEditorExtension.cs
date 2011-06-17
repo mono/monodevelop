@@ -27,9 +27,7 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
-using MonoDevelop.Projects.Dom;
 using System.Text;
-using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.DocFood
 {

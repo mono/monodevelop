@@ -80,7 +80,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		void Enable ()
 		{
 			Document.DocumentParsed += OnDocumentParsed;
-			if (Document.ParsedFile != null)
+			if (Document.ParsedDocument != null)
 				OnDocumentParsed (null, null);
 		}
 		
@@ -93,7 +93,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
-			var doc = Document.ParsedFile;
+			var doc = Document.ParsedDocument;
 			if (doc == null)
 				return;
 			var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));

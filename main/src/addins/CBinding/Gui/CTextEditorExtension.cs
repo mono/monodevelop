@@ -674,7 +674,7 @@ namespace CBinding
 		// Yoinked from C# binding
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
-			var unit = Document.ParsedFile;
+			var unit = Document.ParsedDocument;
 			if (unit == null)
 				return;
 			

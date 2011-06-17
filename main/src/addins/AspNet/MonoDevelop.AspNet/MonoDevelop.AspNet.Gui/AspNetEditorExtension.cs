@@ -532,7 +532,7 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (!(expr is AspNetDataBindingExpression || expr is AspNetRenderExpression))
 				return null;
-			IType codeBehindClass;
+			ITypeDefinition codeBehindClass;
 			ITypeResolveContext projectDatabase;
 			GetCodeBehind (out codeBehindClass, out projectDatabase);
 			
@@ -551,7 +551,7 @@ namespace MonoDevelop.AspNet.Gui
 			return list.Count > 0? list : null;
 		}
 		
-		void GetCodeBehind (out IType codeBehindClass, out ITypeResolveContext projectDatabase)
+		void GetCodeBehind (out ITypeDefinition codeBehindClass, out ITypeResolveContext projectDatabase)
 		{
 			codeBehindClass = null;
 			projectDatabase = null;
@@ -645,7 +645,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			//find the codebehind class
-			IType codeBehindClass;
+			ITypeDefinition codeBehindClass;
 			ITypeResolveContext projectDatabase;
 			GetCodeBehind (out codeBehindClass, out projectDatabase);
 			

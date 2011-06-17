@@ -27,9 +27,9 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
 using System.Text;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
