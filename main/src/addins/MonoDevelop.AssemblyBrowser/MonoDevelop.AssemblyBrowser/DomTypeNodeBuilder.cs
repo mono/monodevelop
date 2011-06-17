@@ -172,14 +172,12 @@ namespace MonoDevelop.AssemblyBrowser
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			var type =  CecilLoader.GetCecilObject ((ITypeDefinition)navigator.DataItem);
-			Console.WriteLine ("disassembple:" + type);
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type));
 		}
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
 			var type =  CecilLoader.GetCecilObject ((ITypeDefinition)navigator.DataItem);
-			Console.WriteLine ("decompile:" + type +" --- :" + ((ITypeDefinition)navigator.DataItem).GetType ());
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, b => b.AddType (type));
 		}
 		
