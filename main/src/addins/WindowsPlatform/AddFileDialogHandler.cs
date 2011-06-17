@@ -19,7 +19,7 @@ namespace MonoDevelop.Platform
             WinFormsRunner runner = new WinFormsRunner();
             bool result = false;
 			
-			SelectFileDialogHandler.SetCommonFormProperties (data, adlg.OpenDialog);
+			SelectFileDialogHandler.SetCommonFormProperties (data, adlg.FileDialog);
 			
             Timer t = new Timer();
             t.Interval = 20;
@@ -35,9 +35,9 @@ namespace MonoDevelop.Platform
                     result = false;
                 else
                 {
-					FilePath[] paths = new FilePath [adlg.OpenDialog.FileNames.Length];
-					for (int n=0; n<adlg.OpenDialog.FileNames.Length; n++)
-						paths [n] = adlg.OpenDialog.FileNames [n];
+					FilePath[] paths = new FilePath [adlg.FileDialog.FileNames.Length];
+					for (int n=0; n<adlg.FileDialog.FileNames.Length; n++)
+						paths [n] = adlg.FileDialog.FileNames [n];
                     data.SelectedFiles = paths;
                     data.OverrideAction = adlg.OverrideAction;
                     result = true;

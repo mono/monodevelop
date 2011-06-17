@@ -28,7 +28,6 @@ namespace CustomControls.Controls
         /// </summary>
         private void InitializeComponent()
         {
-            this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // OpenFileDialogEx
@@ -40,8 +39,6 @@ namespace CustomControls.Controls
         }
 
         #endregion
-
-        protected System.Windows.Forms.OpenFileDialog dlgOpen;
 
 
     }
