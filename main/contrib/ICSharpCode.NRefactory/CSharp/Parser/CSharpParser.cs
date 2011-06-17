@@ -64,6 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new AstLocation (loc.Row, loc.Column);
 			}
 			
+			
 			#region Global
 			Stack<NamespaceDeclaration> namespaceStack = new Stack<NamespaceDeclaration> ();
 			
@@ -2857,7 +2858,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			#endregion
 		}
-
+		
+		public CSharpParser ()
+		{
+			CompilerArguments = new string[] { "-v", "-unsafe"};
+		}
+		
+		public CSharpParser (string[] args)
+		{
+			CompilerArguments = args;
+		}
+		
 		public static void InsertComment (AstNode node, Comment comment)
 		{
 			if (node.EndLocation < comment.StartLocation) {
@@ -2972,15 +2983,27 @@ namespace ICSharpCode.NRefactory.CSharp
 			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
+			if (CompilationUnitCallback != null)
+				CompilationUnitCallback (top);
 			if (line != 0)
 				AdjustLineLocations (conversionVisitor.Unit, line);
 			return conversionVisitor.Unit;
 		}
 		
+		public string[] CompilerArguments {
+			get;
+			private set;
+		}
+		
+		public Action<CompilerCompilationUnit> CompilationUnitCallback {
+			get;
+			set;
+		}
+		
 		public CompilationUnit Parse (Stream stream, int line = 0)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
-				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", errorReportPrinter);
+				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (CompilerArguments, stream, "parsed.cs", errorReportPrinter);
 				return Parse (top, line);
 			}
 		}
