@@ -30,11 +30,9 @@ using System.Text;
 using System.Xml;
 using Mono.TextEditor;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Refactoring;
-
-
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
@@ -43,35 +41,32 @@ namespace MonoDevelop.DocFood
 		public List<Section> sections = new List<Section> ();
 		public Dictionary<string, string> tags = new Dictionary<string, string> ();
 		TextEditorData data;
-		INRefactoryASTProvider provider;
-
+		
 		public DocGenerator ()
 		{
 			
 		}
-
+		
 		public DocGenerator (TextEditorData data)
 		{
 			this.data = data;
-			if (data != null)
-				provider = RefactoringService.GetASTProvider (data.Document.MimeType);
 		}
 		
-		public static string GetBaseDocumentation (IMember member)
+		public static string GetBaseDocumentation (ITypeResolveContext ctx, IEntity member)
 		{
-			if (member.DeclaringType == null || member.DeclaringType.GetProjectContent () == null)
+			if (member.DeclaringTypeDefinition == null)
 				return null;
-			if (member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsFinalizer))
+			if (member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsDestructor))
 				return null;
-			foreach (IType type in member.DeclaringType.GetProjectContent ().GetInheritanceTree (member.DeclaringType)) {
-				if (type.DecoratedFullName == member.DeclaringType.DecoratedFullName)
+			foreach (var type in member.DeclaringTypeDefinition.GetAllBaseTypeDefinitions (ctx)) {
+				if (type.Equals (member.DeclaringTypeDefinition))
 					continue;
 				IMember documentMember = null;
-				foreach (IMember searchedMember in type.SearchMember (member.Name, true)) {
-					if (searchedMember.MemberType == member.MemberType && searchedMember.Name == member.Name && searchedMember.CanHaveParameters == member.CanHaveParameters) {
-						if (searchedMember.CanHaveParameters && searchedMember.Parameters.Count != member.Parameters.Count)
+				foreach (var searchedMember in type.Members.Where (m => m.Name == member.Name)) {
+					if (searchedMember.EntityType == member.EntityType && searchedMember.Name == member.Name) {
+						if ((searchedMember is IParameterizedMember) && ((IParameterizedMember)searchedMember).Parameters.Count != ((IParameterizedMember)member).Parameters.Count)
 							continue;
-						if (searchedMember.Modifiers != member.Modifiers)
+						if (searchedMember.Accessibility != member.Accessibility)
 							continue;
 						documentMember = searchedMember;
 						break;
@@ -127,34 +122,34 @@ namespace MonoDevelop.DocFood
 			}
 		}
 
-		public IBaseMember member;
+		public IEntity member;
 		MemberVisitor visitor = new MemberVisitor ();
 		string currentType;
 		int wordCount;
 		
-		static string GetType (IBaseMember member)
+		static string GetType (IEntity member)
 		{
-			switch (member.MemberType) {
-			case MemberType.Event:
+			switch (member.EntityType) {
+			case EntityType.Event:
 				return "event";
-			case MemberType.Field:
+			case EntityType.Field:
 				return "field";
-			case MemberType.Method:
-				if (((IMethod)member).IsConstructor)
-					return "constructor";
-				if (((IMethod)member).IsFinalizer)
-					return "destructor";
-				if (((IMethod)member).IsSpecialName && GetOperator (member.Name) != null)
-					return "operator";
+			case EntityType.Constructor:
+				return "constructor";
+			case EntityType.Destructor:
+				return "destructor";
+			case EntityType.Operator:
+				return "operator";
+			case EntityType.Method:
 				return "method";
-			case MemberType.Parameter:
-				return "parameter";
-			case MemberType.Property:
-				if (((IProperty)member).IsIndexer)
-					return "indexer";
+//			case MemberType.Parameter:
+//				return "parameter";
+			case EntityType.Indexer:
+				return "indexer";
+			case EntityType.Property:
 				return "property";
-			case MemberType.Type:
-				switch (((IType)member).ClassType) {
+			case EntityType.TypeDefinition:
+				switch (((ITypeDefinition)member).ClassType) {
 				case ClassType.Class:
 					return "class";
 				case ClassType.Delegate:
@@ -242,31 +237,30 @@ namespace MonoDevelop.DocFood
 						break;
 					case "modifier":
 						if (member is IMember) {
-							var mod = (Modifiers)Enum.Parse (typeof(Modifiers), val);
-							result |=  (mod & ((IMember)member).Modifiers) == mod;
+							var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
+							result |=  ((IMember)member).Accessibility == mod;
 						}
 						break;
 					case "paramCount":
-						if (member is IMember)
-							result |= Int32.Parse (val) == ((IMember)member).Parameters.Count;
+						if (member is IParameterizedMember)
+							result |= Int32.Parse (val) == ((IParameterizedMember)member).Parameters.Count;
 						break;
 					case "parameter":
-						if (!(member is IMember))
+						if (!(member is IParameterizedMember))
 							break;
 						string[] par = val.Split(':');
 						int idx = Int32.Parse (par[0]);
 						string name = par[1];
-						result |= idx < ((IMember)member).Parameters.Count && name == ((IMember)member).Parameters[idx].Name;
+						result |= idx < ((IParameterizedMember)member).Parameters.Count && name == ((IParameterizedMember)member).Parameters[idx].Name;
 						break;
 					case "returns":
-						if (member == null || member.ReturnType == null)
+						if ((member as IMember) == null)
 							break;
-						result |= val == member.ReturnType.DecoratedFullName;
+						result |= val == ((IMember)member).ReturnType.ToString ();
 						break;
 					case "name":
-
 						IMethod method = member as IMethod;
-						if (method != null && method.IsSpecialName) {
+						if (method != null && method.IsSynthetic) {
 							string op = GetOperator (method.Name);
 							if (op != null) {
 								result |= val == op;
@@ -305,17 +299,17 @@ namespace MonoDevelop.DocFood
 		}
 		
 		internal string curName;
-		public void GenerateDoc (IMember member)
+		public void GenerateDoc (ITypeResolveContext ctx, IEntity member)
 		{
-			Init (member);
+			Init (ctx, member);
 			
 			this.member = member;
 			this.currentType = GetType (member);
 			DocConfig.Instance.Rules.ForEach (r => r.Run (this));
 			
-			if (member.CanHaveParameters) {
+			if (member is IParameterizedMember) {
 				this.currentType = "parameter";
-				foreach (IParameter p in member.Parameters) {
+				foreach (var p in ((IParameterizedMember)member).Parameters) {
 					curName = p.Name;
 					this.member = member;
 					SplitWords (p, p.Name);
@@ -349,57 +343,58 @@ namespace MonoDevelop.DocFood
 				}
 			}
 			
-			IType type;
-			if (member is IType) {
-				type = (IType)member;
+			ITypeDefinition type;
+			if (member is ITypeDefinition) {
+				type = (ITypeDefinition)member;
 			} else {
-				type = member.DeclaringType;
+				type = ((IMember)member).DeclaringTypeDefinition;
 			}
 			
-			this.currentType = "exception";
-			foreach (var exception in visitor.Exceptions) {
-				var exceptionType = MonoDevelop.Refactoring.HelperMethods.ConvertToReturnType (exception);
-				
-				
-				curName = exceptionType.FullName;
-				tags["Exception"] = exceptionType.ToInvariantString ();
-				SplitWords (exceptionType, exceptionType.Name);
-				
-				if (type != null) {
-					IType resolvedType = type.GetProjectContent ().SearchType (type.CompilationUnit, type, type.Location, exceptionType);
-					string sentence = AmbienceService.GetDocumentationSummary (resolvedType);
-					if (! string.IsNullOrEmpty(sentence)) {
-						sentence = sentence.Trim ();
-						if (sentence.StartsWith ("<para>") && sentence.EndsWith ("</para>"))
-							sentence = sentence.Substring ("<para>".Length, sentence.Length - "<para>".Length - "</para>".Length).Trim ();
-						if (sentence.StartsWith ("Represents the error that occurs when"))
-							sentence = "Is thrown when" + sentence.Substring ("Represents the error that occurs when".Length);
-						if (!string.IsNullOrEmpty (sentence))
-							Set ("exception", curName, sentence);
-					}
-				}
-				
-				DocConfig.Instance.Rules.ForEach (r => r.Run (this));
-			}
+// TODO: Exceptions!
+//			this.currentType = "exception";
+//			foreach (var exception in visitor.Exceptions) {
+//				var exceptionType = MonoDevelop.Refactoring.HelperMethods.ConvertToReturnType (exception);
+//				
+//				
+//				curName = exceptionType.FullName;
+//				tags["Exception"] = exceptionType.ToInvariantString ();
+//				SplitWords (exceptionType, exceptionType.Name);
+//				
+//				if (type != null) {
+//					IType resolvedType = type.GetProjectContent ().SearchType (type.CompilationUnit, type, type.Location, exceptionType);
+//					string sentence = AmbienceService.GetDocumentationSummary (resolvedType);
+//					if (! string.IsNullOrEmpty(sentence)) {
+//						sentence = sentence.Trim ();
+//						if (sentence.StartsWith ("<para>") && sentence.EndsWith ("</para>"))
+//							sentence = sentence.Substring ("<para>".Length, sentence.Length - "<para>".Length - "</para>".Length).Trim ();
+//						if (sentence.StartsWith ("Represents the error that occurs when"))
+//							sentence = "Is thrown when" + sentence.Substring ("Represents the error that occurs when".Length);
+//						if (!string.IsNullOrEmpty (sentence))
+//							Set ("exception", curName, sentence);
+//					}
+//				}
+//				
+//				DocConfig.Instance.Rules.ForEach (r => r.Run (this));
+//			}
 		}
 		
-		void Init (IMember member)
+		void Init (ITypeResolveContext ctx, IEntity member)
 		{
-			FillDocumentation (GetBaseDocumentation (member));
-			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.EndLine > 1) {
-				LineSegment start = data.Document.GetLine (member.Location.Line);
-				LineSegment end = data.Document.GetLine (member.BodyRegion.EndLine);
-				if (start != null && end != null) {
-					var result = provider.ParseFile ("class A {" + data.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset) + "}");
-					result.AcceptVisitor (visitor, null);
-				}
-			}
+			FillDocumentation (GetBaseDocumentation (ctx, member));
+//			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.EndLine > 1) {
+//				LineSegment start = data.Document.GetLine (member.Region.BeginLine);
+//				LineSegment end = data.Document.GetLine (member.BodyRegion.EndLine);
+//				if (start != null && end != null) {
+//					var result = provider.ParseFile ("class A {" + data.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset) + "}");
+//					result.AcceptVisitor (visitor, null);
+//				}
+//			}
 			foreach (var macro in DocConfig.Instance.Macros) {
 				tags.Add (macro.Key, macro.Value);
 			}
-			if (member.DeclaringType != null) {
-				tags["DeclaringType"] = "<see cref=\"" + member.DeclaringType.DecoratedFullName + "\"/>";
-				switch (member.DeclaringType.ClassType) {
+			if (member.DeclaringTypeDefinition != null) {
+				tags["DeclaringType"] = "<see cref=\"" + member.DeclaringTypeDefinition.ReflectionName + "\"/>";
+				switch (member.DeclaringTypeDefinition.ClassType) {
 				case ClassType.Class:
 					tags["DeclaringTypeKind"] = "class";
 					break;
@@ -417,13 +412,13 @@ namespace MonoDevelop.DocFood
 					break;
 				}
 			}
-			if (member.ReturnType != null)
-				tags["ReturnType"] = member.ReturnType != null ? "<see cref=\"" + member.ReturnType.ToInvariantString () + "\"/>" : "";
+			if (member is IMember)
+				tags["ReturnType"] = ((IMember)member).ReturnType != null ? "<see cref=\"" + ((IMember)member).ReturnType + "\"/>" : "";
 			tags["Member"] = "<see cref=\"" + member.Name+ "\"/>";
 
 			
-			if (member.CanHaveParameters) {
-				List<string> parameterNames = new List<string> (from p in member.Parameters select p.Name);
+			if (member is IParameterizedMember) {
+				List<string> parameterNames = new List<string> (from p in ((IParameterizedMember)member).Parameters select p.Name);
 				tags["ParameterSentence"] = string.Join (" ", parameterNames.ToArray ());
 				StringBuilder paramList = new StringBuilder ();
 				for (int i = 0; i < parameterNames.Count; i++) {
@@ -437,16 +432,16 @@ namespace MonoDevelop.DocFood
 					paramList.Append (parameterNames[i]);
 				}
 				tags["ParameterList"] = paramList.ToString ();
-				for (int i = 0; i < member.Parameters.Count; i++) {
-					tags["Parameter" + i +  ".Type"] = member.Parameters[i].ReturnType != null ? "<see cref=\"" + member.Parameters[i].ReturnType.ToInvariantString () + "\"/>" : "";
-					tags["Parameter" + i +  ".Name"] = "<c>" + member.Parameters[i].Name + "</c>";
+				for (int i = 0; i < ((IParameterizedMember)member).Parameters.Count; i++) {
+					tags["Parameter" + i +  ".Type"] = ((IParameterizedMember)member).Parameters[i].Type != null ? "<see cref=\"" + ((IParameterizedMember)member).Parameters[i].Type + "\"/>" : "";
+					tags["Parameter" + i +  ".Name"] = "<c>" + ((IParameterizedMember)member).Parameters[i].Name + "</c>";
 				}
 				
-				IProperty property = member as IProperty;
+				var property = member as IProperty;
 				if (property != null) {
-					if (property.HasGet && property.HasSet) {
+					if (property.CanGet && property.CanSet) {
 						tags["AccessText"] = "Gets or sets";
-					} else if (property.HasGet) {
+					} else if (property.CanGet) {
 						tags["AccessText"] = "Gets";
 					} else {
 						tags["AccessText"] = "Sets";
@@ -535,7 +530,7 @@ namespace MonoDevelop.DocFood
 		public void Set (string name, string parameterName, string doc)
 		{
 			if (name.StartsWith ("param") && name.Length > "param".Length) {
-				parameterName = ((IMember)member).Parameters[int.Parse (name.Substring("param".Length))].Name;
+				parameterName = ((IParameterizedMember)member).Parameters[int.Parse (name.Substring("param".Length))].Name;
 				name = "param";
 			}
 			Section newSection = new Section (name);
@@ -558,9 +553,9 @@ namespace MonoDevelop.DocFood
 		}
 		
 		#region implemented abstract members of MonoDevelop.Projects.Text.DocGenerator
-		public override string GenerateDocumentation (IMember member, string linePrefix)
+		public override string GenerateDocumentation (ITypeResolveContext ctx, IMember member, string linePrefix)
 		{
-			return DocumentBufferHandler.GenerateDocumentation (null, member, "", linePrefix);
+			return DocumentBufferHandler.GenerateDocumentation (ctx, null, member, "", linePrefix);
 		}
 		#endregion
 	}

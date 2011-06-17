@@ -66,28 +66,31 @@ namespace MonoDevelop.DocFood
 		
 		protected override void Run ()
 		{
-			var unit = IdeApp.Workbench.ActiveDocument.CompilationUnit;
+			var document = IdeApp.Workbench.ActiveDocument;
+			if (document == null)
+				return;
+			var unit = document.ParsedDocument;
 			if (unit == null)
 				return;
 			TextEditorData data = IdeApp.Workbench.ActiveDocument.Editor;
-			Stack<IType> types = new Stack<IType> (unit.Types);
-			List<KeyValuePair<int, string>> docs = new List<KeyValuePair<int, string>> ();
+			var types = new Stack<ITypeDefinition> (unit.TopLevelTypeDefinitions);
+			var docs = new List<KeyValuePair<int, string>> ();
 			while (types.Count > 0) {
-				IType curType = types.Pop ();
+				ITypeDefinition curType = types.Pop ();
 				foreach (var member in curType.Members) {
-					if (member is IType) {
-						types.Push ((IType)member);
+					if (member is ITypeDefinition) {
+						types.Push ((ITypeDefinition)member);
 						continue;
 					}
 					if (!member.IsPublic) {
-						if (member.DeclaringType != null && member.DeclaringType.ClassType != ClassType.Interface)
+						if (member.DeclaringType != null && member.DeclaringType.GetDefinition ().ClassType != ClassType.Interface)
 							continue;
 					}
 					if (!NeedsDocumentation (data, member))
 						continue;
 					int offset;
 					string indent = GetIndent (data, member, out offset);
-					string documentation = GenerateDocumentation (data, member, indent);
+					string documentation = GenerateDocumentation (document.TypeResolveContext, data, member, indent);
 					if (documentation.Trim ().Length == 0)
 						continue;
 					docs.Add (new KeyValuePair <int, string> (offset, documentation));
@@ -99,9 +102,9 @@ namespace MonoDevelop.DocFood
 			data.Document.EndAtomicUndo ();
 		}
 		
-		static bool NeedsDocumentation (TextEditorData data, IMember member)
+		static bool NeedsDocumentation (TextEditorData data, IEntity member)
 		{
-			int lineNr = member.Location.Line;
+			int lineNr = member.Region.BeginLine;
 			LineSegment line;
 			do {
 				line = data.Document.GetLine (lineNr--);
@@ -112,24 +115,24 @@ namespace MonoDevelop.DocFood
 			return true;
 		}
 		
-		static string GetIndent (TextEditorData data, IMember member, out int offset)
+		static string GetIndent (TextEditorData data, IEntity member, out int offset)
 		{
-			LineSegment line = data.Document.GetLine (member.Location.Line);
+			LineSegment line = data.Document.GetLine (member.Region.BeginLine);
 			offset = line.Offset;
 			return data.Document.GetLineIndent (line);
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, IMember member, string indent)
+		internal static string GenerateDocumentation (ITypeResolveContext ctx, TextEditorData data, IEntity member, string indent)
 		{
-			return GenerateDocumentation (data, member, indent, "/// ");
+			return GenerateDocumentation (ctx, data, member, indent, "/// ");
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, IMember member, string indent, string prefix)
+		internal static string GenerateDocumentation (ITypeResolveContext ctx, TextEditorData data, IEntity member, string indent, string prefix)
 		{
 			StringBuilder result = new StringBuilder ();
 			
 			DocGenerator generator = new DocGenerator (data);
-			generator.GenerateDoc (member);
+			generator.GenerateDoc (ctx, member);
 			
 			bool first = true;
 			foreach (Section section in generator.sections) {
@@ -192,12 +195,12 @@ namespace MonoDevelop.DocFood
 			return result.ToString ();
 		}
 		
-		internal static string GenerateEmptyDocumentation (TextEditorData data, IMember member, string indent)
+		internal static string GenerateEmptyDocumentation (ITypeResolveContext ctx, TextEditorData data, IEntity member, string indent)
 		{
 			StringBuilder result = new StringBuilder ();
 			
 			DocGenerator generator = new DocGenerator (data);
-			generator.GenerateDoc (member);
+			generator.GenerateDoc (ctx, member);
 			
 			bool first = true;
 			foreach (Section section in generator.sections) {
