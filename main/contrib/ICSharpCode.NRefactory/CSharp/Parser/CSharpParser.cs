@@ -2987,6 +2987,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				CompilationUnitCallback (top);
 			if (line != 0)
 				AdjustLineLocations (conversionVisitor.Unit, line);
+			if (top.LastYYValue is Mono.CSharp.Expression)
+				conversionVisitor.Unit.TopExpression = ((Mono.CSharp.Expression)top.LastYYValue).Accept (conversionVisitor) as AstNode;
 			return conversionVisitor.Unit;
 		}
 		

@@ -38,6 +38,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public AstNode TopExpression {
+			get;
+			set;
+		}
+		
 		public CompilationUnit ()
 		{
 		}

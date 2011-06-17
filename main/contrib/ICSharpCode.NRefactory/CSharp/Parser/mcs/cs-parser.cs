@@ -146,6 +146,14 @@ namespace Mono.CSharp
 		List<Tuple<Modifiers, Location>> mod_locations;
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
+		
+		object lastYYVal;
+		public object LastYYVal {
+			get {
+				return lastYYVal;
+			}
+		}
+		
 #line default
 
   /** error output stream.
@@ -3905,6 +3913,7 @@ case 956:
   break;
 #line default
         }
+		lastYYVal = yyVal;
         yyTop -= yyLen[yyN];
         yyState = yyStates[yyTop];
         int yyM = yyLhs[yyN];
