@@ -37,9 +37,10 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Debugger.Viewers;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
 
 /*
  * Some places we should be doing some error handling we used to toss
@@ -876,13 +877,13 @@ namespace MonoDevelop.Debugger
 			if (doc != null) {
 				ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
 				if (textEditorResolver != null) {
-					ResolveResult rr = textEditorResolver.GetLanguageItem (doc.Editor.Document.LocationToOffset (location.Line, 1), identifier);
-					NamespaceResolveResult ns = rr as NamespaceResolveResult;
+					var rr = textEditorResolver.GetLanguageItem (doc.Editor.Document.LocationToOffset (location.Line, 1), identifier);
+					var ns = rr as NamespaceResolveResult;
 					if (ns != null)
-						return ns.Namespace;
-					MemberResolveResult result = rr as MemberResolveResult;
-					if (result != null && (result.ResolvedMember == null || result.ResolvedMember is IType) && result.ResolvedType != null)
-						return result.ResolvedType.FullName;
+						return ns.NamespaceName;
+					var result = rr as TypeResolveResult;
+					if (result != null && !result.IsError)
+						return result.Type.FullName;
 				}
 			}
 			return null;
