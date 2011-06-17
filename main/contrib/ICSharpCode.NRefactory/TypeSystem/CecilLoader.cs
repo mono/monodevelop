@@ -43,7 +43,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets/Sets the interning provider.
 		/// </summary>
 		public IInterningProvider InterningProvider { get; set; }
+		
+		/// <summary>
+		/// Gets a value indicating whether this instance stores references to the cecil objects.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance has references to the cecil objects; otherwise, <c>false</c>.
+		/// </value>
+		public bool HasCecilReferences { get { return typeSystemTranslationTable != null; } }
 		#endregion
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.CecilLoader"/> class.
+		/// </summary>
+		/// <param name='createCecilReferences'>
+		/// If true references to the cecil objects are hold. In this case the cecil loader can do a type system -> cecil mapping.
+		/// </param>
+		public CecilLoader (bool createCecilReferences = false)
+		{
+			if (createCecilReferences)
+				typeSystemTranslationTable = new Dictionary<object, object> ();
+		}
 		
 		#region Load From AssemblyDefinition
 		/// <summary>
@@ -90,6 +110,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				foreach (CecilTypeDefinition c in types) {
 					c.Init(this);
 				}
+				if (HasCecilReferences)
+					this.typeSystemTranslationTable [pc] = assemblyDefinition;
 				return pc;
 			} finally {
 				this.EarlyBindContext = oldEarlyBindContext;
@@ -173,7 +195,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("fileName");
 			var param = new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() };
 			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
-			return LoadAssembly(asm);
+			var result = LoadAssembly(asm);
+			this.typeSystemTranslationTable [result] = asm;
+			return result;
 		}
 		
 		// used to prevent Cecil from loading referenced assemblies
@@ -297,7 +321,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
 					var earlyBindContext = this.EarlyBindContext;
 					if (earlyBindContext != null) {
-						IType c = earlyBindContext.GetClass(ns, name, typeParameterCount, StringComparer.Ordinal);
+						IType c = earlyBindContext.GetClass (ns, name, typeParameterCount, StringComparer.Ordinal);
 						if (c != null)
 							return c;
 					}
@@ -658,7 +682,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Read Type Definition
 		sealed class CecilTypeDefinition : DefaultTypeDefinition
 		{
-			TypeDefinition typeDefinition;
+			internal TypeDefinition typeDefinition;
 			
 			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)
 				: base(pc, typeDefinition.Namespace, ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeDefinition.Name))
@@ -722,8 +746,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				
 				InitMembers(loader);
-				
-				this.typeDefinition = null;
+				if (!loader.HasCecilReferences)
+					this.typeDefinition = null; 
 				Freeze(); // freeze after initialization
 				ApplyInterningProvider(loader.InterningProvider);
 			}
@@ -749,8 +773,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						InnerClasses.Add(new CecilTypeDefinition(this, name, nestedType));
 					}
 				}
-				foreach (CecilTypeDefinition innerClass in this.InnerClasses) {
-					innerClass.Init(loader);
+				foreach (CecilTypeDefinition nestedType in this.InnerClasses) {
+					nestedType.Init(loader);
 				}
 			}
 			
@@ -833,7 +857,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							if (method.IsSpecialName) {
 								if (method.IsConstructor)
 									type = EntityType.Constructor;
-								else if (method.Name.StartsWith ("op_", StringComparison.Ordinal))
+								else if (method.Name.StartsWith("op_", StringComparison.Ordinal))
 									type = EntityType.Operator;
 								else
 									continue;
@@ -851,10 +875,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				if (typeDefinition.HasProperties) {
 					string defaultMemberName = null;
-					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault (
+					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
 						a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
 					if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
-						defaultMemberName = defaultMemberAttribute.ConstructorArguments [0].Value as string;
+						defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
 					}
 					foreach (PropertyDefinition property in typeDefinition.Properties) {
 						bool getterVisible = property.GetMethod != null && loader.IsVisible(property.GetMethod.Attributes);
@@ -913,7 +937,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				m.IsExtensionMethod = true;
 			}
 			
-			FinishReadMember(m);
+			FinishReadMember(m, method);
 			return m;
 		}
 		
@@ -1047,7 +1071,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				f.IsVolatile = true;
 			}
 			
-			FinishReadMember(f);
+			FinishReadMember(f, field);
 			return f;
 		}
 		
@@ -1116,7 +1140,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			AddAttributes(property, p);
 			
-			FinishReadMember(p);
+			FinishReadMember(p, property);
 			return p;
 		}
 		
@@ -1156,15 +1180,68 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			AddAttributes(ev, e);
 			
-			FinishReadMember(e);
+			FinishReadMember(e, ev);
+			
 			return e;
 		}
 		#endregion
 		
-		void FinishReadMember(AbstractMember member)
+		void FinishReadMember(AbstractMember member, object cecilDefinition)
 		{
 			member.Freeze();
 			member.ApplyInterningProvider(this.InterningProvider);
+			if (HasCecilReferences)
+				typeSystemTranslationTable[member] = cecilDefinition;
 		}
+		
+		#region Type system translation table
+		Dictionary<object, object> typeSystemTranslationTable;
+		
+		T GetCecilObject<T> (object typeSystemObject) where T : class
+		{
+			if (typeSystemObject == null)
+				throw new ArgumentNullException ("typeSystemObject");
+			object result;
+			typeSystemTranslationTable.TryGetValue (typeSystemObject, out result);
+			return result as T;
+		}
+		
+		public AssemblyDefinition GetCecilObject (IProjectContent content)
+		{
+			return GetCecilObject<AssemblyDefinition> (content);
+		}
+		
+		public TypeDefinition GetCecilObject (ITypeDefinition type)
+		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			var cecilType = type as CecilTypeDefinition;
+			if (cecilType == null)
+				throw new ArgumentException ("type is no cecil type definition.");
+			if (!HasCecilReferences)
+				throw new NotSupportedException ("This instance contains no cecil references.");
+			return cecilType.typeDefinition;
+		}
+		
+		public MethodDefinition GetCecilObject (IMethod method)
+		{
+			return GetCecilObject<MethodDefinition> (method);
+		}
+		
+		public FieldDefinition GetCecilObject (IField field)
+		{
+			return GetCecilObject<FieldDefinition> (field);
+		}
+		
+		public EventDefinition GetCecilObject (IEvent evt)
+		{
+			return GetCecilObject<EventDefinition> (evt);
+		}
+		
+		public PropertyDefinition GetCecilObject (IProperty property)
+		{
+			return GetCecilObject<PropertyDefinition> (property);
+		}
+		#endregion
 	}
 }
