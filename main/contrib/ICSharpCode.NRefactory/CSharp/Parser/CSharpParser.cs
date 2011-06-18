@@ -2907,14 +2907,16 @@ namespace ICSharpCode.NRefactory.CSharp
 					var nextLeaf = NextLeaf(leaf);
 					// instert comment at the end
 					if (nextLeaf == null) {
-						leaf.Parent.AddChild(domComment, AstNode.Roles.Comment);
+						var node = leaf.Parent ?? conversionVisitor.Unit;
+						node.AddChild(domComment, AstNode.Roles.Comment);
 						leaf = domComment;
 						break;
 					}
 					
 					// comment is between 2 nodes
 					if (leaf.EndLocation <= domComment.StartLocation && domComment.StartLocation <= nextLeaf.StartLocation) {
-						leaf.Parent.InsertChildAfter(leaf, domComment, AstNode.Roles.Comment);
+						var node = leaf.Parent ?? conversionVisitor.Unit;
+						node.InsertChildAfter(leaf, domComment, AstNode.Roles.Comment);
 						leaf = domComment;
 						break;
 					}

@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException("name");
 			if (name.Length > 0 && name[0] == '@')
 				return new VerbatimIdentifier(name.Substring (1), location);
-			return Identifier.Create (name, location);
+			return new Identifier (name, location);
 		}
 		
 		public static Identifier Create (string name, AstLocation location, bool isVerbatim)
@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			if (isVerbatim)
 				return new VerbatimIdentifier(name, location);
-			return Identifier.Create (name, location);
+			return new Identifier (name, location);
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)

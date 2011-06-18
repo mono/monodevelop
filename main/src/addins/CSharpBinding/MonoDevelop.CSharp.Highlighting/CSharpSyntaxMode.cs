@@ -434,9 +434,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						}
 					}
 					
-					var dom = TypeSystemService.GetProjectContext (project);
-					var parsedDocument = TypeSystemService.ParseFile (dom, doc.FileName, doc.MimeType, doc.Text);
-/*					if (parsedDocument == null)
+/*					var parsedDocument = TypeSystemService.ParseFile (document.ProjectContent, doc.FileName, doc.MimeType, doc.Text);
+					if (parsedDocument == null)
 						parsedDocument = TypeSystemService.ParseFile (dom, doc.FileName ?? "a.cs", delegate { return doc.Text; });
 					if (parsedDocument != null) {
 						foreach (PreProcessorDefine define in parsedDocument.Defines) {
