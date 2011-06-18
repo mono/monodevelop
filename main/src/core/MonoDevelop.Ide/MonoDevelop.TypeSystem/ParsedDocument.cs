@@ -30,6 +30,7 @@ using System.Text;
 using ICSharpCode.NRefactory.CSharp;
 using System.Linq;
 using System.Threading;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.TypeSystem
 		NonSerializable = 1
 	}
 		
-	public class ParsedDocument : IParsedFile
+	public class ParsedDocument : AbstractAnnotatable, IParsedFile
 	{
 		DateTime parseTime = DateTime.Now;
 		public DateTime ParseTime {
@@ -261,155 +262,6 @@ namespace MonoDevelop.TypeSystem
 		{
 			this.conditionalRegions.AddRange (conditionalRegions);
 		}
-		
-		#region Annotation support
-		// Annotations: points either null (no annotations), to the single annotation,
-		// or to an AnnotationList.
-		// Once it is pointed at an AnnotationList, it will never change (this allows thread-safety support by locking the list)
-		object annotations;
-		
-		sealed class AnnotationList : List<object>, ICloneable
-		{
-			// There are two uses for this custom list type:
-			// 1) it's private, and thus (unlike List<object>) cannot be confused with real annotations
-			// 2) It allows us to simplify the cloning logic by making the list behave the same as a clonable annotation.
-			public AnnotationList (int initialCapacity) : base(initialCapacity)
-			{
-			}
-			
-			public object Clone ()
-			{
-				lock (this) {
-					AnnotationList copy = new AnnotationList (this.Count);
-					for (int i = 0; i < this.Count; i++) {
-						object obj = this [i];
-						ICloneable c = obj as ICloneable;
-						copy.Add (c != null ? c.Clone () : obj);
-					}
-					return copy;
-				}
-			}
-		}
-		
-		public void AddAnnotation (object annotation)
-		{
-			if (annotation == null)
-				throw new ArgumentNullException ("annotation");
-		retry: // Retry until successful
-			object oldAnnotation = Interlocked.CompareExchange (ref this.annotations, annotation, null);
-			if (oldAnnotation == null) {
-				return; // we successfully added a single annotation
-			}
-			AnnotationList list = oldAnnotation as AnnotationList;
-			if (list == null) {
-				// we need to transform the old annotation into a list
-				list = new AnnotationList (4);
-				list.Add (oldAnnotation);
-				list.Add (annotation);
-				if (Interlocked.CompareExchange (ref this.annotations, list, oldAnnotation) != oldAnnotation) {
-					// the transformation failed (some other thread wrote to this.annotations first)
-					goto retry;
-				}
-			} else {
-				// once there's a list, use simple locking
-				lock (list) {
-					list.Add (annotation);
-				}
-			}
-		}
-		
-		public void RemoveAnnotations<T> () where T : class
-		{
-		retry: // Retry until successful
-			object oldAnnotations = this.annotations;
-			AnnotationList list = oldAnnotations as AnnotationList;
-			if (list != null) {
-				lock (list)
-					list.RemoveAll (obj => obj is T);
-			} else if (oldAnnotations is T) {
-				if (Interlocked.CompareExchange (ref this.annotations, null, oldAnnotations) != oldAnnotations) {
-					// Operation failed (some other thread wrote to this.annotations first)
-					goto retry;
-				}
-			}
-		}
-		
-		public void RemoveAnnotations (Type type)
-		{
-			if (type == null)
-				throw new ArgumentNullException ("type");
-		retry: // Retry until successful
-			object oldAnnotations = this.annotations;
-			AnnotationList list = oldAnnotations as AnnotationList;
-			if (list != null) {
-				lock (list)
-					list.RemoveAll (obj => type.IsInstanceOfType (obj));
-			} else if (type.IsInstanceOfType (oldAnnotations)) {
-				if (Interlocked.CompareExchange (ref this.annotations, null, oldAnnotations) != oldAnnotations) {
-					// Operation failed (some other thread wrote to this.annotations first)
-					goto retry;
-				}
-			}
-		}
-		
-		public T Annotation<T> () where T: class
-		{
-			object annotations = this.annotations;
-			AnnotationList list = annotations as AnnotationList;
-			if (list != null) {
-				lock (list) {
-					foreach (object obj in list) {
-						T t = obj as T;
-						if (t != null)
-							return t;
-					}
-					return null;
-				}
-			} else {
-				return annotations as T;
-			}
-		}
-		
-		public object Annotation (Type type)
-		{
-			if (type == null)
-				throw new ArgumentNullException ("type");
-			object annotations = this.annotations;
-			AnnotationList list = annotations as AnnotationList;
-			if (list != null) {
-				lock (list) {
-					foreach (object obj in list) {
-						if (type.IsInstanceOfType (obj))
-							return obj;
-					}
-				}
-			} else {
-				if (type.IsInstanceOfType (annotations))
-					return annotations;
-			}
-			return null;
-		}
-		
-		/// <summary>
-		/// Gets all annotations stored on this AstNode.
-		/// </summary>
-		public IEnumerable<object> Annotations {
-			get {
-				object annotations = this.annotations;
-				AnnotationList list = annotations as AnnotationList;
-				if (list != null) {
-					lock (list) {
-						return list.ToArray ();
-					}
-				} else {
-					if (annotations != null)
-						return new object[] { annotations };
-					else
-						return Enumerable.Empty<object> ();
-				}
-			}
-		}
-		#endregion
 	}
 	
 	public class DefaultParsedDocument : ParsedDocument
