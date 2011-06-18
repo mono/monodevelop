@@ -47,21 +47,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			this.Type = type;
 		}
 		
-		FilePath GetH (FilePath syncProjectDir)
-		{
-			return syncProjectDir.Combine (Type.ObjCName + ".h");
-		}
-		
-		FilePath GetM (FilePath syncProjectDir)
-		{
-			return syncProjectDir.Combine (Type.ObjCName + ".m");
-		}
-		
 		public override bool NeedsSyncOut (XcodeSyncContext context)
 		{
-			//FIXME: types dep on other types on project, need better regeneration skipping			
-			var target = GetH (context.ProjectDir);
-			if (File.Exists (target) && context.GetSyncTime (target) > Type.DefinedIn.Max (f => File.GetLastWriteTime (f)))
+			//FIXME: types dep on other types on project, need better regeneration skipping
+			var h = Type.ObjCName + ".h";
+			var path = context.ProjectDir.Combine (h);
+			if (File.Exists (path) && context.GetSyncTime (h) > Type.DefinedIn.Max (f => File.GetLastWriteTime (f)))
 				return false;
 			return true;
 		}
@@ -69,30 +60,32 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public override void SyncOut (XcodeSyncContext context)
 		{
 			Type.GenerateObjcType (context.ProjectDir);
-			context.UpdateSyncTime (GetH (context.ProjectDir));
-			context.UpdateSyncTime (GetM (context.ProjectDir));
+			context.UpdateSyncTime (Type.ObjCName + ".h");
+			context.UpdateSyncTime (Type.ObjCName + ".m");
 		}
 		
 		public override bool NeedsSyncBack (XcodeSyncContext context)
 		{
-			var target = GetH (context.ProjectDir);
-			if (File.Exists (target) && File.GetLastWriteTime (target) > context.GetSyncTime (target))
+			var h = Type.ObjCName + ".h";
+			var path = context.ProjectDir.Combine (h);
+			if (File.Exists (path) && File.GetLastWriteTime (path) > context.GetSyncTime (h))
 				return true;
 			return false;
 		}
 		
 		public override void SyncBack (XcodeSyncBackContext context)
 		{
-			FilePath hFile = GetH (context.ProjectDir);
+			var hFile = context.ProjectDir.Combine (Type.ObjCName + ".h");
 			var parsed = NSObjectInfoService.ParseHeader (hFile);
 			
-			var objcType = context.ProjectInfo.GetType (hFile.FileNameWithoutExtension);
+			var objcType = context.ProjectInfo.GetType (Type.ObjCName);
 			if (objcType == null) {
-				context.ReportError ("Missing objc type {0}", hFile.FileNameWithoutExtension);
+				context.ReportError ("Missing objc type {0}", Type.ObjCName);
 				return;
 			}
 			if (parsed.ObjCName != objcType.ObjCName) {
-				context.ReportError ("Parsed type name {0} does not match original {1}", parsed.ObjCName, objcType.ObjCName);
+				context.ReportError ("Parsed type name {0} does not match original {1}",
+					parsed.ObjCName, objcType.ObjCName);
 				return;
 			}
 			if (!objcType.IsUserType) {
@@ -117,11 +110,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			project.AddSource (Type.ObjCName + ".m");
 		}
 		
-		public override string[] GetTargetFileNames (FilePath syncProjectDir)
+		public override string[] GetTargetRelativeFileNames ()
 		{
 			return new string [] {
-				GetH (syncProjectDir),
-				GetM (syncProjectDir),
+				Type.ObjCName + ".h",
+				Type.ObjCName + ".m",
 			};
 		}
 	}

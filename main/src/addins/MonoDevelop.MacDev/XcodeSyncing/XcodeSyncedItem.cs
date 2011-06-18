@@ -44,6 +44,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public abstract void SyncOut (XcodeSyncContext context);
 		public abstract void SyncBack (XcodeSyncBackContext context);
 		public abstract void AddToProject (XcodeProject project, FilePath syncProjectDir);
-		public abstract string[] GetTargetFileNames (FilePath syncProjectDir);
+		public abstract string[] GetTargetRelativeFileNames ();
 	}
 }

@@ -47,8 +47,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		FilePath xcproj, projectDir;
 		List<XcodeSyncedItem> items;
-		Dictionary<string,XcodeSyncedItem> itemMap
-			= new Dictionary<string, XcodeSyncedItem> ();
+		Dictionary<string,XcodeSyncedItem> itemMap = new Dictionary<string, XcodeSyncedItem> ();
 		Dictionary<string,DateTime> syncTimeCache = new Dictionary<string, DateTime> ();
 		
 		public XcodeMonitor (FilePath projectDir, string name)
@@ -76,11 +75,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			bool updateProject = false;
 			
 			foreach (var item in items) {
-				var files = item.GetTargetFileNames (projectDir);
 				bool needsSync = item.NeedsSyncOut (ctx);
 				if (needsSync)
 					syncList.Add (item);
 				
+				var files = item.GetTargetRelativeFileNames ();
 				foreach (var f in files) {
 					toRemove.Remove (f);
 					if (!itemMap.ContainsKey (f)) {
@@ -99,14 +98,15 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				DeleteProjectArtifacts ();
 			} else {
 				foreach (var f in toClose)
-					CloseFile (f);
+					CloseFile (projectDir.Combine (f));
 			}
 			
 			foreach (var f in toRemove) {
 				itemMap.Remove (f);
 				syncTimeCache.Remove (f);
-				if (File.Exists (f))
-					File.Delete (f);
+				var path = projectDir.Combine (f);
+				if (File.Exists (path))
+					File.Delete (path);
 			}
 			
 			foreach (var item in items) {
@@ -115,7 +115,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			foreach (var item in syncList) {
-				XC4Debug.Log ("Syncing item {0}", item.GetTargetFileNames (projectDir)[0]);
+				XC4Debug.Log ("Syncing item {0}", item.GetTargetRelativeFileNames ()[0]);
 				item.SyncOut (ctx);
 			}
 			

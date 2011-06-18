@@ -251,7 +251,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		//FIXME: report errors
 		void UpdateXcodeProject ()
 		{
-			XC4Debug.Log ("Updating synced project");
 			xcode.UpdateProject (CreateSyncList (), CreateProject (dnp.Name));
 		}
 		
@@ -285,11 +284,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		void CopyFilesToMD (XcodeSyncBackContext context)
 		{
 			foreach (var file in context.FileSyncJobs) {
-				XC4Debug.Log ("Copying changed file from Xcode: {0}", file.Synced);
+				XC4Debug.Log ("Copying changed file from Xcode: {0}", file.SyncedRelative);
 				var tempFile = file.Original.ParentDirectory.Combine (".#" + file.Original.ParentDirectory.FileName);
-				File.Copy (file.Synced, tempFile);
+				File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
 				FileService.SystemRename (tempFile, file.Original);
-				context.SetSyncTimeToNow (file.Synced);
+				context.SetSyncTimeToNow (file.SyncedRelative);
 			}
 			Gtk.Application.Invoke (delegate {
 				FileService.NotifyFilesChanged (context.FileSyncJobs.Select (f => f.Original));
@@ -330,10 +329,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			foreach (var df in updates) {
 				foreach (var type in df.Value) {
-					var hFile = context.ProjectDir.Combine (type.ObjCName + ".h");
-					var mFile = context.ProjectDir.Combine (type.ObjCName + ".m");
-					context.SetSyncTimeToNow (hFile);
-					context.SetSyncTimeToNow (mFile);
+					context.SetSyncTimeToNow (type.ObjCName + ".h");
+					context.SetSyncTimeToNow (type.ObjCName + ".m");
 				}
 			}
 			

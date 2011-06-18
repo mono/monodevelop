@@ -151,6 +151,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	class XcodeSyncFileBackJob
 	{
 		public FilePath Original;
-		public FilePath Synced;
+		public FilePath SyncedRelative;
 	}
 }
