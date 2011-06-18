@@ -702,12 +702,12 @@ namespace MonoDevelop.AspNet.Gui
 					continue;
 				
 				//boolean completion
-				if (prop.ReturnType.Resolve (projectDatabase).Equals (projectDatabase.GetClass (typeof (bool)))) {
+				if (prop.ReturnType.Resolve (projectDatabase).Equals (projectDatabase.GetTypeDefinition (typeof (bool)))) {
 					AddBooleanCompletionData (list);
 					return;
 				}
 				//color completion
-				if (prop.ReturnType.Resolve (projectDatabase).Equals (projectDatabase.GetClass (typeof (System.Drawing.Color)))) {
+				if (prop.ReturnType.Resolve (projectDatabase).Equals (projectDatabase.GetTypeDefinition (typeof (System.Drawing.Color)))) {
 					System.Drawing.ColorConverter conv = new System.Drawing.ColorConverter ();
 					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
 						if (c.IsSystemColor)

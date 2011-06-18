@@ -176,7 +176,7 @@ namespace MonoDevelop.Moonlight
 						continue;
 					
 					//boolean completion
-					if (prop.ReturnType.Resolve (ctx).Equals (ctx.GetClass (typeof (bool)))) {
+					if (prop.ReturnType.Resolve (ctx).Equals (ctx.GetTypeDefinition (typeof (bool)))) {
 						list.Add ("true", "md-literal");
 						list.Add ("false", "md-literal");
 						return;

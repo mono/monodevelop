@@ -126,7 +126,7 @@ namespace MonoDevelop.AspNet
 			
 			var database = document.TypeResolveContext;
 			
-			var cls = database.GetClass (Type.Load ());
+			var cls = database.GetTypeDefinition (Type.Load ());
 			if (cls == null)
 				return tag;
 			

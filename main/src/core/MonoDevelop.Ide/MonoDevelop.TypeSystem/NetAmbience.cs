@@ -89,7 +89,7 @@ namespace MonoDevelop.TypeSystem
 				result.Append (settings.Markup (" : "));
 				bool first = true;
 				foreach (var baseType in type.BaseTypes) {
-					if (baseType.Resolve (settings.Context).Equals (settings.Context.GetClass (typeof (object))))
+					if (baseType.Resolve (settings.Context).Equals (settings.Context.GetTypeDefinition (typeof (object))))
 						continue;
 					if (!first)
 						result.Append (settings.Markup (", "));

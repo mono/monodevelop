@@ -152,6 +152,11 @@ namespace MonoDevelop.TypeSystem
 			var ctx = entity.ProjectContent;
 			return GetString (entity, new OutputSettings (flags) { Context = ctx });
 		}
+		
+		public string GetString (ITypeResolveContext ctx, IParameterizedMember member, IParameter parameter, OutputFlags flags)
+		{
+			return GetParameterString (member, parameter, new OutputSettings (flags) { Context = ctx });
+		}
 	
 		public string GetString (IType type, OutputSettings settings)
 		{

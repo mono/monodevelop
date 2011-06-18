@@ -207,7 +207,7 @@ namespace MonoDevelop.CSharp.Project
 				if (ctx == null)
 					// Project not found in parser database
 					return;
-				foreach (var c in ctx.GetAllClasses ()) {
+				foreach (var c in ctx.GetAllTypes ()) {
 					if (c.Methods != null) {
 						foreach (var m in c.Methods) {
 							if (m.IsStatic && m.Name == "Main")

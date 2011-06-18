@@ -85,7 +85,7 @@ namespace MonoDevelop.Debugger
 				dom = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, asm);
 			}
 			classes.Add ("System.Exception");
-			foreach (var t in dom.GetClass (typeof (System.Exception)).GetSubTypeDefinitions (dom))
+			foreach (var t in dom.GetTypeDefinition (typeof (System.Exception)).GetSubTypeDefinitions (dom))
 				classes.Add (t.ReflectionName);
 		}
 

@@ -34,6 +34,10 @@ using MonoDevelop.Ide;
 using System.Collections.ObjectModel;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using System.IO;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp
 {
@@ -216,8 +220,15 @@ namespace MonoDevelop.CSharp
 		}
 
 		protected override string GetTypeReferenceString (ITypeReference reference, OutputSettings settings)
-		{ // TODO !!!!
-			return reference.ToString ();
+		{
+			var csResolver = new CSharpResolver (settings.Context, System.Threading.CancellationToken.None);
+			var builder = new TypeSystemAstBuilder (csResolver);
+			var astType = builder.ConvertType (reference.Resolve (settings.Context));
+		
+			var w = new StringWriter ();
+			astType.AcceptVisitor (new OutputVisitor (w, new CSharpFormattingOptions ()), null);
+			return w.ToString ();
+			
 			/*		if (returnType.IsNullable && returnType.GenericArguments.Count == 1)
 				return Visit (returnType.GenericArguments [0], settings) + "?";
 			if (returnType.Type is AnonymousType)
