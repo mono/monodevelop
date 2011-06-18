@@ -146,13 +146,6 @@ namespace MonoDevelop.CSharp.Completion
 		bool tryToForceCompletion = false;
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
-			if (textEditorData.CurrentMode is CompletionTextLinkMode) {
-				if (!((CompletionTextLinkMode)textEditorData.CurrentMode).TriggerCodeCompletion)
-					return null;
-			} else if (textEditorData.CurrentMode is Mono.TextEditor.TextLinkEditMode) {
-				return null;
-			}
-
 //		IDisposable timer = null;
 			try {
 				if (dom == null /*|| Document.CompilationUnit == null*/)
@@ -178,43 +171,6 @@ namespace MonoDevelop.CSharp.Completion
 				if (result.ExpressionContext == ExpressionContext.Attribute)
 					return CreateCtrlSpaceCompletionData (completionContext, result);
 				return null;*/
-				case '(':
-					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
-						return null;
-					result = FindExpression (dom, completionContext, -1);
-					if (result == null || result.Expression == null)
-						return null;
-					resolver = CreateResolver ();
-					resolveResult = resolver.Resolve (result, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2));
-					if (resolveResult == null)
-						return null;
-					
-					if (resolver.ResolvedExpression is ICSharpCode.OldNRefactory.Ast.TypeOfExpression) {
-						CompletionDataList completionList = new ProjectDomCompletionDataList ();
-					
-						CompletionDataCollector col = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
-						AddPrimitiveTypes (col);
-						foreach (object o in dom.GetNamespaceContents (GetUsedNamespaces (), true, true)) {
-							col.Add (o);
-						}
-						if (resolver.CallingMember is IMethod) {
-							foreach (ITypeParameter tp in ((IMethod)resolver.CallingMember).TypeParameters) {
-								col.Add (tp.Name, "md-keyword");
-							}
-						}
-						if (resolver.CallingType != null) {
-							foreach (ITypeParameter tp in resolver.CallingType.TypeParameters) {
-								col.Add (tp.Name, "md-keyword");
-							}
-						}
-						return completionList;
-					}
-					if (resolveResult is MethodResolveResult) {
-						var methodResolveResult = resolveResult as MethodResolveResult;
-						resolver.SetupResolver (new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-						return CreateParameterCompletion (resolver, location, result.ExpressionContext, methodResolveResult.Methods, 0);	
-					}
-					return null;
 				case ',':
 					if (!GetParameterCompletionCommandOffset (out cpos)) 
 						return null;
@@ -599,50 +555,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			completionList.DefaultCompletionString = typeString;
 		}
-
-		public CompletionDataList CreateParameterCompletion (NRefactoryResolver resolver, AstLocation location, ExpressionContext context, IEnumerable<IMethod> possibleMethods, int parameter)
-		{
-			CompletionDataList completionList = new ProjectDomCompletionDataList ();
-			var addedEnums = new HashSet<string> ();
-			var addedDelegates = new HashSet<string> ();
-			IType resolvedType = null;
-			foreach (var method in possibleMethods) {
-				if (method.Parameters.Count <= parameter)
-					continue;
-				resolvedType = dom.GetType (method.Parameters [parameter].ReturnType);
-				if (resolvedType == null)
-					continue;
-				switch (resolvedType.ClassType) {
-				case ClassType.Enum:
-					if (addedEnums.Contains (resolvedType.DecoratedFullName))
-						continue;
-					addedEnums.Add (resolvedType.DecoratedFullName);
-					AddEnumMembers (completionList, resolvedType);
-					break;
-				case ClassType.Delegate:
-					if (addedDelegates.Contains (resolvedType.DecoratedFullName))
-						continue;
-					addedDelegates.Add (resolvedType.DecoratedFullName);
-					string parameterDefinition = AddDelegateHandlers (completionList, resolvedType, false, addedDelegates.Count == 1);
-					string varName = "Handle" + method.Parameters [parameter].ReturnType.Name + method.Parameters [parameter].Name;
-					completionList.Add (new EventCreationCompletionData (textEditorData, varName, resolvedType, null, parameterDefinition, resolver.Unit.GetMemberAt (location), resolvedType) { AddSemicolon = false });
-					break;
-				}
-			}
-			if (addedEnums.Count + addedDelegates.Count == 0)
-				return null;
-			CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
-			completionList.AutoCompleteEmptyMatch = false;
-			completionList.AutoSelect = false;
-			resolver.AddAccessibleCodeCompletionData (ExpressionContext.MethodBody, cdc);
-			if (addedDelegates.Count > 0) {
-				foreach (var data in completionList) {
-					if (data is MemberCompletionData) 
-						((MemberCompletionData)data).IsDelegateExpected = true;
-				}
-			}
-			return completionList;
-		}
 		
 		public bool IsInLinqContext (ExpressionResult result)
 		{
@@ -757,16 +669,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			if (dom == null || (completionChar != '(' && completionChar != '<' && completionChar != '['))
-				return null;
-			stateTracker.UpdateEngine (completionContext.TriggerOffset);
-			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
-				return null;
-			ExpressionResult result = FindExpression (dom, completionContext, -1);
-			if (result == null)
-				return null;
-			
-
 			//AstLocation location = new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
 			NRefactoryResolver resolver = CreateResolver ();
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
@@ -786,46 +688,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				return null;
 			}
-			case '(': {
-				ResolveResult resolveResult = resolver.Resolve (result, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-				if (resolveResult != null) {
-					if (result.ExpressionContext == ExpressionContext.Attribute) {
-						IReturnType returnType = resolveResult.ResolvedType;
-						
-						IType type = resolver.SearchType (result.Expression.Trim () + "Attribute");
-						if (type == null) 
-							type = resolver.SearchType (returnType);
-						if (type != null && returnType != null && returnType.GenericArguments != null)
-							type = dom.CreateInstantiatedGenericType (type, returnType.GenericArguments);
-						return new NRefactoryParameterDataProvider (textEditorData, resolver, type);
-					}
-					
-//					System.Console.WriteLine("resolveResult:" + resolveResult);
-					
-					if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
-						IReturnType returnType = resolveResult.ResolvedType ?? ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type;
-						
-						IType type = resolver.SearchType (returnType);
-						if (type != null && returnType.GenericArguments != null)
-							type = dom.CreateInstantiatedGenericType (type, returnType.GenericArguments);
-						return new NRefactoryParameterDataProvider (textEditorData, resolver, type);
-					}
-					
-					if (resolveResult is MethodResolveResult)
-						return new NRefactoryParameterDataProvider (textEditorData, resolver, resolveResult as MethodResolveResult);
-					if (result.ExpressionContext == ExpressionContext.BaseConstructorCall) {
-						if (resolveResult is ThisResolveResult)
-							return new NRefactoryParameterDataProvider (textEditorData, resolver, resolveResult as ThisResolveResult);
-						if (resolveResult is BaseResolveResult)
-							return new NRefactoryParameterDataProvider (textEditorData, resolver, resolveResult as BaseResolveResult);
-					}
-					IType resolvedType = resolver.SearchType (resolveResult.ResolvedType);
-					if (resolvedType != null && resolvedType.ClassType == ClassType.Delegate) {
-						return new NRefactoryParameterDataProvider (textEditorData, result.Expression, resolvedType);
-					}
-				}
-				break;
-			} }
+			 }
 			return null;
 		}
 		

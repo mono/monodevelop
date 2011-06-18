@@ -221,6 +221,8 @@
     <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\DelegateDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -241,11 +243,10 @@
     <None Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
     <None Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
     <None Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
     <None Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

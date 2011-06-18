@@ -1,20 +1,21 @@
-// NRefactoryParameterDataProvider.cs
-//
+// 
+// DelegateDataProvider.cs
+//  
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
-//
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
-//
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
+using System;
 
 using System;
 using System.Collections.Generic;
@@ -44,139 +45,20 @@ using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class NRefactoryParameterDataProvider : IParameterDataProvider
+	public class DelegateDataProvider : IParameterDataProvider
 	{
 		CSharpCompletionTextEditorExtension ext;
 		
-		List<IMethod> methods = new List<IMethod> ();
+		IType delegateType;
+		IMethod delegateMethod;
 		CSharpAmbience ambience = new CSharpAmbience ();
 		
-		bool staticResolve = false;
-		
-		public NRefactoryParameterDataProvider (CSharpCompletionTextEditorExtension ext, MethodGroupResolveResult resolveResult)
+		public DelegateDataProvider (CSharpCompletionTextEditorExtension ext, IType delegateType)
 		{
 			this.ext = ext;
-			
-			HashSet<string> alreadyAdded = new HashSet<string> ();
-			foreach (var method in resolveResult.Methods) {
-				if (method.IsConstructor)
-					continue;
-				string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
-				if (alreadyAdded.Contains (str))
-					continue;
-				alreadyAdded.Add (str);
-				methods.Add (method);
-			}
-			methods.Sort (MethodComparer);
+			this.delegateType = delegateType;
+			this.delegateMethod = delegateType.GetDelegateInvokeMethod ();
 		}
-		
-		static int MethodComparer (IMethod left, IMethod right)
-		{
-			return left.Parameters.Count - right.Parameters.Count;
-		}
-		
-//		public NRefactoryParameterDataProvider (TextEditorData editor, TypeResolveResult resolveResult)
-//		{
-//			HashSet<string> alreadyAdded = new HashSet<string> ();
-//			if (resolveResult.CallingType != null) {
-//				bool includeProtected = true;
-//				foreach (IMethod method in resolveResult.CallingType.Methods) {
-//					if (!method.IsConstructor)
-//						continue;
-//					string str = ambience.GetString (method, OutputFlags.IncludeParameters);
-//					if (alreadyAdded.Contains (str))
-//						continue;
-//					alreadyAdded.Add (str);
-//					
-//					if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
-//						methods.Add (method);
-//				}
-//			}
-//		}
-//		
-//		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
-//		{
-//			HashSet<string> alreadyAdded = new HashSet<string> ();
-//			if (resolveResult.CallingType != null) {
-//				IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
-//				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
-//					IType baseType = resolver.SearchType (rt);
-//					bool includeProtected = DomType.IncludeProtected (resolver.Dom, baseType, resolvedType);
-//					
-//					if (baseType != null) {
-//						foreach (IMethod method in baseType.Methods) {
-//							if (!method.IsConstructor)
-//								continue;
-//							string str = ambience.GetString (method, OutputFlags.IncludeParameters);
-//							if (alreadyAdded.Contains (str))
-//								continue;
-//							alreadyAdded.Add (str);
-//							
-//							if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
-//								methods.Add (method);
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		// used for constructor completion
-//		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IType type)
-//		{
-//			if (type != null) {
-//				if (type.ClassType == ClassType.Delegate) {
-//					IMethod invokeMethod = ExtractInvokeMethod (type);
-//					if (type is InstantiatedType) {
-//						this.delegateName = ((InstantiatedType)type).UninstantiatedType.Name;
-//					} else {
-//						this.delegateName = type.Name;
-//					}
-//					if (invokeMethod != null) {
-//						methods.Add (invokeMethod);
-//					} else {
-//						// no invoke method -> tried to create an abstract delegate
-//					}
-//					return;
-//				}
-//				bool includeProtected = DomType.IncludeProtected (resolver.Dom, type, resolver.CallingType);
-//				bool constructorFound = false;
-//				HashSet<string> alreadyAdded = new HashSet<string> ();
-//				foreach (IMethod method in type.Methods) {
-//					constructorFound |= method.IsConstructor;
-//					string str = ambience.GetString (method, OutputFlags.IncludeParameters);
-//					if (alreadyAdded.Contains (str))
-//						continue;
-//					alreadyAdded.Add (str);
-//					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected)))
-//						methods.Add (method);
-//				}
-//				// No constructor - generating default
-//				if (!constructorFound && (type.TypeModifier & TypeModifier.HasOnlyHiddenConstructors) != TypeModifier.HasOnlyHiddenConstructors) {
-//					DomMethod defaultConstructor = new DomMethod ();
-//					defaultConstructor.MethodModifier = MethodModifier.IsConstructor;
-//					defaultConstructor.DeclaringType = type;
-//					methods.Add (defaultConstructor);
-//				}
-//			}
-//		}
-//		IMethod ExtractInvokeMethod (IType type)
-//		{
-//			foreach (IMethod method in type.Methods) {
-//				if (method.Name == "Invoke")
-//					return method;
-//			}
-//			
-//			return null;
-//		}
-//		
-// 		string delegateName = null;
-//		public NRefactoryParameterDataProvider (TextEditorData editor, string delegateName, IType type)
-//		{
-//			this.delegateName = delegateName;
-//			if (type != null) {
-//				methods.Add (ExtractInvokeMethod (type));
-//			}
-//		}
 		
 		#region IParameterDataProvider implementation
 		
@@ -233,15 +115,11 @@ namespace MonoDevelop.CSharp.Completion
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
-			if (staticResolve)
-				flags |= OutputFlags.StaticUsage;
 			
-			var m = methods [overload];
-			
-			string name =  m.Name; //(this.delegateName ?? (methods [overload].IsConstructor ? ambience.GetString (methods [overload].DeclaringType, flags) : methods [overload].Name));
+			string name = delegateType.Name;
 			var parameters = new StringBuilder ();
 			int curLen = 0;
-			string prefix = !m.IsConstructor ? ambience.GetString (ext.ctx, m.ReturnType, flags) + " " : "";
+			string prefix = !delegateMethod.IsConstructor ? ambience.GetString (ext.ctx, delegateMethod.ReturnType, flags) + " " : "";
 
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
@@ -259,8 +137,6 @@ namespace MonoDevelop.CSharp.Completion
 				parameters.Append (parameter);
 			}
 			var sb = new StringBuilder ();
-			if (m.IsExtensionMethod)
-				sb.Append (GettextCatalog.GetString ("(Extension) "));
 			sb.Append (prefix);
 			sb.Append ("<b>");
 			sb.Append (CSharpAmbience.FilterName (name));
@@ -268,7 +144,7 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (parameters.ToString ());
 			sb.Append (")");
 			
-			if (m.IsObsolete ()) {
+			if (delegateType.GetDefinition ().IsObsolete ()) {
 				sb.AppendLine ();
 				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 			}
@@ -312,36 +188,24 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			IMethod method = methods[overload];
-			
-			if (paramIndex < 0 || paramIndex >= method.Parameters.Count)
+			if (paramIndex < 0 || paramIndex >= delegateMethod.Parameters.Count)
 				return "";
 			
-			return ambience.GetString (ext.ctx, method, method.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+			return ambience.GetString (ext.ctx, delegateMethod, delegateMethod.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		
 		public int GetParameterCount (int overload)
 		{
 			if (overload >= OverloadCount)
 				return -1;
-			IMethod method = methods[overload];
-			return method != null && method.Parameters != null ? method.Parameters.Count : 0;
+			return delegateMethod.Parameters != null ? delegateMethod.Parameters.Count : 0;
 		}
 		
 		public int OverloadCount {
 			get {
-				return methods != null ? methods.Count : 0;
+				return 1;
 			}
 		}
 		#endregion 
-		
-		public List<IMethod> Methods {
-			get {
-				return methods;
-			}
-			set {
-				methods = value;
-			}
-		}
 	}
 }

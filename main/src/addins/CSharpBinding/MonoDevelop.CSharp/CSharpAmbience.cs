@@ -209,7 +209,8 @@ namespace MonoDevelop.CSharp
 		public override string GetString (string nameSpace, OutputSettings settings)
 		{
 			var result = new StringBuilder ();
-			result.Append (settings.EmitKeyword ("namespace"));
+			if (settings.IncludeKeywords)
+				result.Append (settings.EmitKeyword ("namespace"));
 			result.Append (Format (nameSpace));
 			return result.ToString ();
 		}
