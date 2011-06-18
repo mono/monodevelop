@@ -2,9 +2,9 @@
 // Error.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mike@icsharpcode.net>
 // 
-// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
+// Copyright (c) 2011 Mike Krüger <mike@icsharpcode.net>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

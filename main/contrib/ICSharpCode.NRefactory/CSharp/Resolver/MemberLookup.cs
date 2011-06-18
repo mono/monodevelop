@@ -170,10 +170,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Predicate<IMember> memberFilter = delegate(IMember member) {
 					return !member.IsOverride && member.Name == name && IsAccessible(member, allowProtectedAccess);
 				};
-				members.AddRange(type.GetMethods(context, memberFilter.SafeCast<IMember, IMethod>()).SafeCast<IMethod, IMember>());
-				members.AddRange(type.GetProperties(context, memberFilter.SafeCast<IMember, IProperty>()).SafeCast<IProperty, IMember>());
-				members.AddRange(type.GetFields(context, memberFilter.SafeCast<IMember, IField>()).SafeCast<IField, IMember>());
-				members.AddRange(type.GetEvents(context, memberFilter.SafeCast<IMember, IEvent>()).SafeCast<IEvent, IMember>());
+				members.AddRange(type.GetMembers(context, memberFilter));
 				if (isInvocation)
 					members.RemoveAll(m => !IsInvocable(m, context));
 			} else {

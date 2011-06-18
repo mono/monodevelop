@@ -39,7 +39,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
 		CSharpResolver resolver;
 		readonly ParsedFile parsedFile;
-		readonly Dictionary<AstNode, ResolveResult> cache = new Dictionary<AstNode, ResolveResult>();
+		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
+		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
 		
 		readonly IResolveVisitorNavigator navigator;
 		ResolveVisitorNavigationMode mode = ResolveVisitorNavigationMode.Scan;
@@ -95,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public void Scan(AstNode node)
 		{
-			if (node == null)
+			if (node == null || node.IsNull)
 				return;
 			if (mode == ResolveVisitorNavigationMode.ResolveAll) {
 				Resolve(node);
@@ -110,6 +111,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 						break;
 					case ResolveVisitorNavigationMode.Scan:
+						resolverBeforeDict[node] = resolver.Clone();
 						node.AcceptVisitor(this, null);
 						break;
 					case ResolveVisitorNavigationMode.Resolve:
@@ -117,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						Resolve(node);
 						break;
 					default:
-						throw new Exception("Invalid value for ResolveVisitorNavigationMode");
+						throw new InvalidOperationException("Invalid value for ResolveVisitorNavigationMode");
 				}
 				mode = oldMode;
 			}
@@ -125,15 +127,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public ResolveResult Resolve(AstNode node)
 		{
-			if (node == null)
+			if (node == null || node.IsNull)
 				return errorResult;
 			bool wasScan = mode == ResolveVisitorNavigationMode.Scan;
 			if (wasScan)
 				mode = ResolveVisitorNavigationMode.Resolve;
 			ResolveResult result;
-			if (!cache.TryGetValue(node, out result)) {
+			if (!resolveResultCache.TryGetValue(node, out result)) {
 				resolver.cancellationToken.ThrowIfCancellationRequested();
-				result = cache[node] = node.AcceptVisitor(this, null) ?? errorResult;
+				resolverBeforeDict[node] = resolver.Clone();
+				result = resolveResultCache[node] = node.AcceptVisitor(this, null) ?? errorResult;
 			}
 			if (wasScan)
 				mode = ResolveVisitorNavigationMode.Scan;
@@ -162,8 +165,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult GetResolveResult(AstNode node)
 		{
 			ResolveResult result;
-			if (cache.TryGetValue(node, out result))
+			if (resolveResultCache.TryGetValue(node, out result))
 				return result;
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Gets the resolver state in front of the specified node.
+		/// Returns <c>null</c> if no cached resolver was found (e.g. if the node was skipped by the navigator)
+		/// </summary>
+		public CSharpResolver GetResolverStateBefore(AstNode node)
+		{
+			CSharpResolver r;
+			if (resolverBeforeDict.TryGetValue(node, out r))
+				return r;
 			else
 				return null;
 		}
@@ -641,8 +657,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			if (resolverEnabled) {
-				// TODO: type arguments?
-				return resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance,
+				List<IType> typeArguments = new List<IType>();
+				foreach (AstType typeArgument in identifierExpression.TypeArguments) {
+					typeArguments.Add(ResolveType(typeArgument));
+				}
+				return resolver.ResolveSimpleName(identifierExpression.Identifier, typeArguments,
 				                                  IsTargetOfInvocation(identifierExpression));
 			} else {
 				ScanChildren(identifierExpression);
@@ -690,7 +709,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitIsExpression(IsExpression isExpression, object data)
 		{
 			ScanChildren(isExpression);
-			return new ResolveResult(KnownTypeReference.Boolean.Resolve(resolver.Context));
+			if (resolverEnabled)
+				return new ResolveResult(KnownTypeReference.Boolean.Resolve(resolver.Context));
+			else
+				return null;
 		}
 		
 		public override ResolveResult VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
@@ -702,10 +724,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult target = Resolve(memberReferenceExpression.Target);
-				List<AstType> typeArgumentNodes = memberReferenceExpression.TypeArguments.ToList();
-				// TODO: type arguments?
+				List<IType> typeArguments = new List<IType>();
+				foreach (AstType typeArgument in memberReferenceExpression.TypeArguments) {
+					typeArguments.Add(ResolveType(typeArgument));
+				}
 				return resolver.ResolveMemberAccess(target, memberReferenceExpression.MemberName,
-				                                    EmptyList<IType>.Instance,
+				                                    typeArguments,
 				                                    IsTargetOfInvocation(memberReferenceExpression));
 			} else {
 				ScanChildren(memberReferenceExpression);
@@ -747,7 +771,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
-			throw new NotImplementedException();
+			if (resolverEnabled) {
+				ResolveResult target = Resolve(pointerReferenceExpression.Target);
+				ResolveResult deferencedTarget = resolver.ResolveUnaryOperator(UnaryOperatorType.Dereference, target);
+				List<IType> typeArguments = new List<IType>();
+				foreach (AstType typeArgument in pointerReferenceExpression.TypeArguments) {
+					typeArguments.Add(ResolveType(typeArgument));
+				}
+				return resolver.ResolveMemberAccess(deferencedTarget, pointerReferenceExpression.MemberName,
+				                                    typeArguments,
+				                                    IsTargetOfInvocation(pointerReferenceExpression));
+			} else {
+				ScanChildren(pointerReferenceExpression);
+				return null;
+			}
 		}
 		
 		public override ResolveResult VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
@@ -830,7 +867,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					case UndocumentedExpressionType.RefValue:
 						var tre = undocumentedExpression.Arguments.ElementAtOrDefault(1) as TypeReferenceExpression;
 						if (tre != null)
-							resultType = MakeTypeReference(tre.Type);
+							resultType = ResolveType(tre.Type);
 						else
 							resultType = SharedTypes.UnknownType;
 						break;

@@ -23,12 +23,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public sealed class Dynamic {}
 		
-		#region ITypeResolveContext.GetClass(Type)
+		#region ITypeResolveContext.GetTypeDefinition(Type)
 		/// <summary>
-		/// Retrieves a class.
+		/// Retrieves a type definition.
 		/// </summary>
-		/// <returns>Returns the class; or null if it is not found.</returns>
-		public static ITypeDefinition GetClass(this ITypeResolveContext context, Type type)
+		/// <returns>Returns the type definition; or null if it is not found.</returns>
+		/// <remarks>
+		/// This method retrieves the type definition; consider using <code>type.ToTypeReference().Resolve(context)</code> instead
+		/// if you need an <see cref="IType"/>.
+		/// </remarks>
+		public static ITypeDefinition GetTypeDefinition(this ITypeResolveContext context, Type type)
 		{
 			if (type == null)
 				return null;
@@ -39,7 +43,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (type.IsGenericParameter)
 				return null;
 			if (type.DeclaringType != null) {
-				ITypeDefinition declaringType = GetClass(context, type.DeclaringType);
+				ITypeDefinition declaringType = GetTypeDefinition(context, type.DeclaringType);
 				if (declaringType != null) {
 					int typeParameterCount;
 					string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);

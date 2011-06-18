@@ -117,5 +117,11 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			return null;
 		}
+		
+		IEnumerable<IParsedFile> IProjectContent.Files {
+			get {
+				return EmptyList<IParsedFile>.Instance;
+			}
+		}
 	}
 }

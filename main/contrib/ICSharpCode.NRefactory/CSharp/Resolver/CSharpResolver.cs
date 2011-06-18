@@ -303,7 +303,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return true; }
 			}
 			
-			bool IEntity.IsPrivate {
+				bool IEntity.IsPrivate {
 				get { return false; }
 			}
 			

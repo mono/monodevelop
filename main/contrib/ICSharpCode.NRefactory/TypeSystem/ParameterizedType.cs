@@ -261,6 +261,49 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return events;
 		}
 		
+		public IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
+		{
+			Substitution substitution = new Substitution(typeArguments);
+			List<IMember> members = genericType.GetMembers(context, filter).ToList();
+			for (int i = 0; i < members.Count; i++) {
+				members[i] = Specialize(members[i], context, substitution);
+			}
+			return members;
+		}
+		
+		IMember Specialize(IMember member, ITypeResolveContext context, Substitution substitution)
+		{
+			IMethod method = member as IMethod;
+			if (method != null) {
+				SpecializedMethod m = new SpecializedMethod(method);
+				m.SetDeclaringType(this);
+				m.SubstituteTypes(context, substitution);
+				return m;
+			}
+			IProperty property = member as IProperty;
+			if (property != null) {
+				SpecializedProperty p = new SpecializedProperty(property);
+				p.SetDeclaringType(this);
+				p.SubstituteTypes(context, substitution);
+				return p;
+			}
+			IField field = member as IField;
+			if (field != null) {
+				SpecializedField f = new SpecializedField(field);
+				f.SetDeclaringType(this);
+				f.ReturnType = f.ReturnType.Resolve(context).AcceptVisitor(substitution);
+				return f;
+			}
+			IEvent ev = member as IEvent;
+			if (ev != null) {
+				SpecializedEvent e = new SpecializedEvent(ev);
+				e.SetDeclaringType(this);
+				e.ReturnType = e.ReturnType.Resolve(context).AcceptVisitor(substitution);
+				return e;
+			}
+			throw new ArgumentException("Unknown member");
+		}
+		
 		public override bool Equals(object obj)
 		{
 			return Equals(obj as IType);

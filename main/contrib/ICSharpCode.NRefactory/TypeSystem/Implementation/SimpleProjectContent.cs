@@ -184,6 +184,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				readerWriterLock.ExitReadLock();
 			}
 		}
+		
+		public IEnumerable<IParsedFile> Files {
+			get {
+				readerWriterLock.EnterReadLock();
+				try {
+					return fileDict.Values.ToArray();
+				} finally {
+					readerWriterLock.ExitReadLock();
+				}
+			}
+		}
 		#endregion
 		
 		#region Synchronization

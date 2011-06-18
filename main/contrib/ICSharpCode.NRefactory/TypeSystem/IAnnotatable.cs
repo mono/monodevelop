@@ -21,7 +21,8 @@ namespace ICSharpCode.NRefactory
 		}
 		
 		/// <summary>
-		/// Gets an typed annotation..
+		/// Gets the first annotation of the specified type.
+		/// Returns null if no matching annotation exists.
 		/// </summary>
 		/// <typeparam name='T'>
 		/// The type of the annotation.
@@ -29,7 +30,8 @@ namespace ICSharpCode.NRefactory
 		T Annotation<T> () where T: class;
 		
 		/// <summary>
-		/// Gets an annotation.
+		/// Gets the first annotation of the specified type.
+		/// Returns null if no matching annotation exists.
 		/// </summary>
 		/// <param name='type'>
 		/// The type of the annotation.
@@ -45,15 +47,23 @@ namespace ICSharpCode.NRefactory
 		void AddAnnotation (object annotation);
 		
 		/// <summary>
-		/// Removes an annotation from this instance.
+		/// Removes all annotations of the specified type.
 		/// </summary>
 		/// <typeparam name='T'>
-		/// The annotation to remove.
+		/// The type of the annotations to remove.
 		/// </typeparam>
 		void RemoveAnnotations<T> () where T : class;
+		
+		/// <summary>
+		/// Removes all annotations of the specified type.
+		/// </summary>
+		/// <param name='type'>
+		/// The type of the annotations to remove.
+		/// </param>
+		void RemoveAnnotations(Type type);
 	}
 	
-	public abstract class AbstractAnnotatable
+	public abstract class AbstractAnnotatable : IAnnotatable
 	{
 		// Annotations: points either null (no annotations), to the single annotation,
 		// or to an AnnotationList.

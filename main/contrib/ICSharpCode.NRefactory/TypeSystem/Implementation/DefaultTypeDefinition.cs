@@ -314,7 +314,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public bool IsPrivate {
-			get { return Accessibility == Accessibility.Private; } 
+			get { return Accessibility == Accessibility.Private; }
 		}
 		
 		public bool IsPublic {
@@ -332,7 +332,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsProtectedOrInternal {
 			get { return Accessibility == Accessibility.ProtectedOrInternal; }
 		}
-
+		
 		public bool IsProtectedAndInternal {
 			get { return Accessibility == Accessibility.ProtectedAndInternal; }
 		}
@@ -377,7 +377,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						primitiveBaseType = typeof(object);
 						break;
 				}
-				IType t = context.GetClass(primitiveBaseType);
+				IType t = context.GetTypeDefinition(primitiveBaseType);
 				if (t != null)
 					yield return t;
 			}
@@ -391,11 +391,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IList<ITypeDefinition> GetParts()
 		{
 			return new ITypeDefinition[] { this };
-		}
-		
-		public IType GetElementType()
-		{
-			throw new InvalidOperationException();
 		}
 		
 		public ITypeDefinition GetDefinition()
@@ -557,6 +552,34 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 			}
 			return events;
+		}
+		
+		public virtual IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
+		{
+			ITypeDefinition compound = GetCompoundClass();
+			if (compound != this)
+				return compound.GetMembers(context, filter);
+			
+			List<IMember> members = new List<IMember>();
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					int baseCount = 0;
+					foreach (var baseType in GetBaseTypes(context)) {
+						ITypeDefinition baseTypeDef = baseType.GetDefinition();
+						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
+							members.AddRange(baseType.GetMembers(context, filter));
+							baseCount++;
+						}
+					}
+					if (baseCount > 1)
+						RemoveDuplicates(members);
+					AddFilteredRange(members, this.Methods.Where(m => !m.IsConstructor), filter);
+					AddFilteredRange(members, this.Properties, filter);
+					AddFilteredRange(members, this.Fields, filter);
+					AddFilteredRange(members, this.Events, filter);
+				}
+			}
+			return members;
 		}
 		
 		static void AddFilteredRange<T>(List<T> targetList, IEnumerable<T> sourceList, Predicate<T> filter) where T : class

@@ -248,17 +248,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
+			// TODO: get properties from constraints
 			return EmptyList<IProperty>.Instance;
 		}
 		
 		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
 		{
+			// TODO: get fields from constraints
 			return EmptyList<IField>.Instance;
 		}
 		
 		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
 		{
+			// TODO: get events from constraints
 			return EmptyList<IEvent>.Instance;
+		}
+		
+		public IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
+		{
+			// TODO: get members from constraints
+			return GetMethods(context, filter);
 		}
 		
 		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter)
@@ -301,7 +310,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			DefaultTypeParameter o = other as DefaultTypeParameter;
-			return o != null 
+			return o != null
 				&& this.attributes == o.attributes
 				&& this.constraints == o.constraints
 				&& this.flags == o.flags

@@ -24,6 +24,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets a parsed file by its file name.
 		/// </summary>
 		IParsedFile GetFile(string fileName);
+		
+		/// <summary>
+		/// Gets the list of all parsed files in the project content.
+		/// </summary>
+		IEnumerable<IParsedFile> Files { get; }
 	}
 	
 	#if WITH_CONTRACTS

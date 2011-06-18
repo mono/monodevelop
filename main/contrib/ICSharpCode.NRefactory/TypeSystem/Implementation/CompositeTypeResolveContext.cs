@@ -94,11 +94,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <inheritdoc/>
 		public virtual ISynchronizedTypeResolveContext Synchronize()
 		{
-			return Synchronize(new CacheManager(), true);
-		}
-		
-		ISynchronizedTypeResolveContext Synchronize(CacheManager cacheManager, bool isTopLevel)
-		{
 			ISynchronizedTypeResolveContext[] sync = new ISynchronizedTypeResolveContext[children.Length];
 			bool success = false;
 			try {
@@ -107,7 +102,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					if (sync[i] == null)
 						throw new InvalidOperationException(children[i] + ".ToString() returned null");
 				}
-				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, cacheManager, isTopLevel);
+				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, new CacheManager(), true);
 				success = true;
 				return r;
 			} finally {
@@ -132,7 +127,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			readonly CacheManager cacheManager;
 			readonly bool isTopLevel;
 			
-			public CompositeSynchronizedTypeResolveContext(ISynchronizedTypeResolveContext[] children, CacheManager cacheManager, bool isTopLevel)
+			public CompositeSynchronizedTypeResolveContext(ITypeResolveContext[] children, CacheManager cacheManager, bool isTopLevel)
 				: base(children)
 			{
 				Debug.Assert(cacheManager != null);
@@ -142,10 +137,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public void Dispose()
 			{
-				foreach (ISynchronizedTypeResolveContext element in children) {
-					element.Dispose();
-				}
 				if (isTopLevel) {
+					foreach (ISynchronizedTypeResolveContext element in children) {
+						element.Dispose();
+					}
 					// When the top-level synchronized block is closed, clear any cached data
 					cacheManager.Dispose();
 				}
@@ -160,7 +155,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public override ISynchronizedTypeResolveContext Synchronize()
 			{
 				// re-use the same cache manager for nested synchronized contexts
-				return base.Synchronize(cacheManager, false);
+				if (isTopLevel)
+					return new CompositeSynchronizedTypeResolveContext(children, cacheManager, false);
+				else
+					return this;
 			}
 		}
 	}

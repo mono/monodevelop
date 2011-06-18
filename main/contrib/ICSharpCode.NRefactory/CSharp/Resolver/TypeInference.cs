@@ -511,10 +511,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ArrayType arrU = U as ArrayType;
 			ArrayType arrV = V as ArrayType;
 			ParameterizedType pV = V as ParameterizedType;
-			if (arrU != null && (arrV != null && arrU.Dimensions == arrV.Dimensions
-			                     || IsIEnumerableCollectionOrList(pV) && arrU.Dimensions == 1))
-			{
+			if (arrU != null && arrV != null && arrU.Dimensions == arrV.Dimensions) {
 				MakeLowerBoundInference(arrU.ElementType, arrV.ElementType);
+				return;
+			} else if (arrU != null && IsIEnumerableCollectionOrList(pV) && arrU.Dimensions == 1) {
+				MakeLowerBoundInference(arrU.ElementType, pV.TypeArguments[0]);
 				return;
 			}
 			// Handle parameterized types:
@@ -594,10 +595,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ArrayType arrU = U as ArrayType;
 			ArrayType arrV = V as ArrayType;
 			ParameterizedType pU = U as ParameterizedType;
-			if (arrV != null && (arrU != null && arrU.Dimensions == arrV.Dimensions
-			                     || IsIEnumerableCollectionOrList(pU) && arrV.Dimensions == 1))
-			{
+			if (arrV != null && arrU != null && arrU.Dimensions == arrV.Dimensions) {
 				MakeUpperBoundInference(arrU.ElementType, arrV.ElementType);
+				return;
+			} else if (arrV != null && IsIEnumerableCollectionOrList(pU) && arrV.Dimensions == 1) {
+				MakeUpperBoundInference(pU.TypeArguments[0], arrV.ElementType);
 				return;
 			}
 			// Handle parameterized types:
@@ -831,7 +833,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				candidateTypeDefinitions = hashSet.ToList();
 			} else {
 				// Find candidates by looking at all classes in the project:
-				candidateTypeDefinitions = context.GetAllClasses().ToList();
+				candidateTypeDefinitions = context.GetAllTypes().ToList();
 			}
 			
 			// Now filter out candidates that violate the upper bounds:

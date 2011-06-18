@@ -178,6 +178,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return null;
 			}
 			
+			public IEnumerable<IParsedFile> Files {
+				get {
+					return EmptyList<IParsedFile>.Instance;
+				}
+			}
+			
 			string IDocumentationProvider.GetDocumentation(IEntity entity)
 			{
 				if (documentationProvider != null)
@@ -748,7 +754,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				
 				InitMembers(loader);
 				if (!loader.HasCecilReferences)
-					this.typeDefinition = null; 
+					this.typeDefinition = null;
 				Freeze(); // freeze after initialization
 				ApplyInterningProvider(loader.InterningProvider);
 			}

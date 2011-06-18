@@ -74,6 +74,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 		}
 		
+		public virtual bool IsVerbatim {
+			get {
+				return false;
+			}
+		}
+		
 		#region IRelocationable implementation
 		void IRelocatable.SetStartLocation (AstLocation startLocation)
 		{
@@ -135,17 +141,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			return o != null && !o.IsNull && MatchString(this.Name, o.Name);
 		}
 
-		public class VerbatimIdentifier : Identifier
+		class VerbatimIdentifier : Identifier
 		{
 			public override AstLocation EndLocation {
 				get {
 					return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length + 1); // @"..."
 				}
 			}
-
+			
+			public override bool IsVerbatim {
+				get {
+					return true;
+				}
+			}
+			
 			public VerbatimIdentifier(string name, AstLocation location) : base (name, location)
 			{
-
 			}
 		}
 	}
