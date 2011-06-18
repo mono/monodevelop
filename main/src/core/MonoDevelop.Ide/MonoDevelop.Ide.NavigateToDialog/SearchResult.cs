@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			if (useFullName)
 				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
-			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
+			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup) { Context = ctx };
 			settings.EmitNameCallback = delegate (object domVisitable, ref string outString) {
 				if (type == domVisitable)
 					outString = HighlightMatch (widget, outString, match);
@@ -143,7 +143,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			return Ambience.GetString (type, settings);
 		}
 		
-		public TypeSearchResult (string match, string matchedString, int rank, IType type, bool useFullName) : base (match, matchedString, rank, null, useFullName)
+		public TypeSearchResult (ITypeResolveContext ctx, string match, string matchedString, int rank, IType type, bool useFullName) : base (ctx, match, matchedString, rank, null, useFullName)
 		{
 			this.type = type;
 		}
@@ -206,6 +206,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		protected bool useFullName;
 		protected IMember member;
+		protected ITypeResolveContext ctx;
 		
 		protected virtual OutputFlags Flags {
 			get {
@@ -251,8 +252,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public MemberSearchResult (string match, string matchedString, int rank, IMember member, bool useFullName) : base (match, matchedString, rank)
+		public MemberSearchResult (ITypeResolveContext ctx, string match, string matchedString, int rank, IMember member, bool useFullName) : base (match, matchedString, rank)
 		{
+			this.ctx = ctx;
 			this.member = member;
 			this.useFullName = useFullName;
 		}
@@ -261,7 +263,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			if (useFullName)
 				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
-			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
+			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup) { Context = ctx };
 			settings.EmitNameCallback = delegate (object domVisitable, ref string outString) {
 				if (member == domVisitable)
 					outString = HighlightMatch (widget, outString, match);

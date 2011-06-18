@@ -128,10 +128,15 @@ namespace MonoDevelop.TypeSystem
 			var provider = GetProvider (mimeType);
 			if (provider == null)
 				return null;
-			var result = provider.Parse (projectContent, true, fileName, content);
-			if ((result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
-				((SimpleProjectContent)projectContent).UpdateProjectContent (projectContent.GetFile (fileName), result);
-			return result;
+			try {
+				var result = provider.Parse (projectContent, true, fileName, content);
+				if ((result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+					((SimpleProjectContent)projectContent).UpdateProjectContent (projectContent.GetFile (fileName), result);
+				return result;
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while parsing :" + e);
+				return new ParsedDocument (fileName) { Flags = ParsedDocumentFlags.NonSerializable };
+			}
 		}
 		
 		public static event EventHandler ParseOperationStarted;
