@@ -698,7 +698,7 @@ namespace MonoDevelop.AspNet
 			if (typeName != null) {
 				var dom = TypeSystemService.GetContext (this);
 				if (dom != null)
-					return dom.GetClass ("", typeName, 0, StringComparer.Ordinal);
+					return dom.GetTypeDefinition ("", typeName, 0, StringComparer.Ordinal);
 			}
 			return null;
 		}

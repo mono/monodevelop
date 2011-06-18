@@ -419,7 +419,7 @@ namespace Mono.CSharp
 			return ParseFile (args, input, inputFile, new StreamReportPrinter (reportStream));
 		}
 		
-		public static object parseLock = new object ();
+		internal static object parseLock = new object ();
 
 		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, ReportPrinter reportPrinter)
 		{
@@ -455,6 +455,7 @@ namespace Mono.CSharp
 					parser.LocationsBag = new LocationsBag ();
 					parser.UsingsBag = new UsingsBag ();
 					parser.parse ();
+					
 					return new CompilerCompilationUnit () { 
 						ModuleCompiled = RootContext.ToplevelTypes,
 						LocationsBag = parser.LocationsBag, 

@@ -50,6 +50,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		/// <value>
+		/// if the end column is == -1 the end line is -1 too
+		/// this stands for an unknown end
+		/// </value>
+		public int EndColumn {
+			get {
+				return endColumn;
+			}
+		}
+		
 		public AstLocation Begin {
 			get {
 				return new AstLocation (beginLine, beginColumn);
@@ -62,27 +72,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		/// <value>
-		/// if the end column is == -1 the end line is -1 too
-		/// this stands for an unknown end
-		/// </value>
-		public int EndColumn {
-			get {
-				return endColumn;
-			}
-		}
-		
 		public DomRegion (int beginLine, int beginColumn, int endLine, int endColumn) : this (null, beginLine, beginColumn, endLine, endColumn)
 		{
 		}
-		
-		public DomRegion (string fileName, int beginLine, int beginColumn, int endLine, int endColumn)
+
+		public DomRegion(string fileName, int beginLine, int beginColumn, int endLine, int endColumn)
 		{
 			this.fileName = fileName;
-			this.beginLine = beginLine;
+			this.beginLine   = beginLine;
 			this.beginColumn = beginColumn;
-			this.endLine = endLine;
-			this.endColumn = endColumn;
+			this.endLine     = endLine;
+			this.endColumn   = endColumn;
 		}
 		
 		public DomRegion (int beginLine, int beginColumn) : this (null, beginLine, beginColumn)
@@ -123,7 +123,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.endLine = -1;
 			this.endColumn = -1;
 		}
-
+		
 		/// <remarks>
 		/// Returns true, if the given coordinates (line, column) are in the region.
 		/// This method assumes that for an unknown end the end line is == -1
@@ -151,11 +151,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				fileName, beginLine, endLine, beginColumn, endColumn);
 		}
 		
-		public override bool Equals (object obj)
+		public override bool Equals(object obj)
 		{
-			return obj is DomRegion && Equals ((DomRegion)obj);
+			return obj is DomRegion && Equals((DomRegion)obj);
 		}
-		
 		
 		public override int GetHashCode()
 		{

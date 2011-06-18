@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public static readonly AstLocation Empty = new AstLocation(0, 0);
 		
-		int line, column;
+		readonly int line, column;
 		
 		public AstLocation (int line, int column)
 		{
@@ -51,12 +51,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public int Line {
 			get { return line; }
-			set { line = value; }
 		}
 		
 		public int Column {
 			get { return column; }
-			set { column = value; }
 		}
 		
 		public override bool Equals (object obj)

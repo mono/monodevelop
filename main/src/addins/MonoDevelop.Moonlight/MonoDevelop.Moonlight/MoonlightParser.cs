@@ -64,13 +64,13 @@ namespace MonoDevelop.Moonlight
 		static void GenerateCU (XmlParsedDocument doc)
 		{
 			if (doc.XDocument == null || doc.XDocument.RootElement == null) {
-				doc.Add (new Error (ErrorType.Error, 1, 1, "No root node found."));
+				doc.Add (new Error (ErrorType.Error, "No root node found.", 1, 1));
 				return;
 			}
 
 			XAttribute rootClass = doc.XDocument.RootElement.Attributes [new XName ("x", "Class")];
 			if (rootClass == null) {
-				doc.Add (new Error (ErrorType.Error, 1, 1, "Root node does not contain an x:Class attribute."));
+				doc.Add (new Error (ErrorType.Error, "Root node does not contain an x:Class attribute.", 1, 1));
 				return;
 			}
 

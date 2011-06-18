@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					c.Init(this);
 				}
 				if (HasCecilReferences)
-					this.typeSystemTranslationTable [pc] = assemblyDefinition;
+					typeSystemTranslationTable[pc] = assemblyDefinition;
 				return pc;
 			} finally {
 				this.EarlyBindContext = oldEarlyBindContext;
@@ -196,7 +196,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var param = new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() };
 			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
 			var result = LoadAssembly(asm);
-			this.typeSystemTranslationTable [result] = asm;
+			if (HasCecilReferences)
+				typeSystemTranslationTable[result] = asm;
 			return result;
 		}
 		
@@ -321,7 +322,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
 					var earlyBindContext = this.EarlyBindContext;
 					if (earlyBindContext != null) {
-						IType c = earlyBindContext.GetClass (ns, name, typeParameterCount, StringComparer.Ordinal);
+						IType c = earlyBindContext.GetTypeDefinition(ns, name, typeParameterCount, StringComparer.Ordinal);
 						if (c != null)
 							return c;
 					}
@@ -770,10 +771,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						if (name.Length == 0 || name[0] == '<')
 							continue;
 						name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name);
-						InnerClasses.Add(new CecilTypeDefinition(this, name, nestedType));
+						NestedTypes.Add(new CecilTypeDefinition(this, name, nestedType));
 					}
 				}
-				foreach (CecilTypeDefinition nestedType in this.InnerClasses) {
+				foreach (CecilTypeDefinition nestedType in this.NestedTypes) {
 					nestedType.Init(loader);
 				}
 			}
@@ -1197,18 +1198,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Type system translation table
 		Dictionary<object, object> typeSystemTranslationTable;
 		
-		T GetCecilObject<T> (object typeSystemObject) where T : class
+		T InternalGetCecilObject<T> (object typeSystemObject) where T : class
 		{
 			if (typeSystemObject == null)
 				throw new ArgumentNullException ("typeSystemObject");
+			if (!HasCecilReferences)
+				throw new NotSupportedException ("This instance contains no cecil references.");
 			object result;
-			typeSystemTranslationTable.TryGetValue (typeSystemObject, out result);
+			if (!typeSystemTranslationTable.TryGetValue (typeSystemObject, out result))
+				throw new InvalidOperationException ("No cecil reference stored for " + typeSystemObject);
 			return result as T;
 		}
 		
 		public AssemblyDefinition GetCecilObject (IProjectContent content)
 		{
-			return GetCecilObject<AssemblyDefinition> (content);
+			return InternalGetCecilObject<AssemblyDefinition> (content);
 		}
 		
 		public TypeDefinition GetCecilObject (ITypeDefinition type)
@@ -1218,29 +1222,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var cecilType = type as CecilTypeDefinition;
 			if (cecilType == null)
 				throw new ArgumentException ("type is no cecil type definition.");
-			if (!HasCecilReferences)
-				throw new NotSupportedException ("This instance contains no cecil references.");
 			return cecilType.typeDefinition;
 		}
 		
 		public MethodDefinition GetCecilObject (IMethod method)
 		{
-			return GetCecilObject<MethodDefinition> (method);
+			return InternalGetCecilObject<MethodDefinition> (method);
 		}
 		
 		public FieldDefinition GetCecilObject (IField field)
 		{
-			return GetCecilObject<FieldDefinition> (field);
+			return InternalGetCecilObject<FieldDefinition> (field);
 		}
 		
 		public EventDefinition GetCecilObject (IEvent evt)
 		{
-			return GetCecilObject<EventDefinition> (evt);
+			return InternalGetCecilObject<EventDefinition> (evt);
 		}
 		
 		public PropertyDefinition GetCecilObject (IProperty property)
 		{
-			return GetCecilObject<PropertyDefinition> (property);
+			return InternalGetCecilObject<PropertyDefinition> (property);
 		}
 		#endregion
 	}

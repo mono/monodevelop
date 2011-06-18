@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
-using Mono.CSharp;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -51,46 +50,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		IMember GetMember(AstLocation location);
 		
+		/// <summary>
+		/// Gets the parser errors.
+		/// </summary>
 		IList<Error> Errors { get; }
 	}
-	
-	public enum ErrorType
-	{
-		Error,
-		Warning
-	}
-
-	public class Error
-	{	
-		public DomRegion Region { get; private set; }
-		public string Message { get; private set; }
-
-		public ErrorType ErrorType { get; set; }
-		
-		public Error ()
-		{
-		}
-		
-		public Error (ErrorType errorType, DomRegion region, string message)
-		{
-			this.ErrorType = errorType;
-			this.Region = region;
-			this.Message = message;
-		}
-		
-		public Error (ErrorType errorType, int line, int column, string message)
-		{
-			this.ErrorType = errorType;
-			this.Region = new DomRegion (line, column);
-			this.Message = message;
-		}
-		
-		public Error (ErrorType errorType, AstLocation location, string message)
-		{
-			this.ErrorType = errorType;
-			this.Region = new DomRegion (location);
-			this.Message = message;
-		}
-	}
-
 }

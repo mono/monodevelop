@@ -95,7 +95,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		internal void AddError (ErrorType type, ILocation location, string message)
 		{
-			Errors.Add (new Error (type, location.BeginLine, location.BeginColumn, message));
+			Errors.Add (new Error (type, message, location.BeginLine, location.BeginColumn));
 		}
 		
 		public IDictionary<string,CodeBehindMember> Members { get; private set; }

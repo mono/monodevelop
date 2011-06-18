@@ -492,13 +492,13 @@ namespace MonoDevelop.AssemblyBrowser
 				string pattern = e.Argument.ToString ().ToUpper ();
 				int types = 0, curType = 0;
 				foreach (var unit in this.definitions) {
-						types += unit.Value.GetClasses ().Count ();
+						types += unit.Value.GetTypes ().Count ();
 				}
 				var members = new List<IMember> ();
 				switch (searchMode) {
 				case SearchMode.Member:
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.Value.GetClasses ()) {
+						foreach (var type in unit.Value.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
@@ -529,7 +529,7 @@ namespace MonoDevelop.AssemblyBrowser
 						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 					});
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.Value.GetClasses ()) {
+						foreach (var type in unit.Value.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
@@ -557,7 +557,7 @@ namespace MonoDevelop.AssemblyBrowser
 					break;
 				case SearchMode.Decompiler:
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.Value.GetClasses ()) {
+						foreach (var type in unit.Value.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
@@ -585,7 +585,7 @@ namespace MonoDevelop.AssemblyBrowser
 				case SearchMode.Type:
 					var typeList = new List<IType> ();
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.Value.GetClasses ()) {
+						foreach (var type in unit.Value.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)

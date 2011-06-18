@@ -574,7 +574,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						var dom = TypeSystemService.GetProjectContext (p);
 						if (dom == null)
 							continue;
-						foreach (var c in dom.GetClasses ())
+						foreach (var c in dom.GetTypes ())
 							AddType (c, dom, types);
 					}
 				} finally {

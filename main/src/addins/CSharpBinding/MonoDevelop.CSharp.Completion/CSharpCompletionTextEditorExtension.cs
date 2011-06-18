@@ -122,16 +122,16 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		ResolveResult ResolveExpression (ParsedFile file, Expression expr)
+		ResolveResult ResolveExpression (ParsedFile file, Expression expr, CompilationUnit unit)
 		{
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { expr });
 			var visitor = new ResolveVisitor (csResolver, file, navigator);
-			file.Unit.AcceptVisitor (visitor, null);
+			unit.AcceptVisitor (visitor, null);
 			return visitor.Resolve (expr);
 		}
 		
-		Tuple<ParsedFile, Expression> GetExpressionBeforeCursor ()
+		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionBeforeCursor ()
 		{
 			CSharpParser parser = new CSharpParser ();
 			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset);
@@ -165,9 +165,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			var tsvisitor = new TypeSystemConvertVisitor (TypeSystemService.GetProjectContext (Document.Project), Document.FileName);
 			completionUnit.AcceptVisitor (tsvisitor, null);
-			tsvisitor.ParsedFile.Unit = completionUnit;
-			
-			return Tuple.Create (tsvisitor.ParsedFile, expr);
+			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
 		}
 		
 		AstNode GenerateStub ()
@@ -199,7 +197,7 @@ namespace MonoDevelop.CSharp.Completion
 				
 				if (expr == null)
 					return null;
-				var resolveResult = ResolveExpression (expr.Item1, expr.Item2);
+				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
 				
 				return CreateCompletionData (loc, resolveResult);
 			case '#':
@@ -357,7 +355,7 @@ namespace MonoDevelop.CSharp.Completion
 				var nr = (NamespaceResolveResult)resolveResult;
 				var result2 = new ProjectDomCompletionDataList ();
 				
-				foreach (var cl in ctx.GetClasses (nr.NamespaceName, StringComparer.Ordinal)) {
+				foreach (var cl in ctx.GetTypes (nr.NamespaceName, StringComparer.Ordinal)) {
 					result2.Add (new CompletionData (cl.Name, cl.GetStockIcon ()));
 				}
 				foreach (var ns in ctx.GetNamespaces ().Where (n => n.StartsWith (nr.NamespaceName))) {

@@ -61,7 +61,6 @@ namespace MonoDevelop.CSharp.Parser
 			var visitor = new TypeSystemConvertVisitor (projectContent, fileName);
 			unit.AcceptVisitor (visitor, null);
 			result.ParsedFile = visitor.ParsedFile;
-			visitor.ParsedFile.Unit = unit;
 			if (storeAst) {
 				result.AddAnnotation (unit);
 				result.AddAnnotation (visitor.ParsedFile);

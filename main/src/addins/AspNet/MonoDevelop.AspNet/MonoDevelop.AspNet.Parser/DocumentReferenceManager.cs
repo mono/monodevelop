@@ -149,7 +149,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
-			return GetControlCompletionData (TypeSystemService.GetContext (Project).GetClass ("System.Web.UI", "Control", 0, StringComparer.Ordinal));
+			return GetControlCompletionData (TypeSystemService.GetContext (Project).GetTypeDefinition ("System.Web.UI", "Control", 0, StringComparer.Ordinal));
 		}
 		
 		public IEnumerable<CompletionData> GetControlCompletionData (IType baseType)

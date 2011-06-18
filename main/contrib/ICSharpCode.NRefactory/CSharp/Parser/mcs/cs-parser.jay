@@ -144,6 +144,19 @@ namespace Mono.CSharp
 		List<Tuple<Modifiers, Location>> mod_locations;
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
+		
+		object lastYYVal;
+		
+		// Can be used for code completion to get the last valid expression before an error.
+		// needs a hack in yyparse to make it work add 
+		// lastYYVal = yyVal;
+		// after the big switch/case (somewhere around line 3915)
+		public object LastYYVal {
+			get {
+				return lastYYVal;
+			}
+		}
+		
 %}
 
 %token EOF

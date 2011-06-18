@@ -126,10 +126,9 @@ namespace MonoDevelop.Xml.StateEngine
 			try {
 				//track line, column
 				if (c == '\n') {
-					location.Line++;
-					location.Column = 1;
+					location = new AstLocation (location.Line + 1, 1);
 				} else {
-					location.Column++;
+					location = new AstLocation (location.Line, location.Column + 1);
 				}
 				
 				position++;
@@ -283,37 +282,37 @@ namespace MonoDevelop.Xml.StateEngine
 		void IParseContext.LogError (string message)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, LocationCurrentChar, message));
+				InternalLogError (new Error (ErrorType.Error, message, LocationCurrentChar));
 		}
 		
 		void IParseContext.LogWarning (string message)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, LocationCurrentChar, message));
+				InternalLogError (new Error (ErrorType.Warning, message, LocationCurrentChar));
 		}
 		
 		void IParseContext.LogError (string message, AstLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, location, message));
+				InternalLogError (new Error (ErrorType.Error, message, location));
 		}
 		
 		void IParseContext.LogWarning (string message, AstLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, location, message));
+				InternalLogError (new Error (ErrorType.Warning, message, location));
 		}
 		
 		void IParseContext.LogError (string message, DomRegion region)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, region, message));
+				InternalLogError (new Error (ErrorType.Error, message, region));
 		}
 		
 		void IParseContext.LogWarning (string message, DomRegion region)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, region, message));
+				InternalLogError (new Error (ErrorType.Warning, message, region));
 		}
 		
 		void InternalLogError (Error err)

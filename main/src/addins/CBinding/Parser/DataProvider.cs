@@ -71,7 +71,7 @@ namespace CBinding.Parser
 				while (types.Count > 0) {
 					var type = types.Pop ();
 					memberList.Add (type);
-					foreach (var innerType in type.InnerClasses)
+					foreach (var innerType in type.NestedTypes)
 						types.Push (innerType);
 				}
 			} else if (tag is ITypeDefinition) {

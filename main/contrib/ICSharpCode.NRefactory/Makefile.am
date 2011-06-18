@@ -275,6 +275,7 @@ FILES =  \
 	TypeSystem/ClassType.cs \
 	TypeSystem/DomRegion.cs \
 	TypeSystem/EntityType.cs \
+	TypeSystem/Error.cs \
 	TypeSystem/ExtensionMethods.cs \
 	TypeSystem/IAccessor.cs \
 	TypeSystem/IAnnotatable.cs \

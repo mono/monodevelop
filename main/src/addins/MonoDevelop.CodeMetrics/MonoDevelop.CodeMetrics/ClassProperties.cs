@@ -153,7 +153,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		public int InnerTypeCount {
 			get {
-				return Class.InnerClasses.Count;
+				return Class.NestedTypes.Count;
 			}
 		}
 		
@@ -189,7 +189,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		private void EvaluateInnerTypeCount()
 		{
-			foreach (var type in Class.InnerClasses) {
+			foreach (var type in Class.NestedTypes) {
 				switch (type.ClassType) {
 				case ClassType.Class:
 					AddInnerClass(type); 

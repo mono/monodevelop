@@ -132,7 +132,7 @@ namespace MonoDevelop.DesignerSupport
 				ns = className.Substring (0, idx);
 				name = className.Substring (idx + 1);
 			}
-			var cls = ctx.GetClass (ns, name, 0, StringComparer.InvariantCulture);
+			var cls = ctx.GetTypeDefinition (ns, name, 0, StringComparer.InvariantCulture);
 			if (cls == null)
 				throw new TypeNotFoundException (className, location, null);
 			return cls;

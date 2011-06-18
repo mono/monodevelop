@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -52,10 +52,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			foreach (ITypeResolveContext context in children) {
-				ITypeDefinition d = context.GetClass(nameSpace, name, typeParameterCount, nameComparer);
+				ITypeDefinition d = context.GetTypeDefinition(nameSpace, name, typeParameterCount, nameComparer);
 				if (d != null)
 					return d;
 			}
@@ -63,15 +63,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public IEnumerable<ITypeDefinition> GetClasses()
+		public IEnumerable<ITypeDefinition> GetTypes()
 		{
-			return children.SelectMany(c => c.GetClasses());
+			return children.SelectMany(c => c.GetTypes());
 		}
 		
 		/// <inheritdoc/>
-		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		public IEnumerable<ITypeDefinition> GetTypes(string nameSpace, StringComparer nameComparer)
 		{
-			return children.SelectMany(c => c.GetClasses(nameSpace, nameComparer));
+			return children.SelectMany(c => c.GetTypes(nameSpace, nameComparer));
 		}
 		
 		/// <inheritdoc/>

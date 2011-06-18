@@ -295,7 +295,7 @@ namespace MonoDevelop.AspNet
 		{
 			var str = HtmlControlLookup (tagName, typeAttribute);
 			if (str != null) {
-				return SystemWebDom.GetClass ("", str, 0, StringComparer.OrdinalIgnoreCase);
+				return SystemWebDom.GetTypeDefinition ("", str, 0, StringComparer.OrdinalIgnoreCase);
 			}
 			return null;
 		}
@@ -352,7 +352,7 @@ namespace MonoDevelop.AspNet
 		{
 			return (assemblyDatabase == null)
 				? null
-				: assemblyDatabase.GetClass (namespac, tagName, 0, StringComparer.OrdinalIgnoreCase);
+				: assemblyDatabase.GetTypeDefinition (namespac, tagName, 0, StringComparer.OrdinalIgnoreCase);
 		}
 		
 		#endregion

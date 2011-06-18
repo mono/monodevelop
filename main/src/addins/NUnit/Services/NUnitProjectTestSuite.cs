@@ -73,7 +73,7 @@ namespace MonoDevelop.NUnit
 				ns = fullClassName.Substring (0, idx);
 				name = fullClassName.Substring (idx + 1);
 			}
-			var cls = ctx.GetClass (ns, name, 0, StringComparer.Ordinal);
+			var cls = ctx.GetTypeDefinition (ns, name, 0, StringComparer.Ordinal);
 			if (cls == null)
 				return null;
 			

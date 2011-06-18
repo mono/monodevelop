@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		IList<ITypeReference> baseTypes;
 		IList<ITypeParameter> typeParameters;
-		IList<ITypeDefinition> innerClasses;
+		IList<ITypeDefinition> nestedTypes;
 		IList<IField> fields;
 		IList<IMethod> methods;
 		IList<IProperty> properties;
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			baseTypes = FreezeList(baseTypes);
 			typeParameters = FreezeList(typeParameters);
-			innerClasses = FreezeList(innerClasses);
+			nestedTypes = FreezeList(nestedTypes);
 			fields = FreezeList(fields);
 			methods = FreezeList(methods);
 			properties = FreezeList(properties);
@@ -113,11 +113,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public IList<ITypeDefinition> InnerClasses {
+		public IList<ITypeDefinition> NestedTypes {
 			get {
-				if (innerClasses == null)
-					innerClasses = new List<ITypeDefinition>();
-				return innerClasses;
+				if (nestedTypes == null)
+					nestedTypes = new List<ITypeDefinition>();
+				return nestedTypes;
 			}
 		}
 		
@@ -332,7 +332,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsProtectedOrInternal {
 			get { return Accessibility == Accessibility.ProtectedOrInternal; }
 		}
-		
+
 		public bool IsProtectedAndInternal {
 			get { return Accessibility == Accessibility.ProtectedAndInternal; }
 		}
@@ -428,9 +428,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 							break; // there is at most 1 non-interface base
 						}
 					}
-					foreach (ITypeDefinition innerClass in this.InnerClasses) {
-						if (filter == null || filter(innerClass)) {
-							nestedTypes.Add(innerClass);
+					foreach (ITypeDefinition nestedType in this.NestedTypes) {
+						if (filter == null || filter(nestedType)) {
+							nestedTypes.Add(nestedType);
 						}
 					}
 				}

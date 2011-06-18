@@ -82,7 +82,7 @@ namespace ICSharpCode.Decompiler.Ast
 		
 		public IList<IAttribute> AssemblyAttributes { get; private set; }
 		
-		public ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			if (typeParameterCount > 0)
 				name = name + "`" + typeParameterCount.ToString();
@@ -104,14 +104,14 @@ namespace ICSharpCode.Decompiler.Ast
 			return null;
 		}
 		
-		public IEnumerable<ITypeDefinition> GetClasses()
+		public IEnumerable<ITypeDefinition> GetTypes()
 		{
 			foreach (TypeDefinition cecilType in module.Types) {
 				yield return GetClass(cecilType);
 			}
 		}
 		
-		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		public IEnumerable<ITypeDefinition> GetTypes(string nameSpace, StringComparer nameComparer)
 		{
 			foreach (TypeDefinition cecilType in module.Types) {
 				if (nameComparer.Equals(nameSpace, cecilType.Namespace))

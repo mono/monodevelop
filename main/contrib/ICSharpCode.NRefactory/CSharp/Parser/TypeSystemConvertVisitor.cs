@@ -127,7 +127,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (currentTypeDefinition != null) {
 				newType = new DefaultTypeDefinition(currentTypeDefinition, name);
 				newType.TypeParameters.AddRange(currentTypeDefinition.TypeParameters);
-				currentTypeDefinition.InnerClasses.Add(newType);
+				currentTypeDefinition.NestedTypes.Add(newType);
 			} else {
 				newType = new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
 				parsedFile.TopLevelTypeDefinitions.Add(newType);
@@ -637,7 +637,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			DomRegion region = MakeRegion(attr);
 			ITypeReference type = ConvertType(attr.Type);
-			if (!attr.Type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
+			if (!(attr.Type.GetChildByRole(AstNode.Roles.Identifier) is Identifier.VerbatimIdentifier)) {
 				// Try to add "Attribute" suffix, but only if the identifier
 				// (=last identifier in fully qualified name) isn't a verbatim identifier.
 				SimpleTypeOrNamespaceReference st = type as SimpleTypeOrNamespaceReference;

@@ -59,10 +59,10 @@ namespace MonoDevelop.Moonlight
 			if (database == null)
 				yield break;
 			
-			var swd = database.GetClass ("System.Windows", "DependencyObject", 0, StringComparer.Ordinal);
+			var swd = database.GetTypeDefinition ("System.Windows", "DependencyObject", 0, StringComparer.Ordinal);
 			
 			//return classes if they derive from system.web.ui.control
-			foreach (IType cls in database.GetClasses (namespac, StringComparer.Ordinal)) {
+			foreach (IType cls in database.GetTypes (namespac, StringComparer.Ordinal)) {
 				if (cls != null && !cls.GetDefinition ().IsAbstract && cls.GetDefinition ().IsPublic && cls.IsBaseType (database, swd))
 					yield return cls;
 			}
@@ -121,7 +121,7 @@ namespace MonoDevelop.Moonlight
 			if (database == null)
 				return;
 			foreach (string namespc in namespaces) {
-				IType controlType = database.GetClass (namespc, attributedOb.Name.Name, 0, StringComparer.Ordinal);
+				IType controlType = database.GetTypeDefinition (namespc, attributedOb.Name.Name, 0, StringComparer.Ordinal);
 				if (controlType != null) {
 					action (controlType, database);
 					break;
@@ -139,7 +139,7 @@ namespace MonoDevelop.Moonlight
 			if (database == null)
 				return;
 			
-			IType type = database.GetClass ("System.Windows", "DependencyObject", 0, StringComparer.Ordinal);
+			IType type = database.GetTypeDefinition ("System.Windows", "DependencyObject", 0, StringComparer.Ordinal);
 			if (type == null)
 				return;
 			

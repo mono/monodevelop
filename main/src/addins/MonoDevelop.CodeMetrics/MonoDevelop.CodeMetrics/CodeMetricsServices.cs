@@ -44,7 +44,7 @@ namespace MonoDevelop.CodeMetrics
 		public static void AddTypes (ProjectProperties projectprop, MetricsContext ctx)
 		{
 			var dom = TypeSystemService.GetProjectContext (projectprop.Project);
-			foreach (var ob in dom.GetClasses ()) {
+			foreach (var ob in dom.GetTypes ()) {
 				projectprop.AddInstance(ob);
 			}
 		}
@@ -182,7 +182,7 @@ namespace MonoDevelop.CodeMetrics
 		{
 			StringBuilder results = new StringBuilder();
 			results.Append(GettextCatalog.GetString("\nName : " + item.FullName));
-			results.Append(GettextCatalog.GetString("\nTotal number of inner types : " + item.Enum.InnerClasses.Count));
+			results.Append(GettextCatalog.GetString("\nTotal number of inner types : " + item.Enum.NestedTypes.Count));
 			return results;
 		}
 	}

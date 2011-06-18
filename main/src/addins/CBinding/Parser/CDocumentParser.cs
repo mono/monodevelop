@@ -151,7 +151,7 @@ namespace CBinding.Parser
 			
 			if (li is Class || li is Structure || li is Enumeration) {
 				var type = LanguageItemToIType (dom, pi, li, contentLines);
-				klass.InnerClasses.Add (type);
+				klass.NestedTypes.Add (type);
 				return type;
 			}
 			

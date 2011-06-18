@@ -71,7 +71,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var ctx = GetContent (builder);
 			foreach (var ns in ctx.GetNamespaces ()) {
 				var newSpace = new Namespace (ns);
-				newSpace.Types.AddRange (ctx.GetClasses (ns, StringComparer.Ordinal).Where (c => !publicOnly || c.IsPublic ));
+				newSpace.Types.AddRange (ctx.GetTypes (ns, StringComparer.Ordinal).Where (c => !publicOnly || c.IsPublic ));
 				if (newSpace.Types.Count > 0)
 					namespaces [ns] = newSpace;
 			}

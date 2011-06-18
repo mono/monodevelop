@@ -108,7 +108,7 @@ namespace MonoDevelop.AspNet.Gui
 			info.AspNetDocument.RootNode.AcceptVisit (v);
 			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultTypeDefinition (null, info.ClassName);
 			var dom = refman.TypeCtx.TypeResolveContext;
-			var baseType = dom.GetClass ("", info.BaseType, 0, StringComparer.Ordinal);
+			var baseType = dom.GetTypeDefinition ("", info.BaseType, 0, StringComparer.Ordinal);
 			foreach (var m in CodeBehind.GetDesignerMembers (v.Members.Values, baseType, null, dom, null)) {
 				t.Fields.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultField (t, m.Name) {
 					Accessibility = Accessibility.Protected,
@@ -340,7 +340,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (!HasDoc) {
 				AddAspBeginExpressions (list);
 				string aspPrefix = "asp:";
-				foreach (var cls in WebTypeContext.ListSystemControlClasses (TypeSystemService.GetContext (project).GetClass ("System.Web.UI", "Control", 0, StringComparer.Ordinal), project))
+				foreach (var cls in WebTypeContext.ListSystemControlClasses (TypeSystemService.GetContext (project).GetTypeDefinition ("System.Web.UI", "Control", 0, StringComparer.Ordinal), project))
 					list.Add (new AspTagCompletionData (aspPrefix, cls));
 				
 				base.GetElementCompletions (list);
@@ -452,7 +452,7 @@ namespace MonoDevelop.AspNet.Gui
 				
 				if (meth != null) {
 					IType argType = meth.Parameters [0].Type.Resolve (ctx);
-					if (argType != null && argType.IsBaseType (ctx, ctx.GetClass ("System.Web.UI", "Control", 0, StringComparer.Ordinal))) {
+					if (argType != null && argType.IsBaseType (ctx, ctx.GetTypeDefinition ("System.Web.UI", "Control", 0, StringComparer.Ordinal))) {
 						list.AddRange (refman.GetControlCompletionData (argType));
 						return;
 					}
@@ -559,7 +559,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (HasDoc && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
 				projectDatabase = TypeSystemService.GetContext (project);
 				if (projectDatabase != null)
-					codeBehindClass = projectDatabase.GetClass ("", aspDoc.Info.InheritedClass, 0, StringComparer.Ordinal);
+					codeBehindClass = projectDatabase.GetTypeDefinition ("", aspDoc.Info.InheritedClass, 0, StringComparer.Ordinal);
 			}
 		}
 		
@@ -598,7 +598,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			IType controlClass = refman.GetControlType (name.Prefix, name.Name);
 			if (controlClass == null) {
-				controlClass = database.GetClass ("System.Web.UI.WebControls", "WebControl", 0 , StringComparer.Ordinal);
+				controlClass = database.GetTypeDefinition ("System.Web.UI.WebControls", "WebControl", 0 , StringComparer.Ordinal);
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
 					return;
@@ -636,7 +636,7 @@ namespace MonoDevelop.AspNet.Gui
 				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
 				
 				var database = WebTypeContext.GetSystemWebDom (project);
-				controlClass = database.GetClass ("System.Web.UI.WebControls", "WebControl", 0, StringComparer.Ordinal);
+				controlClass = database.GetTypeDefinition ("System.Web.UI.WebControls", "WebControl", 0, StringComparer.Ordinal);
 
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");

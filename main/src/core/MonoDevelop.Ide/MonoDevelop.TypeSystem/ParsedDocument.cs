@@ -430,7 +430,7 @@ namespace MonoDevelop.TypeSystem
 			ITypeDefinition type = GetTopLevelTypeDefinition(location);
 			while (type != null) {
 				parent = type;
-				type = FindEntity(parent.InnerClasses, location);
+				type = FindEntity(parent.NestedTypes, location);
 			}
 			return parent;
 		}
@@ -574,7 +574,7 @@ namespace MonoDevelop.TypeSystem
 			if (!IncompleteOrSingleLine (type.BodyRegion))
 				yield return new FoldingRegion (type.BodyRegion, FoldType.Type);
 			
-			foreach (var inner in type.InnerClasses)
+			foreach (var inner in type.NestedTypes)
 				foreach (FoldingRegion f in inner.ToFolds ())
 					yield return f;
 			
@@ -757,7 +757,7 @@ namespace MonoDevelop.TypeSystem
 				if (member.BodyRegion.IsInside (region.Begin) && member.BodyRegion.IsInside (region.End)) 
 					return true;
 			}
-			foreach (var inner in cl.InnerClasses) {
+			foreach (var inner in cl.NestedTypes) {
 				if (region.IsInsideMember (inner))
 					return true;
 			}

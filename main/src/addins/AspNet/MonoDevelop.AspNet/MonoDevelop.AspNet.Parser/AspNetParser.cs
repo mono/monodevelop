@@ -49,22 +49,22 @@ namespace MonoDevelop.AspNet.Parser
 				rootNode.Parse (fileName, tr);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
-				errors.Add (new Error (ErrorType.Error, 0, 0, "Unhandled error parsing ASP.NET document: " + ex.Message));
+				errors.Add (new Error (ErrorType.Error, "Unhandled error parsing ASP.NET document: " + ex.Message));
 			}
 			
 			
 			foreach (var pe in rootNode.ParseErrors)
-				errors.Add (new Error (ErrorType.Error, pe.Location.BeginLine, pe.Location.BeginColumn, pe.Message));
+				errors.Add (new Error (ErrorType.Error, pe.Message, pe.Location.BeginLine, pe.Location.BeginColumn));
 			
 			info.Populate (rootNode, errors);
 			
 			var type = AspNetAppProject.DetermineWebSubtype (fileName);
 			if (type != info.Subtype) {
 				if (info.Subtype == WebSubtype.None) {
-					errors.Add (new Error (ErrorType.Error, 1, 1, "File directive is missing"));
+					errors.Add (new Error (ErrorType.Error, "File directive is missing", 1, 1));
 				} else {
 					type = info.Subtype;
-					errors.Add (new Error (ErrorType.Warning, 1, 1, "File directive does not match page extension"));
+					errors.Add (new Error (ErrorType.Warning, "File directive does not match page extension", 1, 1));
 				}
 			}
 			

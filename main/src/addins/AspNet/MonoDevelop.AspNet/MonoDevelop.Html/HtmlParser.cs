@@ -65,7 +65,7 @@ namespace MonoDevelop.Html
 		{
 			foreach (XNode node in doc.Nodes) {
 				if (node is XElement && !Object.ReferenceEquals (node, doc.RootElement)) {
-					yield return new Error (ErrorType.Warning, node.Region, "More than one root element");
+					yield return new Error (ErrorType.Warning, "More than one root element", node.Region);
 				}
 			}
 		}
