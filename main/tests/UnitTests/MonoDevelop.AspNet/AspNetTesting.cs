@@ -27,7 +27,6 @@
 using System;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.AspNet.Tests
 {
