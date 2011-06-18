@@ -147,18 +147,13 @@ namespace MonoDevelop.CSharp.Completion
 			parser = new CSharpParser ();
 			completionUnit = parser.Parse (stream, 0);
 			stream.Close ();
-			Console.WriteLine ("text:");
-			Console.WriteLine (text);
 			var type = completionUnit.GetTypes (true).LastOrDefault ();
-			Console.WriteLine ("type: " + type);
 			if (type == null)
 				return null;
 			var member = type.Members.LastOrDefault ();
-			Console.WriteLine ("member: " + member);
 			if (member == null)
 				return null;
 			if (member is MethodDeclaration) {
-				Console.WriteLine ("body:" + ((MethodDeclaration)member).Body);
 				((MethodDeclaration)member).Body.Add (new ExpressionStatement (expr));
 			} else {
 				return null;
@@ -166,21 +161,6 @@ namespace MonoDevelop.CSharp.Completion
 			var tsvisitor = new TypeSystemConvertVisitor (TypeSystemService.GetProjectContext (Document.Project), Document.FileName);
 			completionUnit.AcceptVisitor (tsvisitor, null);
 			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
-		}
-		
-		AstNode GenerateStub ()
-		{
-			var loc = new AstLocation (Document.Editor.Caret.Location.Line, Document.Editor.Caret.Location.Column + 1);
-			
-			CSharpParser parser = new CSharpParser ();
-			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset) + "Foo(); }}}";
-			
-			var stream = new System.IO.StringReader (text);
-			
-			var completionUnit = parser.Parse (stream, 0);
-			stream.Close ();
-			
-			return completionUnit.GetNodeAt (loc.Line, loc.Column - 1);
 		}
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
@@ -250,11 +230,19 @@ namespace MonoDevelop.CSharp.Completion
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
 					return null;
 				
-				var stub = GenerateStub ();
-				if (stub == null)
+				var identifierStart = GetExpressionBeforeCursor ();
+				
+				if (identifierStart == null)
 					return null;
+				
+				var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
+				var navigator = new NodeListResolveVisitorNavigator (new[] { identifierStart.Item2 });
+				var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
+				unit.AcceptVisitor (visitor, null);
+				foreach (var i in csResolver.LocalVariables) {
+					Console.WriteLine (i);
+				}
 //				if (stub.Parent is BlockStatement)
-					
 				
 //				result = FindExpression (dom, completionContext, -1);
 //				if (result == null)
@@ -359,6 +347,7 @@ namespace MonoDevelop.CSharp.Completion
 					result2.Add (new CompletionData (cl.Name, cl.GetStockIcon ()));
 				}
 				foreach (var ns in ctx.GetNamespaces ().Where (n => n.StartsWith (nr.NamespaceName))) {
+					Console.WriteLine ("namespace:" + ns + " <<");
 					string name = ns.Substring (nr.NamespaceName.Length);
 					int idx = name.IndexOf (".");
 					if (idx >= 0)

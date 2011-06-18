@@ -48,7 +48,7 @@ namespace MonoDevelop.TextTemplating.Parser
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 			foreach (System.CodeDom.Compiler.CompilerError err in template.Errors)
 				doc.Errors.Add (new Error (err.IsWarning? ErrorType.Warning : ErrorType.Error,
-				                           err.Line, err.Column, err.ErrorText)); 
+				                           err.ErrorText, err.Line, err.Column)); 
 			
 			return doc;
 		}

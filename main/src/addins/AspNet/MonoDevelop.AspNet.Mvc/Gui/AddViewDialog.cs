@@ -274,12 +274,12 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		{
 			Ambience ambience;
 			
-			public List<IType> List { get; private set; }
+			public List<ITypeDefinition> List { get; private set; }
 			
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
 				var dom = TypeSystemService.GetContext (project);
-				List = new List<IType> (dom.GetClasses ());
+				List = new List<ITypeDefinition> (dom.GetTypes ());
 				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
 			}
 			

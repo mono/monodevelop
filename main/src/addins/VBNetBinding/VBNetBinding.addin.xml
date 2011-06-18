@@ -83,9 +83,9 @@
 		<DataType class = "MonoDevelop.VBNetBinding.VBCompilerParameters" />
 		<DataType class = "MonoDevelop.VBNetBinding.Import" />
 	</Extension>
-	
+	<!--
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Parser class = "MonoDevelop.VBNetBinding.DomParser" fileExtensions=".vb" />
-	</Extension>
+	</Extension>-->
 	
 </Addin>
