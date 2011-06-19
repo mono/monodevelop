@@ -64,6 +64,7 @@ FILES =  \
 	MonoDevelop.Inspection/InspectionPanelWidget.cs \
 	MonoDevelop.Inspection/InspectorAddinNode.cs \
 	MonoDevelop.Refactoring/Change.cs \
+	MonoDevelop.Refactoring/FindReferencesHandler.cs \
 	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \

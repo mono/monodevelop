@@ -124,6 +124,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ResolveResult ResolveExpression (ParsedFile file, Expression expr, CompilationUnit unit)
 		{
+			if (expr == null)
+				return null;
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { expr });
 			var visitor = new ResolveVisitor (csResolver, file, navigator);

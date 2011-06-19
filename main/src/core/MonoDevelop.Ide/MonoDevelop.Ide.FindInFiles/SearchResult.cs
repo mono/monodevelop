@@ -30,15 +30,21 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public class SearchResult
 	{
-		public FileProvider FileProvider { get; set; }
+		public virtual FileProvider FileProvider { get; private set; }
 		
 		public int Offset { get; set; }
 		public int Length { get; set; }
 		
-		public string FileName {
+		public virtual string FileName {
 			get {
 				return FileProvider.FileName;
 			}
+		}
+		
+		protected SearchResult (int offset, int length)
+		{
+			Offset = offset;
+			Length = length;
 		}
 		
 		public SearchResult (FileProvider fileProvider, int offset, int length)

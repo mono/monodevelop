@@ -104,6 +104,7 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringOperation.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
     <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -184,7 +185,6 @@
     <None Include="MonoDevelop.Refactoring.CreateClass\CreateClassCodeGenerator.cs" />
     <None Include="MonoDevelop.Refactoring.CreateClass\CreateStructCodeGenerator.cs" />
     <None Include="MonoDevelop.Refactoring.Rename\RenameHandler.cs" />
-    <None Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
     <None Include="MonoDevelop.Refactoring\HelperMethods.cs" />
     <None Include="MonoDevelop.Refactoring\AbstractRefactoringCommandHandler.cs" />
     <None Include="MonoDevelop.Refactoring.RefactorImports\RemoveUnusedImportsRefactoring.cs" />

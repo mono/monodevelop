@@ -223,12 +223,11 @@
     <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\DelegateDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.CSharp.Refactoring\CSharpNRefactoryASTProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\FindMemberAstVisitor.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
@@ -238,7 +237,6 @@
     <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodHandler.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
     <None Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />

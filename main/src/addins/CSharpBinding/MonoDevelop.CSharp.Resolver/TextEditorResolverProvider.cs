@@ -78,7 +78,8 @@ namespace MonoDevelop.CSharp.Resolver
 			var loc = data.OffsetToLocation (offset);
 			var unit       = doc.ParsedDocument.Annotation<CompilationUnit> ();
 			var parsedFile = doc.ParsedDocument.Annotation<ParsedFile> ();
-			var node       = unit.GetNodeAt<Expression> (loc.Line, loc.Column);
+			var node   = unit.GetResolveableNodeAt (loc.Line, loc.Column);
+			
 			if (unit == null || parsedFile == null || node == null) {
 				expressionRegion = DomRegion.Empty;
 				return null;
@@ -312,7 +313,7 @@ namespace MonoDevelop.CSharp.Resolver
 				return GettextCatalog.GetString ("Delegate");
 			if (type.IsEnum ())
 				return GettextCatalog.GetString ("Enum");
-			if (type.IsReferenceType != null && !type.IsReferenceType.Value)
+			if (type.GetDefinition () != null && type.GetDefinition ().ClassType == ClassType.Struct)
 				return GettextCatalog.GetString ("Struct");
 			return GettextCatalog.GetString ("Class");
 		}

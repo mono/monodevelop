@@ -471,7 +471,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		#endregion
 		
@@ -547,17 +548,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		
 		public override ResolveResult VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		
 		public override ResolveResult VisitAsExpression(AsExpression asExpression, object data)
@@ -717,7 +721,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		
 		public override ResolveResult VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
@@ -971,8 +976,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					VariableInitializer vi = (VariableInitializer)node;
 					
 					IConstantValue cv = null;
-					if (isConst)
-						throw new NotImplementedException();
+//					if (isConst)
+//						throw new NotImplementedException();
 					resolver.AddVariable(type, new DomRegion (parsedFile.FileName, vi.StartLocation, vi.EndLocation), vi.Name, cv);
 					
 					if (resolverEnabled && initializerCount == 1) {
@@ -1090,7 +1095,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Attributes
 		public override ResolveResult VisitAttribute(Attribute attribute, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		#endregion
 		
@@ -1150,7 +1156,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Query Expressions
 		public override ResolveResult VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		#endregion
 		
@@ -1169,12 +1176,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		
 		public override ResolveResult VisitFixedVariableInitializer(FixedVariableInitializer fixedVariableInitializer, object data)
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
+			return errorResult;
 		}
 		
 		#region Token Nodes

@@ -122,10 +122,16 @@ namespace MonoDevelop.Refactoring
 						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.Region.FileName), part.Region.BeginLine), new System.Action (() => IdeApp.ProjectOperations.JumpToDeclaration (part)));
 					ainfo.Add (declSet);
 				} else {
-					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new System.Action (() => IdeApp.ProjectOperations.JumpToDeclaration (item as IEntity)));
+					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new System.Action (() => IdeApp.ProjectOperations.JumpToDeclaration (item as INamedElement)));
 				}
 				added = true;
 			}
+			
+			if (item is IEntity /* || item is LocalVariable || item is IParameter*/) {
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (item as IEntity)));
+				added = true;
+			}
+			
 			
 //			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 //			
@@ -241,8 +247,6 @@ namespace MonoDevelop.Refactoring
 //			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, realItem, null);
 //			
 //			
-//			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
-//				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new RefactoryOperation (refactorer.FindReferences));
 //			
 //			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
 //			bool includeModifyCommands = this.IsModifiable (item);
@@ -802,29 +806,6 @@ namespace MonoDevelop.Refactoring
 //				return;
 //			}
 //			IdeApp.ProjectOperations.JumpToDeclaration (item);
-//		}
-//		
-//		public void FindReferences ()
-//		{
-//			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-//			ThreadPool.QueueUserWorkItem (FindReferencesThread);
-//		}
-//		
-//		void FindReferencesThread (object state)
-//		{
-//			try {
-//				foreach (MemberReference mref in ReferenceFinder.FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, item, monitor)) {
-//					monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
-//				}
-//			} catch (Exception ex) {
-//				if (monitor != null)
-//					monitor.ReportError ("Error finding references", ex);
-//				else
-//					LoggingService.LogError ("Error finding references", ex);
-//			} finally {
-//				if (monitor != null)
-//					monitor.Dispose ();
-//			}
 //		}
 //		
 //		public void GoToBase ()
