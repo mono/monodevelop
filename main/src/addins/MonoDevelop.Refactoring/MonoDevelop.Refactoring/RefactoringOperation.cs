@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring
 {
@@ -48,26 +49,26 @@ namespace MonoDevelop.Refactoring
 				return "";
 			}
 		}
-		public virtual string GetMenuDescription (RefactoringOptions options)
+		public virtual string GetMenuDescription (RefactoringContext options)
 		{
 			return Name;
 		}
 		
-		public virtual bool IsValid (RefactoringOptions options)
+		public virtual bool IsValid (RefactoringContext options)
 		{
 			return false;
 		}
 		
-		public virtual List<Change> PerformChanges (RefactoringOptions options, object properties)
+		public virtual List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> PerformChanges (RefactoringContext options, object properties)
 		{
 			throw new System.NotImplementedException ();
 		}
 
-		public virtual void Run (RefactoringOptions options)
+		public virtual void Run (RefactoringContext options)
 		{
-			List<Change> changes = PerformChanges (options, null);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+//			List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> changes = PerformChanges (options, null);
+//			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
+//			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
 		}
 	}
 }

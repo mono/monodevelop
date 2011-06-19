@@ -100,6 +100,10 @@
     <Compile Include="MonoDevelop.CodeGeneration\AbstractGenerateAction.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\OverrideMembersGenerator.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoryCommands.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoringOperation.cs" />
+    <Compile Include="MonoDevelop.Refactoring\Change.cs" />
+    <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -172,11 +176,6 @@
     <None Include="MonoDevelop.AnalysisCore\README.txt" />
     <None Include="MonoDevelop.AnalysisCore\TODO.txt" />
     <None Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
-    <None Include="MonoDevelop.Refactoring\RefactoryCommands.cs" />
-    <None Include="MonoDevelop.Refactoring\Change.cs" />
-    <None Include="MonoDevelop.Refactoring\RefactoringOperation.cs" />
-    <None Include="MonoDevelop.Refactoring\INRefactoryASTProvider.cs" />
-    <None Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <None Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
     <None Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
     <None Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
@@ -185,7 +184,6 @@
     <None Include="MonoDevelop.Refactoring.CreateClass\CreateClassCodeGenerator.cs" />
     <None Include="MonoDevelop.Refactoring.CreateClass\CreateStructCodeGenerator.cs" />
     <None Include="MonoDevelop.Refactoring.Rename\RenameHandler.cs" />
-    <None Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
     <None Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
     <None Include="MonoDevelop.Refactoring\HelperMethods.cs" />
     <None Include="MonoDevelop.Refactoring\AbstractRefactoringCommandHandler.cs" />

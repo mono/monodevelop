@@ -103,6 +103,8 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (element is IType)
 				return ((IType)element).GetStockIcon ();
+			if (element is ITypeParameter)
+				return ((ITypeParameter)element).GetStockIcon ();
 			return ((IEntity)element).GetStockIcon ();
 		}
 		
@@ -114,6 +116,21 @@ namespace MonoDevelop.TypeSystem
 		public static string GetStockIcon (this IType entity)
 		{
 			return typeIconTable [(int)entity.GetDefinition ().ClassType, ModifierToOffset (entity.GetDefinition ().Accessibility)];
+		}
+		
+		public static string GetStockIcon (this IVariable variable)
+		{
+			return Field;
+		}
+		
+		public static string GetStockIcon (this IParameter parameter)
+		{
+			return Field;
+		}
+		
+		public static string GetStockIcon (this ITypeParameter parameter)
+		{
+			return Field;
 		}
 		
 		public static string GetStockIcon (this IEntity entity)
@@ -137,77 +154,6 @@ namespace MonoDevelop.TypeSystem
 				return eventIconTable [ModifierToOffset (entity.Accessibility)];
 			}
 			return "";
-		}
-		
-		
-		static int ModifierToOffset (TypeAttributes acc)
-		{
-			if ((acc & TypeAttributes.Public) == TypeAttributes.Public)
-				return 0;
-			if ((acc & TypeAttributes.NestedFamily) == TypeAttributes.NestedFamily)
-				return 2;
-			if ((acc & TypeAttributes.NestedAssembly) == TypeAttributes.NestedAssembly)
-				return 3;
-			return 1;
-		}
-		
-		public static string GetStockIcon (this TypeDefinition type)
-		{
-			int ct;
-			if (type.IsEnum) {
-				ct = 1;
-			} else if (type.IsInterface) {
-				ct = 2;
-			} else if (type.IsValueType) {
-				ct = 3;
-			} else if (type.BaseType != null && (type.BaseType.FullName == "System.Delegate" || type.BaseType.FullName == "System.MulticastDelegate")) {
-				ct = 4;
-			} else {
-				ct = 0;
-			}
-			return typeIconTable [ct, ModifierToOffset (type.Attributes)];
-		}
-		
-		static int ModifierToOffset (MethodAttributes acc)
-		{
-			if ((acc & MethodAttributes.Public) == MethodAttributes.Public)
-				return 0;
-			if ((acc & MethodAttributes.Family) == MethodAttributes.Family)
-				return 2;
-			if ((acc & MethodAttributes.Assembly) == MethodAttributes.Assembly)
-				return 3;
-			return 1;
-		}
-		
-		public static string GetStockIcon (this MethodDefinition method)
-		{
-			return methodIconTable [ModifierToOffset (method.Attributes)];
-		}
-		
-		static int ModifierToOffset (FieldAttributes acc)
-		{
-			if ((acc & FieldAttributes.Public) == FieldAttributes.Public)
-				return 0;
-			if ((acc & FieldAttributes.Family) == FieldAttributes.Family)
-				return 2;
-			if ((acc & FieldAttributes.Assembly) == FieldAttributes.Assembly)
-				return 3;
-			return 1;
-		}
-		
-		public static string GetStockIcon (this FieldDefinition field)
-		{
-			return fieldIconTable [ModifierToOffset (field.Attributes)];
-		}
-		
-		public static string GetStockIcon (this PropertyDefinition property)
-		{
-			return propertyIconTable [property.GetMethod != null ? ModifierToOffset (property.GetMethod.Attributes) : ModifierToOffset (property.SetMethod.Attributes)];
-		}
-		
-		public static string GetStockIcon (this EventDefinition evt)
-		{
-			return eventIconTable [evt.AddMethod != null ? ModifierToOffset (evt.AddMethod.Attributes) : ModifierToOffset (evt.RemoveMethod.Attributes)];
 		}
 	}
 }

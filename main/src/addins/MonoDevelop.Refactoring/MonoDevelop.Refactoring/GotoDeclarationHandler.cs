@@ -30,6 +30,8 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
@@ -37,40 +39,15 @@ namespace MonoDevelop.Refactoring
 	{
 		protected override void Run (object data)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
-			if (editor == null)
-				return;
-			int line, column;
-			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ITypeResolveContext ctx = doc.Dom;
-			
-			ResolveResult resolveResult;
-			INode item;
-			CurrentRefactoryOperationsHandler.GetItem (ctx, doc, editor, out resolveResult, out item);
-			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
-			string itemName = null;
-			if (item is IMember)
-				itemName = ((IMember)item).Name;
-			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IField) && !(eitem is IMethod)))) {
-				item = eitem;
-				eitem = null;
-			}
-			
-			IType eclass = null;
-			if (item is IType) {
-				if (((IType)item).ClassType == ClassType.Interface)
-					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
-					eclass = (IType)item;
-				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
-					item = eitem;
-					eitem = null;
-				}
-			}
-			Refactorer refactorer = new Refactorer (ctx, doc.CompilationUnit, eclass, item, null);
-			refactorer.GoToDeclaration ();
+
+			ResolveResult resolveResoult;
+			object item = CurrentRefactoryOperationsHandler.GetItem (doc.TypeResolveContext, doc, out resolveResoult);
+			var entity = item as INamedElement;
+			if (entity != null)
+				IdeApp.ProjectOperations.JumpToDeclaration (entity);
 		}
 	}
 }

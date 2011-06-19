@@ -203,7 +203,7 @@ namespace MonoDevelop.TypeSystem
 					return;
 				try {
 					var context = new SimpleProjectContent ();
-					QueueParseJob (context, null, project);
+					QueueParseJob (context, project);
 					context.AddAnnotation (project);
 					projectContents [project] = context;
 					referenceCounter [project] = 1;
@@ -364,7 +364,9 @@ namespace MonoDevelop.TypeSystem
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
 				return null;
-			return new CecilLoader ().LoadAssembly (asm);
+			var result = new CecilLoader ().LoadAssembly (asm);
+			result.AddAnnotation (fileName);
+			return result;
 		}
 		
 		public static ITypeResolveContext LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
@@ -372,7 +374,9 @@ namespace MonoDevelop.TypeSystem
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
 				return null;
-			return new CecilLoader ().LoadAssembly (asm);
+			var result = new CecilLoader ().LoadAssembly (asm);
+			result.AddAnnotation (fileName);
+			return result;
 		}
 		
 		public static IProjectContent GetProjectContext (Project project)
@@ -482,7 +486,7 @@ namespace MonoDevelop.TypeSystem
 			public SimpleProjectContent Context;
 			public Project Project;
 			public IEnumerable<ProjectFile> FileList;
-			public Action<string, IProgressMonitor> ParseCallback;
+//			public Action<string, IProgressMonitor> ParseCallback;
 			
 			public void Run (IProgressMonitor monitor)
 			{
@@ -495,10 +499,10 @@ namespace MonoDevelop.TypeSystem
 						continue;
 					using (var stream = new System.IO.StreamReader (file.FilePath)) {
 						var parsedFile = provider.Parse (Context, false, file.FilePath, stream);
-						Context.UpdateProjectContent (null, parsedFile);
+						Context.UpdateProjectContent (Context.GetFile (file.FilePath), parsedFile);
 					}
-					if (ParseCallback != null)
-						ParseCallback (file.FilePath, monitor);
+//					if (ParseCallback != null)
+//						ParseCallback (file.FilePath, monitor);
 				}
 			}
 		}
@@ -537,11 +541,11 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		public static void QueueParseJob (SimpleProjectContent context, Action<string, IProgressMonitor> callback, Project project, IEnumerable<ProjectFile> fileList = null)
+		public static void QueueParseJob (SimpleProjectContent context, /* Action<string, IProgressMonitor> callback,*/ Project project, IEnumerable<ProjectFile> fileList = null)
 		{
 			var job = new ParsingJob () {
 				Context = context,
-				ParseCallback = callback,
+//				ParseCallback = callback,
 				Project = project,
 				FileList = fileList
 			};
@@ -567,12 +571,10 @@ namespace MonoDevelop.TypeSystem
 		{
 			lock (parseQueueLock)
 			{
-				while (parseQueue.Count > 0) {
+				if (parseQueue.Count > 0) {
 					var job = parseQueue.Dequeue ();
-					if (job.ParseCallback != null) {
-						parseQueueIndex.Remove (job.Project);
-						return job;
-					}
+					parseQueueIndex.Remove (job.Project);
+					return job;
 				}
 				return null;
 			}
@@ -589,7 +591,6 @@ namespace MonoDevelop.TypeSystem
 			{
 				ParsingJob job;
 				if (parseQueueIndex.TryGetValue (project, out job)) {
-					job.ParseCallback = null;
 					parseQueueIndex.Remove (project);
 				}
 			}
@@ -601,7 +602,6 @@ namespace MonoDevelop.TypeSystem
 			{
 				foreach (var pj in parseQueue) {
 					if (pj.Context == context) {
-						pj.ParseCallback = null;
 						parseQueueIndex.Remove (pj.Project);
 					}
 				}
@@ -707,9 +707,8 @@ namespace MonoDevelop.TypeSystem
 						monitor = GetParseProgressMonitor ();
 						monitor.BeginTask (GettextCatalog.GetString ("Generating database"), 0);
 					}
-					
 					var job = DequeueParseJob ();
-					
+					Console.WriteLine ("run : "+  job);
 					if (job != null) {
 						try {
 							job.Run (monitor);

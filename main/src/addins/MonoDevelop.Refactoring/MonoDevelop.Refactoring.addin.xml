@@ -179,6 +179,7 @@
 	
 	
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+-
 		<CommandItem id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 		             insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 	</Extension>

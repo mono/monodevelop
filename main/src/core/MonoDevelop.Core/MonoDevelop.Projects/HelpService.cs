@@ -218,11 +218,16 @@ namespace MonoDevelop.Projects
 			return "T:" + type.FullName + "`" + type.TypeParameterCount;
 		}
 		
-		public static string GetHelpUrl (this IMember member)
+		public static string GetHelpUrl (this IEntity member)
 		{
 			StringBuilder sb;
 			
 			switch (member.EntityType) {
+			case EntityType.TypeDefinition:
+				var type = member as ITypeDefinition;
+				if (type.TypeParameterCount == 0)
+					return "T:" + type.FullName;
+				return "T:" + type.FullName + "`" + type.TypeParameterCount;
 			case EntityType.Method:
 				var method = (IMethod)member;
 				sb = new StringBuilder ();

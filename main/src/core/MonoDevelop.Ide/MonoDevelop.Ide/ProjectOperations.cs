@@ -212,16 +212,48 @@ namespace MonoDevelop.Ide
 			return (GetDeclaredFile(item) != null);
 		}*/
 		
-		public bool CanJumpToDeclaration (IEntity visitable)
+		public bool CanJumpToDeclaration (INamedElement element)
 		{
-			return visitable != null && !visitable.Region.IsEmpty;
+			var entity = element as IEntity;
+			if (entity == null && element is IType)
+				entity = ((IType)entity).GetDefinition ();
+			
+			if (entity != null) {
+				return !entity.Region.IsEmpty || !(entity.ProjectContent is SimpleProjectItem);
+			}
+			return false;
 		}
 
-		public void JumpToDeclaration (IEntity visitable)
+		public void JumpToDeclaration (INamedElement element)
 		{
-			IdeApp.Workbench.OpenDocument (visitable.Region.FileName,
-			                               visitable.Region.BeginLine,
-			                               visitable.Region.BeginColumn);
+			IEntity entity = element as IEntity;
+			
+			if (entity == null && element is IType)
+				entity = ((IType)entity).GetDefinition ();
+			if (entity == null) {
+				LoggingService.LogError ("Unknown element:" + element);
+				return;
+			}
+			string fileName;
+			bool isCecilProjectContent = !(entity.ProjectContent is SimpleProjectItem);
+			if (isCecilProjectContent) {
+				fileName = entity.ProjectContent.Annotation<string> (); // get dll
+			} else {
+				fileName = entity.Region.FileName;
+			}
+			
+			var doc = IdeApp.Workbench.OpenDocument (fileName,
+			                               entity.Region.BeginLine,
+			                               entity.Region.BeginColumn);
+			
+			if (isCecilProjectContent && doc != null) {
+				doc.RunWhenLoaded (delegate {
+					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
+					if (handler != null)
+						handler.Open (entity.GetHelpUrl ());
+				});
+			}
+			
 		}
 		
 		public void RenameItem (IWorkspaceFileObject item, string newName)
