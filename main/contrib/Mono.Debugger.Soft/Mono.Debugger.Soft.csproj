@@ -93,6 +93,8 @@
     <Compile Include="Mono.Debugger.Soft\ThreadStartEvent.cs" />
     <Compile Include="Mono.Debugger.Soft\TypeLoadEvent.cs" />
     <Compile Include="Mono.Debugger.Soft\TypeMirror.cs" />
+    <Compile Include="Mono.Debugger.Soft\UserBreakEvent.cs" />
+    <Compile Include="Mono.Debugger.Soft\UserLogEvent.cs" />
     <Compile Include="Mono.Debugger.Soft\Value.cs" />
     <Compile Include="Mono.Debugger.Soft\VirtualMachine.cs" />
     <Compile Include="Mono.Debugger.Soft\VirtualMachineManager.cs" />
