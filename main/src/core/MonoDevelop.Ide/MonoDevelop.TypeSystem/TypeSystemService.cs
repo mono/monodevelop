@@ -38,6 +38,7 @@ using MonoDevelop.Ide;
 using Mono.TextEditor;
 using System.Threading;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -177,7 +178,7 @@ namespace MonoDevelop.TypeSystem
 			if (item is Workspace) {
 				var ws = (Workspace)item;
 				foreach (WorkspaceItem it in ws.Items)
-					Load (it);
+				Load (it);
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
@@ -189,7 +190,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static Dictionary<Project, IProjectContent> projectContents = new Dictionary<Project, IProjectContent> ();
+		static Dictionary<Project, SimpleProjectContent> projectContents = new Dictionary<Project, SimpleProjectContent> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 		
 		public static void Load (Project project)
@@ -381,7 +382,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (project == null)
 				return null;
-			IProjectContent content;
+			SimpleProjectContent content;
 			projectContents.TryGetValue (project, out content);
 			return content;
 		}
@@ -398,7 +399,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
 			
-			IProjectContent content;
+			SimpleProjectContent content;
 			if (projectContents.TryGetValue (project, out content))
 				contexts.Add (content);
 			
@@ -497,6 +498,7 @@ namespace MonoDevelop.TypeSystem
 						continue;
 					using (var stream = new System.IO.StreamReader (file.FilePath)) {
 						var parsedFile = provider.Parse (Context, false, file.FilePath, stream);
+						Console.WriteLine ("parsed : "+ file.FilePath);
 						Context.UpdateProjectContent (Context.GetFile (file.FilePath), parsedFile);
 					}
 //					if (ParseCallback != null)
@@ -638,60 +640,48 @@ namespace MonoDevelop.TypeSystem
 					StartParserThread ();
 			}
 		}
+
+		static bool IsFileModified (ProjectFile file, IParsedFile parsedFile)
+		{
+			if (parsedFile == null)
+				return true;
+			return System.IO.File.GetLastWriteTime (file.FilePath) > parsedFile.ParseTime;
+		}
+
+		static void CheckModifiedFiles (Project project, SimpleProjectContent content)
+		{
+			List<ProjectFile> modifiedFiles = null;
+			foreach (var file in project.Files) {
+				if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
+					continue;
+					
+				var provider = TypeSystemService.GetProvider (DesktopService.GetMimeTypeForUri (file.FilePath));
+				if (provider == null)
+					continue;
+				
+				if (!IsFileModified (file, content.GetFile (file.FilePath)))
+					continue;
+				if (modifiedFiles == null)
+					modifiedFiles = new List<ProjectFile> ();
+				modifiedFiles.Add (file);
+			}
+			if (modifiedFiles == null)
+				return;
+			QueueParseJob (content, project, modifiedFiles);
+		}
 		
 		static void CheckModifiedFiles ()
-		{ // TODO: Try it again with the file system watcher.
+		{
+			Queue<KeyValuePair<Project, SimpleProjectContent>> list;
 			
-//			// Check databases following a bottom-up strategy in the dependency
-//			// tree. This will help resolving parsed classes.
-//			
-//			Set<SimpleProjectContent> list = new Set<SimpleProjectContent> ();
-//			lock (projectContents) {
-//				// There may be several uris for the same db
-//				foreach (var ob in projectContents.Values)
-//					list.Add (ob);
-//			}
-//			
-//			Set<SimpleProjectContent> done = new Set<SimpleProjectContent> ();
-//			while (list.Count > 0) 
-//			{
-//				SimpleProjectContent readydb = null;
-//				SimpleProjectContent bestdb = null;
-//				int bestRefCount = int.MaxValue;
-//				
-//				// Look for a db with all references resolved
-//				foreach (var db in list)
-//				{
-//					bool allDone = true;
-//					foreach (var refdb in db.References) {
-//						if (!done.Contains (refdb)) {
-//							allDone = false;
-//							break;
-//						}
-//					}
-//					
-//					if (allDone) {
-//						readydb = db;
-//						break;
-//					}
-//					else if (db.References.Count < bestRefCount) {
-//						bestdb = db;
-//						bestRefCount = db.References.Count;
-//						break;
-//					}
-//				}
-//
-//				// It may not find any db without resolved references if there
-//				// are circular dependencies. In this case, take the one with
-//				// less references
-//				
-//				if (readydb == null)
-//					readydb = bestdb;
-//				
-//				readydb.CheckModifiedFiles ();
-//				list.Remove (readydb);
-//				done.Add (readydb);
-//			}
+			lock (rwLock) {
+				list = new Queue<KeyValuePair<Project, SimpleProjectContent>> (projectContents);
+			}
+			
+			while (list.Count > 0) {
+				var readydb = list.Dequeue ();
+				CheckModifiedFiles (readydb.Key, readydb.Value);
+			}
 		}
 		
 		static void ConsumeParsingQueue ()
