@@ -143,7 +143,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			} else if (member is IMember) {
 				dom = ((IMember)member).DeclaringType.GetProjectContent ();
 				unit = dom.GetFile (member.DeclaringTypeDefinition.Region.FileName);
-	//			searchNodes = CollectMembers (dom, (IMember)member);
+//				if (member is IMethod)
+//					searchNodes = CollectMembers (dom, (IMethod)member);
 			}
 			
 			// prepare references finder
@@ -181,47 +182,44 @@ namespace MonoDevelop.Ide.FindInFiles
 		public abstract void SetPossibleFiles (IEnumerable<Tuple<IProjectContent, FilePath>> files);
 		public abstract IEnumerable<MemberReference> FindReferences ();
 		
-		internal static IEnumerable<IEntity> CollectMembers (ITypeResolveContext dom, IMember member)
-		{
-			yield break;
-			// TODO: Overwork overload finding. Shouldn't find all overloads by default.
-		/*	if (member is IMethod && ((IMethod)member).IsConstructor) {
-				yield return member;
-			} else {
-				bool isOverrideable = member.DeclaringType.GetDefinition ().ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract;
-				bool isLastMember = false;
-				// for members we need to collect the whole 'class' of members (overloads & implementing types)
-				HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
-				foreach (var type in member.DeclaringType.GetAllBaseTypes (dom)) {
-					if (type.GetDefinition ().ClassType == ClassType.Interface || isOverrideable || type.Equals (member.DeclaringType)) {
-						// search in the class for the member
-						foreach (var interfaceMember in type.SearchMember (member.Name, true)) {
-							if (interfaceMember.MemberType == member.MemberType)
-								yield return interfaceMember;
-						}
-						
-						// now search in all subclasses of this class for the member
-						isLastMember = !member.IsOverride;
-						foreach (var implementingType in dom.GetSubclasses (type)) {
-							string name = implementingType.DecoratedFullName;
-							if (alreadyVisitedTypes.Contains (name))
-								continue;
-							alreadyVisitedTypes.Add (name);
-							foreach (IMember typeMember in implementingType.SearchMember (member.Name, true)) {
-								if (typeMember.MemberType == member.MemberType) {
-									isLastMember = type.ClassType != ClassType.Interface && (typeMember.IsVirtual || typeMember.IsAbstract || !typeMember.IsOverride);
-									yield return typeMember;
-								}
-							}
-							if (!isOverrideable)
-								break;
-						}
-						if (isLastMember)
-							break;
-					}
-				}
-			}*/
-		}
+//		internal static IEnumerable<IEntity> CollectMembers (ITypeResolveContext dom, IMethod member)
+//		{
+//			if (member.IsConstructor) {
+//				yield return member;
+//				yield break;
+//			}
+//			
+//			bool isOverrideable = member.DeclaringType.GetDefinition ().ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract;
+//			bool isLastMember = false;
+//			// for members we need to collect the whole 'class' of members (overloads & implementing types)
+//			HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
+//			foreach (var type in member.DeclaringTypeDefinition.GetBaseTypes (dom)) {
+//				if (type.GetDefinition ().ClassType == ClassType.Interface || isOverrideable || type.Equals (member.DeclaringType)) {
+//					// search in the class for the member
+//					foreach (var interfaceMember in type.GetDefinition ().Methods.Where (m => m.Name == member.Name)) {
+//						yield return interfaceMember;
+//					}
+//					
+//					// now search in all subclasses of this class for the member
+//					isLastMember = !member.IsOverride;
+//					foreach (var implementingType in type.GetBaseTypes (dom)) {
+//						string name = implementingType.ReflectionName;
+//						if (alreadyVisitedTypes.Contains (name))
+//							continue;
+//						alreadyVisitedTypes.Add (name);
+//						foreach (var typeMember in implementingType.GetDefinition ().Methods.Where (m => m.Name == member.Name)) {
+//							isLastMember = type.GetDefinition ().ClassType != ClassType.Interface && (typeMember.IsVirtual || typeMember.IsAbstract || !typeMember.IsOverride);
+//							yield return typeMember;
+//						}
+//						if (!isOverrideable)
+//							break;
+//					}
+//					if (isLastMember)
+//						break;
+//				}
+//			}
+//		}
+		
 		public enum RefactoryScope{ File, DeclaringType, Solution, Project}
 		static RefactoryScope GetScope (IEntity node)
 		{
