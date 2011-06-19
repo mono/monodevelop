@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string PlainText {
 			get {
-				return Ambience.GetString (type.GetDefinition ().ProjectContent, type, Flags);
+				return Ambience.GetString (ctx, type, Flags);
 			}
 		}
 		
@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string PlainText {
 			get {
-				return Ambience.GetString (member.DeclaringTypeDefinition.ProjectContent, member, Flags);
+				return Ambience.GetString (ctx, member, Flags);
 			}
 		}
 		
@@ -263,8 +263,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string GetMarkupText (Widget widget)
 		{
-			Console.WriteLine ("member: " + member);
-
 			if (useFullName)
 				return HighlightMatch (widget, Ambience.GetString (ctx, member, Flags), match);
 			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup) { Context = ctx };

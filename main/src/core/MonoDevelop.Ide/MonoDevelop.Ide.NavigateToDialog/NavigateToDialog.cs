@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		void StartCollectThreads ()
 		{
 			members = new List<Tuple<ITypeResolveContext, IMember>> ();
-			types = new List<Tuple<ITypeResolveContext, IType>> ();
+			types = new List<Tuple<ITypeResolveContext, ITypeDefinition>> ();
 			
 			StartCollectFiles ();
 			StartCollectTypes ();
@@ -191,22 +191,21 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			ThreadPool.QueueUserWorkItem (delegate {
 				CollectTypes ();
 				
-//				if (isAbleToSearchMembers) {
-//					getMembersTimer.BeginTiming ();
-//					try {
-//						lock (members) {
-//							foreach (var pair in types) {
-//								var ctx = pair.Item1;
-//								var type = pair.Item2;
-//								foreach (var m in type.GetMembers (ctx)) {
-//									members.Add (Tuple.Create (ctx, m));
-//								}
-//							}
-//						}
-//					} finally {
-//						getMembersTimer.EndTiming ();
-//					}
-//				}
+				if (isAbleToSearchMembers) {
+					getMembersTimer.BeginTiming ();
+					try {
+						lock (members) {
+							foreach (var pair in types) {
+								var type = pair.Item2;
+								foreach (var m in type.Members) {
+									members.Add (Tuple.Create (pair.Item1, m));
+								}
+							}
+						}
+					} finally {
+						getMembersTimer.EndTiming ();
+					}
+				}
 			});
 		}
 		
@@ -310,7 +309,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		class WorkerResult 
 		{
 			public List<ProjectFile> filteredFiles = null;
-			public List<Tuple<ITypeResolveContext, IType>> filteredTypes = null;
+			public List<Tuple<ITypeResolveContext, ITypeDefinition>> filteredTypes = null;
 			public List<Tuple<ITypeResolveContext, IMember>> filteredMembers  = null;
 			
 			public string pattern = null;
@@ -344,7 +343,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				return null;
 			}
 			
-			internal SearchResult CheckType (ITypeResolveContext ctx, IType type)
+			internal SearchResult CheckType (ITypeResolveContext ctx, ITypeDefinition type)
 			{
 				int rank;
 				if (MatchName (type.Name, out rank))
@@ -386,7 +385,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		IEnumerable<ProjectFile> files;
-		List<Tuple<ITypeResolveContext, IType>> types;
+		List<Tuple<ITypeResolveContext, ITypeDefinition>> types;
 		List<Tuple<ITypeResolveContext, IMember>> members;
 		
 		WorkerResult lastResult;
@@ -450,7 +449,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			// Search Types
 			if (newResult.IncludeTypes) {
-				newResult.filteredTypes = new List<Tuple<ITypeResolveContext, IType>> ();
+				newResult.filteredTypes = new List<Tuple<ITypeResolveContext, ITypeDefinition>> ();
 				lock (types) {
 					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
 					var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
@@ -549,21 +548,21 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						if (doc.Project == null && doc.IsFile) {
 							var info = doc.ParsedDocument;
 							if (info != null) {
+								var ctx = doc.TypeResolveContext;
 								foreach (var c in info.TopLevelTypeDefinitions) {
-									types.Add (Tuple.Create (doc.TypeResolveContext, (IType)c));
+									types.Add (Tuple.Create (ctx, c));
 								}
 							}
 						}
 					}
 					
 					ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
-		
+					
 					foreach (Project p in projects) {
-						var dom = TypeSystemService.GetProjectContext (p);
-						if (dom == null)
-							continue;
-						foreach (var c in dom.GetAllTypes ())
-							AddType (c, dom, types);
+						var ctx  = TypeSystemService.GetContext (p);
+						var pctx = TypeSystemService.GetProjectContext (p);
+						foreach (var c in pctx.GetAllTypes ())
+							types.Add (Tuple.Create (ctx, c));
 					}
 				} finally {
 					getTypesTimer.EndTiming ();
@@ -571,13 +570,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 
-		void AddType (IType c, ITypeResolveContext ctx, List<Tuple<ITypeResolveContext, IType>> list)
-		{
-			list.Add (Tuple.Create (ctx, c));
-			foreach (var ct in c.GetNestedTypes (ctx))
-				AddType (ct, ctx, list);
-		}
-		
 		struct MatchResult 
 		{
 			public bool Match;

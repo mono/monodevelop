@@ -66,6 +66,8 @@ namespace MonoDevelop.TypeSystem
 		
 		public static Ambience GetAmbienceForFile (string fileName)
 		{
+			if (string.IsNullOrEmpty (fileName))
+				return DefaultAmbience;
 			return GetAmbience (DesktopService.GetMimeTypeForUri (fileName));
 		}
 		
