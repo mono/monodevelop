@@ -36,9 +36,9 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -518,12 +518,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		public ProjectDom GetParserContext ()
+		public ITypeResolveContext GetParserContext ()
 		{
-			ProjectDom dom = ProjectDomService.GetProjectDom (Project);
+			var dom = TypeSystemService.GetProjectContext (Project);
 			if (dom != null && needsUpdate) {
 				needsUpdate = false;
-				dom.ForceUpdate ();
+//				dom.ForceUpdate ();
 			}
 			return dom;
 		}

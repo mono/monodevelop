@@ -36,7 +36,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.DesignerSupport.Toolbox; 
 using MonoDevelop.DesignerSupport;
 

@@ -33,7 +33,6 @@ using System.Collections.Specialized;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.NodeBuilders;

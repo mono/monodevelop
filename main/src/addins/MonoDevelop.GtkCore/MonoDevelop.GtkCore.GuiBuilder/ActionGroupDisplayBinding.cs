@@ -33,11 +33,9 @@ using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -183,7 +181,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return cls;
 		}
 		
-		internal static bool IsValidClass (ProjectDom ctx, IType cls)
+		internal static bool IsValidClass (ITypeResolveContext ctx, IType cls)
 		{
 			if (cls.BaseTypes != null) {
 				foreach (IReturnType bt in cls.BaseTypes) {

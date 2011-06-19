@@ -30,7 +30,7 @@ using Gtk;
 using System;
 using System.Collections;
 using System.CodeDom;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {

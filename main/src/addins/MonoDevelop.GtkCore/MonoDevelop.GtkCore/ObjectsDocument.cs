@@ -33,9 +33,7 @@ using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.CodeGeneration;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.GtkCore
 {
@@ -113,55 +111,55 @@ namespace MonoDevelop.GtkCore
 				Save (writer);
 			}
 		}
-
-		void InsertToolboxItemAttributes (WidgetParser parser, CodeRefactorer cref)
-		{
-			Dictionary<string, IType> tb_items = parser.GetToolboxItems ();
-			foreach (string clsname in ObjectNames) {
-				if (tb_items.ContainsKey (clsname))
-					continue;
-
-				IType cls = parser.GetClass (clsname);
-				if (cls == null)
-					continue;
-
-				cref.AddAttribute (cls, "System.ComponentModel.ToolboxItem", true);
-				XmlElement elem = DocumentElement.SelectSingleNode ("object[@type='" + clsname + "']") as XmlElement;
-				if (elem != null && elem.HasAttribute ("palette-category"))
-					cref.AddAttribute (cls, "System.ComponentModel.Category", elem.GetAttribute ("palette-category"));
-			}
-		}
-
-		public void Update (WidgetParser parser, Stetic.Project stetic, CodeRefactorer refactorer)
-		{
-			if (AttrSyncState == SyncState.Unspecified) {
-				if (refactorer != null) {
-					InsertToolboxItemAttributes (parser, refactorer);
-					AttrSyncState = SyncState.On;
-				}
-				return;
-			} else if (AttrSyncState == SyncState.Off)
-				return;
-
-			StringCollection tb_names = new StringCollection ();
-			foreach (IType cls in parser.GetToolboxItems().Values) {
-				UpdateClass (parser, stetic, cls, null);
-				tb_names.Add (cls.FullName);
-			}
-
-			List<XmlElement> toDelete = new List<XmlElement> ();
-
-			foreach (XmlElement elem in SelectNodes ("objects/object")) {
-				string name = elem.GetAttribute ("type");
-				if (!tb_names.Contains (name))
-					toDelete.Add (elem);
-			}
-
-			foreach (XmlElement elem in toDelete)
-				elem.ParentNode.RemoveChild (elem);
-
-			Save ();
-		}
+// TODO: Type system conversion.
+//		void InsertToolboxItemAttributes (WidgetParser parser, CodeRefactorer cref)
+//		{
+//			Dictionary<string, IType> tb_items = parser.GetToolboxItems ();
+//			foreach (string clsname in ObjectNames) {
+//				if (tb_items.ContainsKey (clsname))
+//					continue;
+//
+//				IType cls = parser.GetClass (clsname);
+//				if (cls == null)
+//					continue;
+//
+//				cref.AddAttribute (cls, "System.ComponentModel.ToolboxItem", true);
+//				XmlElement elem = DocumentElement.SelectSingleNode ("object[@type='" + clsname + "']") as XmlElement;
+//				if (elem != null && elem.HasAttribute ("palette-category"))
+//					cref.AddAttribute (cls, "System.ComponentModel.Category", elem.GetAttribute ("palette-category"));
+//			}
+//		}
+//
+//		public void Update (WidgetParser parser, Stetic.Project stetic, CodeRefactorer refactorer)
+//		{
+//			if (AttrSyncState == SyncState.Unspecified) {
+//				if (refactorer != null) {
+//					InsertToolboxItemAttributes (parser, refactorer);
+//					AttrSyncState = SyncState.On;
+//				}
+//				return;
+//			} else if (AttrSyncState == SyncState.Off)
+//				return;
+//
+//			StringCollection tb_names = new StringCollection ();
+//			foreach (IType cls in parser.GetToolboxItems().Values) {
+//				UpdateClass (parser, stetic, cls, null);
+//				tb_names.Add (cls.FullName);
+//			}
+//
+//			List<XmlElement> toDelete = new List<XmlElement> ();
+//
+//			foreach (XmlElement elem in SelectNodes ("objects/object")) {
+//				string name = elem.GetAttribute ("type");
+//				if (!tb_names.Contains (name))
+//					toDelete.Add (elem);
+//			}
+//
+//			foreach (XmlElement elem in toDelete)
+//				elem.ParentNode.RemoveChild (elem);
+//
+//			Save ();
+//		}
 
 		void UpdateClass (WidgetParser parser, Stetic.Project stetic, IType widgetClass, IType wrapperClass)
 		{

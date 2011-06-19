@@ -30,7 +30,6 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;

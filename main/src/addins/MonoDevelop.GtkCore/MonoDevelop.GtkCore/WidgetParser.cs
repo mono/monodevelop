@@ -33,9 +33,7 @@ using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.GtkCore
 {
@@ -43,9 +41,9 @@ namespace MonoDevelop.GtkCore
 	public class WidgetParser
 	{
 
-		ProjectDom ctx;
+		ITypeResolveContext ctx;
 
-		public WidgetParser (ProjectDom ctx)
+		public WidgetParser (ITypeResolveContext ctx)
 		{
 			this.ctx = ctx;
 		}

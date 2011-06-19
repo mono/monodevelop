@@ -31,8 +31,8 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using Glade;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {

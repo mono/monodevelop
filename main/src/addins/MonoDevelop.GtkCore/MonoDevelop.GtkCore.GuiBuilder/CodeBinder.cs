@@ -34,12 +34,10 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -240,13 +238,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		CodeRefactorer GetCodeGenerator ()
-		{
-			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution);
-			cr.TextFileProvider = textFileProvider;
-			return cr;
-		}
-		
 		public IType GetClass ()
 		{
 			return GetClass (true);
@@ -306,7 +297,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		static bool IsValidClass (ProjectDom ctx, IType cls, Stetic.Component obj)
+		static bool IsValidClass (ITypeResolveContext ctx, IType cls, Stetic.Component obj)
 		{
 			if (cls.BaseTypes != null) {
 				string typeName = obj.Type.ClassName;
