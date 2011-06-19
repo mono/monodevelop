@@ -40,6 +40,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.rootUsingScope = rootUsingScope;
 		}
 		
+		DateTime parseTime = DateTime.Now;
+		public DateTime ParseTime {
+			get {
+				return parseTime;
+			}
+		}
+		
 		public string FileName {
 			get { return fileName; }
 		}

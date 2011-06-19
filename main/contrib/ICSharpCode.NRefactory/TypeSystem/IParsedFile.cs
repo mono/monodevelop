@@ -54,5 +54,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the parser errors.
 		/// </summary>
 		IList<Error> Errors { get; }
+		
+		/// <summary>
+		/// Gets the time of object creation.
+		/// </summary>
+		DateTime ParseTime { get; }
 	}
 }
