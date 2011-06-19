@@ -44,16 +44,22 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	class XcodeMonitor
 	{
 		string xcodePath = XcodeInterfaceBuilderDesktopApplication.XCODE_LOCATION;
+		FilePath originalProjectDir;
+		int nextHackDir = 0;
+		string name;
 		
 		FilePath xcproj, projectDir;
 		List<XcodeSyncedItem> items;
 		Dictionary<string,XcodeSyncedItem> itemMap = new Dictionary<string, XcodeSyncedItem> ();
 		Dictionary<string,DateTime> syncTimeCache = new Dictionary<string, DateTime> ();
 		
+		XcodeProject pendingProjectWrite;
+		
 		public XcodeMonitor (FilePath projectDir, string name)
 		{
-			this.projectDir = projectDir;
-			this.xcproj = projectDir.Combine (name + ".xcodeproj");
+			this.originalProjectDir = projectDir;
+			this.name = name;
+			HackGetNextProjectDir ();
 		}
 		
 		public bool ProjectExists ()
@@ -92,10 +98,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			updateProject = updateProject || toRemove.Any ();
 			
+			bool removedOldProject = false;
 			if (updateProject) {
-				XC4Debug.Log ("Project file needs to be updated, closing and removing old project");
-				CloseProject ();
-				DeleteProjectArtifacts ();
+				if (pendingProjectWrite == null && ProjectExists ()) {
+					XC4Debug.Log ("Project file needs to be updated, closing and removing old project");
+					CloseProject ();
+					DeleteProjectArtifacts ();
+					removedOldProject = true;
+				}
 			} else {
 				foreach (var f in toClose)
 					CloseFile (projectDir.Combine (f));
@@ -109,6 +119,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					File.Delete (path);
 			}
 			
+			if (removedOldProject) {
+				HackRelocateProject ();
+			}
+			
 			foreach (var item in items) {
 				if (updateProject)
 					item.AddToProject (emptyProject, projectDir);
@@ -120,9 +134,40 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			if (updateProject) {
-				XC4Debug.Log ("Writing Xcode project");
-				emptyProject.Generate (projectDir);
+				XC4Debug.Log ("Queuing Xcode project {0} to write when opened", projectDir);
+				pendingProjectWrite = emptyProject;
 			}
+		}
+		
+		// Xcode keeps some kind of internal lock on project files while it's running and
+		// gets extremely unhappy if a new or changed project is in the same location as
+		// a previously opened one.
+		//
+		// To work around this we increment a subdirectory name and use that, and do some
+		// careful bookkeeping to reduce the unnecessary I/O overhead that this adds.
+		//
+		void HackRelocateProject ()
+		{
+			var oldProjectDir = projectDir;
+			HackGetNextProjectDir ();
+			XC4Debug.Log ("Relocating {0} to {1}", oldProjectDir, projectDir);
+			foreach (var f in syncTimeCache) {
+				var target = projectDir.Combine (f.Key);
+				var src = oldProjectDir.Combine (f.Key);
+				var parent = target.ParentDirectory;
+				if (!Directory.Exists (parent))
+					Directory.CreateDirectory (parent);
+				File.Move (src, target);
+			}
+		}
+		
+		void HackGetNextProjectDir ()
+		{
+			do {
+				this.projectDir = originalProjectDir.Combine (nextHackDir.ToString ());
+				nextHackDir++;
+			} while (Directory.Exists (this.projectDir));
+			this.xcproj = projectDir.Combine (name + ".xcodeproj");
 		}
 
 		public XcodeSyncBackContext GetChanges (NSObjectInfoService infoService, DotNetProject project)
@@ -151,6 +196,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public void OpenProject ()
 		{
+			if (pendingProjectWrite != null) {
+				pendingProjectWrite.Generate (projectDir);
+				pendingProjectWrite = null;
+			}
 			if (!NSWorkspace.SharedWorkspace.OpenFile (xcproj, xcodePath))
 				throw new Exception ("Failed to open Xcode project");
 		}
@@ -165,8 +214,17 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public void DeleteProjectDirectory ()
 		{
 			XC4Debug.Log ("Deleting project directory");
-			if (Directory.Exists (projectDir))
-				Directory.Delete (projectDir, true);
+			//if (Directory.Exists (projectDir))
+			//	Directory.Delete (projectDir, true);
+			HackFlushDirs ();
+		}
+		
+		void HackFlushDirs ()
+		{
+			if (CheckRunning ())
+				return;
+			if (Directory.Exists (this.originalProjectDir))
+				Directory.Delete (this.originalProjectDir, true);
 		}
 		
 		void DeleteProjectArtifacts ()
