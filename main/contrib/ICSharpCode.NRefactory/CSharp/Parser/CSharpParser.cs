@@ -39,6 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		class ConversionVisitor : StructuralVisitor
 		{
 			CompilationUnit unit = new CompilationUnit ();
+			internal bool convertTypeSystemMode;
 			
 			public CompilationUnit Unit {
 				get {
@@ -54,8 +55,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				private set;
 			}
 			
-			public ConversionVisitor (LocationsBag locationsBag)
+			public ConversionVisitor (bool convertTypeSystemMode, LocationsBag locationsBag)
 			{
+				this.convertTypeSystemMode = convertTypeSystemMode;
 				this.LocationsBag = locationsBag;
 			}
 			
@@ -1387,6 +1389,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			void AddBlockChildren (BlockStatement result, Block blockStatement, ref int curLocal)
 			{
+				if (convertTypeSystemMode) {
+					return;
+				}
 				foreach (Mono.CSharp.Statement stmt in blockStatement.Statements) {
 					if (stmt == null)
 						continue;
@@ -2895,7 +2900,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				var comment = special as SpecialsBag.Comment;
 				if (comment == null)
 					continue;
-				
+				if (conversionVisitor.convertTypeSystemMode && (comment.CommentType != SpecialsBag.CommentType.Documentation))
+					continue;
 				var type = (CommentType)comment.CommentType;
 				var start = new AstLocation (comment.Line, comment.Col);
 				var end = new AstLocation (comment.EndLine, comment.EndCol);
@@ -2925,11 +2931,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		internal static CompilationUnit Parse (CompilerCompilationUnit top)
+		internal static CompilationUnit Parse (bool convertTypeSystemMode, CompilerCompilationUnit top)
 		{
 			if (top == null)
 				return null;
-			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (convertTypeSystemMode, top.LocationsBag);
 			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
@@ -3002,7 +3008,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (top == null)
 				return null;
-			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (GenerateTypeSystemMode, top.LocationsBag);
 			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
@@ -3021,6 +3027,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public Action<CompilerCompilationUnit> CompilationUnitCallback {
+			get;
+			set;
+		}
+		
+		public bool GenerateTypeSystemMode {
 			get;
 			set;
 		}

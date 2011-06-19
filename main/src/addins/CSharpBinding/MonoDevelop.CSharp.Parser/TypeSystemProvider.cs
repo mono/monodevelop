@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Parser
 		public ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, System.IO.TextReader content)
 		{
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser (GetCompilerArguments (projectContent));
-			
+			parser.GenerateTypeSystemMode = !storeAst;
 			var result = new ParsedDocumentDecorator ();
 			
 			var tagComments = TaskService.SpecialCommentTags.Select (t => t.Tag).ToArray ();
@@ -52,7 +52,8 @@ namespace MonoDevelop.CSharp.Parser
 					if (comment != null) {
 						VisitComment (result, comment, tagComments);
 					} else {
-						VisitPreprocessorDirective (result, special as SpecialsBag.PreProcessorDirective);
+						if (storeAst)
+							VisitPreprocessorDirective (result, special as SpecialsBag.PreProcessorDirective);
 					}
 				}
 			};
