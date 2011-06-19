@@ -61,6 +61,12 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 		}
 		
+		public IEnumerable<IParsedFile> Files {
+			get {
+				yield break;
+			}
+		}
+		
 		public IParsedFile GetFile (string fileName)
 		{
 			return null;
