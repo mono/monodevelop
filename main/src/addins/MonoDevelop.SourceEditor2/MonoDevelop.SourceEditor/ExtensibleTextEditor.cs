@@ -499,10 +499,12 @@ namespace MonoDevelop.SourceEditor
 		ResolveResult resolveResult = null;
 		public ResolveResult GetLanguageItem (int offset, out DomRegion region)
 		{
-			
 			// we'll cache old results.
-			if (offset == oldOffset)
+			if (offset == oldOffset) {
+				region = DomRegion.Empty;
 				return this.resolveResult;
+			}
+			
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
