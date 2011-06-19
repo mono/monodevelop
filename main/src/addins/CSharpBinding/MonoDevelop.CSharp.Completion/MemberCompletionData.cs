@@ -242,7 +242,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (member is IParameter) {
 				this.completionString = ((IParameter)member).Name;
 			} else {
-				this.completionString = ambience.GetString (member, OutputFlags.None);
+				this.completionString = ambience.GetString (editorCompletion.ctx, member, OutputFlags.None);
 			}
 			descriptionCreated = false;
 			displayText = null;
@@ -258,7 +258,7 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = true;
 			if (Member is IMethod && ((IMethod)Member).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			sb.Append (ambience.GetString (Member, 
+			sb.Append (ambience.GetString (editorCompletion.ctx, Member, 
 				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
 
 			var m = (IMember)Member;

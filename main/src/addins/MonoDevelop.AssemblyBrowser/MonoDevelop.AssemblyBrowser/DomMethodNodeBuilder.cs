@@ -104,7 +104,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IMethod)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), method, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			PrintDeclaringType (result, navigator);
@@ -216,7 +216,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IMethod)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
+			result.Append (Ambience.GetString (GetContent (navigator), method, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
 			result.Append ("</big>");
 			result.AppendLine ();
 			

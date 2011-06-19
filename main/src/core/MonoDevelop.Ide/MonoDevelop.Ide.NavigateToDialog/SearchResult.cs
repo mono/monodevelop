@@ -68,28 +68,28 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		protected static string HighlightMatch (Widget widget, string text, string toMatch)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, false).GetMatch (text);
+			StringBuilder result = new StringBuilder ();
 			if (lane != null) {
-				StringBuilder result = new StringBuilder ();
 				int lastPos = 0;
 				for (int n=0; n < lane.Length; n++) {
 					int pos = lane[n];
 					if (pos - lastPos > 0)
-						result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, pos - lastPos)));
+						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
 					result.Append ("<span foreground=\"");
 					var color = Mono.TextEditor.HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
 						widget.Style.Text (StateType.Normal), 3)[2];
 					result.Append (color.ToPangoString ());
 					result.Append ("\">");
-					result.Append (GLib.Markup.EscapeText (text[pos].ToString ()));
+					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
 					result.Append ("</span>");
 					lastPos = pos + 1;
 				}
 				if (lastPos < text.Length)
-					result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, text.Length - lastPos)));
-				return result.ToString ();
+					MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, text.Length - lastPos));
+			} else {
+				MarkupUtilities.AppendEscapedString (result, text);
 			}
-			
-			return GLib.Markup.EscapeText (text);
+			return result.ToString ();
 		}
 	}
 	
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string PlainText {
 			get {
-				return Ambience.GetString (type.GetDefinition (), Flags);
+				return Ambience.GetString (type.GetDefinition ().ProjectContent, type, Flags);
 			}
 		}
 		
@@ -134,13 +134,15 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override string GetMarkupText (Widget widget)
 		{
 			if (useFullName)
-				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
-			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup) { Context = ctx };
-			settings.EmitNameCallback = delegate (object domVisitable, ref string outString) {
-				if (type == domVisitable)
-					outString = HighlightMatch (widget, outString, match);
-			};
-			return Ambience.GetString (type, settings);
+				return HighlightMatch (widget, Ambience.GetString (ctx, type, Flags), match);
+			return type.Name;
+//			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup) { Context = ctx };
+//			settings.EmitNameCallback = delegate (object domVisitable, string outString) {
+//				if (type == domVisitable)
+//					return HighlightMatch (widget, outString, match);
+//				return outString;
+//			};
+//			return Ambience.GetString (type, settings);
 		}
 		
 		public TypeSearchResult (ITypeResolveContext ctx, string match, string matchedString, int rank, IType type, bool useFullName) : base (ctx, match, matchedString, rank, null, useFullName)
@@ -224,7 +226,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string PlainText {
 			get {
-				return Ambience.GetString (member, Flags);
+				return Ambience.GetString (member.DeclaringTypeDefinition.ProjectContent, member, Flags);
 			}
 		}
 		
@@ -261,12 +263,15 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string GetMarkupText (Widget widget)
 		{
+			Console.WriteLine ("member: " + member);
+
 			if (useFullName)
-				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
+				return HighlightMatch (widget, Ambience.GetString (ctx, member, Flags), match);
 			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup) { Context = ctx };
-			settings.EmitNameCallback = delegate (object domVisitable, ref string outString) {
+			settings.EmitNameCallback = delegate (object domVisitable, string outString) {
 				if (member == domVisitable)
 					outString = HighlightMatch (widget, outString, match);
+				return outString;
 			};
 			return Ambience.GetString (member, settings);
 		}

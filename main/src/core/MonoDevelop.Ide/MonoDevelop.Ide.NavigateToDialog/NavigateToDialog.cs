@@ -191,22 +191,22 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			ThreadPool.QueueUserWorkItem (delegate {
 				CollectTypes ();
 				
-				if (isAbleToSearchMembers) {
-					getMembersTimer.BeginTiming ();
-					try {
-						lock (members) {
-							foreach (var pair in types) {
-								var ctx = pair.Item1;
-								var type = pair.Item2;
-								foreach (var m in type.GetMembers (ctx)) {
-									members.Add (Tuple.Create (ctx, m));
-								}
-							}
-						}
-					} finally {
-						getMembersTimer.EndTiming ();
-					}
-				}
+//				if (isAbleToSearchMembers) {
+//					getMembersTimer.BeginTiming ();
+//					try {
+//						lock (members) {
+//							foreach (var pair in types) {
+//								var ctx = pair.Item1;
+//								var type = pair.Item2;
+//								foreach (var m in type.GetMembers (ctx)) {
+//									members.Add (Tuple.Create (ctx, m));
+//								}
+//							}
+//						}
+//					} finally {
+//						getMembersTimer.EndTiming ();
+//					}
+//				}
 			});
 		}
 		
@@ -562,7 +562,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						var dom = TypeSystemService.GetProjectContext (p);
 						if (dom == null)
 							continue;
-						foreach (var c in dom.GetTypes ())
+						foreach (var c in dom.GetAllTypes ())
 							AddType (c, dom, types);
 					}
 				} finally {

@@ -137,9 +137,21 @@ namespace MonoDevelop.TypeSystem
 			default:
 				throw new ArgumentOutOfRangeException ("EntityType", "Unknown entity type:" + entity.EntityType);
 			}
-			if (settings is OutputSettings) 
-				((OutputSettings)settings).PostProcess (entity, ref result);
+			result = settings.PostProcess (entity, result);
 			return result;
+		}
+		
+		
+		public string GetString (IType type, OutputSettings settings)
+		{
+			var result = GetTypeString (type.GetDefinition (), settings);
+			return settings.PostProcess (type, result);
+		}
+	
+		public string GetString (ITypeReference reference, OutputSettings settings)
+		{
+			var result = GetTypeReferenceString (reference, settings);
+			return settings.PostProcess (reference, result);
 		}
 		
 		public string GetString (ITypeResolveContext ctx, IEntity entity, OutputFlags flags)
@@ -147,36 +159,14 @@ namespace MonoDevelop.TypeSystem
 			return GetString (entity, new OutputSettings (flags) { Context = ctx });
 		}
 		
-		public string GetString (IEntity entity, OutputFlags flags)
-		{
-			var ctx = entity.ProjectContent;
-			return GetString (entity, new OutputSettings (flags) { Context = ctx });
-		}
-		
 		public string GetString (ITypeResolveContext ctx, IParameterizedMember member, IParameter parameter, OutputFlags flags)
 		{
 			return GetParameterString (member, parameter, new OutputSettings (flags) { Context = ctx });
-		}
-	
-		public string GetString (IType type, OutputSettings settings)
-		{
-			var result = GetString ((IEntity)type.GetDefinition (), settings);
-			if (settings is OutputSettings) 
-				((OutputSettings)settings).PostProcess (type, ref result);
-			return result;
 		}
 		
 		public string GetString (ITypeResolveContext ctx, IType type, OutputFlags flags)
 		{
 			return GetString (type, new OutputSettings (flags) { Context = ctx });
-		}
-		
-		public string GetString (ITypeReference reference, OutputSettings settings)
-		{
-			var result = GetTypeReferenceString (reference, settings);
-			if (settings is OutputSettings) 
-				((OutputSettings)settings).PostProcess (reference, ref result);
-			return result;
 		}
 		
 		public string GetString (ITypeResolveContext ctx, ITypeReference reference, OutputFlags flags)

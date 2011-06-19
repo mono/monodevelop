@@ -298,7 +298,7 @@ namespace MonoDevelop.CSharp
 //				result.Append ("}");
 //				return result.ToString ();
 //			}
-			var def = type.GetDefinition ();
+			var def = type;
 			AppendModifiers (result, settings, def);
 			if (settings.IncludeKeywords)
 				result.Append (classTypes [def.ClassType]);

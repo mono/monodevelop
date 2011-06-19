@@ -62,10 +62,10 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			var field = (IField)dataObject;
-			label = Ambience.GetString (field, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			label = Ambience.GetString (GetContent (treeBuilder), field, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			if (field.IsPrivate || field.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (field.GetStockIcon (), Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (((IEntity)field).GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -87,7 +87,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), field, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -112,7 +112,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), field, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			

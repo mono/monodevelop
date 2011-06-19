@@ -181,13 +181,11 @@ namespace MonoDevelop.TypeSystem
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
-				DateTime start = DateTime.Now;
 				var solution = (Solution)item;
 				foreach (Project project in solution.GetAllProjects ())
 					Load (project);
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
-				Console.WriteLine ("solution parse: " + (DateTime.Now - start).TotalMilliseconds);
 			}
 		}
 		
@@ -708,7 +706,6 @@ namespace MonoDevelop.TypeSystem
 						monitor.BeginTask (GettextCatalog.GetString ("Generating database"), 0);
 					}
 					var job = DequeueParseJob ();
-					Console.WriteLine ("run : "+  job);
 					if (job != null) {
 						try {
 							job.Run (monitor);

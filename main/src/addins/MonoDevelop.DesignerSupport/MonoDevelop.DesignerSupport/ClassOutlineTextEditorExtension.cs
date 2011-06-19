@@ -111,7 +111,7 @@ namespace MonoDevelop.DesignerSupport
 				ClassOutlineSortingProperties.SORTING_PROPERTY_NAME,
 				ClassOutlineSortingProperties.GetDefaultInstance ());
 
-			comparer = new ClassOutlineNodeComparer (GetAmbience (), sortingProperties, outlineTreeModelSort);
+			comparer = new ClassOutlineNodeComparer (document.TypeResolveContext, GetAmbience (), sortingProperties, outlineTreeModelSort);
 
 			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
 			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
@@ -199,7 +199,7 @@ namespace MonoDevelop.DesignerSupport
 			object o = model.GetValue (iter, 0);
 			Ambience am = GetAmbience ();
 			if (o is IEntity) {
-				txtRenderer.Text = am.GetString ((IEntity)o, OutputFlags.ClassBrowserEntries);
+				txtRenderer.Text = am.GetString (Document.TypeResolveContext, (IEntity)o, OutputFlags.ClassBrowserEntries);
 			} else if (o is FoldingRegion) {
 				string name = ((FoldingRegion)o).Name.Trim ();
 				if (string.IsNullOrEmpty (name))

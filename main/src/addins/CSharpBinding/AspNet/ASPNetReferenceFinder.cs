@@ -66,8 +66,15 @@ namespace MonoDevelop.CSharp.Refactoring
 //				yield return new DomRegion (fileName, loc.Line, loc.Column, loc.Line, loc.Column + result.Name.Lenhth);
 //			}
 		}
+		public override void SetPossibleFiles (IEnumerable<Tuple<IProjectContent, FilePath>> files)
+		{
+			
+		}
+		public override void SetSearchedMembers (IEnumerable<object> searchedMembers)
+		{
+		}
 		
-		public override IEnumerable<DomRegion> FindReferences (ITypeResolveContext dom, FilePath fileName, IEnumerable<IEntity> searchedMembers)
+		public override IEnumerable<MemberReference> FindReferences ()
 		{ // TODO: Type system conversion.
 			yield break;
 //			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);

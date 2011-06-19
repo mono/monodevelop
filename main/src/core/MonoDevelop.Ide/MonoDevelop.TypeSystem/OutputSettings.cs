@@ -63,10 +63,8 @@ namespace MonoDevelop.TypeSystem
 
 		public string EmitName (object domVisitable, string text)
 		{
-			if (EmitNameCallback != null) {
-				EmitNameCallback (domVisitable, ref text);
-				return text;
-			}
+			if (EmitNameCallback != null)
+				return EmitNameCallback (domVisitable, text);
 			return text;
 		}
 		
@@ -101,10 +99,11 @@ namespace MonoDevelop.TypeSystem
 			return text;
 		}
 		
-		public void PostProcess (object domVisitable, ref string outString)
+		public string PostProcess (object domVisitable, string outString)
 		{
 			if (PostProcessCallback != null)
-				PostProcessCallback (domVisitable, ref outString);
+				return PostProcessCallback (domVisitable, outString);
+			return outString;
 		}
 		
 		static string PangoFormat (string input)
@@ -253,11 +252,10 @@ namespace MonoDevelop.TypeSystem
 		public MarkupText EmitKeywordCallback;
 		public MarkupText MarkupCallback;
 		public MarkupText HighlightCallback;
-		public ProcessString EmitNameCallback;
+		public Func<object, string, string> EmitNameCallback;
 		
 		public delegate string MarkupText (string text);
 		
-		public ProcessString PostProcessCallback;
-		public delegate void ProcessString (object domVisitable, ref string outString);
+		public Func<object, string, string> PostProcessCallback;
 	}
 }

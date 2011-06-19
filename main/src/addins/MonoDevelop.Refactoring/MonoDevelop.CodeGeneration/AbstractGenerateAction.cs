@@ -78,7 +78,7 @@ namespace MonoDevelop.CodeGeneration
 			treeView.AppendColumn (column);
 			Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
 			foreach (var member in GetValidMembers ()) {
-				Store.AppendValues (false, ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member,/* member.EntityType == EntityType. ? OutputFlags.IncludeParameterName :*/ OutputFlags.ClassBrowserEntries), member);
+				Store.AppendValues (false, ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu), ambience.GetString (options.Document.TypeResolveContext, member,/* member.EntityType == EntityType. ? OutputFlags.IncludeParameterName :*/ OutputFlags.ClassBrowserEntries), member);
 			}
 			
 			treeView.Model = store;

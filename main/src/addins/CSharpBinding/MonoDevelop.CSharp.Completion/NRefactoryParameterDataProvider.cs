@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var method in resolveResult.Methods) {
 				if (method.IsConstructor)
 					continue;
-				string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
+				string str = ambience.GetString (ext.ctx, method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
 				if (alreadyAdded.Contains (str))
 					continue;
 				alreadyAdded.Add (str);

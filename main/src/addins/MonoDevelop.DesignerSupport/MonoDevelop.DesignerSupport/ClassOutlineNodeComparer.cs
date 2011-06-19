@@ -45,7 +45,8 @@ namespace MonoDevelop.DesignerSupport
 	public class ClassOutlineNodeComparer : IComparer<TreeIter>
 	{
 		const string DEFAULT_REGION_NAME = "region";
-
+		
+		ITypeResolveContext ctx;
 		Ambience      ambience;
 		TreeModel     model;
 		GroupComparer groupComparer = new GroupComparer ();
@@ -64,8 +65,9 @@ namespace MonoDevelop.DesignerSupport
 		/// <param name="model">
 		/// The model containing the nodes to compare.
 		/// </param>
-		public ClassOutlineNodeComparer (Ambience ambience, ClassOutlineSortingProperties properties, TreeModel model)
+		public ClassOutlineNodeComparer (ITypeResolveContext ctx, Ambience ambience, ClassOutlineSortingProperties properties, TreeModel model)
 		{
+			this.ctx      = ctx;
 			this.ambience = ambience;
 			Properties    = properties;
 			this.model    = model;
@@ -284,7 +286,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (node is IEntity) {
 				// Return the name without type or parameters
-				return ambience.GetString ((IEntity)node, 0);
+				return ambience.GetString (ctx, (IEntity)node, 0);
 			} else if (node is FoldingRegion) {
 				// Return trimmed region name or fallback
 				string name = ((FoldingRegion)node).Name.Trim ();

@@ -47,6 +47,7 @@ namespace CBinding.Parser
 	{
 		object tag;
 		Ambience amb;
+		ITypeResolveContext ctx;
 		List<IEntity> memberList = new List<IEntity> ();
 		
 		Document Document {
@@ -57,6 +58,7 @@ namespace CBinding.Parser
 		public DataProvider (Document doc, object tag, Ambience amb)
 		{
 			this.Document = doc;
+			this.ctx = doc.TypeResolveContext;
 			this.tag = tag;
 			this.amb = amb;
 			Reset ();
@@ -83,8 +85,8 @@ namespace CBinding.Parser
 		string GetString (Ambience amb, IEntity x)
 		{
 			if (tag is IParsedFile)
-				return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
-			return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
+				return amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
+			return amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
 		}
 		
 		public string GetMarkup (int n)
