@@ -34,6 +34,7 @@ using System.Xml;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -128,28 +129,28 @@ namespace MonoDevelop.TypeSystem
 			return GetDocumentationMarkup (GetDocumentationSummary (member));
 		}
 		
-		public static string GetDocumentationSummary (IMember member)
+		public static string GetDocumentationSummary (IEntity member)
 		{
-		/*	if (member == null)
+			if (member == null)
 				return null;
-			string documentation = member.GetProjectContent ().GetDocumentation (member);
-			
-			if (!string.IsNullOrEmpty (documentation)) {
-				int idx1 = documentation.IndexOf ("<summary>");
-				int idx2 = documentation.IndexOf ("</summary>");
-				string result;
-				if (idx2 >= 0 && idx1 >= 0) {
-					result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
-				} else if (idx1 >= 0) {
-					result = documentation.Substring (idx1 + "<summary>".Length);
-				} else if (idx2 >= 0) {
-					result = documentation.Substring (0, idx2 - 1);
-				} else {
-					result = documentation;
-				}
-				
-				return CleanEmpty (result);
-			}
+//			string documentation = member.GetProjectContent ().GetDocumentation (member);
+//			
+//			if (!string.IsNullOrEmpty (documentation)) {
+//				int idx1 = documentation.IndexOf ("<summary>");
+//				int idx2 = documentation.IndexOf ("</summary>");
+//				string result;
+//				if (idx2 >= 0 && idx1 >= 0) {
+//					result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
+//				} else if (idx1 >= 0) {
+//					result = documentation.Substring (idx1 + "<summary>".Length);
+//				} else if (idx2 >= 0) {
+//					result = documentation.Substring (0, idx2 - 1);
+//				} else {
+//					result = documentation;
+//				}
+//				
+//				return CleanEmpty (result);
+//			}
 			
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
 			if (node != null) {
@@ -175,8 +176,7 @@ namespace MonoDevelop.TypeSystem
 			
 				return CleanEmpty (sb.ToString ());
 			}
-			return CleanEmpty (documentation);*/
-			return "TODO";
+			return ""; // CleanEmpty (documentation);
 		}
 		
 		static string CleanEmpty (string doc)
@@ -189,9 +189,9 @@ namespace MonoDevelop.TypeSystem
 			return string.IsNullOrEmpty (documentation) || documentation.StartsWith ("To be added") || documentation == "we have not entered docs yet";
 		}
 		
-		public static string GetDocumentation (IMember member)
-		{// TODO: Type system conversion.
-	/*		if (member == null)
+		public static string GetDocumentation (IEntity member)
+		{
+			if (member == null)
 				return null;
 			if (!string.IsNullOrEmpty (member.Documentation))
 				return CleanEmpty (member.Documentation);
@@ -199,7 +199,7 @@ namespace MonoDevelop.TypeSystem
 			if (node != null) {
 				string result = (node.InnerXml ?? "").Trim ();
 				return CleanEmpty (result);
-			}*/
+			}
 			return null;
 		}
 		

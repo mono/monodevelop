@@ -218,6 +218,13 @@ namespace MonoDevelop.Projects
 			return "T:" + type.FullName + "`" + type.TypeParameterCount;
 		}
 		
+		public static string GetHelpUrl (this ITypeDefinition type)
+		{
+			if (type.TypeParameterCount == 0)
+				return "T:" + type.FullName;
+			return "T:" + type.FullName + "`" + type.TypeParameterCount;
+		}
+		
 		public static string GetHelpUrl (this IEntity member)
 		{
 			StringBuilder sb;
@@ -299,13 +306,14 @@ namespace MonoDevelop.Projects
 			return helpXml.SelectSingleNode ("/Type/Docs");
 		}
 		
-		public static XmlNode GetMonodocDocumentation (this IMember member)
+		public static XmlNode GetMonodocDocumentation (this IEntity member)
 		{
 			var helpXml = HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ());
 			if (helpXml == null)
 				return null;
-				
-			var declaringXml = HelpService.HelpTree.GetHelpXml (member.DeclaringType.GetHelpUrl ());
+			if (member.EntityType == EntityType.TypeDefinition)	
+				return helpXml.SelectSingleNode ("/Type/Docs");
+			var declaringXml = HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetHelpUrl ());
 			if (declaringXml == null)
 				return null;
 			

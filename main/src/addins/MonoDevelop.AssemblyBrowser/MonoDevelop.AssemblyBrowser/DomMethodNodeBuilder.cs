@@ -226,7 +226,7 @@ namespace MonoDevelop.AssemblyBrowser
 			options.Ambience = Ambience;
 			result.AppendLine ();
 			
-//			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (method), options));
+			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (method), options));
 			
 			return result.ToString ();
 		}

@@ -398,6 +398,7 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append ("</i></small>\n");
 					settings.OutputFlags |= OutputFlags.UseFullName;
 					s.Append (ambience.GetString (tr.Type, settings));
+					doc = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
 				} else if (result is MemberResolveResult) {
 					var member = ((MemberResolveResult)result).Member;
 					s.Append ("<small><i>");

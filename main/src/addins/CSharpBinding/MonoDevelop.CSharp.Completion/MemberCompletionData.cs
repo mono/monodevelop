@@ -268,21 +268,21 @@ namespace MonoDevelop.CSharp.Completion
 				DisplayFlags |= DisplayFlags.Obsolete;
 			}
 			
-//			var returnType = m.GetProjectContent ().GetType (m.ReturnType);
-//			if (returnType != null && returnType.ClassType == ClassType.Delegate) {
-//				sb.AppendLine ();
-//				sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
-//				sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
-//			}
-//			
-//			string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Member) + "</summary>", new AmbienceService.DocumentationFormatOptions {
-//				Ambience = ambience
-//			});
-//			
-//			if (!string.IsNullOrEmpty (docMarkup)) {
-//				sb.AppendLine ();
-//				sb.Append (docMarkup);
-//			}
+			var returnType = m.ReturnType.Resolve (editorCompletion.ctx);
+			if (returnType.IsDelegate ()) {
+				sb.AppendLine ();
+				sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
+				sb.Append (ambience.GetString (editorCompletion.ctx, returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
+			}
+			
+			string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Member) + "</summary>", new AmbienceService.DocumentationFormatOptions {
+				Ambience = ambience
+			});
+			
+			if (!string.IsNullOrEmpty (docMarkup)) {
+				sb.AppendLine ();
+				sb.Append (docMarkup);
+			}
 			description = sb.ToString ();
 		}
 		

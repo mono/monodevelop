@@ -93,7 +93,7 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			var evt = (EventDefinition)navigator.DataItem;
+			var evt = (IEvent)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
 //			result.Append (Ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
@@ -106,32 +106,32 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var evt = (EventDefinition)navigator.DataItem;
+			var evt = CecilLoader.GetCecilObject ((IEvent)navigator.DataItem);
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleEvent (evt));
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var evt = (EventDefinition)navigator.DataItem;
+			var evt = CecilLoader.GetCecilObject ((IEvent)navigator.DataItem);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), evt.DeclaringType, b => b.AddEvent (evt));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			var evt = (EventDefinition)navigator.DataItem;
+			var evt = (IEvent)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-	//		result.Append (Ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), evt, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
-//			var.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
-//			options.MaxLineLength = -1;
-//			options.BigHeadings = true;
-//			options.Ambience = Ambience;
+			var options = new AmbienceService.DocumentationFormatOptions ();
+			options.MaxLineLength = -1;
+			options.BigHeadings = true;
+			options.Ambience = Ambience;
 			result.AppendLine ();
 			
-	//		result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (evt), options));
+			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (evt), options));
 			
 			return result.ToString ();
 		}

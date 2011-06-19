@@ -272,41 +272,42 @@ namespace MonoDevelop.CSharp.Completion
 				sb.AppendLine ();
 				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 			}
-//			var curParameter = currentParameter >= 0 && currentParameter < m.Parameters.Count ? m.Parameters [currentParameter] : null;
-//
-//			string docText = AmbienceService.GetDocumentation (methods [overload]);
-//
-//			if (!string.IsNullOrEmpty (docText)) {
-//				string text = docText;
-//				if (curParameter != null) {
-//					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
-//					Match match = paramRegex.Match (docText);
-//					if (match.Success) {
-//						text = match.Groups [1].Value;
-//						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>" + text;
-//					}
-//				} else {
-//					text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>";
-//				}
-//				sb.AppendLine ();
-//				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
-//					HighlightParameter = curParameter != null ? curParameter.Name : null,
-//					Ambience = ambience,
-//					SmallText = true
-//				}));
-//			}
-//			
-//			if (curParameter != null) {
-//				var returnType = curParameter.DeclaringMember.GetProjectContent ().GetType (curParameter.ReturnType);
-//				if (returnType != null && returnType.ClassType == ClassType.Delegate) {
-//					sb.AppendLine ();
-//					sb.AppendLine ();
-//					sb.Append ("<small>");
-//					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
-//					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
-//					sb.Append ("</small>");
-//				}
-//			}
+			
+			var curParameter = currentParameter >= 0 && currentParameter < m.Parameters.Count ? m.Parameters [currentParameter] : null;
+			
+			string docText = AmbienceService.GetDocumentation (methods [overload]);
+			
+			if (!string.IsNullOrEmpty (docText)) {
+				string text = docText;
+				if (curParameter != null) {
+					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
+					Match match = paramRegex.Match (docText);
+					if (match.Success) {
+						text = match.Groups [1].Value;
+						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>" + text;
+					}
+				} else {
+					text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>";
+				}
+				sb.AppendLine ();
+				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
+					HighlightParameter = curParameter != null ? curParameter.Name : null,
+					Ambience = ambience,
+					SmallText = true
+				}));
+			}
+			
+			if (curParameter != null) {
+				var returnType = curParameter.Type.Resolve (ext.ctx);
+				if (returnType.IsDelegate ()) {
+					sb.AppendLine ();
+					sb.AppendLine ();
+					sb.Append ("<small>");
+					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
+					sb.Append (ambience.GetString (ext.ctx, returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
+					sb.Append ("</small>");
+				}
+			}
 			return sb.ToString ();
 		}
 		

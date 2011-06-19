@@ -183,10 +183,10 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			var type = (IType)navigator.DataItem;
+			var type = (ITypeDefinition)navigator.DataItem;
 			var result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (GetContent (navigator), type, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), (IType) type, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
@@ -196,7 +196,7 @@ namespace MonoDevelop.AssemblyBrowser
 			options.Ambience = Ambience;
 			result.AppendLine ();
 			
-//			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (type), options));
+			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (type), options));
 			
 			return result.ToString ();
 		}
