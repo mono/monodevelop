@@ -135,14 +135,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			if (useFullName)
 				return HighlightMatch (widget, Ambience.GetString (ctx, type, Flags), match);
-			return type.Name;
-//			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup) { Context = ctx };
-//			settings.EmitNameCallback = delegate (object domVisitable, string outString) {
-//				if (type == domVisitable)
-//					return HighlightMatch (widget, outString, match);
-//				return outString;
-//			};
-//			return Ambience.GetString (type, settings);
+			return HighlightMatch (widget, type.Name, match);
 		}
 		
 		public TypeSearchResult (ITypeResolveContext ctx, string match, string matchedString, int rank, IType type, bool useFullName) : base (ctx, match, matchedString, rank, null, useFullName)
