@@ -78,8 +78,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.typeArguments = typeArguments;
 		}
 		
-		public bool? IsReferenceType {
-			get { return genericType.IsReferenceType; }
+		public bool? IsReferenceType(ITypeResolveContext context)
+		{
+			return genericType.IsReferenceType(context);
 		}
 		
 		public IType DeclaringType {

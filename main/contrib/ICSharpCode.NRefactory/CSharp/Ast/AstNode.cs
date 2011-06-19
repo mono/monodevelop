@@ -508,13 +508,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return GetNodeAt (new AstLocation (line, column));
 		}
 		
-		public AstNode GetNodeAt (AstLocation location)
+		public AstNode GetNodeAt (AstLocation location, Predicate<AstNode> pred = null)
 		{
+			AstNode result = null;
 			AstNode node = this;
 			while (node.FirstChild != null) {
 				var child = node.FirstChild;
 				while (child != null) {
 					if (child.StartLocation <= location && location < child.EndLocation) {
+						if (pred == null || pred (child))
+							result = child;
 						node = child;
 						break;
 					}
@@ -524,7 +527,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (child == null)
 					break;
 			}
-			return node;
+			return result;
 		}
 		
 		public T GetNodeAt<T> (int line, int column) where T : AstNode
@@ -556,6 +559,19 @@ namespace ICSharpCode.NRefactory.CSharp
 					break;
 			}
 			return result;
+		}
+		
+		public AstNode GetResolveableNodeAt (int line, int column)
+		{
+			return GetResolveableNodeAt (new AstLocation (line, column));
+		}
+		
+		/// <summary>
+		/// Gets a node that can be resolved at location.
+		/// </summary>
+		public AstNode GetResolveableNodeAt (AstLocation location)
+		{
+			return GetNodeAt (location, n => n is AttributedNode || n is VariableInitializer || n is ParameterDeclaration || n is Expression || n is AstType);
 		}
 		
 		public IEnumerable<AstNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)

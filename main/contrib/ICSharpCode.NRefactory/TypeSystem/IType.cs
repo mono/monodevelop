@@ -20,7 +20,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// false, if the type is a value type.
 		/// null, if the type is not known (e.g. unconstrained generic type parameter or type not found)
 		/// </returns>
-		bool? IsReferenceType { get; }
+		/// <remarks>
+		/// The resolve context is required for type parameters with a constraint "T : SomeType":
+		/// the type parameter is a reference type iff SomeType is a class type.
+		/// </remarks>
+		bool? IsReferenceType(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets the underlying type definition.
@@ -102,8 +106,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[ContractClassFor(typeof(IType))]
 	abstract class ITypeContract : ITypeReferenceContract, IType
 	{
-		Nullable<bool> IType.IsReferenceType {
-			get { return null; }
+		bool? IType.IsReferenceType(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			return null;
 		}
 		
 		int IType.TypeParameterCount {

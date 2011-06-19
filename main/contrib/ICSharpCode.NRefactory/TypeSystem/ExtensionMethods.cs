@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Func<ITypeDefinition, IEnumerable<ITypeDefinition>> recursion =
 				t => t.GetBaseTypes(context).Select(b => b.GetDefinition()).Where(d => d != null && typeDefinitions.Add(d));
 			
-			ITypeDefinition typeDef = type as ITypeDefinition;
+			ITypeDefinition typeDef = type.GetDefinition();
 			if (typeDef != null) {
 				typeDefinitions.Add(typeDef);
 				return TreeTraversal.PreOrder(typeDef, recursion);

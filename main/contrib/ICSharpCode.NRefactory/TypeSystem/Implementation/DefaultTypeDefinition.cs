@@ -162,19 +162,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public bool? IsReferenceType {
-			get {
-				switch (this.ClassType) {
-					case ClassType.Class:
-					case ClassType.Interface:
-					case ClassType.Delegate:
-						return true;
-					case ClassType.Enum:
-					case ClassType.Struct:
-						return false;
-					default:
-						return null;
-				}
+		public bool? IsReferenceType(ITypeResolveContext context)
+		{
+			switch (this.ClassType) {
+				case ClassType.Class:
+				case ClassType.Interface:
+				case ClassType.Delegate:
+					return true;
+				case ClassType.Enum:
+				case ClassType.Struct:
+					return false;
+				default:
+					return null;
 			}
 		}
 		

@@ -356,7 +356,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				for (AstNode node = propertyOrIndexerDeclaration.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == PropertyDeclaration.SetterRole && resolver.CurrentMember != null) {
 						resolver.PushBlock();
-						resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
+						resolver.AddVariable(resolver.CurrentMember.ReturnType, DomRegion.Empty, "value");
 						Scan(node);
 						resolver.PopBlock();
 					} else {
@@ -391,7 +391,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				if (resolver.CurrentMember != null) {
 					resolver.PushBlock();
-					resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
+					resolver.AddVariable(resolver.CurrentMember.ReturnType, DomRegion.Empty, "value");
 					ScanChildren(eventDeclaration);
 					resolver.PopBlock();
 				} else {
@@ -916,7 +916,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (AstNode node = fixedStatement.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FixedStatement.Roles.Variable) {
 					VariableInitializer vi = (VariableInitializer)node;
-					resolver.AddVariable(type, ((VariableInitializer)node).Name);
+					resolver.AddVariable(type, new DomRegion (parsedFile.FileName, vi.StartLocation, vi.EndLocation) , vi.Name);
 				}
 				Scan(node);
 			}
@@ -937,7 +937,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			resolver.PushBlock();
 			ITypeReference type = MakeTypeReference(foreachStatement.VariableType, foreachStatement.InExpression, true);
-			resolver.AddVariable(type, foreachStatement.VariableName);
+			resolver.AddVariable(type, new DomRegion (parsedFile.FileName, foreachStatement.VariableNameToken.StartLocation, foreachStatement.VariableNameToken.EndLocation), foreachStatement.VariableName);
 			ScanChildren(foreachStatement);
 			resolver.PopBlock();
 			return null;
@@ -947,7 +947,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			resolver.PushBlock();
 			if (catchClause.VariableName != null) {
-				resolver.AddVariable(MakeTypeReference(catchClause.Type, null, false), catchClause.VariableName);
+				resolver.AddVariable(MakeTypeReference(catchClause.Type, null, false), new DomRegion (parsedFile.FileName, catchClause.VariableNameToken.StartLocation, catchClause.VariableNameToken.EndLocation), catchClause.VariableName);
 			}
 			ScanChildren(catchClause);
 			resolver.PopBlock();
@@ -973,7 +973,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					IConstantValue cv = null;
 					if (isConst)
 						throw new NotImplementedException();
-					resolver.AddVariable(type, vi.Name, cv);
+					resolver.AddVariable(type, new DomRegion (parsedFile.FileName, vi.StartLocation, vi.EndLocation), vi.Name, cv);
 					
 					if (resolverEnabled && initializerCount == 1) {
 						result = Resolve(node);

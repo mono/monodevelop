@@ -1,4 +1,4 @@
-// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -83,12 +83,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal readonly LocalVariable prev;
 			internal readonly ITypeReference type;
+			internal readonly DomRegion region;
 			internal readonly string name;
 			internal readonly IConstantValue constantValue;
 			
-			public LocalVariable(LocalVariable prev, ITypeReference type, string name, IConstantValue constantValue)
+			public LocalVariable(LocalVariable prev, ITypeReference type, DomRegion region, string name, IConstantValue constantValue)
 			{
 				this.prev = prev;
+				this.region = region;
 				this.type = type;
 				this.name = name;
 				this.constantValue = constantValue;
@@ -97,6 +99,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public string Name {
 				get { return name; }
 			}
+			
+			public DomRegion DeclarationRegion {
+				get { return region; } 
+			}
+			
 			public ITypeReference Type {
 				get { return type; }
 			}
@@ -123,7 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public void PushBlock()
 		{
-			localVariableStack = new LocalVariable(localVariableStack, null, null, null);
+			localVariableStack = new LocalVariable(localVariableStack, null, DomRegion.Empty, null, null);
 		}
 		
 		/// <summary>
@@ -143,13 +150,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Adds a new variable to the current block.
 		/// </summary>
-		public IVariable AddVariable(ITypeReference type, string name, IConstantValue constantValue = null)
+		public IVariable AddVariable(ITypeReference type, DomRegion declarationRegion, string name, IConstantValue constantValue = null)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
 			if (name == null)
 				throw new ArgumentNullException("name");
-			return localVariableStack = new LocalVariable(localVariableStack, type, name, constantValue);
+			return localVariableStack = new LocalVariable(localVariableStack, type, declarationRegion, name, constantValue);
 		}
 		
 		/// <summary>
@@ -649,8 +656,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// TODO: find user-defined operators
 			
-			if (lhsType == SharedTypes.Null && rhsType.IsReferenceType == false
-			    || lhsType.IsReferenceType == false && rhsType == SharedTypes.Null)
+			if (lhsType == SharedTypes.Null && rhsType.IsReferenceType(context) == false
+			    || lhsType.IsReferenceType(context) == false && rhsType == SharedTypes.Null)
 			{
 				isNullable = true;
 			}
@@ -1898,7 +1905,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						do {
 							newName = newArgumentName + num.ToString();
 							num++;
-						} while(argumentNames.Contains(newArgumentName));
+						} while(argumentNames.Contains(newName));
 						newArgumentName = newName;
 					}
 					argumentNames[i] = newArgumentName;

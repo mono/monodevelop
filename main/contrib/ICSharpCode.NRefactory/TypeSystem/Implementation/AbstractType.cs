@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return this.FullName; }
 		}
 		
-		public abstract bool? IsReferenceType { get; }
+		public abstract bool? IsReferenceType(ITypeResolveContext context);
 		
 		public virtual int TypeParameterCount {
 			get { return 0; }

@@ -535,7 +535,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
 						IType Ui = uniqueBaseType.TypeArguments[i];
 						IType Vi = pV.TypeArguments[i];
-						if (Ui.IsReferenceType == true) {
+						if (Ui.IsReferenceType(context) == true) {
 							// look for variance
 							ITypeParameter Xi = pV.GetDefinition().TypeParameters[i];
 							switch (Xi.Variance) {
@@ -619,7 +619,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
 						IType Ui = pU.TypeArguments[i];
 						IType Vi = uniqueBaseType.TypeArguments[i];
-						if (Ui.IsReferenceType == true) {
+						if (Ui.IsReferenceType(context) == true) {
 							// look for variance
 							ITypeParameter Xi = pU.GetDefinition().TypeParameters[i];
 							switch (Xi.Variance) {
@@ -692,8 +692,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return "X"; }
 			}
 			
-			public override bool? IsReferenceType {
-				get { return null; }
+			public override bool? IsReferenceType(ITypeResolveContext context)
+			{
+				return null;
 			}
 			
 			public override int GetHashCode()

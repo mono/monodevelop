@@ -71,17 +71,33 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public bool? IsReferenceType {
-			get {
-				switch (flags.Data & (FlagReferenceTypeConstraint | FlagValueTypeConstraint)) {
-					case FlagReferenceTypeConstraint:
-						return true;
-					case FlagValueTypeConstraint:
-						return false;
-					default:
-						return null;
+		public bool? IsReferenceType(ITypeResolveContext context)
+		{
+			switch (flags.Data & (FlagReferenceTypeConstraint | FlagValueTypeConstraint)) {
+				case FlagReferenceTypeConstraint:
+					return true;
+				case FlagValueTypeConstraint:
+					return false;
+			}
+			// protect against cyclic dependencies between type parameters
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					foreach (ITypeReference constraintRef in this.Constraints) {
+						IType constraint = constraintRef.Resolve(context);
+						ITypeDefinition constraintDef = constraint.GetDefinition();
+						// While interfaces are reference types, an interface constraint does not
+						// force the type parameter to be a reference type; so we need to explicitly look for classes here.
+						if (constraintDef != null && constraintDef.ClassType == ClassType.Class)
+							return true;
+						if (constraint is ITypeParameter) {
+							bool? isReferenceType = constraint.IsReferenceType(context);
+							if (isReferenceType.HasValue)
+								return isReferenceType.Value;
+						}
+					}
 				}
 			}
+			return null;
 		}
 		
 		int IType.TypeParameterCount {
@@ -277,12 +293,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			IType defaultBaseType = context.GetTypeDefinition("System", HasValueTypeConstraint ? "ValueType" : "Object", 0, StringComparer.Ordinal);
-			if (defaultBaseType != null)
-				yield return defaultBaseType;
-			
+			bool hasNonInterfaceConstraint = false;
 			foreach (ITypeReference constraint in this.Constraints) {
-				yield return constraint.Resolve(context);
+				IType c = constraint.Resolve(context);
+				yield return c;
+				ITypeDefinition cdef = c.GetDefinition();
+				if (!(cdef != null && cdef.ClassType == ClassType.Interface))
+					hasNonInterfaceConstraint = true;
+			}
+			// Do not add the 'System.Object' constraint if there is another constraint with a base class.
+			if (HasValueTypeConstraint || !hasNonInterfaceConstraint) {
+				IType defaultBaseType = context.GetTypeDefinition("System", HasValueTypeConstraint ? "ValueType" : "Object", 0, StringComparer.Ordinal);
+				if (defaultBaseType != null)
+					yield return defaultBaseType;
 			}
 		}
 		
