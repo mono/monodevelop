@@ -201,7 +201,6 @@
     <None Include="MonoDevelop.Refactoring\OverridesImplementsDialog.cs" />
     <None Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
     <None Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
-    <None Include="MonoDevelop.Refactoring\ReferencesFinder.cs" />
     <None Include="MonoDevelop.Refactoring.Rename\RenameTextEditorExtension.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />

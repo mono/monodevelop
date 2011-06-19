@@ -223,20 +223,16 @@ namespace MonoDevelop.Ide.FindInFiles
 		public enum RefactoryScope{ File, DeclaringType, Solution, Project}
 		static RefactoryScope GetScope (IEntity node)
 		{
-			IMember member = node as IMember;
-			if (member == null)
-				return RefactoryScope.DeclaringType;
-			
 			if (node.DeclaringTypeDefinition != null && node.DeclaringTypeDefinition.ClassType == ClassType.Interface)
-				return GetScope (member.DeclaringTypeDefinition);
+				return GetScope (node.DeclaringTypeDefinition);
 			
-			if ((member.Accessibility & Accessibility.Public) == Accessibility.Public)
+			if ((node.Accessibility & Accessibility.Public) == Accessibility.Public)
 				return RefactoryScope.Solution;
 			
 			// TODO: RefactoringsScope.Hierarchy
-			if ((member.Accessibility & Accessibility.Protected) == Accessibility.Protected)
+			if ((node.Accessibility & Accessibility.Protected) == Accessibility.Protected)
 				return RefactoryScope.Solution;
-			if ((member.Accessibility & Accessibility.Internal) == Accessibility.Protected)
+			if ((node.Accessibility & Accessibility.Internal) == Accessibility.Protected)
 				return RefactoryScope.Project;
 			return RefactoryScope.DeclaringType;
 		}

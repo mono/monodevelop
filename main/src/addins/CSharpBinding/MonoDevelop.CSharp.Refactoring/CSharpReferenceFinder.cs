@@ -105,6 +105,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is MemberDeclaration && (searchedMembers.First () is IMember)) 
 				node = ((MemberDeclaration)node).NameToken;
 			
+			if (node is TypeDeclaration && (searchedMembers.First () is IType)) 
+				node = ((TypeDeclaration)node).NameToken;
+			
 			if (node is ParameterDeclaration && (searchedMembers.First () is IParameter)) 
 				node = ((ParameterDeclaration)node).NameToken;
 			
@@ -119,14 +122,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var pos in positions) {
 				var loc = editor.OffsetToLocation (pos);
 				var node = unit.GetResolveableNodeAt (loc.Line, loc.Column);
-				if (node != null)
+				if (node != null) {
 					nodesToResolve.Add (node);
+				}
 			}
 			
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var visitor = new ResolveVisitor (csResolver, file, new NodeListResolveVisitorNavigator (nodesToResolve));
-			unit.AcceptVisitor (visitor, null);
-			
+			try {
+				unit.AcceptVisitor (visitor, null);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error in resolver during find references.", e);
+			}
 			foreach (var node in nodesToResolve) {
 				var validReference = GetReference (visitor.Resolve (node), node, editor.FileName, editor);
 				if (validReference != null)
@@ -154,7 +161,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				foreach (var reference in FindInDocument (opendoc.Item3))
 					yield return reference;
 			}
-			
+			Project prj = null;
+			ITypeResolveContext ctx = null;
 			foreach (var file in files) {
 				string text = File.ReadAllText (file.Item2);
 				
@@ -172,8 +180,14 @@ namespace MonoDevelop.CSharp.Refactoring
 					continue;
 				
 				var visitor = new TypeSystemConvertVisitor (file.Item1, file.Item2);
+				var curPrj = file.Item1.Annotation<Project> ();
+				if (prj != curPrj) {
+					prj = curPrj;
+					ctx = prj != null ? TypeSystemService.GetContext (prj) : null;
+				}
+				var curCtx = ctx ?? file.Item1;
 				unit.AcceptVisitor (visitor, null);
-				foreach (var reference in InternalFindReferences (file.Item1, editor, positions, unit, visitor.ParsedFile))
+				foreach (var reference in InternalFindReferences (curCtx, editor, positions, unit, visitor.ParsedFile))
 					yield return reference;
 			}
 		}

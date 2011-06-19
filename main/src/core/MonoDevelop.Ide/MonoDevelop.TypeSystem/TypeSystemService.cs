@@ -498,7 +498,6 @@ namespace MonoDevelop.TypeSystem
 						continue;
 					using (var stream = new System.IO.StreamReader (file.FilePath)) {
 						var parsedFile = provider.Parse (Context, false, file.FilePath, stream);
-						Console.WriteLine ("parsed : "+ file.FilePath);
 						Context.UpdateProjectContent (Context.GetFile (file.FilePath), parsedFile);
 					}
 //					if (ParseCallback != null)
