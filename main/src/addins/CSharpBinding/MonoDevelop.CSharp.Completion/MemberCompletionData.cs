@@ -81,7 +81,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					displayText = ambience.GetString (Member, flags | OutputFlags.HideGenericParameterNames);
+					displayText = ambience.GetString (editorCompletion.ctx, Member, flags | OutputFlags.HideGenericParameterNames);
 				}
 				return displayText; 
 			}

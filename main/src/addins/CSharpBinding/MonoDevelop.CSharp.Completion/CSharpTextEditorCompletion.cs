@@ -1589,14 +1589,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		static string[] primitiveTypes = new string [] { "void", "object", "bool", "byte", "sbyte", "char", "short", "int", "long", "ushort", "uint", "ulong", "float", "double", "decimal", "string"};
-		static void AddPrimitiveTypes (CompletionDataCollector col)
-		{
-			foreach (string primitiveType in primitiveTypes) {
-				col.Add (primitiveType, "md-keyword");
-			}
-		}
-		
+	
 		static void AddNRefactoryKeywords (CompletionDataCollector col, System.Collections.BitArray keywords)
 		{
 			for (int i = 0; i < keywords.Length; i++) {
@@ -1803,6 +1796,7 @@ namespace MonoDevelop.CSharp.Completion
 					col.Add (tp.Name, "md-keyword");
 				}
 			}
+			
 			return result;
 		}
 		

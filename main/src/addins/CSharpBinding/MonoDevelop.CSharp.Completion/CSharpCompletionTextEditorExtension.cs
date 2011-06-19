@@ -264,10 +264,10 @@ namespace MonoDevelop.CSharp.Completion
 				var invoke = GetInvocationBeforeCursor ();
 				if (invoke == null)
 					return null;
-				if (invoke.Item1 is TypeOfExpression)
+				if (invoke.Item2 is TypeOfExpression)
 					return CreateTypeList ();
 				
-				if (invoke.Item1 is InvocationExpression) {
+				if (invoke.Item2 is InvocationExpression) {
 					var invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
 					if (invocationResult is MethodGroupResolveResult)
 						return CreateParameterCompletion ((MethodGroupResolveResult)invocationResult, 0);
@@ -296,10 +296,16 @@ namespace MonoDevelop.CSharp.Completion
 				var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 				var navigator = new NodeListResolveVisitorNavigator (new[] { identifierStart.Item2 });
 				var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
-				unit.AcceptVisitor (visitor, null);
-				foreach (var i in csResolver.LocalVariables) {
-					Console.WriteLine (i);
-				}
+				identifierStart.Item3.AcceptVisitor (visitor, null);
+				csResolver = visitor.GetResolverStateBefore (identifierStart.Item2);
+				
+				
+				// identifier has already started with the first letter
+				completionContext.TriggerOffset--;
+				completionContext.TriggerLineOffset--;
+				completionContext.TriggerWordLength = 1;
+				return GenerateContextCompletion (csResolver, identifierStart.Item2);
+				
 				
 //				if (stub.Parent is BlockStatement)
 				
@@ -381,10 +387,6 @@ namespace MonoDevelop.CSharp.Completion
 //					result.Expression = "";
 //					result.Region = DomRegion.Empty;
 //				
-//					// identifier has already started with the first letter
-//					completionContext.TriggerOffset--;
-//					completionContext.TriggerLineOffset--;
-//					completionContext.TriggerWordLength = 1;
 //					return CreateCtrlSpaceCompletionData (completionContext, result);
 //				}
 				break;
@@ -392,23 +394,102 @@ namespace MonoDevelop.CSharp.Completion
 			return null;
 		}
 		
+		ICompletionDataList GenerateContextCompletion (CSharpResolver state, AstNode node)
+		{
+			if (state == null) 
+				return null;
+			var result = new ProjectDomCompletionDataList ();
+			foreach (var variable in state.LocalVariables) {
+				result.Add (new CompletionData (variable.Name, variable.GetStockIcon ()));
+			}
+			
+			if (state.CurrentMember is IParameterizedMember) {
+				var param = (IParameterizedMember)state.CurrentMember;
+				foreach (var p in param.Parameters) {
+					result.Add (new CompletionData (p.Name, p.GetStockIcon ()));
+				}
+			}
+			
+			if (state.CurrentMember is IMethod) {
+				var method = (IMethod)state.CurrentMember;
+				foreach (var p in method.TypeParameters) {
+					result.Add (new CompletionData (p.Name, p.GetStockIcon ()));
+				}
+			}
+			
+			if (state.CurrentTypeDefinition != null) {
+				foreach (var member in state.CurrentTypeDefinition.Resolve (ctx).GetMembers (ctx)) {
+					result.Add (new MemberCompletionData (this, member, OutputFlags.ClassBrowserEntries | OutputFlags.CompletionListFomat));
+				}
+				
+				foreach (var p in state.CurrentTypeDefinition.TypeParameters) {
+					result.Add (new CompletionData (p.Name, p.GetStockIcon ()));
+				}
+			}
+			
+			for (var n = state.UsingScope; n != null; n = n.Parent) {
+				foreach (var pair in n.UsingAliases) {
+					result.Add (new CompletionData (pair.Key, Stock.Namespace));
+				}
+				foreach (var u in n.Usings) {
+					var ns = u.ResolveNamespace (ctx);
+					foreach (var type in ctx.GetTypes (ns.NamespaceName, StringComparer.Ordinal)) {
+						result.Add (new CompletionData (type.Name, type.GetStockIcon ()));
+					}
+				}
+			}
+			
+			foreach (var ns in ctx.GetNamespaces ()) {
+				string name = ns;
+				int idx = name.IndexOf (".");
+				if (idx >= 0)
+					name = name.Substring (0, idx);
+				result.Add (new CompletionData (name, Stock.Namespace));
+			}
+
+			
+			result.Add (new CompletionData ("global", "md-keyword"));
+			result.Add (new CompletionData ("var", "md-keyword"));
+			
+			AddKeywords (result, primitiveTypes);
+			AddKeywords (result, statementStart);
+			return result;
+		}
+		
+		static string[] primitiveTypes = new string [] { "void", "object", "bool", "byte", "sbyte", "char", "short", "int", "long", "ushort", "uint", "ulong", "float", "double", "decimal", "string"};
+		static string[] statementStart = new string [] { "base", "new", "sizeof", "this", 
+			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
+			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
+			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
+			"using", "while", "yield", "dynamic" };
+
+		
+		static void AddKeywords (ICompletionDataList col, string[] keywords)
+		{
+			foreach (string keyword
+				in keywords) {
+				col.Add (new CompletionData (keyword, "md-keyword"));
+			}
+		}
+
+		
 		ICompletionDataList CreateTypeList ()
 		{
 			var ctx = Document.TypeResolveContext;
-			var result2 = new ProjectDomCompletionDataList ();
+			var result = new ProjectDomCompletionDataList ();
 				
 			foreach (var cl in ctx.GetTypes ("", StringComparer.Ordinal)) {
-				result2.Add (new CompletionData (cl.Name, cl.GetStockIcon ()));
+				result.Add (new CompletionData (cl.Name, cl.GetStockIcon ()));
 			}
 			foreach (var ns in ctx.GetNamespaces ()) {
 				string name = ns;
 				int idx = name.IndexOf (".");
 				if (idx >= 0)
 					name = name.Substring (0, idx);
-				result2.Add (new CompletionData (name, Stock.Namespace));
+				result.Add (new CompletionData (name, Stock.Namespace));
 			}
 			
-			return result2;
+			return result;
 		}
 		
 		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult)
