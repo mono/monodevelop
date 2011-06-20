@@ -359,7 +359,8 @@ namespace Mono.Debugging.Soft
 			
 			HideConnectionDialog ();
 			
-			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath, EventType.AssemblyUnload);
+			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath,
+				EventType.AssemblyUnload, EventType.UserBreak, EventType.UserLog);
 			try {
 				unhandledExceptionRequest = vm.CreateExceptionRequest (null, false, true);
 				unhandledExceptionRequest.Enable ();
@@ -857,7 +858,7 @@ namespace Mono.Debugging.Soft
 				Console.WriteLine ("pp eventset({0}): {1}", es.Events.Length, es[0]);
 #endif
 			var type = es[0].EventType;
-			bool isBreakEvent = type == EventType.Step || type == EventType.Breakpoint || type == EventType.Exception;
+			bool isBreakEvent = type == EventType.Step || type == EventType.Breakpoint || type == EventType.Exception || type == EventType.UserBreak;
 			
 			if (isBreakEvent) {
 				if (current_thread != null && es[0].Thread.Id != current_thread.Id) {
@@ -909,6 +910,9 @@ namespace Mono.Debugging.Soft
 							resume = false;
 						}
 					} else if (e.EventType == EventType.Step) {
+						etype = TargetEventType.TargetStopped;
+						resume = false;
+					} else if (e.EventType == EventType.UserBreak) {
 						etype = TargetEventType.TargetStopped;
 						resume = false;
 					} else {
@@ -1018,6 +1022,11 @@ namespace Mono.Debugging.Soft
 				OnTargetEvent (new TargetEventArgs (TargetEventType.ThreadStopped) {
 					Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null),
 				});
+				break;
+			}
+			case EventType.UserLog: {
+				var ul = (UserLogEvent) e;
+				OnDebuggerOutput (false, string.Format ("[{0}:{1}] {2}\n", ul.Level, ul.Category, ul.Message));
 				break;
 			}
 			default:
