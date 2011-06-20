@@ -175,14 +175,14 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		IProjectContent singleFileContext;
-		public ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext TypeResolveContext {
+		public  virtual ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext TypeResolveContext {
 			get {
 				return Project != null ? MonoDevelop.TypeSystem.TypeSystemService.GetContext (Project) : GetProjectContext ();
 			}
 		}
 		
 		ParsedDocument parsedDocument;
-		public ParsedDocument ParsedDocument {
+		public virtual ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;
 			}

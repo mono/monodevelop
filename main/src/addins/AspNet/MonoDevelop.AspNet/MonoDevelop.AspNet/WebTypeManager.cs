@@ -160,7 +160,7 @@ namespace MonoDevelop.AspNet
 					var dom = ResolveAssembly (info.Assembly);
 					if (dom == null)
 						continue;
-					foreach (IType t in ListControlClasses (baseType, dom, info.Namespace))
+					foreach (var t in ListControlClasses (baseType, dom, info.Namespace))
 						yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (info.TagPrefix + ":", t);
 				}
 				else if (info.IsUserControl) {
@@ -212,7 +212,7 @@ namespace MonoDevelop.AspNet
 				if (!string.IsNullOrEmpty (tpxInfo.Namespace) && !string.IsNullOrEmpty (tpxInfo.Assembly) && !string.IsNullOrEmpty (tpxInfo.TagPrefix)) {
 					var dom = ResolveAssembly (tpxInfo.Assembly);
 					if (dom != null)
-						foreach (IType type in ListControlClasses (baseType, dom, tpxInfo.Namespace))
+						foreach (var type in ListControlClasses (baseType, dom, tpxInfo.Namespace))
 							yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (tpxInfo.TagPrefix, type);
 				}
 			}
@@ -310,21 +310,18 @@ namespace MonoDevelop.AspNet
 		}
 		
 		public static IEnumerable<IType> ListControlClasses (IType baseType, ITypeResolveContext database, string namespac)
-		{ // TODO: Type system conversion.
-			yield break;
-//			if (database == null)
-//				yield break;
-//			
-//			//return classes if they derive from system.web.ui.control
-//			foreach (IType type in database.GetSubclasses (baseType, false, new string [] {namespac}))
-//				if (!type.IsAbstract && type.IsPublic)
-//					yield return type;
-//			
-//			if (!baseType.IsAbstract && baseType.IsPublic && baseType.Namespace == namespac) {
-//				IType t = database.GetType (baseType.FullName);
-//				if (t != null)
-//					yield return baseType;
-//			}
+		{
+			if (database == null)
+				yield break;
+			var baseTypeDefinition = baseType.GetDefinition ();
+			//return classes if they derive from system.web.ui.control
+			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions (database).Where (t => t.Namespace == namespac))
+				if (!type.IsAbstract && type.IsPublic)
+					yield return type;
+			
+			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.IsPublic && baseTypeDefinition.Namespace == namespac) {
+				yield return baseType.Resolve (database);
+			}
 		}
 		
 		#endregion

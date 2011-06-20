@@ -46,6 +46,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.AspNet.Gui
 {
+	
 	/// <summary>
 	/// Embedded local region completion information for each keystroke
 	/// </summary>
@@ -55,7 +56,7 @@ namespace MonoDevelop.AspNet.Gui
 		public ParsedDocument ParsedLocalDocument { get; set; }
 		public int CaretPosition { get; set; }
 		public int OriginalCaretPosition { get; set; }
-		public MonoDevelop.Ide.Gui.Document HiddenDocument { get; set; }
+		public HiddenDocument HiddenDocument { get; set; }
 		
 		public List<OffsetInfo> OffsetInfos = new List<OffsetInfo> ();
 		
@@ -218,6 +219,27 @@ namespace MonoDevelop.AspNet.Gui
 					return b;
 			}
 			return null;
+		}
+	}
+	
+	public class HiddenDocument : MonoDevelop.Ide.Gui.Document
+	{
+		internal ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext HiddenContext;
+		public override ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext TypeResolveContext {
+			get {
+				return HiddenContext;
+			}
+		}
+		
+		internal ParsedDocument HiddenParsedDocument;
+		public override ParsedDocument ParsedDocument {
+			get {
+				return HiddenParsedDocument;
+			}
+		}
+		
+		public HiddenDocument (MonoDevelop.Ide.Gui.IWorkbenchWindow window) : base(window)
+		{
 		}
 	}
 }

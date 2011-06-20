@@ -446,6 +446,11 @@ namespace MonoDevelop.TypeSystem
 			return new CompositeTypeResolveContext (contexts);
 		}
 		
+		public static void ForceUpdate (ITypeResolveContext context)
+		{
+			CheckModifiedFiles ();
+		}
+		
 		#region Parser queue
 		static bool threadRunning;
 		

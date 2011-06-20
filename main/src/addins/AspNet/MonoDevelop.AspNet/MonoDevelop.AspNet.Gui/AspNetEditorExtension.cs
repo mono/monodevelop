@@ -96,9 +96,9 @@ namespace MonoDevelop.AspNet.Gui
 				documentInfo = new DocumentInfo (document.TypeResolveContext, aspDoc, usings, refman.GetDoms ());
 				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
 				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
-//				domWrapper = new AspProjectDomWrapper (documentInfo); TODO: Type system conversion
-//				if (localDocumentInfo != null)
-//					localDocumentInfo.HiddenDocument.Dom = domWrapper;
+				var domWrapper = new AspProjectDomWrapper (documentInfo);
+				if (localDocumentInfo != null)
+					localDocumentInfo.HiddenDocument.HiddenContext = domWrapper;
 			}
 		}
 		
@@ -232,11 +232,10 @@ namespace MonoDevelop.AspNet.Gui
 
 			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
 			workbenchWindow.ViewContent = viewContent;
-			localDocumentInfo.HiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow)/* {
-				ParsedFile = localDocumentInfo.ParsedLocalDocument,
-				Dom = null
-			//Dom = domWrapper TODO: Type system conversion
-			}*/;
+			localDocumentInfo.HiddenDocument = new HiddenDocument (workbenchWindow) {
+				HiddenParsedDocument = localDocumentInfo.ParsedLocalDocument,
+				HiddenContext = domWrapper
+			};
 		}
 		
 		
@@ -253,15 +252,15 @@ namespace MonoDevelop.AspNet.Gui
 		
 		ICompletionWidget defaultCompletionWidget;
 		MonoDevelop.Ide.Gui.Document defaultDocument;
-//		AspProjectDomWrapper domWrapper; TODO: Type system conversion.
+		AspProjectDomWrapper domWrapper;
 		public override void Initialize ()
 		{
 			base.Initialize ();
 			defaultCompletionWidget = CompletionWidget;
 			defaultDocument = document;
-/*			defaultDocument.TextEditorData.Caret.PositionChanged += delegate {
+			defaultDocument.Editor.Caret.PositionChanged += delegate {
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
-			};*/
+			};
 		}
 		
 		

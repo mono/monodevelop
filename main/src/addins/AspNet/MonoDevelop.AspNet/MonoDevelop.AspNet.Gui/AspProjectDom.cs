@@ -30,25 +30,25 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Gui
 {
-	// Todo: type system conversion.
-//	/// <summary>
-//	/// This wraps a project dom and adds the compilation information from the ASP.NET page to the DOM to lookup members
-//	/// on the page.
-//	/// </summary>
-//	class AspProjectDomWrapper : ProjectDomDecorator
-//	{
-//		DocumentInfo info;
-//		
-//		//FIXME: use all the doms
-//		//FIXME: merge the items from the members visitor too
-//		public AspProjectDomWrapper (DocumentInfo info) : base (info.References[0])
-//		{
-//			this.info = info;
-//		}
-//		
-//		IType constructedType = null;
-//		IType CheckType (IType type)
-//		{
+	/// <summary>
+	/// This wraps a project dom and adds the compilation information from the ASP.NET page to the DOM to lookup members
+	/// on the page.
+	/// </summary>
+	class AspProjectDomWrapper : TypeResolveContextDecorator
+	{
+		DocumentInfo info;
+		
+		//FIXME: use all the doms
+		//FIXME: merge the items from the members visitor too
+		public AspProjectDomWrapper (DocumentInfo info) : base (info.References[0])
+		{
+			this.info = info;
+		}
+		
+		ITypeDefinition constructedType = null;
+		ITypeDefinition CheckType (ITypeDefinition type)
+		{
+// TODO: Type system conversion.
 //			if (type == null)
 //				return null;
 //			var cu =info.ParsedDocument.CompilationUnit;
@@ -61,46 +61,24 @@ namespace MonoDevelop.AspNet.Gui
 //				constructedType.GetProjectContent () = this;
 //				return constructedType;
 //			}
-//			return type;
-//		}
-//		
-//		public override IType ResolveType (IType type)
-//		{
-//			if (type == constructedType)
-//				return type;
-//			return CheckType (base.ResolveType (type));
-//		}
-//		
-//		public override IType GetType (IReturnType returnType)
-//		{
-//			return CheckType (base.GetType (returnType));
-//		}
-//
-//		public override IType GetType (string typeName, IList<IReturnType> genericArguments, 
-//		                               bool deepSearchReferences, bool caseSensitive)
-//		{
-//			return CheckType (base.GetType (typeName, genericArguments, deepSearchReferences, caseSensitive));
-//		}
-//
-//		public override IType GetType (string typeName, int genericArgumentsCount, 
-//		                               bool deepSearchReferences, bool caseSensitive)
-//		{
-//			return CheckType (base.GetType (typeName, genericArgumentsCount, deepSearchReferences, caseSensitive));
-//		}
-//		
-//		public override IEnumerable<IType> GetInheritanceTree (IType type)
-//		{
-//			foreach (IType t in BaseGetInheritanceTree (type)) {
-//				yield return CheckType (t);
-//			}
-//		}
-//		
-//		//WORKAROUND for gmcs code generation bug - base not properly accessible from generators.
-//		//Should be fixed in Mono 2.8 final.
-//		IEnumerable<IType> BaseGetInheritanceTree (IType type)
-//		{
-//			return base.GetInheritanceTree (type);
-//		}
-//	}
+			return type;
+		}
+		
+		public override ITypeDefinition GetTypeDefinition (string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+		{
+			return CheckType (base.GetTypeDefinition (nameSpace, name, typeParameterCount, nameComparer));
+		}
+		
+		public override IEnumerable<ITypeDefinition> GetTypes()
+		{
+			return base.GetTypes ().Select (t => CheckType (t));
+		}
+		
+		public override IEnumerable<ITypeDefinition> GetTypes(string nameSpace, StringComparer nameComparer)
+		{
+			return base.GetTypes (nameSpace, nameComparer).Select (t => CheckType (t));
+		}
+		
+	}
 }
 

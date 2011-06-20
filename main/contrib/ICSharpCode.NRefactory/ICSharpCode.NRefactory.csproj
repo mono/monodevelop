@@ -398,6 +398,7 @@
     <Compile Include="Utils\Platform.cs" />
     <Compile Include="TypeSystem\IAnnotatable.cs" />
     <Compile Include="TypeSystem\Error.cs" />
+    <Compile Include="TypeSystem\TypeResolveContextDecorator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

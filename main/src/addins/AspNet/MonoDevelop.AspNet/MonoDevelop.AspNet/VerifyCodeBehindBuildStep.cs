@@ -110,8 +110,7 @@ namespace MonoDevelop.AspNet
 					updatedParseDb = true;
 					monitor.Log.Write (GettextCatalog.GetString ("Waiting for project type database to finish updating..."));
 					var dom = TypeSystemService.GetContext (aspProject);
-					// TODO: Type system conversion
-					//					dom.ForceUpdate (true);
+					TypeSystemService.ForceUpdate (dom);
 					monitor.Log.WriteLine (GettextCatalog.GetString (" complete."));
 				}
 				

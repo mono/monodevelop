@@ -444,12 +444,10 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 		public override string Description {
-			get { // TODO: Type system conversion.
-				return "todo";
-				//		if (base.Description == null && cls != null)
-				//			base.Description = DocumentationService.GetCodeCompletionDescription (
-				//				cls, AmbienceService.DefaultAmbience);
-				//		return base.Description;
+			get { 
+				if (base.Description == null && cls != null)
+					base.Description = AmbienceService.GetDocumentation (cls.GetDefinition ());
+				return base.Description;
 			}
 			set { base.Description = value;	}
 		}

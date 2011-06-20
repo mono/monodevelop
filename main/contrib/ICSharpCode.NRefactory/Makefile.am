@@ -342,6 +342,7 @@ FILES =  \
 	TypeSystem/ReflectionHelper.cs \
 	TypeSystem/ReflectionNameParseException.cs \
 	TypeSystem/SharedTypes.cs \
+	TypeSystem/TypeResolveContextDecorator.cs \
 	TypeSystem/TypeVisitor.cs \
 	Utils/BitVector16.cs \
 	Utils/BusyManager.cs \
