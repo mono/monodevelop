@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Tasks
 			ReloadPriorities ();
 			
 			TaskService.CommentTasksChanged += OnCommentTasksChanged;
-			TaskService.SpecialCommentTagsChanged += OnCommentTagsChanged;
+			CommentTag.SpecialCommentTagsChanged += OnCommentTagsChanged;
 			IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			
@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Tasks
 //				if (pContext == null)
 //					continue;
 				foreach (ProjectFile file in p.Files) {
-					IList<Tag> tags = TaskService.GetSpecialComments (file.Name);
+					IList<Tag> tags = CommentTag.GetSpecialComments (file.Name);
 					if (tags != null && tags.Count > 0)
 						UpdateCommentTags (sln, file.Name, tags);
 				}
@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ReloadPriorities ()
 		{
 			priorities.Clear ();
-			foreach (var tag in TaskService.SpecialCommentTags)
+			foreach (var tag in CommentTag.SpecialCommentTags)
 				priorities.Add (tag.Tag, (TaskPriority) tag.Priority);
 		}		
 		

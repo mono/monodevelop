@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
 			get {
-				return editorCompletion.policy;
+				return editorCompletion.FormattingPolicy;
 			}
 		}
 		

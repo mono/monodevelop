@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Parser
 			parser.GenerateTypeSystemMode = !storeAst;
 			var result = new ParsedDocumentDecorator ();
 			
-			var tagComments = TaskService.SpecialCommentTags.Select (t => t.Tag).ToArray ();
+			var tagComments = CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
 			
 			parser.CompilationUnitCallback = delegate (CompilerCompilationUnit top) {
 				foreach (var special in top.SpecialsBag.Specials) {

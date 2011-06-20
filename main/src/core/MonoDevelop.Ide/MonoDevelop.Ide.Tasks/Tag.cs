@@ -68,5 +68,7 @@ namespace MonoDevelop.Ide.Tasks
 			this.Region = region;
 			this.Comment = comment;
 		}
+		
+		
 	}
 }

@@ -89,8 +89,7 @@ namespace MonoDevelop.CSharp.Inspection
 				return Enumerable.Empty<Result> ();
 				
 			var cg = new CallGraph ();
-			// TODO: Type system conversion
-//			cg.Inspect (input, input.GetResolver (), unit);
+			cg.Inspect (input, unit);
 			var data = new InspectionData () { Graph = cg, Document = input };
 //			unit.AcceptVisitor (visitor, data);
 			return data.Results;

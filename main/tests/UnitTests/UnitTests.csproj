@@ -214,6 +214,7 @@
     <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionCSharpTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TestDocument.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

@@ -35,12 +35,12 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
 using System.Linq;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension
 	{
-		internal MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy;
 		internal Mono.TextEditor.TextEditorData textEditorData;
 		internal ITypeResolveContext ctx;
 		
@@ -66,18 +66,39 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
+		CSharpFormattingPolicy policy;
+		public CSharpFormattingPolicy FormattingPolicy {
+			get {
+				if (policy == null) {
+					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+					if (Document.Project != null && Document.Project.Policies != null) {
+						policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
+					} else {
+						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+					}
+				}
+				return policy;
+			}
+		}
+		
+		public CSharpCompletionTextEditorExtension ()
+		{
+		}
+		
+		/// <summary>
+		/// Used in testing environment.
+		/// </summary>
+		[System.ComponentModel.Browsable(false)]
+		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc) : this ()
+		{
+			Initialize (doc);
+		}
+		
 		public override void Initialize ()
 		{
 			base.Initialize ();
 			ctx = Document.TypeResolveContext;
 			textEditorData = Document.Editor;
-			
-			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-			if (Document.Project != null) {
-				policy = Document.Project.Policies.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			} else {
-				policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			}
 			
 			Document.DocumentParsed += delegate {
 				var unit = Document.ParsedDocument;
@@ -85,8 +106,11 @@ namespace MonoDevelop.CSharp.Completion
 					return;
 				this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
 				this.ParsedFile = document.ParsedDocument.Annotation<ParsedFile> ();
-				Editor.Parent.TextViewMargin.PurgeLayoutCache ();
-				Editor.Parent.RedrawMarginLines (Editor.Parent.TextViewMargin, 1, Editor.LineCount);
+				var textEditor = Editor.Parent;
+				if (textEditor != null) {
+					textEditor.TextViewMargin.PurgeLayoutCache ();
+					textEditor.RedrawMarginLines (textEditor.TextViewMargin, 1, Editor.LineCount);
+				}
 			};
 		}
 		
@@ -130,8 +154,15 @@ namespace MonoDevelop.CSharp.Completion
 			var navigator = new NodeListResolveVisitorNavigator (new[] { expr });
 			var visitor = new ResolveVisitor (csResolver, file, navigator);
 			unit.AcceptVisitor (visitor, null);
-			return visitor.Resolve (expr);
+			var result = visitor.Resolve (expr);
+			var state = visitor.GetResolverStateBefore (expr);
+			this.currentType = state.CurrentTypeDefinition;
+			this.currentMember = state.CurrentMember;
+			return result;
 		}
+		
+		ITypeDefinition currentType;
+		IMember currentMember;
 		
 		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionBeforeCursor ()
 		{
@@ -149,7 +180,8 @@ namespace MonoDevelop.CSharp.Completion
 			parser = new CSharpParser ();
 			completionUnit = parser.Parse (stream, 0);
 			stream.Close ();
-			var type = completionUnit.GetTypes (true).LastOrDefault ();
+			
+			var type = completionUnit.GetNodeAt<TypeDeclaration> (expr.StartLocation);
 			if (type == null)
 				return null;
 			var member = type.Members.LastOrDefault ();
@@ -157,6 +189,10 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			if (member is MethodDeclaration) {
 				((MethodDeclaration)member).Body.Add (new ExpressionStatement (expr));
+			} else if (member is ConstructorDeclaration) {
+				((ConstructorDeclaration)member).Body.Add (new ExpressionStatement (expr));
+			} else if (member is DestructorDeclaration) {
+				((DestructorDeclaration)member).Body.Add (new ExpressionStatement (expr));
 			} else {
 				return null;
 			}
@@ -210,7 +246,6 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			}
 			
-			document.UpdateParseDocument ();
 			var loc = new AstLocation (Document.Editor.Caret.Location.Line, Document.Editor.Caret.Location.Column);
 			switch (completionChar) {
 			// Magic key completion
@@ -221,8 +256,14 @@ namespace MonoDevelop.CSharp.Completion
 				var expr = GetExpressionBeforeCursor ();
 				if (expr == null)
 					return null;
-				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
 				
+				// do not complete <number>. (but <number>.<number>.)
+				if (expr.Item2 is PrimitiveExpression) {
+					var pexpr = (PrimitiveExpression)expr.Item2;
+					if (pexpr.Value is string || pexpr.Value is char || !pexpr.LiteralValue.Contains ('.'))
+						return null;
+				}
+				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
 				return CreateCompletionData (loc, resolveResult);
 			case '#':
 				if (IsInsideComment () || IsInsideString ())
@@ -494,35 +535,165 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
+		class CompletionDataWrapper
+		{
+			CSharpCompletionTextEditorExtension completion;
+			CompletionDataList result = new ProjectDomCompletionDataList ();
+			
+			public CompletionDataList Result {
+				get {
+					return result;
+				}
+			}
+			
+			public CompletionDataWrapper (CSharpCompletionTextEditorExtension completion)
+			{
+				this.completion = completion;
+			}
+			
+			HashSet<string> usedNamespaces = new HashSet<string> ();
+			
+			public void AddNamespace (string name)
+			{
+				if (string.IsNullOrEmpty (name) || usedNamespaces.Contains (name))
+					return;
+				usedNamespaces.Add (name);
+				result.Add (new CompletionData (name, Stock.Namespace));
+			}
+			
+			HashSet<string> usedTypes = new HashSet<string> ();
+			public void AddType (ITypeDefinition type)
+			{
+				if (type == null || usedTypes.Contains (type.Name))
+					return;
+				usedTypes.Add (type.Name);
+				result.Add (new CompletionData (type.Name, type.GetStockIcon ()));
+			}
+			
+			Dictionary<string, List<MemberCompletionData>> data = new Dictionary<string, List<MemberCompletionData>> ();
+			
+			public MemberCompletionData AddMember (IMember member)
+			{
+				return AddMember (member, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets /* | additionalFlags*/);
+			}
+			
+			public MemberCompletionData AddMember (IMember member, OutputFlags flags)
+			{
+				var newData = new MemberCompletionData (completion, member, flags);
+//				newData.HideExtensionParameter = HideExtensionParameter;
+				string memberKey = newData.CompletionText;
+				if (memberKey == null)
+					return null;
+				if (member is IMember) {
+					newData.CompletionCategory = GetCompletionCategory (member.DeclaringTypeDefinition);
+				}
+				List<MemberCompletionData> existingData;
+				data.TryGetValue (memberKey, out existingData);
+				
+				if (existingData != null) {
+					var a = member;
+					foreach (MemberCompletionData md in existingData) {
+						var b = md.Member;
+						if (a == null || b == null || a.EntityType == b.EntityType) {
+							md.AddOverload (newData);
+							newData = null;
+							break;
+						} 
+					}
+					if (newData != null) {
+						result.Add (newData);
+						data[memberKey].Add (newData);
+					}
+				} else {
+					result.Add (newData);
+					data[memberKey] = new List<MemberCompletionData> ();
+					data[memberKey].Add (newData);
+				}
+				return newData;
+			}
+			
+			internal CompletionCategory GetCompletionCategory (ITypeDefinition type)
+			{
+				if (type == null)
+					return null;
+				if (!completionCategories.ContainsKey (type))
+					completionCategories[type] = new TypeCompletionCategory (type);
+				return completionCategories[type];
+			}
+			
+			Dictionary<ITypeDefinition, CompletionCategory> completionCategories = new Dictionary<ITypeDefinition, CompletionCategory> ();
+			class TypeCompletionCategory : CompletionCategory
+			{
+				public ITypeDefinition Type {
+					get;
+					private set;
+				}
+				
+				public TypeCompletionCategory (ITypeDefinition type) : base (type.FullName, type.GetStockIcon ())
+				{
+					this.Type = type;
+				}
+				
+				public override int CompareTo (CompletionCategory other)
+				{
+					TypeCompletionCategory compareCategory = other as TypeCompletionCategory;
+					if (compareCategory == null)
+						return 1;
+					
+					if (Type.ReflectionName == compareCategory.Type.ReflectionName)
+						return 0;
+					
+					// System.Object is always the smallest
+					if (Type.ReflectionName == "System.Object") 
+						return -1;
+					if (compareCategory.Type.ReflectionName == "System.Object")
+						return 1;
+					
+/*					if (Type.GetProjectContent () != null) {
+						if (Type.GetProjectContent ().GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
+							return 1;
+						return -1;
+					}
+					
+					// source project dom == null - try to make the opposite comparison
+					if (compareCategory.Type.GetProjectContent () != null && compareCategory.Type.GetProjectContent ().GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == Type.DecoratedFullName))
+						return -1;*/
+					return 1;
+				}
+			}
+		}
+		
 		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult)
 		{
 			if (resolveResult == null || resolveResult.IsError)
 				return null;
 			var ctx = Document.TypeResolveContext;
-			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
-				var result2 = new ProjectDomCompletionDataList ();
-				
+				var namespaceContents = new CompletionDataWrapper (this);
 				foreach (var cl in ctx.GetTypes (nr.NamespaceName, StringComparer.Ordinal)) {
-					result2.Add (new CompletionData (cl.Name, cl.GetStockIcon ()));
+					namespaceContents.AddType (cl);
 				}
 				foreach (var ns in ctx.GetNamespaces ().Where (n => n.Length > nr.NamespaceName.Length && n.StartsWith (nr.NamespaceName))) {
 					string name = ns.Substring (nr.NamespaceName.Length + 1);
 					int idx = name.IndexOf (".");
 					if (idx >= 0)
 						name = name.Substring (0, idx);
-					result2.Add (new CompletionData (name, Stock.Namespace));
+					namespaceContents.AddNamespace (name);
 				}
 				
-				return result2;
+				return namespaceContents.Result;
 			}
 			
 			var type = resolveResult.Type.Resolve (ctx);
-			
-			var result = new ProjectDomCompletionDataList ();
+			var lookup = new MemberLookup (ctx, currentType, document.GetProjectContext ());
+			var result = new CompletionDataWrapper (this);
 			foreach (var member in type.GetMembers (ctx)) {
-				result.Add (new MemberCompletionData (this, member, OutputFlags.ClassBrowserEntries | OutputFlags.CompletionListFomat));
+				if (!lookup.IsAccessible (member, lookup.IsProtectedAccessAllowed (type)))
+					continue;
+				if (currentMember.IsStatic ^ member.IsStatic)
+					continue;
+				result.AddMember (member);
 			}
 			
 //			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
@@ -546,7 +717,7 @@ namespace MonoDevelop.CSharp.Completion
 //				}
 //			}
 			
-			return result;
+			return result.Result;
 		}
 		
 		ICompletionDataList CreateParameterCompletion (MethodGroupResolveResult resolveResult, int parameter)

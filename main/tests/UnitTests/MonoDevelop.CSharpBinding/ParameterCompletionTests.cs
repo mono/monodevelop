@@ -67,6 +67,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 			project.AddFile (file);
 			
 			TypeSystemService.Load (project);
+			var dom = TypeSystemService.GetContext (project);
+			TypeSystemService.ForceUpdate (dom);
+			
 			var content = TypeSystemService.GetProjectContext (project);
 			var parsedDocument = TypeSystemService.ParseFile (content, file, "text/x-csharp", parsedText);
 			
@@ -75,8 +78,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
 			tww.ViewContent = sev;
-			Document doc = new Document (tww);
-			doc.ParsedDocument = parsedDocument;
+			TestDocument doc = new TestDocument (tww);
+			doc.HiddenParsedDocument = parsedDocument;
+			doc.HiddenProjectContent = content;
+			doc.HiddenContext        = dom;
 			var textEditorCompletion = new CSharpCompletionTextEditorExtension (doc);
 			
 			CodeCompletionContext ctx = new CodeCompletionContext ();

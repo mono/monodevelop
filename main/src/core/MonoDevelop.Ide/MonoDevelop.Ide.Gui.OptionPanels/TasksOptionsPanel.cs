@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Load ()
 		{
-			foreach (var ctag in TaskService.SpecialCommentTags)
+			foreach (var ctag in CommentTag.SpecialCommentTags)
 				tokensStore.AppendValues (ctag.Tag, ctag.Priority);
 			
 			colorbuttonHighPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			foreach (object[] row in tokensStore)
 				tags.Add (new CommentTag ((string)row[0], (int)row[1]));
 
-			TaskService.SpecialCommentTags = tags;
+			CommentTag.SpecialCommentTags = tags;
 			
 			PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
 			PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));

@@ -37,6 +37,7 @@ using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -157,14 +158,16 @@ namespace MonoDevelop.CSharpBinding.Tests
 			TypeSystemService.ForceUpdate (dom);
 			var content = TypeSystemService.GetProjectContext (project);
 			var parsedDocument = TypeSystemService.ParseFile (content, file, "text/x-csharp", parsedText);
-			
+			((SimpleProjectContent)content).UpdateProjectContent (null, parsedDocument);
 			sev.Project = project;
 			sev.ContentName = file;
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
 			tww.ViewContent = sev;
-			Document doc = new Document (tww);
-			doc.ParsedDocument = parsedDocument;
+			TestDocument doc = new TestDocument (tww);
+			doc.HiddenParsedDocument = parsedDocument;
+			doc.HiddenProjectContent = content;
+			doc.HiddenContext        = dom;
 			foreach (var e in doc.ParsedDocument.Errors)
 				Console.WriteLine (e);
 			var textEditorCompletion = new CSharpCompletionTextEditorExtension (doc);
@@ -286,6 +289,22 @@ namespace ThisOne {
 ");
 			Assert.IsNull (provider);
 		}
+		
+		[Test()]
+		public void TestBug318834CaseB ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"class T
+{
+        static void Main ()
+        {
+                $decimal foo = 0.0.$
+        }
+}
+
+");
+			Assert.IsNotNull (provider);
+		}
 
 		/// <summary>
 		/// Bug 321306 - Code completion doesn't recognize child namespaces
@@ -339,6 +358,10 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
+			for (int i = 0; i < provider.Count; i++) {
+				CompletionData varname = provider [i];
+				Console.WriteLine (varname.CompletionText);
+			}
 			Assert.AreEqual (6, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("AField"), "field 'AField' not found.");

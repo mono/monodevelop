@@ -248,7 +248,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				document = IdeApp.Workbench.GetDocument (doc.FileName);
 				
-				foreach (var tag in TaskService.SpecialCommentTags) {
+				foreach (var tag in CommentTag.SpecialCommentTags) {
 					tags.Add (tag.Tag);
 				}
 				

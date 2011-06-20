@@ -62,15 +62,11 @@ namespace MonoDevelop.CSharp.Completion
 			get { return this.dom; }
 			set { this.dom = value; }
 		}
-		
+	
 		public CSharpTextEditorCompletion ()
 		{
 		}
 		
-		public CSharpTextEditorCompletion (Document doc) : this ()
-		{
-			Initialize (doc);
-		}
 		
 		public override void Initialize ()
 		{
@@ -1060,7 +1056,6 @@ namespace MonoDevelop.CSharp.Completion
 				private set;
 			}
 			
-			Dictionary<string, List<MemberCompletionData>> data = new Dictionary<string, List<MemberCompletionData>> ();
 			HashSet<string> namespacesInList = new HashSet<string> ();
 			
 			HashSet<string> namespacesInScope = new HashSet<string> ();
@@ -1166,92 +1161,6 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
-			Dictionary<IType, CompletionCategory> completionCategories = new Dictionary<IType, CompletionCategory> ();
-			
-			class TypeCompletionCategory : CompletionCategory
-			{
-				public IType Type {
-					get;
-					private set;
-				}
-				
-				public TypeCompletionCategory (IType type) : base (type.FullName, type.StockIcon)
-				{
-					this.Type = type;
-				}
-				
-				public override int CompareTo (CompletionCategory other)
-				{
-					TypeCompletionCategory compareCategory = other as TypeCompletionCategory;
-					if (compareCategory == null)
-						return 1;
-					
-					if (Type.DecoratedFullName == compareCategory.Type.DecoratedFullName)
-						return 0;
-					
-					// System.Object is always the smallest
-					if (Type.DecoratedFullName == DomReturnType.Object.DecoratedFullName) 
-						return -1;
-					if (compareCategory.Type.DecoratedFullName == DomReturnType.Object.DecoratedFullName)
-						return 1;
-					
-					if (Type.GetProjectContent () != null) {
-						if (Type.GetProjectContent ().GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
-							return 1;
-						return -1;
-					}
-					
-					// source project dom == null - try to make the opposite comparison
-					if (compareCategory.Type.GetProjectContent () != null && compareCategory.Type.GetProjectContent ().GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == Type.DecoratedFullName))
-						return -1;
-					return 1;
-				}
-			}
-			
-			internal CompletionCategory GetCompletionCategory (IType type)
-			{
-				if (type == null)
-					return null;
-				if (!completionCategories.ContainsKey (type)) {
-					completionCategories[type] = new TypeCompletionCategory (type);
-				}
-				return completionCategories[type];
-			}
-			
-			MemberCompletionData AddMemberCompletionData (object member, OutputFlags flags)
-			{
-				var newData = new MemberCompletionData (editorCompletion, member as INode, flags);
-				newData.HideExtensionParameter = HideExtensionParameter;
-				string memberKey = newData.CompletionText;
-				if (memberKey == null)
-					return null;
-				if (member is IMember) {
-					newData.CompletionCategory = GetCompletionCategory (((IMember)member).DeclaringType);
-				}
-				List<MemberCompletionData> existingData;
-				data.TryGetValue (memberKey, out existingData);
-				
-				if (existingData != null) {
-					IBaseMember a = member as IBaseMember;
-					foreach (MemberCompletionData md in existingData) {
-						IBaseMember b = md.Member as IBaseMember;
-						if (a == null || b == null || a.MemberType == b.MemberType) {
-							md.AddOverload (newData);
-							newData = null;
-							break;
-						} 
-					}
-					if (newData != null) {
-						CompletionList.Add (newData);
-						data[memberKey].Add (newData);
-					}
-				} else {
-					CompletionList.Add (newData);
-					data[memberKey] = new List<MemberCompletionData> ();
-					data[memberKey].Add (newData);
-				}
-				return newData;
-			}
 			
 			public CompletionData Add (string name, string icon)
 			{
