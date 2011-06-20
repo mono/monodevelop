@@ -33,10 +33,10 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -66,10 +66,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 			string file = GetTempFile (".cs");
 			project.AddFile (file);
 			
-			ProjectDomService.Load (project);
-//			ProjectDom dom = ProjectDomService.GetProjectDom (project);
-			ProjectDomService.Parse (project, file, delegate { return parsedText; });
-			ProjectDomService.Parse (project, file, delegate { return parsedText; });
+			TypeSystemService.Load (project);
+			var content = TypeSystemService.GetProjectContext (project);
+			var parsedDocument = TypeSystemService.ParseFile (content, file, "text/x-csharp", parsedText);
 			
 			sev.Project = project;
 			sev.ContentName = file;
@@ -77,8 +76,8 @@ namespace MonoDevelop.CSharpBinding.Tests
 			sev.CursorPosition = cursorPosition;
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
-			doc.ParsedDocument = new McsParser ().Parse (null, sev.ContentName, parsedText);
-			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
+			doc.ParsedDocument = parsedDocument;
+			var textEditorCompletion = new CSharpCompletionTextEditorExtension (doc);
 			
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
@@ -88,7 +87,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			ctx.TriggerLineOffset = column - 1;
 			
 			IParameterDataProvider result = textEditorCompletion.HandleParameterCompletion (ctx, editorText[cursorPosition - 1]);
-			ProjectDomService.Unload (project);
+			TypeSystemService.Unload (project);
 			return result;
 		}
 		

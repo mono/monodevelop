@@ -202,6 +202,18 @@
     <Compile Include="Mono.TextEditor.Tests\SegmentTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\RedBlackTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\HeightTreeTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionBugTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\ParameterCompletionTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TopLevelTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\MemberTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionOperatorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionCSharp3Tests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionAccessibleTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionCSharpTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -222,18 +234,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.CSharpBinding\TopLevelTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\MemberTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\CodeCompletionBugTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
-    <None Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
-    <None Include="MonoDevelop.CSharpBinding\CodeCompletionOperatorTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\ParameterCompletionTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\CodeCompletionCSharp3Tests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\CodeCompletionAccessibleTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\CodeCompletionCSharpTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
     <None Include="MonoDevelop.Projects\CompletionDatabaseTests.cs" />
     <None Include="MonoDevelop.Refactoring\ExtractMethodTests.cs" />
     <None Include="MonoDevelop.Refactoring\CreateBackingStoreTests.cs" />

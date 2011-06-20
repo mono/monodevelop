@@ -33,10 +33,10 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -152,12 +152,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 			
 			string file = GetTempFile (".cs");
 			project.AddFile (file);
-			
-			ProjectDomService.Load (project);
-			ProjectDom dom = ProjectDomService.GetProjectDom (project);
-			dom.ForceUpdate (true);
-			ProjectDomService.Parse (project, file, delegate { return parsedText; });
-			ProjectDomService.Parse (project, file, delegate { return parsedText; });
+			TypeSystemService.Load (project);
+			var dom = TypeSystemService.GetContext (project);
+			TypeSystemService.ForceUpdate (dom);
+			var content = TypeSystemService.GetProjectContext (project);
+			var parsedDocument = TypeSystemService.ParseFile (content, file, "text/x-csharp", parsedText);
 			
 			sev.Project = project;
 			sev.ContentName = file;
@@ -165,10 +164,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 			sev.CursorPosition = cursorPosition;
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
-			doc.ParsedDocument = new McsParser ().Parse (null, sev.ContentName, parsedText);
+			doc.ParsedDocument = parsedDocument;
 			foreach (var e in doc.ParsedDocument.Errors)
 				Console.WriteLine (e);
-			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
+			var textEditorCompletion = new CSharpCompletionTextEditorExtension (doc);
 			int triggerWordLength = 1;
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			textEditorCompletion.CompletionWidget = new TestCompletionWidget (doc.Editor) {
@@ -179,6 +178,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
 			ctx.TriggerLine = line;
 			ctx.TriggerLineOffset = column - 1;
+			TypeSystemService.Unload (project);
 			if (isCtrlSpace)
 				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
 			return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
