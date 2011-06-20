@@ -35,12 +35,13 @@ using System.Xml;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.Moonlight
 {
 	public class MoonlightParser : AbstractTypeSystemProvider
 	{
-		public override ParsedDocument Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
+		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
 			try {
@@ -52,7 +53,7 @@ namespace MonoDevelop.Moonlight
 				if (doc.XDocument != null && doc.XDocument.RootElement != null) {
 					if (!doc.XDocument.RootElement.IsEnded)
 						doc.XDocument.RootElement.End (xmlParser.Location);
-					GenerateCU (doc);
+					GenerateCU (projectContent, doc);
 				}
 			}
 			catch (Exception ex) {
@@ -61,7 +62,7 @@ namespace MonoDevelop.Moonlight
 			return doc;
 		}
 		
-		static void GenerateCU (XmlParsedDocument doc)
+		static void GenerateCU (IProjectContent projectContent, XmlParsedDocument doc)
 		{
 			if (doc.XDocument == null || doc.XDocument.RootElement == null) {
 				doc.Add (new Error (ErrorType.Error, "No root node found.", 1, 1));
@@ -79,30 +80,34 @@ namespace MonoDevelop.Moonlight
 			string rootNamespace, rootType, rootAssembly;
 			XamlG.ParseXmlns (rootClass.Value, out rootType, out rootNamespace, out rootAssembly);
 
-// TODO: Type system conversion.
-//			var cu = new ParsedDocument (doc.FileName);
-//			doc.CompilationUnit = cu;
-//
-//			DomRegion rootRegion = doc.XDocument.RootElement.Region;
-//			if (doc.XDocument.RootElement.IsClosed)
-//				rootRegion.End = doc.XDocument.RootElement.ClosingTag.Region.End;
-//			
-//			DomType declType = new DomType (cu, ClassType.Class, Modifiers.Partial | Modifiers.Public, rootType,
-//			                                doc.XDocument.RootElement.Region.Start, rootNamespace, rootRegion);
-//			cu.Add (declType);
-//			
-//			DomMethod initcomp = new DomMethod ();
-//			initcomp.Name = "InitializeComponent";
-//			initcomp.Modifiers = Modifiers.Public;
-//			initcomp.ReturnType = DomReturnType.Void;
-//			declType.Add (initcomp);
-//			
-//			DomField _contentLoaded = new DomField ("_contentLoaded");
-//			_contentLoaded.ReturnType = new DomReturnType ("System.Boolean");
-//
-//			if (isApplication)
-//				return;
-//			
+			var cu = new DefaultParsedDocument (doc.FileName);
+
+			DomRegion rootRegion = doc.XDocument.RootElement.Region;
+			if (doc.XDocument.RootElement.IsClosed)
+				rootRegion = new DomRegion (doc.XDocument.RootElement.Region.FileName, doc.XDocument.RootElement.Region.Begin, doc.XDocument.RootElement.ClosingTag.Region.End); 
+			
+			var declType = new DefaultTypeDefinition (projectContent, rootNamespace, rootType) {
+				ClassType = ClassType.Class,
+				Accessibility = Accessibility.Public,
+				Region = rootRegion
+			};
+			cu.TopLevelTypeDefinitions.Add (declType);
+			
+			var initcomp = new DefaultMethod (declType, "InitializeComponent") {
+				ReturnType = KnownTypeReference.Void,
+				Accessibility = Accessibility.Public
+			};
+			declType.Methods.Add (initcomp);
+			
+			var _contentLoaded = new DefaultField (declType, "_contentLoaded") {
+				ReturnType = KnownTypeReference.Boolean
+			};
+// was missing in the original code: correct ? 
+//			declType.Fields.Add (_contentLoaded);
+
+			if (isApplication)
+				return;
+			
 //			cu.Add (new DomUsing (DomRegion.Empty, "System"));
 //			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows"));
 //			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls"));
@@ -116,18 +121,18 @@ namespace MonoDevelop.Moonlight
 	//		Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
 	//		namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";
 			
-//			XName nameAtt = new XName ("x", "Name");
-//			
-//			foreach (XElement el in doc.XDocument.RootElement.AllDescendentElements) {
-//				XAttribute name = el.Attributes [nameAtt];
-//				if (name != null && name.IsComplete) {
-//					string type = ResolveType (el);
-//					if (type == null || type.Length == 0)
-//						doc.Add (new Error (ErrorType.Error, el.Region.Begin, "Could not find namespace for '" + el.Name.FullName + "'."));
-//					else
-//						declType.Add (new DomField (name.Value, Modifiers.Internal, el.Region.Begin, new DomReturnType (type)));
-//				}
-//			}
+			XName nameAtt = new XName ("x", "Name");
+			
+			foreach (XElement el in doc.XDocument.RootElement.AllDescendentElements) {
+				XAttribute name = el.Attributes [nameAtt];
+				if (name != null && name.IsComplete) {
+					string type = ResolveType (el);
+					if (type == null || type.Length == 0)
+						cu.Add (new Error (ErrorType.Error, "Could not find namespace for '" + el.Name.FullName + "'.", el.Region.Begin));
+					else
+						declType.Fields.Add (new DefaultField (declType, name.Value) { Accessibility = Accessibility.Internal, Region = el.Region, ReturnType = new GetClassTypeReference (type, 0) });
+				}
+			}
 		}
 		
 		static string GetNamespace (XElement el)
