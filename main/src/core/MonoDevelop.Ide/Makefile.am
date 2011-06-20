@@ -452,6 +452,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GtkAlertDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GtkErrorDialog.cs \
@@ -689,6 +690,7 @@ FILES =  \
 	MonoDevelop.Ide/DesktopService.cs \
 	MonoDevelop.Ide/DispatchService.cs \
 	MonoDevelop.Ide/ExitEventHandler.cs \
+	MonoDevelop.Ide/FeedbackService.cs \
 	MonoDevelop.Ide/GLibLogging.cs \
 	MonoDevelop.Ide/HelpOperations.cs \
 	MonoDevelop.Ide/Ide.cs \
@@ -721,6 +723,7 @@ RES =  \
 	icons/assembly-project-16.png \
 	icons/author-information-16.png \
 	icons/author-information-24.png \
+	icons/balloon.png \
 	icons/breakpoint-16.png \
 	icons/breakpoint-22.png \
 	icons/breakpoint-disable-all-16.png \

@@ -776,6 +776,9 @@
     <EmbeddedResource Include="icons\text-quickfix-16.png">
       <LogicalName>text-quickfix-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\balloon.png">
+      <LogicalName>balloon.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1453,6 +1456,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\PriorityList.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.PriorityList.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FilePathEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeedbackDialog.cs" />
+    <Compile Include="MonoDevelop.Ide\FeedbackService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
