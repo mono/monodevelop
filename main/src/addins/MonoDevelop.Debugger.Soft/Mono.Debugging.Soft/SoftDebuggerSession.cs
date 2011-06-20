@@ -352,9 +352,7 @@ namespace Mono.Debugging.Soft
 			this.vm = vm;
 			
 			//full paths, from GetSourceFiles (true), are only supported by sdb protocol 2.2 and later
-			var version = vm.Version;
-			if (version.MajorVersion <= 2 && version.MinorVersion < 2)
-				useFullPaths = false;
+			useFullPaths = vm.Version.AtLeast (2, 2);
 			
 			ConnectOutput (vm.StandardOutput, false);
 			ConnectOutput (vm.StandardError, true);
@@ -390,7 +388,7 @@ namespace Mono.Debugging.Soft
 		protected bool SetSocketTimeouts (int send_timeout, int receive_timeout, int keepalive_interval)
 		{
 			try {
-				if (vm.Version.MajorVersion == 2 && vm.Version.MinorVersion >= 4) {
+				if (vm.Version.AtLeast (2, 4)) {
 					vm.EnableEvents (EventType.KeepAlive);
 					vm.SetSocketTimeouts (send_timeout, receive_timeout, keepalive_interval);
 					return true;
@@ -423,7 +421,7 @@ namespace Mono.Debugging.Soft
 		void ReadOutput (System.IO.StreamReader reader, bool isError)
 		{
 			try {
-				char[] buffer = new char [1024];
+				var buffer = new char [1024];
 				while (!exited) {
 					int c = reader.Read (buffer, 0, buffer.Length);
 					if (c > 0) {
@@ -494,7 +492,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnAttachToProcess (long processId)
 		{
-			throw new System.NotImplementedException ();
+			throw new System.NotSupportedException ();
 		}
 
 		protected override void OnContinue ()
@@ -514,7 +512,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnDetach ()
 		{
-			throw new System.NotImplementedException ();
+			throw new System.NotSupportedException ();
 		}
 
 		protected override void OnExit ()
@@ -610,14 +608,16 @@ namespace Mono.Debugging.Soft
 		protected override ThreadInfo[] OnGetThreads (long processId)
 		{
 			if (current_threads == null) {
-				List<ThreadInfo> threads = new List<ThreadInfo> ();
-				foreach (ThreadMirror t in vm.GetThreads ()) {
+				IList<ThreadMirror> mirrors = vm.GetThreads ();
+				var threads = new ThreadInfo[mirrors.Count];
+				for (int i = 0; i < mirrors.Count; i++) {
+					ThreadMirror t = mirrors [i];
 					string name = t.Name;
 					if (string.IsNullOrEmpty (name) && t.IsThreadPoolThread)
 						name = "<Thread Pool>";
-					threads.Add (new ThreadInfo (processId, GetId (t), name, null));
+					threads[i] = new ThreadInfo (processId, GetId (t), name, null);
 				}
-				current_threads = threads.ToArray ();
+				current_threads = threads;
 			}
 			return current_threads;
 		}
@@ -644,10 +644,10 @@ namespace Mono.Debugging.Soft
 			if (exited)
 				return null;
 			
-			BreakInfo bi = new BreakInfo ();
+			var bi = new BreakInfo ();
 			
 			if (ev is Breakpoint) {
-				Breakpoint bp = (Breakpoint) ev;
+				var bp = (Breakpoint) ev;
 				bool inisideLoadedRange;
 				bi.Location = FindLocation (bp.FileName, bp.Line, out inisideLoadedRange);
 				if (bi.Location != null) {
@@ -679,7 +679,7 @@ namespace Mono.Debugging.Soft
 		{
 			if (exited)
 				return;
-			BreakInfo bi = (BreakInfo) binfo;
+			var bi = (BreakInfo) binfo;
 			if (bi.Req != null) {
 				bi.Req.Enabled = false;
 				RemoveQueuedBreakEvents (bi.Req);
@@ -691,7 +691,7 @@ namespace Mono.Debugging.Soft
 		{
 			if (exited)
 				return;
-			BreakInfo bi = (BreakInfo) binfo;
+			var bi = (BreakInfo) binfo;
 			if (bi.Req != null) {
 				bi.Req.Enabled = enable;
 				if (!enable)
@@ -796,7 +796,8 @@ namespace Mono.Debugging.Soft
 			while (true) {
 				try {
 					EventSet e = vm.GetNextEventSet ();
-					if (e[0] is VMDeathEvent || e[0] is VMDisconnectEvent) {
+					var type = e[0].EventType;
+					if (type == EventType.VMDeath || type == EventType.VMDisconnect) {
 						break;
 					}
 					HandleEventSet (e);
@@ -855,8 +856,8 @@ namespace Mono.Debugging.Soft
 			if (!(es[0] is TypeLoadEvent))
 				Console.WriteLine ("pp eventset({0}): {1}", es.Events.Length, es[0]);
 #endif
-			
-			bool isBreakEvent = es[0] is BreakpointEvent || es[0] is ExceptionEvent || es[0] is StepEvent;
+			var type = es[0].EventType;
+			bool isBreakEvent = type == EventType.Step || type == EventType.Breakpoint || type == EventType.Exception;
 			
 			if (isBreakEvent) {
 				if (current_thread != null && es[0].Thread.Id != current_thread.Id) {
@@ -883,7 +884,7 @@ namespace Mono.Debugging.Soft
 			BreakEvent breakEvent = null;
 			
 			if (es[0] is ExceptionEvent) {
-				var bad = es.FirstOrDefault (ee => !(ee is ExceptionEvent));
+				var bad = es.FirstOrDefault (ee => ee.EventType != EventType.Exception);
 				if (bad != null)
 					throw new Exception ("Catchpoint eventset had unexpected event type " + bad.GetType ());
 				var ev = (ExceptionEvent)es[0];
@@ -898,7 +899,7 @@ namespace Mono.Debugging.Soft
 			else {
 				//always need to evaluate all breakpoints, some might be tracepoints or conditional bps with counters
 				foreach (Event e in es) {
-					BreakpointEvent be = e as BreakpointEvent;
+					var be = e as BreakpointEvent;
 					if (be != null) {
 						if (!HandleBreakpoint (e.Thread, be.Request)) {
 							etype = TargetEventType.TargetHitBreakpoint;
@@ -907,7 +908,7 @@ namespace Mono.Debugging.Soft
 								breakEvent = binfo.BreakEvent;
 							resume = false;
 						}
-					} else if (e is StepEvent) {
+					} else if (e.EventType == EventType.Step) {
 						etype = TargetEventType.TargetStopped;
 						resume = false;
 					} else {
@@ -926,7 +927,7 @@ namespace Mono.Debugging.Soft
 					currentStepRequest = null;
 				}
 				current_thread = recent_thread = es[0].Thread;
-				TargetEventArgs args = new TargetEventArgs (etype);
+				var args = new TargetEventArgs (etype);
 				args.Process = OnGetProcesses () [0];
 				args.Thread = GetThread (args.Process, current_thread);
 				args.Backtrace = GetThreadBacktrace (current_thread);
@@ -941,17 +942,19 @@ namespace Mono.Debugging.Soft
 		
 		void HandleEvent (Event e)
 		{
-			if (e is AssemblyLoadEvent) {
-				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
+			switch (e.EventType) {
+			case EventType.AssemblyLoad: {
+				var ae = (AssemblyLoadEvent) e;
 				bool isExternal = !UpdateAssemblyFilters (ae.Assembly) && userAssemblyNames != null;
 				string flagExt = isExternal? " [External]" : "";
 				OnDebuggerOutput (false, string.Format ("Loaded assembly: {0}{1}\n", ae.Assembly.Location, flagExt));
+				break;
 			}
-			else if (e is AssemblyUnloadEvent) {
-				AssemblyUnloadEvent aue = (AssemblyUnloadEvent)e;
+			case EventType.AssemblyUnload: {
+				var aue = (AssemblyUnloadEvent) e;
 				
 				// Mark affected breakpoints as pending again
-				List<KeyValuePair<EventRequest,BreakInfo>> affectedBreakpoints = new List<KeyValuePair<EventRequest, BreakInfo>> (
+				var affectedBreakpoints = new List<KeyValuePair<EventRequest, BreakInfo>> (
 					breakpoints.Where (x=> (x.Value.Location.Method.DeclaringType.Assembly.Location.Equals (aue.Assembly.Location, StringComparison.OrdinalIgnoreCase)))
 				);
 				foreach (KeyValuePair<EventRequest,BreakInfo> breakpoint in affectedBreakpoints) {
@@ -963,7 +966,7 @@ namespace Mono.Debugging.Soft
 				}
 				
 				// Remove affected types from the loaded types list
-				List<string> affectedTypes = new List<string> (
+				var affectedTypes = new List<string> (
 					from pair in types
 					where pair.Value.Assembly.Location.Equals (aue.Assembly.Location, StringComparison.OrdinalIgnoreCase)
 					select pair.Key
@@ -978,15 +981,17 @@ namespace Mono.Debugging.Soft
 					});
 				}
 				OnDebuggerOutput (false, string.Format ("Unloaded assembly: {0}\n", aue.Assembly.Location));
+				break;
 			}
-			else if (e is VMStartEvent) {
+			case EventType.VMStart: {
 				OnStarted (new ThreadInfo (0, GetId (e.Thread), e.Thread.Name, null));
 				//HACK: 2.6.1 VM doesn't emit type load event, so work around it
 				var t = vm.RootDomain.Corlib.GetType ("System.Exception", false, false);
 				if (t != null)
 					ResolveBreakpoints (t);
+				break;
 			}
-			else if (e is TypeLoadEvent) {
+			case EventType.TypeLoad: {
 				var t = ((TypeLoadEvent)e).Type;
 				
 				string typeName = t.FullName;
@@ -997,20 +1002,27 @@ namespace Mono.Debugging.Soft
 				} else {
 					ResolveBreakpoints (t);
 				}
+				break;
 			}
-			else if (e is ThreadStartEvent) {
-				ThreadStartEvent ts = (ThreadStartEvent)e;
+			case EventType.ThreadStart: {
+				var ts = (ThreadStartEvent) e;
 				OnDebuggerOutput (false, string.Format ("Thread started: {0}\n", ts.Thread.Name));
-				TargetEventArgs args = new TargetEventArgs (TargetEventType.ThreadStarted);
-				args.Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null);
-				OnTargetEvent (args);
+				OnTargetEvent (new TargetEventArgs (TargetEventType.ThreadStarted) {
+					Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null),
+				});
+				break;
 			}
-			else if (e is ThreadDeathEvent) {
-				ThreadDeathEvent ts = (ThreadDeathEvent)e;
+			case EventType.ThreadDeath: {
+				var ts = (ThreadDeathEvent) e;
 				OnDebuggerOutput (false, string.Format ("Thread finished: {0}\n", ts.Thread.Name));
-				TargetEventArgs args = new TargetEventArgs (TargetEventType.ThreadStopped);
-				args.Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null);
-				OnTargetEvent (args);
+				OnTargetEvent (new TargetEventArgs (TargetEventType.ThreadStopped) {
+					Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null),
+				});
+				break;
+			}
+			default:
+				Console.WriteLine ("Unknown debugger event type {0}", e.GetType ());
+				break;
 			}
 		}
 
@@ -1112,7 +1124,7 @@ namespace Mono.Debugging.Soft
 			if (!breakpoints.TryGetValue (er, out binfo))
 				return false;
 			
-			Breakpoint bp = binfo.BreakEvent as Breakpoint;
+			var bp = binfo.BreakEvent as Breakpoint;
 			if (bp == null)
 				return false;
 			
@@ -1150,7 +1162,7 @@ namespace Mono.Debugging.Soft
 		
 		string EvaluateTrace (ThreadMirror thread, string exp)
 		{
-			StringBuilder sb = new StringBuilder ();
+			var sb = new StringBuilder ();
 			int last = 0;
 			int i = exp.IndexOf ('{');
 			while (i != -1) {
@@ -1182,7 +1194,7 @@ namespace Mono.Debugging.Soft
 					return string.Empty;
 				EvaluationOptions ops = Options.EvaluationOptions;
 				ops.AllowTargetInvoke = true;
-				SoftEvaluationContext ctx = new SoftEvaluationContext (this, frames[0], ops);
+				var ctx = new SoftEvaluationContext (this, frames[0], ops);
 				ValueReference val = ctx.Evaluator.Evaluate (ctx, exp);
 				return val.CreateObjectValue (false).Value;
 			} catch (Exception ex) {
@@ -1233,7 +1245,7 @@ namespace Mono.Debugging.Soft
 				}
 				
 				foreach (var bi in pending_bes.Where (b => b.BreakEvent is Breakpoint)) {
-					Breakpoint bp = (Breakpoint) bi.BreakEvent;
+					var bp = (Breakpoint) bi.BreakEvent;
 					if (PathComparer.Compare (PathToFileName (bp.FileName), s) == 0) {
 						bool inisideLoadedRange;
 						Location l = GetLocFromType (t, s, bp.Line, out inisideLoadedRange);
@@ -1258,7 +1270,7 @@ namespace Mono.Debugging.Soft
 			//handle pending catchpoints
 			
 			foreach (var bi in pending_bes.Where (b => b.BreakEvent is Catchpoint)) {
-				Catchpoint cp = (Catchpoint) bi.BreakEvent;
+				var cp = (Catchpoint) bi.BreakEvent;
 				if (cp.ExceptionName == typeName) {
 					ResolvePendingCatchpoint (bi, t);
 					resolved.Add (bi);
@@ -1466,7 +1478,7 @@ namespace Mono.Debugging.Soft
 			if (!source_to_type.TryGetValue (file, out types))
 				return new AssemblyLine [0];
 			
-			List<AssemblyLine> lines = new List<AssemblyLine> ();
+			var lines = new List<AssemblyLine> ();
 			foreach (TypeMirror type in types) {
 				foreach (MethodMirror met in type.GetMethods ()) {
 					if (!PathsAreEqual (NormalizePath (met.SourceFile), file))
@@ -1512,7 +1524,7 @@ namespace Mono.Debugging.Soft
 			if (current == null)
 				return new AssemblyLine [0];
 			
-			List<AssemblyLine> result = new List<AssemblyLine> ();
+			var result = new List<AssemblyLine> ();
 			
 			int pos = firstLine;
 			
