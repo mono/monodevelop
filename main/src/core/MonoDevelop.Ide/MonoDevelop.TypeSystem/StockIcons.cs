@@ -118,6 +118,11 @@ namespace MonoDevelop.TypeSystem
 			return typeIconTable [(int)entity.GetDefinition ().ClassType, ModifierToOffset (entity.GetDefinition ().Accessibility)];
 		}
 		
+		public static string GetStockIcon (this IField field)
+		{
+			return GetStockIcon ((IEntity)field);
+		}
+		
 		public static string GetStockIcon (this IVariable variable)
 		{
 			return Field;

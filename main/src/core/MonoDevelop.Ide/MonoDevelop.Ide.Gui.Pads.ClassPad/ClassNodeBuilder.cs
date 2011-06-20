@@ -34,6 +34,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -59,8 +61,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ClassData classData = dataObject as ClassData;
-			label = AmbienceService.GetAmbience (classData.Class).GetString (classData.Class, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
-			icon = Context.GetIcon (classData.Class.StockIcon);
+			label = AmbienceService.DefaultAmbience.GetString (classData.Ctx, classData.Class, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			icon = Context.GetIcon (classData.Class.GetStockIcon ());
 		}
 		/*
 		private string GetNameWithGenericParameters (IType c)
@@ -92,23 +94,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (classData.Class.ClassType == ClassType.Delegate)
 				return;
 
-			foreach (IType innerClass in classData.Class.InnerTypes)
+			foreach (var innerClass in classData.Class.NestedTypes)
 				if (innerClass.IsPublic || (innerClass.IsProtected && publicProtectedOnly) || !publicOnly)
-					builder.AddChild (new ClassData (classData.Project, innerClass));
+					builder.AddChild (new ClassData (classData.Ctx, classData.Project, innerClass));
 
-			foreach (IMethod method in classData.Class.Methods)
+			foreach (var method in classData.Class.Methods)
 				if (method.IsPublic || (method.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (method);
 			
-			foreach (IProperty property in classData.Class.Properties)
+			foreach (var property in classData.Class.Properties)
 				if (property.IsPublic || (property.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (property);
 			
-			foreach (IField field in classData.Class.Fields)
+			foreach (var field in classData.Class.Fields)
 				if (field.IsPublic || (field.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (field);
 			
-			foreach (IEvent e in classData.Class.Events)
+			foreach (var e in classData.Class.Events)
 				if (e.IsPublic || (e.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (e);
 		}

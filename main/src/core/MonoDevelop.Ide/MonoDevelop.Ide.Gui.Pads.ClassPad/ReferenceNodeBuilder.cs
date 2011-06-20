@@ -78,33 +78,33 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
-		{
-			ProjectReference pref = (ProjectReference) dataObject;
-			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
-			bool nestedNs = builder.Options ["NestedNamespaces"];
-			foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
-				IParsedFile unit = DomCecilCompilationUnit.Load (fileName, false, true);
-				if (unit == null)
-					continue;
-				foreach (IType type in unit.Types) {
-					if (type.IsSpecialName || type.Name.Contains ("<") || type.Name.Contains (">") || type.Name.Contains ("$"))
-						continue;
-					if (String.IsNullOrEmpty (type.Namespace)) {
-						builder.AddChild (new ClassData (null, type));
-						continue;
-					}
-					string ns = type.Namespace;
-					if (nestedNs) {
-						int idx = ns.IndexOf ('.');
-						if (idx >= 0)
-							ns = ns.Substring (0, idx);
-					}
-					if (namespaces.ContainsKey (ns))
-						continue;
-					namespaces[ns] = true;
-					builder.AddChild (new CompilationUnitNamespaceData (unit, ns));
-				}
-			}
+		{ // TODO: Type system conversion.
+//			ProjectReference pref = (ProjectReference) dataObject;
+//			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
+//			bool nestedNs = builder.Options ["NestedNamespaces"];
+//			foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
+//				var unit = DomCecilCompilationUnit.Load (fileName, false, true);
+//				if (unit == null)
+//					continue;
+//				foreach (IType type in unit.Types) {
+//					if (type.IsSpecialName || type.Name.Contains ("<") || type.Name.Contains (">") || type.Name.Contains ("$"))
+//						continue;
+//					if (String.IsNullOrEmpty (type.Namespace)) {
+//						builder.AddChild (new ClassData (null, type));
+//						continue;
+//					}
+//					string ns = type.Namespace;
+//					if (nestedNs) {
+//						int idx = ns.IndexOf ('.');
+//						if (idx >= 0)
+//							ns = ns.Substring (0, idx);
+//					}
+//					if (namespaces.ContainsKey (ns))
+//						continue;
+//					namespaces[ns] = true;
+//					builder.AddChild (new CompilationUnitNamespaceData (unit, ns));
+//				}
+//			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

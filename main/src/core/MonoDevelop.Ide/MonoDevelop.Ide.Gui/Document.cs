@@ -614,7 +614,7 @@ namespace MonoDevelop.Ide.Gui
 			return this.parsedDocument;
 		}
 
-		public IProjectContent GetProjectContext ()
+		public virtual IProjectContent GetProjectContext ()
 		{
 			IProjectContent ctx;
 			if (Project == null) {

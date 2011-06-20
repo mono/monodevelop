@@ -35,6 +35,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -94,34 +96,33 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void AddProjectContent (ITreeBuilder builder)
 		{
 			if (project != null) {
-				ITypeResolveContext dom = TypeSystemService.GetProjectDom (Project);
-				AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
+				AddProjectContent (builder, project);
 			} else {
-				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-					ITypeResolveContext dom = TypeSystemService.GetProjectDom (p);
-					AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
+				foreach (var p in IdeApp.Workspace.GetAllProjects ()) {
+					AddProjectContent (builder, p);
 				}
 			}
 		}
 		
-		void AddProjectContent (ITreeBuilder builder, List<IMember> list)
+		void AddProjectContent (ITreeBuilder builder, Project p)
 		{
+			var dom = TypeSystemService.GetProjectContext (p);
+			var ctx = TypeSystemService.GetContext (p);
+			foreach (var ns in dom.GetNamespaces ().Where (ns => ns.StartsWith (FullName) && ns != FullName)) {
+				string nsName = ns.Substring (FullName.Length + 1);
+				if (!builder.HasChild (nsName, typeof(NamespaceData)))
+					builder.AddChild (new ProjectNamespaceData (project, ns));
+			}
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-
-			foreach (IMember ob in list) {
-				if (ob is Namespace && nestedNs) {
-					Namespace nsob = (Namespace)ob;
-					string ns = FullName + "." + nsob.Name;
-					if (!builder.HasChild (nsob.Name, typeof(NamespaceData)))
-						builder.AddChild (new ProjectNamespaceData (project, ns));
-				}
-				else if (ob is IType) {
-					if (!publicOnly || ((IType)ob).IsPublic)
-						builder.AddChild (new ClassData (project, ob as IType));
-				}
+			
+			foreach (var type in dom.GetTypes (FullName, StringComparer.Ordinal)) {
+				if (!publicOnly || type.IsPublic)
+					builder.AddChild (new ClassData (ctx, project, type));
 			}
+			
 		}
+		
 		
 		public override bool Equals (object ob)
 		{
@@ -155,11 +156,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
-			foreach (IType type in unit.Types) {
+			foreach (var type in unit.TopLevelTypeDefinitions) {
 				if (publicOnly && !type.IsPublic)
 					continue;
 				if (type.Namespace == FullName) {
-					builder.AddChild (new ClassData (null, type));
+					builder.AddChild (new ClassData (null, null, type));
 					continue;
 				}
 				if (nestedNs && type.Namespace.StartsWith (FullName)) {

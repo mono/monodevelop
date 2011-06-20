@@ -492,6 +492,22 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ReferenceNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FileOperationsBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs \
@@ -914,6 +930,7 @@ RES =  \
 	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassPadContextMenu.addin.xml,MonoDevelop.Ide.MonoDevelop.Ide.Gui.Pads.ClassPad.ClassPadContextMenu.addin.xml \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml \
 	MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \

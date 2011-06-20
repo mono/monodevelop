@@ -159,14 +159,20 @@ namespace MonoDevelop.TypeSystem
 			return GetString (entity, new OutputSettings (flags) { Context = ctx });
 		}
 		
-		public string GetString (ITypeResolveContext ctx, IParameterizedMember member, IParameter parameter, OutputFlags flags)
-		{
-			return GetParameterString (member, parameter, new OutputSettings (flags) { Context = ctx });
-		}
-		
 		public string GetString (ITypeResolveContext ctx, IType type, OutputFlags flags)
 		{
 			return GetString (type, new OutputSettings (flags) { Context = ctx });
+		}
+		
+		public string GetString (ITypeResolveContext ctx, ITypeDefinition type, OutputFlags flags)
+		{
+			return GetString ((IEntity)type, new OutputSettings (flags) { Context = ctx });
+		}
+		
+		
+		public string GetString (ITypeResolveContext ctx, IParameterizedMember member, IParameter parameter, OutputFlags flags)
+		{
+			return GetParameterString (member, parameter, new OutputSettings (flags) { Context = ctx });
 		}
 		
 		public string GetString (ITypeResolveContext ctx, ITypeReference reference, OutputFlags flags)

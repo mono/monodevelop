@@ -32,6 +32,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -39,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	{
 		public override void ActivateItem ()
 		{			
-			IMember member = CurrentNode.DataItem as IMember;
+			var member = CurrentNode.DataItem as IEntity;
 			IdeApp.ProjectOperations.JumpToDeclaration(member);
 		}
 	}
