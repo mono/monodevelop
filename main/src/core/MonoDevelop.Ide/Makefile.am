@@ -660,6 +660,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SolutionDescriptor.cs \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
+	MonoDevelop.Ide.Templates/XmlCodeDomReader.cs \
 	MonoDevelop.Ide.Updater/UpdateCommands.cs \
 	MonoDevelop.Ide.Updater/UpdateDialog.cs \
 	MonoDevelop.Ide.Updater/UpdateInfoExtensionNode.cs \

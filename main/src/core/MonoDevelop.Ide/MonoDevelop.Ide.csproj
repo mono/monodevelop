@@ -1464,6 +1464,7 @@
     <Compile Include="MonoDevelop.TypeSystem\ConditionalRegion.cs" />
     <Compile Include="MonoDevelop.TypeSystem\MarkupUtilities.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\MemberReference.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\XmlCodeDomReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
