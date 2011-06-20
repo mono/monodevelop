@@ -43,6 +43,7 @@ using System.Linq;
 using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -256,7 +257,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Gtk.TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-				var member = (IMemberDefinition)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+				var member = (IEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
 				var nav = SearchMember (member);
 				if (nav != null) {
 					nav.ExpandToNode ();
@@ -291,17 +292,17 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 		void InspectEditorhandleLinkRequest (object sender, Mono.TextEditor.LinkEventArgs args)
-		{ // TODO: Type system conversion.
-/*			if (args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
+		{
+			if (args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
 				AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
 				foreach (var cu in definitions) {
-					assemblyBrowserView.Load (cu.FileName);
+					assemblyBrowserView.Load (cu.Key);
 				}
 				IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
 				((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
 			} else {
 				this.Open (args.Link);
-			}*/
+			}
 		}
 		
 		public IMember ActiveMember  {
@@ -321,11 +322,9 @@ namespace MonoDevelop.AssemblyBrowser
 				((Mono.TextEditor.TextEditorOptions)this.inspectEditor.Options).ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 		}
 		
-		ITreeNavigator SearchMember (IMemberDefinition member)
+		ITreeNavigator SearchMember (IEntity member)
 		{
-			// TODO: Type system conversion
-			//	return SearchMember (member.HelpUrl);
-			return null;
+			return SearchMember (member.GetHelpUrl ());
 		}
 			
 		ITreeNavigator SearchMember (string helpUrl)
@@ -334,10 +333,9 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		static bool IsMatch (ITreeNavigator nav, string helpUrl)
-		{ // TODO: Type system conversion.
-//			IMember member = nav.DataItem as IMember;
-//			return member != null && member.HelpUrl == helpUrl;
-			return false;
+		{
+			var member = nav.DataItem as IEntity;
+			return member != null && member.GetHelpUrl () == helpUrl;
 		}
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl)
