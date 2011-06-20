@@ -735,21 +735,20 @@ namespace CBinding
 			return accumulator+1;
 		}// ResetTriggerOffset
 
-// TODO: Type system conversion
-//		[CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
-//		public void GotoDeclaration ()
-//		{
-//			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
-//			if (item != null)
-//				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1);
-//		}
-//		
-//		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
-//		public void CanGotoDeclaration (CommandInfo item)
-//		{
-//			item.Visible = (GetLanguageItemAt (Editor.Caret.Location) != null);
-//			item.Bypass = !item.Visible;
-//		}
+		[CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
+		public void GotoDeclaration ()
+		{
+			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
+			if (item != null)
+				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1);
+		}
+		
+		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
+		public void CanGotoDeclaration (CommandInfo item)
+		{
+			item.Visible = (GetLanguageItemAt (Editor.Caret.Location) != null);
+			item.Bypass = !item.Visible;
+		}
 		
 		private LanguageItem GetLanguageItemAt (DocumentLocation location)
 		{
