@@ -616,21 +616,29 @@ namespace MonoDevelop.CSharp.Inspection
 		{
 			var words = new List<string> ();
 			int wordStart = 0;
-			bool lastWasLower = false;
+			bool lastWasLower = false, lastWasUpper = false;
 			for (int i = 0; i < identifier.Length; i++) {
 				char c = identifier[i];
-				if (lastWasLower && Char.IsUpper (c)) {
-					words.Add (identifier.Substring (wordStart, i - wordStart));
-					wordStart = i;
-					lastWasLower = false;
-				} else if (c == '_') {
-					if (i > 0)
+				if (c == '_') {
+					if ((i - wordStart) > 0) {
 						words.Add (identifier.Substring (wordStart, i - wordStart));
-					i++;
-					wordStart = i;
+					}
+					wordStart = i + 1;
+					lastWasLower = lastWasUpper = false;
+				} else if (Char.IsLower (c)) {
+					if (lastWasUpper && (i - wordStart) > 2) {
+						words.Add (identifier.Substring (wordStart, i - wordStart - 1));
+						wordStart = i - 1;
+					}
+					lastWasLower = true;
+					lastWasUpper = false;
+				} else if (Char.IsUpper (c)) {
+					if (lastWasLower) {
+						words.Add (identifier.Substring (wordStart, i - wordStart));
+						wordStart = i;
+					}
 					lastWasLower = false;
-				} else {
-					lastWasLower = Char.IsLower (c);
+					lastWasUpper = true;
 				}
 			}
 			if (wordStart < identifier.Length)
