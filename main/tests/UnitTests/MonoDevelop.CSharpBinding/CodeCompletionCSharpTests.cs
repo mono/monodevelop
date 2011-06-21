@@ -218,7 +218,7 @@ class Test
 {
 	void Test ()
 	{
-		foreach (Test t in notExist)
+		foreach (Test t in new string[] {""hello""})
 			$t.$;
 	}
 }");
