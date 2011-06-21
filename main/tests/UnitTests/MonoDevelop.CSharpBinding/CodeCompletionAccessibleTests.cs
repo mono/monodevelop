@@ -985,7 +985,7 @@ class TestClass
 public class InnerEnumTest
 {
 	public enum TestEnum { A, B, C}
-	void Bar (TestEnum test) {}
+	public void Bar (TestEnum test) {}
 }
 
 class TestClass

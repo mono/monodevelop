@@ -538,19 +538,6 @@ namespace MonoDevelop.CSharp.Completion
 			return sb.ToString ();
 		}
 		
-		public void AddEnumMembers (CompletionDataList completionList, IType resolvedType)
-		{
-			if (resolvedType == null || resolvedType.ClassType != ClassType.Enum)
-				return;
-			string typeString = Document.CompilationUnit.ShortenTypeName (new DomReturnType (resolvedType), new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column)).ToInvariantString ();
-			if (typeString.Contains ("."))
-				completionList.Add (typeString, resolvedType.StockIcon);
-			foreach (var field in resolvedType.Fields) {
-				if (field.IsConst || field.IsStatic)
-					completionList.Add (typeString + "." + field.Name, field.StockIcon);
-			}
-			completionList.DefaultCompletionString = typeString;
-		}
 		
 		public bool IsInLinqContext (ExpressionResult result)
 		{

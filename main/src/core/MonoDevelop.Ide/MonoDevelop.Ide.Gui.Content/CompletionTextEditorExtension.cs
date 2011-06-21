@@ -278,12 +278,6 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                         char completionChar, ref int triggerWordLength)
 		{
-			return HandleCodeCompletion (completionContext, completionChar);
-		}
-		
-		public virtual ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
-		                                                         char completionChar)
-		{
 			return null;
 		}
 		
@@ -362,22 +356,12 @@ namespace MonoDevelop.Ide.Gui.Content
 			// the char at the cursor position. If it returns a provider, just return it.
 			
 			int pos = completionContext.TriggerOffset;
-			string txt = Editor.GetTextBetween (pos - 1, pos);
-			if (txt.Length > 0) {
-				ICompletionDataList completionList = HandleCodeCompletion (completionContext, txt[0]);
+			if (pos > 0) {
+				char ch = Editor.GetCharAt (pos - 1);
+				int triggerWordLength = completionContext.TriggerWordLength;
+				ICompletionDataList completionList = HandleCodeCompletion (completionContext, ch, ref triggerWordLength);
 				if (completionList != null)
 					return completionList;
-			}
-			
-			// If there is a parser context, try resolving by calling CtrlSpace.
-			var ctx = GetParserContext();
-			if (ctx != null) {
-// TODO: Type system conversion.
-				//CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (ctx, GetAmbience ());
-				//completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, 
-//						completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);
-//				if (!completionProvider.IsEmpty)
-//					return completionProvider;
 			}
 			return null;
 		}

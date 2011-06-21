@@ -250,31 +250,31 @@ namespace CBinding
 			return null;
 		}
 		
-		public override ICompletionDataList HandleCodeCompletion (
-		    CodeCompletionContext completionContext, char completionChar)
-		{
-			int triggerWordLength = 0;
-			return HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
-			
-			string lineText = Editor.GetLineText (completionContext.TriggerLine).TrimEnd();
-			
-			// If the line ends with a matched extension, invoke its handler
-			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
-				if (lineText.EndsWith(pair.Key)) {
-					lineText = lineText.Substring (0, lineText.Length - pair.Key.Length);
-					
-					int nameStart = lineText.LastIndexOfAny (allowedCharsMinusColon) + 1;
-					string itemName = lineText.Substring (nameStart).Trim ();
-					
-					if (string.IsNullOrEmpty (itemName))
-						return null;
-					
-					return pair.Value (this, pair.Key, itemName);
-				}
-			}
-			
-			return null;
-		}
+//		public override ICompletionDataList HandleCodeCompletion (
+//		    CodeCompletionContext completionContext, char completionChar)
+//		{
+//			int triggerWordLength = 0;
+//			return HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
+//			
+//			string lineText = Editor.GetLineText (completionContext.TriggerLine).TrimEnd();
+//			
+//			// If the line ends with a matched extension, invoke its handler
+//			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
+//				if (lineText.EndsWith(pair.Key)) {
+//					lineText = lineText.Substring (0, lineText.Length - pair.Key.Length);
+//					
+//					int nameStart = lineText.LastIndexOfAny (allowedCharsMinusColon) + 1;
+//					string itemName = lineText.Substring (nameStart).Trim ();
+//					
+//					if (string.IsNullOrEmpty (itemName))
+//						return null;
+//					
+//					return pair.Value (this, pair.Key, itemName);
+//				}
+//			}
+//			
+//			return null;
+//		}
 		
 		public override ICompletionDataList CodeCompletionCommand (
 		    CodeCompletionContext completionContext)
@@ -284,7 +284,8 @@ namespace CBinding
 			
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
 				if(lineText.EndsWith(pair.Key)) {
-					return HandleCodeCompletion (completionContext, Editor.GetCharAt (pos));
+					int triggerWordLength = completionContext.TriggerWordLength;
+					return HandleCodeCompletion (completionContext, Editor.GetCharAt (pos), ref triggerWordLength);
 				}
 			}
 

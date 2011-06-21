@@ -157,6 +157,8 @@ namespace MonoDevelop.CSharp.Completion
 			var result = visitor.Resolve (expr);
 			var state = visitor.GetResolverStateBefore (expr);
 			this.currentType = state.CurrentTypeDefinition;
+			if (this.currentType != null)
+				this.currentType = ctx.GetTypeDefinition (currentType.Namespace, currentType.Name, currentType.TypeParameterCount, StringComparer.Ordinal) ?? this.currentType;
 			this.currentMember = state.CurrentMember;
 			return result;
 		}
@@ -201,7 +203,7 @@ namespace MonoDevelop.CSharp.Completion
 			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
 		}
 		
-		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionAteCursor ()
+		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionAtCursor ()
 		{
 			CSharpParser parser = new CSharpParser ();
 			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset);
@@ -303,14 +305,12 @@ namespace MonoDevelop.CSharp.Completion
 			case '(':
 				if (IsInsideComment () || IsInsideString ())
 					return null;
-				
 				var invoke = GetInvocationBeforeCursor ();
 				if (invoke == null)
 					return null;
 				if (invoke.Item2 is TypeOfExpression)
 					return CreateTypeList ();
-				
-				if (invoke.Item2 is InvocationExpression) {
+				if (invoke.Item2 is MemberReferenceExpression) {
 					var invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
 					if (invocationResult is MethodGroupResolveResult)
 						return CreateParameterCompletion ((MethodGroupResolveResult)invocationResult, 0);
@@ -331,8 +331,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
 					return null;
-				var identifierStart = GetExpressionAteCursor ();
-				
+				var identifierStart = GetExpressionAtCursor ();
 				if (identifierStart == null)
 					return null;
 				
@@ -341,6 +340,7 @@ namespace MonoDevelop.CSharp.Completion
 				var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
 				identifierStart.Item3.AcceptVisitor (visitor, null);
 				csResolver = visitor.GetResolverStateBefore (identifierStart.Item2);
+				
 				
 				
 				// identifier has already started with the first letter
@@ -663,6 +663,58 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
+		bool IsAccessibleFrom (IEntity member, ITypeDefinition calledType, IMember currentMember, bool includeProtected)
+		{
+			if (currentMember == null)
+				return member.IsStatic || member.IsPublic;
+//			if (currentMember is MonoDevelop.Projects.Dom.BaseResolveResult.BaseMemberDecorator) 
+//				return member.IsPublic | member.IsProtected;
+	//		if (member.IsStatic && !IsStatic)
+	//			return false;
+			if (member.IsPublic || calledType != null && calledType.ClassType == ClassType.Interface && !member.IsProtected)
+				return true;
+			if (member.DeclaringTypeDefinition != null) {
+				if (member.DeclaringTypeDefinition.ClassType == ClassType.Interface) 
+					return IsAccessibleFrom (member.DeclaringTypeDefinition, calledType, currentMember, includeProtected);
+			
+				if (member.IsProtected && !(member.DeclaringTypeDefinition.IsProtectedOrInternal && !includeProtected))
+					return includeProtected;
+			}
+			if (member.IsInternal || member.IsProtectedAndInternal) {
+				var type1 = member is ITypeDefinition ? (ITypeDefinition)member : member.DeclaringTypeDefinition;
+				var type2 = currentMember is ITypeDefinition ? (ITypeDefinition)currentMember : currentMember.DeclaringTypeDefinition;
+				bool result;
+				// easy case, projects are the same
+				if (type1.ProjectContent == type2.ProjectContent) {
+					result = true; 
+				} else if (type1.ProjectContent != null && type1.ProjectContent.Annotation<MonoDevelop.Projects.Project> () != null) {
+					// maybe type2 hasn't project dom set (may occur in some cases), check if the file is in the project
+					result = type1.ProjectContent.Annotation<MonoDevelop.Projects.Project> ().GetProjectFile (type2.Region.FileName) != null;
+				} else if (type2.ProjectContent != null && type2.ProjectContent.Annotation<MonoDevelop.Projects.Project> () != null) {
+					result = type2.ProjectContent.Annotation<MonoDevelop.Projects.Project> ().GetProjectFile (type1.Region.FileName) != null;
+				} else {
+					// should never happen !
+					result = true;
+				}
+				return member.IsProtectedAndInternal ? includeProtected && result : result;
+			}
+			
+			if (!(currentMember is IType) && (currentMember.DeclaringTypeDefinition == null || member.DeclaringTypeDefinition == null))
+				return false;
+			
+			// inner class 
+			var declaringType = currentMember.DeclaringTypeDefinition;
+			while (declaringType != null) {
+				if (declaringType.ReflectionName == currentMember.DeclaringType.ReflectionName)
+					return true;
+				declaringType = declaringType.DeclaringTypeDefinition;
+			}
+			
+			
+			return currentMember.DeclaringTypeDefinition != null && member.DeclaringTypeDefinition.FullName == currentMember.DeclaringTypeDefinition.FullName;
+		}
+				
+		
 		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult)
 		{
 			if (resolveResult == null || resolveResult.IsError)
@@ -684,15 +736,18 @@ namespace MonoDevelop.CSharp.Completion
 				
 				return namespaceContents.Result;
 			}
-			
 			var type = resolveResult.Type.Resolve (ctx);
-			var lookup = new MemberLookup (ctx, currentType, document.GetProjectContext ());
+//			var lookup = new MemberLookup (ctx, currentType, document.GetProjectContext ());
 			var result = new CompletionDataWrapper (this);
+			
+			bool isProtectedAllowed = type.GetAllBaseTypeDefinitions (ctx).Any (bt => bt.FullName == currentType.FullName && bt.TypeParameterCount == currentType.TypeParameterCount);
+			
 			foreach (var member in type.GetMembers (ctx)) {
-				if (!lookup.IsAccessible (member, lookup.IsProtectedAccessAllowed (type)))
+				if (!IsAccessibleFrom (member, currentType, currentMember, isProtectedAllowed))
 					continue;
-				if (currentMember.IsStatic ^ member.IsStatic)
-					continue;
+	//			if ((currentMember.IsStatic || resolveResult is TypeResolveResult) ^ member.IsStatic) 
+	//				continue;
+				
 				result.AddMember (member);
 			}
 			
@@ -721,50 +776,59 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		ICompletionDataList CreateParameterCompletion (MethodGroupResolveResult resolveResult, int parameter)
-		{ // TODO!
-			return null;
-//			CompletionDataList completionList = new ProjectDomCompletionDataList ();
-//			var addedEnums = new HashSet<string> ();
-//			var addedDelegates = new HashSet<string> ();
-//			IType resolvedType = null;
-//			foreach (var method in possibleMethods) {
-//				if (method.Parameters.Count <= parameter)
-//					continue;
-//				resolvedType = dom.GetType (method.Parameters [parameter].ReturnType);
-//				if (resolvedType == null)
-//					continue;
-//				switch (resolvedType.ClassType) {
-//				case ClassType.Enum:
-//					if (addedEnums.Contains (resolvedType.DecoratedFullName))
-//						continue;
-//					addedEnums.Add (resolvedType.DecoratedFullName);
-//					AddEnumMembers (completionList, resolvedType);
-//					break;
-//				case ClassType.Delegate:
+		{
+			var result = new CompletionDataWrapper (this);
+			CompletionDataList completionList = new ProjectDomCompletionDataList ();
+			var addedEnums = new HashSet<string> ();
+			var addedDelegates = new HashSet<string> ();
+			
+			foreach (var method in resolveResult.Methods) {
+				if (method.Parameters.Count <= parameter)
+					continue;
+				var resolvedType = method.Parameters [parameter].Type.Resolve (ctx);
+				if (resolvedType.IsEnum ()) {
+					if (addedEnums.Contains (resolvedType.ReflectionName))
+						continue;
+					addedEnums.Add (resolvedType.ReflectionName);
+					AddEnumMembers (result, resolvedType);
+				} else if (resolvedType.IsDelegate ()) {
 //					if (addedDelegates.Contains (resolvedType.DecoratedFullName))
 //						continue;
 //					addedDelegates.Add (resolvedType.DecoratedFullName);
 //					string parameterDefinition = AddDelegateHandlers (completionList, resolvedType, false, addedDelegates.Count == 1);
 //					string varName = "Handle" + method.Parameters [parameter].ReturnType.Name + method.Parameters [parameter].Name;
-//					completionList.Add (new EventCreationCompletionData (textEditorData, varName, resolvedType, null, parameterDefinition, resolver.Unit.GetMemberAt (location), resolvedType) { AddSemicolon = false });
-//					break;
-//				}
-//			}
-//			if (addedEnums.Count + addedDelegates.Count == 0)
-//				return null;
-//			CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
-//			completionList.AutoCompleteEmptyMatch = false;
-//			completionList.AutoSelect = false;
+//					result.Add (new EventCreationCompletionData (textEditorData, varName, resolvedType, null, parameterDefinition, resolver.Unit.GetMemberAt (location), resolvedType) { AddSemicolon = false });
+				
+				}
+			}
+			if (addedEnums.Count + addedDelegates.Count == 0)
+				return null;
+			result.Result.AutoCompleteEmptyMatch = false;
+			result.Result.AutoSelect = false;
+			
 //			resolver.AddAccessibleCodeCompletionData (ExpressionContext.MethodBody, cdc);
 //			if (addedDelegates.Count > 0) {
-//				foreach (var data in completionList) {
+//				foreach (var data in result.Result) {
 //					if (data is MemberCompletionData) 
 //						((MemberCompletionData)data).IsDelegateExpected = true;
 //				}
 //			}
-//			return completionList;
+			return result.Result;
 		}
 		
+		void AddEnumMembers (CompletionDataWrapper completionList, IType resolvedType)
+		{
+			if (!resolvedType.IsEnum ())
+				return;
+			string typeString = resolvedType.FullName; //  Document.CompilationUnit.ShortenTypeName (new DomReturnType (resolvedType), new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column)).ToInvariantString ();
+			if (typeString.Contains ("."))
+				completionList.Result.Add (typeString, resolvedType.GetStockIcon ());
+			foreach (var field in resolvedType.GetFields (ctx)) {
+				if (field.IsConst || field.IsStatic)
+					completionList.Result.Add (typeString + "." + field.Name, field.GetStockIcon ());
+			}
+			completionList.Result.DefaultCompletionString = typeString;
+		}
 		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
