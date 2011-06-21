@@ -66,7 +66,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case Accessibility.None:
 					return false;
 				case Accessibility.Private:
-					return entity.DeclaringTypeDefinition == currentTypeDefinition;
+					var lookupTypeDefinition = currentTypeDefinition;
+					while (lookupTypeDefinition != null) {
+						if (entity.DeclaringTypeDefinition.Equals (lookupTypeDefinition)) 
+							return true;
+						lookupTypeDefinition = lookupTypeDefinition.DeclaringTypeDefinition;
+					}
+					return false;
 				case Accessibility.Public:
 					return true;
 				case Accessibility.Protected:
