@@ -1,6 +1,0 @@
-<TargetFramework id="MonoDroid,Version=v1.6" _name="Mono for Android 1.6" clrVersion="Clr_2_1" IncludesFramework="v1.0">
-<Assemblies>
-  <Assembly name="Mono.Android" version="1.6.0.0" />
-  <Assembly name="OpenTK" />
-</Assemblies>
-</TargetFramework>

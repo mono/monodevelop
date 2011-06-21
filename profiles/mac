@@ -1,5 +1,3 @@
 main --disable-update-mimedb --disable-update-desktopdb --disable-gnomeplatform --enable-macplatform --enable-tests
-extras/MonoDevelop.IPhone
 extras/MonoDevelop.MonoMac
 extras/MonoDevelop.Database
-extras/MonoDevelop.MonoDroid
