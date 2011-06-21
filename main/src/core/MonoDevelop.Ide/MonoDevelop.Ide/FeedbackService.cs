@@ -39,11 +39,14 @@ namespace MonoDevelop.Ide
 		static bool sending;
 		static object sendingLock = new object ();
 		
-		public static void ShowFeedbackWidnow (int x, int y)
+		public static void ShowFeedbackWidnow ()
 		{
-			FeedbackDialog d = new FeedbackDialog (x, y);
+			var p = FeedbackPositionGetter ();
+			FeedbackDialog d = new FeedbackDialog (p.X, p.Y);
 			d.Show ();
 		}
+		
+		internal static Func<Gdk.Point> FeedbackPositionGetter { get; set; }
 		
 		public static int FeedbacksSent {
 			get { return PropertyService.Get<int> ("MonoDevelop.Feedback.Count", 0); }
