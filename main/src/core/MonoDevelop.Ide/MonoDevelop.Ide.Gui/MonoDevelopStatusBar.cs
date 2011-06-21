@@ -95,6 +95,13 @@ namespace MonoDevelop.Ide
 			PackStart (fr, false, false, 0);
 			feedbackButton.Clicked += HandleFeedbackButtonClicked;
 			feedbackButton.ClickOnRelease = true;
+			FeedbackService.FeedbackPositionGetter = delegate {
+				int x, y;
+				feedbackButton.GdkWindow.GetOrigin (out x, out y);
+				x += feedbackButton.Allocation.Width;
+				y -= 6;
+				return new Gdk.Point (x, y);
+			};
 			
 			// Dock area
 			
@@ -188,13 +195,7 @@ namespace MonoDevelop.Ide
 
 		void HandleFeedbackButtonClicked (object sender, EventArgs e)
 		{
-			int x, y;
-			feedbackButton.GdkWindow.GetOrigin (out x, out y);
-			//x += feedbackButton.Allocation.X;
-			//y += feedbackButton.Allocation.Y;
-			x += feedbackButton.Allocation.Width;
-			y -= 6;
-			FeedbackService.ShowFeedbackWidnow (x, y);
+			FeedbackService.ShowFeedbackWidnow ();
 		}
 
 		void HandleEventMessageBoxButtonPressEvent (object o, ButtonPressEventArgs args)

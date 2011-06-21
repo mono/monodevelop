@@ -81,4 +81,12 @@ namespace MonoDevelop.Ide.Commands
 			}
 		}
 	}
+	
+	class SendFeedbackHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			FeedbackService.ShowFeedbackWidnow ();
+		}
+	}
 }
