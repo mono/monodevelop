@@ -78,6 +78,8 @@ namespace MonoDevelop.DesignerSupport
 			get {
 				if (openFiles == null) {
 					openFiles = new List<string> ();
+					if (!IdeApp.IsInitialized)
+						return openFiles;
 					DispatchService.GuiSyncDispatch (delegate {
 						foreach (var doc in IdeApp.Workbench.Documents)
 						if (doc.GetContent<IEditableTextBuffer> () != null)
@@ -147,8 +149,14 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void WriteOpenFiles ()
 		{
-			if (filesToWrite == null)
+			if (filesToWrite == null) {
 				return;
+			}
+			
+			if (filesToWrite.Count == 0) {
+				filesToWrite = null;
+				return;
+			}
 			
 			//these documents are open, so needs to run in GUI thread
 			DispatchService.GuiSyncDispatch (delegate {
