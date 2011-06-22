@@ -235,13 +235,12 @@ namespace MonoDevelop.Ide
 				return;
 			}
 			string fileName;
-			bool isCecilProjectContent = !(entity.ProjectContent is SimpleProjectItem);
+			bool isCecilProjectContent = !(entity.ProjectContent is ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleProjectContent);
 			if (isCecilProjectContent) {
 				fileName = entity.ProjectContent.Annotation<string> (); // get dll
 			} else {
 				fileName = entity.Region.FileName;
 			}
-			
 			var doc = IdeApp.Workbench.OpenDocument (fileName,
 			                               entity.Region.BeginLine,
 			                               entity.Region.BeginColumn);
