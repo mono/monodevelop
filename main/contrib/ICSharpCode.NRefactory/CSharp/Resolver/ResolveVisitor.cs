@@ -968,7 +968,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ITypeReference type = MakeTypeReference(variableDeclarationStatement.Type,
 			                                        firstInitializer != null ? firstInitializer.Initializer : null,
 			                                        false);
-			
 			int initializerCount = variableDeclarationStatement.Variables.Count;
 			ResolveResult result = null;
 			for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
@@ -979,7 +978,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 //					if (isConst)
 //						throw new NotImplementedException();
 					resolver.AddVariable(type, new DomRegion (parsedFile.FileName, vi.StartLocation, vi.EndLocation), vi.Name, cv);
-					
 					if (resolverEnabled && initializerCount == 1) {
 						result = Resolve(node);
 					} else {

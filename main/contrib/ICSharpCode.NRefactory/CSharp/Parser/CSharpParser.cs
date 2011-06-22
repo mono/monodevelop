@@ -1371,14 +1371,21 @@ namespace ICSharpCode.NRefactory.CSharp
 					usingResult.AddChild (new CSharpTokenNode (Convert (u.loc), "using".Length), UsingStatement.Roles.Keyword);
 					usingResult.AddChild (new CSharpTokenNode (Convert (blockStatement.StartLocation), 1), UsingStatement.Roles.LPar);
 					if (u.Variables != null) {
-						usingResult.AddChild (ConvertToType (u.Variables.TypeExpression), UsingStatement.Roles.Type);
-						usingResult.AddChild (Identifier.Create (u.Variables.Variable.Name, Convert (u.Variables.Variable.Location)), UsingStatement.Roles.Identifier);
+						var initializer = new VariableInitializer () {
+							NameToken = Identifier.Create (u.Variables.Variable.Name, Convert (u.Variables.Variable.Location)),
+						};
+						
 						var loc = LocationsBag.GetLocations (u.Variables);
 						if (loc != null)
-							usingResult.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), ContinueStatement.Roles.Assign);
+							initializer.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), VariableInitializer.Roles.Assign);
 						if (u.Variables.Initializer != null)
-							usingResult.AddChild ((AstNode)u.Variables.Initializer.Accept (this), UsingStatement.ResourceAcquisitionRole);
+							initializer.Initializer = u.Variables.Initializer.Accept (this) as Expression;
 						
+						var varDec  = new VariableDeclarationStatement () {
+							Type = ConvertToType (u.Variables.TypeExpression),
+							Variables = { initializer }
+						};
+						usingResult.AddChild (varDec, UsingStatement.ResourceAcquisitionRole);
 					}
 					cur = u.Statement;
 					usingResult.AddChild (new CSharpTokenNode (Convert (blockStatement.EndLocation), 1), UsingStatement.Roles.RPar);
@@ -1619,7 +1626,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (new CSharpTokenNode (Convert (usingStatement.loc), "using".Length), UsingStatement.Roles.Keyword);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), UsingStatement.Roles.LPar);
-				
 				if (usingStatement.Expression != null)
 					result.AddChild ((AstNode)usingStatement.Expression.Accept (this), UsingStatement.ResourceAcquisitionRole);
 				

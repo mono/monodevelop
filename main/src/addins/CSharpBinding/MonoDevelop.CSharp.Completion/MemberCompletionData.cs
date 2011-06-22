@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -289,49 +290,56 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region IOverloadedCompletionData implementation 
 	
-//		class OverloadSorter : IComparer<CompletionData>
-//		{
-//			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
-//			
-//			public int Compare (CompletionData x, CompletionData y)
-//			{
-//				INode mx = ((MemberCompletionData)x).Member;
-//				INode my = ((MemberCompletionData)y).Member;
-//				int result;
-//				
-//				if (mx is IType && my is IType) {
-//					result = ((((IType)mx).TypeParameters.Count).CompareTo (((IType)my).TypeParameters.Count));
-//					if (result != 0)
-//						return result;
-//				}
-//				
-//				if (mx is IMethod && my is IMethod) {
-//					IMethod mmx = (IMethod) mx;//, mmy = (IMethod) my;
-//					result = (mmx.TypeParameters.Count).CompareTo (mmx.TypeParameters.Count);
-//					if (result != 0)
-//						return result;
-//					result = (mmx.Parameters.Count).CompareTo (mmx.Parameters.Count);
-//					if (result != 0)
-//						return result;
-//				}
-//				
-//				string sx = ambience.GetString (mx, flags);
-//				string sy = ambience.GetString (my, flags);
-//				result = sx.Length.CompareTo (sy.Length);
-//				return result == 0? string.Compare (sx, sy) : result;
-//			}
-//		}
-//		public override IEnumerable<CompletionData> OverloadedData {
-//			get {
-//				if (overloads == null)
-//					return new CompletionData[] { this };
-//				
-//				List<CompletionData> sorted = new List<CompletionData> (overloads.Values);
-//				sorted.Add (this);
-//				sorted.Sort (new OverloadSorter ());
-//				return sorted;
-//			}
-//		}
+		class OverloadSorter : IComparer<CompletionData>
+		{
+			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
+			ITypeResolveContext ctx;
+			
+			public OverloadSorter (ITypeResolveContext ctx)
+			{
+				this.ctx = ctx;
+			}
+			
+			public int Compare (CompletionData x, CompletionData y)
+			{
+				var mx = ((MemberCompletionData)x).Member;
+				var my = ((MemberCompletionData)y).Member;
+				int result;
+				
+				if (mx is ITypeDefinition && my is ITypeDefinition) {
+					result = ((((ITypeDefinition)mx).TypeParameters.Count).CompareTo (((ITypeDefinition)my).TypeParameters.Count));
+					if (result != 0)
+						return result;
+				}
+				
+				if (mx is IMethod && my is IMethod) {
+					IMethod mmx = (IMethod) mx;//, mmy = (IMethod) my;
+					result = (mmx.TypeParameters.Count).CompareTo (mmx.TypeParameters.Count);
+					if (result != 0)
+						return result;
+					result = (mmx.Parameters.Count).CompareTo (mmx.Parameters.Count);
+					if (result != 0)
+						return result;
+				}
+				
+				string sx = ambience.GetString (ctx, mx, flags);
+				string sy = ambience.GetString (ctx, my, flags);
+				result = sx.Length.CompareTo (sy.Length);
+				return result == 0? string.Compare (sx, sy) : result;
+			}
+		}
+		
+		public override IEnumerable<CompletionData> OverloadedData {
+			get {
+				if (overloads == null)
+					return new CompletionData[] { this };
+				
+				List<CompletionData> sorted = new List<CompletionData> (overloads.Values);
+				sorted.Add (this);
+				sorted.Sort (new OverloadSorter (editorCompletion.ctx));
+				return sorted;
+			}
+		}
 		
 		public override bool IsOverloaded {
 			get { return overloads != null && overloads.Count > 0; }
@@ -342,49 +350,49 @@ namespace MonoDevelop.CSharp.Completion
 			if (overloads == null)
 				overloads = new Dictionary<string, CompletionData> ();
 			
-//			if (overload.Member is IMember && Member is IMember) {
-//				// filter virtual & overriden members that came from base classes
-//				// note that the overload tree is traversed top down.
-//				IMember member = Member as IMember;
-//				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType != null && ((IMember)overload.Member).DeclaringType != null && member.DeclaringType.DecoratedFullName != ((IMember)overload.Member).DeclaringType.DecoratedFullName) {
-//					string str1 = ambience.GetString (member, flags);
-//					string str2 = ambience.GetString (overload.Member, flags);
-//					if (str1 == str2) {
-//						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Member)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Member)))
-//							SetMember (overload.Member);
+			if (overload.Member is IMember && Member is IMember) {
+				// filter virtual & overriden members that came from base classes
+				// note that the overload tree is traversed top down.
+				var member = Member as IMember;
+				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType != null && ((IMember)overload.Member).DeclaringType != null && member.DeclaringType.ReflectionName != ((IMember)overload.Member).DeclaringType.ReflectionName) {
+					string str1 = ambience.GetString (editorCompletion.ctx, member, flags);
+					string str2 = ambience.GetString (editorCompletion.ctx, overload.Member, flags);
+					if (str1 == str2) {
+						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Member)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Member)))
+							SetMember (overload.Member);
+						return;
+					}
+				}
+				
+				string MemberId = (overload.Member as IMember).GetHelpUrl ();
+				if (Member is IMethod && overload.Member is IMethod) {
+					string signature1 = ambience.GetString (editorCompletion.ctx, Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+					string signature2 = ambience.GetString (editorCompletion.ctx, overload.Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+					if (signature1 == signature2)
+						return;
+				}
+				
+				if (MemberId != (this.Member as IMember).GetHelpUrl () && !overloads.ContainsKey (MemberId)) {
+//					if (((IMethod)overload.Member).IsPartial)
 //						return;
-//					}
-//				}
-//				
-//				string MemberId = (overload.Member as IMember).HelpUrl;
-//				if (Member is IMethod && overload.Member is IMethod) {
-//					string signature1 = ambience.GetString (Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
-//					string signature2 = ambience.GetString (overload.Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
-//					if (signature1 == signature2)
-//						return;
-//				}
-//				
-//				if (MemberId != (this.Member as IMember).HelpUrl && !overloads.ContainsKey (MemberId)) {
-//					if (((IMember)overload.Member).IsPartial)
-//						return;
-//					overloads[MemberId] = overload;
-//					
-//					//if any of the overloads is obsolete, we should not mark the item obsolete
-//					if (!(overload.Member as IMember).IsObsolete)
-//						DisplayFlags &= ~DisplayFlags.Obsolete;
-///*					
-//					//make sure that if there are generic overloads, we show a generic signature
-//					if (overload.Member is IType && Member is IType && ((IType)Member).TypeParameters.Count == 0 && ((IType)overload.Member).TypeParameters.Count > 0) {
-//						displayText = overload.DisplayText;
-//					}
-//					if (overload.Member is IMethod && Member is IMethod && ((IMethod)Member).TypeParameters.Count == 0 && ((IMethod)overload.Member).TypeParameters.Count > 0) {
-//						displayText = overload.DisplayText;
-//					}*/
-//				}
-//			}
-//			
-//			
-//			// always set the member with the least type parameters as the main member.
+					overloads[MemberId] = overload;
+					
+					//if any of the overloads is obsolete, we should not mark the item obsolete
+					if (!(overload.Member as IMember).IsObsolete ())
+						DisplayFlags &= ~DisplayFlags.Obsolete;
+/*					
+					//make sure that if there are generic overloads, we show a generic signature
+					if (overload.Member is IType && Member is IType && ((IType)Member).TypeParameters.Count == 0 && ((IType)overload.Member).TypeParameters.Count > 0) {
+						displayText = overload.DisplayText;
+					}
+					if (overload.Member is IMethod && Member is IMethod && ((IMethod)Member).TypeParameters.Count == 0 && ((IMethod)overload.Member).TypeParameters.Count > 0) {
+						displayText = overload.DisplayText;
+					}*/
+				}
+			}
+			
+			
+			// always set the member with the least type parameters as the main member.
 //			if (Member is ITypeParameterMember && overload.Member is ITypeParameterMember) {
 //				if (((ITypeParameterMember)Member).TypeParameters.Count > ((ITypeParameterMember)overload.Member).TypeParameters.Count) {
 //					INode member = Member;

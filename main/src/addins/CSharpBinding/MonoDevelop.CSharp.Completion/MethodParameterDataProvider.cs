@@ -44,16 +44,21 @@ using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class NRefactoryParameterDataProvider : IParameterDataProvider
+	public class MethodParameterDataProvider : IParameterDataProvider
 	{
-		CSharpCompletionTextEditorExtension ext;
+		protected CSharpCompletionTextEditorExtension ext;
 		
-		List<IMethod> methods = new List<IMethod> ();
-		CSharpAmbience ambience = new CSharpAmbience ();
+		protected List<IMethod> methods = new List<IMethod> ();
+		protected CSharpAmbience ambience = new CSharpAmbience ();
 		
-		bool staticResolve = false;
+		protected bool staticResolve = false;
 		
-		public NRefactoryParameterDataProvider (CSharpCompletionTextEditorExtension ext, MethodGroupResolveResult resolveResult)
+		protected MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext)
+		{
+			this.ext = ext;	
+		}
+		
+		public MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext, MethodGroupResolveResult resolveResult)
 		{
 			this.ext = ext;
 			

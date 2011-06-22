@@ -395,7 +395,7 @@ class Foo<T>
 }
 ");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNull (provider.Find ("T"), "generic parameter 'T' found, but shouldn't");
+			Assert.IsNotNull (provider.Find ("T"), "generic parameter 'T' not found");
 			Assert.IsNotNull (provider.Find ("TValue"), "generic parameter 'TValue' not found");
 		}
 		
@@ -467,8 +467,9 @@ namespace FooBar {
 		}
 	}
 }");
-			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn't");
+			// either provider == null, or B not found
+			if (provider != null)
+				Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn't");
 		}
 		
 		

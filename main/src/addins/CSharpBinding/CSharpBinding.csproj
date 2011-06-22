@@ -221,9 +221,10 @@
     <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\DelegateDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

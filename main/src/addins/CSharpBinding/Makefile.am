@@ -40,10 +40,11 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
+	MonoDevelop.CSharp.Completion/ConstructorParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/CSharpCompletionTextEditorExtension.cs \
 	MonoDevelop.CSharp.Completion/DelegateDataProvider.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
-	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
+	MonoDevelop.CSharp.Completion/MethodParameterDataProvider.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionWrappers.cs \

@@ -588,6 +588,7 @@ class C : BaseClass
 	}
 }
 ");
+			// protected members should not be displayed in this case.
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.AreEqual (4, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
@@ -632,7 +633,6 @@ class C : BaseClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (2, provider.Count);
 			Assert.IsNotNull (provider.Find ("a"), "enum member 'a' not found.");
 			Assert.IsNotNull (provider.Find ("b"), "enum member 'b' not found.");
 		}
@@ -1835,8 +1835,8 @@ class Test
 	}
 }
 ");
-			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNull (provider.Find ("TestMethod"), "method 'TestMethod' found, but shouldn't.");
+			if (provider != null)
+				Assert.IsNull (provider.Find ("TestMethod"), "method 'TestMethod' found, but shouldn't.");
 		}
 		
 		/// <summary>
