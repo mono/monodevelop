@@ -2,7 +2,7 @@
 // QuickTaskStrip.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike KrÃ¼ger <mkrueger@novell.com>
 // 
 // Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
