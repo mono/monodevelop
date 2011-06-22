@@ -66,13 +66,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 		
 		
-		public static IEnumerable<MemberReference> FindReferences (IEntity member, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (object member, IProgressMonitor monitor = null)
 		{
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, monitor);
 		}
 		
 		
-		static IEnumerable<Tuple<IProjectContent, FilePath>> GetFileNames (Solution solution, IProjectContent dom, IParsedFile unit, IEntity member, IProgressMonitor monitor)
+		static IEnumerable<Tuple<IProjectContent, FilePath>> GetFileNames (Solution solution, IProjectContent dom, IParsedFile unit, object member, IProgressMonitor monitor)
 		{
 			var scope = GetScope (member);
 			switch (scope) {
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, IEntity member, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, IProgressMonitor monitor = null)
 		{
 			if (member == null)
 				yield break;
@@ -129,20 +129,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			IProjectContent dom = null;
 			IParsedFile unit = null;
 			IEnumerable<object> searchNodes = new [] { member };
-//			if (member is IVariable) { 
-//				dom = ((IVariable)member).DeclaringMember.DeclaringType.GetProjectContent ();
-//				unit = ((IVariable)member).CompilationUnit;
-//			} else if (member is IParameter) {
-//				dom = ((IParameter)member).DeclaringMember.DeclaringType.GetProjectContent ();
-//				unit = ((IParameter)member).DeclaringMember.DeclaringType.CompilationUnit;
-//			} else
-//			
-			if (member is IType) {
+			if (member is IVariable) { 
+				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).DeclarationRegion.FileName);
+				dom = doc.GetProjectContext ();
+				unit = doc.ParsedDocument;
+			} else if (member is IType) {
 				dom = ((IType)member).GetDefinition ().ProjectContent;
 				unit = dom.GetFile (((IType)member).GetDefinition ().Region.FileName);
-			} else if (member is IMember) {
-				dom = ((IMember)member).DeclaringType.GetProjectContent ();
-				unit = dom.GetFile (member.DeclaringTypeDefinition.Region.FileName);
+			} else if (member is IEntity) {
+				dom = ((IEntity)member).DeclaringTypeDefinition.ProjectContent;
+				unit = dom.GetFile (((IEntity)member).DeclaringTypeDefinition.Region.FileName);
 //				if (member is IMethod)
 //					searchNodes = CollectMembers (dom, (IMethod)member);
 			}
@@ -221,8 +217,12 @@ namespace MonoDevelop.Ide.FindInFiles
 //		}
 		
 		public enum RefactoryScope{ File, DeclaringType, Solution, Project}
-		static RefactoryScope GetScope (IEntity node)
+		static RefactoryScope GetScope (object o)
 		{
+			IEntity node = o as IEntity;
+			if (node == null)
+				return RefactoryScope.DeclaringType;
+			
 			if (node.DeclaringTypeDefinition != null && node.DeclaringTypeDefinition.ClassType == ClassType.Interface)
 				return GetScope (node.DeclaringTypeDefinition);
 			
