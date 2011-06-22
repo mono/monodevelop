@@ -32,218 +32,215 @@ using MonoDevelop.Projects.Text;
 using Mono.TextEditor;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring
 {
-//	public abstract class Change
-//	{
-//		public string Description {
-//			get;
-//			set;
-//		}
-//		
-//		public Change ()
-//		{
-//		}
-//		
-////		public abstract void PerformChange (IProgressMonitor monitor, RefactorerContext rctx);
-//	}
-//	
-//	public class TextReplaceChange : Change
-//	{
-//		public string FileName {
-//			get;
-//			set;
-//		}
-//		
-//		public int Offset {
-//			get;
-//			set;
-//		}
-//		
-//		public bool MoveCaretToReplace {
-//			get;
-//			set;
-//		}
-//		
-//		int removedChars;
-//		public int RemovedChars {
-//			get { 
-//				return removedChars; 
-//			}
-//			set {
-//				if (value < 0)
-//					throw new ArgumentOutOfRangeException ("RemovedChars", "needs to be >= 0");
-//				removedChars = value; 
-//			}
-//		}
-//		
-//		public string InsertedText {
-//			get;
-//			set;
-//		}
-//		
-//		static List<TextEditorData> textEditorDatas = new List<TextEditorData> ();
-//		public static void FinishRefactoringOperation ()
-//		{
-//			foreach (TextEditorData data in textEditorDatas) {
-//				data.Document.EndAtomicUndo ();
-//				data.Document.CommitUpdateAll ();
-//			}
-//			textEditorDatas.Clear ();
-//		}
-//		
-//		internal static TextEditorData GetTextEditorData (string fileName)
-//		{
-//			if (IdeApp.Workbench == null)
-//				return null;
-//			foreach (var doc in IdeApp.Workbench.Documents) {
-//				if (doc.FileName == fileName) {
-//					TextEditorData result = doc.Editor;
-//					if (result != null) {
-//						textEditorDatas.Add (result);
-//						result.Document.BeginAtomicUndo ();
-//						return result;
-//					}
-//				}
-//			}
-//			return null;
-//		}
-//		protected virtual TextEditorData TextEditorData {
-//			get {
-//				return GetTextEditorData (FileName);
-//			}
-//		}
-////		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
-////		{
-////			if (rctx == null)
-////				throw new InvalidOperationException ("Refactory context not available.");
-////			
-////			TextEditorData textEditorData = this.TextEditorData;
-////			if (textEditorData == null) {
-////				IEditableTextFile file = rctx.GetFile (FileName);
-////				if (file != null) {
-////					if (RemovedChars > 0)
-////						file.DeleteText (Offset, RemovedChars);
-////					if (!string.IsNullOrEmpty (InsertedText))
-////						file.InsertText (Offset, InsertedText);
-////					rctx.Save ();
-////				}
-////			} else if (textEditorData != null) {
-////				int offset = textEditorData.Caret.Offset;
-////				int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
-////				if (MoveCaretToReplace) {
-////					textEditorData.Caret.Offset = Offset + charsInserted;
-////				} else {
-////					if (Offset < offset) {
-////						int rem = RemovedChars;
-////						if (Offset + rem > offset)
-////							rem = offset - Offset;
-////						textEditorData.Caret.Offset = offset - rem + charsInserted;
-////					}
-////				}
-////			}
-////		}
-//		
-//		public override string ToString ()
-//		{
-//			return string.Format ("[TextReplaceChange: FileName={0}, Offset={1}, RemovedChars={2}, InsertedText={3}]", FileName, Offset, RemovedChars, InsertedText);
-//		}
-//	}
-//	
-//	public class CreateFileChange : Change
-//	{
-//		public string FileName {
-//			get;
-//			set;
-//		}
-//		
-//		public string Content {
-//			get;
-//			set;
-//		}
-//		
-//		public CreateFileChange (string fileName, string content)
-//		{
-//			this.FileName = fileName;
-//			this.Content = content;
-//			this.Description = string.Format (GettextCatalog.GetString ("Create file '{0}'"), Path.GetFileName (fileName));
-//		}
-//		
-////		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
-////		{
-////			File.WriteAllText (FileName, Content);
-////			rctx.ParserContext.Project.AddFile (FileName);
-////			IdeApp.ProjectOperations.Save (rctx.ParserContext.Project);
-////		}
-//	}
-//	
-//	public class OpenFileChange : Change
-//	{
-//		public string FileName {
-//			get;
-//			set;
-//		}
-//		
-//		public OpenFileChange (string fileName)
-//		{
-//			this.FileName = fileName;
-//			this.Description = string.Format (GettextCatalog.GetString ("Open file '{0}'"), Path.GetFileName (fileName));
-//		}
-//		
-////		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
-////		{
-////			IdeApp.Workbench.OpenDocument (FileName);
-////		}
-//	}
-//	
-//	public class RenameFileChange : Change
-//	{
-//		public string OldName {
-//			get;
-//			set;
-//		}
-//		
-//		public string NewName {
-//			get;
-//			set;
-//		}
-//		
-//		public RenameFileChange (string oldName, string newName)
-//		{
-//			this.OldName = oldName;
-//			this.NewName = newName;
-//			this.Description = string.Format (GettextCatalog.GetString ("Rename file '{0}' to '{1}'"), Path.GetFileName (oldName), Path.GetFileName (newName));
-//		}
-//		
-////		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
-////		{
-////			FileService.RenameFile (OldName, NewName);
-////			
-////			if (rctx.ParserContext.Project != null)
-////				IdeApp.ProjectOperations.Save (rctx.ParserContext.Project);
-////		}
-//	}
-//	
-//	public class SaveProjectChange : Change
-//	{
-//		public Project Project {
-//			get;
-//			set;
-//		}
-//		
-//		public SaveProjectChange (Project project)
-//		{
-//			this.Project = project;
-//			this.Description = string.Format (GettextCatalog.GetString ("Save project {0}"), project.Name);
-//		}
-//		
-////		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
-////		{
-////			Console.WriteLine ("SAVE !!!!");
-////			IdeApp.ProjectOperations.Save (this.Project);
-////		}
-//		
-//	}
+	public abstract class Change
+	{
+		public string Description {
+			get;
+			set;
+		}
+		
+		public Change ()
+		{
+		}
+		
+		public abstract void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx);
+	}
+	
+	public class TextReplaceChange : Change
+	{
+		public string FileName {
+			get;
+			set;
+		}
+		
+		public int Offset {
+			get;
+			set;
+		}
+		
+		public bool MoveCaretToReplace {
+			get;
+			set;
+		}
+		
+		int removedChars;
+		public int RemovedChars {
+			get { 
+				return removedChars; 
+			}
+			set {
+				if (value < 0)
+					throw new ArgumentOutOfRangeException ("RemovedChars", "needs to be >= 0");
+				removedChars = value; 
+			}
+		}
+		
+		public string InsertedText {
+			get;
+			set;
+		}
+		
+		static List<TextEditorData> textEditorDatas = new List<TextEditorData> ();
+		public static void FinishRefactoringOperation ()
+		{
+			foreach (TextEditorData data in textEditorDatas) {
+				data.Document.EndAtomicUndo ();
+				data.Document.CommitUpdateAll ();
+			}
+			textEditorDatas.Clear ();
+		}
+		
+		internal static TextEditorData GetTextEditorData (string fileName)
+		{
+			if (IdeApp.Workbench == null)
+				return null;
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				if (doc.FileName == fileName) {
+					TextEditorData result = doc.Editor;
+					if (result != null) {
+						textEditorDatas.Add (result);
+						result.Document.BeginAtomicUndo ();
+						return result;
+					}
+				}
+			}
+			return null;
+		}
+		protected virtual TextEditorData TextEditorData {
+			get {
+				return GetTextEditorData (FileName);
+			}
+		}
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		{
+			if (rctx == null)
+				throw new InvalidOperationException ("Refactory context not available.");
+			
+			TextEditorData textEditorData = this.TextEditorData;
+			bool saveEditor = false;
+			if (textEditorData == null) {
+				textEditorData = TextFileProvider.Instance.GetTextEditorData (FileName);
+				saveEditor = true;
+			}
+		
+			
+			int offset = textEditorData.Caret.Offset;
+			int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
+			if (MoveCaretToReplace) {
+				textEditorData.Caret.Offset = Offset + charsInserted;
+			} else {
+				if (Offset < offset) {
+					int rem = RemovedChars;
+					if (Offset + rem > offset)
+						rem = offset - Offset;
+					textEditorData.Caret.Offset = offset - rem + charsInserted;
+				}
+			}
+			
+			if (saveEditor)
+				System.IO.File.WriteAllText (FileName, textEditorData.Text);
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[TextReplaceChange: FileName={0}, Offset={1}, RemovedChars={2}, InsertedText={3}]", FileName, Offset, RemovedChars, InsertedText);
+		}
+	}
+	
+	public class CreateFileChange : Change
+	{
+		public string FileName {
+			get;
+			set;
+		}
+		
+		public string Content {
+			get;
+			set;
+		}
+		
+		public CreateFileChange (string fileName, string content)
+		{
+			this.FileName = fileName;
+			this.Content = content;
+			this.Description = string.Format (GettextCatalog.GetString ("Create file '{0}'"), Path.GetFileName (fileName));
+		}
+		
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		{
+			File.WriteAllText (FileName, Content);
+			rctx.Document.Project.AddFile (FileName);
+			IdeApp.ProjectOperations.Save (rctx.Document.Project);
+		}
+	}
+	
+	public class OpenFileChange : Change
+	{
+		public string FileName {
+			get;
+			set;
+		}
+		
+		public OpenFileChange (string fileName)
+		{
+			this.FileName = fileName;
+			this.Description = string.Format (GettextCatalog.GetString ("Open file '{0}'"), Path.GetFileName (fileName));
+		}
+		
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		{
+			IdeApp.Workbench.OpenDocument (FileName);
+		}
+	}
+	
+	public class RenameFileChange : Change
+	{
+		public string OldName {
+			get;
+			set;
+		}
+		
+		public string NewName {
+			get;
+			set;
+		}
+		
+		public RenameFileChange (string oldName, string newName)
+		{
+			this.OldName = oldName;
+			this.NewName = newName;
+			this.Description = string.Format (GettextCatalog.GetString ("Rename file '{0}' to '{1}'"), Path.GetFileName (oldName), Path.GetFileName (newName));
+		}
+		
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		{
+			FileService.RenameFile (OldName, NewName);
+			var project = rctx.Document.Project;
+			if (project != null)
+				IdeApp.ProjectOperations.Save (project);
+		}
+	}
+	
+	public class SaveProjectChange : Change
+	{
+		public Project Project {
+			get;
+			set;
+		}
+		
+		public SaveProjectChange (Project project)
+		{
+			this.Project = project;
+			this.Description = string.Format (GettextCatalog.GetString ("Save project {0}"), project.Name);
+		}
+		
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
+		{
+			IdeApp.ProjectOperations.Save (this.Project);
+		}
+	}
 }

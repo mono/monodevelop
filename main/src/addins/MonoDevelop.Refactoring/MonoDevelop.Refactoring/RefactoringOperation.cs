@@ -49,26 +49,26 @@ namespace MonoDevelop.Refactoring
 				return "";
 			}
 		}
-		public virtual string GetMenuDescription (RefactoringContext options)
+		public virtual string GetMenuDescription (RefactoringOptions options)
 		{
 			return Name;
 		}
 		
-		public virtual bool IsValid (RefactoringContext options)
+		public virtual bool IsValid (RefactoringOptions options)
 		{
 			return false;
 		}
 		
-		public virtual List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> PerformChanges (RefactoringContext options, object properties)
+		public virtual List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			throw new System.NotImplementedException ();
 		}
 
-		public virtual void Run (RefactoringContext options)
+		public virtual void Run (RefactoringOptions options)
 		{
-//			List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> changes = PerformChanges (options, null);
-//			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
-//			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+			var changes = PerformChanges (options, null);
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
+			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
 		}
 	}
 }

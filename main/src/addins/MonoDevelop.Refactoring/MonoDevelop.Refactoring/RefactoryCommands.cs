@@ -98,6 +98,90 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 		
+		class JumpTo
+		{
+			INamedElement el;
+			
+			public JumpTo (INamedElement el)
+			{
+				this.el = el;
+			}
+			
+			public void Run ()
+			{
+				Console.WriteLine ("jump to: "+  el);
+				IdeApp.ProjectOperations.JumpToDeclaration (el);
+			}
+		}
+		
+		class GotoBase 
+		{
+			ITypeResolveContext ctx;
+			IEntity item;
+			
+			public GotoBase (ITypeResolveContext ctx, IEntity item)
+			{
+				this.ctx  = ctx;
+				this.item = item;
+			}
+			
+			public void Run ()
+			{
+				var cls = item as ITypeDefinition;
+				if (cls != null && cls.BaseTypes != null) {
+					foreach (var bc in cls.BaseTypes) {
+						var bcls = bc.Resolve (ctx);
+						if (bcls == null)
+							continue;
+						var def = bcls.GetDefinition ();
+						if (def != null && def.ClassType != ClassType.Interface && !def.Region.IsEmpty) {
+							IdeApp.Workbench.OpenDocument (def.Region.FileName, def.Region.BeginLine, def.Region.BeginColumn);
+							return;
+						}
+					}
+				}
+				
+				IMethod method = item as IMethod;
+				if (method != null) {
+					foreach (var bc in method.DeclaringTypeDefinition.BaseTypes) {
+						var bcls = bc.Resolve (ctx);
+						if (bcls == null)
+							continue;
+						var def = bcls.GetDefinition ();
+						
+						if (def != null && def.ClassType != ClassType.Interface && !def.Region.IsEmpty) {
+							IMethod baseMethod = null;
+							foreach (var m in def.Methods) {
+								if (m.Name == method.Name && m.Parameters.Count == m.Parameters.Count) {
+									baseMethod = m;
+									break;
+								}
+							}
+							if (baseMethod != null)
+								IdeApp.Workbench.OpenDocument (baseMethod.Region.FileName, baseMethod.Region.BeginLine, baseMethod.Region.EndLine);
+							return;
+						}
+					}
+					return;
+				}
+			}
+		}
+		
+		class FindRefs 
+		{
+			IEntity entity;
+			
+			public FindRefs (IEntity entity)
+			{
+				this.entity = entity;
+			}
+			
+			public void Run ()
+			{
+				FindReferencesHandler.FindRefs (entity);
+			}
+		}
+		
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -114,23 +198,107 @@ namespace MonoDevelop.Refactoring
 			bool added = false;
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item as INamedElement)) {
 				var type = item as ICSharpCode.NRefactory.TypeSystem.IType;
-				if (type != null && type.GetDefinition ().GetParts ().Count > 0) {
+				if (type != null && type.GetDefinition ().GetParts ().Count > 1) {
 					var declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Go to declaration");
 					var ct = type.GetDefinition ();
 					foreach (var part in ct.GetParts ())
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.Region.FileName), part.Region.BeginLine), new System.Action (() => IdeApp.ProjectOperations.JumpToDeclaration (part)));
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.Region.FileName), part.Region.BeginLine), new System.Action (new JumpTo (part).Run));
 					ainfo.Add (declSet);
 				} else {
-					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new System.Action (() => IdeApp.ProjectOperations.JumpToDeclaration (item as INamedElement)));
+					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new System.Action (new JumpTo (item as INamedElement).Run));
 				}
 				added = true;
 			}
 			
 			if (item is IEntity /* || item is LocalVariable || item is IParameter*/) {
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (item as IEntity)));
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item as IEntity).Run));
 				added = true;
 			}
+			
+			if (item is IMethod) {
+				IMethod method = item as IMethod;
+				if (method.IsOverride) {
+					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase (ctx, (IMethod)item).Run));
+					added = true;
+				}
+			} else if (item is ITypeDefinition) {
+				ITypeDefinition cls = (ITypeDefinition) item;
+				foreach (var rt in cls.BaseTypes) {
+					var bc = rt.Resolve (ctx);
+					if (bc != null && bc.GetDefinition ().ClassType != ClassType.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
+						ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase (ctx, (ITypeDefinition)item).Run));
+						break;
+					}
+				}
+			}
+//			bool canRename;
+//			if (item is IVariable || item is IParameter) {
+//				canRename = true; 
+//			} else if (item is ITypeDefinition) { 
+//				canRename = ((ITypeDefinition)item).ProjectContent is ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleProjectContent;
+//			} else if (item is IMember) {
+//				var cls = ((IMember)item).DeclaringTypeDefinition;
+//				canRename = cls.ProjectContent is ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleProjectContent;
+//			} else {
+//				canRename = false;
+//			}
+//			if (canRename)
+//				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new System.Action (new Rename (ctx, item).Run));
+			
+//				
+//				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface) {
+//					ainfo.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
+//				}
+//
+//				if (cls.GetSourceProject () != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
+//					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
+//					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
+//				}
+//				
+//				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new RefactoryOperation (refactorer.FindReferences));
+//				
+//				if (canRename && cls.ClassType == ClassType.Interface && eclass != null) {
+//					// is now provided by the refactoring command infrastructure:
+////					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (explicit)"), new RefactoryOperation (refactorer.ImplementExplicitInterface));
+////					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (implicit)"), new RefactoryOperation (refactorer.ImplementImplicitInterface));
+//				} else if (canRename && includeModifyCommands && cls.BaseType != null && cls.ClassType != ClassType.Interface && cls == eclass) {
+//					// Class might have interfaces... offer to implement them
+//					CommandInfoSet impset = new CommandInfoSet ();
+//					CommandInfoSet expset = new CommandInfoSet ();
+//					CommandInfoSet abstactset = new CommandInfoSet ();
+//					bool ifaceAdded = false;
+//					bool abstractAdded = false;
+//					
+//					foreach (IReturnType rt in cls.BaseTypes) {
+//						IType iface = ctx.GetType (rt);
+//						if (iface == null)
+//							continue;
+//						if (iface.ClassType == ClassType.Interface) {
+//							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface, rt);
+//							impset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
+//							expset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
+//							ifaceAdded = true;
+//						} else if (ContainsAbstractMembers (iface)) {
+//							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface, rt);
+//							abstactset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementAbstractMembers));
+//							abstractAdded = true;
+//						}
+//					}
+//					
+//					if (ifaceAdded) {
+//						impset.Text = GettextCatalog.GetString ("Implement Interface (implicit)");
+//						ciset.CommandInfos.Add (impset, null);
+//						
+//						expset.Text = GettextCatalog.GetString ("Implement Interface (explicit)");
+//						ciset.CommandInfos.Add (expset, null);
+//					}
+//					if (abstractAdded) {
+//						abstactset.Text = GettextCatalog.GetString ("Implement abstract members");
+//						ciset.CommandInfos.Add (abstactset, null);
+//					}
+//				}
+//			} 
 			
 			
 //			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
@@ -245,23 +413,9 @@ namespace MonoDevelop.Refactoring
 //			
 //			
 //			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, realItem, null);
-//			
-//			
-//			
 //			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
 //			bool includeModifyCommands = this.IsModifiable (item);
 //			
-//			bool canRename;
-//			if ((item is LocalVariable) || (item is IParameter)) {
-//				canRename = true; 
-//			} else if (item is IType) { 
-//				canRename = ((IType)item).GetSourceProject () != null; 
-//			} else if (item is IMember) {
-//				IType cls = ((IMember)item).DeclaringType;
-//				canRename = cls != null && cls.GetSourceProject () != null;
-//			} else {
-//				canRename = false;
-//			}
 //			
 //			// case: clicked on base in "constructor" - so pointing to the base constructor using argument count
 //			// not 100% correct, but it's the fastest thing to do.
@@ -287,84 +441,12 @@ namespace MonoDevelop.Refactoring
 //				ainfo.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer2.GoToBase));
 //			}
 //			
-//			if (item is IType) {
-//				IType cls = (IType) item;
-//				if (cls.BaseType != null && cls.ClassType == ClassType.Class) {
-//					foreach (IReturnType rt in cls.BaseTypes) {
-//						IType bc = ctx.GetType (rt);
-//						if (bc != null && bc.ClassType != ClassType.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
-//							ainfo.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer.GoToBase));
-//							break;
-//						}
-//					}
-//				}
-//				
-//				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface) {
-//					ainfo.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
-//				}
-//
-//				if (cls.GetSourceProject () != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
-//					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
-//					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
-//				}
-//				
-//				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new RefactoryOperation (refactorer.FindReferences));
-//				
-////				if (canRename)
-////					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
-//				
-//				if (canRename && cls.ClassType == ClassType.Interface && eclass != null) {
-//					// is now provided by the refactoring command infrastructure:
-////					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (explicit)"), new RefactoryOperation (refactorer.ImplementExplicitInterface));
-////					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (implicit)"), new RefactoryOperation (refactorer.ImplementImplicitInterface));
-//				} else if (canRename && includeModifyCommands && cls.BaseType != null && cls.ClassType != ClassType.Interface && cls == eclass) {
-//					// Class might have interfaces... offer to implement them
-//					CommandInfoSet impset = new CommandInfoSet ();
-//					CommandInfoSet expset = new CommandInfoSet ();
-//					CommandInfoSet abstactset = new CommandInfoSet ();
-//					bool ifaceAdded = false;
-//					bool abstractAdded = false;
-//					
-//					foreach (IReturnType rt in cls.BaseTypes) {
-//						IType iface = ctx.GetType (rt);
-//						if (iface == null)
-//							continue;
-//						if (iface.ClassType == ClassType.Interface) {
-//							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface, rt);
-//							impset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
-//							expset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
-//							ifaceAdded = true;
-//						} else if (ContainsAbstractMembers (iface)) {
-//							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface, rt);
-//							abstactset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementAbstractMembers));
-//							abstractAdded = true;
-//						}
-//					}
-//					
-//					if (ifaceAdded) {
-//						impset.Text = GettextCatalog.GetString ("Implement Interface (implicit)");
-//						ciset.CommandInfos.Add (impset, null);
-//						
-//						expset.Text = GettextCatalog.GetString ("Implement Interface (explicit)");
-//						ciset.CommandInfos.Add (expset, null);
-//					}
-//					if (abstractAdded) {
-//						abstactset.Text = GettextCatalog.GetString ("Implement abstract members");
-//						ciset.CommandInfos.Add (abstactset, null);
-//					}
-//				}
-//			} else if (item is IField) {
+//				else if (item is IField) {
 //				if (includeModifyCommands) {
 //					if (canRename)
 //						ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Field..."), new RefactoryOperation (refactorer.EncapsulateField));
 //				}
-//			} else if (item is IMethod) {
-//				IMethod method = item as IMethod;
-//				if (method.IsOverride) {
-//					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer.GoToBase));
-//					added = true;
-//				}
-//			}
+//			} else 
 			
 			if (added)
 				ainfo.AddSeparator ();
@@ -437,9 +519,9 @@ namespace MonoDevelop.Refactoring
 		class RefactoringOperationWrapper
 		{
 			RefactoringOperation refactoring;
-			RefactoringContext options;
+			RefactoringOptions options;
 			
-			public RefactoringOperationWrapper (RefactoringOperation refactoring, RefactoringContext options)
+			public RefactoringOperationWrapper (RefactoringOperation refactoring, RefactoringOptions options)
 			{
 				this.refactoring = refactoring;
 				this.options = options;
@@ -808,39 +890,6 @@ namespace MonoDevelop.Refactoring
 //			IdeApp.ProjectOperations.JumpToDeclaration (item);
 //		}
 //		
-//		public void GoToBase ()
-//		{
-//			IType cls = item as IType;
-//			if (cls != null && cls.BaseTypes != null) {
-//				foreach (IReturnType bc in cls.BaseTypes) {
-//					IType bcls = ctx.GetType (bc);
-//					if (bcls != null && bcls.ClassType != ClassType.Interface && !bcls.Location.IsEmpty) {
-//						IdeApp.Workbench.OpenDocument (bcls.GetDefinition ().Region.FileName, bcls.Location.Line, bcls.Location.Column);
-//						return;
-//					}
-//				}
-//				return;
-//			}
-//			IMethod method = item as IMethod;
-//			if (method != null) {
-//				foreach (IReturnType bc in method.DeclaringType.BaseTypes) {
-//					IType bcls = ctx.GetType (bc);
-//					if (bcls != null && bcls.ClassType != ClassType.Interface && !bcls.Location.IsEmpty) {
-//						IMethod baseMethod = null;
-//						foreach (IMethod m in bcls.Methods) {
-//							if (m.Name == method.Name && m.Parameters.Count == m.Parameters.Count) {
-//								baseMethod = m;
-//								break;
-//							}
-//						}
-//						if (baseMethod != null)
-//							IdeApp.Workbench.OpenDocument (bcls.GetDefinition ().Region.FileName, baseMethod.Location.Line, baseMethod.Location.Column);
-//						return;
-//					}
-//				}
-//				return;
-//			}
-//		}
 //		
 //		public void FindDerivedClasses ()
 //		{
@@ -927,10 +976,5 @@ namespace MonoDevelop.Refactoring
 //			MessageService.ShowCustomDialog (new OverridesImplementsDialog (IdeApp.Workbench.ActiveDocument, (IType)item));
 //		}
 //		
-//		public void Rename ()
-//		{
-//		//	RenameItemDialog dialog = new RenameItemDialog (ctx, item);
-//		//	dialog.Show ();
-//		}
 //	}
 }

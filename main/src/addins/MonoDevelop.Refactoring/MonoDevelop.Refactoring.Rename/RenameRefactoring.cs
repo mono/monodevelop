@@ -25,10 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using System.Text;
@@ -37,6 +34,9 @@ using System.Linq;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.ProgressMonitoring;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -56,15 +56,15 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (options.SelectedItem is LocalVariable || options.SelectedItem is IParameter)
+			if (options.SelectedItem is IVariable || options.SelectedItem is IParameter)
 				return true;
 
-			if (options.SelectedItem is IType)
-				return ((IType)options.SelectedItem).GetSourceProject () != null;
+			if (options.SelectedItem is ITypeDefinition)
+				return ((ITypeDefinition)options.SelectedItem).ProjectContent is SimpleProjectContent;
 
 			if (options.SelectedItem is IMember) {
-				IType cls = ((IMember)options.SelectedItem).DeclaringType;
-				return cls != null && cls.GetSourceProject () != null;
+				var cls = ((IMember)options.SelectedItem).DeclaringTypeDefinition;
+				return cls != null && cls.ProjectContent is SimpleProjectContent;
 			}
 			return false;
 		}
@@ -76,25 +76,25 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public override void Run (RefactoringOptions options)
 		{
-			if (options.SelectedItem is LocalVariable || options.SelectedItem is IParameter) {
+			if (options.SelectedItem is IVariable) {
 				var col = ReferenceFinder.FindReferences (options.SelectedItem);
 				if (col == null)
 					return;
-				TextEditorData data = options.GetTextEditorData ();
-				Mono.TextEditor.TextEditor editor = data.Parent;
+				var data = options.GetTextEditorData ();
+				var editor = data.Parent;
 				if (editor == null) {
 					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
 					return;
 				}
 				
-				List<TextLink> links = new List<TextLink> ();
-				TextLink link = new TextLink ("name");
+				var links = new List<TextLink> ();
+				var link = new TextLink ("name");
 				int baseOffset = Int32.MaxValue;
-				foreach (MemberReference r in col) {
-					baseOffset = Math.Min (baseOffset, data.Document.LocationToOffset (r.Line, r.Column));
+				foreach (var r in col) {
+					baseOffset = Math.Min (baseOffset, r.Offset);
 				}
 				foreach (MemberReference r in col) {
-					Segment segment = new Segment (data.Document.LocationToOffset (r.Line, r.Column) - baseOffset, r.Name.Length);
+					Segment segment = new Segment (r.Offset - baseOffset, r.Length);
 					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment); 
 					} else {
@@ -111,7 +111,7 @@ namespace MonoDevelop.Refactoring.Rename
 				if (tle.ShouldStartTextLinkMode) {
 					ModeHelpWindow helpWindow = new ModeHelpWindow ();
 					helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
-					helpWindow.TitleText = options.SelectedItem is LocalVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
+					helpWindow.TitleText = options.SelectedItem is IVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
 					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
 					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Return</b>"), GettextCatalog.GetString ("<b>Accept</b> this refactoring.")));
 					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
@@ -148,15 +148,15 @@ namespace MonoDevelop.Refactoring.Rename
 			List<Change> result = new List<Change> ();
 			IEnumerable<MemberReference> col = null;
 			using (var monitor = new MessageDialogProgressMonitor (true, false, false, true)) {
-				col = ReferenceFinder.FindReferences (options.SelectedItem, monitor);
+				col = ReferenceFinder.FindReferences (options.SelectedItem as IEntity, monitor);
 				if (col == null)
 					return result;
 					
 				if (properties.RenameFile && options.SelectedItem is IType) {
-					IType cls = (IType)options.SelectedItem;
+					var cls = (ITypeDefinition)options.SelectedItem;
 					int currentPart = 1;
 					HashSet<string> alreadyRenamed = new HashSet<string> ();
-					foreach (IType part in cls.Parts) {
+					foreach (var part in cls.GetParts ()) {
 						if (part.GetDefinition ().Region.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.GetDefinition ().Region.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
 							continue;
 						if (alreadyRenamed.Contains (part.GetDefinition ().Region.FileName))
@@ -183,13 +183,13 @@ namespace MonoDevelop.Refactoring.Rename
 					}
 				}
 				
-				foreach (MemberReference memberRef in col) {
+				foreach (var memberRef in col) {
 					TextReplaceChange change = new TextReplaceChange ();
 					change.FileName = memberRef.FileName;
-					change.Offset = memberRef.Position;
-					change.RemovedChars = memberRef.Name.Length;
+					change.Offset = memberRef.Offset;
+					change.RemovedChars = memberRef.Length;
 					change.InsertedText = properties.NewName;
-					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.Name, properties.NewName);
+					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.Entity.Name, properties.NewName);
 					result.Add (change);
 				}
 			}

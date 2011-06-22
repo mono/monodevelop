@@ -27,9 +27,8 @@
 using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -37,7 +36,7 @@ namespace MonoDevelop.Refactoring.Rename
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			RenameRefactoring renameRefactoring = new RenameRefactoring ();
+			var renameRefactoring = new RenameRefactoring ();
 			if (renameRefactoring.IsValid (options))
 				renameRefactoring.Run (options);
 		}

@@ -26,6 +26,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs \
 	gtk-gui/MonoDevelop.ContextAction.ContextActionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Inspection.InspectionPanelWidget.cs \
+	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
+	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
 	MonoDevelop.AnalysisCore/AnalysisCommands.cs \
 	MonoDevelop.AnalysisCore/AnalysisExtensions.cs \
 	MonoDevelop.AnalysisCore/AnalysisOptions.cs \
@@ -63,10 +65,17 @@ FILES =  \
 	MonoDevelop.ContextAction/ContextActionWidget.cs \
 	MonoDevelop.Inspection/InspectionPanelWidget.cs \
 	MonoDevelop.Inspection/InspectorAddinNode.cs \
+	MonoDevelop.Refactoring.Rename/RenameHandler.cs \
+	MonoDevelop.Refactoring.Rename/RenameItemDialog.cs \
+	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
+	MonoDevelop.Refactoring.Rename/RenameTextEditorExtension.cs \
+	MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs \
 	MonoDevelop.Refactoring/Change.cs \
 	MonoDevelop.Refactoring/FindReferencesHandler.cs \
 	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \
+	MonoDevelop.Refactoring/RefactoringOptions.cs \
+	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \
 	MonoDevelop.Refactoring/RefactoryCommands.cs 
 

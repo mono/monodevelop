@@ -105,6 +105,15 @@
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
     <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\RenameTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\RenameHandler.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring\AbstractRefactoringCommandHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -176,17 +185,12 @@
     <None Include="ChangeLog" />
     <None Include="MonoDevelop.AnalysisCore\README.txt" />
     <None Include="MonoDevelop.AnalysisCore\TODO.txt" />
-    <None Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <None Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
-    <None Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
-    <None Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
     <None Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantRefactoring.cs" />
     <None Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantDialog.cs" />
     <None Include="MonoDevelop.Refactoring.CreateClass\CreateClassCodeGenerator.cs" />
     <None Include="MonoDevelop.Refactoring.CreateClass\CreateStructCodeGenerator.cs" />
-    <None Include="MonoDevelop.Refactoring.Rename\RenameHandler.cs" />
     <None Include="MonoDevelop.Refactoring\HelperMethods.cs" />
-    <None Include="MonoDevelop.Refactoring\AbstractRefactoringCommandHandler.cs" />
     <None Include="MonoDevelop.Refactoring.RefactorImports\RemoveUnusedImportsRefactoring.cs" />
     <None Include="MonoDevelop.Refactoring.RefactorImports\RefactorImportsHandler.cs" />
     <None Include="MonoDevelop.Refactoring.RefactorImports\FindTypeReferencesVisitor.cs" />
@@ -201,9 +205,6 @@
     <None Include="MonoDevelop.Refactoring\OverridesImplementsDialog.cs" />
     <None Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
     <None Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
-    <None Include="MonoDevelop.Refactoring.Rename\RenameTextEditorExtension.cs" />
-    <None Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
-    <None Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.EncapsulateFieldDialog.cs" />
