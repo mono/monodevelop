@@ -66,6 +66,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case Accessibility.None:
 					return false;
 				case Accessibility.Private:
+					if (entity.DeclaringTypeDefinition.ClassType == ClassType.Interface)
+						return true;
 					var lookupTypeDefinition = currentTypeDefinition;
 					while (lookupTypeDefinition != null) {
 						if (entity.DeclaringTypeDefinition.Equals (lookupTypeDefinition)) 
@@ -97,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		bool IsProtectedAccessible(ITypeDefinition declaringType)
 		{
-			if (declaringType == currentTypeDefinition)
+			if (declaringType.Equals (currentTypeDefinition))
 				return true;
 			// PERF: this might hurt performance as this method is called several times (once for each member)
 			// make sure resolving base types is cheap (caches?) or cache within the MemberLookup instance
