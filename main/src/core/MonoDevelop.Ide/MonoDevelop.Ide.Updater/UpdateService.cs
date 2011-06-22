@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+//#define ENABLE_UPDATER
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,6 +40,7 @@ using System.Globalization;
 using Mono.Addins;
 using Mono.Addins.Setup;
 using MonoDevelop.Core.ProgressMonitoring;
+
 
 namespace MonoDevelop.Ide.Updater
 {
@@ -65,7 +68,17 @@ namespace MonoDevelop.Ide.Updater
 					continue;
 				
 				try {
-					list.Add (UpdateInfo.FromFile (file));
+					var uinfo = UpdateInfo.FromFile (file);
+					if (uinfo.AppId == InstallerUpdateId) {
+						// If there is an updated installer, get the update info for that one
+						var installerUpdateInfo = UpdatedInstallerPath.Combine (InstallerUpdateId + ".updateinfo");
+						if (File.Exists (installerUpdateInfo)) {
+							var localuinfo = UpdateInfo.FromFile (installerUpdateInfo);
+							if (localuinfo.VersionId > uinfo.VersionId)
+								uinfo = localuinfo;
+						}
+					}
+					list.Add (uinfo);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error reading update info file '" + file + "'", ex);
 				}
@@ -73,10 +86,57 @@ namespace MonoDevelop.Ide.Updater
 			return list.ToArray ();
 		}
 		
+		static FilePath UpdatedInstallerPath {
+			get { return PropertyService.Locations.Data.Combine ("Installer"); }
+		}
+		
 		static UpdateService ()
 		{
+#if ENABLE_UPDATER
 			updateInfos = LoadUpdateInfos ();
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/UpdateTags", OnTagExtensionChanged);
+			
+			DownloadService.Initialize ();
+			DownloadService.DownloadFinished += HandleDownloadServiceDownloadFinished;
+#endif
+		}
+
+		static void HandleDownloadServiceDownloadFinished (object sender, EventArgs e)
+		{
+			if (!DownloadService.AllDownloaded)
+				return;
+			var downloads = DownloadService.GetAllDownloads ();
+			
+			// Check if there is an update for the installer
+			var installer = downloads.FirstOrDefault (d => d.Id == InstallerUpdateId);
+			if (installer != null) {
+				string file = InstallerUpdateId + Path.GetExtension (installer.File);
+				if (Directory.Exists (UpdatedInstallerPath))
+					Directory.Delete (UpdatedInstallerPath, true);
+				Directory.CreateDirectory (UpdatedInstallerPath);
+				
+				// Copy the updated installer to a local directory
+				var installerPath = UpdatedInstallerPath.Combine (file);
+				var updateInfoPath = UpdatedInstallerPath.Combine (InstallerUpdateId + ".updateinfo");
+				File.Copy (installer.File, installerPath, true);
+				File.WriteAllText (updateInfoPath, InstallerUpdateId + " " + installer.VersionId);
+				DownloadService.Remove (installer);
+				downloads = DownloadService.GetAllDownloads ();
+				
+				// Update hte updateInfos list, and replace the old update info with the new updater
+				var ui = updateInfos.FirstOrDefault (u => u.AppId == InstallerUpdateId);
+				if (ui != null)
+					updateInfos [Array.IndexOf (updateInfos, ui)] = new UpdateInfo (updateInfoPath, InstallerUpdateId, installer.VersionId);
+			}
+			if (downloads.Any ()) {
+				InstallDialog dlg = new InstallDialog (downloads);
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+					DownloadService.MarkForInstallation (dlg.UpdatesToInstall);
+					var installerPath = Directory.GetFiles (UpdatedInstallerPath).FirstOrDefault (f => Path.GetExtension (f) != ".updateinfo");
+					DesktopService.StartUpdatesInstaller (DownloadService.DownloadIndex, installerPath);
+				}
+				dlg.Destroy ();
+			}
 		}
 		
 		static void OnTagExtensionChanged (object sender, ExtensionNodeEventArgs args)
@@ -123,6 +183,10 @@ namespace MonoDevelop.Ide.Updater
 			}
 		}
 		
+		internal static string InstallerUpdateId {
+			get { return "updater-" + DesktopService.PlatformName; }
+		}
+		
 		public static void RunCheckDialog (bool automatic)
 		{
 			RunCheckDialog (DefaultUpdateInfos, automatic);
@@ -154,7 +218,7 @@ namespace MonoDevelop.Ide.Updater
 		
 		static void ShowUpdateDialog ()
 		{
-			Gtk.Application.Invoke (delegate {
+/*			Gtk.Application.Invoke (delegate {
 				if (visibleDialog == null) {
 					visibleDialog = new UpdateDialog ();
 					MessageService.ShowCustomDialog (visibleDialog);
@@ -163,16 +227,23 @@ namespace MonoDevelop.Ide.Updater
 					visibleDialog.GdkWindow.Focus (0);
 				}
 			});
+			SetupDownloader (result);*/
 		}
 		
 		static void ShowUpdateResult (UpdateResult result)
 		{
-			Gtk.Application.Invoke (delegate {
+/*			Gtk.Application.Invoke (delegate {
 				if (visibleDialog != null)
 					visibleDialog.LoadResult (result);
-			});
+			});*/
+			SetupDownloader (result);
 		}
-			
+		
+		static void SetupDownloader (UpdateResult result)
+		{
+			DownloadService.SetUpdates (result.Updates);
+		}
+
 		#endregion
 		
 		public static void QueryUpdateServer (UpdateInfo[] updateInfos, UpdateLevel level, Action<UpdateResult> callback)
@@ -190,11 +261,11 @@ namespace MonoDevelop.Ide.Updater
 			query.Append (formatVersion);
 			
 			foreach (var info in updateInfos)
-				query.AppendFormat ("&{0}={1}", info.AppId, info.VersionId);
+				query.AppendFormat ("&pv{0}={1}", info.AppId, info.VersionId);
 			
 			if (level != UpdateLevel.Stable) {
 				query.Append ("&level=");
-				query.Append (level.ToString ().ToLower ());
+				query.Append (level.ToString ());
 			}
 			
 			bool hasEnv = false;
@@ -237,12 +308,18 @@ namespace MonoDevelop.Ide.Updater
 							let first = x.Elements ("Update").First ()
 							select new Update () {
 								Name = x.Attribute ("name").Value,
+								Id = x.Attribute ("id").Value,
+								VersionId = int.Parse (first.Attribute ("versionId").Value),
+								Dependencies = x.Attribute ("dependencies").Value,
 								Url = first.Attribute ("url").Value,
 								Version = first.Attribute ("version").Value,
+								Size = int.Parse (first.Attribute ("size").Value),
+								Hash = first.Attribute ("hash").Value,
 								Level = first.Attribute ("level") != null
 									? (UpdateLevel)Enum.Parse (typeof(UpdateLevel), (string)first.Attribute ("level"))
 									: UpdateLevel.Stable,
 								Date = DateTime.Parse (first.Attribute ("date").Value),
+								UpdateInfoFile = updateInfos.Where (u => u.AppId == x.Attribute ("id").Value).Select (u => u.File).FirstOrDefault (),
 								Releases = x.Elements ("Update").Select (y => new Release () {
 									Version = y.Attribute ("version").Value,
 									Date = DateTime.Parse (y.Attribute ("date").Value),
@@ -319,7 +396,7 @@ namespace MonoDevelop.Ide.Updater
 					date = DateTime.Now;
 				res.Add (new Update () {
 					Name = entry.Addin.Name,
-					InstallAction = (m) => InstallAddin (m, entry),
+					Url = entry.Url,
 					Version = entry.Addin.Version,
 					Level = level,
 					Date = date,

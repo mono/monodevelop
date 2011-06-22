@@ -779,6 +779,12 @@
     <EmbeddedResource Include="icons\balloon.png">
       <LogicalName>balloon.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\downloader-paused.png">
+      <LogicalName>downloader-paused.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\downloader-running.png">
+      <LogicalName>downloader-running.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1458,6 +1464,9 @@
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FilePathEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeedbackDialog.cs" />
     <Compile Include="MonoDevelop.Ide\FeedbackService.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\DownloadService.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\InstallDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Updater.InstallDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

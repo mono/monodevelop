@@ -32,21 +32,31 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Setup;
 using System.Net;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace MonoDevelop.Ide.Updater
 {
-	class Update
+	public class Update
 	{
 		public string Name;
+		public string Id;
+		public int VersionId;
+		public string Dependencies;
 		public string Url;
 		public string Version;
+		public int Size;
+		public string Hash;
+		public bool IsThirdParty;
 		public DateTime Date;
 		public List<Release> Releases;
 		public UpdateLevel Level;
-		public Func<IProgressMonitor,IAsyncOperation> InstallAction;
+
+		public string File { get; set; }
+		public UpdateStatus Status { get; set; }
+		public string UpdateInfoFile { get; set; }
 	}
 	
-	class Release
+	public class Release
 	{
 		public string Version;
 		public DateTime Date;
@@ -59,21 +69,23 @@ namespace MonoDevelop.Ide.Updater
 		{
 		}
 		
-		public UpdateInfo (Guid appId, long versionId)
+		public UpdateInfo (string file, string appId, long versionId)
 		{
+			this.File = file;
 			this.AppId = appId;
 			this.VersionId = versionId;
 		}
 		
-		public readonly Guid AppId;
+		public readonly string File;
+		public readonly string AppId;
 		public readonly long VersionId;
 		
 		public static UpdateInfo FromFile (string fileName)
 		{
-			using (var f = File.OpenText (fileName)) {
+			using (var f = System.IO.File.OpenText (fileName)) {
 				var s = f.ReadLine ();
 				var parts = s.Split (' ');
-				return new UpdateInfo (new Guid (parts[0]), long.Parse (parts[1]));
+				return new UpdateInfo (fileName, parts[0], long.Parse (parts[1]));
 			}
 		}
 	}

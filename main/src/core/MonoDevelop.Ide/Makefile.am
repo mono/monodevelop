@@ -104,6 +104,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Projects.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Updater.InstallDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Updater.UpdateDialog.cs \
 	MonoDevelop.Components.AutoTest/AutoTestClientSession.cs \
 	MonoDevelop.Components.AutoTest/AutoTestService.cs \
@@ -671,6 +672,8 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SolutionDescriptor.cs \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
+	MonoDevelop.Ide.Updater/DownloadService.cs \
+	MonoDevelop.Ide.Updater/InstallDialog.cs \
 	MonoDevelop.Ide.Updater/UpdateCommands.cs \
 	MonoDevelop.Ide.Updater/UpdateDialog.cs \
 	MonoDevelop.Ide.Updater/UpdateInfoExtensionNode.cs \
@@ -749,6 +752,8 @@ RES =  \
 	icons/compiler-options-24.png \
 	icons/custom-commands-16.png \
 	icons/custom-commands-24.png \
+	icons/downloader-paused.png \
+	icons/downloader-running.png \
 	icons/edit-find-next-16.png \
 	icons/edit-find-next-24.png \
 	icons/edit-select-all.png \

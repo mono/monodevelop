@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Updater
 				labelBox.PackStart (commandBox, false, false, 0);
 				
 				var downloadButton = new Button () {
-					Label = update.InstallAction == null ? GettextCatalog.GetString ("Download") : GettextCatalog.GetString ("Install")
+					Label = GettextCatalog.GetString ("Download")
 				};
 				
 				//NOTE: grab the variable from the loop var so the closure captures it 
@@ -212,56 +212,7 @@ namespace MonoDevelop.Ide.Updater
 		
 		void Install (Gtk.Alignment commandBox, Button installButton, Update update)
 		{
-			if (update.InstallAction == null) {
-				DesktopService.ShowUrl (update.Url);
-				return;
-			}
-			
-			installButton.Hide ();
-			
-			if (installing) {
-				Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString ("Waiting"));
-				commandBox.Child.Destroy ();
-				commandBox.Add (lab);
-				lab.Show ();
-				installQueue.Enqueue (delegate {
-					lab.Hide ();
-					RunInstall (commandBox, update);
-				});
-				return;
-			}
-			
-			RunInstall (commandBox, update);
-		}
-		
-		void RunInstall (Gtk.Alignment commandBox, Update update)
-		{
-			installing = true;
-			
-			ProgressBarMonitor monitorBar = new ProgressBarMonitor ();
-			monitorBar.ShowErrorsDialog = true;
-			monitorBar.Show ();
-			commandBox.Child.Destroy ();
-			commandBox.Add (monitorBar);
-			
-			IAsyncOperation oper = update.InstallAction (monitorBar.CreateProgressMonitor ());
-			oper.Completed += delegate {
-				DispatchService.GuiDispatch (delegate {
-					monitorBar.Hide ();
-					Gtk.Label result = new Gtk.Label ();
-					if (oper.Success)
-						result.Text = GettextCatalog.GetString ("Completed");
-					else
-						result.Text = GettextCatalog.GetString ("Failed");
-					commandBox.Child.Destroy ();
-					commandBox.Add (result);
-					result.Show ();
-					installing = false;
-					
-					if (installQueue.Count > 0)
-						installQueue.Dequeue ()();
-				});
-			};
+			DesktopService.ShowUrl (update.Url);
 		}
 	}
 }
