@@ -46,7 +46,6 @@ namespace MonoDevelop.Refactoring
 {
 	public class FindDerivedClassesHandler : CommandHandler
 	{
-		
 		public static void FindDerivedClasses (ITypeDefinition cls)
 		{
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
@@ -54,13 +53,7 @@ namespace MonoDevelop.Refactoring
 				return;
 			var sourceCtx     = cls.GetProjectContent ();
 			var sourceProject = sourceCtx.Annotation<Project> ();
-			var projects = new List<Tuple<Project, IProjectContent>> ();
-			projects.Add (Tuple.Create (sourceProject, sourceCtx));
-			foreach (var project in solution.GetAllProjects ()) {
-				if (project.GetReferencedItems (ConfigurationSelector.Default).Any (prj => prj == sourceProject))
-					projects.Add (Tuple.Create (project, TypeSystemService.GetProjectContext (project)));
-			}
-			
+			var projects = ReferenceFinder.GetAllReferencingProjects (solution, sourceProject);
 			ThreadPool.QueueUserWorkItem (delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					var cache = new Dictionary<string, TextEditorData> ();

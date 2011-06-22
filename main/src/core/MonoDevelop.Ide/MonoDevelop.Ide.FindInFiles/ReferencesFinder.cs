@@ -103,10 +103,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			case RefactoryScope.Solution:
 				if (monitor != null)
 					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
-				foreach (var project in solution.GetAllProjects ()) {
+				var sourceProject = ((IEntity)member).ProjectContent.Annotation<Project> ();
+				foreach (var tuple in GetAllReferencingProjects (solution, sourceProject)) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
-					var currentDom = TypeSystemService.GetProjectContext (project);
+					var project    = tuple.Item1;
+					var currentDom = tuple.Item2;
 					foreach (var file in project.Files) {
 						if (monitor != null && monitor.IsCancelRequested)
 							yield break;
@@ -119,6 +121,17 @@ namespace MonoDevelop.Ide.FindInFiles
 					monitor.EndTask ();
 				break;
 			}
+		}
+		
+		public static List<Tuple<Project, IProjectContent>> GetAllReferencingProjects (Solution solution, Project sourceProject)
+		{
+			var projects = new List<Tuple<Project, IProjectContent>> ();
+			projects.Add (Tuple.Create (sourceProject, TypeSystemService.GetProjectContext (sourceProject)));
+			foreach (var project in solution.GetAllProjects ()) {
+				if (project.GetReferencedItems (ConfigurationSelector.Default).Any (prj => prj == sourceProject))
+					projects.Add (Tuple.Create (project, TypeSystemService.GetProjectContext (project)));
+			}
+			return projects;
 		}
 		
 		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, IProgressMonitor monitor = null)
