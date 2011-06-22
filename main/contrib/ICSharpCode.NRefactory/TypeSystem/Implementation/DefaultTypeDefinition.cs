@@ -605,10 +605,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		// we use reference equality
 		bool IEquatable<IType>.Equals(IType other)
 		{
-			return this == other;
+			var otherDefinition = other as ITypeDefinition;
+			if (otherDefinition == null)
+				return false;
+			return this.ProjectContent == otherDefinition.ProjectContent && this.ReflectionName == otherDefinition.ReflectionName;
 		}
 		
 		public override string ToString()
