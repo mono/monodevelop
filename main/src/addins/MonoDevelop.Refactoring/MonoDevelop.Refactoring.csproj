@@ -114,6 +114,7 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -198,7 +199,6 @@
     <None Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
     <None Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
     <None Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
-    <None Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
     <None Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantHandler.cs" />
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
     <None Include="MonoDevelop.Refactoring\EncapsulateFieldDialog.cs" />

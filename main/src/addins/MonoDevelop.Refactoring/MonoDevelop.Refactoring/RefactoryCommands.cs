@@ -182,6 +182,21 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
+		class FindDerivedClasses
+		{
+			ITypeDefinition type;
+			
+			public FindDerivedClasses (ITypeDefinition type)
+			{
+				this.type = type;
+			}
+			
+			public void Run ()
+			{
+				FindDerivedClassesHandler.FindDerivedClasses (type);
+			}
+		}
+		
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -231,6 +246,11 @@ namespace MonoDevelop.Refactoring
 						break;
 					}
 				}
+				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface) {
+					ainfo.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
+				}
+
+				
 			}
 //			bool canRename;
 //			if (item is IVariable || item is IParameter) {
@@ -247,10 +267,6 @@ namespace MonoDevelop.Refactoring
 //				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new System.Action (new Rename (ctx, item).Run));
 			
 //				
-//				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface) {
-//					ainfo.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
-//				}
-//
 //				if (cls.GetSourceProject () != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
 //					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
 //					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
@@ -891,30 +907,6 @@ namespace MonoDevelop.Refactoring
 //		}
 //		
 //		
-//		public void FindDerivedClasses ()
-//		{
-//			ThreadPool.QueueUserWorkItem (FindDerivedThread);
-//		}
-//		
-//		void FindDerivedThread (object state)
-//		{
-//			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-//			using (monitor) {
-//				IType cls = (IType) item;
-//				if (cls == null) return;
-//				
-//				CodeRefactorer cr = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-//				foreach (IType sub in cr.FindDerivedClasses (cls)) {
-//					if (!sub.Location.IsEmpty) {
-//						IEditableTextFile textFile = cr.TextFileProvider.GetEditableTextFile (sub.GetDefinition ().Region.FileName);
-//						if (textFile == null) 
-//							textFile = new TextFile (sub.GetDefinition ().Region.FileName);
-//						int position = textFile.GetPositionFromLineColumn (sub.Location.Line, sub.Location.Column);
-//						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (sub.GetDefinition ().Region.FileName, sub.GetSourceProject () as Project), position, 0));
-//					}
-//				}
-//			}
-//		}
 //		
 //		void ImplementInterface (bool explicitly)
 //		{
