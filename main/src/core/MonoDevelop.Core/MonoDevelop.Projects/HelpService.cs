@@ -339,8 +339,6 @@ namespace MonoDevelop.Projects
 			default:
 				return declaringXml.SelectSingleNode ("/Type/Members/Member[@MemberName='" + member.Name + "']/Docs");
 			}
-			
-			return null;
 		}
 		
 	}
