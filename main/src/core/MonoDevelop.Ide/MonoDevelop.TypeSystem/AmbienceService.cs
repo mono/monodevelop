@@ -46,7 +46,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			// may not have been initialized in testing environment.
 			if (AddinManager.IsInitialized) {
-				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
 					var ambience = args.ExtensionNode as MonoDevelop.Core.AddIns.MimeTypeExtensionNode;
 					switch (args.Change) {
 					case ExtensionChange.Add:

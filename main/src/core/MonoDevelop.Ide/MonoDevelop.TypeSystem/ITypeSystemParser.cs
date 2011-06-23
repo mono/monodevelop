@@ -1,5 +1,5 @@
 // 
-// TypeSystemProviderNode.cs
+// ITypeSystemParser.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,40 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Mono.Addins;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TypeSystem
 {
-	public class TypeSystemProviderNode : TypeExtensionNode
+	public interface ITypeSystemParser
 	{
-		[NodeAttribute (Description="The mime type.")]
-		string mimeType;
-		
-		public string MimeType {
-			get {
-				return mimeType;
-			}
-			set {
-				mimeType = value;
-			}
-		}
-		
-		ITypeSystemProvider cachedInstance;
-		
-		public ITypeSystemProvider Provider {
-			get {
-				return cachedInstance ?? (cachedInstance = (ITypeSystemProvider)CreateInstance ());
-			}
-		}
-		
-		HashSet<string> mimeTypes;
-		public bool CanParse (string mimeType)
+		ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader content);
+	}
+	
+	public abstract class AbstractTypeSystemParser : ITypeSystemParser
+	{
+		public virtual ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader content)
 		{
-			if (mimeTypes == null)
-				mimeTypes  = new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ()));
-			return mimeTypes.Contains (mimeType, StringComparer.Ordinal);
+			return null;
 		}
 	}
 }

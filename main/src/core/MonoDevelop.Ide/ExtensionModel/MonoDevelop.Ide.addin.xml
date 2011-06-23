@@ -156,16 +156,16 @@
 		<ExtensionNode name="Tag" type="Mono.Addins.ExtensionNode"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/TypeSystemProvider" name = "TypeSystemProvider">
-		<ExtensionNode name="Provider" type="MonoDevelop.TypeSystem.TypeSystemProviderNode"/>
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Parser" name = "TypeSystemParser">
+		<ExtensionNode name="Parser" type="MonoDevelop.TypeSystem.TypeSystemParserNode"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Ambiences" name = "Language ambiences">
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Ambiences" name = "Language ambiences">
 		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
 		<ExtensionNode name="Ambience" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/CodeGenerators">
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/CodeGenerators">
 		<ExtensionNode name="Generator" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 

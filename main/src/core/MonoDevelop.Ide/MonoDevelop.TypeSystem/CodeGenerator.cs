@@ -34,7 +34,7 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.TypeSystem
 {
 	public abstract class CodeGenerator
 	{
@@ -88,14 +88,8 @@ namespace MonoDevelop.Ide
 		
 		static CodeGenerator ()
 		{
-			Console.WriteLine ("!!!!!!!!!");
-			Console.WriteLine ("node count:" + AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/CodeGenerators").Count);
-			Console.WriteLine ("ambiences:" + AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/Ambiences").Count);
-			
-			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/CodeGenerators", delegate (object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/CodeGenerators", delegate (object sender, ExtensionNodeEventArgs args) {
 				var node = (MimeTypeExtensionNode)args.ExtensionNode;
-				Console.WriteLine ("got : "+ node + " /" + args.Change);
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					AddGenerator (node);

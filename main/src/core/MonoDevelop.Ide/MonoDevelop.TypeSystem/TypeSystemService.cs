@@ -88,20 +88,20 @@ namespace MonoDevelop.TypeSystem
 	
 	public static class TypeSystemService
 	{
-		static List<TypeSystemProviderNode> parsers;
+		static List<TypeSystemParserNode> parsers;
 		
-		static IEnumerable<TypeSystemProviderNode> Parsers {
+		static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				if (parsers == null) {
 //					Counters.ParserServiceInitialization.BeginTiming ();
-					parsers = new List<TypeSystemProviderNode> ();
-					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/TypeSystemProvider", delegate (object sender, ExtensionNodeEventArgs args) {
+					parsers = new List<TypeSystemParserNode> ();
+					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
 						switch (args.Change) {
 						case ExtensionChange.Add:
-							parsers.Add ((TypeSystemProviderNode)args.ExtensionNode);
+							parsers.Add ((TypeSystemParserNode)args.ExtensionNode);
 							break;
 						case ExtensionChange.Remove:
-							parsers.Remove ((TypeSystemProviderNode)args.ExtensionNode);
+							parsers.Remove ((TypeSystemParserNode)args.ExtensionNode);
 							break;
 						}
 					});
@@ -111,10 +111,10 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static ITypeSystemProvider GetProvider (string mimeType)
+		static ITypeSystemParser GetParser (string mimeType)
 		{
 			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType));
-			return provider != null ? provider.Provider : null;
+			return provider != null ? provider.Parser : null;
 		}
 		
 		public static ParsedDocument ParseFile (Project project, string fileName)
@@ -126,11 +126,11 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (projectContent == null)
 				throw new ArgumentNullException ("projectContent");
-			var provider = GetProvider (mimeType);
-			if (provider == null)
+			var parser = GetParser (mimeType);
+			if (parser == null)
 				return null;
 			try {
-				var result = provider.Parse (projectContent, true, fileName, content);
+				var result = parser.Parse (projectContent, true, fileName, content);
 				if ((result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
 					((SimpleProjectContent)projectContent).UpdateProjectContent (projectContent.GetFile (fileName), result);
 				return result;
@@ -498,11 +498,11 @@ namespace MonoDevelop.TypeSystem
 					if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 						continue;
 					
-					var provider = TypeSystemService.GetProvider (DesktopService.GetMimeTypeForUri (file.FilePath));
-					if (provider == null)
+					var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.FilePath));
+					if (parser == null)
 						continue;
 					using (var stream = new System.IO.StreamReader (file.FilePath)) {
-						var parsedFile = provider.Parse (Context, false, file.FilePath, stream);
+						var parsedFile = parser.Parse (Context, false, file.FilePath, stream);
 						Context.UpdateProjectContent (Context.GetFile (file.FilePath), parsedFile);
 					}
 //					if (ParseCallback != null)
@@ -659,8 +659,8 @@ namespace MonoDevelop.TypeSystem
 				if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 					continue;
 					
-				var provider = TypeSystemService.GetProvider (DesktopService.GetMimeTypeForUri (file.FilePath));
-				if (provider == null)
+				var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.FilePath));
+				if (parser == null)
 					continue;
 				
 				if (!IsFileModified (file, content.GetFile (file.FilePath)))

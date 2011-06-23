@@ -692,8 +692,6 @@ FILES =  \
 	MonoDevelop.Ide.WebBrowser/StatusMessageChangedEventArgs.cs \
 	MonoDevelop.Ide.WebBrowser/TitleChangedEventArgs.cs \
 	MonoDevelop.Ide/AddEntryEventHandler.cs \
-	MonoDevelop.Ide/CodeGenerationService.cs \
-	MonoDevelop.Ide/CodeGenerator.cs \
 	MonoDevelop.Ide/DesktopService.cs \
 	MonoDevelop.Ide/DispatchService.cs \
 	MonoDevelop.Ide/ExitEventHandler.cs \
@@ -710,10 +708,12 @@ FILES =  \
 	MonoDevelop.Ide/WebBrowserService.cs \
 	MonoDevelop.TypeSystem/Ambience.cs \
 	MonoDevelop.TypeSystem/AmbienceService.cs \
+	MonoDevelop.TypeSystem/CodeGenerationService.cs \
+	MonoDevelop.TypeSystem/CodeGenerator.cs \
 	MonoDevelop.TypeSystem/Comment.cs \
 	MonoDevelop.TypeSystem/ConditionalRegion.cs \
 	MonoDevelop.TypeSystem/FoldingRegion.cs \
-	MonoDevelop.TypeSystem/ITypeSystemProvider.cs \
+	MonoDevelop.TypeSystem/ITypeSystemParser.cs \
 	MonoDevelop.TypeSystem/MarkupUtilities.cs \
 	MonoDevelop.TypeSystem/NetAmbience.cs \
 	MonoDevelop.TypeSystem/OutputFlags.cs \
@@ -723,7 +723,7 @@ FILES =  \
 	MonoDevelop.TypeSystem/ProjectContentEventArgs.cs \
 	MonoDevelop.TypeSystem/StockIcons.cs \
 	MonoDevelop.TypeSystem/Tag.cs \
-	MonoDevelop.TypeSystem/TypeSystemProviderNode.cs \
+	MonoDevelop.TypeSystem/TypeSystemParserNode.cs \
 	MonoDevelop.TypeSystem/TypeSystemService.cs
 
 RES =  \

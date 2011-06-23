@@ -36,8 +36,9 @@ using System.CodeDom.Compiler;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.TypeSystem
 {
 	public class CodeGenerationService
 	{

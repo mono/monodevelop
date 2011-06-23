@@ -1422,7 +1422,6 @@
     <Compile Include="MonoDevelop.Ide.Projects\TemplatePickerWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectOptionsWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\FileTypeCondition.cs" />
-    <Compile Include="MonoDevelop.Ide\CodeGenerationService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ExportProjectPolicyDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.cs" />
@@ -1443,9 +1442,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\PriorityList.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.PriorityList.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FilePathEditor.cs" />
-    <Compile Include="MonoDevelop.TypeSystem\ITypeSystemProvider.cs" />
     <Compile Include="MonoDevelop.TypeSystem\ProjectContentEventArgs.cs" />
-    <Compile Include="MonoDevelop.TypeSystem\TypeSystemProviderNode.cs" />
     <Compile Include="MonoDevelop.TypeSystem\TypeSystemService.cs" />
     <Compile Include="MonoDevelop.TypeSystem\Ambience.cs" />
     <Compile Include="MonoDevelop.TypeSystem\AmbienceService.cs" />
@@ -1456,7 +1453,6 @@
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksChangedEventHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\Tag.cs" />
     <Compile Include="MonoDevelop.TypeSystem\StockIcons.cs" />
-    <Compile Include="MonoDevelop.Ide\CodeGenerator.cs" />
     <Compile Include="MonoDevelop.TypeSystem\FoldingRegion.cs" />
     <Compile Include="MonoDevelop.TypeSystem\ParsedDocument.cs" />
     <Compile Include="MonoDevelop.TypeSystem\Comment.cs" />
@@ -1482,6 +1478,10 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\PropertyNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\SolutionNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ReferenceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\CodeGenerationService.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\CodeGenerator.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\TypeSystemParserNode.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\ITypeSystemParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
