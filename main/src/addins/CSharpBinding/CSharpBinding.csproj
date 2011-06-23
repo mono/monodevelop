@@ -226,6 +226,8 @@
     <Compile Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -244,8 +246,6 @@
     <None Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
     <None Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
     <None Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
