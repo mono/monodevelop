@@ -118,7 +118,7 @@ namespace MonoDevelop.AspNet.Gui
 		public IList<ITypeResolveContext> References { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
 		
-		public IType CodeBesideClass { get; set; }
+		public ITypeDefinition CodeBesideClass { get; set; }
 		
 		public string BaseType {
 			get {

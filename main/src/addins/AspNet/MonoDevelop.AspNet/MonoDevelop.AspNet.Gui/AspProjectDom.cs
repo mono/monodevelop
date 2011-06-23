@@ -52,9 +52,9 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (type == null)
 				return null;
-			var cu =info.ParsedDocument.CompilationUnit;
-			var firstType = cu.Types.FirstOrDefault ();
-			if (type.IsPartial && firstType != null && firstType.FullName == type.FullName) {
+			var cu = info.ParsedDocument;
+			var firstType = cu.TopLevelTypeDefinitions.FirstOrDefault ();
+			if (firstType != null && firstType.FullName == type.FullName) {
 				if (constructedType != null)
 					return constructedType;
 				constructedType = new CompoundTypeDefinition ();

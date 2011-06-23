@@ -102,7 +102,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		static IType CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
+		static ITypeDefinition CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
 		{
 			var v = new MemberListVisitor (info.AspNetDocument, refman);
 			info.AspNetDocument.RootNode.AcceptVisit (v);
