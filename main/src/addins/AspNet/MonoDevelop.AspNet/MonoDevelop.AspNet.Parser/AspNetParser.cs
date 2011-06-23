@@ -37,7 +37,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	public class AspNetParser : AbstractTypeSystemProvider
+	public class AspNetParser : AbstractTypeSystemParser
 	{
 		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
 		{

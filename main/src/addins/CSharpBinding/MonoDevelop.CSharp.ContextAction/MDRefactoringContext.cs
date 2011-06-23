@@ -327,7 +327,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
 			{
 				var editor = ctx.Document.Editor;
-				var mode = new InsertionCursorEditMode (editor.Parent, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedDocument.GetTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
+				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedDocument.GetTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
 				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);

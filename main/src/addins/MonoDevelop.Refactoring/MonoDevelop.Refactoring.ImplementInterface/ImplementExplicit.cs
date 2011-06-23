@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Refactoring.ImplementInterface
 {

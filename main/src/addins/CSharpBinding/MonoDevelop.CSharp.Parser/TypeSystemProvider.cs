@@ -1,5 +1,5 @@
 // 
-// TypeSystemProvider.cs
+// TypeSystemParser.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -36,7 +36,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Parser
 {
-	public class TypeSystemProvider : ITypeSystemProvider
+	public class TypeSystemParser : ITypeSystemParser
 	{
 		public ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, System.IO.TextReader content)
 		{

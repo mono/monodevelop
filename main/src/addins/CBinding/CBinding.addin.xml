@@ -250,8 +250,8 @@
 	</Module>
 -->
 	
-	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
-		<Provider class="CBinding.Parser.CDocumentParser" mimeType = "text/x-csrc, text/x-chdr, text/x-c++src, text/x-c++hdr, text/x-objcsrc, text/x-objc++src" />
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class="CBinding.Parser.CDocumentParser" mimeType = "text/x-csrc, text/x-chdr, text/x-c++src, text/x-c++hdr, text/x-objcsrc, text/x-objc++src" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">

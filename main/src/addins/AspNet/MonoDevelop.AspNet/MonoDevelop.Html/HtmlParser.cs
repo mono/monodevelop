@@ -37,7 +37,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Html
 {
-	public class HtmlParser : AbstractTypeSystemProvider
+	public class HtmlParser : AbstractTypeSystemParser
 	{
 		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
 		{

@@ -130,8 +130,8 @@
 		<ContextPad id = "MonoDevelop.XmlEditor.XPathQueryPad"/>
 	</Extension>-->
 	
-	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
-		<Provider class = "MonoDevelop.XmlEditor.XmlDocumentParser" mimeType = "application/xml" id = "XmlParser"/>
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class = "MonoDevelop.XmlEditor.XmlDocumentParser" mimeType = "application/xml" id = "XmlParser"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/CodeFormatters">

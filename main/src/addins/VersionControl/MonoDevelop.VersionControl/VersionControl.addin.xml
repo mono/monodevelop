@@ -287,8 +287,8 @@
 		<Policies resource="Policies.xml"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
-		<Provider class = "MonoDevelop.VersionControl.Views.DiffParser" id = "DiffParser" mimeType="text/x-patch" />
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class = "MonoDevelop.VersionControl.Views.DiffParser" id = "DiffParser" mimeType="text/x-patch" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

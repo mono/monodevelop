@@ -39,9 +39,9 @@ namespace MonoDevelop.XmlEditor
 {
 	
 	
-	public class XmlDocumentParser : ITypeSystemProvider
+	public class XmlDocumentParser : ITypeSystemParser
 	{
-		ParsedDocument ITypeSystemProvider.Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader content)
+		ParsedDocument ITypeSystemParser.Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader content)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;

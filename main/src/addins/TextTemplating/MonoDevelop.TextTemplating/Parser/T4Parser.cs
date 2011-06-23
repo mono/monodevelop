@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
-	public class T4Parser : AbstractTypeSystemProvider
+	public class T4Parser : AbstractTypeSystemParser
 	{
 		public override ParsedDocument Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader content)
 		{

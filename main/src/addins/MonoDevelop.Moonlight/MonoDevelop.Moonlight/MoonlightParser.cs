@@ -39,7 +39,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.Moonlight
 {
-	public class MoonlightParser : AbstractTypeSystemProvider
+	public class MoonlightParser : AbstractTypeSystemParser
 	{
 		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
 		{
