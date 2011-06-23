@@ -115,6 +115,9 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -196,9 +199,6 @@
     <None Include="MonoDevelop.Refactoring.RefactorImports\RefactorImportsHandler.cs" />
     <None Include="MonoDevelop.Refactoring.RefactorImports\FindTypeReferencesVisitor.cs" />
     <None Include="MonoDevelop.Refactoring.RefactorImports\SortImportsRefactoring.cs" />
-    <None Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
-    <None Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
-    <None Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
     <None Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantHandler.cs" />
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
     <None Include="MonoDevelop.Refactoring\EncapsulateFieldDialog.cs" />

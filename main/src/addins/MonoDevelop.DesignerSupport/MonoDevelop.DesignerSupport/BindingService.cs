@@ -150,7 +150,7 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 		
-		public static IMember AddMemberToClass (Project project, ITypeDefinition cls, IType specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+		public static IMember AddMemberToClass (Project project, ITypeDefinition cls, ITypeDefinition specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
 			foreach (var c in cls.GetDefinition ().GetParts ())
@@ -242,7 +242,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		
 		//opens the code view with the desired method, creating it if it doesn't already exist
-		public static void CreateAndShowMember (Project project, ITypeDefinition cls, IType specificPartToAffect, CodeTypeMember member)
+		public static void CreateAndShowMember (Project project, ITypeDefinition cls, ITypeDefinition specificPartToAffect, CodeTypeMember member)
 		{
 			//only adds the method if it doesn't already exist
 			IMember mem = AddMemberToClass (project, cls, specificPartToAffect, member, false);

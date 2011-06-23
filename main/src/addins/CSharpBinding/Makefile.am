@@ -86,6 +86,7 @@ FILES =  \
 	MonoDevelop.CSharp.Project/CSharpCompilerParameters.cs \
 	MonoDevelop.CSharp.Project/CSharpProjectParameters.cs \
 	MonoDevelop.CSharp.Project/CSharpResourceIdBuilder.cs \
+	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \

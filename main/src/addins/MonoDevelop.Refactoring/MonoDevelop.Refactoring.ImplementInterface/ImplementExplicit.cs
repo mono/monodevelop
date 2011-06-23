@@ -24,13 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 using Mono.TextEditor.PopupWindow;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Refactoring.ImplementInterface
 {
@@ -41,28 +42,42 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			return GettextCatalog.GetString ("I_mplement explicit");
 		}
 		
-		public override bool IsValid (RefactoringOptions options)
+		internal static bool InternalIsValid (RefactoringOptions options, out IType interfaceType)
 		{
-			if (options.ResolveResult == null)
+			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			interfaceType = null;
+			if (unit == null)
 				return false;
-			
-			IType type = options.Dom.GetType (options.ResolveResult.ResolvedType);
-			if (type == null || type.ClassType != MonoDevelop.Projects.Dom.ClassType.Interface)
+			var loc = options.Document.Editor.Caret.Location;
+			var declaration = unit.GetNodeAt<TypeDeclaration> (loc.Line, loc.Column);
+			if (declaration == null)
 				return false;
-			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
-			IType declaringType = options.Document.GetType (location.Line, location.Column);
-			return declaringType != null && options.ResolveResult.ResolvedExpression.IsInInheritableTypeContext;
+			if (!declaration.BaseTypes.Any (bt => bt.Contains (loc.Line, loc.Column)))
+				return false;
+			interfaceType = options.ResolveResult.Type.Resolve (options.Dom);
+			return interfaceType.GetDefinition ().ClassType == ClassType.Interface;
 		}
 		
-		public override void Run (RefactoringOptions options)
+		public override bool IsValid (RefactoringOptions options)
 		{
-			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
-			IType interfaceType = options.Dom.GetType (options.ResolveResult.ResolvedType);
-			IType declaringType = options.Document.GetType (location.Line, location.Column);
+			IType interfaceType;
+			return InternalIsValid (options, out interfaceType);
+		}
+		
+		internal static void InternalRun (RefactoringOptions options, bool implementExplicit)
+		{
+			IType interfaceType;
+			
+			if (!InternalIsValid (options, out interfaceType))
+				return;
+			var loc = options.Document.Editor.Caret.Location;
+			var declaringType = options.Document.ParsedDocument.GetTypeDefinition (loc.Line, loc.Column);
+			if (declaringType == null)
+				return;
 			
 			var editor = options.GetTextEditorData ().Parent;
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (options.Document, declaringType));
+			var mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (options.Document, declaringType));
 			ModeHelpWindow helpWindow = new ModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement Interface -- Targeting</b>");
@@ -76,10 +91,17 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
-					CodeGenerator generator = options.Document.CreateCodeGenerator ();
-					args.InsertionPoint.Insert (options.GetTextEditorData (), generator.CreateInterfaceImplementation (declaringType, interfaceType, true));
+					var generator = options.CreateCodeGenerator ();
+					if (generator == null) 
+						return;
+					args.InsertionPoint.Insert (options.GetTextEditorData (), generator.CreateInterfaceImplementation (options.Dom, declaringType, interfaceType, implementExplicit));
 				}
 			};
+		}
+		
+		public override void Run (RefactoringOptions options)
+		{
+			InternalRun (options, true);
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide
 {
 	public class CodeGenerationService
 	{
-		public static IMember AddCodeDomMember (IType type, CodeTypeMember newMember)
+		public static IMember AddCodeDomMember (ITypeDefinition type, CodeTypeMember newMember)
 		{
 			bool isOpen;
 			var data = TextFileProvider.Instance.GetTextEditorData (type.GetDefinition ().Region.FileName, out isOpen);
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide
 			return newDocument.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
 		}
 		
-		public static void AddNewMember (IType type, IMember newMember, bool implementExplicit = false)
+		public static void AddNewMember (ITypeResolveContext ctx, ITypeDefinition type, IMember newMember, bool implementExplicit = false)
 		{
 			bool isOpen;
 			var data = TextFileProvider.Instance.GetTextEditorData (type.GetDefinition ().Region.FileName, out isOpen);
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide
 			var generator = CreateCodeGenerator (data);
 
 			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetTypeDefinition (type.GetLocation ()));
-			var generatedCode = generator.CreateMemberImplementation (type, newMember, implementExplicit);
+			var generatedCode = generator.CreateMemberImplementation (ctx, type, newMember, implementExplicit);
 			suitableInsertionPoint.Insert (data, generatedCode.Code);
 			if (!isOpen) {
 				try {
@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide
 			return indentLevel;
 		}
 		
-		public static void AddNewMembers (IType type, IEnumerable<IMember> newMembers, string regionName = null, Func<IMember, bool> implementExplicit = null)
+		public static void AddNewMembers (ITypeResolveContext ctx, ITypeDefinition type, IEnumerable<IMember> newMembers, string regionName = null, Func<IMember, bool> implementExplicit = null)
 		{
 			IMember firstNewMember = newMembers.FirstOrDefault ();
 			if (firstNewMember == null)
@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide
 					sb.AppendLine ();
 					sb.AppendLine ();
 				}
-				sb.Append (generator.CreateMemberImplementation (type, newMember, implementExplicit != null ? implementExplicit (newMember) : false).Code);
+				sb.Append (generator.CreateMemberImplementation (ctx, type, newMember, implementExplicit != null ? implementExplicit (newMember) : false).Code);
 			}
 			suitableInsertionPoint.Insert (data, string.IsNullOrEmpty (regionName) ? sb.ToString () : generator.WrapInRegions (regionName, sb.ToString ()));
 			if (!isOpen) {
@@ -168,14 +168,14 @@ namespace MonoDevelop.Ide
 		}
 		
 		#region Insertion Points
-		public static List<InsertionPoint> GetInsertionPoints (MonoDevelop.Ide.Gui.Document document, IType type)
+		public static List<InsertionPoint> GetInsertionPoints (MonoDevelop.Ide.Gui.Document document, ITypeDefinition type)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			return GetInsertionPoints (document.Editor, document.ParsedDocument, type);
 		}
 		
-		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, IParsedFile parsedDocument, IType type)
+		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, IParsedFile parsedDocument, ITypeDefinition type)
 		{
 			if (data == null)
 				throw new ArgumentNullException ("data");

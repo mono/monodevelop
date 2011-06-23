@@ -88,8 +88,14 @@ namespace MonoDevelop.Ide
 		
 		static CodeGenerator ()
 		{
+			Console.WriteLine ("!!!!!!!!!");
+			Console.WriteLine ("node count:" + AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/CodeGenerators").Count);
+			Console.WriteLine ("ambiences:" + AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/Ambiences").Count);
+			
+			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/CodeGenerators", delegate (object sender, ExtensionNodeEventArgs args) {
 				var node = (MimeTypeExtensionNode)args.ExtensionNode;
+				Console.WriteLine ("got : "+ node + " /" + args.Change);
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					AddGenerator (node);
@@ -113,6 +119,7 @@ namespace MonoDevelop.Ide
 		
 		public static void AddGenerator (MimeTypeExtensionNode node)
 		{
+			Console.WriteLine ("add generator :"+ node.MimeType);
 			generators [node.MimeType] = node;
 		}
 		
@@ -121,7 +128,7 @@ namespace MonoDevelop.Ide
 			generators.Remove (node.MimeType);
 		}
 		
-		static int CalculateBodyIndentLevel (IType declaringType)
+		static int CalculateBodyIndentLevel (ITypeDefinition declaringType)
 		{
 			int indentLevel = 0;
 			// TODO: Type system conversion.
@@ -140,13 +147,13 @@ namespace MonoDevelop.Ide
 			return indentLevel;
 		}
 		
-		protected void SetIndentTo (IType implementingType)
+		protected void SetIndentTo (ITypeDefinition implementingType)
 		{
 			if (IndentLevel < 0)
 				IndentLevel = CalculateBodyIndentLevel (implementingType);
 		}
 		
-		public string CreateInterfaceImplementation (IType implementingType, IType interfaceType, bool explicitly, bool wrapRegions = true)
+		public string CreateInterfaceImplementation (ITypeResolveContext ctx, ITypeDefinition implementingType, IType interfaceType, bool explicitly, bool wrapRegions = true)
 		{
 			SetIndentTo (implementingType);
 			StringBuilder result = new StringBuilder ();
@@ -158,7 +165,7 @@ namespace MonoDevelop.Ide
 					AppendLine (result);
 					AppendLine (result);
 				}
-				string implementation = InternalCreateInterfaceImplementation (implementingType, baseInterface, explicitly, implementedMembers);
+				string implementation = InternalCreateInterfaceImplementation (ctx, implementingType, baseInterface, explicitly, implementedMembers);
 				if (wrapRegions) {
 					result.Append (WrapInRegions (baseInterface.Name + " implementation", implementation));
 				} else {
@@ -168,7 +175,7 @@ namespace MonoDevelop.Ide
 			return result.ToString ();
 		}
 		
-		protected string InternalCreateInterfaceImplementation (IType implementingType, IType interfaceType, bool explicitly, List<IMember> implementedMembers)
+		protected string InternalCreateInterfaceImplementation (ITypeResolveContext ctx, ITypeDefinition implementingType, IType interfaceType, bool explicitly, List<IMember> implementedMembers)
 		{
 			StringBuilder result = new StringBuilder ();
 			
@@ -195,8 +202,8 @@ namespace MonoDevelop.Ide
 					continue;
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
-				foreach (var t in implementingType.GetAllBaseTypes (dom)) {
-					if (t.GetDefinition ().ClassType == ClassType.Interface)
+				foreach (var t in implementingType.GetAllBaseTypeDefinitions (dom)) {
+					if (t.ClassType == ClassType.Interface)
 						continue;
 					foreach (var cmet in t.GetMethods (dom)) {
 						if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
@@ -261,7 +268,7 @@ namespace MonoDevelop.Ide
 					}
 				}
 				
-				result.Append (CreateMemberImplementation (implementingType, pair.Key, isExplicit).Code);
+				result.Append (CreateMemberImplementation (ctx, implementingType, pair.Key, isExplicit).Code);
 				implementedMembers.Add (pair.Key);
 			}
 			
@@ -281,9 +288,9 @@ namespace MonoDevelop.Ide
 		
 		public abstract string WrapInRegions (string regionName, string text)
 ;
-		public abstract CodeGeneratorMemberResult CreateMemberImplementation (IType implementingType, IMember member, bool explicitDeclaration)
+		public abstract CodeGeneratorMemberResult CreateMemberImplementation (ITypeResolveContext ctx, ITypeDefinition implementingType, IMember member, bool explicitDeclaration)
 ;
-		public abstract string CreateFieldEncapsulation (IType implementingType, IField field, string propertyName, Modifiers modifiers, bool readOnly);
+		public abstract string CreateFieldEncapsulation (ITypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly);
 	}
 	
 	public class CodeGeneratorMemberResult

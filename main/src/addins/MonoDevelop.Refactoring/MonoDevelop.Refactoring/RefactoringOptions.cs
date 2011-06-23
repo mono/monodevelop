@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring
 {
@@ -88,10 +89,19 @@ namespace MonoDevelop.Refactoring
 			return result.ToString ();
 		}
 		
+		public CodeGenerator CreateCodeGenerator ()
+		{
+			var result = CodeGenerator.CreateGenerator (Document.Editor);
+			if (result == null)
+				LoggingService.LogError ("Generator can't be generated for : " + Document.Editor.MimeType);
+			return result;
+		}
+		
 		public static string GetIndent (Document document, IEntity member)
 		{
 			return GetWhitespaces (document, document.Editor.Document.LocationToOffset (member.Region.BeginLine, 1));
 		}
+		
 		public string GetWhitespaces (int insertionOffset)
 		{
 			return GetWhitespaces (Document, insertionOffset);

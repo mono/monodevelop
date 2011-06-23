@@ -105,10 +105,6 @@
 		<SerializationMap resource="md1format.xml" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-csharp-file" resource = "C#.FileIcon" size="Menu" />
 		<StockIcon stockid = "md-csharp-project" resource = "csharp-project-16.png" size="Menu"/>
@@ -122,6 +118,18 @@
 	
 	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
 		<Formatter mimeType="text/x-csharp" class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
+		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
+		<Provider class="MonoDevelop.CSharp.Parser.TypeSystemProvider" mimeType = "text/x-csharp" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/CodeGenerators">
+		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
@@ -297,20 +305,12 @@
 		         macShortcut = "Alt|Shift|Down"
 		         _label = "_Expand selection"/>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/CodeGenerators">
-		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/TypeSystemProvider">
-		<Provider class="MonoDevelop.CSharp.Parser.TypeSystemProvider" mimeType = "text/x-csharp" />
-	</Extension>
-	
+	<!--
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="CreateMethod" class = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 		<Class id="ExtractMethod" class = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
 		<Class id="DeclareLocal" class = "MonoDevelop.CSharp.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
-	</Extension>
+	</Extension>-->
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CreateMethod"

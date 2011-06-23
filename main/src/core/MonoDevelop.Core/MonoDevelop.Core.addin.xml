@@ -140,10 +140,6 @@
 		<ExtensionNode name="Source" type="MonoDevelop.Projects.Extensions.MonoDocSourceNode" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/CodeGenerators">
-		<ExtensionNode name="Generator" type="MonoDevelop.Projects.CodeGeneration.MimeTypeExtensionNode"/>
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/DocumentationGenerator">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>

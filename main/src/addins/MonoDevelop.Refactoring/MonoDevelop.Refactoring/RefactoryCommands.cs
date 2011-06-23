@@ -249,9 +249,30 @@ namespace MonoDevelop.Refactoring
 				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface) {
 					ainfo.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
 				}
-
-				
 			}
+			
+			RefactoringOptions options = new RefactoringOptions () {
+				Document = doc,
+				Dom = ctx,
+				ResolveResult = resolveResult,
+				SelectedItem = item
+			};
+			
+			CommandInfoSet ciset = new CommandInfoSet ();
+			ciset.Text = GettextCatalog.GetString ("Refactor");
+			foreach (var refactoring in RefactoringService.Refactorings) {
+				if (refactoring.IsValid (options)) {
+					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
+					info.AccelKey = refactoring.AccelKey;
+					ciset.CommandInfos.Add (info, new System.Action (new RefactoringOperationWrapper (refactoring, options).Operation));
+				}
+			}
+			
+			if (ciset.CommandInfos.Count > 0) {
+				ainfo.Add (ciset, null);
+				added = true;
+			}
+			
 //			bool canRename;
 //			if (item is IVariable || item is IParameter) {
 //				canRename = true; 
@@ -353,12 +374,6 @@ namespace MonoDevelop.Refactoring
 //				item = realItem;
 //			}
 //			
-//			RefactoringOptions options = new RefactoringOptions () {
-//				Document = doc,
-//				Dom = ctx,
-//				ResolveResult = resolveResult,
-//				SelectedItem = realItem
-//			};
 //			
 //			if (resolveResult != null  && resolveResult.ResolvedExpression != null && !string.IsNullOrEmpty (resolveResult.ResolvedExpression.Expression)) {
 //				bool resolveDirect;
@@ -409,20 +424,6 @@ namespace MonoDevelop.Refactoring
 //				added = true;
 //			}
 //			
-//			CommandInfoSet ciset = new CommandInfoSet ();
-//			ciset.Text = GettextCatalog.GetString ("Refactor");
-//			foreach (var refactoring in RefactoringService.Refactorings) {
-//				if (refactoring.IsValid (options)) {
-//					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-//					info.AccelKey = refactoring.AccelKey;
-//					ciset.CommandInfos.Add (info, new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
-//				}
-//			}
-//			
-//			if (ciset.CommandInfos.Count > 0) {
-//				ainfo.Add (ciset, null);
-//				added = true;
-//			}
 //			IParsedFile pinfo = doc.CompilationUnit;
 //			if (pinfo == null)
 //				return;

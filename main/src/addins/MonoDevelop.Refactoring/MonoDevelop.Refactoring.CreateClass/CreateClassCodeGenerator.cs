@@ -34,9 +34,6 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
  
 using Mono.TextEditor;

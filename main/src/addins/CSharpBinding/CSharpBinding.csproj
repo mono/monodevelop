@@ -225,11 +225,11 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />

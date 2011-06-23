@@ -30,8 +30,6 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.IntroduceConstant

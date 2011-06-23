@@ -165,6 +165,10 @@
 		<ExtensionNode name="Ambience" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/CodeGenerators">
+		<ExtensionNode name="Generator" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode"/>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

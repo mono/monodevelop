@@ -65,6 +65,9 @@ FILES =  \
 	MonoDevelop.ContextAction/ContextActionWidget.cs \
 	MonoDevelop.Inspection/InspectionPanelWidget.cs \
 	MonoDevelop.Inspection/InspectorAddinNode.cs \
+	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \
+	MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs \
+	MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs \
 	MonoDevelop.Refactoring.Rename/RenameHandler.cs \
 	MonoDevelop.Refactoring.Rename/RenameItemDialog.cs \
 	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \

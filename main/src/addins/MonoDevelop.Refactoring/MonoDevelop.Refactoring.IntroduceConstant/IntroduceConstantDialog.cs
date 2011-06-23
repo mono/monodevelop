@@ -26,16 +26,12 @@
 
 using System;
 using Gtk;
-using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.IntroduceConstant
 {
-
-
 	public partial class IntroduceConstantDialog : Gtk.Dialog
 	{
 		RefactoringOperation refactoring;
