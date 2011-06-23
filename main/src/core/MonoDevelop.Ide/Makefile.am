@@ -929,7 +929,7 @@ RES =  \
 	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassPadContextMenu.addin.xml,MonoDevelop.Ide.MonoDevelop.Ide.Gui.Pads.ClassPad.ClassPadContextMenu.addin.xml \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassPadContextMenu.addin.xml \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml \
 	MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \
