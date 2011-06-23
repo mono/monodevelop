@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.CSharp;
  
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 {
@@ -56,23 +57,17 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		
 		AstNode GetMemberBodyNode (MonoDevelop.Refactoring.RefactoringOptions options)
 		{
-			IMember member = ((LocalVariable) options.SelectedItem).DeclaringMember;
-			if (member == null)
+			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			if (unit == null)
 				return null;
-			int start = options.Document.Editor.Document.LocationToOffset (member.BodyRegion.BeginLine, member.BodyRegion.BeginColumn);
-			int end = options.Document.Editor.Document.LocationToOffset (member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
-			string memberBody = options.Document.Editor.GetTextBetween (start, end);
-			INRefactoryASTProvider provider = options.GetASTProvider ();
-			if (provider == null) {
-//				Console.WriteLine("!!!Provider not found!");
-				return null;
-			}
-			return provider.ParseText (memberBody.Trim ());
+			
+			AstLocation loc = new AstLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+			return unit.GetNodeAt<AttributedNode> (loc);
 		}
-
+		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (!(options.SelectedItem is LocalVariable)) {
+			if (!(options.SelectedItem is IVariable)) {
 				//				Console.WriteLine ("!!! Item is not LocalVariable");
 				return false;
 			}
@@ -85,12 +80,13 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			var memberNode = GetMemberBodyNode (options);
-			List<Change> changes = new List<Change> ();
 			if (memberNode == null)
 				return null;
+			
+			List<Change> changes = new List<Change> ();
 			try {
-				//				Console.WriteLine ("AcceptVisitor");
-				//				Console.WriteLine ("Start: " + memberNode.StartLocation.ToString () + " - End: " + memberNode.EndLocation.ToString ());
+//				Console.WriteLine ("AcceptVisitor");
+//				Console.WriteLine ("Start: " + memberNode.StartLocation.ToString () + " - End: " + memberNode.EndLocation.ToString ());
 				memberNode.AcceptVisitor (new IntegrateTemporaryVariableVisitor (), new IntegrateTemporaryVariableVisitorOptions (changes, options));
 				//				Console.WriteLine ("AcceptVisitor done");
 			} catch (IntegrateTemporaryVariableException e) {
@@ -145,12 +141,11 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				TextReplaceChange change = new TextReplaceChange ();
 				change.Description = string.Format (GettextCatalog.GetString ("Substitute variable {0} with the Initializeexpression"), options.GetName ());
 				change.FileName = options.Options.Document.FileName;
-
-				change.Offset = options.Options.Document.Editor.Document.LocationToOffset (toReplace.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.BeginLine, toReplace.StartLocation.Column);
+				
+				change.Offset = options.Options.Document.Editor.Document.LocationToOffset (toReplace.StartLocation.Line, toReplace.StartLocation.Column);
 				change.RemovedChars = options.GetName ().Length;
 
-				INRefactoryASTProvider provider = options.Options.GetASTProvider ();
-				change.InsertedText = provider.OutputNode (options.Options.Dom, replaceWith);
+				change.InsertedText = options.Options.OutputNode (replaceWith);
 
 //				Console.WriteLine ("Replace done");
 				return change;
@@ -160,27 +155,29 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			{
 				//				Console.WriteLine ("LocalVariableDeclaration: " + localVariableDeclaration.StartLocation.ToString () + " - " + localVariableDeclaration.EndLocation.ToString ());
 				localVariableDeclaration.Type.AcceptVisitor (this, data);
+				
+				var options = (IntegrateTemporaryVariableVisitorOptions)data;
+				var editor = options.Options.Document.Editor.Document;
+				
 				foreach (var o in localVariableDeclaration.Variables) {
 					if (o.Name == ((IntegrateTemporaryVariableVisitorOptions)data).GetName ()) {
-						IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
-						options.Initializer = localVariableDeclaration.GetVariable (((LocalVariable)options.Options.SelectedItem).Name).Initializer.Clone ();
+						
+						options.Initializer = localVariableDeclaration.GetVariable (((IVariable)options.Options.SelectedItem).Name).Initializer.Clone ();
 						if (localVariableDeclaration.Variables.Count == 1) {
 							TextReplaceChange change = new TextReplaceChange ();
 							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
 							change.FileName = options.Options.Document.FileName;
-							int lineNumber = localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.BeginLine;
-							Console.WriteLine (localVariableDeclaration.StartLocation  + "/" + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start);
-							change.Offset = options.Options.Document.Editor.Document.LocationToOffset (lineNumber, localVariableDeclaration.StartLocation.Column);
-							int end = options.Options.Document.Editor.Document.LocationToOffset (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.BeginLine, localVariableDeclaration.EndLocation.Column);
+							int lineNumber = localVariableDeclaration.StartLocation.Line;
+							change.Offset = editor.LocationToOffset (lineNumber, localVariableDeclaration.StartLocation.Column);
+							int end = editor.LocationToOffset (localVariableDeclaration.EndLocation.Line, localVariableDeclaration.EndLocation.Column);
 							change.RemovedChars = end - change.Offset;
 							// check if whole line can be removed.
-							var line = options.Options.Document.Editor.GetLine (lineNumber);
-							Console.WriteLine (line.GetIndentation (options.Options.Document.Editor.Document).Length  + "/" + localVariableDeclaration.StartLocation.Column);
-							Console.WriteLine (options.Options.Document.Editor.GetTextAt (line));
-							if (line.GetIndentation (options.Options.Document.Editor.Document).Length == localVariableDeclaration.StartLocation.Column - 1) {
+							var line = editor.GetLine (lineNumber);
+							
+							if (line.GetIndentation (editor).Length == localVariableDeclaration.StartLocation.Column - 1) {
 								bool isEmpty = true;
 								for (int i = end; i < line.EndOffset; i++) {
-									if (!char.IsWhiteSpace (options.Options.Document.Editor.GetCharAt (i))) {
+									if (!char.IsWhiteSpace (editor.GetCharAt (i))) {
 										isEmpty = false;
 										break;
 									}
@@ -197,13 +194,13 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
 							change.FileName = options.Options.Document.FileName;
 
-							change.Offset = options.Options.Document.Editor.Document.LocationToOffset (localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.BeginLine, localVariableDeclaration.StartLocation.Column);
-							int end = options.Options.Document.Editor.Document.LocationToOffset (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.BeginLine, localVariableDeclaration.EndLocation.Column);
+							change.Offset = editor.LocationToOffset (localVariableDeclaration.StartLocation.Line, localVariableDeclaration.StartLocation.Column);
+							int end = editor.LocationToOffset (localVariableDeclaration.EndLocation.Line, localVariableDeclaration.EndLocation.Column);
 
 							change.RemovedChars = end - change.Offset;
 							localVariableDeclaration.Variables.Remove (localVariableDeclaration.GetVariable (options.GetName ()));
-							INRefactoryASTProvider provider = options.Options.GetASTProvider ();
-							change.InsertedText = options.Options.GetWhitespaces (change.Offset) + provider.OutputNode (options.Options.Dom, localVariableDeclaration);
+							
+							change.InsertedText = options.Options.GetWhitespaces (change.Offset) + options.Options.OutputNode (localVariableDeclaration);
 							((IntegrateTemporaryVariableVisitorOptions)data).Changes.Add (change);
 						}
 					} else {
@@ -433,7 +430,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			}
 			public string GetName ()
 			{
-				return ((LocalVariable)Options.SelectedItem).Name;
+				return ((IVariable)Options.SelectedItem).Name;
 			}
 			public IntegrateTemporaryVariableVisitorOptions (List<Change> changes, RefactoringOptions options)
 			{

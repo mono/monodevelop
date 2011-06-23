@@ -89,6 +89,19 @@ namespace MonoDevelop.Refactoring
 			}
 			return result.ToString ();
 		}
+
+		public string OutputNode (AstNode node)
+		{
+			using (var stringWriter = new System.IO.StringWriter ()) {
+				var formatter = new TextWriterOutputFormatter (stringWriter);
+//				formatter.Indentation = indentLevel;
+				stringWriter.NewLine = Document.Editor.EolMarker;
+				
+				var visitor = new OutputVisitor (formatter, new CSharpFormattingOptions ());
+				node.AcceptVisitor (visitor, null);
+				return stringWriter.ToString ();
+			}
+		}
 		
 		public CodeGenerator CreateCodeGenerator ()
 		{

@@ -118,6 +118,8 @@
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
+    <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
+    <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -189,7 +191,6 @@
     <None Include="ChangeLog" />
     <None Include="MonoDevelop.AnalysisCore\README.txt" />
     <None Include="MonoDevelop.AnalysisCore\TODO.txt" />
-    <None Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
     <None Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantRefactoring.cs" />
     <None Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantDialog.cs" />
     <None Include="MonoDevelop.Refactoring.CreateClass\CreateClassCodeGenerator.cs" />
@@ -203,7 +204,6 @@
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
     <None Include="MonoDevelop.Refactoring\EncapsulateFieldDialog.cs" />
     <None Include="MonoDevelop.Refactoring\OverridesImplementsDialog.cs" />
-    <None Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
     <None Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
