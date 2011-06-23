@@ -97,16 +97,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				declaringType = options.Document.ParsedDocument.GetTypeDefinition (options.Location);
 				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
 			}
-			if (declaringType != null && !HasCompatibleMethod (ctx, declaringType, methodName, invocation)) {
-/*				if (declaringType.GetDefinition ().GetParts ())
-					declaringType = declaringType.Parts.FirstOrDefault (t => t.GetDefinition ().Region.FileName == options.Document.FileName) ?? declaringType;
-				if (declaringType == null || declaringType.CompilationUnit == null)
-					return false;*/
-				var doc = IdeApp.Workbench.OpenDocument (declaringType.Region.FileName);
-				declaringType = doc.ParsedDocument.GetTypeDefinition (declaringType.Region.Begin) ?? declaringType;
-				return true;
-			}
-			return false;
+			return declaringType != null && !HasCompatibleMethod (ctx, declaringType, methodName, invocation);
 		}
 		
 		IType GetDelegateType (RefactoringOptions options, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)

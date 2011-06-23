@@ -173,8 +173,8 @@ namespace MonoDevelop.CSharp.Inspection
 		}
 		
 		public bool CheckVariableDeclaration (ICS.VariableDeclarationStatement node, InspectionData data)
-		{ // TODO: Type system conversion.
-			return false;
+		{
+// local varialbes shouldn't be checked.
 //			if ((MatchKind != 0 && (MatchKind & DeclarationKinds.LocalVariable) == 0) || !CheckModifiers (node.Modifiers, ICS.Modifiers.Private))
 //				return false;
 //			var member = data.Document.ParsedFile.GetMember (node.StartLocation);
@@ -188,7 +188,7 @@ namespace MonoDevelop.CSharp.Inspection
 //				data.Add (GetFixableResult (var.NameToken.StartLocation, v, name));
 //			}
 //			
-//			return true;
+			return true;
 		}
 		
 		public bool CheckProperty (ICS.PropertyDeclaration node, InspectionData data)
