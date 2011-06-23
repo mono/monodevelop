@@ -102,6 +102,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				case TypeCode.String:
 					return new PrimitiveType("string");
 			}
+			// There is no type code for System.Void
+			if (typeDef != null && typeDef.Namespace == "System" && typeDef.Name == "Void" && typeDef.TypeParameterCount == 0)
+				return new PrimitiveType("void");
 			if (resolver != null && TypeArgumentsTrivial(typeArguments, OuterTypeParameterCount(typeDef))) {
 				TypeResolveResult trr = resolver.ResolveSimpleName(typeDef.Name, typeArguments) as TypeResolveResult;
 				if (trr != null && !trr.IsError && trr.Type.GetDefinition() == typeDef) {
