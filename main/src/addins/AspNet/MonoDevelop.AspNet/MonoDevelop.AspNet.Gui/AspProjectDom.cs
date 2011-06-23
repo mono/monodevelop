@@ -27,6 +27,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -45,22 +47,23 @@ namespace MonoDevelop.AspNet.Gui
 			this.info = info;
 		}
 		
-		ITypeDefinition constructedType = null;
+		CompoundTypeDefinition constructedType = null;
 		ITypeDefinition CheckType (ITypeDefinition type)
 		{
-// TODO: Type system conversion.
-//			if (type == null)
-//				return null;
-//			var cu =info.ParsedDocument.CompilationUnit;
-//			var firstType = cu.Types.FirstOrDefault ();
-//			if (type.IsPartial && firstType != null && firstType.FullName == type.FullName) {
-//				if (constructedType != null)
-//					return constructedType;
-//				constructedType = CompoundType.Merge (firstType, type);
-//				constructedType = CompoundType.Merge (constructedType, info.CodeBesideClass);
+			if (type == null)
+				return null;
+			var cu =info.ParsedDocument.CompilationUnit;
+			var firstType = cu.Types.FirstOrDefault ();
+			if (type.IsPartial && firstType != null && firstType.FullName == type.FullName) {
+				if (constructedType != null)
+					return constructedType;
+				constructedType = new CompoundTypeDefinition ();
+				constructedType.AddPart (firstType);
+				constructedType.AddPart (type);
+				constructedType.AddPart (info.CodeBesideClass);
 //				constructedType.GetProjectContent () = this;
-//				return constructedType;
-//			}
+				return constructedType;
+			}
 			return type;
 		}
 		
