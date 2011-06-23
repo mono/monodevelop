@@ -256,6 +256,8 @@ namespace MonoDevelop.TypeSystem
 		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, AstLocation caretLocation);
 
 		public abstract string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type);
+
+		public abstract void CompleteStatement (MonoDevelop.Ide.Gui.Document doc);
 	}
 	
 	public class CodeGeneratorMemberResult

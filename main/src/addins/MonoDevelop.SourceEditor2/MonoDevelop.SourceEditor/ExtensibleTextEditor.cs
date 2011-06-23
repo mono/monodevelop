@@ -997,14 +997,13 @@ namespace MonoDevelop.SourceEditor
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CompleteStatement)]
 		internal void OnCompleteStatement ()
-		{ // TODO: Type system conversion.
-//			var refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-//			AstLocation caretLocation = refactorer.CompleteStatement (ITypeResolveContext, Document.FileName, new AstLocation (Caret.Line, Caret.Column));
-//			Caret.Line   = caretLocation.Line;
-//			Caret.Column = caretLocation.Column;
+		{
+			var generator = CodeGenerator.CreateGenerator (GetTextEditorData ());
+			if (generator != null) {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				generator.CompleteStatement (doc);
+			}
 		}
-		
-		
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord)]
 		internal void OnDeletePrevWord ()

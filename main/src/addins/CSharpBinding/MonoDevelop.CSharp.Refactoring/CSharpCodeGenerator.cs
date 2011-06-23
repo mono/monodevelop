@@ -715,6 +715,56 @@ namespace MonoDevelop.CSharp.Refactoring
 			return builder.ConvertType (fullType);
 		}
 		
+		public override void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
+		{
+			var file = doc.Editor;
+			var caretLocation = file.Caret.Location;
+			
+			int pos = file.LocationToOffset (caretLocation.Line + 1, 1);
+			StringBuilder line = new StringBuilder ();
+			int lineNr = caretLocation.Line + 1, column = 1, maxColumn = 1, lastPos = pos;
+			if (true) 
+				while (lineNr == caretLocation.Line + 1) {
+					maxColumn = column;
+					lastPos = pos;
+					line.Append (file.GetCharAt (pos));
+					pos++;
+					var loc = file.OffsetToLocation (pos);
+					lineNr = loc.Line;
+					column = loc.Column;
+				}
+			string trimmedline = line.ToString ().Trim ();
+			string indent = line.ToString ().Substring (0, line.Length - line.ToString ().TrimStart (' ', '\t').Length);
+			if (trimmedline.EndsWith (";") || trimmedline.EndsWith ("{")) {
+				file.Caret.Location = caretLocation;
+				return;
+			}
+			
+			if (trimmedline.StartsWith ("if") || 
+			    trimmedline.StartsWith ("while") ||
+			    trimmedline.StartsWith ("switch") ||
+			    trimmedline.StartsWith ("for") ||
+			    trimmedline.StartsWith ("foreach")) {
+				if (!trimmedline.EndsWith (")")) {
+					file.Insert (lastPos, " () {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "}");
+					caretLocation.Column = maxColumn + 1;
+				} else {
+					file.Insert (lastPos, " {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "}");
+					caretLocation.Column = indent.Length + 1;
+					caretLocation.Line++;
+				}
+			} else if (trimmedline.StartsWith ("do")) {
+				file.Insert (lastPos, " {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "} while ();");
+				caretLocation.Column = indent.Length + 1;
+				caretLocation.Line++;
+			} else {
+				file.Insert (lastPos, ";" + file.EolMarker + indent);
+				caretLocation.Column = indent.Length;
+				caretLocation.Line++;
+			}
+			file.Caret.Location = caretLocation;
+		}
+		
 		
 	}
 }
