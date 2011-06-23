@@ -391,7 +391,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			TemplateContext context = new TemplateContext {
 				Template = this,
 				Document = document,
-				ITypeResolveContext = dom,
+				Ctx = dom,
 				ParsedDocument = doc,
 				InsertPosition = data.Caret.Location,
 				LineIndent = data.Document.GetLineIndent (data.Caret.Line),

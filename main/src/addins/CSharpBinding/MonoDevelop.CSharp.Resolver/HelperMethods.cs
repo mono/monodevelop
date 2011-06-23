@@ -88,5 +88,14 @@ namespace MonoDevelop.CSharp
 				return parser.Parse (stream);
 			}
 		}
+		
+		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
+		{
+			var dom =doc.TypeResolveContext;
+			var policyParent = doc.Project != null ? doc.Project.Policies : null;
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			return codePolicy.CreateOptions ();
+		}
 	}
 }

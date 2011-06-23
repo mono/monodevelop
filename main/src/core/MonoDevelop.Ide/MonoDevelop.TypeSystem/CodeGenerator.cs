@@ -286,6 +286,8 @@ namespace MonoDevelop.TypeSystem
 		
 		public abstract void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName);
 		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, AstLocation caretLocation);
+
+		public abstract string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type);
 	}
 	
 	public class CodeGeneratorMemberResult

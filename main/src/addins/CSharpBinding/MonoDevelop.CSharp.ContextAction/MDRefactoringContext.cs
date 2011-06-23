@@ -70,11 +70,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public override CSharpFormattingOptions FormattingOptions {
 			get {
-				var dom = Document.TypeResolveContext;
-				var policyParent = Document.Project != null ? Document.Project.Policies : null;
-				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-				var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-				return codePolicy.CreateOptions ();
+				return Document.GetFormattingOptions ();
 			}
 		}
 		

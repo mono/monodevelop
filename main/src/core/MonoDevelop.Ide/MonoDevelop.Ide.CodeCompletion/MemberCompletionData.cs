@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class MemberCompletionData : CompletionData
 	{
-		public IEntity Member {
+		public object Member {
 			get;
 			set;
 		}

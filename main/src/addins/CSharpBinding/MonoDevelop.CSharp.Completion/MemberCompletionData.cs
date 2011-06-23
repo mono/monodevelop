@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					displayText = ambience.GetString (editorCompletion.ctx, Member, flags | OutputFlags.HideGenericParameterNames);
+					displayText = ambience.GetString (editorCompletion.ctx, Member as IEntity, flags | OutputFlags.HideGenericParameterNames);
 				}
 				return displayText; 
 			}
@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override IconId Icon {
 			get {
-				return Member.GetStockIcon ();
+				return (Member as IEntity).GetStockIcon ();
 			}
 		}
 		
@@ -259,7 +259,7 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = true;
 			if (Member is IMethod && ((IMethod)Member).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			sb.Append (ambience.GetString (editorCompletion.ctx, Member, 
+			sb.Append (ambience.GetString (editorCompletion.ctx, Member as IEntity, 
 				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
 
 			var m = (IMember)Member;
@@ -302,8 +302,8 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public int Compare (CompletionData x, CompletionData y)
 			{
-				var mx = ((MemberCompletionData)x).Member;
-				var my = ((MemberCompletionData)y).Member;
+				var mx = ((MemberCompletionData)x).Member as IMember;
+				var my = ((MemberCompletionData)y).Member as IMember;
 				int result;
 				
 				if (mx is ITypeDefinition && my is ITypeDefinition) {
@@ -355,19 +355,19 @@ namespace MonoDevelop.CSharp.Completion
 				// note that the overload tree is traversed top down.
 				var member = Member as IMember;
 				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType != null && ((IMember)overload.Member).DeclaringType != null && member.DeclaringType.ReflectionName != ((IMember)overload.Member).DeclaringType.ReflectionName) {
-					string str1 = ambience.GetString (editorCompletion.ctx, member, flags);
-					string str2 = ambience.GetString (editorCompletion.ctx, overload.Member, flags);
+					string str1 = ambience.GetString (editorCompletion.ctx, member as IMember, flags);
+					string str2 = ambience.GetString (editorCompletion.ctx, overload.Member as IMember, flags);
 					if (str1 == str2) {
 						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Member)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Member)))
-							SetMember (overload.Member);
+							SetMember (overload.Member as IMember);
 						return;
 					}
 				}
 				
 				string MemberId = (overload.Member as IMember).GetHelpUrl ();
 				if (Member is IMethod && overload.Member is IMethod) {
-					string signature1 = ambience.GetString (editorCompletion.ctx, Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
-					string signature2 = ambience.GetString (editorCompletion.ctx, overload.Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+					string signature1 = ambience.GetString (editorCompletion.ctx, Member as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+					string signature2 = ambience.GetString (editorCompletion.ctx, overload.Member as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
 					if (signature1 == signature2)
 						return;
 				}

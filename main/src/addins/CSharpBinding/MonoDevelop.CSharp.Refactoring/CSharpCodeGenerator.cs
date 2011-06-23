@@ -32,6 +32,7 @@ using System.Linq;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -667,5 +668,41 @@ namespace MonoDevelop.CSharp.Refactoring
 				doc.Editor.Caret.Offset = caretOffset + inserted;
 			doc.Editor.Document.EndAtomicUndo ();
 		}
+		
+		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)
+		{
+			AstType shortType = CreateShortType (doc, type);
+			return OutputNode (doc, shortType);
+		}
+		
+		static string OutputNode (MonoDevelop.Ide.Gui.Document doc, AstNode node)
+		{
+			using (var stringWriter = new System.IO.StringWriter ()) {
+//				formatter.Indentation = indentLevel;
+				var formatter = new TextWriterOutputFormatter (stringWriter);
+				stringWriter.NewLine = doc.Editor.EolMarker;
+				
+				var visitor = new OutputVisitor (formatter, doc.GetFormattingOptions ());
+				node.AcceptVisitor (visitor, null);
+				return stringWriter.ToString ();
+			}
+		}
+		
+		
+		static AstType CreateShortType (MonoDevelop.Ide.Gui.Document doc, IType fullType)
+		{
+			var csResolver = new CSharpResolver (doc.TypeResolveContext, System.Threading.CancellationToken.None);
+			
+			var pf = doc.ParsedDocument.Annotation<ParsedFile> ();
+			var loc = new AstLocation (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+			csResolver.CurrentMember = pf.GetMember (loc);
+			csResolver.CurrentTypeDefinition = pf.GetTypeDefinition (loc);
+			csResolver.UsingScope = pf.GetUsingScope (loc);
+			
+			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
+			return builder.ConvertType (fullType);
+		}
+		
+		
 	}
 }

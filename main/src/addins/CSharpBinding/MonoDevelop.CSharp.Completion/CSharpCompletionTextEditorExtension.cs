@@ -1340,9 +1340,9 @@ namespace MonoDevelop.CSharp.Completion
 				data.TryGetValue (memberKey, out existingData);
 				
 				if (existingData != null) {
-					var a = member;
+					var a = member as IEntity;
 					foreach (MemberCompletionData md in existingData) {
-						var b = md.Member;
+						var b = md.Member as IEntity;
 						if (a == null || b == null || a.EntityType == b.EntityType) {
 							md.AddOverload (newData);
 							newData = null;
