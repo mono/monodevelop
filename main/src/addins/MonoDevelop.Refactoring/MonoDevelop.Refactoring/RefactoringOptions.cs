@@ -146,14 +146,19 @@ namespace MonoDevelop.Refactoring
 		
 		public List<string> GetUsedNamespaces ()
 		{
+			return GetUsedNamespaces (Document, Location);
+		}
+		
+		public static List<string> GetUsedNamespaces (Document doc, AstLocation loc)
+		{
 			var result = new List<string> ();
-			var pf = Document.ParsedDocument.Annotation<ParsedFile> ();
+			var pf = doc.ParsedDocument.Annotation<ParsedFile> ();
 			if (pf == null)
 				return result;
-			var scope = pf.GetUsingScope (Location);
+			var scope = pf.GetUsingScope (loc);
 			if (scope == null)
 				return result;
-			var ctx = Document.TypeResolveContext;
+			var ctx = doc.TypeResolveContext;
 			
 			for (var n = scope; n != null; n = n.Parent) {
 				result.Add (n.NamespaceName);

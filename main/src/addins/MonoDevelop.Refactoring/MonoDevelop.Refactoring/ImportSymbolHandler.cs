@@ -38,10 +38,12 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
-using MonoDevelop.Refactoring.RefactorImports;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.Refactoring
 {
@@ -55,33 +57,32 @@ namespace MonoDevelop.Refactoring
 	{
 		Dictionary<string, GenerateNamespaceImport> cache = new Dictionary<string, GenerateNamespaceImport> ();
 		
-		public GenerateNamespaceImport GetResult (ITypeResolveContext dom, IParsedFile unit, IType type, TextEditorData data)
+		public GenerateNamespaceImport GetResult (ITypeResolveContext dom, IParsedFile unit, IType type, MonoDevelop.Ide.Gui.Document doc)
 		{
 			GenerateNamespaceImport result;
 			if (cache.TryGetValue (type.Namespace, out result))
 				return result;
 			result = new GenerateNamespaceImport ();
 			cache[type.Namespace] = result;
+			TextEditorData data = doc.Editor;
 			
 			result.InsertNamespace  = false;
-			
-			AstLocation location = new AstLocation (data.Caret.Line, data.Caret.Column);
-			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
-				if (u.Namespaces.Any (ns => type.Namespace == ns)) {
+			var loc = new AstLocation (data.Caret.Line, data.Caret.Column);
+			foreach (var ns in RefactoringOptions.GetUsedNamespaces (doc, loc)) {
+				if (type.Namespace == ns) {
 					result.GenerateUsing = false;
 					return result;
 				}
 			}
-			result.GenerateUsing = true;
-			string name = type.DecoratedFullName.Substring (type.Namespace.Length + 1);
 			
-			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
-				foreach (string ns in u.Namespaces) {
-					if (dom.SearchType (unit, unit.GetTypeAt (location), location, ns + "." + name) != null) {
-						result.GenerateUsing = false;
-						result.InsertNamespace = true;
-						return result;
-					}
+			result.GenerateUsing = true;
+			string name = type.Name;
+			
+			foreach (string ns in RefactoringOptions.GetUsedNamespaces (doc, loc)) {
+				if (dom.GetTypeDefinition (ns, name, type.TypeParameterCount, StringComparer.Ordinal) != null) {
+					result.GenerateUsing = false;
+					result.InsertNamespace = true;
+					return result;
 				}
 			}
 			return result;
@@ -93,7 +94,7 @@ namespace MonoDevelop.Refactoring
 		TextEditorData data;
 		IType type;
 		Ambience ambience;
-		IParsedFile unit;
+		ParsedDocument unit;
 		ITypeResolveContext dom;
 		MonoDevelop.Ide.Gui.Document doc;
 		ImportSymbolCache cache;
@@ -108,9 +109,9 @@ namespace MonoDevelop.Refactoring
 			this.cache = cache;
 			this.dom = dom;
 			this.data = doc.Editor;
-			this.ambience = doc.Project != null ? doc.Project.Ambience : AmbienceService.GetAmbienceForFile (doc.FileName);
+			this.ambience = AmbienceService.GetAmbience (doc.Editor.MimeType);
 			this.type = type;
-			this.unit = doc.CompilationUnit;
+			this.unit = doc.ParsedDocument;
 		}
 		
 		bool initialized = false;
@@ -123,7 +124,7 @@ namespace MonoDevelop.Refactoring
 			initialized = true;
 			if (string.IsNullOrEmpty (type.Namespace)) 
 				return;
-			var result = cache.GetResult (dom, unit, type, data);
+			var result = cache.GetResult (dom, unit, type, doc);
 			generateUsing = result.GenerateUsing;
 			insertNamespace = result.InsertNamespace;
 		}
@@ -140,10 +141,12 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (!window.WasShiftPressed && generateUsing) {
-				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-				refactorer.AddGlobalNamespaceImport (dom, data.Document.FileName, type.Namespace);
-				// add using to compilation unit (this way the using is valid before the parser thread updates)
-				((MonoDevelop.Projects.Dom.CompilationUnit)doc.CompilationUnit).AddAtTop (new DomUsing (new DomRegion (1, 1, int.MaxValue, 1), type.Namespace));
+				var generator = CodeGenerator.CreateGenerator (doc.Editor);
+				if (generator != null) {
+					generator.AddGlobalNamespaceImport (doc, type.Namespace);
+					// reparse
+					doc.UpdateParseDocument ();
+				}
 			}
 		}
 		#endregion
@@ -151,14 +154,14 @@ namespace MonoDevelop.Refactoring
 		#region ICompletionData implementation
 		public override IconId Icon {
 			get {
-				return type.StockIcon;
+				return type.GetStockIcon ();
 			}
 		}
 		string displayText = null;
 		public override string DisplayText {
 			get {
 				if (displayText == null)
-					displayText = ambience.GetString (type, OutputFlags.IncludeGenerics);
+					displayText = ambience.GetString (dom, type, OutputFlags.IncludeGenerics);
 				return displayText;
 			}
 		}
@@ -200,7 +203,7 @@ namespace MonoDevelop.Refactoring
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.CompilationUnit == null)
+			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
 				return;
 			ITextEditorExtension ext = doc.EditorExtension;
 			while (ext != null && !(ext is CompletionTextEditorExtension))
@@ -208,17 +211,12 @@ namespace MonoDevelop.Refactoring
 			if (ext == null)
 				return;
 		
-			ITypeResolveContext dom = doc.Dom;
+			ITypeResolveContext dom = doc.TypeResolveContext;
 			ImportSymbolCache cache = new ImportSymbolCache ();
 			
 			List<ImportSymbolCompletionData> typeList = new List<ImportSymbolCompletionData> ();
-			foreach (IType type in dom.Types) {
+			foreach (var type in dom.GetTypes ()) {
 				typeList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
-			}
-			foreach (var refDom in dom.References) {
-				foreach (IType type in refDom.Types) {
-					typeList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
-				}
 			}
 			
 			typeList.Sort (delegate (ImportSymbolCompletionData left, ImportSymbolCompletionData right) {

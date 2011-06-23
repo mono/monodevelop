@@ -79,6 +79,7 @@ FILES =  \
 	MonoDevelop.Refactoring/FindDerivedClassesHandler.cs \
 	MonoDevelop.Refactoring/FindReferencesHandler.cs \
 	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
+	MonoDevelop.Refactoring/ImportSymbolHandler.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \
 	MonoDevelop.Refactoring/RefactoringOptions.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \

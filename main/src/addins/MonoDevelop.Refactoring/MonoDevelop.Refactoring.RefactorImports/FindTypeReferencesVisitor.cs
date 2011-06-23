@@ -29,20 +29,21 @@ using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.Refactoring.RefactorImports
 {
 	public class FindTypeReferencesVisitor : DepthFirstAstVisitor<object, object>
 	{
 		TextEditorData data;
-		IResolver resolver;
+		ResolveVisitor resolver;
 		List<AstType> possibleTypeReferences = new List<AstType> ();
 		
 		public List<AstType> PossibleTypeReferences {
 			get { return this.possibleTypeReferences; }
 		}
 		
-		public FindTypeReferencesVisitor (TextEditorData data, IResolver resolver)
+		public FindTypeReferencesVisitor (TextEditorData data, ResolveVisitor resolver)
 		{
 			this.data = data;
 			this.resolver = resolver;
@@ -96,10 +97,11 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			}
 			base.VisitInvocationExpression (invocationExpression, data);
 			
-			MethodResolveResult mrr = resolver.Resolve (new ExpressionResult (invocation), new AstLocation (invocationExpression.StartLocation.Line, invocationExpression.StartLocation.Column)) as MethodResolveResult;
-			if (mrr != null && mrr.MostLikelyMethod != null && mrr.MostLikelyMethod is ExtensionMethod) {
-				IMethod originalMethod = ((ExtensionMethod)mrr.MostLikelyMethod).OriginalMethod;
-				possibleTypeReferences.Add (new SimpleType (originalMethod.DeclaringType.Name));
+			var mrr = resolver.Resolve (invocationExpression) as MethodGroupResolveResult;
+			if (mrr != null && mrr.Methods.Count > 0  && mrr.Methods.First ().IsExtensionMethod) {
+				// todo convert ts -> ast type
+//				 mrr.Methods.First ().DeclaringTypeDefinition
+//				possibleTypeReferences.Add (new SimpleType (originalMethod.DeclaringType.Name));
 			}
 			return null;
 		}

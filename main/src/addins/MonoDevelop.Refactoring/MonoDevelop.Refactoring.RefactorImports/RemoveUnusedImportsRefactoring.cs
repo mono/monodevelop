@@ -28,8 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Refactoring.RefactorImports
 {

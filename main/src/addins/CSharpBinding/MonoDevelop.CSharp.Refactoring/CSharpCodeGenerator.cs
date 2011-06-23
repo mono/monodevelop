@@ -613,7 +613,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				var loc = node == unit.FirstChild ? node.StartLocation : node.EndLocation;
 				offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
 			}
-			doc.Editor.Insert (offset, text.ToString ());
+			doc.Editor.Document.BeginAtomicUndo ();
+			int caretOffset = doc.Editor.Caret.Offset;
+			int inserted = doc.Editor.Insert (offset, text.ToString ());
+			if (offset < caretOffset)
+				doc.Editor.Caret.Offset = caretOffset + inserted;
+			doc.Editor.Document.EndAtomicUndo ();
 			doc.Editor.Document.CommitUpdateAll ();
 		}
 		
@@ -653,10 +658,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else {
 				loc = nsDecl.LBraceToken.EndLocation;
 			}
-			
 			offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
-			doc.Editor.Insert (offset, text.ToString ());
-			doc.Editor.Document.CommitUpdateAll ();
+			
+			doc.Editor.Document.BeginAtomicUndo ();
+			int caretOffset = doc.Editor.Caret.Offset;
+			int inserted = doc.Editor.Insert (offset, text.ToString ());
+			if (offset < caretOffset)
+				doc.Editor.Caret.Offset = caretOffset + inserted;
+			doc.Editor.Document.EndAtomicUndo ();
 		}
 	}
 }
