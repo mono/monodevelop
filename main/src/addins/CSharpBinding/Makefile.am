@@ -90,6 +90,8 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodHandler.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
+	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalCodeGenerator.cs \
+	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalHandler.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
 	MonoDevelop.CSharp/CSharpAmbience.cs \

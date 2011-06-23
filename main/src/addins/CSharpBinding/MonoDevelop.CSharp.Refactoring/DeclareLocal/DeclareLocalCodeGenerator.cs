@@ -30,14 +30,14 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Refactoring;
 using System.IO;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 {
@@ -62,33 +62,36 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			return GettextCatalog.GetString ("_Declare Local");
 		}
 		
-		string expressionText;
+		Expression selectedExpression;
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			IResolver resolver = options.GetResolver ();
-			INRefactoryASTProvider provider = options.GetASTProvider ();
 			TextEditorData data = options.GetTextEditorData ();
 			
-			if (resolver == null || provider == null || data == null || !data.IsSomethingSelected)
+			if (data == null || !data.IsSomethingSelected)
 				return false;
-			expressionText = data.SelectedText.Trim ();
-			ExpressionResult expressionResult = new ExpressionResult (expressionText);
-			if (expressionResult.Expression.Contains (" ") || expressionResult.Expression.Contains ("\t"))
-				expressionResult.Expression = "(" + expressionResult.Expression + ")";
 			
+			var startPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Anchor : data.MainSelection.Lead; 
 			var endPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Lead : data.MainSelection.Anchor; 
-			options.ResolveResult = resolver.Resolve (expressionResult, new AstLocation (endPoint.Line, endPoint.Column));
+			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
 			
-			if (options.ResolveResult == null)
+			var startExpression = unit.GetNodeAt<Expression> (startPoint.Line, startPoint.Column);
+			var endExpression = unit.GetNodeAt<Expression> (endPoint.Line, endPoint.Column);
+			if (startExpression == null || endExpression == null)
 				return false;
 			
-			if (options.ResolveResult.CallingMember == null || !options.ResolveResult.CallingMember.BodyRegion.Contains (endPoint.Line, endPoint.Column))
-				return false;
+			selectedExpression = GetExpressionTree (startExpression).FirstOrDefault (p => GetExpressionTree (endExpression).Contains (p));
+			
+			return selectedExpression != null;
+		}
 		
-			return options.ResolveResult.ResolvedType != null && !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName) && 
-				(options.ResolveResult.ResolvedType.FullName != DomReturnType.Void.FullName || 
-				(options.ResolveResult is MethodResolveResult && !((MethodResolveResult)options.ResolveResult).GetsInvoked));
+		IEnumerable<Expression> GetExpressionTree (Expression start)
+		{
+			var node = start;
+			while (node != null) {
+				yield return node;
+				node = node.Parent as Expression;
+			}
 		}
 		
 		List<AstNode> matches = new List<AstNode> ();
@@ -97,9 +100,8 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		void SearchMatchingExpressions (RefactoringOptions options)
 		{
 			var parser = new CSharpParser ();
-			var astNode = parser.ParseExpression (new StringReader (expressionText));
 			var data = options.GetTextEditorData ();
-			var unit = parser.Parse (data);
+			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
 			if (unit != null) {
 				var node = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 				while (node != null && !(node is BlockStatement)) {
@@ -112,7 +114,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 					while (nodeStack.Count > 0) {
 						var curNode = nodeStack.Pop ();
 						
-						if (curNode.StartLocation > minLoc && curNode.IsMatch (astNode)) {
+						if (curNode.StartLocation > minLoc && curNode.IsMatch (selectedExpression)) {
 							matches.Add (curNode);
 						}
 						foreach (var child in curNode.Children)
@@ -173,31 +175,29 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		string varName;
 		int varCount;
 		
-		public IReturnType GetResolvedType (RefactoringOptions options, ResolveResult resolveResult)
+		public ITypeReference GetResolvedType (RefactoringOptions options, ResolveResult resolveResult)
 		{
-			var result = resolveResult.ResolvedType;
-			if (result == null || string.IsNullOrEmpty (result.Name))
-				result = DomReturnType.Object;
-			if (resolveResult is MethodResolveResult) {
-				var mrr = (MethodResolveResult)resolveResult;
-				if (!mrr.GetsInvoked) {
-					var method = options.SelectedItem as IMethod ?? mrr.MostLikelyMethod;
-					
-					DomReturnType type;
-					if (method.ReturnType == null || method.ReturnType.FullName == DomReturnType.Void.FullName) {
-						type = new DomReturnType ("System.Action");
-					} else {
-						type = new DomReturnType ("System.Func");
-					}
-						
-					foreach (var param in method.Parameters)
-						type.AddTypeParameter (param.ReturnType);
-					
-					if (method.ReturnType != null && method.ReturnType.FullName != DomReturnType.Void.FullName)
-						type.AddTypeParameter (method.ReturnType);
-					result = type;
-				}
-			}
+			ITypeReference result = resolveResult.Type;
+			if (result == null)
+				result = KnownTypeReference.Object;
+//			if (resolveResult is MethodGroupResolveResult) {
+//				var mrr = (MethodGroupResolveResult)resolveResult;
+//				var method = options.SelectedItem as IMethod ?? mrr.Methods.FirstOrDefault ();
+//				if (method == null)
+//					return KnownTypeReference.Object;
+//				ITypeReference type;
+//				if (method.ReturnType == null || method.ReturnType.FullName == DomReturnType.Void.FullName) {
+//					type = new DomReturnType ("System.Action");
+//				} else {
+//				}
+//					
+//				foreach (var param in method.Parameters)
+//					type.AddTypeParameter (param.ReturnType);
+//				
+//				if (method.ReturnType != null && method.ReturnType.FullName != DomReturnType.Void.FullName)
+//					type.AddTypeParameter (method.ReturnType);
+//				result = type;
+//			}
 			return result;
 		}
 		
@@ -207,10 +207,8 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			selectionStart = selectionEnd = -1;
 			
 			List<Change > result = new List<Change> ();
-			IResolver resolver = options.GetResolver ();
-			INRefactoryASTProvider provider = options.GetASTProvider ();
 			TextEditorData data = options.GetTextEditorData ();
-			if (resolver == null || provider == null || data == null)
+			if (data == null)
 				return result;
 			
 			DocumentLocation endPoint;
@@ -221,45 +219,37 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			}
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
-			var unit = provider.ParseFile (data.Document.Text);
-			if (unit == null) {
-				LoggingService.LogError ("Declare local error: parese file == null");
-				return result;
-			}
-			var visitor = new VariableLookupVisitor (resolver, new AstLocation (endPoint.Line, endPoint.Column));
+			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var visitor = new VariableLookupVisitor (options, new AstLocation (endPoint.Line, endPoint.Column));
+			var ctx = options.Document.TypeResolveContext;
 			if (options.ResolveResult == null) {
 				LoggingService.LogError ("Declare local error: resolve result == null");
 				return result;
 			}
-			IMember callingMember = options.ResolveResult.CallingMember;
+			IMember callingMember = options.Document.ParsedDocument.GetMember (options.Location);
 			if (callingMember != null)
-				visitor.MemberLocation = new AstLocation (callingMember.Location.Column, callingMember.Location.Line);
+				visitor.MemberLocation = callingMember.Region.Begin;
 			unit.AcceptVisitor (visitor, null);
-			
-			ExpressionResult expressionResult = new ExpressionResult (data.SelectedText.Trim ());
-			if (expressionResult.Expression.Contains (" ") || expressionResult.Expression.Contains ("\t"))
-				expressionResult.Expression = "(" + expressionResult.Expression + ")";
-			resolveResult = resolver.Resolve (expressionResult, new AstLocation (endPoint.Line, endPoint.Column));
+			resolveResult = options.Resolve (selectedExpression);
 			if (resolveResult == null)
 				return result;
-			IReturnType resolvedType = GetResolvedType (options, resolveResult); 
+			var resolvedType = resolveResult.Type.Resolve (ctx);
 			
 			AstType returnType;
-			if (resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.Name)) {
+			if (resolveResult.Type == null) {
 				returnType = new SimpleType ("var");
 			} else {
-				returnType = options.ShortenTypeName (resolvedType).ConvertToTypeReference ();
+				returnType = options.CreateShortType (resolvedType);
 			}
 			
 			varName = CreateVariableName (resolvedType, visitor);
-			options.ParseMember (resolveResult.CallingMember);
 			
 			// insert local variable declaration
 			TextReplaceChange insert = new TextReplaceChange ();
 			insert.FileName = options.Document.FileName;
 			insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 			
-			var varDecl = new VariableDeclarationStatement (returnType, varName, provider.ParseExpression (data.SelectedText));
+			var varDecl = new VariableDeclarationStatement (returnType, varName, selectedExpression.Clone ());
 			
 			var node = unit.GetNodeAt (endPoint.Line, endPoint.Column);
 			
@@ -274,8 +264,8 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 				lineSegment = data.Document.GetLine (containing.StartLocation.Line);
 			}
 			insert.Offset = lineSegment.Offset;
-			insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl);
-			var insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + provider.OutputNode (options.Dom, varDecl.Type).Length + " ".Length;
+			insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + options.OutputNode (varDecl);
+			var insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + options.OutputNode (varDecl.Type).Length + " ".Length;
 			offsets.Add (insertOffset);
 			result.Add (insert);
 			varCount++;
@@ -283,8 +273,10 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			// replace main selection
 			TextReplaceChange replace = new TextReplaceChange ();
 			replace.FileName = options.Document.FileName;
-			replace.Offset = data.SelectionRange.Offset;
-			replace.RemovedChars = data.SelectionRange.Length;
+			int startOffset = options.Document.Editor.LocationToOffset (selectedExpression.StartLocation.Line, selectedExpression.StartLocation.Column); 
+			int endOffset   = options.Document.Editor.LocationToOffset (selectedExpression.EndLocation.Line, selectedExpression.EndLocation.Column); 
+			replace.Offset = startOffset;
+			replace.RemovedChars = endOffset - startOffset;
 			replace.InsertedText = varName;
 			result.Add (replace);
 			int delta = insert.InsertedText.Length - insert.RemovedChars;
@@ -346,9 +338,9 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			return false;
 		}
 		
-		static string[] GetPossibleName (MonoDevelop.Projects.Dom.IReturnType returnType)
+		static string[] GetPossibleName (IType returnType)
 		{
-			switch (returnType.FullName) {
+			switch (returnType.ReflectionName) {
 			case "System.Byte":
 			case "System.SByte":
 				return new [] { "b" };
@@ -387,7 +379,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			return new [] { Char.ToLower (returnType.Name[0]) + returnType.Name.Substring (1) };
 		}
 		
-		static string CreateVariableName (MonoDevelop.Projects.Dom.IReturnType returnType, VariableLookupVisitor visitor)
+		static string CreateVariableName (IType returnType, VariableLookupVisitor visitor)
 		{
 			string[] possibleNames = GetPossibleName (returnType);
 			foreach (string name in possibleNames) {
@@ -441,7 +433,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			set;
 		}
 		
-		public IReturnType ReturnType {
+		public ITypeReference ReturnType {
 			get;
 			set;
 		}
@@ -465,7 +457,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 	
 	public class VariableLookupVisitor : DepthFirstAstVisitor<object, object>
 	{
-		List<KeyValuePair <string, IReturnType>> unknownVariables = new List<KeyValuePair <string, IReturnType>> ();
+		List<KeyValuePair <string, IType>> unknownVariables = new List<KeyValuePair <string, IType>> ();
 		Dictionary<string, VariableDescriptor> variables = new Dictionary<string, VariableDescriptor> ();
 		
 		public bool ReferencesMember {
@@ -473,7 +465,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			set;
 		}
 		
-		public List<KeyValuePair <string, IReturnType>> UnknownVariables {
+		public List<KeyValuePair <string, IType>> UnknownVariables {
 			get {
 				return unknownVariables;
 			}
@@ -496,14 +488,14 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			set;
 		}
 		
-		IResolver resolver;
+		RefactoringOptions resolver;
 		AstLocation position;
 		public DomRegion CutRegion {
 			get;
 			set;
 		}
 		
-		public VariableLookupVisitor (IResolver resolver, AstLocation position)
+		public VariableLookupVisitor (RefactoringOptions resolver, AstLocation position)
 		{
 			this.resolver = resolver;
 			this.position = position;
@@ -512,11 +504,11 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement localVariableDeclaration, object data)
 		{
-			if (!CutRegion.Contains (localVariableDeclaration.StartLocation.Line, localVariableDeclaration.StartLocation.Column)) {
+			if (!CutRegion.IsInside (localVariableDeclaration.StartLocation)) {
 				foreach (var varDecl in localVariableDeclaration.Variables) {
 					variables[varDecl.Name] = new VariableDescriptor (varDecl.Name) {
 						IsDefined = true, 
-						ReturnType = MonoDevelop.Refactoring.HelperMethods.ConvertToReturnType  (localVariableDeclaration.Type),
+						ReturnType = resolver.Resolve (localVariableDeclaration.Type).Type,
 						Location = new DocumentLocation (MemberLocation.Line + localVariableDeclaration.StartLocation.Line, localVariableDeclaration.StartLocation.Column)
 					};
 				}
@@ -527,28 +519,25 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
 		{
 			if (!variables.ContainsKey (identifierExpression.Identifier)) {
-
-				ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier);
-
-				ResolveResult result = resolver.Resolve (expressionResult, position);
+				var result = resolver.Resolve (identifierExpression);
 				
-				MemberResolveResult mrr = result as MemberResolveResult;
-				ReferencesMember |= mrr != null && mrr.ResolvedMember != null && !mrr.ResolvedMember.IsStatic;
+				var mrr = result as MemberResolveResult;
+				ReferencesMember |= mrr != null && mrr.Member != null && !mrr.Member.IsStatic;
 				
-				if (!(result is LocalVariableResolveResult || result is ParameterResolveResult))
+				if (!(result is LocalResolveResult))
 					return base.VisitIdentifierExpression (identifierExpression, data);
 				
 				// result.ResolvedType == null may be true for namespace names or undeclared variables
-				if (!result.StaticResolve && !variables.ContainsKey (identifierExpression.Identifier)) {
+				if (!(result is TypeResolveResult) && !variables.ContainsKey (identifierExpression.Identifier)) {
 					variables [identifierExpression.Identifier] = new VariableDescriptor (identifierExpression.Identifier) {
 						InitialValueUsed = !valueGetsChanged,
 						Location = new DocumentLocation (MemberLocation.Line + identifierExpression.StartLocation.Line, identifierExpression.StartLocation.Column)
 
 					};
-					variables [identifierExpression.Identifier].ReturnType = result.ResolvedType;
+					variables [identifierExpression.Identifier].ReturnType = result.Type;
 				}
-				if (result != null && !result.StaticResolve && result.ResolvedType != null && !(result is MethodResolveResult) && !(result is NamespaceResolveResult) && !(result is MemberResolveResult))
-					unknownVariables.Add (new KeyValuePair <string, IReturnType> (identifierExpression.Identifier, result.ResolvedType));
+				if (result != null && !(result is TypeResolveResult) && result.Type != null && !(result is MethodGroupResolveResult) && !(result is NamespaceResolveResult) && !(result is MemberResolveResult))
+					unknownVariables.Add (new KeyValuePair <string, IType> (identifierExpression.Identifier, result.Type));
 			}
 			return base.VisitIdentifierExpression (identifierExpression, data);
 		}

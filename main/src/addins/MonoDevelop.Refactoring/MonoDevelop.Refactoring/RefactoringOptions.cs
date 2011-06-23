@@ -97,7 +97,7 @@ namespace MonoDevelop.Refactoring
 			}
 			return result.ToString ();
 		}
-
+		
 		public string OutputNode (AstNode node)
 		{
 			using (var stringWriter = new System.IO.StringWriter ()) {
@@ -169,6 +169,32 @@ namespace MonoDevelop.Refactoring
 			return result;
 		}
 		
+		public ResolveResult Resolve (AstNode node)
+		{
+			var pf = Document.ParsedDocument.Annotation<ParsedFile> ();
+			var unit = Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var csResolver = new CSharpResolver (Document.TypeResolveContext, System.Threading.CancellationToken.None);
+			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
+			
+			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, pf, navigator);
+			unit.AcceptVisitor (visitor, null);
+			return visitor.Resolve (node);
+		}
+		
+		public AstType CreateShortType (IType fullType)
+		{
+			var csResolver = new CSharpResolver (Document.TypeResolveContext, System.Threading.CancellationToken.None);
+			
+			var pf = Document.ParsedDocument.Annotation<ParsedFile> ();
+			
+			csResolver.CurrentMember = pf.GetMember (Location);
+			csResolver.CurrentTypeDefinition = pf.GetTypeDefinition (Location);
+			csResolver.UsingScope = pf.GetUsingScope (Location);
+			
+			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
+			return builder.ConvertType (fullType);
+		}
+	
 		
 //		public List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
 //		{
