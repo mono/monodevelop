@@ -117,6 +117,9 @@ namespace MonoDevelop.TypeSystem
 			var scope = file.GetUsingScope (declaringType.Region.Begin);
 			while (scope != null) {
 				indentLevel++;
+				// skip virtual scopes.
+				while (scope.Parent != null && scope.Parent.Region == scope.Region)
+					scope = scope.Parent;
 				scope = scope.Parent;
 			}
 			return indentLevel;
