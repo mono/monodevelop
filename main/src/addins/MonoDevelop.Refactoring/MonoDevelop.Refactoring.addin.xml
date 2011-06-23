@@ -88,7 +88,6 @@
 	</ExtensionPoint>
 
 	<!-- Text editor integration -->
-<!--	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />
 	</Extension>
@@ -96,7 +95,6 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
-	-->
 	
 	<!-- RefactoryCommands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
