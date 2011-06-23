@@ -84,14 +84,17 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public static IEnumerable<Result> Check (Document input)
 		{
-			var unit = input != null ? input.ParsedDocument : null;
+			Console.WriteLine ("check !");
+			var unit = input.ParsedDocument.Annotation<CompilationUnit> ();
 			if (unit == null)
 				return Enumerable.Empty<Result> ();
 				
 			var cg = new CallGraph ();
-			cg.Inspect (input, unit);
+			cg.Inspect (input, input.ParsedDocument);
 			var data = new InspectionData () { Graph = cg, Document = input };
-//			unit.AcceptVisitor (visitor, data);
+			
+			unit.AcceptVisitor (visitor, data);
+			Console.WriteLine ("get results !");
 			return data.Results;
 		}
 	}

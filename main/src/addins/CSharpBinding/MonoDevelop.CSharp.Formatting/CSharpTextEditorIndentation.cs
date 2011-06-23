@@ -165,14 +165,8 @@ namespace MonoDevelop.CSharp.Formatting
 		#region Sharing the tracker
 
 		void InitTracker ()
-		{ // TODO: Type system conversion
-//			//if there's a CSharpTextEditorCompletion in the extension chain, we can reuse its stateTracker
-//			CSharpTextEditorCompletion c = this.Document.GetContent<CSharpTextEditorCompletion> ();
-//			if (c != null && c.StateTracker != null) {
-//				stateTracker = c.StateTracker;
-//			} else {
-				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData);
-//			}
+		{
+			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData);
 		}
 
 		internal DocumentStateTracker<CSharpIndentEngine> StateTracker { get { return stateTracker; } }

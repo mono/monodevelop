@@ -31,34 +31,34 @@ using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Ide.Gui;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class NotImplementedExceptionInspector : CSharpInspector
 	{
 		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitior)
-		{ // TODO: Type system conversion.
-//			visitior.ThrowStatementVisited += delegate(ThrowStatement node, InspectionData data) {
-//				if (node.Expression.IsNull)
-//					return;
-//				if (node.Expression is IdentifierExpression && ((IdentifierExpression)node.Expression).Identifier != "NotImplementedException")
-//					return;
-//				if (node.Expression is MemberReferenceExpression && ((MemberReferenceExpression)node.Expression).MemberName != "NotImplementedException")
-//					return;
-//				// may be a not implemented exception, to get 100% sure we need to make a resolve.
-//				var resolver = data.Resolver;
-//				var result = resolver.Resolve (node.Expression.ToString (), new AstLocation (node.StartLocation.Line, node.EndLocation.Column));
-//				if (result != null && result.Type.FullName != null && result.Type.FullName == "System.NotImplementedException") {
-//					data.Add (new Result (
-//						new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
-//						GettextCatalog.GetString ("NotImplemented exception thrown"),
-//						MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion,
-//						ResultCertainty.High,
-//						ResultImportance.Low,
-//						false)
-//					);
-//				}
-//			};
+		{
+			visitior.ThrowStatementVisited += delegate(ThrowStatement node, InspectionData data) {
+				if (node.Expression.IsNull)
+					return;
+				if (node.Expression is IdentifierExpression && ((IdentifierExpression)node.Expression).Identifier != "NotImplementedException")
+					return;
+				if (node.Expression is MemberReferenceExpression && ((MemberReferenceExpression)node.Expression).MemberName != "NotImplementedException")
+					return;
+				// may be a not implemented exception, to get 100% sure we need to make a resolve.
+				var result = data.Graph.Resolve (node.Expression);
+				if (result != null && result.Type.FullName != null && result.Type.FullName == "System.NotImplementedException") {
+					data.Add (new Result (
+						new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
+						GettextCatalog.GetString ("NotImplemented exception thrown"),
+						MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion,
+						ResultCertainty.High,
+						ResultImportance.Low,
+						false)
+					);
+				}
+			};
 		}
 	}
 }

@@ -35,11 +35,29 @@ namespace MonoDevelop.CSharp.ContextAction
 	{
 		public static int CalcIndentLevel (this MonoDevelop.Ide.Gui.Document doc, string indent)
 		{
-			return 0; // TODO: Type system conversion.
-//			int col = MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider.GetColumn (indent, 0, doc.Editor.Options.TabSize);
-//			return System.Math.Max (0, col / doc.Editor.Options.TabSize);
+			int col = GetColumn (indent, 0, doc.Editor.Options.TabSize);
+			return System.Math.Max (0, col / doc.Editor.Options.TabSize);
 		}
 		
+		public static int GetColumn (string wrapper, int i, int tabSize)
+		{
+			int j = i;
+			int col = 0;
+			for (; j < wrapper.Length && (wrapper[j] == ' ' || wrapper[j] == '\t'); j++) {
+				if (wrapper[j] == ' ') {
+					col++;
+				} else {
+					col = GetNextTabstop (col, tabSize);
+				}
+			}
+			return col;
+		}
+		
+		static int GetNextTabstop (int currentColumn, int tabSize)
+		{
+			int result = currentColumn + tabSize;
+			return (result / tabSize) * tabSize;
+		}
 		
 		static ExpressionVisitor exVisitor = new ExpressionVisitor ();
 		class ExpressionVisitor : DepthFirstAstVisitor<object, ICSharpCode.OldNRefactory.Ast.Expression>

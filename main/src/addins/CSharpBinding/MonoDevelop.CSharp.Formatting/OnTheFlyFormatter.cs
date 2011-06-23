@@ -61,82 +61,88 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, AstLocation location, bool correctBlankLines, bool runAferCR/* = false*/)
-		{ // TODO: Type system conversion.
+		{
+			if (data.ParsedDocument == null)
+				return;
+			var member = data.ParsedDocument.GetMember (location.Line + (runAferCR ? -1 : 0), location.Column);
+			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
+				return;
 			
-//			if (data.ParsedFile == null)
-//				return;
-//			var member = data.ParsedFile.GetMember (location.Line + (runAferCR ? -1 : 0), location.Column);
-//			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
-//				return;
-//			
-//			StringBuilder sb = new StringBuilder ();
-//			int closingBrackets = 0;
-//			DomRegion validRegion = DomRegion.Empty;
-//			foreach (var u in data.ParsedDocument.CompilationUnit.Usings.Where (us => us.IsFromNamespace)) {
-//				// the dom parser breaks A.B.C into 3 namespaces with the same region, this is filtered here
-//				if (u.ValidRegion == validRegion || !u.ValidRegion.Contains (location))
-//					continue;
-//				// indicates a parser error on namespace level.
-//				if (u.Namespaces.FirstOrDefault () == "<invalid>")
-//					continue;
-//				validRegion = u.ValidRegion;
-//				sb.Append ("namespace Stub {");
-//				closingBrackets++;
-//			}
-//			
-//			var parent = member.DeclaringType;
-//			while (parent != null) {
-//				sb.Append ("class Stub {");
-//				closingBrackets++;
-//				parent = parent.DeclaringType;
-//			}
-//			sb.AppendLine ();
-//			int startOffset = sb.Length;
-//			int memberStart = data.Editor.LocationToOffset (member.Location.Line, 1);
-//			int memberEnd = data.Editor.LocationToOffset (member.BodyRegion.EndLine + (runAferCR ? 1 : 0), member.BodyRegion.EndColumn);
-//			if (memberEnd < 0)
-//				memberEnd = data.Editor.Length;
-//			sb.Append (data.Editor.GetTextBetween (memberStart, memberEnd));
-//			int endOffset = sb.Length;
-//			sb.AppendLine ();
-//			sb.Append (new string ('}', closingBrackets));
-//			TextEditorData stubData = new TextEditorData () { Text = sb.ToString () };
-//			stubData.Document.FileName = data.FileName;
-//			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
-//			var compilationUnit = parser.Parse (stubData);
-//			bool hadErrors = parser.HasErrors;
-//			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-//			var adapter = new TextEditorDataAdapter (stubData);
-//			
-//			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data.Editor)) {
-//				HadErrors = hadErrors
-//			};
-//			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
-//			
-//			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-//			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
-//			
-//			int delta = data.Editor.LocationToOffset (member.Location.Line, 1) - startOffset;
-//			HashSet<int > lines = new HashSet<int> ();
-//			foreach (TextReplaceAction change in changes) {
-//				change.Offset += delta;
-//				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
-//			}
-//			// be sensible in documents with parser errors - only correct up to the caret position.
-//			if (hadErrors || data.ParsedDocument.Errors.Any (e => e.ErrorType == ErrorType.Error)) {
-//				var lastOffset = data.Editor.Caret.Offset;
-//				changes.RemoveAll (c => ((TextReplaceAction)c).Offset > lastOffset);
-//			}
-//			try {
-//				data.Editor.Document.BeginAtomicUndo ();
-//				MDRefactoringContext.MdScript.RunActions (changes, null);
-//				
-//				foreach (int line in lines)
-//					data.Editor.Document.CommitLineUpdate (line);
-//			} finally {
-//				data.Editor.Document.EndAtomicUndo ();
-//			}
-//			stubData.Dispose ();
+//			var unit = data.ParsedDocument.Annotation<CompilationUnit> ();
+			var pf = data.ParsedDocument.Annotation<ParsedFile> ();
+			
+			StringBuilder sb = new StringBuilder ();
+			int closingBrackets = 0;
+//k			DomRegion validRegion = DomRegion.Empty;
+			var scope = pf.GetUsingScope (new AstLocation (data.Editor.Caret.Line, data.Editor.Caret.Column));
+			while (scope != null) {
+				sb.Append ("namespace Stub {");
+				closingBrackets++;
+				
+				scope = scope.Parent;
+			}
+			
+			var parent = member.DeclaringTypeDefinition;
+			while (parent != null) {
+				sb.Append ("class Stub {");
+				closingBrackets++;
+				parent = parent.DeclaringTypeDefinition;
+			}
+			
+			sb.AppendLine ();
+			int startOffset = sb.Length;
+			int memberStart = data.Editor.LocationToOffset (member.Region.BeginLine, 1);
+			int memberEnd = data.Editor.LocationToOffset (member.Region.EndLine + (runAferCR ? 1 : 0), member.Region.EndColumn);
+			if (memberEnd < 0)
+				memberEnd = data.Editor.Length;
+			sb.Append (data.Editor.GetTextBetween (memberStart, memberEnd));
+			int endOffset = sb.Length;
+			sb.AppendLine ();
+			sb.Append (new string ('}', closingBrackets));
+			
+			
+			var stubData = new TextEditorData () { Text = sb.ToString () };
+			Console.WriteLine (stubData.Text);
+			stubData.Document.FileName = data.FileName;
+			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
+			var compilationUnit = parser.Parse (stubData);
+			bool hadErrors = parser.HasErrors;
+			
+			// try it out, if the behavior is better when working only with correct code.
+			if (hadErrors)
+				return;
+			
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+			var adapter = new TextEditorDataAdapter (stubData);
+			
+			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data.Editor)) {
+				HadErrors = hadErrors
+			};
+			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
+			
+			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
+			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
+			
+			int delta = data.Editor.LocationToOffset (member.Region.BeginLine, 1) - startOffset;
+			HashSet<int> lines = new HashSet<int> ();
+			foreach (TextReplaceAction change in changes) {
+				change.Offset += delta;
+				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
+			}
+			// be sensible in documents with parser errors - only correct up to the caret position.
+			if (hadErrors || data.ParsedDocument.Errors.Any (e => e.ErrorType == ErrorType.Error)) {
+				var lastOffset = data.Editor.Caret.Offset;
+				changes.RemoveAll (c => ((TextReplaceAction)c).Offset > lastOffset);
+			}
+			try {
+				data.Editor.Document.BeginAtomicUndo ();
+				MDRefactoringContext.MdScript.RunActions (changes, null);
+				foreach (int line in lines)
+					data.Editor.Document.CommitLineUpdate (line);
+			} finally {
+				data.Editor.Document.EndAtomicUndo ();
+			}
+			stubData.Dispose ();
 		}
 	}
 }
