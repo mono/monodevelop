@@ -216,7 +216,7 @@ namespace MonoDevelop.Ide
 		{
 			var entity = element as IEntity;
 			if (entity == null && element is IType)
-				entity = ((IType)entity).GetDefinition ();
+				entity = ((IType)element).GetDefinition ();
 			
 			if (entity != null) {
 				return !entity.Region.IsEmpty || !(entity.ProjectContent is SimpleProjectItem);

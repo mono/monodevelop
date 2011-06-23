@@ -134,7 +134,8 @@ namespace MonoDevelop.TypeSystem
 			StringBuilder result = new StringBuilder ();
 			List<IMember > implementedMembers = new List<IMember> ();
 			foreach (var baseInterface in interfaceType.GetAllBaseTypes (interfaceType.GetDefinition ().ProjectContent)) {
-				if (baseInterface.GetDefinition ().ClassType != ClassType.Interface)
+				var def = baseInterface.GetDefinition ();
+				if (def != null && def.ClassType != ClassType.Interface)
 					continue;
 				if (result.Length > 0) {
 					AppendLine (result);

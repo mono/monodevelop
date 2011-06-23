@@ -36,6 +36,10 @@ using Mono.TextEditor;
 using ICSharpCode.OldNRefactory;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.CSharp.Parser;
+using System.IO;
+
+
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -46,15 +50,11 @@ namespace MonoDevelop.CSharp.Completion
 			return language == "C#";
 		}
 		
-		public static ParsedDocument Parse (ITypeResolveContext dom, string fileName, string text)
+		public static ParsedDocument Parse (IProjectContent dom, string fileName, string text)
 		{
-			// TODO: type system conversion.
-			return new ParsedDocument (fileName);
-//			var result = new MonoDevelop.CSharp.Parser.McsParser ().Parse (null, fileName, text);
-//			foreach (DomType type in result.CompilationUnit.Types) {
-//				type.GetProjectContent () = dom;
-//			}
-//			return result;
+			using (var content = new StringReader (text)) {
+				return new TypeSystemParser ().Parse (dom, true, fileName, content);
+			}
 		}
 		
 		static void WriteUsings (IEnumerable<string> usings, StringBuilder builder)
@@ -111,77 +111,64 @@ namespace MonoDevelop.CSharp.Completion
 			result.LocalDocument = sb.ToString ();
 			result.CaretPosition = caretPosition;
 			result.OriginalCaretPosition = data.Caret.Offset;
-			result.ParsedLocalDocument = Parse (info.Dom, info.AspNetDocument.FileName, sb.ToString ());
+			result.ParsedLocalDocument = Parse (info.ParsedDocument.ProjectContent, info.AspNetDocument.FileName, sb.ToString ());
 			return result;
 		}
 		
 		public ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo)
-		{// TODO: Type system conversion
-//			CodeCompletionContext codeCompletionContext;
-//			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
-//				return completion.CodeCompletionCommand (codeCompletionContext);
-//			}
-			return null;
+		{
+			CodeCompletionContext codeCompletionContext;
+			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
+				return completion.CodeCompletionCommand (codeCompletionContext);
+			}
 		}
 		
 		public ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
-		{// TODO: Type system conversion
-//			CodeCompletionContext ccc;
-//			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
-//				return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
-//			}
-			return null;
+		{
+			CodeCompletionContext ccc;
+			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
+				return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
+			}
 		}
 		
 		public IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
-		{// TODO: Type system conversion
-			return null;
-//			CodeCompletionContext ccc;
-//			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
-//				return completion.HandleParameterCompletion (completionContext, completionChar);
-//			}
+		{
+			CodeCompletionContext ccc;
+			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
+				return completion.HandleParameterCompletion (completionContext, completionChar);
+			}
 		}
 		
 		public bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
 		{
-// TODO: Type system conversion
-			cpos = 0;
-			return false;
-//			CodeCompletionContext codeCompletionContext;
-//			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
-//				
-//				return completion.GetParameterCompletionCommandOffset (out cpos);
-//			}
+			CodeCompletionContext codeCompletionContext;
+			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
+				return completion.GetParameterCompletionCommandOffset (out cpos);
+			}
 		}
 
 		public ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo)
 		{
 			return new AspCompletionWidget (realDocument, localInfo);
 		}
-// TODO: Type system conversion
-//		CSharpTextEditorCompletion CreateCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
-//		{
-//			var doc = new Mono.TextEditor.Document () {
-//				Text = localInfo.LocalDocument,
-//			};
-//			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);
-//			
-//			codeCompletionContext = new CodeCompletionContext () {
-//				TriggerOffset = localInfo.CaretPosition,
-//				TriggerLine = documentLocation.Line,
-//				TriggerLineOffset = documentLocation.Column - 1
-//			};
-//			
-//			var r = new System.IO.StringReader (localInfo.LocalDocument);
-//			using (var parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, r)) {
-//				parser.Parse ();
-//				return new CSharpTextEditorCompletion (localInfo.HiddenDocument) {
-//					ParsedUnit = parser.CompilationUnit,
-//					CompletionWidget = CreateCompletionWidget (realDocument, localInfo),
-//					Dom = localInfo.HiddenDocument.Dom
-//				};
-//			}
-//		}
+		
+		CSharpCompletionTextEditorExtension CreateCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
+		{
+			var doc = new Mono.TextEditor.Document () {
+				Text = localInfo.LocalDocument,
+			};
+			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);
+			
+			codeCompletionContext = new CodeCompletionContext () {
+				TriggerOffset = localInfo.CaretPosition,
+				TriggerLine = documentLocation.Line,
+				TriggerLineOffset = documentLocation.Column - 1
+			};
+			
+			return new CSharpCompletionTextEditorExtension (localInfo.HiddenDocument) {
+				CompletionWidget = CreateCompletionWidget (realDocument, localInfo)
+			};
+		}
 		
 		class AspCompletionWidget : ICompletionWidget
 		{
@@ -288,7 +275,7 @@ namespace MonoDevelop.CSharp.Completion
 		public ParsedDocument BuildDocument (DocumentInfo info, TextEditorData data)
 		{
 			var docStr = BuildDocumentString (info, data);
-			return Parse (info.Dom, info.AspNetDocument.FileName, docStr);
+			return Parse (info.ParsedDocument.ProjectContent, info.AspNetDocument.FileName, docStr);
 		}
 		 
 		public string BuildDocumentString (DocumentInfo info, TextEditorData data, List<LocalDocumentInfo.OffsetInfo> offsetInfos = null, bool buildExpressions = false)

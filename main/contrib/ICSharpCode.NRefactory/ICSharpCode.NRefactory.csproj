@@ -399,6 +399,7 @@
     <Compile Include="TypeSystem\IAnnotatable.cs" />
     <Compile Include="TypeSystem\Error.cs" />
     <Compile Include="TypeSystem\TypeResolveContextDecorator.cs" />
+    <Compile Include="TypeSystem\Implementation\CompoundTypeDefinition.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
@@ -407,6 +408,7 @@
     <Folder Include="CSharp\Formatter\" />
     <Folder Include="CSharp\Refactoring\ContextAction\" />
     <Folder Include="EditorInterfaces\" />
+    <Folder Include="TypeSystem\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Cecil\Mono.Cecil.csproj">

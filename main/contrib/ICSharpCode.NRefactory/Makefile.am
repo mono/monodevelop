@@ -295,6 +295,7 @@ FILES =  \
 	TypeSystem/Implementation/AbstractMember.cs \
 	TypeSystem/Implementation/AbstractType.cs \
 	TypeSystem/Implementation/CompositeTypeResolveContext.cs \
+	TypeSystem/Implementation/CompoundTypeDefinition.cs \
 	TypeSystem/Implementation/DefaultAccessor.cs \
 	TypeSystem/Implementation/DefaultAttribute.cs \
 	TypeSystem/Implementation/DefaultEvent.cs \

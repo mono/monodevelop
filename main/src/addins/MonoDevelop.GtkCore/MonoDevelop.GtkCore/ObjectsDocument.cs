@@ -111,7 +111,6 @@ namespace MonoDevelop.GtkCore
 				Save (writer);
 			}
 		}
-// TODO: Type system conversion.
 //		void InsertToolboxItemAttributes (WidgetParser parser, CodeRefactorer cref)
 //		{
 //			Dictionary<string, IType> tb_items = parser.GetToolboxItems ();
