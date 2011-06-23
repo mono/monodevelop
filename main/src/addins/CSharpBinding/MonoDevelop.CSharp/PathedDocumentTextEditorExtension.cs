@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp
 			object tag;
 			Ambience amb;
 			List<IEntity> memberList = new List<IEntity> ();
-			
+			ITypeResolveContext ctx;
 			Document Document {
 				get;
 				set;
@@ -70,6 +70,7 @@ namespace MonoDevelop.CSharp
 			public DataProvider (Document doc, object tag, Ambience amb)
 			{
 				this.Document = doc;
+				this.ctx = doc.TypeResolveContext;
 				this.tag = tag;
 				this.amb = amb;
 				Reset ();
@@ -79,7 +80,6 @@ namespace MonoDevelop.CSharp
 			public void Reset ()
 			{
 				memberList.Clear ();
-				Console.WriteLine ("tag:" + tag);
 				if (tag is IParsedFile) {
 					var types = new Stack<ITypeDefinition> (((IParsedFile)tag).TopLevelTypeDefinitions);
 					while (types.Count > 0) {
@@ -97,8 +97,8 @@ namespace MonoDevelop.CSharp
 			string GetString (Ambience amb, IEntity x)
 			{
 				if (tag is IParsedFile)
-					return amb.GetString (Document.TypeResolveContext, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
-				return amb.GetString (Document.TypeResolveContext, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
+					return amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
+				return amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
 			}
 			
 			public string GetMarkup (int n)

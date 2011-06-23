@@ -73,12 +73,13 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			StringBuilder sb = new StringBuilder ();
 			int closingBrackets = 0;
-//k			DomRegion validRegion = DomRegion.Empty;
+//			DomRegion validRegion = DomRegion.Empty;
 			var scope = pf.GetUsingScope (new AstLocation (data.Editor.Caret.Line, data.Editor.Caret.Column));
 			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				sb.Append ("namespace Stub {");
 				closingBrackets++;
-				
+				while (scope.Parent != null && scope.Parent.Region == scope.Region)
+					scope = scope.Parent;
 				scope = scope.Parent;
 			}
 			

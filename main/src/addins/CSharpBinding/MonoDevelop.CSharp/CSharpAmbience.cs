@@ -23,7 +23,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -218,18 +217,48 @@ namespace MonoDevelop.CSharp
 			result.Append (Format (nameSpace));
 			return result.ToString ();
 		}
+		
+		void AppendComposedType (StringBuilder sb, ComposedType compType)
+		{
+			AppendAstType (sb, compType.BaseType);
+			if (compType.HasNullableSpecifier)
+				sb.Append ("?");
+			if (compType.PointerRank > 0)
+				sb.Append (new string ('*', compType.PointerRank));
+			foreach (ArraySpecifier spec in compType.ArraySpecifiers) {
+				sb.Append ("[");
+				if (spec.Dimensions > 1)
+					sb.Append (new string (',', spec.Dimensions - 1));
+				sb.Append ("]");
+			}
+		}
 
+		public void AppendAstType (StringBuilder sb, AstType astType)
+		{
+			if (astType is ComposedType) {
+				AppendComposedType (sb, (ComposedType)astType);
+			} else if (astType is PrimitiveType) {
+				sb.Append (((PrimitiveType)astType).Keyword);
+			} else if (astType is SimpleType) {
+				sb.Append (((SimpleType)astType).Identifier);
+			} else if (astType is MemberType) {
+				var mt = (MemberType)astType;
+				sb.Append (mt.MemberName);
+			} 
+		}
+		
 		protected override string GetTypeReferenceString (ITypeReference reference, OutputSettings settings)
 		{
 			var csResolver = new CSharpResolver (settings.Context, System.Threading.CancellationToken.None);
 			var builder = new TypeSystemAstBuilder (csResolver);
 			var astType = builder.ConvertType (reference.Resolve (settings.Context));
-		
-			var w = new StringWriter ();
-			astType.AcceptVisitor (new OutputVisitor (w, new CSharpFormattingOptions ()), null);
-			return w.ToString ();
 			
-			/*		if (returnType.IsNullable && returnType.GenericArguments.Count == 1)
+			
+			var sb = new StringBuilder ();
+			AppendAstType (sb, astType);
+			
+			return sb.ToString ();
+/*		if (returnType.IsNullable && returnType.GenericArguments.Count == 1)
 				return Visit (returnType.GenericArguments [0], settings) + "?";
 			if (returnType.Type is AnonymousType)
 				return returnType.Type.AcceptVisitor (this, settings);
@@ -351,15 +380,15 @@ namespace MonoDevelop.CSharp
 			if (settings.IncludeBaseTypes && type.BaseTypes.Any ()) {
 				bool first = true;
 				foreach (var baseType in type.BaseTypes) {
-					//				if (baseType.FullName == "System.Object" || baseType.FullName == "System.Enum")
-					//					continue;
+//				if (baseType.FullName == "System.Object" || baseType.FullName == "System.Enum")
+//					continue;
 					result.Append (settings.Markup (first ? " : " : ", "));
 					first = false;
 					result.Append (GetTypeReferenceString (baseType, settings));	
 				}
 				
 			}
-			//		OutputConstraints (result, settings, type.TypeParameters);
+//		OutputConstraints (result, settings, type.TypeParameters);
 			return result.ToString ();
 		}
 		
@@ -395,9 +424,9 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (settings.IncludeParameters) {
-	//			CSharpFormattingPolicy policy = GetPolicy (settings);
-	//			if (policy.BeforeMethodCallParentheses)
-	//				result.Append (settings.Markup (" "));
+//			CSharpFormattingPolicy policy = GetPolicy (settings);
+//			if (policy.BeforeMethodCallParentheses)
+//				result.Append (settings.Markup (" "));
 				
 				result.Append (settings.Markup ("("));
 				AppendParameterList (result, settings, method.Parameters);
@@ -409,7 +438,7 @@ namespace MonoDevelop.CSharp
 				result.Append (GetTypeReferenceString (method.ReturnType, settings));
 			}
 			
-	//		OutputConstraints (result, settings, method.TypeParameters);
+//		OutputConstraints (result, settings, method.TypeParameters);
 			
 			return result.ToString ();			
 		}
@@ -570,6 +599,7 @@ namespace MonoDevelop.CSharp
 			}
 			return result.ToString ();
 		}
+
 		#endregion
 		
 		void AppendExplicitInterfaces (StringBuilder sb, IMember member, OutputSettings settings)
@@ -643,7 +673,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		/*
+/*
 		new const string nullString = "Null";
 
 		protected override IDomVisitor<OutputSettings, string> OutputVisitor {
