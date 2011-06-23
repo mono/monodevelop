@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int closingBrackets = 0;
 //k			DomRegion validRegion = DomRegion.Empty;
 			var scope = pf.GetUsingScope (new AstLocation (data.Editor.Caret.Line, data.Editor.Caret.Column));
-			while (scope != null) {
+			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				sb.Append ("namespace Stub {");
 				closingBrackets++;
 				
@@ -99,7 +99,6 @@ namespace MonoDevelop.CSharp.Formatting
 			int endOffset = sb.Length;
 			sb.AppendLine ();
 			sb.Append (new string ('}', closingBrackets));
-			
 			
 			var stubData = new TextEditorData () { Text = sb.ToString () };
 			Console.WriteLine (stubData.Text);
