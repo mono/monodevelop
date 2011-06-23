@@ -75,12 +75,20 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return null;
 			var loc = data.OffsetToLocation (offset);
-			var unit       = doc.ParsedDocument.Annotation<CompilationUnit> ();
-			var parsedFile = doc.ParsedDocument.Annotation<ParsedFile> ();
-			var node   = unit.GetResolveableNodeAt (loc.Line, loc.Column);
 			
-			if (unit == null || parsedFile == null || node == null) {
+			var unit       = parsedDocument.Annotation<CompilationUnit> ();
+			var parsedFile = parsedDocument.Annotation<ParsedFile> ();
+			
+			if (unit == null || parsedFile == null) {
+				expressionRegion = DomRegion.Empty;
+				return null;
+			}
+			var node   = unit.GetResolveableNodeAt (loc.Line, loc.Column);
+			if (node == null) {
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}

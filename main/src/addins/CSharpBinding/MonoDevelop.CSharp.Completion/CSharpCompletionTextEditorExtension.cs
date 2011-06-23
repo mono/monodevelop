@@ -103,13 +103,18 @@ namespace MonoDevelop.CSharp.Completion
 			base.Initialize ();
 			ctx = Document.TypeResolveContext;
 			textEditorData = Document.Editor;
-			
+			var parsedDocument = document.ParsedDocument;
+			if (parsedDocument != null) {
+				this.Unit = parsedDocument.Annotation<CompilationUnit> ();
+				this.ParsedFile = parsedDocument.Annotation<ParsedFile> ();
+			}
+				
 			Document.DocumentParsed += delegate {
-				var unit = Document.ParsedDocument;
-				if (unit == null) 
+				var newDocument = Document.ParsedDocument;
+				if (newDocument == null) 
 					return;
-				this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
-				this.ParsedFile = document.ParsedDocument.Annotation<ParsedFile> ();
+				this.Unit = newDocument.Annotation<CompilationUnit> ();
+				this.ParsedFile = newDocument.Annotation<ParsedFile> ();
 				var textEditor = Editor.Parent;
 				if (textEditor != null) {
 					textEditor.TextViewMargin.PurgeLayoutCache ();
