@@ -393,12 +393,15 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append("<small><i>");
 					s.Append(methodStr);
 					s.Append("</i></small>\n");
-					s.Append(ambience.GetString(mrr.Methods.First (), settings));
-					if (mrr.Methods.Count > 1) {
-						int overloadCount = mrr.Methods.Count - 1;
-						s.Append(string.Format(GettextCatalog.GetPluralString(" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
+					var method = mrr.Methods.FirstOrDefault ();
+					if (method != null) {
+						s.Append(ambience.GetString(method, settings));
+						if (mrr.Methods.Count > 1) {
+							int overloadCount = mrr.Methods.Count - 1;
+							s.Append(string.Format(GettextCatalog.GetPluralString(" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
+						}
+						doc = AmbienceService.GetDocumentationSummary(mrr.Methods.FirstOrDefault ());
 					}
-					doc = AmbienceService.GetDocumentationSummary(mrr.Methods.First ());
 				} else if (result is TypeResolveResult) {
 					var tr = (TypeResolveResult)result;
 					s.Append ("<small><i>");

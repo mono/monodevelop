@@ -34,6 +34,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Core;
 using MonoDevelop.TypeSystem;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring
 {
@@ -68,6 +70,12 @@ namespace MonoDevelop.Refactoring
 		public string MimeType {
 			get {
 				return DesktopService.GetMimeTypeForUri (Document.FileName);
+			}
+		}
+		
+		public AstLocation Location {
+			get {
+				return new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 			}
 		}
 		
@@ -134,6 +142,68 @@ namespace MonoDevelop.Refactoring
 //		public ParsedDocument ParseDocument ()
 //		{
 //			return ProjectDomService.Parse (Dom.Project, Document.FileName, Document.Editor.Text);
+//		}
+		
+		public List<string> GetUsedNamespaces ()
+		{
+			var result = new List<string> ();
+			var pf = Document.ParsedDocument.Annotation<ParsedFile> ();
+			if (pf == null)
+				return result;
+			var scope = pf.GetUsingScope (Location);
+			if (scope == null)
+				return result;
+			var ctx = Document.TypeResolveContext;
+			
+			for (var n = scope; n != null; n = n.Parent) {
+				result.Add (n.NamespaceName);
+				result.AddRange (n.Usings.Select (u => u.ResolveNamespace (ctx))
+					.Where (nr => nr != null)
+					.Select (nr => nr.NamespaceName));
+			}
+			return result;
+		}
+		
+		
+//		public List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
+//		{
+//			IReturnType returnType = null; 
+//			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (DesktopService.GetMimeTypeForUri (options.Document.FileName));
+//			
+//			if (options.ResolveResult != null && options.ResolveResult.ResolvedExpression != null) {
+//				if (astProvider != null) 
+//					returnType = astProvider.ParseTypeReference (options.ResolveResult.ResolvedExpression.Expression).ConvertToReturnType ();
+//				if (returnType == null)
+//					returnType = DomReturnType.GetSharedReturnType (options.ResolveResult.ResolvedExpression.Expression);
+//			}
+//			
+//			List<string> namespaces;
+//			if (options.ResolveResult is UnresolvedMemberResolveResult) {
+//				namespaces = new List<string> ();
+//				UnresolvedMemberResolveResult unresolvedMemberResolveResult = options.ResolveResult as UnresolvedMemberResolveResult;
+//				IType type = unresolvedMemberResolveResult.TargetResolveResult != null ? options.Dom.GetType (unresolvedMemberResolveResult.TargetResolveResult.ResolvedType) : null;
+//				if (type != null) {
+//					List<IType> allExtTypes = DomType.GetAccessibleExtensionTypes (options.Dom, null);
+//					foreach (ExtensionMethod method in type.GetExtensionMethods (allExtTypes, unresolvedMemberResolveResult.MemberName)) {
+//						string ns = method.OriginalMethod.DeclaringType.Namespace;
+//						if (!namespaces.Contains (ns) && !options.Document.CompilationUnit.Usings.Any (u => u.Namespaces.Contains (ns)))
+//							namespaces.Add (ns);
+//					}
+//				}
+//				resolveDirect = false;
+//			} else {
+//				namespaces = new List<string> (options.Dom.ResolvePossibleNamespaces (returnType));
+//				resolveDirect = true;
+//			}
+//			for (int i = 0; i < namespaces.Count; i++) {
+//				for (int j = i + 1; j < namespaces.Count; j++) {
+//					if (namespaces[j] == namespaces[i]) {
+//						namespaces.RemoveAt (j);
+//						j--;
+//					}
+//				}
+//			}
+//			return namespaces;
 //		}
 	}
 }

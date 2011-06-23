@@ -587,5 +587,76 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendBraceEnd (result, policy.PropertyBraceStyle);
 			return result.ToString ();
 		}
+		
+		public override void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
+		{
+			var parsedDocument = doc.ParsedDocument;
+			var unit = parsedDocument.Annotation<CompilationUnit> ();
+			if (unit == null)
+				return;
+			
+			var node = unit.FirstChild;
+			while (node.NextSibling is ICSharpCode.NRefactory.CSharp.Comment || node.NextSibling is UsingDeclaration || node.NextSibling is UsingAliasDeclaration) {
+				node = node.NextSibling;
+			}
+			
+			var text = new StringBuilder ();
+			if (node != null && node != unit.FirstChild)
+				text.Append (doc.Editor.EolMarker);
+			text.Append ("using ");
+			text.Append (nsName);
+			text.Append (";");
+			text.Append (doc.Editor.EolMarker);
+			
+			int offset = 0;
+			if (node != null) {
+				var loc = node == unit.FirstChild ? node.StartLocation : node.EndLocation;
+				offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
+			}
+			doc.Editor.Insert (offset, text.ToString ());
+			doc.Editor.Document.CommitUpdateAll ();
+		}
+		
+		public override void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, AstLocation caretLocation)
+		{
+			var parsedDocument = doc.ParsedDocument;
+			var unit = parsedDocument.Annotation<CompilationUnit> ();
+			if (unit == null)
+				return;
+			
+			var nsDecl = unit.GetNodeAt<NamespaceDeclaration> (caretLocation);
+			if (nsDecl == null) {
+				AddGlobalNamespaceImport (doc, nsName);
+				return;
+			}
+				
+			
+			var node = unit.FirstChild;
+			while (node.NextSibling is ICSharpCode.NRefactory.CSharp.Comment || node.NextSibling is UsingDeclaration || node.NextSibling is UsingAliasDeclaration) {
+				node = node.NextSibling;
+			}
+			
+			var text = new StringBuilder ();
+			
+			text.Append (doc.Editor.EolMarker);
+			string indent = doc.Editor.GetLineIndent (nsDecl.StartLocation.Line) + "\t";
+			text.Append (indent);
+			text.Append ("using ");
+			text.Append (nsName);
+			text.Append (";");
+			text.Append (doc.Editor.EolMarker);
+			
+			int offset;
+			AstLocation loc;
+			if (node != null) {
+				loc = node == unit.FirstChild ? node.StartLocation : node.EndLocation;
+			} else {
+				loc = nsDecl.LBraceToken.EndLocation;
+			}
+			
+			offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
+			doc.Editor.Insert (offset, text.ToString ());
+			doc.Editor.Document.CommitUpdateAll ();
+		}
 	}
 }

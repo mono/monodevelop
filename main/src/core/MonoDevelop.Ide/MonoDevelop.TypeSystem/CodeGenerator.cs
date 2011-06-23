@@ -280,11 +280,12 @@ namespace MonoDevelop.TypeSystem
 			return null;
 		}
 		
-		public abstract string WrapInRegions (string regionName, string text)
-;
-		public abstract CodeGeneratorMemberResult CreateMemberImplementation (ITypeResolveContext ctx, ITypeDefinition implementingType, IMember member, bool explicitDeclaration)
-;
+		public abstract string WrapInRegions (string regionName, string text);
+		public abstract CodeGeneratorMemberResult CreateMemberImplementation (ITypeResolveContext ctx, ITypeDefinition implementingType, IMember member, bool explicitDeclaration);
 		public abstract string CreateFieldEncapsulation (ITypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly);
+		
+		public abstract void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName);
+		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, AstLocation caretLocation);
 	}
 	
 	public class CodeGeneratorMemberResult

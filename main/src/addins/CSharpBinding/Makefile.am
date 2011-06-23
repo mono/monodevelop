@@ -80,7 +80,7 @@ FILES =  \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingInspector.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingRule.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingStyle.cs \
-	MonoDevelop.CSharp.Parser/TypeSystemParser.cs \
+	MonoDevelop.CSharp.Parser/TypeSystemProvider.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
 	MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs \
 	MonoDevelop.CSharp.Project/CSharpCompilerParameters.cs \

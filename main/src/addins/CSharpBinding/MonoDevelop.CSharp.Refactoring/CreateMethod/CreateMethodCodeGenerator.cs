@@ -30,8 +30,6 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
@@ -41,6 +39,8 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Formatting;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 {
@@ -153,7 +153,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			return resolver.Resolve (new ExpressionResult (expression), resolvePosition);
 		}
 
-		IReturnType GuessReturnType (RefactoringOptions options)
+		ITypeReference GuessReturnType (RefactoringOptions options)
 		{
 			var resolver = options.GetResolver ();
 			var data = options.GetTextEditorData ();
@@ -239,21 +239,21 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		AstLocation resolvePosition;
 		
-		IType declaringType;
-		public IType DeclaringType {
+		ITypeDefinition declaringType;
+		public ITypeDefinition DeclaringType {
 			get {
 				return this.declaringType;
 			}
 		}
 		
-		IReturnType returnType;
+		ITypeReference returnType;
 		string methodName;
 		
 		InvocationExpression invocation;
 		IType delegateType;
 		TextEditorData data;
 		
-		MonoDevelop.Projects.Dom.Modifiers modifiers;
+		Accessibility modifiers;
 		
 		InsertionPoint insertionPoint;
 		public void SetInsertionPoint (InsertionPoint point)

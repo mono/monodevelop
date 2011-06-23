@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.Refactoring
 {
@@ -92,7 +93,7 @@ namespace MonoDevelop.Refactoring
 			if (resolveResult is MemberResolveResult)
 				return ((MemberResolveResult)resolveResult).Member;
 			if (resolveResult is MethodGroupResolveResult)
-				return ((MethodGroupResolveResult)resolveResult).Methods.First ();
+				return ((MethodGroupResolveResult)resolveResult).Methods.FirstOrDefault ();
 			if (resolveResult is TypeResolveResult)
 				return resolveResult.Type;
 			return null;
@@ -141,7 +142,7 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 				
-				IMethod method = item as IMethod;
+				var method = item as IMethod;
 				if (method != null) {
 					foreach (var bc in method.DeclaringTypeDefinition.BaseTypes) {
 						var bcls = bc.Resolve (ctx);
@@ -194,6 +195,41 @@ namespace MonoDevelop.Refactoring
 			public void Run ()
 			{
 				FindDerivedClassesHandler.FindDerivedClasses (type);
+			}
+		}
+		
+		class AddImport
+		{
+			RefactoringOptions options;
+			string ns;
+			bool addUsing;
+			
+			public AddImport (RefactoringOptions options, string ns, bool addUsing)
+			{
+				this.options = options;
+				this.ns = ns;
+				this.addUsing = addUsing;
+			}
+			
+			public void Run ()
+			{
+				if (!addUsing) {
+					var unit  = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+					var node = unit.GetNodeAt (options.Location, n => n is Expression || n is AstType);
+					int offset = options.Document.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
+					options.Document.Editor.Insert (offset, ns + ".");
+					options.Document.Editor.Document.CommitLineUpdate (options.Location.Line);
+					return;
+				}
+				
+				var generator = options.CreateCodeGenerator ();
+				if (generator == null)
+					return;
+				if (options.ResolveResult is NamespaceResolveResult) {
+					generator.AddLocalNamespaceImport (options.Document, ns, options.Location);
+				} else {
+					generator.AddGlobalNamespaceImport (options.Document, ns);
+				}
 			}
 		}
 		
@@ -258,7 +294,7 @@ namespace MonoDevelop.Refactoring
 				SelectedItem = item
 			};
 			
-			CommandInfoSet ciset = new CommandInfoSet ();
+			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {
@@ -272,6 +308,89 @@ namespace MonoDevelop.Refactoring
 				ainfo.Add (ciset, null);
 				added = true;
 			}
+			
+			
+			var resolveMenu = new CommandInfoSet ();
+			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
+			bool resolveDirect = true;
+			
+			HashSet<string> possibleNamespaces = new HashSet<string> ();
+			List<string> usedNamespaces = new List<string> ();
+			Console.WriteLine ("result:" + resolveResult);
+			if (resolveResult is UnknownIdentifierResolveResult) {
+				usedNamespaces = options.GetUsedNamespaces ();
+				var uiResult = resolveResult as UnknownIdentifierResolveResult;
+				foreach (var typeDefinition in ctx.GetTypes ()) {
+					if (typeDefinition.Name == uiResult.Identifier) {
+						possibleNamespaces.Add (typeDefinition.Namespace);
+					}
+				}
+			} else if (resolveResult is UnknownMemberResolveResult) {
+				usedNamespaces = options.GetUsedNamespaces ();
+				var umResult = (UnknownMemberResolveResult)resolveResult;
+				var conv = new Conversions (ctx);
+				var baseTypes = new List<IType> (umResult.TargetType.GetAllBaseTypes (ctx));
+				
+				foreach (var typeDefinition in ctx.GetTypes ().Where (t => t.HasExtensionMethods && !usedNamespaces.Contains (t.Namespace))) {
+					foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod && m.Name == umResult.MemberName)) {
+						var pType = m.Parameters.First ().Type.Resolve (ctx);
+						foreach (var baseType in baseTypes) {
+							if (conv.ImplicitConversion (umResult.TargetType, baseType)) {
+								possibleNamespaces.Add (typeDefinition.Namespace);
+								goto skipType;
+							}
+						}
+					}
+				skipType:;
+				}
+				resolveDirect = false;
+				
+			}
+			
+			foreach (string ns in possibleNamespaces) {
+				// remove used namespaces for conflict resolving. 
+				if (usedNamespaces.Contains (ns))
+					continue;
+				var info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new System.Action (new AddImport (options, ns, true).Run));
+				info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
+			}
+			
+			if (resolveDirect) {
+				if (resolveMenu.CommandInfos.Count > 0)
+					resolveMenu.CommandInfos.AddSeparator ();
+				
+				foreach (string ns in possibleNamespaces) {
+					resolveMenu.CommandInfos.Add (ns, new System.Action (new AddImport (options, ns, false).Run));
+				}
+			}
+			
+			if (resolveMenu.CommandInfos.Count > 0) {
+				ainfo.Add (resolveMenu, null);
+				added = true;
+			}
+			
+			
+			if (resolveResult != null) {
+//				List<string> namespaces = QuickFixHandler.GetResolveableNamespaces (options, out resolveDirect);
+//			
+//				if (item == null || namespaces.Count > 1) {
+//					if (item == null) {
+//						foreach (string ns in namespaces) {
+//							// remove used namespaces for conflict resolving. 
+//							if (options.Document.CompilationUnit.IsNamespaceUsedAt (ns, options.ResolveResult.ResolvedExpression.Region.Start))
+//								continue;
+//							CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
+//							info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
+//						}
+//						// remove all unused namespaces (for resolving conflicts)
+//						namespaces.RemoveAll (ns => !doc.CompilationUnit.IsNamespaceUsedAt (ns, resolveResult.ResolvedExpression.Region.Start));
+//					}
+//					
+//					if (namespaces.Count > (item == null ? 0 : 1))
+//						ainfo.Add (resolveMenu, null);
+//				}
+			}
+			
 			
 //			bool canRename;
 //			if (item is IVariable || item is IParameter) {
@@ -375,37 +494,6 @@ namespace MonoDevelop.Refactoring
 //			}
 //			
 //			
-//			if (resolveResult != null  && resolveResult.ResolvedExpression != null && !string.IsNullOrEmpty (resolveResult.ResolvedExpression.Expression)) {
-//				bool resolveDirect;
-//				List<string> namespaces = QuickFixHandler.GetResolveableNamespaces (options, out resolveDirect);
-//			
-//				if (item == null || namespaces.Count > 1) {
-//					CommandInfoSet resolveMenu = new CommandInfoSet ();
-//					resolveMenu.Text = GettextCatalog.GetString ("Resolve");
-//					if (item == null) {
-//						foreach (string ns in namespaces) {
-//							// remove used namespaces for conflict resolving. 
-//							if (options.Document.CompilationUnit.IsNamespaceUsedAt (ns, options.ResolveResult.ResolvedExpression.Region.Start))
-//								continue;
-//							CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
-//							info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
-//						}
-//						if (!(resolveResult is UnresolvedMemberResolveResult))
-//							resolveMenu.CommandInfos.AddSeparator ();
-//					} else {
-//						// remove all unused namespaces (for resolving conflicts)
-//						namespaces.RemoveAll (ns => !doc.CompilationUnit.IsNamespaceUsedAt (ns, resolveResult.ResolvedExpression.Region.Start));
-//					}
-//					
-//					if (resolveDirect) {
-//						foreach (string ns in namespaces) {
-//							resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).ResolveName));
-//						}
-//					}
-//					if (namespaces.Count > (item == null ? 0 : 1))
-//						ainfo.Add (resolveMenu, null);
-//				}
-//			}
 //			
 //			var unit = doc.CompilationUnit;
 //			if (unit != null && unit.Usings != null && unit.Usings.Any (u => !u.IsFromNamespace && u.Region.Contains (line, column))) {

@@ -143,6 +143,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc)
 		{
+			if (string.IsNullOrEmpty (memberName))
+				return Enumerable.Empty<MemberReference> ();
 			var editor = doc.Editor;
 			var positions = new List<int> (editor.Document.SearchForward (memberName, 0));
 			if (positions.Count <= 0)
