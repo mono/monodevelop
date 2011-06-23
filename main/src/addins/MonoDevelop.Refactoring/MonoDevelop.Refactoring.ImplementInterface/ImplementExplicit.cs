@@ -56,7 +56,10 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			if (!declaration.BaseTypes.Any (bt => bt.Contains (loc.Line, loc.Column)))
 				return false;
 			interfaceType = options.ResolveResult.Type.Resolve (options.Dom);
-			return interfaceType.GetDefinition ().ClassType == ClassType.Interface;
+			var def = interfaceType.GetDefinition ();
+			if (def == null)
+				return false;
+			return def.ClassType == ClassType.Interface;
 		}
 		
 		public override bool IsValid (RefactoringOptions options)

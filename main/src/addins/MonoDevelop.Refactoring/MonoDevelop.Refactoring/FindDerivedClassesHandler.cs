@@ -58,7 +58,9 @@ namespace MonoDevelop.Refactoring
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					var cache = new Dictionary<string, TextEditorData> ();
 					foreach (var p in projects) {
-						var combinedContent = sourceProject != p.Item2 ?  (ITypeResolveContext)new CompositeTypeResolveContext (new ITypeResolveContext[] { sourceCtx, p.Item2 }) : sourceCtx;
+						if (p.Item2 == null) // may happen for cecil contexts
+							continue;
+						ITypeResolveContext combinedContent = sourceProject != p.Item2 ?  (ITypeResolveContext)new CompositeTypeResolveContext (new ITypeResolveContext[] { sourceCtx, p.Item2 }) : sourceCtx;
 						foreach (var type in p.Item2.GetAllTypes ()) {
 							if (!type.IsDerivedFrom (cls, combinedContent)) 
 								continue;

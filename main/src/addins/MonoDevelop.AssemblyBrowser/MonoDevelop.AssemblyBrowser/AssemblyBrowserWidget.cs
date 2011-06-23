@@ -305,7 +305,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		public IMember ActiveMember  {
+		public IEntity ActiveMember  {
 			get;
 			set;
 		}
@@ -1110,7 +1110,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (currentItem != null)
 					navigationBackwardHistory.Push (currentItem);
 				currentItem = TreeView.GetSelectedNode ();
-				ActiveMember = currentItem.DataItem as IMember;
+				ActiveMember = currentItem.DataItem as IEntity;
 				navigationForwardHistory.Clear ();
 			}
 			UpdateNavigationActions ();
