@@ -650,7 +650,6 @@ FILES =  \
 	MonoDevelop.Ide.Tasks/CommentTasksChangedEventHandler.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
 	MonoDevelop.Ide.Tasks/ITaskListView.cs \
-	MonoDevelop.Ide.Tasks/Tag.cs \
 	MonoDevelop.Ide.Tasks/Task.cs \
 	MonoDevelop.Ide.Tasks/TaskPriority.cs \
 	MonoDevelop.Ide.Tasks/TaskService.cs \

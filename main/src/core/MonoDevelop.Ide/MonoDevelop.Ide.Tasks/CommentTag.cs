@@ -94,14 +94,6 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			return res;
 		}
-		
-		public static IList<Tag> GetSpecialComments (string name)
-		{
-			var result = new List<Tag> ();
-			// TODO: Type system conversion.
-			return result;
-		}
-		
 	}
 }
 

@@ -1451,7 +1451,6 @@
     <Compile Include="MonoDevelop.TypeSystem\OutputSettings.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTag.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksChangedEventHandler.cs" />
-    <Compile Include="MonoDevelop.Ide.Tasks\Tag.cs" />
     <Compile Include="MonoDevelop.TypeSystem\StockIcons.cs" />
     <Compile Include="MonoDevelop.TypeSystem\FoldingRegion.cs" />
     <Compile Include="MonoDevelop.TypeSystem\ParsedDocument.cs" />

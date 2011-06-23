@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.Tasks
 {

@@ -37,6 +37,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -196,15 +199,22 @@ namespace MonoDevelop.Ide.Tasks
 			
 			// Load all tags that are stored in pidb files
 			foreach (Project p in sln.GetAllProjects ()) {
-//				ITypeResolveContext pContext = TypeSystemService. (p);
-//				if (pContext == null)
-//					continue;
+				var pContext = TypeSystemService.GetProjectContext (p);
+				if (pContext == null)
+					continue;
 				foreach (ProjectFile file in p.Files) {
-					IList<Tag> tags = CommentTag.GetSpecialComments (file.Name);
-					if (tags != null && tags.Count > 0)
-						UpdateCommentTags (sln, file.Name, tags);
+					UpdateCommentTags (sln, file.Name, GetSpecialComments (pContext, file.Name));
 				}
 			}
+		}
+		
+		
+		static IEnumerable<Tag> GetSpecialComments (IProjectContent ctx, string name)
+		{
+			var doc = ctx.GetFile (name) as ParsedDocument;
+			if (doc == null)
+				return Enumerable.Empty<Tag> ();
+			return (IEnumerable<Tag>)doc.TagComments;
 		}
 		
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
