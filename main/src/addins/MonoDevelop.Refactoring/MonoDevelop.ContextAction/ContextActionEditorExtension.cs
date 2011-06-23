@@ -104,15 +104,14 @@ namespace MonoDevelop.ContextAction
 		{
 			CursorPositionChanged ();
 		}
-//	TODO: Type system conversion. (commands not included atm.)
-//		[CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.QuickFix)]
-//		void OnQuickFixCommand ()
-//		{
-//			if (widget == null)
-//				return;
-//			widget.PopupQuickFixMenu ();
-//		}
-
+		
+		[CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.QuickFix)]
+		void OnQuickFixCommand ()
+		{
+			if (widget == null)
+				return;
+			widget.PopupQuickFixMenu ();
+		}
 	}
 }
 

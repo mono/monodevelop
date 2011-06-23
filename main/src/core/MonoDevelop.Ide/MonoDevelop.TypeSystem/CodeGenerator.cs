@@ -122,29 +122,10 @@ namespace MonoDevelop.TypeSystem
 			generators.Remove (node.MimeType);
 		}
 		
-		static int CalculateBodyIndentLevel (ITypeDefinition declaringType)
-		{
-			int indentLevel = 0;
-			// TODO: Type system conversion.
-/*			IType t = declaringType;
-			do {
-				indentLevel++;
-				t = t.DeclaringType;
-			} while (t != null);
-			DomLocation lastLoc = DomLocation.Empty;
-			foreach (IUsing us in declaringType.CompilationUnit.Usings.Where (u => u.IsFromNamespace && u.ValidRegion.Contains (declaringType.Location))) {
-				if (lastLoc == us.Region.Start)
-					continue;
-				lastLoc = us.Region.Start;
-				indentLevel++;
-			}*/
-			return indentLevel;
-		}
-		
 		protected void SetIndentTo (ITypeDefinition implementingType)
 		{
 			if (IndentLevel < 0)
-				IndentLevel = CalculateBodyIndentLevel (implementingType);
+				IndentLevel = CodeGenerationService.CalculateBodyIndentLevel (implementingType);
 		}
 		
 		public string CreateInterfaceImplementation (ITypeResolveContext ctx, ITypeDefinition implementingType, IType interfaceType, bool explicitly, bool wrapRegions = true)
@@ -203,9 +184,8 @@ namespace MonoDevelop.TypeSystem
 						if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
 							if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
 								needsExplicitly = true;
-// TODO: Type system conversion.
-//							else
-//								alreadyImplemented |= !needsExplicitly || (interfaceType.FullName == GetExplicitPrefix (cmet.InterfaceImplementations.FirstOrDefault ()));
+							else
+								alreadyImplemented |= !needsExplicitly || cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Resolve (ctx).Equals (interfaceType));
 						}
 					}
 				}
@@ -226,9 +206,8 @@ namespace MonoDevelop.TypeSystem
 						if (cprop.Name == prop.Name) {
 							if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
 								needsExplicitly = true;
-// TODO: Type system conversion.
-//							else
-//								alreadyImplemented |= !needsExplicitly || (interfaceType.FullName == GetExplicitPrefix (cprop.ExplicitInterfaces));
+							else
+								alreadyImplemented |= !needsExplicitly || cprop.InterfaceImplementations.Any (impl => impl.InterfaceType.Resolve (ctx).Equals (interfaceType));
 						}
 					}
 				}
@@ -267,17 +246,6 @@ namespace MonoDevelop.TypeSystem
 			}
 			
 			return result.ToString ();
-		}
-		
-		static string GetExplicitPrefix (IEnumerable<ITypeReference> explicitInterfaces)
-		{	
-			if (explicitInterfaces != null) {
-				foreach (var retType in explicitInterfaces) {
-					// TODO: Type system conversion.
-					return retType.ToString ();
-				}
-			}
-			return null;
 		}
 		
 		public abstract string WrapInRegions (string regionName, string text);

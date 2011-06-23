@@ -86,7 +86,12 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				var targetResult = options.Resolve (target);
 //				if (targetResult is TypeResolveResult)
 //					modifiers = MonoDevelop.Projects.Dom.Modifiers.Static;
-				declaringType = targetResult.Type.Resolve (ctx).GetDefinition ().GetParts ().First ();
+				if (targetResult == null)
+					return false;
+				var type = targetResult.Type.Resolve (ctx);
+				if (type == null || type.GetDefinition () == null)
+					return false;
+				declaringType = type.GetDefinition ().GetParts ().First ();
 				methodName = memberReference.MemberName;
 			} else if (target is Identifier) {
 				declaringType = options.Document.ParsedDocument.GetTypeDefinition (options.Location);

@@ -104,22 +104,21 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		public static int CalculateBodyIndentLevel (IType declaringType)
+		public static int CalculateBodyIndentLevel (ITypeDefinition declaringType)
 		{
-			int indentLevel = 0;
-			// TODO: Type system conversion.
-		/*	IType t = declaringType;
-			do {
+			int indentLevel = 1;
+			
+			var pf = declaringType.ProjectContent.GetFile (declaringType.Region.FileName);
+			if (pf is ParsedDocumentDecorator)
+				pf = ((ParsedDocumentDecorator)pf).ParsedFile;
+			var file = pf as ParsedFile;
+			if (file == null)
+				return indentLevel;
+			var scope = file.GetUsingScope (declaringType.Region.Begin);
+			while (scope != null) {
 				indentLevel++;
-				t = t.DeclaringType;
-			} while (t != null);
-			AstLocation lastLoc = AstLocation.Empty;
-			foreach (IUsing us in declaringType.CompilationUnit.Usings.Where (u => u.IsFromNamespace && u.ValidRegion.Contains (declaringType.Location))) {
-				if (lastLoc == us.Region.Start)
-					continue;
-				lastLoc = us.Region.Start;
-				indentLevel++;
-			}*/
+				scope = scope.Parent;
+			}
 			return indentLevel;
 		}
 		

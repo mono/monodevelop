@@ -29,6 +29,9 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Refactoring.Rename;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
@@ -55,82 +58,77 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		//maybe the item's type's SourceProject is null?
 		public IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
 		{
-			yield break;
-			// TODO: Type system conversion.
-//			var renameFix = (RenameMemberFix)fix;
-//			var refactoring = new RenameRefactoring ();
-//			var options = new RefactoringOptions () {
-//				Document = doc,
-//				Dom = doc.Dom,
-//				SelectedItem = renameFix.Item,
-//			};
-//			
-//			if (renameFix.Item == null) {
-//				INode item;
-//				ResolveResult resolveResult;
-//				var editor = options.Document.GetContent<MonoDevelop.Ide.Gui.Content.ITextBuffer> ();
-//				CurrentRefactoryOperationsHandler.GetItem (options.Dom, options.Document, editor, out resolveResult, out item);
-//				options.SelectedItem = item;
-//			}
-//			
-//			if (!refactoring.IsValid (options))
-//				yield break;
-//			
-//			var prop = new RenameRefactoring.RenameProperties () {
-//				NewName = renameFix.NewName,
-//			};
-//			if (string.IsNullOrEmpty (renameFix.NewName)) {
-//				yield return new RenameFixAction () {
-//					Label = GettextCatalog.GetString ("Rename '{0}'...", renameFix.OldName),
-//					Refactoring = refactoring,
-//					Options = options,
-//					Properties = prop,
-//					Preview = false,
-//				};
-//				yield break;
-//			}
-//			yield return new RenameFixAction () {
-//				Label = GettextCatalog.GetString ("Rename '{0}' to '{1}'", renameFix.OldName, renameFix.NewName),
-//				Refactoring = refactoring,
-//				Options = options,
-//				Properties = prop,
-//				Preview = false,
-//			};
-//			
-//			yield return new RenameFixAction () {
-//				Label = GettextCatalog.GetString ("Rename '{0}' to '{1}' with preview",
-//					renameFix.OldName, renameFix.NewName),
-//				Refactoring = refactoring,
-//				Options = options,
-//				Properties = prop,
-//				Preview = true,
-//			};
+			var renameFix = (RenameMemberFix)fix;
+			var refactoring = new RenameRefactoring ();
+			var options = new RefactoringOptions () {
+				Document = doc,
+				Dom = doc.TypeResolveContext,
+				SelectedItem = renameFix.Item,
+			};
+			
+			if (renameFix.Item == null) {
+				ResolveResult resolveResult;
+				
+				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Dom, options.Document, out resolveResult);
+			}
+			
+			if (!refactoring.IsValid (options))
+				yield break;
+			
+			var prop = new RenameRefactoring.RenameProperties () {
+				NewName = renameFix.NewName,
+			};
+			if (string.IsNullOrEmpty (renameFix.NewName)) {
+				yield return new RenameFixAction () {
+					Label = GettextCatalog.GetString ("Rename '{0}'...", renameFix.OldName),
+					Refactoring = refactoring,
+					Options = options,
+					Properties = prop,
+					Preview = false,
+				};
+				yield break;
+			}
+			yield return new RenameFixAction () {
+				Label = GettextCatalog.GetString ("Rename '{0}' to '{1}'", renameFix.OldName, renameFix.NewName),
+				Refactoring = refactoring,
+				Options = options,
+				Properties = prop,
+				Preview = false,
+			};
+			
+			yield return new RenameFixAction () {
+				Label = GettextCatalog.GetString ("Rename '{0}' to '{1}' with preview",
+					renameFix.OldName, renameFix.NewName),
+				Refactoring = refactoring,
+				Options = options,
+				Properties = prop,
+				Preview = true,
+			};
 		}
 		
-		// TODO: Type system conversion.
 		class RenameFixAction : IAnalysisFixAction
 		{
-//			public RenameRefactoring Refactoring;
-//			public RefactoringOptions Options;
-//			public RenameRefactoring.RenameProperties Properties;
+			public RenameRefactoring Refactoring;
+			public RefactoringOptions Options;
+			public RenameRefactoring.RenameProperties Properties;
 			public bool Preview;
 			public string Label { get; set; }
 			
 			public void Fix ()
 			{
-//				if (string.IsNullOrEmpty (Properties.NewName)) {
-//					Refactoring.Run (Options);
-//					return;
-//				}
-//				
-//				//FIXME: performchanges should probably use a monitor too, as it can be slow
-//				var changes = Refactoring.PerformChanges (Options, Properties);
-//				if (Preview) {
-//					MessageService.ShowCustomDialog (new RefactoringPreviewDialog (Options.Dom, changes));
-//				} else {
-//					var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
-//					RefactoringService.AcceptChanges (monitor, Options.Dom, changes);
-//				}
+				if (string.IsNullOrEmpty (Properties.NewName)) {
+					Refactoring.Run (Options);
+					return;
+				}
+				
+				//FIXME: performchanges should probably use a monitor too, as it can be slow
+				var changes = Refactoring.PerformChanges (Options, Properties);
+				if (Preview) {
+					MessageService.ShowCustomDialog (new RefactoringPreviewDialog (Options.Dom, changes));
+				} else {
+					var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
+					RefactoringService.AcceptChanges (monitor, Options.Dom, changes);
+				}
 			}
 		}
 	}

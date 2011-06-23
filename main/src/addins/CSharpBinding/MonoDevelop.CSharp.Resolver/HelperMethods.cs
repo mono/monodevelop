@@ -91,10 +91,17 @@ namespace MonoDevelop.CSharp
 		
 		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
 		{
-			var dom =doc.TypeResolveContext;
 			var policyParent = doc.Project != null ? doc.Project.Policies : null;
 			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 			var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			return codePolicy.CreateOptions ();
+		}
+		
+		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Projects.Project project)
+		{
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			var codePolicy = project != null ? project.Policies.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) :
+				MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			return codePolicy.CreateOptions ();
 		}
 	}

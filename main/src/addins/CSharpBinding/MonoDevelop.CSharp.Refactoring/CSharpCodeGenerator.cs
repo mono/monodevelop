@@ -165,11 +165,24 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (GetIndent (IndentLevel));
 		}
 		
-		static void AppendReturnType (StringBuilder result, IType implementingType, ITypeReference type)
+		void AppendReturnType (StringBuilder result, ITypeDefinition implementingType, ITypeReference type)
 		{
-		//	var shortType = implementingType.CompilationUnit.ShortenTypeName (type, implementingType.BodyRegion.IsEmpty ? implementingType.Location : implementingType.BodyRegion.Start);
-			var shortType = type.ToString ();
-			result.Append (ambience.GetString (shortType, OutputFlags.IncludeGenerics | OutputFlags.UseFullName));
+			var loc = implementingType.Region.Begin;
+			
+			var pf = implementingType.ProjectContent.GetFile (implementingType.Region.FileName);
+			if (pf is ParsedDocumentDecorator)
+				pf = ((ParsedDocumentDecorator)pf).ParsedFile;
+			var file = pf as ParsedFile;
+			var project = implementingType.ProjectContent.Annotation<MonoDevelop.Projects.Project> ();
+			var ctx = TypeSystemService.GetContext (project);
+			var shortType = CreateShortType (ctx, file, loc, type.Resolve (ctx));
+			using (var stringWriter = new System.IO.StringWriter ()) {
+				var formatter = new TextWriterOutputFormatter (stringWriter);
+				stringWriter.NewLine = EolMarker;
+				var visitor = new OutputVisitor (formatter, project.GetFormattingOptions ());
+				shortType.AcceptVisitor (visitor, null);
+				result.Append (stringWriter.ToString ());
+			}
 		}
 		
 		/*
@@ -396,7 +409,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
 		}
 		
-		void AppendParameterList (StringBuilder result, IType implementingType, IList<IParameter> parameters)
+		void AppendParameterList (StringBuilder result, ITypeDefinition implementingType, IList<IParameter> parameters)
 		{
 			for (int i = 0; i < parameters.Count; i++) {
 				if (i > 0)
@@ -671,7 +684,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)
 		{
-			AstType shortType = CreateShortType (doc, type);
+			var loc = new AstLocation (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+			AstType shortType = CreateShortType (doc.TypeResolveContext, doc.ParsedDocument.Annotation<ParsedFile> (), loc, type);
 			return OutputNode (doc, shortType);
 		}
 		
@@ -689,15 +703,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 		
 		
-		static AstType CreateShortType (MonoDevelop.Ide.Gui.Document doc, IType fullType)
+		static AstType CreateShortType (ITypeResolveContext ctx, ParsedFile file, AstLocation loc, IType fullType)
 		{
-			var csResolver = new CSharpResolver (doc.TypeResolveContext, System.Threading.CancellationToken.None);
+			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			
-			var pf = doc.ParsedDocument.Annotation<ParsedFile> ();
-			var loc = new AstLocation (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
-			csResolver.CurrentMember = pf.GetMember (loc);
-			csResolver.CurrentTypeDefinition = pf.GetTypeDefinition (loc);
-			csResolver.UsingScope = pf.GetUsingScope (loc);
+			csResolver.CurrentMember = file.GetMember (loc);
+			csResolver.CurrentTypeDefinition = file.GetTypeDefinition (loc);
+			csResolver.UsingScope = file.GetUsingScope (loc);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);
