@@ -198,6 +198,11 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			HashSet<string> tags = new HashSet<string> ();
 			MonoDevelop.Ide.Gui.Document document;
+			CompilationUnit unit;
+			ResolveVisitor visitor;
+			SemanticResolveVisitorNavigator navi;
+
+			
 			static HashSet<string> contextualKeywords = new HashSet<string> ();
 			
 			static CSharpChunkParser ()
@@ -253,27 +258,29 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 				
 				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
-					if (document.ParsedDocument.Annotation <ResolveVisitor> () == null) {
+					unit = document.ParsedDocument.Annotation<CompilationUnit> ();
+					
+					if ((visitor = document.ParsedDocument.Annotation <ResolveVisitor> ()) == null) {
 						var resolver = new CSharpResolver (document.TypeResolveContext, System.Threading.CancellationToken.None);
-						var navi    = new SemanticResolveVisitorNavigator ();
-						var visitor = new ResolveVisitor (resolver, document.ParsedDocument.Annotation <ParsedFile> (), navi);
+						navi    = new SemanticResolveVisitorNavigator ();
+						visitor = new ResolveVisitor (resolver, document.ParsedDocument.Annotation <ParsedFile> (), navi);
 						document.ParsedDocument.AddAnnotation (navi);
 						document.ParsedDocument.AddAnnotation (visitor);
+					} else {
+						visitor = document.ParsedDocument.Annotation<ResolveVisitor> ();
+						navi = document.ParsedDocument.Annotation<SemanticResolveVisitorNavigator> ();
 					}
 				}
 			}
 			
 			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
 			{
-				var unit = parsedDocument.Annotation<CompilationUnit> ();
-				var visitor = document.ParsedDocument.Annotation<ResolveVisitor> ();
-				var navi = document.ParsedDocument.Annotation<SemanticResolveVisitorNavigator> ();
 				if (unit == null || visitor == null)
 					return null;
-				
 				var loc = doc.OffsetToLocation (chunk.Offset);
+				var node = unit.GetNodeAt (new AstLocation (loc.Line, loc.Column), n => n is Identifier || n is AstType);
+				
 				if (contextualKeywords.Contains (wordbuilder.ToString ())) {
-					var node = unit.GetNodeAt (loc.Line, loc.Column);
 					if (node is Identifier) {
 						switch (((Identifier)node).Name) {
 						case "value":
@@ -295,83 +302,86 @@ namespace MonoDevelop.CSharp.Highlighting
 							break;
 						}
 					}
-					if (node is CSharpTokenNode) 
+					if (node == null)
 						return null;
 					endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
 					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
-				} else {
-					var node = unit.GetNodeAt (loc.Line, loc.Column);
-					while (node != null && !(node is Statement || node is AttributedNode)) {
-						if (node is SimpleType) {
-							var st = (SimpleType)node;
-							if (st.IdentifierToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
-								endOffset = doc.LocationToOffset (st.IdentifierToken.EndLocation.Line, st.IdentifierToken.EndLocation.Column);
-								return "keyword.semantic.type";
-							}
-							return null;
+				}
+				
+				while (node != null && !(node is Statement || node is AttributedNode)) {
+					if (node is SimpleType) {
+						var st = (SimpleType)node;
+						if (st.IdentifierToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
+							endOffset = doc.LocationToOffset (st.IdentifierToken.EndLocation.Line, st.IdentifierToken.EndLocation.Column);
+							return "keyword.semantic.type";
 						}
-						if (node is ICSharpCode.NRefactory.CSharp.MemberType) {
-							var mt = (ICSharpCode.NRefactory.CSharp.MemberType)node;
-							if (mt.MemberNameToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
-								endOffset = doc.LocationToOffset (mt.MemberNameToken.EndLocation.Line, mt.MemberNameToken.EndLocation.Column);
-								return "keyword.semantic.type";
-							}
-							return null;
+						return null;
+					}
+					if (node is ICSharpCode.NRefactory.CSharp.MemberType) {
+						var mt = (ICSharpCode.NRefactory.CSharp.MemberType)node;
+						if (mt.MemberNameToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
+							endOffset = doc.LocationToOffset (mt.MemberNameToken.EndLocation.Line, mt.MemberNameToken.EndLocation.Column);
+							return "keyword.semantic.type";
+						}
+						return null;
+					}
+					
+					if (node is Identifier) {
+						if (node.Parent is TypeDeclaration && node.Role == TypeDeclaration.Roles.Identifier) {
+							endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+							return "keyword.semantic.type";
 						}
 						
-						if (node is Identifier) {
-							if (node.Parent is TypeDeclaration && node.Role == TypeDeclaration.Roles.Identifier) {
-								endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
-								return "keyword.semantic.type";
-							}
-							
-							if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration || node.Parent is FixedVariableInitializer || node.Parent is EnumMemberDeclaration) {
-								endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration || node.Parent is FixedVariableInitializer || node.Parent is EnumMemberDeclaration) {
+							endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+							return "keyword.semantic.field";
+						}
+					}
+					var id = node as IdentifierExpression;
+					if (id != null) {
+						navi.Reset ();
+						navi.AddNode (id);
+						unit.AcceptVisitor (visitor, null);
+						var result = visitor.Resolve (id);
+						if (result is MemberResolveResult) {
+							var member = ((MemberResolveResult)result).Member;
+							if (member is IField) {
+								endOffset = doc.LocationToOffset (id.EndLocation.Line, id.EndLocation.Column);
 								return "keyword.semantic.field";
 							}
 						}
-						var id = node as IdentifierExpression;
-						if (id != null) {
-							navi.AddNode (id);
-							unit.AcceptVisitor (visitor, null);
-							var result = visitor.VisitIdentifierExpression (id, null);
-							navi.Reset ();
-							if (result is MemberResolveResult) {
-								var member = ((MemberResolveResult)result).Member;
-								if (member is IField) {
-									endOffset = doc.LocationToOffset (id.EndLocation.Line, id.EndLocation.Column);
-									return "keyword.semantic.field";
-								}
-								if (member == null && !result.IsError) {
-									endOffset = doc.LocationToOffset (id.EndLocation.Line, id.EndLocation.Column);
-									return "keyword.semantic.type";
-								}
+						if (result is TypeResolveResult) {
+							if (!result.IsError) {
+								endOffset = doc.LocationToOffset (id.EndLocation.Line, id.EndLocation.Column);
+								return "keyword.semantic.type";
 							}
 						}
-						
-						var memberReferenceExpression = node as MemberReferenceExpression;
-						if (memberReferenceExpression != null) {
-							if (!memberReferenceExpression.MemberNameToken.Contains (loc.Line, loc.Column)) 
-								return null;
-							
-							navi.AddNode (memberReferenceExpression);
-							unit.AcceptVisitor (visitor, null);
-							var result = memberReferenceExpression.AcceptVisitor (visitor, null);
-							navi.Reset ();
-							if (result is MemberResolveResult) {
-								var member = ((MemberResolveResult)result).Member;
-								if (member is IField) {
-									endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
-									return "keyword.semantic.field";
-								}
-								if (member == null && !result.IsError) {
-									endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
-									return "keyword.semantic.type";
-								}
-							}
-						}
-						node = node.Parent;
 					}
+					
+					var memberReferenceExpression = node as MemberReferenceExpression;
+					if (memberReferenceExpression != null) {
+						if (!memberReferenceExpression.MemberNameToken.Contains (loc.Line, loc.Column)) 
+							return null;
+						
+						navi.Reset ();
+						navi.AddNode (memberReferenceExpression);
+						unit.AcceptVisitor (visitor, null);
+						var result = visitor.Resolve (memberReferenceExpression);
+						if (result is MemberResolveResult) {
+							var member = ((MemberResolveResult)result).Member;
+							if (member is IField) {
+								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
+								return "keyword.semantic.field";
+							}
+						}
+						if (result is TypeResolveResult) {
+							if (!result.IsError) {
+								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
+								return "keyword.semantic.type";
+							}
+						}
+					}
+					node = node.Parent;
 				}
 				return null;
 			}
@@ -435,7 +445,6 @@ namespace MonoDevelop.CSharp.Highlighting
 							Console.WriteLine ("NO CONFIGURATION");
 						}
 					}
-					
 /*					var parsedDocument = TypeSystemService.ParseFile (document.ProjectContent, doc.FileName, doc.MimeType, doc.Text);
 					if (parsedDocument == null)
 						parsedDocument = TypeSystemService.ParseFile (dom, doc.FileName ?? "a.cs", delegate { return doc.Text; });
