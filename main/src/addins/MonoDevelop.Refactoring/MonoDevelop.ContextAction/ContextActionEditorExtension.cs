@@ -40,6 +40,7 @@ namespace MonoDevelop.ContextAction
 	public class ContextActionEditorExtension : TextEditorExtension 
 	{
 		ContextActionWidget widget;
+		uint quickFixTimeout;
 		
 		public void RemoveWidget ()
 		{
@@ -57,6 +58,7 @@ namespace MonoDevelop.ContextAction
 		
 		public override void Dispose ()
 		{
+			CancelQuickFixTimer ();
 			document.DocumentParsed -= HandleDocumentDocumentParsed;
 			RemoveWidget ();
 			base.Dispose ();
@@ -76,18 +78,30 @@ namespace MonoDevelop.ContextAction
 				-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
 			widget.Show ();
 		}
+
+		public void CancelQuickFixTimer ()
+		{
+			if (quickFixTimeout != 0) {
+				GLib.Source.Remove (quickFixTimeout);
+				quickFixTimeout = 0;
+			}
+		}
 		
 		public override void CursorPositionChanged ()
 		{
 			RemoveWidget ();
-			
+			CancelQuickFixTimer ();
 			if (Document.ParsedDocument != null) {
-				AstLocation loc = new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
-				RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<ContextAction> fixes) {
-					Application.Invoke (delegate {
-						RemoveWidget ();
-						CreateWidget (fixes, loc);
+				quickFixTimeout = GLib.Timeout.Add (100, delegate {
+					AstLocation loc = new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+					RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<ContextAction> fixes) {
+						Application.Invoke (delegate {
+							RemoveWidget ();
+							CreateWidget (fixes, loc);
+						});
 					});
+					quickFixTimeout = 0;
+					return false;
 				});
 			}
 			base.CursorPositionChanged ();
