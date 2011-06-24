@@ -608,9 +608,9 @@ namespace MonoDevelop.CSharp.Completion
 				completionContext.TriggerLineOffset--;
 				completionContext.TriggerWordLength = 1;
 				
-				var wrapper = new CompletionDataWrapper (this);
-				AddContextCompletion (wrapper, csResolver, identifierStart.Item2);
-				return wrapper.Result;
+				var contextList = new CompletionDataWrapper (this);
+				AddContextCompletion (contextList, csResolver, identifierStart.Item2);
+				return contextList.Result;
 //				if (stub.Parent is BlockStatement)
 				
 //				result = FindExpression (dom, completionContext, -1);
@@ -1299,7 +1299,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 		}
-		static string[] expressionLevel = new string [] { "as", "is", "else", "out", "ref"};
+		static string[] expressionLevel = new string [] { "as", "is", "else", "out", "ref", "null"};
 		static string[] primitiveTypes = new string [] { "void", "object", "bool", "byte", "sbyte", "char", "short", "int", "long", "ushort", "uint", "ulong", "float", "double", "decimal", "string"};
 		static string[] statementStart = new string [] { "base", "new", "sizeof", "this", 
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",

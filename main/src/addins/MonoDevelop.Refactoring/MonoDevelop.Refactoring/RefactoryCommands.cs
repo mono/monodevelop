@@ -92,8 +92,13 @@ namespace MonoDevelop.Refactoring
 				return ((LocalResolveResult)resolveResult).Variable;
 			if (resolveResult is MemberResolveResult)
 				return ((MemberResolveResult)resolveResult).Member;
-			if (resolveResult is MethodGroupResolveResult)
-				return ((MethodGroupResolveResult)resolveResult).Methods.FirstOrDefault ();
+			if (resolveResult is MethodGroupResolveResult) {
+				var mg = ((MethodGroupResolveResult)resolveResult);
+				var method = mg.Methods.FirstOrDefault ();
+				if (method == null && mg.ExtensionMethods.Any ()) 
+					method = mg.ExtensionMethods.First ().FirstOrDefault ();
+				return method;
+			}
 			if (resolveResult is TypeResolveResult)
 				return resolveResult.Type;
 			return null;

@@ -77,8 +77,10 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			}
 			var parsedDocument = doc.ParsedDocument;
-			if (parsedDocument == null)
+			if (parsedDocument == null) {
+				expressionRegion = DomRegion.Empty;
 				return null;
+			}
 			var loc = data.OffsetToLocation (offset);
 			
 			var unit       = parsedDocument.Annotation<CompilationUnit> ();
@@ -220,14 +222,20 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append("<small><i>");
 					s.Append(methodStr);
 					s.Append("</i></small>\n");
-					var method = mrr.Methods.FirstOrDefault ();
+					var allMethods = new List<IMethod> (mrr.Methods);
+					if (mrr.ExtensionMethods != null) {
+						foreach (var l in mrr.ExtensionMethods) {
+							allMethods.AddRange (l);
+						}
+					}
+					var method = allMethods.FirstOrDefault ();
 					if (method != null) {
 						s.Append(ambience.GetString(method, settings));
-						if (mrr.Methods.Count > 1) {
-							int overloadCount = mrr.Methods.Count - 1;
+						if (allMethods.Count > 1) {
+							int overloadCount = allMethods.Count - 1;
 							s.Append(string.Format(GettextCatalog.GetPluralString(" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
 						}
-						doc = AmbienceService.GetDocumentationSummary(mrr.Methods.FirstOrDefault ());
+						doc = AmbienceService.GetDocumentationSummary(method);
 					}
 				} else if (result is TypeResolveResult) {
 					var tr = (TypeResolveResult)result;

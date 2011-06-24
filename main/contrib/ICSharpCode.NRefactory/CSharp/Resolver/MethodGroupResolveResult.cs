@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// List of extension methods, used to avoid re-calculating it in ResolveInvocation() when it was already
 		/// calculated by ResolveMemberAccess().
 		/// </summary>
-		internal List<List<IMethod>> ExtensionMethods;
+		public List<List<IMethod>> ExtensionMethods;
 		
 		public MethodGroupResolveResult(IType targetType, string methodName, IList<IMethod> methods, IList<IType> typeArguments) : base(SharedTypes.UnknownType)
 		{
