@@ -40,6 +40,8 @@ using MonoDevelop.CSharp.Formatting;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Text;
+using MonoDevelop.Ide.CodeTemplates;
+
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -1242,8 +1244,6 @@ namespace MonoDevelop.CSharp.Completion
 			AddTypesAndNamespaces (wrapper, state);
 			
 			wrapper.Result.Add (new CompletionData ("global", "md-keyword"));
-			Console.WriteLine ("mem:" + state.CurrentMember);
-			Console.WriteLine ("type:" + state.CurrentTypeDefinition);
 			if (state.CurrentMember != null) {
 				AddKeywords (wrapper, statementStart);
 				AddKeywords (wrapper, expressionLevel);
@@ -1254,6 +1254,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			AddKeywords (wrapper, primitiveTypes);
+			
+			CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", wrapper.Result);
 		}
 
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, Predicate<ITypeDefinition> typePred = null)

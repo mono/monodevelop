@@ -572,7 +572,6 @@ namespace MonoDevelop.CSharp.Completion
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
 				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.GlobalLevel);
-				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.ObjectInitializer) {
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForObjectInitializer (textEditorData, resolver.Unit, Document.FileName, resolver.CallingType);
 				if (exactContext is ExpressionContext.TypeExpressionContext) {
