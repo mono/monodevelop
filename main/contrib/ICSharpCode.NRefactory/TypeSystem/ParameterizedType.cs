@@ -48,6 +48,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		readonly ITypeDefinition genericType;
 		readonly IType[] typeArguments;
+
+		public ITypeDefinition GenericType {
+			get {
+				return genericType;
+			}
+		}
 		
 		public ParameterizedType(ITypeDefinition genericType, IEnumerable<IType> typeArguments)
 		{

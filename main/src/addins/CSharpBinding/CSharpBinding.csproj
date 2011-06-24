@@ -230,6 +230,7 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -241,7 +242,6 @@
     <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
     <None Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
     <None Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
     <None Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />

@@ -40,40 +40,41 @@ namespace MonoDevelop.CSharp.Completion
 {
 	public class NewOverrideCompletionData : CompletionData
 	{
-		TextEditorData editor;
+		CSharpCompletionTextEditorExtension ext;
 		IMember member;
 		static Ambience ambience = new CSharpAmbience ();
 		int    declarationBegin;
-		IType  type;
+		ITypeDefinition  type;
 		
 		public bool GenerateBody { get; set; }
 		
-		public NewOverrideCompletionData (ITypeResolveContext dom, TextEditorData editor, int declarationBegin, IType type, IMember member) : base (null)
+		public NewOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeDefinition type, IMember member) : base (null)
 		{
-			this.editor = editor;
+			this.ext = ext;
 			this.type   = type;
 			this.member = member;
 			
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
-			this.Icon = member.StockIcon;
-			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter);
+			this.Icon = member.GetStockIcon ();
+			this.DisplayText = ambience.GetString (ext.ctx, member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter);
 			this.CompletionText = member.Name;
 		}
 		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
-			CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType, editor.Options.TabsToSpaces, editor.Options.TabSize, editor.EolMarker);
+			var editor = ext.textEditorData;
+			var generator = CodeGenerator.CreateGenerator (editor);
 			bool isExplicit = false;
-			if (member.DeclaringType.ClassType == ClassType.Interface) {
+			if (member.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
 				foreach (var m in type.Members) {
-					if (m.Name == member.Name && m.ReturnType.ToInvariantString () != member.ReturnType.ToInvariantString ()) {
+					if (m.Name == member.Name && !m.ReturnType.Resolve (ext.ctx).Equals (member.ReturnType.Resolve (ext.ctx))) {
 						isExplicit = true;
 						break;
 					}
 				}
 			}
-			var result = generator.CreateMemberImplementation (type, member, isExplicit);
+			var result = generator.CreateMemberImplementation (ext.ctx, type, member, isExplicit);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();

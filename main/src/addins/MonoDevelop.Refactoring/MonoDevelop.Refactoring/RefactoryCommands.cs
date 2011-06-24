@@ -335,7 +335,7 @@ namespace MonoDevelop.Refactoring
 					foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod && m.Name == umResult.MemberName)) {
 						var pType = m.Parameters.First ().Type.Resolve (ctx);
 						foreach (var baseType in baseTypes) {
-							if (conv.ImplicitConversion (umResult.TargetType, baseType)) {
+							if (conv.ImplicitConversion (pType, baseType)) {
 								possibleNamespaces.Add (typeDefinition.Namespace);
 								goto skipType;
 							}

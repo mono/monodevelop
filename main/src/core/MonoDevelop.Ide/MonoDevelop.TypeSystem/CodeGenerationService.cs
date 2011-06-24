@@ -115,7 +115,7 @@ namespace MonoDevelop.TypeSystem
 			if (file == null)
 				return indentLevel;
 			var scope = file.GetUsingScope (declaringType.Region.Begin);
-			while (scope != null) {
+			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				indentLevel++;
 				// skip virtual scopes.
 				while (scope.Parent != null && scope.Parent.Region == scope.Region)

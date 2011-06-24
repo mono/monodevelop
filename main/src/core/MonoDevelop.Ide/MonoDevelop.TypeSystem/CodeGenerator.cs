@@ -126,6 +126,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (IndentLevel < 0)
 				IndentLevel = CodeGenerationService.CalculateBodyIndentLevel (implementingType);
+			Console.WriteLine ("indent level:" + IndentLevel);
 		}
 		
 		public string CreateInterfaceImplementation (ITypeResolveContext ctx, ITypeDefinition implementingType, IType interfaceType, bool explicitly, bool wrapRegions = true)

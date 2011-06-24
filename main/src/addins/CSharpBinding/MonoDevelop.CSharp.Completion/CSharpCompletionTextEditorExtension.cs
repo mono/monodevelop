@@ -183,45 +183,62 @@ namespace MonoDevelop.CSharp.Completion
 		
 		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionBeforeCursor ()
 		{
+			if (currentMember == null && currentType == null) {
+				return null;
+			}
+			
 			CSharpParser parser = new CSharpParser ();
-			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset);
-			var stream = new System.IO.StringReader (text);
-			var completionUnit = parser.Parse (stream, 0);
+			int startOffset;
+			if (currentMember != null) {
+				startOffset = document.Editor.LocationToOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
+			} else {
+				startOffset = document.Editor.LocationToOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
+			}
+			string memberText = Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset);
+			
+//			var stream = new System.IO.StringReader (memberText);
+//			var member = parser.ParseTypeMembers (stream, currentMember.Region.BeginLine - 1).FirstOrDefault ();
+//			stream.Close ();
+//			
+//			if (member == null)
+//				return null;
+			CompilationUnit completionUnit = (CompilationUnit)Unit.Clone ();
+//			member.Remove ();
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			var member = completionUnit.GetNodeAt<AttributedNode> (memberLocation);
+			
+			StringBuilder wrapper = new StringBuilder ();
+			wrapper.Append ("class Stub {");
+			wrapper.AppendLine ();
+			wrapper.Append (memberText);
+			var stream = new System.IO.StringReader (wrapper.ToString ());
+			var memberUnit = parser.Parse (stream, memberLocation.Line - 1);
 			stream.Close ();
-			var expr = completionUnit.TopExpression as Expression;
+			var expr = memberUnit.TopExpression as Expression;
 			if (expr == null) {
 				/// try to get this. or base.
-				text += "a ();  } } }";
-				stream = new System.IO.StringReader (text);
-				completionUnit = parser.Parse (stream, 0);
+				wrapper.Append ("a ();  } } }");
+				stream = new System.IO.StringReader (wrapper.ToString ());
+				var baseUnit = parser.Parse (stream, memberLocation.Line - 1);
 				stream.Close ();
 				
-				var mref = completionUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+				var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
 				if (mref != null) {
 					expr = mref.Target.Clone ();
 				} else {
 					return null;
 				}
-			} else {
-				text += "Console.WriteLine (\"a\"); } } }";
-				stream = new System.IO.StringReader (text);
-				parser = new CSharpParser ();
-				completionUnit = parser.Parse (stream, 0);
-				stream.Close ();
 			}
-			
-			var type = completionUnit.GetNodeAt<TypeDeclaration> (expr.StartLocation);
-			if (type == null)
-				return null;
 			
 			bool nodeInserted = false;
 			
 			AstNode node = completionUnit.GetNodeAt<Statement> (document.Editor.Caret.Line, document.Editor.Caret.Column);
 			if (node != null) {
+				
 				if (node is BlockStatement) {
-					node.ReplaceWith (n => new BlockStatement () { Statements = { new ExpressionStatement (expr) } });
+					node.AddChild (expr, AstNode.Roles.Expression);
 				} else {
-					node.ReplaceWith (n => new ExpressionStatement (expr));
+					node.Parent.AddChild (expr, AstNode.Roles.Expression);
 				}
 				nodeInserted = true;
 			} else {
@@ -233,15 +250,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			if (!nodeInserted) {
-				var member = type.Members.LastOrDefault ();
-				if (member == null)
-					return null;
-				if (member is MethodDeclaration) {
-					((MethodDeclaration)member).Body.Add (new ExpressionStatement (expr));
-				} else if (member is ConstructorDeclaration) {
-					((ConstructorDeclaration)member).Body.Add (new ExpressionStatement (expr));
-				} else if (member is DestructorDeclaration) {
-					((DestructorDeclaration)member).Body.Add (new ExpressionStatement (expr));
+				if (member != null) {
+					member.AddChild (expr, AstNode.Roles.Expression);
 				} else {
 					return null;
 				}
@@ -249,9 +259,9 @@ namespace MonoDevelop.CSharp.Completion
 //			
 //			Console.WriteLine ("Parsed AST:");
 //			
-			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
-			completionUnit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
+//			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
+//			completionUnit.AcceptVisitor (tsvisitor, null);
+			return Tuple.Create (ParsedFile, expr, completionUnit);
 		}
 		
 		static void Print (AstNode node)
@@ -259,21 +269,12 @@ namespace MonoDevelop.CSharp.Completion
 			var v = new OutputVisitor (Console.Out, new CSharpFormattingOptions ());
 			node.AcceptVisitor (v, null);
 		}
-		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionAtCursor ()
+		
+		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionAtCursor ()
 		{
-			CSharpParser parser = new CSharpParser ();
-			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset);
-			text += "a(); } } }";
-			var stream = new System.IO.StringReader (text);
-			var completionUnit = parser.Parse (stream, 0);
-			stream.Close ();
 			var loc = Document.Editor.Caret.Location;
-			var expr = completionUnit.GetNodeAt<Expression> (loc.Line, loc.Column);
-			if (expr == null)
-				return null;
-			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
-			completionUnit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
+			var expr = Unit.GetNodeAt (loc.Line, loc.Column);
+			return Tuple.Create (ParsedFile, expr, Unit);
 		}
 		
 		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
@@ -310,7 +311,6 @@ namespace MonoDevelop.CSharp.Completion
 			stream.Close ();
 			
 			var expr = completionUnit.GetNodeAt<Expression> (document.Editor.Caret.Line, document.Editor.Caret.Column - 1);
-			
 			if (expr is InvocationExpression)
 				expr = ((InvocationExpression)expr).Target;
 			
@@ -345,10 +345,10 @@ namespace MonoDevelop.CSharp.Completion
 			} else if (textEditorData.CurrentMode is Mono.TextEditor.TextLinkEditMode) {
 				return null;
 			}
-			this.currentType = Document.ParsedDocument.GetTypeDefinition (Editor.Caret.Line, Editor.Caret.Column);
-			this.currentMember = Document.ParsedDocument.GetMember (Editor.Caret.Line, Editor.Caret.Column);
 			
 			var loc = new AstLocation (Document.Editor.Caret.Location.Line, Document.Editor.Caret.Location.Column);
+			this.currentType = ParsedFile.GetTypeDefinition (loc);
+			this.currentMember = ParsedFile.GetMember (loc);
 			switch (completionChar) {
 			// Magic key completion
 			case ':':
@@ -368,7 +368,7 @@ namespace MonoDevelop.CSharp.Completion
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
 				if (resolveResult == null)
 					return null;
-				return CreateCompletionData (loc, resolveResult.Item1);
+				return CreateCompletionData (loc, resolveResult.Item1, resolveResult.Item2);
 			case '#':
 				if (IsInsideComment () || IsInsideString ())
 					return null;
@@ -590,12 +590,16 @@ namespace MonoDevelop.CSharp.Completion
 				var identifierStart = GetExpressionAtCursor ();
 				if (identifierStart == null)
 					return null;
-				
-				var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
-				var navigator = new NodeListResolveVisitorNavigator (new[] { identifierStart.Item2 });
-				var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
-				identifierStart.Item3.AcceptVisitor (visitor, null);
-				csResolver = visitor.GetResolverStateBefore (identifierStart.Item2);
+				CSharpResolver csResolver;
+				if (identifierStart.Item2 != null && !(identifierStart.Item2 is TypeDeclaration)) {
+					csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
+					var navigator = new NodeListResolveVisitorNavigator (new[] { identifierStart.Item2 });
+					var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
+					identifierStart.Item3.AcceptVisitor (visitor, null);
+					csResolver = visitor.GetResolverStateBefore (identifierStart.Item2);
+				} else {
+					csResolver = GetState ();
+				}
 				
 				// identifier has already started with the first letter
 				completionContext.TriggerOffset--;
@@ -749,10 +753,10 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var state = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var pf = document.ParsedDocument.Annotation<ParsedFile> ();
-			state.CurrentMember =  pf.GetMember (Editor.Caret.Line, Editor.Caret.Column);
-			state.CurrentTypeDefinition =  pf.GetTypeDefinition (Editor.Caret.Line, Editor.Caret.Column);
-			state.UsingScope = pf.GetUsingScope (new AstLocation (Editor.Caret.Line, Editor.Caret.Column));
-			
+			var loc = new AstLocation (Editor.Caret.Line, Editor.Caret.Column);
+			state.CurrentMember =  pf.GetMember (loc);
+			state.CurrentTypeDefinition =  pf.GetTypeDefinition (loc);
+			state.UsingScope = pf.GetUsingScope (loc);
 			if (state.CurrentMember != null) {
 				var unit = document.ParsedDocument.Annotation<CompilationUnit> ();
 				var node = unit.GetNodeAt (Editor.Caret.Line, Editor.Caret.Column);
@@ -1019,32 +1023,29 @@ namespace MonoDevelop.CSharp.Completion
 //						result.ExpressionContext = ExpressionContext.TypeName;
 //						return CreateCtrlSpaceCompletionData (completionContext, result);
 //					}
-//				case "override":
-//					// Look for modifiers, in order to find the beginning of the declaration
-//					int firstMod = wordStart;
-//					int i = wordStart;
-//					for (int n = 0; n < 3; n++) {
-//						string mod = GetPreviousToken (ref i, true);
-//						if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
-//							firstMod = i;
-//						} else if (mod == "static") {
-//							// static methods are not overridable
-//							return null;
-//						} else
-//							break;
-//					}
-//					if (!IsLineEmptyUpToEol ())
-//						return null;
-//					
-//					IType overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-//					if (overrideCls == null)
-//						overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new AstLocation (completionContext.TriggerLine - 1, 1));
-//					Console.WriteLine ("type: " + overrideCls);
-//					if (overrideCls != null && (overrideCls.ClassType == ClassType.Class || overrideCls.ClassType == ClassType.Struct)) {
-//						string modifiers = textEditorData.GetTextBetween (firstMod, wordStart);
-//						return GetOverrideCompletionData (completionContext, overrideCls, modifiers);
-//					}
-//					return null;
+				case "override":
+				// Look for modifiers, in order to find the beginning of the declaration
+					int firstMod = wordStart;
+					int i = wordStart;
+					for (int n = 0; n < 3; n++) {
+						string mod = GetPreviousToken (ref i, true);
+						if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
+							firstMod = i;
+						} else if (mod == "static") {
+							// static methods are not overridable
+							return null;
+						} else
+							break;
+					}
+					if (!IsLineEmptyUpToEol ())
+						return null;
+					var overrideCls = ParsedFile.GetTypeDefinition (location);
+								
+					if (overrideCls != null && (overrideCls.ClassType == ClassType.Class || overrideCls.ClassType == ClassType.Struct)) {
+						string modifiers = textEditorData.GetTextBetween (firstMod, wordStart);
+						return GetOverrideCompletionData (completionContext, overrideCls, modifiers);
+					}
+					return null;
 //				case "partial":
 //					// Look for modifiers, in order to find the beginning of the declaration
 //					firstMod = wordStart;
@@ -1147,6 +1148,75 @@ namespace MonoDevelop.CSharp.Completion
 			return null;
 		}
 		
+		bool IsLineEmptyUpToEol ()
+		{
+			var line = Editor.GetLine (Editor.Caret.Line);
+			for (int j = Editor.Caret.Offset; j < line.EndOffset; j++) {
+				char ch = Editor.GetCharAt (j);
+				if (!char.IsWhiteSpace (ch))
+					return false;
+			}
+			return true;
+		}
+		
+		CompletionDataList GetOverrideCompletionData (CodeCompletionContext completionCtx, ITypeDefinition type, string modifiers)
+		{
+			CompletionDataWrapper wrapper = new CompletionDataWrapper (this);
+			Dictionary<string, bool> alreadyInserted = new Dictionary<string, bool> ();
+			bool addedVirtuals = false;
+			
+			int declarationBegin = completionCtx.TriggerOffset;
+			int j = declarationBegin;
+			for (int i = 0; i < 3; i++) {
+				switch (GetPreviousToken (ref j, true)) {
+					case "public":
+					case "protected":
+					case "private":
+					case "internal":
+					case "sealed":
+					case "override":
+						declarationBegin = j;
+						break;
+					case "static":
+						return null; // don't add override completion for static members
+				}
+			}
+			
+			foreach (var baseType in type.GetAllBaseTypeDefinitions (ctx)) {
+				AddVirtuals (completionCtx, alreadyInserted, wrapper, type, modifiers, baseType, declarationBegin);
+				addedVirtuals = true;
+			}
+			if (!addedVirtuals)
+				AddVirtuals (completionCtx, alreadyInserted, wrapper, type, modifiers, ctx.GetTypeDefinition (typeof(object)), declarationBegin);
+			return wrapper.Result;
+		}
+		
+		void AddVirtuals (CodeCompletionContext completionCtx, Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, ITypeDefinition type, string modifiers, ITypeDefinition curType, int declarationBegin)
+		{
+			if (curType == null)
+				return;
+			var amb = new CSharpAmbience ();
+			foreach (var m in curType.Methods.Where (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.Properties.Cast<IMember> ())) {
+				if (m.IsSynthetic || curType.ClassType != ClassType.Interface && !(m.IsVirtual || m.IsOverride || m.IsAbstract))
+					continue;
+				
+				// filter out the "Finalize" methods, because finalizers should be done with destructors.
+				if (m is IMethod && m.Name == "Finalize")
+					continue;
+				
+				var data = new NewOverrideCompletionData (this, declarationBegin, type, m);
+				string text = amb.GetString (ctx, m, OutputFlags.ClassBrowserEntries);
+				// check if the member is already implemented
+				bool foundMember = type.Members.Any (cm => amb.GetString (ctx, cm, OutputFlags.ClassBrowserEntries) == text);
+				
+				if (!foundMember && !alreadyInserted.ContainsKey (text)) {
+					alreadyInserted[text] = true;
+					data.CompletionCategory = col.GetCompletionCategory (curType);
+					col.Result.Add (data);
+				}
+			}
+		}
+		
 		void AddContextCompletion (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
 			if (state == null) 
@@ -1172,10 +1242,18 @@ namespace MonoDevelop.CSharp.Completion
 			AddTypesAndNamespaces (wrapper, state);
 			
 			wrapper.Result.Add (new CompletionData ("global", "md-keyword"));
-			wrapper.Result.Add (new CompletionData ("var", "md-keyword"));
+			Console.WriteLine ("mem:" + state.CurrentMember);
+			Console.WriteLine ("type:" + state.CurrentTypeDefinition);
+			if (state.CurrentMember != null) {
+				AddKeywords (wrapper, statementStart);
+				AddKeywords (wrapper, expressionLevel);
+			} else if (state.CurrentTypeDefinition != null) {
+				AddKeywords (wrapper, typeLevel);
+			} else {
+				AddKeywords (wrapper, globalLevel);
+			}
 			
 			AddKeywords (wrapper, primitiveTypes);
-			AddKeywords (wrapper, statementStart);
 		}
 
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, Predicate<ITypeDefinition> typePred = null)
@@ -1219,14 +1297,28 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 		}
-		
+		static string[] expressionLevel = new string [] { "as", "is", "else", "out", "ref"};
 		static string[] primitiveTypes = new string [] { "void", "object", "bool", "byte", "sbyte", "char", "short", "int", "long", "ushort", "uint", "ulong", "float", "double", "decimal", "string"};
 		static string[] statementStart = new string [] { "base", "new", "sizeof", "this", 
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
-			"using", "while", "yield", "dynamic" };
-
+			"using", "while", "yield", "dynamic", "var" };
+		static string[] globalLevel = new string [] {
+			"namespace", "using", "extern", "public", "internal", 
+			"class", "interface", "struct", "enum", "delegate",
+			"abstract", "sealed", "static", "unsafe", "partial"
+		};
+		
+		static string[] typeLevel = new string [] {
+			"public", "internal", "protected", "private",
+			"class", "interface", "struct", "enum", "delegate",
+			"abstract", "sealed", "static", "unsafe", "partial",
+			"const", "event", "extern", "fixed","new", 
+			"operator", "explicit", "implicit", 
+			"override", "readonly", "virtual", "volatile"
+		};
+		static string[] linqKeywords = new string[] { "from", "where", "select", "group", "into", "orderby", "join", "let", "in", "on", "equals", "by", "ascending", "descending" };
 		
 		static void AddKeywords (CompletionDataWrapper wrapper, string[] keywords)
 		{
@@ -1462,9 +1554,9 @@ namespace MonoDevelop.CSharp.Completion
 			
 			return currentMember.DeclaringTypeDefinition != null && member.DeclaringTypeDefinition.FullName == currentMember.DeclaringTypeDefinition.FullName;
 		}
-				
+
 		
-		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult)
+		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult, CSharpResolver state)
 		{
 			if (resolveResult == null || resolveResult.IsError)
 				return null;
@@ -1504,9 +1596,9 @@ namespace MonoDevelop.CSharp.Completion
 				return result.Result;
 			}
 			
-			Console.WriteLine ("type:" + type);
+//			Console.WriteLine ("type:" + type);
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
-			Console.WriteLine (resolveResult);
+//			Console.WriteLine (resolveResult);
 //			Console.WriteLine (currentMember.IsStatic);
 			foreach (var member in type.GetMembers (ctx)) {
 				if (!lookup.IsAccessible (member, isProtectedAllowed)) {
@@ -1522,13 +1614,24 @@ namespace MonoDevelop.CSharp.Completion
 //					Console.WriteLine ("skip non static member: " + member.FullName);
 					continue;
 				}
-				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
+//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 				result.AddMember (member);
 			}
 			
 			if (resolveResult is TypeResolveResult) {
 				foreach (var nested in type.GetNestedTypes (ctx)) {
 					result.AddType (nested, nested.Name);
+				}
+				
+			} else {
+				var baseTypes = new List<IType> (type.GetAllBaseTypes (ctx));
+				var conv = new Conversions (ctx);
+				for (var n = state.UsingScope; n != null; n = n.Parent) {
+					AddExtensionMethods (result, conv, baseTypes, n.NamespaceName);
+					foreach (var u in n.Usings) {
+						var ns = u.ResolveNamespace (ctx);
+						AddExtensionMethods (result, conv, baseTypes, ns.NamespaceName);
+					}
 				}
 			}
 			
@@ -1555,7 +1658,20 @@ namespace MonoDevelop.CSharp.Completion
 			
 			return result.Result;
 		}
-		
+
+		void AddExtensionMethods (CompletionDataWrapper result, Conversions conv, List<IType> baseTypes, string namespaceName)
+		{
+			foreach (var typeDefinition in ctx.GetTypes (namespaceName, StringComparer.Ordinal).Where (t => t.IsStatic && t.HasExtensionMethods)) {
+				foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod )) {
+					var pt= m.Parameters.First ().Type.Resolve (ctx);
+					string reflectionName = pt is ParameterizedType ?  ((ParameterizedType)pt).GenericType.ReflectionName : pt.ReflectionName;
+					if (baseTypes.Any (bt => (bt is ParameterizedType ?  ((ParameterizedType)bt).GenericType.ReflectionName : bt.ReflectionName) == reflectionName)) {
+						result.AddMember (m);
+					}
+				}
+			}
+		}
+						
 		ICompletionDataList CreateParameterCompletion (MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, int parameter)
 		{
 			var result = new CompletionDataWrapper (this);
@@ -1676,6 +1792,20 @@ namespace MonoDevelop.CSharp.Completion
 //					return new NRefactoryParameterDataProvider (textEditorData, result.Expression, resolvedType);
 //				}
 				break;
+				
+//			case '<':
+//				if (string.IsNullOrEmpty (result.Expression))
+//					return null;
+//				return new NRefactoryTemplateParameterDataProvider (textEditorData, resolver, GetUsedNamespaces (), result, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//			case '[': {
+//				ResolveResult resolveResult = resolver.Resolve (result, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//				if (resolveResult != null && !resolveResult.StaticResolve) {
+//					IType type = dom.GetType (resolveResult.ResolvedType);
+//					if (type != null)
+//						return new NRefactoryIndexerParameterDataProvider (textEditorData, type, result.Expression);
+//				}
+//				return null;
+//			}
 				
 			}
 			return null;

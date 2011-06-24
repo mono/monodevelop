@@ -45,6 +45,7 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/DelegateDataProvider.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MethodParameterDataProvider.cs \
+	MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionWrappers.cs \

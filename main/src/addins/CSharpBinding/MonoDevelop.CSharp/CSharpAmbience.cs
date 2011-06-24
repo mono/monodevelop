@@ -249,6 +249,8 @@ namespace MonoDevelop.CSharp
 		
 		protected override string GetTypeReferenceString (ITypeReference reference, OutputSettings settings)
 		{
+			if (reference == null)
+				return "";
 			var csResolver = new CSharpResolver (settings.Context, System.Threading.CancellationToken.None);
 			var builder = new TypeSystemAstBuilder (csResolver);
 			var astType = builder.ConvertType (reference.Resolve (settings.Context));
@@ -308,6 +310,8 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetTypeString (ITypeDefinition type, OutputSettings settings)
 		{
+			if (type == null)
+				return "";
 			var result = new StringBuilder ();
 //			if (type is AnonymousType) {
 //				result.Append ("new {");
@@ -394,6 +398,8 @@ namespace MonoDevelop.CSharp
 		
 		string InternalGetMethodString (IMethod method, OutputSettings settings, string methodName, bool getReturnType)
 		{
+			if (method == null)
+				return "";
 			var result = new StringBuilder ();
 			AppendModifiers (result, settings, method);
 			if (!settings.CompletionListFomat && settings.IncludeReturnType && getReturnType) {
@@ -465,6 +471,8 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetFieldString (IField field, OutputSettings settings)
 		{
+			if (field == null)
+				return "";
 			var result = new StringBuilder ();
 			bool isEnum = field.DeclaringType != null && field.DeclaringType.IsEnum ();
 			AppendModifiers (result, settings, field);
@@ -489,6 +497,8 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetEventString (IEvent evt, OutputSettings settings)
 		{
+			if (evt == null)
+				return "";
 			var result = new StringBuilder ();
 			AppendModifiers (result, settings, evt);
 			if (settings.IncludeKeywords)
@@ -515,6 +525,8 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetPropertyString (IProperty property, OutputSettings settings)
 		{
+			if (property == null)
+				return "";
 			var result = new StringBuilder ();
 			
 			AppendModifiers (result, settings, property);
@@ -542,6 +554,8 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetIndexerString (IProperty property, OutputSettings settings)
 		{
+			if (property == null)
+				return "";
 			var result = new StringBuilder ();
 			
 			AppendModifiers (result, settings, property);
@@ -570,6 +584,8 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetParameterString (IParameterizedMember member, IParameter parameter, OutputSettings settings)
 		{
+			if (member == null)
+				return "";
 			StringBuilder result = new StringBuilder ();
 			if (settings.IncludeParameterName) {
 				if (settings.IncludeModifiers) {

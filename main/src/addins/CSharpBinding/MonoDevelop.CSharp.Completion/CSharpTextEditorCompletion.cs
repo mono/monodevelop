@@ -309,10 +309,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		
-		
-		static string[] linqKeywords = new string[] { "from", "where", "select", "group", "into", "orderby", "join", "let", "in", "on", "equals", "by", "ascending", "descending" };
-		
 		int GetMemberStartPosition (IMember mem)
 		{
 			if (mem is IField)
@@ -339,19 +335,6 @@ namespace MonoDevelop.CSharp.Completion
 				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (textEditorData, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
 			
 			switch (completionChar) {
-			case '<':
-				if (string.IsNullOrEmpty (result.Expression))
-					return null;
-				return new NRefactoryTemplateParameterDataProvider (textEditorData, resolver, GetUsedNamespaces (), result, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-			case '[': {
-				ResolveResult resolveResult = resolver.Resolve (result, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-				if (resolveResult != null && !resolveResult.StaticResolve) {
-					IType type = dom.GetType (resolveResult.ResolvedType);
-					if (type != null)
-						return new NRefactoryIndexerParameterDataProvider (textEditorData, type, result.Expression);
-				}
-				return null;
-			}
 			 }
 			return null;
 		}
@@ -396,18 +379,6 @@ namespace MonoDevelop.CSharp.Completion
 			col.Add (type);
 		}
 
-		bool IsLineEmptyUpToEol ()
-		{
-			var line = Editor.GetLine (Editor.Caret.Line);
-			for (int j = Editor.Caret.Offset; j < line.EndOffset; j++) {
-				char ch = Editor.GetCharAt (j);
-				if (!char.IsWhiteSpace (ch))
-					return false;
-			}
-			return true;
-		}
-		
-	
 		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult, 
 		                                          ExpressionResult expressionResult, NRefactoryResolver resolver)
 		{
@@ -438,68 +409,6 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 
-		void AddVirtuals (CodeCompletionContext ctx, Dictionary<string, bool> alreadyInserted, CompletionDataList completionList, IType type, string modifiers, IReturnType curType)
-		{
-			if (curType == null)
-				return;
-			IType searchType = dom.SearchType (Document.CompilationUnit, type, new AstLocation (ctx.TriggerLine, ctx.TriggerLineOffset + 1), curType);
-			//System.Console.WriteLine("Add Virtuals for:" + searchType + " / " + curType);
-			if (searchType == null)
-				return;
-			bool isInterface      = type.ClassType == ClassType.Interface;
-			bool includeOverriden = false;
-		
-			int declarationBegin = ctx.TriggerOffset;
-			int j = declarationBegin;
-			for (int i = 0; i < 3; i++) {
-				switch (GetPreviousToken (ref j, true)) {
-					case "public":
-					case "protected":
-					case "private":
-					case "internal":
-					case "sealed":
-					case "override":
-						declarationBegin = j;
-						break;
-					case "static":
-						return; // don't add override completion for static members
-				}
-			}
-			CompletionDataCollector col = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, searchType, AstLocation.Empty);
-			var inheritanceTree = new List<IType> (this.dom.GetInheritanceTree (searchType));
-			var sortedTree = inheritanceTree.Where (c => c.ClassType != ClassType.Interface).Concat (inheritanceTree.Where (c => c.ClassType == ClassType.Interface));
-			foreach (IType t in sortedTree) {
-				foreach (IMember m in t.Members) {
-					if (/*!m.IsAccessibleFrom (dom, type, type, true) ||*/ m.IsSpecialName)
-						continue;
-					//if (m.IsSpecialName || (m.IsInternal && !m.IsProtectedOrInternal) || && searchType.GetSourceProject () != Document.Project)
-					//	continue;
-					if (t.ClassType == ClassType.Interface || (isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
-						// filter out the "Finalize" methods, because finalizers should be done with destructors.
-						if (m is IMethod && m.Name == "Finalize")
-							continue;
-					
-						//System.Console.WriteLine("add");
-						NewOverrideCompletionData data = new NewOverrideCompletionData (dom, textEditorData, declarationBegin, type, m);
-						string text = CompletionDataCollector.ambience.GetString (m, OutputFlags.ClassBrowserEntries);
-						// check if the member is already implemented
-						bool foundMember = false;
-						foreach (IMember member in type.Members) {
-							if (text == CompletionDataCollector.ambience.GetString (member, OutputFlags.ClassBrowserEntries)) {
-								foundMember = true;
-								break;
-							}
-						}
-						
-						if (!foundMember && !alreadyInserted.ContainsKey (text)) {
-							alreadyInserted[text] = true;
-							data.CompletionCategory = col.GetCompletionCategory (t);
-							completionList.Add (data);
-						}
-					}
-				}
-			}
-		}
 		
 		static string StripGenerics (string str)
 		{
@@ -509,19 +418,6 @@ namespace MonoDevelop.CSharp.Completion
 			return str;
 		}
 		
-		CompletionDataList GetOverrideCompletionData (CodeCompletionContext ctx, IType type, string modifiers)
-		{
-			CompletionDataList result = new ProjectDomCompletionDataList ();
-			Dictionary<string, bool> alreadyInserted = new Dictionary<string, bool> ();
-			bool addedVirtuals = false;
-			foreach (IReturnType baseType in type.BaseTypes) {
-				AddVirtuals (ctx, alreadyInserted, result, type, modifiers, baseType);
-				addedVirtuals = true;
-			}
-			if (!addedVirtuals)
-				AddVirtuals (ctx, alreadyInserted, result, type, modifiers, DomReturnType.Object);
-			return result;
-		}
 		
 		static bool ContainsDeclaration (IType type, IMethod method)
 		{

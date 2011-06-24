@@ -84,7 +84,6 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public static IEnumerable<Result> Check (Document input)
 		{
-			Console.WriteLine ("check !");
 			var unit = input.ParsedDocument.Annotation<CompilationUnit> ();
 			if (unit == null)
 				return Enumerable.Empty<Result> ();
@@ -94,7 +93,6 @@ namespace MonoDevelop.CSharp.Inspection
 			var data = new InspectionData () { Graph = cg, Document = input };
 			
 			unit.AcceptVisitor (visitor, data);
-			Console.WriteLine ("get results !");
 			return data.Results;
 		}
 	}
