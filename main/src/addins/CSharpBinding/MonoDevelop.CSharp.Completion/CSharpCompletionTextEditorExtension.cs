@@ -368,7 +368,7 @@ namespace MonoDevelop.CSharp.Completion
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
 				if (resolveResult == null)
 					return null;
-				return CreateCompletionData (loc, resolveResult.Item1, resolveResult.Item2);
+				return CreateCompletionData (loc, resolveResult.Item1, expr.Item2, resolveResult.Item2);
 			case '#':
 				if (IsInsideComment () || IsInsideString ())
 					return null;
@@ -1107,12 +1107,12 @@ namespace MonoDevelop.CSharp.Completion
 //					if (stateTracker.Engine.IsInsidePreprocessorDirective) 
 //						return GetDefineCompletionData ();
 //					return null;
-//				case "yield":
-//					CompletionDataList yieldDataList = new CompletionDataList ();
-//					yieldDataList.DefaultCompletionString = "return";
-//					yieldDataList.Add ("break", "md-keyword");
-//					yieldDataList.Add ("return", "md-keyword");
-//					return yieldDataList;
+				case "yield":
+					var yieldDataList = new CompletionDataWrapper (this);
+					yieldDataList.Result.DefaultCompletionString = "return";
+					yieldDataList.Result.Add ("break", "md-keyword");
+					yieldDataList.Result.Add ("return", "md-keyword");
+					return yieldDataList.Result;
 //				case "where":
 //					CompletionDataList whereDataList = new CompletionDataList ();
 //					NRefactoryResolver constraintResolver = CreateResolver ();
@@ -1556,7 +1556,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		
-		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult, CSharpResolver state)
+		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
 		{
 			if (resolveResult == null || resolveResult.IsError)
 				return null;
@@ -1605,6 +1605,8 @@ namespace MonoDevelop.CSharp.Completion
 //					Console.WriteLine ("skip access: " + member.FullName);
 					continue;
 				}
+				if (resolvedNode is BaseReferenceExpression && member.IsAbstract)
+					continue;
 				
 				if (member.IsStatic && !(resolveResult is TypeResolveResult)) {
 //					Console.WriteLine ("skip static member: " + member.FullName);

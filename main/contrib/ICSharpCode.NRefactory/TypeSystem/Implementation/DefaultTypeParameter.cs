@@ -250,40 +250,86 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
-			// TODO: get methods from constraints
-			IType objectType = context.GetTypeDefinition("System", "Object", 0, StringComparer.Ordinal);
-			IEnumerable<IMethod> objectMethods;
-			if (objectType != null)
-				objectMethods = objectType.GetMethods(context, filter);
-			else
-				objectMethods = EmptyList<IMethod>.Instance;
-			
-			// don't return static methods (those cannot be called from type parameter)
-			return objectMethods.Where(m => !m.IsStatic);
+			foreach (var baseType in GetNonCircularBaseTypes(context)) {
+				foreach (var m in baseType.GetMethods(context, filter)) {
+					if (!m.IsStatic)
+						yield return m;
+				}
+			}
 		}
 		
 		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
-			// TODO: get properties from constraints
-			return EmptyList<IProperty>.Instance;
+			foreach (var baseType in GetNonCircularBaseTypes(context)) {
+				foreach (var m in baseType.GetProperties(context, filter)) {
+					if (!m.IsStatic)
+						yield return m;
+				}
+			}
 		}
 		
 		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
 		{
-			// TODO: get fields from constraints
-			return EmptyList<IField>.Instance;
+			foreach (var baseType in GetNonCircularBaseTypes(context)) {
+				foreach (var m in baseType.GetFields(context, filter)) {
+					if (!m.IsStatic)
+						yield return m;
+				}
+			}
 		}
 		
 		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
 		{
-			// TODO: get events from constraints
-			return EmptyList<IEvent>.Instance;
+			foreach (var baseType in GetNonCircularBaseTypes(context)) {
+				foreach (var m in baseType.GetEvents(context, filter)) {
+					if (!m.IsStatic)
+						yield return m;
+				}
+			}
 		}
 		
 		public IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
 		{
-			// TODO: get members from constraints
-			return GetMethods(context, filter);
+			foreach (var baseType in GetNonCircularBaseTypes(context)) {
+				foreach (var m in baseType.GetMembers(context, filter)) {
+					if (!m.IsStatic)
+						yield return m;
+				}
+			}
+		}
+		
+		// Problem with type parameter resolving - circular declarations
+		//   void Example<S, T> (S s, T t) where S : T where T : S
+		IEnumerable<IType> GetNonCircularBaseTypes(ITypeResolveContext context)
+		{
+			var result = this.GetBaseTypes(context).Where(bt => !IsCircular (context, bt));
+			if (result.Any ())
+				return result;
+			
+			// result may be empty, GetBaseTypes doesn't return object/struct when there are only constraints (even circular) as base types are available,
+			// but even when there are only circular references the default base type should be included.
+			IType defaultBaseType = context.GetTypeDefinition("System", HasValueTypeConstraint ? "ValueType" : "Object", 0, StringComparer.Ordinal);
+			if (defaultBaseType != null)
+				return new [] { defaultBaseType };
+			return Enumerable.Empty<IType> ();
+		}
+		
+		bool IsCircular(ITypeResolveContext context, IType baseType)
+		{
+			var parameter = baseType as DefaultTypeParameter;
+			if (parameter == null)
+				return false;
+			var stack = new Stack<DefaultTypeParameter>();
+			while (true) {
+				if (parameter == this)
+					return true;
+				foreach (DefaultTypeParameter parameterBaseType in parameter.GetNonCircularBaseTypes(context).Where(t => t is DefaultTypeParameter)) {
+					stack.Push(parameterBaseType); 
+				}
+				if (stack.Count == 0)
+					return false;
+				parameter = stack.Pop();
+			}
 		}
 		
 		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter)
