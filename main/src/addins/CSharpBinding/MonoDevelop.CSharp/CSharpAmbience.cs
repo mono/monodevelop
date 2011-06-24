@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.IO;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.CSharp
 {
@@ -218,94 +219,117 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 		
-		void AppendComposedType (StringBuilder sb, ComposedType compType)
+		public void AppendType (StringBuilder sb, IType type, OutputSettings settings)
 		{
-			AppendAstType (sb, compType.BaseType);
-			if (compType.HasNullableSpecifier)
-				sb.Append ("?");
-			if (compType.PointerRank > 0)
-				sb.Append (new string ('*', compType.PointerRank));
-			foreach (ArraySpecifier spec in compType.ArraySpecifiers) {
-				sb.Append ("[");
-				if (spec.Dimensions > 1)
-					sb.Append (new string (',', spec.Dimensions - 1));
-				sb.Append ("]");
+			if (type.DeclaringType != null) {
+				AppendType (sb, type.DeclaringType, settings);
+				sb.Append (settings.Markup ("."));
 			}
-		}
-
-		public void AppendAstType (StringBuilder sb, AstType astType)
-		{
-			if (astType is ComposedType) {
-				AppendComposedType (sb, (ComposedType)astType);
-			} else if (astType is PrimitiveType) {
-				sb.Append (((PrimitiveType)astType).Keyword);
-			} else if (astType is SimpleType) {
-				sb.Append (((SimpleType)astType).Identifier);
-			} else if (astType is MemberType) {
-				var mt = (MemberType)astType;
-				sb.Append (mt.MemberName);
-			} 
+			
+			if (type.Namespace == "System" && type.TypeParameterCount == 0) {
+				switch (type.Name) {
+				case "Object":
+					sb.Append ("object");
+					return;
+				case "Boolean":
+					sb.Append ("bool");
+					return;
+				case "Char":
+					sb.Append ("char");
+					return;
+				case "SByte":
+					sb.Append ("sbyte");
+					return;
+				case "Byte":
+					sb.Append ("byte");
+					return;
+				case "Int16":
+					sb.Append ("short");
+					return;
+				case "UInt16":
+					sb.Append ("ushort");
+					return;
+				case "Int32":
+					sb.Append ("int");
+					return;
+				case "UInt32":
+					sb.Append ("uint");
+					return;
+				case "Int64":
+					sb.Append ("long");
+					return;
+				case "UInt64":
+					sb.Append ("ulong");
+					return;
+				case "Single":
+					sb.Append ("float");
+					return;
+				case "Double":
+					sb.Append ("double");
+					return;
+				case "Decimal":
+					sb.Append ("decimal");
+					return;
+				case "String":
+					sb.Append ("string");
+					return;
+				case "Void":
+					sb.Append ("void");
+					return;
+				}
+			}
+			
+			var typeWithElementType = type as TypeWithElementType;
+			if (typeWithElementType != null) {
+				AppendType (sb, typeWithElementType.ElementType, settings);
+				sb.Append (typeWithElementType.NameSuffix);
+				return;
+			}
+			
+			var pt = type as ParameterizedType;
+			if (pt != null) {
+				if (pt.Name == "Nullable" && pt.Namespace == "System" && pt.TypeParameterCount == 1) {
+					AppendType (sb, pt.TypeArguments[0], settings);
+					sb.Append (settings.Markup ("?"));
+					return;
+				}
+				sb.Append (pt.Name);
+				if (pt.TypeParameterCount > 0) {
+					sb.Append (settings.Markup ("<"));
+					for (int i = 0; i < pt.TypeParameterCount; i++) {
+						if (i > 0)
+							sb.Append (settings.Markup (", "));
+						AppendType (sb, pt.TypeArguments[i], settings);
+					}
+					sb.Append (settings.Markup (">"));
+				}
+				return;
+			}
+			
+			var typeDef = type as ITypeDefinition ?? type.GetDefinition ();
+			if (typeDef != null) {
+				sb.Append (typeDef.Name);
+				
+				if (typeDef.TypeParameterCount > 0) {
+					sb.Append (settings.Markup ("<"));
+					for (int i = 0; i < typeDef.TypeParameterCount; i++) {
+						if (i > 0)
+							sb.Append (settings.Markup (", "));
+						AppendType (sb, typeDef.TypeParameters[i], settings);
+					}
+					sb.Append (settings.Markup (">"));
+				}
+			}
 		}
 		
 		protected override string GetTypeReferenceString (ITypeReference reference, OutputSettings settings)
 		{
+			
 			if (reference == null)
-				return "";
-			var csResolver = new CSharpResolver (settings.Context, System.Threading.CancellationToken.None);
-			var builder = new TypeSystemAstBuilder (csResolver);
-			var astType = builder.ConvertType (reference.Resolve (settings.Context));
-			
-			
+				return "null";
 			var sb = new StringBuilder ();
-			AppendAstType (sb, astType);
-			
+			AppendType (sb, reference.Resolve (settings.Context), settings);
 			return sb.ToString ();
-/*		if (returnType.IsNullable && returnType.GenericArguments.Count == 1)
-				return Visit (returnType.GenericArguments [0], settings) + "?";
-			if (returnType.Type is AnonymousType)
-				return returnType.Type.AcceptVisitor (this, settings);
-			StringBuilder result = new StringBuilder ();
-			if (!settings.UseNETTypeNames && netToCSharpTypes.ContainsKey (returnType.FullName)) {
-				result.Append (settings.EmitName (returnType, netToCSharpTypes [returnType.FullName]));
-			} else {
-				if (settings.UseFullName && returnType.Namespace != null) 
-					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (returnType.Namespace))));
-				
-				foreach (ReturnTypePart part in returnType.Parts) {
-					if (part.IsGenerated)
-						continue;
-					if (!settings.UseFullName && part != returnType.Parts.LastOrDefault ())
-						continue;
-					if (result.Length > 0)
-						result.Append (settings.EmitName (returnType, "."));
-					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (part.Name))));
-					if (settings.IncludeGenerics && part.GenericArguments.Count > 0) {
-						result.Append (settings.Markup ("<"));
-						bool hideArrays = settings.HideArrayBrackets;
-						settings.OutputFlags &= ~OutputFlags.HideArrayBrackets;
-						for (int i = 0; i < part.GenericArguments.Count; i++) {
-							if (i > 0)
-								result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
-							if (!settings.HideGenericParameterNames) 
-								result.Append (GetString (part.GenericArguments [i], settings));
-						}
-						if (hideArrays)
-							settings.OutputFlags |= OutputFlags.HideArrayBrackets;
-						result.Append (settings.Markup (">"));
-					}
-				}
-			}
-			
-			if (!settings.HideArrayBrackets && returnType.ArrayDimensions > 0) {
-				for (int i = 0; i < returnType.ArrayDimensions; i++) {
-					result.Append (settings.Markup ("["));
-					int dimension = returnType.GetDimension (i);
-					if (dimension > 0)
-						result.Append (settings.Markup (new string (',', dimension)));
-					result.Append (settings.Markup ("]"));
-				}
-			}
-			return result.ToString ();*/
 		}
 
 		protected override string GetTypeString (ITypeDefinition type, OutputSettings settings)
@@ -433,7 +457,6 @@ namespace MonoDevelop.CSharp
 //			CSharpFormattingPolicy policy = GetPolicy (settings);
 //			if (policy.BeforeMethodCallParentheses)
 //				result.Append (settings.Markup (" "));
-				
 				result.Append (settings.Markup ("("));
 				AppendParameterList (result, settings, method.Parameters);
 				result.Append (settings.Markup (")"));
@@ -584,7 +607,7 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetParameterString (IParameterizedMember member, IParameter parameter, OutputSettings settings)
 		{
-			if (member == null)
+			if (parameter == null)
 				return "";
 			StringBuilder result = new StringBuilder ();
 			if (settings.IncludeParameterName) {
@@ -600,10 +623,8 @@ namespace MonoDevelop.CSharp
 					}
 				}
 				
-				if (settings.IncludeReturnType) {
-					result.Append (GetTypeReferenceString (parameter.Type, settings));
-					result.Append (" ");
-				}
+				result.Append (GetTypeReferenceString (parameter.Type, settings));
+				result.Append (" ");
 				
 				if (settings.HighlightName) {
 					result.Append (settings.EmitName (parameter, settings.Highlight (Format (FilterName (parameter.Name)))));
@@ -630,6 +651,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (parameterList == null)
 				return;
+			
 			bool first = true;
 			foreach (var parameter in parameterList) {
 				if (!first)
