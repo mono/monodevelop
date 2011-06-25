@@ -42,11 +42,12 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		string parameterList;
 		IMember callingMember;
-		TextEditorData editor;
+		CSharpCompletionTextEditorExtension ext;
 		int initialOffset;
 		public bool AddSemicolon = true;
+		TextEditorData editor;
 		
-		public EventCreationCompletionData (TextEditorData editor, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
+		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
 			if (string.IsNullOrEmpty (varName)) {
 				this.DisplayText   = "Handle" + (evt != null ? evt.Name : "");
@@ -54,15 +55,15 @@ namespace MonoDevelop.CSharp.Completion
 				this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + (evt != null ? evt.Name : "");
 			}
 			
-			if (declaringType != null && declaringType.SearchMember (this.DisplayText, true).Count > 0) {
+			if (declaringType != null && declaringType.GetMembers (ext.ctx).Any (m => m.Name == this.DisplayText)) {
 				for (int i = 1; i < 10000; i++) {
-					if (declaringType.SearchMember (this.DisplayText + i.ToString (), true).Count == 0) {
+					if (!declaringType.GetMembers (ext.ctx).Any (m => m.Name == this.DisplayText + i)) {
 						this.DisplayText = this.DisplayText + i.ToString ();
 						break;
 					}
 				}
 			}
-			this.editor        = editor;
+			this.editor        = ext.textEditorData;
 			this.parameterList = parameterList;
 			this.callingMember = callingMember;
 			this.Icon          = "md-newmethod";
@@ -86,7 +87,7 @@ namespace MonoDevelop.CSharp.Completion
 			pos = Math.Max (0, Math.Min (pos, editor.Document.Length - 1));
 			
 			// Insert new event handler after closing bracket
-			string indent = editor.Document.GetLine (callingMember.Location.Line).GetIndentation (editor.Document);
+			string indent = editor.Document.GetLine (callingMember.Region.BeginLine).GetIndentation (editor.Document);
 			
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (editor.EolMarker);

@@ -43,6 +43,7 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/ConstructorParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/CSharpCompletionTextEditorExtension.cs \
 	MonoDevelop.CSharp.Completion/DelegateDataProvider.cs \
+	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MethodParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs \

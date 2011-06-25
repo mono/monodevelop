@@ -122,18 +122,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		static bool MatchDelegate (IType delegateType, IMethod method)
-		{
-			IMethod delegateMethod = delegateType.Methods.First ();
-			if (delegateMethod.Parameters.Count != method.Parameters.Count)
-				return false;
-			for (int i = 0; i < delegateMethod.Parameters.Count; i++) {
-				if (delegateMethod.Parameters[i].ReturnType.ToInvariantString () != method.Parameters[i].ReturnType.ToInvariantString ())
-					return false;
-			}
-			return true;
-		}
-		
 		internal Document GetDocument ()
 		{
 			return Document;
@@ -185,79 +173,6 @@ namespace MonoDevelop.CSharp.Completion
 //				}
 			return null;
 		}
-
-		public string GetPreviousMemberReferenceExpression (int tokenIndex)
-		{
-			string result = GetPreviousToken (ref tokenIndex, false);
-			result = GetPreviousToken (ref tokenIndex, false);
-			if (result != ".") {
-				result = null;
-			} else {
-				List<string > names = new List<string> ();
-				while (result == ".") {
-					result = GetPreviousToken (ref tokenIndex, false);
-					if (result == "this") {
-						names.Add ("handle");
-					} else if (result != null) {
-						string trimmedName = result.Trim ();
-						if (trimmedName.Length == 0)
-							break;
-						names.Insert (0, trimmedName);
-					}
-					result = GetPreviousToken (ref tokenIndex, false);
-				}
-				result = String.Join ("", names.ToArray ());
-				foreach (char ch in result) {
-					if (!char.IsLetterOrDigit (ch) && ch != '_') {
-						result = "";
-						break;
-					}
-				}
-			}
-			return result;
-		}
-
-		string AddDelegateHandlers (CompletionDataList completionList, IType delegateType, bool addSemicolon = true, bool addDefault = true)
-		{
-			IMethod delegateMethod = delegateType.Methods.First ();
-			string delegateEndString = Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + "}" + (addSemicolon ? ";" : "");
-			bool containsDelegateData = completionList.Any (d => d.DisplayText.StartsWith ("delegate("));
-			if (addDefault)
-				completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + delegateEndString);
-			
-			StringBuilder sb = new StringBuilder ("(");
-			StringBuilder sbWithoutTypes = new StringBuilder ("(");
-			for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
-				if (k > 0) {
-					sb.Append (", ");
-					sbWithoutTypes.Append (", ");
-				}
-				IType parameterType = dom.GetType (delegateMethod.Parameters [k].ReturnType);
-				IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters [k].ReturnType;
-				sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName));
-				sb.Append (" ");
-				sb.Append (delegateMethod.Parameters [k].Name);
-				sbWithoutTypes.Append (delegateMethod.Parameters [k].Name);
-			}
-			sb.Append (")");
-			sbWithoutTypes.Append (")");
-			completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + delegateEndString);
-			if (!completionList.Any (data => data.DisplayText == sbWithoutTypes.ToString ()))
-				completionList.Add (sbWithoutTypes.ToString (), "md-keyword", GettextCatalog.GetString ("Creates lambda expression."), sbWithoutTypes + " => |" + (addSemicolon ? ";" : ""));
-			
-			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('
-			// otherwise we would end up with () => )
-			if (!containsDelegateData) {
-				var savedValue = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
-				MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = false;
-				completionList.CompletionListClosed += delegate {
-					MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = savedValue;
-				};
-			}
-			return sb.ToString ();
-		}
-		
-		
 		public bool IsInLinqContext (ExpressionResult result)
 		{
 			if (result.Contexts == null)
@@ -337,22 +252,6 @@ namespace MonoDevelop.CSharp.Completion
 			switch (completionChar) {
 			 }
 			return null;
-		}
-		
-		List<string> GetUsedNamespaces ()
-		{
-			List<string> result = new List<string> ();
-			result.Add ("");
-			if (Document.CompilationUnit != null && Document.CompilationUnit.Usings != null) {
-				foreach (IUsing u in Document.CompilationUnit.Usings) {
-					if (u.Namespaces == null)
-						continue;
-					foreach (string ns in u.Namespaces) {
-						result.Add (ns);
-					}
-				}
-			}
-			return result;
 		}
 		
 		/// <summary>

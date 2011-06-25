@@ -285,16 +285,88 @@ namespace MonoDevelop.CSharp.Completion
 			node.AcceptVisitor (v, null);
 		}
 		
-		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionAtCursor ()
+		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionAtCursor ()
 		{
-			var loc = Document.Editor.Caret.Location;
-			var expr = Unit.GetNodeAt<Statement> (loc.Line, loc.Column - 1);
-			if (expr != null) {
-				var bogusExpression = new EmptyExpression ();
-				expr.AddChild (bogusExpression, AstNode.Roles.Expression);
-				return Tuple.Create (ParsedFile, (AstNode)bogusExpression, Unit);
+			if (currentMember == null && currentType == null) {
+				return null;
 			}
-			return null;
+			
+			CSharpParser parser = new CSharpParser ();
+			int startOffset;
+			if (currentMember != null) {
+				startOffset = document.Editor.LocationToOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
+			} else {
+				startOffset = document.Editor.LocationToOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
+			}
+			string memberText = Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset);
+			
+//			var stream = new System.IO.StringReader (memberText);
+//			var member = parser.ParseTypeMembers (stream, currentMember.Region.BeginLine - 1).FirstOrDefault ();
+//			stream.Close ();
+//			
+//			if (member == null)
+//				return null;
+			CompilationUnit completionUnit = (CompilationUnit)Unit.Clone ();
+//			member.Remove ();
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			var member = completionUnit.GetNodeAt<AttributedNode> (memberLocation);
+			
+			StringBuilder wrapper = new StringBuilder ();
+			wrapper.Append ("class Stub {");
+			wrapper.AppendLine ();
+			wrapper.Append (memberText);
+			wrapper.Append (".");
+			var stream = new System.IO.StringReader (wrapper.ToString ());
+			var memberUnit = parser.Parse (stream, memberLocation.Line - 1);
+			stream.Close ();
+			var expr = memberUnit.TopExpression as Expression;
+			if (expr == null) {
+				/// try to get this. or base.
+				wrapper.Append ("a ();  } } }");
+				stream = new System.IO.StringReader (wrapper.ToString ());
+				var baseUnit = parser.Parse (stream, memberLocation.Line - 1);
+				stream.Close ();
+				
+				var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+				if (mref != null) {
+					expr = mref.Target.Clone ();
+				} else {
+					return null;
+				}
+			}
+			
+			bool nodeInserted = false;
+			
+			AstNode node = completionUnit.GetNodeAt<Statement> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+			if (node != null) {
+				
+				if (node is BlockStatement) {
+					node.AddChild (expr, AstNode.Roles.Expression);
+				} else {
+					node.Parent.AddChild (expr, AstNode.Roles.Expression);
+				}
+				nodeInserted = true;
+			} else {
+				node = completionUnit.GetNodeAt<Expression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+				if (node != null) {
+					node.ReplaceWith (n => expr);
+					nodeInserted = true;
+				}
+			}
+			
+			if (!nodeInserted) {
+				if (member != null) {
+					member.AddChild (expr, AstNode.Roles.Expression);
+				} else {
+					return null;
+				}
+			}
+//			
+//			Console.WriteLine ("Parsed AST:");
+//			
+//			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
+//			completionUnit.AcceptVisitor (tsvisitor, null);
+			return Tuple.Create (ParsedFile, expr, completionUnit);
 		}
 		
 		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
@@ -519,7 +591,6 @@ namespace MonoDevelop.CSharp.Completion
 				
 				int tokenIndex = completionContext.TriggerOffset;
 				string token = GetPreviousToken (ref tokenIndex, false);
-				
 //				int tokenIndex = completionContext.TriggerOffset;
 //				string token = GetPreviousToken (ref tokenIndex, false);
 //				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
@@ -529,14 +600,14 @@ namespace MonoDevelop.CSharp.Completion
 //					if (objectInitializer != null && objectInitializer.ArrayDimensions == 0 && objectInitializer.PointerNestingLevel == 0 && (token == "{" || token == ","))
 //						return CreateCtrlSpaceCompletionData (completionContext, result); 
 //				}
-//				if (token == "=") {
-//					int j = tokenIndex;
-//					string prevToken = GetPreviousToken (ref j, false);
-//					if (prevToken == "=" || prevToken == "+" || prevToken == "-") {
-//						token = prevToken + token;
-//						tokenIndex = j;
-//					}
-//				}
+				if (token == "=") {
+					int j = tokenIndex;
+					string prevToken = GetPreviousToken (ref j, false);
+					if (prevToken == "=" || prevToken == "+" || prevToken == "-") {
+						token = prevToken + token;
+						tokenIndex = j;
+					}
+				}
 				
 				switch (token) {
 				case "(":
@@ -605,51 +676,49 @@ namespace MonoDevelop.CSharp.Completion
 //						return completionList;
 //					}
 					return null;
-//				case "+=":
-//				case "-=":
-//					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
-//						return null;
-//					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset);
-//					resolver = CreateResolver ();
-//					resolveResult = resolver.Resolve (result, location);
-//				
-//					if (resolveResult is MemberResolveResult) {
-//						MemberResolveResult mrr = resolveResult as MemberResolveResult;
-//						IEvent evt = mrr.ResolvedMember as IEvent;
-//						if (evt == null)
-//							return null;
-//						IType delegateType = resolver.SearchType (evt.ReturnType);
-//						if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
-//							return null;
-//						CompletionDataList completionList = new ProjectDomCompletionDataList ();
-//						CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
-//					
-//						IType declaringType = resolver.CallingType;
-//						if (Document.LastErrorFreeParsedDocument != null) {
-//							declaringType = Document.LastErrorFreeParsedDocument.CompilationUnit.GetType (declaringType.FullName, declaringType.TypeParameters.Count);
-//						}
-//						IType typeFromDatabase = null;
-//						if (declaringType != null) {
-//							typeFromDatabase = dom.GetType (declaringType.FullName, new DomReturnType (declaringType).GenericArguments) ?? declaringType;
+				case "+=":
+				case "-=":
+					GetPreviousToken (ref tokenIndex, false);
+					
+					expressionOrVariableDeclaration = GetExpressionAt (tokenIndex);
+					Console.WriteLine (expressionOrVariableDeclaration);
+					if (expressionOrVariableDeclaration == null)
+						return null;
+				
+					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
+					Console.WriteLine (resolveResult);
+					if (resolveResult == null)
+						return null;
+					
+					
+					var mrr = resolveResult.Item1 as MemberResolveResult;
+					if (mrr != null) {
+						var evt = mrr.Member as IEvent;
+						if (evt == null)
+							return null;
+						var delegateType = evt.ReturnType.Resolve (ctx);
+						if (!delegateType.IsDelegate ())
+							return null;
+						
+						var wrapper = new CompletionDataWrapper (this);
+						if (currentType != null) {
 //							bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
-//							foreach (IType type in dom.GetInheritanceTree (typeFromDatabase)) {
-//								foreach (IMethod method in type.Methods) {
-//									if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) && MatchDelegate (delegateType, method)) {
-//										CompletionData data = cdc.Add (method);
-//										data.SetText (data.CompletionText + ";");
-//									}
-//								}
-//							}
-//						}
-//						if (token == "+=") {
-//							string parameterDefinition = AddDelegateHandlers (completionList, delegateType);
-//							string varName = GetPreviousMemberReferenceExpression (tokenIndex);
-//							completionList.Add (new EventCreationCompletionData (textEditorData, varName, delegateType, evt, parameterDefinition, resolver.CallingMember, typeFromDatabase));
-//						}
-//					
-//						return completionList;
-//					}
-//					return null;
+							foreach (var method in currentType.GetMethods (ctx)) {
+								if (MatchDelegate (delegateType, method) /*&& method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) &&*/) {
+									wrapper.AddMember (method);
+//									data.SetText (data.CompletionText + ";");
+								}
+							}
+						}
+						if (token == "+=") {
+							string parameterDefinition = AddDelegateHandlers (wrapper, delegateType);
+							string varName = GetPreviousMemberReferenceExpression (tokenIndex);
+							wrapper.Result.Add (new EventCreationCompletionData (this, varName, delegateType, evt, parameterDefinition, currentMember, currentType));
+						}
+					
+						return wrapper.Result;
+					}
+					return null;
 				}
 				
 				return HandleKeywordCompletion (completionContext, tokenIndex, token);
@@ -666,7 +735,6 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
 					return null;
-				
 				// Do not pop up completion on identifier identifier (should be handled by keyword completion).
 				tokenIndex = completionContext.TriggerOffset - 1;
 				token = GetPreviousToken (ref tokenIndex, false);
@@ -675,13 +743,12 @@ namespace MonoDevelop.CSharp.Completion
 					if (!char.IsLetterOrDigit (last) && last != '_')
 						return null;
 				}
-					
-					
+				
 				var identifierStart = GetExpressionAtCursor ();
 				if (identifierStart == null)
 					return null;
 				CSharpResolver csResolver;
-				if (identifierStart.Item2 != null && !(identifierStart.Item2 is TypeDeclaration)) {
+				if (identifierStart.Item2 != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
 					csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 					var navigator = new NodeListResolveVisitorNavigator (new[] { identifierStart.Item2 });
 					var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
@@ -784,6 +851,91 @@ namespace MonoDevelop.CSharp.Completion
 				break;
 			}
 			return null;
+		}
+		
+		public string GetPreviousMemberReferenceExpression (int tokenIndex)
+		{
+			string result = GetPreviousToken (ref tokenIndex, false);
+			result = GetPreviousToken (ref tokenIndex, false);
+			if (result != ".") {
+				result = null;
+			} else {
+				List<string > names = new List<string> ();
+				while (result == ".") {
+					result = GetPreviousToken (ref tokenIndex, false);
+					if (result == "this") {
+						names.Add ("handle");
+					} else if (result != null) {
+						string trimmedName = result.Trim ();
+						if (trimmedName.Length == 0)
+							break;
+						names.Insert (0, trimmedName);
+					}
+					result = GetPreviousToken (ref tokenIndex, false);
+				}
+				result = String.Join ("", names.ToArray ());
+				foreach (char ch in result) {
+					if (!char.IsLetterOrDigit (ch) && ch != '_') {
+						result = "";
+						break;
+					}
+				}
+			}
+			return result;
+		}
+		
+		bool MatchDelegate (IType delegateType, IMethod method)
+		{
+			var delegateMethod = delegateType.GetDelegateInvokeMethod ();
+			if (delegateMethod == null || delegateMethod.Parameters.Count != method.Parameters.Count)
+				return false;
+			
+			for (int i = 0; i < delegateMethod.Parameters.Count; i++) {
+				if (!delegateMethod.Parameters[i].Type.Resolve (ctx).Equals (method.Parameters[i].Type.Resolve (ctx)))
+					return false;
+			}
+			return true;
+		}
+		
+		string AddDelegateHandlers (CompletionDataWrapper completionList, IType delegateType, bool addSemicolon = true, bool addDefault = true)
+		{
+			var ambience = GetAmbience ();
+			IMethod delegateMethod = delegateType.GetDelegateInvokeMethod ();
+			var thisLineIndent = Document.Editor.GetLineIndent (Document.Editor.Caret.Line);
+			string delegateEndString = Document.Editor.EolMarker + thisLineIndent + "}" + (addSemicolon ? ";" : "");
+			bool containsDelegateData = completionList.Result.Any (d => d.DisplayText.StartsWith ("delegate("));
+			if (addDefault)
+				completionList.AddCustom ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + thisLineIndent + TextEditorProperties.IndentString + "|" + delegateEndString);
+			var generator = new MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator ();
+			var sb = new StringBuilder ("(");
+			var sbWithoutTypes = new StringBuilder ("(");
+			for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
+				if (k > 0) {
+					sb.Append (", ");
+					sbWithoutTypes.Append (", ");
+				}
+				var parameterType = delegateMethod.Parameters [k].Type.Resolve (ctx);
+				sb.Append (generator.GetShortTypeString (Document, parameterType));
+				sb.Append (" ");
+				sb.Append (delegateMethod.Parameters [k].Name);
+				sbWithoutTypes.Append (delegateMethod.Parameters [k].Name);
+			}
+			sb.Append (")");
+			sbWithoutTypes.Append (")");
+			completionList.AddCustom ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + thisLineIndent + TextEditorProperties.IndentString + "|" + delegateEndString);
+			if (!completionList.Result.Any (data => data.DisplayText == sbWithoutTypes.ToString ()))
+				completionList.AddCustom (sbWithoutTypes.ToString (), "md-keyword", GettextCatalog.GetString ("Creates lambda expression."), sbWithoutTypes + " => |" + (addSemicolon ? ";" : ""));
+			
+			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('
+			// otherwise we would end up with () => )
+			if (!containsDelegateData) {
+				var savedValue = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
+				MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = false;
+				completionList.Result.CompletionListClosed += delegate {
+					MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = savedValue;
+				};
+			}
+			return sb.ToString ();
 		}
 		
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
@@ -1452,6 +1604,11 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				this.completion = completion;
 			}
+
+			public void AddCustom (string displayText, string icon, string description, string completionText)
+			{
+				result.Add (displayText, icon, description, completionText);
+			}
 			
 			HashSet<string> usedNamespaces = new HashSet<string> ();
 			
@@ -1902,6 +2059,25 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return null;
 		}
+		
+		List<string> GetUsedNamespaces ()
+		{
+			var scope = ParsedFile.GetUsingScope (new AstLocation (document.Editor.Caret.Line, document.Editor.Caret.Column));
+			List<string> result = new List<string> ();
+			while (scope != null) {
+				result.Add (scope.NamespaceName);
+				foreach (var u in scope.Usings) {
+					var ns = u.ResolveNamespace (ctx);
+					if (ns == null)
+						continue;
+					result.Add (ns.NamespaceName);
+				}
+				scope = scope.Parent;
+			}
+			return result;
+		}
+		
+	
 		
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
