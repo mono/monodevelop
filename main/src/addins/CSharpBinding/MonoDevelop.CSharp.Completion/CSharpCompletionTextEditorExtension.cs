@@ -128,20 +128,20 @@ namespace MonoDevelop.CSharp.Completion
 		bool IsInsideComment ()
 		{
 			var loc = Document.Editor.Caret.Location;
-			return Unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Comment> (loc.Line, loc.Column) != null;
+			return Unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Comment> (loc.Line, loc.Column - 1) != null;
 		}
 		
 		bool IsInsideDocComment ()
 		{
 			var loc = Document.Editor.Caret.Location;
-			var cmt = Unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Comment> (loc.Line, loc.Column);
+			var cmt = Unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Comment> (loc.Line, loc.Column - 1);
 			return cmt != null && cmt.CommentType == CommentType.Documentation;
 		}
 
 		bool IsInsideString ()
 		{
 			var loc = Document.Editor.Caret.Location;
-			var expr = Unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column );
+			var expr = Unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
 			return expr != null && expr.Value is string;
 		}
 		
@@ -275,8 +275,13 @@ namespace MonoDevelop.CSharp.Completion
 		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionAtCursor ()
 		{
 			var loc = Document.Editor.Caret.Location;
-			var expr = Unit.GetNodeAt (loc.Line, loc.Column);
-			return Tuple.Create (ParsedFile, expr, Unit);
+			var expr = Unit.GetNodeAt<Statement> (loc.Line, loc.Column - 1);
+			if (expr != null) {
+				var bogusExpression = new EmptyExpression ();
+				expr.AddChild (bogusExpression, AstNode.Roles.Expression);
+				return Tuple.Create (ParsedFile, (AstNode)bogusExpression, Unit);
+			}
+			return null;
 		}
 		
 		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
@@ -288,14 +293,8 @@ namespace MonoDevelop.CSharp.Completion
 			stream.Close ();
 			var loc = document.Editor.OffsetToLocation (offset);
 			
-//			Console.WriteLine ("Parsed AST:");
-//			var v = new OutputVisitor (Console.Out, new CSharpFormattingOptions ());
-//			completionUnit.AcceptVisitor (v, null);
-			
-//			Console.WriteLine (loc);
-//			Console.WriteLine (text.Substring (offset, 5));
 			var expr = completionUnit.GetNodeAt (new AstLocation (loc.Line, loc.Column), n => n is Expression || n is VariableDeclarationStatement);
-//			Console.WriteLine ("node:" + expr);
+			
 			if (expr == null)
 				return null;
 			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
@@ -305,20 +304,81 @@ namespace MonoDevelop.CSharp.Completion
 		
 		Tuple<ParsedFile, Expression, CompilationUnit> GetInvocationBeforeCursor ()
 		{
+			// the same as GetExpressionBeforeCursor except that the last '(' is replaced with '.' (otherwise
+			// mcs doesn't give the exact expression)
+			if (currentMember == null && currentType == null)
+				return null;
+			
 			CSharpParser parser = new CSharpParser ();
-			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset);
-			text += "a); } } }";
-			var stream = new System.IO.StringReader (text);
-			var completionUnit = parser.Parse (stream, 0);
+			int startOffset;
+			if (currentMember != null) {
+				startOffset = document.Editor.LocationToOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
+			} else {
+				startOffset = document.Editor.LocationToOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
+			}
+			string memberText = Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset - 1);
+			
+			CompilationUnit completionUnit = (CompilationUnit)Unit.Clone ();
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			var member = completionUnit.GetNodeAt<AttributedNode> (memberLocation);
+			
+			var wrapper = new StringBuilder ();
+			wrapper.Append ("class Stub {");
+			wrapper.AppendLine ();
+			wrapper.Append (memberText);
+			wrapper.Append (".");
+			var stream = new System.IO.StringReader (wrapper.ToString ());
+			var memberUnit = parser.Parse (stream, memberLocation.Line - 1);
 			stream.Close ();
+			var expr = memberUnit.TopExpression as Expression;
 			
-			var expr = completionUnit.GetNodeAt<Expression> (document.Editor.Caret.Line, document.Editor.Caret.Column - 1);
-			if (expr is InvocationExpression)
-				expr = ((InvocationExpression)expr).Target;
+			if (expr == null) {
+				/// try to get this. or base.
+				wrapper.Append ("a ();  } } }");
+				stream = new System.IO.StringReader (wrapper.ToString ());
+				var baseUnit = parser.Parse (stream, memberLocation.Line - 1);
+				stream.Close ();
+				
+				var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+				if (mref != null) {
+					expr = mref.Target.Clone ();
+				} else {
+					return null;
+				}
+			}
 			
-			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
-			completionUnit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
+			bool nodeInserted = false;
+			
+			AstNode node = completionUnit.GetNodeAt<Statement> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+			if (node != null) {
+				
+				if (node is BlockStatement) {
+					node.AddChild (expr, AstNode.Roles.Expression);
+				} else {
+					node.Parent.AddChild (expr, AstNode.Roles.Expression);
+				}
+				nodeInserted = true;
+			} else {
+				node = completionUnit.GetNodeAt<Expression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+				if (node != null) {
+					node.ReplaceWith (n => expr);
+					nodeInserted = true;
+				}
+			}
+			
+			if (!nodeInserted) {
+				if (member != null) {
+					member.AddChild (expr, AstNode.Roles.Expression);
+				} else {
+					return null;
+				}
+			}
+//			
+//			Console.WriteLine ("Parsed AST:");
+//			
+//			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
+//			completionUnit.AcceptVisitor (tsvisitor, null);
+			return Tuple.Create (ParsedFile, expr, completionUnit);
 		}
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
@@ -416,6 +476,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (invoke.Item2 is TypeOfExpression)
 					return CreateTypeList ();
 				var invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				Console.WriteLine ("result:" + invocationResult);
 				if (invocationResult == null)
 					return null;
 				var methodGroup = invocationResult.Item1 as MethodGroupResolveResult;

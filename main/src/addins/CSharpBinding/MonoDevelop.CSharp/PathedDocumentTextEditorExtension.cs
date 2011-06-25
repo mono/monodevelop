@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharp
 			get;
 			private set;
 		}
-
+		
 		PathEntry GetRegionEntry (ParsedDocument unit, Mono.TextEditor.DocumentLocation loc)
 		{
 			PathEntry entry;
@@ -262,6 +262,17 @@ namespace MonoDevelop.CSharp
 			if (noSelection != null) 
 				result.Add (noSelection);
 			var prev = CurrentPath;
+			if (prev != null && prev.Length == result.Count) {
+				bool equals = true;
+				for (int i = 0; i < prev.Length; i++) {
+					if (prev[i].Markup != result[i].Markup) {
+						equals = false;
+						break;
+					}
+				}
+				if (equals)
+					return;
+			}
 			CurrentPath = result.ToArray ();
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));
 		}
