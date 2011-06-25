@@ -339,12 +339,15 @@ namespace MonoDevelop.CSharp.Completion
 			wrapper.Append ("class Stub {");
 			wrapper.AppendLine ();
 			wrapper.Append (memberText);
-			wrapper.Append (".");
+			wrapper.Append ("().");
 			var stream = new System.IO.StringReader (wrapper.ToString ());
 			var memberUnit = parser.Parse (stream, memberLocation.Line - 1);
 			stream.Close ();
 			var expr = memberUnit.TopExpression as Expression;
-			
+			if (expr is InvocationExpression) {
+				expr = ((InvocationExpression)expr).Target;
+				expr.Remove ();
+			}
 			if (expr == null) {
 				/// try to get this. or base.
 				wrapper.Append ("a ();  } } }");
