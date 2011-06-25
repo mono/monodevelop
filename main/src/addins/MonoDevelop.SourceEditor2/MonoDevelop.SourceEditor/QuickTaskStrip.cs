@@ -128,7 +128,7 @@ namespace MonoDevelop.SourceEditor
 		public QuickTaskMapMode (QuickTaskStrip parent)
 		{
 			this.parentStrip = parent;
-			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.PointerMotionMask;
+			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			
 			VAdjustment.ValueChanged += RedrawOnUpdate;
 			VAdjustment.Changed += RedrawOnUpdate;
@@ -141,6 +141,9 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
+			RemovePreviewPopupTimeout ();
+			DestroyPreviewWindow ();
+			
 			TextEditor.HighlightSearchPatternChanged -= RedrawOnUpdate;
 			TextEditor.TextViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
 			TextEditor.TextViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
@@ -157,8 +160,11 @@ namespace MonoDevelop.SourceEditor
 			QueueDraw ();
 		}
 		
+		internal CodeSegmentPreviewWindow previewWindow;
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
+			RemovePreviewPopupTimeout ();
+			
 			if (button != 0)
 				MouseMove (evnt.Y);
 			
@@ -201,8 +207,100 @@ namespace MonoDevelop.SourceEditor
 					base.TooltipText = hoverTask != null ? hoverTask.Description : null;
 				}
 			}
-			
+			if (button == 0) {
+				int markerHeight = Allocation.Width + 6;
+				double position = (evnt.Y / (Allocation.Height - markerHeight)) * VAdjustment.Upper;
+				
+				int line = TextEditor.YToLine (position);
+				
+				line = Math.Max (1, line - 2);
+				int lastLine = Math.Min (TextEditor.LineCount, line + 5);
+				var start = TextEditor.GetLine (line);
+				var end = TextEditor.GetLine (lastLine);
+				if (start == null || end == null) {
+					return base.OnMotionNotifyEvent (evnt);
+				}
+				var showSegment = new Mono.TextEditor.Segment (start.Offset, end.Offset + end.EditableLength - start.Offset);
+				
+				if (previewWindow != null) {
+					previewWindow.SetSegment (showSegment, false);
+					PositionPreviewWindow ((int)evnt.Y);
+				} else {
+					
+					var popup = new PreviewPopup (this, showSegment, TextEditor.Allocation.Width * 4 / 7, (int)evnt.Y);
+					previewPopupTimeout = GLib.Timeout.Add (350, new GLib.TimeoutHandler (popup.Run));
+				}
+				
+			}
 			return base.OnMotionNotifyEvent (evnt);
+		}
+		
+		class PreviewPopup {
+			
+			QuickTaskMapMode strip;
+			Mono.TextEditor.Segment segment;
+			int w, y;
+			
+			public PreviewPopup (QuickTaskMapMode strip, Mono.TextEditor.Segment segment, int w, int y)
+			{
+				this.strip = strip;
+				this.segment = segment;
+				this.w = w;
+				this.y = y;
+			}
+			
+			public bool Run ()
+			{
+				strip.previewWindow = new CodeSegmentPreviewWindow (strip.TextEditor, true, segment, w, -1, false);
+				strip.previewWindow.WidthRequest = w;
+				strip.previewWindow.Show ();
+				strip.PositionPreviewWindow (y);
+				return false;
+			}
+			
+		}
+		
+		uint previewPopupTimeout = 0;
+		
+		void PositionPreviewWindow (int my)
+		{
+			int ox, oy;
+			GdkWindow.GetOrigin (out ox, out oy);
+			
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (ox, oy));
+			
+			var alloc = previewWindow.Allocation;
+			int x = ox - 4 - alloc.Width;
+			if (x < geometry.Left)
+				x = ox + parentStrip.Allocation.Width + 4;
+			
+			int y = oy + my - alloc.Height / 2;
+			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom));
+			
+			previewWindow.Move (x, y);
+		}
+		
+		void RemovePreviewPopupTimeout ()
+		{
+			if (previewPopupTimeout != 0) {
+				GLib.Source.Remove (previewPopupTimeout);
+				previewPopupTimeout = 0;
+			}
+		}
+		
+		void DestroyPreviewWindow ()
+		{
+			if (previewWindow != null) {
+				previewWindow.Destroy ();
+				previewWindow = null;
+			}
+		}
+		
+		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
+		{
+			RemovePreviewPopupTimeout ();
+			DestroyPreviewWindow ();
+			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
 		Cairo.Color GetBarColor (QuickTaskSeverity severity)
@@ -244,7 +342,6 @@ namespace MonoDevelop.SourceEditor
 			position = Math.Max (VAdjustment.Lower, Math.Min (position, VAdjustment.Upper - VAdjustment.PageSize));
 			VAdjustment.Value = position;
 		}
-		
 		
 		QuickTask hoverTask = null;
 		

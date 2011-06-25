@@ -131,6 +131,12 @@ namespace MonoDevelop.CSharp.Completion
 			return Unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Comment> (loc.Line, loc.Column - 1) != null;
 		}
 		
+		bool IsInsideComment (int offset)
+		{
+			var loc = Document.Editor.OffsetToLocation (offset);
+			return Unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Comment> (loc.Line, loc.Column) != null;
+		}
+		
 		bool IsInsideDocComment ()
 		{
 			var loc = Document.Editor.Caret.Location;
@@ -141,6 +147,13 @@ namespace MonoDevelop.CSharp.Completion
 		bool IsInsideString ()
 		{
 			var loc = Document.Editor.Caret.Location;
+			var expr = Unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
+			return expr != null && expr.Value is string;
+		}
+		
+		bool IsInsideString (int offset)
+		{
+			var loc = Document.Editor.OffsetToLocation (offset);
 			var expr = Unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
 			return expr != null && expr.Value is string;
 		}
@@ -650,6 +663,17 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
 					return null;
+				
+				// Do not pop up completion on identifier identifier (should be handled by keyword completion).
+				tokenIndex = completionContext.TriggerOffset - 1;
+				token = GetPreviousToken (ref tokenIndex, false);
+				if (string.IsNullOrEmpty (token) && !(IsInsideComment (tokenIndex) || IsInsideString (tokenIndex))) {
+					char last = token [token.Length - 1];
+					if (!char.IsLetterOrDigit (last) && last != '_')
+						return null;
+				}
+					
+					
 				var identifierStart = GetExpressionAtCursor ();
 				if (identifierStart == null)
 					return null;
@@ -1360,7 +1384,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 		}
-		static string[] expressionLevel = new string [] { "as", "is", "else", "out", "ref", "null"};
+		static string[] expressionLevel = new string [] { "as", "is", "else", "out", "ref", "null", "delegate", "default"};
 		static string[] primitiveTypes = new string [] { "void", "object", "bool", "byte", "sbyte", "char", "short", "int", "long", "ushort", "uint", "ulong", "float", "double", "decimal", "string"};
 		static string[] statementStart = new string [] { "base", "new", "sizeof", "this", 
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
