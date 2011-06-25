@@ -436,13 +436,18 @@ namespace MonoDevelop.SourceEditor
 			base.OnSizeRequested (ref requisition);
 			requisition.Width = 17;
 		}
-
+		
+		double LineToY (int logicalLine)
+		{
+			var h = Allocation.Height - IndicatorHeight;
+			return h * (TextEditor.GetTextEditorData ().LogicalToVisualLine (logicalLine) - 0.5) / (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
+		}
+		
 		protected void DrawCaret (Cairo.Context cr)
 		{
 			if (TextEditor.ColorStyle == null)
 				return;
-			var h = Allocation.Height - IndicatorHeight;
-			double y = h * TextEditor.LineToY (caretLine) / Math.Max (TextEditor.EditorLineThreshold * TextEditor.LineHeight + TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height);
+			double y = LineToY (caretLine);
 			cr.MoveTo (0, y - 4);
 			cr.LineTo (7, y);
 			cr.LineTo (0, y + 4);
@@ -454,9 +459,8 @@ namespace MonoDevelop.SourceEditor
 		protected QuickTaskSeverity DrawQuickTasks (Cairo.Context cr)
 		{
 			QuickTaskSeverity severity = QuickTaskSeverity.None;
-			var h = Allocation.Height - IndicatorHeight;
 			foreach (var task in AllTasks) {
-				double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * TextEditor.LineHeight + TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height);
+				double y = LineToY (task.Location.Line);
 				
 				if (task.Severity == QuickTaskSeverity.Usage) {
 					var usageColor = TextEditor.ColorStyle.Default.CairoColor;
@@ -523,10 +527,9 @@ namespace MonoDevelop.SourceEditor
 		
 		protected void DrawSearchResults (Cairo.Context cr)
 		{
-			var h = Allocation.Height - IndicatorHeight;
 			foreach (var region in TextEditor.TextViewMargin.SearchResults) {
 				int line = TextEditor.OffsetToLineNumber (region.Offset);
-				double y = h * TextEditor.LineToY (line) / Math.Max (TextEditor.EditorLineThreshold * TextEditor.LineHeight + TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height);
+				double y = LineToY (line);
 				bool isMainSelection = false;
 				if (TextEditor.TextViewMargin.MainSearchResult != null)
 					isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
