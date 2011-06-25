@@ -35,10 +35,12 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.SourceEditor;
+
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	public class HighlightUsagesExtension : TextEditorExtension
+	public class HighlightUsagesExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		ITypeResolveContext dom;
 		
@@ -114,9 +116,14 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			try {
 				ResolveResult resolveResult = textEditorResolver.GetLanguageItem (textEditorData.Caret.Offset);
-				if (resolveResult == null || resolveResult.IsError)
+				if (resolveResult == null || resolveResult.IsError) {
+					if (quickTasks.Count > 0) {
+						quickTasks.Clear ();
+						OnTasksUpdated (EventArgs.Empty);
+					}
 					return false;
-
+				}
+				
 				ShowReferences (GetReferences (resolveResult));
 			} catch (Exception e) {
 				LoggingService.LogError ("Unhandled Exception in HighlightingUsagesExtension", e);
@@ -130,10 +137,14 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			RemoveMarkers (false);
 			var lineNumbers = new HashSet<int> ();
+			quickTasks.Clear ();
 			if (references != null) {
 				bool alphaBlend = false;
 				foreach (var r in references) {
 					var marker = GetMarker (r.Region.BeginLine);
+					
+					quickTasks.Add (new QuickTask (null, r.Region.Begin, QuickTaskSeverity.Usage));
+					
 					int offset = r.Offset;
 					int endOffset = offset + r.Length;
 					if (!alphaBlend && textEditorData.Parent.TextViewMargin.SearchResults.Any (sr => sr.Contains (offset) || sr.Contains (endOffset) ||
@@ -146,8 +157,25 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			foreach (int line in lineNumbers)
 				textEditorData.Document.CommitLineUpdate (line);
+			OnTasksUpdated (EventArgs.Empty);
 		}
 		
+		List<QuickTask> quickTasks = new List<QuickTask> ();
+		public IEnumerable<QuickTask> QuickTasks {
+			get {
+				return quickTasks;
+			}
+		}
+		
+		public event EventHandler TasksUpdated;
+		
+		protected virtual void OnTasksUpdated (EventArgs e)
+		{
+			EventHandler handler = this.TasksUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		List<MemberReference> GetReferences (ResolveResult resolveResult)
 		{
 			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
@@ -173,7 +201,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			return null;
 		}
-		
+
 		Dictionary<int, UsageMarker> markers = new Dictionary<int, UsageMarker> ();
 		
 		public Dictionary<int, UsageMarker> Markers {

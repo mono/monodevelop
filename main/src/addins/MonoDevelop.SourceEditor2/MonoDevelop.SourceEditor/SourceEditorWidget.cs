@@ -220,6 +220,8 @@ namespace MonoDevelop.SourceEditor
 			
 			protected override void OnDestroyed ()
 			{
+				strip.Destroy ();
+				
 				if (scrolledWindow.Child != null)
 					RemoveEvents ();
 				
