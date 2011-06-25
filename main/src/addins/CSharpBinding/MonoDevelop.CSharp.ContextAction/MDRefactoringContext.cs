@@ -372,6 +372,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			return new MdScript (this);
 		}
+		ParsedFile ParsedFile { get; set; }
 		
 		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
@@ -380,18 +381,18 @@ namespace MonoDevelop.CSharp.ContextAction
 			this.Document = document;
 			this.Location = new AstLocation (loc.Line, loc.Column);
 			this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
+			this.ParsedFile = document.ParsedDocument.Annotation<ParsedFile> ();
 		}
 		
 		public override AstType CreateShortType (IType fullType)
 		{
+			Console.WriteLine (Environment.StackTrace);
 			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
+			csResolver.CurrentMember = ParsedFile.GetMember (Location);
+			csResolver.CurrentTypeDefinition = ParsedFile.GetTypeDefinition (Location);
+			csResolver.UsingScope = ParsedFile.GetUsingScope (Location);
 			TypeSystemAstBuilder builder = new TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);
-		}
-		
-		public override AstType CreateShortType (string fullTypeName)
-		{
-			return CreateShortType (new SimpleType (fullTypeName));
 		}
 		
 		/*

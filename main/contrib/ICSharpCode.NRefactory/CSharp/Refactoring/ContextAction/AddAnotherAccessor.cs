@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return new ReturnStatement (new IdentifierExpression (field.Name));
 			}
 			
-			return new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.NotImplementedException")));
+			return new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System", "NotImplementedException")));
 		}
 		
 		static PropertyDeclaration GetPropertyDeclaration (RefactoringContext context)

@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var type = result.Type;
 			var newSwitch = (SwitchStatement)switchStatement.Clone ();
 			
-			var target = new TypeReferenceExpression (context.CreateShortType (result.Type.ConvertToAstType ()));
+			var target = new TypeReferenceExpression (context.CreateShortType (result.Type.Resolve (context.TypeResolveContext)));
 			foreach (var field in type.GetFields (context.TypeResolveContext)) {
 				if (field.IsSynthetic || !field.IsConst)
 					continue;
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					new CaseLabel ()
 				},
 				Statements = {
-					new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.ArgumentOutOfRangeException")))
+					new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System", "ArgumentOutOfRangeException")))
 				}
 			});
 			

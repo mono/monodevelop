@@ -382,7 +382,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				} else {
 					AppendIndent (result);
 					bodyStartOffset = result.Length;
-					if (method.ReturnType != null) // != void ? 
+					if (!method.ReturnType.Resolve (options.Ctx).Equals (KnownTypeReference.Void.Resolve (options.Ctx)))
 						result.Append ("return ");
 					result.Append ("base.");
 					result.Append (method.Name);
