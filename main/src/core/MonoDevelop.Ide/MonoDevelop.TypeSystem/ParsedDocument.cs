@@ -31,6 +31,8 @@ using ICSharpCode.NRefactory.CSharp;
 using System.Linq;
 using System.Threading;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+
 
 namespace MonoDevelop.TypeSystem
 {
@@ -182,23 +184,9 @@ namespace MonoDevelop.TypeSystem
 			foreach (FoldingRegion fold in ConditionalRegions.ToFolds ())
 				yield return fold;
 			
-			IEnumerable<FoldingRegion> commentFolds = comments.ToFolds ();
-//			if (parsedFile != null) {
-//				commentFolds = commentFolds.FlagIfInsideMembers (CompilationUnit.Types, delegate (FoldingRegion f) {
-//					f.Type = FoldType.CommentInsideMember;
-//				});
-//			}
 			
-//			foreach (FoldingRegion fold in commentFolds)
-//				yield return fold;
-			
-			
-//			FoldingRegion usingFold = CompilationUnit.Usings.ToFold ();
-//			if (usingFold != null)
-//				yield return usingFold;
-			
-//			foreach (var fold in this.parsedFile.TopLevelTypeDefinitions.ToFolds ())
-//				yield return fold;
+			foreach (var fold in TopLevelTypeDefinitions.ToFolds ())
+				yield return fold;
 		}
 		
 		public void Add (Error error)
@@ -384,7 +372,32 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		#endregion
-
+		
+		IEnumerable<FoldingRegion> AddFolds ()
+		{
+			IEnumerable<FoldingRegion> commentFolds = Comments.ToFolds ();
+			if (parsedFile != null) {
+				commentFolds = commentFolds.FlagIfInsideMembers (TopLevelTypeDefinitions, delegate (FoldingRegion f) {
+					f.Type = FoldType.CommentInsideMember;
+				});
+			}
+			
+			foreach (FoldingRegion fold in commentFolds)
+				yield return fold;
+			
+			if (parsedFile is ParsedFile) {
+				var pf = (ParsedFile)parsedFile;
+				foreach (var scope in pf.UsingScopes)
+					yield return new FoldingRegion (scope.Region);
+			}
+			
+		}
+		
+		public override IEnumerable<FoldingRegion> GenerateFolds ()
+		{
+			return base.GenerateFolds ().Concat (AddFolds ());
+		}
+		
 		#region IFreezable implementation
 		public override void Freeze ()
 		{
@@ -447,25 +460,6 @@ namespace MonoDevelop.TypeSystem
 			return region.BeginLine <= 0 || region.EndLine <= region.BeginLine;
 		}
 		
-//		public static FoldingRegion ToFold (this IEnumerable<IUsing> usings)
-//		{
-//			if (usings == null)
-//				return null;
-//			var en = usings.GetEnumerator ();
-//			if (!en.MoveNext ())
-//				return null;
-//			IUsing first = en.Current;
-//			IUsing last = first;
-//			while (en.MoveNext ()) {
-//				if (en.Current.IsFromNamespace)
-//					break;
-//				last = en.Current;
-//			}
-//			
-//			if (first.Region.IsEmpty || last.Region.IsEmpty || first.Region.Start.Line == last.Region.End.Line)
-//				return null;
-//			return new FoldingRegion (new DomRegion (first.Region.Start, last.Region.End));
-//		}
 		
 		public static IEnumerable<FoldingRegion> ToFolds (this IList<Comment> comments)
 		{
