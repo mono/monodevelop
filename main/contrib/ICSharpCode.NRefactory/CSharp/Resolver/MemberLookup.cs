@@ -66,8 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case Accessibility.None:
 					return false;
 				case Accessibility.Private:
-					if (entity.DeclaringTypeDefinition.ClassType == ClassType.Interface)
-						return true;
+					// check for members of outer classes (private members of outer classes can be accessed)
 					var lookupTypeDefinition = currentTypeDefinition;
 					while (lookupTypeDefinition != null) {
 						if (entity.DeclaringTypeDefinition.Equals (lookupTypeDefinition)) 
@@ -99,7 +98,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		bool IsProtectedAccessible(ITypeDefinition declaringType)
 		{
-			if (declaringType.Equals (currentTypeDefinition))
+			if (declaringType == currentTypeDefinition)
 				return true;
 			// PERF: this might hurt performance as this method is called several times (once for each member)
 			// make sure resolving base types is cheap (caches?) or cache within the MemberLookup instance
@@ -167,7 +166,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!isInvocation) {
 				// Consider nested types only if it's not an invocation. The type parameter count must match in this case.
 				Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
-					return d.TypeParameterCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
+					// inner types contain the type parameters of outer types. therefore this count has to been adjusted.
+					int correctedCount = d.TypeParameterCount - type.TypeParameterCount;
+					return correctedCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
 				};
 				types.AddRange(type.GetNestedTypes(context, typeFilter));
 			}
