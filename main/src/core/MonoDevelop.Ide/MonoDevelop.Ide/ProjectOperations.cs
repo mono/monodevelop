@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide
 			IEntity entity = element as IEntity;
 			
 			if (entity == null && element is IType)
-				entity = ((IType)entity).GetDefinition ();
+				entity = ((IType)element).GetDefinition ();
 			if (entity == null) {
 				LoggingService.LogError ("Unknown element:" + element);
 				return;
