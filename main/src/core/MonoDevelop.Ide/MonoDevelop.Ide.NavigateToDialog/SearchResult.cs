@@ -95,10 +95,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	
 	class TypeSearchResult : MemberSearchResult
 	{
-		IType type;
+		ITypeDefinition type;
 			
 		public override string File {
-			get { return type.GetDefinition ().Region.FileName; }
+			get { return type.Region.FileName; }
 		}
 		
 		public override Gdk.Pixbuf Icon {
@@ -108,11 +108,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		public override int Row {
-			get { return type.GetDefinition ().Region.BeginLine; }
+			get { return type.Region.BeginLine; }
 		}
 		
 		public override int Column {
-			get { return type.GetDefinition ().Region.BeginColumn; }
+			get { return type.Region.BeginColumn; }
 		}
 		
 		public override string PlainText {
@@ -138,14 +138,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			return HighlightMatch (widget, type.Name, match);
 		}
 		
-		public TypeSearchResult (ITypeResolveContext ctx, string match, string matchedString, int rank, IType type, bool useFullName) : base (ctx, match, matchedString, rank, null, useFullName)
+		public TypeSearchResult (ITypeResolveContext ctx, string match, string matchedString, int rank, ITypeDefinition type, bool useFullName) : base (ctx, match, matchedString, rank, null, useFullName)
 		{
 			this.type = type;
 		}
 		
 		protected override Ambience Ambience { 
 			get {
-				return AmbienceService.GetAmbienceForFile (type.GetDefinition ().Region.FileName);
+				return AmbienceService.GetAmbienceForFile (type.Region.FileName);
 			}
 		}
 	}
@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		public override string File {
-			get { return member.DeclaringType.GetDefinition ().Region.FileName; }
+			get { return member.DeclaringTypeDefinition.Region.FileName; }
 		}
 
 		public override Gdk.Pixbuf Icon {
@@ -269,7 +269,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		protected virtual Ambience Ambience { 
 			get {
-				return AmbienceService.GetAmbienceForFile (member.DeclaringType.GetDefinition ().Region.FileName);
+				return AmbienceService.GetAmbienceForFile (member.DeclaringTypeDefinition.Region.FileName);
 			}
 		}
 	}
