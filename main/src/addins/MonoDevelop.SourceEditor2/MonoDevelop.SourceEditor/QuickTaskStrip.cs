@@ -211,7 +211,7 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					TextEditorData editorData = TextEditor.GetTextEditorData ();
 					foreach (var task in AllTasks) {
-						double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
+						double y = LineToY (task.Location.Line);
 						if (Math.Abs (y - evnt.Y) < 3) {
 							hoverTask = task;
 						}
@@ -221,9 +221,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (button == 0) {
-				double position = (evnt.Y / Allocation.Height) * VAdjustment.Upper;
-				
-				int line = TextEditor.YToLine (position);
+				int line = YToLine (evnt.Y);
 				
 				line = Math.Max (1, line - 2);
 				int lastLine = Math.Min (TextEditor.LineCount, line + 5);
@@ -441,6 +439,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			var h = Allocation.Height - IndicatorHeight;
 			return h * (TextEditor.GetTextEditorData ().LogicalToVisualLine (logicalLine) - 0.5) / (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
+		}
+		int YToLine (double y)
+		{
+			var line = 0.5 + y / (Allocation.Height - IndicatorHeight) * (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
+			return TextEditor.GetTextEditorData ().VisualToLogicalLine ((int)line);
 		}
 		
 		protected void DrawCaret (Cairo.Context cr)
