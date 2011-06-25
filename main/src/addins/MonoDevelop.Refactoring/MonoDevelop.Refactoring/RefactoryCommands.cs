@@ -282,7 +282,7 @@ namespace MonoDevelop.Refactoring
 				ITypeDefinition cls = (ITypeDefinition) item;
 				foreach (var rt in cls.BaseTypes) {
 					var bc = rt.Resolve (ctx);
-					if (bc != null && bc.GetDefinition ().ClassType != ClassType.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
+					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().ClassType != ClassType.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
 						ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase (ctx, (ITypeDefinition)item).Run));
 						break;
 					}
