@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			var methodDeclaration = new MethodDeclaration () {
 				Name = "On" + initializer.Name,
-				ReturnType = context.CreateShortType (eventDeclaration.ReturnType),
+				ReturnType = new PrimitiveType ("void"),
 				Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Virtual,
 				Body = new BlockStatement () {
 					new VariableDeclarationStatement (context.CreateShortType (eventDeclaration.ReturnType), handlerName, new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name)),
