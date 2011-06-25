@@ -60,18 +60,68 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public void OpenBrace(BraceStyle style)
 		{
-			WriteIndentation();
-			textWriter.Write(' ');
-			textWriter.Write('{');
+			switch (style) {
+			case BraceStyle.DoNotChange:
+			case BraceStyle.EndOfLine:
+				WriteIndentation();
+				textWriter.Write(' ');
+				textWriter.Write('{');
+				break;
+			case BraceStyle.EndOfLineWithoutSpace:
+				WriteIndentation();
+				textWriter.Write('{');
+				break;
+			case BraceStyle.NextLine:
+				NewLine ();
+				WriteIndentation();
+				textWriter.Write('{');
+				break;
+				
+			case BraceStyle.NextLineShifted:
+				NewLine ();
+				Indent();
+				WriteIndentation();
+				textWriter.Write('{');
+				NewLine();
+				return;
+			case BraceStyle.NextLineShifted2:
+				NewLine ();
+				Indent();
+				WriteIndentation();
+				textWriter.Write('{');
+				break;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
 			Indent();
 			NewLine();
 		}
 		
 		public void CloseBrace(BraceStyle style)
 		{
-			Unindent();
-			WriteIndentation();
-			textWriter.Write('}');
+			switch (style) {
+			case BraceStyle.DoNotChange:
+			case BraceStyle.EndOfLine:
+			case BraceStyle.EndOfLineWithoutSpace:
+			case BraceStyle.NextLine:
+				Unindent();
+				WriteIndentation();
+				textWriter.Write('}');
+				break;
+			case BraceStyle.NextLineShifted:
+				WriteIndentation();
+				textWriter.Write('}');
+				Unindent();
+				break;
+			case BraceStyle.NextLineShifted2:
+				Unindent();
+				WriteIndentation();
+				textWriter.Write('}');
+				Unindent();
+				break;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
 		}
 		
 		void WriteIndentation()
