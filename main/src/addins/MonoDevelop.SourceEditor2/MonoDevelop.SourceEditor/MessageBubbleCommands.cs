@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void Update (CommandArrayInfo ainfo)
 		{
-			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Errors & Warnings"), new Action (delegate {
+			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Errors & Warnings"), new Action (delegate {
 				MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles = MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings;
 			}));
 			info.Checked = MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles == MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings;

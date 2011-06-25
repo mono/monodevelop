@@ -30,9 +30,31 @@ using System.Collections.Generic;
 using Gdk;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Ide;
+using MonoDevelop.Components.Commands;
+
+
 
 namespace MonoDevelop.SourceEditor
 {
+	public enum ScrollbarCommand
+	{
+		Top,
+		Bottom,
+		PgUp,
+		PgDown,
+		
+		ShowScrollBar,
+		ShowMap,
+		ShowFull
+	}
+	
+	public enum ScrollBarMode {
+		Normal,
+		Map,
+		Full
+	}
+	
 	public enum QuickTaskSeverity
 	{
 		None,
@@ -81,90 +103,59 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 	
-	public class QuickTaskStrip : DrawingArea
+	public class QuickTaskMapMode : DrawingArea
 	{
-		Adjustment adj;
-
+		QuickTaskStrip parentStrip;
+		
 		public Adjustment VAdjustment {
 			get {
-				return this.adj;
-			}
-			set {
-				adj = value;
-				adj.ValueChanged += (sender, e) => QueueDraw ();
-				adj.Changed += (sender, e) => QueueDraw ();
+				return parentStrip.VAdjustment;
 			}
 		}
 		
-		Mono.TextEditor.TextEditor textEditor;
 		public TextEditor TextEditor {
 			get {
-				return textEditor;
-			}
-			set {
-				if (value == null)
-					throw new ArgumentNullException ();
-				textEditor = value;
-				textEditor.HighlightSearchPatternChanged += (sender, e) => QueueDraw ();
-				textEditor.TextViewMargin.SearchRegionsUpdated += (sender, e) => QueueDraw ();
-				textEditor.TextViewMargin.MainSearchResultChanged += (sender, e) => QueueDraw ();
+				return parentStrip.TextEditor;
 			}
 		}
 		
-		Dictionary<IQuickTaskProvider, List<QuickTask>> providerTasks = new Dictionary<IQuickTaskProvider, List<QuickTask>> ();
-		
-		IEnumerable<QuickTask> AllTasks {
+		public IEnumerable<QuickTask> AllTasks {
 			get {
-				foreach (var tasks in providerTasks.Values) {
-					foreach (var task in tasks) {
-						yield return task;
-					}
-				}
+				return parentStrip.AllTasks;
 			}
 		}
 		
-		public QuickTaskStrip ()
+		public QuickTaskMapMode (QuickTaskStrip parent)
 		{
+			this.parentStrip = parent;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.PointerMotionMask;
+			
+			VAdjustment.ValueChanged += RedrawOnUpdate;
+			VAdjustment.Changed += RedrawOnUpdate;
+			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
+			
+			TextEditor.HighlightSearchPatternChanged += RedrawOnUpdate;
+			TextEditor.TextViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
+			TextEditor.TextViewMargin.MainSearchResultChanged += RedrawOnUpdate;
 		}
 		
-		public void Update (IQuickTaskProvider provider)
+		protected override void OnDestroyed ()
 		{
-			providerTasks [provider] = new List<QuickTask> (provider.QuickTasks);
+			TextEditor.HighlightSearchPatternChanged -= RedrawOnUpdate;
+			TextEditor.TextViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
+			TextEditor.TextViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
+			
+			parentStrip.TaskProviderUpdated -= RedrawOnUpdate;
+			
+			VAdjustment.ValueChanged -= RedrawOnUpdate;
+			VAdjustment.Changed -= RedrawOnUpdate;
+			base.OnDestroyed ();
+		}
+		
+		void RedrawOnUpdate (object sender, EventArgs e)
+		{
 			QueueDraw ();
 		}
-		
-		Cairo.Color GetBarColor (QuickTaskSeverity severity)
-		{
-			switch (severity) {
-			case QuickTaskSeverity.Error:
-				return TextEditor.ColorStyle.ErrorUnderline;
-			case QuickTaskSeverity.Warning:
-				return TextEditor.ColorStyle.WarningUnderline;
-			case QuickTaskSeverity.Suggestion:
-				return TextEditor.ColorStyle.SuggestionUnderline;
-			case QuickTaskSeverity.Hint:
-				return TextEditor.ColorStyle.HintUnderline;
-			case QuickTaskSeverity.None:
-				return TextEditor.ColorStyle.Default.CairoColor;
-			default:
-				throw new ArgumentOutOfRangeException ();
-			}
-		}
-		
-		Cairo.Color GetIndicatorColor (QuickTaskSeverity severity)
-		{
-			switch (severity) {
-			case QuickTaskSeverity.Error:
-				return new Cairo.Color (254 / 255.0, 58 / 255.0, 22 / 255.0);
-			case QuickTaskSeverity.Warning:
-				return new Cairo.Color (251 / 255.0, 247 / 255.0, 88 / 255.0);
-			default:
-				return new Cairo.Color (75 / 255.0, 255 / 255.0, 75 / 255.0);
-			}
-		}
-		
-		QuickTask hoverTask = null;
 		
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
@@ -201,12 +192,10 @@ namespace MonoDevelop.SourceEditor
 					this.TooltipText = text;
 				} else {
 					TextEditorData editorData = TextEditor.GetTextEditorData ();
-					foreach (var tasks in providerTasks.Values) {
-						foreach (var task in tasks) {
-							double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
-							if (Math.Abs (y - evnt.Y) < 3) {
-								hoverTask = task;
-							}
+					foreach (var task in AllTasks) {
+						double y = h * TextEditor.LineToY (task.Location.Line) / Math.Max (TextEditor.EditorLineThreshold * editorData.LineHeight + editorData.TotalHeight, TextEditor.Allocation.Height);
+						if (Math.Abs (y - evnt.Y) < 3) {
+							hoverTask = task;
 						}
 					}
 					base.TooltipText = hoverTask != null ? hoverTask.Description : null;
@@ -216,15 +205,48 @@ namespace MonoDevelop.SourceEditor
 			return base.OnMotionNotifyEvent (evnt);
 		}
 		
+		Cairo.Color GetBarColor (QuickTaskSeverity severity)
+		{
+			switch (severity) {
+			case QuickTaskSeverity.Error:
+				return TextEditor.ColorStyle.ErrorUnderline;
+			case QuickTaskSeverity.Warning:
+				return TextEditor.ColorStyle.WarningUnderline;
+			case QuickTaskSeverity.Suggestion:
+				return TextEditor.ColorStyle.SuggestionUnderline;
+			case QuickTaskSeverity.Hint:
+				return TextEditor.ColorStyle.HintUnderline;
+			case QuickTaskSeverity.None:
+				return TextEditor.ColorStyle.Default.CairoColor;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
+		}
+		
+		Cairo.Color GetIndicatorColor (QuickTaskSeverity severity)
+		{
+			switch (severity) {
+			case QuickTaskSeverity.Error:
+				return new Cairo.Color (254 / 255.0, 58 / 255.0, 22 / 255.0);
+			case QuickTaskSeverity.Warning:
+				return new Cairo.Color (251 / 255.0, 247 / 255.0, 88 / 255.0);
+			default:
+				return new Cairo.Color (75 / 255.0, 255 / 255.0, 75 / 255.0);
+			}
+		}
+		
 		void MouseMove (double y)
 		{
 			if (button != 1)
 				return;
 			int markerHeight = Allocation.Width + 6;
-			double position = (y / (Allocation.Height - markerHeight)) * adj.Upper - adj.PageSize / 2;
-			position = Math.Max (adj.Lower, Math.Min (position, adj.Upper - adj.PageSize));
-			adj.Value = position;
+			double position = (y / (Allocation.Height - markerHeight)) * VAdjustment.Upper - VAdjustment.PageSize / 2;
+			position = Math.Max (VAdjustment.Lower, Math.Min (position, VAdjustment.Upper - VAdjustment.PageSize));
+			VAdjustment.Value = position;
 		}
+		
+		
+		QuickTask hoverTask = null;
 		
 		uint button;
 
@@ -327,7 +349,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			return severity;
 		}
-
+		
 		void DrawLeftBorder (Cairo.Context cr)
 		{
 			cr.MoveTo (0.5, 0);
@@ -336,16 +358,16 @@ namespace MonoDevelop.SourceEditor
 				cr.Color = TextEditor.ColorStyle.FoldLine.CairoColor;
 			cr.Stroke ();
 		}
-
+		
 		void DrawBar (Cairo.Context cr)
 		{
-			if (adj == null || adj.Upper <= adj.PageSize) 
+			if (VAdjustment == null || VAdjustment.Upper <= VAdjustment.PageSize) 
 				return;
 			int h = Allocation.Height - Allocation.Width - 6;
 			cr.Rectangle (1.5,
-				              h * adj.Value / adj.Upper + cr.LineWidth + 0.5,
+				              h * VAdjustment.Value / VAdjustment.Upper + cr.LineWidth + 0.5,
 				              Allocation.Width - 2,
-				              h * (adj.PageSize / adj.Upper));
+				              h * (VAdjustment.PageSize / VAdjustment.Upper));
 			Cairo.Color color = (TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0);
 			color.A = 0.5;
 			cr.Color = color;
@@ -409,5 +431,193 @@ namespace MonoDevelop.SourceEditor
 			return true;
 		}
 	}
-}
+	
+	public class QuickTaskStrip : VBox
+	{
+		Adjustment adj;
+		
+		public Adjustment VAdjustment {
+			get {
+				return this.adj;
+			}
+			set {
+				adj = value;
+				SetupMode ();
+			}
+		}
+		
+		Mono.TextEditor.TextEditor textEditor;
+		public TextEditor TextEditor {
+			get {
+				return textEditor;
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException ();
+				textEditor = value;
+			}
+		}
+		
+		ScrollBarMode mode;
+		public ScrollBarMode ScrollBarMode {
+			get {
+				return this.mode;
+			}
+			set {
+				mode = value;
+				PropertyService.Set ("ScrollBar.Mode", value);
+				SetupMode ();
+			}
+		}
+		
+		Dictionary<IQuickTaskProvider, List<QuickTask>> providerTasks = new Dictionary<IQuickTaskProvider, List<QuickTask>> ();
+		
+		public IEnumerable<QuickTask> AllTasks {
+			get {
+				foreach (var tasks in providerTasks.Values) {
+					foreach (var task in tasks) {
+						yield return task;
+					}
+				}
+			}
+		}
+		
+		public QuickTaskStrip ()
+		{
+			ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Normal);
+			PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
+			Events |= EventMask.ButtonPressMask;
+		}
+		
+		VScrollbar vScrollBar;
+		QuickTaskMapMode mapMode;
+		void SetupMode ()
+		{
+			if (adj == null)
+				return;
+			if (vScrollBar != null) {
+				vScrollBar.Destroy ();
+				vScrollBar = null;
+			}
+			
+			if (mapMode != null) {
+				mapMode.Destroy ();
+				mapMode = null;
+			}
+			switch (ScrollBarMode) {
+			case ScrollBarMode.Normal:
+				vScrollBar = new VScrollbar (adj);
+				PackStart (vScrollBar, true, true, 0);
+				break;
+			case ScrollBarMode.Map:
+			case ScrollBarMode.Full:
+				mapMode = new QuickTaskMapMode (this);
+				PackStart (mapMode, true, true, 0);
+				break;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
+			ShowAll ();
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			PropertyService.RemovePropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
+			base.OnDestroyed ();
+		}
+		
+		void ScrollBarModeChanged (object sender, PropertyChangedEventArgs args)
+		{
+			var newMode =  (ScrollBarMode)args.NewValue;
+			if (newMode == this.ScrollBarMode)
+				return;
+			this.ScrollBarMode = newMode;
+		}
+		
+		public void Update (IQuickTaskProvider provider)
+		{
+			providerTasks [provider] = new List<QuickTask> (provider.QuickTasks);
+			OnTaskProviderUpdated (EventArgs.Empty);
+		}
 
+		protected virtual void OnTaskProviderUpdated (EventArgs e)
+		{
+			var handler = this.TaskProviderUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler TaskProviderUpdated;
+		
+		protected override bool OnButtonPressEvent (EventButton evnt)
+		{
+			if (evnt.Button == 3) {
+				var cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar");
+				IdeApp.CommandService.ShowContextMenu (cset, this);
+			}
+			return base.OnButtonPressEvent (evnt);
+		}
+		
+		#region Command handlers
+		[CommandHandler (ScrollbarCommand.Top)]
+		void GotoTop ()
+		{
+			VAdjustment.Value = VAdjustment.Lower;
+		}
+		
+		[CommandHandler (ScrollbarCommand.Bottom)]
+		void GotoBottom ()
+		{
+			VAdjustment.Value = Math.Max (VAdjustment.Lower, VAdjustment.Upper - VAdjustment.PageSize / 2);
+		}
+		
+		[CommandHandler (ScrollbarCommand.PgUp)]
+		void GotoPgUp ()
+		{
+			VAdjustment.Value = Math.Max (VAdjustment.Lower, VAdjustment.Value - VAdjustment.PageSize);
+		}
+		
+		[CommandHandler (ScrollbarCommand.PgDown)]
+		void GotoPgDown ()
+		{
+			VAdjustment.Value = Math.Min (VAdjustment.Upper, VAdjustment.Value + VAdjustment.PageSize);
+		}
+		
+		[CommandUpdateHandler (ScrollbarCommand.ShowScrollBar)]
+		void UpdateShowScrollBar (CommandInfo info)
+		{
+			info.Checked = ScrollBarMode == ScrollBarMode.Normal;
+		}
+		
+		[CommandHandler (ScrollbarCommand.ShowScrollBar)]
+		void ShowScrollBar ()
+		{
+			 ScrollBarMode = ScrollBarMode.Normal; 
+		}
+		
+		[CommandUpdateHandler (ScrollbarCommand.ShowMap)]
+		void UpdateShowMap (CommandInfo info)
+		{
+			info.Checked = ScrollBarMode == ScrollBarMode.Map;
+		}
+		
+		[CommandHandler (ScrollbarCommand.ShowMap)]
+		void ShowMap ()
+		{
+			 ScrollBarMode = ScrollBarMode.Map; 
+		}
+		
+		[CommandUpdateHandler (ScrollbarCommand.ShowFull)]
+		void UpdateShowFull (CommandInfo info)
+		{
+			info.Checked = ScrollBarMode == ScrollBarMode.Full;
+		}
+		
+		[CommandHandler (ScrollbarCommand.ShowFull)]
+		void ShowFull ()
+		{
+			 ScrollBarMode = ScrollBarMode.Full; 
+		}
+		#endregion
+	}
+}
