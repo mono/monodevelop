@@ -61,7 +61,7 @@ namespace MonoDevelop.DesignerSupport
 					EnsureClassExists (ctx, rt, GetValidRegion (prop));
 					CodeMemberProperty memProp = member as CodeMemberProperty;
 					if (memProp == null || !IsTypeCompatible (ctx, rt, memProp.Type.BaseType))
-						throw new MemberExistsException (cls.FullName, MemberType.Property, member, GetValidRegion (prop), cls.GetDefinition ().Region.FileName);
+						throw new MemberExistsException (cls.FullName, MemberType.Property, member, GetValidRegion (prop), cls.Region.FileName);
 					return prop;
 				}
 			}
@@ -73,7 +73,7 @@ namespace MonoDevelop.DesignerSupport
 					EnsureClassExists (ctx, rt, GetValidRegion (meth));
 					CodeMemberMethod memMeth = member as CodeMemberMethod;
 					if (memMeth == null || !IsTypeCompatible (ctx, rt, memMeth.ReturnType.BaseType))
-						throw new MemberExistsException (cls.FullName, MemberType.Method, member, GetValidRegion (meth), cls.GetDefinition ().Region.FileName);
+						throw new MemberExistsException (cls.FullName, MemberType.Method, member, GetValidRegion (meth), cls.Region.FileName);
 					return meth;
 				}
 			}
@@ -85,7 +85,7 @@ namespace MonoDevelop.DesignerSupport
 					EnsureClassExists (ctx, rt, GetValidRegion (ev));
 					CodeMemberEvent memEv = member as CodeMemberEvent;
 					if (memEv == null || !IsTypeCompatible (ctx, rt, memEv.Type.BaseType))
-						throw new MemberExistsException (cls.FullName, MemberType.Event, member, GetValidRegion (ev), cls.GetDefinition ().Region.FileName);
+						throw new MemberExistsException (cls.FullName, MemberType.Event, member, GetValidRegion (ev), cls.Region.FileName);
 					return ev;
 				}
 			}
@@ -97,7 +97,7 @@ namespace MonoDevelop.DesignerSupport
 					EnsureClassExists (ctx, rt, GetValidRegion (field));
 					CodeMemberField memField = member as CodeMemberField;
 					if (memField == null || !IsTypeCompatible (ctx, rt, memField.Type.BaseType))
-						throw new MemberExistsException (cls.FullName, MemberType.Field, member, GetValidRegion (field), cls.GetDefinition ().Region.FileName);
+						throw new MemberExistsException (cls.FullName, MemberType.Field, member, GetValidRegion (field), cls.Region.FileName);
 					return field;
 				}
 			}
@@ -115,7 +115,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		static DomRegion GetValidRegion (IMember member)
 		{
-			if (member.BodyRegion.IsEmpty || member.DeclaringType.GetDefinition ().Region.FileName == FilePath.Null)
+			if (member.BodyRegion.IsEmpty || member.DeclaringTypeDefinition.Region.FileName == FilePath.Null)
 				return member.DeclaringTypeDefinition.Region;
 			return member.BodyRegion;
 		}
@@ -153,7 +153,7 @@ namespace MonoDevelop.DesignerSupport
 		public static IMember AddMemberToClass (Project project, ITypeDefinition cls, ITypeDefinition specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
-			foreach (var c in cls.GetDefinition ().GetParts ())
+			foreach (var c in cls.GetParts ())
 				if (c == specificPartToAffect)
 					isChildClass = true;
 			if (!isChildClass)
@@ -166,7 +166,7 @@ namespace MonoDevelop.DesignerSupport
 				return CodeGenerationService.AddCodeDomMember (specificPartToAffect, member);
 			
 			if (throwIfExists)
-				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.BodyRegion, cls.GetDefinition ().Region.FileName);
+				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.BodyRegion, cls.Region.FileName);
 			
 			return existingMember;
 		}
@@ -249,11 +249,11 @@ namespace MonoDevelop.DesignerSupport
 			
 			//some tests in case code refactorer returns bad values
 			int beginline = specificPartToAffect.GetDefinition ().BodyRegion.BeginLine;
-			if (!mem.BodyRegion.IsEmpty && mem.BodyRegion.BeginLine >= beginline && mem.BodyRegion.BeginLine <= specificPartToAffect.GetDefinition ().BodyRegion.EndLine)
+			if (!mem.BodyRegion.IsEmpty && mem.BodyRegion.BeginLine >= beginline && mem.BodyRegion.BeginLine <= specificPartToAffect.BodyRegion.EndLine)
 				beginline = mem.BodyRegion.BeginLine;
 			
 			//jump to the member or class
-			IdeApp.Workbench.OpenDocument (specificPartToAffect.GetDefinition ().Region.FileName, beginline, 1);
+			IdeApp.Workbench.OpenDocument (specificPartToAffect.Region.FileName, beginline, 1);
 		}
 		
 		public static System.CodeDom.CodeTypeMember ReflectionToCodeDomMember (MemberInfo memberInfo)
