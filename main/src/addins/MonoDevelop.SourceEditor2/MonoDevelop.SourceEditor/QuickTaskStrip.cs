@@ -639,6 +639,7 @@ namespace MonoDevelop.SourceEditor
 				backgroundPixbuf.Dispose ();
 				backgroundBuffer.Dispose ();
 				backgroundPixbuf = backgroundBuffer = null;
+				curWidth = curHeight = -1;
 			}
 		}
 		
@@ -657,7 +658,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			if (allocation.Width > 1)
+			if (allocation.Width != curWidth || allocation.Height != curHeight)
 				CreateBgBuffer ();
 		}
 		
@@ -682,11 +683,14 @@ namespace MonoDevelop.SourceEditor
 			backgroundBuffer = tmp;
 		}
 		
+		int curWidth = -1, curHeight = -1;
 		void CreateBgBuffer ()
 		{
 			DestroyBgBuffer ();
-			backgroundPixbuf = new Pixmap (GdkWindow, Allocation.Width, Allocation.Height);
-			backgroundBuffer = new Pixmap (GdkWindow, Allocation.Width, Allocation.Height);
+			curWidth = Allocation.Width;
+			curHeight = Allocation.Height;
+			backgroundPixbuf = new Pixmap (GdkWindow, curWidth, curHeight);
+			backgroundBuffer = new Pixmap (GdkWindow, curWidth, curHeight);
 			
 			if (TextEditor.ColorStyle != null) {
 				using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
