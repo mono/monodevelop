@@ -651,7 +651,8 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnMapped ()
 		{
-			CreateBgBuffer ();
+			if (backgroundPixbuf == null && Allocation.Width > 1)
+				CreateBgBuffer ();
 			base.OnMapped ();
 		}
 		
