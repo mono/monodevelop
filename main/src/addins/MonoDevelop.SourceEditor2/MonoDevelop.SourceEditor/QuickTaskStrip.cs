@@ -622,6 +622,8 @@ namespace MonoDevelop.SourceEditor
 		
 		void DestroyBgBuffer ()
 		{
+			if (curUpdate != null)
+				curUpdate.RemoveHandler ();
 			if (backgroundPixbuf != null) {
 				backgroundPixbuf.Dispose ();
 				backgroundBuffer.Dispose ();
@@ -631,14 +633,11 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
+			doc.TextReplaced -= TextReplaced;
 			if (redrawTimeout != 0) {
 				GLib.Source.Remove (redrawTimeout);
 				redrawTimeout = 0;
 			}
-			
-			if (curUpdate != null)
-				curUpdate.RemoveHandler ();
-			doc.TextReplaced -= TextReplaced;
 			DestroyBgBuffer ();
 			base.OnDestroyed ();
 		}
@@ -646,7 +645,8 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			CreateBgBuffer ();
+			if (allocation.Width > 1)
+				CreateBgBuffer ();
 		}
 		
 		protected override void OnMapped ()
@@ -673,14 +673,12 @@ namespace MonoDevelop.SourceEditor
 		void CreateBgBuffer ()
 		{
 			DestroyBgBuffer ();
-			if (curUpdate != null)
-				curUpdate.RemoveHandler ();
-			backgroundPixbuf = new Pixmap (GdkWindow, Allocation.Width - leftMargin, Allocation.Height);
-			backgroundBuffer = new Pixmap (GdkWindow, Allocation.Width - leftMargin, Allocation.Height);
+			backgroundPixbuf = new Pixmap (GdkWindow, Allocation.Width, Allocation.Height);
+			backgroundBuffer = new Pixmap (GdkWindow, Allocation.Width, Allocation.Height);
 			
 			if (TextEditor.ColorStyle != null) {
 				using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
-					cr.Rectangle (0, 0, Allocation.Width - leftMargin, Allocation.Height);
+					cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 					cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
 					cr.Fill ();
 				}
@@ -689,7 +687,6 @@ namespace MonoDevelop.SourceEditor
 			new BgBufferUpdate (this);
 		}
 		
-		const int leftMargin = 0;
 		class BgBufferUpdate {
 			int maxLine;
 			double sx;
@@ -708,13 +705,13 @@ namespace MonoDevelop.SourceEditor
 				cr = Gdk.CairoHelper.Create (mode.backgroundBuffer);
 				
 				cr.LineWidth = 1;
-				cr.Rectangle (0, 0, mode.Allocation.Width - leftMargin, mode.Allocation.Height);
+				cr.Rectangle (0, 0, mode.Allocation.Width, mode.Allocation.Height);
 				if (mode.TextEditor.ColorStyle != null)
 					cr.Color = mode.TextEditor.ColorStyle.Default.CairoBackgroundColor;
 				cr.Fill ();
 				
 				maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount;
-				sx = (mode.Allocation.Width - leftMargin) / (double)mode.TextEditor.Allocation.Width;
+				sx = mode.Allocation.Width / (double)mode.TextEditor.Allocation.Width;
 				sy = Math.Min (1, (mode.Allocation.Height - mode.IndicatorHeight) / (double)mode.TextEditor.GetTextEditorData ().TotalHeight);
 				cr.Scale (sx, sy);
 				
@@ -774,11 +771,7 @@ namespace MonoDevelop.SourceEditor
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 				cr.LineWidth = 1;
 				if (backgroundPixbuf != null) {
-					cr.Rectangle (0, 0, leftMargin, Allocation.Height);
-					if (TextEditor.ColorStyle != null)
-						cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
-					cr.Fill ();
-					e.Window.DrawDrawable (Style.BlackGC, backgroundPixbuf, 0, 0, leftMargin, 0, Allocation.Width - leftMargin, Allocation.Height);
+					e.Window.DrawDrawable (Style.BlackGC, backgroundPixbuf, 0, 0, 0, 0, Allocation.Width, Allocation.Height);
 				} else {
 					cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 					if (TextEditor.ColorStyle != null)
