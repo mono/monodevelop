@@ -1597,8 +1597,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (location != null)
 						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), CatchClause.Roles.RPar);
 				}
-				
-				result.AddChild ((BlockStatement)ctch.Block.Accept (this), CatchClause.Roles.Body);
+				if (ctch.Block != null)
+					result.AddChild ((BlockStatement)ctch.Block.Accept (this), CatchClause.Roles.Body);
 				
 				return result;
 			}
