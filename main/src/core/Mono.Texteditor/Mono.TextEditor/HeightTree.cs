@@ -197,14 +197,14 @@ namespace Mono.TextEditor
 		public double LineNumberToY (int lineNumber)
 		{
 			var node = GetNodeByLine (lineNumber);
-			if (node == null)
-				return 0;
 			var n = node;
 			while (n != null && n.foldLevel > 0) {
 				lineNumber -= n.count;
 				n = n.GetPrevNode ();
 				node = n;
 			}
+			if (node == null)
+				return 0;
 			double result = node.Left != null ? ((HeightNode)node.Left).totalHeight : 0;
 			if (node.count > 1) {
 				int lineDelta = lineNumber - node.GetLineNumber ();
