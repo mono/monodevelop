@@ -66,6 +66,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case Accessibility.None:
 					return false;
 				case Accessibility.Private:
+					// members from interfaces are always accessible.
+					if (entity.DeclaringTypeDefinition.ClassType == ClassType.Interface)
+						return true;
 					// check for members of outer classes (private members of outer classes can be accessed)
 					var lookupTypeDefinition = currentTypeDefinition;
 					while (lookupTypeDefinition != null) {
