@@ -581,6 +581,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		static void ApplyModifiers(TypeSystem.Implementation.AbstractMember m, Modifiers modifiers)
 		{
+			// members from interfaces are always Public.
+			if (m.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+				m.Accessibility = Accessibility.Public;
+				return;
+			}
 			m.Accessibility = GetAccessibility(modifiers) ?? Accessibility.Private;
 			m.IsAbstract = (modifiers & Modifiers.Abstract) != 0;
 			m.IsOverride = (modifiers & Modifiers.Override) != 0;
