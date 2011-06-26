@@ -80,6 +80,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				                  node.GetChildByRole(AstNode.Roles.RBrace).EndLocation);
 		}
 		
+		public override IEntity VisitCompilationUnit (CompilationUnit unit, object data)
+		{
+			parsedFile.Errors = unit.Errors;
+			return base.VisitCompilationUnit (unit, data);
+		}
+		
 		#region Using Declarations
 		public override IEntity VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration, object data)
 		{

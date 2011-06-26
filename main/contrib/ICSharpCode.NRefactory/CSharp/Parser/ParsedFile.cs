@@ -57,6 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IList<Error> Errors {
 			get { return errors; }
+			internal set { errors = (List<Error>)value; }
 		}
 		
 		public IList<UsingScope> UsingScopes {
