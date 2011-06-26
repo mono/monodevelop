@@ -236,18 +236,19 @@ namespace MonoDevelop.CSharp
 			
 			var type = unit.GetTypeDefinition (loc.Line, loc.Column);
 			var curType = type;
-			object lastTag = unit;
 			while (curType != null) {
-				var markup = amb.GetString (ctx, (IEntity)curType, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
-				result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = lastTag });
-				lastTag = curType;
+				var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
+				if (curType.DeclaringTypeDefinition == null)
+					flags |= OutputFlags.UseFullInnerTypeName;
+				var markup = amb.GetString (ctx, (IEntity)curType, flags);
+				result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)curType.DeclaringTypeDefinition ?? unit });
 				curType = curType.DeclaringTypeDefinition;
 			}
 			
 			var member = type != null && !type.IsDelegate () ? unit.GetMember (loc.Line, loc.Column) : null;
 			if (member != null) {
 				var markup = amb.GetString (ctx, member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
-				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = lastTag });
+				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member.DeclaringTypeDefinition });
 			}
 			
 			var entry = GetRegionEntry (unit, loc);

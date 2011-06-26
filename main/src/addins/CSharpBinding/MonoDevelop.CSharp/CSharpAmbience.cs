@@ -370,10 +370,10 @@ namespace MonoDevelop.CSharp
 			}
 			
 			
-			if (settings.UseFullName && type.DeclaringType != null) {
+			if (settings.UseFullInnerTypeName && type.DeclaringTypeDefinition != null) {
 				bool includeGenerics = settings.IncludeGenerics;
 				settings.OutputFlags |= OutputFlags.IncludeGenerics;
-				string typeString = GetTypeReferenceString (type.DeclaringType, settings);
+				string typeString = GetTypeReferenceString (type.DeclaringTypeDefinition, settings);
 				if (!includeGenerics)
 					settings.OutputFlags &= ~OutputFlags.IncludeGenerics;
 				result.Append (typeString);
