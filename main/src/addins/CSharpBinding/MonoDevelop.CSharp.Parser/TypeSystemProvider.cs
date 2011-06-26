@@ -131,21 +131,19 @@ namespace MonoDevelop.CSharp.Parser
 			conditionalRegions.Pop ();
 		}
 		
-		static ICSharpCode.OldNRefactory.PrettyPrinter.CSharpOutputVisitor visitor = new ICSharpCode.OldNRefactory.PrettyPrinter.CSharpOutputVisitor ();
-		
 		void VisitPreprocessorDirective (ParsedDocument result, SpecialsBag.PreProcessorDirective directive)
 		{
 			AstLocation loc = new AstLocation (directive.Line, directive.Col);
 			switch (directive.Cmd) {
 			case Tokenizer.PreprocessorDirective.If:
-				conditionalRegions.Push (new ConditionalRegion (visitor.Text));
+				conditionalRegions.Push (new ConditionalRegion (directive.Arg));
 				ifBlocks.Push (directive);
 				ConditionalRegion.Start = loc;
 				break;
 			case Tokenizer.PreprocessorDirective.Elif:
 				CloseConditionBlock (new AstLocation (directive.EndLine, directive.EndCol));
 				if (ConditionalRegion != null)
-					ConditionalRegion.ConditionBlocks.Add (new ConditionBlock (visitor.Text, loc));
+					ConditionalRegion.ConditionBlocks.Add (new ConditionBlock (directive.Arg, loc));
 				break;
 			case Tokenizer.PreprocessorDirective.Else:
 				CloseConditionBlock (new AstLocation (directive.EndLine, directive.EndCol));

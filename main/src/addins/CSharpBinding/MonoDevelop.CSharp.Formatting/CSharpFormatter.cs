@@ -29,9 +29,6 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-using ICSharpCode.OldNRefactory;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.PrettyPrinter;
 
 using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;

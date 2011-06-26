@@ -59,32 +59,6 @@ namespace MonoDevelop.CSharp.ContextAction
 			return (result / tabSize) * tabSize;
 		}
 		
-		static ExpressionVisitor exVisitor = new ExpressionVisitor ();
-		class ExpressionVisitor : DepthFirstAstVisitor<object, ICSharpCode.OldNRefactory.Ast.Expression>
-		{
-			public override ICSharpCode.OldNRefactory.Ast.Expression VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
-			{
-				return new ICSharpCode.OldNRefactory.Ast.IdentifierExpression (identifierExpression.Identifier);
-			}
-			
-			public override ICSharpCode.OldNRefactory.Ast.Expression VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
-			{
-				return new ICSharpCode.OldNRefactory.Ast.MemberReferenceExpression (memberReferenceExpression.Target.AcceptVisitor (this, null), memberReferenceExpression.MemberName);
-			}
-			
-			public override ICSharpCode.OldNRefactory.Ast.Expression VisitThisReferenceExpression (ThisReferenceExpression thisReferenceExpression, object data)
-			{
-				return new ICSharpCode.OldNRefactory.Ast.ThisReferenceExpression ();
-			}
-			
-			public override ICSharpCode.OldNRefactory.Ast.Expression VisitBaseReferenceExpression (BaseReferenceExpression baseReferenceExpression, object data)
-			{
-				return new ICSharpCode.OldNRefactory.Ast.BaseReferenceExpression ();
-			}
-			
-			
-		}
-		
 		public static void FormatText (this AstNode node, MonoDevelop.Ide.Gui.Document doc)
 		{
 			doc.UpdateParseDocument ();
