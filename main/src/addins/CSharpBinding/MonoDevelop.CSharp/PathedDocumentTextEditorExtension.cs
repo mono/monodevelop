@@ -89,6 +89,7 @@ namespace MonoDevelop.CSharp
 							types.Push (innerType);
 					}
 				} else if (tag is ITypeDefinition) {
+					memberList.AddRange (((ITypeDefinition)tag).NestedTypes);
 					memberList.AddRange (((ITypeDefinition)tag).Members);
 				}
 				memberList.Sort ((x, y) => String.Compare (GetString (amb, x), GetString (amb, y), StringComparison.OrdinalIgnoreCase));
