@@ -116,9 +116,8 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public TextEditor TextEditor {
-			get {
-				return parentStrip.TextEditor;
-			}
+			get;
+			private set;
 		}
 		
 		public IEnumerable<QuickTask> AllTasks {
@@ -135,6 +134,7 @@ namespace MonoDevelop.SourceEditor
 			VAdjustment.ValueChanged += RedrawOnUpdate;
 			VAdjustment.Changed += RedrawOnUpdate;
 			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
+			TextEditor = parent.TextEditor;
 			TextEditor.Caret.PositionChanged += CaretPositionChanged;
 			TextEditor.HighlightSearchPatternChanged += RedrawOnUpdate;
 			TextEditor.TextViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
@@ -588,7 +588,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		Pixmap backgroundPixbuf;
 		uint redrawTimeout;
-		
+		Document doc;
 		protected override double IndicatorHeight  {
 			get {
 				return 16;
@@ -597,7 +597,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public QuickTaskFullMode (QuickTaskStrip parent) : base (parent)
 		{
-			parent.TextEditor.Document.TextReplaced += TextReplaced;
+			doc = parent.TextEditor.Document;
+			doc.TextReplaced += TextReplaced;
 		}
 		
 		void TextReplaced (object sender, ReplaceEventArgs args)
@@ -625,7 +626,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		protected override bool OnDestroyEvent (Event evnt)
+		protected override void OnDestroyed ()
 		{
 			if (redrawTimeout != 0) {
 				GLib.Source.Remove (redrawTimeout);
@@ -634,9 +635,9 @@ namespace MonoDevelop.SourceEditor
 			
 			if (curUpdate != null)
 				curUpdate.RemoveHandler ();
-			TextEditor.Document.TextReplaced -= TextReplaced;
+			doc.TextReplaced -= TextReplaced;
 			DestroyBgBuffer ();
-			return base.OnDestroyEvent (evnt);
+			base.OnDestroyed ();
 		}
 		
 		protected override void OnSizeAllocated (Rectangle allocation)

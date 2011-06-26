@@ -314,10 +314,6 @@ namespace Mono.TextEditor
 			options = options.Kill ();
 			
 			DetachDocument ();
-			if (caret != null) {
-				caret.PositionChanged -= CaretPositionChanged;
-				caret = null;
-			}
 		}
 		
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
