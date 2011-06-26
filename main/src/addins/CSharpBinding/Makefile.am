@@ -39,6 +39,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/ConstructorParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/CSharpCompletionTextEditorExtension.cs \
@@ -94,6 +95,10 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
 	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalHandler.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodDialog.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodHandler.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodRefactoring.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
 	MonoDevelop.CSharp/CSharpAmbience.cs \

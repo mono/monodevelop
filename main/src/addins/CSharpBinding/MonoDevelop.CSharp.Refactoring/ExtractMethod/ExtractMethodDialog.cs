@@ -29,13 +29,14 @@ using System;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.CodeGeneration;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
 using Mono.TextEditor;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 {
@@ -115,38 +116,40 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		{
 			store.Clear ();
 			foreach (VariableDescriptor var in properties.Parameters) {
-				store.AppendValues (var.ReturnType != null ? var.ReturnType.ToInvariantString () : "<null>" , var.Name);
+				store.AppendValues (var.ReturnType != null ? var.ReturnType.ToString () : "<null>" , var.Name);
 			}
 		}
 
 		bool ValidateName ()
 		{
-			string fileName = properties.DeclaringMember.DeclaringType.GetDefinition ().Region.FileName;
+			string fileName = properties.DeclaringMember.Region.FileName;
 			string methodName = entry.Text;
 			if (HasMember (methodName)) {
 				labelWarning.Text = GettextCatalog.GetString ("A member with the name '{0}' already exists.", methodName);
 				imageWarning.IconName = Gtk.Stock.DialogError;
 				return false;
 			}
-
-			INameValidator nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
-			if (nameValidator == null)
-				return true;
-			ValidationResult result = nameValidator.ValidateName (new DomMethod (), entry.Text);
-			if (!result.IsValid) {
-				imageWarning.IconName = Gtk.Stock.DialogError;
-			} else if (result.HasWarning) {
-				imageWarning.IconName = Gtk.Stock.DialogWarning;
-			} else {
-				imageWarning.IconName = Gtk.Stock.Apply;
-			}
-			labelWarning.Text = result.Message;
-			return result.IsValid;
+			
+			return true;
+//			INameValidator nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
+//			if (nameValidator == null)
+//				return true;
+//			ValidationResult result = nameValidator.ValidateName (new DomMethod (), entry.Text);
+//			if (!result.IsValid) {
+//				imageWarning.IconName = Gtk.Stock.DialogError;
+//			} else if (result.HasWarning) {
+//				imageWarning.IconName = Gtk.Stock.DialogWarning;
+//			} else {
+//				imageWarning.IconName = Gtk.Stock.Apply;
+//			}
+//			labelWarning.Text = result.Message;
+//			return result.IsValid;
 		}
 
 		bool HasMember (string name)
 		{
-			foreach (var member in properties.DeclaringMember.DeclaringType.SearchMember (name, true)) {
+			var ctx = options.Document.TypeResolveContext;
+			foreach (var member in properties.DeclaringMember.DeclaringType.GetMembers (ctx, m => m.Name == name)) {
 				var method = member as IMethod;
 				if (method == null)
 					continue;
@@ -154,7 +157,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 					continue;
 				bool equals = true;
 				for (int i = 0; i < method.Parameters.Count; i++) {
-					if (properties.Parameters[i].ReturnType.ToInvariantString () != member.Parameters[i].ReturnType.ToInvariantString ()) {
+					if (!properties.Parameters[i].ReturnType.Resolve (ctx).Equals (method.Parameters[i].Type.Resolve (ctx))) {
 						equals = false;
 						break;
 					}
@@ -176,19 +179,19 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			properties.GenerateComment = generateComments;
 			switch (activeModifier) {
 			case 0:
-				properties.Modifiers = Modifiers.None;
+				properties.Modifiers = Accessibility.Public;
 				break;
 			case 1:
-				properties.Modifiers = Modifiers.Public;
+				properties.Modifiers = Accessibility.Public;
 				break;
 			case 2:
-				properties.Modifiers = Modifiers.Private;
+				properties.Modifiers = Accessibility.Private;
 				break;
 			case 3:
-				properties.Modifiers = Modifiers.Protected;
+				properties.Modifiers = Accessibility.Protected;
 				break;
 			case 4:
-				properties.Modifiers = Modifiers.Internal;
+				properties.Modifiers = Accessibility.Internal;
 				break;
 			}
 			PropertyService.Set ("MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.DefaultModifier", comboboxModifiers.Active);
@@ -200,9 +203,9 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			Mono.TextEditor.TextEditor editor = data.Parent;
 // Insertion cursor mode test:
 			if (editor != null) {
-				IType type = properties.DeclaringMember.DeclaringType;
+				var type = properties.DeclaringMember.DeclaringTypeDefinition;
 				
-				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (options.Document, type));
+				var mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (options.Document, type));
 				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
 					var point = mode.InsertionPoints[i];
 					if (point.Location < editor.Caret.Location) {

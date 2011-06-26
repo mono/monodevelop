@@ -30,8 +30,6 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
@@ -41,9 +39,11 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Formatting;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 {
@@ -71,12 +71,12 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (buffer.Document.MimeType != CSharpFormatter.MimeType)
 				return false;
 			if (buffer.IsSomethingSelected) {
-				ParsedDocument doc = options.ParseDocument ();
-				if (doc != null && doc.CompilationUnit != null) {
-					var member = doc.CompilationUnit.GetMemberAt (buffer.Caret.Line, buffer.Caret.Column);
+				var doc = options.Document.ParsedDocument;
+				if (doc != null) {
+					var member = doc.GetMember (buffer.Caret.Line, buffer.Caret.Column);
 					if (member == null)
 						return false;
-					if (!member.BodyRegion.Contains (buffer.Caret.Line, buffer.Caret.Column))
+					if (!member.BodyRegion.IsInside (buffer.Caret.Line, buffer.Caret.Column))
 						return false;
 					return true;
 				}
@@ -108,11 +108,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (!buffer.IsSomethingSelected)
 				return null;
 
-			ParsedDocument doc = options.ParseDocument ();
-			if (doc == null || doc.CompilationUnit == null)
+			ParsedDocument doc = options.Document.ParsedDocument;
+			if (doc == null)
 				return null;
 
-			IMember member = doc.CompilationUnit.GetMemberAt (buffer.Caret.Line, buffer.Caret.Column);
+			IMember member = doc.GetMember (buffer.Caret.Line, buffer.Caret.Column);
 			if (member == null)
 				return null;
 			
@@ -161,7 +161,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				set;
 			}
 			
-			public MonoDevelop.Projects.Dom.Modifiers Modifiers {
+			public Accessibility Modifiers {
 				get;
 				set;
 			}
@@ -190,7 +190,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			/// <summary>
 			/// The type of the expression, if the text is an expression, otherwise null.
 			/// </summary>
-			public IReturnType ExpressionType {
+			public IType ExpressionType {
 				get;
 				set;
 			}
@@ -258,7 +258,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			var data = options.GetTextEditorData ();
 			var parser = new CSharpParser ();
 			var unit = parser.Parse (data);
-			var resolver = options.GetResolver ();
 			if (unit == null)
 				return false;
 			var selectionRange = data.SelectionRange;
@@ -279,15 +278,15 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			string text = options.Document.Editor.GetTextBetween (startLocation, endLocation);
 			
 			param.Text = RemoveIndent (text, GetIndent (data.GetTextBetween (data.GetLine (startLocation.Line).Offset, data.GetLine (endLocation.Line).EndOffset))).TrimEnd ('\n', '\r');
-			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
-			visitor.MemberLocation = param.DeclaringMember.Location;
+			var visitor = new VariableLookupVisitor (options, param.Location);
+			visitor.MemberLocation = param.DeclaringMember.Region.Begin;
 			visitor.CutRegion = new DomRegion (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column);
 			if (fillParameter) {
 				unit.AcceptVisitor (visitor, null);
 				if (param.Nodes != null && (param.Nodes.Count == 1 && param.Nodes [0].NodeType == NodeType.Expression)) {
-					ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + text + ")"), param.Location);
-					if (resolveResult != null && resolveResult.ResolvedType != null)
-						param.ExpressionType = resolveResult.ResolvedType;
+					var resolveResult = options.Resolve (param.Nodes[0]);
+					if (resolveResult != null)
+						param.ExpressionType = resolveResult.Type;
 				}
 				
 				foreach (VariableDescriptor varDescr in visitor.VariableList.Where (v => !v.IsDefinedInsideCutRegion && (v.UsedInCutRegion || v.IsChangedInsideCutRegion || v.UsedAfterCutRegion && v.IsDefinedInsideCutRegion))) {
@@ -415,30 +414,31 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			return sb.ToString ();
 		}
 		
-		static DomMethod GenerateMethodStub (RefactoringOptions options, ExtractMethodParameters param)
+		static IMethod GenerateMethodStub (RefactoringOptions options,ITypeDefinition callingType, ExtractMethodParameters param)
 		{
-			DomMethod result = new DomMethod ();
-			result.Name = param.Name;
-			result.ReturnType = param.ExpressionType ?? DomReturnType.Void;
-			result.Modifiers = param.Modifiers;
-			if (!param.ReferencesMember)
-				result.Modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
+			var result = new DefaultMethod (callingType, param.Name);
+			result.ReturnType = param.ExpressionType ?? KnownTypeReference.Void;
+			result.Accessibility = param.Modifiers;
+//			if (!param.ReferencesMember)
+//				result.Modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
 			
 			if (param.Parameters == null)
 				return result;
 			foreach (var p in param.Parameters) {
 				if (param.OneChangedVariable && p.UsedAfterCutRegion && !p.UsedInCutRegion)
 					continue;
-				var newParameter = new DomParameter ();
-				newParameter.Name = p.Name;
-				newParameter.ReturnType = p.ReturnType;
+				var newParameter = new DefaultParameter (p.ReturnType, p.Name);
 				
 				if (!param.OneChangedVariable) {
 					if (!p.IsDefinedInsideCutRegion && p.IsChangedInsideCutRegion) {
-						newParameter.ParameterModifiers = p.UsedBeforeCutRegion ? ParameterModifiers.Ref : ParameterModifiers.Out;
+						if (p.UsedBeforeCutRegion) {
+							newParameter.IsRef = true;
+						} else {
+							newParameter.IsOut = true;
+						}
 					}
 				}
-				result.Add (newParameter);
+				result.Parameters.Add (newParameter);
 			}
 			return result;
 		}
@@ -467,17 +467,17 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				EolMarker = options.Document.Editor.EolMarker,
 				TabSize = options.Document.Editor.Options.TabSize
 			};
-			
-			var newMethod = GenerateMethodStub (options, param);
-			IType callingType = null;
-			var cu = options.Document.CompilationUnit;
+			var ctx = options.Document.TypeResolveContext;
+			ITypeDefinition callingType = null;
+			var cu = options.Document.ParsedDocument;
 			if (cu != null)
-				callingType = newMethod.DeclaringType = options.Document.GetType (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
-				
-			var createdMethod = codeGenerator.CreateMemberImplementation (callingType, newMethod, false);
+				callingType = cu.GetTypeDefinition (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+			var newMethod = GenerateMethodStub (options, callingType, param);
+
+			var createdMethod = codeGenerator.CreateMemberImplementation (ctx, callingType, newMethod, false);
 
 			if (param.GenerateComment && DocGenerator.Instance != null)
-				methodText.AppendLine (DocGenerator.Instance.GenerateDocumentation (newMethod, indent + "/// "));
+				methodText.AppendLine (DocGenerator.Instance.GenerateDocumentation (ctx, newMethod, indent + "/// "));
 			string code = createdMethod.Code;
 			int idx1 = code.LastIndexOf ("throw");
 			int idx2 = code.LastIndexOf (";");
@@ -492,8 +492,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				if (param.OneChangedVariable) {
 					var par = param.Variables.First (p => p.IsDefinedInsideCutRegion && p.UsedAfterCutRegion);
 					if (!par.UsedInCutRegion) {
-						
-						text.Append (new CSharpAmbience ().GetString (par.ReturnType, OutputFlags.ClassBrowserEntries));
+						text.Append (codeGenerator.GetShortTypeString (options.Document, par.ReturnType.Resolve (ctx)));
 						text.Append (" ");
 						text.Append (par.Name);
 						text.AppendLine (";");
@@ -553,8 +552,8 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
 			var insertionPoint = param.InsertionPoint;
 			if (insertionPoint == null) {
-				var points = CodeGenerationService.GetInsertionPoints (options.Document, param.DeclaringMember.DeclaringType);
-				insertionPoint = points.LastOrDefault (p => p.Location.Line < param.DeclaringMember.Location.Line);
+				var points = CodeGenerationService.GetInsertionPoints (options.Document, param.DeclaringMember.DeclaringTypeDefinition);
+				insertionPoint = points.LastOrDefault (p => p.Location.Line < param.DeclaringMember.Region.BeginLine);
 				if (insertionPoint == null)
 					insertionPoint = points.FirstOrDefault ();
 			}

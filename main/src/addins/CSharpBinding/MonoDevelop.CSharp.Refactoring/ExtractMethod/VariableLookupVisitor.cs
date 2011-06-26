@@ -27,10 +27,12 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+
 
 namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 {
@@ -41,7 +43,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			set;
 		}
 		
-		public IReturnType ReturnType {
+		public IType ReturnType {
 			get;
 			set;
 		}
@@ -90,16 +92,17 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 	
 	public class VariableLookupVisitor : DepthFirstAstVisitor<object, object>
 	{
-		List<KeyValuePair <string, IReturnType>> unknownVariables = new List<KeyValuePair <string, IReturnType>> ();
+		List<KeyValuePair <string, IType>> unknownVariables = new List<KeyValuePair <string, IType>> ();
 		Dictionary<string, VariableDescriptor> variables = new Dictionary<string, VariableDescriptor> ();
 //		bool valueGetsChanged;
+		RefactoringOptions options;
 		
 		public bool ReferencesMember {
 			get;
 			set;
 		}
 		
-		public List<KeyValuePair <string, IReturnType>> UnknownVariables {
+		public List<KeyValuePair <string, IType>> UnknownVariables {
 			get {
 				return unknownVariables;
 			}
@@ -122,22 +125,21 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			set;
 		}
 		
-		IResolver resolver;
 		AstLocation position;
 		public DomRegion CutRegion {
 			get;
 			set;
 		}
-		public VariableLookupVisitor (IResolver resolver, AstLocation position)
+		public VariableLookupVisitor (RefactoringOptions options, AstLocation position)
 		{
-			this.resolver = resolver;
+			this.options = options;
 			this.position = position;
 			this.MemberLocation = AstLocation.Empty;
 		}
 		
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
 		{
-			bool isDefinedInsideCutRegion = CutRegion.Contains (variableDeclarationStatement.StartLocation.Line, variableDeclarationStatement.StartLocation.Column);
+			bool isDefinedInsideCutRegion = CutRegion.IsInside (variableDeclarationStatement.StartLocation.Line, variableDeclarationStatement.StartLocation.Column);
 			foreach (var varDecl in variableDeclarationStatement.Variables) {
 				var descr = new VariableDescriptor (varDecl.Name) {
 					IsDefinedInsideCutRegion = isDefinedInsideCutRegion,
@@ -159,18 +161,17 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.CSharp.IdentifierExpression identifierExpression, object data)
 		{
-			ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier);
-			ResolveResult result = resolver.Resolve (expressionResult, position);
-			MemberResolveResult mrr = result as MemberResolveResult;
-			ReferencesMember |= mrr != null && mrr.ResolvedMember != null && !mrr.ResolvedMember.IsStatic;
+			var result = options.Resolve (identifierExpression);
+			var mrr = result as MemberResolveResult;
+			ReferencesMember |= mrr != null && mrr.Member != null && !mrr.Member.IsStatic;
 			
-			if (!(result is LocalVariableResolveResult || result is ParameterResolveResult))
+			if (!(result is LocalResolveResult))
 				return null;
 			if (!variables.ContainsKey (identifierExpression.Identifier))
 				return null;
 			var v = variables[identifierExpression.Identifier];
-			v.ReturnType = result.ResolvedType;
-			if (CutRegion.Contains (identifierExpression.StartLocation.Line, identifierExpression.StartLocation.Column)) {
+			v.ReturnType = result.Type;
+			if (CutRegion.IsInside (identifierExpression.StartLocation.Line, identifierExpression.StartLocation.Column)) {
 				if (!v.IsChangedInsideCutRegion)
 					v.UsedInCutRegion = true;
 			} else if (identifierExpression.StartLocation < new AstLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
@@ -190,7 +191,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			
 			if (left != null && variables.ContainsKey (left.Identifier)) {
 				var v = variables[left.Identifier];
-				v.IsChangedInsideCutRegion = CutRegion.Contains (assignmentExpression.StartLocation.Line, assignmentExpression.StartLocation.Column);
+				v.IsChangedInsideCutRegion = CutRegion.IsInside (assignmentExpression.StartLocation.Line, assignmentExpression.StartLocation.Column);
 				if (!v.IsChangedInsideCutRegion) {
 					if (assignmentExpression.StartLocation < new AstLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
 						v.UsedBeforeCutRegion = true;
@@ -205,7 +206,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.CSharp.UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			base.VisitUnaryOperatorExpression (unaryOperatorExpression, data);
-			if (CutRegion.Contains (unaryOperatorExpression.StartLocation.Line, unaryOperatorExpression.StartLocation.Column)) {
+			if (CutRegion.IsInside (unaryOperatorExpression.StartLocation.Line, unaryOperatorExpression.StartLocation.Column)) {
 				var left = unaryOperatorExpression.Expression as ICSharpCode.NRefactory.CSharp.IdentifierExpression;
 				if (left != null && variables.ContainsKey (left.Identifier)) {
 					variables[left.Identifier].IsChangedInsideCutRegion = true;

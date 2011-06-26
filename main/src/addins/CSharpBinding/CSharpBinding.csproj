@@ -232,17 +232,16 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodAstTransformer.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodDialog.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodHandler.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
-    <None Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
     <None Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
     <None Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
