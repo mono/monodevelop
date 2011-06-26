@@ -586,7 +586,7 @@ namespace MonoDevelop.SourceEditor
 	
 	public class QuickTaskFullMode : QuickTaskMapMode
 	{
-		Pixmap backgroundPixbuf;
+		Pixmap backgroundPixbuf, backgroundBuffer;
 		uint redrawTimeout;
 		Document doc;
 		protected override double IndicatorHeight  {
@@ -603,6 +603,8 @@ namespace MonoDevelop.SourceEditor
 		
 		void TextReplaced (object sender, ReplaceEventArgs args)
 		{
+			if (redrawTimeout != 0)
+				GLib.Source.Remove (redrawTimeout);
 			redrawTimeout = GLib.Timeout.Add (250, delegate {
 				if (curUpdate != null)
 					curUpdate.RemoveHandler ();
@@ -622,7 +624,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (backgroundPixbuf != null) {
 				backgroundPixbuf.Dispose ();
-				backgroundPixbuf = null;
+				backgroundBuffer.Dispose ();
+				backgroundPixbuf = backgroundBuffer = null;
 			}
 		}
 		
@@ -659,14 +662,32 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		BgBufferUpdate curUpdate = null;
+		void SwapBuffer ()
+		{
+			var tmp = backgroundPixbuf;
+			backgroundPixbuf = backgroundBuffer;
+			backgroundBuffer = tmp;
+		}
 		
 		void CreateBgBuffer ()
 		{
 			DestroyBgBuffer ();
 			if (curUpdate != null)
 				curUpdate.RemoveHandler ();
+			backgroundPixbuf = new Pixmap (GdkWindow, Allocation.Width - leftMargin, Allocation.Height);
+			backgroundBuffer = new Pixmap (GdkWindow, Allocation.Width - leftMargin, Allocation.Height);
+			
+			if (TextEditor.ColorStyle != null) {
+				using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
+					cr.Rectangle (0, 0, Allocation.Width - leftMargin, Allocation.Height);
+					cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
+					cr.Fill ();
+				}
+			}
+			
 			new BgBufferUpdate (this);
 		}
+		
 		const int leftMargin = 0;
 		class BgBufferUpdate {
 			int maxLine;
@@ -674,8 +695,6 @@ namespace MonoDevelop.SourceEditor
 			double sy;
 			
 			Cairo.Context cr;
-			
-			Pixmap backgroundPixbuf;
 			
 			QuickTaskFullMode mode;
 			
@@ -685,8 +704,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				this.mode = mode;
 				
-				backgroundPixbuf = new Pixmap (mode.GdkWindow, mode.Allocation.Width - leftMargin, mode.Allocation.Height);
-				cr = Gdk.CairoHelper.Create (backgroundPixbuf);
+				cr = Gdk.CairoHelper.Create (mode.backgroundBuffer);
 				
 				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, mode.Allocation.Width - leftMargin, mode.Allocation.Height);
@@ -694,12 +712,11 @@ namespace MonoDevelop.SourceEditor
 					cr.Color = mode.TextEditor.ColorStyle.Default.CairoBackgroundColor;
 				cr.Fill ();
 				
-				
 				maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount;
 				sx = (mode.Allocation.Width - leftMargin) / (double)mode.TextEditor.Allocation.Width;
 				sy = Math.Min (1, (mode.Allocation.Height - mode.IndicatorHeight) / (double)mode.TextEditor.GetTextEditorData ().TotalHeight);
 				cr.Scale (sx, sy);
-		
+				
 				GLib.Idle.Add (BgBufferUpdater);
 			}
 			
@@ -711,36 +728,40 @@ namespace MonoDevelop.SourceEditor
 				((IDisposable)cr).Dispose ();
 				cr = null;
 				mode.curUpdate = null;
-				backgroundPixbuf.Dispose ();
 			}
 		
 			bool BgBufferUpdater ()
 			{
-				for (int i = 0; i < 25 && curLine < maxLine; i++) {
-					var nr = mode.TextEditor.GetTextEditorData ().VisualToLogicalLine (curLine);
-					var line = mode.TextEditor.GetLine (nr);
-					if (line != null) {
-						var layout = mode.TextEditor.TextViewMargin.GetLayout (line);
-						cr.MoveTo (0, (curLine - 1) * mode.TextEditor.LineHeight);
-						cr.ShowLayout (layout.Layout);
-							
-						if (layout.IsUncached)
-							layout.Dispose ();
+				if (mode.TextEditor.Document == null)
+					return false;
+				try {
+					for (int i = 0; i < 25 && curLine < maxLine; i++) {
+						var nr = mode.TextEditor.GetTextEditorData ().VisualToLogicalLine (curLine);
+						var line = mode.TextEditor.GetLine (nr);
+						if (line != null) {
+							var layout = mode.TextEditor.TextViewMargin.GetLayout (line);
+							cr.MoveTo (0, (curLine - 1) * mode.TextEditor.LineHeight);
+							cr.ShowLayout (layout.Layout);
+								
+							if (layout.IsUncached)
+								layout.Dispose ();
+						}
+						
+						curLine++;
 					}
 					
-					curLine++;
-				}
-				
-				if (curLine >= maxLine) {
-					mode.DestroyBgBuffer ();
-					mode.backgroundPixbuf = this.backgroundPixbuf;
-					((IDisposable)cr).Dispose ();
-					cr = null;
-					mode.curUpdate = null;
-					mode.QueueDraw ();
+					if (curLine >= maxLine) {
+						mode.SwapBuffer ();
+						((IDisposable)cr).Dispose ();
+						cr = null;
+						mode.curUpdate = null;
+						mode.QueueDraw ();
+						return false;
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error in background buffer drawer.", e);
 					return false;
 				}
-				
 				return true;
 			}
 		}
