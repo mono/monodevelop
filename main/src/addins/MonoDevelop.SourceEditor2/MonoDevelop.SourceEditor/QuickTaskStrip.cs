@@ -658,7 +658,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			if (allocation.Width != curWidth || allocation.Height != curHeight)
+			if (allocation.Width > 1 && (allocation.Width != curWidth || allocation.Height != curHeight))
 				CreateBgBuffer ();
 		}
 		
@@ -694,19 +694,19 @@ namespace MonoDevelop.SourceEditor
 			
 			if (TextEditor.ColorStyle != null) {
 				using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
-					cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+					cr.Rectangle (0, 0, curWidth, curHeight);
 					cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
 					cr.Fill ();
 				}
 			}
-			
-			new BgBufferUpdate (this);
+			curUpdate = new BgBufferUpdate (this);
 		}
 		
 		class BgBufferUpdate {
 			int maxLine;
 			double sx;
 			double sy;
+			uint handler;
 			
 			Cairo.Context cr;
 			
@@ -731,14 +731,15 @@ namespace MonoDevelop.SourceEditor
 				sy = Math.Min (1, (mode.Allocation.Height - mode.IndicatorHeight) / (double)mode.TextEditor.GetTextEditorData ().TotalHeight);
 				cr.Scale (sx, sy);
 				
-				GLib.Idle.Add (BgBufferUpdater);
+				handler = GLib.Idle.Add (BgBufferUpdater);
 			}
 			
 			public void RemoveHandler ()
 			{
 				if (cr == null)
 					return;
-				GLib.Idle.Remove (BgBufferUpdater);
+				GLib.Source.Remove (handler);
+				handler = 0;
 				((IDisposable)cr).Dispose ();
 				cr = null;
 				mode.curUpdate = null;
@@ -746,7 +747,7 @@ namespace MonoDevelop.SourceEditor
 		
 			bool BgBufferUpdater ()
 			{
-				if (mode.TextEditor.Document == null)
+				if (mode.TextEditor.Document == null || handler == 0)
 					return false;
 				try {
 					for (int i = 0; i < 25 && curLine < maxLine; i++) {
