@@ -599,9 +599,20 @@ namespace MonoDevelop.SourceEditor
 		{
 			doc = parent.TextEditor.Document;
 			doc.TextReplaced += TextReplaced;
+			doc.Folded += HandleFolded;
+		}
+
+		void HandleFolded (object sender, FoldSegmentEventArgs e)
+		{
+			RequestRedraw ();
 		}
 		
 		void TextReplaced (object sender, ReplaceEventArgs args)
+		{
+			RequestRedraw ();
+		}
+
+		void RequestRedraw ()
 		{
 			if (redrawTimeout != 0)
 				GLib.Source.Remove (redrawTimeout);
@@ -633,6 +644,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
+			doc.Folded -= HandleFolded;
 			doc.TextReplaced -= TextReplaced;
 			if (redrawTimeout != 0) {
 				GLib.Source.Remove (redrawTimeout);
