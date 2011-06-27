@@ -495,7 +495,6 @@ namespace MonoDevelop.CSharp.Completion
 			} else if (textEditorData.CurrentMode is Mono.TextEditor.TextLinkEditMode) {
 				return null;
 			}
-			
 			var loc = new AstLocation (Document.Editor.Caret.Location.Line, Document.Editor.Caret.Location.Column);
 			this.currentType = ParsedFile.GetTypeDefinition (loc);
 			this.currentMember = ParsedFile.GetMember (loc);
@@ -559,6 +558,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (IsInsideComment () || IsInsideString ())
 					return null;
 				var invoke = GetInvocationBeforeCursor ();
+				
 				if (invoke == null)
 					return null;
 				if (invoke.Item2 is TypeOfExpression)
@@ -1993,12 +1993,12 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			if (IsInsideComment () || IsInsideString ())
 				return null;
+			this.currentType = Document.ParsedDocument.GetTypeDefinition (Editor.Caret.Line, Editor.Caret.Column);
+			this.currentMember = Document.ParsedDocument.GetMember (Editor.Caret.Line, Editor.Caret.Column);
+			
 			var invoke = GetInvocationBeforeCursor ();
 			if (invoke == null)
 				return null;
-			
-			this.currentType = Document.ParsedDocument.GetTypeDefinition (Editor.Caret.Line, Editor.Caret.Column);
-			this.currentMember = Document.ParsedDocument.GetMember (Editor.Caret.Line, Editor.Caret.Column);
 			
 			ResolveResult resolveResult;
 			switch (completionChar) {
@@ -2009,6 +2009,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				
 				var invocationExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				
 				if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError)
 					return null;
 				resolveResult = invocationExpression.Item1;

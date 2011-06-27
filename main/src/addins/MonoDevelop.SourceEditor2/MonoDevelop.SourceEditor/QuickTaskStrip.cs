@@ -612,14 +612,21 @@ namespace MonoDevelop.SourceEditor
 			RequestRedraw ();
 		}
 
+		public void RemoveRedrawTimer ()
+		{
+			if (redrawTimeout != 0) {
+				GLib.Source.Remove (redrawTimeout);
+				redrawTimeout = 0;
+			}
+		}
+
 		void RequestRedraw ()
 		{
-			if (redrawTimeout != 0)
-				GLib.Source.Remove (redrawTimeout);
-			redrawTimeout = GLib.Timeout.Add (250, delegate {
+			RemoveRedrawTimer ();
+			redrawTimeout = GLib.Timeout.Add (450, delegate {
 				if (curUpdate != null)
 					curUpdate.RemoveHandler ();
-				new BgBufferUpdate (this);
+				curUpdate = new BgBufferUpdate (this);
 				redrawTimeout = 0;
 				return false;
 			});
@@ -647,10 +654,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			doc.Folded -= HandleFolded;
 			doc.TextReplaced -= TextReplaced;
-			if (redrawTimeout != 0) {
-				GLib.Source.Remove (redrawTimeout);
-				redrawTimeout = 0;
-			}
+			RemoveRedrawTimer ();
 			DestroyBgBuffer ();
 			base.OnDestroyed ();
 		}
