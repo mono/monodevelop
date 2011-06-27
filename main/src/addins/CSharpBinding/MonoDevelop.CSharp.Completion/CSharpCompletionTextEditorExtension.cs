@@ -387,7 +387,7 @@ namespace MonoDevelop.CSharp.Completion
 			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
 		}
 		
-		Tuple<ParsedFile, Expression, CompilationUnit> GetInvocationBeforeCursor ()
+		Tuple<ParsedFile, Expression, CompilationUnit> GetInvocationBeforeCursor (bool afterBracket)
 		{
 			// the same as GetExpressionBeforeCursor except that the last '(' is replaced with '.' (otherwise
 			// mcs doesn't give the exact expression)
@@ -402,7 +402,6 @@ namespace MonoDevelop.CSharp.Completion
 				startOffset = document.Editor.LocationToOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
 			}
 			string memberText = Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset - 1);
-			
 			CompilationUnit completionUnit = (CompilationUnit)Unit.Clone ();
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var member = completionUnit.GetNodeAt<AttributedNode> (memberLocation);
@@ -411,7 +410,11 @@ namespace MonoDevelop.CSharp.Completion
 			wrapper.Append ("class Stub {");
 			wrapper.AppendLine ();
 			wrapper.Append (memberText);
-			wrapper.Append ("().");
+			if (afterBracket) {
+				wrapper.Append ("().");
+			} else {
+				wrapper.Append ("x).");
+			}
 			var stream = new System.IO.StringReader (wrapper.ToString ());
 			var memberUnit = parser.Parse (stream, memberLocation.Line - 1);
 			stream.Close ();
@@ -557,7 +560,7 @@ namespace MonoDevelop.CSharp.Completion
 			case '(':
 				if (IsInsideComment () || IsInsideString ())
 					return null;
-				var invoke = GetInvocationBeforeCursor ();
+				var invoke = GetInvocationBeforeCursor (true);
 				
 				if (invoke == null)
 					return null;
@@ -571,18 +574,15 @@ namespace MonoDevelop.CSharp.Completion
 				if (methodGroup != null)
 					return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, 0);
 				return null;
-//			case ',':
-//				if (!GetParameterCompletionCommandOffset (out cpos)) 
-//					return null;
-//				ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
-//				provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
-//				if (provider != null) {
-//					int currentParameter = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
-//					resolver = CreateResolver ();
-//					resolver.SetupResolver (new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-//					return CreateParameterCompletion (CreateResolver (), location, ExpressionContext.MethodBody, provider.Methods, currentParameter);	
-//				}
-//				break;
+			case ',':
+				int cpos2;
+				if (!GetParameterCompletionCommandOffset (out cpos2)) 
+					return null;
+			//	completionContext = CompletionWidget.CreateCodeCompletionContext (cpos2);
+			//	int currentParameter2 = MethodParameterDataProvider.GetCurrentParameterIndex (CompletionWidget, completionContext) - 1;
+				Console.WriteLine ("cp:" + cpos2);
+//				return CreateParameterCompletion (CreateResolver (), location, ExpressionContext.MethodBody, provider.Methods, currentParameter);	
+				break;
 				
 			// Completion on space:
 			case ' ':
@@ -615,22 +615,19 @@ namespace MonoDevelop.CSharp.Completion
 					int cpos;
 					if (!GetParameterCompletionCommandOffset (out cpos)) 
 						break;
-					completionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
-					var provider = ParameterCompletionCommand (completionContext) as MethodParameterDataProvider;
-					if (provider != null) {
-						int currentParameter = provider.GetCurrentParameterIndex (CompletionWidget, completionContext) - 1;
-						
-						invoke = GetInvocationBeforeCursor ();
-						if (invoke == null)
-							return null;
-						invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
-						if (invocationResult == null)
-							return null;
-						methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
-						if (methodGroup != null)
-							return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, currentParameter);
+					int currentParameter = MethodParameterDataProvider.GetCurrentParameterIndex (CompletionWidget, cpos, 0) - 1;
+					if (currentParameter < 0)
 						return null;
-					}
+					invoke = GetInvocationBeforeCursor (token == "(");
+					if (invoke == null)
+						return null;
+					invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+					if (invocationResult == null)
+						return null;
+					methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
+					if (methodGroup != null)
+						return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, currentParameter);
+					return null;
 					break;
 				case "=":
 				case "==":
@@ -1996,7 +1993,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.currentType = Document.ParsedDocument.GetTypeDefinition (Editor.Caret.Line, Editor.Caret.Column);
 			this.currentMember = Document.ParsedDocument.GetMember (Editor.Caret.Line, Editor.Caret.Column);
 			
-			var invoke = GetInvocationBeforeCursor ();
+			var invoke = GetInvocationBeforeCursor (true);
 			if (invoke == null)
 				return null;
 			
