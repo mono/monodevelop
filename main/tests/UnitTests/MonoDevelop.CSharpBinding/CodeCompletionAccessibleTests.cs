@@ -543,6 +543,10 @@ class TestClass : A
 	{
 	}
 	
+}
+
+class Example
+{
 	void TestMe ()
 	{
 		$A a = new $

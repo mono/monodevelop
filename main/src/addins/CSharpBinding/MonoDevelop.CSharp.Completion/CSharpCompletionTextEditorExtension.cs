@@ -198,9 +198,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionBeforeCursor ()
 		{
-			if (currentMember == null && currentType == null) {
+			if (currentMember == null && currentType == null)
 				return null;
-			}
 			
 			CSharpParser parser = new CSharpParser ();
 			int startOffset;
@@ -211,73 +210,34 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			string memberText = Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset);
 			
-//			var stream = new System.IO.StringReader (memberText);
-//			var member = parser.ParseTypeMembers (stream, currentMember.Region.BeginLine - 1).FirstOrDefault ();
-//			stream.Close ();
-//			
-//			if (member == null)
-//				return null;
-			CompilationUnit completionUnit = (CompilationUnit)Unit.Clone ();
-//			member.Remove ();
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
-			var member = completionUnit.GetNodeAt<AttributedNode> (memberLocation);
-			
 			StringBuilder wrapper = new StringBuilder ();
 			wrapper.Append ("class Stub {");
 			wrapper.AppendLine ();
 			wrapper.Append (memberText);
+			
+			/// try to get this. or base.
+			wrapper.Append ("a ();  } } }");
 			var stream = new System.IO.StringReader (wrapper.ToString ());
-			var memberUnit = parser.Parse (stream, memberLocation.Line - 1);
+			var baseUnit = parser.Parse (stream, memberLocation.Line - 2);
 			stream.Close ();
-			var expr = memberUnit.TopExpression as Expression;
-			if (expr == null) {
-				/// try to get this. or base.
-				wrapper.Append ("a ();  } } }");
-				stream = new System.IO.StringReader (wrapper.ToString ());
-				var baseUnit = parser.Parse (stream, memberLocation.Line - 1);
-				stream.Close ();
-				
-				var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-				if (mref != null) {
-					expr = mref.Target.Clone ();
-				} else {
-					return null;
-				}
-			}
 			
-			bool nodeInserted = false;
-			
-			AstNode node = completionUnit.GetNodeAt<Statement> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-			if (node != null) {
-				
-				if (node is BlockStatement) {
-					node.AddChild (expr, AstNode.Roles.Expression);
-				} else {
-					node.Parent.AddChild (expr, AstNode.Roles.Expression);
-				}
-				nodeInserted = true;
+			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+			Expression expr;
+			if (mref != null) {
+				expr = mref.Target;
 			} else {
-				node = completionUnit.GetNodeAt<Expression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-				if (node != null) {
-					node.ReplaceWith (n => expr);
-					nodeInserted = true;
-				}
+				return null;
 			}
 			
-			if (!nodeInserted) {
-				if (member != null) {
-					member.AddChild (expr, AstNode.Roles.Expression);
-				} else {
-					return null;
-				}
-			}
-//			
-//			Console.WriteLine ("Parsed AST:");
-//			Print (completionUnit);
-//			
-//			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
-//			completionUnit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (ParsedFile, expr, completionUnit);
+			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			member2.Remove ();
+			member.ReplaceWith (member2);
+
+			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
+			Unit.AcceptVisitor (tsvisitor, null);
+			return Tuple.Create (tsvisitor.ParsedFile, expr, Unit);
 		}
 		
 		static void Print (AstNode node)
@@ -385,13 +345,13 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
 			completionUnit.AcceptVisitor (tsvisitor, null);
+			
 			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
 		}
 		
 		Tuple<ParsedFile, Expression, CompilationUnit> GetInvocationBeforeCursor (bool afterBracket)
 		{
-			// the same as GetExpressionBeforeCursor except that the last '(' is replaced with '.' (otherwise
-			// mcs doesn't give the exact expression)
+			///////
 			if (currentMember == null && currentType == null)
 				return null;
 			
@@ -403,74 +363,37 @@ namespace MonoDevelop.CSharp.Completion
 				startOffset = document.Editor.LocationToOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
 			}
 			string memberText = Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset - 1);
-			CompilationUnit completionUnit = (CompilationUnit)Unit.Clone ();
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
-			var member = completionUnit.GetNodeAt<AttributedNode> (memberLocation);
 			
-			var wrapper = new StringBuilder ();
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			StringBuilder wrapper = new StringBuilder ();
 			wrapper.Append ("class Stub {");
 			wrapper.AppendLine ();
 			wrapper.Append (memberText);
+			
 			if (afterBracket) {
-				wrapper.Append ("().");
+				wrapper.Append ("();");
 			} else {
-				wrapper.Append ("x).");
+				wrapper.Append ("x);");
 			}
+			
+			wrapper.Append (" SomeCall (); } } }");
 			var stream = new System.IO.StringReader (wrapper.ToString ());
-			var memberUnit = parser.Parse (stream, memberLocation.Line - 1);
+			var baseUnit = parser.Parse (stream, memberLocation.Line - 2);
 			stream.Close ();
-			var expr = memberUnit.TopExpression as Expression;
+			var expr = baseUnit.GetNodeAt<Expression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
 			if (expr is InvocationExpression) {
 				expr = ((InvocationExpression)expr).Target;
-				expr.Remove ();
 			}
-			if (expr == null) {
-				/// try to get this. or base.
-				wrapper.Append ("a ();  } } }");
-				stream = new System.IO.StringReader (wrapper.ToString ());
-				var baseUnit = parser.Parse (stream, memberLocation.Line - 1);
-				stream.Close ();
-				
-				var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-				if (mref != null) {
-					expr = mref.Target.Clone ();
-				} else {
-					return null;
-				}
-			}
+			if (expr == null)
+				return null;
+			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			member2.Remove ();
+			member.ReplaceWith (member2);
 			
-			bool nodeInserted = false;
-			
-			AstNode node = completionUnit.GetNodeAt<Statement> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-			if (node != null) {
-				
-				if (node is BlockStatement) {
-					node.AddChild (expr, AstNode.Roles.Expression);
-				} else {
-					node.Parent.AddChild (expr, AstNode.Roles.Expression);
-				}
-				nodeInserted = true;
-			} else {
-				node = completionUnit.GetNodeAt<Expression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-				if (node != null) {
-					node.ReplaceWith (n => expr);
-					nodeInserted = true;
-				}
-			}
-			
-			if (!nodeInserted) {
-				if (member != null) {
-					member.AddChild (expr, AstNode.Roles.Expression);
-				} else {
-					return null;
-				}
-			}
-//			
-//			Console.WriteLine ("Parsed AST:");
-//			
-//			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
-//			completionUnit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (ParsedFile, expr, completionUnit);
+			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
+			Unit.AcceptVisitor (tsvisitor, null);
+			return Tuple.Create (tsvisitor.ParsedFile, expr, Unit);
 		}
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
@@ -520,6 +443,7 @@ namespace MonoDevelop.CSharp.Completion
 						return null;
 				}
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
+				
 				if (resolveResult == null)
 					return null;
 				return CreateCompletionData (loc, resolveResult.Item1, expr.Item2, resolveResult.Item2);
@@ -1849,7 +1773,6 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				isProtectedAllowed = currentType != null && typeDef != null ? currentType.GetAllBaseTypeDefinitions (ctx).Any (bt => bt.Equals (typeDef)) : false;
 			}
-			
 			if (resolveResult is TypeResolveResult && type.IsEnum ()) {
 				foreach (var field in type.GetFields (ctx)) {
 					result.AddMember (field);

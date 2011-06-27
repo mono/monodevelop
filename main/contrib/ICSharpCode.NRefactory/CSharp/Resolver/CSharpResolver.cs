@@ -1572,7 +1572,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("identifier");
 			if (typeArguments == null)
 				throw new ArgumentNullException("typeArguments");
-			
 			if (typeArguments.Count == 0) {
 				foreach (IVariable v in this.LocalVariables) {
 					if (v.Name == identifier) {
