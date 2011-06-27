@@ -566,12 +566,56 @@ namespace ICSharpCode.NRefactory.CSharp
 			return GetResolveableNodeAt (new AstLocation (line, column));
 		}
 		
+		
 		/// <summary>
 		/// Gets a node that can be resolved at location.
 		/// </summary>
 		public AstNode GetResolveableNodeAt (AstLocation location)
 		{
-			return GetNodeAt (location, n => n is AttributedNode || n is VariableInitializer || n is ParameterDeclaration || n is Expression || n is AstType);
+			return GetNodeAt (location, delegate (AstNode n) {
+				
+				if (n is TypeDeclaration) {
+					var decl = (TypeDeclaration)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is DelegateDeclaration) {
+					var decl = (DelegateDeclaration)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is MemberDeclaration) {
+					var decl = (MemberDeclaration)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is ConstructorDeclaration) {
+					var decl = (ConstructorDeclaration)n;
+					return decl.IdentifierToken.StartLocation <= location && location <= decl.IdentifierToken.EndLocation;
+				}
+				
+				if (n is DestructorDeclaration) {
+					var decl = (DestructorDeclaration)n;
+					return decl.IdentifierToken.StartLocation <= location && location <= decl.IdentifierToken.EndLocation;
+				}
+				
+				if (n is VariableInitializer) {
+					var decl = (VariableInitializer)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is ParameterDeclaration) {
+					var decl = (ParameterDeclaration)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is MemberReferenceExpression) {
+					var decl = (MemberReferenceExpression)n;
+					return decl.MemberNameToken.StartLocation <= location && location <= decl.MemberNameToken.EndLocation;
+				}
+				
+				return n is IdentifierExpression || n is AstType;
+			});
 		}
 		
 		public IEnumerable<AstNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)
