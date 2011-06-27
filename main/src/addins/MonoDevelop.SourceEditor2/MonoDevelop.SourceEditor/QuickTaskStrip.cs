@@ -237,7 +237,7 @@ namespace MonoDevelop.SourceEditor
 					PositionPreviewWindow ((int)evnt.Y);
 				} else {
 					var popup = new PreviewPopup (this, showSegment, TextEditor.Allocation.Width * 4 / 7, (int)evnt.Y);
-					previewPopupTimeout = GLib.Timeout.Add (350, new GLib.TimeoutHandler (popup.Run));
+					previewPopupTimeout = GLib.Timeout.Add (450, new GLib.TimeoutHandler (popup.Run));
 				}
 			}
 			return base.OnMotionNotifyEvent (evnt);
