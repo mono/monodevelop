@@ -324,11 +324,26 @@ namespace MonoDevelop.CSharp
 		
 		protected override string GetTypeReferenceString (ITypeReference reference, OutputSettings settings)
 		{
-			
 			if (reference == null)
 				return "null";
+			var type = reference.Resolve (settings.Context);
 			var sb = new StringBuilder ();
-			AppendType (sb, reference.Resolve (settings.Context), settings);
+			if (type is ITypeDefinition && ((ITypeDefinition)type).IsSynthetic&& ((ITypeDefinition)type).Name == "$Anonymous$") {
+				sb.Append ("new {");
+				foreach (var property in ((ITypeDefinition)type).Properties) {
+					sb.AppendLine ();
+					sb.Append ("\t");
+					sb.Append (GetTypeReferenceString (property.ReturnType, settings) ?? "?");
+					sb.Append (" ");
+					sb.Append (property.Name);
+					sb.Append (";");
+				}
+				sb.AppendLine ();
+				sb.Append ("}");
+				return sb.ToString ();
+			}
+			
+			AppendType (sb, type, settings);
 			return sb.ToString ();
 		}
 
@@ -336,25 +351,11 @@ namespace MonoDevelop.CSharp
 		{
 			if (type == null)
 				return "";
+			// output anonymous type
+			if (type.IsSynthetic && type.Name == "$Anonymous$")
+				return GetTypeReferenceString (type, settings);
+			
 			var result = new StringBuilder ();
-//			if (type is AnonymousType) {
-//				result.Append ("new {");
-//				foreach (IProperty property in type.Properties) {
-//					result.AppendLine ();
-//					result.Append ("\t");
-//					if (property.ReturnType != null && !string.IsNullOrEmpty (property.ReturnType.FullName)) {
-//						result.Append (property.ReturnType.AcceptVisitor (this, settings));
-//						result.Append (" ");
-//					} else {
-//						result.Append ("? ");
-//					}
-//					result.Append (property.Name);
-//					result.Append (";");
-//				}
-//				result.AppendLine ();
-//				result.Append ("}");
-//				return result.ToString ();
-//			}
 			var def = type;
 			AppendModifiers (result, settings, def);
 			if (settings.IncludeKeywords)

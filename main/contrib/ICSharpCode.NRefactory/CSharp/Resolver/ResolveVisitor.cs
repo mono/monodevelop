@@ -546,20 +546,55 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return MakeTypeReference(type).Resolve(resolver.Context);
 		}
 		
-		public override ResolveResult VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public override ResolveResult VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 //			throw new NotImplementedException();
 			return errorResult;
+		}
+		
+		static string GetAnonymousTypePropertyName (Expression expr, out Expression resolveExpr)
+		{
+			if (expr is NamedArgumentExpression) {
+				var namedArgExpr = ((NamedArgumentExpression)expr);
+				resolveExpr = namedArgExpr.Expression;
+				return namedArgExpr.Identifier;
+			}
+			// no name given, so it's a projection initializer
+			if (expr is MemberReferenceExpression) {
+				resolveExpr = expr;
+				return ((MemberReferenceExpression)expr).MemberName;
+			}
+			if (expr is IdentifierExpression) { 
+				resolveExpr = expr;
+				return ((IdentifierExpression)expr).Identifier;
+			}
+			resolveExpr = null;
+			return null;
 		}
 		
 		public override ResolveResult VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
 		{
-//			throw new NotImplementedException();
-			return errorResult;
+			// 7.6.10.6 Anonymous object creation expressions
+			var anonymousType = new DefaultTypeDefinition(resolver.CurrentTypeDefinition, "$Anonymous$");
+			anonymousType.IsSynthetic = true;
+			foreach (var expr in anonymousTypeCreateExpression.Initializer) {
+				Expression resolveExpr;
+				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
+				if (string.IsNullOrEmpty(name))
+					continue;
+				
+				var property = new DefaultProperty(anonymousType, name) {
+					Accessibility = Accessibility.Public,
+					ReturnType = new VarTypeReference(this, resolver.Clone(), resolveExpr, false)
+				};
+				anonymousType.Properties.Add (property);
+			}
+			return new TypeResolveResult(anonymousType);
 		}
 		
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
+			
 //			throw new NotImplementedException();
 			return errorResult;
 		}
