@@ -190,7 +190,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					// (partially) parameterize the nested type definition
 					IType[] newTypeArgs = new IType[def.TypeParameterCount];
 					for (int j = 0; j < newTypeArgs.Length; j++) {
-						if (j < typeArguments.Length)
+						if (i < typeArguments.Length)
 							newTypeArgs[j] = typeArguments[i];
 						else
 							newTypeArgs[j] = def.TypeParameters[j];

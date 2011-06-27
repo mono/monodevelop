@@ -479,8 +479,8 @@ class Test
 
 $namespace A.$
 ");
-			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (0, provider.Count);
+			if (provider != null)
+				Assert.AreEqual (0, provider.Count);
 		}
 
 		/// <summary>

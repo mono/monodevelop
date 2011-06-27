@@ -725,19 +725,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return errorResult;
 		}
 		
-		public override ResolveResult VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+		public override ResolveResult VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			if (resolverEnabled) {
-				ResolveResult target = Resolve(memberReferenceExpression.Target);
-				List<IType> typeArguments = new List<IType>();
+				ResolveResult target = Resolve (memberReferenceExpression.Target);
+				List<IType> typeArguments = new List<IType> ();
 				foreach (AstType typeArgument in memberReferenceExpression.TypeArguments) {
-					typeArguments.Add(ResolveType(typeArgument));
+					typeArguments.Add (ResolveType (typeArgument));
 				}
-				return resolver.ResolveMemberAccess(target, memberReferenceExpression.MemberName,
+				return resolver.ResolveMemberAccess (target, memberReferenceExpression.MemberName,
 				                                    typeArguments,
-				                                    IsTargetOfInvocation(memberReferenceExpression));
+				                                    IsTargetOfInvocation (memberReferenceExpression));
 			} else {
-				ScanChildren(memberReferenceExpression);
+				ScanChildren (memberReferenceExpression);
 				return null;
 			}
 		}

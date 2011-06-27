@@ -273,6 +273,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 //			
 //			Console.WriteLine ("Parsed AST:");
+//			Print (completionUnit);
 //			
 //			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
 //			completionUnit.AcceptVisitor (tsvisitor, null);
@@ -507,6 +508,7 @@ namespace MonoDevelop.CSharp.Completion
 			case '.':
 				if (IsInsideComment () || IsInsideString ())
 					return null;
+				
 				var expr = GetExpressionBeforeCursor ();
 				if (expr == null)
 					return null;
@@ -1005,7 +1007,6 @@ namespace MonoDevelop.CSharp.Completion
 				var visitor = new ResolveVisitor (state, pf, navigator);
 				unit.AcceptVisitor (visitor, null);
 				state = visitor.GetResolverStateBefore (node) ?? state;
-				Console.WriteLine ("locals:" + state.LocalVariables.Count ());
 				Print (unit);
 				foreach (var v in state.LocalVariables) {
 					Console.WriteLine (v);
@@ -1015,11 +1016,11 @@ namespace MonoDevelop.CSharp.Completion
 			return state;
 		}
 
-		static bool ContainsNonPrivateConstructors (ITypeDefinition t)
+		static bool ContainsPublicConstructors (ITypeDefinition t)
 		{
 			if (t.Methods.Count (m => m.IsConstructor) == 0)
 				return true;
-			return t.Methods.Any (m => m.IsConstructor && !m.IsPrivate);
+			return t.Methods.Any (m => m.IsConstructor && m.IsPublic);
 		}
 
 		ICompletionDataList CreateTypeCompletionData (IType hintType)
@@ -1028,10 +1029,18 @@ namespace MonoDevelop.CSharp.Completion
 			var state = GetState ();
 			Predicate<ITypeDefinition> pred = null;
 			if (hintType != null) {
-				pred = t => ContainsNonPrivateConstructors (t) && (t.IsDerivedFrom (hintType.GetDefinition (), ctx) || t.Equals (hintType));
+				var lookup = new MemberLookup (ctx, currentType, document.GetProjectContext ());
+				pred = t => {
+					if (t.Methods.Count (m => m.IsConstructor) == 0)
+						return true;
+					bool isProtectedAllowed = currentType.IsDerivedFrom (t, ctx);
+					return t.Methods.Any (m => m.IsConstructor && lookup.IsAccessible (m, isProtectedAllowed));
+				};
+				var generator = new MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator ();
+				wrapper.Result.DefaultCompletionString = generator.GetShortTypeString (Document, hintType);
 			}
 			AddTypesAndNamespaces (wrapper, state, pred);
-			
+			AddKeywords (wrapper, primitiveTypes.Where (k => k != "void"));
 			wrapper.Result.AutoCompleteEmptyMatch = true;
 			return wrapper.Result;
 		}
@@ -1309,9 +1318,20 @@ namespace MonoDevelop.CSharp.Completion
 //					}
 //					return null;
 //					
+			case "public":
+			case "protected":
+			case "private":
+			case "internal":
+			case "sealed":
+			case "static":
+				wrapper = new CompletionDataWrapper (this);
+				var state = GetState ();
+				AddTypesAndNamespaces (wrapper, state, null, m => false);
+				AddKeywords (wrapper, typeLevel);
+				return wrapper.Result;
 			case "new":
 				int j = completionContext.TriggerOffset - 4;
-				string token = GetPreviousToken (ref j, true);
+//				string token = GetPreviousToken (ref j, true);
 				
 				IType hintType = null;
 				var expressionOrVariableDeclaration = GetExpressionAt (j);
@@ -1495,17 +1515,18 @@ namespace MonoDevelop.CSharp.Completion
 			CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", wrapper.Result);
 		}
 
-		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, Predicate<ITypeDefinition> typePred = null)
+		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, Predicate<ITypeDefinition> typePred = null, Predicate<IMember> memberPred = null)
 		{
 			if (state.CurrentTypeDefinition != null) {
+				
 				foreach (var nestedType in state.CurrentTypeDefinition.NestedTypes) {
 					if (typePred == null || typePred (nestedType))
 						wrapper.AddType (nestedType, nestedType.Name);
 				}
+				
 				foreach (var member in state.CurrentTypeDefinition.Resolve (ctx).GetMembers (ctx)) {
-					if (currentMember != null && currentMember.IsStatic && !member.IsStatic)
-						continue;
-					wrapper.AddMember (member);
+					if (memberPred == null || memberPred (member))
+						wrapper.AddMember (member);
 				}
 				
 				foreach (var p in state.CurrentTypeDefinition.TypeParameters) {
@@ -1559,7 +1580,7 @@ namespace MonoDevelop.CSharp.Completion
 		};
 		static string[] linqKeywords = new string[] { "from", "where", "select", "group", "into", "orderby", "join", "let", "in", "on", "equals", "by", "ascending", "descending" };
 		
-		static void AddKeywords (CompletionDataWrapper wrapper, string[] keywords)
+		static void AddKeywords (CompletionDataWrapper wrapper, IEnumerable<string> keywords)
 		{
 			foreach (string keyword in keywords) {
 				wrapper.Result.Add (new CompletionData (keyword, "md-keyword"));
