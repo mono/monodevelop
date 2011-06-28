@@ -2020,9 +2020,9 @@ namespace TestMe
 		{
 				CompletionDataList provider = CreateProvider (
 @"
-class A<T>
+public class A<T>
 {
-	class B
+	public class B
 	{
 		public T field;
 	}

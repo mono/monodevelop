@@ -443,7 +443,6 @@ namespace MonoDevelop.CSharp.Completion
 						return null;
 				}
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
-				
 				if (resolveResult == null)
 					return null;
 				return CreateCompletionData (loc, resolveResult.Item1, expr.Item2, resolveResult.Item2);
@@ -957,11 +956,12 @@ namespace MonoDevelop.CSharp.Completion
 				pred = t => {
 					if (t.Methods.Count (m => m.IsConstructor) == 0)
 						return true;
-					bool isProtectedAllowed = currentType.IsDerivedFrom (t, ctx);
+					bool isProtectedAllowed = currentType != null ? currentType.IsDerivedFrom (t, ctx) : false;
 					return t.Methods.Any (m => m.IsConstructor && lookup.IsAccessible (m, isProtectedAllowed));
 				};
 				var generator = new MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator ();
 				wrapper.Result.DefaultCompletionString = generator.GetShortTypeString (Document, hintType);
+				wrapper.AddType (hintType, wrapper.Result.DefaultCompletionString);
 			}
 			AddTypesAndNamespaces (wrapper, state, pred);
 			AddKeywords (wrapper, primitiveTypes.Where (k => k != "void"));
@@ -1578,7 +1578,7 @@ namespace MonoDevelop.CSharp.Completion
 			HashSet<string> usedTypes = new HashSet<string> ();
 			public void AddType (IType type, string shortType)
 			{
-				if (type == null || usedTypes.Contains (shortType))
+				if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (shortType))
 					return;
 				usedTypes.Add (shortType);
 				result.Add (new CompletionData (shortType, type.GetStockIcon ()));
@@ -1767,9 +1767,14 @@ namespace MonoDevelop.CSharp.Completion
 			var lookup = new MemberLookup (ctx, currentType, document.GetProjectContext ());
 			var result = new CompletionDataWrapper (this);
 			bool isProtectedAllowed = false;
+			bool includeStaticMembers = false;
 			
 			if (resolveResult is LocalResolveResult) {
 				isProtectedAllowed = currentType != null && typeDef != null ? typeDef.GetAllBaseTypeDefinitions (ctx).Any (bt => bt.Equals (currentType)) : false;
+				if (resolvedNode is IdentifierExpression) {
+					var mrr = (LocalResolveResult)resolveResult;
+					includeStaticMembers  = mrr.Variable.Name == mrr.Type.Name;
+				}
 			} else {
 				isProtectedAllowed = currentType != null && typeDef != null ? currentType.GetAllBaseTypeDefinitions (ctx).Any (bt => bt.Equals (typeDef)) : false;
 			}
@@ -1784,6 +1789,11 @@ namespace MonoDevelop.CSharp.Completion
 				return result.Result;
 			}
 			
+			if (resolveResult is MemberResolveResult && resolvedNode is IdentifierExpression) {
+				var mrr = (MemberResolveResult)resolveResult;
+				includeStaticMembers  = mrr.Member.Name == mrr.Type.Name;
+			}
+			
 //			Console.WriteLine ("type:" + type);
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
@@ -1796,7 +1806,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (resolvedNode is BaseReferenceExpression && member.IsAbstract)
 					continue;
 				
-				if (member.IsStatic && !(resolveResult is TypeResolveResult)) {
+				if (!includeStaticMembers && member.IsStatic && !(resolveResult is TypeResolveResult)) {
 //					Console.WriteLine ("skip static member: " + member.FullName);
 					continue;
 				}
@@ -1808,7 +1818,7 @@ namespace MonoDevelop.CSharp.Completion
 				result.AddMember (member);
 			}
 			
-			if (resolveResult is TypeResolveResult) {
+			if (resolveResult is TypeResolveResult || includeStaticMembers) {
 				foreach (var nested in type.GetNestedTypes (ctx)) {
 					result.AddType (nested, nested.Name);
 				}
