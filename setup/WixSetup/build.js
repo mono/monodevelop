@@ -12,7 +12,14 @@ var ASSEMBLY_BUILD_VERSION = 0;
 
 var sh = new ActiveXObject("WScript.Shell");
 var fs = new ActiveXObject("Scripting.FileSystemObject");
-var MONO_LIBS = "C:\\Program Files\\MonoLibraries\\2.6";
+var MONO_LIBS = sh.ExpandEnvironmentStrings("%ProgramFiles(x86)%") + "\\MonoLibraries\\2.6";
+if (!fs.FolderExists (MONO_LIBS))
+	MONO_LIBS = sh.ExpandEnvironmentStrings("%ProgramFiles%") + "\\MonoLibraries\\2.6";
+if (!fs.FolderExists (MONO_LIBS)) {
+	WScript.Echo ("Mono libraries folder not found.\nGet latest from http://software.xamarin.com/files/MonoLibraries.msi");
+	WScript.Quit (1);
+}
+
 var MD_DIR = "..\\..";
 var MD_EXTRAS_DIR = "..\\..\\extras";
 var PRODUCT_VERSION = "" + MAJOR_VERSION + "." + MINOR_VERSION + "." + POINT_VERSION + (BUILD_VERSION != 0 ? "." + BUILD_VERSION : "");
@@ -75,7 +82,7 @@ WScript.Echo ("Setup successfully generated");
 function build (file)
 {
 	if (sh.run ("C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe " + MD_DIR + "\\" + file, 5, true) != 0) {
-		WScript.Echo ("Build failed");
+		WScript.Echo ("Build failed.\nCommand:\nC:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe " + MD_DIR + "\\" + file);
 		return 1;
 	}
 	return 0;
