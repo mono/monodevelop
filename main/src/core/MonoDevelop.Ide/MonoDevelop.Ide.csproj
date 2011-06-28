@@ -779,12 +779,6 @@
     <EmbeddedResource Include="icons\balloon.png">
       <LogicalName>balloon.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\downloader-paused.png">
-      <LogicalName>downloader-paused.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\downloader-running.png">
-      <LogicalName>downloader-running.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

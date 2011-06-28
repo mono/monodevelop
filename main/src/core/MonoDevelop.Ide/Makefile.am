@@ -741,8 +741,6 @@ RES =  \
 	icons/compiler-options-24.png \
 	icons/custom-commands-16.png \
 	icons/custom-commands-24.png \
-	icons/downloader-paused.png \
-	icons/downloader-running.png \
 	icons/edit-find-next-16.png \
 	icons/edit-find-next-24.png \
 	icons/edit-select-all.png \
