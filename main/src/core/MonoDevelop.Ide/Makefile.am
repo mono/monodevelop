@@ -104,8 +104,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Projects.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Updater.InstallDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Updater.UpdateDialog.cs \
 	MonoDevelop.Components.AutoTest/AutoTestClientSession.cs \
 	MonoDevelop.Components.AutoTest/AutoTestService.cs \
 	MonoDevelop.Components.AutoTest/AutoTestSession.cs \
@@ -672,15 +670,6 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SolutionDescriptor.cs \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
-	MonoDevelop.Ide.Updater/DownloadService.cs \
-	MonoDevelop.Ide.Updater/InstallDialog.cs \
-	MonoDevelop.Ide.Updater/UpdateCommands.cs \
-	MonoDevelop.Ide.Updater/UpdateDialog.cs \
-	MonoDevelop.Ide.Updater/UpdateInfoExtensionNode.cs \
-	MonoDevelop.Ide.Updater/UpdateRank.cs \
-	MonoDevelop.Ide.Updater/UpdateResult.cs \
-	MonoDevelop.Ide.Updater/UpdateService.cs \
-	MonoDevelop.Ide.Updater/UpdateTagExtensionNode.cs \
 	MonoDevelop.Ide.WebBrowser/IWebBrowser.cs \
 	MonoDevelop.Ide.WebBrowser/IWebBrowserLoader.cs \
 	MonoDevelop.Ide.WebBrowser/LoadingProgressChangedEventArgs.cs \
