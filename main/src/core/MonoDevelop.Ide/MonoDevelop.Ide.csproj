@@ -875,7 +875,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\Workbench.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AddinUpdateHandler.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\FileViewer.cs" />
@@ -1450,6 +1449,10 @@
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FilePathEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeedbackDialog.cs" />
     <Compile Include="MonoDevelop.Ide\FeedbackService.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateService.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\IUpdateHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\AddinsUpdateHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateCheckHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -1,5 +1,5 @@
 // 
-// InstallDialog.cs
+// IUpdateHandler.cs
 //  
 // Author:
 //       Lluis Sanchez <lluis@xamarin.com>
@@ -24,55 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Updater
 {
-	public partial class InstallDialog : Gtk.Dialog
+	public interface IUpdateHandler
 	{
-		List<Update> toInstall = new List<Update> ();
-		
-		public InstallDialog (IEnumerable<Update> updates)
-		{
-			this.Build ();
-			toInstall.AddRange (updates);
-			
-			var coreUpdates = updates.Where (u => !u.IsThirdParty);
-			var extraUpdates = updates.Where (u => u.IsThirdParty);
-			
-			if (coreUpdates.Any ())
-				AddUpdates (tableUpdates, coreUpdates);
-			else
-				boxUpdates.Hide ();
-
-			if (extraUpdates.Any ())
-				AddUpdates (tableUpdatesExtra, extraUpdates);
-			else
-				boxUpdatesExtra.Hide ();
-		}
-		
-		void AddUpdates (Gtk.Table table, IEnumerable<Update> updates)
-		{
-			uint r = 0;
-			foreach (var up in updates) {
-				var cb = new Gtk.CheckButton (up.Name);
-				var cup = up;
-				cb.Active = true;
-				cb.Toggled += delegate {
-					if (cb.Active)
-						toInstall.Add (cup);
-					else
-						toInstall.Remove (cup);
-				};
-				table.Attach (cb, 0, 1, r, r + 1);
-			}
-			table.ShowAll ();
-		}
-		
-		public IEnumerable<Update> UpdatesToInstall {
-			get { return toInstall; }
-		}
+		void CheckUpdates (IProgressMonitor monitor);
 	}
 }
 
