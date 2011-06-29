@@ -225,6 +225,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.SendFeedback" />
+		<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
 		<SeparatorItem id = "Separator2" />
 		<ItemSet id = "Web" _label = "_Web">
 			<LinkItem id = "MonoDevelop" _label = "MonoDevelop" link = "http://www.monodevelop.com" />

@@ -37,5 +37,13 @@ namespace MonoDevelop.Ide.Updater
 			UpdateService.ScheduledCheckForUpdates ();
 		}
 	}
+	
+	class CheckForUpdatesHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			UpdateService.CheckForUpdates ();
+		}
+	}
 }
 

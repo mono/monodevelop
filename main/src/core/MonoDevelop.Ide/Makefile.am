@@ -852,6 +852,7 @@ RES =  \
 	icons/project-reference-package-16.png \
 	icons/project-reference-project-16.png \
 	icons/remove-namespace-16.png \
+	icons/software-update-available.png \
 	icons/solution-16.png \
 	icons/solution-32.png \
 	icons/solution-folder-closed-16.png \

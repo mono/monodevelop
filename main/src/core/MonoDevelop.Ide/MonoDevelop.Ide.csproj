@@ -779,6 +779,9 @@
     <EmbeddedResource Include="icons\balloon.png">
       <LogicalName>balloon.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\software-update-available.png">
+      <LogicalName>software-update-available.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
