@@ -349,10 +349,76 @@ namespace MonoDevelop.TypeSystem
 		
 		static Dictionary<string, ITypeResolveContext> assemblyContents = new Dictionary<string, ITypeResolveContext> ();
 		
+		class SimpleAssemblyResolver : IAssemblyResolver
+		{
+			string lookupPath;
+			Dictionary<string, AssemblyDefinition> cache = new Dictionary<string, AssemblyDefinition> ();
+			
+			public SimpleAssemblyResolver (string lookupPath)
+			{
+				this.lookupPath = lookupPath;
+			}
+
+			public AssemblyDefinition InternalResolve (string fullName)
+			{
+				AssemblyDefinition result;
+				if (cache.TryGetValue (fullName, out result))
+					return result;
+				
+				var name = AssemblyNameReference.Parse (fullName);
+				// need to handle different file extension casings. Some dlls from windows tend to end with .Dll or .DLL rather than '.dll'
+				foreach (string file in Directory.GetFiles (lookupPath, name.Name + ".*")) {
+					string ext = Path.GetExtension (file);
+					if (string.IsNullOrEmpty (ext))
+						continue;
+					ext = ext.ToUpper ();
+					if (ext == ".DLL" || ext == ".EXE") {
+						result = ReadAssembly (file);
+						break;
+					}
+				}
+				
+				if (result == null) {
+					var framework = MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework;
+					var assemblyName = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (fullName, framework);
+					var location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyName, framework);
+					
+					if (!string.IsNullOrEmpty (location) && File.Exists (location)) {
+						result = ReadAssembly (location);
+					}
+				}
+				if (result != null)
+					cache [fullName] = result;
+				return result;
+			}
+
+			#region IAssemblyResolver implementation
+			public AssemblyDefinition Resolve (AssemblyNameReference name)
+			{
+				return InternalResolve (name.FullName) ?? GlobalAssemblyResolver.Instance.Resolve (name);
+			}
+
+			public AssemblyDefinition Resolve (AssemblyNameReference name, ReaderParameters parameters)
+			{
+				return InternalResolve (name.FullName) ?? GlobalAssemblyResolver.Instance.Resolve (name, parameters);
+			}
+
+			public AssemblyDefinition Resolve (string fullName)
+			{
+				return InternalResolve (fullName) ?? GlobalAssemblyResolver.Instance.Resolve (fullName);
+			}
+
+			public AssemblyDefinition Resolve (string fullName, ReaderParameters parameters)
+			{
+				return InternalResolve (fullName) ?? GlobalAssemblyResolver.Instance.Resolve (fullName, parameters);
+			}
+			#endregion
+		}
+		
 		static AssemblyDefinition ReadAssembly (string fileName)
 		{
 			ReaderParameters parameters = new ReaderParameters ();
-//			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
+			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
 				return AssemblyDefinition.ReadAssembly (stream, parameters);
 			}
