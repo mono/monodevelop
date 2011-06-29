@@ -91,9 +91,9 @@ namespace MonoDevelop.Ide.Updater
 			}
 		}
 		
-		public void ShowManager ()
+		public static void ShowManager ()
 		{
-			IProgressMonitor m = updateMonitor;
+			IProgressMonitor m = Instance != null ? Instance.updateMonitor : null;
 			if (m != null && !m.AsyncOperation.IsCompleted) {
 				AggregatedProgressMonitor monitor = new AggregatedProgressMonitor (m);
 				monitor.AddSlaveMonitor (new MessageDialogProgressMonitor (true, true, false));

@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			AddinsUpdateHandler.Instance.ShowManager ();
+			AddinsUpdateHandler.ShowManager ();
 		}
 	}
 
