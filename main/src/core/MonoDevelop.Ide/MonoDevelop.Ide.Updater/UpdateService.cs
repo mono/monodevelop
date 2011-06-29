@@ -35,6 +35,11 @@ namespace MonoDevelop.Ide.Updater
 {
 	public static class UpdateService
 	{
+		static UpdateService ()
+		{
+			NotifyAddinUpdates = true;
+		}
+		
 		public static bool AutoCheckForUpdates {
 			get {
 				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
@@ -70,6 +75,8 @@ namespace MonoDevelop.Ide.Updater
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", value);
 			}
 		}
+		
+		public static bool NotifyAddinUpdates { get; set; }
 		
 		internal static void ScheduledCheckForUpdates ()
 		{

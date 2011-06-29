@@ -64,6 +64,9 @@ namespace MonoDevelop.Ide.Updater
 		
 		void WarnAvailableUpdates ()
 		{
+			if (!UpdateService.NotifyAddinUpdates)
+				return;
+			
 			updateIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetPixbuf ("md-software-update", IconSize.Menu));
 			string s = GettextCatalog.GetString ("New add-in updates are available:");
 			for (int n=0; n<updates.Length && n < 10; n++)
