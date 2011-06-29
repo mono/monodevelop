@@ -553,7 +553,6 @@ namespace MonoDevelop.CSharp.Completion
 					if (methodGroup != null)
 						return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, currentParameter);
 					return null;
-					break;
 				case "=":
 				case "==":
 					GetPreviousToken (ref tokenIndex, false);
@@ -1407,7 +1406,6 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var variable in state.LocalVariables) {
 				wrapper.AddVariable (variable);
 			}
-			
 			if (state.CurrentMember is IParameterizedMember) {
 				var param = (IParameterizedMember)state.CurrentMember;
 				foreach (var p in param.Parameters) {
@@ -1465,6 +1463,8 @@ namespace MonoDevelop.CSharp.Completion
 				
 				foreach (var u in n.Usings) {
 					var ns = u.ResolveNamespace (ctx);
+					if (ns == null)
+						continue;
 					foreach (var type in ctx.GetTypes (ns.NamespaceName, StringComparer.Ordinal)) {
 						if (typePred == null || typePred (type))
 							wrapper.AddType (type, type.Name);
