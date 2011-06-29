@@ -31,6 +31,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using Mono.Addins.Gui;
 using MonoDevelop.Ide.ProgressMonitoring;
 using Mono.Addins;
+using MonoDevelop.Core.Setup;
 
 namespace MonoDevelop.Ide.Updater
 {
@@ -51,6 +52,8 @@ namespace MonoDevelop.Ide.Updater
 		{
 			updateMonitor = monitor;
 			try {
+				if (UpdateService.UpdateLevel == UpdateLevel.Test)
+					Runtime.AddinSetupService.RegisterMainRepository (UpdateLevel.Test, true);
 				using (ProgressStatusMonitor pm = new ProgressStatusMonitor (monitor)) {
 					Runtime.AddinSetupService.Repositories.UpdateAllRepositories (pm);
 					updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();
