@@ -323,12 +323,12 @@
 				_label = "_Declare Local" 
 				shortcut = "Control+dead_circumflex"/> 
 	</Extension>
-<!--
+
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Rule _name="C# Code Analysis" input="Document" 
 			func="MonoDevelop.CSharp.Inspection.CodeAnalysis.Check" />
-	</Extension>-->
-	
+	</Extension>
+
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>

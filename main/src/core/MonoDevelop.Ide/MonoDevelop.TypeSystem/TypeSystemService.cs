@@ -270,7 +270,18 @@ namespace MonoDevelop.TypeSystem
 				}
 				projectContents.Remove (project);
 				referenceCounter.Remove (project);
+				
+				OnProjectUnloaded (new ProjectEventArgs (project));
 			}
+		}
+		
+		public static event EventHandler<ProjectEventArgs> ProjectUnloaded;
+
+		static void OnProjectUnloaded (ProjectEventArgs e)
+		{
+			var handler = ProjectUnloaded;
+			if (handler != null)
+				handler (null, e);
 		}
 		
 		static void OnWorkspaceItemAdded (object s, WorkspaceItemEventArgs args)

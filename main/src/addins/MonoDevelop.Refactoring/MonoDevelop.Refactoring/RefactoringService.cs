@@ -76,17 +76,17 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 			
-//			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
-//				switch (args.Change) {
-//				case ExtensionChange.Add:
-//					contextActions.Add ((ContextActionAddinNode)args.ExtensionNode);
-//					break;
-//				case ExtensionChange.Remove:
-//					contextActions.Remove ((ContextActionAddinNode)args.ExtensionNode);
-//					break;
-//				}
-//			});
-//			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					contextActions.Add ((ContextActionAddinNode)args.ExtensionNode);
+					break;
+				case ExtensionChange.Remove:
+					contextActions.Remove ((ContextActionAddinNode)args.ExtensionNode);
+					break;
+				}
+			});
+			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:

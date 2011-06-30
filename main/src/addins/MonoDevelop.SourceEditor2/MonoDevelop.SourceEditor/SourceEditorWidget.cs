@@ -200,22 +200,22 @@ namespace MonoDevelop.SourceEditor
 //				scrolledWindow.ShadowType = ShadowType.In;
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
 				PackStart (scrolledWindow, true, true, 0);
-//				if (parent.quickTaskProvider.Count > 0) {
-//					strip.VAdjustment = scrolledWindow.Vadjustment;
-//					scrolledWindow.ReplaceVScrollBar (strip);
-//				} else {
-//					strip.Visible = false;
-//				}
-//				parent.quickTaskProvider.ForEach (p => AddQuickTaskStrip (p));
+				if (parent.quickTaskProvider.Count > 0) {
+					strip.VAdjustment = scrolledWindow.Vadjustment;
+					scrolledWindow.ReplaceVScrollBar (strip);
+				} else {
+					strip.Visible = false;
+				}
+				parent.quickTaskProvider.ForEach (p => AddQuickTaskStrip (p));
 			}
 
 			public void AddQuickTaskStrip (IQuickTaskProvider p)
 			{
-//				if (!strip.Visible) {
-//					strip.VAdjustment = scrolledWindow.Vadjustment;
-//					scrolledWindow.ReplaceVScrollBar (strip);
-//				}
-//				p.TasksUpdated += (sender, e) => strip.Update (p);
+				if (!strip.Visible) {
+					strip.VAdjustment = scrolledWindow.Vadjustment;
+					scrolledWindow.ReplaceVScrollBar (strip);
+				}
+				p.TasksUpdated += (sender, e) => strip.Update (p);
 			}
 			
 			protected override void OnDestroyed ()
