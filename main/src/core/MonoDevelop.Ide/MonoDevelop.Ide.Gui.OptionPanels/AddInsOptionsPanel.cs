@@ -78,6 +78,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			case UpdateLevel.Test: radioTest.Visible = true; radioTest.Active = true; checkUnstable.Active = true; break;
 			default: checkUnstable.Active = false; break;
 			}
+			
+			if (UpdateService.TestModeEnabled)
+				radioTest.Visible = true;
 		}
 		
 		public void Store ()
