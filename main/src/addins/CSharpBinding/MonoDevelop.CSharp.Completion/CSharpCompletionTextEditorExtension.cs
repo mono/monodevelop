@@ -42,13 +42,14 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Text;
 using MonoDevelop.Ide.CodeTemplates;
 
-
 namespace MonoDevelop.CSharp.Completion
 {
+	
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension
 	{
 		internal Mono.TextEditor.TextEditorData textEditorData;
 		internal ITypeResolveContext ctx;
+	
 		
 		CompilationUnit unit;
 		static readonly CompilationUnit emptyUnit = new CompilationUnit ();
@@ -357,9 +358,11 @@ namespace MonoDevelop.CSharp.Completion
 			var baseUnit = ParseStub ("");
 			
 			Expression expr = baseUnit.GetNodeAt<IdentifierExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column - 1); 
-			Console.WriteLine (expr);
 			if (expr == null) {
-				return null;
+				baseUnit = ParseStub ("()");
+				expr = baseUnit.GetNodeAt<IdentifierExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column - 1); 
+				if (expr == null)
+					return null;
 			}
 			
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);

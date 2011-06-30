@@ -364,6 +364,25 @@ class Foo<T>
 		}
 		
 		[Test()]
+		public void TestUnclosedMember ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+
+class C
+{
+	
+	public void Hello ()
+	{
+		$C$
+
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("C"), "class 'C' not found");
+		}
+		
+		[Test()]
 		public void TestGenericParameterB ()
 		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
