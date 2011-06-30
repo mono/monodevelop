@@ -30,12 +30,13 @@ using System.Linq;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
 	public class NSObjectTypeInfo
 	{
-		public NSObjectTypeInfo (string objcName, string cliName, string baseObjCName, string baseCliName, bool isModel)
+		public NSObjectTypeInfo (string objcName, ITypeDefinition cliName, string baseObjCName, ITypeReference baseCliName, bool isModel)
 		{
 			this.ObjCName = objcName;
 			this.CliName = cliName;
@@ -49,11 +50,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 		
 		public string ObjCName { get; private set; }
-		public string CliName { get; private set; }
+		public ITypeDefinition CliName { get; private set; }
 		public bool IsModel { get; internal set; }
 		
 		public string BaseObjCType { get; internal set; }
-		public string BaseCliType { get; internal set; } 
+		public ITypeReference BaseCliType { get; internal set; } 
 		public bool BaseIsModel { get; internal set; }
 		
 		public bool IsUserType { get; internal set; }
@@ -241,14 +242,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (Outlets.Any (o => o.IsDesigner) || Actions.Any (a => a.IsDesigner))
 				AddWarningDisablePragmas (ctd, provider);
 			
-			var dotIdx = CliName.LastIndexOf ('.');
-			if (dotIdx > 0) {
-				ns = CliName.Substring (0, dotIdx);
-				ctd.Name = CliName.Substring (dotIdx + 1);
-			} else {
-				ctd.Name = CliName;
-				ns = null;
-			}
+			ns = CliName.Namespace;
+			ctd.Name = CliName.Name;
+			
 			if (IsRegisteredInDesigner)
 				AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);
 			

@@ -10,12 +10,12 @@
 //
 using <#= WrapperNamespace #>.Foundation;
 
-namespace <#= GetNs (Types.First().CliName) #>
+namespace <#= Types.First().CliName.Namespace #>
 {
 <#
 bool firstClass = true;
 foreach (var nso in Types) {
-	string name = GetName (nso.CliName);
+	string name = nso.CliName.Name;
 	BlankLine (ref firstClass);
 #>
 	[Register ("<#=nso.ObjCName #>")]
