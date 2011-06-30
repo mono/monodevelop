@@ -260,7 +260,8 @@ namespace MonoDevelop.CSharp.Completion
 					parameters.Append (new string (' ', (prefix != null ? prefix.Length : 0) + name.Length + 4));
 					curLen = 0;
 				}
-				curLen += text.Length + 2;
+				if (text != null)
+					curLen += text.Length + 2;
 				parameters.Append (parameter);
 			}
 			var sb = new StringBuilder ();

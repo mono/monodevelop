@@ -215,9 +215,82 @@ namespace MonoDevelop.CSharp.Completion
 			wrapper.Append ("class Stub {");
 			wrapper.AppendLine ();
 			wrapper.Append (memberText);
+			wrapper.Append ("a ()");
 			
+			var bracketStack = new Stack<char> ();
+			
+			bool isInString = false, isInChar = false;
+			bool isInLineComment = false, isInBlockComment = false;
+			
+			for (int pos = 0; pos < memberText.Length; pos++) {
+				char ch = memberText[pos];
+				switch (ch) {
+					case '(':
+					case '[':
+					case '{':
+						bracketStack.Push (ch);
+						break;
+					case ')':
+					case ']':
+					case '}':
+						if (bracketStack.Count > 0)
+							bracketStack.Pop ();
+						break;
+					case '\r':
+					case '\n':
+						isInLineComment = false;
+						break;
+					case '/':
+						if (isInBlockComment) {
+							if (pos > 0 && memberText [pos - 1] == '*') 
+								isInBlockComment = false;
+						} else  if (!isInString && !isInChar && pos + 1 < memberText.Length) {
+							char nextChar = memberText [pos + 1];
+							if (nextChar == '/')
+								isInLineComment = true;
+							if (!isInLineComment && nextChar == '*')
+								isInBlockComment = true;
+						}
+						break;
+					case '"':
+						if (!(isInChar || isInLineComment || isInBlockComment)) 
+							isInString = !isInString;
+						break;
+					case '\'':
+						if (!(isInString || isInLineComment || isInBlockComment)) 
+							isInChar = !isInChar;
+						break;
+					default :
+						break;
+				}
+			}
+			bool didAppendSemicolon = false;
+			while (bracketStack.Count > 0) {
+				switch (bracketStack.Pop ()) {
+					case '(':
+						wrapper.Append (')');
+						break;
+					case '[':
+						wrapper.Append (']');
+						break;
+					case '<':
+						wrapper.Append ('>');
+						break;
+					case '{':
+						if (!didAppendSemicolon) {
+							didAppendSemicolon = true;
+							wrapper.Append (';');
+						}
+						
+						wrapper.Append ('}');
+						break;
+				}
+			}
+			if (!didAppendSemicolon)
+				wrapper.Append (';');
+			
+			wrapper.Append ('}'); // open brace from class.
 			/// try to get this. or base.
-			wrapper.Append ("a ();  } } }");
 			var stream = new System.IO.StringReader (wrapper.ToString ());
 			var baseUnit = parser.Parse (stream, memberLocation.Line - 2);
 			stream.Close ();
