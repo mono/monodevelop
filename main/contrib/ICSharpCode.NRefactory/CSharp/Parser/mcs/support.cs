@@ -242,10 +242,9 @@ namespace Mono.CSharp {
 			char[] chars = new char[toPosition - fromPosition];
 			if (buffer_start <= fromPosition && toPosition <= buffer_start + buffer.Length) {
 				Array.Copy (buffer, fromPosition - buffer_start, chars, 0, chars.Length);
-			} else {
-				throw new NotImplementedException ();
+			} else { // TODO: Fix buffer bug!!!!!!
+//				throw new NotImplementedException ();
 			}
-
 			return chars;
 		}
 

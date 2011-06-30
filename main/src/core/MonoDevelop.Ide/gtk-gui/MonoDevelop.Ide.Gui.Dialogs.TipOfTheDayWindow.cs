@@ -16,7 +16,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		private global::Gtk.HButtonBox hbuttonbox1;
 		private global::Gtk.Button nextButton;
 		private global::Gtk.Button closeButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

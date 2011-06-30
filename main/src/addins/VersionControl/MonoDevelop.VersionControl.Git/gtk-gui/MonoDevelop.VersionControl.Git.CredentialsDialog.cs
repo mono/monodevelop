@@ -10,7 +10,7 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.Button buttonOk;
 		private global::Gtk.Button buttonNo;
 		private global::Gtk.Button buttonYes;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

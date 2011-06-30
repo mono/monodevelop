@@ -13,7 +13,7 @@ namespace MonoDevelop.Gettext
 		private global::Gtk.VBox vbox4;
 		private global::Gtk.Button buttonAdd;
 		private global::Gtk.Button buttonRemove;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

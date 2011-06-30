@@ -685,6 +685,11 @@
 			defaultHandler = "MonoDevelop.Ide.Updater.CheckForUpdatesHandler"
 			_label = "_Check for Updates"
 			_description = "Check for updates to MonoDevelop and packages it requires" />
+	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.SendFeedback"
+			defaultHandler = "MonoDevelop.Ide.Commands.SendFeedbackHandler"
+			_label = "Send Feedback" 
+			icon = "md-feedback" 
+			_description = "Send feedback to the MonoDevelop development team" />
 	</Category>
 	
 	<!-- SearchCommands -->

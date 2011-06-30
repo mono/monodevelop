@@ -26,7 +26,7 @@ namespace MonoDevelop.Gettext.Translator
 		private global::Gtk.RadioButton radiobuttonCustom;
 		private global::Gtk.Button button1;
 		private global::Gtk.Button buttonOK;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

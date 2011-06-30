@@ -85,14 +85,19 @@ namespace MonoDevelop.CSharp.Inspection
 		public DeclarationKinds MatchKind { get; set; }
 		
 		/// <summary>
-		/// If set, matches on nodes with all of these modifiers.
+		/// If set, matches only on nodes with at least one of these modifiers.
 		/// </summary>
 		public ICS.Modifiers MatchAnyModifiers { get; set; }
 		
 		/// <summary>
-		/// If set, matches on nodes with any of these modifiers.
+		/// If set, matches only on nodes with all of these modifiers.
 		/// </summary>
 		public ICS.Modifiers MatchAllModifiers { get; set; }
+		
+		/// <summary>
+		/// If set, matches only on nodes with none of these modifiers.
+		/// </summary>
+		public ICS.Modifiers MatchNoModifiers { get; set; }
 		
 		/// <summary>
 		/// If set, identifiers are required to be prefixed with one of these values.
@@ -164,6 +169,9 @@ namespace MonoDevelop.CSharp.Inspection
 				mods = mods | defaultVisibility;
 			
 			if (MatchAnyModifiers != 0 && (MatchAnyModifiers & mods) == 0)
+				return false;
+			
+			if ((MatchNoModifiers & mods) != 0)
 				return false;
 			
 			if (MatchAllModifiers != 0 && (MatchAllModifiers & mods) != MatchAllModifiers)
@@ -609,21 +617,29 @@ namespace MonoDevelop.CSharp.Inspection
 		{
 			var words = new List<string> ();
 			int wordStart = 0;
-			bool lastWasLower = false;
+			bool lastWasLower = false, lastWasUpper = false;
 			for (int i = 0; i < identifier.Length; i++) {
 				char c = identifier[i];
-				if (lastWasLower && Char.IsUpper (c)) {
-					words.Add (identifier.Substring (wordStart, i - wordStart));
-					wordStart = i;
-					lastWasLower = false;
-				} else if (c == '_') {
-					if (i > 0)
+				if (c == '_') {
+					if ((i - wordStart) > 0) {
 						words.Add (identifier.Substring (wordStart, i - wordStart));
-					i++;
-					wordStart = i;
+					}
+					wordStart = i + 1;
+					lastWasLower = lastWasUpper = false;
+				} else if (Char.IsLower (c)) {
+					if (lastWasUpper && (i - wordStart) > 2) {
+						words.Add (identifier.Substring (wordStart, i - wordStart - 1));
+						wordStart = i - 1;
+					}
+					lastWasLower = true;
+					lastWasUpper = false;
+				} else if (Char.IsUpper (c)) {
+					if (lastWasLower) {
+						words.Add (identifier.Substring (wordStart, i - wordStart));
+						wordStart = i;
+					}
 					lastWasLower = false;
-				} else {
-					lastWasLower = Char.IsLower (c);
+					lastWasUpper = true;
 				}
 			}
 			if (wordStart < identifier.Length)

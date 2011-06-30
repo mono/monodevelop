@@ -199,8 +199,7 @@ namespace MonoDevelop.Debugger.Soft
 			
 			IPAddress ip;
 			string command, args;
-			int port = -1;
-			int consolePort = 0;
+			int? port, consolePort;
 			
 			Properties properties;
 			
@@ -259,24 +258,18 @@ namespace MonoDevelop.Debugger.Soft
 					if (string.IsNullOrEmpty (ipEntry.Text)) {
 						ip = IPAddress.Loopback;
 					} else if (!IPAddress.TryParse (ipEntry.Text, out ip)) {
-						ip = IPAddress.Loopback;
+						ip = null;
 					}
 					CheckValid ();
 				};
 				
 				portEntry.Changed += delegate {
-					if (!int.TryParse (portEntry.Text, out port))
-						port = -1;
+					port = ParsePort (portEntry.Text);
 					CheckValid ();
 				};
 				
 				consolePortEntry.Changed += delegate {
-					string txt = consolePortEntry.Text;
-					if (string.IsNullOrEmpty (txt)) {
-						consolePort = 0;
-					} else if (!int.TryParse (consolePortEntry.Text, out consolePort)) {
-						consolePort = -1;
-					}
+					consolePort = ParsePort (consolePortEntry.Text);
 					CheckValid ();
 				};
 				
@@ -284,18 +277,35 @@ namespace MonoDevelop.Debugger.Soft
 				args = properties.Get ("Arguments", "");
 				if (!IPAddress.TryParse (properties.Get ("IpAddress", "127.0.0.1"), out ip) || ip == null)
 					ip = IPAddress.Loopback;
-				port = properties.Get ("Port", 10000);
-				consolePort = properties.Get ("ConsolePort", 0);
+				string portStr = properties.Get<string> ("Port");
+				port = ParsePort (portStr) ?? 10000;
+				string consolePortStr = properties.Get<string> ("ConsolePort");
+				consolePort = ParsePort (consolePortStr);
 				
 				commandEntry.Path = command;
 				argsEntry.Text = args;
 				ipEntry.Text = ip.ToString ();
-				portEntry.Text = port.ToString ();
-				consolePortEntry.Text = consolePort > 0? consolePort.ToString () : "";
+				portEntry.Text = PortToString (port) ?? "";
+				consolePortEntry.Text = PortToString (consolePort) ?? "";
 				
 				CheckValid ();
 				
 				VBox.ShowAll ();
+			}
+			
+			int? ParsePort (string port)
+			{
+				if (string.IsNullOrEmpty (port))
+					return null;
+				int value;
+				if (!int.TryParse (port, out value))
+					return -1;
+				return value;
+			}
+			
+			string PortToString (int? port)
+			{
+				return port.HasValue? port.Value.ToString () : null; 
 			}
 			
 			public new SoftDebuggerStartInfo Run ()
@@ -307,8 +317,8 @@ namespace MonoDevelop.Debugger.Soft
 				properties.Set ("Command", command);
 				properties.Set ("Arguments", args);
 				properties.Set ("IpAddress", ip.ToString ());
-				properties.Set ("Port", port);
-				properties.Set ("ConsolePort", consolePort);
+				properties.Set ("Port", PortToString (port));
+				properties.Set ("ConsolePort", PortToString (consolePort));
 				
 				var name = string.IsNullOrEmpty (command)? "" : command;
 				bool listen = response == listenResponse;
@@ -317,15 +327,15 @@ namespace MonoDevelop.Debugger.Soft
 				var customArgsTags = new string[,] {
 					{ "AgentArgs", agentArgs },
 					{ "IP", ip.ToString () },
-					{ "Port", port.ToString () },
-					{ "Console", consolePort.ToString () },
+					{ "Port", PortToString (port) },
+					{ "Console", PortToString (consolePort) },
 				};
 				
 				SoftDebuggerRemoteArgs startArgs;
 				if (listen) {
-					startArgs = (SoftDebuggerRemoteArgs) new SoftDebuggerListenArgs (name, ip, port, consolePort);
+					startArgs = (SoftDebuggerRemoteArgs) new SoftDebuggerListenArgs (name, ip, port.Value, consolePort ?? -1);
 				} else {
-					startArgs = new SoftDebuggerConnectArgs (name, ip, port, consolePort) {
+					startArgs = new SoftDebuggerConnectArgs (name, ip, port.Value, consolePort ?? -1) {
 						//infinite connection retries (user can cancel), 800ms between them
 						TimeBetweenConnectionAttempts = 800,
 						MaxConnectionAttempts = -1,
@@ -345,9 +355,11 @@ namespace MonoDevelop.Debugger.Soft
 			
 			void CheckValid ()
 			{
-				bool valid = ip != null && port > 0 && consolePort >= 0;
+				bool valid = ip != null
+					&& (port.HasValue && port.Value >= 0)
+					&& (!consolePort.HasValue || consolePort >= 0);
 				listenButton.Sensitive = valid;
-				connectButton.Sensitive = valid;
+				connectButton.Sensitive = valid && port > 0 && (!consolePort.HasValue || consolePort > 0);
 			}
 		}
 	}

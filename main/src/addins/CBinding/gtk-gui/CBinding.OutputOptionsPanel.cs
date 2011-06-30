@@ -15,7 +15,7 @@ namespace CBinding
 		private global::Gtk.Entry parametersTextEntry;
 		private global::Gtk.CheckButton externalConsoleCheckbox;
 		private global::Gtk.CheckButton pauseCheckbox;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

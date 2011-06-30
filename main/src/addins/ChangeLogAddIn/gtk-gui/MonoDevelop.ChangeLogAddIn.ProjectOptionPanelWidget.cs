@@ -23,7 +23,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		private global::Gtk.VBox vbox1;
 		private global::MonoDevelop.VersionControl.CommitMessageStylePanelWidget messageWidget;
 		private global::Gtk.Label label2;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

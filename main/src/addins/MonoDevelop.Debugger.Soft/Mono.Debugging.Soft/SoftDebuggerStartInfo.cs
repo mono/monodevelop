@@ -133,7 +133,7 @@ namespace Mono.Debugging.Soft
 			if (debugPort == 0)
 				throw new ArgumentException ("Debug port cannot be zero when connecting", "debugPort");
 			if (outputPort == 0)
-				throw new ArgumentException ("Output port cannot be zero when connectig", "outputPort");
+				throw new ArgumentException ("Output port cannot be zero when connecting", "outputPort");
 			
 			MaxConnectionAttempts = 1;
 			TimeBetweenConnectionAttempts = 500;

@@ -14,7 +14,7 @@ namespace MonoDevelop.Deployment.Linux
 		private global::Gtk.CheckButton checkDesktop;
 		private global::Gtk.VBox boxLibrary;
 		private global::Gtk.CheckButton checkPcFile;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

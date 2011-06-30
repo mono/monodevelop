@@ -4,6 +4,7 @@ MACOS=$(MAC_APP_DIR)/Contents/MacOS
 MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop
 ADDINS=$(MACOS)/lib/monodevelop/AddIns
 EXTRAS=$(top_srcdir)/../extras
+BUNDLE_ADDINS=$(top_srcdir)/../bundle-addins
 ARTIFACTS=$(top_srcdir)/../../artifacts
 
 CLEANFILES = MonoDevelop.dmg MonoDevelop.app
@@ -93,6 +94,7 @@ MonoDevelop.app:
 	  $(MACOS)/lib/monodevelop/bin/addin-db* \
 	  $(MACOS)/lib/monodevelop/bin/local \
 	  $(MACOS)/lib/monodevelop/bin/repository-cache* \
+	  $(MACOS)/lib/monodevelop/bin/addins-setup.config \
 	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
 
 # add extras known to work on Mac, if they exist
@@ -100,14 +102,23 @@ MonoDevelop.app:
 	@echo "Copying supported extras into app bundle"
 	@echo ""
 
-	for ADDIN in MonoDevelop.IPhone MonoDevelop.MonoDroid MonoDevelop.Database; do \
+	@for ADDIN in MonoDevelop.Database; do \
 		(ls $(EXTRAS)/$${ADDIN}/build/* > /dev/null 2>&1 && \
 			echo "Copying $${ADDIN}" && \
 			mkdir -p $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN} && \
 			cp -pR $(EXTRAS)/$${ADDIN}/build/* $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN}/ ) \
 		|| (echo "Skipping $${ADDIN}" && echo "$${ADDIN}" >> missing-stuff)  ; \
 	done
-
+	
+	@if [ "`ls -A $(BUNDLE_ADDINS)`" ]; then \
+		echo; \
+		echo "Bundled addins"; \
+		echo; \
+		ls "$(BUNDLE_ADDINS)"; \
+		echo; \
+		cp -RH $(BUNDLE_ADDINS)/* $(MAC_APP_LIB_DIR)/AddIns/; \
+	fi
+	
 # add the binary artifacts if they exist
 	@echo ""
 	@echo "Copying binary artifacts into app bundle"

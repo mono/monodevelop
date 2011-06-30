@@ -29,7 +29,7 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.Alignment alignment1;
 		private global::Gtk.HBox hbox4;
 		private global::Gtk.Button autofooProperties;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

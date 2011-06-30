@@ -42,7 +42,7 @@ namespace MonoDevelop.Gettext
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Toolbar toolbarPages;
 		private global::Gtk.ProgressBar progressbar1;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

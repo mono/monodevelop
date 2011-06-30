@@ -253,7 +253,22 @@ namespace MonoDevelop.Platform.Mac
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
-						IdeApp.Workbench.RootWindow.Visible = true;
+						IdeApp.Workbench.RootWindow.Show ();
+						
+						// This is a workaround to a GTK+ bug. The HasTopLevelFocus flag is not properly
+						// set when the main window is restored. The workaround is to create and quickly
+						// destroy a top level window. GTK+ then detects that the top level focus has
+						// changed and properly sets HasTopLevelFocus.
+						Gtk.Window ww = new Gtk.Window ("");
+						ww.Decorated = false;
+						ww.SetDefaultSize (0, 0);
+						ww.Present ();
+						IdeApp.Workbench.RootWindow.Present ();
+						GLib.Timeout.Add (1, delegate {
+							// Without this small delay, GTK+ crashes when destroying the window
+							ww.Destroy ();
+							return false;
+						});
 						e.Handled = true;
 					}
 				};
@@ -286,7 +301,7 @@ namespace MonoDevelop.Platform.Mac
 		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
 			args.RetVal = true;
-			IdeApp.Workbench.RootWindow.Visible = false;
+			IdeApp.Workbench.RootWindow.Hide ();
 		}
 		
 		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
@@ -358,24 +373,6 @@ namespace MonoDevelop.Platform.Mac
 activate
 do script with command ""cd {0}""
 end tell", directory.ToString ().Replace ("\"", "\\\"")));
-		}
-		
-		public override string GetUpdaterUrl ()
-		{
-			return "http://go-mono.com/macupdate/update";
-		}
-		
-		public override IEnumerable<string> GetUpdaterEnviromentFlags ()
-		{
-			var sdkDir = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs";
-			if (Directory.Exists (sdkDir)) {
-				foreach (var dir in Directory.GetDirectories (sdkDir, "iPhoneSimulator*")) {
-					var name = Path.GetFileNameWithoutExtension (dir);
-					int len = "iPhoneSimulator".Length;
-					if (name != null && name.Length > len) 
-						yield return "iphsdk" + name.Substring (len);
-				}
-			}
 		}
 		
 		public override IEnumerable<DesktopApplication> GetApplications (string filename)

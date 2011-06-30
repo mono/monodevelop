@@ -88,6 +88,7 @@ namespace MonoDevelop.Debugger.Win32
 			string method = "";
 			string lang = "";
 			string module = "";
+			string type = "";
 
 			if (frame.FrameType == CorFrameType.ILFrame) {
 				if (frame.Function != null) {
@@ -95,6 +96,7 @@ namespace MonoDevelop.Debugger.Win32
 					CorMetadataImport importer = new CorMetadataImport (frame.Function.Module);
 					MethodInfo mi = importer.GetMethodInfo (frame.Function.Token);
 					method = mi.DeclaringType.FullName + "." + mi.Name;
+					type = mi.DeclaringType.FullName;
 					ISymbolReader reader = session.GetReaderForModule (frame.Function.Module.Name);
 					if (reader != null) {
 						ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
@@ -133,7 +135,8 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			if (method == null)
 				method = "<Unknown>";
-			return new StackFrame ((long) address, module, method, file, line, lang);
+			var loc = new SourceLocation (method, file, line);
+			return new StackFrame ((long) address, loc, lang);
 		}
 
 		#endregion

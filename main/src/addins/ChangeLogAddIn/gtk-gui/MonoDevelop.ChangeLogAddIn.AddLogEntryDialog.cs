@@ -26,7 +26,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		private global::Gtk.Label label9;
 		private global::Gtk.Button button7;
 		private global::Gtk.Button button119;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

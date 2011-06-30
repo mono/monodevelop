@@ -8,7 +8,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		private global::Gtk.CheckButton autoCompleteElementsCheck;
 		private global::Gtk.CheckButton autoAddPunctuationCheck;
 		private global::Gtk.CheckButton showSchemaAnnotationCheck;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

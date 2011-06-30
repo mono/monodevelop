@@ -13,7 +13,7 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.Entry entryName;
 		private global::Gtk.Label labelMail;
 		private global::Gtk.Label labelName;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

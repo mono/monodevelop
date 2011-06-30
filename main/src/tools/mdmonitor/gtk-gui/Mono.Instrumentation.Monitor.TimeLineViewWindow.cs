@@ -18,7 +18,7 @@ namespace Mono.Instrumentation.Monitor
 		private global::Gtk.Label label2;
 		private global::Gtk.Button buttonResetScale;
 		private global::Gtk.VScale vscaleScale;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -86,7 +86,12 @@ namespace Mono.Instrumentation.Monitor
 			global::Gtk.Viewport w5 = new global::Gtk.Viewport ();
 			w5.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child GtkViewport.Gtk.Container+ContainerChild
-			this.timeView = null;
+			this.timeView = new global::Mono.Instrumentation.Monitor.TimeLineView ();
+			this.timeView.Name = "timeView";
+			this.timeView.SingleThread = false;
+			this.timeView.TimeScale = 0;
+			this.timeView.Zoom = 0;
+			this.timeView.Scale = 0;
 			w5.Add (this.timeView);
 			this.GtkScrolledWindow.Add (w5);
 			this.hbox2.Add (this.GtkScrolledWindow);

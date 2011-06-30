@@ -17,7 +17,7 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.Alignment alignment3;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView itemTv;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

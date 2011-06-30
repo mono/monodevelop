@@ -187,8 +187,7 @@ namespace MonoDevelop.VersionControl.Git
 				NGit.FileMode fileModeTree = treeWalk.GetFileMode(0);
 				
 				if (treeWalk.IsSubtree) {
-					if (dirCacheIterator != null || treeIterator != null)
-						treeWalk.EnterSubtree ();
+					treeWalk.EnterSubtree ();
 					continue;
 				}
 				

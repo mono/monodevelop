@@ -888,72 +888,98 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public event EventHandler CurrentItemActivated;
 		
+		#region Zoom
+		
+		const int ZOOM_MIN = -4;
+		const int ZOOM_MAX = 8;
+		const double ZOOM_FACTOR = 1.1f;
+		
+		int zoomPow = 0;
+		double zoom = 1;
+		
 		public double Zoom {
 			get {
-				return pix_render.Zoom;
+				 return zoom;
 			}
 			set {
-				if (pix_render.Zoom != value) {
-					pix_render.Zoom = value;
-					if (customFontSize != -1) {
-						int newSize = customFontSize;
-						if (value != 1)
-							newSize = (int) (((double) customFontSize) * value);
-						text_render.Size = newSize;
-					}
-					int expanderSize = (int) (12 * Zoom);
-					if (expanderSize < 3) expanderSize = 3;
-					if (expanderSize > 15) expanderSize = 15;
-					if (expanderSize != 12)
-						tree.Name = "MonoDevelop.ExtensibleTreeView_" + expanderSize;
-					else
-						tree.Name = "";
-					tree.ColumnsAutosize ();
-					if (!string.IsNullOrEmpty (Id)) {
-						PropertyService.Set ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, Zoom);
-						PropertyService.SaveProperties ();
-					}
+				ZoomPow = (int) System.Math.Round (System.Math.Log (value) / System.Math.Log (ZOOM_FACTOR));
+			}
+		}
+		
+		int ZoomPow {
+			get {
+				return zoomPow;
+			}
+			set {
+				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
+				if (zoomPow != value) {
+					zoomPow = value;
+					zoom = System.Math.Pow (ZOOM_FACTOR, zoomPow);
+					OnZoomChanged (zoom);
 				}
+			}
+		}
+		
+		void OnZoomChanged (double value)
+		{
+			pix_render.Zoom = value;
+			if (customFontSize != -1) {
+				int newSize = customFontSize;
+				if (value != 1)
+					newSize = (int) (((double) customFontSize) * value);
+				text_render.Size = newSize;
+			}
+			int expanderSize = (int) (12 * Zoom);
+			if (expanderSize < 3) expanderSize = 3;
+			if (expanderSize > 15) expanderSize = 15;
+			if (expanderSize != 12)
+				tree.Name = "MonoDevelop.ExtensibleTreeView_" + expanderSize;
+			else
+				tree.Name = "";
+			tree.ColumnsAutosize ();
+			if (!string.IsNullOrEmpty (Id)) {
+				PropertyService.Set ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, Zoom);
+				PropertyService.SaveProperties ();
 			}
 		}
 		
 		[CommandHandler (ViewCommands.ZoomIn)]
 		public void ZoomIn ()
 		{
-			double newZoom = Zoom * 1.1;
-			Zoom = System.Math.Min (8.0, System.Math.Max (0.3, newZoom));
+			ZoomPow++;
 		}
 
 		[CommandHandler (ViewCommands.ZoomOut)]
 		public void ZoomOut ()
 		{
-			double newZoom = Zoom * 0.9;
-			Zoom = System.Math.Min (8.0, System.Math.Max (0.3, newZoom));
+			ZoomPow--;
 		}
 		
 		[CommandHandler (ViewCommands.ZoomReset)]
 		public void ZoomReset ()
 		{
-			Zoom = 1;
+			ZoomPow = 0;
 		}
 
 		[CommandUpdateHandler (ViewCommands.ZoomIn)]
 		protected void UpdateZoomIn (CommandInfo cinfo)
 		{
-			cinfo.Enabled = Zoom != 8.0;
+			cinfo.Enabled = ZoomPow <= ZOOM_MAX;
 		}
 
 		[CommandUpdateHandler (ViewCommands.ZoomOut)]
 		protected void UpdateZoomOut (CommandInfo cinfo)
 		{
-			cinfo.Enabled = Zoom != 0.3;
+			cinfo.Enabled = ZoomPow >= ZOOM_MIN;
 		}
 		
 		[CommandUpdateHandler (ViewCommands.ZoomReset)]
 		protected void UpdateZoomReset (CommandInfo cinfo)
 		{
-			cinfo.Enabled = Zoom != 1;
+			cinfo.Enabled = ZoomPow != 0;
 		}
+		
+		#endregion
 
 		[CommandHandler (EditCommands.Copy)]
 		public void CopyCurrentItem ()
@@ -2157,6 +2183,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (zoom == 1)
 				return value;
 			
+			//this can happen during solution deserialization if the project is unrecognized
+			//because a line is added into the treeview with no icon
+			if (value == null)
+				return null;
+
 			Gdk.Pixbuf resized;
 			if (resizedCache.TryGetValue (value, out resized))
 				return resized;

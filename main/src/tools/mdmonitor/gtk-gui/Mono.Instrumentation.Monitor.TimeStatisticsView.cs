@@ -10,7 +10,7 @@ namespace Mono.Instrumentation.Monitor
 		private global::Gtk.CheckButton checkShowCats;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeView;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -10,7 +10,7 @@ namespace MonoDevelop.CodeMetrics
 		private global::Gtk.TreeView treeviewMetrics;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
 		private global::Gtk.TextView textviewReport;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

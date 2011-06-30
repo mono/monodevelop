@@ -147,7 +147,7 @@ namespace Mono.TextTemplating
 				var obj = domain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName, false,
 					BindingFlags.CreateInstance, null,
 					new object[] { host, results, templateClassFullName, settings.Culture, references.ToArray () },
-					null, null, null);
+					null, null);
 				return (CompiledTemplate) obj;
 			} else {
 				return new CompiledTemplate (host, results, templateClassFullName, settings.Culture, references.ToArray ());
@@ -256,7 +256,6 @@ namespace Mono.TextTemplating
 					continue;
 					
 				default:
-					bool isParameterProcessor = dt.Name == "parameter";
 					string processorName = dt.Extract ("Processor");
 					if (processorName == null)
 						throw new InvalidOperationException ("Custom directive '" + dt.Name + "' does not specify a processor");
@@ -583,7 +582,6 @@ namespace Mono.TextTemplating
 		static void GenerateProcessingHelpers (CodeTypeDeclaration type, TemplateSettings settings)
 		{
 			var thisRef = new CodeThisReferenceExpression ();
-			var stringTypeRef = TypeRef<string> ();
 			var sbTypeRef = TypeRef<StringBuilder> ();
 			
 			var sessionField = PrivateField (TypeRef<IDictionary<string,object>> (), "session");

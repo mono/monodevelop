@@ -84,7 +84,7 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.Label lblMessageType;
 		private global::Gtk.Label lblWarningRegex;
 		private global::Gtk.Label label4;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

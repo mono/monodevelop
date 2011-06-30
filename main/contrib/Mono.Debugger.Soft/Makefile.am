@@ -68,6 +68,8 @@ FILES =  \
 	Mono.Debugger.Soft/ThreadStartEvent.cs \
 	Mono.Debugger.Soft/TypeLoadEvent.cs \
 	Mono.Debugger.Soft/TypeMirror.cs \
+	Mono.Debugger.Soft/UserBreakEvent.cs \
+	Mono.Debugger.Soft/UserLogEvent.cs \
 	Mono.Debugger.Soft/Value.cs \
 	Mono.Debugger.Soft/VirtualMachine.cs \
 	Mono.Debugger.Soft/VirtualMachineManager.cs \

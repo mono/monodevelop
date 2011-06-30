@@ -65,6 +65,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
       <Private>False</Private>
+      <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
@@ -74,15 +75,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
       <Private>False</Private>
+      <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
       <Private>False</Private>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.MacDev, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\MonoDevelop.IPhone\build\MonoDevelop.MacDev.dll</HintPath>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.MacDev\MonoDevelop.MacDev.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MacPlatform, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">

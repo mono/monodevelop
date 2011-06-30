@@ -40,7 +40,7 @@ namespace MonoDevelop.RegexToolkit
 		private global::Gtk.Label labelStatus;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonLibrary;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

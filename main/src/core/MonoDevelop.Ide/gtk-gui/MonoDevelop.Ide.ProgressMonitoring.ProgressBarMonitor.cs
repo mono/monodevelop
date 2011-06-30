@@ -7,7 +7,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.ProgressBar progressBar;
 		private global::Gtk.Button buttonCancel;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

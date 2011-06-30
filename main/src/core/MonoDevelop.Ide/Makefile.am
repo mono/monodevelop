@@ -106,7 +106,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Projects.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Updater.UpdateDialog.cs \
 	MonoDevelop.Components.AutoTest/AutoTestClientSession.cs \
 	MonoDevelop.Components.AutoTest/AutoTestService.cs \
 	MonoDevelop.Components.AutoTest/AutoTestSession.cs \
@@ -455,6 +454,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GtkAlertDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GtkErrorDialog.cs \
@@ -539,7 +539,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractPadContent.cs \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
-	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
 	MonoDevelop.Ide.Gui/AsyncDispatchAttribute.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
@@ -676,13 +675,10 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/XmlCodeDomReader.cs \
-	MonoDevelop.Ide.Updater/UpdateCommands.cs \
-	MonoDevelop.Ide.Updater/UpdateDialog.cs \
-	MonoDevelop.Ide.Updater/UpdateInfoExtensionNode.cs \
-	MonoDevelop.Ide.Updater/UpdateRank.cs \
-	MonoDevelop.Ide.Updater/UpdateResult.cs \
+	MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs \
+	MonoDevelop.Ide.Updater/IUpdateHandler.cs \
+	MonoDevelop.Ide.Updater/UpdateCheckHandler.cs \
 	MonoDevelop.Ide.Updater/UpdateService.cs \
-	MonoDevelop.Ide.Updater/UpdateTagExtensionNode.cs \
 	MonoDevelop.Ide.WebBrowser/IWebBrowser.cs \
 	MonoDevelop.Ide.WebBrowser/IWebBrowserLoader.cs \
 	MonoDevelop.Ide.WebBrowser/LoadingProgressChangedEventArgs.cs \
@@ -694,6 +690,7 @@ FILES =  \
 	MonoDevelop.Ide/DesktopService.cs \
 	MonoDevelop.Ide/DispatchService.cs \
 	MonoDevelop.Ide/ExitEventHandler.cs \
+	MonoDevelop.Ide/FeedbackService.cs \
 	MonoDevelop.Ide/GLibLogging.cs \
 	MonoDevelop.Ide/HelpOperations.cs \
 	MonoDevelop.Ide/Ide.cs \
@@ -745,6 +742,7 @@ RES =  \
 	icons/assembly-project-16.png \
 	icons/author-information-16.png \
 	icons/author-information-24.png \
+	icons/balloon.png \
 	icons/breakpoint-16.png \
 	icons/breakpoint-22.png \
 	icons/breakpoint-disable-all-16.png \
@@ -878,6 +876,7 @@ RES =  \
 	icons/project-reference-package-16.png \
 	icons/project-reference-project-16.png \
 	icons/remove-namespace-16.png \
+	icons/software-update-available.png \
 	icons/solution-16.png \
 	icons/solution-32.png \
 	icons/solution-folder-closed-16.png \

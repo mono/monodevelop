@@ -147,16 +147,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void ChangeLocalReference ()
 		{
-			Dictionary<Project,Project> projects = new Dictionary<Project,Project> ();
+			var projects = new Dictionary<Project,Project> ();
 			ProjectReference firstRef = null;
 			foreach (ITreeNavigator node in CurrentNodes) {
-				ProjectReference pref = (ProjectReference) node.DataItem;
+				var pref = (ProjectReference) node.DataItem;
+				if (!pref.CanSetLocalCopy)
+					continue;
 				if (firstRef == null) {
 					firstRef = pref;
 					pref.LocalCopy = !pref.LocalCopy;
 				} else
 					pref.LocalCopy = firstRef.LocalCopy;
-				Project project = node.GetParentDataItem (typeof(Project), false) as Project;
+				var project = node.GetParentDataItem (typeof(Project), false) as Project;
 				projects [project] = project;
 			}
 			foreach (Project p in projects.Values)
@@ -168,17 +170,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectReference lastRef = null;
 			foreach (ITreeNavigator node in CurrentNodes) {
-				ProjectReference pref = (ProjectReference) node.DataItem;
-				if (pref.ReferenceType != ReferenceType.Gac) {
-					if (lastRef == null || lastRef.LocalCopy == pref.LocalCopy) {
-						lastRef = pref;
-						info.Checked = pref.LocalCopy;
-					} else
-						info.CheckedInconsistent = true;
-				}
-				else {
-					info.Checked = false;
+				var pref = (ProjectReference) node.DataItem;
+				if (!pref.CanSetLocalCopy)
 					info.Enabled = false;
+				if (lastRef == null || lastRef.LocalCopy == pref.LocalCopy) {
+					lastRef = pref;
+					info.Checked = pref.LocalCopy;
+				} else {
+					info.CheckedInconsistent = true;
 				}
 			}
 		}
@@ -187,16 +186,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void RequireSpecificAssemblyVersion ()
 		{
-			Dictionary<Project,Project> projects = new Dictionary<Project,Project> ();
+			var projects = new Dictionary<Project,Project> ();
 			ProjectReference firstRef = null;
 			foreach (ITreeNavigator node in CurrentNodes) {
-				ProjectReference pref = (ProjectReference) node.DataItem;
+				var pref = (ProjectReference) node.DataItem;
+				if (!pref.CanSetSpecificVersion)
+					continue;
 				if (firstRef == null) {
 					firstRef = pref;
 					pref.SpecificVersion = !pref.SpecificVersion;
 				} else
 					pref.SpecificVersion = firstRef.SpecificVersion;
-				Project project = node.GetParentDataItem (typeof(Project), false) as Project;
+				var project = node.GetParentDataItem (typeof(Project), false) as Project;
 				projects [project] = project;
 			}
 			foreach (Project p in projects.Values)
@@ -208,17 +209,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectReference lastRef = null;
 			foreach (ITreeNavigator node in CurrentNodes) {
-				ProjectReference pref = (ProjectReference) node.DataItem;
-				if (pref.ReferenceType == ReferenceType.Gac) {
-					if (lastRef == null || lastRef.LocalCopy == pref.LocalCopy) {
-						lastRef = pref;
-						info.Checked = pref.SpecificVersion;
-					} else
-						info.CheckedInconsistent = true;
-				}
-				else {
-					info.Checked = false;
+				var pref = (ProjectReference) node.DataItem;
+				if (!pref.CanSetSpecificVersion)
 					info.Enabled = false;
+				if (lastRef == null || lastRef.SpecificVersion == pref.SpecificVersion) {
+					lastRef = pref;
+					info.Checked = pref.SpecificVersion;
+				} else {
+					info.CheckedInconsistent = true;
 				}
 			}
 		}

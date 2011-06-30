@@ -46,8 +46,10 @@ namespace MonoDevelop.MonoMac.Gui
 			this.Build ();
 			
 			certs = Keychain.GetAllSigningCertificates ()
-				.Where (k => !Keychain.GetCertificateCommonName (k).StartsWith ("iPhone"))
-				.ToList ();
+				.Where (k => {
+					var cn = Keychain.GetCertificateCommonName (k);
+					return !cn.StartsWith ("iPhone") && !cn.StartsWith ("com.apple");
+				}) .ToList ();
 			
 			productDefinitionFileEntry.BrowserTitle = GettextCatalog.GetString ("Select Product Definition...");
 			

@@ -11,7 +11,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOpen;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -11,7 +11,7 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.Entry argsEntry;
 		private global::Gtk.CheckButton checkExternal;
 		private global::Gtk.CheckButton checkDisposeExternal;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

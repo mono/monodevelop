@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui;
 using System;
+using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			AddinUpdateHandler.ShowManager ();
+			AddinsUpdateHandler.ShowManager ();
 		}
 	}
 

@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.RadioButton saveChangesRadioButton;
 		private global::Gtk.RadioButton promptChangesRadioButton;
 		private global::Gtk.RadioButton noSaveRadioButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

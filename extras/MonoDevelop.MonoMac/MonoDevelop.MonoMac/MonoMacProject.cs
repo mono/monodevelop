@@ -36,6 +36,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using System.Reflection;
 using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.XcodeSyncing;
 using MonoDevelop.MacDev.XcodeIntegration;
 using MonoDevelop.MacDev.NativeReferences;
 
@@ -171,10 +172,11 @@ namespace MonoDevelop.MonoMac
 			//HACK: workaround for MD not local-copying package references
 			foreach (var projectReference in References) {
 				if (projectReference.Package != null && projectReference.Package.Name == "monomac") {
-					if (projectReference.LocalCopy && projectReference.ReferenceType == ReferenceType.Gac) {
+					if (projectReference.ReferenceType == ReferenceType.Gac) {
 						foreach (var assem in projectReference.Package.Assemblies) {
 							list.Add (assem.Location);
-							if (((MonoMacProjectConfiguration)solutionConfiguration.GetConfiguration (this)).DebugMode) {
+							var cfg = (MonoMacProjectConfiguration)solutionConfiguration.GetConfiguration (this);
+							if (cfg.DebugMode) {
 								var mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (assem.Location);
 								if (File.Exists (mdbFile))
 									list.Add (mdbFile);

@@ -110,7 +110,7 @@ namespace MonoDevelop.AspNet.Mvc
 			//HACK: workaround for MD not local-copying package references
 			foreach (ProjectReference projectReference in References) {
 				if (projectReference.Package != null && projectReference.Package.Name == "system.web.mvc") {
-					if (projectReference.LocalCopy && projectReference.ReferenceType == ReferenceType.Gac)
+					if (projectReference.ReferenceType == ReferenceType.Gac)
 						foreach (MonoDevelop.Core.Assemblies.SystemAssembly assem in projectReference.Package.Assemblies)
 							list.Add (assem.Location);
 					break;

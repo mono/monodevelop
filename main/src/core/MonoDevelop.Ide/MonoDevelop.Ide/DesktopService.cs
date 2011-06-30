@@ -190,5 +190,10 @@ namespace MonoDevelop.Ide
 		{
 			return platformService.GetUpdaterEnviromentFlags ();
 		}
+		
+		internal static void StartUpdatesInstaller (FilePath installerDataFile, FilePath updatedInstallerPath)
+		{
+			platformService.StartUpdatesInstaller (installerDataFile, updatedInstallerPath);
+		}
 	}
 }

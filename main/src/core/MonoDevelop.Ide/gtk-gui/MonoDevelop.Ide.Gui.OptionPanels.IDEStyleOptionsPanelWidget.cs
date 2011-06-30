@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.FontButton fontOutputButton;
 		private global::Gtk.CheckButton hiddenButton;
 		private global::Gtk.CheckButton documentSwitcherButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

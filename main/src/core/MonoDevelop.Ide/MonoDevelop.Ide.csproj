@@ -784,6 +784,12 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ClassPadContextMenu.addin.xml">
       <LogicalName>ClassPadContextMenu.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\balloon.png">
+      <LogicalName>balloon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\software-update-available.png">
+      <LogicalName>software-update-available.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -880,7 +886,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\Workbench.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AddinUpdateHandler.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\FileViewer.cs" />
@@ -1394,12 +1399,6 @@
     <Compile Include="MonoDevelop.Ide.Fonts\FontChooserPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Fonts\FontService.cs" />
     <Compile Include="MonoDevelop.Ide.Fonts\FontDescriptionCodon.cs" />
-    <Compile Include="MonoDevelop.Ide.Updater\UpdateDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Updater\UpdateResult.cs" />
-    <Compile Include="MonoDevelop.Ide.Updater\UpdateService.cs" />
-    <Compile Include="MonoDevelop.Ide.Updater\UpdateCommands.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Updater.UpdateDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Updater\UpdateInfoExtensionNode.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\AlertDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkAlertDialog.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\TextQuestionDialog.cs" />
@@ -1437,8 +1436,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ImportProjectPolicyDialog.cs" />
     <Compile Include="MonoDevelop.Ide.ProgressMonitoring\ProgressBarMonitor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.ProgressMonitoring.ProgressBarMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Updater\UpdateTagExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.Updater\UpdateRank.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AddExternalFileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.AddExternalFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\PriorityList.cs" />
@@ -1483,6 +1480,12 @@
     <Compile Include="MonoDevelop.TypeSystem\CodeGenerator.cs" />
     <Compile Include="MonoDevelop.TypeSystem\TypeSystemParserNode.cs" />
     <Compile Include="MonoDevelop.TypeSystem\ITypeSystemParser.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeedbackDialog.cs" />
+    <Compile Include="MonoDevelop.Ide\FeedbackService.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateService.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\IUpdateHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\AddinsUpdateHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateCheckHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1513,6 +1516,7 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
+        <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
@@ -1547,7 +1551,6 @@
     <Folder Include="MonoDevelop.Ide.Navigation\" />
     <Folder Include="MonoDevelop.Components.AutoTest\" />
     <Folder Include="MonoDevelop.Ide.Fonts\" />
-    <Folder Include="MonoDevelop.Ide.Updater\" />
     <Folder Include="MonoDevelop.Ide.Codons\" />
     <Folder Include="ExtensionModel\" />
     <Folder Include="MonoDevelop.TypeSystem\" />

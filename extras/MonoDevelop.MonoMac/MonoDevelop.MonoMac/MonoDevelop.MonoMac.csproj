@@ -78,13 +78,13 @@
     </Reference>
     <Reference Include="MonoDevelop.MacDev, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\MonoDevelop.IPhone\build\MonoDevelop.MacDev.dll</HintPath>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.MacDev\MonoDevelop.MacDev.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MacPlatform, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
       <HintPath>..\..\..\main\build\AddIns\MacPlatform.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

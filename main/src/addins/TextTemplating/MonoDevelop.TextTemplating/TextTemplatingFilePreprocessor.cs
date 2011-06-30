@@ -88,17 +88,20 @@ namespace MonoDevelop.TextTemplating
 			return ns;
 		}
 		
+		static bool warningLogged;
+		
 		internal static void LogicalSetData (string name, object value,
 			System.CodeDom.Compiler.CompilerErrorCollection errors)
 		{
+			if (warningLogged)
+				return;
+			
 			//FIXME: CallContext.LogicalSetData not implemented in Mono
 			try {
 				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData (name, value);
 			} catch (NotImplementedException) {
-				errors.Add (new System.CodeDom.Compiler.CompilerError (
-					null, -1, -1, null,
-					"Could not set " + name +  " - CallContext.LogicalSetData not implemented in this Mono version"
-				) { IsWarning = true });
+				LoggingService.LogWarning ("T4: CallContext.LogicalSetData not implemented in this Mono version");
+				warningLogged = true;
 			}
 		}
 	}

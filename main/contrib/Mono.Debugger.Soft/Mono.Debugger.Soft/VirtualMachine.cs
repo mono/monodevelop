@@ -227,7 +227,11 @@ namespace Mono.Debugger.Soft
 		public void ClearAllBreakpoints () {
 			conn.ClearAllBreakpoints ();
 		}
-
+		
+		public void Disconnect () {
+			conn.Close ();
+		}
+		
 		internal void queue_event_set (EventSet es) {
 			lock (queue_monitor) {
 				queue.Enqueue (es);
@@ -593,6 +597,12 @@ namespace Mono.Debugger.Soft
 					break;
 				case EventType.AppDomainUnload:
 					l.Add (new AppDomainUnloadEvent (vm, req_id, thread_id, id));
+					break;
+				case EventType.UserBreak:
+					l.Add (new UserBreakEvent (vm, req_id, thread_id));
+					break;
+				case EventType.UserLog:
+					l.Add (new UserLogEvent (vm, req_id, thread_id, ei.Level, ei.Category, ei.Message));
 					break;
 				default:
 					break;

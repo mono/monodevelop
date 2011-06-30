@@ -30,12 +30,16 @@ using System.CodeDom.Compiler;
 using System.CodeDom;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
 	public sealed class ParameterDirectiveProcessor : DirectiveProcessor, IRecognizeHostSpecific
 	{
-		CodeDomProvider languageProvider;
+		CodeDomProvider provider;
+		bool isCSharp;
+		bool useMonoHack;
+		
 		bool hostSpecific;
 		List<CodeStatement> postStatements = new List<CodeStatement> ();
 		CodeTypeMemberCollection members = new CodeTypeMemberCollection ();
@@ -47,7 +51,12 @@ namespace Microsoft.VisualStudio.TextTemplating
 		public override void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors)
 		{
 			base.StartProcessingRun (languageProvider, templateContents, errors);
-			this.languageProvider = languageProvider;
+			this.provider = languageProvider;
+			//HACK: Mono as of 2.10.2 doesn't implement GenerateCodeFromMember
+			if (Type.GetType ("Mono.Runtime") != null)
+				useMonoHack = true;
+			if (languageProvider is Microsoft.CSharp.CSharpCodeProvider)
+				isCSharp = true;
 			postStatements.Clear ();
 			members.Clear ();
 		}
@@ -70,15 +79,14 @@ namespace Microsoft.VisualStudio.TextTemplating
 		{
 			var options = new CodeGeneratorOptions ();
 			using (var sw = new StringWriter ()) {
-				foreach (CodeTypeMember member in members)
-					languageProvider.GenerateCodeFromMember (member, sw, options);
+				GenerateCodeFromMembers (sw, options);
 				return Indent (sw.ToString (), "        ");
 			}
 		}
 		
 		string Indent (string s, string indent)
 		{
-			if (this.languageProvider is Microsoft.CSharp.CSharpCodeProvider)
+			if (isCSharp)
 				return Mono.TextTemplating.TemplatingEngine.IndentSnippetText (s, indent);
 			return s;
 		}
@@ -103,7 +111,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			var options = new CodeGeneratorOptions ();
 			using (var sw = new StringWriter ()) {
 				foreach (var statement in statements)
-					languageProvider.GenerateCodeFromStatement (statement, sw, options);
+					provider.GenerateCodeFromStatement (statement, sw, options);
 				return sw.ToString ();
 			}
 		}
@@ -221,6 +229,39 @@ namespace Microsoft.VisualStudio.TextTemplating
 
 		public bool RequiresProcessingRunIsHostSpecific {
 			get { return false; }
+		}
+		
+		void GenerateCodeFromMembers (StringWriter sw, CodeGeneratorOptions options)
+		{
+			if (!useMonoHack) {
+				foreach (CodeTypeMember member in members)
+					provider.GenerateCodeFromMember (member, sw, options);
+			}
+			
+			var cgType = typeof (CodeGenerator);
+			var cgInit = cgType.GetMethod ("InitOutput", BindingFlags.NonPublic | BindingFlags.Instance);
+			var cgFieldGen = cgType.GetMethod ("GenerateField", BindingFlags.NonPublic | BindingFlags.Instance);
+			var cgPropGen = cgType.GetMethod ("GenerateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+			
+#pragma warning disable 0618
+			var generator = (CodeGenerator) provider.CreateGenerator ();
+#pragma warning restore 0618
+			var dummy = new CodeTypeDeclaration ("Foo");
+			
+			foreach (CodeTypeMember member in members) {
+				var f = member as CodeMemberField;
+				if (f != null) {
+					cgInit.Invoke (generator, new object[] { sw, options });
+					cgFieldGen.Invoke (generator, new object[] { f });
+					continue;
+				}
+				var p = member as CodeMemberProperty;
+				if (p != null) {
+					cgInit.Invoke (generator, new object[] { sw, options });
+					cgPropGen.Invoke (generator, new object[] { p, dummy });
+					continue;
+				}
+			}
 		}
 	}
 }

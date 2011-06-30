@@ -346,6 +346,22 @@ namespace MonoDevelop.Ide.Desktop
 			return new string[0];
 		}
 		
+		/// <summary>
+		/// Starts the installer.
+		/// </summary>
+		/// <param name='installerDataFile'>
+		/// File containing the list of updates to install
+		/// </param>
+		/// <param name='updatedInstallerPath'>
+		/// Optional path to an updated installer executable
+		/// </param>
+		/// <remarks>
+		/// This method should start the installer in an independent process.
+		/// </remarks>
+		public virtual void StartUpdatesInstaller (FilePath installerDataFile, FilePath updatedInstallerPath)
+		{
+		}
+		
 		public virtual IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
 			return new DesktopApplication[0];

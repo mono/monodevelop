@@ -73,7 +73,7 @@ namespace MonoDevelop.Deployment.Linux
 		private global::Gtk.Button buttonAddEntry;
 		private global::Gtk.Button buttonRemoveEntry;
 		private global::Gtk.Label label5;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

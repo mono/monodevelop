@@ -14,7 +14,7 @@ namespace CBinding
 		private global::Gtk.Label label3;
 		private global::Gtk.CheckButton parseLocalVariablesCheck;
 		private global::Gtk.CheckButton parseSystemTagsCheck;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

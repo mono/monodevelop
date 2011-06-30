@@ -7,7 +7,7 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.Label label1;
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

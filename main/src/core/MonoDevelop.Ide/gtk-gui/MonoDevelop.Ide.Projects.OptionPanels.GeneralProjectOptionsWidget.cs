@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.HBox hbox27;
 		private global::Gtk.Label label50;
 		private global::Gtk.CheckButton autoInsertNewFilesCheckButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

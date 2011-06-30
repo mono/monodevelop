@@ -7,7 +7,7 @@ namespace CBinding
 		private global::Gtk.Table table2;
 		private global::Gtk.ComboBox compilerComboBox;
 		private global::Gtk.CheckButton useCcacheCheckBox;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

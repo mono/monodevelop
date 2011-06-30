@@ -1,1 +1,0 @@
-information.png is from the famfamfam silk icon set. MonoDevelop main already includes attribution.
