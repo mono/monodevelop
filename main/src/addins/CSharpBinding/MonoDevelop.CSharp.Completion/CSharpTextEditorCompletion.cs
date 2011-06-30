@@ -506,25 +506,6 @@ namespace MonoDevelop.CSharp.Completion
 //				result.Add ("global", "md-literal");
 //				AddPrimitiveTypes (result);
 //				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, result);
-			} else if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
-				col.Add ("global", "md-keyword");
-				AddPrimitiveTypes (col);
-				string attributeName = NewCSharpExpressionFinder.FindAttributeName (textEditorData, Document.CompilationUnit, Document.FileName);
-				if (attributeName != null) {
-					IType type = resolver.SearchType (attributeName + "Attribute");
-					if (type == null) 
-						type = resolver.SearchType (attributeName);
-					if (type != null) {
-						foreach (var property in type.Properties) {
-							col.Add (property);
-						}
-						foreach (var field in type.Fields) {
-							if (field.IsPublic)
-								col.Add (field);
-						}
-					}
-				}
-				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.IdentifierExpected) {
 				if (!string.IsNullOrEmpty (expressionResult.Expression))
 					expressionResult.Expression = expressionResult.Expression.Trim ();

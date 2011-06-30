@@ -196,27 +196,8 @@ namespace MonoDevelop.CSharp.Completion
 		ITypeDefinition currentType;
 		IMember currentMember;
 		
-		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionBeforeCursor ()
+		void AppendMissingClosingBrackets (StringBuilder wrapper, string memberText)
 		{
-			if (currentMember == null && currentType == null)
-				return null;
-			
-			CSharpParser parser = new CSharpParser ();
-			int startOffset;
-			if (currentMember != null) {
-				startOffset = document.Editor.LocationToOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
-			} else {
-				startOffset = document.Editor.LocationToOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
-			}
-			string memberText = Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset);
-			
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
-			StringBuilder wrapper = new StringBuilder ();
-			wrapper.Append ("class Stub {");
-			wrapper.AppendLine ();
-			wrapper.Append (memberText);
-			wrapper.Append ("a ()");
-			
 			var bracketStack = new Stack<char> ();
 			
 			bool isInString = false, isInChar = false;
@@ -228,13 +209,15 @@ namespace MonoDevelop.CSharp.Completion
 					case '(':
 					case '[':
 					case '{':
-						bracketStack.Push (ch);
+						if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+							bracketStack.Push (ch);
 						break;
 					case ')':
 					case ']':
 					case '}':
-						if (bracketStack.Count > 0)
-							bracketStack.Pop ();
+						if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+							if (bracketStack.Count > 0)
+								bracketStack.Pop ();
 						break;
 					case '\r':
 					case '\n':
@@ -265,16 +248,20 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			bool didAppendSemicolon = false;
+			char lastBracket = '\0';
 			while (bracketStack.Count > 0) {
 				switch (bracketStack.Pop ()) {
 					case '(':
 						wrapper.Append (')');
+						lastBracket = ')';
 						break;
 					case '[':
 						wrapper.Append (']');
+						lastBracket = ']';
 						break;
 					case '<':
 						wrapper.Append ('>');
+						lastBracket = '>';
 						break;
 					case '{':
 						if (!didAppendSemicolon) {
@@ -286,16 +273,58 @@ namespace MonoDevelop.CSharp.Completion
 						break;
 				}
 			}
-			if (!didAppendSemicolon)
-				wrapper.Append (';');
-			
+			if (currentMember == null && lastBracket == ']') {
+				// attribute context
+				wrapper.Append ("void Target() {}");
+			} else {
+				if (!didAppendSemicolon)
+					wrapper.Append (';');
+			}
+		}
+
+		CompilationUnit ParseStub (string continuation)
+		{
+			string memberText = GetMemberTextToCaret ();
+			if (memberText == null)
+				return null;
+			var wrapper = new StringBuilder ();
+			wrapper.Append ("class Stub {");
+			wrapper.AppendLine ();
+			wrapper.Append (memberText);
+			wrapper.Append (continuation);
+			AppendMissingClosingBrackets (wrapper, memberText);
 			wrapper.Append ('}'); // open brace from class.
-			/// try to get this. or base.
-			var stream = new System.IO.StringReader (wrapper.ToString ());
-			var baseUnit = parser.Parse (stream, memberLocation.Line - 2);
-			stream.Close ();
+			Console.WriteLine (wrapper);
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			
-			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
+				var parser = new CSharpParser ();
+				return parser.Parse (stream, memberLocation.Line - 2);
+			}
+		}
+		
+		string GetMemberTextToCaret ()
+		{
+			int startOffset;
+			if (currentMember != null) {
+				startOffset = document.Editor.LocationToOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
+			} else if (currentType != null) {
+				startOffset = document.Editor.LocationToOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
+			} else {
+				startOffset = 0;
+			}
+			return Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset);
+		}
+		
+		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionBeforeCursor ()
+		{
+			if (currentMember == null && currentType == null)
+				return null;
+			
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			var baseUnit = ParseStub ("a()");
+			
+			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column); 
 			Expression expr;
 			if (mref != null) {
 				expr = mref.Target;
@@ -321,86 +350,30 @@ namespace MonoDevelop.CSharp.Completion
 		
 		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionAtCursor ()
 		{
-			if (currentMember == null && currentType == null) {
+			if (currentMember == null && currentType == null)
+				return null;
+			
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			var baseUnit = ParseStub ("");
+			
+			Expression expr = baseUnit.GetNodeAt<IdentifierExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column - 1); 
+			Console.WriteLine (expr);
+			if (expr == null) {
 				return null;
 			}
 			
-			CSharpParser parser = new CSharpParser ();
-			int startOffset;
-			if (currentMember != null) {
-				startOffset = document.Editor.LocationToOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
+			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			member2.Remove ();
+			if (member is TypeDeclaration) {
+				member.AddChild (member2, TypeDeclaration.MemberRole);
 			} else {
-				startOffset = document.Editor.LocationToOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
+				member.ReplaceWith (member2);
 			}
-			string memberText = Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset);
-			
-//			var stream = new System.IO.StringReader (memberText);
-//			var member = parser.ParseTypeMembers (stream, currentMember.Region.BeginLine - 1).FirstOrDefault ();
-//			stream.Close ();
-//			
-//			if (member == null)
-//				return null;
-			CompilationUnit completionUnit = (CompilationUnit)Unit.Clone ();
-//			member.Remove ();
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
-			var member = completionUnit.GetNodeAt<AttributedNode> (memberLocation);
-			
-			StringBuilder wrapper = new StringBuilder ();
-			wrapper.Append ("class Stub {");
-			wrapper.AppendLine ();
-			wrapper.Append (memberText);
-			wrapper.Append (".");
-			var stream = new System.IO.StringReader (wrapper.ToString ());
-			var memberUnit = parser.Parse (stream, memberLocation.Line - 1);
-			stream.Close ();
-			var expr = memberUnit.TopExpression as Expression;
-			if (expr == null) {
-				/// try to get this. or base.
-				wrapper.Append ("a ();  } } }");
-				stream = new System.IO.StringReader (wrapper.ToString ());
-				var baseUnit = parser.Parse (stream, memberLocation.Line - 1);
-				stream.Close ();
-				
-				var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-				if (mref != null) {
-					expr = mref.Target.Clone ();
-				} else {
-					return null;
-				}
-			}
-			
-			bool nodeInserted = false;
-			
-			AstNode node = completionUnit.GetNodeAt<Statement> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-			if (node != null) {
-				
-				if (node is BlockStatement) {
-					node.AddChild (expr, AstNode.Roles.Expression);
-				} else {
-					node.Parent.AddChild (expr, AstNode.Roles.Expression);
-				}
-				nodeInserted = true;
-			} else {
-				node = completionUnit.GetNodeAt<Expression> (document.Editor.Caret.Line, document.Editor.Caret.Column);
-				if (node != null) {
-					node.ReplaceWith (n => expr);
-					nodeInserted = true;
-				}
-			}
-			
-			if (!nodeInserted) {
-				if (member != null) {
-					member.AddChild (expr, AstNode.Roles.Expression);
-				} else {
-					return null;
-				}
-			}
-//			
-//			Console.WriteLine ("Parsed AST:");
-//			
-//			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
-//			completionUnit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (ParsedFile, expr, completionUnit);
+
+			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
+			Unit.AcceptVisitor (tsvisitor, null);
+			return Tuple.Create (tsvisitor.ParsedFile, expr, Unit);
 		}
 		
 		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
@@ -742,12 +715,33 @@ namespace MonoDevelop.CSharp.Completion
 				if (identifierStart == null)
 					return null;
 				CSharpResolver csResolver;
-				if (identifierStart.Item2 != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
+				AstNode n = identifierStart.Item2;
+				var contextList = new CompletionDataWrapper (this);
+				
+				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
 					csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
-					var navigator = new NodeListResolveVisitorNavigator (new[] { identifierStart.Item2 });
+					var nodes = new List<AstNode> ();
+					nodes.Add (n);
+					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
+						nodes.Add (n.Parent);
+					var navigator = new NodeListResolveVisitorNavigator (nodes);
 					var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
 					identifierStart.Item3.AcceptVisitor (visitor, null);
-					csResolver = visitor.GetResolverStateBefore (identifierStart.Item2);
+					csResolver = visitor.GetResolverStateBefore (n);
+					
+					// add attribute properties.
+					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
+						var resolved = visitor.Resolve (n.Parent);
+						Console.WriteLine (resolved);
+						if (!resolved.IsError)  {
+							foreach (var property in resolved.Type.GetProperties (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
+								contextList.AddMember (property);
+							}
+							foreach (var field in resolved.Type.GetFields (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
+								contextList.AddMember (field);
+							}
+						}
+					}
 				} else {
 					csResolver = GetState ();
 				}
@@ -757,7 +751,8 @@ namespace MonoDevelop.CSharp.Completion
 				completionContext.TriggerLineOffset--;
 				completionContext.TriggerWordLength = 1;
 				
-				var contextList = new CompletionDataWrapper (this);
+				
+				
 				AddContextCompletion (contextList, csResolver, identifierStart.Item2);
 				return contextList.Result;
 //				if (stub.Parent is BlockStatement)

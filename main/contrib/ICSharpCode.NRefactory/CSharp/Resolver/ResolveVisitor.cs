@@ -1040,7 +1040,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ITypeReference MakeTypeReference(AstType type)
+		public ITypeReference MakeTypeReference(AstType type)
 		{
 			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, false);
 		}
@@ -1126,10 +1126,45 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Attributes
+		IType GetAttributeType (Attribute attribute)
+		{
+			var attributeType = attribute.Type;
+			var type = ResolveType(attributeType);
+			if (!type.Equals (SharedTypes.UnknownType))
+				return type;
+			
+			AstType typeWithAttributeSuffix;
+			if (attributeType is SimpleType) {
+				var st = (SimpleType)attributeType;
+				typeWithAttributeSuffix = new SimpleType (st.Identifier + "Attribute");
+			} else if (attributeType is MemberType) {
+				var mt = (MemberType)attributeType;
+				typeWithAttributeSuffix = new MemberType (mt.Target.Clone (), mt.MemberName + "Attribute");
+			} else {
+				// unsupported type.
+				return SharedTypes.UnknownType;
+			}
+			return ResolveType(typeWithAttributeSuffix);
+		}
+		
 		public override ResolveResult VisitAttribute(Attribute attribute, object data)
 		{
-//			throw new NotImplementedException();
-			return errorResult;
+			ScanChildren(attribute);
+			if (resolverEnabled) {
+				var type = GetAttributeType (attribute);
+				
+				// try if the attribute usage references a constructuor
+				string[] argumentNames;
+				ResolveResult[] arguments = GetArguments(attribute.Arguments, out argumentNames);
+				var result = resolver.ResolveObjectCreation(type, arguments, argumentNames);
+				
+				// if this is an error give back type resolve result, an attribute arg list isn't a constructor reference
+				// in all cases. - is it better to always give back the type resolve result ?
+				if (result.IsError)
+					return new TypeResolveResult (type);
+				return result;
+			}
+			return null;
 		}
 		#endregion
 		
