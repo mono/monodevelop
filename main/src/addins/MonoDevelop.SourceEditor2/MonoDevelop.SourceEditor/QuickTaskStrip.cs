@@ -624,9 +624,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			RemoveRedrawTimer ();
 			redrawTimeout = GLib.Timeout.Add (450, delegate {
-				if (curUpdate != null)
+				if (curUpdate != null) {
 					curUpdate.RemoveHandler ();
-				curUpdate = new BgBufferUpdate (this);
+					curUpdate = null;
+				}
+				if (backgroundPixbuf != null)
+					curUpdate = new BgBufferUpdate (this);
 				redrawTimeout = 0;
 				return false;
 			});
