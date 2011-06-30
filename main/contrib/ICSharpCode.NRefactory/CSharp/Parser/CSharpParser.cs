@@ -351,8 +351,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (c);
-				if (location != null && location.Count > 2)
+				if (location != null && location.Count > 2) {
 					newType.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AstNode.Roles.RBrace);
+				} else {
+					// parser error, set end node to max value.
+					newType.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
 				typeStack.Pop ();
 				AddType (newType);
 			}
@@ -387,8 +391,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (s);
-				if (location != null && location.Count > 2)
+				if (location != null && location.Count > 2) {
 					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AstNode.Roles.RBrace);
+				} else {
+					// parser error, set end node to max value.
+					newType.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
 				typeStack.Pop ();
 				AddType (newType);
 			}
@@ -421,8 +429,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (i);
-				if (location != null && location.Count > 2)
+				if (location != null && location.Count > 2) {
 					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AstNode.Roles.RBrace);
+				} else {
+					// parser error, set end node to max value.
+					newType.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
 				typeStack.Pop ();
 				AddType (newType);
 			}
@@ -494,8 +506,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (e);
-				if (location != null && location.Count > 2)
+				if (location != null && location.Count > 2) {
 					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AstNode.Roles.RBrace);
+				} else {
+					// parser error, set end node to max value.
+					newType.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
 				typeStack.Pop ();
 				AddType (newType);
 			}
@@ -749,9 +765,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					newIndexer.AddChild (setAccessor, PropertyDeclaration.SetterRole);
 				}
 				
-				if (location != null)
+				if (location != null) {
 					newIndexer.AddChild (new CSharpTokenNode (Convert (location[3]), 1), IndexerDeclaration.Roles.RBrace);
-				
+				} else {
+					// parser error, set end node to max value.
+					newIndexer.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
 				typeStack.Peek ().AddChild (newIndexer, TypeDeclaration.MemberRole);
 			}
 			
@@ -791,6 +810,9 @@ namespace ICSharpCode.NRefactory.CSharp
 //					} else {
 					newMethod.AddChild (bodyBlock, MethodDeclaration.Roles.Body);
 //					}
+				} else if (location != null && location.Count < 3) {
+					// parser error, set end node to max value.
+					newMethod.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
 				}
 				typeStack.Peek ().AddChild (newMethod, TypeDeclaration.MemberRole);
 			}
@@ -892,8 +914,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					newProperty.AddChild (setAccessor, PropertyDeclaration.SetterRole);
 				}
-				if (location != null && location.Count > 1)
+				if (location != null && location.Count > 1) {
 					newProperty.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RBrace);
+				} else {
+					// parser error, set end node to max value.
+					newProperty.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
 				
 				typeStack.Peek ().AddChild (newProperty, TypeDeclaration.MemberRole);
 			}
@@ -1037,8 +1063,12 @@ namespace ICSharpCode.NRefactory.CSharp
 						removeAccessor.AddChild ((BlockStatement)ep.Remove.Block.Accept (this), CustomEventDeclaration.Roles.Body);
 					newEvent.AddChild (removeAccessor, CustomEventDeclaration.RemoveAccessorRole);
 				}
-				if (location != null && location.Count >= 3)
+				if (location != null && location.Count >= 3) {
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[2]), 1), CustomEventDeclaration.Roles.RBrace);
+				} else {
+					// parser error, set end node to max value.
+					newEvent.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
 				
 				typeStack.Peek ().AddChild (newEvent, TypeDeclaration.MemberRole);
 			}
@@ -1127,8 +1157,12 @@ namespace ICSharpCode.NRefactory.CSharp
 						result.AddChild (init, VariableDeclarationStatement.Roles.Variable);
 					}
 				}
-				if (location != null)
+				if (location != null) {
 					result.AddChild (new CSharpTokenNode (Convert (location[location.Count - 1]), 1), VariableDeclarationStatement.Roles.Semicolon);
+				} else {
+					// parser error, set end node to max value.
+					result.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
 				return result;
 			}
 			
@@ -1467,8 +1501,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
 				}
 				
-				if (location != null)
+				if (location != null) {
 					result.AddChild (new CSharpTokenNode (Convert (location[3]), 1), SwitchStatement.Roles.RBrace);
+				} else {
+					// parser error, set end node to max value.
+					result.AddChild (new CSharpTokenNode (new AstLocation (int.MaxValue, int.MaxValue), 1), AstNode.Roles.RBrace);
+				}
+				
 				return result;
 			}
 			

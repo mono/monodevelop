@@ -382,6 +382,37 @@ class C
 			Assert.IsNotNull (provider.Find ("C"), "class 'C' not found");
 		}
 		
+		
+		[Test()]
+		public void TestUnclosedMember2 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"using System;
+
+namespace ConsoleTest
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+		}
+		
+		public void Hello ()
+		{
+		}
+	}
+	
+	class Foo
+	{
+		void Hello ()
+		{
+			$M$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("MainClass"), "class 'MainClass' not found");
+		}
+		
 		[Test()]
 		public void TestGenericParameterB ()
 		{

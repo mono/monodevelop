@@ -364,10 +364,10 @@ namespace MonoDevelop.CSharp.Completion
 				if (expr == null)
 					return null;
 			}
-			
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
+			
 			if (member is TypeDeclaration) {
 				member.AddChild (member2, TypeDeclaration.MemberRole);
 			} else {
