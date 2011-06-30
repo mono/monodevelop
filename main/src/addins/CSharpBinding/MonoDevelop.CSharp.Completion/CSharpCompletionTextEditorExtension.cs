@@ -110,7 +110,7 @@ namespace MonoDevelop.CSharp.Completion
 				this.Unit = parsedDocument.Annotation<CompilationUnit> ();
 				this.ParsedFile = parsedDocument.Annotation<ParsedFile> ();
 			}
-				
+			
 			Document.DocumentParsed += delegate {
 				var newDocument = Document.ParsedDocument;
 				if (newDocument == null) 
@@ -1023,7 +1023,7 @@ namespace MonoDevelop.CSharp.Completion
 			var wrapper = new CompletionDataWrapper (this);
 			var state = GetState ();
 			Predicate<ITypeDefinition> pred = null;
-			if (hintType != null) {
+			if (hintType != null && !hintType.Equals (SharedTypes.UnknownType)) {
 				var lookup = new MemberLookup (ctx, currentType, document.GetProjectContext ());
 				pred = t => {
 					if (t.Methods.Count (m => m.IsConstructor) == 0)
