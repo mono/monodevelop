@@ -31,6 +31,7 @@ using System.IO;
 using System.Xml;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Extensions;
+using System.Reflection;
 
 namespace MonoDevelop.Ide
 {
@@ -65,6 +66,25 @@ namespace MonoDevelop.Ide
 			PropertyService.Set ("MonoDevelop.Feedback.Count", FeedbacksSent + 1);
 			PropertyService.Set ("MonoDevelop.Feedback.Email", email);
 			PropertyService.SaveProperties ();
+			
+			string header = "MonoDevelop: " + BuildVariables.PackageVersionLabel + "\n";
+			
+			Type t = Type.GetType ("Mono.Runtime");
+			if (t != null) {
+				try {
+					string ver = (string) t.InvokeMember ("GetDisplayName", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic, null, null, null);
+					header += "Runtime: Mono " + ver + "\n";
+				} catch {
+					header += "Runtime: Mono (detection failed)\n";
+				}
+			} else {
+				header += "Runtime: Microsoft .NET v" + Environment.Version + "\n";
+			}
+			
+			string os = PropertyService.IsMac ? "Mac OSX" : (PropertyService.IsWindows ? "Windows" : "Linux");
+			header += "Operating System: " + os + " (" + Environment.OSVersion + ")\n";
+			
+			body = header + "\n" + body;
 			
 			lock (sendingLock) {
 				// Append the feedback entry to the end of the file
