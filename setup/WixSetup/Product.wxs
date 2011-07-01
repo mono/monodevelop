@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define ProductShortName = "MonoDevelop" ?>
-<?define ProductVersion = "2.5.9" ?>
-<?define ProductVersionText = "2.5.9" ?>
+<?define ProductVersion = "2.5.9.3" ?>
+<?define ProductVersionText = "2.6 Beta 4" ?>
 <?define AssemblyVersion = "2.6.0.0" ?>
 <?define Manufacturer = "Novell" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
@@ -51,7 +51,6 @@
               <File Name="mdmonitor.exe" Source="$(var.BuildRoot)\bin\mdmonitor.exe" />
               <File Name="Mono.Cecil.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.dll" />
               <File Name="Mono.Cecil.Mdb.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.Mdb.dll" />
-              <File Name="Cecil.Decompiler.dll" Source="$(var.BuildRoot)\bin\Cecil.Decompiler.dll" />
               <File Name="Mono.Debugging.dll" Source="$(var.BuildRoot)\bin\Mono.Debugging.dll" />
               <File Name="Mono.TextEditor.dll" Source="$(var.BuildRoot)\bin\Mono.TextEditor.dll" />
               <File Name="MonoDevelop.Core.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Core.dll" />
@@ -60,7 +59,9 @@
               <File Name="MonoDevelop.Ide.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Ide.dll" />
               <File Name="MonoDevelop.Projects.Formats.MSBuild.exe" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Formats.MSBuild.exe" />
               <File Name="MonoDevelop.Projects.Formats.MSBuild.exe.config" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Formats.MSBuild.exe.config" />
-              <File Name="NRefactory.dll" Source="$(var.BuildRoot)\bin\NRefactory.dll" />
+              <File Name="OldNRefactory.dll" Source="$(var.BuildRoot)\bin\OldNRefactory.dll" />
+              <File Name="ICSharpCode.Decompiler.dll" Source="$(var.BuildRoot)\bin\ICSharpCode.Decompiler.dll" />
+              <File Name="ICSharpCode.NRefactory.dll" Source="$(var.BuildRoot)\bin\ICSharpCode.NRefactory.dll" />
 
               <File Name="ICSharpCode.SharpZipLib.dll" Source="Libraries\ICSharpCode.SharpZipLib.dll" />
               <File Name="Mono.Addins.dll" Source="Libraries\Mono.Addins.dll" />

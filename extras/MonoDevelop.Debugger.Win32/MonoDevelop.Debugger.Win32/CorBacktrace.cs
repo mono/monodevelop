@@ -136,7 +136,7 @@ namespace MonoDevelop.Debugger.Win32
 			if (method == null)
 				method = "<Unknown>";
 			var loc = new SourceLocation (method, file, line);
-			return new StackFrame ((long) address, method.FullName, loc, lang, module, type);
+			return new StackFrame ((long) address, loc, lang);
 		}
 
 		#endregion

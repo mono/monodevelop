@@ -104,8 +104,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Projects.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Updater.InstallDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Updater.UpdateDialog.cs \
 	MonoDevelop.Components.AutoTest/AutoTestClientSession.cs \
 	MonoDevelop.Components.AutoTest/AutoTestService.cs \
 	MonoDevelop.Components.AutoTest/AutoTestSession.cs \
@@ -538,7 +536,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractPadContent.cs \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
-	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
 	MonoDevelop.Ide.Gui/AsyncDispatchAttribute.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
@@ -672,15 +669,10 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SolutionDescriptor.cs \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
-	MonoDevelop.Ide.Updater/DownloadService.cs \
-	MonoDevelop.Ide.Updater/InstallDialog.cs \
-	MonoDevelop.Ide.Updater/UpdateCommands.cs \
-	MonoDevelop.Ide.Updater/UpdateDialog.cs \
-	MonoDevelop.Ide.Updater/UpdateInfoExtensionNode.cs \
-	MonoDevelop.Ide.Updater/UpdateRank.cs \
-	MonoDevelop.Ide.Updater/UpdateResult.cs \
+	MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs \
+	MonoDevelop.Ide.Updater/IUpdateHandler.cs \
+	MonoDevelop.Ide.Updater/UpdateCheckHandler.cs \
 	MonoDevelop.Ide.Updater/UpdateService.cs \
-	MonoDevelop.Ide.Updater/UpdateTagExtensionNode.cs \
 	MonoDevelop.Ide.WebBrowser/IWebBrowser.cs \
 	MonoDevelop.Ide.WebBrowser/IWebBrowserLoader.cs \
 	MonoDevelop.Ide.WebBrowser/LoadingProgressChangedEventArgs.cs \
@@ -752,8 +744,6 @@ RES =  \
 	icons/compiler-options-24.png \
 	icons/custom-commands-16.png \
 	icons/custom-commands-24.png \
-	icons/downloader-paused.png \
-	icons/downloader-running.png \
 	icons/edit-find-next-16.png \
 	icons/edit-find-next-24.png \
 	icons/edit-select-all.png \
@@ -862,6 +852,7 @@ RES =  \
 	icons/project-reference-package-16.png \
 	icons/project-reference-project-16.png \
 	icons/remove-namespace-16.png \
+	icons/software-update-available.png \
 	icons/solution-16.png \
 	icons/solution-32.png \
 	icons/solution-folder-closed-16.png \

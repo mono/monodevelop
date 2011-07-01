@@ -37,6 +37,8 @@ using MonoDevelop.Projects;
 
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Setup;
+using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -57,48 +59,62 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 	internal partial class AddInsPanelWidget :  Gtk.Bin 
 	{
-		public  AddInsPanelWidget ()
+		public AddInsPanelWidget ()
 		{
 			Build ();
 		
-			bool checkForUpdates = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
-			int updateSpan = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
-			string unit = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
+			if (!UpdateService.AutoCheckForUpdates)
+				radioNever.Active = true;
+			else if (UpdateService.UpdateSpanUnit == UpdateSpanUnit.Hour)
+				radioHour.Active = true;
+			else if (UpdateService.UpdateSpanUnit == UpdateSpanUnit.Day)
+				radioDay.Active = true;
+			else if (UpdateService.UpdateSpanUnit == UpdateSpanUnit.Month)
+				radioMonth.Active = true;
 			
-			lookCheck.Active = checkForUpdates;
-			valueSpin.Value = (double) updateSpan;
+			switch (UpdateService.UpdateLevel) {
+			case UpdateLevel.Beta: radioBeta.Active = true; checkUnstable.Active = true; break;
+			case UpdateLevel.Alpha: radioAlpha.Active = true; checkUnstable.Active = true; break;
+			case UpdateLevel.Test: radioTest.Visible = true; radioTest.Active = true; checkUnstable.Active = true; break;
+			default: checkUnstable.Active = false; break;
+			}
 			
-			if (unit == "D")
-				periodCombo.Active = 0;
-			else
-				periodCombo.Active = 1;
-			UpdateStatus ();
+			if (UpdateService.TestModeEnabled)
+				radioTest.Visible = true;
 		}
 		
 		public void Store ()
 		{
-			if (periodCombo.Active == 0)
-				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
-			else
-				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "M");
+			UpdateService.AutoCheckForUpdates = !radioNever.Active;
+			UpdateService.UpdateSpanValue = 1;
 			
-			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", (int) valueSpin.Value);
-			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", lookCheck.Active);
+			if (radioHour.Active)
+				UpdateService.UpdateSpanUnit = UpdateSpanUnit.Hour;
+			else if (radioDay.Active)
+				UpdateService.UpdateSpanUnit = UpdateSpanUnit.Day;
+			else if (radioMonth.Active)
+				UpdateService.UpdateSpanUnit = UpdateSpanUnit.Month;
+			
+			if (checkUnstable.Active) {
+				if (radioBeta.Active)
+					UpdateService.UpdateLevel = UpdateLevel.Beta;
+				else if (radioAlpha.Active)
+					UpdateService.UpdateLevel = UpdateLevel.Alpha;
+				else if (radioTest.Active)
+					UpdateService.UpdateLevel = UpdateLevel.Test;
+			} else
+				UpdateService.UpdateLevel = UpdateLevel.Stable;
+
 		}
 		
-		void UpdateStatus ()
+		protected void OnCheckUnstableToggled (object sender, System.EventArgs e)
 		{
-			valueSpin.Sensitive = periodCombo.Sensitive = lookCheck.Active;
+			boxUnstable.Visible = checkUnstable.Active;
 		}
-		
-		public void OnManageClicked (object s, EventArgs a)
+
+		protected void OnButtonUpdateNowClicked (object sender, System.EventArgs e)
 		{
-			AddinUpdateHandler.ShowManager ();
-		}
-		
-		public void OnCheckToggled (object s, EventArgs a)
-		{
-			UpdateStatus ();
+			UpdateService.CheckForUpdates ();
 		}
 	}
 }

@@ -110,7 +110,7 @@ MonoDevelop.app:
 		|| (echo "Skipping $${ADDIN}" && echo "$${ADDIN}" >> missing-stuff)  ; \
 	done
 	
-	@if test -d "$(BUNDLE_ADDINS)"; then \
+	@if [ "`ls -A $(BUNDLE_ADDINS)`" ]; then \
 		echo; \
 		echo "Bundled addins"; \
 		echo; \

@@ -82,6 +82,7 @@ namespace MonoDevelop.CSharp.Inspection
 			rules.Add (new NamingRule () {
 				MatchKind = DeclarationKinds.Type | ( DeclarationKinds.Member & ~DeclarationKinds.Field),
 				MatchAllModifiers = ICS.Modifiers.Private,
+				MatchNoModifiers = ICS.Modifiers.Extern,
 				NamingStyle = NamingStyle.PascalCase,
 			});
 		}

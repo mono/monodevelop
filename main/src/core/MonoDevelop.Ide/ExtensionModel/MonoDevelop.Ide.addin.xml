@@ -137,11 +137,6 @@
 		<ExtensionNode name="Font" type="MonoDevelop.Ide.Fonts.FontDescriptionCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/Updater" name = "Updater information">
-		<Description>Path of an updateinfo file.</Description>
-		<ExtensionNode name="UpdateInfo" type="MonoDevelop.Ide.Updater.UpdateInfoExtensionNode"/>
-	</ExtensionPoint>
-	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeFormatters" name = "Code formatters">
 		<ExtensionNode name="Formatter" type="MonoDevelop.Ide.CodeFormatting.CodeFormatterExtensionNode" />
 	</ExtensionPoint>
@@ -151,9 +146,8 @@
 		<ExtensionNode name="ReferenceFinder" type="MonoDevelop.Ide.FindInFiles.ReferenceFinderCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/UpdateTags" name = "Update tags">
-		<Description>Update tags for the Updater service</Description>
-		<ExtensionNode name="Tag" type="Mono.Addins.ExtensionNode"/>
+	<ExtensionPoint path = "/MonoDevelop/Ide/Updater/UpdateHandlers" name = "Update handlers">
+		<ExtensionNode name="Type" />
 	</ExtensionPoint>
 
 		<!-- Extensions -->
@@ -170,9 +164,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class = "MonoDevelop.Ide.Gui.AddinUpdateHandler"/>
+		<Class class = "MonoDevelop.Ide.Updater.UpdateCheckHandler"/>
 		<Class class = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayStartup"/>
-		<Class class = "MonoDevelop.Ide.Updater.CheckForUpdatesOnStartUpHandler" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">

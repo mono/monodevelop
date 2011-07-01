@@ -9,12 +9,7 @@
     <Item>MonoDevelop.Database/MonoDevelop.Database.sln</Item>
     <Item>MonoDevelop.CodeAnalysis/MonoDevelop.CodeAnalysis.sln</Item>
     <Item>JavaBinding/JavaBinding.sln</Item>
-    <Item>GeckoWebBrowser/GeckoWebBrowser.sln</Item>
-    <Item>BooBinding/BooBinding.sln</Item>
-    <Item>AspNetEdit/AspNetEdit.sln</Item>
-    <Item>MonoDevelop.IPhone/MonoDevelop.IPhone.sln</Item>
     <Item>MonoDevelop.Debugger.Win32/MonoDevelop.Debugger.Win32.sln</Item>
-    <Item>MonoDevelop.MeeGo/MonoDevelop.MeeGo.sln</Item>
     <Item>MonoDevelop.MonoMac/MonoDevelop.MonoMac.sln</Item>
   </Items>
 </WorkspaceItem>

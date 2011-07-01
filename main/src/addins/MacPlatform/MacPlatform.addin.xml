@@ -44,12 +44,6 @@
 		             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Updater">
-		<UpdateInfo file="../../../updateinfo" />
-		<UpdateInfo file="/Library/Frameworks/Mono.framework/Versions/Current/updateinfo" />
-		<UpdateInfo file="/Library/Frameworks/Mono.framework/Versions/Current/updateinfo.csdk" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Components/DialogHandlers">
 		<Class class="MonoDevelop.Platform.Mac.MacSelectFileDialogHandler" />
 		<Class class="MonoDevelop.Platform.Mac.MacAddFileDialogHandler" />

@@ -132,10 +132,5 @@ namespace MonoDevelop.Platform
 		{
 			return new MonoDevelop.Platform.WindowsRecentFiles ();
 		}
-		
-		public override string GetUpdaterUrl ()
-		{
-			return "http://go-mono.com/macupdate/update";
-		}
 	}
 }
