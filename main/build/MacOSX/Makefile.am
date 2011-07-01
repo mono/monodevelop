@@ -4,7 +4,6 @@ MACOS=$(MAC_APP_DIR)/Contents/MacOS
 MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop
 ADDINS=$(MACOS)/lib/monodevelop/AddIns
 EXTRAS=$(top_srcdir)/../extras
-BUNDLE_ADDINS=$(top_srcdir)/../bundle-addins
 ARTIFACTS=$(top_srcdir)/../../artifacts
 
 CLEANFILES = MonoDevelop.dmg MonoDevelop.app
@@ -109,15 +108,6 @@ MonoDevelop.app:
 			cp -pR $(EXTRAS)/$${ADDIN}/build/* $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN}/ ) \
 		|| (echo "Skipping $${ADDIN}" && echo "$${ADDIN}" >> missing-stuff)  ; \
 	done
-	
-	@if [ "`ls -A $(BUNDLE_ADDINS)`" ]; then \
-		echo; \
-		echo "Bundled addins"; \
-		echo; \
-		ls "$(BUNDLE_ADDINS)"; \
-		echo; \
-		cp -RH $(BUNDLE_ADDINS)/* $(MAC_APP_LIB_DIR)/AddIns/; \
-	fi
 	
 # add the binary artifacts if they exist
 	@echo ""
