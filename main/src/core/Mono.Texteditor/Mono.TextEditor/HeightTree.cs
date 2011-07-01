@@ -196,12 +196,15 @@ namespace Mono.TextEditor
 			return result;
 		}
 
-		public void Unfold (FoldMarker marker)
+		public void Unfold (FoldMarker marker, int lineNumber, int count)
 		{
 			if (marker == null || !markers.Contains (marker))
 				return;
 			markers.Remove (marker);
-			for (int i = marker.Line; i < marker.Line + marker.Count; i++) {
+			
+			GetSingleLineNode (lineNumber);
+			lineNumber++;
+			for (int i = lineNumber; i < lineNumber + count; i++) {
 				var node = GetSingleLineNode (i);
 				node.foldLevel--;
 				node.UpdateAugmentedData ();

@@ -1187,10 +1187,10 @@ namespace Mono.TextEditor
 			
 			if (e.FoldSegment.IsFolded) {
 				if (e.FoldSegment.Marker != null)
-					heightTree.Unfold (e.FoldSegment.Marker);
+					heightTree.Unfold (e.FoldSegment.Marker, start, end - start);
 				e.FoldSegment.Marker = heightTree.Fold (start, end - start);
 			} else {
-				heightTree.Unfold (e.FoldSegment.Marker);
+				heightTree.Unfold (e.FoldSegment.Marker, start, end - start);
 				e.FoldSegment.Marker = null;
 			}
 		}
