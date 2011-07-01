@@ -1186,9 +1186,12 @@ namespace Mono.TextEditor
 			int end = OffsetToLineNumber (e.FoldSegment.EndLine.Offset);
 			
 			if (e.FoldSegment.IsFolded) {
+				if (e.FoldSegment.Marker != null)
+					heightTree.Unfold (e.FoldSegment.Marker);
 				e.FoldSegment.Marker = heightTree.Fold (start, end - start);
 			} else {
 				heightTree.Unfold (e.FoldSegment.Marker);
+				e.FoldSegment.Marker = null;
 			}
 		}
 		
