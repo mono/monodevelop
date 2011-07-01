@@ -499,6 +499,8 @@ namespace Mono.TextEditor.Utils
 
 		public override string ToString ()
 		{
+			if (Root == null)
+				return "<null>";
 			var result = new StringBuilder ();
 			AppendNode (result, Root, 0);
 			return result.ToString ();
