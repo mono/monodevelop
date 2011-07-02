@@ -168,6 +168,15 @@ namespace Mono.TextEditor.Utils
 				InsertRight (node.Left.GetOuterRight (), newNode);
 			}
 		}
+		
+		public void InsertAfter (IRedBlackTreeNode node, IRedBlackTreeNode newNode)
+		{
+			if (node.Right == null) {
+				InsertRight (node, newNode);
+			} else {
+				InsertLeft (node.Right.GetOuterLeft (), newNode);
+			}
+		}
 
 		public void InsertLeft (IRedBlackTreeNode parentNode, IRedBlackTreeNode newNode)
 		{

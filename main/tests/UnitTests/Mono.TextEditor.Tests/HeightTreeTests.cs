@@ -205,10 +205,24 @@ namespace Mono.TextEditor.Tests
 			
 			heightTree.Fold (1, 2);
 			
-			for (int i = 4; i <= editor.LineCount; i++) {
-				var y = System.Math.Max (0, (i - 3) * editor.LineHeight);
-				Assert.AreEqual (y, heightTree.LineNumberToY (i));
-				Assert.AreEqual (i, heightTree.YToLineNumber (y));
+			heightTree.Fold (6, 4);
+			heightTree.Fold (5, 10);
+			
+			var f = heightTree.Fold (20, 8);
+			heightTree.Unfold (f, 20, 8);
+			
+			heightTree.Fold (20, 4);
+			heightTree.Fold (25, 4);
+			
+			for (int i = 50; i <= editor.LineCount; i++) {
+				var y = System.Math.Max (0, (i - 3 - 10 - 8) * editor.LineHeight);
+				Assert.AreEqual (y, heightTree.LineNumberToY (i), "line:" + i + " --> y:" + y);
+				Assert.AreEqual (i, heightTree.YToLineNumber (y), "y:" + y + " --> line:" + i);
+			}
+			for (int i = 50; i <= editor.LineCount; i++) {
+				var y = System.Math.Max (0, (i - 3 - 10 - 8) * editor.LineHeight);
+				Assert.AreEqual (y, heightTree.LineNumberToY (i), "line:" + i + " --> y:" + y);
+				Assert.AreEqual (i, heightTree.YToLineNumber (y), "y:" + y + " --> line:" + i);
 			}
 		}
 		
@@ -220,7 +234,7 @@ namespace Mono.TextEditor.Tests
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			var f = heightTree.Fold (2, 2);
-			heightTree.Unfold (f);
+			heightTree.Unfold (f, 2, 2);
 			for (int i = 1; i <= editor.LineCount; i++) {
 				Assert.AreEqual ((i - 1) * editor.LineHeight, heightTree.LineNumberToY (i));
 				Assert.AreEqual (i, heightTree.YToLineNumber ((i - 1) * editor.LineHeight));

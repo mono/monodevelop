@@ -26,6 +26,8 @@
 using System;
 using Mono.TextEditor.Utils;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 
 
 namespace Mono.TextEditor
@@ -107,7 +109,7 @@ namespace Mono.TextEditor
 			foreach (var segment in editor.Document.FoldedSegments) {
 				int start = editor.OffsetToLineNumber (segment.StartLine.Offset);
 				int end = editor.OffsetToLineNumber (segment.EndLine.Offset);
-				Fold (start, end - start);
+				segment.Marker = Fold (start, end - start);
 			}
 		}
 		
@@ -152,20 +154,6 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
-		public int YToLineNumber (double y)
-		{
-			var node = GetNodeByY (y);
-			if (node == null)
-				return y < 0 ? DocumentLocation.MinLine + (int)(y / editor.LineHeight) : tree.Root.totalCount + (int)((y - tree.Root.totalHeight) / editor.LineHeight);
-			int lineOffset = 0;
-			if (node.foldLevel == 0) {
-				double delta = y - node.GetY ();
-				lineOffset = (int)(node.count * delta / node.height);
-			}
-			return node.GetLineNumber () + lineOffset;
-		}
-		
 		
 		public class FoldMarker
 		{
@@ -218,10 +206,8 @@ namespace Mono.TextEditor
 			while (ln > 0 && node != null && node.foldLevel > 0) {
 				node = GetSingleLineNode (ln--);
 			}
-			
 			if (ln == 0 || node == null)
 				return 0;
-			
 			double result = node.Left != null ? ((HeightNode)node.Left).totalHeight : 0;
 			
 			while (node.parent != null) {
@@ -237,16 +223,33 @@ namespace Mono.TextEditor
 			}
 			return result;
 		}
-
+			
+		public int YToLineNumber (double y)
+		{
+			var node = GetNodeByY (y);
+			if (node == null)
+				return y < 0 ? DocumentLocation.MinLine + (int)(y / editor.LineHeight) : tree.Root.totalCount + (int)((y - tree.Root.totalHeight) / editor.LineHeight);
+			int lineOffset = 0;
+			if (node.foldLevel == 0) {
+				double delta = y - node.GetY ();
+				lineOffset = (int)(node.count * delta / node.height);
+			}
+			return node.GetLineNumber () + lineOffset;
+		}
+		
 		void InsertAfter (HeightNode node, HeightNode newNode)
 		{
 			if (newNode.count <= 0)
 				throw new ArgumentOutOfRangeException ("new node count <= 0.");
-			if (node.right == null) {
-				tree.InsertRight (node, newNode);
-			} else {
-				tree.InsertLeft (node.right.GetOuterLeft (), newNode);
-			}
+			tree.InsertAfter (node, newNode);
+			newNode.UpdateAugmentedData ();
+		}
+		
+		void InsertBefore (HeightNode node, HeightNode newNode)
+		{
+			if (newNode.count <= 0)
+				throw new ArgumentOutOfRangeException ("new node count <= 0.");
+			tree.InsertBefore (node, newNode);
 			newNode.UpdateAugmentedData ();
 		}
 		
@@ -306,24 +309,23 @@ namespace Mono.TextEditor
 				return node;
 			
 			int nodeStartLine = node.GetLineNumber ();
-			int linesBefore = lineNumber - nodeStartLine + 1;
+			int linesBefore = lineNumber - nodeStartLine;
 			if (linesBefore > 0) {
-				var splittedNode = new HeightNode () {
-					count = node.count - linesBefore,
-					height = (node.count - linesBefore) * editor.LineHeight,
-					foldLevel = node.foldLevel
-				};
+				var splittedNode = new HeightNode ();
+				splittedNode.count = linesBefore ;
+				splittedNode.height = linesBefore * editor.LineHeight;
+				splittedNode.foldLevel = node.foldLevel;
 				if (splittedNode.count > 0)
-					InsertAfter (node, splittedNode);
+					InsertBefore (node, splittedNode);
 					
-				node.count = linesBefore;
-				node.height = node.count * editor.LineHeight;
+				node.count -= linesBefore;
+				node.height -= splittedNode.height;
 				node.UpdateAugmentedData ();
 				
-				if (node.count == 1) {
+				if (node.count == 1)
 					return node;
-				}
 			}
+			Debug.Assert (lineNumber == node.GetLineNumber ());
 			
 			InsertAfter (node, new HeightNode () {
 				count = node.count - 1,

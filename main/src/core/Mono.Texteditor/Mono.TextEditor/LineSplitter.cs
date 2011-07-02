@@ -361,11 +361,7 @@ namespace Mono.TextEditor
 				return result;
 			}
 			
-			if (segment.right == null) {
-				tree.InsertRight (segment, result);
-			} else {
-				tree.InsertLeft (segment.right.GetOuterLeft (), result);
-			}
+			tree.InsertAfter (segment, result);
 			result.UpdateAugmentedData ();
 			OnLineChanged (new LineEventArgs (result));
 			return result;
