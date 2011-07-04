@@ -313,7 +313,13 @@ namespace MonoDevelop.CSharp.Highlighting
 				while (node != null && !(node is Statement || node is AttributedNode)) {
 					if (node is SimpleType) {
 						var st = (SimpleType)node;
-						if (st.IdentifierToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
+						
+						navi.Reset ();
+						navi.AddNode (st);
+						unit.AcceptVisitor (visitor, null);
+						var result = visitor.Resolve (st);
+						
+						if (result is TypeResolveResult && st.IdentifierToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
 							endOffset = doc.LocationToOffset (st.IdentifierToken.EndLocation.Line, st.IdentifierToken.EndLocation.Column);
 							return "keyword.semantic.type";
 						}
@@ -321,7 +327,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					if (node is ICSharpCode.NRefactory.CSharp.MemberType) {
 						var mt = (ICSharpCode.NRefactory.CSharp.MemberType)node;
-						if (mt.MemberNameToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
+						
+						navi.Reset ();
+						navi.AddNode (mt);
+						unit.AcceptVisitor (visitor, null);
+						var result = visitor.Resolve (mt);
+						
+						if (result is TypeResolveResult && mt.MemberNameToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
 							endOffset = doc.LocationToOffset (mt.MemberNameToken.EndLocation.Line, mt.MemberNameToken.EndLocation.Column);
 							return "keyword.semantic.type";
 						}
