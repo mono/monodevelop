@@ -38,8 +38,6 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.XmlEditor
 {
-	
-	
 	public class XmlDocumentParser : AbstractParser
 	{
 		public override bool CanParse (string fileName)

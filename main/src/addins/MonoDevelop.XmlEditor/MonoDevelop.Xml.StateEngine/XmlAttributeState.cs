@@ -142,8 +142,7 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			}
 			
-			if (Char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsWhiteSpace (c)) {
-				string err;
+			if (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsWhiteSpace (c)) {
 				if (context.StateTag == GETTINGEQ)
 					context.LogError ("Expecting = in attribute, got " + c + ".");
 				else if (context.StateTag == GETTINGVAL)
