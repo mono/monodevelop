@@ -40,58 +40,9 @@ namespace MonoDevelop.MacDev
 {
 	public static class MacBuildUtilities
 	{
-		public static IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
-		{
-			return allItems.OfType<ProjectFile> ()
-				.Where (pf => pf.BuildAction == BuildAction.Page && pf.FilePath.Extension == ".xib")
-				.Select (pf => {
-					string[] splits = ((string)pf.ProjectVirtualPath).Split (Path.DirectorySeparatorChar);
-					FilePath name = splits.Last ();
-					if (splits.Length > 1 && splits[0].EndsWith (".lproj"))
-						name = new FilePath (splits[0]).Combine (name);
-					return new FilePair (pf.FilePath, name.ChangeExtension (".nib").ToAbsolute (outputRoot));
-				});
-		}
-		
 		public static bool NeedsBuilding (FilePair fp)
 		{
 			return fp.NeedsBuilding ();
-		}
-		
-		public static BuildResult CompileXibFiles (IProgressMonitor monitor, IEnumerable<ProjectFile> files,
-		                                           FilePath outputRoot)
-		{
-			var result = new BuildResult ();
-			var ibfiles = GetIBFilePairs (files, outputRoot).Where (NeedsBuilding).ToList ();
-			
-			if (ibfiles.Count > 0) {
-				monitor.BeginTask (GettextCatalog.GetString ("Compiling interface definitions"), 0);	
-				foreach (var file in ibfiles) {
-					file.EnsureOutputDirectory ();
-					var args = new ProcessArgumentBuilder ();
-					args.AddQuoted (file.Input);
-					args.Add ("--compile");
-					args.AddQuoted (file.Output);
-					var psi = new ProcessStartInfo ("ibtool", args.ToString ());
-					monitor.Log.WriteLine (psi.FileName + " " + psi.Arguments);
-					psi.WorkingDirectory = outputRoot;
-					string errorOutput;
-					int code;
-					try {
-					code = ExecuteCommand (monitor, psi, out errorOutput);
-					} catch (System.ComponentModel.Win32Exception ex) {
-						LoggingService.LogError ("Error running ibtool", ex);
-						result.AddError (null, 0, 0, null, "ibtool not found. Please ensure the Apple SDK is installed.");
-						return result;
-					}
-					if (code != 0) {
-						//FIXME: parse the plist that ibtool returns
-						result.AddError (null, 0, 0, null, "ibtool returned error code " + code);
-					}
-				}
-				monitor.EndTask ();
-			}
-			return result;
 		}
 		
 		public static BuildResult UpdateCodeBehind (IProgressMonitor monitor, XibCodeBehind generator, 
@@ -133,45 +84,65 @@ namespace MonoDevelop.MacDev
 			return result;
 		}
 		
-		
-		
-		//copied from MoonlightBuildExtension
-		public static int ExecuteCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo, out string errorOutput)
+		public static int ExecuteBuildCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo)
 		{
+			return ExecuteBuildCommand (monitor, startInfo, null, null);
+		}
+		
+		/// <summary>Executes a build command, writing output to the monitor.</summary>
+		/// <returns>Whether the command executed successfully.</returns>
+		/// <param name='monitor'>Progress monitor for writing output and handling cancellation.</param>
+		/// <param name='startInfo'>Process start info. Redirection will be enabled if necessary.</param>
+		/// <param name='stdout'>Text writer for stdout. May be null.</param>
+		/// <param name='stderr'>Text writer for stderr. May be null.</param>
+		public static int ExecuteBuildCommand (IProgressMonitor monitor, ProcessStartInfo startInfo,
+			TextWriter stdout, TextWriter stderr)
+		{
+			monitor.Log.WriteLine (startInfo.FileName + " " + startInfo.Arguments);
+			
 			startInfo.UseShellExecute = false;
 			startInfo.RedirectStandardError = true;
 			startInfo.RedirectStandardOutput = true;
 			
-			errorOutput = string.Empty;
 			int exitCode = -1;
 			
-			var swError = new StringWriter ();
-			var chainedError = new LogTextWriter ();
-			chainedError.ChainWriter (monitor.Log);
-			chainedError.ChainWriter (swError);
+			TextWriter outWriter = monitor.Log, errWriter = monitor.Log;
+			LogTextWriter chainedOut = null, chainedErr = null;
+			
+			if (stdout != null) {
+				chainedOut = new LogTextWriter ();
+				chainedOut.ChainWriter (outWriter);
+				chainedOut.ChainWriter (stdout);
+				outWriter = chainedOut;
+			}
+			
+			if (stderr != null) {
+				chainedErr = new LogTextWriter ();
+				chainedErr.ChainWriter (errWriter);
+				chainedErr.ChainWriter (stderr);
+				errWriter = chainedErr;
+			}
 			
 			var operationMonitor = new AggregatedOperationMonitor (monitor);
 			
+			IProcessAsyncOperation p = null;
 			try {
-				var p = Runtime.ProcessService.StartProcess (startInfo, monitor.Log, chainedError, null);
+				p = Runtime.ProcessService.StartProcess (startInfo, outWriter, errWriter, null);
 				operationMonitor.AddOperation (p); //handles cancellation
-				
-				p.WaitForOutput ();
-				errorOutput = swError.ToString ();
+				p.WaitForCompleted ();
 				exitCode = p.ExitCode;
-				p.Dispose ();
-				
-				if (monitor.IsCancelRequested) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Build cancelled"));
-					monitor.ReportError (GettextCatalog.GetString ("Build cancelled"), null);
-					if (exitCode == 0)
-						exitCode = -1;
-				}
 			} finally {
-				chainedError.Close ();
-				swError.Close ();
+				if (chainedErr != null)
+					chainedErr.Dispose ();
+				if (chainedOut != null)
+					chainedOut.Dispose ();
+				if (p != null)
+					p.Dispose ();
 				operationMonitor.Dispose ();
 			}
+			
+			if (exitCode != 0)
+				monitor.Log.WriteLine ("{0} exited with code {1}", Path.GetFileName (startInfo.FileName), exitCode);
 			
 			return exitCode;
 		}
@@ -267,4 +238,3 @@ namespace MonoDevelop.MacDev
 		}
 	}
 }
-
