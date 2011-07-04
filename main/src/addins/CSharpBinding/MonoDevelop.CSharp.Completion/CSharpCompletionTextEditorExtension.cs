@@ -1324,6 +1324,7 @@ namespace MonoDevelop.CSharp.Completion
 				var state = GetState ();
 				AddTypesAndNamespaces (wrapper, state, null, m => false);
 				AddKeywords (wrapper, typeLevel);
+				AddKeywords (wrapper, primitiveTypes);
 				return wrapper.Result;
 			case "new":
 				int j = completionContext.TriggerOffset - 4;
