@@ -21,7 +21,6 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
-	Keychain.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \

@@ -37,6 +37,7 @@ using System.Diagnostics;
 using System.IO;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MonoMac.Gui
 {

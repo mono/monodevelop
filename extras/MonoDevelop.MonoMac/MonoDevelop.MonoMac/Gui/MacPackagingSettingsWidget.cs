@@ -29,6 +29,7 @@ using MonoDevelop.MacDev;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MonoMac.Gui
 {

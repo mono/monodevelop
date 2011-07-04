@@ -85,7 +85,6 @@
     <Compile Include="MonoDevelop.MacDev.Plist\PlistString.cs" />
     <Compile Include="MacBuildUtilities.cs" />
     <Compile Include="XibCodeBehind.cs" />
-    <Compile Include="Keychain.cs" />
     <Compile Include="SigningIdentityCombo.cs" />
     <Compile Include="ObjCIntegration\IBOutlet.cs" />
     <Compile Include="ObjCIntegration\IBAction.cs" />
