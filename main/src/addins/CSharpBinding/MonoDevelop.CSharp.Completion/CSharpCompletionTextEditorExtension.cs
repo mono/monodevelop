@@ -1025,6 +1025,9 @@ namespace MonoDevelop.CSharp.Completion
 				pred = t => {
 					if (t.Methods.Count (m => m.IsConstructor) == 0)
 						return true;
+					if (hintType.GetDefinition () != null && !t.IsDerivedFrom (hintType.GetDefinition (), ctx))
+						return false;
+					
 					bool isProtectedAllowed = currentType != null ? currentType.IsDerivedFrom (t, ctx) : false;
 					return t.Methods.Any (m => m.IsConstructor && lookup.IsAccessible (m, isProtectedAllowed));
 				};
