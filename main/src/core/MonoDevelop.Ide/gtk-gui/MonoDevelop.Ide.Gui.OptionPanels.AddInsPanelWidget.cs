@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.radioHour = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Every hour"));
 			this.radioHour.CanFocus = true;
 			this.radioHour.Name = "radioHour";
+			this.radioHour.Active = true;
 			this.radioHour.DrawIndicator = true;
 			this.radioHour.UseUnderline = true;
 			this.radioHour.Group = new global::GLib.SList (global::System.IntPtr.Zero);
@@ -133,6 +134,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.radioBeta = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Beta updates (weekly)"));
 			this.radioBeta.CanFocus = true;
 			this.radioBeta.Name = "radioBeta";
+			this.radioBeta.Active = true;
 			this.radioBeta.DrawIndicator = true;
 			this.radioBeta.UseUnderline = true;
 			this.radioBeta.Group = new global::GLib.SList (global::System.IntPtr.Zero);

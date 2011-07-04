@@ -76,6 +76,20 @@ namespace MonoDevelop.Ide.Updater
 			}
 		}
 		
+		public static string TestMode {
+			get {
+				string testMode = Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATER_TEST");
+				if (!string.IsNullOrEmpty (testMode))
+					return testMode;
+				else
+					return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.TestMode", "");
+			}
+		}
+		
+		public static bool TestModeEnabled {
+			get { return TestMode.Length > 0 && TestMode.ToLower () != "false"; }
+		}
+		
 		public static bool NotifyAddinUpdates { get; set; }
 		
 		internal static void ScheduledCheckForUpdates ()

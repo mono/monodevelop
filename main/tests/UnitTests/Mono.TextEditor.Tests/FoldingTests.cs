@@ -383,7 +383,7 @@ $1234567890");
 			int end = data.GetLine (8).Offset;
 			data.Remove (start, end - start);
 			Assert.AreEqual (1, data.Document.FoldSegments.Count ());
-			Assert.AreEqual (8, data.LogicalToVisualLine (10));
+			Assert.AreEqual (10, data.LogicalToVisualLine (10));
 		}
 		
 		[Test()]

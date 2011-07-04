@@ -228,7 +228,6 @@ namespace MonoDevelop.Ide.Projects
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
 			Child.ShowAll ();
 			OnChanged (null, null);
-			Show ();
 			InsertFilterEntry ();
 		}
 		
