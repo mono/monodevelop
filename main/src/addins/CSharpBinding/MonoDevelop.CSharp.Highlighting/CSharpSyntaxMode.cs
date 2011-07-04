@@ -355,7 +355,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (semanticStyle != null) {
 						if (endLoc < chunk.EndOffset) {
 							base.AddRealChunk (new Chunk (chunk.Offset, endLoc - chunk.Offset, semanticStyle));
-							AddRealChunk (new Chunk (endLoc, chunk.EndOffset - endLoc, chunk.Style));
+							base.AddRealChunk (new Chunk (endLoc, chunk.EndOffset - endLoc, chunk.Style));
 							return;
 						}
 						chunk.Style = semanticStyle;
