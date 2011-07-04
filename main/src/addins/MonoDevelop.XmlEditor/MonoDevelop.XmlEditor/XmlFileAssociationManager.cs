@@ -30,11 +30,12 @@ namespace MonoDevelop.XmlEditor
 {
 	static class XmlFileAssociationManager
 	{
-		//keyed by LowerInvariant extension
-		static Dictionary<string,XmlFileAssociation> map = new Dictionary<string,XmlFileAssociation> ();
+		static Dictionary<string,XmlFileAssociation> map;
 		
 		static XmlFileAssociationManager ()
 		{
+			map = new Dictionary<string,XmlFileAssociation> (StringComparer.OrdinalIgnoreCase);
+			
 			foreach (XmlFileAssociationNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/XmlEditor/XmlFileAssociations")) {
 				var assoc = node.GetAssociation ();
 				map[assoc.Extension] = assoc;
@@ -69,7 +70,6 @@ namespace MonoDevelop.XmlEditor
 		
 		public static XmlFileAssociation GetAssociation (string extension)
 		{
-			extension = extension.ToLowerInvariant ();
 			var assoc = XmlEditorOptions.GetFileAssociation (extension);
 			if (assoc != null)
 				return assoc;
@@ -83,7 +83,6 @@ namespace MonoDevelop.XmlEditor
 			if (string.IsNullOrEmpty (extension))
 				return false;
 			
-			string ext = extension.ToLowerInvariant ();
 			if (map.ContainsKey (extension))
 				return true;
 			
