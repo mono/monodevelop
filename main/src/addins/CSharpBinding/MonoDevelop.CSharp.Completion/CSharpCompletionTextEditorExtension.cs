@@ -484,11 +484,10 @@ namespace MonoDevelop.CSharp.Completion
 				var expr = GetExpressionBeforeCursor ();
 				if (expr == null)
 					return null;
-				
 				// do not complete <number>. (but <number>.<number>.)
 				if (expr.Item2 is PrimitiveExpression) {
 					var pexpr = (PrimitiveExpression)expr.Item2;
-					if (pexpr.Value is string || pexpr.Value is char || !pexpr.LiteralValue.Contains ('.'))
+					if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains ('.'))
 						return null;
 				}
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);

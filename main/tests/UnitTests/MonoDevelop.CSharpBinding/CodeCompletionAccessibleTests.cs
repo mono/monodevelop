@@ -1058,6 +1058,43 @@ class TestClass
 			Assert.IsNotNull (provider.Find ("InnerEnumTest.TestEnum.C"), "enum 'InnerEnumTest.TestEnum.C' not found.");
 		}
 		
+		
+		[Test()]
+		public void TestPrimimitiveTypeCompletionString ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"using System;
 
+class Test
+{
+	public static void Foo () 
+	{
+		Console.WriteLine ($"""".$);
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
+		}
+		
+		
+		[Test()]
+		public void TestPrimimitiveTypeCompletionChar ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"using System;
+
+class Test
+{
+	public static void Foo () 
+	{
+		Console.WriteLine ($''.$);
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
+		}
+		
 	}
 }
