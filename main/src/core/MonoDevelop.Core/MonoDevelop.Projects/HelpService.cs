@@ -308,11 +308,13 @@ namespace MonoDevelop.Projects
 		
 		public static XmlNode GetMonodocDocumentation (this IEntity member)
 		{
-			var helpXml = HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ());
-			if (helpXml == null)
-				return null;
-			if (member.EntityType == EntityType.TypeDefinition)	
+			if (member.EntityType == EntityType.TypeDefinition) {
+				var helpXml = HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ());
+				if (helpXml == null)
+					return null;
 				return helpXml.SelectSingleNode ("/Type/Docs");
+			}
+			
 			var declaringXml = HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetHelpUrl ());
 			if (declaringXml == null)
 				return null;
