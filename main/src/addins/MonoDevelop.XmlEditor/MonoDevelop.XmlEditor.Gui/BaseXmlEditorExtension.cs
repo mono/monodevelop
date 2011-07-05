@@ -46,8 +46,6 @@ using System.Text;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
-	
-	
 	public abstract class BaseXmlEditorExtension : CompletionTextEditorExtension, IPathedDocument, IOutlinedDocument
 	{
 		DocumentStateTracker<Parser> tracker;
@@ -788,6 +786,11 @@ namespace MonoDevelop.XmlEditor.Gui
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
+		}
+		
+		IEnumerable<Gtk.Widget> IOutlinedDocument.GetToolbarWidgets ()
+		{
+			return null;
 		}
 		
 		protected virtual void InitializeOutlineColumns (MonoDevelop.Ide.Gui.Components.PadTreeView outlineTree)

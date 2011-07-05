@@ -141,13 +141,9 @@
     <Compile Include="MonoDevelop.DesignerSupport\CodeBehindWriter.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\SwitchBetweenRelatedFilesCommand.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineNodeComparer.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineSortingProperties.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\ISortableOutline.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\ISortingProperties.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\SortingPreferencesDialog.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\GroupComparer.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\Group.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.DesignerSupport.SortingPreferencesDialog.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineSortingPreferencesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DesignerSupport.ClassOutlineSortingPreferencesDialog.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml">

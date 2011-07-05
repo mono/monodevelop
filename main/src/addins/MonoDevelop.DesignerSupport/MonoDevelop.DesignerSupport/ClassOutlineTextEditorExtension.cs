@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Projects;
 
 
 namespace MonoDevelop.DesignerSupport
@@ -55,27 +56,26 @@ namespace MonoDevelop.DesignerSupport
 	/// </remarks>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineNodeComparer"/>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSortingProperties"/>
-	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument, ISortableOutline
+	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
 	{
-		ParsedDocument                              lastCU = null;
+		ParsedDocument lastCU = null;
 
-		MonoDevelop.Ide.Gui.Components.PadTreeView  outlineTreeView;
-		TreeStore                                   outlineTreeStore;
-		TreeModelSort                               outlineTreeModelSort;
+		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
+		TreeStore outlineTreeStore;
+		TreeModelSort outlineTreeModelSort;
+		Widget[] toolbarWidgets;
 
-		ClassOutlineNodeComparer                    comparer;
+		ClassOutlineNodeComparer comparer;
+		ClassOutlineSettings settings;
 
-		bool                                        refreshingOutline;
-		bool                                        disposed;
-		bool                                        outlineReady;
-
-		ClassOutlineSortingProperties               sortingProperties;
-
+		bool refreshingOutline;
+		bool disposed;
+		bool outlineReady;
 
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			MonoDevelop.Projects.IDotNetLanguageBinding binding = MonoDevelop.Projects.LanguageBindingService.GetBindingPerFileName (doc.Name) as MonoDevelop.Projects.IDotNetLanguageBinding;
-			return binding != null;
+			var binding = LanguageBindingService.GetBindingPerFileName (doc.Name);
+			return binding != null && binding is IDotNetLanguageBinding;
 		}
 
 		public override void Initialize ()
@@ -103,16 +103,10 @@ namespace MonoDevelop.DesignerSupport
 				return outlineTreeView;
 
 			outlineTreeStore = new TreeStore (typeof(object));
-
-			// Initialize sorted tree model
-
 			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
-
-			sortingProperties = PropertyService.Get (
-				ClassOutlineSortingProperties.SORTING_PROPERTY_NAME,
-				ClassOutlineSortingProperties.GetDefaultInstance ());
-
-			comparer = new ClassOutlineNodeComparer (GetAmbience (), sortingProperties, outlineTreeModelSort);
+			
+			settings = ClassOutlineSettings.Load ();
+			comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
 
 			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
 			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
@@ -148,17 +142,65 @@ namespace MonoDevelop.DesignerSupport
 			this.lastCU = Document.ParsedDocument;
 
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
-
-			// Register for property changes (e.g. preferences dialog)
-
-			sortingProperties.EventSortingPropertiesChanged += OnSortingPropertiesChanged;
-
 			UpdateSorting ();
 
 			var sw = new CompactScrolledWindow ();
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
+		}
+		
+		IEnumerable<Widget> MonoDevelop.DesignerSupport.IOutlinedDocument.GetToolbarWidgets ()
+		{
+			if (toolbarWidgets != null)
+				return toolbarWidgets;
+			
+			var groupToggleButton = new ToggleButton () {
+				Image = new Image (ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu)),
+				TooltipText = GettextCatalog.GetString ("Group entries by type"),
+				Active = settings.IsGrouped,
+			};	
+			groupToggleButton.Toggled += delegate {
+				if (groupToggleButton.Active == settings.IsGrouped)
+					return;
+				settings.IsGrouped = groupToggleButton.Active;
+				UpdateSorting ();
+			};
+
+			var sortAlphabeticallyToggleButton = new ToggleButton () {
+				Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu),
+				TooltipText = GettextCatalog.GetString ("Sort entries alphabetically"),
+			};	
+			sortAlphabeticallyToggleButton.Toggled += delegate {
+				if (sortAlphabeticallyToggleButton.Active == settings.IsSorted)
+					return;
+				settings.IsSorted = sortAlphabeticallyToggleButton.Active;
+				UpdateSorting ();
+			};
+
+			var preferencesButton = new DockToolButton (Gtk.Stock.Preferences) {
+				Image = new Image (Gtk.Stock.Preferences, IconSize.Menu),
+				TooltipText = GettextCatalog.GetString ("Open preferences dialog"),
+			};
+			preferencesButton.Clicked += delegate {
+				var dialog = new ClassOutlineSortingPreferencesDialog (settings);
+				try {
+					if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
+						dialog.SaveSettings ();
+						comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
+						UpdateSorting ();
+					}
+				} finally {
+					dialog.Destroy ();
+				}
+			};
+			
+			return toolbarWidgets = new Widget[] {
+				groupToggleButton,
+				sortAlphabeticallyToggleButton,
+				new VSeparator (),
+				preferencesButton,
+			};
 		}
 		
 		void JumpToDeclaration (bool focusEditor)
@@ -213,19 +255,17 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (outlineTreeView == null)
 				return;
-			ScrolledWindow w = (ScrolledWindow)outlineTreeView.Parent;
+			var w = (ScrolledWindow)outlineTreeView.Parent;
 			w.Destroy ();
 			outlineTreeModelSort.Dispose ();
 			outlineTreeModelSort = null;
 			outlineTreeStore.Dispose ();
 			outlineTreeStore = null;
 			outlineTreeView = null;
-
-			// De-register from property changes
-
-			sortingProperties.EventSortingPropertiesChanged -= OnSortingPropertiesChanged;
-
-			sortingProperties = null;
+			settings = null;
+			foreach (var tw in toolbarWidgets)
+				w.Destroy ();
+			toolbarWidgets = null;
 			comparer = null;
 		}
 
@@ -244,7 +284,7 @@ namespace MonoDevelop.DesignerSupport
 			//limit update rate to 3s
 			if (!refreshingOutline) {
 				refreshingOutline = true;
-				refillOutlineStoreId = GLib.Timeout.Add (3000, new GLib.TimeoutHandler (RefillOutlineStore));
+				refillOutlineStoreId = GLib.Timeout.Add (3000, RefillOutlineStore);
 			}
 		}
 
@@ -297,10 +337,7 @@ namespace MonoDevelop.DesignerSupport
 			foreach (object o in cls.Members)
 				items.Add (o);
 
-			items.Sort (delegate(object x, object y) {
-				DomRegion r1 = GetRegion (x), r2 = GetRegion (y);
-				return r1.CompareTo (r2);
-			});
+			items.Sort (ClassOutlineNodeComparer.CompareRegion);
 
 			List<FoldingRegion> regions = new List<FoldingRegion> ();
 			foreach (FoldingRegion fr in parsedDocument.UserRegions)
@@ -319,7 +356,7 @@ namespace MonoDevelop.DesignerSupport
 
 				//no regions left; quick exit
 				if (regionEnumerator != null) {
-					DomRegion itemRegion = GetRegion (item);
+					DomRegion itemRegion = ClassOutlineNodeComparer.GetRegion (item);
 
 					//advance to a region that could potentially contain this member
 					while (regionEnumerator != null && !OuterEndsAfterInner (regionEnumerator.Current.Region, itemRegion))
@@ -345,34 +382,18 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		static DomRegion GetRegion (object o)
-		{
-			if (o is IField) {
-				var f = (IField)o;
-				return new DomRegion (f.Location, f.Location);
-			}
-			
-			if (o is IMember) {
-				var m = (IMember)o;
-				return m.BodyRegion.IsEmpty ? new DomRegion (m.Location, m.Location) : m.BodyRegion;
-			}
-			throw new InvalidOperationException (o.GetType ().ToString ());
-		}
-
 		static bool OuterEndsAfterInner (DomRegion outer, DomRegion inner)
 		{
-			return ((outer.End.Line > 1 && outer.End.Line > inner.End.Line) || (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
+			return ((outer.End.Line > 1 && outer.End.Line > inner.End.Line)
+				|| (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
 		}
 
 		void UpdateSorting ()
 		{
 			if (IsSorting ()) {
-
 				// Sort the model, sort keys may have changed.
 				// Only setting the column again does not re-sort so we set the function instead.
-
 				outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
-
 				outlineTreeView.Model = outlineTreeModelSort;
 			} else {
 				outlineTreeView.Model = outlineTreeStore;
@@ -380,23 +401,12 @@ namespace MonoDevelop.DesignerSupport
 
 			// Because sorting the tree by setting the sort function also collapses the tree view we expand
 			// the whole tree.
-
 			outlineTreeView.ExpandAll ();
-		}
-
-		void OnSortingPropertiesChanged (object sender, EventArgs e)
-		{
-			UpdateSorting ();
-		}
-
-		ISortingProperties ISortableOutline.GetSortingProperties ()
-		{
-			return sortingProperties;
 		}
 
 		bool IsSorting ()
 		{
-			return sortingProperties.IsGrouping || sortingProperties.IsSortingAlphabetically;
+			return settings.IsGrouped || settings.IsSorted;
 		}
 	}
 }

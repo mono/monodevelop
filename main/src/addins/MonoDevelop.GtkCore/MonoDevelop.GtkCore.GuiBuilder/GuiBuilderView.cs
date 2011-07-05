@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using MonoDevelop.Core;
@@ -601,6 +602,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
 		{
 			return GuiBuilderDocumentOutline.Instance;
+		}
+		
+		IEnumerable<Gtk.Widget> MonoDevelop.DesignerSupport.IOutlinedDocument.GetToolbarWidgets ()
+		{
+			return null;
 		}
 
 		void MonoDevelop.DesignerSupport.IOutlinedDocument.ReleaseOutlineWidget ()

@@ -43,18 +43,14 @@ namespace MonoDevelop.DesignerSupport
 	/// a secondary sort key (string based on node's name) for comparison.
 	/// </remarks>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSortingProperties"/>
-	public class ClassOutlineNodeComparer : IComparer<TreeIter>
+	class ClassOutlineNodeComparer : IComparer<TreeIter>
 	{
 		const string DEFAULT_REGION_NAME = "region";
 
-		Ambience      ambience;
-		TreeModel     model;
-		GroupComparer groupComparer = new GroupComparer ();
-
-		public ClassOutlineSortingProperties Properties {
-			get;
-			set;
-		}
+		Ambience ambience;
+		TreeModel model;
+		ClassOutlineSettings settings;
+		int[] groupTable;
 
 		/// <param name="ambience">
 		/// The ambience used on retrieval of node names.
@@ -65,14 +61,14 @@ namespace MonoDevelop.DesignerSupport
 		/// <param name="model">
 		/// The model containing the nodes to compare.
 		/// </param>
-		public ClassOutlineNodeComparer (Ambience ambience, ClassOutlineSortingProperties properties, TreeModel model)
+		public ClassOutlineNodeComparer (Ambience ambience, ClassOutlineSettings settings, TreeModel model)
 		{
 			this.ambience = ambience;
-			Properties    = properties;
-			this.model    = model;
+			this.settings = settings;
+			this.model = model;
+			BuildGroupTable ();
 		}
 
-		/// <seealso cref="System.Collections.Generic.IComparer"/>
 		public int Compare (TreeIter a, TreeIter b)
 		{
 			return CompareNodes (model, a, b);
@@ -88,10 +84,10 @@ namespace MonoDevelop.DesignerSupport
 		/// <param name="model">
 		/// The TreeModel that the iterators refer to.
 		/// </param>
-		/// <param name="nodeA">
+		/// <param name="node1">
 		/// The first tree node that will be compared.
 		/// </param>
-		/// <param name="nodeB">
+		/// <param name="node2">
 		/// The second tree node that will be compared.
 		/// </param>
 		/// <returns>
@@ -99,111 +95,84 @@ namespace MonoDevelop.DesignerSupport
 		/// Zero if nodeA == nodeB.
 		/// Greater than zero if nodeA > nodeB.
 		/// </returns>
-		public int CompareNodes (TreeModel model, TreeIter nodeA, TreeIter nodeB)
+		public int CompareNodes (TreeModel model, TreeIter node1, TreeIter node2)
 		{
-			object objectA = model.GetValue (nodeA, 0);
-			object objectB = model.GetValue (nodeB, 0);
-
-			string nameA = GetSortName (objectA);
-			string nameB = GetSortName (objectB);
-
-			Group groupA = GetGroup (objectA);
-			Group groupB = GetGroup (objectB);
-
-			bool isGrouping              = Properties.IsGrouping;
-			bool isSortingAlphabetically = Properties.IsSortingAlphabetically;
-
-			if (isGrouping) {
-
-				int groupOrder = groupComparer.Compare (groupA, groupB);
-
-				// If items have the same group
-
-				if (groupOrder == 0) {
-
-					bool isComparingTwoMethods = objectA is IMethod;
-
-					if (isComparingTwoMethods) {
-						return CompareMethods (objectA, objectB, nameA, nameB, isSortingAlphabetically);
-					} else {
-						if (isSortingAlphabetically) {
-							return CompareName (nameA, nameB);
-						} else {
-							return 0;
-						}
-					}
-				} else {
-					return groupOrder;
-				}
-
-			} else {
-
-				if (isSortingAlphabetically) {
-					return CompareName (nameA, nameB);
-				} else {
-					return 0;
-				}
+			object o1 = model.GetValue (node1, 0);
+			object o2 = model.GetValue (node2, 0);
+			if (o1 == null) {
+				return o2 == null? 0 : 1;
+			} else if (o2 == null) {
+				return -1;
 			}
+			
+			if (settings.IsGrouped) {
+				int groupOrder = GetGroupPriority (o1) - GetGroupPriority (o2);
+				if (groupOrder != 0)
+					return groupOrder;
+				
+				IMethod m1 = o1 as IMethod;
+				if (m1 != null)
+					return CompareMethods (m1, (IMethod)o2, settings.IsSorted);
+			}
+			
+			if (settings.IsSorted)
+				return CompareName (o1, o2);
+			
+			return CompareRegion (o1, o2);
 		}
 
-		int CompareName (string nameA, string nameB)
+		int CompareName (object o1, object o2)
 		{
-			return String.Compare (nameA, nameB,
+			var sort = string.Compare (
+				GetSortName (o1),
+				GetSortName (o2),
 				System.Globalization.CultureInfo.CurrentCulture,
 				System.Globalization.CompareOptions.IgnoreSymbols);
+			if (sort == 0)
+				return CompareRegion (o1, o2);
+			return sort;
 		}
 
-		int CompareMethods (object objectA, object objectB, string nameA, string nameB, bool isSortingAlphabetically)
+		int CompareMethods (IMethod m1, IMethod m2, bool isSortingAlphabetically)
 		{
-			// Here we sort constructors before destructors before other methods.
+			// Here we sort constructors before finalizers before other methods.
 			// Remember that two constructors have the same name.
 
 			// Sort constructors at top.
+			
+			bool isCtor1 = m1.IsConstructor;
+			bool isCtor2 = m2.IsConstructor;
 
-			bool isConstructorA = IsConstructor (objectA);
-			bool isConstructorB = IsConstructor (objectB);
-
-			if (isConstructorA) {
-				if (isConstructorB) {
-					return 0;
-				} else {
+			if (isCtor1) {
+				if (isCtor2)
+					return CompareRegion (m1, m2);
+				else
 					return -1;
-				}
-			} else {
-				if (isConstructorB) {
-					return 1;
-				} else {
-
-					// Sort destructors after constructors.
-					//
-					// Sorting two destructors even though this is not valid C#. This gives a correct
-					// outline during editing.
-
-					bool isFinalizerA = IsFinalizer (objectA);
-					bool isFinalizerB = IsFinalizer (objectB);
-
-					if (isFinalizerA) {
-						if (isFinalizerB) {
-							return 0;
-						} else {
-							return -1;
-						}
-					} else {
-						if (isFinalizerB) {
-							return 1;
-						} else {
-
-							// Sort other methods
-
-							if (isSortingAlphabetically) {
-								return CompareName (nameA, nameB);
-							} else {
-								return 0;
-							}
-						}
-					}
-				}
+			} else if (isCtor2) {
+				return 1;
 			}
+			
+			// Sort finalizers after constructors.
+			//
+			// Sorting two finalizers even though this is not valid C#. This gives a correct
+			// outline during editing.
+			
+			bool isFinalizer1 = IsFinalizer (m1);
+			bool isFinalizer2 = IsFinalizer (m2);
+			
+			if (isFinalizer1) {
+				if (isFinalizer2)
+					return CompareRegion (m1, m2);
+				else
+					return -1;
+			} else if (isFinalizer2) {
+				return 1;
+			}
+			
+			if (isSortingAlphabetically)
+				return CompareName (m1, m2);
+			else
+				return CompareRegion (m1, m2);
 		}
 
 		bool IsConstructor (object node)
@@ -223,50 +192,63 @@ namespace MonoDevelop.DesignerSupport
 
 			return false;
 		}
-
-		/// <summary>
-		/// Returns the sort group based on the group of the node.
-		/// </summary>
-		/// <remarks>
-		/// The sort group is retrieved from the properties.
-		/// </remarks>
-		/// <param name="node">
-		/// A node in the tree. Expected to be either an IMember or a FoldingRegion.
-		/// </param>
-		/// <returns>
-		/// The sorting group for this node.
-		/// If the node is not an IMember or a FoldingRegion then the group for parameters
-		/// is returned.
-		/// </returns>
-		Group GetGroup (object node)
+		
+		const int GROUP_INDEX_REGIONS = 0;
+		const int GROUP_INDEX_NAMESPACES = 1;
+		const int GROUP_INDEX_TYPES = 2;
+		const int GROUP_INDEX_FIELDS = 3;
+		const int GROUP_INDEX_PROPERTIES = 4;
+		const int GROUP_INDEX_EVENTS = 5;
+		const int GROUP_INDEX_METHODS = 6;
+		
+		void BuildGroupTable ()
 		{
-			if (node is FoldingRegion) {
-				return Properties.FoldingRegionsGroup;
+			groupTable = new int[7];
+			int i = -10;
+			foreach (var g in settings.GroupOrder) {
+				switch (g) {
+				case ClassOutlineSettings.GroupRegions:
+					groupTable[GROUP_INDEX_REGIONS] = i++;
+					break;
+				case ClassOutlineSettings.GroupNamespaces:
+					groupTable[GROUP_INDEX_NAMESPACES] = i++;
+					break;
+				case ClassOutlineSettings.GroupTypes:
+					groupTable[GROUP_INDEX_TYPES] = i++;
+					break;
+				case ClassOutlineSettings.GroupFields:
+					groupTable[GROUP_INDEX_FIELDS] = i++;
+					break;
+				case ClassOutlineSettings.GroupProperties:
+					groupTable[GROUP_INDEX_PROPERTIES] = i++;
+					break;
+				case ClassOutlineSettings.GroupEvents:
+					groupTable[GROUP_INDEX_EVENTS] = i++;
+					break;
+				case ClassOutlineSettings.GroupMethods:
+					groupTable[GROUP_INDEX_METHODS] = i++;
+					break;
+				}
 			}
-			else if (node is Namespace)	{
-				return Properties.NamespacesGroup;
-			}
-			else if (node is IType) {
-				return Properties.TypesGroup;
-			}
-			else if (node is IField) {
-				return Properties.FieldsGroup;
-			}
-			else if (node is IProperty) {
-				return Properties.PropertiesGroup;
-			}
-			else if (node is IEvent) {
-				return Properties.EventsGroup;
-			}
-			else if (node is IMethod) {
-				return Properties.MethodsGroup;
-			}
-			else if (node is LocalVariable) {
-				return Properties.LocalVariablesGroup;
-			}
-			else {
-				return Properties.ParametersGroup;
-			}
+		}
+
+		int GetGroupPriority (object node)
+		{
+			if (node is FoldingRegion)
+				return groupTable[GROUP_INDEX_REGIONS];
+			if (node is Namespace)
+				return groupTable[GROUP_INDEX_NAMESPACES];
+			if (node is IType)
+				return groupTable[GROUP_INDEX_TYPES];
+			if (node is IField)
+				return groupTable[GROUP_INDEX_FIELDS];
+			if (node is IProperty)
+				return groupTable[GROUP_INDEX_PROPERTIES];
+			if (node is IEvent)
+				return groupTable[GROUP_INDEX_EVENTS];
+			if (node is IMethod)
+				return groupTable[GROUP_INDEX_METHODS];
+			return 0;
 		}
 
 		/// <summary>
@@ -282,31 +264,36 @@ namespace MonoDevelop.DesignerSupport
 		string GetSortName (object node)
 		{
 			if (node is IMember) {
-
 				// Return the name without type or parameters
-
 				return ambience.GetString ((IMember)node, 0);
-
-			} else if (node is FoldingRegion) {
-
+			}
+		
+			if (node is FoldingRegion) {
 				// Return trimmed region name or fallback
-
 				string name = ((FoldingRegion)node).Name.Trim ();
-
-				//
+				
 				// ClassOutlineTextEditorExtension uses a fallback name for regions
 				// so we do the same here with a slighty different name.
-				//
-
-				if (string.IsNullOrEmpty (name)) {
+				if (name.Length == 0)
 					name = DEFAULT_REGION_NAME;
-				}
-
+				
 				return name;
 			}
-
+			
 			return string.Empty;
+		}
+		
+		internal static DomRegion GetRegion (object o)
+		{
+			var m = o as IMember;
+			if (m != null)
+				return m.BodyRegion.IsEmpty ? new DomRegion (m.Location, m.Location) : m.BodyRegion;
+			return ((FoldingRegion)o).Region;
+		}
+		
+		internal static int CompareRegion (object o1, object o2)
+		{
+			return GetRegion (o1).CompareTo (GetRegion (o2));
 		}
 	}
 }
-

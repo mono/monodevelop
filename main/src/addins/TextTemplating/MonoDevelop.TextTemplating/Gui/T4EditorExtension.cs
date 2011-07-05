@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
@@ -34,8 +35,6 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.TextTemplating.Gui
 {
-	
-	
 	public class T4EditorExtension : CompletionTextEditorExtension, IOutlinedDocument
 	{
 		bool disposed;
@@ -172,6 +171,11 @@ namespace MonoDevelop.TextTemplating.Gui
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
+		}
+		
+		IEnumerable<Gtk.Widget> IOutlinedDocument.GetToolbarWidgets ()
+		{
+			return null;
 		}
 		
 		void RefreshOutline ()
