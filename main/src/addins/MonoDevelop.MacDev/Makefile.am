@@ -20,6 +20,8 @@ REFS =  \
 	-r:System.Xml.Linq
 
 FILES =  \
+	AppleSdkSettings.cs \
+	AppleSdkSettingsPanel.cs \
 	AssemblyInfo.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \

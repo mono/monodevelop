@@ -42,6 +42,9 @@ namespace MonoDevelop.MacDev
 		
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
+			if (!AppleSdkSettings.IsXcode4)
+				return false;
+			
 			if (ownerProject == null || !(ownerProject is IXcodeTrackedProject))
 				return false;
 			if (mimeType == "application/vnd.apple-interface-builder")
@@ -56,11 +59,10 @@ namespace MonoDevelop.MacDev
 	
 	class XcodeInterfaceBuilderDesktopApplication : DesktopApplication
 	{
-		public const string XCODE_LOCATION = "/Developer/Applications/Xcode.app";
-		
 		IXcodeTrackedProject project;
 		
-		public XcodeInterfaceBuilderDesktopApplication (IXcodeTrackedProject project) : base (XCODE_LOCATION, "Xcode Interface Builder", true)
+		public XcodeInterfaceBuilderDesktopApplication (IXcodeTrackedProject project)
+			: base (AppleSdkSettings.XcodePath, "Xcode Interface Builder", true)
 		{
 			this.project = project;
 		}

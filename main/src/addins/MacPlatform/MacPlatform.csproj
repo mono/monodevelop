@@ -89,6 +89,7 @@
     <Compile Include="MacInterop\LaunchServices.cs" />
     <Compile Include="MacInterop\ProcessManager.cs" />
     <Compile Include="MacInterop\Keychain.cs" />
+    <Compile Include="MacInterop\Cocoa.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

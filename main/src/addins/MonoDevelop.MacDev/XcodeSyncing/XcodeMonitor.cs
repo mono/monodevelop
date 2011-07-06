@@ -43,7 +43,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 {
 	class XcodeMonitor
 	{
-		string xcodePath = XcodeInterfaceBuilderDesktopApplication.XCODE_LOCATION;
 		FilePath originalProjectDir;
 		int nextHackDir = 0;
 		string name;
@@ -184,14 +183,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public bool CheckRunning ()
 		{
 			var appPathKey = new NSString ("NSApplicationPath");
-			var appPathVal = new NSString (xcodePath);
+			var appPathVal = new NSString (AppleSdkSettings.XcodePath);
 			return NSWorkspace.SharedWorkspace.LaunchedApplications.Any (app => appPathVal.Equals (app[appPathKey]));
 		}
 		
 		public void SaveProject ()
 		{
 			XC4Debug.Log ("Saving Xcode project");
-			AppleScript.Run (XCODE_SAVE_IN_PATH, xcodePath, projectDir);
+			AppleScript.Run (XCODE_SAVE_IN_PATH, AppleSdkSettings.XcodePath, projectDir);
 		}
 		
 		public void OpenProject ()
@@ -200,7 +199,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				pendingProjectWrite.Generate (projectDir);
 				pendingProjectWrite = null;
 			}
-			if (!NSWorkspace.SharedWorkspace.OpenFile (xcproj, xcodePath))
+			if (!NSWorkspace.SharedWorkspace.OpenFile (xcproj, AppleSdkSettings.XcodePath))
 				throw new Exception ("Failed to open Xcode project");
 		}
 		
@@ -208,7 +207,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			XC4Debug.Log ("Opening file in Xcode: {0}", relativeName);
 			OpenProject ();
-			NSWorkspace.SharedWorkspace.OpenFile (projectDir.Combine (relativeName), xcodePath);
+			NSWorkspace.SharedWorkspace.OpenFile (projectDir.Combine (relativeName), AppleSdkSettings.XcodePath);
 		}
 		
 		public void DeleteProjectDirectory ()
@@ -238,19 +237,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			if (!CheckRunning ())
 				return false;
-			return AppleScript.Run (XCODE_CHECK_PROJECT_OPEN, xcodePath, xcproj) == "true";
+			return AppleScript.Run (XCODE_CHECK_PROJECT_OPEN, AppleSdkSettings.XcodePath, xcproj) == "true";
 		}
 		
 		public bool CloseProject ()
 		{
-			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, xcodePath, projectDir) == "true";
+			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, projectDir) == "true";
 			XC4Debug.Log ("Closing project: {0}", success);
 			return success;
 		}
 		
 		public bool CloseFile (string fileName)
 		{
-			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, xcodePath, fileName) == "true";
+			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, fileName) == "true";
 			XC4Debug.Log ("Closing file {0}: {1}", fileName, success);
 			return success;
 		}

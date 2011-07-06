@@ -37,6 +37,7 @@ FILES =  \
 	MacInterop/AppleScript.cs \
 	MacInterop/ApplicationEvents.cs \
 	MacInterop/Carbon.cs \
+	MacInterop/Cocoa.cs \
 	MacInterop/ComponentManager.cs \
 	MacInterop/CoreFoundation.cs \
 	MacInterop/GtkQuartz.cs \

@@ -58,6 +58,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			this.dnp = dnp;
 			this.infoService = infoService;
+			AppleSdkSettings.Changed += DisableSyncing;
 		}
 		
 		void EnableSyncing ()
@@ -363,6 +364,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				return;
 			disposed = true;
 			DisableSyncing ();
+			AppleSdkSettings.Changed -= DisableSyncing;
 		}
 	}
 	

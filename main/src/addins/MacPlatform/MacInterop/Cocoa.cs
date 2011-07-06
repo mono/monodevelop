@@ -1,10 +1,10 @@
 // 
-// GtkQuartz.cs
+// Cocoa.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Michael Hutchinson <mhutch@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Runtime.InteropServices;
-using MonoMac.AppKit;
 
 namespace MonoDevelop.MacInterop
 {
-	public static class GtkQuartz
+	public static class Cocoa
 	{
-		//this may be needed to work around focusing issues in GTK/Cocoa interop
-		public static void FocusWindow (Gtk.Window widget)
+		static bool inited;
+		static object lockObj = new object	();
+		
+		public static void InitMonoMac ()
 		{
-			var window = GetWindow (widget);
-			if (window != null)
-				window.MakeKeyAndOrderFront (window);
+			if (inited)
+				return;
+			lock (lockObj) {
+				if (inited)
+					return;
+				MonoMac.AppKit.NSApplication.Init ();
+				inited = true;
+			}
 		}
-		
-		public static NSWindow GetWindow (Gtk.Window window)
-		{
-			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
-			if (ptr == IntPtr.Zero)
-				return null;
-			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSWindow;
-		}
-		
-		public static NSView GetView (Gtk.Widget widget)
-		{
-			var ptr = gdk_quartz_window_get_nsview (widget.GdkWindow.Handle);
-			if (ptr == IntPtr.Zero)
-				return null;
-			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSView;
-		}
-		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
-		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
-		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
-		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 	}
 }

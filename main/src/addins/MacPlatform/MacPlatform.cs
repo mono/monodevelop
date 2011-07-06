@@ -68,8 +68,7 @@ namespace MonoDevelop.Platform.Mac
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
 			Carbon.SetProcessName ("MonoDevelop");
 			
-			timer.Trace ("Initializing NSApplication");
-			MonoMac.AppKit.NSApplication.Init ();
+			MonoDevelop.MacInterop.Cocoa.InitMonoMac ();
 			
 			timer.Trace ("Installing App Event Handlers");
 			GlobalSetup ();

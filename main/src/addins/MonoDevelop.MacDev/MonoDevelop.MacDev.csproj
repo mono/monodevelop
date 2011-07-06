@@ -123,6 +123,8 @@
     <Compile Include="XcodeSyncing\XcodeSyncedItem.cs" />
     <Compile Include="XcodeSyncing\XcodeSyncBackContext.cs" />
     <Compile Include="XcodeSyncing\XcodeSyncContext.cs" />
+    <Compile Include="AppleSdkSettingsPanel.cs" />
+    <Compile Include="AppleSdkSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
