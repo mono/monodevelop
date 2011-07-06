@@ -54,17 +54,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		bool updatingProjectFiles;
 		
-		static bool? trackerEnabled;
-		public static bool TrackerEnabled {
-			get {
-				if (!trackerEnabled.HasValue) {
-					trackerEnabled = Environment.GetEnvironmentVariable ("MD_XC4_TEST") != null;
-					XC4Debug.Log ("Tracker enabled: {0}", trackerEnabled.Value);
-				}
-				return trackerEnabled.Value;
-			}
-		}
-		
 		public XcodeProjectTracker (DotNetProject dnp, NSObjectInfoService infoService)
 		{
 			this.dnp = dnp;

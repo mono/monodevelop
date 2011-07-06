@@ -84,9 +84,7 @@ namespace MonoDevelop.MonoMac
 		protected override void OnEndLoad ()
 		{
 			base.OnEndLoad ();
-			
-			if (XcodeProjectTracker.TrackerEnabled)
-				projectTracker = new MonoMacXcodeProjectTracker (this);
+			projectTracker = new MonoMacXcodeProjectTracker (this);
 		}
 		
 		public override void Dispose ()
