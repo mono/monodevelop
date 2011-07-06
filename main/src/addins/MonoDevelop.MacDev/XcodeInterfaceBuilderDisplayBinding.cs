@@ -44,12 +44,12 @@ namespace MonoDevelop.MacDev
 		{
 			if (!AppleSdkSettings.IsXcode4)
 				return false;
-			
-			if (ownerProject == null || !(ownerProject is IXcodeTrackedProject))
+			if (fileName.IsNullOrEmpty)
 				return false;
-			if (mimeType == "application/vnd.apple-interface-builder")
-				return true;
-			return fileName.IsNotNull && fileName.HasExtension (".xib");
+			var xcp = ownerProject as IXcodeTrackedProject;
+			if (xcp == null)
+				return false;
+			return xcp.XcodeProjectTracker.ShouldOpenInXcode (fileName);
 		}
 
 		public bool CanUseAsDefault {
