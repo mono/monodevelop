@@ -43,7 +43,6 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.MonoMac
 {
-	
 	public class MonoMacBuildExtension : ProjectServiceExtension
 	{
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
@@ -56,12 +55,7 @@ namespace MonoDevelop.MonoMac
 			var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
 			var appDir = conf.AppDirectory;
 			
-			//make sure the codebehind files are updated before building
-			var res = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, proj.Files);
-			if (res.ErrorCount > 0)
-				return res;
-			
-			res = res.Append (base.Build (monitor, item, configuration));
+			var res = base.Build (monitor, item, configuration);
 			if (res.ErrorCount > 0)
 				return res;
 			

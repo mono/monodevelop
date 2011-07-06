@@ -76,8 +76,7 @@ FILES =  \
 	XcodeSyncing/XcodeSyncContext.cs \
 	XcodeSyncing/XcodeSyncedContent.cs \
 	XcodeSyncing/XcodeSyncedItem.cs \
-	XcodeSyncing/XcodeSyncedType.cs \
-	XibCodeBehind.cs 
+	XcodeSyncing/XcodeSyncedType.cs 
 
 RES = MonoDevelop.MacDev.addin.xml
 

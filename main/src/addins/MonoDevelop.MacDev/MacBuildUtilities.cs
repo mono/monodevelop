@@ -45,45 +45,6 @@ namespace MonoDevelop.MacDev
 			return fp.NeedsBuilding ();
 		}
 		
-		public static BuildResult UpdateCodeBehind (IProgressMonitor monitor, XibCodeBehind generator, 
-		                                            IEnumerable<ProjectFile> items)
-		{
-			var result = new BuildResult ();
-			
-			if (XcodeSyncing.XcodeProjectTracker.TrackerEnabled)
-				return result;
-			
-			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (monitor, generator.Project);
-			if (!writer.SupportsPartialTypes) {
-				monitor.ReportWarning ("Cannot generate designer code, because CodeDom " +
-						"provider does not support partial classes.");
-				return result;
-			}
-			
-			var files = generator.GetDesignerFilesNeedBuilding (items, false).ToList ();
-			if (files.Count == 0)
-				return result;
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Updating CodeBehind files"), 0);
-			
-			foreach (var f in files) {
-				try {
-					generator.GenerateDesignerCode (writer, f.Key, f.Value);
-					var relPath = f.Value.FilePath.ToRelative (generator.Project.BaseDirectory);
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Updated {0}", relPath));
-				} catch (Exception ex) {
-					result = result ?? new BuildResult ();
-					result.AddError (f.Key.FilePath, 0, 0, null, ex.Message);
-					LoggingService.LogError (String.Format ("Error generating code for xib file '{0}'", f.Key.FilePath), ex);
-				}
-			}
-			
-			writer.WriteOpenFiles ();
-			
-			monitor.EndTask ();
-			return result;
-		}
-		
 		public static int ExecuteBuildCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo)
 		{
 			return ExecuteBuildCommand (monitor, startInfo, null, null);

@@ -48,10 +48,6 @@ namespace MonoDevelop.MonoMac
 			get { return "MonoMac"; }
 		}
 		
-		public MonoMacCodeBehind CodeBehindGenerator {
-			get; private set;
-		}
-		
 		#region Constructors
 		
 		public MonoMacProject ()
@@ -83,8 +79,6 @@ namespace MonoDevelop.MonoMac
 			
 		void Init ()
 		{
-			if (!XcodeProjectTracker.TrackerEnabled)
-				CodeBehindGenerator = new MonoMacCodeBehind (this);
 		}
 		
 		protected override void OnEndLoad ()
