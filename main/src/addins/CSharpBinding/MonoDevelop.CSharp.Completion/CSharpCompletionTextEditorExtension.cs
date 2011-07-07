@@ -362,7 +362,6 @@ namespace MonoDevelop.CSharp.Completion
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
-			Print (Unit);
 			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
 			Unit.AcceptVisitor (tsvisitor, null);
 			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
@@ -612,7 +611,6 @@ namespace MonoDevelop.CSharp.Completion
 						tokenIndex = j;
 					}
 				}
-				
 				switch (token) {
 				case "(":
 				case ",":
@@ -716,6 +714,13 @@ namespace MonoDevelop.CSharp.Completion
 							wrapper.Result.Add (new EventCreationCompletionData (this, varName, delegateType, evt, parameterDefinition, currentMember, currentType));
 						}
 					
+						return wrapper.Result;
+					}
+					return null;
+				case ":":
+					if (currentMember == null) {
+						var wrapper = new CompletionDataWrapper (this);
+						AddTypesAndNamespaces (wrapper, GetState (), t => currentType != null ? !currentType.Equals (t) : true);
 						return wrapper.Result;
 					}
 					return null;
@@ -1546,9 +1551,11 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (state.CurrentTypeDefinition != null) {
 				
-				foreach (var nestedType in state.CurrentTypeDefinition.NestedTypes) {
-					if (typePred == null || typePred (nestedType))
-						wrapper.AddType (nestedType, nestedType.Name);
+				for (var ct = state.CurrentTypeDefinition; ct != null; ct = ct.DeclaringTypeDefinition) {
+					foreach (var nestedType in ct.NestedTypes) {
+						if (typePred == null || typePred (nestedType))
+							wrapper.AddType (nestedType, nestedType.Name);
+					}
 				}
 				
 				foreach (var member in state.CurrentTypeDefinition.Resolve (ctx).GetMembers (ctx)) {
