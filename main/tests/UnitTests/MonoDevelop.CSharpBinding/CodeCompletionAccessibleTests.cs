@@ -928,6 +928,29 @@ $class Test2 : Test.$
 		}
 		
 		[Test()]
+		public void TestInheritableTypeContextCase2 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+namespace A {
+	class Test
+	{
+		public class Inner {}
+		public static void Foo () {}
+	}
+	
+	class Test2 $: Test.$
+	{
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Inner"), "class 'Inner' not found.");
+			Assert.IsNull (provider.Find ("Foo"), "method 'Foo' found.");
+		}
+		
+		
+		[Test()]
 		public void TestInheritableTypeWhereContext ()
 		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
