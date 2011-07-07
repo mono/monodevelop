@@ -1059,11 +1059,12 @@ namespace MonoDevelop.CSharp.Completion
 			if (hintType != null && !hintType.Equals (SharedTypes.UnknownType)) {
 				var lookup = new MemberLookup (ctx, currentType, document.GetProjectContext ());
 				pred = t => {
-					if (t.Methods.Count (m => m.IsConstructor) == 0)
-						return true;
+					// check if type is in inheritance tree.
 					if (hintType.GetDefinition () != null && !t.IsDerivedFrom (hintType.GetDefinition (), ctx))
 						return false;
-					
+					// check for valid constructors
+					if (t.Methods.Count (m => m.IsConstructor) == 0)
+						return true;
 					bool isProtectedAllowed = currentType != null ? currentType.IsDerivedFrom (t, ctx) : false;
 					return t.Methods.Any (m => m.IsConstructor && lookup.IsAccessible (m, isProtectedAllowed));
 				};
