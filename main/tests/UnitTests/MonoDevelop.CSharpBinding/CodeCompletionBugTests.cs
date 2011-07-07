@@ -3106,8 +3106,12 @@ class Foo
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("args"), "parameter 'args' not found.");
 			Assert.IsNull (provider.Find ("arg"), "variable 'arg' found.");
-			
-			provider = CreateCtrlSpaceProvider (
+		}
+		
+		[Test()]
+		public void TestBug674514B ()
+		{
+			var provider = CreateCtrlSpaceProvider (
 @"using System;
 using System.Linq;
 using System.Collections.Generic;

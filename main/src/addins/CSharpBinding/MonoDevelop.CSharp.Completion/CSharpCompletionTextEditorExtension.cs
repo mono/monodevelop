@@ -181,7 +181,7 @@ namespace MonoDevelop.CSharp.Completion
 			} else if (expr is VariableDeclarationStatement) {
 				resolveNode = ((VariableDeclarationStatement)expr).Type;
 			} else {
-				return null;
+				resolveNode = expr;
 			}
 			
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
@@ -517,7 +517,6 @@ namespace MonoDevelop.CSharp.Completion
 				
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
 				
-				Console.WriteLine (resolveResult + "/" + expr.Item2.GetType ());
 				if (resolveResult == null)
 					return null;
 				if (expr.Item2 is AstType)
@@ -570,7 +569,6 @@ namespace MonoDevelop.CSharp.Completion
 				if (invoke.Item2 is TypeOfExpression)
 					return CreateTypeList ();
 				var invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
-				Console.WriteLine ("result:" + invocationResult);
 				if (invocationResult == null)
 					return null;
 				var methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
@@ -583,7 +581,6 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 			//	completionContext = CompletionWidget.CreateCodeCompletionContext (cpos2);
 			//	int currentParameter2 = MethodParameterDataProvider.GetCurrentParameterIndex (CompletionWidget, completionContext) - 1;
-				Console.WriteLine ("cp:" + cpos2);
 //				return CreateParameterCompletion (CreateResolver (), location, ExpressionContext.MethodBody, provider.Methods, currentParameter);	
 				break;
 				
@@ -679,12 +676,10 @@ namespace MonoDevelop.CSharp.Completion
 					GetPreviousToken (ref tokenIndex, false);
 					
 					expressionOrVariableDeclaration = GetExpressionAt (tokenIndex);
-					Console.WriteLine (expressionOrVariableDeclaration);
 					if (expressionOrVariableDeclaration == null)
 						return null;
 				
 					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
-					Console.WriteLine (resolveResult);
 					if (resolveResult == null)
 						return null;
 					
@@ -770,7 +765,6 @@ namespace MonoDevelop.CSharp.Completion
 					// add attribute properties.
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 						var resolved = visitor.Resolve (n.Parent);
-						Console.WriteLine (resolved);
 						if (!resolved.IsError)  {
 							foreach (var property in resolved.Type.GetProperties (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (property);
@@ -1012,9 +1006,12 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			
 			var wrapper = new CompletionDataWrapper (this);
-			var state = GetState ();
 			
-			AddContextCompletion (wrapper, state, null);
+			var loc = new AstLocation (Editor.Caret.Line, Editor.Caret.Column);
+			var node = unit.GetNodeAt (loc);
+			var rr = ResolveExpression (ParsedFile, node, Unit);
+			AddContextCompletion (wrapper, rr != null ? rr.Item2 : GetState (), node);
+			
 			return wrapper.Result;
 		}
 		
@@ -1035,10 +1032,6 @@ namespace MonoDevelop.CSharp.Completion
 				var visitor = new ResolveVisitor (state, pf, navigator);
 				unit.AcceptVisitor (visitor, null);
 				state = visitor.GetResolverStateBefore (node) ?? state;
-				Print (unit);
-				foreach (var v in state.LocalVariables) {
-					Console.WriteLine (v);
-				}
 			}
 			
 			return state;
@@ -1406,6 +1399,12 @@ namespace MonoDevelop.CSharp.Completion
 					yieldDataList.Result.Add ("break", "md-keyword");
 					yieldDataList.Result.Add ("return", "md-keyword");
 					return yieldDataList.Result;
+				case "in":
+					var inList = new CompletionDataWrapper (this);
+					var node = unit.GetNodeAt (location);
+					var rr = ResolveExpression (ParsedFile, node, Unit);
+					AddContextCompletion (inList, rr != null ? rr.Item2 : GetState (), node);
+					return inList.Result;
 //				case "where":
 //					CompletionDataList whereDataList = new CompletionDataList ();
 //					NRefactoryResolver constraintResolver = CreateResolver ();
@@ -1966,6 +1965,8 @@ namespace MonoDevelop.CSharp.Completion
 					AddExtensionMethods (result, conv, baseTypes, n.NamespaceName);
 					foreach (var u in n.Usings) {
 						var ns = u.ResolveNamespace (ctx);
+						if (ns == null)
+							continue;
 						AddExtensionMethods (result, conv, baseTypes, ns.NamespaceName);
 					}
 				}
