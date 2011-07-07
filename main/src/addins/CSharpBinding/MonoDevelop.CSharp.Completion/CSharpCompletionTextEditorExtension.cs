@@ -346,19 +346,23 @@ namespace MonoDevelop.CSharp.Completion
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column); 
-			
 			Expression expr;
 			if (mref != null) {
 				expr = mref.Target;
 			} else {
-				return null;
+				var tref = baseUnit.GetNodeAt<TypeReferenceExpression> (document.Editor.Caret.Line, document.Editor.Caret.Column); 
+				var memberType = tref != null ? tref.Type as MemberType : null;
+				if (memberType == null)
+					return null;
+				expr = new TypeReferenceExpression (memberType.Target.Clone ());
+				tref.ReplaceWith (expr);
 			}
 			
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
-
+			Print (Unit);
 			var tsvisitor = new TypeSystemConvertVisitor (Document.GetProjectContext (), Document.FileName);
 			Unit.AcceptVisitor (tsvisitor, null);
 			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
