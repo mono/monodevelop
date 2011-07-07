@@ -153,12 +153,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 			
 			string file = GetTempFile (".cs");
 			project.AddFile (file);
+			
 			TypeSystemService.Load (project);
 			var dom = TypeSystemService.GetContext (project);
 			TypeSystemService.ForceUpdate (dom);
 			var content = TypeSystemService.GetProjectContext (project);
 			var parsedDocument = TypeSystemService.ParseFile (content, file, "text/x-csharp", parsedText);
 			((SimpleProjectContent)content).UpdateProjectContent (null, parsedDocument);
+			
 			sev.Project = project;
 			sev.ContentName = file;
 			sev.Text = editorText;
@@ -172,19 +174,19 @@ namespace MonoDevelop.CSharpBinding.Tests
 				Console.WriteLine (e);
 			var textEditorCompletion = new CSharpCompletionTextEditorExtension (doc);
 			int triggerWordLength = 1;
-			CodeCompletionContext ctx = new CodeCompletionContext ();
+			CodeCompletionContext completionContext = new CodeCompletionContext ();
 			textEditorCompletion.CompletionWidget = new TestCompletionWidget (doc.Editor) {
-				CurrentCodeCompletionContext = ctx
+				CurrentCodeCompletionContext = completionContext
 			};
-			ctx.TriggerOffset = sev.CursorPosition;
+			completionContext.TriggerOffset = sev.CursorPosition;
 			int line, column;
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
-			ctx.TriggerLine = line;
-			ctx.TriggerLineOffset = column - 1;
+			completionContext.TriggerLine = line;
+			completionContext.TriggerLineOffset = column - 1;
 			TypeSystemService.Unload (project);
 			if (isCtrlSpace)
-				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
-			return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
+				return textEditorCompletion.CodeCompletionCommand (completionContext) as CompletionDataList;
+			return textEditorCompletion.HandleCodeCompletion (completionContext, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 		}
 		
 		public static void CheckObjectMembers (CompletionDataList provider)
@@ -906,7 +908,12 @@ namespace MyNamespace
 		public void TestBug436705 ()
 		{
 			CompletionDataList provider = CreateProvider (
-@"
+@"namespace System.Drawing {
+	public class Point
+	{
+	}
+}
+
 public class Point
 {
 }
