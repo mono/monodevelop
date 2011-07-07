@@ -75,7 +75,11 @@ namespace MonoDevelop.MonoMac
 		
 		XcodeProjectTracker projectTracker;
 		
-		XcodeProjectTracker IXcodeTrackedProject.XcodeProjectTracker { get { return projectTracker; } }
+		XcodeProjectTracker IXcodeTrackedProject.XcodeProjectTracker {
+			get {
+				return projectTracker ?? (projectTracker = new MonoMacXcodeProjectTracker (this));
+			}
+		}
 			
 		void Init ()
 		{
@@ -84,7 +88,6 @@ namespace MonoDevelop.MonoMac
 		protected override void OnEndLoad ()
 		{
 			base.OnEndLoad ();
-			projectTracker = new MonoMacXcodeProjectTracker (this);
 		}
 		
 		public override void Dispose ()
