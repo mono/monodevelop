@@ -17,8 +17,10 @@ bool firstClass = true;
 foreach (var nso in Types) {
 	string name = GetName (nso.CliName);
 	BlankLine (ref firstClass);
+	if (nso.IsRegisteredInDesigner) {
 #>
 	[Register ("<#=nso.ObjCName #>")]
+<#	} #>
 	partial class <#=name #>
 	{
 <#	bool firstMember = true;
