@@ -503,9 +503,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 		
-		public AstNode GetNodeAt (int line, int column)
+		public AstNode GetNodeAt (int line, int column, Predicate<AstNode> pred = null)
 		{
-			return GetNodeAt (new AstLocation (line, column));
+			return GetNodeAt (new AstLocation (line, column), pred);
 		}
 		
 		public AstNode GetNodeAt (AstLocation location, Predicate<AstNode> pred = null)

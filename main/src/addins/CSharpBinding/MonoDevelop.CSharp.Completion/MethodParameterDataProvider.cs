@@ -75,6 +75,12 @@ namespace MonoDevelop.CSharp.Completion
 			methods.Sort (MethodComparer);
 		}
 		
+		public MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext, IMethod method)
+		{
+			this.ext = ext;
+			methods.Add (method);
+		}
+		
 		static int MethodComparer (IMethod left, IMethod right)
 		{
 			return left.Parameters.Count - right.Parameters.Count;
