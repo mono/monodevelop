@@ -23,6 +23,8 @@ FILES =  \
 	AppleSdkSettings.cs \
 	AppleSdkSettingsPanel.cs \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.MacDev.Plist.PListEditorWidget.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \
@@ -37,6 +39,8 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistDate.cs \
 	MonoDevelop.MacDev.Plist/PlistDictionary.cs \
 	MonoDevelop.MacDev.Plist/PlistDocument.cs \
+	MonoDevelop.MacDev.Plist/PListEditorDisplayBinding.cs \
+	MonoDevelop.MacDev.Plist/PListEditorWidget.cs \
 	MonoDevelop.MacDev.Plist/PlistInteger.cs \
 	MonoDevelop.MacDev.Plist/PlistObject.cs \
 	MonoDevelop.MacDev.Plist/PlistObjectBase.cs \
@@ -80,7 +84,9 @@ FILES =  \
 	XcodeSyncing/XcodeSyncedItem.cs \
 	XcodeSyncing/XcodeSyncedType.cs 
 
-RES = MonoDevelop.MacDev.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	MonoDevelop.MacDev.addin.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \

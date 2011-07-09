@@ -111,4 +111,9 @@
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other/SdkLocations">
 		<Panel id = "AppleSdkSettings" class="MonoDevelop.MacDev.AppleSdkSettingsPanel"/>
 	</Extension>
+	<!--
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding class = "MonoDevelop.MacDev.Plist.PListEditorDisplayBinding" />
+	</Extension> -->
+	
 </Addin>

@@ -125,10 +125,17 @@
     <Compile Include="XcodeSyncing\XcodeSyncContext.cs" />
     <Compile Include="AppleSdkSettingsPanel.cs" />
     <Compile Include="AppleSdkSettings.cs" />
+    <Compile Include="MonoDevelop.MacDev.Plist\PListEditorDisplayBinding.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.MacDev.Plist\PListEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MacDev.Plist.PListEditorWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
       <LogicalName>MonoDevelop.MacDev.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

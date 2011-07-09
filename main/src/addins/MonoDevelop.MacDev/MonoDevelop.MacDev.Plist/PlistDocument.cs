@@ -184,5 +184,24 @@ namespace MonoDevelop.MacDev.Plist
 				Write (writer);
 			}
 		}
+		
+		#region PList editor
+		public override string ObjectTypeString {
+			get {
+				throw new NotSupportedException ();
+			}
+		}
+		
+		public override void RenderValue (PListEditorWidget widget, PListEditorWidget.CellRendererProperty renderer)
+		{
+			throw new NotSupportedException ();
+		}
+		
+		public override void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter)
+		{
+			if (Root != null)
+				Root.AddToTree (treeStore, iter);
+		}
+		#endregion
 	}
 }

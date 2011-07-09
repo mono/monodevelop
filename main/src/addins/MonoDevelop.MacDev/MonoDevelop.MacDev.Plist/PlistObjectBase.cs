@@ -86,5 +86,15 @@ namespace MonoDevelop.MacDev.Plist
 		{
 			return new PlistDictionary (value);
 		}
+		
+		#region PList editor
+		public abstract string ObjectTypeString {
+			get;
+		}
+		
+		public abstract void RenderValue (PListEditorWidget widget, PListEditorWidget.CellRendererProperty renderer);
+		
+		public abstract void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter);
+		#endregion
 	}
 }

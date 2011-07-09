@@ -27,6 +27,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.MacDev.Plist
 {
@@ -93,5 +95,31 @@ namespace MonoDevelop.MacDev.Plist
 		{
 			return Value.GetEnumerator ();
 		}
+		
+		#region PList editor
+		public override string ObjectTypeString {
+			get {
+				return GettextCatalog.GetString ("Array");
+			}
+		}
+		
+		public override void RenderValue (PListEditorWidget widget, PListEditorWidget.CellRendererProperty renderer)
+		{
+			renderer.Sensitive = false;
+			renderer.RenderValue = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Count), Count);
+		}
+		
+		public override void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter)
+		{
+			int i = 1;
+			foreach (var item in this) {
+				var txt = string.Format (GettextCatalog.GetString ("Item {0}"), i);
+				var subIter = iter.Equals (TreeIter.Zero) ? treeStore.AppendValues (txt, item) : treeStore.AppendValues (iter, txt, item);
+				i++;
+				if (item is PlistDictionary || item is PlistArray)
+					item.AddToTree (treeStore, subIter);
+			}
+		}
+		#endregion
 	}
 }

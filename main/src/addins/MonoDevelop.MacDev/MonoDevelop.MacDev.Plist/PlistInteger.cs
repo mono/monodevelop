@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.MacDev.Plist
 {
@@ -38,5 +40,13 @@ namespace MonoDevelop.MacDev.Plist
 		{
 			writer.WriteElementString ("integer", Value.ToString ());
 		}
+		
+		#region PList editor
+		public override string ObjectTypeString {
+			get {
+				return GettextCatalog.GetString ("Integer");
+			}
+		}
+		#endregion
 	}
 }

@@ -9,7 +9,6 @@
 // ------------------------------------------------------------------------------
 
 namespace MonoDevelop.MacDev.ObjCIntegration {
-    using MonoDevelop.MacDev.ObjCIntegration;
     using System.Collections.Generic;
     using System.Linq;
     using System;

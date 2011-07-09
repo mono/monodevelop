@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.MacDev.Plist
 {
-
-
 	public class PlistDate : PlistObject<DateTime>
 	{
 		public PlistDate (DateTime value) : base(value)
@@ -42,5 +42,14 @@ namespace MonoDevelop.MacDev.Plist
 		{
 			writer.WriteElementString ("date", Value.ToUniversalTime ().ToString (plistDateFormat));
 		}
+		
+		#region PList editor
+		public override string ObjectTypeString {
+			get {
+				return GettextCatalog.GetString ("Date");
+			}
+		}
+		#endregion
+		
 	}
 }
