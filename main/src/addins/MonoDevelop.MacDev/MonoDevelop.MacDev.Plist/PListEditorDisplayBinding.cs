@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using MonoMac.Foundation;
 
 namespace MonoDevelop.MacDev.Plist
 {
@@ -72,9 +73,7 @@ namespace MonoDevelop.MacDev.Plist
 			ContentName = fileName;
 			this.IsDirty = false;
 			
-			var doc = new PlistDocument ();
-			doc.LoadFromXmlFile (fileName);
-			widget.PlistDocument = doc;
+			widget.NSDictionary = NSDictionary.FromFile (fileName);
 		}
 		
 		public override void Save (string fileName)
@@ -82,7 +81,7 @@ namespace MonoDevelop.MacDev.Plist
 			this.IsDirty = false;
 			ContentName = fileName;
 			try {
-				widget.PlistDocument.WriteToFile (fileName);
+				widget.NSDictionary.WriteToFile (fileName, false);
 			} catch (Exception e) {
 				MessageService.ShowException (e, GettextCatalog.GetString ("Error while writing plist"));
 			}

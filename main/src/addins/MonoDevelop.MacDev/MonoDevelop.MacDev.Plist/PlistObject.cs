@@ -41,18 +41,5 @@ namespace MonoDevelop.MacDev.Plist
 			get { return value; }
 			set { this.value = value; }
 		}
-		
-		#region PList editor
-		public override void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter)
-		{
-			throw new NotSupportedException ();
-		}
-		
-		public override void RenderValue (PListEditorWidget widget, PListEditorWidget.CellRendererProperty renderer)
-		{
-			renderer.Sensitive = true;
-			renderer.RenderValue = Value.ToString ();
-		}
-		#endregion
 	}
 }

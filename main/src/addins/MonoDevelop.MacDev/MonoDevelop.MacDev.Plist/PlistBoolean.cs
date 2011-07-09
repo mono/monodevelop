@@ -41,13 +41,5 @@ namespace MonoDevelop.MacDev.Plist
 			writer.WriteStartElement (Value ? "true" : "false");
 			writer.WriteEndElement ();
 		}
-		
-		#region PList editor
-		public override string ObjectTypeString {
-			get {
-				return GettextCatalog.GetString ("Boolean");
-			}
-		}
-		#endregion
 	}
 }

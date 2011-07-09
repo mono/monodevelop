@@ -42,14 +42,5 @@ namespace MonoDevelop.MacDev.Plist
 		{
 			writer.WriteElementString ("date", Value.ToUniversalTime ().ToString (plistDateFormat));
 		}
-		
-		#region PList editor
-		public override string ObjectTypeString {
-			get {
-				return GettextCatalog.GetString ("Date");
-			}
-		}
-		#endregion
-		
 	}
 }

@@ -40,14 +40,5 @@ namespace MonoDevelop.MacDev.Plist
 		{
 			writer.WriteElementString ("string", Value);
 		}
-		
-		
-		#region PList editor
-		public override string ObjectTypeString {
-			get {
-				return GettextCatalog.GetString ("String");
-			}
-		}
-		#endregion
 	}
 }

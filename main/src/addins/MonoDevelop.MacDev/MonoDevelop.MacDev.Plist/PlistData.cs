@@ -42,19 +42,5 @@ namespace MonoDevelop.MacDev.Plist
 			writer.WriteBase64 (Value, Value.Length, 1);
 			writer.WriteEndElement ();
 		}
-		
-		#region PList editor
-		public override string ObjectTypeString {
-			get {
-				return GettextCatalog.GetString ("Data");
-			}
-		}
-		
-		public override void RenderValue (PListEditorWidget widget, PListEditorWidget.CellRendererProperty renderer)
-		{
-			renderer.Sensitive = false;
-			renderer.RenderValue = "byte[]";
-		}
-		#endregion
 	}
 }

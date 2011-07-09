@@ -27,23 +27,24 @@ using System;
 using Gtk;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using MonoMac.Foundation;
 
 namespace MonoDevelop.MacDev.Plist
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class PListEditorWidget : Gtk.Bin
 	{
-		TreeStore treeStore = new TreeStore (typeof(string), typeof (PlistObjectBase));
-		PlistDocument plistDocument;
+		TreeStore treeStore = new TreeStore (typeof(string), typeof (NSObject));
+		NSDictionary nsDictionary;
 		
 		static Dictionary<string, string> keyTable = new Dictionary<string, string> ();
 		
-		public PlistDocument PlistDocument {
+		public NSDictionary NSDictionary {
 			get {
-				return plistDocument;
+				return nsDictionary;
 			}
 			set {
-				plistDocument = value;
+				nsDictionary = value;
 				RefreshTree ();
 			}
 		}
@@ -61,8 +62,82 @@ namespace MonoDevelop.MacDev.Plist
 			keyTable["CFBundleVersion"] = GettextCatalog.GetString ("Bundle version");
 			keyTable["LSRequiresIPhoneOS"] = GettextCatalog.GetString ("iPhone OS required");
 			keyTable["NSMainNibFile"] = GettextCatalog.GetString ("Main nib file name");
+		}
+		
+		static string GetObjectTypeString (NSObject obj)
+		{
+			if (obj is NSArray)
+				return GettextCatalog.GetString ("Array");
+			if (obj is NSDictionary)
+				return GettextCatalog.GetString ("Dictionary");
 			
+			if (obj is NSData)
+				return GettextCatalog.GetString ("Data");
 			
+			if (obj is NSDate)
+				return GettextCatalog.GetString ("Date");
+			if (obj is NSNumber)
+				return GettextCatalog.GetString ("Number");
+			if (obj is NSString)
+				return GettextCatalog.GetString ("String");
+			throw new InvalidOperationException ("unknown object :" + obj.GetType ());
+//			if (obj is NSBool)
+//				return GettextCatalog.GetString ("Boolean");
+		}
+		
+		static void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, NSDictionary dict)
+		{
+			foreach (var item in dict) {
+				var key = item.Key.ToString ();
+				var subIter = iter.Equals (TreeIter.Zero) ? treeStore.AppendValues (key, item.Value) : treeStore.AppendValues (iter, key, item.Value);
+				if (item.Value is NSArray)
+					AddToTree (treeStore, subIter, (NSArray)item.Value);
+				if (item.Value is NSDictionary)
+					AddToTree (treeStore, subIter, (NSDictionary)item.Value);
+			}
+		}
+		
+		static void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, NSArray arr)
+		{
+			for (uint i = 0; i < arr.Count; i++) {
+				NSObject item = MonoMac.ObjCRuntime.Runtime.GetNSObject (arr.ValueAt (i));
+				
+				var txt = string.Format (GettextCatalog.GetString ("Item {0}"), i);
+				var subIter = iter.Equals (TreeIter.Zero) ? treeStore.AppendValues (txt, item) : treeStore.AppendValues (iter, txt, item);
+				
+				if (item is NSArray)
+					AddToTree (treeStore, subIter, (NSArray)item);
+				if (item is NSDictionary)
+					AddToTree (treeStore, subIter, (NSDictionary)item);
+			}
+		}
+		
+		
+		void RenderValue (PListEditorWidget.CellRendererProperty renderer, NSObject obj)
+		{
+			if (obj is NSArray) {
+				var arr = (NSArray)obj;
+				renderer.Sensitive = false;
+				renderer.RenderValue = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", (int)arr.Count), (int)arr.Count);
+				return;
+			}
+			if (obj is NSDictionary) {
+				var dict = (NSDictionary)obj;
+				renderer.Sensitive = false;
+				renderer.RenderValue = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", (int)dict.Count), (int)dict.Count);
+				return;
+			}
+			renderer.Sensitive = true;
+			
+			if (obj is NSData) {
+				renderer.RenderValue = "byte[]";
+			} else if (obj is NSDate) {
+				renderer.RenderValue = ((NSDate)obj).ToString ();
+			} else if (obj is NSNumber) {
+				renderer.RenderValue = ((NSNumber)obj).ToString ();
+			} else if (obj is NSString) {
+				renderer.RenderValue = ((NSString)obj).ToString ();
+			}
 		}
 		
 		public PListEditorWidget ()
@@ -70,7 +145,7 @@ namespace MonoDevelop.MacDev.Plist
 			this.Build ();
 			treeview1.AppendColumn (GettextCatalog.GetString ("Key"), new CellRendererText (), delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererText)cell;
-				string key = (string)tree_model.GetValue (iter, 0);
+				string key = (string)tree_model.GetValue (iter, 0) ?? "";
 				string txt;
 				if (!keyTable.TryGetValue (key, out txt))
 					txt = key;
@@ -79,16 +154,16 @@ namespace MonoDevelop.MacDev.Plist
 			
 			treeview1.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererText)cell;
-				var obj      = (PlistObjectBase)tree_model.GetValue (iter, 1);
+				var obj      = (NSObject)tree_model.GetValue (iter, 1);
 				renderer.ForegroundGdk = Style.Text (StateType.Insensitive);
-				renderer.Text = obj != null ? obj.ObjectTypeString : "";
+				renderer.Text = GetObjectTypeString (obj);
 			});
 			
 			treeview1.AppendColumn (GettextCatalog.GetString ("Value"), new CellRendererProperty (), delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererProperty)cell;
-				var obj      = (PlistObjectBase)tree_model.GetValue (iter, 1);
-				obj.RenderValue (this, renderer);
-			});	
+				var obj      = (NSObject)tree_model.GetValue (iter, 1);
+				RenderValue (renderer, obj);
+			});
 			treeview1.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview1.Model = treeStore;
 		}
@@ -96,8 +171,8 @@ namespace MonoDevelop.MacDev.Plist
 		void RefreshTree ()
 		{
 			treeStore.Clear ();
-			if (plistDocument != null)
-				plistDocument.AddToTree (treeStore, Gtk.TreeIter.Zero);
+			if (nsDictionary != null)
+				AddToTree (treeStore, Gtk.TreeIter.Zero, nsDictionary);
 		}
 		
 		public class CellRendererProperty : CellRenderer

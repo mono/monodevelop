@@ -155,28 +155,5 @@ namespace MonoDevelop.MacDev.Plist
 		{
 			return GetEnumerator ();
 		}
-		
-		#region PList editor
-		public override string ObjectTypeString {
-			get {
-				return GettextCatalog.GetString ("Dictionary");
-			}
-		}
-		
-		public override void RenderValue (PListEditorWidget widget, PListEditorWidget.CellRendererProperty renderer)
-		{
-			renderer.Sensitive = false;
-			renderer.RenderValue = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Count), Count);
-		}
-		
-		public override void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter)
-		{
-			foreach (var item in this) {
-				var subIter = iter.Equals (TreeIter.Zero) ? treeStore.AppendValues (item.Key, item.Value) : treeStore.AppendValues (iter, item.Key, item.Value);
-				if (item.Value is PlistDictionary || item.Value is PlistArray)
-					item.Value.AddToTree (treeStore, subIter);
-			}
-		}
-		#endregion
 	}
 }
