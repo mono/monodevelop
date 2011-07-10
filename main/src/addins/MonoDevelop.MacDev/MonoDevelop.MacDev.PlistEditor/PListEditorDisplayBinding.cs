@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoMac.Foundation;
 
-namespace MonoDevelop.MacDev.Plist
+namespace MonoDevelop.MacDev.PlistEditor
 {
 	public class PListEditorDisplayBinding : IViewDisplayBinding
 	{
@@ -55,36 +55,6 @@ namespace MonoDevelop.MacDev.Plist
 		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new PListEditorViewContent ();
-		}
-	}
-	
-	public class PListEditorViewContent : AbstractViewContent
-	{
-		PListEditorWidget widget = new PListEditorWidget ();
-		
-		public override Gtk.Widget Control {
-			get {
-				return widget;
-			}
-		}
-		
-		public override void Load (string fileName)
-		{
-			ContentName = fileName;
-			this.IsDirty = false;
-			
-			widget.NSDictionary = NSDictionary.FromFile (fileName);
-		}
-		
-		public override void Save (string fileName)
-		{
-			this.IsDirty = false;
-			ContentName = fileName;
-			try {
-				widget.NSDictionary.WriteToFile (fileName, false);
-			} catch (Exception e) {
-				MessageService.ShowException (e, GettextCatalog.GetString ("Error while writing plist"));
-			}
 		}
 	}
 }

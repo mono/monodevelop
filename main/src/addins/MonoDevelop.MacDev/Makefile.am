@@ -24,7 +24,8 @@ FILES =  \
 	AppleSdkSettingsPanel.cs \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.MacDev.Plist.PListEditorWidget.cs \
+	gtk-gui/MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.cs \
+	gtk-gui/MonoDevelop.MacDev.PlistEditor.PListEditorWidget.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \
@@ -39,13 +40,17 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistDate.cs \
 	MonoDevelop.MacDev.Plist/PlistDictionary.cs \
 	MonoDevelop.MacDev.Plist/PlistDocument.cs \
-	MonoDevelop.MacDev.Plist/PListEditorDisplayBinding.cs \
-	MonoDevelop.MacDev.Plist/PListEditorWidget.cs \
 	MonoDevelop.MacDev.Plist/PlistInteger.cs \
 	MonoDevelop.MacDev.Plist/PlistObject.cs \
 	MonoDevelop.MacDev.Plist/PlistObjectBase.cs \
 	MonoDevelop.MacDev.Plist/PlistReal.cs \
 	MonoDevelop.MacDev.Plist/PlistString.cs \
+	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
+	MonoDevelop.MacDev.PlistEditor/PListEditorViewContent.cs \
+	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/PListObject.cs \
+	MonoDevelop.MacDev.PlistEditor/PListSheme.cs \
 	NativeReferences/NativeReference.cs \
 	NativeReferences/NativeReferenceCommandHandler.cs \
 	NativeReferences/NativeReferenceFolderNodeBuilder.cs \
@@ -86,7 +91,16 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	MonoDevelop.MacDev.addin.xml
+	MonoDevelop.MacDev.addin.xml \
+	MonoDevelop.MacDev.PlistEditor/Icons/iPad1.png \
+	MonoDevelop.MacDev.PlistEditor/Icons/iPad2.png \
+	MonoDevelop.MacDev.PlistEditor/Icons/iPad3.png \
+	MonoDevelop.MacDev.PlistEditor/Icons/iPad4.png \
+	MonoDevelop.MacDev.PlistEditor/Icons/iPhone1.png \
+	MonoDevelop.MacDev.PlistEditor/Icons/iPhone2.png \
+	MonoDevelop.MacDev.PlistEditor/Icons/iPhone3.png \
+	MonoDevelop.MacDev.PlistEditor/Icons/iPhone4.png \
+	MonoDevelop.MacDev.PlistEditor/InfoPListSheme.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \

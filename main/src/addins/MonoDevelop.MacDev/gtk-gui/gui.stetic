@@ -10,7 +10,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.MacDev/MonoDevelop.MacDev.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.MacDev.Plist.PListEditorWidget" design-size="620 563">
+  <widget class="Gtk.Bin" id="MonoDevelop.MacDev.PlistEditor.PListEditorWidget" design-size="620 563">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Notebook" id="notebook1">
@@ -44,14 +44,14 @@
                             <property name="ColumnSpacing">6</property>
                             <property name="BorderWidth">6</property>
                             <child>
-                              <widget class="Gtk.ComboBox" id="comboboxDeploymentTarget">
+                              <widget class="Gtk.ComboBox" id="comboboxDevices">
                                 <property name="MemberName" />
                                 <property name="IsTextCombo">True</property>
                                 <property name="Items" translatable="yes" />
                               </widget>
                               <packing>
-                                <property name="TopAttach">3</property>
-                                <property name="BottomAttach">4</property>
+                                <property name="TopAttach">2</property>
+                                <property name="BottomAttach">3</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
                                 <property name="AutoSize">True</property>
@@ -66,14 +66,14 @@
                               </packing>
                             </child>
                             <child>
-                              <widget class="Gtk.ComboBox" id="comboboxDevices">
+                              <widget class="Gtk.ComboBoxEntry" id="comboboxentryDeploymentTarget">
                                 <property name="MemberName" />
                                 <property name="IsTextCombo">True</property>
                                 <property name="Items" translatable="yes" />
                               </widget>
                               <packing>
-                                <property name="TopAttach">2</property>
-                                <property name="BottomAttach">3</property>
+                                <property name="TopAttach">3</property>
+                                <property name="BottomAttach">4</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
                                 <property name="AutoSize">True</property>
@@ -307,8 +307,9 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait">
+                                                  <widget class="Gtk.Image" id="imageIPhone1">
                                                     <property name="MemberName" />
+                                                    <property name="Pixbuf">resource:iPhone1.png</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="Position">0</property>
@@ -349,8 +350,9 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait1">
+                                                  <widget class="Gtk.Image" id="imageIPhone2">
                                                     <property name="MemberName" />
+                                                    <property name="Pixbuf">resource:iPhone3.png</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="Position">0</property>
@@ -392,8 +394,9 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait2">
+                                                  <widget class="Gtk.Image" id="imageIPhone3">
                                                     <property name="MemberName" />
+                                                    <property name="Pixbuf">resource:iPhone2.png</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="Position">0</property>
@@ -434,8 +437,9 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait3">
+                                                  <widget class="Gtk.Image" id="imageIPhone4">
                                                     <property name="MemberName" />
+                                                    <property name="Pixbuf">resource:iPhone4.png</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="Position">0</property>
@@ -508,7 +512,7 @@
                                             <property name="CanFocus">True</property>
                                             <property name="Type">Custom</property>
                                             <child>
-                                              <widget class="Gtk.Image" id="imageIPhonePortrait5">
+                                              <widget class="Gtk.Image" id="imageIPhoneAppIcon1">
                                                 <property name="MemberName" />
                                               </widget>
                                             </child>
@@ -525,13 +529,12 @@
                                             <property name="MemberName" />
                                             <property name="CanFocus">True</property>
                                             <property name="Type">Custom</property>
-                                            <property name="Active">True</property>
                                             <child>
                                               <widget class="Gtk.VBox" id="vbox9">
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait6">
+                                                  <widget class="Gtk.Image" id="imageIPhoneAppIcon2">
                                                     <property name="MemberName" />
                                                   </widget>
                                                   <packing>
@@ -606,7 +609,7 @@
                                             <property name="CanFocus">True</property>
                                             <property name="Type">Custom</property>
                                             <child>
-                                              <widget class="Gtk.Image" id="imageIPhonePortrait7">
+                                              <widget class="Gtk.Image" id="imageIPhoneLaunch1">
                                                 <property name="MemberName" />
                                               </widget>
                                             </child>
@@ -623,13 +626,12 @@
                                             <property name="MemberName" />
                                             <property name="CanFocus">True</property>
                                             <property name="Type">Custom</property>
-                                            <property name="Active">True</property>
                                             <child>
                                               <widget class="Gtk.VBox" id="vbox10">
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait8">
+                                                  <widget class="Gtk.Image" id="imageIPhoneLaunch2">
                                                     <property name="MemberName" />
                                                   </widget>
                                                   <packing>
@@ -772,13 +774,15 @@
                                             <property name="MemberName" />
                                             <property name="CanFocus">True</property>
                                             <property name="Type">Custom</property>
+                                            <property name="Active">True</property>
                                             <child>
                                               <widget class="Gtk.VBox" id="vbox8">
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait4">
+                                                  <widget class="Gtk.Image" id="imageIPad1">
                                                     <property name="MemberName" />
+                                                    <property name="Pixbuf">resource:iPad1.png</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="Position">0</property>
@@ -819,8 +823,9 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait9">
+                                                  <widget class="Gtk.Image" id="imageIPad2">
                                                     <property name="MemberName" />
+                                                    <property name="Pixbuf">resource:iPad3.png</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="Position">0</property>
@@ -862,8 +867,9 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait10">
+                                                  <widget class="Gtk.Image" id="imageIPad3">
                                                     <property name="MemberName" />
+                                                    <property name="Pixbuf">resource:iPad2.png</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="Position">0</property>
@@ -904,8 +910,9 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait11">
+                                                  <widget class="Gtk.Image" id="imageIPad4">
                                                     <property name="MemberName" />
+                                                    <property name="Pixbuf">resource:iPad4.png</property>
                                                   </widget>
                                                   <packing>
                                                     <property name="Position">0</property>
@@ -978,7 +985,7 @@
                                             <property name="CanFocus">True</property>
                                             <property name="Type">Custom</property>
                                             <child>
-                                              <widget class="Gtk.Image" id="imageIPhonePortrait12">
+                                              <widget class="Gtk.Image" id="imageIPadAppIcon">
                                                 <property name="MemberName" />
                                               </widget>
                                             </child>
@@ -1036,7 +1043,7 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait16">
+                                                  <widget class="Gtk.Image" id="imageIPadLaunch1">
                                                     <property name="MemberName" />
                                                   </widget>
                                                   <packing>
@@ -1079,7 +1086,7 @@
                                                 <property name="MemberName" />
                                                 <property name="Spacing">6</property>
                                                 <child>
-                                                  <widget class="Gtk.Image" id="imageIPhonePortrait15">
+                                                  <widget class="Gtk.Image" id="imageIPadLaunch2">
                                                     <property name="MemberName" />
                                                   </widget>
                                                   <packing>
@@ -1171,14 +1178,182 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+          <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
             <property name="MemberName" />
+            <property name="CanFocus">True</property>
             <property name="ShadowType">In</property>
             <child>
-              <widget class="Gtk.TreeView" id="treeview1">
+              <widget class="Gtk.Viewport" id="GtkViewport1">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="ShowScrollbars">True</property>
+                <property name="ShadowType">None</property>
+                <child>
+                  <widget class="Gtk.VBox" id="vbox3">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Expander" id="expander2">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Expanded">True</property>
+                        <child>
+                          <widget class="Gtk.VBox" id="vboxCustomProperties">
+                            <property name="MemberName" />
+                            <property name="Spacing">6</property>
+                            <child>
+                              <widget class="MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget" id="customProperties">
+                                <property name="MemberName" />
+                                <property name="Events">ButtonPressMask</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">0</property>
+                                <property name="AutoSize">True</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="GtkLabel9">
+                            <property name="MemberName" />
+                            <property name="LabelProp" translatable="yes">&lt;b&gt;Custom iOS Properties&lt;/b&gt;</property>
+                            <property name="UseMarkup">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
+                            <property name="type">label_item</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Expander" id="expander3">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Expanded">True</property>
+                        <child>
+                          <widget class="Gtk.Label" id="label19">
+                            <property name="MemberName" />
+                            <property name="Ypad">20</property>
+                            <property name="LabelProp" translatable="yes">No Document Types</property>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="GtkLabel10">
+                            <property name="MemberName" />
+                            <property name="LabelProp" translatable="yes">&lt;b&gt;Document Types&lt;/b&gt;</property>
+                            <property name="UseMarkup">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
+                            <property name="type">label_item</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Expander" id="expander4">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Expanded">True</property>
+                        <child>
+                          <widget class="Gtk.Label" id="label22">
+                            <property name="MemberName" />
+                            <property name="Ypad">20</property>
+                            <property name="LabelProp" translatable="yes">No Exported UTIs</property>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="GtkLabel11">
+                            <property name="MemberName" />
+                            <property name="LabelProp" translatable="yes">&lt;b&gt;Exported UTIs&lt;/b&gt;</property>
+                            <property name="UseMarkup">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
+                            <property name="type">label_item</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Expander" id="expander5">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Expanded">True</property>
+                        <child>
+                          <widget class="Gtk.Label" id="label23">
+                            <property name="MemberName" />
+                            <property name="Ypad">20</property>
+                            <property name="LabelProp" translatable="yes">No Imported UTIs</property>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="GtkLabel12">
+                            <property name="MemberName" />
+                            <property name="LabelProp" translatable="yes">&lt;b&gt;Imported UTIs&lt;/b&gt;</property>
+                            <property name="UseMarkup">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
+                            <property name="type">label_item</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">3</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Expander" id="expander6">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Expanded">True</property>
+                        <child>
+                          <widget class="Gtk.Label" id="label24">
+                            <property name="MemberName" />
+                            <property name="Ypad">20</property>
+                            <property name="LabelProp" translatable="yes">No URL Types</property>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="GtkLabel13">
+                            <property name="MemberName" />
+                            <property name="LabelProp" translatable="yes">&lt;b&gt;URL Types&lt;/b&gt;</property>
+                            <property name="UseMarkup">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
+                            <property name="type">label_item</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">4</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
               </widget>
             </child>
           </widget>
@@ -1194,6 +1369,23 @@
           <packing>
             <property name="type">tab</property>
           </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget" design-size="503 416">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+        <property name="MemberName" />
+        <property name="ShadowType">In</property>
+        <child>
+          <widget class="Gtk.TreeView" id="treeview1">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="ShowScrollbars">True</property>
+          </widget>
         </child>
       </widget>
     </child>
