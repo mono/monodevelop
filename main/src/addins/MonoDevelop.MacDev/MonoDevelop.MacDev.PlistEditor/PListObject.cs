@@ -28,6 +28,10 @@ using System.Collections.Generic;
 using MonoDevelop.MacDev.Plist;
 using MonoDevelop.Core;
 using System.Linq;
+using MonoMac.Foundation;
+using System.Runtime.InteropServices;
+
+
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -51,6 +55,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			// TODO
 		}
+		
+		public abstract NSObject Convert ();
 		
 		public abstract void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer);
 		
@@ -136,35 +142,45 @@ namespace MonoDevelop.MacDev.PlistEditor
 			renderer.RenderValue = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
 		}
 		
+		public override NSObject Convert ()
+		{
+			var dict = new NSDictionary ();
+//			foreach (var pair in Value) {
+//				dict[new NSString (pair.Key)] = pair.Value.Convert ();
+//			}
+			return dict;
+		}
+		
 		public void Save (string fileName)
 		{
-			throw new NotImplementedException ();
+			var dict = (NSDictionary)Convert ();
+			dict.WriteToFile (fileName, false);
 		}
 		
 		public static PDictionary Load (string fileName)
 		{
-			// todo: NSDictionary loading.
-			var doc = new PlistDocument ();
-			doc.LoadFromXmlFile (fileName);
-			return (PDictionary)Conv (doc.Root);
+			var dict = NSDictionary.FromFile (fileName);
+			return (PDictionary)Conv (dict);
 		}
 		
-		static PObject Conv (PlistObjectBase val)
+		static IntPtr selObjCType = MonoMac.ObjCRuntime.Selector.GetHandle ("objCType");
+		static PObject Conv (NSObject val)
 		{
-			if (val is PlistDictionary) {
+			if (val is NSDictionary) {
 				var result = new PDictionary ();
-				foreach (var pair in ((PlistDictionary)val)) {
+				foreach (var pair in (NSDictionary)val) {
 					var p = Conv (pair.Value);
-					p.Key = pair.Key;
+					string k = pair.Key.ToString ();
+					p.Key = k;
 					p.Parent = result;
-					result.Value[pair.Key] = p;
+					result.Value[k] = p;
 				}
 				return result;
 			}
 			
-			if (val is PlistArray) {
+			if (val is NSArray) {
 				var result = new PArray ();
-				foreach (var f in ((PlistArray)val)) {
+				foreach (var f in NSArray.ArrayFromHandle<NSObject> (((NSArray)val).Handle)) {
 					var p = Conv (f);
 					p.Parent = result;
 					result.Value.Add (p);
@@ -172,20 +188,27 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return result;
 			}
 			
-			if (val is PlistObject<string>)
-				return ((PlistObject<string>)val).Value;
-			if (val is PlistObject<int>)
-				return ((PlistObject<int>)val).Value;
-			if (val is PlistObject<bool>)
-				return ((PlistObject<bool>)val).Value;
-			if (val is PlistObject<DateTime>)
-				return ((PlistObject<DateTime>)val).Value;
-			if (val is PlistObject<byte[]>)
-				return ((PlistObject<byte[]>)val).Value;
+			if (val is NSString)
+				return ((NSString)val).ToString ();
+			if (val is NSNumber) {
+				var nr = (NSNumber)val;
+				var str = Marshal.PtrToStringAnsi (MonoMac.ObjCRuntime.Messaging.IntPtr_objc_msgSend (val.Handle, selObjCType));
+				if (str == "c" || str == "C" || str == "B")
+					return nr.BoolValue;
+				return nr.Int32Value;
+			}
+			if (val is NSDate)
+				return PDate.referenceDate + TimeSpan.FromSeconds (((NSDate)val).SecondsSinceReferenceDate);
+			
+			if (val is NSData) {
+				var data = (NSData)val;
+				var bytes = new byte[data.Length];
+				Marshal.Copy (data.Bytes, bytes, 0, (int)data.Length);
+				return bytes;
+			}
 			
 			throw new NotSupportedException (val.ToString ());
 		}
-		
 	}
 	
 	public class PArray : PValueObject<List<PObject>>
@@ -199,6 +222,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public PArray ()
 		{
 			Value = new List<PObject> ();
+		}
+		
+		public override NSObject Convert ()
+		{
+			return NSArray.FromNSObjects (Value.Select (x => x.Convert ()).ToArray ());
 		}
 		
 		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
@@ -220,6 +248,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 		}
 		
+		public override NSObject Convert ()
+		{
+			return NSNumber.FromBoolean (Value);
+		}
+		
 		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
 		{
 			renderer.Sensitive = true;
@@ -235,6 +268,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		public override NSObject Convert ()
+		{
+			return NSData.FromArray (Value);
+		}
+		
 		public PData (byte[] value) : base(value)
 		{
 		}
@@ -242,6 +280,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PDate : PValueObject<DateTime>
 	{
+		internal static DateTime referenceDate = new DateTime (2001, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		
 		public override string TypeString {
 			get {
 				return GettextCatalog.GetString ("Date");
@@ -250,6 +290,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PDate (DateTime value) : base(value)
 		{
+		}
+		
+		public override NSObject Convert ()
+		{
+			var secs = (Value - referenceDate).TotalSeconds;
+			return NSDate.FromTimeIntervalSinceReferenceDate (secs);
 		}
 	}
 	
@@ -263,6 +309,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PNumber (int value) : base(value)
 		{
+		}
+		
+		public override NSObject Convert ()
+		{
+			return NSNumber.FromInt32 (Value);
 		}
 	}
 	
@@ -278,6 +329,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 		}
 		
+		public override NSObject Convert ()
+		{
+			return new NSString (Value);
+		}
+		
 		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
 		{
 			renderer.Sensitive = true;
@@ -291,6 +347,5 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			base.RenderValue (widget, renderer);
 		}
-		
 	}
 }
