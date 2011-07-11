@@ -337,7 +337,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
 		{
 			renderer.Sensitive = true;
-			var key = Parent != null ? widget.Sheme.GetKey (Parent.Key) : null;
+			var key = Parent != null ? widget.Scheme.GetKey (Parent.Key) : null;
 			if (key != null) {
 				var val = key.Values.FirstOrDefault (v => v.Identifier == Value);
 				if (val != null) {

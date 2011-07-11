@@ -5,6 +5,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.MacDev.dll
 DEPS =  \
 	../../../build/AddIns/MacPlatform.dll \
 	../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	../../../build/bin/Mono.TextEditor.dll \
 	../../../build/bin/MonoDevelop.Core.dll \
 	../../../build/bin/MonoDevelop.Ide.dll
 
@@ -13,6 +14,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:../../../../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -50,7 +52,7 @@ FILES =  \
 	MonoDevelop.MacDev.PlistEditor/PListEditorViewContent.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/PListObject.cs \
-	MonoDevelop.MacDev.PlistEditor/PListSheme.cs \
+	MonoDevelop.MacDev.PlistEditor/PListScheme.cs \
 	NativeReferences/NativeReference.cs \
 	NativeReferences/NativeReferenceCommandHandler.cs \
 	NativeReferences/NativeReferenceFolderNodeBuilder.cs \
@@ -100,7 +102,7 @@ RES =  \
 	MonoDevelop.MacDev.PlistEditor/Icons/iPhone2.png \
 	MonoDevelop.MacDev.PlistEditor/Icons/iPhone3.png \
 	MonoDevelop.MacDev.PlistEditor/Icons/iPhone4.png \
-	MonoDevelop.MacDev.PlistEditor/InfoPListSheme.xml
+	MonoDevelop.MacDev.PlistEditor/InfoPListSheme.xml,InfoPListScheme.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \

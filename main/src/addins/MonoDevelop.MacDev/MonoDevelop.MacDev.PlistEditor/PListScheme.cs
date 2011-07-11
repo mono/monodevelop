@@ -1,5 +1,5 @@
 // 
-// PListSheme.cs
+// PListScheme.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
-	public class PListSheme
+	public class PListScheme
 	{
 		List<Key> keys = new List<Key> ();
 		
@@ -54,11 +54,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return keys.FirstOrDefault (k => k.Identifier == id);
 		}
 		
-		static PListSheme Read (XmlReader reader)
+		static PListScheme Read (XmlReader reader)
 		{
-			var result = new PListSheme ();
+			var result = new PListScheme ();
 			
-			XmlReadHelper.ReadList (reader, "PListSheme", delegate () {
+			XmlReadHelper.ReadList (reader, "PListScheme", delegate () {
 				switch (reader.LocalName) {
 				case "Key":
 					var key = new Key () {
@@ -85,13 +85,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 		return result;
 		}
 		
-		public static readonly PListSheme Sheme;
+		public static readonly PListScheme Scheme;
 		
-		static PListSheme ()
+		static PListScheme ()
 		{
-			const string ManifestResourceName = "InfoPListSheme.xml";
-			using (var reader = XmlTextReader.Create (typeof (PListSheme).Assembly.GetManifestResourceStream (ManifestResourceName))) {
-				Sheme = Read (reader);
+			const string ManifestResourceName = "InfoPListScheme.xml";
+			using (var reader = XmlTextReader.Create (typeof (PListScheme).Assembly.GetManifestResourceStream (ManifestResourceName))) {
+				Scheme = Read (reader);
 			}
 		}
 	}

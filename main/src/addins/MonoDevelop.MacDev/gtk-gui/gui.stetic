@@ -9,6 +9,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.MacDev/MonoDevelop.MacDev.dll" internal="true" />
+    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.MacDev.PlistEditor.PListEditorWidget" design-size="620 563">
     <property name="MemberName" />

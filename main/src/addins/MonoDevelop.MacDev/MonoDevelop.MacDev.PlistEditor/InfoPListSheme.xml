@@ -1,6 +1,6 @@
 <!--
 
-InfoPListSheme.xml
+InfoPListScheme.xml
  
 Author:
       Mike Krüger <mkrueger@xamarin.com>
@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<PListSheme>
+<PListScheme>
 	<!-- Core Foundation keys -->
 	<Key name = "CFAppleHelpAnchor" _description = "Help file" type = "String"/>
 	<Key name = "CFBundleAllowMixedLocalizations" _description = "Localized resources can be mixed" type = "Boolean"/>
@@ -123,4 +123,4 @@ THE SOFTWARE.
 	</Key>
 	<Key name = "UIViewEdgeAntialiasing" _description = "Renders with edge antialiasing" type = "Boolean"/>
 	<Key name = "UIViewGroupOpacity" _description = "Renders with group opacity" type = "Boolean"/>
-</PListSheme>
+</PListScheme>

@@ -35,11 +35,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public partial class CustomPropertiesWidget : Gtk.Bin
 	{
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
-		PListSheme sheme;
+		PListScheme scheme;
 		
-		public PListSheme Sheme {
+		public PListScheme Scheme {
 			get {
-				return sheme;
+				return scheme;
 			}
 		}
 		
@@ -50,7 +50,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			set {
 				nsDictionary = value;
-				sheme  = PListSheme.Sheme;
+				scheme  = PListScheme.Scheme;
 				RefreshTree ();
 			}
 		}
@@ -62,7 +62,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			treeview1.AppendColumn (GettextCatalog.GetString ("Key"), new CellRendererText (), delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererText)cell;
 				string id = (string)tree_model.GetValue (iter, 0) ?? "";
-				var key = sheme.GetKey (id);
+				var key = scheme.GetKey (id);
 				renderer.Text = key != null ? GettextCatalog.GetString (key.Description) : id;
 			});
 			var comboRenderer = new CellRendererCombo ();
@@ -112,7 +112,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			treeview1.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererCombo (), delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				string id = (string)tree_model.GetValue (iter, 0) ?? "";
-				var key   = sheme.GetKey (id);
+				var key   = scheme.GetKey (id);
 				var obj   = (PObject)tree_model.GetValue (iter, 1);
 				renderer.Editable = key == null;
 				renderer.ForegroundGdk = Style.Text (key == null ? StateType.Normal : StateType.Insensitive);
