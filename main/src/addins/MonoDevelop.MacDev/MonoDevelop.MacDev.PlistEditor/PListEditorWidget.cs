@@ -29,6 +29,9 @@ using Gtk;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using MonoMac.Foundation;
+using MonoDevelop.Components;
+using Mono.TextEditor;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -54,7 +57,75 @@ namespace MonoDevelop.MacDev.PlistEditor
 			devices.AppendValues (GettextCatalog.GetString ("iPad"));
 			devices.AppendValues (GettextCatalog.GetString ("Universal"));
 			
+			
+			
 			comboboxDevices.Model = devices;
+			
+		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			
+			imageIPhoneAppIcon1.Pixbuf = CreateNoImageIcon (57, 57);
+			imageIPhoneAppIcon2.Pixbuf = CreateNoImageIcon (114, 114);
+			
+			imageIPhoneLaunch1.Pixbuf = CreateNoImageIcon (58, 58);
+			imageIPhoneLaunch2.Pixbuf = CreateNoImageIcon (58, 58);
+			
+			imageIPadAppIcon.Pixbuf = CreateNoImageIcon (72, 72);
+			
+			imageIPadLaunch1.Pixbuf = CreateNoImageIcon (58, 58);
+			imageIPadLaunch2.Pixbuf = CreateNoImageIcon (58, 58);
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			createdImages.ForEach (px => px.Dispose ());
+			createdImages.Clear ();
+		}
+		
+		List<Gdk.Pixbuf> createdImages = new List<Gdk.Pixbuf> ();
+		Gdk.Pixbuf CreateNoImageIcon (int w, int h)
+		{
+			using (var pixmap = new Pixmap (GdkWindow, w, h)) {
+				using (var cr = Gdk.CairoHelper.Create (pixmap)) {
+					cr.Rectangle (0, 0, w, h);
+					cr.Color = new Cairo.Color (1, 1, 1);
+					cr.FillPreserve ();
+					cr.LineWidth = 1;
+					cr.Color = new Cairo.Color (0.57, 0.57, 0.57);
+					cr.Stroke ();
+					
+					CairoExtensions.RoundedRectangle (cr, 5, 5, w - 10, h - 10, 5);
+					cr.Color = new Cairo.Color (0.97, 0.97, 0.97);
+					cr.Fill ();
+					
+					using (var layout = new Pango.Layout (PangoContext)) {
+						layout.SetText (GettextCatalog.GetString ("no image"));
+					
+						layout.Width = (int)((w - 20) * Pango.Scale.PangoScale);
+						layout.Wrap = Pango.WrapMode.WordChar;
+						layout.Alignment = Pango.Alignment.Center;
+						int pw, ph;
+						layout.GetPixelSize (out pw, out ph);
+						cr.MoveTo ((w - layout.Width / Pango.Scale.PangoScale) / 2, (h - ph) / 2);
+						
+						cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
+						cr.ShowLayout (layout);
+					}
+					
+					CairoExtensions.RoundedRectangle (cr, 5, 5, w - 10, h - 10, 5);
+					cr.LineWidth = 3;
+					cr.Color = new Cairo.Color (0.8, 0.8, 0.8);
+					cr.SetDash (new double[] { 12, 2 }, 0);
+					cr.Stroke ();
+				}
+				var result = Pixbuf.FromDrawable (pixmap, this.Colormap, 0, 0, 0, 0, w, h);
+				createdImages.Add (result);
+				return result;
+			}
 		}
 		
 		void Update ()
