@@ -145,7 +145,7 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\InfoPListSheme.xml">
+    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\InfoPListScheme.xml">
       <LogicalName>InfoPListScheme.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPhone2.png">

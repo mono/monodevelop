@@ -102,7 +102,7 @@ RES =  \
 	MonoDevelop.MacDev.PlistEditor/Icons/iPhone2.png \
 	MonoDevelop.MacDev.PlistEditor/Icons/iPhone3.png \
 	MonoDevelop.MacDev.PlistEditor/Icons/iPhone4.png \
-	MonoDevelop.MacDev.PlistEditor/InfoPListSheme.xml,InfoPListScheme.xml
+	MonoDevelop.MacDev.PlistEditor/InfoPListScheme.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \
