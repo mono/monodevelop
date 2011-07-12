@@ -4,8 +4,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 {
 	public partial class CustomPropertiesWidget
 	{
-		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		private global::Gtk.TreeView treeview1;
+		private global::Gtk.VBox vbox1;
 		
 		protected virtual void Build ()
 		{
@@ -14,15 +13,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget";
 			// Container child MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.Gtk.Container+ContainerChild
-			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
-			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
-			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
-			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-			this.treeview1 = new global::Gtk.TreeView ();
-			this.treeview1.CanFocus = true;
-			this.treeview1.Name = "treeview1";
-			this.GtkScrolledWindow.Add (this.treeview1);
-			this.Add (this.GtkScrolledWindow);
+			this.vbox1 = new global::Gtk.VBox ();
+			this.vbox1.Name = "vbox1";
+			this.vbox1.Spacing = 6;
+			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}

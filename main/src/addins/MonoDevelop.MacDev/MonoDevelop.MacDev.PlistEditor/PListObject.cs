@@ -57,6 +57,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// TODO
 		}
 		
+		public void Remove ()
+		{
+			if (Parent is PDictionary) {
+				((PDictionary)Parent).Value.Remove (Key);
+			} else if (Parent is PArray) {
+				((PArray)Parent).Value.Remove (this);
+			}
+		}
+		
 		public abstract NSObject Convert ();
 		
 		public abstract void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer);

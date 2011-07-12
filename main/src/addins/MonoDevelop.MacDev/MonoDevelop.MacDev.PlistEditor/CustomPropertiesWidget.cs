@@ -29,6 +29,8 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using MonoMac.Foundation;
 using System.Linq;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -38,7 +40,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
 		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (object));
-		
+		Gtk.TreeView treeview1;
 		PListScheme scheme;
 		
 		public PListScheme Scheme {
@@ -81,9 +83,65 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return new PString ("<error>");
 		}
 		
+		
+		class PopupTreeView : Gtk.TreeView
+		{
+			CustomPropertiesWidget widget;
+			
+			public PopupTreeView (CustomPropertiesWidget widget)
+			{
+				this.widget = widget;
+			}
+			
+			protected override bool OnPopupMenu ()
+			{
+				ShowPoupMenu ();
+				return base.OnPopupMenu ();
+			}
+			
+			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+			{
+				if (evnt.Button == 3)
+					ShowPoupMenu ();
+				return base.OnButtonPressEvent (evnt);
+			}
+			
+			void ShowPoupMenu ()
+			{
+				var menu = new Gtk.Menu ();
+				var newKey = new Gtk.MenuItem (GettextCatalog.GetString ("New key"));
+				newKey.Activated += delegate(object sender, EventArgs e) {
+					Gtk.TreeIter iter;
+					if (!Selection.GetSelected (out iter))
+						return;
+//					var obj = (PObject)widget.treeStore.GetValue (iter, 1);
+					var newIter = widget.treeStore.InsertNodeAfter (iter);
+					
+					widget.treeStore.SetValues (newIter, "newNode", new PString (""));
+				};
+				menu.Append (newKey);
+				
+				var removeKey = new Gtk.MenuItem (GettextCatalog.GetString ("Remove key"));
+				removeKey.Activated += delegate(object sender, EventArgs e) {
+					Gtk.TreeIter iter;
+					if (!Selection.GetSelected (out iter))
+						return;
+					var obj = (PObject)widget.treeStore.GetValue (iter, 1);
+					obj.Remove ();
+					widget.treeStore.Remove (ref iter);
+				};
+				menu.Append (removeKey);
+				IdeApp.CommandService.ShowContextMenu (menu, this);
+				menu.ShowAll ();
+			}
+		}
+		
 		public CustomPropertiesWidget ()
 		{
 			this.Build ();
+			treeview1 = new PopupTreeView  (this);
+			this.vbox1.PackStart (treeview1, true, true, 0);
+			ShowAll ();
 			
 			var keyRenderer = new CellRendererCombo ();
 			keyRenderer.Editable = true;
