@@ -37,6 +37,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
+		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (object));
 		
 		PListScheme scheme;
 		
@@ -108,7 +109,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			treeview1.AppendColumn (GettextCatalog.GetString ("Key"), keyRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				string id = (string)tree_model.GetValue (iter, 0) ?? "";
+				var obj = (PObject)tree_model.GetValue (iter, 1);
 				var key = scheme.GetKey (id);
+				renderer.Editable = !(obj.Parent is PArray);
 				renderer.Text = key != null ? GettextCatalog.GetString (key.Description) : id;
 			});
 			
@@ -142,12 +145,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var key   = scheme.GetKey (id);
 				var obj   = (PObject)tree_model.GetValue (iter, 1);
 				renderer.Editable = key == null;
-				renderer.ForegroundGdk = Style.Text (key == null ? StateType.Normal : StateType.Insensitive);
+				renderer.ForegroundGdk = Style.Text (renderer.Editable ? StateType.Normal : StateType.Insensitive);
 				renderer.Text = obj.TypeString;
 			});
 			
-			var propRenderer = new CellRendererProperty ();
+			var propRenderer = new CellRendererCombo ();
+			
+			propRenderer.Model = valueStore;
+			propRenderer.Mode = CellRendererMode.Editable;
+			propRenderer.TextColumn = 0;
 			propRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
+				valueStore.Clear ();
+			};
+			
+	/*		propRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
 				TreeIter iter;
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
@@ -156,13 +167,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 					((PBoolean)obj).Value = !((PBoolean)obj).Value;
 					propRenderer.StopEditing (false);
 				}
-			};
+			};*/
 			
 			
 			treeview1.AppendColumn (GettextCatalog.GetString ("Value"), propRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
-				var renderer = (CellRendererProperty)cell;
+				var renderer = (CellRendererCombo)cell;
 				var obj      = (PObject)tree_model.GetValue (iter, 1);
-				renderer.Object = obj;
+				renderer.Editable = !(obj is PArray || obj is PDictionary);
 				obj.RenderValue (this, renderer);
 			});
 			treeview1.EnableGridLines = TreeViewGridLines.Horizontal;
@@ -209,7 +220,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				AddToTree (treeStore, Gtk.TreeIter.Zero, nsDictionary);
 		}
 		
-		public class CellRendererProperty : CellRenderer
+		/*public class CellRendererProperty : CellRenderer
 		{
 			public PObject Object {
 				get;
@@ -266,8 +277,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				Gtk.Entry entry = new Gtk.Entry ();
 				return entry;
 			}
-			
-		}
+		}*/
 	}
 }
 

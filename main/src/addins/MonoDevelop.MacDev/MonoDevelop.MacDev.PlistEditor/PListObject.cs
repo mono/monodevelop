@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using System.Linq;
 using MonoMac.Foundation;
 using System.Runtime.InteropServices;
+using Gtk;
 
 
 
@@ -58,7 +59,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public abstract NSObject Convert ();
 		
-		public abstract void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer);
+		public abstract void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer);
 		
 		public static implicit operator PObject (string value)
 		{
@@ -102,10 +103,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
+		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = true;
-			renderer.RenderValue = Value.ToString ();
+			renderer.Text = Value.ToString ();
 		}
 		
 		public static implicit operator T (PValueObject<T> pObj)
@@ -136,10 +137,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return (T)obj;
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
+		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
-			renderer.RenderValue = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
+			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
 		}
 		
 		public override NSObject Convert ()
@@ -229,10 +230,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSArray.FromNSObjects (Value.Select (x => x.Convert ()).ToArray ());
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
+		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
-			renderer.RenderValue = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
+			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
 		}
 	}
 	
@@ -253,10 +254,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSNumber.FromBoolean (Value);
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
+		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = true;
-			renderer.RenderValue = Value ? GettextCatalog.GetString ("Yes") : GettextCatalog.GetString ("No");
+			renderer.Text = Value ? GettextCatalog.GetString ("Yes") : GettextCatalog.GetString ("No");
 		}
 	}
 	
@@ -334,14 +335,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return new NSString (Value);
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CustomPropertiesWidget.CellRendererProperty renderer)
+		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = true;
 			var key = Parent != null ? widget.Scheme.GetKey (Parent.Key) : null;
 			if (key != null) {
 				var val = key.Values.FirstOrDefault (v => v.Identifier == Value);
 				if (val != null) {
-					renderer.RenderValue = GettextCatalog.GetString (val.Description);
+					renderer.Text = GettextCatalog.GetString (val.Description);
 					return;
 				}
 			}
