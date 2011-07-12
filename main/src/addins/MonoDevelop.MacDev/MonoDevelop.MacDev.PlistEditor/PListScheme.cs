@@ -35,6 +35,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		List<Key> keys = new List<Key> ();
 		
+		
+		public IEnumerable<Key> Keys {
+			get {
+				return keys;
+			}
+		}
+		
 		public class Value {
 			public string Identifier { get; set; }
 			public string Description { get; set; }
