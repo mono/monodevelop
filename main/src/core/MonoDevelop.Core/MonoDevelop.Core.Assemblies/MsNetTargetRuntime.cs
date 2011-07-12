@@ -98,16 +98,18 @@ namespace MonoDevelop.Core.Assemblies
 			// Extended assembly folders
 
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+				if (fx.Id.Identifier != ".NETFramework")
+					continue;
 				if (ShuttingDown)
 					return;
-				RegistryKey fxKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\v" + fx.Id + @"\AssemblyFoldersEx", false);
+				RegistryKey fxKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\v" + fx.Id.Version + @"\AssemblyFoldersEx", false);
 				if (fxKey != null) {
 					AddPackages (fx, fxKey);
 					fxKey.Close ();
 				}
 
 				string clrVer = MsNetFrameworkBackend.GetClrVersion (fx.ClrVersion);
-				if (clrVer.StartsWith ("v" + fx.Id)) {
+				if (clrVer.StartsWith ("v" + fx.Id.Version)) {
 					// Several frameworks can share the same clr version. Make sure only one registers the assemblies.
 					fxKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\" + clrVer + @"\AssemblyFoldersEx", false);
 					if (fxKey != null) {
