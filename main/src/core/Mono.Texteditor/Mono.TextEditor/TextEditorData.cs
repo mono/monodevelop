@@ -241,9 +241,14 @@ namespace Mono.TextEditor
 					break;
 				case '\r':
 					sb.Append ('\r');
-					if (i + 1 < str.Length && str [i + 1] == '\n')
+					if (i + 1 < str.Length && str [i + 1] == '\n') {
 						i++;
-					goto case '\n';
+						goto case '\n';
+					} else {
+						loc.Line++;
+						loc.Column = 0;
+					}
+					break;
 				case '\n':
 					sb.Append ('\n');
 					loc.Line++;
