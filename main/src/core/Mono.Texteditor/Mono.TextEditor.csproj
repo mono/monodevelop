@@ -54,8 +54,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Core">
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>

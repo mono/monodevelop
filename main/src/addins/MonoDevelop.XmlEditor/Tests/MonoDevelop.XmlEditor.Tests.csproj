@@ -47,16 +47,12 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>

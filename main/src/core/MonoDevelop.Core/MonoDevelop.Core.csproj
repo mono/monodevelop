@@ -38,8 +38,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core">
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib">
       <Private>False</Private>
     </Reference>
