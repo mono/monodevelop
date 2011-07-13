@@ -168,7 +168,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.expander1.Name = "expander1";
 			this.expander1.Expanded = true;
 			// Container child expander1.Gtk.Container+ContainerChild
-			this.customProperiesWidget = null;
+			this.customProperiesWidget = new global::MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget ();
+			this.customProperiesWidget.Events = ((global::Gdk.EventMask)(256));
+			this.customProperiesWidget.Name = "customProperiesWidget";
 			this.expander1.Add (this.customProperiesWidget);
 			this.GtkLabel = new global::Gtk.Label ();
 			this.GtkLabel.Name = "GtkLabel";

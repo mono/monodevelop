@@ -457,14 +457,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox3.Name = "hbox3";
 			this.hbox3.Spacing = 6;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.imageIPhoneAppIcon1 = null;
+			this.imageIPhoneAppIcon1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imageIPhoneAppIcon1.Name = "imageIPhoneAppIcon1";
 			this.hbox3.Add (this.imageIPhoneAppIcon1);
 			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageIPhoneAppIcon1]));
 			w34.Position = 0;
 			w34.Expand = false;
 			w34.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.imageIPhoneAppIcon2 = null;
+			this.imageIPhoneAppIcon2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imageIPhoneAppIcon2.Name = "imageIPhoneAppIcon2";
+			this.imageIPhoneAppIcon2.Description = "Retina Display";
 			this.hbox3.Add (this.imageIPhoneAppIcon2);
 			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageIPhoneAppIcon2]));
 			w35.Position = 1;
@@ -495,14 +498,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox4.Name = "hbox4";
 			this.hbox4.Spacing = 6;
 			// Container child hbox4.Gtk.Box+BoxChild
-			this.imageIPhoneLaunch1 = null;
+			this.imageIPhoneLaunch1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imageIPhoneLaunch1.Name = "imageIPhoneLaunch1";
 			this.hbox4.Add (this.imageIPhoneLaunch1);
 			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.imageIPhoneLaunch1]));
 			w39.Position = 0;
 			w39.Expand = false;
 			w39.Fill = false;
 			// Container child hbox4.Gtk.Box+BoxChild
-			this.imageIPhoneLaunch2 = null;
+			this.imageIPhoneLaunch2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imageIPhoneLaunch2.Name = "imageIPhoneLaunch2";
+			this.imageIPhoneLaunch2.Description = "Retina Display";
 			this.hbox4.Add (this.imageIPhoneLaunch2);
 			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.imageIPhoneLaunch2]));
 			w40.Position = 1;
@@ -740,7 +746,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox7.Name = "hbox7";
 			this.hbox7.Spacing = 6;
 			// Container child hbox7.Gtk.Box+BoxChild
-			this.imageIPadAppIcon = null;
+			this.imageIPadAppIcon = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imageIPadAppIcon.Name = "imageIPadAppIcon";
 			this.hbox7.Add (this.imageIPadAppIcon);
 			global::Gtk.Box.BoxChild w68 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.imageIPadAppIcon]));
 			w68.Position = 0;
@@ -771,14 +778,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox8.Name = "hbox8";
 			this.hbox8.Spacing = 6;
 			// Container child hbox8.Gtk.Box+BoxChild
-			this.imageIPadLaunch1 = null;
+			this.imageIPadLaunch1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imageIPadLaunch1.Name = "imageIPadLaunch1";
 			this.hbox8.Add (this.imageIPadLaunch1);
 			global::Gtk.Box.BoxChild w72 = ((global::Gtk.Box.BoxChild)(this.hbox8 [this.imageIPadLaunch1]));
 			w72.Position = 0;
 			w72.Expand = false;
 			w72.Fill = false;
 			// Container child hbox8.Gtk.Box+BoxChild
-			this.imageIPadLaunch2 = null;
+			this.imageIPadLaunch2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imageIPadLaunch2.Name = "imageIPadLaunch2";
 			this.hbox8.Add (this.imageIPadLaunch2);
 			global::Gtk.Box.BoxChild w73 = ((global::Gtk.Box.BoxChild)(this.hbox8 [this.imageIPadLaunch2]));
 			w73.Position = 1;
@@ -839,7 +848,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vboxCustomProperties.Name = "vboxCustomProperties";
 			this.vboxCustomProperties.Spacing = 6;
 			// Container child vboxCustomProperties.Gtk.Box+BoxChild
-			this.customProperties = null;
+			this.customProperties = new global::MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget ();
+			this.customProperties.Events = ((global::Gdk.EventMask)(256));
+			this.customProperties.Name = "customProperties";
 			this.vboxCustomProperties.Add (this.customProperties);
 			global::Gtk.Box.BoxChild w83 = ((global::Gtk.Box.BoxChild)(this.vboxCustomProperties [this.customProperties]));
 			w83.Position = 0;

@@ -39,7 +39,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.imagechooser1 = null;
+			this.imagechooser1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imagechooser1.Name = "imagechooser1";
 			this.vbox3.Add (this.imagechooser1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.imagechooser1]));
 			w1.Position = 0;
@@ -143,7 +144,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.expander1.Name = "expander1";
 			this.expander1.Expanded = true;
 			// Container child expander1.Gtk.Container+ContainerChild
-			this.customProperiesWidget = null;
+			this.customProperiesWidget = new global::MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget ();
+			this.customProperiesWidget.Events = ((global::Gdk.EventMask)(256));
+			this.customProperiesWidget.Name = "customProperiesWidget";
 			this.expander1.Add (this.customProperiesWidget);
 			this.GtkLabel = new global::Gtk.Label ();
 			this.GtkLabel.Name = "GtkLabel";
