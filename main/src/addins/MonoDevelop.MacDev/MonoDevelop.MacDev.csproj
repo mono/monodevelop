@@ -137,6 +137,7 @@
     <Compile Include="MonoDevelop.MacDev.PlistEditor\CustomPropertiesWidget.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PListObject.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PListScheme.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\ImageChooser.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

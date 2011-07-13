@@ -48,6 +48,7 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistReal.cs \
 	MonoDevelop.MacDev.Plist/PlistString.cs \
 	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/ImageChooser.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorViewContent.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \

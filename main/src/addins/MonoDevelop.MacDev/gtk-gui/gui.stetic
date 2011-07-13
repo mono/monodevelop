@@ -508,15 +508,8 @@
                                         <property name="MemberName" />
                                         <property name="Spacing">6</property>
                                         <child>
-                                          <widget class="Gtk.ToggleButton" id="togglebutton5">
+                                          <widget class="MonoDevelop.MacDev.PlistEditor.ImageChooser" id="imageIPhoneAppIcon1">
                                             <property name="MemberName" />
-                                            <property name="CanFocus">True</property>
-                                            <property name="Type">Custom</property>
-                                            <child>
-                                              <widget class="Gtk.Image" id="imageIPhoneAppIcon1">
-                                                <property name="MemberName" />
-                                              </widget>
-                                            </child>
                                           </widget>
                                           <packing>
                                             <property name="Position">0</property>
@@ -526,40 +519,9 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <widget class="Gtk.ToggleButton" id="togglebutton6">
+                                          <widget class="MonoDevelop.MacDev.PlistEditor.ImageChooser" id="imageIPhoneAppIcon2">
                                             <property name="MemberName" />
-                                            <property name="CanFocus">True</property>
-                                            <property name="Type">Custom</property>
-                                            <child>
-                                              <widget class="Gtk.VBox" id="vbox9">
-                                                <property name="MemberName" />
-                                                <property name="Spacing">6</property>
-                                                <child>
-                                                  <widget class="Gtk.Image" id="imageIPhoneAppIcon2">
-                                                    <property name="MemberName" />
-                                                  </widget>
-                                                  <packing>
-                                                    <property name="Position">0</property>
-                                                    <property name="AutoSize">True</property>
-                                                    <property name="Expand">False</property>
-                                                    <property name="Fill">False</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <widget class="Gtk.Label" id="label13">
-                                                    <property name="MemberName" />
-                                                    <property name="LabelProp" translatable="yes">Retina Display</property>
-                                                    <property name="UseMarkup">True</property>
-                                                  </widget>
-                                                  <packing>
-                                                    <property name="Position">1</property>
-                                                    <property name="AutoSize">True</property>
-                                                    <property name="Expand">False</property>
-                                                    <property name="Fill">False</property>
-                                                  </packing>
-                                                </child>
-                                              </widget>
-                                            </child>
+                                            <property name="Description">Retina Display</property>
                                           </widget>
                                           <packing>
                                             <property name="Position">1</property>
@@ -605,15 +567,8 @@
                                         <property name="MemberName" />
                                         <property name="Spacing">6</property>
                                         <child>
-                                          <widget class="Gtk.ToggleButton" id="togglebutton7">
+                                          <widget class="MonoDevelop.MacDev.PlistEditor.ImageChooser" id="imageIPhoneLaunch1">
                                             <property name="MemberName" />
-                                            <property name="CanFocus">True</property>
-                                            <property name="Type">Custom</property>
-                                            <child>
-                                              <widget class="Gtk.Image" id="imageIPhoneLaunch1">
-                                                <property name="MemberName" />
-                                              </widget>
-                                            </child>
                                           </widget>
                                           <packing>
                                             <property name="Position">0</property>
@@ -623,40 +578,9 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <widget class="Gtk.ToggleButton" id="togglebutton8">
+                                          <widget class="MonoDevelop.MacDev.PlistEditor.ImageChooser" id="imageIPhoneLaunch2">
                                             <property name="MemberName" />
-                                            <property name="CanFocus">True</property>
-                                            <property name="Type">Custom</property>
-                                            <child>
-                                              <widget class="Gtk.VBox" id="vbox10">
-                                                <property name="MemberName" />
-                                                <property name="Spacing">6</property>
-                                                <child>
-                                                  <widget class="Gtk.Image" id="imageIPhoneLaunch2">
-                                                    <property name="MemberName" />
-                                                  </widget>
-                                                  <packing>
-                                                    <property name="Position">0</property>
-                                                    <property name="AutoSize">True</property>
-                                                    <property name="Expand">False</property>
-                                                    <property name="Fill">False</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <widget class="Gtk.Label" id="label14">
-                                                    <property name="MemberName" />
-                                                    <property name="LabelProp" translatable="yes">Retina Display</property>
-                                                    <property name="UseMarkup">True</property>
-                                                  </widget>
-                                                  <packing>
-                                                    <property name="Position">1</property>
-                                                    <property name="AutoSize">True</property>
-                                                    <property name="Expand">False</property>
-                                                    <property name="Fill">False</property>
-                                                  </packing>
-                                                </child>
-                                              </widget>
-                                            </child>
+                                            <property name="Description">Retina Display</property>
                                           </widget>
                                           <packing>
                                             <property name="Position">1</property>
@@ -981,15 +905,8 @@
                                         <property name="MemberName" />
                                         <property name="Spacing">6</property>
                                         <child>
-                                          <widget class="Gtk.ToggleButton" id="togglebutton13">
+                                          <widget class="MonoDevelop.MacDev.PlistEditor.ImageChooser" id="imageIPadAppIcon">
                                             <property name="MemberName" />
-                                            <property name="CanFocus">True</property>
-                                            <property name="Type">Custom</property>
-                                            <child>
-                                              <widget class="Gtk.Image" id="imageIPadAppIcon">
-                                                <property name="MemberName" />
-                                              </widget>
-                                            </child>
                                           </widget>
                                           <packing>
                                             <property name="Position">0</property>
@@ -1035,40 +952,8 @@
                                         <property name="MemberName" />
                                         <property name="Spacing">6</property>
                                         <child>
-                                          <widget class="Gtk.ToggleButton" id="togglebutton17">
+                                          <widget class="MonoDevelop.MacDev.PlistEditor.ImageChooser" id="imageIPadLaunch1">
                                             <property name="MemberName" />
-                                            <property name="CanFocus">True</property>
-                                            <property name="Type">Custom</property>
-                                            <child>
-                                              <widget class="Gtk.VBox" id="vbox16">
-                                                <property name="MemberName" />
-                                                <property name="Spacing">6</property>
-                                                <child>
-                                                  <widget class="Gtk.Image" id="imageIPadLaunch1">
-                                                    <property name="MemberName" />
-                                                  </widget>
-                                                  <packing>
-                                                    <property name="Position">0</property>
-                                                    <property name="AutoSize">True</property>
-                                                    <property name="Expand">False</property>
-                                                    <property name="Fill">False</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <widget class="Gtk.Label" id="label21">
-                                                    <property name="MemberName" />
-                                                    <property name="LabelProp" translatable="yes">Portrait</property>
-                                                    <property name="UseMarkup">True</property>
-                                                  </widget>
-                                                  <packing>
-                                                    <property name="Position">1</property>
-                                                    <property name="AutoSize">True</property>
-                                                    <property name="Expand">False</property>
-                                                    <property name="Fill">False</property>
-                                                  </packing>
-                                                </child>
-                                              </widget>
-                                            </child>
                                           </widget>
                                           <packing>
                                             <property name="Position">0</property>
@@ -1078,40 +963,8 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <widget class="Gtk.ToggleButton" id="togglebutton16">
+                                          <widget class="MonoDevelop.MacDev.PlistEditor.ImageChooser" id="imageIPadLaunch2">
                                             <property name="MemberName" />
-                                            <property name="CanFocus">True</property>
-                                            <property name="Type">Custom</property>
-                                            <child>
-                                              <widget class="Gtk.VBox" id="vbox15">
-                                                <property name="MemberName" />
-                                                <property name="Spacing">6</property>
-                                                <child>
-                                                  <widget class="Gtk.Image" id="imageIPadLaunch2">
-                                                    <property name="MemberName" />
-                                                  </widget>
-                                                  <packing>
-                                                    <property name="Position">0</property>
-                                                    <property name="AutoSize">True</property>
-                                                    <property name="Expand">False</property>
-                                                    <property name="Fill">False</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <widget class="Gtk.Label" id="label20">
-                                                    <property name="MemberName" />
-                                                    <property name="LabelProp" translatable="yes">Landscape</property>
-                                                    <property name="UseMarkup">True</property>
-                                                  </widget>
-                                                  <packing>
-                                                    <property name="Position">1</property>
-                                                    <property name="AutoSize">True</property>
-                                                    <property name="Expand">False</property>
-                                                    <property name="Fill">False</property>
-                                                  </packing>
-                                                </child>
-                                              </widget>
-                                            </child>
                                           </widget>
                                           <packing>
                                             <property name="Position">1</property>

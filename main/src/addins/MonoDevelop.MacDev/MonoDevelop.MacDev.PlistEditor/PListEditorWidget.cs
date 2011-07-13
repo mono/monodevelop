@@ -35,7 +35,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
-	[System.ComponentModel.ToolboxItem(true)]
+	[System.ComponentModel.ToolboxItem(false)]
 	public partial class PListEditorWidget : Gtk.Bin
 	{
 		public PDictionary NSDictionary {
@@ -52,31 +52,24 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			this.Build ();
 			
+			
+			imageIPhoneAppIcon1.PictureSize = new Size (57, 57);
+			imageIPhoneAppIcon2.PictureSize = new Size (114, 114);
+			
+			imageIPhoneLaunch1.PictureSize = new Size (58, 58);
+			imageIPhoneLaunch2.PictureSize = new Size (58, 58);
+			
+			imageIPadAppIcon.PictureSize = new Size (72, 72);
+			
+			imageIPadLaunch1.PictureSize = new Size (58, 58);
+			imageIPadLaunch2.PictureSize = new Size (58, 58);
+			
 			Gtk.ListStore devices = new Gtk.ListStore (typeof (string));
 			devices.AppendValues (GettextCatalog.GetString ("iPhone/iPod"));
 			devices.AppendValues (GettextCatalog.GetString ("iPad"));
 			devices.AppendValues (GettextCatalog.GetString ("Universal"));
 			
-			
-			
 			comboboxDevices.Model = devices;
-			
-		}
-		
-		protected override void OnRealized ()
-		{
-			base.OnRealized ();
-			
-			imageIPhoneAppIcon1.Pixbuf = CreateNoImageIcon (57, 57);
-			imageIPhoneAppIcon2.Pixbuf = CreateNoImageIcon (114, 114);
-			
-			imageIPhoneLaunch1.Pixbuf = CreateNoImageIcon (58, 58);
-			imageIPhoneLaunch2.Pixbuf = CreateNoImageIcon (58, 58);
-			
-			imageIPadAppIcon.Pixbuf = CreateNoImageIcon (72, 72);
-			
-			imageIPadLaunch1.Pixbuf = CreateNoImageIcon (58, 58);
-			imageIPadLaunch2.Pixbuf = CreateNoImageIcon (58, 58);
 		}
 		
 		protected override void OnDestroyed ()
