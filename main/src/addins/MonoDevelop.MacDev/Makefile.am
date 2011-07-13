@@ -27,7 +27,10 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.cs \
+	gtk-gui/MonoDevelop.MacDev.PlistEditor.DocumentTypeWidget.cs \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.PListEditorWidget.cs \
+	gtk-gui/MonoDevelop.MacDev.PlistEditor.URLTypeWidget.cs \
+	gtk-gui/MonoDevelop.MacDev.PlistEditor.UTIWidget.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \
@@ -48,12 +51,15 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistReal.cs \
 	MonoDevelop.MacDev.Plist/PlistString.cs \
 	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/DocumentTypeWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/ImageChooser.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorViewContent.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/PListObject.cs \
 	MonoDevelop.MacDev.PlistEditor/PListScheme.cs \
+	MonoDevelop.MacDev.PlistEditor/URLTypeWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/UTIWidget.cs \
 	NativeReferences/NativeReference.cs \
 	NativeReferences/NativeReferenceCommandHandler.cs \
 	NativeReferences/NativeReferenceFolderNodeBuilder.cs \

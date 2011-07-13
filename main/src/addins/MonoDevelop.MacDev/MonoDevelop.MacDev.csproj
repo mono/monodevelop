@@ -138,6 +138,12 @@
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PListObject.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PListScheme.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\ImageChooser.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\DocumentTypeWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.DocumentTypeWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\UTIWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.UTIWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\URLTypeWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.URLTypeWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

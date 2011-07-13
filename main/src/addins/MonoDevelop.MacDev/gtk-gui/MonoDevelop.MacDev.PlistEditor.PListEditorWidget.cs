@@ -101,16 +101,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 		private global::MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget customProperties;
 		private global::Gtk.Label GtkLabel9;
 		private global::Gtk.Expander expander3;
-		private global::Gtk.Label label19;
 		private global::Gtk.Label GtkLabel10;
 		private global::Gtk.Expander expander4;
-		private global::Gtk.Label label22;
 		private global::Gtk.Label GtkLabel11;
 		private global::Gtk.Expander expander5;
-		private global::Gtk.Label label23;
 		private global::Gtk.Label GtkLabel12;
 		private global::Gtk.Expander expander6;
-		private global::Gtk.Label label24;
 		private global::Gtk.Label GtkLabel13;
 		private global::Gtk.Label label2;
 		
@@ -124,7 +120,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.notebook1 = new global::Gtk.Notebook ();
 			this.notebook1.CanFocus = true;
 			this.notebook1.Name = "notebook1";
-			this.notebook1.CurrentPage = 0;
+			this.notebook1.CurrentPage = 1;
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow1.CanFocus = true;
@@ -461,17 +457,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox3.Name = "hbox3";
 			this.hbox3.Spacing = 6;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.imageIPhoneAppIcon1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPhoneAppIcon1.Name = "imageIPhoneAppIcon1";
+			this.imageIPhoneAppIcon1 = null;
 			this.hbox3.Add (this.imageIPhoneAppIcon1);
 			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageIPhoneAppIcon1]));
 			w34.Position = 0;
 			w34.Expand = false;
 			w34.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.imageIPhoneAppIcon2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPhoneAppIcon2.Name = "imageIPhoneAppIcon2";
-			this.imageIPhoneAppIcon2.Description = "Retina Display";
+			this.imageIPhoneAppIcon2 = null;
 			this.hbox3.Add (this.imageIPhoneAppIcon2);
 			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageIPhoneAppIcon2]));
 			w35.Position = 1;
@@ -502,17 +495,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox4.Name = "hbox4";
 			this.hbox4.Spacing = 6;
 			// Container child hbox4.Gtk.Box+BoxChild
-			this.imageIPhoneLaunch1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPhoneLaunch1.Name = "imageIPhoneLaunch1";
+			this.imageIPhoneLaunch1 = null;
 			this.hbox4.Add (this.imageIPhoneLaunch1);
 			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.imageIPhoneLaunch1]));
 			w39.Position = 0;
 			w39.Expand = false;
 			w39.Fill = false;
 			// Container child hbox4.Gtk.Box+BoxChild
-			this.imageIPhoneLaunch2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPhoneLaunch2.Name = "imageIPhoneLaunch2";
-			this.imageIPhoneLaunch2.Description = "Retina Display";
+			this.imageIPhoneLaunch2 = null;
 			this.hbox4.Add (this.imageIPhoneLaunch2);
 			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.imageIPhoneLaunch2]));
 			w40.Position = 1;
@@ -750,8 +740,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox7.Name = "hbox7";
 			this.hbox7.Spacing = 6;
 			// Container child hbox7.Gtk.Box+BoxChild
-			this.imageIPadAppIcon = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPadAppIcon.Name = "imageIPadAppIcon";
+			this.imageIPadAppIcon = null;
 			this.hbox7.Add (this.imageIPadAppIcon);
 			global::Gtk.Box.BoxChild w68 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.imageIPadAppIcon]));
 			w68.Position = 0;
@@ -782,16 +771,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox8.Name = "hbox8";
 			this.hbox8.Spacing = 6;
 			// Container child hbox8.Gtk.Box+BoxChild
-			this.imageIPadLaunch1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPadLaunch1.Name = "imageIPadLaunch1";
+			this.imageIPadLaunch1 = null;
 			this.hbox8.Add (this.imageIPadLaunch1);
 			global::Gtk.Box.BoxChild w72 = ((global::Gtk.Box.BoxChild)(this.hbox8 [this.imageIPadLaunch1]));
 			w72.Position = 0;
 			w72.Expand = false;
 			w72.Fill = false;
 			// Container child hbox8.Gtk.Box+BoxChild
-			this.imageIPadLaunch2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPadLaunch2.Name = "imageIPadLaunch2";
+			this.imageIPadLaunch2 = null;
 			this.hbox8.Add (this.imageIPadLaunch2);
 			global::Gtk.Box.BoxChild w73 = ((global::Gtk.Box.BoxChild)(this.hbox8 [this.imageIPadLaunch2]));
 			w73.Position = 1;
@@ -852,9 +839,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vboxCustomProperties.Name = "vboxCustomProperties";
 			this.vboxCustomProperties.Spacing = 6;
 			// Container child vboxCustomProperties.Gtk.Box+BoxChild
-			this.customProperties = new global::MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget ();
-			this.customProperties.Events = ((global::Gdk.EventMask)(256));
-			this.customProperties.Name = "customProperties";
+			this.customProperties = null;
 			this.vboxCustomProperties.Add (this.customProperties);
 			global::Gtk.Box.BoxChild w83 = ((global::Gtk.Box.BoxChild)(this.vboxCustomProperties [this.customProperties]));
 			w83.Position = 0;
@@ -873,12 +858,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.expander3.CanFocus = true;
 			this.expander3.Name = "expander3";
 			this.expander3.Expanded = true;
-			// Container child expander3.Gtk.Container+ContainerChild
-			this.label19 = new global::Gtk.Label ();
-			this.label19.Name = "label19";
-			this.label19.Ypad = 20;
-			this.label19.LabelProp = global::Mono.Unix.Catalog.GetString ("No Document Types");
-			this.expander3.Add (this.label19);
 			this.GtkLabel10 = new global::Gtk.Label ();
 			this.GtkLabel10.Name = "GtkLabel10";
 			this.GtkLabel10.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Document Types</b>");
@@ -886,21 +865,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.GtkLabel10.UseUnderline = true;
 			this.expander3.LabelWidget = this.GtkLabel10;
 			this.vbox3.Add (this.expander3);
-			global::Gtk.Box.BoxChild w87 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander3]));
-			w87.Position = 1;
-			w87.Expand = false;
-			w87.Fill = false;
+			global::Gtk.Box.BoxChild w86 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander3]));
+			w86.Position = 1;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.expander4 = new global::Gtk.Expander (null);
 			this.expander4.CanFocus = true;
 			this.expander4.Name = "expander4";
 			this.expander4.Expanded = true;
-			// Container child expander4.Gtk.Container+ContainerChild
-			this.label22 = new global::Gtk.Label ();
-			this.label22.Name = "label22";
-			this.label22.Ypad = 20;
-			this.label22.LabelProp = global::Mono.Unix.Catalog.GetString ("No Exported UTIs");
-			this.expander4.Add (this.label22);
 			this.GtkLabel11 = new global::Gtk.Label ();
 			this.GtkLabel11.Name = "GtkLabel11";
 			this.GtkLabel11.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Exported UTIs</b>");
@@ -908,21 +879,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.GtkLabel11.UseUnderline = true;
 			this.expander4.LabelWidget = this.GtkLabel11;
 			this.vbox3.Add (this.expander4);
-			global::Gtk.Box.BoxChild w89 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander4]));
-			w89.Position = 2;
-			w89.Expand = false;
-			w89.Fill = false;
+			global::Gtk.Box.BoxChild w87 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander4]));
+			w87.Position = 2;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.expander5 = new global::Gtk.Expander (null);
 			this.expander5.CanFocus = true;
 			this.expander5.Name = "expander5";
 			this.expander5.Expanded = true;
-			// Container child expander5.Gtk.Container+ContainerChild
-			this.label23 = new global::Gtk.Label ();
-			this.label23.Name = "label23";
-			this.label23.Ypad = 20;
-			this.label23.LabelProp = global::Mono.Unix.Catalog.GetString ("No Imported UTIs");
-			this.expander5.Add (this.label23);
 			this.GtkLabel12 = new global::Gtk.Label ();
 			this.GtkLabel12.Name = "GtkLabel12";
 			this.GtkLabel12.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Imported UTIs</b>");
@@ -930,21 +893,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.GtkLabel12.UseUnderline = true;
 			this.expander5.LabelWidget = this.GtkLabel12;
 			this.vbox3.Add (this.expander5);
-			global::Gtk.Box.BoxChild w91 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander5]));
-			w91.Position = 3;
-			w91.Expand = false;
-			w91.Fill = false;
+			global::Gtk.Box.BoxChild w88 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander5]));
+			w88.Position = 3;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.expander6 = new global::Gtk.Expander (null);
 			this.expander6.CanFocus = true;
 			this.expander6.Name = "expander6";
 			this.expander6.Expanded = true;
-			// Container child expander6.Gtk.Container+ContainerChild
-			this.label24 = new global::Gtk.Label ();
-			this.label24.Name = "label24";
-			this.label24.Ypad = 20;
-			this.label24.LabelProp = global::Mono.Unix.Catalog.GetString ("No URL Types");
-			this.expander6.Add (this.label24);
 			this.GtkLabel13 = new global::Gtk.Label ();
 			this.GtkLabel13.Name = "GtkLabel13";
 			this.GtkLabel13.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>URL Types</b>");
@@ -952,15 +907,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.GtkLabel13.UseUnderline = true;
 			this.expander6.LabelWidget = this.GtkLabel13;
 			this.vbox3.Add (this.expander6);
-			global::Gtk.Box.BoxChild w93 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander6]));
-			w93.Position = 4;
-			w93.Expand = false;
-			w93.Fill = false;
+			global::Gtk.Box.BoxChild w89 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander6]));
+			w89.Position = 4;
 			w82.Add (this.vbox3);
 			this.scrolledwindow2.Add (w82);
 			this.notebook1.Add (this.scrolledwindow2);
-			global::Gtk.Notebook.NotebookChild w96 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.scrolledwindow2]));
-			w96.Position = 1;
+			global::Gtk.Notebook.NotebookChild w92 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.scrolledwindow2]));
+			w92.Position = 1;
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
