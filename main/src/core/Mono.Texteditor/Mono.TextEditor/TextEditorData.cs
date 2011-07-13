@@ -240,11 +240,12 @@ namespace Mono.TextEditor
 						goto default;
 					break;
 				case '\r':
+					sb.Append ('\r');
 					if (i + 1 < str.Length && str [i + 1] == '\n')
 						i++;
 					goto case '\n';
 				case '\n':
-					sb.Append (Options.DefaultEolMarker);
+					sb.Append ('\n');
 					loc.Line++;
 					loc.Column = 0;
 					break;
