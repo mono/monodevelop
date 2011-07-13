@@ -44,7 +44,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			winDir = Path.GetFullPath (Environment.SystemDirectory + "\\..");
 			rootDir = winDir + "\\Microsoft.NET\\Framework";
-			newFxDir = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
+			newFxDir = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86);
 			newFxDir = newFxDir + "\\Reference Assemblies\\Microsoft\\Framework";
 			this.running = running;
 			execHandler = new MsNetExecutionHandler ();
@@ -72,11 +72,14 @@ namespace MonoDevelop.Core.Assemblies
 			get { return rootDir; }
 		}
 		
+		public FilePath FrameworksDirectory {
+			get { return newFxDir; }
+		}
+		
 		public override string GetAssemblyDebugInfoFile (string assemblyPath)
 		{
 			return Path.ChangeExtension (assemblyPath, ".pdb");
 		}
-
 		
 		protected override void OnInitialize ()
 		{
@@ -198,6 +201,26 @@ namespace MonoDevelop.Core.Assemblies
 		protected override TargetFrameworkBackend CreateBackend (TargetFramework fx)
 		{
 			return new MsNetFrameworkBackend ();
+		}
+		
+		public IEnumerable<TargetFramework> GetCustomFrameworks ()
+		{
+			foreach (var id in Directory.GetDirectories (FrameworksDirectory)) {
+				foreach (var version in Directory.GetDirectories (FrameworksDirectory.Combine (id))) {
+					var versionDir = FrameworksDirectory.Combine (id, version);
+					var moniker = new TargetFrameworkMoniker (id, version);
+					var fx = TargetFramework.FromFrameworkDirectory (moniker, versionDir);
+					if (fx != null)
+						yield return fx;
+					foreach (var profile in Directory.GetDirectories (versionDir)) {
+						var profileDir = versionDir.Combine (profile);
+						moniker = new TargetFrameworkMoniker (id, version, profile);
+						fx = TargetFramework.FromFrameworkDirectory (moniker, profileDir);
+						if (fx != null)
+							yield return fx;
+					}
+				}
+			}
 		}
 	}
 }
