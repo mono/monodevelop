@@ -337,10 +337,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				};
 				provider.GenerateCodeFromCompileUnit (cu, fileStream, options);
 				text = fileStream.ToString ();
+				text = FormatGeneratedFile (fileName, text, provider);
 			}
-			string eol = pol.GetEolMarker ();
-			if (Environment.NewLine != eol)
-				text = text.Replace (Environment.NewLine, eol);
 			
 			if (saveToFile)
 				File.WriteAllText (fileName, text);
@@ -491,8 +489,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						provider.GenerateCodeFromCompileUnit (unit, sw, codeGeneratorOptions);
 						string content = sw.ToString ();
 						string eol = pol.GetEolMarker ();
-						if (Environment.NewLine != eol)
-							content = content.Replace (Environment.NewLine, eol);
 									
 						timer.Trace ("Formatting code");
 						content = FormatGeneratedFile (fname, content, provider);
@@ -540,10 +536,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static string FormatGeneratedFile (string file, string content, CodeDomProvider provider)
 		{
 			content = StripHeaderAndBlankLines (content, provider);
+			
+			var pol = PolicyService.InvariantPolicies.Get<TextStylePolicy> ();
+			string eol = pol.GetEolMarker ();
+			if (Environment.NewLine != eol)
+				content = content.Replace (Environment.NewLine, eol);
+			
 			string mt = DesktopService.GetMimeTypeForUri (file);
 			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
 			if (formatter != null)
 				content = formatter.FormatText (PolicyService.InvariantPolicies, content);
+			
 			return content;
 		}
 		
