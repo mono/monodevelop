@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Projects;
@@ -74,7 +75,19 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.project = project;
 			if (project != null) {
 				// Get the list of available versions, and add only those supported by the target language.
-				foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+				var frameworks = Runtime.SystemAssemblyService.GetTargetFrameworks ().ToList ();
+				frameworks.Sort ((x, y) => {
+					var cmp = string.CompareOrdinal (x.Id.Identifier, y.Id.Identifier);
+					if (cmp != 0)
+						return cmp;
+					//sort by version descending
+					cmp = string.CompareOrdinal (y.Id.Version, x.Id.Version);
+					if (cmp != 0)
+						return cmp;
+					return string.CompareOrdinal (x.Id.Profile, y.Id.Profile);
+				});
+				
+				foreach (TargetFramework fx in frameworks) {
 					if (fx.Hidden)
 						continue;
 					if (fx != project.TargetFramework) {
