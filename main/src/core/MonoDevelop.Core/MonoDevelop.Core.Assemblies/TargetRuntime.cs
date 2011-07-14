@@ -57,6 +57,7 @@ namespace MonoDevelop.Core.Assemblies
 		ComposedAssemblyContext composedAssemblyContext;
 		ITimeTracker timer;
 		SynchronizationContext mainContext;
+		TargetFramework[] customFrameworks = new TargetFramework[0];
 		
 		protected bool ShuttingDown { get; private set; }
 		
@@ -133,6 +134,17 @@ namespace MonoDevelop.Core.Assemblies
 		/// Returns 'true' if this runtime is the one currently running MonoDevelop.
 		/// </summary>
 		public abstract bool IsRunning { get; }
+		
+		/// <summary>
+		/// Gets the reference frameworks directory.
+		/// </summary>
+		public virtual FilePath FrameworksDirectory {
+			get { return null; }
+		}
+		
+		public IEnumerable<TargetFramework> CustomFrameworks {
+			get { return customFrameworks; }
+		}
 		
 		protected abstract void OnInitialize ();
 		
@@ -390,6 +402,14 @@ namespace MonoDevelop.Core.Assemblies
 			if (ShuttingDown)
 				return;
 			
+			timer.Trace ("Finding custom frameworks");
+			try {
+				if (!string.IsNullOrEmpty (FrameworksDirectory) && Directory.Exists (FrameworksDirectory))
+					customFrameworks = new List<TargetFramework> (FindTargetFrameworks (FrameworksDirectory)).ToArray ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error finding custom frameworks", ex);
+			}
+			
 			timer.Trace ("Creating frameworks");
 			CreateFrameworks ();
 			
@@ -501,9 +521,16 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			}
 			
-			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetCoreFrameworks ()) {
 				// A framework is installed if the assemblies directory exists and the first
 				// assembly of the list exists.
+				if (IsInstalled (fx)) {
+					timer.Trace ("Registering assemblies for framework " + fx.Id);
+					RegisterSystemAssemblies (fx);
+				}
+			}
+			
+			foreach (TargetFramework fx in CustomFrameworks) {
 				if (IsInstalled (fx)) {
 					timer.Trace ("Registering assemblies for framework " + fx.Id);
 					RegisterSystemAssemblies (fx);
@@ -566,6 +593,40 @@ namespace MonoDevelop.Core.Assemblies
 		protected virtual SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx, string packageName)
 		{
 			return GetBackend (fx).GetFrameworkPackageInfo (packageName);
+		}
+		
+		protected static IEnumerable<TargetFramework> FindTargetFrameworks (FilePath frameworksDirectory)
+		{
+			foreach (FilePath idDir in Directory.GetDirectories (frameworksDirectory)) {
+				var id = idDir.FileName;
+				foreach (FilePath versionDir in Directory.GetDirectories (idDir)) {
+					var version = versionDir.FileName;
+					var moniker = new TargetFrameworkMoniker (id, version);
+					var fx = ReadTargetFramework (moniker, versionDir);
+					if (fx != null)
+						yield return (fx);
+					var profileListDir = versionDir.Combine ("Profile");
+					if (!Directory.Exists (profileListDir))
+						continue;
+					foreach (FilePath profileDir in Directory.GetDirectories (profileListDir)) {
+						var profile = profileDir.FileName;
+						moniker = new TargetFrameworkMoniker (id, version, profile);
+						fx = ReadTargetFramework (moniker, profileDir);
+						if (fx != null)
+							yield return (fx);
+					}
+				}
+			}
+		}
+		
+		static TargetFramework ReadTargetFramework (TargetFrameworkMoniker moniker, FilePath directory)
+		{
+			try {
+				return TargetFramework.FromFrameworkDirectory (moniker, directory);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error reading framework definition '" + directory + "'", ex);
+			}
+			return null;
 		}
 	}
 }

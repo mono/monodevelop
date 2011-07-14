@@ -155,7 +155,7 @@ namespace MonoDevelop.Core.Assemblies
 		public string GetAssemblyDirectoryName ()
 		{
 			if (profile != null)
-				return System.IO.Path.Combine (identifier, "v" + version, profile);
+				return System.IO.Path.Combine (identifier, "v" + version, "Profile", profile);
 			return System.IO.Path.Combine (identifier, "v" + version);
 		}
 		

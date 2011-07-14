@@ -41,7 +41,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
-			var dir = targetRuntime.FrameworksDirectory .Combine (framework.Id.GetAssemblyDirectoryName ());
+			var dir = targetRuntime.FrameworksDirectory.Combine (framework.Id.GetAssemblyDirectoryName ());
 			if (Directory.Exists (dir) && File.Exists (dir.Combine ("RedistList", "FrameworkList.xml")))
 				yield return dir;
 			

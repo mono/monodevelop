@@ -72,7 +72,7 @@ namespace MonoDevelop.Core.Assemblies
 			get { return rootDir; }
 		}
 		
-		public FilePath FrameworksDirectory {
+		public override FilePath FrameworksDirectory {
 			get { return newFxDir; }
 		}
 		
@@ -201,26 +201,6 @@ namespace MonoDevelop.Core.Assemblies
 		protected override TargetFrameworkBackend CreateBackend (TargetFramework fx)
 		{
 			return new MsNetFrameworkBackend ();
-		}
-		
-		public IEnumerable<TargetFramework> GetCustomFrameworks ()
-		{
-			foreach (var id in Directory.GetDirectories (FrameworksDirectory)) {
-				foreach (var version in Directory.GetDirectories (FrameworksDirectory.Combine (id))) {
-					var versionDir = FrameworksDirectory.Combine (id, version);
-					var moniker = new TargetFrameworkMoniker (id, version);
-					var fx = TargetFramework.FromFrameworkDirectory (moniker, versionDir);
-					if (fx != null)
-						yield return fx;
-					foreach (var profile in Directory.GetDirectories (versionDir)) {
-						var profileDir = versionDir.Combine (profile);
-						moniker = new TargetFrameworkMoniker (id, version, profile);
-						fx = TargetFramework.FromFrameworkDirectory (moniker, profileDir);
-						if (fx != null)
-							yield return fx;
-					}
-				}
-			}
 		}
 	}
 }

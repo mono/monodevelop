@@ -127,9 +127,21 @@ namespace MonoDevelop.Core.Assemblies
 				RuntimesChanged (this, EventArgs.Empty);
 		}
 		
-		public IEnumerable<TargetFramework> GetTargetFrameworks ()
+		internal IEnumerable<TargetFramework> GetCoreFrameworks ()
 		{
 			return frameworks;
+		}
+		
+		public IEnumerable<TargetFramework> GetTargetFrameworks ()
+		{
+			var keys = new HashSet<TargetFrameworkMoniker> ();
+			foreach (var fx in frameworks)
+				if (keys.Add (fx.Id))
+					yield return fx;
+			foreach (var rt in runtimes)
+				foreach (var f in rt.CustomFrameworks)
+					if (keys.Add (f.Id))
+						yield return f;
 		}
 		
 		public IEnumerable<TargetRuntime> GetTargetRuntimes ()

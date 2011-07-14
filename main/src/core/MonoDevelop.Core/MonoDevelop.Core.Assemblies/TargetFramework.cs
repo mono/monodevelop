@@ -221,13 +221,13 @@ namespace MonoDevelop.Core.Assemblies
 				
 				//not sure what this is for
 				//if (reader.MoveToAttribute ("Redist") && reader.ReadAttributeValue ())
-				//	redist = reader.ReadString ();
+				//	redist = reader.ReadContentAsString ();
 				
 				if (reader.MoveToAttribute ("Name") && reader.ReadAttributeValue ())
-					fx.name = reader.ReadString ();
+					fx.name = reader.ReadContentAsString ();
 				
 				if (reader.MoveToAttribute ("RuntimeVersion") && reader.ReadAttributeValue ()) {
-					string runtimeVersion = reader.ReadString ();
+					string runtimeVersion = reader.ReadContentAsString ();
 					switch (runtimeVersion) {
 					case "2.0":
 						fx.clrVersion = ClrVersion.Net_2_0;
@@ -241,7 +241,7 @@ namespace MonoDevelop.Core.Assemblies
 				}
 				
 				if (reader.MoveToAttribute ("ToolsVersion") && reader.ReadAttributeValue ()) {
-					string runtimeVersion = reader.ReadString ();
+					string runtimeVersion = reader.ReadContentAsString ();
 					switch (runtimeVersion) {
 					case "2.0":
 						fx.toolsVersion = TargetFrameworkToolsVersion.V2_0;
@@ -258,31 +258,32 @@ namespace MonoDevelop.Core.Assemblies
 				}
 				
 				if (reader.MoveToAttribute ("IncludeFramework") && reader.ReadAttributeValue ()) {
-					string include = reader.ReadString ();
+					string include = reader.ReadContentAsString ();
 					if (!string.IsNullOrEmpty (include)) {
 						fx.IncludedFrameworks.Add (new TargetFrameworkMoniker (fx.Id.Identifier, include));
 					}
 				}
 				
-				if (!reader.ReadToDescendant ("File"))
+				if (!reader.ReadToFollowing ("File"))
 					throw new Exception ("No File element");
 				
 				var assemblies = new List<AssemblyInfo> ();
 				do {
 					var ainfo = new AssemblyInfo ();
 					assemblies.Add (ainfo);
-					if (!reader.MoveToAttribute ("AssemblyName") && reader.ReadAttributeValue ())
+					if (reader.MoveToAttribute ("AssemblyName") && reader.ReadAttributeValue ())
+						ainfo.Name = reader.ReadContentAsString ();
+					if (string.IsNullOrEmpty (ainfo.Name))
 						throw new Exception ("Missing AssemblyName attribute");
-					ainfo.Name = reader.ReadString ();
 					if (reader.MoveToAttribute ("Version") && reader.ReadAttributeValue ())
-						ainfo.Version = reader.ReadString ();
+						ainfo.Version = reader.ReadContentAsString ();
 					if (reader.MoveToAttribute ("PublicKeyToken") && reader.ReadAttributeValue ())
-						ainfo.PublicKeyToken = reader.ReadString ();
+						ainfo.PublicKeyToken = reader.ReadContentAsString ();
 					if (reader.MoveToAttribute ("Culture") && reader.ReadAttributeValue ())
-						ainfo.Culture = reader.ReadString ();
+						ainfo.Culture = reader.ReadContentAsString ();
 					if (reader.MoveToAttribute ("ProcessorArchitecture") && reader.ReadAttributeValue ())
 						ainfo.ProcessorArchitecture = (ProcessorArchitecture)
-							Enum.Parse (typeof (ProcessorArchitecture), reader.ReadString ());
+							Enum.Parse (typeof (ProcessorArchitecture), reader.ReadContentAsString (), true);
 					if (reader.MoveToAttribute ("InGac") && reader.ReadAttributeValue ())
 						ainfo.InGac = reader.ReadContentAsBoolean ();
 				} while (reader.ReadToFollowing ("File"));
