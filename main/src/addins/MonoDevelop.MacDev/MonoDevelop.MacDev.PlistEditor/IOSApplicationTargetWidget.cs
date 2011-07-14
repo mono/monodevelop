@@ -1,5 +1,5 @@
 // 
-// PListEditorWidget.cs
+// IOSApplicationTargetWidget.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,58 +24,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Gdk;
-using Gtk;
 using MonoDevelop.Core;
-using System.Collections.Generic;
-using MonoMac.Foundation;
-using MonoDevelop.Components;
-using Mono.TextEditor;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
-	[System.ComponentModel.ToolboxItem(false)]
-	public partial class PListEditorWidget : Gtk.Bin
+	[System.ComponentModel.ToolboxItem(true)]
+	public partial class IOSApplicationTargetWidget : Gtk.Bin
 	{
-		public PDictionary NSDictionary {
-			get {
-				return customProperties.NSDictionary;
-			}
-			set {
-				customProperties.NSDictionary = value;
-				Update ();
-			}
-		}
-		CustomPropertiesWidget customProperties = new CustomPropertiesWidget ();
-		IOSApplicationTargetWidget iOSApplicationTargetWidget = new IOSApplicationTargetWidget ();
-		IPhoneDeploymentInfo iPhoneDeploymentInfo = new IPhoneDeploymentInfo ();
-		IPadDeploymentInfo iPadDeploymentInfo = new IPadDeploymentInfo ();
-		
-		public PListEditorWidget ()
+		public IOSApplicationTargetWidget ()
 		{
 			this.Build ();
 			
-			customTargetPropertiesContainer.SetWidget (customProperties);
+			Gtk.ListStore devices = new Gtk.ListStore (typeof (string));
+			devices.AppendValues (GettextCatalog.GetString ("iPhone/iPod"));
+			devices.AppendValues (GettextCatalog.GetString ("iPad"));
+			devices.AppendValues (GettextCatalog.GetString ("Universal"));
 			
-			iosApplicationTargetContainer.SetWidget (iOSApplicationTargetWidget);
-			iPhoneDeploymentInfoContainer.SetWidget (iPhoneDeploymentInfo);
-			iPadDeploymentInfoContainer.SetWidget (iPadDeploymentInfo);
+			comboboxDevices.Model = devices;
 		}
 		
-		void Update ()
+		public void Update (PDictionary NSDictionary)
 		{
-			iOSApplicationTargetWidget.Update (NSDictionary);
-			iPhoneDeploymentInfo.Update (NSDictionary);
-			iPadDeploymentInfo.Update (NSDictionary);
+			var identifier = NSDictionary.Get<PString> ("CFBundleIdentifier");
+			entryIdentifier.Text = identifier != null ? identifier : "";
+			
+			var version = NSDictionary.Get<PString> ("CFBundleVersion");
+			entryVersion.Text = version != null ? version : "";
 			
 			var iphone = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations");
-			iPhoneDeploymentInfoContainer.Visible = iphone != null;
 			var ipad   = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
-			iPadDeploymentInfoContainer.Visible = ipad != null;
 			
+			if (iphone != null && ipad != null) {
+				comboboxDevices.Active = 2;
+			} else if (ipad != null) {
+				comboboxDevices.Active = 1;
+			} else {
+				comboboxDevices.Active = 0;
+			}
 		}
-		
 	}
 }
 

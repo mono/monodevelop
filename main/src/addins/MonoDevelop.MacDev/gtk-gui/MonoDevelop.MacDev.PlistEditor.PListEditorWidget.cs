@@ -7,92 +7,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 		private global::Gtk.Notebook notebook1;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.VBox vbox2;
-		private global::Gtk.Expander expander1;
-		private global::Gtk.Table table1;
-		private global::Gtk.ComboBox comboboxDevices;
-		private global::Gtk.ComboBoxEntry comboboxentryDeploymentTarget;
-		private global::Gtk.Entry entryIdentifier;
-		private global::Gtk.Entry entryVersion;
-		private global::Gtk.Label label3;
-		private global::Gtk.Label label4;
-		private global::Gtk.Label label5;
-		private global::Gtk.Label label6;
-		private global::Gtk.Label GtkLabel;
-		private global::Gtk.Expander expanderIPhone;
-		private global::Gtk.VBox vboxIPhoneDeploymentInfo;
-		private global::Gtk.HBox hbox1;
-		private global::Gtk.Label label7;
-		private global::Gtk.ComboBoxEntry comboboxentryIPhoneMainInterface;
-		private global::Gtk.Frame frame1;
-		private global::Gtk.Alignment GtkAlignment;
-		private global::Gtk.HBox hbox2;
-		private global::Gtk.ToggleButton togglebutton1;
-		private global::Gtk.VBox vbox4;
-		private global::Gtk.Image imageIPhone1;
-		private global::Gtk.Label label8;
-		private global::Gtk.ToggleButton togglebutton2;
-		private global::Gtk.VBox vbox5;
-		private global::Gtk.Image imageIPhone2;
-		private global::Gtk.Label label9;
-		private global::Gtk.ToggleButton togglebutton3;
-		private global::Gtk.VBox vbox6;
-		private global::Gtk.Image imageIPhone3;
-		private global::Gtk.Label label10;
-		private global::Gtk.ToggleButton togglebutton4;
-		private global::Gtk.VBox vbox7;
-		private global::Gtk.Image imageIPhone4;
-		private global::Gtk.Label label11;
-		private global::Gtk.Label GtkLabel3;
-		private global::Gtk.Frame frame2;
-		private global::Gtk.Alignment GtkAlignment1;
-		private global::Gtk.HBox hbox3;
-		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imageIPhoneAppIcon1;
-		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imageIPhoneAppIcon2;
-		private global::Gtk.Label GtkLabel4;
-		private global::Gtk.Frame frame3;
-		private global::Gtk.Alignment GtkAlignment2;
-		private global::Gtk.HBox hbox4;
-		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imageIPhoneLaunch1;
-		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imageIPhoneLaunch2;
-		private global::Gtk.Label GtkLabel5;
-		private global::Gtk.Label GtkLabel1;
-		private global::Gtk.Expander expanderIPad;
-		private global::Gtk.VBox vboxIPadDeploymentInfo;
-		private global::Gtk.HBox hbox5;
-		private global::Gtk.Label label12;
-		private global::Gtk.ComboBoxEntry comboboxentryIPadMainInterface;
-		private global::Gtk.Frame frame4;
-		private global::Gtk.Alignment GtkAlignment3;
-		private global::Gtk.HBox hbox6;
-		private global::Gtk.ToggleButton togglebutton9;
-		private global::Gtk.VBox vbox8;
-		private global::Gtk.Image imageIPad1;
-		private global::Gtk.Label label15;
-		private global::Gtk.ToggleButton togglebutton10;
-		private global::Gtk.VBox vbox11;
-		private global::Gtk.Image imageIPad2;
-		private global::Gtk.Label label16;
-		private global::Gtk.ToggleButton togglebutton11;
-		private global::Gtk.VBox vbox12;
-		private global::Gtk.Image imageIPad3;
-		private global::Gtk.Label label17;
-		private global::Gtk.ToggleButton togglebutton12;
-		private global::Gtk.VBox vbox13;
-		private global::Gtk.Image imageIPad4;
-		private global::Gtk.Label label18;
-		private global::Gtk.Label GtkLabel6;
-		private global::Gtk.Frame frame5;
-		private global::Gtk.Alignment GtkAlignment4;
-		private global::Gtk.HBox hbox7;
-		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imageIPadAppIcon;
-		private global::Gtk.Label GtkLabel7;
-		private global::Gtk.Frame frame6;
-		private global::Gtk.Alignment GtkAlignment5;
-		private global::Gtk.HBox hbox8;
-		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imageIPadLaunch1;
-		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imageIPadLaunch2;
-		private global::Gtk.Label GtkLabel8;
-		private global::Gtk.Label GtkLabel2;
+		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer iosApplicationTargetContainer;
+		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer iPhoneDeploymentInfoContainer;
+		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer iPadDeploymentInfoContainer;
 		private global::Gtk.Label label1;
 		private global::Gtk.ScrolledWindow scrolledwindow2;
 		private global::Gtk.VBox vbox3;
@@ -113,7 +30,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.notebook1 = new global::Gtk.Notebook ();
 			this.notebook1.CanFocus = true;
 			this.notebook1.Name = "notebook1";
-			this.notebook1.CurrentPage = 1;
+			this.notebook1.CurrentPage = 0;
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow1.CanFocus = true;
@@ -125,691 +42,45 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// Container child GtkViewport.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
-			this.vbox2.Spacing = 6;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.expander1 = new global::Gtk.Expander (null);
-			this.expander1.CanFocus = true;
-			this.expander1.Name = "expander1";
-			this.expander1.Expanded = true;
-			// Container child expander1.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
-			this.table1.Name = "table1";
-			this.table1.RowSpacing = ((uint)(6));
-			this.table1.ColumnSpacing = ((uint)(6));
-			this.table1.BorderWidth = ((uint)(6));
-			// Container child table1.Gtk.Table+TableChild
-			this.comboboxDevices = global::Gtk.ComboBox.NewText ();
-			this.comboboxDevices.Name = "comboboxDevices";
-			this.table1.Add (this.comboboxDevices);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxDevices]));
-			w2.TopAttach = ((uint)(2));
-			w2.BottomAttach = ((uint)(3));
-			w2.LeftAttach = ((uint)(1));
-			w2.RightAttach = ((uint)(2));
-			w2.XOptions = ((global::Gtk.AttachOptions)(4));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.comboboxentryDeploymentTarget = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentryDeploymentTarget.Name = "comboboxentryDeploymentTarget";
-			this.table1.Add (this.comboboxentryDeploymentTarget);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentryDeploymentTarget]));
-			w3.TopAttach = ((uint)(3));
-			w3.BottomAttach = ((uint)(4));
-			w3.LeftAttach = ((uint)(1));
-			w3.RightAttach = ((uint)(2));
-			w3.XOptions = ((global::Gtk.AttachOptions)(4));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.entryIdentifier = new global::Gtk.Entry ();
-			this.entryIdentifier.CanFocus = true;
-			this.entryIdentifier.Name = "entryIdentifier";
-			this.entryIdentifier.IsEditable = true;
-			this.entryIdentifier.InvisibleChar = '●';
-			this.table1.Add (this.entryIdentifier);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryIdentifier]));
-			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.entryVersion = new global::Gtk.Entry ();
-			this.entryVersion.CanFocus = true;
-			this.entryVersion.Name = "entryVersion";
-			this.entryVersion.IsEditable = true;
-			this.entryVersion.InvisibleChar = '●';
-			this.table1.Add (this.entryVersion);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryVersion]));
-			w5.TopAttach = ((uint)(1));
-			w5.BottomAttach = ((uint)(2));
-			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3 = new global::Gtk.Label ();
-			this.label3.Name = "label3";
-			this.label3.Xalign = 1F;
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Identifier:");
-			this.label3.UseUnderline = true;
-			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label4 = new global::Gtk.Label ();
-			this.label4.Name = "label4";
-			this.label4.Xalign = 1F;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("_Version:");
-			this.label4.UseUnderline = true;
-			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
-			w7.TopAttach = ((uint)(1));
-			w7.BottomAttach = ((uint)(2));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label5 = new global::Gtk.Label ();
-			this.label5.Name = "label5";
-			this.label5.Xalign = 1F;
-			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("_Devices:");
-			this.label5.UseUnderline = true;
-			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
-			w8.TopAttach = ((uint)(2));
-			w8.BottomAttach = ((uint)(3));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label6 = new global::Gtk.Label ();
-			this.label6.Name = "label6";
-			this.label6.Xalign = 1F;
-			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("D_eployment Target");
-			this.label6.UseUnderline = true;
-			this.table1.Add (this.label6);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.label6]));
-			w9.TopAttach = ((uint)(3));
-			w9.BottomAttach = ((uint)(4));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.expander1.Add (this.table1);
-			this.GtkLabel = new global::Gtk.Label ();
-			this.GtkLabel.Name = "GtkLabel";
-			this.GtkLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>iOS Application Target</b>");
-			this.GtkLabel.UseMarkup = true;
-			this.GtkLabel.UseUnderline = true;
-			this.expander1.LabelWidget = this.GtkLabel;
-			this.vbox2.Add (this.expander1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.expander1]));
-			w11.Position = 0;
-			w11.Expand = false;
-			w11.Fill = false;
+			this.iosApplicationTargetContainer = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
+			this.iosApplicationTargetContainer.CanFocus = true;
+			this.iosApplicationTargetContainer.Name = "iosApplicationTargetContainer";
+			this.iosApplicationTargetContainer.ContentLabel = "iOS Application Target";
+			this.iosApplicationTargetContainer.NoContentMessage = "";
+			this.iosApplicationTargetContainer.Expanded = false;
+			this.iosApplicationTargetContainer.Expandable = false;
+			this.vbox2.Add (this.iosApplicationTargetContainer);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.iosApplicationTargetContainer]));
+			w2.Position = 0;
+			w2.Expand = false;
+			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.expanderIPhone = new global::Gtk.Expander (null);
-			this.expanderIPhone.CanFocus = true;
-			this.expanderIPhone.Name = "expanderIPhone";
-			this.expanderIPhone.Expanded = true;
-			// Container child expanderIPhone.Gtk.Container+ContainerChild
-			this.vboxIPhoneDeploymentInfo = new global::Gtk.VBox ();
-			this.vboxIPhoneDeploymentInfo.Name = "vboxIPhoneDeploymentInfo";
-			this.vboxIPhoneDeploymentInfo.Spacing = 6;
-			this.vboxIPhoneDeploymentInfo.BorderWidth = ((uint)(6));
-			// Container child vboxIPhoneDeploymentInfo.Gtk.Box+BoxChild
-			this.hbox1 = new global::Gtk.HBox ();
-			this.hbox1.Name = "hbox1";
-			this.hbox1.Spacing = 6;
-			// Container child hbox1.Gtk.Box+BoxChild
-			this.label7 = new global::Gtk.Label ();
-			this.label7.Name = "label7";
-			this.label7.Xalign = 1F;
-			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Main Interface:");
-			this.hbox1.Add (this.label7);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label7]));
-			w12.Position = 0;
-			w12.Expand = false;
-			w12.Fill = false;
-			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboboxentryIPhoneMainInterface = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentryIPhoneMainInterface.Name = "comboboxentryIPhoneMainInterface";
-			this.hbox1.Add (this.comboboxentryIPhoneMainInterface);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboboxentryIPhoneMainInterface]));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
-			this.vboxIPhoneDeploymentInfo.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vboxIPhoneDeploymentInfo [this.hbox1]));
-			w14.Position = 0;
-			w14.Expand = false;
-			w14.Fill = false;
-			// Container child vboxIPhoneDeploymentInfo.Gtk.Box+BoxChild
-			this.frame1 = new global::Gtk.Frame ();
-			this.frame1.Name = "frame1";
-			this.frame1.ShadowType = ((global::Gtk.ShadowType)(0));
-			// Container child frame1.Gtk.Container+ContainerChild
-			this.GtkAlignment = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment.Name = "GtkAlignment";
-			this.GtkAlignment.LeftPadding = ((uint)(12));
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			this.hbox2 = new global::Gtk.HBox ();
-			this.hbox2.Name = "hbox2";
-			this.hbox2.Spacing = 6;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.togglebutton1 = new global::Gtk.ToggleButton ();
-			this.togglebutton1.CanFocus = true;
-			this.togglebutton1.Name = "togglebutton1";
-			// Container child togglebutton1.Gtk.Container+ContainerChild
-			this.vbox4 = new global::Gtk.VBox ();
-			this.vbox4.Name = "vbox4";
-			this.vbox4.Spacing = 6;
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.imageIPhone1 = new global::Gtk.Image ();
-			this.imageIPhone1.Name = "imageIPhone1";
-			this.imageIPhone1.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("iPhone1.png");
-			this.vbox4.Add (this.imageIPhone1);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.imageIPhone1]));
-			w15.Position = 0;
-			w15.Expand = false;
-			w15.Fill = false;
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.label8 = new global::Gtk.Label ();
-			this.label8.Name = "label8";
-			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Portrait");
-			this.vbox4.Add (this.label8);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label8]));
-			w16.Position = 1;
-			w16.Expand = false;
-			w16.Fill = false;
-			this.togglebutton1.Add (this.vbox4);
-			this.togglebutton1.Label = null;
-			this.hbox2.Add (this.togglebutton1);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.togglebutton1]));
-			w18.Position = 0;
-			w18.Expand = false;
-			w18.Fill = false;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.togglebutton2 = new global::Gtk.ToggleButton ();
-			this.togglebutton2.CanFocus = true;
-			this.togglebutton2.Name = "togglebutton2";
-			// Container child togglebutton2.Gtk.Container+ContainerChild
-			this.vbox5 = new global::Gtk.VBox ();
-			this.vbox5.Name = "vbox5";
-			this.vbox5.Spacing = 6;
-			// Container child vbox5.Gtk.Box+BoxChild
-			this.imageIPhone2 = new global::Gtk.Image ();
-			this.imageIPhone2.Name = "imageIPhone2";
-			this.imageIPhone2.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("iPhone3.png");
-			this.vbox5.Add (this.imageIPhone2);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.imageIPhone2]));
-			w19.Position = 0;
-			w19.Expand = false;
-			w19.Fill = false;
-			// Container child vbox5.Gtk.Box+BoxChild
-			this.label9 = new global::Gtk.Label ();
-			this.label9.Name = "label9";
-			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Upside Down");
-			this.label9.UseMarkup = true;
-			this.vbox5.Add (this.label9);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label9]));
-			w20.Position = 1;
-			w20.Expand = false;
-			w20.Fill = false;
-			this.togglebutton2.Add (this.vbox5);
-			this.togglebutton2.Label = null;
-			this.hbox2.Add (this.togglebutton2);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.togglebutton2]));
-			w22.Position = 1;
-			w22.Expand = false;
-			w22.Fill = false;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.togglebutton3 = new global::Gtk.ToggleButton ();
-			this.togglebutton3.CanFocus = true;
-			this.togglebutton3.Name = "togglebutton3";
-			// Container child togglebutton3.Gtk.Container+ContainerChild
-			this.vbox6 = new global::Gtk.VBox ();
-			this.vbox6.Name = "vbox6";
-			this.vbox6.Spacing = 6;
-			// Container child vbox6.Gtk.Box+BoxChild
-			this.imageIPhone3 = new global::Gtk.Image ();
-			this.imageIPhone3.Name = "imageIPhone3";
-			this.imageIPhone3.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("iPhone2.png");
-			this.vbox6.Add (this.imageIPhone3);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.imageIPhone3]));
-			w23.Position = 0;
-			w23.Expand = false;
-			w23.Fill = false;
-			// Container child vbox6.Gtk.Box+BoxChild
-			this.label10 = new global::Gtk.Label ();
-			this.label10.Name = "label10";
-			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("Landscape Left");
-			this.vbox6.Add (this.label10);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.label10]));
-			w24.Position = 1;
-			w24.Expand = false;
-			w24.Fill = false;
-			this.togglebutton3.Add (this.vbox6);
-			this.togglebutton3.Label = null;
-			this.hbox2.Add (this.togglebutton3);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.togglebutton3]));
-			w26.Position = 2;
-			w26.Expand = false;
-			w26.Fill = false;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.togglebutton4 = new global::Gtk.ToggleButton ();
-			this.togglebutton4.CanFocus = true;
-			this.togglebutton4.Name = "togglebutton4";
-			// Container child togglebutton4.Gtk.Container+ContainerChild
-			this.vbox7 = new global::Gtk.VBox ();
-			this.vbox7.Name = "vbox7";
-			this.vbox7.Spacing = 6;
-			// Container child vbox7.Gtk.Box+BoxChild
-			this.imageIPhone4 = new global::Gtk.Image ();
-			this.imageIPhone4.Name = "imageIPhone4";
-			this.imageIPhone4.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("iPhone4.png");
-			this.vbox7.Add (this.imageIPhone4);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.imageIPhone4]));
-			w27.Position = 0;
-			w27.Expand = false;
-			w27.Fill = false;
-			// Container child vbox7.Gtk.Box+BoxChild
-			this.label11 = new global::Gtk.Label ();
-			this.label11.Name = "label11";
-			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("Landscape Right");
-			this.vbox7.Add (this.label11);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.label11]));
-			w28.Position = 1;
-			w28.Expand = false;
-			w28.Fill = false;
-			this.togglebutton4.Add (this.vbox7);
-			this.togglebutton4.Label = null;
-			this.hbox2.Add (this.togglebutton4);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.togglebutton4]));
-			w30.Position = 3;
-			w30.Expand = false;
-			w30.Fill = false;
-			this.GtkAlignment.Add (this.hbox2);
-			this.frame1.Add (this.GtkAlignment);
-			this.GtkLabel3 = new global::Gtk.Label ();
-			this.GtkLabel3.Name = "GtkLabel3";
-			this.GtkLabel3.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Supported Device Orientations</b>");
-			this.GtkLabel3.UseMarkup = true;
-			this.frame1.LabelWidget = this.GtkLabel3;
-			this.vboxIPhoneDeploymentInfo.Add (this.frame1);
-			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.vboxIPhoneDeploymentInfo [this.frame1]));
-			w33.Position = 1;
-			w33.Expand = false;
-			w33.Fill = false;
-			// Container child vboxIPhoneDeploymentInfo.Gtk.Box+BoxChild
-			this.frame2 = new global::Gtk.Frame ();
-			this.frame2.Name = "frame2";
-			this.frame2.ShadowType = ((global::Gtk.ShadowType)(0));
-			// Container child frame2.Gtk.Container+ContainerChild
-			this.GtkAlignment1 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment1.Name = "GtkAlignment1";
-			this.GtkAlignment1.LeftPadding = ((uint)(12));
-			// Container child GtkAlignment1.Gtk.Container+ContainerChild
-			this.hbox3 = new global::Gtk.HBox ();
-			this.hbox3.Name = "hbox3";
-			this.hbox3.Spacing = 6;
-			// Container child hbox3.Gtk.Box+BoxChild
-			this.imageIPhoneAppIcon1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPhoneAppIcon1.Name = "imageIPhoneAppIcon1";
-			this.hbox3.Add (this.imageIPhoneAppIcon1);
-			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageIPhoneAppIcon1]));
-			w34.Position = 0;
-			w34.Expand = false;
-			w34.Fill = false;
-			// Container child hbox3.Gtk.Box+BoxChild
-			this.imageIPhoneAppIcon2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPhoneAppIcon2.Name = "imageIPhoneAppIcon2";
-			this.imageIPhoneAppIcon2.Description = "Retina Display";
-			this.hbox3.Add (this.imageIPhoneAppIcon2);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageIPhoneAppIcon2]));
-			w35.Position = 1;
-			w35.Expand = false;
-			w35.Fill = false;
-			this.GtkAlignment1.Add (this.hbox3);
-			this.frame2.Add (this.GtkAlignment1);
-			this.GtkLabel4 = new global::Gtk.Label ();
-			this.GtkLabel4.Name = "GtkLabel4";
-			this.GtkLabel4.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>App Icons</b>");
-			this.GtkLabel4.UseMarkup = true;
-			this.frame2.LabelWidget = this.GtkLabel4;
-			this.vboxIPhoneDeploymentInfo.Add (this.frame2);
-			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.vboxIPhoneDeploymentInfo [this.frame2]));
-			w38.Position = 2;
-			w38.Expand = false;
-			w38.Fill = false;
-			// Container child vboxIPhoneDeploymentInfo.Gtk.Box+BoxChild
-			this.frame3 = new global::Gtk.Frame ();
-			this.frame3.Name = "frame3";
-			this.frame3.ShadowType = ((global::Gtk.ShadowType)(0));
-			// Container child frame3.Gtk.Container+ContainerChild
-			this.GtkAlignment2 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment2.Name = "GtkAlignment2";
-			this.GtkAlignment2.LeftPadding = ((uint)(12));
-			// Container child GtkAlignment2.Gtk.Container+ContainerChild
-			this.hbox4 = new global::Gtk.HBox ();
-			this.hbox4.Name = "hbox4";
-			this.hbox4.Spacing = 6;
-			// Container child hbox4.Gtk.Box+BoxChild
-			this.imageIPhoneLaunch1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPhoneLaunch1.Name = "imageIPhoneLaunch1";
-			this.hbox4.Add (this.imageIPhoneLaunch1);
-			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.imageIPhoneLaunch1]));
-			w39.Position = 0;
-			w39.Expand = false;
-			w39.Fill = false;
-			// Container child hbox4.Gtk.Box+BoxChild
-			this.imageIPhoneLaunch2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPhoneLaunch2.Name = "imageIPhoneLaunch2";
-			this.imageIPhoneLaunch2.Description = "Retina Display";
-			this.hbox4.Add (this.imageIPhoneLaunch2);
-			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.imageIPhoneLaunch2]));
-			w40.Position = 1;
-			w40.Expand = false;
-			w40.Fill = false;
-			this.GtkAlignment2.Add (this.hbox4);
-			this.frame3.Add (this.GtkAlignment2);
-			this.GtkLabel5 = new global::Gtk.Label ();
-			this.GtkLabel5.Name = "GtkLabel5";
-			this.GtkLabel5.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Launch images</b>");
-			this.GtkLabel5.UseMarkup = true;
-			this.frame3.LabelWidget = this.GtkLabel5;
-			this.vboxIPhoneDeploymentInfo.Add (this.frame3);
-			global::Gtk.Box.BoxChild w43 = ((global::Gtk.Box.BoxChild)(this.vboxIPhoneDeploymentInfo [this.frame3]));
-			w43.Position = 3;
-			w43.Expand = false;
-			w43.Fill = false;
-			this.expanderIPhone.Add (this.vboxIPhoneDeploymentInfo);
-			this.GtkLabel1 = new global::Gtk.Label ();
-			this.GtkLabel1.Name = "GtkLabel1";
-			this.GtkLabel1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>iPhone / iPod Deployment Info</b>");
-			this.GtkLabel1.UseMarkup = true;
-			this.GtkLabel1.UseUnderline = true;
-			this.expanderIPhone.LabelWidget = this.GtkLabel1;
-			this.vbox2.Add (this.expanderIPhone);
-			global::Gtk.Box.BoxChild w45 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.expanderIPhone]));
-			w45.Position = 1;
-			w45.Expand = false;
-			w45.Fill = false;
+			this.iPhoneDeploymentInfoContainer = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
+			this.iPhoneDeploymentInfoContainer.CanFocus = true;
+			this.iPhoneDeploymentInfoContainer.Name = "iPhoneDeploymentInfoContainer";
+			this.iPhoneDeploymentInfoContainer.ContentLabel = "iPhone / iPod Deployment Info";
+			this.iPhoneDeploymentInfoContainer.NoContentMessage = "";
+			this.iPhoneDeploymentInfoContainer.Expanded = false;
+			this.iPhoneDeploymentInfoContainer.Expandable = true;
+			this.vbox2.Add (this.iPhoneDeploymentInfoContainer);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.iPhoneDeploymentInfoContainer]));
+			w3.Position = 1;
+			w3.Expand = false;
+			w3.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.expanderIPad = new global::Gtk.Expander (null);
-			this.expanderIPad.CanFocus = true;
-			this.expanderIPad.Name = "expanderIPad";
-			this.expanderIPad.Expanded = true;
-			// Container child expanderIPad.Gtk.Container+ContainerChild
-			this.vboxIPadDeploymentInfo = new global::Gtk.VBox ();
-			this.vboxIPadDeploymentInfo.Name = "vboxIPadDeploymentInfo";
-			this.vboxIPadDeploymentInfo.Spacing = 6;
-			this.vboxIPadDeploymentInfo.BorderWidth = ((uint)(6));
-			// Container child vboxIPadDeploymentInfo.Gtk.Box+BoxChild
-			this.hbox5 = new global::Gtk.HBox ();
-			this.hbox5.Name = "hbox5";
-			this.hbox5.Spacing = 6;
-			// Container child hbox5.Gtk.Box+BoxChild
-			this.label12 = new global::Gtk.Label ();
-			this.label12.Name = "label12";
-			this.label12.Xalign = 1F;
-			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Main Interface:");
-			this.hbox5.Add (this.label12);
-			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.label12]));
-			w46.Position = 0;
-			w46.Expand = false;
-			w46.Fill = false;
-			// Container child hbox5.Gtk.Box+BoxChild
-			this.comboboxentryIPadMainInterface = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentryIPadMainInterface.Name = "comboboxentryIPadMainInterface";
-			this.hbox5.Add (this.comboboxentryIPadMainInterface);
-			global::Gtk.Box.BoxChild w47 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.comboboxentryIPadMainInterface]));
-			w47.Position = 1;
-			w47.Expand = false;
-			w47.Fill = false;
-			this.vboxIPadDeploymentInfo.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w48 = ((global::Gtk.Box.BoxChild)(this.vboxIPadDeploymentInfo [this.hbox5]));
-			w48.Position = 0;
-			w48.Expand = false;
-			w48.Fill = false;
-			// Container child vboxIPadDeploymentInfo.Gtk.Box+BoxChild
-			this.frame4 = new global::Gtk.Frame ();
-			this.frame4.Name = "frame4";
-			this.frame4.ShadowType = ((global::Gtk.ShadowType)(0));
-			// Container child frame4.Gtk.Container+ContainerChild
-			this.GtkAlignment3 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment3.Name = "GtkAlignment3";
-			this.GtkAlignment3.LeftPadding = ((uint)(12));
-			// Container child GtkAlignment3.Gtk.Container+ContainerChild
-			this.hbox6 = new global::Gtk.HBox ();
-			this.hbox6.Name = "hbox6";
-			this.hbox6.Spacing = 6;
-			// Container child hbox6.Gtk.Box+BoxChild
-			this.togglebutton9 = new global::Gtk.ToggleButton ();
-			this.togglebutton9.CanFocus = true;
-			this.togglebutton9.Name = "togglebutton9";
-			this.togglebutton9.Active = true;
-			// Container child togglebutton9.Gtk.Container+ContainerChild
-			this.vbox8 = new global::Gtk.VBox ();
-			this.vbox8.Name = "vbox8";
-			this.vbox8.Spacing = 6;
-			// Container child vbox8.Gtk.Box+BoxChild
-			this.imageIPad1 = new global::Gtk.Image ();
-			this.imageIPad1.Name = "imageIPad1";
-			this.imageIPad1.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("iPad1.png");
-			this.vbox8.Add (this.imageIPad1);
-			global::Gtk.Box.BoxChild w49 = ((global::Gtk.Box.BoxChild)(this.vbox8 [this.imageIPad1]));
-			w49.Position = 0;
-			w49.Expand = false;
-			w49.Fill = false;
-			// Container child vbox8.Gtk.Box+BoxChild
-			this.label15 = new global::Gtk.Label ();
-			this.label15.Name = "label15";
-			this.label15.LabelProp = global::Mono.Unix.Catalog.GetString ("Portrait");
-			this.vbox8.Add (this.label15);
-			global::Gtk.Box.BoxChild w50 = ((global::Gtk.Box.BoxChild)(this.vbox8 [this.label15]));
-			w50.Position = 1;
-			w50.Expand = false;
-			w50.Fill = false;
-			this.togglebutton9.Add (this.vbox8);
-			this.togglebutton9.Label = null;
-			this.hbox6.Add (this.togglebutton9);
-			global::Gtk.Box.BoxChild w52 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.togglebutton9]));
-			w52.Position = 0;
-			w52.Expand = false;
-			w52.Fill = false;
-			// Container child hbox6.Gtk.Box+BoxChild
-			this.togglebutton10 = new global::Gtk.ToggleButton ();
-			this.togglebutton10.CanFocus = true;
-			this.togglebutton10.Name = "togglebutton10";
-			// Container child togglebutton10.Gtk.Container+ContainerChild
-			this.vbox11 = new global::Gtk.VBox ();
-			this.vbox11.Name = "vbox11";
-			this.vbox11.Spacing = 6;
-			// Container child vbox11.Gtk.Box+BoxChild
-			this.imageIPad2 = new global::Gtk.Image ();
-			this.imageIPad2.Name = "imageIPad2";
-			this.imageIPad2.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("iPad3.png");
-			this.vbox11.Add (this.imageIPad2);
-			global::Gtk.Box.BoxChild w53 = ((global::Gtk.Box.BoxChild)(this.vbox11 [this.imageIPad2]));
-			w53.Position = 0;
-			w53.Expand = false;
-			w53.Fill = false;
-			// Container child vbox11.Gtk.Box+BoxChild
-			this.label16 = new global::Gtk.Label ();
-			this.label16.Name = "label16";
-			this.label16.LabelProp = global::Mono.Unix.Catalog.GetString ("Upside Down");
-			this.label16.UseMarkup = true;
-			this.vbox11.Add (this.label16);
-			global::Gtk.Box.BoxChild w54 = ((global::Gtk.Box.BoxChild)(this.vbox11 [this.label16]));
-			w54.Position = 1;
-			w54.Expand = false;
-			w54.Fill = false;
-			this.togglebutton10.Add (this.vbox11);
-			this.togglebutton10.Label = null;
-			this.hbox6.Add (this.togglebutton10);
-			global::Gtk.Box.BoxChild w56 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.togglebutton10]));
-			w56.Position = 1;
-			w56.Expand = false;
-			w56.Fill = false;
-			// Container child hbox6.Gtk.Box+BoxChild
-			this.togglebutton11 = new global::Gtk.ToggleButton ();
-			this.togglebutton11.CanFocus = true;
-			this.togglebutton11.Name = "togglebutton11";
-			// Container child togglebutton11.Gtk.Container+ContainerChild
-			this.vbox12 = new global::Gtk.VBox ();
-			this.vbox12.Name = "vbox12";
-			this.vbox12.Spacing = 6;
-			// Container child vbox12.Gtk.Box+BoxChild
-			this.imageIPad3 = new global::Gtk.Image ();
-			this.imageIPad3.Name = "imageIPad3";
-			this.imageIPad3.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("iPad2.png");
-			this.vbox12.Add (this.imageIPad3);
-			global::Gtk.Box.BoxChild w57 = ((global::Gtk.Box.BoxChild)(this.vbox12 [this.imageIPad3]));
-			w57.Position = 0;
-			w57.Expand = false;
-			w57.Fill = false;
-			// Container child vbox12.Gtk.Box+BoxChild
-			this.label17 = new global::Gtk.Label ();
-			this.label17.Name = "label17";
-			this.label17.LabelProp = global::Mono.Unix.Catalog.GetString ("Landscape Left");
-			this.vbox12.Add (this.label17);
-			global::Gtk.Box.BoxChild w58 = ((global::Gtk.Box.BoxChild)(this.vbox12 [this.label17]));
-			w58.Position = 1;
-			w58.Expand = false;
-			w58.Fill = false;
-			this.togglebutton11.Add (this.vbox12);
-			this.togglebutton11.Label = null;
-			this.hbox6.Add (this.togglebutton11);
-			global::Gtk.Box.BoxChild w60 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.togglebutton11]));
-			w60.Position = 2;
-			w60.Expand = false;
-			w60.Fill = false;
-			// Container child hbox6.Gtk.Box+BoxChild
-			this.togglebutton12 = new global::Gtk.ToggleButton ();
-			this.togglebutton12.CanFocus = true;
-			this.togglebutton12.Name = "togglebutton12";
-			// Container child togglebutton12.Gtk.Container+ContainerChild
-			this.vbox13 = new global::Gtk.VBox ();
-			this.vbox13.Name = "vbox13";
-			this.vbox13.Spacing = 6;
-			// Container child vbox13.Gtk.Box+BoxChild
-			this.imageIPad4 = new global::Gtk.Image ();
-			this.imageIPad4.Name = "imageIPad4";
-			this.imageIPad4.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("iPad4.png");
-			this.vbox13.Add (this.imageIPad4);
-			global::Gtk.Box.BoxChild w61 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.imageIPad4]));
-			w61.Position = 0;
-			w61.Expand = false;
-			w61.Fill = false;
-			// Container child vbox13.Gtk.Box+BoxChild
-			this.label18 = new global::Gtk.Label ();
-			this.label18.Name = "label18";
-			this.label18.LabelProp = global::Mono.Unix.Catalog.GetString ("Landscape Right");
-			this.vbox13.Add (this.label18);
-			global::Gtk.Box.BoxChild w62 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.label18]));
-			w62.Position = 1;
-			w62.Expand = false;
-			w62.Fill = false;
-			this.togglebutton12.Add (this.vbox13);
-			this.togglebutton12.Label = null;
-			this.hbox6.Add (this.togglebutton12);
-			global::Gtk.Box.BoxChild w64 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.togglebutton12]));
-			w64.Position = 3;
-			w64.Expand = false;
-			w64.Fill = false;
-			this.GtkAlignment3.Add (this.hbox6);
-			this.frame4.Add (this.GtkAlignment3);
-			this.GtkLabel6 = new global::Gtk.Label ();
-			this.GtkLabel6.Name = "GtkLabel6";
-			this.GtkLabel6.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Supported Device Orientations</b>");
-			this.GtkLabel6.UseMarkup = true;
-			this.frame4.LabelWidget = this.GtkLabel6;
-			this.vboxIPadDeploymentInfo.Add (this.frame4);
-			global::Gtk.Box.BoxChild w67 = ((global::Gtk.Box.BoxChild)(this.vboxIPadDeploymentInfo [this.frame4]));
-			w67.Position = 1;
-			w67.Expand = false;
-			w67.Fill = false;
-			// Container child vboxIPadDeploymentInfo.Gtk.Box+BoxChild
-			this.frame5 = new global::Gtk.Frame ();
-			this.frame5.Name = "frame5";
-			this.frame5.ShadowType = ((global::Gtk.ShadowType)(0));
-			// Container child frame5.Gtk.Container+ContainerChild
-			this.GtkAlignment4 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment4.Name = "GtkAlignment4";
-			this.GtkAlignment4.LeftPadding = ((uint)(12));
-			// Container child GtkAlignment4.Gtk.Container+ContainerChild
-			this.hbox7 = new global::Gtk.HBox ();
-			this.hbox7.Name = "hbox7";
-			this.hbox7.Spacing = 6;
-			// Container child hbox7.Gtk.Box+BoxChild
-			this.imageIPadAppIcon = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPadAppIcon.Name = "imageIPadAppIcon";
-			this.hbox7.Add (this.imageIPadAppIcon);
-			global::Gtk.Box.BoxChild w68 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.imageIPadAppIcon]));
-			w68.Position = 0;
-			w68.Expand = false;
-			w68.Fill = false;
-			this.GtkAlignment4.Add (this.hbox7);
-			this.frame5.Add (this.GtkAlignment4);
-			this.GtkLabel7 = new global::Gtk.Label ();
-			this.GtkLabel7.Name = "GtkLabel7";
-			this.GtkLabel7.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>App Icon</b>");
-			this.GtkLabel7.UseMarkup = true;
-			this.frame5.LabelWidget = this.GtkLabel7;
-			this.vboxIPadDeploymentInfo.Add (this.frame5);
-			global::Gtk.Box.BoxChild w71 = ((global::Gtk.Box.BoxChild)(this.vboxIPadDeploymentInfo [this.frame5]));
-			w71.Position = 2;
-			w71.Expand = false;
-			w71.Fill = false;
-			// Container child vboxIPadDeploymentInfo.Gtk.Box+BoxChild
-			this.frame6 = new global::Gtk.Frame ();
-			this.frame6.Name = "frame6";
-			this.frame6.ShadowType = ((global::Gtk.ShadowType)(0));
-			// Container child frame6.Gtk.Container+ContainerChild
-			this.GtkAlignment5 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment5.Name = "GtkAlignment5";
-			this.GtkAlignment5.LeftPadding = ((uint)(12));
-			// Container child GtkAlignment5.Gtk.Container+ContainerChild
-			this.hbox8 = new global::Gtk.HBox ();
-			this.hbox8.Name = "hbox8";
-			this.hbox8.Spacing = 6;
-			// Container child hbox8.Gtk.Box+BoxChild
-			this.imageIPadLaunch1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPadLaunch1.Name = "imageIPadLaunch1";
-			this.hbox8.Add (this.imageIPadLaunch1);
-			global::Gtk.Box.BoxChild w72 = ((global::Gtk.Box.BoxChild)(this.hbox8 [this.imageIPadLaunch1]));
-			w72.Position = 0;
-			w72.Expand = false;
-			w72.Fill = false;
-			// Container child hbox8.Gtk.Box+BoxChild
-			this.imageIPadLaunch2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imageIPadLaunch2.Name = "imageIPadLaunch2";
-			this.hbox8.Add (this.imageIPadLaunch2);
-			global::Gtk.Box.BoxChild w73 = ((global::Gtk.Box.BoxChild)(this.hbox8 [this.imageIPadLaunch2]));
-			w73.Position = 1;
-			w73.Expand = false;
-			w73.Fill = false;
-			this.GtkAlignment5.Add (this.hbox8);
-			this.frame6.Add (this.GtkAlignment5);
-			this.GtkLabel8 = new global::Gtk.Label ();
-			this.GtkLabel8.Name = "GtkLabel8";
-			this.GtkLabel8.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Launch images</b>");
-			this.GtkLabel8.UseMarkup = true;
-			this.frame6.LabelWidget = this.GtkLabel8;
-			this.vboxIPadDeploymentInfo.Add (this.frame6);
-			global::Gtk.Box.BoxChild w76 = ((global::Gtk.Box.BoxChild)(this.vboxIPadDeploymentInfo [this.frame6]));
-			w76.Position = 3;
-			w76.Expand = false;
-			w76.Fill = false;
-			this.expanderIPad.Add (this.vboxIPadDeploymentInfo);
-			this.GtkLabel2 = new global::Gtk.Label ();
-			this.GtkLabel2.Name = "GtkLabel2";
-			this.GtkLabel2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>iPad Deployment Info</b>");
-			this.GtkLabel2.UseMarkup = true;
-			this.GtkLabel2.UseUnderline = true;
-			this.expanderIPad.LabelWidget = this.GtkLabel2;
-			this.vbox2.Add (this.expanderIPad);
-			global::Gtk.Box.BoxChild w78 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.expanderIPad]));
-			w78.Position = 2;
-			w78.Expand = false;
-			w78.Fill = false;
+			this.iPadDeploymentInfoContainer = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
+			this.iPadDeploymentInfoContainer.CanFocus = true;
+			this.iPadDeploymentInfoContainer.Name = "iPadDeploymentInfoContainer";
+			this.iPadDeploymentInfoContainer.ContentLabel = "iPad Deployment Info";
+			this.iPadDeploymentInfoContainer.NoContentMessage = "";
+			this.iPadDeploymentInfoContainer.Expanded = false;
+			this.iPadDeploymentInfoContainer.Expandable = true;
+			this.vbox2.Add (this.iPadDeploymentInfoContainer);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.iPadDeploymentInfoContainer]));
+			w4.Position = 2;
+			w4.Expand = false;
+			w4.Fill = false;
 			w1.Add (this.vbox2);
 			this.scrolledwindow1.Add (w1);
 			this.notebook1.Add (this.scrolledwindow1);
@@ -825,8 +96,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.scrolledwindow2.Name = "scrolledwindow2";
 			this.scrolledwindow2.ShadowType = ((global::Gtk.ShadowType)(1));
 			// Container child scrolledwindow2.Gtk.Container+ContainerChild
-			global::Gtk.Viewport w82 = new global::Gtk.Viewport ();
-			w82.ShadowType = ((global::Gtk.ShadowType)(0));
+			global::Gtk.Viewport w8 = new global::Gtk.Viewport ();
+			w8.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child GtkViewport1.Gtk.Container+ContainerChild
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
@@ -839,8 +110,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.customTargetPropertiesContainer.Expanded = false;
 			this.customTargetPropertiesContainer.Expandable = false;
 			this.vbox3.Add (this.customTargetPropertiesContainer);
-			global::Gtk.Box.BoxChild w83 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.customTargetPropertiesContainer]));
-			w83.Position = 0;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.customTargetPropertiesContainer]));
+			w9.Position = 0;
+			w9.Expand = false;
+			w9.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.documentTypes = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
 			this.documentTypes.CanFocus = true;
@@ -850,10 +123,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.documentTypes.Expanded = false;
 			this.documentTypes.Expandable = true;
 			this.vbox3.Add (this.documentTypes);
-			global::Gtk.Box.BoxChild w84 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.documentTypes]));
-			w84.Position = 1;
-			w84.Expand = false;
-			w84.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.documentTypes]));
+			w10.Position = 1;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.exportedUTIs = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
 			this.exportedUTIs.CanFocus = true;
@@ -863,10 +136,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.exportedUTIs.Expanded = false;
 			this.exportedUTIs.Expandable = true;
 			this.vbox3.Add (this.exportedUTIs);
-			global::Gtk.Box.BoxChild w85 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs]));
-			w85.Position = 2;
-			w85.Expand = false;
-			w85.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs]));
+			w11.Position = 2;
+			w11.Expand = false;
+			w11.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.exportedUTIs1 = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
 			this.exportedUTIs1.CanFocus = true;
@@ -876,10 +149,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.exportedUTIs1.Expanded = false;
 			this.exportedUTIs1.Expandable = true;
 			this.vbox3.Add (this.exportedUTIs1);
-			global::Gtk.Box.BoxChild w86 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs1]));
-			w86.Position = 3;
-			w86.Expand = false;
-			w86.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs1]));
+			w12.Position = 3;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.exportedUTIs2 = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
 			this.exportedUTIs2.CanFocus = true;
@@ -889,15 +162,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.exportedUTIs2.Expanded = false;
 			this.exportedUTIs2.Expandable = true;
 			this.vbox3.Add (this.exportedUTIs2);
-			global::Gtk.Box.BoxChild w87 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs2]));
-			w87.Position = 4;
-			w87.Expand = false;
-			w87.Fill = false;
-			w82.Add (this.vbox3);
-			this.scrolledwindow2.Add (w82);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs2]));
+			w13.Position = 4;
+			w13.Expand = false;
+			w13.Fill = false;
+			w8.Add (this.vbox3);
+			this.scrolledwindow2.Add (w8);
 			this.notebook1.Add (this.scrolledwindow2);
-			global::Gtk.Notebook.NotebookChild w90 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.scrolledwindow2]));
-			w90.Position = 1;
+			global::Gtk.Notebook.NotebookChild w16 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.scrolledwindow2]));
+			w16.Position = 1;
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
@@ -908,7 +181,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.label3.MnemonicWidget = this.entryIdentifier;
 			this.Show ();
 		}
 	}

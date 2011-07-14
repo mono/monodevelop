@@ -67,6 +67,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			set {
 				contentBox.Visible = value;
+				header.StartTimeout ();
 			}
 		}
 		
@@ -75,9 +76,30 @@ namespace MonoDevelop.MacDev.PlistEditor
 			set;
 		}
 		
-		public class ExpanderHeader : DrawingArea
+		class Border : DrawingArea
+		{
+			protected override void OnSizeRequested (ref Requisition requisition)
+			{
+				base.OnSizeRequested (ref requisition);
+				requisition.Height = 1;
+			}
+			
+			protected override bool OnExposeEvent (EventExpose evnt)
+			{
+				using (var cr = CairoHelper.Create (evnt.Window)) {
+					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+					cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+					cr.Fill ();
+				}
+				return true;
+			}
+		}
+		
+		class ExpanderHeader : DrawingArea
 		{
 			DocumentTypeContainer container;
+			uint animationTimeout;
+			ExpanderStyle expanderStyle;
 			
 			public string Label {
 				get;
@@ -99,6 +121,47 @@ namespace MonoDevelop.MacDev.PlistEditor
 					layout.GetPixelSize (out w, out h);
 					requisition.Height = h + 4;
 				}
+			}
+			
+			void RemoveTimeout ()
+			{
+				if (animationTimeout != 0) {
+					GLib.Source.Remove (animationTimeout);
+					animationTimeout = 0;
+				}
+			}
+			
+			public void StartTimeout ()
+			{
+				RemoveTimeout ();
+				animationTimeout = GLib.Timeout.Add (50, delegate {
+					bool finished = false;
+					if (container.Expanded) {
+						if (expanderStyle == ExpanderStyle.Collapsed) {
+							expanderStyle = ExpanderStyle.SemiExpanded;
+						} else {
+							expanderStyle = ExpanderStyle.Expanded;
+							finished = true;
+						}
+					} else {
+						if (expanderStyle == ExpanderStyle.Expanded) {
+							expanderStyle = ExpanderStyle.SemiCollapsed;
+						} else {
+							expanderStyle = ExpanderStyle.Collapsed;
+							finished = true;
+						}
+					}
+					QueueDraw ();
+					if (finished) 
+						animationTimeout = 0;
+					return !finished;
+				});
+			}
+			
+			protected override void OnDestroyed ()
+			{
+				base.OnDestroyed ();
+				RemoveTimeout ();
 			}
 			
 			bool mouseOver;
@@ -151,9 +214,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 					lg.AddColorStop (0, (Mono.TextEditor.HslColor)Style.Light (state));
 					lg.AddColorStop (1, (Mono.TextEditor.HslColor)Style.Mid (state));
 					cr.Pattern = lg;
-					cr.FillPreserve ();
+					cr.Fill ();
 					
 					if (mouseOver && container.Expandable) {
+						cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 						double rx = mx;
 						double ry = my;
 						Cairo.RadialGradient gradient = new Cairo.RadialGradient (rx, ry, Allocation.Width * 2, rx, ry, 2);
@@ -162,9 +226,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 						color.A = 0.2;
 						gradient.AddColorStop (1, color);
 						cr.Pattern = gradient;
-						cr.FillPreserve ();
+						cr.Fill ();
 					}
-					
+					cr.MoveTo (0, 0);
+					cr.LineTo (0, Allocation.Height);
+					cr.LineTo (Allocation.Width, Allocation.Height);
+					cr.LineTo (Allocation.Width, 0);
+					if (!container.Expandable)
+						cr.LineTo (0, 0);
 					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 					cr.Stroke ();
 					
@@ -179,21 +248,25 @@ namespace MonoDevelop.MacDev.PlistEditor
 					}
 				}
 				
-				var bounds = GetExpanderBounds ();
+				if (container.Expandable) {
+					var bounds = GetExpanderBounds ();
+					
+					var state2 = mouseOver ? StateType.Prelight : StateType.Normal;
+					Style.PaintExpander (Style, 
+						evnt.Window, 
+						state2,
+						evnt.Region.Clipbox, 
+						this, 
+						"expander",
+						bounds.X + bounds.Width / 2, bounds.Y + bounds.Width / 2,
+						expanderStyle);
+				}
 				
-				var state2 = StateType.Normal;
-				Style.PaintExpander (Style, 
-					evnt.Window, 
-					state2,
-					evnt.Region.Clipbox, 
-					this, 
-					"expander",
-					0, evnt.Region.Clipbox.Height / 2,
-					this.container.Expanded ? ExpanderStyle.Expanded : ExpanderStyle.Collapsed);
 				return base.OnExposeEvent (evnt);
 			}
 		}
 		
+		Border border = new Border ();
 		public DocumentTypeContainer ()
 		{
 			header = new ExpanderHeader (this);
@@ -202,6 +275,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			contentBox = new VBox ();
 			noContentLabel = new Label ();
 			contentBox.PackStart (noContentLabel, true, true, 32);
+			
+			contentBox.PackEnd (border, false, false, 0);
 			PackStart (contentBox, true, true, 0);
 		}
 		
