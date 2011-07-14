@@ -47,11 +47,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 				Update ();
 			}
 		}
-		
+		CustomPropertiesWidget customProperties = new CustomPropertiesWidget ();
 		public PListEditorWidget ()
 		{
 			this.Build ();
 			
+			customTargetPropertiesContainer.SetWidget (customProperties);
 			
 			imageIPhoneAppIcon1.PictureSize = new Size (57, 57);
 			imageIPhoneAppIcon2.PictureSize = new Size (114, 114);

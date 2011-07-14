@@ -11,7 +11,7 @@
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.MacDev/MonoDevelop.MacDev.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.MacDev.PlistEditor.PListEditorWidget" design-size="620 563">
+  <widget class="Gtk.Bin" id="MonoDevelop.MacDev.PlistEditor.PListEditorWidget" design-size="448 303">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Notebook" id="notebook1">
@@ -1043,143 +1043,82 @@
                 <child>
                   <widget class="Gtk.VBox" id="vbox3">
                     <property name="MemberName" />
-                    <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.Expander" id="expander2">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="customTargetPropertiesContainer">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Expanded">True</property>
-                        <child>
-                          <widget class="Gtk.VBox" id="vboxCustomProperties">
-                            <property name="MemberName" />
-                            <property name="Spacing">6</property>
-                            <child>
-                              <widget class="MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget" id="customProperties">
-                                <property name="MemberName" />
-                                <property name="Events">ButtonPressMask</property>
-                              </widget>
-                              <packing>
-                                <property name="Position">0</property>
-                                <property name="AutoSize">True</property>
-                              </packing>
-                            </child>
-                          </widget>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="GtkLabel9">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">&lt;b&gt;Custom iOS Properties&lt;/b&gt;</property>
-                            <property name="UseMarkup">True</property>
-                            <property name="UseUnderline">True</property>
-                          </widget>
-                          <packing>
-                            <property name="type">label_item</property>
-                          </packing>
-                        </child>
+                        <property name="ContentLabel">Custom iOS Target Properties</property>
+                        <property name="NoContentMessage">No Document Types</property>
+                        <property name="Expanded">False</property>
+                        <property name="Expandable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
+                        <property name="AutoSize">False</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Expander" id="expander3">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="documentTypes">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Expanded">True</property>
-                        <child>
-                          <placeholder />
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="GtkLabel10">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">&lt;b&gt;Document Types&lt;/b&gt;</property>
-                            <property name="UseMarkup">True</property>
-                            <property name="UseUnderline">True</property>
-                          </widget>
-                          <packing>
-                            <property name="type">label_item</property>
-                          </packing>
-                        </child>
+                        <property name="ContentLabel">Document Types</property>
+                        <property name="NoContentMessage">No Document Types</property>
+                        <property name="Expanded">False</property>
+                        <property name="Expandable">True</property>
                       </widget>
                       <packing>
                         <property name="Position">1</property>
                         <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Expander" id="expander4">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="exportedUTIs">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Expanded">True</property>
-                        <child>
-                          <placeholder />
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="GtkLabel11">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">&lt;b&gt;Exported UTIs&lt;/b&gt;</property>
-                            <property name="UseMarkup">True</property>
-                            <property name="UseUnderline">True</property>
-                          </widget>
-                          <packing>
-                            <property name="type">label_item</property>
-                          </packing>
-                        </child>
+                        <property name="ContentLabel">Exported UTIs</property>
+                        <property name="NoContentMessage">No Exported UTIs</property>
+                        <property name="Expanded">False</property>
+                        <property name="Expandable">True</property>
                       </widget>
                       <packing>
                         <property name="Position">2</property>
                         <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Expander" id="expander5">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="exportedUTIs1">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Expanded">True</property>
-                        <child>
-                          <placeholder />
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="GtkLabel12">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">&lt;b&gt;Imported UTIs&lt;/b&gt;</property>
-                            <property name="UseMarkup">True</property>
-                            <property name="UseUnderline">True</property>
-                          </widget>
-                          <packing>
-                            <property name="type">label_item</property>
-                          </packing>
-                        </child>
+                        <property name="ContentLabel">Imported UTIs</property>
+                        <property name="NoContentMessage">No Imported UTIs</property>
+                        <property name="Expanded">False</property>
+                        <property name="Expandable">True</property>
                       </widget>
                       <packing>
                         <property name="Position">3</property>
                         <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Expander" id="expander6">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="exportedUTIs2">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Expanded">True</property>
-                        <child>
-                          <placeholder />
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="GtkLabel13">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">&lt;b&gt;URL Types&lt;/b&gt;</property>
-                            <property name="UseMarkup">True</property>
-                            <property name="UseUnderline">True</property>
-                          </widget>
-                          <packing>
-                            <property name="type">label_item</property>
-                          </packing>
-                        </child>
+                        <property name="ContentLabel">URL Types</property>
+                        <property name="NoContentMessage">No URL Types</property>
+                        <property name="Expanded">False</property>
+                        <property name="Expandable">True</property>
                       </widget>
                       <packing>
                         <property name="Position">4</property>
                         <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
                       </packing>
                     </child>
                   </widget>

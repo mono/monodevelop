@@ -141,6 +141,7 @@
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.UTIWidget.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\URLTypeWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.URLTypeWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\DocumentTypeContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
