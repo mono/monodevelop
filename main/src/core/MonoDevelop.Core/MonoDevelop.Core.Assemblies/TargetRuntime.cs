@@ -521,17 +521,19 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			}
 			
+			var frameworks = new HashSet<TargetFrameworkMoniker> ();
+			
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetCoreFrameworks ()) {
 				// A framework is installed if the assemblies directory exists and the first
 				// assembly of the list exists.
-				if (IsInstalled (fx)) {
+				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
 					timer.Trace ("Registering assemblies for framework " + fx.Id);
 					RegisterSystemAssemblies (fx);
 				}
 			}
 			
 			foreach (TargetFramework fx in CustomFrameworks) {
-				if (IsInstalled (fx)) {
+				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
 					timer.Trace ("Registering assemblies for framework " + fx.Id);
 					RegisterSystemAssemblies (fx);
 				}
