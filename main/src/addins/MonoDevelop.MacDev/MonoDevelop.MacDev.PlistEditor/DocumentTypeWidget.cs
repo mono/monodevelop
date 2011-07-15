@@ -47,8 +47,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		Project proj;
 		
-		MacExpander expander;
-		public MacExpander Expander {
+		ClosableExpander expander;
+		public ClosableExpander Expander {
 			get {
 				return expander;
 			}

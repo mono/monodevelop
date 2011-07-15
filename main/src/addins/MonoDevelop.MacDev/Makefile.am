@@ -53,6 +53,7 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistObjectBase.cs \
 	MonoDevelop.MacDev.Plist/PlistReal.cs \
 	MonoDevelop.MacDev.Plist/PlistString.cs \
+	MonoDevelop.MacDev.PlistEditor/CloseableExpander.cs \
 	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/DocumentTypeWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/ExpanderList.cs \

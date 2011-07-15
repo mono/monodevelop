@@ -149,6 +149,7 @@
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.IPadDeploymentInfo.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\ExpanderList.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\MacExpander.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\CloseableExpander.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

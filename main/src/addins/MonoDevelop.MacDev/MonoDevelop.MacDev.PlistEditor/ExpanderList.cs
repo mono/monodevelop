@@ -70,7 +70,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			ShowAll ();
 		}
 		
-		public MacExpander AddListItem (string name, Widget widget)
+		public ClosableExpander AddListItem (string name, Widget widget)
 		{
 			if (noContentLabel != null) {
 				contentBox.Remove (noContentLabel);
@@ -78,9 +78,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				noContentLabel = null;
 			}
 			
-			var expander = new MacExpander ();
+			var expander = new ClosableExpander ();
 			expander.ContentLabel = name;
-			expander.Expandable = true;
 			expander.SetWidget (widget);
 			expander.BorderWidth = 4;
 			contentBox.PackStart (expander, true, true, 0);

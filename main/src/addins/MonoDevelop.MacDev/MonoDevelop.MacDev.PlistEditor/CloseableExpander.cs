@@ -1,5 +1,5 @@
 // 
-// DocumentTypeContainer.cs
+// ClosableExpander.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -36,7 +36,7 @@ using Gtk;
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[ToolboxItem(true)]
-	public class MacExpander : VBox
+	public class ClosableExpander : VBox
 	{
 		ExpanderHeader header;
 		VBox contentBox;
@@ -62,38 +62,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		public bool Expandable {
-			get;
-			set;
-		}
-		
-		public bool Closeable {
-			get;
-			set;
-		}
-		
-		class Border : DrawingArea
-		{
-			protected override void OnSizeRequested (ref Requisition requisition)
-			{
-				base.OnSizeRequested (ref requisition);
-				requisition.Height = 1;
-			}
-			
-			protected override bool OnExposeEvent (EventExpose evnt)
-			{
-				using (var cr = CairoHelper.Create (evnt.Window)) {
-					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
-					cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-					cr.Fill ();
-				}
-				return true;
-			}
-		}
-		
 		class ExpanderHeader : DrawingArea
 		{
-			MacExpander container;
+			ClosableExpander container;
 			uint animationTimeout;
 			ExpanderStyle expanderStyle;
 			
@@ -102,7 +73,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				set;
 			}
 			
-			public ExpanderHeader (MacExpander container)
+			public ExpanderHeader (ClosableExpander container)
 			{
 				this.container = container;
 				Events |= EventMask.AllEventsMask;
@@ -117,8 +88,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					layout.GetPixelSize (out w, out h);
 					requisition.Height = h + 4;
 				}
-				if (container.Closeable)
-					requisition.Height += 4;
+				requisition.Height += 2;
 			}
 			
 			void RemoveTimeout ()
@@ -193,40 +163,42 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			protected override bool OnButtonReleaseEvent (EventButton evnt)
 			{
-				if (container.Expandable && evnt.Button == 1)
+				if (evnt.Button == 1)
 					container.Expanded = !container.Expanded;
 				return base.OnButtonReleaseEvent (evnt);
 			}
 			
 			// constants taken from gtk
 			const int DEFAULT_EXPANDER_SIZE = 10;
-			const int DEFAULT_EXPANDER_SPACING = 2;
+			const int DEFAULT_EXPANDER_SPACING = 4;
 			
 			Rectangle GetExpanderBounds ()
 			{
-				return new Rectangle (DEFAULT_EXPANDER_SPACING, (Allocation.Height - DEFAULT_EXPANDER_SIZE) / 2, DEFAULT_EXPANDER_SIZE, DEFAULT_EXPANDER_SIZE);
+				return new Rectangle (DEFAULT_EXPANDER_SPACING, 1 + (Allocation.Height - DEFAULT_EXPANDER_SIZE) / 2, DEFAULT_EXPANDER_SIZE, DEFAULT_EXPANDER_SIZE);
 			}
 			
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
+				Style.PaintBox (Style, evnt.Window, StateType.Insensitive, ShadowType.None, Allocation, this, "base", 0, 0, Allocation.Width, Allocation.Height);
+				
 				using (var cr = CairoHelper.Create (evnt.Window)) {
-					cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+					CairoCorners corners = CairoCorners.TopLeft | CairoCorners.TopRight;
+					if (!container.Expanded)
+						corners = CairoCorners.All;
+					int r = 10;
+					CairoExtensions.RoundedRectangle (cr, 0, 0, Allocation.Width, Allocation.Height, r, corners);
+					
 					var lg = new Cairo.LinearGradient (0, 0, 0, Allocation.Height);
 					var state = mouseOver ? StateType.Prelight : StateType.Normal;
 					
-					if (container.Closeable) {
-						lg.AddColorStop (0, (Mono.TextEditor.HslColor)Style.Mid (state));
-						lg.AddColorStop (1, (Mono.TextEditor.HslColor)Style.Dark (state));
-					} else {
-						lg.AddColorStop (0, (Mono.TextEditor.HslColor)Style.Light (state));
-						lg.AddColorStop (1, (Mono.TextEditor.HslColor)Style.Mid (state));
-					}
+					lg.AddColorStop (0, (Mono.TextEditor.HslColor)Style.Mid (state));
+					lg.AddColorStop (1, (Mono.TextEditor.HslColor)Style.Dark (state));
 					
 					cr.Pattern = lg;
 					cr.Fill ();
 					
-					if (mouseOver && container.Expandable) {
-						cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+					if (mouseOver) {
+						CairoExtensions.RoundedRectangle (cr, 0, 0, Allocation.Width, Allocation.Height, r, corners);
 						double rx = mx;
 						double ry = my;
 						Cairo.RadialGradient gradient = new Cairo.RadialGradient (rx, ry, Allocation.Width * 2, rx, ry, 2);
@@ -237,53 +209,78 @@ namespace MonoDevelop.MacDev.PlistEditor
 						cr.Pattern = gradient;
 						cr.Fill ();
 					}
-					cr.MoveTo (0, 0);
-					cr.LineTo (0, Allocation.Height);
-					cr.LineTo (Allocation.Width, Allocation.Height);
-					cr.LineTo (Allocation.Width, 0);
-					if (!container.Expandable)
-						cr.LineTo (0, 0);
+					cr.LineWidth = 1;
+					CairoExtensions.RoundedRectangle (cr, 0.5, 0.5, Allocation.Width-1, Allocation.Height - 1, r, corners);
 					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 					cr.Stroke ();
 					
 					using (var layout = new Pango.Layout (PangoContext)) {
-						layout.SetMarkup ("<b>" + Label + "</b>");
+						layout.SetMarkup (Label);
 						int w, h;
 						layout.GetPixelSize (out w, out h);
 						
-						cr.MoveTo (container.Expandable ? 16 : 4, (Allocation.Height - h) / 2);
+						cr.MoveTo (16, (Allocation.Height - h) / 2);
 						cr.Color = new Cairo.Color (0, 0, 0);
 						cr.ShowLayout (layout);
 					}
-				}
-				
-				if (container.Expandable) {
-					var bounds = GetExpanderBounds ();
 					
-					var state2 = mouseOver ? StateType.Prelight : StateType.Normal;
-					Style.PaintExpander (Style, 
-						evnt.Window, 
-						state2,
-						evnt.Region.Clipbox, 
-						this, 
-						"expander",
-						bounds.X + bounds.Width / 2, bounds.Y + bounds.Width / 2,
-						expanderStyle);
+					cr.Arc (Allocation.Width - 16, Allocation.Height / 2, 6, 0, Math.PI * 2);
+					cr.Color = new Cairo.Color (1, 1, 1);
+					cr.Fill ();
+					
+					cr.Arc (Allocation.Width - 16, Allocation.Height / 2, 6, 0, Math.PI * 2);
+					cr.ClosePath ();
+					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+					cr.Stroke ();
+					
+					cr.Color = new Cairo.Color (0, 0, 0);
+					cr.LineWidth = 1;
+					cr.MoveTo (Allocation.Width - 16 - 3, Allocation.Height / 2 - 3);
+					cr.LineTo(Allocation.Width - 16 + 3, Allocation.Height / 2 + 3);
+					cr.Stroke ();
+					
+					cr.MoveTo (Allocation.Width - 16 + 3, Allocation.Height / 2 - 3);
+					cr.LineTo(Allocation.Width - 16 - 3, Allocation.Height / 2 + 3);
+					cr.Stroke ();
+					
+
 				}
 				
-				return base.OnExposeEvent (evnt);
+				var bounds = GetExpanderBounds ();
+				
+				var state2 = mouseOver ? StateType.Prelight : StateType.Normal;
+				Style.PaintExpander (Style, 
+					evnt.Window, 
+					state2,
+					evnt.Region.Clipbox, 
+					this, 
+					"expander",
+					bounds.X + bounds.Width / 2, bounds.Y + bounds.Width / 2,
+					expanderStyle);
+				
+				
+				
+				return true;
 			}
 		}
 		
-		Border border = new Border ();
-		public MacExpander ()
+		public ClosableExpander ()
 		{
 			header = new ExpanderHeader (this);
 			PackStart (header, false, false, 0);
 			
 			contentBox = new VBox ();
-			contentBox.PackEnd (border, false, false, 0);
-			
+			contentBox.ExposeEvent += delegate(object o, ExposeEventArgs args) {
+				
+				using (var cr = CairoHelper.Create (args.Event.Window)) {
+					CairoCorners corners = CairoCorners.BottomLeft | CairoCorners.BottomRight;
+					int r = 10;
+					CairoExtensions.RoundedRectangle (cr, contentBox.Allocation.X + 0.5, contentBox.Allocation.Y+ 0.5, contentBox.Allocation.Width - 1, contentBox.Allocation.Height - 1, r, corners);
+					cr.LineWidth = 1;
+					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+					cr.Stroke ();
+				}
+			};
 			PackStart (contentBox, true, true, 0);
 			ShowAll ();
 		}

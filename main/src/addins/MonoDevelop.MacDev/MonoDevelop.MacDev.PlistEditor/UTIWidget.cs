@@ -36,8 +36,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		readonly PDictionary dict;
 		
-		MacExpander expander;
-		public MacExpander Expander {
+		ClosableExpander expander;
+		public ClosableExpander Expander {
 			get {
 				return expander;
 			}

@@ -49,6 +49,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.iosApplicationTargetContainer.ContentLabel = "iOS Application Target";
 			this.iosApplicationTargetContainer.Expanded = false;
 			this.iosApplicationTargetContainer.Expandable = false;
+			this.iosApplicationTargetContainer.Closeable = false;
 			this.vbox2.Add (this.iosApplicationTargetContainer);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.iosApplicationTargetContainer]));
 			w2.Position = 0;
@@ -61,6 +62,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.iPhoneDeploymentInfoContainer.ContentLabel = "iPhone / iPod Deployment Info";
 			this.iPhoneDeploymentInfoContainer.Expanded = false;
 			this.iPhoneDeploymentInfoContainer.Expandable = true;
+			this.iPhoneDeploymentInfoContainer.Closeable = false;
 			this.vbox2.Add (this.iPhoneDeploymentInfoContainer);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.iPhoneDeploymentInfoContainer]));
 			w3.Position = 1;
@@ -73,6 +75,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.iPadDeploymentInfoContainer.ContentLabel = "iPad Deployment Info";
 			this.iPadDeploymentInfoContainer.Expanded = false;
 			this.iPadDeploymentInfoContainer.Expandable = true;
+			this.iPadDeploymentInfoContainer.Closeable = false;
 			this.vbox2.Add (this.iPadDeploymentInfoContainer);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.iPadDeploymentInfoContainer]));
 			w4.Position = 2;
@@ -105,6 +108,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.customTargetPropertiesContainer.ContentLabel = "Custom iOS Target Properties";
 			this.customTargetPropertiesContainer.Expanded = false;
 			this.customTargetPropertiesContainer.Expandable = false;
+			this.customTargetPropertiesContainer.Closeable = false;
 			this.vbox3.Add (this.customTargetPropertiesContainer);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.customTargetPropertiesContainer]));
 			w9.Position = 0;
@@ -117,6 +121,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.documentTypeExpander.ContentLabel = "Document Types";
 			this.documentTypeExpander.Expanded = false;
 			this.documentTypeExpander.Expandable = true;
+			this.documentTypeExpander.Closeable = false;
 			this.vbox3.Add (this.documentTypeExpander);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.documentTypeExpander]));
 			w10.Position = 1;
@@ -129,6 +134,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.exportedUTIExpander.ContentLabel = "Exported UTIs";
 			this.exportedUTIExpander.Expanded = false;
 			this.exportedUTIExpander.Expandable = true;
+			this.exportedUTIExpander.Closeable = false;
 			this.vbox3.Add (this.exportedUTIExpander);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIExpander]));
 			w11.Position = 2;
@@ -141,6 +147,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.importedUTIExpander.ContentLabel = "Imported UTIs";
 			this.importedUTIExpander.Expanded = false;
 			this.importedUTIExpander.Expandable = true;
+			this.importedUTIExpander.Closeable = false;
 			this.vbox3.Add (this.importedUTIExpander);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.importedUTIExpander]));
 			w12.Position = 3;
@@ -153,6 +160,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.urlTypeExpander.ContentLabel = "URL Types";
 			this.urlTypeExpander.Expanded = false;
 			this.urlTypeExpander.Expandable = true;
+			this.urlTypeExpander.Closeable = false;
 			this.vbox3.Add (this.urlTypeExpander);
 			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.urlTypeExpander]));
 			w13.Position = 4;
