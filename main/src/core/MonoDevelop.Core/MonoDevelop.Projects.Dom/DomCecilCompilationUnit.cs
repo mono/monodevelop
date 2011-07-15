@@ -157,6 +157,8 @@ namespace MonoDevelop.Projects.Dom
 				if (result == null) {
 					var framework = Services.ProjectService.DefaultTargetFramework;
 					var assemblyName = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (fullName, framework);
+					if (assemblyName == null)
+						return null;
 					var location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyName, framework);
 					
 					if (!string.IsNullOrEmpty (location) && File.Exists (location)) {
