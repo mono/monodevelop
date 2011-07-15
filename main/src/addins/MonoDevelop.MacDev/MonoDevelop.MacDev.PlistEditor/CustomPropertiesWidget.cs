@@ -164,7 +164,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			};
 			
-			treeview1.AppendColumn (GettextCatalog.GetString ("Key"), keyRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
+			treeview1.AppendColumn (GettextCatalog.GetString ("Property"), keyRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				string id = (string)tree_model.GetValue (iter, 0) ?? "";
 				var obj = (PObject)tree_model.GetValue (iter, 1);
