@@ -21,7 +21,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		private global::Gtk.Label label3;
 		private global::Gtk.Expander expander1;
 		private global::MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget custompropertiesWidget;
-		private global::Gtk.Label GtkLabel1;
+		private global::Gtk.Label GtkLabel2;
 		
 		protected virtual void Build ()
 		{
@@ -33,6 +33,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vbox1 = new global::Gtk.VBox ();
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
+			this.vbox1.BorderWidth = ((uint)(6));
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
@@ -191,11 +192,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.custompropertiesWidget.Events = ((global::Gdk.EventMask)(256));
 			this.custompropertiesWidget.Name = "custompropertiesWidget";
 			this.expander1.Add (this.custompropertiesWidget);
-			this.GtkLabel1 = new global::Gtk.Label ();
-			this.GtkLabel1.Name = "GtkLabel1";
-			this.GtkLabel1.LabelProp = global::Mono.Unix.Catalog.GetString ("Additional document type properties");
-			this.GtkLabel1.UseUnderline = true;
-			this.expander1.LabelWidget = this.GtkLabel1;
+			this.GtkLabel2 = new global::Gtk.Label ();
+			this.GtkLabel2.Name = "GtkLabel2";
+			this.GtkLabel2.LabelProp = global::Mono.Unix.Catalog.GetString ("Additional document type properties");
+			this.GtkLabel2.UseUnderline = true;
+			this.expander1.LabelWidget = this.GtkLabel2;
 			this.vbox1.Add (this.expander1);
 			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.expander1]));
 			w16.Position = 1;

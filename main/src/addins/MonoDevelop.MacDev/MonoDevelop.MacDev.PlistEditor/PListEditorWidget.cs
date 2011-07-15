@@ -78,6 +78,33 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var dtw = new DocumentTypeWidget (dict);
 				dtw.Expander = documentTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
 			};
+			
+			exportedUTIList.CreateNew += delegate {
+				var documentTypes = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
+				if (documentTypes == null) {
+					NSDictionary.Value["UTExportedTypeDeclarations"] = documentTypes = new PArray () { Parent = NSDictionary };
+					NSDictionary.QueueRebuild ();
+				}
+				var dict = new PDictionary ();
+				documentTypes.Value.Add (dict);
+				
+				var dtw = new DocumentTypeWidget (dict);
+				dtw.Expander = exportedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
+			};
+			
+			importedUTIList.CreateNew += delegate {
+				var documentTypes = NSDictionary.Get<PArray> ("UTImportedTypeDeclarations");
+				if (documentTypes == null) {
+					NSDictionary.Value["UTImportedTypeDeclarations"] = documentTypes = new PArray () { Parent = NSDictionary };
+					NSDictionary.QueueRebuild ();
+				}
+				var dict = new PDictionary ();
+				documentTypes.Value.Add (dict);
+				
+				var dtw = new DocumentTypeWidget (dict);
+				dtw.Expander = importedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
+			};
+			
 			documentTypeExpander.SetWidget (documentTypeList);
 			exportedUTIExpander.SetWidget (exportedUTIList);
 			importedUTIExpander.SetWidget (importedUTIList);
@@ -112,6 +139,35 @@ namespace MonoDevelop.MacDev.PlistEditor
 				
 			}
 			
+			var exportedUTIs = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
+			if (exportedUTIs != null) {
+				foreach (var pObject in exportedUTIs.Value) {
+					var dict = (PDictionary)pObject;
+					if (dict == null)
+						continue;
+					var typeName = dict.Get<PString> ("UTTypeIdentifier");
+					string name = typeName != null ? typeName.Value : null;
+					if (string.IsNullOrEmpty (name))
+						name = GettextCatalog.GetString ("Untitled");
+					var dtw = new UTIWidget (dict);
+					dtw.Expander = exportedUTIList.AddListItem (name, dtw);
+				}
+			}
+			
+			var importedUTIs = NSDictionary.Get<PArray> ("UTImportedTypeDeclarations");
+			if (importedUTIs != null) {
+				foreach (var pObject in importedUTIs.Value) {
+					var dict = (PDictionary)pObject;
+					if (dict == null)
+						continue;
+					var typeName = dict.Get<PString> ("UTTypeIdentifier");
+					string name = typeName != null ? typeName.Value : null;
+					if (string.IsNullOrEmpty (name))
+						name = GettextCatalog.GetString ("Untitled");
+					var dtw = new UTIWidget (dict);
+					dtw.Expander = importedUTIList.AddListItem (name, dtw);
+				}
+			}
 		}
 		
 	}

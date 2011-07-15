@@ -165,6 +165,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return (T)obj;
 		}
 		
+		
 		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;

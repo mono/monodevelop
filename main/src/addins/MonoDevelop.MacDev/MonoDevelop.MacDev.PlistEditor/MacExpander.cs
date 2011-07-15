@@ -182,9 +182,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
-				if (container.Expandable)
-					container.Expanded = !container.Expanded;
 				return base.OnButtonPressEvent (evnt);
+			}
+			protected override bool OnButtonReleaseEvent (EventButton evnt)
+			{
+				if (container.Expandable && evnt.Button == 1)
+					container.Expanded = !container.Expanded;
+				return base.OnButtonReleaseEvent (evnt);
 			}
 			
 			// constants taken from gtk

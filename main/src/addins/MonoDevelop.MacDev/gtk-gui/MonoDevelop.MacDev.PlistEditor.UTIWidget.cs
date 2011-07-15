@@ -6,11 +6,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.Table table1;
-		private global::Gtk.ComboBoxEntry comboboxentry1;
-		private global::Gtk.ComboBoxEntry comboboxentry2;
-		private global::Gtk.Entry entry1;
-		private global::Gtk.Entry entry2;
-		private global::Gtk.Entry entry3;
+		private global::Gtk.ComboBoxEntry comboboxentryLargeIcon;
+		private global::Gtk.ComboBoxEntry comboboxentrySmallIcon;
+		private global::Gtk.Entry entryConformsTo;
+		private global::Gtk.Entry entryDescription;
+		private global::Gtk.Entry entryIdentifier;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
@@ -30,65 +30,66 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vbox1 = new global::Gtk.VBox ();
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
+			this.vbox1.BorderWidth = ((uint)(6));
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(4)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboboxentry1 = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentry1.Name = "comboboxentry1";
-			this.table1.Add (this.comboboxentry1);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentry1]));
+			this.comboboxentryLargeIcon = global::Gtk.ComboBoxEntry.NewText ();
+			this.comboboxentryLargeIcon.Name = "comboboxentryLargeIcon";
+			this.table1.Add (this.comboboxentryLargeIcon);
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentryLargeIcon]));
+			w1.TopAttach = ((uint)(1));
+			w1.BottomAttach = ((uint)(2));
 			w1.LeftAttach = ((uint)(3));
 			w1.RightAttach = ((uint)(4));
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboboxentry2 = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentry2.Name = "comboboxentry2";
-			this.table1.Add (this.comboboxentry2);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentry2]));
-			w2.TopAttach = ((uint)(1));
-			w2.BottomAttach = ((uint)(2));
+			this.comboboxentrySmallIcon = global::Gtk.ComboBoxEntry.NewText ();
+			this.comboboxentrySmallIcon.Name = "comboboxentrySmallIcon";
+			this.table1.Add (this.comboboxentrySmallIcon);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentrySmallIcon]));
 			w2.LeftAttach = ((uint)(3));
 			w2.RightAttach = ((uint)(4));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.entry1 = new global::Gtk.Entry ();
-			this.entry1.CanFocus = true;
-			this.entry1.Name = "entry1";
-			this.entry1.IsEditable = true;
-			this.entry1.InvisibleChar = '●';
-			this.table1.Add (this.entry1);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entry1]));
+			this.entryConformsTo = new global::Gtk.Entry ();
+			this.entryConformsTo.CanFocus = true;
+			this.entryConformsTo.Name = "entryConformsTo";
+			this.entryConformsTo.IsEditable = true;
+			this.entryConformsTo.InvisibleChar = '●';
+			this.table1.Add (this.entryConformsTo);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryConformsTo]));
+			w3.TopAttach = ((uint)(2));
+			w3.BottomAttach = ((uint)(3));
 			w3.LeftAttach = ((uint)(1));
 			w3.RightAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.entry2 = new global::Gtk.Entry ();
-			this.entry2.CanFocus = true;
-			this.entry2.Name = "entry2";
-			this.entry2.IsEditable = true;
-			this.entry2.InvisibleChar = '●';
-			this.table1.Add (this.entry2);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.entry2]));
-			w4.TopAttach = ((uint)(1));
-			w4.BottomAttach = ((uint)(2));
+			this.entryDescription = new global::Gtk.Entry ();
+			this.entryDescription.CanFocus = true;
+			this.entryDescription.Name = "entryDescription";
+			this.entryDescription.IsEditable = true;
+			this.entryDescription.InvisibleChar = '●';
+			this.table1.Add (this.entryDescription);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryDescription]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.entry3 = new global::Gtk.Entry ();
-			this.entry3.CanFocus = true;
-			this.entry3.Name = "entry3";
-			this.entry3.IsEditable = true;
-			this.entry3.InvisibleChar = '●';
-			this.table1.Add (this.entry3);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.entry3]));
-			w5.TopAttach = ((uint)(2));
-			w5.BottomAttach = ((uint)(3));
+			this.entryIdentifier = new global::Gtk.Entry ();
+			this.entryIdentifier.CanFocus = true;
+			this.entryIdentifier.Name = "entryIdentifier";
+			this.entryIdentifier.IsEditable = true;
+			this.entryIdentifier.InvisibleChar = '●';
+			this.table1.Add (this.entryIdentifier);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryIdentifier]));
+			w5.TopAttach = ((uint)(1));
+			w5.BottomAttach = ((uint)(2));
 			w5.LeftAttach = ((uint)(1));
 			w5.RightAttach = ((uint)(2));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -184,7 +185,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.Hide ();
+			this.Show ();
 		}
 	}
 }

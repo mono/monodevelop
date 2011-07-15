@@ -50,8 +50,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			if (dict == null)
 				throw new ArgumentNullException ("dict");
-			this.Build ();
 			this.dict = dict;
+			this.Build ();
 			this.treeviewIcons.Model = iconStore;
 			this.treeviewIcons.AppendColumn ("icon", new CellRendererText (), "text", 0);
 			this.treeviewIcons.HeadersVisible = false;
