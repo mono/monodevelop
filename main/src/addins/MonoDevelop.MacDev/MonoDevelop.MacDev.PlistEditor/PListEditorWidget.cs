@@ -67,42 +67,59 @@ namespace MonoDevelop.MacDev.PlistEditor
 			iPadDeploymentInfoContainer.SetWidget (iPadDeploymentInfo);
 			
 			documentTypeList.CreateNew += delegate {
-				var documentTypes = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");
-				if (documentTypes == null) {
-					NSDictionary.Value["CFBundleDocumentTypes"] = documentTypes = new PArray () { Parent = NSDictionary };
+				var dict = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");
+				if (dict == null) {
+					NSDictionary.Value["CFBundleDocumentTypes"] = dict = new PArray () { Parent = NSDictionary };
 					NSDictionary.QueueRebuild ();
 				}
-				var dict = new PDictionary ();
-				documentTypes.Value.Add (dict);
+				var newEntry = new PDictionary ();
+				dict.Value.Add (newEntry);
+				dict.QueueRebuild ();
 				
-				var dtw = new DocumentTypeWidget (dict);
+				var dtw = new DocumentTypeWidget (newEntry);
 				dtw.Expander = documentTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
 			};
 			
 			exportedUTIList.CreateNew += delegate {
-				var documentTypes = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
-				if (documentTypes == null) {
-					NSDictionary.Value["UTExportedTypeDeclarations"] = documentTypes = new PArray () { Parent = NSDictionary };
+				var dict = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
+				if (dict == null) {
+					NSDictionary.Value["UTExportedTypeDeclarations"] = dict = new PArray () { Parent = NSDictionary };
 					NSDictionary.QueueRebuild ();
 				}
-				var dict = new PDictionary ();
-				documentTypes.Value.Add (dict);
+				var newEntry = new PDictionary ();
+				dict.Value.Add (newEntry);
+				dict.QueueRebuild ();
 				
-				var dtw = new DocumentTypeWidget (dict);
+				var dtw = new DocumentTypeWidget (newEntry);
 				dtw.Expander = exportedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
 			};
 			
 			importedUTIList.CreateNew += delegate {
-				var documentTypes = NSDictionary.Get<PArray> ("UTImportedTypeDeclarations");
-				if (documentTypes == null) {
-					NSDictionary.Value["UTImportedTypeDeclarations"] = documentTypes = new PArray () { Parent = NSDictionary };
+				var dict = NSDictionary.Get<PArray> ("UTImportedTypeDeclarations");
+				if (dict == null) {
+					NSDictionary.Value["UTImportedTypeDeclarations"] = dict = new PArray () { Parent = NSDictionary };
 					NSDictionary.QueueRebuild ();
 				}
-				var dict = new PDictionary ();
-				documentTypes.Value.Add (dict);
+				var newEntry = new PDictionary ();
+				dict.Value.Add (newEntry);
+				dict.QueueRebuild ();
 				
-				var dtw = new DocumentTypeWidget (dict);
+				var dtw = new DocumentTypeWidget (newEntry);
 				dtw.Expander = importedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
+			};
+			
+			urlTypeList.CreateNew += delegate {
+				var dict = NSDictionary.Get<PArray> ("CFBundleURLTypes");
+				if (dict == null) {
+					NSDictionary.Value["CFBundleURLTypes"] = dict = new PArray () { Parent = NSDictionary };
+					NSDictionary.QueueRebuild ();
+				}
+				var newEntry = new PDictionary ();
+				dict.Value.Add (newEntry);
+				dict.QueueRebuild ();
+				
+				var dtw = new URLTypeWidget (newEntry);
+				dtw.Expander = urlTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
 			};
 			
 			documentTypeExpander.SetWidget (documentTypeList);
@@ -128,15 +145,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 					var dict = (PDictionary)pObject;
 					if (dict == null)
 						continue;
-					var typeName = dict.Get<PString> ("CFBundleTypeName");
-					string name = typeName != null ? typeName.Value : null;
-					if (string.IsNullOrEmpty (name))
-						name = GettextCatalog.GetString ("Untitled");
+					string name = GettextCatalog.GetString ("Untitled");
 					var dtw = new DocumentTypeWidget (dict);
 					dtw.Expander = documentTypeList.AddListItem (name, dtw);
 					
 				}
-				
 			}
 			
 			var exportedUTIs = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
@@ -145,10 +158,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					var dict = (PDictionary)pObject;
 					if (dict == null)
 						continue;
-					var typeName = dict.Get<PString> ("UTTypeIdentifier");
-					string name = typeName != null ? typeName.Value : null;
-					if (string.IsNullOrEmpty (name))
-						name = GettextCatalog.GetString ("Untitled");
+					string name = GettextCatalog.GetString ("Untitled");
 					var dtw = new UTIWidget (dict);
 					dtw.Expander = exportedUTIList.AddListItem (name, dtw);
 				}
@@ -160,12 +170,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 					var dict = (PDictionary)pObject;
 					if (dict == null)
 						continue;
-					var typeName = dict.Get<PString> ("UTTypeIdentifier");
-					string name = typeName != null ? typeName.Value : null;
-					if (string.IsNullOrEmpty (name))
-						name = GettextCatalog.GetString ("Untitled");
+					string name = GettextCatalog.GetString ("Untitled");
 					var dtw = new UTIWidget (dict);
 					dtw.Expander = importedUTIList.AddListItem (name, dtw);
+				}
+			}
+			
+			var urlTypes = NSDictionary.Get<PArray> ("CFBundleURLTypes");
+			if (urlTypes != null) {
+				foreach (var pObject in urlTypes.Value) {
+					var dict = (PDictionary)pObject;
+					if (dict == null)
+						continue;
+					string name = GettextCatalog.GetString ("Untitled");
+					var dtw = new URLTypeWidget (dict);
+					dtw.Expander = urlTypeList.AddListItem (name, dtw);
 				}
 			}
 		}

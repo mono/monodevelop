@@ -34,11 +34,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		readonly PDictionary dict;
 		
+		MacExpander expander;
 		public MacExpander Expander {
-			get;
-			set;
+			get {
+				return expander;
+			}
+			set {
+				expander = value;
+				Update ();
+			}
 		}
-		
 		
 		const string DescriptionKey = "UTTypeDescription";
 		const string TypeIdentifierKey = "UTTypeIdentifier";

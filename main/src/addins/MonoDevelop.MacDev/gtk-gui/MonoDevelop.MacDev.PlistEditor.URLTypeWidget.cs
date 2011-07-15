@@ -7,14 +7,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.VBox vbox3;
-		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imagechooser1;
+		private global::MonoDevelop.MacDev.PlistEditor.ImageChooser imagechooser;
 		private global::Gtk.Table table1;
-		private global::Gtk.ComboBoxEntry comboboxentry3;
-		private global::Gtk.Entry entry1;
-		private global::Gtk.Entry entry2;
+		private global::Gtk.ComboBoxEntry comboboxentryIcon;
+		private global::Gtk.ComboBox comboboxType;
+		private global::Gtk.Entry entryIdentifier;
+		private global::Gtk.Entry entryUrlShemes;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
+		private global::Gtk.Label label4;
 		private global::Gtk.Expander expander1;
 		private global::MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget customProperiesWidget;
 		private global::Gtk.Label GtkLabel;
@@ -29,6 +31,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vbox1 = new global::Gtk.VBox ();
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
+			this.vbox1.BorderWidth = ((uint)(6));
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
@@ -38,10 +41,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.imagechooser1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
-			this.imagechooser1.Name = "imagechooser1";
-			this.vbox3.Add (this.imagechooser1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.imagechooser1]));
+			this.imagechooser = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
+			this.imagechooser.Name = "imagechooser";
+			this.vbox3.Add (this.imagechooser);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.imagechooser]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -51,15 +54,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(2)), false);
+			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboboxentry3 = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentry3.Name = "comboboxentry3";
-			this.table1.Add (this.comboboxentry3);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentry3]));
+			this.comboboxentryIcon = global::Gtk.ComboBoxEntry.NewText ();
+			this.comboboxentryIcon.Name = "comboboxentryIcon";
+			this.table1.Add (this.comboboxentryIcon);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentryIcon]));
 			w3.TopAttach = ((uint)(2));
 			w3.BottomAttach = ((uint)(3));
 			w3.LeftAttach = ((uint)(1));
@@ -67,31 +70,42 @@ namespace MonoDevelop.MacDev.PlistEditor
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.entry1 = new global::Gtk.Entry ();
-			this.entry1.CanFocus = true;
-			this.entry1.Name = "entry1";
-			this.entry1.IsEditable = true;
-			this.entry1.InvisibleChar = '●';
-			this.table1.Add (this.entry1);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.entry1]));
+			this.comboboxType = global::Gtk.ComboBox.NewText ();
+			this.comboboxType.Name = "comboboxType";
+			this.table1.Add (this.comboboxType);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxType]));
+			w4.TopAttach = ((uint)(3));
+			w4.BottomAttach = ((uint)(4));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.entry2 = new global::Gtk.Entry ();
-			this.entry2.CanFocus = true;
-			this.entry2.Name = "entry2";
-			this.entry2.IsEditable = true;
-			this.entry2.InvisibleChar = '●';
-			this.table1.Add (this.entry2);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.entry2]));
-			w5.TopAttach = ((uint)(1));
-			w5.BottomAttach = ((uint)(2));
+			this.entryIdentifier = new global::Gtk.Entry ();
+			this.entryIdentifier.CanFocus = true;
+			this.entryIdentifier.Name = "entryIdentifier";
+			this.entryIdentifier.IsEditable = true;
+			this.entryIdentifier.InvisibleChar = '●';
+			this.table1.Add (this.entryIdentifier);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryIdentifier]));
 			w5.LeftAttach = ((uint)(1));
 			w5.RightAttach = ((uint)(2));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.entryUrlShemes = new global::Gtk.Entry ();
+			this.entryUrlShemes.CanFocus = true;
+			this.entryUrlShemes.Name = "entryUrlShemes";
+			this.entryUrlShemes.IsEditable = true;
+			this.entryUrlShemes.InvisibleChar = '●';
+			this.table1.Add (this.entryUrlShemes);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryUrlShemes]));
+			w6.TopAttach = ((uint)(1));
+			w6.BottomAttach = ((uint)(2));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
@@ -100,9 +114,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.label1.UseMarkup = true;
 			this.label1.UseUnderline = true;
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
@@ -111,11 +125,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.label2.UseMarkup = true;
 			this.label2.UseUnderline = true;
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
-			w7.TopAttach = ((uint)(1));
-			w7.BottomAttach = ((uint)(2));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
+			w8.TopAttach = ((uint)(1));
+			w8.BottomAttach = ((uint)(2));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
@@ -124,21 +138,34 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.label3.UseMarkup = true;
 			this.label3.UseUnderline = true;
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
-			w8.TopAttach = ((uint)(2));
-			w8.BottomAttach = ((uint)(3));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
+			w9.TopAttach = ((uint)(2));
+			w9.BottomAttach = ((uint)(3));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.label4 = new global::Gtk.Label ();
+			this.label4.Name = "label4";
+			this.label4.Xalign = 1F;
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("_Role:");
+			this.label4.UseMarkup = true;
+			this.label4.UseUnderline = true;
+			this.table1.Add (this.label4);
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
+			w10.TopAttach = ((uint)(3));
+			w10.BottomAttach = ((uint)(4));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.hbox1.Add (this.table1);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.table1]));
-			w9.Position = 1;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.table1]));
+			w11.Position = 1;
+			w11.Expand = false;
+			w11.Fill = false;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
-			w10.Position = 0;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
+			w12.Position = 0;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.expander1 = new global::Gtk.Expander (null);
 			this.expander1.CanFocus = true;
@@ -155,13 +182,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.GtkLabel.UseUnderline = true;
 			this.expander1.LabelWidget = this.GtkLabel;
 			this.vbox1.Add (this.expander1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.expander1]));
-			w12.Position = 1;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.expander1]));
+			w14.Position = 1;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.Hide ();
+			this.Show ();
 		}
 	}
 }

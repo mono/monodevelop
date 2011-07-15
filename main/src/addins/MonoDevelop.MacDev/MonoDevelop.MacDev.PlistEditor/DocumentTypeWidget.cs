@@ -41,9 +41,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 		const string ContentTypesKey = "LSItemContentTypes";
 		const string IconFilesKey = "CFBundleTypeIconFiles";
 		
+		MacExpander expander;
 		public MacExpander Expander {
-			get;
-			set;
+			get {
+				return expander;
+			}
+			set {
+				expander = value;
+				Update ();
+			}
 		}
 		
 		public DocumentTypeWidget (PDictionary dict)
