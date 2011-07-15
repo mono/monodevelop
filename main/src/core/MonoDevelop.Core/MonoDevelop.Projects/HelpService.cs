@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects
 					helpTree = RootTree.LoadTree ();
 					
 					//FIXME: don't do this when monodoc itself does it or we'll get duplicates!
-					if (PropertyService.IsMac)
+					if (Platform.IsMac)
 						sources.Add ("/Library/Frameworks/Mono.framework/External/monodoc");
 					
 					foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/MonoDocSources"))

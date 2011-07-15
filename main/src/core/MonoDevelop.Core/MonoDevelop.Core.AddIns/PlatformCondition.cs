@@ -43,14 +43,14 @@ namespace MonoDevelop.Core.AddIns
 			switch (plat.ToLower ()) {
 				case "windows":
 				case "win32":
-					result = PropertyService.IsWindows; break;
+					result = Platform.IsWindows; break;
 				case "mac":
 				case "macos":
 				case "macosx":
-					result = PropertyService.IsMac; break;
+					result = Platform.IsMac; break;
 				case "unix":
 				case "linux":
-					result = !PropertyService.IsMac && !PropertyService.IsWindows; break;
+					result = !Platform.IsMac && !Platform.IsWindows; break;
 				default:
 					result = false; break;
 			}

@@ -31,7 +31,7 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	public static class Platform
+	static class Platform
 	{
 		static Platform ()
 		{

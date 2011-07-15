@@ -42,9 +42,6 @@ namespace MonoDevelop.Core
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
 
-		public readonly static bool IsWindows;
-		public readonly static bool IsMac;
-
 		public static Properties GlobalInstance {
 			get { return properties; }
 		}
@@ -73,35 +70,9 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		//From Managed.Windows.Forms/XplatUI
-		static bool IsRunningOnMac ()
-		{
-			IntPtr buf = IntPtr.Zero;
-			try {
-				buf = System.Runtime.InteropServices.Marshal.AllocHGlobal (8192);
-				// This is a hacktastic way of getting sysname from uname ()
-				if (uname (buf) == 0) {
-					string os = System.Runtime.InteropServices.Marshal.PtrToStringAnsi (buf);
-					if (os == "Darwin")
-						return true;
-				}
-			} catch {
-			} finally {
-				if (buf != IntPtr.Zero)
-					System.Runtime.InteropServices.Marshal.FreeHGlobal (buf);
-			}
-			return false;
-		}
-		
-		[System.Runtime.InteropServices.DllImport ("libc")]
-		static extern int uname (IntPtr buf);
-		
 		static PropertyService ()
 		{
 			Counters.PropertyServiceInitialization.BeginTiming ();
-			
-			IsWindows = Path.DirectorySeparatorChar == '\\';
-			IsMac = !IsWindows && IsRunningOnMac ();
 			
 			FilePath testProfileRoot = Environment.GetEnvironmentVariable ("MONODEVELOP_PROFILE");
 			if (!testProfileRoot.IsNullOrEmpty) {
@@ -151,9 +122,9 @@ namespace MonoDevelop.Core
 		
 		static UserDataLocations GetLocations (string profileVersion)
 		{
-			if (IsWindows)
+			if (Platform.IsWindows)
 				return UserDataLocations.ForWindows (profileVersion);
-			else if (IsMac)
+			else if (Platform.IsMac)
 				return UserDataLocations.ForMac (profileVersion);
 			else
 				return UserDataLocations.ForUnix (profileVersion);

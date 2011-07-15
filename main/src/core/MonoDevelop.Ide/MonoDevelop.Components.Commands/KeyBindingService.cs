@@ -63,7 +63,7 @@ namespace MonoDevelop.Components.Commands
 		
 		static string ConfigFileName {
 			get {
-				string file = PropertyService.IsMac? "Custom.mac-kb.xml" : "Custom.kb.xml";
+				string file = Platform.IsMac? "Custom.mac-kb.xml" : "Custom.kb.xml";
 				return PropertyService.Locations.Config.Combine ("KeyBindings", file);
 			}
 		}
@@ -109,12 +109,12 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (args.Change == ExtensionChange.Add) {
 				SchemeExtensionNode node = (SchemeExtensionNode) args.ExtensionNode;
-				if (node.IsForMac == PropertyService.IsMac)
+				if (node.IsForMac == Platform.IsMac)
 					schemes.Add (node.Id, node);
 			}
 			else {
 				SchemeExtensionNode node = (SchemeExtensionNode) args.ExtensionNode;
-				if (node.IsForMac == PropertyService.IsMac)
+				if (node.IsForMac == Platform.IsMac)
 					schemes.Remove (node.Name);
 			}
 		}

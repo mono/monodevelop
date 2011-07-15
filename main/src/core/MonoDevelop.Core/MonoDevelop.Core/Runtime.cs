@@ -57,7 +57,7 @@ namespace MonoDevelop.Core
 			Counters.RuntimeInitialization.BeginTiming ();
 			SetupInstrumentation ();
 			
-			if (PropertyService.IsMac)
+			if (Platform.IsMac)
 				InitMacFoundation ();
 			
 			// Set a default sync context
@@ -134,9 +134,9 @@ namespace MonoDevelop.Core
 		internal static string GetRepoUrl (string quality)
 		{
 			string platform;
-			if (PropertyService.IsWindows)
+			if (Platform.IsWindows)
 				platform = "Win32";
-			else if (PropertyService.IsMac)
+			else if (Platform.IsMac)
 				platform = "Mac";
 			else
 				platform = "Linux";

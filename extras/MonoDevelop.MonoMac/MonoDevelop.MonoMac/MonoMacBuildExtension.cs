@@ -73,7 +73,7 @@ namespace MonoDevelop.MonoMac
 			}
 			
 			//FIXME: only do this check if there are actually xib files
-			if (!PropertyService.IsMac) {
+			if (!Platform.IsMac) {
 				res.AddWarning ("Cannot compile xib files on non-Mac platforms");
 			} else {
 				//Interface Builder files
@@ -89,7 +89,7 @@ namespace MonoDevelop.MonoMac
 				if (res.Append (MergeInfoPlist (monitor, proj, conf, appInfoIn, plistOut)).ErrorCount > 0)
 					return res;
 			
-			if (PropertyService.IsWindows) {
+			if (Platform.IsWindows) {
 				res.AddWarning ("Cannot create app bundle on Windows");
 			} else {	
 				//launch script
@@ -172,7 +172,7 @@ namespace MonoDevelop.MonoMac
 			if (GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding).Any ())
 				return true;
 			
-			if (PropertyService.IsMac) {
+			if (Platform.IsMac) {
 				//Interface Builder files
 				var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
 				if (GetIBFilePairs (proj.Files, resDir).Any (NeedsBuilding))

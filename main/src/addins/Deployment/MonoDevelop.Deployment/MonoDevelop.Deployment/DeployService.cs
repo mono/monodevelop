@@ -140,7 +140,7 @@ namespace MonoDevelop.Deployment
 					foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
 						TarEntry entry = TarEntry.CreateEntryFromFile (f);
 						entry.Name = f.ToRelative (folder);
-						if (!PropertyService.IsWindows) {
+						if (!Platform.IsWindows) {
 							UnixFileInfo fi = new UnixFileInfo (f);
 							entry.TarHeader.Mode = (int)fi.Protection;
 						}
@@ -171,7 +171,7 @@ namespace MonoDevelop.Deployment
 					byte[] buffer = new byte [8092];
 					foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
 						string name = f.ToRelative (folder);
-						if (PropertyService.IsWindows)
+						if (Platform.IsWindows)
 							name = name.Replace ('\\', '/');
 						ZipEntry infoEntry = new ZipEntry (name);
 						zs.PutNextEntry (infoEntry);

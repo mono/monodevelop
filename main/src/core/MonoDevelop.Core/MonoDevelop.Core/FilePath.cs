@@ -123,7 +123,7 @@ namespace MonoDevelop.Core
 
 		public bool IsChildPathOf (FilePath basePath)
 		{
-			StringComparison sc = PropertyService.IsWindows ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+			StringComparison sc = Platform.IsWindows ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 			if (basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar)
 				return fileName.StartsWith (basePath.fileName + Path.DirectorySeparatorChar, sc);
 			else
@@ -202,7 +202,7 @@ namespace MonoDevelop.Core
 
 		public static bool operator == (FilePath name1, FilePath name2)
 		{
-			if (PropertyService.IsWindows)
+			if (Platform.IsWindows)
 				return string.Equals (name1.fileName, name2.fileName, StringComparison.OrdinalIgnoreCase);
 			else
 				return string.Equals (name1.fileName, name2.fileName, StringComparison.Ordinal);
@@ -226,7 +226,7 @@ namespace MonoDevelop.Core
 		{
 			if (fileName == null)
 				return 0;
-			if (PropertyService.IsWindows)
+			if (Platform.IsWindows)
 				return fileName.ToLower ().GetHashCode ();
 			else
 				return fileName.GetHashCode ();
@@ -239,7 +239,7 @@ namespace MonoDevelop.Core
 
 		public int CompareTo (FilePath filePath)
 		{
-			return string.Compare (fileName, filePath.fileName, PropertyService.IsWindows);
+			return string.Compare (fileName, filePath.fileName, Platform.IsWindows);
 		}
 
 		int IComparable.CompareTo (object obj)

@@ -161,6 +161,7 @@ FILES =  \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/LoggingService.cs \
+	MonoDevelop.Core/Platform.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyBag.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \

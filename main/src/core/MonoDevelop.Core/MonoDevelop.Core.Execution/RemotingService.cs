@@ -103,7 +103,7 @@ namespace MonoDevelop.Core.Execution
 				// This is a workaround to a serialization interoperability issue between Mono and .NET
 				// For some reason, .NET is unable to resolve add-in assemblies referenced in
 				// serialized objects, when the assemblies are not in the main bin directory
-				if (PropertyService.IsWindows) {
+				if (Platform.IsWindows) {
 					AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
 						if (!simpleResolveAssemblies.Contains (args.Name))
 							return null;

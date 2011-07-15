@@ -49,9 +49,9 @@ namespace MonoDevelop.Ide.OnlineTemplates
 		internal static string GetOnlineTemplatesRoot ()
 		{
 			string platform;
-			if (PropertyService.IsWindows)
+			if (Platform.IsWindows)
 				platform = "win32";
-			else if (PropertyService.IsMac)
+			else if (Platform.IsMac)
 				platform = "mac";
 			else
 				platform = "linux";

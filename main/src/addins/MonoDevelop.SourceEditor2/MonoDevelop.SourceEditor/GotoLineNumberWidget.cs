@@ -63,7 +63,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			
 			//HACK: GTK rendering issue on Mac, images don't repaint unless we put them in visible eventboxes
-			if (Platform.IsMac) {
+			if (MonoDevelop.Core.Platform.IsMac) {
 				foreach (var eb in new [] { eventbox1, eventbox2 }) {
 					eb.VisibleWindow = true;
 					eb.ModifyBg (StateType.Normal, new Gdk.Color (230, 230, 230));

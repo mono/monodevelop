@@ -88,7 +88,7 @@ namespace CBinding.Parser
 					try {
 						var output = new StringWriter ();
 						Runtime.ProcessService.StartProcess (CTagsManager.CTagsExecutable, "--version", null, output, null, null).WaitForExit ();
-						if (PropertyService.IsMac && !output.ToString ().StartsWith ("Exuberant", StringComparison.Ordinal)) {
+						if (Platform.IsMac && !output.ToString ().StartsWith ("Exuberant", StringComparison.Ordinal)) {
 							System.Console.WriteLine ("Fallback to OSX ctags");
 							ctags = new BsdCTagsManager ();
 						} else {

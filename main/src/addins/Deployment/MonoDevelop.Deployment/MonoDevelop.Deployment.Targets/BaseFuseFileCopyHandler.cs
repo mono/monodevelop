@@ -70,7 +70,7 @@ namespace MonoDevelop.Deployment.Targets
 					string escapedDir = tempDir.FullName.Replace ("\"", "\\\"");
 					string cmd, args;
 					
-					if (PropertyService.IsMac) {
+					if (Platform.IsMac) {
 						cmd = "umount";
 						args = string.Format ("\"{0}\"", escapedDir);
 					} else {

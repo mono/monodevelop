@@ -51,14 +51,14 @@ namespace MonoDevelop.Core.Assemblies
 			if (currentRuntime != null) {
 				yield return new MonoTargetRuntime (currentRuntime);
 			}
-			if (PropertyService.IsWindows) {
+			if (Platform.IsWindows) {
 				string progs = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
 				foreach (string dir in Directory.GetDirectories (progs, "Mono-*")) {
 					MonoRuntimeInfo info = new MonoRuntimeInfo (dir);
 					if (info.IsValidRuntime)
 						yield return new MonoTargetRuntime (info);
 				}
-			} else if (PropertyService.IsMac) {
+			} else if (Platform.IsMac) {
 				if (!Directory.Exists (MAC_FRAMEWORK_DIR))
 					yield break;
 				foreach (string dir in Directory.GetDirectories (MAC_FRAMEWORK_DIR)) {

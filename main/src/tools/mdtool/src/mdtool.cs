@@ -64,8 +64,7 @@ public class MonoDevelopProcessHost
 			}
 			
 			// Don't log to console unless verbose log is requested
-			MonoDevelop.Core.Logging.ConsoleLogger logger
-				= (MonoDevelop.Core.Logging.ConsoleLogger)LoggingService.GetLogger ("ConsoleLogger");
+			var logger = (MonoDevelop.Core.Logging.ConsoleLogger)LoggingService.GetLogger ("ConsoleLogger");
 			int pi = 0;
 			if (args [0] == "-v" || args [0] == "--verbose") {
 				pi++;

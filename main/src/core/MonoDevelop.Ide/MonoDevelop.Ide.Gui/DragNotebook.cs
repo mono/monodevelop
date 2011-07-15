@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui
 			AddEvents ((Int32) (EventMask.AllEventsMask));
 			
 			//FIXME: we make the tabs smaller by shrinking the border, but this looks ugly with the windows theme
-			if (!MonoDevelop.Core.PropertyService.IsWindows)
+			if (!MonoDevelop.Core.Platform.IsWindows)
 				this.SetProperty ("tab-border", new GLib.Value (0));
 		}
 		

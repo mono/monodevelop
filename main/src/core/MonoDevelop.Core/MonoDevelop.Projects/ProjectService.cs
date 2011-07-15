@@ -621,7 +621,7 @@ namespace MonoDevelop.Projects
 		
 		string GetTargetFile (string file)
 		{
-			if (!PropertyService.IsWindows) {
+			if (!Platform.IsWindows) {
 				try {
 					UnixSymbolicLinkInfo fi = new UnixSymbolicLinkInfo (file);
 					if (fi.IsSymbolicLink)

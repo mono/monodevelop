@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide
 				header += "Runtime: Microsoft .NET v" + Environment.Version + "\n";
 			}
 			
-			string os = PropertyService.IsMac ? "Mac OSX" : (PropertyService.IsWindows ? "Windows" : "Linux");
+			string os = Platform.IsMac ? "Mac OSX" : (Platform.IsWindows ? "Windows" : "Linux");
 			header += "Operating System: " + os + " (" + Environment.OSVersion + ")\n";
 			
 			body = header + "\n" + body;

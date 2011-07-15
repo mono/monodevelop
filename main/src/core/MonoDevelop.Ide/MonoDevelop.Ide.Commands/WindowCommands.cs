@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Commands
 
 				//Add AccelKey
 				if (i < 10) {
-					commandInfo.AccelKey = ((PropertyService.IsMac) ? "Meta" : "Alt") + "|" + ((i + 1) % 10).ToString ();
+					commandInfo.AccelKey = ((Platform.IsMac) ? "Meta" : "Alt") + "|" + ((i + 1) % 10).ToString ();
 				}
 
 

@@ -303,13 +303,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return false;
 			
 			string path = relPath;
-			if (!PropertyService.IsWindows)
+			if (!Platform.IsWindows)
 				path = path.Replace ("\\", "/");
 			
 			path = UnscapeString (path);
 
 			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':') {
-				if (PropertyService.IsWindows) {
+				if (Platform.IsWindows) {
 					resultPath = path; // Return the escaped value
 					return true;
 				} else
@@ -324,7 +324,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return true;
 			}
 				
-			if (Path.IsPathRooted (path) && !PropertyService.IsWindows) {
+			if (Path.IsPathRooted (path) && !Platform.IsWindows) {
 					
 				// Windows paths are case-insensitive. When mapping an absolute path
 				// we can try to find the correct case for the path.
