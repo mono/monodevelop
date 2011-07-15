@@ -1,5 +1,5 @@
 // 
-// ExternalConsoleProcess.cs
+// MacExternalConsoleProcess.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -34,9 +34,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.MacInterop;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacIntegration
 {
-	internal class ExternalConsoleProcess : IProcessAsyncOperation
+	internal class MacExternalConsoleProcess : IProcessAsyncOperation
 	{
 /*
 NOTES ON CONTROLLING A TERMINAL WITH APPLESCRIPT	 
@@ -81,9 +81,9 @@ bash pause on exit trick
 		string tabId, windowId;
 		bool cancelled;
 		
-		public ExternalConsoleProcess (string command, string arguments, string workingDirectory,
-		                               IDictionary<string, string> environmentVariables,
-		                               string title, bool pauseWhenFinished)
+		public MacExternalConsoleProcess (string command, string arguments, string workingDirectory,
+			IDictionary<string, string> environmentVariables,
+			string title, bool pauseWhenFinished)
 		{
 			//build the sh command
 			var sb = new StringBuilder ("clear; ");
@@ -197,4 +197,3 @@ end tell", tabId, windowId);
 		#endregion
 	}
 }
-

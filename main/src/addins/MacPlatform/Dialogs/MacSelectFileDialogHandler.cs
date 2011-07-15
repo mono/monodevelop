@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacIntegration
 {
 	class MacSelectFileDialogHandler : ISelectFileDialogHandler
 	{

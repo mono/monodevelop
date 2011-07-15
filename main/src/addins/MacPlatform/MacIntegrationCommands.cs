@@ -1,5 +1,5 @@
 // 
-// Commands.cs
+// MacIntegrationCommands.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -28,17 +28,16 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.MacInterop;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacIntegration
 {
-	internal enum Commands
+	internal enum MacIntegrationCommands
 	{
 		MinimizeWindow,
 		HideWindow,
 		HideOthers,
-		CheckForUpdates,
 	}
 	
-	internal class MinimizeWindowHandler : CommandHandler
+	internal class MacMinimizeWindowHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -46,15 +45,15 @@ namespace MonoDevelop.Platform.Mac
 		}
 	}
 	
-	internal class HideWindowHandler : CommandHandler
+	internal class MacHideWindowHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			HideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
+			MacHideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
 		}
 	}
 	
-	internal class HideOthersHandler : CommandHandler
+	internal class MacHideOthersHandler : CommandHandler
 	{
 		protected override void Run ()
 		{

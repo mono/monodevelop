@@ -23,7 +23,6 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
-	Commands.cs \
 	Dialogs/Layout.cs \
 	Dialogs/MacAddFileDialogHandler.cs \
 	Dialogs/MacAlertDialogHandler.cs \
@@ -32,7 +31,8 @@ FILES =  \
 	Dialogs/MDBox.cs \
 	Dialogs/SelectEncodingPanel.cs \
 	Dialogs/SelectEncodingPopUpButton.cs \
-	ExternalConsoleProcess.cs \
+	MacExternalConsoleProcess.cs \
+	MacIntegrationCommands.cs \
 	MacInterop/AppleEvent.cs \
 	MacInterop/AppleScript.cs \
 	MacInterop/ApplicationEvents.cs \
@@ -45,8 +45,8 @@ FILES =  \
 	MacInterop/Keychain.cs \
 	MacInterop/LaunchServices.cs \
 	MacInterop/ProcessManager.cs \
-	MacPlatform.cs \
-	Menus/OSXMenu.cs
+	MacMainMenu.cs \
+	MacPlatform.cs
 
 RES = MacPlatform.addin.xml
 
