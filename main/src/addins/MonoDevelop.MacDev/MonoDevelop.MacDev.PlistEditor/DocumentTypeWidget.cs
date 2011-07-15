@@ -28,6 +28,10 @@ using MonoDevelop.Core.Collections;
 using System.Text;
 using System.Linq;
 using Gtk;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -41,6 +45,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		const string ContentTypesKey = "LSItemContentTypes";
 		const string IconFilesKey = "CFBundleTypeIconFiles";
 		
+		Project proj;
+		
 		MacExpander expander;
 		public MacExpander Expander {
 			get {
@@ -52,11 +58,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		public DocumentTypeWidget (PDictionary dict)
+		public DocumentTypeWidget (Project proj, PDictionary dict)
 		{
 			if (dict == null)
 				throw new ArgumentNullException ("dict");
 			this.dict = dict;
+			this.proj = proj;
 			this.Build ();
 			this.treeviewIcons.Model = iconStore;
 			this.treeviewIcons.AppendColumn ("icon", new CellRendererText (), "text", 0);
@@ -108,11 +115,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 
 		void AddIcon (object sender, EventArgs e)
 		{
+			var dialog = new ProjectFileSelectorDialog (proj, null, "*.png");
+			string newIcon;
+			try {
+				dialog.Title = GettextCatalog.GetString ("Select icon...");
+				int response = MessageService.RunCustomDialog (dialog);
+				if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
+					newIcon  = dialog.SelectedFile.ProjectVirtualPath;
+				} else {
+					return;
+				}
+			} finally {
+				dialog.Destroy ();
+			}
+			
+			
 			dict.Changed -= HandleDictChanged;
 			var iconFiles = dict.GetArray (IconFilesKey);
-			
-			// TODO: Select new Icon
-			string newIcon = "new Icon";
 			
 			iconFiles.Value.Add (new PString (newIcon));
 			iconFiles.QueueRebuild ();

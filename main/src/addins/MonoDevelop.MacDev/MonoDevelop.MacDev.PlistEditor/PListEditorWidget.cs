@@ -80,7 +80,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.Value.Add (newEntry);
 				dict.QueueRebuild ();
 				
-				var dtw = new DocumentTypeWidget (newEntry);
+				var dtw = new DocumentTypeWidget (proj, newEntry);
 				dtw.Expander = documentTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
 			};
 			
@@ -94,7 +94,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.Value.Add (newEntry);
 				dict.QueueRebuild ();
 				
-				var dtw = new DocumentTypeWidget (newEntry);
+				var dtw = new DocumentTypeWidget (proj, newEntry);
 				dtw.Expander = exportedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
 			};
 			
@@ -108,7 +108,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.Value.Add (newEntry);
 				dict.QueueRebuild ();
 				
-				var dtw = new DocumentTypeWidget (newEntry);
+				var dtw = new DocumentTypeWidget (proj, newEntry);
 				dtw.Expander = importedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
 			};
 			
@@ -150,7 +150,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (dict == null)
 						continue;
 					string name = GettextCatalog.GetString ("Untitled");
-					var dtw = new DocumentTypeWidget (dict);
+					var dtw = new DocumentTypeWidget (proj, dict);
 					dtw.Expander = documentTypeList.AddListItem (name, dtw);
 					
 				}
@@ -192,7 +192,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 		}
-		
 	}
 }
 
