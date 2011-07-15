@@ -163,7 +163,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (dict == null)
 						continue;
 					string name = GettextCatalog.GetString ("Untitled");
-					var dtw = new UTIWidget (dict);
+					var dtw = new UTIWidget (proj, dict);
 					dtw.Expander = exportedUTIList.AddListItem (name, dtw);
 				}
 			}
@@ -175,7 +175,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (dict == null)
 						continue;
 					string name = GettextCatalog.GetString ("Untitled");
-					var dtw = new UTIWidget (dict);
+					var dtw = new UTIWidget (proj, dict);
 					dtw.Expander = importedUTIList.AddListItem (name, dtw);
 				}
 			}

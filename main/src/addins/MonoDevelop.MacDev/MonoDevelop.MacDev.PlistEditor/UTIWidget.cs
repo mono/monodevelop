@@ -26,6 +26,8 @@
 using System;
 using System.Linq;
 using System.Text;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -51,13 +53,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 		const string SmallIconKey = "UTTypeSize64IconFile";
 		const string ConformsToKey = "UTTypeConformsTo";
 		
-		public UTIWidget (PDictionary dict)
+		public UTIWidget (Project proj, PDictionary dict)
 		{
 			if (dict == null)
 				throw new ArgumentNullException ("dict");
 			this.dict = dict;
 			this.Build ();
 			dict.Changed += HandleDictChanged;
+			
+			
+			iconPickerLarge.Project = iconPickerSmall.Project = proj;
+			iconPickerLarge.DefaultFilter = iconPickerSmall.DefaultFilter = "*.png";
+			iconPickerLarge.EntryIsEditable = iconPickerSmall.EntryIsEditable = true;
+			iconPickerLarge.DialogTitle = iconPickerSmall.DialogTitle = GettextCatalog.GetString ("Select icon...");
 			
 			entryDescription.Changed += delegate {
 				if (inUpdate)
@@ -76,19 +84,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.Changed += HandleDictChanged;
 			};
 			
-			comboboxentrySmallIcon.Entry.Changed += delegate {
+			iconPickerSmall.Changed += delegate {
 				if (inUpdate)
 					return;
 				dict.Changed -= HandleDictChanged;
-				dict.GetString (SmallIconKey).SetValue (comboboxentrySmallIcon.Entry.Text);
+				dict.GetString (SmallIconKey).SetValue (iconPickerSmall.SelectedFile);
 				dict.Changed += HandleDictChanged;
 			};
 			
-			comboboxentryLargeIcon.Entry.Changed += delegate {
+			iconPickerLarge.Changed += delegate {
 				if (inUpdate)
 					return;
 				dict.Changed -= HandleDictChanged;
-				dict.GetString (LargeIconKey).SetValue (comboboxentryLargeIcon.Entry.Text);
+				dict.GetString (LargeIconKey).SetValue (iconPickerLarge.SelectedFile);
 				dict.Changed += HandleDictChanged;
 			};
 			
@@ -124,8 +132,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			UpdateExpanderLabel ();
 			
 			entryIdentifier.Text = dict.Get<PString> (TypeIdentifierKey) ?? "";
-			comboboxentrySmallIcon.Entry.Text = dict.Get<PString> (SmallIconKey) ?? "";
-			comboboxentryLargeIcon.Entry.Text = dict.Get<PString> (LargeIconKey) ?? "";
+			iconPickerSmall.SelectedFile = dict.Get<PString> (SmallIconKey) ?? "";
+			iconPickerLarge.SelectedFile = dict.Get<PString> (LargeIconKey) ?? "";
 			
 			var conformsTo = dict.Get<PArray> (ConformsToKey);
 			entryConformsTo.Text = conformsTo != null ? conformsTo.ToStringList () : "";

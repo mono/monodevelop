@@ -6,11 +6,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.Table table1;
-		private global::Gtk.ComboBoxEntry comboboxentryLargeIcon;
-		private global::Gtk.ComboBoxEntry comboboxentrySmallIcon;
 		private global::Gtk.Entry entryConformsTo;
 		private global::Gtk.Entry entryDescription;
 		private global::Gtk.Entry entryIdentifier;
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry iconPickerLarge;
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry iconPickerSmall;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
@@ -37,38 +37,18 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboboxentryLargeIcon = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentryLargeIcon.Name = "comboboxentryLargeIcon";
-			this.table1.Add (this.comboboxentryLargeIcon);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentryLargeIcon]));
-			w1.TopAttach = ((uint)(1));
-			w1.BottomAttach = ((uint)(2));
-			w1.LeftAttach = ((uint)(3));
-			w1.RightAttach = ((uint)(4));
-			w1.XOptions = ((global::Gtk.AttachOptions)(4));
-			w1.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.comboboxentrySmallIcon = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentrySmallIcon.Name = "comboboxentrySmallIcon";
-			this.table1.Add (this.comboboxentrySmallIcon);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxentrySmallIcon]));
-			w2.LeftAttach = ((uint)(3));
-			w2.RightAttach = ((uint)(4));
-			w2.XOptions = ((global::Gtk.AttachOptions)(4));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
 			this.entryConformsTo = new global::Gtk.Entry ();
 			this.entryConformsTo.CanFocus = true;
 			this.entryConformsTo.Name = "entryConformsTo";
 			this.entryConformsTo.IsEditable = true;
 			this.entryConformsTo.InvisibleChar = '●';
 			this.table1.Add (this.entryConformsTo);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryConformsTo]));
-			w3.TopAttach = ((uint)(2));
-			w3.BottomAttach = ((uint)(3));
-			w3.LeftAttach = ((uint)(1));
-			w3.RightAttach = ((uint)(2));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryConformsTo]));
+			w1.TopAttach = ((uint)(2));
+			w1.BottomAttach = ((uint)(3));
+			w1.LeftAttach = ((uint)(1));
+			w1.RightAttach = ((uint)(2));
+			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.entryDescription = new global::Gtk.Entry ();
 			this.entryDescription.CanFocus = true;
@@ -76,10 +56,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.entryDescription.IsEditable = true;
 			this.entryDescription.InvisibleChar = '●';
 			this.table1.Add (this.entryDescription);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryDescription]));
-			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryDescription]));
+			w2.LeftAttach = ((uint)(1));
+			w2.RightAttach = ((uint)(2));
+			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.entryIdentifier = new global::Gtk.Entry ();
 			this.entryIdentifier.CanFocus = true;
@@ -87,11 +67,35 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.entryIdentifier.IsEditable = true;
 			this.entryIdentifier.InvisibleChar = '●';
 			this.table1.Add (this.entryIdentifier);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryIdentifier]));
-			w5.TopAttach = ((uint)(1));
-			w5.BottomAttach = ((uint)(2));
-			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryIdentifier]));
+			w3.TopAttach = ((uint)(1));
+			w3.BottomAttach = ((uint)(2));
+			w3.LeftAttach = ((uint)(1));
+			w3.RightAttach = ((uint)(2));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.iconPickerLarge = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
+			this.iconPickerLarge.Name = "iconPickerLarge";
+			this.iconPickerLarge.VerifyFileExistsInProject = false;
+			this.iconPickerLarge.EntryIsEditable = false;
+			this.table1.Add (this.iconPickerLarge);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.iconPickerLarge]));
+			w4.TopAttach = ((uint)(1));
+			w4.BottomAttach = ((uint)(2));
+			w4.LeftAttach = ((uint)(3));
+			w4.RightAttach = ((uint)(4));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.iconPickerSmall = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
+			this.iconPickerSmall.Name = "iconPickerSmall";
+			this.iconPickerSmall.VerifyFileExistsInProject = false;
+			this.iconPickerSmall.EntryIsEditable = false;
+			this.table1.Add (this.iconPickerSmall);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.iconPickerSmall]));
+			w5.LeftAttach = ((uint)(3));
+			w5.RightAttach = ((uint)(4));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
