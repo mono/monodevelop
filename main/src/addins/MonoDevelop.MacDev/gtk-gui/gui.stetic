@@ -17,7 +17,7 @@
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="CurrentPage">0</property>
+        <property name="CurrentPage">1</property>
         <child>
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
             <property name="MemberName" />
@@ -31,11 +31,10 @@
                   <widget class="Gtk.VBox" id="vbox2">
                     <property name="MemberName" />
                     <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="iosApplicationTargetContainer">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="iosApplicationTargetContainer">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ContentLabel">iOS Application Target</property>
-                        <property name="NoContentMessage" />
                         <property name="Expanded">False</property>
                         <property name="Expandable">False</property>
                       </widget>
@@ -47,11 +46,10 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="iPhoneDeploymentInfoContainer">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="iPhoneDeploymentInfoContainer">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ContentLabel">iPhone / iPod Deployment Info</property>
-                        <property name="NoContentMessage" />
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
                       </widget>
@@ -63,11 +61,10 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="iPadDeploymentInfoContainer">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="iPadDeploymentInfoContainer">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ContentLabel">iPad Deployment Info</property>
-                        <property name="NoContentMessage" />
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
                       </widget>
@@ -106,11 +103,10 @@
                   <widget class="Gtk.VBox" id="vbox3">
                     <property name="MemberName" />
                     <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="customTargetPropertiesContainer">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="customTargetPropertiesContainer">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ContentLabel">Custom iOS Target Properties</property>
-                        <property name="NoContentMessage">No Document Types</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">False</property>
                       </widget>
@@ -122,11 +118,10 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="documentTypes">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="documentTypeExpander">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ContentLabel">Document Types</property>
-                        <property name="NoContentMessage">No Document Types</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
                       </widget>
@@ -138,11 +133,10 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="exportedUTIs">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="exportedUTIExpander">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ContentLabel">Exported UTIs</property>
-                        <property name="NoContentMessage">No Exported UTIs</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
                       </widget>
@@ -154,11 +148,10 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="exportedUTIs1">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="importedUTIExpander">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ContentLabel">Imported UTIs</property>
-                        <property name="NoContentMessage">No Imported UTIs</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
                       </widget>
@@ -170,11 +163,10 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer" id="exportedUTIs2">
+                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="urlTypeExpander">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ContentLabel">URL Types</property>
-                        <property name="NoContentMessage">No URL Types</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
                       </widget>
@@ -221,7 +213,6 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.MacDev.PlistEditor.DocumentTypeWidget" design-size="300 300">
     <property name="MemberName" />
-    <property name="Visible">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -262,32 +253,15 @@
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
+                <property name="NRows">4</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
-                  <widget class="Gtk.Entry" id="entry1">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">●</property>
-                  </widget>
-                  <packing>
-                    <property name="LeftAttach">1</property>
-                    <property name="RightAttach">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
-                    <property name="XFill">True</property>
-                    <property name="XShrink">False</property>
-                    <property name="YExpand">False</property>
-                    <property name="YFill">True</property>
-                    <property name="YShrink">False</property>
-                  </packing>
+                  <placeholder />
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="entry2">
+                  <widget class="Gtk.Entry" id="entryContentTypes">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
@@ -299,8 +273,30 @@
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Entry" id="entryName">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="IsEditable">True</property>
+                    <property name="InvisibleChar">●</property>
+                  </widget>
+                  <packing>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
                     <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
@@ -313,7 +309,7 @@
                     <property name="MemberName" />
                     <property name="ShadowType">In</property>
                     <child>
-                      <widget class="Gtk.TreeView" id="treeview1">
+                      <widget class="Gtk.TreeView" id="treeviewIcons">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ShowScrollbars">True</property>
@@ -326,8 +322,62 @@
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.HBox" id="hbox2">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Button" id="buttonAdd">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="UseStock">True</property>
+                        <property name="Type">StockItem</property>
+                        <property name="StockId">gtk-add</property>
+                        <property name="label">gtk-add</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Button" id="buttonRemove">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="UseStock">True</property>
+                        <property name="Type">StockItem</property>
+                        <property name="StockId">gtk-remove</property>
+                        <property name="label">gtk-remove</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
                     <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
@@ -400,6 +450,8 @@
               <packing>
                 <property name="Position">1</property>
                 <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
               </packing>
             </child>
           </widget>
@@ -414,15 +466,14 @@
           <widget class="Gtk.Expander" id="expander1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Expanded">True</property>
             <child>
-              <widget class="MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget" id="customProperiesWidget">
+              <widget class="MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget" id="custompropertiesWidget">
                 <property name="MemberName" />
                 <property name="Events">ButtonPressMask</property>
               </widget>
             </child>
             <child>
-              <widget class="Gtk.Label" id="GtkLabel">
+              <widget class="Gtk.Label" id="GtkLabel1">
                 <property name="MemberName" />
                 <property name="LabelProp" translatable="yes">Additional document type properties</property>
                 <property name="UseUnderline">True</property>

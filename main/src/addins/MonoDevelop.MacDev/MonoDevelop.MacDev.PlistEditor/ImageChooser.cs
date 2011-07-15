@@ -87,6 +87,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			base.OnRealized ();
 			DestroyPixbuf ();
+			if (pictureSize.Width <= 0 || pictureSize.Height <= 0)
+				throw new InvalidOperationException ("Picture size not set.");
 			image.Pixbuf = pixbuf = CreateNoImageIcon (pictureSize.Width, pictureSize.Height);
 		}
 		

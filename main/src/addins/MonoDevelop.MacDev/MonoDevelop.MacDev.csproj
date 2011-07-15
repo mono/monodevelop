@@ -141,13 +141,14 @@
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.UTIWidget.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\URLTypeWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.URLTypeWidget.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\DocumentTypeContainer.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IOSApplicationTargetWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.IOSApplicationTargetWidget.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IPhoneDeploymentInfo.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.IPhoneDeploymentInfo.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IPadDeploymentInfo.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.IPadDeploymentInfo.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\ExpanderList.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\MacExpander.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

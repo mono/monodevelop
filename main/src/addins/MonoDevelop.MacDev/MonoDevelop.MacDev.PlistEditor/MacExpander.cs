@@ -36,11 +36,10 @@ using Gtk;
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[ToolboxItem(true)]
-	public class DocumentTypeContainer : VBox
+	public class MacExpander : VBox
 	{
 		ExpanderHeader header;
 		VBox contentBox;
-		Label noContentLabel;
 		
 		public string ContentLabel {
 			get {
@@ -49,15 +48,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			set {
 				header.Label = value;
-			}
-		}
-		
-		public string NoContentMessage {
-			get {
-				return noContentLabel.Text;
-			}
-			set {
-				noContentLabel.Text = value;
+				QueueDraw ();
 			}
 		}
 		
@@ -97,7 +88,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		class ExpanderHeader : DrawingArea
 		{
-			DocumentTypeContainer container;
+			MacExpander container;
 			uint animationTimeout;
 			ExpanderStyle expanderStyle;
 			
@@ -106,7 +97,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				set;
 			}
 			
-			public ExpanderHeader (DocumentTypeContainer container)
+			public ExpanderHeader (MacExpander container)
 			{
 				this.container = container;
 				Events |= EventMask.AllEventsMask;
@@ -267,22 +258,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		Border border = new Border ();
-		public DocumentTypeContainer ()
+		public MacExpander ()
 		{
 			header = new ExpanderHeader (this);
 			PackStart (header, false, false, 0);
 			
 			contentBox = new VBox ();
-			noContentLabel = new Label ();
-			contentBox.PackStart (noContentLabel, true, true, 32);
 			
 			contentBox.PackEnd (border, false, false, 0);
 			PackStart (contentBox, true, true, 0);
+			ShowAll ();
 		}
 		
 		public void SetWidget (Gtk.Widget widget)
 		{
-			contentBox.Remove (noContentLabel);
 			contentBox.PackStart (widget, true, true, 0);
 		}
 	}

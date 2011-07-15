@@ -54,12 +54,13 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistReal.cs \
 	MonoDevelop.MacDev.Plist/PlistString.cs \
 	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
-	MonoDevelop.MacDev.PlistEditor/DocumentTypeContainer.cs \
 	MonoDevelop.MacDev.PlistEditor/DocumentTypeWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/ExpanderList.cs \
 	MonoDevelop.MacDev.PlistEditor/ImageChooser.cs \
 	MonoDevelop.MacDev.PlistEditor/IOSApplicationTargetWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/IPadDeploymentInfo.cs \
 	MonoDevelop.MacDev.PlistEditor/IPhoneDeploymentInfo.cs \
+	MonoDevelop.MacDev.PlistEditor/MacExpander.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorViewContent.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \

@@ -51,6 +51,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 		IOSApplicationTargetWidget iOSApplicationTargetWidget = new IOSApplicationTargetWidget ();
 		IPhoneDeploymentInfo iPhoneDeploymentInfo = new IPhoneDeploymentInfo ();
 		IPadDeploymentInfo iPadDeploymentInfo = new IPadDeploymentInfo ();
+		ExpanderList documentTypeList = new ExpanderList (GettextCatalog.GetString ("No Document Types"), GettextCatalog.GetString ("Add Document Type"));
+		ExpanderList exportedUTIList = new ExpanderList (GettextCatalog.GetString ("No Exported UTIs"), GettextCatalog.GetString ("Add Exported UTI"));
+		ExpanderList importedUTIList = new ExpanderList (GettextCatalog.GetString ("No Imported UTIs"), GettextCatalog.GetString ("Add Imported UTI"));
+		ExpanderList urlTypeList = new ExpanderList (GettextCatalog.GetString ("No URL Types"), GettextCatalog.GetString ("Add URL Type"));
 		
 		public PListEditorWidget ()
 		{
@@ -61,6 +65,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 			iosApplicationTargetContainer.SetWidget (iOSApplicationTargetWidget);
 			iPhoneDeploymentInfoContainer.SetWidget (iPhoneDeploymentInfo);
 			iPadDeploymentInfoContainer.SetWidget (iPadDeploymentInfo);
+			
+			documentTypeList.CreateNew += delegate {
+				var documentTypes = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");
+				if (documentTypes == null) {
+					NSDictionary.Value["CFBundleDocumentTypes"] = documentTypes = new PArray () { Parent = NSDictionary };
+					NSDictionary.QueueRebuild ();
+				}
+				var dict = new PDictionary ();
+				documentTypes.Value.Add (dict);
+				
+				var dtw = new DocumentTypeWidget (dict);
+				dtw.Expander = documentTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
+			};
+			documentTypeExpander.SetWidget (documentTypeList);
+			exportedUTIExpander.SetWidget (exportedUTIList);
+			importedUTIExpander.SetWidget (importedUTIList);
+			urlTypeExpander.SetWidget (urlTypeList);
 		}
 		
 		void Update ()
@@ -73,6 +94,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 			iPhoneDeploymentInfoContainer.Visible = iphone != null;
 			var ipad   = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
 			iPadDeploymentInfoContainer.Visible = ipad != null;
+			
+			var documentTypes = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");
+			if (documentTypes != null) {
+				foreach (var pObject in documentTypes.Value) {
+					var dict = (PDictionary)pObject;
+					if (dict == null)
+						continue;
+					var typeName = dict.Get<PString> ("CFBundleTypeName");
+					string name = typeName != null ? typeName.Value : null;
+					if (string.IsNullOrEmpty (name))
+						name = GettextCatalog.GetString ("Untitled");
+					var dtw = new DocumentTypeWidget (dict);
+					dtw.Expander = documentTypeList.AddListItem (name, dtw);
+					
+				}
+				
+			}
 			
 		}
 		

@@ -7,17 +7,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 		private global::Gtk.Notebook notebook1;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.VBox vbox2;
-		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer iosApplicationTargetContainer;
-		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer iPhoneDeploymentInfoContainer;
-		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer iPadDeploymentInfoContainer;
+		private global::MonoDevelop.MacDev.PlistEditor.MacExpander iosApplicationTargetContainer;
+		private global::MonoDevelop.MacDev.PlistEditor.MacExpander iPhoneDeploymentInfoContainer;
+		private global::MonoDevelop.MacDev.PlistEditor.MacExpander iPadDeploymentInfoContainer;
 		private global::Gtk.Label label1;
 		private global::Gtk.ScrolledWindow scrolledwindow2;
 		private global::Gtk.VBox vbox3;
-		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer customTargetPropertiesContainer;
-		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer documentTypes;
-		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer exportedUTIs;
-		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer exportedUTIs1;
-		private global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer exportedUTIs2;
+		private global::MonoDevelop.MacDev.PlistEditor.MacExpander customTargetPropertiesContainer;
+		private global::MonoDevelop.MacDev.PlistEditor.MacExpander documentTypeExpander;
+		private global::MonoDevelop.MacDev.PlistEditor.MacExpander exportedUTIExpander;
+		private global::MonoDevelop.MacDev.PlistEditor.MacExpander importedUTIExpander;
+		private global::MonoDevelop.MacDev.PlistEditor.MacExpander urlTypeExpander;
 		private global::Gtk.Label label2;
 		
 		protected virtual void Build ()
@@ -30,7 +30,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.notebook1 = new global::Gtk.Notebook ();
 			this.notebook1.CanFocus = true;
 			this.notebook1.Name = "notebook1";
-			this.notebook1.CurrentPage = 0;
+			this.notebook1.CurrentPage = 1;
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow1.CanFocus = true;
@@ -43,11 +43,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.iosApplicationTargetContainer = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
+			this.iosApplicationTargetContainer = new global::MonoDevelop.MacDev.PlistEditor.MacExpander ();
 			this.iosApplicationTargetContainer.CanFocus = true;
 			this.iosApplicationTargetContainer.Name = "iosApplicationTargetContainer";
 			this.iosApplicationTargetContainer.ContentLabel = "iOS Application Target";
-			this.iosApplicationTargetContainer.NoContentMessage = "";
 			this.iosApplicationTargetContainer.Expanded = false;
 			this.iosApplicationTargetContainer.Expandable = false;
 			this.vbox2.Add (this.iosApplicationTargetContainer);
@@ -56,11 +55,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.iPhoneDeploymentInfoContainer = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
+			this.iPhoneDeploymentInfoContainer = new global::MonoDevelop.MacDev.PlistEditor.MacExpander ();
 			this.iPhoneDeploymentInfoContainer.CanFocus = true;
 			this.iPhoneDeploymentInfoContainer.Name = "iPhoneDeploymentInfoContainer";
 			this.iPhoneDeploymentInfoContainer.ContentLabel = "iPhone / iPod Deployment Info";
-			this.iPhoneDeploymentInfoContainer.NoContentMessage = "";
 			this.iPhoneDeploymentInfoContainer.Expanded = false;
 			this.iPhoneDeploymentInfoContainer.Expandable = true;
 			this.vbox2.Add (this.iPhoneDeploymentInfoContainer);
@@ -69,11 +67,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.iPadDeploymentInfoContainer = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
+			this.iPadDeploymentInfoContainer = new global::MonoDevelop.MacDev.PlistEditor.MacExpander ();
 			this.iPadDeploymentInfoContainer.CanFocus = true;
 			this.iPadDeploymentInfoContainer.Name = "iPadDeploymentInfoContainer";
 			this.iPadDeploymentInfoContainer.ContentLabel = "iPad Deployment Info";
-			this.iPadDeploymentInfoContainer.NoContentMessage = "";
 			this.iPadDeploymentInfoContainer.Expanded = false;
 			this.iPadDeploymentInfoContainer.Expandable = true;
 			this.vbox2.Add (this.iPadDeploymentInfoContainer);
@@ -102,11 +99,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.customTargetPropertiesContainer = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
+			this.customTargetPropertiesContainer = new global::MonoDevelop.MacDev.PlistEditor.MacExpander ();
 			this.customTargetPropertiesContainer.CanFocus = true;
 			this.customTargetPropertiesContainer.Name = "customTargetPropertiesContainer";
 			this.customTargetPropertiesContainer.ContentLabel = "Custom iOS Target Properties";
-			this.customTargetPropertiesContainer.NoContentMessage = "No Document Types";
 			this.customTargetPropertiesContainer.Expanded = false;
 			this.customTargetPropertiesContainer.Expandable = false;
 			this.vbox3.Add (this.customTargetPropertiesContainer);
@@ -115,54 +111,50 @@ namespace MonoDevelop.MacDev.PlistEditor
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.documentTypes = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
-			this.documentTypes.CanFocus = true;
-			this.documentTypes.Name = "documentTypes";
-			this.documentTypes.ContentLabel = "Document Types";
-			this.documentTypes.NoContentMessage = "No Document Types";
-			this.documentTypes.Expanded = false;
-			this.documentTypes.Expandable = true;
-			this.vbox3.Add (this.documentTypes);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.documentTypes]));
+			this.documentTypeExpander = new global::MonoDevelop.MacDev.PlistEditor.MacExpander ();
+			this.documentTypeExpander.CanFocus = true;
+			this.documentTypeExpander.Name = "documentTypeExpander";
+			this.documentTypeExpander.ContentLabel = "Document Types";
+			this.documentTypeExpander.Expanded = false;
+			this.documentTypeExpander.Expandable = true;
+			this.vbox3.Add (this.documentTypeExpander);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.documentTypeExpander]));
 			w10.Position = 1;
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.exportedUTIs = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
-			this.exportedUTIs.CanFocus = true;
-			this.exportedUTIs.Name = "exportedUTIs";
-			this.exportedUTIs.ContentLabel = "Exported UTIs";
-			this.exportedUTIs.NoContentMessage = "No Exported UTIs";
-			this.exportedUTIs.Expanded = false;
-			this.exportedUTIs.Expandable = true;
-			this.vbox3.Add (this.exportedUTIs);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs]));
+			this.exportedUTIExpander = new global::MonoDevelop.MacDev.PlistEditor.MacExpander ();
+			this.exportedUTIExpander.CanFocus = true;
+			this.exportedUTIExpander.Name = "exportedUTIExpander";
+			this.exportedUTIExpander.ContentLabel = "Exported UTIs";
+			this.exportedUTIExpander.Expanded = false;
+			this.exportedUTIExpander.Expandable = true;
+			this.vbox3.Add (this.exportedUTIExpander);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIExpander]));
 			w11.Position = 2;
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.exportedUTIs1 = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
-			this.exportedUTIs1.CanFocus = true;
-			this.exportedUTIs1.Name = "exportedUTIs1";
-			this.exportedUTIs1.ContentLabel = "Imported UTIs";
-			this.exportedUTIs1.NoContentMessage = "No Imported UTIs";
-			this.exportedUTIs1.Expanded = false;
-			this.exportedUTIs1.Expandable = true;
-			this.vbox3.Add (this.exportedUTIs1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs1]));
+			this.importedUTIExpander = new global::MonoDevelop.MacDev.PlistEditor.MacExpander ();
+			this.importedUTIExpander.CanFocus = true;
+			this.importedUTIExpander.Name = "importedUTIExpander";
+			this.importedUTIExpander.ContentLabel = "Imported UTIs";
+			this.importedUTIExpander.Expanded = false;
+			this.importedUTIExpander.Expandable = true;
+			this.vbox3.Add (this.importedUTIExpander);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.importedUTIExpander]));
 			w12.Position = 3;
 			w12.Expand = false;
 			w12.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.exportedUTIs2 = new global::MonoDevelop.MacDev.PlistEditor.DocumentTypeContainer ();
-			this.exportedUTIs2.CanFocus = true;
-			this.exportedUTIs2.Name = "exportedUTIs2";
-			this.exportedUTIs2.ContentLabel = "URL Types";
-			this.exportedUTIs2.NoContentMessage = "No URL Types";
-			this.exportedUTIs2.Expanded = false;
-			this.exportedUTIs2.Expandable = true;
-			this.vbox3.Add (this.exportedUTIs2);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.exportedUTIs2]));
+			this.urlTypeExpander = new global::MonoDevelop.MacDev.PlistEditor.MacExpander ();
+			this.urlTypeExpander.CanFocus = true;
+			this.urlTypeExpander.Name = "urlTypeExpander";
+			this.urlTypeExpander.ContentLabel = "URL Types";
+			this.urlTypeExpander.Expanded = false;
+			this.urlTypeExpander.Expandable = true;
+			this.vbox3.Add (this.urlTypeExpander);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.urlTypeExpander]));
 			w13.Position = 4;
 			w13.Expand = false;
 			w13.Fill = false;

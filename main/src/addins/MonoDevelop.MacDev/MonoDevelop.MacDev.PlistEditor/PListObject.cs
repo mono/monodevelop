@@ -70,6 +70,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public abstract void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer);
 		
+		public abstract void SetValue (string text);
+		
 		public static implicit operator PObject (string value)
 		{
 			return new PString (value);
@@ -94,13 +96,31 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			return new PData (value);
 		}
+		
+		protected virtual void OnChanged (EventArgs e)
+		{
+			EventHandler handler = this.Changed;
+			if (handler != null)
+				handler (this, e);
+			
+			if (Parent != null)
+				Parent.OnChanged (e);
+		}
+		
+		public event EventHandler Changed;
 	}
 	
 	public abstract class PValueObject<T> : PObject
 	{
+		T val;
 		public T Value {
-			get;
-			set;
+			get {
+				return val;
+			}
+			set {
+				val = value;
+				OnChanged (EventArgs.Empty);
+			}
 		}
 		
 		public PValueObject (T value)
@@ -120,9 +140,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public static implicit operator T (PValueObject<T> pObj)
 		{
-			return pObj.Value;
+			return pObj != null ? pObj.Value : default(T);
 		}
-		
 	}
 	
 	public class PDictionary : PValueObject<Dictionary<string, PObject>>
@@ -150,6 +169,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			renderer.Sensitive = false;
 			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
+		}
+		
+		public override void SetValue (string text)
+		{
+			throw new NotSupportedException ();
 		}
 		
 		public override NSObject Convert ()
@@ -219,6 +243,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			throw new NotSupportedException (val.ToString ());
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[PDictionary: Items={0}]", Value.Count);
+		}
+		
+		public void QueueRebuild ()
+		{
+			if (Rebuild != null)
+				Rebuild (this, EventArgs.Empty);
+			OnChanged (EventArgs.Empty);
+		}
+		
+		public event EventHandler Rebuild;
 	}
 	
 	public class PArray : PValueObject<List<PObject>>
@@ -234,6 +272,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			Value = new List<PObject> ();
 		}
 		
+		public override void SetValue (string text)
+		{
+			throw new NotSupportedException ();
+		}
+		
 		public override NSObject Convert ()
 		{
 			return NSArray.FromNSObjects (Value.Select (x => x.Convert ()).ToArray ());
@@ -244,6 +287,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 			renderer.Sensitive = false;
 			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[PArray: Items={0}]", Value.Count);
+		}
+		
+		public void QueueRebuild ()
+		{
+			if (Rebuild != null)
+				Rebuild (this, EventArgs.Empty);
+			OnChanged (EventArgs.Empty);
+		}
+		
+		public event EventHandler Rebuild;
 	}
 	
 	public class PBoolean : PValueObject<bool>
@@ -256,6 +313,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PBoolean (bool value) : base(value)
 		{
+		}
+		
+		public override void SetValue (string text)
+		{
+			Value = text == GettextCatalog.GetString ("Yes");
 		}
 		
 		public override NSObject Convert ()
@@ -286,6 +348,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public PData (byte[] value) : base(value)
 		{
 		}
+		
+		public override void SetValue (string text)
+		{
+			throw new NotSupportedException ();
+		}
 	}
 	
 	public class PDate : PValueObject<DateTime>
@@ -300,6 +367,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PDate (DateTime value) : base(value)
 		{
+		}
+		
+		public override void SetValue (string text)
+		{
+			throw new NotImplementedException ();
 		}
 		
 		public override NSObject Convert ()
@@ -321,6 +393,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 		}
 		
+		public override void SetValue (string text)
+		{
+			int newValue;
+			if (int.TryParse (text, out newValue))
+				Value = newValue;
+		}
+
 		public override NSObject Convert ()
 		{
 			return NSNumber.FromInt32 (Value);
@@ -337,6 +416,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PString (string value) : base(value)
 		{
+		}
+		
+		public override void SetValue (string text)
+		{
+			Value = text;
 		}
 		
 		public override NSObject Convert ()
