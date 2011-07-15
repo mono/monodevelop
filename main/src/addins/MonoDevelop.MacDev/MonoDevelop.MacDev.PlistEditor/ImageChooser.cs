@@ -33,6 +33,9 @@ using Mono.TextEditor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using Gtk;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -44,7 +47,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		Label labelDescription;
 		
 		Pixbuf pixbuf;
-		
 		public string Description {
 			get {
 				return labelDescription.Text;
@@ -64,6 +66,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		public FilePath SelectedPixbuf {
+			get;
+			set;
+		}
+		
 		public ImageChooser ()
 		{
 			this.buttonImage = new Button ();
@@ -77,6 +84,22 @@ namespace MonoDevelop.MacDev.PlistEditor
 			ShowAll ();
 		}
 		
+		public void SetProject (Project proj)
+		{
+			this.buttonImage.Clicked += delegate {
+				var dialog = new ProjectFileSelectorDialog (proj, null, "*.png");
+				try {
+					dialog.Title = GettextCatalog.GetString ("Select icon...");
+					int response = MessageService.RunCustomDialog (dialog);
+					if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
+						SelectedPixbuf  = dialog.SelectedFile.ProjectVirtualPath;
+					}
+				} finally {
+					dialog.Destroy ();
+				}
+			};
+		}
+			
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
