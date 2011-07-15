@@ -320,7 +320,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (!rebuildArrays.Contains (arr)) {
 				rebuildArrays.Add (arr);
 				arr.Rebuild += delegate {
-					bool isExpanded = treeview1.GetRowExpanded (treeStore.GetPath (iter));
+					bool isExpanded;
+					if (TreeIter.Zero.Equals (iter)) {
+						isExpanded = false;
+					} else {
+						var path = treeStore.GetPath (iter);
+						isExpanded = path != null ? treeview1.GetRowExpanded (path) : false;
+					}
+					
 					RemoveChildren (iter);
 					AddToTree (treeStore, iter, arr);
 					if (isExpanded)
