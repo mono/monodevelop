@@ -49,7 +49,7 @@ namespace MonoDevelop.Database.Sql
 
 		static ConnectionContextService ()
 		{
-			configFile = Path.Combine (PropertyService.Locations.Config, "MonoDevelop.Database.ConnectionManager.xml");
+			configFile = Path.Combine (UserProfile.Current.ConfigDir, "MonoDevelop.Database.ConnectionManager.xml");
 			Initialize (configFile);
 		}
 		

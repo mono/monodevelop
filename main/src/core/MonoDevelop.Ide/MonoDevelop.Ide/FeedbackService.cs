@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		static string FeedbackFile {
-			get { return PropertyService.Locations.Data.Combine ("Feedback.xml"); }
+			get { return UserProfile.Current.LocalConfigDir.Combine ("Feedback.xml"); }
 		}
 		
 		public static void SendFeedback (string email, string body)

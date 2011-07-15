@@ -100,7 +100,7 @@ namespace Mono.Instrumentation.Monitor
 		}
 
 		static string ConfigFile {
-			get { return PropertyService.Locations.Config.Combine ("monitor-views.xml"); }
+			get { return UserProfile.Current.ConfigDir.Combine ("monitor-views.xml"); }
 		}
 		
 		public void SaveViews ()

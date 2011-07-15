@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		
 		public static void SaveTools ()
 		{
-			SaveTools (PropertyService.Locations.Config.Combine (FileName));
+			SaveTools (UserProfile.Current.ConfigDir.Combine (FileName));
 		}
 		
 		static List<ExternalTool> LoadTools (string fileName)
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		
 		static List<ExternalTool> LoadTools ()
 		{
-			List<ExternalTool> result = LoadTools (PropertyService.Locations.Config.Combine (FileName));
+			List<ExternalTool> result = LoadTools (UserProfile.Current.ConfigDir.Combine (FileName));
 			if (result == null) {
 				LoggingService.LogInfo ("ExternalToolService: No user templates, reading default templates.");
 				result = LoadTools (Path.Combine (Path.Combine (PropertyService.DataPath, "options"), FileName));

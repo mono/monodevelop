@@ -39,7 +39,7 @@ namespace MonoDevelop.SourceEditor
 
 		public static FilePath SyntaxModePath {
 			get {
-				return PropertyService.Locations.Data.Combine ("HighlightingSchemes");
+				return UserProfile.Current.UserDataRoot.Combine ("HighlightingSchemes");
 			}
 		}
 		

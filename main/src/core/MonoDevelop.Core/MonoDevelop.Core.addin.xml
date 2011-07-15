@@ -186,8 +186,8 @@
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<Migration sourceVersion="2.4" kind="Config" sourcePath="mono-runtimes.xml" />
-		<Migration sourceVersion="2.4" kind="Data" sourcePath="DefaultPolicies.xml" targetPath="Policies/Default.mdpolicy.xml" />
-		<!-- the following file belongs to the instrumetaion viewer but it's not an addin so can't register for migrations -->
+		<Migration sourceVersion="2.4" kind="UserData" sourcePath="DefaultPolicies.xml" targetPath="Policies/Default.mdpolicy.xml" />
+		<!-- the following file belongs to the instrumentation viewer but it's not an addin so can't register for migrations -->
 		<Migration sourceVersion="2.4" kind="Config" sourcePath="monitor-views.xml" />
 	</Extension>
 

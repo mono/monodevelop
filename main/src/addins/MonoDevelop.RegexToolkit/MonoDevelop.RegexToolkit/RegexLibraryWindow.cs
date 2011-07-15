@@ -166,7 +166,7 @@ namespace MonoDevelop.RegexToolkit
 		
 		static string LibraryLocation {
 			get {
-				return PropertyService.Locations.Cache.Combine (libraryFileName);
+				return UserProfile.Current.CacheDir.Combine (libraryFileName);
 			}
 		}
 		const string Node = "RegexLibrary";

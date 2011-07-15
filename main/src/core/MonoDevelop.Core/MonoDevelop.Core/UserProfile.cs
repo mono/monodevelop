@@ -1,10 +1,10 @@
 // 
-// UserDataLocations.cs
+// UserProfile.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Michael Hutchinson <mhutch@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,80 +23,102 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Core
 {
-	public class UserDataLocations
+	public class UserProfile
 	{
+		const string PROFILE_ENV_VAR = "MONODEVELOP_PROFILE";
 		const string APP_ID = "MonoDevelop";
+		const string CURRENT_PROFILE_VERSION = "2.6";
+		
+		static readonly UserProfile currentProfile = GetCurrentProfile ();
+		
+		public static UserProfile Current { get { return currentProfile; } }
 		
 		/// <summary>Location for cached data that can be regenerated.</summary>
-		public FilePath Cache { get; private set; }
+		public FilePath CacheDir { get; private set; }
 		
 		/// <summary>Location for current preferences/settings.</summary>
-		public FilePath Config { get; private set; }
+		public FilePath ConfigDir { get; private set; }
 		
 		/// <summary>Preferences/settings specific to the local machine.</summary>
-		public FilePath ConfigLocal { get; private set; }
+		public FilePath LocalConfigDir { get; private set; }
 		
-		/// <summary>Root location for data files created or modifiable by the user, such as templates, snippets and color schemes.</summary>
-		public FilePath Data { get; private set; }
+		/// <summary>User-visible root location for user-created data files such as templates, snippets and color schemes.</summary>
+		public FilePath UserDataRoot { get; private set; }
 		
 		/// <summary>Location for log files.</summary>
-		public FilePath Logs { get; private set; }
+		public FilePath LogDir { get; private set; }
 		
-		/// <summary>Location for addins installed by the user.</summary>
-		public FilePath Addins { get; private set; }
+		/// <summary>Location for files installed from external sources.</summary>
+		public FilePath LocalInstallDir { get; private set; }
 		
 		//TODO: clear out temp files at startup
 		/// <summary>Location for temporary files.</summary>
-		public FilePath Temp { get; private set; }
+		public FilePath TempDir { get; private set; }
 		
 		/// <summary>Gets a location by its ID.</summary>
 		internal FilePath GetLocation (UserDataKind kind)
 		{
 			switch (kind) {
-			case UserDataKind.Addins:
-				return Addins;
+			case UserDataKind.LocalInstall:
+				return LocalInstallDir;
 			case UserDataKind.Cache:
-				return Cache;
-			case UserDataKind.Data:
-				return Data;
+				return CacheDir;
+			case UserDataKind.UserData:
+				return UserDataRoot;
 			case UserDataKind.Logs:
-				return Logs;
+				return LogDir;
 			case UserDataKind.Config:
-				return Config;
-			case UserDataKind.ConfigLocal:
-				return ConfigLocal;
+				return ConfigDir;
+			case UserDataKind.LocalConfig:
+				return LocalConfigDir;
 			case UserDataKind.Temp:
-				return Temp;
+				return TempDir;
 			default:
 				throw new ArgumentException ("Unknown UserDataLocation:" + kind.ToString ());
 			}
 		}
 		
+		internal static UserProfile GetCurrentProfile ()
+		{
+			return GetProfile (CURRENT_PROFILE_VERSION);
+		}
+		
+		internal static UserProfile GetProfile (string profileVersion)
+		{
+			FilePath testProfileRoot = Environment.GetEnvironmentVariable (PROFILE_ENV_VAR);
+			if (!testProfileRoot.IsNullOrEmpty)
+				return UserProfile.ForTest (CURRENT_PROFILE_VERSION, testProfileRoot);;
+			
+			if (Platform.IsWindows)
+				return UserProfile.ForWindows (profileVersion);
+			else if (Platform.IsMac)
+				return UserProfile.ForMac (profileVersion);
+			else
+				return UserProfile.ForUnix (profileVersion);
+		}
+		
 		/// <summary>
 		/// Creates locations in a specific folder, for testing.
 		/// </summary>
-		internal static UserDataLocations ForTest (string version, FilePath profileLocation)
+		internal static UserProfile ForTest (string version, FilePath profileLocation)
 		{
 			string appId = APP_ID + "-" + version;
-			return new UserDataLocations () {
-				Cache = profileLocation.Combine (appId, "Cache"),
-				Data = profileLocation.Combine (appId, "Data"),
-				ConfigLocal = profileLocation.Combine (appId, "Config"),
-				Config = profileLocation.Combine (appId, "ConfigLocal"),
-				Logs = profileLocation.Combine (appId, "Logs"),
-				Addins = profileLocation.Combine (appId, "Addins"),
-				Temp = profileLocation.Combine (appId, "Temp"),
+			return new UserProfile () {
+				CacheDir = profileLocation.Combine (appId, "Cache"),
+				UserDataRoot = profileLocation.Combine (appId, "UserData"),
+				ConfigDir = profileLocation.Combine (appId, "Config"),
+				LocalConfigDir = profileLocation.Combine (appId, "LocalConfig"),
+				LogDir = profileLocation.Combine (appId, "Logs"),
+				LocalInstallDir = profileLocation.Combine (appId, "LocalInstall"),
+				TempDir = profileLocation.Combine (appId, "Temp"),
 			};
 		}
 		
-		internal static UserDataLocations ForWindows (string version)
+		internal static UserProfile ForWindows (string version)
 		{
 			string appId = APP_ID + "-" + version;
 			FilePath local = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
@@ -106,18 +128,18 @@ namespace MonoDevelop.Core
 			local = local.Combine (appId);
 			roaming = roaming.Combine (appId);
 			
-			return new UserDataLocations () {
-				Data = roaming,
-				Config = roaming.Combine ("Config"),
-				ConfigLocal = local.Combine ("Config"),
-				Addins = local.Combine ("Addins"),
-				Logs = local.Combine ("Logs"),
-				Cache = local.Combine ("Cache"),
-				Temp = local.Combine ("Temp"),
+			return new UserProfile () {
+				UserDataRoot = roaming,
+				ConfigDir = roaming.Combine ("Config"),
+				LocalConfigDir = local.Combine ("Config"),
+				LocalInstallDir = local.Combine ("LocalInstall"),
+				LogDir = local.Combine ("Logs"),
+				CacheDir = local.Combine ("Cache"),
+				TempDir = local.Combine ("Temp"),
 			};
 		}
 		
-		internal static UserDataLocations ForMac (string version)
+		internal static UserProfile ForMac (string version)
 		{
 			string appId = APP_ID + "-" + version;
 			FilePath home = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
@@ -129,18 +151,18 @@ namespace MonoDevelop.Core
 			FilePath logs = library.Combine ("Logs", appId);
 			FilePath appSupport = library.Combine ("Application Support", appId);
 			
-			return new UserDataLocations () {
-				Cache = cache,
-				Data = data,
-				Config = preferences,
-				ConfigLocal = preferences,
-				Logs = logs,
-				Addins = appSupport.Combine ("Addins"),
-				Temp = cache.Combine ("Temp"),
+			return new UserProfile () {
+				CacheDir = cache,
+				UserDataRoot = data,
+				ConfigDir = preferences,
+				LocalConfigDir = preferences,
+				LogDir = logs,
+				LocalInstallDir = appSupport.Combine ("LocalInstall"),
+				TempDir = cache.Combine ("Temp"),
 			};
 		}
 		
-		internal static UserDataLocations ForUnix (string version)
+		internal static UserProfile ForUnix (string version)
 		{
 			FilePath home = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 			FilePath xdgDataHome = Environment.GetEnvironmentVariable ("XDG_DATA_HOME");
@@ -158,28 +180,28 @@ namespace MonoDevelop.Core
 			FilePath config = xdgConfigHome.Combine (appId);
 			FilePath cache = xdgCacheHome.Combine (appId);
 			
-			return new UserDataLocations () {
-				Data = data,
-				Addins = data.Combine ("Addins"),
-				Config = config,
-				ConfigLocal = config,
-				Cache = cache,
-				Temp = cache.Combine ("Temp"),
-				Logs = cache.Combine ("Logs"),
+			return new UserProfile () {
+				UserDataRoot = data,
+				LocalInstallDir = data.Combine ("LocalInstall"),
+				ConfigDir = config,
+				LocalConfigDir = config,
+				CacheDir = cache,
+				TempDir = cache.Combine ("Temp"),
+				LogDir = cache.Combine ("Logs"),
 			};
 		}
 		
-		internal static UserDataLocations ForMD24 ()
+		internal static UserProfile ForMD24 ()
 		{
 			FilePath appdata = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
 			var mdConfig = appdata.Combine ("MonoDevelop");
-			return new UserDataLocations () {
-				Data = mdConfig,
-				Config = mdConfig,
-				ConfigLocal = mdConfig,
-				Addins = mdConfig.Combine ("addins"),
-				Logs = mdConfig,
-				Cache = mdConfig,
+			return new UserProfile () {
+				UserDataRoot = mdConfig,
+				ConfigDir = mdConfig,
+				LocalConfigDir = mdConfig,
+				LocalInstallDir = mdConfig.Combine ("addins"),
+				LogDir = mdConfig,
+				CacheDir = mdConfig,
 				//temp is not migratable
 			};
 		}
@@ -208,10 +230,10 @@ namespace MonoDevelop.Core
 	{
 		Cache,
 		Config,
-		ConfigLocal,
-		Data,
+		LocalConfig,
+		UserData,
 		Logs,
-		Addins,
+		LocalInstall,
 		Temp,
 	}
 }

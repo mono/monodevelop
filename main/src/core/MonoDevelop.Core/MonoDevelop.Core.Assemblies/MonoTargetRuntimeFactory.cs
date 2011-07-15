@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.Assemblies
 	class MonoTargetRuntimeFactory: ITargetRuntimeFactory
 	{
 		static RuntimeCollection customRuntimes = new RuntimeCollection ();
-		static string configFile = Path.Combine (PropertyService.Locations.Config, "mono-runtimes.xml");
+		static string configFile = UserProfile.Current.ConfigDir.Combine ("mono-runtimes.xml");
 		static string[] commonLinuxPrefixes = new string[] { "/usr", "/usr/local" };
 		
 		static MonoTargetRuntimeFactory ()

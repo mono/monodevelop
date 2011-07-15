@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			
 			recentFilesModified = false;
-			FilePath file = PropertyService.Locations.Cache.Combine ("RecentAssemblies.txt");
+			FilePath file = UserProfile.Current.CacheDir.Combine ("RecentAssemblies.txt");
 			if (File.Exists (file)) {
 				try {
 					recentFiles = new List<FilePath> (File.ReadAllLines (file).Where (f => File.Exists (f)).Select (f => (FilePath)f));
@@ -420,7 +420,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			if (!recentFilesModified)
 				return;
-			FilePath file = PropertyService.Locations.Cache.Combine ("RecentAssemblies.txt");
+			FilePath file = UserProfile.Current.CacheDir.Combine ("RecentAssemblies.txt");
 			try {
 				File.WriteAllLines (file, recentFiles.ToArray ().ToStringArray ());
 			} catch (Exception ex) {

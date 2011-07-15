@@ -168,9 +168,9 @@ FILES =  \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
 	MonoDevelop.Core/StringParserService.cs \
-	MonoDevelop.Core/UserDataLocations.cs \
 	MonoDevelop.Core/UserDataMigrationService.cs \
 	MonoDevelop.Core/UserException.cs \
+	MonoDevelop.Core/UserProfile.cs \
 	MonoDevelop.Core/XmlReadHelper.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs \

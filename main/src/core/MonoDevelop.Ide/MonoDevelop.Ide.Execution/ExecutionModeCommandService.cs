@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.Execution
 			if (globalModes == null) {
 				try {
 					XmlDataSerializer ser = new XmlDataSerializer (GetDataContext ());
-					FilePath file = PropertyService.Locations.Config.Combine ("custom-command-modes.xml");
+					FilePath file = UserProfile.Current.ConfigDir.Combine ("custom-command-modes.xml");
 					if (File.Exists (file))
 						globalModes = (CustomExecutionModes) ser.Deserialize (file, typeof(CustomExecutionModes));
 				} catch (Exception ex) {
@@ -343,7 +343,7 @@ namespace MonoDevelop.Ide.Execution
 				return;
 			try {
 				XmlDataSerializer ser = new XmlDataSerializer (GetDataContext ());
-				FilePath file = PropertyService.Locations.Config.Combine ("custom-command-modes.xml");
+				FilePath file = UserProfile.Current.ConfigDir.Combine ("custom-command-modes.xml");
 				ser.Serialize (file, globalModes, typeof(CustomExecutionModes));
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not save global custom execution modes.", ex);

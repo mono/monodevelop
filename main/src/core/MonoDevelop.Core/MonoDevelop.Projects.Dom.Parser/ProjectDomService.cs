@@ -196,7 +196,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static string GetDefaultCompletionFileLocation ()
 		{
-			string path = Path.Combine (PropertyService.Locations.Cache, "CodeCompletionData");
+			string path = UserProfile.Current.CacheDir.Combine ("CodeCompletionData");
 			FileService.EnsureDirectoryExists (path);
 
 			return path;

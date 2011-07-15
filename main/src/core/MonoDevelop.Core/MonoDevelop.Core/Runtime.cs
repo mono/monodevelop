@@ -71,9 +71,9 @@ namespace MonoDevelop.Core
 			try {
 				Counters.RuntimeInitialization.Trace ("Initializing Addin Manager");
 				AddinManager.Initialize (
-					PropertyService.Locations.Config,
-					PropertyService.Locations.Addins,
-					PropertyService.Locations.Cache);
+					UserProfile.Current.ConfigDir,
+					UserProfile.Current.LocalInstallDir,
+					UserProfile.Current.CacheDir);
 				AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
 				
 				if (updateAddinRegistry)

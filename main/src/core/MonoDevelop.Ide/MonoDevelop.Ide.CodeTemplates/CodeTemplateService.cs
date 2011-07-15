@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		static string TemplatePath {
 			get {
-				return Path.Combine (PropertyService.Locations.Data.Combine ("Snippets"));
+				return UserProfile.Current.UserDataRoot.Combine ("Snippets");
 			}
 		}
 		

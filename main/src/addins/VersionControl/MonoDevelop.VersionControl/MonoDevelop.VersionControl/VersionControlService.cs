@@ -240,7 +240,7 @@ namespace MonoDevelop.VersionControl
 		
 		static string CommitMessagesFile {
 			get {
-				return PropertyService.Locations.Cache.Combine ("version-control-commit-msg");
+				return UserProfile.Current.CacheDir.Combine ("version-control-commit-msg");
 				
 			}
 		}
@@ -561,7 +561,7 @@ namespace MonoDevelop.VersionControl
 		
 		static string ConfigFile {
 			get {
-				return PropertyService.Locations.Config.Combine ("VersionControl.config");
+				return UserProfile.Current.ConfigDir.Combine ("VersionControl.config");
 			}
 		}
 		

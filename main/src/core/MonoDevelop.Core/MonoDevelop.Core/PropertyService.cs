@@ -37,7 +37,6 @@ namespace MonoDevelop.Core
 {
 	public static class PropertyService
 	{
-		const string CURRENT_PROFILE_VERSION = "2.6";
 		
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
@@ -52,10 +51,6 @@ namespace MonoDevelop.Core
 					return Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location);
 				return AppDomain.CurrentDomain.BaseDirectory;
 			}
-		}
-		
-		public static UserDataLocations Locations {
-			get; private set;
 		}
 		
 		/// <summary>
@@ -74,23 +69,16 @@ namespace MonoDevelop.Core
 		{
 			Counters.PropertyServiceInitialization.BeginTiming ();
 			
-			FilePath testProfileRoot = Environment.GetEnvironmentVariable ("MONODEVELOP_PROFILE");
-			if (!testProfileRoot.IsNullOrEmpty) {
-				Locations = UserDataLocations.ForTest (CURRENT_PROFILE_VERSION, testProfileRoot);
-			} else {
-				Locations = GetLocations (CURRENT_PROFILE_VERSION);
-			}
-			
 			string migrateVersion = null;
-			UserDataLocations migratableProfile = null;
+			UserProfile migratableProfile = null;
 			
-			var prefsPath = Locations.Config.Combine (FileName);
+			var prefsPath = UserProfile.Current.ConfigDir.Combine (FileName);
 			if (!File.Exists (prefsPath)) {
-				if (GetMigratableProfile (testProfileRoot, out migratableProfile, out migrateVersion)) {
-					FilePath migratePrefsPath = migratableProfile.Config.Combine (FileName);
+				if (GetMigratableProfile (out migratableProfile, out migrateVersion)) {
+					FilePath migratePrefsPath = migratableProfile.ConfigDir.Combine (FileName);
 					try {
 						var parentDir = prefsPath.ParentDirectory;
-						//can't use file service until property sevice in initialized
+						//can't use file service until property service is initialized
 						if (!Directory.Exists (parentDir))
 							Directory.CreateDirectory (parentDir);
 						File.Copy (migratePrefsPath, prefsPath);
@@ -120,17 +108,7 @@ namespace MonoDevelop.Core
 			Counters.PropertyServiceInitialization.EndTiming ();
 		}
 		
-		static UserDataLocations GetLocations (string profileVersion)
-		{
-			if (Platform.IsWindows)
-				return UserDataLocations.ForWindows (profileVersion);
-			else if (Platform.IsMac)
-				return UserDataLocations.ForMac (profileVersion);
-			else
-				return UserDataLocations.ForUnix (profileVersion);
-		}
-		
-		static bool GetMigratableProfile (FilePath testProfileRoot, out UserDataLocations profile, out string version)
+		internal static bool GetMigratableProfile (out UserProfile profile, out string version)
 		{
 			profile = null;
 			version = null;
@@ -138,23 +116,10 @@ namespace MonoDevelop.Core
 			//TODO: check 2.6 when 2.8 is released, etc
 			string[] migratableVersions = { };
 			
-			//test profiles only migrate from test profiles
-			if (!testProfileRoot.IsNullOrEmpty) {
-				for (int i = migratableVersions.Length -1; i >= 0; i--) {
-					var p = UserDataLocations.ForTest (migratableVersions[i], testProfileRoot);
-					if (File.Exists (p.Config.Combine (FileName))) {
-						profile = p;
-						version = migratableVersions[i];
-						return true;
-					}
-				}
-				return false;
-			}
-			
 			//try versioned profiles
 			for (int i = migratableVersions.Length -1; i >= 0; i--) {
-				var p = UserDataLocations.ForTest (migratableVersions[i], testProfileRoot);
-				if (File.Exists (p.Config.Combine (FileName))) {
+				var p = UserProfile.GetProfile (migratableVersions[i]);
+				if (File.Exists (p.ConfigDir.Combine (FileName))) {
 					profile = p;
 					version = migratableVersions[i];
 					return true;
@@ -162,8 +127,8 @@ namespace MonoDevelop.Core
 			}
 			
 			//try the old unversioned MD <= 2.4 profile
-			var md24 = UserDataLocations.ForMD24 ();
-			if (File.Exists (md24.Config.Combine (FileName))) {
+			var md24 = UserProfile.ForMD24 ();
+			if (File.Exists (md24.ConfigDir.Combine (FileName))) {
 				profile = md24;
 				version = "2.4";
 				return true;
@@ -197,7 +162,7 @@ namespace MonoDevelop.Core
 		public static void SaveProperties ()
 		{
 			Debug.Assert (properties != null);
-			var prefsPath = Locations.Config.Combine (FileName);
+			var prefsPath = UserProfile.Current.ConfigDir.Combine (FileName);
 			FileService.EnsureDirectoryExists (prefsPath.ParentDirectory);
 			properties.Save (prefsPath);
 		}

@@ -108,13 +108,13 @@ namespace MonoDevelop.Ide.Commands
 					return AppDomain.CurrentDomain.BaseDirectory;
 					
 				case "CONFIGDIR":
-					return PropertyService.Locations.Config;
+					return UserProfile.Current.ConfigDir;
 				
 				case "DATADIR":
-					return PropertyService.Locations.Data;
+					return UserProfile.Current.UserDataRoot;
 				
 				case "LOGDIR":
-					return PropertyService.Locations.Logs;
+					return UserProfile.Current.LogDir;
 			}
 			throw new NotSupportedException ();
         }

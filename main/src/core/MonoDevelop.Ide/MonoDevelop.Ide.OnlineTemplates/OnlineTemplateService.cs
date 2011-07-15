@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.OnlineTemplates
 		
 		static FilePath ProjectTemplateIndexFile {
 			get {
-				return PropertyService.Locations.Cache.Combine ("OnlineTemplates", "ProjectTemplateIndex.xml");
+				return UserProfile.Current.CacheDir.Combine ("OnlineTemplates", "ProjectTemplateIndex.xml");
 			}
 		}
 		
