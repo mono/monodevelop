@@ -287,7 +287,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (!rebuildArrays.Contains (dict)) {
 				rebuildArrays.Add (dict);
 				dict.Rebuild += delegate {
-					bool isExpanded = treeview1.GetRowExpanded (treeStore.GetPath (iter));
+					bool isExpanded;
+					if (TreeIter.Zero.Equals (iter)) {
+						isExpanded = false;
+					} else {
+						var path = treeStore.GetPath (iter);
+						isExpanded = path != null ? treeview1.GetRowExpanded (path) : false;
+					}
 					RemoveChildren (iter);
 					AddToTree (treeStore, iter, dict);
 					if (isExpanded)

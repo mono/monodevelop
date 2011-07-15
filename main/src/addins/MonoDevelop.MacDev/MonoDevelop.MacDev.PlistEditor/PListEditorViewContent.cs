@@ -49,6 +49,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.IsDirty = false;
 			
 			widget.NSDictionary = PDictionary.Load (fileName);
+			widget.NSDictionary.Changed += (sender, e) => IsDirty = true;
 		}
 		
 		public override void Save (string fileName)

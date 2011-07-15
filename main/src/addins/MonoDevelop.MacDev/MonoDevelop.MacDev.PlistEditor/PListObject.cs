@@ -179,11 +179,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public override NSObject Convert ()
 		{
-			var dict = new NSDictionary ();
-//			foreach (var pair in Value) {
-//				dict[new NSString (pair.Key)] = pair.Value.Convert ();
-//			}
-			return dict;
+			List<NSObject> objs = new List<NSObject> ();
+			List<NSObject> keys = new List<NSObject> ();
+			
+			foreach (var pair in Value) {
+				var val = pair.Value.Convert ();
+				objs.Add (val);
+				keys.Add (new NSString (pair.Key));
+			}
+			return NSDictionary.FromObjectsAndKeys (objs.ToArray (), keys.ToArray ());
 		}
 		
 		public void Save (string fileName)
