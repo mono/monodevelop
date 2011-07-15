@@ -48,7 +48,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			set {
 				expander = value;
-				Update ();
+				UpdateExpanderLabel ();
 			}
 		}
 		
@@ -66,8 +66,22 @@ namespace MonoDevelop.MacDev.PlistEditor
 			custompropertiesWidget.NSDictionary = dict;
 			Update ();
 			
-			this.entryName.Changed += HandleEntryNamehandleChanged;
-			this.entryContentTypes.Changed += HandleEntryContentTypeshandleChanged;
+			this.entryName.Changed += delegate {
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetString (NameKey).SetValue (entryName.Text);
+				UpdateExpanderLabel ();
+				dict.Changed += HandleDictChanged;
+			};
+			
+			this.entryContentTypes.Changed += delegate {
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetArray (ContentTypesKey).AssignStringList (entryContentTypes.Text);
+				dict.Changed += HandleDictChanged;
+			};
 			
 			this.buttonAdd.Clicked += AddIcon;
 			this.buttonRemove.Clicked += RemoveIcon;
@@ -81,15 +95,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return;
 			iconStore.Remove (ref iter);
 			
-			var iconFiles = dict.Get<PArray> (IconFilesKey);
-			if (iconFiles == null) {
-				dict.Value[ContentTypesKey] = iconFiles = new PArray ();
-				iconFiles.Parent = dict;
-				dict.QueueRebuild ();
-			}
-			
+			var iconFiles = dict.GetArray (IconFilesKey);
 			iconFiles.Value.Clear ();
-			
 			if (iconStore.GetIterFirst (out iter)) {
 				do {
 					iconFiles.Value.Add ((PObject)(string)iconStore.GetValue (iter, 0));
@@ -102,12 +109,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		void AddIcon (object sender, EventArgs e)
 		{
 			dict.Changed -= HandleDictChanged;
-			var iconFiles = dict.Get<PArray> (IconFilesKey);
-			if (iconFiles == null) {
-				dict.Value[IconFilesKey] = iconFiles = new PArray ();
-				iconFiles.Parent = dict;
-				dict.QueueRebuild ();
-			}
+			var iconFiles = dict.GetArray (IconFilesKey);
 			
 			// TODO: Select new Icon
 			string newIcon = "new Icon";
@@ -122,40 +124,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			Update ();
 		}
-		
-		void HandleEntryNamehandleChanged (object sender, EventArgs e)
+			
+		void UpdateExpanderLabel ()
 		{
-			if (inUpdate)
-				return;
-			var typeName = dict.Get<PString> (NameKey);
-			if (typeName == null) {
-				dict.Value[NameKey] = typeName = new PString (null);
-				typeName.Parent = dict;
-				dict.QueueRebuild ();
-			}
-			typeName.SetValue (entryName.Text);
-		}
-		
-		void HandleEntryContentTypeshandleChanged (object sender, EventArgs e)
-		{
-			if (inUpdate)
-				return;
-			dict.Changed -= HandleDictChanged;
-			var contentTypes = dict.Get<PArray> (ContentTypesKey);
-			if (contentTypes == null) {
-				dict.Value[ContentTypesKey] = contentTypes = new PArray ();
-				contentTypes.Parent = dict;
-				dict.QueueRebuild ();
-			}
-			contentTypes.Value.Clear ();
-			string[] types = entryContentTypes.Text.Split (',', ' ');
-			foreach (var type in types) {
-				if (string.IsNullOrEmpty (type))
-					continue;
-				contentTypes.Value.Add (new PString (type));
-			}
-			contentTypes.QueueRebuild ();
-			dict.Changed += HandleDictChanged;
+			if (Expander != null)
+				Expander.ContentLabel = dict.Get<PString> (NameKey) ?? "";
 		}
 		
 		bool inUpdate = false;
@@ -164,20 +137,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			inUpdate = true;
 			
 			entryName.Text = dict.Get<PString> (NameKey) ?? "";
-			if (Expander != null)
-				Expander.ContentLabel = entryName.Text;
+			UpdateExpanderLabel ();
 			
-			var sb = new StringBuilder ();
 			var contentTypes = dict.Get<PArray> (ContentTypesKey);
-			if (contentTypes != null) {
-				foreach (PString str in contentTypes.Value.Where (o => o is PString)) {
-					if (sb.Length > 0)
-						sb.Append (", ");
-					sb.Append (str);
-				}
-			}
-			entryContentTypes.Text = sb.ToString ();
-			
+			entryContentTypes.Text = contentTypes != null ? contentTypes.ToStringList () : "";
 			
 			iconStore.Clear ();
 			var iconFiles = dict.Get<PArray> (IconFilesKey);

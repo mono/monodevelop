@@ -31,6 +31,7 @@ using System.Linq;
 using MonoMac.Foundation;
 using System.Runtime.InteropServices;
 using Gtk;
+using System.Text;
 
 
 
@@ -254,6 +255,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return string.Format ("[PDictionary: Items={0}]", Value.Count);
 		}
 		
+		public PString GetString (string key)
+		{
+			var result = Get<PString> (key);
+			if (result == null) {
+				Value[key] = result = new PString ("") { Parent = this };
+				QueueRebuild ();
+			}
+			return result;
+		}
+		
+		public PArray GetArray (string key)
+		{
+			var result = Get<PArray> (key);
+			if (result == null) {
+				Value[key] = result = new PArray () { Parent = this };
+				QueueRebuild ();
+			}
+			return result;
+		}
+		
 		public void QueueRebuild ()
 		{
 			if (Rebuild != null)
@@ -296,6 +317,30 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override string ToString ()
 		{
 			return string.Format ("[PArray: Items={0}]", Value.Count);
+		}
+		
+		public void AssignStringList (string strList)
+		{
+			Value.Clear ();
+			
+			foreach (var item in strList.Split (',', ' ')) {
+				if (string.IsNullOrEmpty (item))
+					continue;
+				Value.Add (new PString (item));
+			}
+			
+			QueueRebuild ();
+		}
+		
+		public string ToStringList ()
+		{
+			var sb = new StringBuilder ();
+			foreach (PString str in Value.Where (o => o is PString)) {
+				if (sb.Length > 0)
+					sb.Append (", ");
+				sb.Append (str);
+			}
+			return sb.ToString ();
 		}
 		
 		public void QueueRebuild ()

@@ -41,7 +41,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			set {
 				expander = value;
-				Update ();
+				UpdateExpanderLabel ();
 			}
 		}
 		
@@ -65,59 +65,51 @@ namespace MonoDevelop.MacDev.PlistEditor
 			comboboxType.AppendText ("None");
 			
 			entryIdentifier.Changed += delegate {
-				if (!inUpdate)
-					GetString (UrlNameKey).SetValue (entryIdentifier.Text);
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetString (UrlNameKey).SetValue (entryIdentifier.Text);
+				UpdateExpanderLabel ();
+				dict.Changed += HandleDictChanged;
 			};
+			
 			comboboxentryIcon.Entry.Changed += delegate {
-				if (!inUpdate)
-					GetString (IconKey).SetValue (comboboxentryIcon.Entry.Text);
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetString (IconKey).SetValue (comboboxentryIcon.Entry.Text);
+				dict.Changed += HandleDictChanged;
 			};
+			
 			comboboxType.Changed += delegate {
-				if (!inUpdate)
-					GetString (TypeKey).SetValue (comboboxType.ActiveText);
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetString (TypeKey).SetValue (comboboxType.ActiveText);
+				dict.Changed += HandleDictChanged;
 			};
-			entryUrlShemes.Changed += HandleEntryUrlShemesChanged;;
+			
+			entryUrlShemes.Changed += delegate {
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetArray (UrlShemesKey).AssignStringList (entryUrlShemes.Text);
+				dict.Changed += HandleDictChanged;
+			};
 			
 			customProperiesWidget.NSDictionary = dict;
 			Update ();
 		}
 		
-		PString GetString (string key)
-		{
-			var result = dict.Get<PString> (key);
-			if (result == null) {
-				dict.Value[key] = result = new PString (null);
-				result.Parent = dict;
-				dict.QueueRebuild ();
-			}
-			return result;
-		}
-		
-		void HandleEntryUrlShemesChanged (object sender, EventArgs e)
-		{
-			if (inUpdate)
-				return;
-			dict.Changed -= HandleDictChanged;
-			var contentTypes = dict.Get<PArray> (UrlShemesKey);
-			if (contentTypes == null) {
-				dict.Value[UrlShemesKey] = contentTypes = new PArray ();
-				contentTypes.Parent = dict;
-				dict.QueueRebuild ();
-			}
-			contentTypes.Value.Clear ();
-			string[] types = entryUrlShemes.Text.Split (',', ' ');
-			foreach (var type in types) {
-				if (string.IsNullOrEmpty (type))
-					continue;
-				contentTypes.Value.Add (new PString (type));
-			}
-			contentTypes.QueueRebuild ();
-			dict.Changed += HandleDictChanged;
-		}
-		
 		void HandleDictChanged (object sender, EventArgs e)
 		{
 			Update ();
+		}
+		
+		void UpdateExpanderLabel ()
+		{
+			if (Expander != null)
+				Expander.ContentLabel = dict.Get<PString> (UrlNameKey) ?? "";
 		}
 		
 		bool inUpdate = false;
@@ -126,19 +118,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			inUpdate = true;
 			
 			entryIdentifier.Text = dict.Get<PString> (UrlNameKey) ?? "";
-			if (Expander != null)
-				Expander.ContentLabel = entryIdentifier.Text;
+			UpdateExpanderLabel ();
 			
-			var sb = new StringBuilder ();
 			var urlShemes = dict.Get<PArray> (UrlShemesKey);
-			if (urlShemes != null) {
-				foreach (PString str in urlShemes.Value.Where (o => o is PString)) {
-					if (sb.Length > 0)
-						sb.Append (", ");
-					sb.Append (str);
-				}
-			}
-			entryUrlShemes.Text = sb.ToString ();
+			entryUrlShemes.Text = urlShemes != null ? urlShemes.ToStringList () : "";
 			
 			comboboxentryIcon.Entry.Text = dict.Get<PString> (IconKey) ?? "";
 			
@@ -157,11 +140,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				break;
 			}
 			
-			
 			inUpdate = false;
 		}
-		
-		
 	}
 }
-

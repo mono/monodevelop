@@ -41,7 +41,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			set {
 				expander = value;
-				Update ();
+				UpdateExpanderLabel ();
 			}
 		}
 		
@@ -60,22 +60,45 @@ namespace MonoDevelop.MacDev.PlistEditor
 			dict.Changed += HandleDictChanged;
 			
 			entryDescription.Changed += delegate {
-				if (!inUpdate)
-					GetString (DescriptionKey).SetValue (entryDescription.Text);
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetString (DescriptionKey).SetValue (entryDescription.Text);
+				UpdateExpanderLabel ();
+				dict.Changed += HandleDictChanged;
 			};
+			
 			entryIdentifier.Changed += delegate {
-				if (!inUpdate)
-					GetString (TypeIdentifierKey).SetValue (entryIdentifier.Text);
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetString (TypeIdentifierKey).SetValue (entryIdentifier.Text);
+				dict.Changed += HandleDictChanged;
 			};
+			
 			comboboxentrySmallIcon.Entry.Changed += delegate {
-				if (!inUpdate)
-					GetString (SmallIconKey).SetValue (comboboxentrySmallIcon.Entry.Text);
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetString (SmallIconKey).SetValue (comboboxentrySmallIcon.Entry.Text);
+				dict.Changed += HandleDictChanged;
 			};
+			
 			comboboxentryLargeIcon.Entry.Changed += delegate {
-				if (!inUpdate)
-					GetString (LargeIconKey).SetValue (comboboxentryLargeIcon.Entry.Text);
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetString (LargeIconKey).SetValue (comboboxentryLargeIcon.Entry.Text);
+				dict.Changed += HandleDictChanged;
 			};
-			entryConformsTo.Changed += HandleEntryConformsToChanged;
+			
+			entryConformsTo.Changed += delegate {
+				if (inUpdate)
+					return;
+				dict.Changed -= HandleDictChanged;
+				dict.GetArray (ConformsToKey).AssignStringList (entryConformsTo.Text);
+				dict.Changed += HandleDictChanged;
+			};
 			
 			customProperiesWidget.NSDictionary = dict;
 			Update ();
@@ -86,37 +109,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			Update ();
 		}
 
-		void HandleEntryConformsToChanged (object sender, EventArgs e)
+		void UpdateExpanderLabel ()
 		{
-			if (inUpdate)
-				return;
-			dict.Changed -= HandleDictChanged;
-			var contentTypes = dict.Get<PArray> (ConformsToKey);
-			if (contentTypes == null) {
-				dict.Value[ConformsToKey] = contentTypes = new PArray ();
-				contentTypes.Parent = dict;
-				dict.QueueRebuild ();
-			}
-			contentTypes.Value.Clear ();
-			string[] types = entryConformsTo.Text.Split (',', ' ');
-			foreach (var type in types) {
-				if (string.IsNullOrEmpty (type))
-					continue;
-				contentTypes.Value.Add (new PString (type));
-			}
-			contentTypes.QueueRebuild ();
-			dict.Changed += HandleDictChanged;
-		}
-		
-		PString GetString (string key)
-		{
-			var result = dict.Get<PString> (key);
-			if (result == null) {
-				dict.Value[key] = result = new PString (null);
-				result.Parent = dict;
-				dict.QueueRebuild ();
-			}
-			return result;
+			if (Expander != null)
+				Expander.ContentLabel = dict.Get<PString> (DescriptionKey) ?? "";
 		}
 		
 		bool inUpdate = false;
@@ -125,23 +121,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			inUpdate = true;
 			
 			entryDescription.Text = dict.Get<PString> (DescriptionKey) ?? "";
-			if (Expander != null)
-				Expander.ContentLabel = entryDescription.Text ;
+			UpdateExpanderLabel ();
 			
 			entryIdentifier.Text = dict.Get<PString> (TypeIdentifierKey) ?? "";
 			comboboxentrySmallIcon.Entry.Text = dict.Get<PString> (SmallIconKey) ?? "";
 			comboboxentryLargeIcon.Entry.Text = dict.Get<PString> (LargeIconKey) ?? "";
 			
-			var sb = new StringBuilder ();
 			var conformsTo = dict.Get<PArray> (ConformsToKey);
-			if (conformsTo != null) {
-				foreach (PString str in conformsTo.Value.Where (o => o is PString)) {
-					if (sb.Length > 0)
-						sb.Append (", ");
-					sb.Append (str);
-				}
-			}
-			entryConformsTo.Text = sb.ToString ();
+			entryConformsTo.Text = conformsTo != null ? conformsTo.ToStringList () : "";
 			
 			inUpdate = false;
 		}

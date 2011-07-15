@@ -47,7 +47,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return header.Label;
 			}
 			set {
-				header.Label = value;
+				header.Label = !string.IsNullOrEmpty (value) ? value : GettextCatalog.GetString ("Untitled");
 				QueueDraw ();
 			}
 		}
