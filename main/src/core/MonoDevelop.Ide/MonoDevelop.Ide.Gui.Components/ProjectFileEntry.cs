@@ -46,7 +46,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			button = new Button () { Label = "..." };
 			button.Clicked += ButtonClicked;
 			PackStart (button, false, false, 2);
-			
+			entry.Changed += delegate {
+				OnChanged (EventArgs.Empty);
+			};
 			ShowAll ();
 		}
 		
@@ -113,5 +115,14 @@ namespace MonoDevelop.Ide.Gui.Components
 				dialog.Destroy ();
 			}
 		}
+		
+		protected virtual void OnChanged (System.EventArgs e)
+		{
+			EventHandler handler = this.Changed;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler Changed;
 	}
 }
