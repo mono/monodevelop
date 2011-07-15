@@ -32,12 +32,15 @@ using MonoMac.Foundation;
 using MonoDevelop.Components;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[System.ComponentModel.ToolboxItem(false)]
 	public partial class PListEditorWidget : Gtk.Bin
 	{
+		Project proj;
+		
 		public PDictionary NSDictionary {
 			get {
 				return customProperties.NSDictionary;
@@ -56,8 +59,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 		ExpanderList importedUTIList = new ExpanderList (GettextCatalog.GetString ("No Imported UTIs"), GettextCatalog.GetString ("Add Imported UTI"));
 		ExpanderList urlTypeList = new ExpanderList (GettextCatalog.GetString ("No URL Types"), GettextCatalog.GetString ("Add URL Type"));
 		
-		public PListEditorWidget ()
+		public PListEditorWidget (Project proj)
 		{
+			this.proj = proj;
 			this.Build ();
 			
 			customTargetPropertiesContainer.SetWidget (customProperties);
@@ -118,7 +122,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.Value.Add (newEntry);
 				dict.QueueRebuild ();
 				
-				var dtw = new URLTypeWidget (newEntry);
+				var dtw = new URLTypeWidget (proj, newEntry);
 				dtw.Expander = urlTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
 			};
 			
@@ -183,7 +187,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (dict == null)
 						continue;
 					string name = GettextCatalog.GetString ("Untitled");
-					var dtw = new URLTypeWidget (dict);
+					var dtw = new URLTypeWidget (proj, dict);
 					dtw.Expander = urlTypeList.AddListItem (name, dtw);
 				}
 			}

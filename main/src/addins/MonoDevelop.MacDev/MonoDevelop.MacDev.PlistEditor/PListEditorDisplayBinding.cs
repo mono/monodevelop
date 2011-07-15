@@ -48,13 +48,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return mimeType == "application/vnd.apple-plist" || 
+			return ownerProject != null &&
+				mimeType == "application/vnd.apple-plist" || 
 				fileName.Extension == ".plist";
 		}
 		
 		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return new PListEditorViewContent ();
+			return new PListEditorViewContent (ownerProject);
 		}
 	}
 }

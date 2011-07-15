@@ -35,12 +35,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 {
 	public class PListEditorViewContent : AbstractViewContent
 	{
-		PListEditorWidget widget = new PListEditorWidget ();
+		PListEditorWidget widget;
 		
 		public override Gtk.Widget Control {
 			get {
 				return widget;
 			}
+		}
+		
+		public PListEditorViewContent (Project proj)
+		{
+			widget = new PListEditorWidget (proj);
 		}
 		
 		public override void Load (string fileName)

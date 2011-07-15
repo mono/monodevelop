@@ -44,11 +44,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			set;
 		}
 		
-		public string Key {
-			get;
-			set;
-		}
-		
 		public abstract string TypeString {
 			get;
 		}
@@ -58,10 +53,24 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// TODO
 		}
 		
+		public string Key {
+			get {
+				if (Parent is PDictionary) {
+					var dict = (PDictionary)Parent;
+					if (dict.Value.Any (p => p.Value == this)) {
+						var pair = dict.Value.First (p => p.Value == this);
+							return pair.Key;
+					}
+				}
+				return null;
+			}
+		}
+		
 		public void Remove ()
 		{
 			if (Parent is PDictionary) {
-				((PDictionary)Parent).Value.Remove (Key);
+				var dict = (PDictionary)Parent;
+				dict.Value.Remove (Key);
 			} else if (Parent is PArray) {
 				((PArray)Parent).Value.Remove (this);
 			}
@@ -211,7 +220,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 				foreach (var pair in (NSDictionary)val) {
 					var p = Conv (pair.Value);
 					string k = pair.Key.ToString ();
-					p.Key = k;
 					p.Parent = result;
 					result.Value[k] = p;
 				}

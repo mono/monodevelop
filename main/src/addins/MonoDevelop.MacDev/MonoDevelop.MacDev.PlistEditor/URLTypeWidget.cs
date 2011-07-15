@@ -26,6 +26,8 @@
 using System;
 using System.Text;
 using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -51,15 +53,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 		const string TypeKey = "CFBundleTypeRole";
 		
 			
-		public URLTypeWidget (PDictionary dict)
+		public URLTypeWidget (Project proj, PDictionary dict)
 		{
 			if (dict == null)
 				throw new ArgumentNullException ("dict");
 			this.dict = dict;
 			dict.Changed += HandleDictChanged;
 			this.Build ();
+			
+			iconPicker.Project = proj;
+			iconPicker.DefaultFilter = "*.png";
+			iconPicker.EntryIsEditable = true;
+			iconPicker.DialogTitle = GettextCatalog.GetString ("Select icon...");
+			
 			imagechooser.PictureSize  = new Gdk.Size (58, 58);
-				
+			
 			comboboxType.AppendText ("Viewer");
 			comboboxType.AppendText ("Editor");
 			comboboxType.AppendText ("None");
@@ -73,11 +81,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.Changed += HandleDictChanged;
 			};
 			
-			comboboxentryIcon.Entry.Changed += delegate {
+			iconPicker.Changed += delegate {
 				if (inUpdate)
 					return;
 				dict.Changed -= HandleDictChanged;
-				dict.GetString (IconKey).SetValue (comboboxentryIcon.Entry.Text);
+				dict.GetString (IconKey).SetValue (iconPicker.SelectedFile);
 				dict.Changed += HandleDictChanged;
 			};
 			
@@ -99,6 +107,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			customProperiesWidget.NSDictionary = dict;
 			Update ();
+			
 		}
 		
 		void HandleDictChanged (object sender, EventArgs e)
@@ -123,7 +132,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var urlShemes = dict.Get<PArray> (UrlShemesKey);
 			entryUrlShemes.Text = urlShemes != null ? urlShemes.ToStringList () : "";
 			
-			comboboxentryIcon.Entry.Text = dict.Get<PString> (IconKey) ?? "";
+			iconPicker.SelectedFile = dict.Get<PString> (IconKey) ?? "";
 			
 			switch (dict.Get<PString> (TypeKey) ?? "") {
 			case "Viewer":
