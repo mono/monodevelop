@@ -31,6 +31,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class IPhoneDeploymentInfo : Gtk.Bin
 	{
+		PDictionary dict;
+		public PDictionary Dict {
+			get {
+				return dict;
+			}
+			set {
+				dict = value;
+				dict.Changed += HandleDictChanged;
+				Update ();
+			}
+		}
+		
+		void HandleDictChanged (object sender, EventArgs e)
+		{
+			Update ();
+		}
+		
 		public IPhoneDeploymentInfo ()
 		{
 			this.Build ();
@@ -42,9 +59,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			imageIPhoneLaunch2.PictureSize = new Size (58, 58);
 		}
 		
-		public void Update (PDictionary NSDictionary)
+		public void Update ()
 		{
-			var iphone = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations");
+			var iphone = dict.Get<PArray> ("UISupportedInterfaceOrientations");
 			togglebutton1.Active = togglebutton2.Active = togglebutton3.Active = togglebutton4.Active = false;
 			if (iphone != null) {
 				foreach (PString val in iphone.Value) {

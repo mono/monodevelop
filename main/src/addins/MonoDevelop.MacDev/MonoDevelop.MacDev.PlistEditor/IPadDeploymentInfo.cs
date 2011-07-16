@@ -31,6 +31,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class IPadDeploymentInfo : Gtk.Bin
 	{
+		PDictionary dict;
+		public PDictionary Dict {
+			get {
+				return dict;
+			}
+			set {
+				dict = value;
+				dict.Changed += HandleDictChanged;
+				Update ();
+			}
+		}
+		
+		void HandleDictChanged (object sender, EventArgs e)
+		{
+			Update ();
+		}
+		
 		public IPadDeploymentInfo ()
 		{
 			this.Build ();
@@ -41,9 +58,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			imageIPadLaunch2.PictureSize = new Size (58, 58);
 		}
 		
-		public void Update (PDictionary NSDictionary)
+		public void Update ()
 		{
-			var ipad   = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
+			var ipad   = dict.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
 			togglebutton9.Active = togglebutton10.Active = togglebutton11.Active = togglebutton12.Active = false;
 			if (ipad != null) {
 				foreach (PString val in ipad.Value) {

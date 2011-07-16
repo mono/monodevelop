@@ -77,7 +77,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (inUpdate)
 					return;
 				dict.Changed -= HandleDictChanged;
-				dict.GetString (NameKey).SetValue (entryName.Text);
+				dict.SetString (NameKey, entryName.Text);
 				UpdateExpanderLabel ();
 				dict.Changed += HandleDictChanged;
 			};

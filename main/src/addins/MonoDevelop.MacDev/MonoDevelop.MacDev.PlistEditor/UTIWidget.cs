@@ -71,7 +71,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (inUpdate)
 					return;
 				dict.Changed -= HandleDictChanged;
-				dict.GetString (DescriptionKey).SetValue (entryDescription.Text);
+				dict.SetString (DescriptionKey, entryDescription.Text);
 				UpdateExpanderLabel ();
 				dict.Changed += HandleDictChanged;
 			};
@@ -80,7 +80,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (inUpdate)
 					return;
 				dict.Changed -= HandleDictChanged;
-				dict.GetString (TypeIdentifierKey).SetValue (entryIdentifier.Text);
+				dict.SetString (TypeIdentifierKey, entryIdentifier.Text);
 				dict.Changed += HandleDictChanged;
 			};
 			
@@ -88,7 +88,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (inUpdate)
 					return;
 				dict.Changed -= HandleDictChanged;
-				dict.GetString (SmallIconKey).SetValue (iconPickerSmall.SelectedFile);
+				dict.SetString (SmallIconKey, iconPickerSmall.SelectedFile);
 				dict.Changed += HandleDictChanged;
 			};
 			
@@ -96,7 +96,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (inUpdate)
 					return;
 				dict.Changed -= HandleDictChanged;
-				dict.GetString (LargeIconKey).SetValue (iconPickerLarge.SelectedFile);
+				dict.SetString (LargeIconKey, iconPickerLarge.SelectedFile);
 				dict.Changed += HandleDictChanged;
 			};
 			

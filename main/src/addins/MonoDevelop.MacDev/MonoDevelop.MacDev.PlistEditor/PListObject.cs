@@ -262,6 +262,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			return string.Format ("[PDictionary: Items={0}]", Value.Count);
 		}
+
+		public void SetString (string key, string value)
+		{
+			var result = Get<PString> (key);
+			if (result == null) {
+				Value[key] = result = new PString (value) { Parent = this };
+				QueueRebuild ();
+				return;
+			}
+			result.Value = value;
+		}
 		
 		public PString GetString (string key)
 		{

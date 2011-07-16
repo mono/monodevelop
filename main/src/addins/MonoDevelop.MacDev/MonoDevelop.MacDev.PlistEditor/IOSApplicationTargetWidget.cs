@@ -31,6 +31,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class IOSApplicationTargetWidget : Gtk.Bin
 	{
+		const string IdentifierKey = "CFBundleIdentifier";
+		const string VersionKey = "CFBundleVersion";
+		
+		PDictionary dict;
+		public PDictionary Dict {
+			get {
+				return dict;
+			}
+			set {
+				dict = value;
+				dict.Changed += HandleDictChanged;
+				Update ();
+			}
+		}
+
+		void HandleDictChanged (object sender, EventArgs e)
+		{
+			Update ();
+		}
+		
 		public IOSApplicationTargetWidget ()
 		{
 			this.Build ();
@@ -41,18 +61,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 			devices.AppendValues (GettextCatalog.GetString ("Universal"));
 			
 			comboboxDevices.Model = devices;
+			
+			entryIdentifier.Changed += delegate {
+				dict.SetString (IdentifierKey, entryIdentifier.Text);
+			};
+			
+			entryVersion.Changed += delegate {
+				dict.SetString (VersionKey, entryVersion.Text);
+			};
 		}
 		
-		public void Update (PDictionary NSDictionary)
+		public void Update ()
 		{
-			var identifier = NSDictionary.Get<PString> ("CFBundleIdentifier");
+			var identifier = dict.Get<PString> (IdentifierKey);
 			entryIdentifier.Text = identifier != null ? identifier : "";
 			
-			var version = NSDictionary.Get<PString> ("CFBundleVersion");
+			var version = dict.Get<PString> (VersionKey);
 			entryVersion.Text = version != null ? version : "";
 			
-			var iphone = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations");
-			var ipad   = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
+			var iphone = dict.Get<PArray> ("UISupportedInterfaceOrientations");
+			var ipad   = dict.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
 			
 			if (iphone != null && ipad != null) {
 				comboboxDevices.Active = 2;

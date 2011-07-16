@@ -47,6 +47,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			set {
 				customProperties.NSDictionary = value;
+				iOSApplicationTargetWidget.Dict = value;
+				iPhoneDeploymentInfo.Dict = value;
+				iPadDeploymentInfo.Dict = value;
 				Update ();
 			}
 		}
@@ -134,9 +137,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void Update ()
 		{
-			iOSApplicationTargetWidget.Update (NSDictionary);
-			iPhoneDeploymentInfo.Update (NSDictionary);
-			iPadDeploymentInfo.Update (NSDictionary);
+			iOSApplicationTargetWidget.Update ();
+			iPhoneDeploymentInfo.Update ();
+			iPadDeploymentInfo.Update ();
 			
 			var iphone = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations");
 			iPhoneDeploymentInfoContainer.Visible = iphone != null;
