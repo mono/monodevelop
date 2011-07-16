@@ -43,9 +43,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return parent;
 			}
 			set {
-				if (parent != null && value != null)
+				if (parent != null)
 					throw new NotSupportedException ("Already parented.");
-				parent = value;
+				this.parent = value;
 			}
 		}
 		
@@ -73,7 +73,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public void Remove ()
 		{
-			Console.WriteLine ("Remove from :" + Parent);
 			if (Parent is PDictionary) {
 				var dict = (PDictionary)Parent;
 				dict.Remove (Key);
@@ -184,6 +183,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			set {
 				value.Parent = this;
 				dict[key] = value;
+				QueueRebuild ();
 			}
 		}
 
@@ -268,7 +268,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var result = new PDictionary ();
 				foreach (var pair in (NSDictionary)val) {
 					string k = pair.Key.ToString ();
-					result.dict[k] = Conv (pair.Value);
+					result[k] = Conv (pair.Value);
 				}
 				return result;
 			}
@@ -312,7 +312,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			var result = Get<PString> (key);
 			if (result == null) {
-				dict[key] = result = new PString (value);
+				this[key] = result = new PString (value);
 				QueueRebuild ();
 				return;
 			}
@@ -323,7 +323,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			var result = Get<PString> (key);
 			if (result == null) {
-				dict[key] = result = new PString ("");
+				this[key] = result = new PString ("");
 				QueueRebuild ();
 			}
 			return result;
@@ -333,7 +333,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			var result = Get<PArray> (key);
 			if (result == null) {
-				dict[key] = result = new PArray ();
+				this[key] = result = new PArray ();
 				QueueRebuild ();
 			}
 			return result;
