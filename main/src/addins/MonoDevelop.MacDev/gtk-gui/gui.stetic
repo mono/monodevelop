@@ -37,6 +37,7 @@
                         <property name="ContentLabel">iOS Application Target</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">False</property>
+                        <property name="Closeable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -52,6 +53,7 @@
                         <property name="ContentLabel">iPhone / iPod Deployment Info</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
+                        <property name="Closeable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">1</property>
@@ -67,6 +69,7 @@
                         <property name="ContentLabel">iPad Deployment Info</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
+                        <property name="Closeable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">2</property>
@@ -109,6 +112,7 @@
                         <property name="ContentLabel">Custom iOS Target Properties</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">False</property>
+                        <property name="Closeable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -124,6 +128,7 @@
                         <property name="ContentLabel">Document Types</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
+                        <property name="Closeable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">1</property>
@@ -139,6 +144,7 @@
                         <property name="ContentLabel">Exported UTIs</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
+                        <property name="Closeable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">2</property>
@@ -154,6 +160,7 @@
                         <property name="ContentLabel">Imported UTIs</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
+                        <property name="Closeable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">3</property>
@@ -169,6 +176,7 @@
                         <property name="ContentLabel">URL Types</property>
                         <property name="Expanded">False</property>
                         <property name="Expandable">True</property>
+                        <property name="Closeable">False</property>
                       </widget>
                       <packing>
                         <property name="Position">4</property>

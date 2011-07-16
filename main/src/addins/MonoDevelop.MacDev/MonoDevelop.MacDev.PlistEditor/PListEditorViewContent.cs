@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using MonoMac.Foundation;
+using MonoMac.Foundation;	
 
 namespace MonoDevelop.MacDev.PlistEditor
 {

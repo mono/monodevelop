@@ -1,5 +1,5 @@
 // 
-// PListEditorDisplayBinding.cs
+// PlainPListEditorViewContent.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -32,31 +32,39 @@ using MonoMac.Foundation;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
-	public class PListEditorDisplayBinding : IViewDisplayBinding
+	public class PlainPListEditorViewContent : AbstractViewContent
 	{
-		public string Name {
+		CustomPropertiesWidget widget;
+		
+		public override Gtk.Widget Control {
 			get {
-				return "PList";
+				return widget;
 			}
 		}
 		
-		public bool CanUseAsDefault {
-			get {
-				return true;
+		public PlainPListEditorViewContent ()
+		{
+			widget = new CustomPropertiesWidget ();
+		}
+		
+		public override void Load (string fileName)
+		{
+			ContentName = fileName;
+			this.IsDirty = false;
+			
+			widget.NSDictionary = PDictionary.Load (fileName);
+			widget.NSDictionary.Changed += (sender, e) => IsDirty = true;
+		}
+		
+		public override void Save (string fileName)
+		{
+			this.IsDirty = false;
+			ContentName = fileName;
+			try {
+				widget.NSDictionary.Save (fileName);
+			} catch (Exception e) {
+				MessageService.ShowException (e, GettextCatalog.GetString ("Error while writing plist"));
 			}
-		}
-		
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
-		{
-			return mimeType == "application/vnd.apple-plist" || 
-				fileName.Extension == ".plist";
-		}
-		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
-		{
-			if (ownerProject == null)
-				return new PlainPListEditorViewContent ();
-			return new PListEditorViewContent (ownerProject);
 		}
 	}
 }
