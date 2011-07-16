@@ -57,9 +57,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 				iOSApplicationTargetWidget.Dict = value;
 				iPhoneDeploymentInfo.Dict = value;
 				iPadDeploymentInfo.Dict = value;
+				value.Changed += HandleValueChanged;
 				Update ();
 			}
 		}
+
+		void HandleValueChanged (object sender, EventArgs e)
+		{
+			Update (true);
+		}
+		
 		CustomPropertiesWidget customProperties = new CustomPropertiesWidget ();
 		
 		IOSApplicationTargetWidget iOSApplicationTargetWidget;
@@ -193,7 +200,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			urlTypeExpander.SetWidget (urlTypeList);
 		}
 		
-		void Update ()
+		void Update (bool soft = false)
 		{
 			DisposeIcons ();
 			
@@ -205,65 +212,69 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 			
-			
-				
 			iOSApplicationTargetWidget.Update ();
 			iPhoneDeploymentInfo.Update ();
 			iPadDeploymentInfo.Update ();
 			
-			
-			
 			var iphone = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations");
 			iPhoneDeploymentInfoContainer.Visible = iphone != null;
+			
 			var ipad   = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
 			iPadDeploymentInfoContainer.Visible = ipad != null;
 			
-			var documentTypes = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");
-			if (documentTypes != null) {
-				foreach (var pObject in documentTypes.Value) {
-					var dict = (PDictionary)pObject;
-					if (dict == null)
-						continue;
-					string name = GettextCatalog.GetString ("Untitled");
-					var dtw = new DocumentTypeWidget (proj, dict);
-					dtw.Expander = documentTypeList.AddListItem (name, dtw);
-					
+			if (!soft) {
+				var documentTypes = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");
+				documentTypeList.Clear ();
+				if (documentTypes != null) {
+					foreach (var pObject in documentTypes.Value) {
+						var dict = (PDictionary)pObject;
+						if (dict == null)
+							continue;
+						string name = GettextCatalog.GetString ("Untitled");
+						var dtw = new DocumentTypeWidget (proj, dict);
+						dtw.Expander = documentTypeList.AddListItem (name, dtw);
+						
+					}
 				}
-			}
-			
-			var exportedUTIs = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
-			if (exportedUTIs != null) {
-				foreach (var pObject in exportedUTIs.Value) {
-					var dict = (PDictionary)pObject;
-					if (dict == null)
-						continue;
-					string name = GettextCatalog.GetString ("Untitled");
-					var dtw = new UTIWidget (proj, dict);
-					dtw.Expander = exportedUTIList.AddListItem (name, dtw);
+				
+				var exportedUTIs = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
+				exportedUTIList.Clear ();
+				if (exportedUTIs != null) {
+					foreach (var pObject in exportedUTIs.Value) {
+						var dict = (PDictionary)pObject;
+						if (dict == null)
+							continue;
+						string name = GettextCatalog.GetString ("Untitled");
+						var dtw = new UTIWidget (proj, dict);
+						dtw.Expander = exportedUTIList.AddListItem (name, dtw);
+					}
 				}
-			}
-			
-			var importedUTIs = NSDictionary.Get<PArray> ("UTImportedTypeDeclarations");
-			if (importedUTIs != null) {
-				foreach (var pObject in importedUTIs.Value) {
-					var dict = (PDictionary)pObject;
-					if (dict == null)
-						continue;
-					string name = GettextCatalog.GetString ("Untitled");
-					var dtw = new UTIWidget (proj, dict);
-					dtw.Expander = importedUTIList.AddListItem (name, dtw);
+				
+				var importedUTIs = NSDictionary.Get<PArray> ("UTImportedTypeDeclarations");
+				importedUTIList.Clear ();
+				if (importedUTIs != null) {
+					foreach (var pObject in importedUTIs.Value) {
+						var dict = (PDictionary)pObject;
+						if (dict == null)
+							continue;
+						string name = GettextCatalog.GetString ("Untitled");
+						var dtw = new UTIWidget (proj, dict);
+						dtw.Expander = importedUTIList.AddListItem (name, dtw);
+					}
 				}
-			}
-			
-			var urlTypes = NSDictionary.Get<PArray> ("CFBundleURLTypes");
-			if (urlTypes != null) {
-				foreach (var pObject in urlTypes.Value) {
-					var dict = (PDictionary)pObject;
-					if (dict == null)
-						continue;
-					string name = GettextCatalog.GetString ("Untitled");
-					var dtw = new URLTypeWidget (proj, dict);
-					dtw.Expander = urlTypeList.AddListItem (name, dtw);
+				
+				var urlTypes = NSDictionary.Get<PArray> ("CFBundleURLTypes");
+				urlTypeList.Clear ();
+				
+				if (urlTypes != null) {
+					foreach (var pObject in urlTypes.Value) {
+						var dict = (PDictionary)pObject;
+						if (dict == null)
+							continue;
+						string name = GettextCatalog.GetString ("Untitled");
+						var dtw = new URLTypeWidget (proj, dict);
+						dtw.Expander = urlTypeList.AddListItem (name, dtw);
+					}
 				}
 			}
 		}

@@ -73,6 +73,25 @@ namespace MonoDevelop.MacDev.PlistEditor
 			devices.AppendValues (GettextCatalog.GetString ("Universal"));
 			
 			comboboxDevices.Model = devices;
+			comboboxDevices.Changed += delegate {
+				switch (comboboxDevices.Active) {
+				case 0: // iPhone
+					dict.Value.Remove ("UISupportedInterfaceOrientations~ipad");
+					dict.GetArray ("UISupportedInterfaceOrientations");
+					dict.QueueRebuild ();
+					break;
+				case 1: // iPad
+					dict.Value.Remove ("UISupportedInterfaceOrientations");
+					dict.GetArray ("UISupportedInterfaceOrientations~ipad");
+					dict.QueueRebuild ();
+					break;
+				default: // Universal
+					dict.GetArray ("UISupportedInterfaceOrientations");
+					dict.GetArray ("UISupportedInterfaceOrientations~ipad");
+					dict.QueueRebuild ();
+					break;
+				}
+			};
 			
 			entryIdentifier.Changed += delegate {
 				dict.SetString (IdentifierKey, entryIdentifier.Text);

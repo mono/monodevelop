@@ -30,18 +30,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 {
 	public class ExpanderList : VBox
 	{
-		Label noContentLabel = new Label ();
-		Button addButton = new Button ();
-		VBox contentBox = new VBox ();
-		
-		public string NoContentMessage {
-			get {
-				return noContentLabel.Text;
-			}
-			set {
-				noContentLabel.Text = value;
-			}
-		}
+		Label noContentLabel;
+		Button addButton;
+		VBox contentBox;
+		string addMessage;
+		string noContentMessage;
 		
 		public event EventHandler CreateNew;
 		
@@ -52,17 +45,31 @@ namespace MonoDevelop.MacDev.PlistEditor
 				handler (this, e);
 		}
 
-		public ExpanderList (string noContentLabel, string addMessage)
+		public ExpanderList (string noContentMessage, string addMessage)
 		{
-			NoContentMessage = noContentLabel;
+			this.noContentMessage = noContentMessage;
+			this.addMessage = addMessage;
 			
-			contentBox.PackStart (this.noContentLabel, true, true, 6);
+			Clear ();
+		}
+
+		public void Clear ()
+		{
+			if (contentBox != null)
+				contentBox.Destroy ();
 			
+			noContentLabel = new Label ();
+			noContentLabel.Text = noContentMessage;
+			
+			addButton = new Button ();
 			addButton.Label = addMessage;
 			addButton.Relief = ReliefStyle.None;
 			addButton.Clicked += delegate {
 				OnCreateNew (EventArgs.Empty);
 			};
+			
+			contentBox = new VBox ();
+			contentBox.PackStart (this.noContentLabel, true, true, 6);
 			contentBox.PackEnd (addButton, false, true, 0);
 			
 			PackStart (contentBox, true, true, 6);
