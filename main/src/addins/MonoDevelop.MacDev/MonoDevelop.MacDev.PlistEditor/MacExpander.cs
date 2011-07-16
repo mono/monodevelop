@@ -204,11 +204,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			Rectangle GetExpanderBounds ()
 			{
-				return new Rectangle (DEFAULT_EXPANDER_SPACING, (Allocation.Height - DEFAULT_EXPANDER_SIZE) / 2, DEFAULT_EXPANDER_SIZE, DEFAULT_EXPANDER_SIZE);
+				return new Rectangle (DEFAULT_EXPANDER_SPACING, 1 + (Allocation.Height - DEFAULT_EXPANDER_SIZE) / 2, DEFAULT_EXPANDER_SIZE, DEFAULT_EXPANDER_SIZE);
 			}
 			
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
+				var expanderBounds = GetExpanderBounds ();
 				using (var cr = CairoHelper.Create (evnt.Window)) {
 					cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 					var lg = new Cairo.LinearGradient (0, 0, 0, Allocation.Height);
@@ -251,14 +252,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 						int w, h;
 						layout.GetPixelSize (out w, out h);
 						
-						cr.MoveTo (container.Expandable ? 16 : 4, (Allocation.Height - h) / 2);
+						const int padding = 4;
+						
+						cr.MoveTo (container.Expandable ? expanderBounds.Right + padding : padding, (Allocation.Height - h) / 2);
 						cr.Color = new Cairo.Color (0, 0, 0);
 						cr.ShowLayout (layout);
 					}
 				}
 				
 				if (container.Expandable) {
-					var bounds = GetExpanderBounds ();
 					
 					var state2 = mouseOver ? StateType.Prelight : StateType.Normal;
 					Style.PaintExpander (Style, 
@@ -267,7 +269,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 						evnt.Region.Clipbox, 
 						this, 
 						"expander",
-						bounds.X + bounds.Width / 2, bounds.Y + bounds.Width / 2,
+						expanderBounds.X + expanderBounds.Width / 2, expanderBounds.Y + expanderBounds.Width / 2,
 						expanderStyle);
 				}
 				
