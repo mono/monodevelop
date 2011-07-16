@@ -95,15 +95,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (inUpdate)
 				return;
 			var arr = dict.GetArray ("UISupportedInterfaceOrientations");
-			arr.Value.Clear ();
+			arr.Clear ();
 			if (togglebutton1.Active)
-				arr.Value.Add (new PString ("UIInterfaceOrientationPortrait") { Parent = arr });
+				arr.Add (new PString ("UIInterfaceOrientationPortrait"));
 			if (togglebutton2.Active)
-				arr.Value.Add (new PString ("UIInterfaceOrientationPortraitUpsideDown") { Parent = arr });
+				arr.Add (new PString ("UIInterfaceOrientationPortraitUpsideDown"));
 			if (togglebutton3.Active)
-				arr.Value.Add (new PString ("UIInterfaceOrientationLandscapeLeft") { Parent = arr });
+				arr.Add (new PString ("UIInterfaceOrientationLandscapeLeft"));
 			if (togglebutton4.Active)
-				arr.Value.Add (new PString ("UIInterfaceOrientationLandscapeRight") { Parent = arr });
+				arr.Add (new PString ("UIInterfaceOrientationLandscapeRight"));
 			arr.QueueRebuild ();
 		}
 		
@@ -123,7 +123,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var iphone = dict.Get<PArray> ("UISupportedInterfaceOrientations");
 			togglebutton1.Active = togglebutton2.Active = togglebutton3.Active = togglebutton4.Active = false;
 			if (iphone != null) {
-				foreach (PString val in iphone.Value) {
+				foreach (PString val in iphone) {
 					if (val == "UIInterfaceOrientationPortrait")
 						togglebutton1.Active = true;
 					if (val == "UIInterfaceOrientationPortraitUpsideDown")

@@ -106,9 +106,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			iconFiles[selectedPixbuf] = new Pixbuf (Project.GetAbsoluteChildPath (selectedPixbuf));
 			
 			var icons = NSDictionary.GetArray ("CFBundleIconFiles");
-			icons.Value.Clear ();
+			icons.Clear ();
 			foreach (var key in iconFiles.Keys) {
-				icons.Value.Add (new PString (key) { Parent = icons });
+				icons.Add (new PString (key));
 			}
 			icons.QueueRebuild ();
 			
@@ -141,11 +141,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			documentTypeList.CreateNew += delegate {
 				var dict = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");
 				if (dict == null) {
-					NSDictionary.Value["CFBundleDocumentTypes"] = dict = new PArray () { Parent = NSDictionary };
+					NSDictionary["CFBundleDocumentTypes"] = dict = new PArray ();
 					NSDictionary.QueueRebuild ();
 				}
 				var newEntry = new PDictionary ();
-				dict.Value.Add (newEntry);
+				dict.Add (newEntry);
 				dict.QueueRebuild ();
 				
 				var dtw = new DocumentTypeWidget (proj, newEntry);
@@ -155,11 +155,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			exportedUTIList.CreateNew += delegate {
 				var dict = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
 				if (dict == null) {
-					NSDictionary.Value["UTExportedTypeDeclarations"] = dict = new PArray () { Parent = NSDictionary };
+					NSDictionary["UTExportedTypeDeclarations"] = dict = new PArray ();
 					NSDictionary.QueueRebuild ();
 				}
 				var newEntry = new PDictionary ();
-				dict.Value.Add (newEntry);
+				dict.Add (newEntry);
 				dict.QueueRebuild ();
 				
 				var dtw = new DocumentTypeWidget (proj, newEntry);
@@ -169,11 +169,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			importedUTIList.CreateNew += delegate {
 				var dict = NSDictionary.Get<PArray> ("UTImportedTypeDeclarations");
 				if (dict == null) {
-					NSDictionary.Value["UTImportedTypeDeclarations"] = dict = new PArray () { Parent = NSDictionary };
+					NSDictionary["UTImportedTypeDeclarations"] = dict = new PArray ();
 					NSDictionary.QueueRebuild ();
 				}
 				var newEntry = new PDictionary ();
-				dict.Value.Add (newEntry);
+				dict.Add (newEntry);
 				dict.QueueRebuild ();
 				
 				var dtw = new DocumentTypeWidget (proj, newEntry);
@@ -183,11 +183,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			urlTypeList.CreateNew += delegate {
 				var dict = NSDictionary.Get<PArray> ("CFBundleURLTypes");
 				if (dict == null) {
-					NSDictionary.Value["CFBundleURLTypes"] = dict = new PArray () { Parent = NSDictionary };
+					NSDictionary["CFBundleURLTypes"] = dict = new PArray ();
 					NSDictionary.QueueRebuild ();
 				}
 				var newEntry = new PDictionary ();
-				dict.Value.Add (newEntry);
+				dict.Add (newEntry);
 				dict.QueueRebuild ();
 				
 				var dtw = new URLTypeWidget (proj, newEntry);
@@ -207,7 +207,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var icons = NSDictionary.Get<PArray> ("CFBundleIconFiles");
 			
 			if (icons != null) {
-				foreach (PString icon in icons.Value.Where (v => v is PString)) {
+				foreach (PString icon in icons.Where (v => v is PString)) {
 					iconFiles[icon.Value] = new Pixbuf (Project.GetAbsoluteChildPath (icon.Value));
 				}
 			}
@@ -226,7 +226,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var documentTypes = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");
 				documentTypeList.Clear ();
 				if (documentTypes != null) {
-					foreach (var pObject in documentTypes.Value) {
+					foreach (var pObject in documentTypes) {
 						var dict = (PDictionary)pObject;
 						if (dict == null)
 							continue;
@@ -240,7 +240,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var exportedUTIs = NSDictionary.Get<PArray> ("UTExportedTypeDeclarations");
 				exportedUTIList.Clear ();
 				if (exportedUTIs != null) {
-					foreach (var pObject in exportedUTIs.Value) {
+					foreach (var pObject in exportedUTIs) {
 						var dict = (PDictionary)pObject;
 						if (dict == null)
 							continue;
@@ -253,7 +253,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var importedUTIs = NSDictionary.Get<PArray> ("UTImportedTypeDeclarations");
 				importedUTIList.Clear ();
 				if (importedUTIs != null) {
-					foreach (var pObject in importedUTIs.Value) {
+					foreach (var pObject in importedUTIs) {
 						var dict = (PDictionary)pObject;
 						if (dict == null)
 							continue;
@@ -267,7 +267,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				urlTypeList.Clear ();
 				
 				if (urlTypes != null) {
-					foreach (var pObject in urlTypes.Value) {
+					foreach (var pObject in urlTypes) {
 						var dict = (PDictionary)pObject;
 						if (dict == null)
 							continue;

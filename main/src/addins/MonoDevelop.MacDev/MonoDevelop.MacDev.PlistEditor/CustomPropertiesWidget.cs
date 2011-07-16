@@ -120,11 +120,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 					var obj = (PObject)widget.treeStore.GetValue (iter, 1);
 					var newIter = widget.treeStore.InsertNodeAfter (iter);
 					var newObj = new PString ("");
-					newObj.Parent = obj.Parent;
 					
 					if (obj.Parent is PArray) {
 						var arr = (PArray)obj.Parent;
-						arr.Value.Add (newObj);
+						arr.Add (newObj);
 						arr.QueueRebuild ();
 						return;
 					}
@@ -133,9 +132,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (dict == null)
 						return;
 					string name = "newNode";
-					while (dict.Value.ContainsKey (name))
+					while (dict.ContainsKey (name))
 						name += "_";
-					dict.Value[name] = newObj;
+					dict[name] = newObj;
 					widget.treeStore.SetValues (newIter, name, newObj);
 				};
 				
@@ -272,10 +271,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 			treeview1.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview1.Model = treeStore;
 		}
+
+		bool GetIsExpanded (Gtk.TreeIter iter, TreeStore treeStore)
+		{
+			if (TreeIter.Zero.Equals (iter))
+				return  false;
+			var path = treeStore.GetPath (iter);
+			return path != null ? treeview1.GetRowExpanded (path) : false;
+		}
+		
+		Dictionary<PObject, Gtk.TreeIter> iterTable = new Dictionary<PObject, Gtk.TreeIter> ();
 		
 		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PDictionary dict)
 		{
-			foreach (var item in dict.Value) {
+			iterTable[dict] = iter;
+			foreach (var item in dict) {
 				var key = item.Key.ToString ();
 				var subIter = iter.Equals (TreeIter.Zero) ? treeStore.AppendValues (key, item.Value) : treeStore.AppendValues (iter, key, item.Value);
 				if (item.Value is PArray)
@@ -286,28 +296,29 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			if (!rebuildArrays.Contains (dict)) {
 				rebuildArrays.Add (dict);
-				dict.Rebuild += delegate {
-					bool isExpanded;
-					if (TreeIter.Zero.Equals (iter)) {
-						isExpanded = false;
-					} else {
-						var path = treeStore.GetPath (iter);
-						isExpanded = path != null ? treeview1.GetRowExpanded (path) : false;
-					}
-					RemoveChildren (iter);
-					AddToTree (treeStore, iter, dict);
-					if (isExpanded)
-						treeview1.ExpandRow (treeStore.GetPath (iter), false);
-				};
+				dict.Rebuild += HandleDictRebuild;
 			}
+		}
+
+		void HandleDictRebuild (object sender, EventArgs e)
+		{
+			var dict = (PDictionary)sender;
+			var iter = iterTable[dict];
+			bool isExpanded = GetIsExpanded (iter, treeStore);
+			RemoveChildren (iter);
+			AddToTree (treeStore, iter, dict);
+			if (isExpanded)
+				treeview1.ExpandRow (treeStore.GetPath (iter), false);
 		}
 		
 		HashSet<PObject> rebuildArrays = new HashSet<PObject> ();
 		
 		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PArray arr)
 		{
-			for (int i = 0; i < arr.Value.Count; i++) {
-				var item = arr.Value [i];
+			iterTable[arr] = iter;
+			
+			for (int i = 0; i < arr.Count; i++) {
+				var item = arr[i];
 				
 				var txt = string.Format (GettextCatalog.GetString ("Item {0}"), i);
 				var subIter = iter.Equals (TreeIter.Zero) ? treeStore.AppendValues (txt, item) : treeStore.AppendValues (iter, txt, item);
@@ -319,21 +330,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			if (!rebuildArrays.Contains (arr)) {
 				rebuildArrays.Add (arr);
-				arr.Rebuild += delegate {
-					bool isExpanded;
-					if (TreeIter.Zero.Equals (iter)) {
-						isExpanded = false;
-					} else {
-						var path = treeStore.GetPath (iter);
-						isExpanded = path != null ? treeview1.GetRowExpanded (path) : false;
-					}
-					
-					RemoveChildren (iter);
-					AddToTree (treeStore, iter, arr);
-					if (isExpanded)
-						treeview1.ExpandRow (treeStore.GetPath (iter), false);
-				};
+				arr.Rebuild += HandleArrRebuild;
 			}
+		}
+
+		void HandleArrRebuild (object sender, EventArgs e)
+		{
+			var arr = (PArray)sender;
+			var iter = iterTable[arr];
+			bool isExpanded = GetIsExpanded (iter, treeStore);
+			RemoveChildren (iter);
+			AddToTree (treeStore, iter, arr);
+			if (isExpanded)
+				treeview1.ExpandRow (treeStore.GetPath (iter), false);
 		}
 
 		void RemoveChildren (Gtk.TreeIter iter)

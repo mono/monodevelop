@@ -76,12 +76,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			comboboxDevices.Changed += delegate {
 				switch (comboboxDevices.Active) {
 				case 0: // iPhone
-					dict.Value.Remove ("UISupportedInterfaceOrientations~ipad");
+					dict.Remove ("UISupportedInterfaceOrientations~ipad");
 					dict.GetArray ("UISupportedInterfaceOrientations");
 					dict.QueueRebuild ();
 					break;
 				case 1: // iPad
-					dict.Value.Remove ("UISupportedInterfaceOrientations");
+					dict.Remove ("UISupportedInterfaceOrientations");
 					dict.GetArray ("UISupportedInterfaceOrientations~ipad");
 					dict.QueueRebuild ();
 					break;

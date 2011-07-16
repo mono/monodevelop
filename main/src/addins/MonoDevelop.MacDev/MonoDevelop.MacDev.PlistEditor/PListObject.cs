@@ -33,15 +33,20 @@ using System.Runtime.InteropServices;
 using Gtk;
 using System.Text;
 
-
-
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	public abstract class PObject
 	{
+		PObject parent;
 		public PObject Parent {
-			get;
-			set;
+			get {
+				return parent;
+			}
+			set {
+				if (parent != null && value != null)
+					throw new NotSupportedException ("Already parented.");
+				parent = value;
+			}
 		}
 		
 		public abstract string TypeString {
@@ -57,8 +62,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			get {
 				if (Parent is PDictionary) {
 					var dict = (PDictionary)Parent;
-					if (dict.Value.Any (p => p.Value == this)) {
-						var pair = dict.Value.First (p => p.Value == this);
+					if (dict.Any (p => p.Value == this)) {
+						var pair = dict.First (p => p.Value == this);
 							return pair.Key;
 					}
 				}
@@ -68,14 +73,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public void Remove ()
 		{
+			Console.WriteLine ("Remove from :" + Parent);
 			if (Parent is PDictionary) {
 				var dict = (PDictionary)Parent;
-				dict.Value.Remove (Key);
+				dict.Remove (Key);
 				dict.QueueRebuild ();
 			} else if (Parent is PArray) {
 				var arr = (PArray)Parent;
-				arr.Value.Remove (this);
+				arr.Remove (this);
 				arr.QueueRebuild ();
+			} else {
+				if (Parent == null)
+					throw new InvalidOperationException ("Can't remove from null parent");
+				throw new InvalidOperationException ("Can't remove from parent " + Parent);
 			}
 		}
 		
@@ -157,23 +167,59 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 	}
 	
-	public class PDictionary : PValueObject<Dictionary<string, PObject>>
+	public class PDictionary : PObject, IEnumerable<KeyValuePair<string, PObject>>
 	{
+		Dictionary<string, PObject> dict;
+		
 		public override string TypeString {
 			get {
 				return GettextCatalog.GetString ("Dictionary");
 			}
 		}
 		
+		public PObject this[string key] {
+			get {
+				return dict[key];
+			}
+			set {
+				value.Parent = this;
+				dict[key] = value;
+			}
+		}
+
+		#region IEnumerable[KeyValuePair[System.String,PObject]] implementation
+		public IEnumerator<KeyValuePair<string, PObject>> GetEnumerator ()
+		{
+			return dict.GetEnumerator ();
+		}
+		#endregion
+
+		#region IEnumerable implementation
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return ((System.Collections.IEnumerable)dict).GetEnumerator ();
+		}
+		#endregion
+		
 		public PDictionary ()
 		{
-			Value = new Dictionary<string, PObject> ();
+			dict = new Dictionary<string, PObject> ();
+		}
+
+		public bool ContainsKey (string name)
+		{
+			return dict.ContainsKey (name);
+		}
+
+		public bool Remove (string key)
+		{
+			return dict.Remove (key);
 		}
 		
 		public T Get<T> (string key) where T : PObject
 		{
 			PObject obj = null;
-			if (!Value.TryGetValue (key, out obj))
+			if (!dict.TryGetValue (key, out obj))
 				return default(T);
 			return (T)obj;
 		}
@@ -182,7 +228,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
-			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
+			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", dict.Count), dict.Count);
 		}
 		
 		public override void SetValue (string text)
@@ -195,7 +241,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			List<NSObject> objs = new List<NSObject> ();
 			List<NSObject> keys = new List<NSObject> ();
 			
-			foreach (var pair in Value) {
+			foreach (var pair in dict) {
 				var val = pair.Value.Convert ();
 				objs.Add (val);
 				keys.Add (new NSString (pair.Key));
@@ -221,10 +267,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (val is NSDictionary) {
 				var result = new PDictionary ();
 				foreach (var pair in (NSDictionary)val) {
-					var p = Conv (pair.Value);
 					string k = pair.Key.ToString ();
-					p.Parent = result;
-					result.Value[k] = p;
+					result.dict[k] = Conv (pair.Value);
 				}
 				return result;
 			}
@@ -232,9 +276,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (val is NSArray) {
 				var result = new PArray ();
 				foreach (var f in NSArray.ArrayFromHandle<NSObject> (((NSArray)val).Handle)) {
-					var p = Conv (f);
-					p.Parent = result;
-					result.Value.Add (p);
+					result.Add (Conv (f));
 				}
 				return result;
 			}
@@ -263,14 +305,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public override string ToString ()
 		{
-			return string.Format ("[PDictionary: Items={0}]", Value.Count);
+			return string.Format ("[PDictionary: Items={0}]", dict.Count);
 		}
 
 		public void SetString (string key, string value)
 		{
 			var result = Get<PString> (key);
 			if (result == null) {
-				Value[key] = result = new PString (value) { Parent = this };
+				dict[key] = result = new PString (value);
 				QueueRebuild ();
 				return;
 			}
@@ -281,7 +323,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			var result = Get<PString> (key);
 			if (result == null) {
-				Value[key] = result = new PString ("") { Parent = this };
+				dict[key] = result = new PString ("");
 				QueueRebuild ();
 			}
 			return result;
@@ -291,7 +333,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			var result = Get<PArray> (key);
 			if (result == null) {
-				Value[key] = result = new PArray () { Parent = this };
+				dict[key] = result = new PArray ();
 				QueueRebuild ();
 			}
 			return result;
@@ -307,17 +349,48 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public event EventHandler Rebuild;
 	}
 	
-	public class PArray : PValueObject<List<PObject>>
+	public class PArray : PObject, IEnumerable<PObject>
 	{
+		List<PObject> list;
+		
 		public override string TypeString {
 			get {
 				return GettextCatalog.GetString ("Array");
 			}
 		}
 		
+		public int Count {
+			get {
+				return list.Count;
+			}
+		}
+		
+		public PObject this[int i] {
+			get {
+				return list[i];
+			}
+		}
+		
 		public PArray ()
 		{
-			Value = new List<PObject> ();
+			list = new List<PObject> ();
+		}
+		
+		
+		public void Add (PObject obj)
+		{
+			obj.Parent = this;
+			list.Add (obj);
+		}
+		
+		public void Remove (PObject obj)
+		{
+			list.Remove (obj);
+		}
+
+		public void Clear ()
+		{
+			list.Clear ();
 		}
 		
 		public override void SetValue (string text)
@@ -327,28 +400,27 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public override NSObject Convert ()
 		{
-			return NSArray.FromNSObjects (Value.Select (x => x.Convert ()).ToArray ());
+			return NSArray.FromNSObjects (list.Select (x => x.Convert ()).ToArray ());
 		}
 		
 		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
-			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Value.Count), Value.Count);
+			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Count), Count);
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[PArray: Items={0}]", Value.Count);
+			return string.Format ("[PArray: Items={0}]", Count);
 		}
 		
 		public void AssignStringList (string strList)
 		{
-			Value.Clear ();
-			
+			Clear ();
 			foreach (var item in strList.Split (',', ' ')) {
 				if (string.IsNullOrEmpty (item))
 					continue;
-				Value.Add (new PString (item));
+				Add (new PString (item));
 			}
 			
 			QueueRebuild ();
@@ -357,7 +429,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public string ToStringList ()
 		{
 			var sb = new StringBuilder ();
-			foreach (PString str in Value.Where (o => o is PString)) {
+			foreach (PString str in list.Where (o => o is PString)) {
 				if (sb.Length > 0)
 					sb.Append (", ");
 				sb.Append (str);
@@ -373,6 +445,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		public event EventHandler Rebuild;
+
+		#region IEnumerable[PObject] implementation
+		public IEnumerator<PObject> GetEnumerator ()
+		{
+			return list.GetEnumerator ();
+		}
+		#endregion
+
+		#region IEnumerable implementation
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return ((System.Collections.IEnumerable)list).GetEnumerator ();
+		}
+		#endregion
 	}
 	
 	public class PBoolean : PValueObject<bool>

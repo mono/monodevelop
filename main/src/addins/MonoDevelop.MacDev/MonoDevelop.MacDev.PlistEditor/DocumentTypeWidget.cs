@@ -103,10 +103,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			iconStore.Remove (ref iter);
 			
 			var iconFiles = dict.GetArray (IconFilesKey);
-			iconFiles.Value.Clear ();
+			iconFiles.Clear ();
 			if (iconStore.GetIterFirst (out iter)) {
 				do {
-					iconFiles.Value.Add ((PObject)(string)iconStore.GetValue (iter, 0));
+					iconFiles.Add ((PObject)(string)iconStore.GetValue (iter, 0));
 				} while (iconStore.IterNext (ref iter));
 			}
 			iconFiles.QueueRebuild ();
@@ -133,7 +133,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			dict.Changed -= HandleDictChanged;
 			var iconFiles = dict.GetArray (IconFilesKey);
 			
-			iconFiles.Value.Add (new PString (newIcon));
+			iconFiles.Add (new PString (newIcon));
 			iconFiles.QueueRebuild ();
 			iconStore.AppendValues (newIcon);
 			dict.Changed += HandleDictChanged;
@@ -164,7 +164,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			iconStore.Clear ();
 			var iconFiles = dict.Get<PArray> (IconFilesKey);
 			if (iconFiles != null) {
-				foreach (PString str in iconFiles.Value.Where (o => o is PString)) {
+				foreach (PString str in iconFiles.Where (o => o is PString)) {
 					iconStore.AppendValues (str.Value);
 				}
 			}
