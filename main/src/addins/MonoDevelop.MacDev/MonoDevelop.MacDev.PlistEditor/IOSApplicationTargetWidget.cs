@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.MacDev.PlistEditor
@@ -51,6 +52,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 			Update ();
 		}
 		
+		static string[] knownOSVersions = new [] {
+			"3.0",
+			"3.1",
+			"3.1.2",
+			"3.2",
+			"4.0",
+			"4.1",
+			"4.2",
+			"4.3"
+		};
+		
 		public IOSApplicationTargetWidget ()
 		{
 			this.Build ();
@@ -69,6 +81,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			entryVersion.Changed += delegate {
 				dict.SetString (VersionKey, entryVersion.Text);
 			};
+			
+			foreach (var ver in knownOSVersions.Reverse ()) {
+				comboboxentryDeploymentTarget.AppendText (ver);
+			}
 		}
 		
 		public void Update ()

@@ -66,9 +66,25 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		
+		public Size AccepptedSize {
+			get;
+			set;
+		}
+		
 		public FilePath SelectedPixbuf {
 			get;
 			set;
+		}
+
+		public Pixbuf Pixbuf {
+			get {
+				return this.pixbuf;
+			}
+			set {
+				DestroyPixbuf ();
+				image.Pixbuf = pixbuf = value;
+			}
 		}
 		
 		public ImageChooser ()
@@ -76,10 +92,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.buttonImage = new Button ();
 			this.image = new Gtk.Image ();
 			this.buttonImage.Add (this.image);
-			this.Add (this.buttonImage);
+			this.PackStart (this.buttonImage, false, false, 0);
 			
 			this.labelDescription = new Label ();
-			this.Add (this.labelDescription);
+			this.PackEnd (this.labelDescription, false, false, 0);
 			
 			ShowAll ();
 		}
@@ -92,7 +108,18 @@ namespace MonoDevelop.MacDev.PlistEditor
 					dialog.Title = GettextCatalog.GetString ("Select icon...");
 					int response = MessageService.RunCustomDialog (dialog);
 					if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
-						SelectedPixbuf  = dialog.SelectedFile.ProjectVirtualPath;
+						
+						var path = dialog.SelectedFile.FilePath;
+						if (AccepptedSize.Width > 0) {
+							using (var pb = new Pixbuf (path)) {
+								if (pb.Width != AccepptedSize.Width || pb.Height != AccepptedSize.Height) {
+									MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"), string.Format (GettextCatalog.GetString ("Only pictures with {0}x{1} are acceppted. Picture was {2}x{3}."), AccepptedSize.Width, AccepptedSize.Height, pb.Width, pb.Height));
+									return;
+								}
+							}
+						}
+						SelectedPixbuf = dialog.SelectedFile.ProjectVirtualPath;
+						OnChanged (EventArgs.Empty);
 					}
 				} finally {
 					dialog.Destroy ();
@@ -109,17 +136,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			DestroyPixbuf ();
 			if (pictureSize.Width <= 0 || pictureSize.Height <= 0)
 				throw new InvalidOperationException ("Picture size not set.");
-			image.Pixbuf = pixbuf = CreateNoImageIcon (pictureSize.Width, pictureSize.Height);
+			
+			if (pixbuf == null)
+				pixbuf = CreateNoImageIcon (pictureSize.Width, pictureSize.Height);
+			image.Pixbuf = pixbuf;
 		}
 		
+		bool shouldDestroyPixbuf;
 		void DestroyPixbuf ()
 		{
-			if (pixbuf != null) {
+			if (shouldDestroyPixbuf && pixbuf != null) {
 				pixbuf.Dispose ();
 				pixbuf = null;
+				shouldDestroyPixbuf = false;
 			}
 		}
 		
@@ -158,8 +189,18 @@ namespace MonoDevelop.MacDev.PlistEditor
 					cr.SetDash (new double[] { 12, 2 }, 0);
 					cr.Stroke ();
 				}
+				shouldDestroyPixbuf = true;
 				return Pixbuf.FromDrawable (pixmap, this.Colormap, 0, 0, 0, 0, w, h);
 			}
 		}
+		
+		protected virtual void OnChanged (System.EventArgs e)
+		{
+			EventHandler handler = this.Changed;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler Changed;
 	}
 }

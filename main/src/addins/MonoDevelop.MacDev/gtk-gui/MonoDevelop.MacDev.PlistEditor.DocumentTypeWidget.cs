@@ -84,7 +84,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryName]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
@@ -176,8 +175,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox1.Add (this.table1);
 			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.table1]));
 			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
 			this.vbox1.Add (this.hbox1);
 			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
 			w14.Position = 0;
@@ -204,6 +201,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			this.imagechooser1.Hide ();
 			this.Show ();
 		}
 	}

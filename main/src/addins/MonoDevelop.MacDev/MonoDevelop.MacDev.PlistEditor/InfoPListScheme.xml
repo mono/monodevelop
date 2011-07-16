@@ -79,6 +79,7 @@ THE SOFTWARE.
 	<Key name = "NSJavaPath" _description = "Java classpath" type = "String"/>
 	<Key name = "NSJavaRoot" _description = "Java root directory" type = "String"/>
 	<Key name = "NSMainNibFile" _description = "Main nib file name" type = "String"/>
+	<Key name = "NSMainNibFile~ipad" _description = "Main nib file name (iPad)" type = "String"/>
 	<Key name = "NSPersistentStoreTypeKey" _description = "Core data persistent store type" type = "String"/>
 	<Key name = "NSPrefPaneIconFile" _description = "Preference pane icon file" type = "String"/>
 	<Key name = "NSPrefPaneIconLabel" _description = "Preference pane icon label" type = "String"/>

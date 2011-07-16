@@ -124,7 +124,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			this.comboboxentryDeploymentTarget.Hide ();
 			this.label3.MnemonicWidget = this.entryIdentifier;
+			this.label6.Hide ();
 			this.Show ();
 		}
 	}

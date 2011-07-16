@@ -7,7 +7,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		private global::Gtk.VBox vboxIPadDeploymentInfo;
 		private global::Gtk.HBox hbox5;
 		private global::Gtk.Label label12;
-		private global::Gtk.ComboBoxEntry comboboxentryIPadMainInterface;
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry interfacePicker;
 		private global::Gtk.Frame frame4;
 		private global::Gtk.Alignment GtkAlignment3;
 		private global::Gtk.HBox hbox6;
@@ -66,10 +66,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox5.Gtk.Box+BoxChild
-			this.comboboxentryIPadMainInterface = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentryIPadMainInterface.Name = "comboboxentryIPadMainInterface";
-			this.hbox5.Add (this.comboboxentryIPadMainInterface);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.comboboxentryIPadMainInterface]));
+			this.interfacePicker = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
+			this.interfacePicker.Name = "interfacePicker";
+			this.interfacePicker.VerifyFileExistsInProject = false;
+			this.interfacePicker.EntryIsEditable = false;
+			this.hbox5.Add (this.interfacePicker);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.interfacePicker]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -251,6 +253,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// Container child hbox7.Gtk.Box+BoxChild
 			this.imageIPadAppIcon = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
 			this.imageIPadAppIcon.Name = "imageIPadAppIcon";
+			this.imageIPadAppIcon.Description = "72 x 72";
 			this.hbox7.Add (this.imageIPadAppIcon);
 			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.imageIPadAppIcon]));
 			w23.Position = 0;
@@ -312,6 +315,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			this.frame6.Hide ();
 			this.Show ();
 		}
 	}

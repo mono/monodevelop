@@ -33,6 +33,7 @@ using MonoDevelop.Components;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using System.Linq;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -40,6 +41,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public partial class PListEditorWidget : Gtk.Bin
 	{
 		Project proj;
+		
+		public Project Project {
+			get {
+				return proj;
+			}
+		}
 		
 		public PDictionary NSDictionary {
 			get {
@@ -54,13 +61,59 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		CustomPropertiesWidget customProperties = new CustomPropertiesWidget ();
-		IOSApplicationTargetWidget iOSApplicationTargetWidget = new IOSApplicationTargetWidget ();
-		IPhoneDeploymentInfo iPhoneDeploymentInfo = new IPhoneDeploymentInfo ();
-		IPadDeploymentInfo iPadDeploymentInfo = new IPadDeploymentInfo ();
+		
+		IOSApplicationTargetWidget iOSApplicationTargetWidget;
+		IPhoneDeploymentInfo iPhoneDeploymentInfo;
+		IPadDeploymentInfo iPadDeploymentInfo;
+		
 		ExpanderList documentTypeList = new ExpanderList (GettextCatalog.GetString ("No Document Types"), GettextCatalog.GetString ("Add Document Type"));
 		ExpanderList exportedUTIList = new ExpanderList (GettextCatalog.GetString ("No Exported UTIs"), GettextCatalog.GetString ("Add Exported UTI"));
 		ExpanderList importedUTIList = new ExpanderList (GettextCatalog.GetString ("No Imported UTIs"), GettextCatalog.GetString ("Add Imported UTI"));
 		ExpanderList urlTypeList = new ExpanderList (GettextCatalog.GetString ("No URL Types"), GettextCatalog.GetString ("Add URL Type"));
+		
+		Dictionary<string, Pixbuf> iconFiles = new Dictionary<string, Pixbuf> ();
+
+		public Dictionary<string, Pixbuf> IconFiles {
+			get {
+				return this.iconFiles;
+			}
+		}
+		
+		void DisposeIcons ()
+		{
+			foreach (var pixbuf in iconFiles.Values)
+				pixbuf.Dispose ();
+			iconFiles.Clear ();
+		}
+
+		public void SetIcon (FilePath selectedPixbuf, int width, int height)
+		{
+			foreach (var val in iconFiles) {
+				if (val.Value.Width == width && val.Value.Height == height) {
+					val.Value.Dispose ();
+					iconFiles.Remove (val.Key);
+					break;
+				}
+			}
+			
+			iconFiles[selectedPixbuf] = new Pixbuf (Project.GetAbsoluteChildPath (selectedPixbuf));
+			
+			var icons = NSDictionary.GetArray ("CFBundleIconFiles");
+			icons.Value.Clear ();
+			foreach (var key in iconFiles.Keys) {
+				icons.Value.Add (new PString (key) { Parent = icons });
+			}
+			icons.QueueRebuild ();
+			
+			Update ();
+			
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			DisposeIcons ();
+		}
 		
 		public PListEditorWidget (Project proj)
 		{
@@ -69,8 +122,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			customTargetPropertiesContainer.SetWidget (customProperties);
 			
+			iOSApplicationTargetWidget = new IOSApplicationTargetWidget ();
 			iosApplicationTargetContainer.SetWidget (iOSApplicationTargetWidget);
+			
+			iPhoneDeploymentInfo = new IPhoneDeploymentInfo (this);
 			iPhoneDeploymentInfoContainer.SetWidget (iPhoneDeploymentInfo);
+			
+			iPadDeploymentInfo = new IPadDeploymentInfo (this);
 			iPadDeploymentInfoContainer.SetWidget (iPadDeploymentInfo);
 			
 			documentTypeList.CreateNew += delegate {
@@ -137,9 +195,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void Update ()
 		{
+			DisposeIcons ();
+			
+			var icons = NSDictionary.Get<PArray> ("CFBundleIconFiles");
+			
+			if (icons != null) {
+				foreach (PString icon in icons.Value.Where (v => v is PString)) {
+					iconFiles[icon.Value] = new Pixbuf (Project.GetAbsoluteChildPath (icon.Value));
+				}
+			}
+			
+			
+				
 			iOSApplicationTargetWidget.Update ();
 			iPhoneDeploymentInfo.Update ();
 			iPadDeploymentInfo.Update ();
+			
+			
 			
 			var iphone = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations");
 			iPhoneDeploymentInfoContainer.Visible = iphone != null;

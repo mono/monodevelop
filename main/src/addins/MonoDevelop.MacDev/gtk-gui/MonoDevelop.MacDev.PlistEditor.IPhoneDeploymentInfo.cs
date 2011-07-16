@@ -7,7 +7,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		private global::Gtk.VBox vboxIPhoneDeploymentInfo;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label7;
-		private global::Gtk.ComboBoxEntry comboboxentryIPhoneMainInterface;
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry interfacePicker;
 		private global::Gtk.Frame frame1;
 		private global::Gtk.Alignment GtkAlignment;
 		private global::Gtk.HBox hbox2;
@@ -67,10 +67,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboboxentryIPhoneMainInterface = global::Gtk.ComboBoxEntry.NewText ();
-			this.comboboxentryIPhoneMainInterface.Name = "comboboxentryIPhoneMainInterface";
-			this.hbox1.Add (this.comboboxentryIPhoneMainInterface);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboboxentryIPhoneMainInterface]));
+			this.interfacePicker = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
+			this.interfacePicker.Name = "interfacePicker";
+			this.interfacePicker.VerifyFileExistsInProject = false;
+			this.interfacePicker.EntryIsEditable = false;
+			this.hbox1.Add (this.interfacePicker);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.interfacePicker]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -251,6 +253,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.imageIPhoneAppIcon1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
 			this.imageIPhoneAppIcon1.Name = "imageIPhoneAppIcon1";
+			this.imageIPhoneAppIcon1.Description = "57 x 57";
 			this.hbox3.Add (this.imageIPhoneAppIcon1);
 			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageIPhoneAppIcon1]));
 			w23.Position = 0;
@@ -259,7 +262,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.imageIPhoneAppIcon2 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
 			this.imageIPhoneAppIcon2.Name = "imageIPhoneAppIcon2";
-			this.imageIPhoneAppIcon2.Description = "Retina Display";
+			this.imageIPhoneAppIcon2.Description = "Retina Display (114 x 114)";
 			this.hbox3.Add (this.imageIPhoneAppIcon2);
 			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageIPhoneAppIcon2]));
 			w24.Position = 1;
@@ -322,6 +325,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			this.frame3.Hide ();
 			this.Show ();
 		}
 	}
