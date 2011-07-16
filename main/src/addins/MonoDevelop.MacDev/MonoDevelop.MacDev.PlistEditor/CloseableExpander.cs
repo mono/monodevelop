@@ -297,7 +297,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				using (var cr = CairoHelper.Create (args.Event.Window)) {
 					CairoCorners corners = CairoCorners.BottomLeft | CairoCorners.BottomRight;
 					int r = 10;
-					CairoExtensions.RoundedRectangle (cr, contentBox.Allocation.X + 0.5, contentBox.Allocation.Y+ 0.5, contentBox.Allocation.Width - 1, contentBox.Allocation.Height - 1, r, corners);
+					CairoExtensions.RoundedRectangle (cr, contentBox.Allocation.X + 0.5, contentBox.Allocation.Y+ 0.5, contentBox.Allocation.Width - 1, contentBox.Allocation.Height - 1, r, corners, true);
 					cr.LineWidth = 1;
 					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 					cr.Stroke ();
