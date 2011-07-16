@@ -228,9 +228,9 @@ namespace MonoDevelop.SourceEditor
 		public void SetPinned (bool pinned)
 		{
 			if (pinned)
-				icon.Pixbuf = ImageService.GetPixbuf ("md-pin-down");
+				icon.Pixbuf = ImageService.GetPixbuf ("md-pin-down", IconSize.Menu);
 			else
-				icon.Pixbuf = ImageService.GetPixbuf ("md-pin-up");
+				icon.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
 		}
 	}
 }
