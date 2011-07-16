@@ -62,6 +62,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		public event EventHandler Closed;
+		
+		public void InvokeClose ()
+		{
+			if (Closed != null)
+				Closed (this, EventArgs.Empty);
+		}
+		
 		class ExpanderHeader : DrawingArea
 		{
 			ClosableExpander container;
@@ -161,10 +169,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 			{
 				return base.OnButtonPressEvent (evnt);
 			}
+			
 			protected override bool OnButtonReleaseEvent (EventButton evnt)
 			{
-				if (evnt.Button == 1)
-					container.Expanded = !container.Expanded;
+				if (evnt.Button == 1) {
+					if (IsCloseSelected) {
+						container.InvokeClose ();
+					} else {
+						container.Expanded = !container.Expanded;
+					}
+				}
 				return base.OnButtonReleaseEvent (evnt);
 			}
 			
@@ -177,6 +191,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return new Rectangle (DEFAULT_EXPANDER_SPACING, 1 + (Allocation.Height - DEFAULT_EXPANDER_SIZE) / 2, DEFAULT_EXPANDER_SIZE, DEFAULT_EXPANDER_SIZE);
 			}
 			
+			bool IsCloseSelected {
+				get {
+					return mouseOver && Math.Abs (Allocation.Width - 16 - mx) < 8;
+				}
+			}
+			
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				Style.PaintBox (Style, evnt.Window, StateType.Insensitive, ShadowType.None, Allocation, this, "base", 0, 0, Allocation.Width, Allocation.Height);
@@ -187,6 +207,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 						corners = CairoCorners.All;
 					int r = 10;
 					CairoExtensions.RoundedRectangle (cr, 0, 0, Allocation.Width, Allocation.Height, r, corners);
+					
 					
 					var lg = new Cairo.LinearGradient (0, 0, 0, Allocation.Height);
 					var state = mouseOver ? StateType.Prelight : StateType.Normal;
@@ -224,8 +245,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 						cr.ShowLayout (layout);
 					}
 					
+					
 					cr.Arc (Allocation.Width - 16, Allocation.Height / 2, 6, 0, Math.PI * 2);
-					cr.Color = new Cairo.Color (1, 1, 1);
+					cr.Color = IsCloseSelected ? new Cairo.Color (0, 0, 0) : new Cairo.Color (1, 1, 1);
 					cr.Fill ();
 					
 					cr.Arc (Allocation.Width - 16, Allocation.Height / 2, 6, 0, Math.PI * 2);
@@ -233,7 +255,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 					cr.Stroke ();
 					
-					cr.Color = new Cairo.Color (0, 0, 0);
+					cr.Color = IsCloseSelected ? new Cairo.Color (1, 1, 1) : new Cairo.Color (0, 0, 0);
 					cr.LineWidth = 1;
 					cr.MoveTo (Allocation.Width - 16 - 3, Allocation.Height / 2 - 3);
 					cr.LineTo(Allocation.Width - 16 + 3, Allocation.Height / 2 + 3);
@@ -248,7 +270,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				
 				var bounds = GetExpanderBounds ();
 				
-				var state2 = mouseOver ? StateType.Prelight : StateType.Normal;
+				var state2 = mouseOver && !IsCloseSelected ? StateType.Prelight : StateType.Normal;
 				Style.PaintExpander (Style, 
 					evnt.Window, 
 					state2,

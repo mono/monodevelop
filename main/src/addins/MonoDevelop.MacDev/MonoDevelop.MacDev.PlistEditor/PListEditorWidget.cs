@@ -149,7 +149,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.QueueRebuild ();
 				
 				var dtw = new DocumentTypeWidget (proj, newEntry);
-				dtw.Expander = documentTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
+				dtw.Expander = documentTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw, newEntry);
 			};
 			
 			exportedUTIList.CreateNew += delegate {
@@ -163,7 +163,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.QueueRebuild ();
 				
 				var dtw = new DocumentTypeWidget (proj, newEntry);
-				dtw.Expander = exportedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
+				dtw.Expander = exportedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw, newEntry);
 			};
 			
 			importedUTIList.CreateNew += delegate {
@@ -177,7 +177,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.QueueRebuild ();
 				
 				var dtw = new DocumentTypeWidget (proj, newEntry);
-				dtw.Expander = importedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
+				dtw.Expander = importedUTIList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw, newEntry);
 			};
 			
 			urlTypeList.CreateNew += delegate {
@@ -191,7 +191,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.QueueRebuild ();
 				
 				var dtw = new URLTypeWidget (proj, newEntry);
-				dtw.Expander = urlTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw);
+				dtw.Expander = urlTypeList.AddListItem (GettextCatalog.GetString ("Untitled"), dtw, newEntry);
 			};
 			
 			documentTypeExpander.SetWidget (documentTypeList);
@@ -232,7 +232,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 							continue;
 						string name = GettextCatalog.GetString ("Untitled");
 						var dtw = new DocumentTypeWidget (proj, dict);
-						dtw.Expander = documentTypeList.AddListItem (name, dtw);
+						dtw.Expander = documentTypeList.AddListItem (name, dtw, dict);
 						
 					}
 				}
@@ -246,7 +246,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 							continue;
 						string name = GettextCatalog.GetString ("Untitled");
 						var dtw = new UTIWidget (proj, dict);
-						dtw.Expander = exportedUTIList.AddListItem (name, dtw);
+						dtw.Expander = exportedUTIList.AddListItem (name, dtw, dict);
 					}
 				}
 				
@@ -259,7 +259,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 							continue;
 						string name = GettextCatalog.GetString ("Untitled");
 						var dtw = new UTIWidget (proj, dict);
-						dtw.Expander = importedUTIList.AddListItem (name, dtw);
+						dtw.Expander = importedUTIList.AddListItem (name, dtw, dict);
 					}
 				}
 				
@@ -273,7 +273,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 							continue;
 						string name = GettextCatalog.GetString ("Untitled");
 						var dtw = new URLTypeWidget (proj, dict);
-						dtw.Expander = urlTypeList.AddListItem (name, dtw);
+						dtw.Expander = urlTypeList.AddListItem (name, dtw, dict);
 					}
 				}
 			}

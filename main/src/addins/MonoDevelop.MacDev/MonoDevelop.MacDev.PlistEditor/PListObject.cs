@@ -71,8 +71,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (Parent is PDictionary) {
 				var dict = (PDictionary)Parent;
 				dict.Value.Remove (Key);
+				dict.QueueRebuild ();
 			} else if (Parent is PArray) {
-				((PArray)Parent).Value.Remove (this);
+				var arr = (PArray)Parent;
+				arr.Value.Remove (this);
+				arr.QueueRebuild ();
 			}
 		}
 		

@@ -77,7 +77,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			ShowAll ();
 		}
 		
-		public ClosableExpander AddListItem (string name, Widget widget)
+		public ClosableExpander AddListItem (string name, Widget widget, PObject obj)
 		{
 			if (noContentLabel != null) {
 				contentBox.Remove (noContentLabel);
@@ -89,6 +89,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			expander.ContentLabel = name;
 			expander.SetWidget (widget);
 			expander.BorderWidth = 4;
+			expander.Closed += delegate(object sender, EventArgs e) {
+				var expanderWidget = (ClosableExpander)sender;
+				obj.Remove ();
+				contentBox.Remove (expanderWidget);
+				expanderWidget.Destroy ();
+			};
 			contentBox.PackStart (expander, true, true, 0);
 			contentBox.Show ();
 			expander.Expanded = false;
