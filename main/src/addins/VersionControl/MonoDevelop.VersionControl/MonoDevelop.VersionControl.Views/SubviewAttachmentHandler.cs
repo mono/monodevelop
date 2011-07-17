@@ -44,6 +44,8 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			if (!e.Document.IsFile || !repo.GetVersionInfo (e.Document.FileName).IsVersioned)
 				return;
+			if (e.Document.Editor == null)
+				return;
 			var item = new VersionControlItem (repo, e.Document.Project, e.Document.FileName, false, null);
 			
 			DiffView.AttachViewContents (e.Document, item);
