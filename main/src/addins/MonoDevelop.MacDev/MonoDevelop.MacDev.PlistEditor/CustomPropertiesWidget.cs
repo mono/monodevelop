@@ -153,6 +153,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 				IdeApp.CommandService.ShowContextMenu (menu, this);
 				menu.ShowAll ();
 			}
+			
+			protected override void OnSizeRequested (ref Requisition requisition)
+			{
+				base.OnSizeRequested (ref requisition);
+				//Pad the bottom with empty space. This serves two purposes:
+				// * an obvious place for the user to right-click to add rows
+				// * prevents empty plists from having nowhere to click to adds rows
+				requisition.Height += 25;
+			}
 		}
 		
 		public CustomPropertiesWidget ()
