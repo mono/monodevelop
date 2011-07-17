@@ -72,6 +72,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		IOSApplicationTargetWidget iOSApplicationTargetWidget;
 		IPhoneDeploymentInfo iPhoneDeploymentInfo;
 		IPadDeploymentInfo iPadDeploymentInfo;
+		MacExpander iosApplicationTargetContainer, iPhoneDeploymentInfoContainer, iPadDeploymentInfoContainer;
 		
 		ExpanderList documentTypeList = new ExpanderList (GettextCatalog.GetString ("No Document Types"), GettextCatalog.GetString ("Add Document Type"));
 		ExpanderList exportedUTIList = new ExpanderList (GettextCatalog.GetString ("No Exported UTIs"), GettextCatalog.GetString ("Add Exported UTI"));
@@ -124,19 +125,46 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PListEditorWidget (Project proj)
 		{
+			
 			this.proj = proj;
 			this.Build ();
 			
-			customTargetPropertiesContainer.SetWidget (customProperties);
+			var summaryScrolledWindow = new CompactScrolledWindow ();
+			var summaryLabel = new Label (GettextCatalog.GetString ("Summary"));
+			summaryLabel.Show ();
+			notebook1.PrependPage (summaryScrolledWindow, summaryLabel);
+			var summaryVbox = new VBox (false, 0);
+			summaryScrolledWindow.AddWithViewport (summaryVbox);
+			
 			
 			iOSApplicationTargetWidget = new IOSApplicationTargetWidget ();
+			iPhoneDeploymentInfo = new IPhoneDeploymentInfo (this);
+			iPadDeploymentInfo = new IPadDeploymentInfo (this);
+			
+			iosApplicationTargetContainer = new MacExpander () {
+				ContentLabel = GettextCatalog.GetString ("iOS Application Target"),
+				Expandable = true,
+			};
 			iosApplicationTargetContainer.SetWidget (iOSApplicationTargetWidget);
 			
-			iPhoneDeploymentInfo = new IPhoneDeploymentInfo (this);
+			iPhoneDeploymentInfoContainer = new MacExpander () {
+				ContentLabel = GettextCatalog.GetString ("iPhone / iPod Deployment Info"),
+				Expandable = true,
+			};
 			iPhoneDeploymentInfoContainer.SetWidget (iPhoneDeploymentInfo);
 			
-			iPadDeploymentInfo = new IPadDeploymentInfo (this);
+			iPadDeploymentInfoContainer = new MacExpander () {
+				ContentLabel = GettextCatalog.GetString ("iPad Deployment Info"),
+				Expandable = true,
+			};
 			iPadDeploymentInfoContainer.SetWidget (iPadDeploymentInfo);
+			
+			summaryVbox.PackStart (iosApplicationTargetContainer, false, false, 0);
+			summaryVbox.PackStart (iPhoneDeploymentInfoContainer, false, false, 0);
+			summaryVbox.PackStart (iPadDeploymentInfoContainer, false, false, 0);
+			summaryScrolledWindow.ShowAll ();
+			
+			customTargetPropertiesContainer.SetWidget (customProperties);
 			
 			documentTypeList.CreateNew += delegate {
 				var dict = NSDictionary.Get<PArray> ("CFBundleDocumentTypes");

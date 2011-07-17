@@ -45,6 +45,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.imagechooser1 = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
 			this.imagechooser1.Name = "imagechooser1";
+			this.imagechooser1.Label = null;
 			this.vbox3.Add (this.imagechooser1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.imagechooser1]));
 			w1.Position = 0;
@@ -53,8 +54,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox1.Add (this.vbox3);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox3]));
 			w2.Position = 0;
-			w2.Expand = false;
-			w2.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
 			this.table1.Name = "table1";
@@ -184,6 +183,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.expander1 = new global::Gtk.Expander (null);
 			this.expander1.CanFocus = true;
 			this.expander1.Name = "expander1";
+			this.expander1.Expanded = true;
 			// Container child expander1.Gtk.Container+ContainerChild
 			this.custompropertiesWidget = new global::MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget ();
 			this.custompropertiesWidget.Events = ((global::Gdk.EventMask)(256));

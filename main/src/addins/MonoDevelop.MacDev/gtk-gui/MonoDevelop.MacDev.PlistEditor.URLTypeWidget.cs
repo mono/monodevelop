@@ -43,6 +43,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.imagechooser = new global::MonoDevelop.MacDev.PlistEditor.ImageChooser ();
 			this.imagechooser.Name = "imagechooser";
+			this.imagechooser.Label = null;
 			this.vbox3.Add (this.imagechooser);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.imagechooser]));
 			w1.Position = 0;

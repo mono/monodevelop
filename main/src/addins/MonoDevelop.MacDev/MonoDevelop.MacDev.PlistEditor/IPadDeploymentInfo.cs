@@ -58,15 +58,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.widget = widget;
 			this.Build ();
 			
-			imageIPadAppIcon.PictureSize = new Size (72, 72);
-			imageIPadAppIcon.AccepptedSize = new Size (72, 72);
+			imageIPadAppIcon.DisplaySize = new Size (72, 72);
+			imageIPadAppIcon.AcceptedSize = new Size (72, 72);
 			imageIPadAppIcon.SetProject (widget.Project);
 			imageIPadAppIcon.Changed += delegate {
-				widget.SetIcon (imageIPadAppIcon.SelectedPixbuf, 114, 114);
+				widget.SetIcon (imageIPadAppIcon.SelectedProjectFile, 72, 72);
 			};
 			
-			imageIPadLaunch1.PictureSize = new Size (58, 58);
-			imageIPadLaunch2.PictureSize = new Size (58, 58);
+			imageIPadLaunchPortrait.AcceptedSize = new Size (768, 1004);
+			imageIPadLaunchPortrait.DisplaySize = new Size (96, 128); // acceptedsize / 8
+			imageIPadLaunchLandscape.AcceptedSize = new Size (1024, 748);
+			imageIPadLaunchLandscape.DisplaySize = new Size (128, 96); // acceptedsize / 8
 			
 			interfacePicker.Project = widget.Project;
 			interfacePicker.DefaultFilter = "*.xib|*.storyboard";
@@ -76,10 +78,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.SetString (NibFileKey, widget.Project.GetRelativeChildPath (interfacePicker.SelectedFile));
 			};
 			
-			togglebutton9.Toggled += HandleToggled;
-			togglebutton10.Toggled += HandleToggled;
-			togglebutton11.Toggled += HandleToggled;
-			togglebutton12.Toggled += HandleToggled;
+			togglePortrait.Toggled += HandleToggled;
+			toggleUpsideDown.Toggled += HandleToggled;
+			toggleLandscapeLeft.Toggled += HandleToggled;
+			toggleLandscapeRight.Toggled += HandleToggled;
 		}
 		
 		void HandleToggled (object sender, EventArgs e)
@@ -88,13 +90,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return;
 			var arr = dict.GetArray ("UISupportedInterfaceOrientations~ipad");
 			arr.Clear ();
-			if (togglebutton9.Active)
+			if (togglePortrait.Active)
 				arr.Add (new PString ("UIInterfaceOrientationPortrait"));
-			if (togglebutton10.Active)
+			if (toggleUpsideDown.Active)
 				arr.Add (new PString ("UIInterfaceOrientationPortraitUpsideDown"));
-			if (togglebutton11.Active)
+			if (toggleLandscapeLeft.Active)
 				arr.Add (new PString ("UIInterfaceOrientationLandscapeLeft"));
-			if (togglebutton12.Active)
+			if (toggleLandscapeRight.Active)
 				arr.Add (new PString ("UIInterfaceOrientationLandscapeRight"));
 			arr.QueueRebuild ();
 		}
@@ -106,23 +108,28 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			foreach (var pair in widget.IconFiles) {
 				if (pair.Value.Width == 72)
-					imageIPadAppIcon.Pixbuf = pair.Value;
+					imageIPadAppIcon.SetDisplayPixbuf (pair.Value);
 			}
 			
 			interfacePicker.SelectedFile = dict.Get<PString> (NibFileKey) ?? "";
 			
 			var ipad   = dict.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
-			togglebutton9.Active = togglebutton10.Active = togglebutton11.Active = togglebutton12.Active = false;
+			
+			togglePortrait.Active = false;
+			toggleUpsideDown.Active = false;
+			toggleLandscapeLeft.Active = false;
+			toggleLandscapeRight.Active = false;
+			
 			if (ipad != null) {
 				foreach (PString val in ipad) {
 					if (val == "UIInterfaceOrientationPortrait")
-						togglebutton9.Active = true;
+						togglePortrait.Active = true;
 					if (val == "UIInterfaceOrientationPortraitUpsideDown")
-						togglebutton10.Active = true;
+						toggleUpsideDown.Active = true;
 					if (val == "UIInterfaceOrientationLandscapeLeft")
-						togglebutton11.Active = true;
+						toggleLandscapeLeft.Active = true;
 					if (val == "UIInterfaceOrientationLandscapeRight")
-						togglebutton12.Active = true;
+						toggleLandscapeRight.Active = true;
 				}
 			}
 			inUpdate = false;

@@ -58,22 +58,24 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.widget = widget;
 			this.Build ();
 			
-			imageIPhoneAppIcon1.PictureSize = new Size (57, 57);
-			imageIPhoneAppIcon1.AccepptedSize = new Size (57, 57);
-			imageIPhoneAppIcon1.SetProject (widget.Project);
-			imageIPhoneAppIcon1.Changed += delegate {
-				widget.SetIcon (imageIPhoneAppIcon1.SelectedPixbuf, 57, 57);
+			imageIPhoneAppIcon.DisplaySize = new Size (57, 57);
+			imageIPhoneAppIcon.AcceptedSize = new Size (57, 57);
+			imageIPhoneAppIcon.SetProject (widget.Project);
+			imageIPhoneAppIcon.Changed += delegate {
+				widget.SetIcon (imageIPhoneAppIcon.SelectedProjectFile, 57, 57);
 			};
 			
-			imageIPhoneAppIcon2.PictureSize = new Size (57, 57);
-			imageIPhoneAppIcon2.AccepptedSize = new Size (114, 114);
-			imageIPhoneAppIcon2.SetProject (widget.Project);
-			imageIPhoneAppIcon2.Changed += delegate {
-				widget.SetIcon (imageIPhoneAppIcon2.SelectedPixbuf, 114, 114);
+			imageIPhoneAppIconRetina.DisplaySize = new Size (57, 57);
+			imageIPhoneAppIconRetina.AcceptedSize = new Size (114, 114);
+			imageIPhoneAppIconRetina.SetProject (widget.Project);
+			imageIPhoneAppIconRetina.Changed += delegate {
+				widget.SetIcon (imageIPhoneAppIconRetina.SelectedProjectFile, 114, 114);
 			};
 			
-			imageIPhoneLaunch1.PictureSize = new Size (58, 58);
-			imageIPhoneLaunch2.PictureSize = new Size (58, 58);
+			imageIPhoneLaunch.DisplaySize = new Size (80, 120);
+			imageIPhoneLaunchRetina.DisplaySize = new Size (80, 120);
+			imageIPhoneLaunch.AcceptedSize = new Size (320, 480);
+			imageIPhoneLaunchRetina.AcceptedSize = new Size (640, 960);
 			
 			interfacePicker.Project = widget.Project;
 			interfacePicker.DefaultFilter = "*.xib|*.storyboard";
@@ -83,10 +85,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 				dict.SetString (NibFileKey, widget.Project.GetRelativeChildPath (interfacePicker.SelectedFile));
 			};
 			
-			togglebutton1.Toggled += HandleToggled;
-			togglebutton2.Toggled += HandleToggled;
-			togglebutton3.Toggled += HandleToggled;
-			togglebutton4.Toggled += HandleToggled;
+			togglePortrait.Toggled += HandleToggled;
+			toggleUpsideDown.Toggled += HandleToggled;
+			toggleLandscapeLeft.Toggled += HandleToggled;
+			toggleLandscapeRight.Toggled += HandleToggled;
 			
 		}
 
@@ -96,13 +98,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return;
 			var arr = dict.GetArray ("UISupportedInterfaceOrientations");
 			arr.Clear ();
-			if (togglebutton1.Active)
+			if (togglePortrait.Active)
 				arr.Add (new PString ("UIInterfaceOrientationPortrait"));
-			if (togglebutton2.Active)
+			if (toggleUpsideDown.Active)
 				arr.Add (new PString ("UIInterfaceOrientationPortraitUpsideDown"));
-			if (togglebutton3.Active)
+			if (toggleLandscapeLeft.Active)
 				arr.Add (new PString ("UIInterfaceOrientationLandscapeLeft"));
-			if (togglebutton4.Active)
+			if (toggleLandscapeRight.Active)
 				arr.Add (new PString ("UIInterfaceOrientationLandscapeRight"));
 			arr.QueueRebuild ();
 		}
@@ -115,23 +117,28 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			foreach (var pair in widget.IconFiles) {
 				if (pair.Value.Width == 57)
-					imageIPhoneAppIcon1.Pixbuf = pair.Value;
+					imageIPhoneAppIcon.SetDisplayPixbuf (pair.Value);
 				if (pair.Value.Width == 114)
-					imageIPhoneAppIcon2.Pixbuf = pair.Value;
+					imageIPhoneAppIconRetina.SetDisplayPixbuf (pair.Value);
 			}
 			
 			var iphone = dict.Get<PArray> ("UISupportedInterfaceOrientations");
-			togglebutton1.Active = togglebutton2.Active = togglebutton3.Active = togglebutton4.Active = false;
+			
+			togglePortrait.Active = false;
+			toggleUpsideDown.Active = false;
+			toggleLandscapeLeft.Active = false;
+			toggleLandscapeRight.Active = false;
+			
 			if (iphone != null) {
 				foreach (PString val in iphone) {
 					if (val == "UIInterfaceOrientationPortrait")
-						togglebutton1.Active = true;
+						togglePortrait.Active = true;
 					if (val == "UIInterfaceOrientationPortraitUpsideDown")
-						togglebutton2.Active = true;
+						toggleUpsideDown.Active = true;
 					if (val == "UIInterfaceOrientationLandscapeLeft")
-						togglebutton3.Active = true;
+						toggleLandscapeLeft.Active = true;
 					if (val == "UIInterfaceOrientationLandscapeRight")
-						togglebutton4.Active = true;
+						toggleLandscapeRight.Active = true;
 				}
 			}
 			inUpdate = false;

@@ -40,158 +40,140 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[ToolboxItem(true)]
-	public class ImageChooser : VBox
+	public class ImageChooser : Button
 	{
-		Button buttonImage;
+		Project project;
 		Gtk.Image image;
-		Label labelDescription;
+		Pixbuf scaledPixbuf;
+		Size displaySize, acceptedSize;
 		
-		Pixbuf pixbuf;
-		public string Description {
-			get {
-				return labelDescription.Text;
-			}
+		public Size DisplaySize {
+			get { return displaySize; }
 			set {
-				labelDescription.Text = value;
+				this.displaySize = value;
+				image.WidthRequest = value.Width;
+				image.HeightRequest = value.Height;
 			}
 		}
 		
-		Size pictureSize;
-		public Size PictureSize {
-			get {
-				return pictureSize;
-			}
+		
+		public Size AcceptedSize {
+			get { return acceptedSize; }
 			set {
-				this.pictureSize = value;
+				acceptedSize = value;
+				TooltipText = GettextCatalog.GetString ("Image size {0}x{1}", value.Width, value.Height);
 			}
 		}
 		
+		/// <summary>
+		/// Project virtual path of the selected file.
+		/// </summary>
+		public FilePath SelectedProjectFile { get; set; }
 		
-		public Size AccepptedSize {
-			get;
-			set;
-		}
-		
-		public FilePath SelectedPixbuf {
-			get;
-			set;
-		}
-
-		public Pixbuf Pixbuf {
-			get {
-				return this.pixbuf;
+		public void SetDisplayPixbuf (Pixbuf pixbuf)
+		{
+			DestroyScaledPixbuf ();
+			
+			//scale image down to fit
+			if (pixbuf != null && (pixbuf.Width > DisplaySize.Width || pixbuf.Height > DisplaySize.Height)) {
+				double aspect = pixbuf.Height / pixbuf.Width;
+				int destWidth = Math.Min ((int) (DisplaySize.Height / aspect), pixbuf.Width);
+				destWidth = Math.Min (DisplaySize.Width, destWidth);
+				int destHeight = Math.Min ((int) (DisplaySize.Width * aspect), pixbuf.Height);
+				destHeight = Math.Min (DisplaySize.Height, destHeight);
+				scaledPixbuf = pixbuf = pixbuf.ScaleSimple (destWidth, destHeight, InterpType.Bilinear);
 			}
-			set {
-				DestroyPixbuf ();
-				image.Pixbuf = pixbuf = value;
-			}
+			image.Pixbuf = pixbuf;
 		}
 		
 		public ImageChooser ()
 		{
-			this.buttonImage = new Button ();
 			this.image = new Gtk.Image ();
-			this.buttonImage.Add (this.image);
-			this.PackStart (this.buttonImage, false, false, 0);
-			
-			this.labelDescription = new Label ();
-			this.PackEnd (this.labelDescription, false, false, 0);
-			
+			this.Add (this.image);
 			ShowAll ();
+		}
+		
+		protected override void OnClicked ()
+		{
+			base.OnClicked ();
+			if (project == null)
+				return;
+			var dialog = new ProjectFileSelectorDialog (project, null, "*.png");
+			try {
+				dialog.Title = GettextCatalog.GetString ("Select icon...");
+				int response = MessageService.RunCustomDialog (dialog);
+				if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
+					
+					var path = dialog.SelectedFile.FilePath;
+					if (AcceptedSize.Width > 0) {
+						using (var pb = new Pixbuf (path)) {
+							if (pb.Width != AcceptedSize.Width || pb.Height != AcceptedSize.Height) {
+								MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"),
+									GettextCatalog.GetString (
+										"Only pictures with size {0}x{1} are accepted. Picture was {2}x{3}.",
+										AcceptedSize.Width, AcceptedSize.Height, pb.Width, pb.Height));
+								return;
+							}
+						}
+					}
+					SelectedProjectFile = dialog.SelectedFile.ProjectVirtualPath;
+					OnChanged (EventArgs.Empty);
+				}
+			} finally {
+				dialog.Destroy ();
+			}
 		}
 		
 		public void SetProject (Project proj)
 		{
-			this.buttonImage.Clicked += delegate {
-				var dialog = new ProjectFileSelectorDialog (proj, null, "*.png");
-				try {
-					dialog.Title = GettextCatalog.GetString ("Select icon...");
-					int response = MessageService.RunCustomDialog (dialog);
-					if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
-						
-						var path = dialog.SelectedFile.FilePath;
-						if (AccepptedSize.Width > 0) {
-							using (var pb = new Pixbuf (path)) {
-								if (pb.Width != AccepptedSize.Width || pb.Height != AccepptedSize.Height) {
-									MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"), string.Format (GettextCatalog.GetString ("Only pictures with {0}x{1} are acceppted. Picture was {2}x{3}."), AccepptedSize.Width, AccepptedSize.Height, pb.Width, pb.Height));
-									return;
-								}
-							}
-						}
-						SelectedPixbuf = dialog.SelectedFile.ProjectVirtualPath;
-						OnChanged (EventArgs.Empty);
-					}
-				} finally {
-					dialog.Destroy ();
-				}
-			};
+			this.project = proj;
 		}
 			
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			DestroyPixbuf ();
+			DestroyScaledPixbuf ();
 		}
 		
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			if (pictureSize.Width <= 0 || pictureSize.Height <= 0)
-				throw new InvalidOperationException ("Picture size not set.");
+			if (displaySize.Width <= 0 || displaySize.Height <= 0)
+				throw new InvalidOperationException ("Display size not set.");
+		}
+		
+		protected override bool OnExposeEvent (EventExpose evnt)
+		{
+			var ret = base.OnExposeEvent (evnt);
+			if (image.Pixbuf != null)
+				return ret;
 			
-			if (pixbuf == null)
-				pixbuf = CreateNoImageIcon (pictureSize.Width, pictureSize.Height);
-			image.Pixbuf = pixbuf;
-		}
-		
-		bool shouldDestroyPixbuf;
-		void DestroyPixbuf ()
-		{
-			if (shouldDestroyPixbuf && pixbuf != null) {
-				pixbuf.Dispose ();
-				pixbuf = null;
-				shouldDestroyPixbuf = false;
-			}
-		}
-		
-		Pixbuf CreateNoImageIcon (int w, int h)
-		{
-			using (var pixmap = new Pixmap (GdkWindow, w, h)) {
-				using (var cr = CairoHelper.Create (pixmap)) {
-					cr.Rectangle (0, 0, w, h);
-					cr.Color = new Cairo.Color (1, 1, 1);
-					cr.FillPreserve ();
-					cr.LineWidth = 1;
-					cr.Color = new Cairo.Color (0.57, 0.57, 0.57);
-					cr.Stroke ();
-					
-					CairoExtensions.RoundedRectangle (cr, 5, 5, w - 10, h - 10, 5);
-					cr.Color = new Cairo.Color (0.97, 0.97, 0.97);
-					cr.Fill ();
-					
-					using (var layout = new Pango.Layout (PangoContext)) {
-						layout.SetText (GettextCatalog.GetString ("no image"));
-					
-						layout.Width = (int)((w - 20) * Pango.Scale.PangoScale);
-						layout.Wrap = Pango.WrapMode.WordChar;
-						layout.Alignment = Pango.Alignment.Center;
-						int pw, ph;
-						layout.GetPixelSize (out pw, out ph);
-						cr.MoveTo ((w - layout.Width / Pango.Scale.PangoScale) / 2, (h - ph) / 2);
-						
-						cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
-						cr.ShowLayout (layout);
-					}
-					
-					CairoExtensions.RoundedRectangle (cr, 5, 5, w - 10, h - 10, 5);
-					cr.LineWidth = 3;
-					cr.Color = new Cairo.Color (0.8, 0.8, 0.8);
-					cr.SetDash (new double[] { 12, 2 }, 0);
-					cr.Stroke ();
+			using (var cr = CairoHelper.Create (evnt.Window)) {
+				cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
+				cr.Clip ();
+				var imgAlloc = image.Allocation;
+				cr.Translate (imgAlloc.X, imgAlloc.Y);
+				
+				using (var layout = new Pango.Layout (PangoContext)) {
+					layout.SetText (GettextCatalog.GetString ("No image"));
+				
+					layout.Width = (int)((imgAlloc.Width - 20) * Pango.Scale.PangoScale);
+					layout.Wrap = Pango.WrapMode.WordChar;
+					layout.Alignment = Pango.Alignment.Center;
+					int pw, ph;
+					layout.GetPixelSize (out pw, out ph);
+					cr.MoveTo ((imgAlloc.Width - layout.Width / Pango.Scale.PangoScale) / 2, (imgAlloc.Height - ph) / 2);
+					cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
+					cr.ShowLayout (layout);
 				}
-				shouldDestroyPixbuf = true;
-				return Pixbuf.FromDrawable (pixmap, this.Colormap, 0, 0, 0, 0, w, h);
+				
+				CairoExtensions.RoundedRectangle (cr, 5, 5, imgAlloc.Width - 10, imgAlloc.Height - 10, 5);
+				cr.LineWidth = 3;
+				cr.Color = new Cairo.Color (0.8, 0.8, 0.8);
+				cr.SetDash (new double[] { 12, 2 }, 0);
+				cr.Stroke ();
 			}
+			return ret;
 		}
 		
 		protected virtual void OnChanged (System.EventArgs e)
@@ -202,5 +184,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		public event EventHandler Changed;
+		
+		void DestroyScaledPixbuf ()
+		{
+			if (scaledPixbuf != null) {
+				scaledPixbuf.Dispose ();
+				scaledPixbuf = null;
+			}
+		}
 	}
 }

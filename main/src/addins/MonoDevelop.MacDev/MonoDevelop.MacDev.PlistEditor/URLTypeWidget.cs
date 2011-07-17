@@ -66,7 +66,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			iconPicker.EntryIsEditable = true;
 			iconPicker.DialogTitle = GettextCatalog.GetString ("Select icon...");
 			
-			imagechooser.PictureSize  = new Gdk.Size (58, 58);
+			imagechooser.DisplaySize  = new Gdk.Size (58, 58);
 			
 			comboboxType.AppendText ("Viewer");
 			comboboxType.AppendText ("Editor");

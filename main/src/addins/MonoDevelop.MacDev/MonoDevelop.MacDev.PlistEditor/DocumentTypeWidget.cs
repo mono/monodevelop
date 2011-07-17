@@ -68,7 +68,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.treeviewIcons.Model = iconStore;
 			this.treeviewIcons.AppendColumn ("icon", new CellRendererText (), "text", 0);
 			this.treeviewIcons.HeadersVisible = false;
-			this.imagechooser1.PictureSize = new Gdk.Size (58, 58);
+			this.imagechooser1.DisplaySize = new Gdk.Size (58, 58);
 			dict.Changed += HandleDictChanged;			
 			custompropertiesWidget.NSDictionary = dict;
 			Update ();
