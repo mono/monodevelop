@@ -55,7 +55,18 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public void Replace (PObject newObject)
 		{
-			// TODO
+			var p = Parent;
+			if (p is PDictionary) {
+				var dict = (PDictionary)p;
+				var key = dict.GetKey (this);
+				if (key == null)
+					return;
+				Remove ();
+				dict[key] = newObject;
+			} else if (p is PArray) {
+				var arr = (PArray)p;
+				arr.Replace (this, newObject);
+			}
 		}
 		
 		public string Key {
@@ -186,7 +197,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 				QueueRebuild ();
 			}
 		}
-
+		
+		public int Count {
+			get {
+				return dict.Count;
+			}
+		}
+		
 		#region IEnumerable[KeyValuePair[System.String,PObject]] implementation
 		public IEnumerator<KeyValuePair<string, PObject>> GetEnumerator ()
 		{
@@ -214,6 +231,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public bool Remove (string key)
 		{
 			return dict.Remove (key);
+		}
+
+		public string GetKey (PObject obj)
+		{
+			foreach (var pair in dict) {
+				if (pair.Value == obj)
+					return pair.Key;
+			}
+			return null;
 		}
 		
 		public T Get<T> (string key) where T : PObject
@@ -392,6 +418,18 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			obj.Parent = this;
 			list.Add (obj);
+		}
+
+		public void Replace (PObject oldObj, PObject newObject)
+		{
+			for (int i = 0; i < Count; i++) {
+				if (list[i] == oldObj) {
+					newObject.Parent = this;
+					list[i] = newObject;
+					QueueRebuild ();
+					break;
+				}
+			}
 		}
 		
 		public void Remove (PObject obj)

@@ -119,7 +119,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				bool hasSelection = Selection.GetSelected (out iter);
 				PObject obj = null;
 				if (hasSelection) {
-					obj = (PObject) widget.treeStore.GetValue (iter, 1);
+					obj = (PObject)widget.treeStore.GetValue (iter, 1);
 				} else {
 					if (widget.treeStore.IterNChildren () > 0)
 						return;
@@ -133,13 +133,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 					var newObj = new PString ("");
 					PDictionary dict = widget.nsDictionary;
 					if (hasSelection) {
-						if (obj.Parent is PArray) {
-							var arr = (PArray)obj.Parent;
+						
+						PObject o;
+						if (obj != null) {
+							o = obj.Parent;
+						} else {
+							Gtk.TreeIter parent;
+							if (widget.treeStore.IterParent (out parent, iter))
+								o = (PObject)widget.treeStore.GetValue (parent, 1);
+						}
+						
+						if (o is PArray) {
+							var arr = (PArray)o;
 							arr.Add (newObj);
 							arr.QueueRebuild ();
 							return;
 						}
-						dict = obj.Parent as PDictionary;
+						dict = o as PDictionary;
 						if (dict == null)
 							return;
 					}
@@ -150,7 +160,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					dict[name] = newObj;
 				};
 				
-				if (hasSelection) {
+				if (hasSelection && obj != null) {
 					var removeKey = new Gtk.MenuItem (GettextCatalog.GetString ("Remove key"));
 					menu.Append (removeKey);
 					removeKey.Activated += delegate(object sender, EventArgs e) {
@@ -222,11 +232,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var renderer = (CellRendererCombo)cell;
 				string id = (string)tree_model.GetValue (iter, 0) ?? "";
 				var obj = (PObject)tree_model.GetValue (iter, 1);
-				if (obj == null)
+				if (obj == null) {
+					renderer.Text = id;
+					renderer.Editable = false;
+					renderer.Sensitive = false;
 					return;
+				}
 				
 				var key = scheme.GetKey (id);
 				renderer.Editable = !(obj.Parent is PArray);
+				renderer.Sensitive = true;
 				renderer.Text = key != null && !HideRealKeyNames ? GettextCatalog.GetString (key.Description) : id;
 			});
 			
@@ -242,16 +257,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 			typeModel.AppendValues ("String");
 			comboRenderer.Model = typeModel;
 			comboRenderer.Mode = CellRendererMode.Editable;
+			comboRenderer.HasEntry = false;
 			comboRenderer.TextColumn = 0;
 			comboRenderer.Edited += delegate(object o, EditedArgs args) {
-				TreeIter iter;
-				if (!treeStore.GetIterFromString (out iter, args.Path)) 
-					return;
 				TreeIter selIter;
-				if (!treeview1.Selection.GetSelected (out selIter))
+				if (!treeStore.GetIterFromString (out selIter, args.Path)) 
 					return;
 				
-				treeStore.SetValue (selIter, 1, CreateNewObject (args.NewText));
+				PObject oldObj = (PObject)treeStore.GetValue (selIter, 1);
+				if (oldObj == null)
+					return;
+				var newObj = CreateNewObject (args.NewText);
+				
+				oldObj.Replace (newObj);
 			};
 			
 			treeview1.AppendColumn (GettextCatalog.GetString ("Type"), comboRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
@@ -259,8 +277,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 				string id = (string)tree_model.GetValue (iter, 0) ?? "";
 				var key   = scheme.GetKey (id);
 				var obj   = (PObject)tree_model.GetValue (iter, 1);
-				if (obj == null)
-					return;
+				if (obj == null) {
+					renderer.Editable = false;
+					renderer.Text = "";
+					return; 
+				}
 				renderer.Editable = key == null;
 				renderer.ForegroundGdk = Style.Text (renderer.Editable ? StateType.Normal : StateType.Insensitive);
 				renderer.Text = obj.TypeString;
@@ -298,8 +319,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			treeview1.AppendColumn (GettextCatalog.GetString ("Value"), propRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				var obj      = (PObject)tree_model.GetValue (iter, 1);
-				if (obj == null)
+				if (obj == null) {
+					renderer.Editable = false;
+					renderer.Text = "";
 					return;
+				}
 				renderer.Editable = !(obj is PArray || obj is PDictionary);
 				obj.RenderValue (this, renderer);
 			});
@@ -316,6 +340,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		Dictionary<PObject, Gtk.TreeIter> iterTable = new Dictionary<PObject, Gtk.TreeIter> ();
+
+		void SetNoEntries (Gtk.TreeIter iter)
+		{
+			if (iter.Equals (TreeIter.Zero)) {
+				treeStore.AppendValues (GettextCatalog.GetString ("No entries."), null);
+				return;
+			}
+			treeStore.AppendValues (iter, GettextCatalog.GetString ("No entries."), null);
+		}
 		
 		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PDictionary dict)
 		{
@@ -328,7 +361,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (item.Value is PDictionary)
 					AddToTree (treeStore, subIter, (PDictionary)item.Value);
 			}
-			
+			if (dict.Count == 0)
+				SetNoEntries (iter);
 			if (!rebuildArrays.Contains (dict)) {
 				rebuildArrays.Add (dict);
 				dict.Rebuild += HandleDictRebuild;
@@ -363,6 +397,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (item is PDictionary)
 					AddToTree (treeStore, subIter, (PDictionary)item);
 			}
+			
+			if (arr.Count == 0)
+				SetNoEntries (iter);
+			
 			if (!rebuildArrays.Contains (arr)) {
 				rebuildArrays.Add (arr);
 				arr.Rebuild += HandleArrRebuild;
