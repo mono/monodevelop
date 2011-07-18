@@ -61,7 +61,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return keys.FirstOrDefault (k => k.Identifier == id);
 		}
 		
-		static PListScheme Read (XmlReader reader)
+		public static PListScheme Load (XmlReader reader)
 		{
 			var result = new PListScheme ();
 			
@@ -89,17 +89,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 				return false;
 			});
-		return result;
-		}
-		
-		public static readonly PListScheme Scheme;
-		
-		static PListScheme ()
-		{
-			const string ManifestResourceName = "InfoPListScheme.xml";
-			using (var reader = XmlTextReader.Create (typeof (PListScheme).Assembly.GetManifestResourceStream (ManifestResourceName))) {
-				Scheme = Read (reader);
-			}
+			return result;
 		}
 		
 		public static readonly PListScheme Empty = new PListScheme ();

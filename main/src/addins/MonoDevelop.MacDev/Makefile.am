@@ -27,12 +27,6 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.cs \
-	gtk-gui/MonoDevelop.MacDev.PlistEditor.DocumentTypeWidget.cs \
-	gtk-gui/MonoDevelop.MacDev.PlistEditor.IOSApplicationTargetWidget.cs \
-	gtk-gui/MonoDevelop.MacDev.PlistEditor.IPadDeploymentInfo.cs \
-	gtk-gui/MonoDevelop.MacDev.PlistEditor.IPhoneDeploymentInfo.cs \
-	gtk-gui/MonoDevelop.MacDev.PlistEditor.URLTypeWidget.cs \
-	gtk-gui/MonoDevelop.MacDev.PlistEditor.UTIWidget.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \
@@ -54,13 +48,8 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistString.cs \
 	MonoDevelop.MacDev.PlistEditor/CloseableExpander.cs \
 	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
-	MonoDevelop.MacDev.PlistEditor/DocumentTypeListWidget.cs \
-	MonoDevelop.MacDev.PlistEditor/DocumentTypeWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/ExpanderList.cs \
 	MonoDevelop.MacDev.PlistEditor/ImageChooser.cs \
-	MonoDevelop.MacDev.PlistEditor/IOSApplicationTargetWidget.cs \
-	MonoDevelop.MacDev.PlistEditor/IPadDeploymentInfo.cs \
-	MonoDevelop.MacDev.PlistEditor/IPhoneDeploymentInfo.cs \
 	MonoDevelop.MacDev.PlistEditor/IPlistEditingHandler.cs \
 	MonoDevelop.MacDev.PlistEditor/MacExpander.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
@@ -68,10 +57,6 @@ FILES =  \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/PListObject.cs \
 	MonoDevelop.MacDev.PlistEditor/PListScheme.cs \
-	MonoDevelop.MacDev.PlistEditor/UrlTypeListWidget.cs \
-	MonoDevelop.MacDev.PlistEditor/URLTypeWidget.cs \
-	MonoDevelop.MacDev.PlistEditor/UtiListWidget.cs \
-	MonoDevelop.MacDev.PlistEditor/UTIWidget.cs \
 	NativeReferences/NativeReference.cs \
 	NativeReferences/NativeReferenceCommandHandler.cs \
 	NativeReferences/NativeReferenceFolderNodeBuilder.cs \
@@ -112,16 +97,7 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	MonoDevelop.MacDev.addin.xml \
-	MonoDevelop.MacDev.PlistEditor/Icons/iPad1.png \
-	MonoDevelop.MacDev.PlistEditor/Icons/iPad2.png \
-	MonoDevelop.MacDev.PlistEditor/Icons/iPad3.png \
-	MonoDevelop.MacDev.PlistEditor/Icons/iPad4.png \
-	MonoDevelop.MacDev.PlistEditor/Icons/iPhone1.png \
-	MonoDevelop.MacDev.PlistEditor/Icons/iPhone2.png \
-	MonoDevelop.MacDev.PlistEditor/Icons/iPhone3.png \
-	MonoDevelop.MacDev.PlistEditor/Icons/iPhone4.png \
-	MonoDevelop.MacDev.PlistEditor/InfoPListScheme.xml
+	MonoDevelop.MacDev.addin.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \

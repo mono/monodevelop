@@ -61,7 +61,6 @@
     <Folder Include="XcodeSyncing\" />
     <Folder Include="XcodeIntegration\" />
     <Folder Include="MonoDevelop.MacDev.PlistEditor\" />
-    <Folder Include="MonoDevelop.MacDev.PlistEditor\Icons\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -133,26 +132,11 @@
     <Compile Include="MonoDevelop.MacDev.PlistEditor\CustomPropertiesWidget.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PListObject.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PListScheme.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\ImageChooser.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\DocumentTypeWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.DocumentTypeWidget.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\UTIWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.UTIWidget.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\URLTypeWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.URLTypeWidget.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\IOSApplicationTargetWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.IOSApplicationTargetWidget.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\IPhoneDeploymentInfo.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.IPhoneDeploymentInfo.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\IPadDeploymentInfo.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.IPadDeploymentInfo.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\ExpanderList.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\MacExpander.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\CloseableExpander.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IPlistEditingHandler.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\DocumentTypeListWidget.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\UrlTypeListWidget.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\UtiListWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\ExpanderList.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\ImageChooser.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
@@ -160,33 +144,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\InfoPListScheme.xml">
-      <LogicalName>InfoPListScheme.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPhone2.png">
-      <LogicalName>iPhone2.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPhone3.png">
-      <LogicalName>iPhone3.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPhone4.png">
-      <LogicalName>iPhone4.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPhone1.png">
-      <LogicalName>iPhone1.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPad1.png">
-      <LogicalName>iPad1.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPad2.png">
-      <LogicalName>iPad2.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPad3.png">
-      <LogicalName>iPad3.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.MacDev.PlistEditor\Icons\iPad4.png">
-      <LogicalName>iPad4.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -225,8 +182,6 @@
       <LastGenOutput>CSharpCodeCodebehind.cs</LastGenOutput>
       <CustomToolNamespace>MonoDevelop.MacDev.ObjCIntegration</CustomToolNamespace>
     </None>
-    <None Include="MonoDevelop.MacDev.PlistEditor\Icons\iPad.svg" />
-    <None Include="MonoDevelop.MacDev.PlistEditor\Icons\IPhone.svg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
