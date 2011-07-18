@@ -43,6 +43,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		Gtk.TreeView treeview1;
 		PListScheme scheme;
 		
+		public bool HideRealKeyNames {
+			get;
+			set;
+		}
+		
 		public PListScheme Scheme {
 			get {
 				return scheme;
@@ -153,6 +158,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 						obj.Remove ();
 					};
 				}
+				
+				if (widget.scheme != null) {
+					menu.Append (new Gtk.SeparatorMenuItem ());
+					var realNames = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Show real key names"));
+					realNames.Active = !widget.HideRealKeyNames;
+					realNames.Activated += delegate {
+						widget.HideRealKeyNames = !widget.HideRealKeyNames;
+						widget.QueueDraw ();
+					};
+					menu.Append (realNames);
+				}
 				IdeApp.CommandService.ShowContextMenu (menu, this);
 				menu.ShowAll ();
 			}
@@ -211,7 +227,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				
 				var key = scheme.GetKey (id);
 				renderer.Editable = !(obj.Parent is PArray);
-				renderer.Text = key != null ? GettextCatalog.GetString (key.Description) : id;
+				renderer.Text = key != null && !HideRealKeyNames ? GettextCatalog.GetString (key.Description) : id;
 			});
 			
 			var comboRenderer = new CellRendererCombo ();
