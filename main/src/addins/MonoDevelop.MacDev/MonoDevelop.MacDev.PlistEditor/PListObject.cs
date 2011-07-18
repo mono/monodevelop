@@ -233,6 +233,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return dict.Remove (key);
 		}
 
+		public bool ChangeKey (PObject obj, string newKey)
+		{
+			var oldkey = GetKey (obj);
+			if (oldkey == null || dict.ContainsKey (newKey))
+				return false;
+			dict.Remove (oldkey);
+			dict.Add (newKey, obj);
+			return true;
+		}
+
 		public string GetKey (PObject obj)
 		{
 			foreach (var pair in dict) {

@@ -121,8 +121,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (hasSelection) {
 					obj = (PObject)widget.treeStore.GetValue (iter, 1);
 				} else {
-					if (widget.treeStore.IterNChildren () > 0)
-						return;
+					return;
 				}
 					
 				var menu = new Gtk.Menu ();
@@ -131,28 +130,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 				
 				newKey.Activated += delegate(object sender, EventArgs e) {
 					var newObj = new PString ("");
-					PDictionary dict = widget.nsDictionary;
-					if (hasSelection) {
-						
-						PObject o;
-						if (obj != null) {
-							o = obj.Parent;
-						} else {
-							Gtk.TreeIter parent;
-							if (widget.treeStore.IterParent (out parent, iter))
-								o = (PObject)widget.treeStore.GetValue (parent, 1);
-						}
-						
-						if (o is PArray) {
-							var arr = (PArray)o;
-							arr.Add (newObj);
-							arr.QueueRebuild ();
-							return;
-						}
-						dict = o as PDictionary;
-						if (dict == null)
-							return;
+					
+					PObject parent;
+					if (obj != null) {
+						parent = obj.Parent;
+					} else {
+						Gtk.TreeIter parentIter;
+						if (widget.treeStore.IterParent (out parentIter, iter))
+							parent = (PObject)widget.treeStore.GetValue (parentIter, 1);
 					}
+					
+					if (parent is PArray) {
+						var arr = (PArray)parent;
+						arr.Add (newObj);
+						arr.QueueRebuild ();
+						return;
+					}
+					
+					var dict = parent as PDictionary;
+					if (dict == null)
+						return;
 					
 					string name = "newNode";
 					while (dict.ContainsKey (name))
@@ -218,14 +215,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 				if (args.NewText == (string)treeStore.GetValue (selIter, 0))
 					return;
+				
+				var obj = (PObject)treeStore.GetValue (selIter, 1);
+				
+				var dict = obj.Parent as PDictionary;
+				if (dict == null)
+					return;
+				
 				var key = scheme.Keys.FirstOrDefault (k => k.Identifier == args.NewText || k.Description == args.NewText);
-				if (key != null) {
-					treeStore.SetValue (selIter, 0, key.Identifier);
-					treeStore.SetValue (selIter, 1, CreateNewObject (key.Type));
-				} else {
-					treeStore.SetValue (selIter, 0, args.NewText);
-					treeStore.SetValue (selIter, 1, CreateNewObject ("String"));
-				}
+				var newKey = key != null ? key.Identifier : args.NewText;
+				
+				if (!dict.ChangeKey (obj, newKey))
+					return;
+				
+				treeStore.SetValue (selIter, 0, newKey);
+				
 			};
 			
 			treeview1.AppendColumn (GettextCatalog.GetString ("Property"), keyRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
