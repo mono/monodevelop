@@ -36,6 +36,10 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/MacDev/PlistEditingHandler">
+		<ExtensionNode name="Class" objectType="MonoDevelop.MacDev.PlistEditor.IPlistEditingHandler"/>
+	</ExtensionPoint>
+	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="application/vnd.apple-plist" _description="Mac Property List" isText="false">
 			<File pattern="*.plist" />

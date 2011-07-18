@@ -34,7 +34,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 	[System.ComponentModel.ToolboxItem (false)]
 	public partial class PListEditorWidget : Notebook
 	{
-		public PListEditorWidget (Project proj, PDictionary plist)
+		public PListEditorWidget (IPlistEditingHandler handler, Project proj, PDictionary plist)
 		{
 			var summaryScrolledWindow = new CompactScrolledWindow ();
 			var summaryLabel = new Label (GettextCatalog.GetString ("Summary"));
@@ -48,8 +48,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var advancedVbox = new VBox (false, 0);
 			advancedScrolledWindow.AddWithViewport (advancedVbox);
 			
-			IPlistEditingHandler h = new IPhonePlistEditingHandler ();
-			foreach (var section in h.GetSections (proj, plist)) {
+			foreach (var section in handler.GetSections (proj, plist)) {
 				var expander = new MacExpander () {
 					ContentLabel = section.Name,
 					Expandable = true,
@@ -62,14 +61,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					summaryVbox.PackStart (expander, false, false, 0);
 				}
 			}
-			
 			ShowAll ();
 		}
-		
-		//	var iphone = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations");
-		//	iPhoneDeploymentInfoContainer.Visible = iphone != null;
-			
-		//	var ipad   = NSDictionary.Get<PArray> ("UISupportedInterfaceOrientations~ipad");
-		//	iPadDeploymentInfoContainer.Visible = ipad != null;
 	}
 }

@@ -35,20 +35,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 {
 	public class PListEditorViewContent : AbstractViewContent
 	{
-		PListEditorWidget widget;
 		PDictionary dict;
+		Gtk.Widget widget;
 		
-		public override Gtk.Widget Control {
-			get {
-				return widget;
-			}
-		}
+		public override Gtk.Widget Control { get { return widget; } }
 		
-		public PListEditorViewContent (Project proj)
+		public PListEditorViewContent (IPlistEditingHandler handler, Project proj)
 		{
 			dict = new PDictionary ();
 			dict.Changed += (sender, e) => IsDirty = true;
-			widget = new PListEditorWidget (proj, dict);
+			if (handler != null) {
+				widget =  new PListEditorWidget (handler, proj, dict);
+			} else {
+				widget = new CustomPropertiesWidget () { NSDictionary = dict };
+			}
 		}
 		
 		public override void Load (string fileName)

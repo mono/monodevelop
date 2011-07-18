@@ -34,17 +34,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 {
 	public class PListEditorDisplayBinding : IViewDisplayBinding
 	{
-		public string Name {
-			get {
-				return "PList";
-			}
-		}
+		const string EXT_PATH = "/MonoDevelop/MacDev/PlistEditingHandler";
 		
-		public bool CanUseAsDefault {
-			get {
-				return true;
-			}
-		}
+		public string Name { get { return GettextCatalog.GetString ("Property List Editor"); } }
+		
+		public bool CanUseAsDefault { get { return true; } }
 		
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
@@ -54,10 +48,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			if (ownerProject == null)
-				return new PlainPListEditorViewContent ();
-			return new PListEditorViewContent (ownerProject);
+			IPlistEditingHandler handler = null;
+			if (ownerProject != null && fileName != null) {
+				var pf = ownerProject.GetProjectFile (fileName);
+				var virtualPath = pf.ProjectVirtualPath;
+				var handlers = Mono.Addins.AddinManager.GetExtensionObjects<IPlistEditingHandler> (EXT_PATH);
+				foreach (var h in handlers) {
+					if (h.CanHandle (ownerProject, virtualPath)) {
+						handler = h;
+						break;
+					}
+				}
+			}
+			return new PListEditorViewContent (handler, ownerProject);
 		}
 	}
 }
-

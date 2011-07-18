@@ -149,7 +149,6 @@
     <Compile Include="MonoDevelop.MacDev.PlistEditor\ExpanderList.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\MacExpander.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\CloseableExpander.cs" />
-    <Compile Include="MonoDevelop.MacDev.PlistEditor\PlainPListEditorViewContent.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IPlistEditingHandler.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\DocumentTypeListWidget.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\UrlTypeListWidget.cs" />

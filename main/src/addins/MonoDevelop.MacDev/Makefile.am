@@ -63,7 +63,6 @@ FILES =  \
 	MonoDevelop.MacDev.PlistEditor/IPhoneDeploymentInfo.cs \
 	MonoDevelop.MacDev.PlistEditor/IPlistEditingHandler.cs \
 	MonoDevelop.MacDev.PlistEditor/MacExpander.cs \
-	MonoDevelop.MacDev.PlistEditor/PlainPListEditorViewContent.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorViewContent.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \
