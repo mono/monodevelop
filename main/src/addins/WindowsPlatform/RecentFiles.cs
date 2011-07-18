@@ -28,6 +28,7 @@ using System;
 using System.Runtime.InteropServices;
 using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Platform
 {
