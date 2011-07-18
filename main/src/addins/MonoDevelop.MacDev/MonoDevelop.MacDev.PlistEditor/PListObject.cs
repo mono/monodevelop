@@ -287,23 +287,29 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public void Save (string fileName)
 		{
-			var dict = (NSDictionary)Convert ();
-			dict.WriteToFile (fileName, false);
+			using (new NSAutoreleasePool ()) {
+				var dict = (NSDictionary)Convert ();
+				dict.WriteToFile (fileName, false);
+			}
 		}
 		
 		public static PDictionary Load (string fileName)
 		{
-			var dict = NSDictionary.FromFile (fileName);
-			return (PDictionary)Conv (dict);
+			using (new NSAutoreleasePool ()) {
+				var dict = NSDictionary.FromFile (fileName);
+				return (PDictionary)Conv (dict);
+			}
 		}
 		
 		public void Reload (string fileName)
 		{
-			dict.Clear ();
-			var nsd = NSDictionary.FromFile (fileName);
-			foreach (var pair in nsd) {
-				string k = pair.Key.ToString ();
-				this[k] = Conv (pair.Value);
+			using (new NSAutoreleasePool ()) {
+				dict.Clear ();
+				var nsd = NSDictionary.FromFile (fileName);
+				foreach (var pair in nsd) {
+					string k = pair.Key.ToString ();
+					this[k] = Conv (pair.Value);
+				}
 			}
 			OnChanged (EventArgs.Empty);
 		}
