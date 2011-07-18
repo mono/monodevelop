@@ -560,6 +560,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			throw new NotSupportedException ();
 		}
+		
+		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
+		{
+			renderer.Sensitive = false;
+			renderer.Text = string.Format ("byte[{0}]", Value != null ? Value.Length : 0);
+		}
 	}
 	
 	public class PDate : PValueObject<DateTime>

@@ -324,7 +324,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					renderer.Text = "";
 					return;
 				}
-				renderer.Editable = !(obj is PArray || obj is PDictionary);
+				renderer.Editable = !(obj is PArray || obj is PDictionary || obj is PData);
 				obj.RenderValue (this, renderer);
 			});
 			treeview1.EnableGridLines = TreeViewGridLines.Horizontal;
