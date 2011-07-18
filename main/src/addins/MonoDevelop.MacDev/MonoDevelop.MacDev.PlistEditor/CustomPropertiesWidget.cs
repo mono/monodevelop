@@ -59,7 +59,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 				nsDictionary.Changed += delegate {
 					QueueDraw ();
 				};
-				scheme  = PListScheme.Scheme;
 				RefreshTree ();
 			}
 		}
@@ -86,7 +85,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return new PString ("<error>");
 		}
 		
-		
 		class PopupTreeView : Gtk.TreeView
 		{
 			CustomPropertiesWidget widget;
@@ -98,58 +96,63 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			protected override bool OnPopupMenu ()
 			{
-				ShowPoupMenu ();
+				ShowPopup ();
 				return base.OnPopupMenu ();
 			}
 			
-			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+			protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 			{
-				if (evnt.Button == 3)
-					ShowPoupMenu ();
-				return base.OnButtonPressEvent (evnt);
+				if (evnt.Button == 3) {
+					ShowPopup ();
+				}
+				return base.OnButtonReleaseEvent (evnt);
 			}
-			
-			void ShowPoupMenu ()
+
+			void ShowPopup ()
 			{
+				Gtk.TreeIter iter;
+				bool hasSelection = Selection.GetSelected (out iter);
+				PObject obj = null;
+				if (hasSelection) {
+					obj = (PObject) widget.treeStore.GetValue (iter, 1);
+				} else {
+					if (widget.treeStore.IterNChildren () > 0)
+						return;
+				}
+					
 				var menu = new Gtk.Menu ();
 				var newKey = new Gtk.MenuItem (GettextCatalog.GetString ("New key"));
+				menu.Append (newKey);
+				
 				newKey.Activated += delegate(object sender, EventArgs e) {
-					Gtk.TreeIter iter;
-					if (!Selection.GetSelected (out iter))
-						return;
-					var obj = (PObject)widget.treeStore.GetValue (iter, 1);
-					var newIter = widget.treeStore.InsertNodeAfter (iter);
 					var newObj = new PString ("");
-					
-					if (obj.Parent is PArray) {
-						var arr = (PArray)obj.Parent;
-						arr.Add (newObj);
-						arr.QueueRebuild ();
-						return;
+					PDictionary dict = widget.nsDictionary;
+					if (hasSelection) {
+						if (obj.Parent is PArray) {
+							var arr = (PArray)obj.Parent;
+							arr.Add (newObj);
+							arr.QueueRebuild ();
+							return;
+						}
+						dict = obj.Parent as PDictionary;
+						if (dict == null)
+							return;
 					}
 					
-					var dict = obj.Parent as PDictionary;
-					if (dict == null)
-						return;
 					string name = "newNode";
 					while (dict.ContainsKey (name))
 						name += "_";
 					dict[name] = newObj;
-					widget.treeStore.SetValues (newIter, name, newObj);
 				};
 				
-				menu.Append (newKey);
-				
-				var removeKey = new Gtk.MenuItem (GettextCatalog.GetString ("Remove key"));
-				removeKey.Activated += delegate(object sender, EventArgs e) {
-					Gtk.TreeIter iter;
-					if (!Selection.GetSelected (out iter))
-						return;
-					var obj = (PObject)widget.treeStore.GetValue (iter, 1);
-					obj.Remove ();
-					widget.treeStore.Remove (ref iter);
-				};
-				menu.Append (removeKey);
+				if (hasSelection) {
+					var removeKey = new Gtk.MenuItem (GettextCatalog.GetString ("Remove key"));
+					menu.Append (removeKey);
+					removeKey.Activated += delegate(object sender, EventArgs e) {
+						//the change event handler removes it from the store
+						obj.Remove ();
+					};
+				}
 				IdeApp.CommandService.ShowContextMenu (menu, this);
 				menu.ShowAll ();
 			}
@@ -157,15 +160,22 @@ namespace MonoDevelop.MacDev.PlistEditor
 			protected override void OnSizeRequested (ref Requisition requisition)
 			{
 				base.OnSizeRequested (ref requisition);
-				//Pad the bottom with empty space. This serves two purposes:
-				// * an obvious place for the user to right-click to add rows
-				// * prevents empty plists from having nowhere to click to adds rows
-				requisition.Height += 25;
+				
+				if (widget.treeStore.IterNChildren () == 0) {
+				//Pad the bottom with empty space. This  prevents empty plists from having nowhere to click to adds rows
+					requisition.Height += 20;
+				}
 			}
 		}
 		
 		public CustomPropertiesWidget ()
+			: this (null)
 		{
+		}
+		
+		public CustomPropertiesWidget (PListScheme scheme)
+		{
+			this.scheme = scheme = scheme ?? PListScheme.Empty;
 			this.Build ();
 			treeview1 = new PopupTreeView  (this);
 			this.vbox1.PackStart (treeview1, true, true, 0);

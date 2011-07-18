@@ -261,6 +261,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return (PDictionary)Conv (dict);
 		}
 		
+		public void Reload (string fileName)
+		{
+			dict.Clear ();
+			var nsd = NSDictionary.FromFile (fileName);
+			foreach (var pair in nsd) {
+				string k = pair.Key.ToString ();
+				this[k] = Conv (pair.Value);
+			}
+			OnChanged (EventArgs.Empty);
+		}
+		
 		static IntPtr selObjCType = MonoMac.ObjCRuntime.Selector.GetHandle ("objCType");
 		static PObject Conv (NSObject val)
 		{
@@ -589,7 +600,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = true;
-			var key = Parent != null ? widget.Scheme.GetKey (Parent.Key) : null;
+			var key = Parent != null? widget.Scheme.GetKey (Parent.Key) : null;
 			if (key != null) {
 				var val = key.Values.FirstOrDefault (v => v.Identifier == Value);
 				if (val != null) {

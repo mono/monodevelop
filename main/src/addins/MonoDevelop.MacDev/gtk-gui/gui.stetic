@@ -11,123 +11,6 @@
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.MacDev/MonoDevelop.MacDev.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.MacDev.PlistEditor.PListEditorWidget" design-size="792 807">
-    <property name="MemberName" />
-    <child>
-      <widget class="Gtk.Notebook" id="notebook1">
-        <property name="MemberName" />
-        <property name="CanFocus">True</property>
-        <property name="CurrentPage">0</property>
-        <child>
-          <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="ShadowType">In</property>
-            <child>
-              <widget class="Gtk.Viewport" id="GtkViewport1">
-                <property name="MemberName" />
-                <property name="ShadowType">None</property>
-                <child>
-                  <widget class="Gtk.VBox" id="vbox3">
-                    <property name="MemberName" />
-                    <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="customTargetPropertiesContainer">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ContentLabel">Custom iOS Target Properties</property>
-                        <property name="Expanded">False</property>
-                        <property name="Expandable">False</property>
-                        <property name="Closeable">False</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="documentTypeExpander">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ContentLabel">Document Types</property>
-                        <property name="Expanded">False</property>
-                        <property name="Expandable">True</property>
-                        <property name="Closeable">False</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="exportedUTIExpander">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ContentLabel">Exported UTIs</property>
-                        <property name="Expanded">False</property>
-                        <property name="Expandable">True</property>
-                        <property name="Closeable">False</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="importedUTIExpander">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ContentLabel">Imported UTIs</property>
-                        <property name="Expanded">False</property>
-                        <property name="Expandable">True</property>
-                        <property name="Closeable">False</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">3</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="MonoDevelop.MacDev.PlistEditor.MacExpander" id="urlTypeExpander">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ContentLabel">URL Types</property>
-                        <property name="Expanded">False</property>
-                        <property name="Expandable">True</property>
-                        <property name="Closeable">False</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">4</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                  </widget>
-                </child>
-              </widget>
-            </child>
-          </widget>
-        </child>
-        <child>
-          <widget class="Gtk.Label" id="label2">
-            <property name="MemberName" />
-            <property name="LabelProp" translatable="yes">Info</property>
-          </widget>
-          <packing>
-            <property name="type">tab</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget" design-size="503 416">
     <property name="MemberName" />
     <property name="Visible">False</property>
@@ -159,7 +42,6 @@
                 <child>
                   <widget class="MonoDevelop.MacDev.PlistEditor.ImageChooser" id="imagechooser1">
                     <property name="MemberName" />
-                    <property name="Visible">False</property>
                     <property name="Type">Custom</property>
                   </widget>
                   <packing>
@@ -178,7 +60,9 @@
               </widget>
               <packing>
                 <property name="Position">0</property>
-                <property name="AutoSize">True</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
               </packing>
             </child>
             <child>

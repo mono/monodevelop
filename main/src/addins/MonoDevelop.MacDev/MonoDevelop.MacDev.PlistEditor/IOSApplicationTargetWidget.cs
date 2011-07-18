@@ -36,16 +36,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		const string VersionKey = "CFBundleVersion";
 		
 		PDictionary dict;
-		public PDictionary Dict {
-			get {
-				return dict;
-			}
-			set {
-				dict = value;
-				dict.Changed += HandleDictChanged;
-				Update ();
-			}
-		}
 
 		void HandleDictChanged (object sender, EventArgs e)
 		{
@@ -63,7 +53,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			"4.3"
 		};
 		
-		public IOSApplicationTargetWidget ()
+		public IOSApplicationTargetWidget (PDictionary dict)
 		{
 			this.Build ();
 			
@@ -104,9 +94,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			foreach (var ver in knownOSVersions.Reverse ()) {
 				comboboxentryDeploymentTarget.AppendText (ver);
 			}
+			
+			this.dict = dict;
+			dict.Changed += HandleDictChanged;
+			Update ();
 		}
 		
-		public void Update ()
+		void Update ()
 		{
 			var identifier = dict.Get<PString> (IdentifierKey);
 			entryIdentifier.Text = identifier != null ? identifier : "";
@@ -127,4 +121,3 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 	}
 }
-

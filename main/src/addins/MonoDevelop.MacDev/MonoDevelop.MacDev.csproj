@@ -126,7 +126,6 @@
     <Compile Include="AppleSdkSettingsPanel.cs" />
     <Compile Include="AppleSdkSettings.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.PListEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PListEditorWidget.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PListEditorDisplayBinding.cs" />
@@ -151,6 +150,10 @@
     <Compile Include="MonoDevelop.MacDev.PlistEditor\MacExpander.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\CloseableExpander.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PlainPListEditorViewContent.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\IPlistEditingHandler.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\DocumentTypeListWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\UrlTypeListWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\UtiListWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

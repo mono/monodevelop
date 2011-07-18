@@ -34,35 +34,22 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public partial class IPadDeploymentInfo : Gtk.Bin
 	{
 		PDictionary dict;
-		public PDictionary Dict {
-			get {
-				return dict;
-			}
-			set {
-				dict = value;
-				dict.Changed += HandleDictChanged;
-				Update ();
-			}
-		}
+		PlistIconFileManager iconFileManager;
 		
 		const string NibFileKey = "NSMainNibFile~ipad";
 		
-		void HandleDictChanged (object sender, EventArgs e)
+		public IPadDeploymentInfo (Project project, PDictionary dict, PlistIconFileManager iconFileManager)
 		{
-			Update ();
-		}
-		
-		PListEditorWidget widget;
-		public IPadDeploymentInfo (PListEditorWidget widget)
-		{
-			this.widget = widget;
+			this.iconFileManager = iconFileManager;
+			this.dict = dict;
+			
 			this.Build ();
 			
 			imageIPadAppIcon.DisplaySize = new Size (72, 72);
 			imageIPadAppIcon.AcceptedSize = new Size (72, 72);
-			imageIPadAppIcon.SetProject (widget.Project);
+			imageIPadAppIcon.SetProject (project);
 			imageIPadAppIcon.Changed += delegate {
-				widget.SetIcon (imageIPadAppIcon.SelectedProjectFile, 72, 72);
+				iconFileManager.SetIcon (imageIPadAppIcon.SelectedProjectFile, 72, 72);
 			};
 			
 			imageIPadLaunchPortrait.AcceptedSize = new Size (768, 1004);
@@ -70,18 +57,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 			imageIPadLaunchLandscape.AcceptedSize = new Size (1024, 748);
 			imageIPadLaunchLandscape.DisplaySize = new Size (128, 96); // acceptedsize / 8
 			
-			interfacePicker.Project = widget.Project;
+			interfacePicker.Project = project;
 			interfacePicker.DefaultFilter = "*.xib|*.storyboard";
 			interfacePicker.EntryIsEditable = true;
 			interfacePicker.DialogTitle = GettextCatalog.GetString ("Select iPad interface file...");
 			interfacePicker.Changed += delegate {
-				dict.SetString (NibFileKey, widget.Project.GetRelativeChildPath (interfacePicker.SelectedFile));
+				dict.SetString (NibFileKey, project.GetRelativeChildPath (interfacePicker.SelectedFile));
 			};
 			
 			togglePortrait.Toggled += HandleToggled;
 			toggleUpsideDown.Toggled += HandleToggled;
 			toggleLandscapeLeft.Toggled += HandleToggled;
 			toggleLandscapeRight.Toggled += HandleToggled;
+			
+			dict.Changed += delegate {
+				Update ();
+			};
+			Update ();
 		}
 		
 		void HandleToggled (object sender, EventArgs e)
@@ -105,11 +97,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public void Update ()
 		{
 			inUpdate = true;
-			
-			foreach (var pair in widget.IconFiles) {
-				if (pair.Value.Width == 72)
-					imageIPadAppIcon.SetDisplayPixbuf (pair.Value);
-			}
+			imageIPadAppIcon.SetDisplayPixbuf (iconFileManager.GetIcon (72, 72));
 			
 			interfacePicker.SelectedFile = dict.Get<PString> (NibFileKey) ?? "";
 			

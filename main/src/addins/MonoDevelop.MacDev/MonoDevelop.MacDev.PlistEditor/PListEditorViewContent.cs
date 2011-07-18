@@ -36,6 +36,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public class PListEditorViewContent : AbstractViewContent
 	{
 		PListEditorWidget widget;
+		PDictionary dict;
 		
 		public override Gtk.Widget Control {
 			get {
@@ -45,16 +46,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PListEditorViewContent (Project proj)
 		{
-			widget = new PListEditorWidget (proj);
+			dict = new PDictionary ();
+			dict.Changed += (sender, e) => IsDirty = true;
+			widget = new PListEditorWidget (proj, dict);
 		}
 		
 		public override void Load (string fileName)
 		{
 			ContentName = fileName;
+			dict.Reload (fileName);
 			this.IsDirty = false;
-			
-			widget.NSDictionary = PDictionary.Load (fileName);
-			widget.NSDictionary.Changed += (sender, e) => IsDirty = true;
 		}
 		
 		public override void Save (string fileName)
@@ -62,7 +63,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.IsDirty = false;
 			ContentName = fileName;
 			try {
-				widget.NSDictionary.Save (fileName);
+				dict.Save (fileName);
 			} catch (Exception e) {
 				MessageService.ShowException (e, GettextCatalog.GetString ("Error while writing plist"));
 			}

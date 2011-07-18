@@ -101,6 +101,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				Scheme = Read (reader);
 			}
 		}
+		
+		public static readonly PListScheme Empty = new PListScheme ();
 	}
 }
 

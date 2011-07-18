@@ -31,7 +31,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.IOSApplicationTargetWidget.cs \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.IPadDeploymentInfo.cs \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.IPhoneDeploymentInfo.cs \
-	gtk-gui/MonoDevelop.MacDev.PlistEditor.PListEditorWidget.cs \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.URLTypeWidget.cs \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.UTIWidget.cs \
 	MacBuildUtilities.cs \
@@ -55,12 +54,14 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistString.cs \
 	MonoDevelop.MacDev.PlistEditor/CloseableExpander.cs \
 	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/DocumentTypeListWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/DocumentTypeWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/ExpanderList.cs \
 	MonoDevelop.MacDev.PlistEditor/ImageChooser.cs \
 	MonoDevelop.MacDev.PlistEditor/IOSApplicationTargetWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/IPadDeploymentInfo.cs \
 	MonoDevelop.MacDev.PlistEditor/IPhoneDeploymentInfo.cs \
+	MonoDevelop.MacDev.PlistEditor/IPlistEditingHandler.cs \
 	MonoDevelop.MacDev.PlistEditor/MacExpander.cs \
 	MonoDevelop.MacDev.PlistEditor/PlainPListEditorViewContent.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
@@ -68,7 +69,9 @@ FILES =  \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/PListObject.cs \
 	MonoDevelop.MacDev.PlistEditor/PListScheme.cs \
+	MonoDevelop.MacDev.PlistEditor/UrlTypeListWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/URLTypeWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/UtiListWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/UTIWidget.cs \
 	NativeReferences/NativeReference.cs \
 	NativeReferences/NativeReferenceCommandHandler.cs \

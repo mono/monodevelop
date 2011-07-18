@@ -36,40 +36,32 @@ namespace MonoDevelop.MacDev.PlistEditor
 		const string NibFileKey = "NSMainNibFile";
 		
 		PDictionary dict;
-		public PDictionary Dict {
-			get {
-				return dict;
-			}
-			set {
-				dict = value;
-				dict.Changed += HandleDictChanged;
-				Update ();
-			}
-		}
+		PlistIconFileManager iconFileManager;
 		
 		void HandleDictChanged (object sender, EventArgs e)
 		{
 			Update ();
 		}
 		
-		PListEditorWidget widget;
-		public IPhoneDeploymentInfo (PListEditorWidget widget)
+		public IPhoneDeploymentInfo (Project project, PDictionary dict, PlistIconFileManager iconFileManager)
 		{
-			this.widget = widget;
+			this.iconFileManager = iconFileManager;
+			this.dict = dict;
+			
 			this.Build ();
 			
 			imageIPhoneAppIcon.DisplaySize = new Size (57, 57);
 			imageIPhoneAppIcon.AcceptedSize = new Size (57, 57);
-			imageIPhoneAppIcon.SetProject (widget.Project);
+			imageIPhoneAppIcon.SetProject (project);
 			imageIPhoneAppIcon.Changed += delegate {
-				widget.SetIcon (imageIPhoneAppIcon.SelectedProjectFile, 57, 57);
+				iconFileManager.SetIcon (imageIPhoneAppIcon.SelectedProjectFile, 57, 57);
 			};
 			
 			imageIPhoneAppIconRetina.DisplaySize = new Size (57, 57);
 			imageIPhoneAppIconRetina.AcceptedSize = new Size (114, 114);
-			imageIPhoneAppIconRetina.SetProject (widget.Project);
+			imageIPhoneAppIconRetina.SetProject (project);
 			imageIPhoneAppIconRetina.Changed += delegate {
-				widget.SetIcon (imageIPhoneAppIconRetina.SelectedProjectFile, 114, 114);
+//				widget.SetIcon (imageIPhoneAppIconRetina.SelectedProjectFile, 114, 114);
 			};
 			
 			imageIPhoneLaunch.DisplaySize = new Size (80, 120);
@@ -77,12 +69,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			imageIPhoneLaunch.AcceptedSize = new Size (320, 480);
 			imageIPhoneLaunchRetina.AcceptedSize = new Size (640, 960);
 			
-			interfacePicker.Project = widget.Project;
+			interfacePicker.Project = project;
 			interfacePicker.DefaultFilter = "*.xib|*.storyboard";
 			interfacePicker.EntryIsEditable = true;
 			interfacePicker.DialogTitle = GettextCatalog.GetString ("Select main interface file...");
 			interfacePicker.Changed += delegate {
-				dict.SetString (NibFileKey, widget.Project.GetRelativeChildPath (interfacePicker.SelectedFile));
+				dict.SetString (NibFileKey, project.GetRelativeChildPath (interfacePicker.SelectedFile));
 			};
 			
 			togglePortrait.Toggled += HandleToggled;
@@ -90,6 +82,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			toggleLandscapeLeft.Toggled += HandleToggled;
 			toggleLandscapeRight.Toggled += HandleToggled;
 			
+			dict.Changed += HandleDictChanged;
+			Update ();
 		}
 
 		void HandleToggled (object sender, EventArgs e)
@@ -115,12 +109,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			inUpdate = true;
 			interfacePicker.SelectedFile = dict.Get<PString> (NibFileKey) ?? "";
 			
-			foreach (var pair in widget.IconFiles) {
-				if (pair.Value.Width == 57)
-					imageIPhoneAppIcon.SetDisplayPixbuf (pair.Value);
-				if (pair.Value.Width == 114)
-					imageIPhoneAppIconRetina.SetDisplayPixbuf (pair.Value);
-			}
+			imageIPhoneAppIcon.SetDisplayPixbuf (iconFileManager.GetIcon (57, 57));
+			imageIPhoneAppIconRetina.SetDisplayPixbuf (iconFileManager.GetIcon (114, 114));
 			
 			var iphone = dict.Get<PArray> ("UISupportedInterfaceOrientations");
 			

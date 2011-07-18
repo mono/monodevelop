@@ -54,6 +54,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.hbox1.Add (this.vbox3);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox3]));
 			w2.Position = 0;
+			w2.Expand = false;
+			w2.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
 			this.table1.Name = "table1";
@@ -201,7 +203,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.imagechooser1.Hide ();
 			this.Show ();
 		}
 	}
