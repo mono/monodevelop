@@ -42,6 +42,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (object));
 		Gtk.TreeView treeview1;
 		PListScheme scheme;
+		HashSet<PObject> expandedObjects = new HashSet<PObject> ();
 		
 		public bool HideRealKeyNames {
 			get;
@@ -248,7 +249,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 				renderer.Sensitive = true;
 				renderer.Text = key != null && !HideRealKeyNames ? GettextCatalog.GetString (key.Description) : id;
 			});
-			
+			treeview1.RowExpanded += delegate(object o, RowExpandedArgs args) {
+				var obj = (PObject)treeStore.GetValue (args.Iter, 1);
+				expandedObjects.Add (obj);
+			};
+			treeview1.RowCollapsed += delegate(object o, RowCollapsedArgs args) {
+				var obj = (PObject)treeStore.GetValue (args.Iter, 1);
+				expandedObjects.Remove (obj);
+			};
 			var comboRenderer = new CellRendererCombo ();
 			
 			var typeModel = new ListStore (typeof (string));
@@ -364,9 +372,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 					AddToTree (treeStore, subIter, (PArray)item.Value);
 				if (item.Value is PDictionary)
 					AddToTree (treeStore, subIter, (PDictionary)item.Value);
+				if (expandedObjects.Contains (item.Value))
+					treeview1.ExpandRow (treeStore.GetPath (subIter), true);
 			}
 			if (dict.Count == 0)
 				SetNoEntries (iter);
+			
 			if (!rebuildArrays.Contains (dict)) {
 				rebuildArrays.Add (dict);
 				dict.Rebuild += HandleDictRebuild;
@@ -400,6 +411,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 					AddToTree (treeStore, subIter, (PArray)item);
 				if (item is PDictionary)
 					AddToTree (treeStore, subIter, (PDictionary)item);
+				if (expandedObjects.Contains (item))
+					treeview1.ExpandRow (treeStore.GetPath (subIter), true);
 			}
 			
 			if (arr.Count == 0)
