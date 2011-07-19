@@ -201,6 +201,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		public void Add (string key, PObject value)
+		{
+			dict.Add (key, value);
+			order.Add (key);
+		}
+		
 		public int Count {
 			get {
 				return dict.Count;
