@@ -34,19 +34,36 @@ namespace MonoDevelop.MacDev.PlistEditor
 	[System.ComponentModel.ToolboxItem (false)]
 	public partial class PListEditorWidget : Notebook
 	{
+		class PListEditorSection : CompactScrolledWindow
+		{
+			VBox content = new VBox ();
+			
+			public PListEditorSection ()
+			{
+				AddWithViewport (content);
+				ShowAll ();
+				content.Hide ();
+			}
+			
+			protected override void OnRealized ()
+			{
+				base.OnRealized ();
+				content.Show ();
+			}
+			
+			public void AddExpander (MacExpander expander)
+			{
+				content.PackStart (expander, false, false, 0);
+			}
+		}
+		
 		public PListEditorWidget (IPlistEditingHandler handler, Project proj, PDictionary plist)
 		{
-			var summaryScrolledWindow = new CompactScrolledWindow ();
-			var summaryLabel = new Label (GettextCatalog.GetString ("Summary"));
-			AppendPage (summaryScrolledWindow, summaryLabel);
-			var summaryVbox = new VBox (false, 0);
-			summaryScrolledWindow.AddWithViewport (summaryVbox);
+			var summaryScrolledWindow = new PListEditorSection ();
+			AppendPage (summaryScrolledWindow, new Label (GettextCatalog.GetString ("Summary")));
 			
-			var advancedScrolledWindow = new CompactScrolledWindow ();
-			var advancedLabel = new Label (GettextCatalog.GetString ("Advanced"));
-			AppendPage (advancedScrolledWindow, advancedLabel);
-			var advancedVbox = new VBox (false, 0);
-			advancedScrolledWindow.AddWithViewport (advancedVbox);
+			var advancedScrolledWindow = new PListEditorSection ();
+			AppendPage (advancedScrolledWindow, new Label (GettextCatalog.GetString ("Advanced")));
 			
 			foreach (var section in handler.GetSections (proj, plist)) {
 				var expander = new MacExpander () {
@@ -56,12 +73,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 				expander.SetWidget (section.Widget);
 				
 				if (section.IsAdvanced) {
-					advancedVbox.PackStart (expander, false, false, 0);
+					advancedScrolledWindow.AddExpander (expander);
 				} else {
-					summaryVbox.PackStart (expander, false, false, 0);
+					summaryScrolledWindow.AddExpander (expander);
 				}
 			}
-			ShowAll ();
+			Show ();
 		}
 	}
 }
