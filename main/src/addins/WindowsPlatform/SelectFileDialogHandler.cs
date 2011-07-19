@@ -31,7 +31,7 @@ namespace MonoDevelop.Platform
                     return false;
 				
 				if (dlg is FileDialog) {
-					var fileDlg = dlg as OpenFileDialog;
+					var fileDlg = dlg as FileDialog;
 					FilePath[] paths = new FilePath [fileDlg.FileNames.Length];
 					for (int n=0; n < fileDlg.FileNames.Length; n++)
 						paths [n] = fileDlg.FileNames [n];
