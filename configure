@@ -173,12 +173,10 @@ create_local_config ()
 	# Copy the .pc file to local-config, and set the base lib directory
 	mkdir -p local-config
 	builddir=`pwd`/$path/build
-	if test -a $1/*.pc.in; then
-		for f in `ls $1/*.pc.in` ; do
-			pcfile=`echo $f | sed s,.*/,, | sed s/\.in$//`
-			sed -e s,libdir=.*,libdir=$builddir, -e s/@VERSION@/$ver/g $f> local-config/$pcfile
-		done
-	fi
+	for f in `ls $1/*.pc.in 2>/dev/null`; do
+		pcfile=`echo $f | sed s,.*/,, | sed s/\.in$//`
+		sed -e s,libdir=.*,libdir=$builddir, -e s/@VERSION@/$ver/g $f> local-config/$pcfile
+	done
 	
 	# Generate the .addins file for the package
 	addins=local-config/`echo $path | sed s,/,_,`.addins
