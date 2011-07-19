@@ -116,6 +116,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		
 		public string Id { get; set; }
+
+		internal object[] DragObjects {
+			get {
+				return this.dragObjects;
+			}
+		}
 		
 		public ExtensibleTreeView ()
 		{
