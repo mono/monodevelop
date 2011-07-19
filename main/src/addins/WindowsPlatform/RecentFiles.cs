@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 
