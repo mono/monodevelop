@@ -335,6 +335,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		static IntPtr selObjCType = MonoMac.ObjCRuntime.Selector.GetHandle ("objCType");
 		static PObject Conv (NSObject val)
 		{
+			if (val == null)
+				return null;
 			if (val is NSDictionary) {
 				var result = new PDictionary ();
 				foreach (var pair in (NSDictionary)val) {
