@@ -261,6 +261,24 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		
+		public bool TryGetValue<T> (string key, out T value) where T : PObject
+		{
+			PObject obj = null;
+			if (!dict.TryGetValue (key, out obj)) {
+				value = default(T);
+				return false;
+			}
+			
+			if (!(obj is T)) {
+				value = default(T);
+				return false;
+			}
+			
+			value = (T)obj;
+			return true;
+		}
+		
+		
 		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
