@@ -136,7 +136,7 @@ namespace MonoDevelop.Projects
 			}
 
 			if ((projectOptions != null) && (projectOptions.Attributes["TargetFrameworkVersion"] != null))
-				targetFrameworkId = TargetFrameworkMoniker.Parse (projectOptions.Attributes["TargetFrameworkVersion"].Value);
+				newProjectTargetFrameworkId = TargetFrameworkMoniker.Parse (projectOptions.Attributes["TargetFrameworkVersion"].Value);
 
 			string binPath;
 			if (projectCreateInfo != null) {
@@ -275,25 +275,30 @@ namespace MonoDevelop.Projects
 				return resourceHandler;
 			}
 		}
-
-		TargetFrameworkMoniker targetFrameworkId;
+		
+		//only used for initializing new projects
+		TargetFrameworkMoniker newProjectTargetFrameworkId;
+		
 		TargetFramework targetFramework;
 
 		public TargetFramework TargetFramework {
 			get {
-				SetDefaultFramework ();
+				if (targetFramework == null) {
+					var id = newProjectTargetFrameworkId ?? GetDefaultTargetFrameworkId ();
+					targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (id);
+				}
 				return targetFramework;
 			}
 			set {
-				bool replacingValue = targetFramework != null;
-				TargetFramework validValue = GetValidFrameworkVersion (value);
-				if (targetFramework == null && validValue == null)
-					targetFramework = Services.ProjectService.DefaultTargetFramework;
-				if (targetFramework == validValue || validValue == null)
+				if (!SupportsFramework (value))
+					throw new ArgumentException ("Project does not support framework '" + value.Id.ToString () +"'");
+				if (value == null)
+					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId ());
+				if (value.Id == targetFramework.Id)
 					return;
-				targetFramework = validValue;
-				targetFrameworkId = validValue.Id;
-				if (replacingValue)
+				bool updateReferences = targetFramework != null;
+				targetFramework = value;
+				if (updateReferences)
 					UpdateSystemReferences ();
 				NotifyModified ("TargetFramework");
 			}
@@ -305,7 +310,7 @@ namespace MonoDevelop.Projects
 		
 		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
-			return ProjectService.DefaultTargetFrameworkId;
+			return Services.ProjectService.DefaultTargetFramework.Id;
 		}
 
 		public IAssemblyContext AssemblyContext {
@@ -325,16 +330,6 @@ namespace MonoDevelop.Projects
 				if (privateAssemblyContext == null)
 					privateAssemblyContext = new DirectoryAssemblyContext ();
 				return privateAssemblyContext;
-			}
-		}
-
-		void SetDefaultFramework ()
-		{
-			if (targetFramework == null) {
-				if (targetFrameworkId != null)
-					targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFrameworkId);
-				if (targetFramework == null)
-					TargetFramework = Services.ProjectService.DefaultTargetFramework;
 			}
 		}
 
@@ -749,7 +744,8 @@ namespace MonoDevelop.Projects
 		{
 			// Make sure the fx version is sorted out before saving
 			// to avoid changes in project references while saving 
-			SetDefaultFramework ();
+			if (targetFramework == null)
+				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId ());
 			base.OnSave (monitor);
 		}
 

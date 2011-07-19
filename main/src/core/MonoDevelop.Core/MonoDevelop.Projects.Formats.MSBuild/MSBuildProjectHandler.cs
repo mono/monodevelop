@@ -316,13 +316,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 				item = (SolutionItem) Activator.CreateInstance (dt.ValueType);
 			}
-			
-			// Basic initialization
-			
-			if (item is DotNetProject) {
-				DotNetProject p = (DotNetProject) item;
-				p.TargetFramework = Services.ProjectService.DefaultTargetFramework;
-			}
 			return item;
 		}
 		
