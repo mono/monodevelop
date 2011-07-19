@@ -682,10 +682,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PString (string value) : base(value)
 		{
+			if (value == null)
+				throw new ArgumentNullException ("value");
 		}
 		
 		public override void SetValue (string text)
 		{
+			if (text == null)
+				throw new ArgumentNullException ("text");
 			Value = text;
 		}
 		
