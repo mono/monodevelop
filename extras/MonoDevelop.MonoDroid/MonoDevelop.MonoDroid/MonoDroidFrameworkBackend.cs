@@ -63,7 +63,7 @@ namespace MonoDevelop.MonoDroid
 			return new string[] {  MonoDroidFramework.MonoDroidToolsDir.Combine ("platforms", "android-" + apiLevel) };
 		}
 		
-		internal static string GetApiLevelFromVersion (string version)
+		static string GetApiLevelFromVersion (string version)
 		{
 			switch (version) {
 			case "1.6":   return "4";

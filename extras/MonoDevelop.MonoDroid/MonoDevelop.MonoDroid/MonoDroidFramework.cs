@@ -49,24 +49,6 @@ namespace MonoDevelop.MonoDroid
 			DeviceManager = new DeviceManager ();
 			VirtualDeviceManager = new VirtualDeviceManager ();
 			UpdateSdkLocations ();
-
-			List<AndroidVersion> vs = new List<AndroidVersion>();
-			AndroidVersion v = null;
-			foreach (string s in new[]{"1.6", "2.0", "2.0.1", "2.1", "2.2", "2.3"}) {
-				if ((v = GetVersion (s)) != null)
-					vs.Add (v);
-			}
-			AndroidVersions = vs.ToArray ();
-		}
-
-		static AndroidVersion GetVersion (string version)
-		{
-			string apiLevel = MonoDroidMonoFrameworkBackend.GetApiLevelFromVersion (version);
-			if (apiLevel == null)
-				return null;
-			if (!Directory.Exists (AndroidBinDir.Combine ("platforms", "android-" + apiLevel)))
-				return null;
-			return new AndroidVersion (Int32.Parse (apiLevel), version);
 		}
 		
 		internal static void UpdateSdkLocations ()
@@ -360,7 +342,14 @@ namespace MonoDevelop.MonoDroid
 			"preferExternal"
 		};
 		
-		public static AndroidVersion[] AndroidVersions;
+		public static AndroidVersion[] AndroidVersions = new[] {
+			new AndroidVersion (4, "1.6"),
+			new AndroidVersion (5, "2.0"),
+			new AndroidVersion (6, "2.0.1"),
+			new AndroidVersion (7, "2.1"),
+			new AndroidVersion (8, "2.2"),
+			new AndroidVersion (10, "2.3"),
+		};
 		
 		public static AndroidVersion DefaultAndroidVersion {
 			get { return AndroidVersions[AndroidVersions.Length-2]; } // 2.2
