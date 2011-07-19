@@ -47,6 +47,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 		Pixbuf scaledPixbuf;
 		Size displaySize, acceptedSize;
 		
+		Gtk.TargetEntry[] targetEntryTypes = new Gtk.TargetEntry[] {
+			new Gtk.TargetEntry ("text/uri-list", 0, 100u)
+		};
+		
 		public Size DisplaySize {
 			get { return displaySize; }
 			set {
@@ -91,6 +95,32 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.image = new Gtk.Image ();
 			this.Add (this.image);
 			ShowAll ();
+			
+			Gtk.Drag.DestSet (this, DestDefaults.Drop, targetEntryTypes, DragAction.Link);
+		}
+
+		public bool CheckImage (FilePath path)
+		{
+			Pixbuf pb;
+			
+			try {
+				pb = new Pixbuf (path);
+			} catch (Exception e) {
+				MessageService.ShowError (GettextCatalog.GetString ("Can't load image"), 
+					GettextCatalog.GetString ("The selected file may be no picture."));
+				return false;
+			}
+			if (AcceptedSize.Width > 0) {
+				if (pb.Width != AcceptedSize.Width || pb.Height != AcceptedSize.Height) {
+					MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"),
+						GettextCatalog.GetString (
+							"Only pictures with size {0}x{1} are accepted. Picture was {2}x{3}.",
+							AcceptedSize.Width, AcceptedSize.Height, pb.Width, pb.Height));
+					return false;
+				}
+			}
+			pb.Dispose ();
+			return true;
 		}
 		
 		protected override void OnClicked ()
@@ -105,17 +135,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
 					
 					var path = dialog.SelectedFile.FilePath;
-					if (AcceptedSize.Width > 0) {
-						using (var pb = new Pixbuf (path)) {
-							if (pb.Width != AcceptedSize.Width || pb.Height != AcceptedSize.Height) {
-								MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"),
-									GettextCatalog.GetString (
-										"Only pictures with size {0}x{1} are accepted. Picture was {2}x{3}.",
-										AcceptedSize.Width, AcceptedSize.Height, pb.Width, pb.Height));
-								return;
-							}
-						}
-					}
+					if (!CheckImage (path))
+						return;
 					SelectedProjectFile = dialog.SelectedFile.ProjectVirtualPath;
 					OnChanged (EventArgs.Empty);
 				}
@@ -190,6 +211,28 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (scaledPixbuf != null) {
 				scaledPixbuf.Dispose ();
 				scaledPixbuf = null;
+			}
+		}
+		
+		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
+		{
+			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
+			if (info == 100u) {
+				string fullData = System.Text.Encoding.UTF8.GetString (selection_data.Data);
+				
+				foreach (string individualFile in fullData.Split ('\n')) {
+					string file = individualFile.Trim ();
+					if (file.StartsWith ("file://")) {
+						file = new Uri(file).LocalPath;
+						if (!CheckImage (file))
+							return;
+						if (project != null)
+							file = project.GetRelativeChildPath (file);
+						SelectedProjectFile = file;
+						OnChanged (EventArgs.Empty);
+					}
+				}
+				
 			}
 		}
 	}
