@@ -52,7 +52,7 @@ namespace MonoDevelop.Platform
 			
 			dialog.AddExtension = true;
 			dialog.Filter = GetFilterFromData (data.Filters);
-			dialog.FilterIndex = data.DefaultFilter == null ? 0 : data.Filters.IndexOf (data.DefaultFilter);
+			dialog.FilterIndex = data.DefaultFilter == null ? 1 : data.Filters.IndexOf (data.DefaultFilter) + 1;
 			
 			dialog.InitialDirectory = data.CurrentFolder;
             if (!string.IsNullOrEmpty (data.InitialFileName))
