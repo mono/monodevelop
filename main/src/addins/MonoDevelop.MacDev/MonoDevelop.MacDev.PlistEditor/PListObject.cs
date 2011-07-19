@@ -180,6 +180,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public class PDictionary : PObject, IEnumerable<KeyValuePair<string, PObject>>
 	{
 		Dictionary<string, PObject> dict;
+		List<string> order;
 		
 		public override string TypeString {
 			get {
@@ -193,6 +194,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			set {
 				value.Parent = this;
+				if (!dict.ContainsKey (key))
+					order.Add (key);
 				dict[key] = value;
 				QueueRebuild ();
 			}
@@ -207,20 +210,22 @@ namespace MonoDevelop.MacDev.PlistEditor
 		#region IEnumerable[KeyValuePair[System.String,PObject]] implementation
 		public IEnumerator<KeyValuePair<string, PObject>> GetEnumerator ()
 		{
-			return dict.GetEnumerator ();
+			foreach (var key in order)
+				yield return new KeyValuePair<string, PObject> (key, dict[key]);
 		}
 		#endregion
 
 		#region IEnumerable implementation
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
 		{
-			return ((System.Collections.IEnumerable)dict).GetEnumerator ();
+			return GetEnumerator ();
 		}
 		#endregion
 		
 		public PDictionary ()
 		{
 			dict = new Dictionary<string, PObject> ();
+			order = new List<string> ();
 		}
 
 		public bool ContainsKey (string name)
@@ -230,7 +235,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 
 		public bool Remove (string key)
 		{
-			return dict.Remove (key);
+			if (dict.Remove (key)) {
+				order.Remove (key);
+				return true;
+			}
+			return false;
 		}
 
 		public bool ChangeKey (PObject obj, string newKey)
@@ -240,6 +249,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return false;
 			dict.Remove (oldkey);
 			dict.Add (newKey, obj);
+			order[order.IndexOf (oldkey)] = newKey;
 			return true;
 		}
 
@@ -295,10 +305,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			List<NSObject> objs = new List<NSObject> ();
 			List<NSObject> keys = new List<NSObject> ();
 			
-			foreach (var pair in dict) {
-				var val = pair.Value.Convert ();
+			foreach (var key in order) {
+				var val = dict[key].Convert ();
 				objs.Add (val);
-				keys.Add (new NSString (pair.Key));
+				keys.Add (new NSString (key));
 			}
 			return NSDictionary.FromObjectsAndKeys (objs.ToArray (), keys.ToArray ());
 		}
@@ -323,6 +333,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			using (new NSAutoreleasePool ()) {
 				dict.Clear ();
+				order.Clear ();
 				var nsd = NSDictionary.FromFile (fileName);
 				foreach (var pair in nsd) {
 					string k = pair.Key.ToString ();
