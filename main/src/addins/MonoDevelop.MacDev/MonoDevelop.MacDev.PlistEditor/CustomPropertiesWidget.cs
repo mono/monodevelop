@@ -356,10 +356,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 		void SetNoEntries (Gtk.TreeIter iter)
 		{
 			if (iter.Equals (TreeIter.Zero)) {
-				treeStore.AppendValues (GettextCatalog.GetString ("No entries."), null);
+				treeStore.AppendValues (GettextCatalog.GetString ("No entries"), null);
 				return;
 			}
-			treeStore.AppendValues (iter, GettextCatalog.GetString ("No entries."), null);
+			treeStore.AppendValues (iter, GettextCatalog.GetString ("No entries"), null);
 		}
 		
 		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PDictionary dict)
