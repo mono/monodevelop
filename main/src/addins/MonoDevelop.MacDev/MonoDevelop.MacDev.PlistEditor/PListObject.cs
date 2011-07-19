@@ -700,7 +700,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var key = Parent != null? widget.Scheme.GetKey (Parent.Key) : null;
 			if (key != null) {
 				var val = key.Values.FirstOrDefault (v => v.Identifier == Value);
-				if (val != null) {
+				if (val != null && widget.HideRealKeyNames) {
 					renderer.Text = GettextCatalog.GetString (val.Description);
 					return;
 				}
