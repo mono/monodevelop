@@ -239,13 +239,16 @@ namespace MonoDevelop.Ide.Projects
 			filterEntry.Parent = mainBook;
 			filterEntry.Ready = true;
 			filterEntry.ForceFilterButtonVisible = true;
-			filterEntry.Visible = true;
 			filterEntry.HasFocus = true;
 			filterEntry.Entry.CanFocus = true;
 			filterEntry.EmptyMessage = GettextCatalog.GetString ("Search (Control+F)");
 			filterEntry.KeyPressEvent += HandleFilterEntryKeyPressEvent;
 			filterEntry.Activated += HandleFilterEntryActivated;
 			
+			this.Shown += delegate {
+				filterEntry.Entry.Show ();
+				filterEntry.Show ();
+			};
 			mainBook.SizeAllocated += delegate {
 				RepositionFilter ();
 			};
