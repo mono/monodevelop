@@ -106,8 +106,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			try {
 				pb = new Pixbuf (path);
 			} catch (Exception e) {
-				MessageService.ShowError (GettextCatalog.GetString ("Can't load image"), 
-					GettextCatalog.GetString ("The selected file may be no picture."));
+				LoggingService.LogError ("Error loading pixbuf for image chooser,", e);
+				MessageService.ShowError (
+					GettextCatalog.GetString ("Cannot load image"),
+					GettextCatalog.GetString ("The selected file could not be loaded as an image.")
+				);
 				return false;
 			}
 			if (AcceptedSize.Width > 0) {

@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.Projects
 					} else {
 						name = GLib.Markup.EscapeText (fname);
 					}
-					store.AppendValues (fname, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, ReferenceType.Assembly);
+					store.AppendValues (name, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, ReferenceType.Assembly);
 				}
 			}
         }

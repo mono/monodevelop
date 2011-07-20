@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public ProjectSolutionPad ()
 		{
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnWindowChanged);
-			Console.WriteLine ("create psp");
 		}
 		
 		public override void Initialize (MonoDevelop.Ide.Gui.Components.NodeBuilder[] builders, MonoDevelop.Ide.Gui.Components.TreePadOption[] options, string contextMenuPath)

@@ -95,11 +95,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			MacExpander container;
 			uint animationTimeout;
-			ExpanderStyle expanderStyle;
+			ExpanderStyle expanderStyle = ExpanderStyle.Expanded;
 			
 			public string Label {
 				get;
 				set;
+			}
+			
+			public void UpdateInitialExpanderState ()
+			{
+				expanderStyle = container.Expanded? ExpanderStyle.Expanded : ExpanderStyle.Collapsed;
 			}
 			
 			public ExpanderHeader (MacExpander container)
@@ -293,6 +298,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public void SetWidget (Gtk.Widget widget)
 		{
 			contentBox.PackStart (widget, true, true, 0);
+			header.UpdateInitialExpanderState ();
 		}
 	}
 }
