@@ -43,10 +43,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 		Gtk.TreeView treeview1;
 		PListScheme scheme;
 		HashSet<PObject> expandedObjects = new HashSet<PObject> ();
+		bool showDescriptions = true;
 		
-		public bool HideRealKeyNames {
-			get;
-			set;
+		public bool ShowDescriptions {
+			get { return showDescriptions; }
+			set {
+				showDescriptions = value;
+				QueueDraw ();
+			}
 		}
 		
 		public PListScheme Scheme {
@@ -169,13 +173,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 				
 				if (widget.scheme != null) {
 					menu.Append (new Gtk.SeparatorMenuItem ());
-					var realNames = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Show real key names"));
-					realNames.Active = !widget.HideRealKeyNames;
-					realNames.Activated += delegate {
-						widget.HideRealKeyNames = !widget.HideRealKeyNames;
-						widget.QueueDraw ();
+					var showDescItem = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Show descriptions"));
+					showDescItem.Active = widget.ShowDescriptions;
+					showDescItem.Activated += delegate {
+						widget.ShowDescriptions = !widget.ShowDescriptions;
 					};
-					menu.Append (realNames);
+					menu.Append (showDescItem);
 				}
 				IdeApp.CommandService.ShowContextMenu (menu, this);
 				menu.ShowAll ();
@@ -247,7 +250,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var key = scheme.GetKey (id);
 				renderer.Editable = !(obj.Parent is PArray);
 				renderer.Sensitive = true;
-				renderer.Text = key != null && !HideRealKeyNames ? GettextCatalog.GetString (key.Description) : id;
+				renderer.Text = key != null && ShowDescriptions ? GettextCatalog.GetString (key.Description) : id;
 			});
 			treeview1.RowExpanded += delegate(object o, RowExpandedArgs args) {
 				var obj = (PObject)treeStore.GetValue (args.Iter, 1);
