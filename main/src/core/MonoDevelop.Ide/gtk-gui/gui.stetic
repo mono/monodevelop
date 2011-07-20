@@ -11078,7 +11078,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
               <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">603</property>
+                <property name="Position">590</property>
                 <child>
                   <widget class="Gtk.Alignment" id="alignment1">
                     <property name="MemberName" />
@@ -11112,6 +11112,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                   </widget>
                   <packing>
                     <property name="Resize">False</property>
+                    <property name="Shrink">False</property>
                   </packing>
                 </child>
                 <child>
@@ -11203,6 +11204,9 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                       </widget>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="Shrink">False</property>
+                  </packing>
                 </child>
               </widget>
               <packing>
