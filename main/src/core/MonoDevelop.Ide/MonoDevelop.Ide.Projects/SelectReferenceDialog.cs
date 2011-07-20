@@ -235,16 +235,22 @@ namespace MonoDevelop.Ide.Projects
 		{
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
-			filterEntry.WidthRequest = 200;
 			filterEntry.Parent = mainBook;
 			filterEntry.Ready = true;
 			filterEntry.ForceFilterButtonVisible = true;
-			filterEntry.Visible = true;
 			filterEntry.HasFocus = true;
 			filterEntry.Entry.CanFocus = true;
 			filterEntry.EmptyMessage = GettextCatalog.GetString ("Search (Control+F)");
 			filterEntry.KeyPressEvent += HandleFilterEntryKeyPressEvent;
 			filterEntry.Activated += HandleFilterEntryActivated;
+			
+			this.Shown += delegate {
+				filterEntry.Entry.Show ();
+				filterEntry.Show ();
+			};
+			
+			//hack to make sure the notebook tab row always has space for the filter entry
+			alignment1.SizeRequested += Alignment1SizeRequested;
 			
 			mainBook.SizeAllocated += delegate {
 				RepositionFilter ();
@@ -254,6 +260,16 @@ namespace MonoDevelop.Ide.Projects
 					p.SetFilter (filterEntry.Query);
 			};
 			RepositionFilter ();
+		}
+		
+		[GLib.ConnectBefore]
+		void Alignment1SizeRequested (object o, SizeRequestedArgs args)
+		{
+			var req = mainBook.SizeRequest ();
+			var filterReq = filterEntry.SizeRequest ();
+			req.Width += filterReq.Width + 10;
+			args.Requisition = req;
+			args.RetVal = true;
 		}
 
 		void HandleFilterEntryActivated (object sender, EventArgs e)
