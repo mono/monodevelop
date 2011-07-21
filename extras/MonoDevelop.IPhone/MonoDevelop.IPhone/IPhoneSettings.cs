@@ -54,18 +54,23 @@ namespace MonoDevelop.IPhone
 		
 		public static System.Net.IPAddress GetDebuggerHostIP (bool simulator)
 		{
+			return GetDebuggerHostIPs (simulator) [0];
+		}
+
+		public static System.Net.IPAddress[] GetDebuggerHostIPs (bool simulator)
+		{
 			if (simulator)
-				return System.Net.IPAddress.Loopback;
+				return new System.Net.IPAddress [] { System.Net.IPAddress.Loopback };
 
 			var ipStr = PropertyService.Get ("MonoTouch.Debugger.HostIP", "");
 			try {
 				if (!string.IsNullOrEmpty (ipStr))
-					return System.Net.IPAddress.Parse (ipStr);
+					return new System.Net.IPAddress [] { System.Net.IPAddress.Parse (ipStr) };
 			} catch (Exception e) {
 				LoggingService.LogInfo ("Error parsing Debugger HostIP: {0}: {1}", ipStr, e);
 			}
 			
-			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
+			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList;
 		}
 	}
 }

@@ -197,6 +197,15 @@ namespace MonoDevelop.IPhone
 				}
 			}
 			
+			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Updating debug configuration file"), 0);
+				var fileName = conf.AppDirectory.Combine ("MonoTouchDebugConfiguration.txt");
+				if (result.Append (CreateDebugConfigureFile (conf, fileName)).ErrorCount > 0)
+					return result;
+			} finally {
+				monitor.EndTask ();
+			}
+			
 			//create the Setting.bundle plist for debug settings, merging in the template if it exists
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Updating debug settings manifest"), 0);
@@ -1345,6 +1354,36 @@ namespace MonoDevelop.IPhone
 			"Resources",
 			"_CodeSignature",
 		}, StringComparer.OrdinalIgnoreCase);
+
+		static BuildResult CreateDebugConfigureFile (IPhoneProjectConfiguration conf, string target)
+		{
+			System.Net.IPAddress [] debuggerIPs = null;
+			bool sim = conf.Platform == IPhoneProject.PLAT_SIM;
+			var br = new BuildResult ();
+
+			// We only have this configure file in debug mode
+			if (!conf.DebugMode)
+				return null;
+			
+			try {
+				debuggerIPs = IPhoneSettings.GetDebuggerHostIPs (sim);
+			} catch {
+				br.AddWarning (GettextCatalog.GetString ("Could not resolve host IPs for debugger settings"));
+			}
+			
+			using (FileStream fs = new FileStream (target, FileMode.Create, FileAccess.Write)) {
+				using (StreamWriter writer = new StreamWriter (fs)) {
+					if (debuggerIPs != null) {
+						foreach (var ip in debuggerIPs) {
+							writer.Write ("IP: ");
+							writer.WriteLine (ip.ToString ());
+						}
+					}
+				}
+			}
+			
+			return br;
+		}
 		
 		static BuildResult UpdateDebugSettingsPlist (IProgressMonitor monitor, IPhoneProjectConfiguration conf,
 		                                             ProjectFile template, string target)
