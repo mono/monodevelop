@@ -638,8 +638,11 @@ namespace MonoDevelop.Ide.Gui
 			foreach (var fv in dock.Layouts)
 				if (fv.EndsWith (fullViewModeTag))
 					dock.DeleteLayout (fv);
-			
-			dock.SaveLayouts (configFile);
+			try {
+				dock.SaveLayouts (configFile);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while saving layout.", ex);
+			}
 			UninstallMenuBar ();
 			Remove (rootWidget);
 			
