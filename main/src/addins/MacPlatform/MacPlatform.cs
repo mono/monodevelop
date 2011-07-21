@@ -253,22 +253,14 @@ namespace MonoDevelop.MacIntegration
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
-						IdeApp.Workbench.RootWindow.Show ();
-						
+
 						// This is a workaround to a GTK+ bug. The HasTopLevelFocus flag is not properly
-						// set when the main window is restored. The workaround is to create and quickly
-						// destroy a top level window. GTK+ then detects that the top level focus has
-						// changed and properly sets HasTopLevelFocus.
-						Gtk.Window ww = new Gtk.Window ("");
-						ww.Decorated = false;
-						ww.SetDefaultSize (0, 0);
-						ww.Present ();
+						// set when the main window is restored. The workaround is to hide and re-show it.
+						// Since this happens before the next mainloop cycle, the window isn't actually affected.
+						IdeApp.Workbench.RootWindow.Hide ();
+						IdeApp.Workbench.RootWindow.Show ();
+
 						IdeApp.Workbench.RootWindow.Present ();
-						GLib.Timeout.Add (1, delegate {
-							// Without this small delay, GTK+ crashes when destroying the window
-							ww.Destroy ();
-							return false;
-						});
 						e.Handled = true;
 					}
 				};
