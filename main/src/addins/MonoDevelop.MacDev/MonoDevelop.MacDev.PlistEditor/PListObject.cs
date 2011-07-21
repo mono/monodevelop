@@ -132,6 +132,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		protected virtual void OnChanged (EventArgs e)
 		{
+			if (SuppressChangeEvents)
+				return;
+			
 			EventHandler handler = this.Changed;
 			if (handler != null)
 				handler (this, e);
@@ -139,6 +142,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (Parent != null)
 				Parent.OnChanged (e);
 		}
+		
+		internal bool SuppressChangeEvents;
 		
 		public event EventHandler Changed;
 	}
@@ -337,7 +342,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public void Reload (string fileName)
 		{
-			using (new NSAutoreleasePool ()) {
+			var pool = new NSAutoreleasePool ();
+			SuppressChangeEvents = true;
+			try {
 				dict.Clear ();
 				order.Clear ();
 				var nsd = NSDictionary.FromFile (fileName);
@@ -345,6 +352,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 					string k = pair.Key.ToString ();
 					this[k] = Conv (pair.Value);
 				}
+			} finally {
+				SuppressChangeEvents = false;
+				pool.Dispose ();
 			}
 			OnChanged (EventArgs.Empty);
 		}

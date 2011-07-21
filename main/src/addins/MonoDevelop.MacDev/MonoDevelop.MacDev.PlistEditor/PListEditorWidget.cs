@@ -77,6 +77,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 				} else {
 					summaryScrolledWindow.AddExpander (expander);
 				}
+				
+				if (section.CheckVisible != null) {
+					expander.Visible = section.CheckVisible (plist);
+					//capture section for closure
+					var s = section;
+					plist.Changed += delegate {
+						expander.Visible = s.CheckVisible (plist);
+					};
+				}
 			}
 			Show ();
 		}

@@ -47,5 +47,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public string Name { get; private set; }
 		public Gtk.Widget Widget { get; private set; }
 		public bool IsAdvanced { get; set; }
+		public Func<PDictionary,bool> CheckVisible { get; set; }
 	}
 }
