@@ -209,7 +209,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					this.TooltipText = text;
 				} else {
-					TextEditorData editorData = TextEditor.GetTextEditorData ();
+//					TextEditorData editorData = TextEditor.GetTextEditorData ();
 					foreach (var task in AllTasks) {
 						double y = LineToY (task.Location.Line);
 						if (Math.Abs (y - evnt.Y) < 3) {
@@ -432,7 +432,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = 17;
+			requisition.Width = 15;
 		}
 		
 		double LineToY (int logicalLine)
@@ -555,10 +555,13 @@ namespace MonoDevelop.SourceEditor
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				if (TextEditor.ColorStyle != null)
-					cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
+				var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0);
+				grad.AddColorStop (0, TextEditor.ColorStyle.FoldLine.CairoColor);
+				grad.AddColorStop (0.7, TextEditor.ColorStyle.Default.CairoBackgroundColor);
+				grad.AddColorStop (1, TextEditor.ColorStyle.FoldLine.CairoColor);
+				cr.Pattern = grad;
 				cr.Fill ();
-				
+				/*
 				cr.Color = (HslColor)Style.Dark (State);
 				cr.MoveTo (0.5, 0.5);
 				cr.LineTo (Allocation.Width, 0.5);
@@ -577,7 +580,7 @@ namespace MonoDevelop.SourceEditor
 				DrawCaret (cr);
 				
 				DrawBar (cr);
-				DrawLeftBorder (cr);
+				DrawLeftBorder (cr);*/
 			}
 			
 			return true;
