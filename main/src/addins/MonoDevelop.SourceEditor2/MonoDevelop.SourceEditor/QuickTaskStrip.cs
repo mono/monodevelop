@@ -220,7 +220,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			
-			if (button == 0) {
+			if (button == 0 && evnt.State.HasFlag (ModifierType.ShiftMask)) {
 				int line = YToLine (evnt.Y);
 				
 				line = Math.Max (1, line - 2);
@@ -239,6 +239,9 @@ namespace MonoDevelop.SourceEditor
 					var popup = new PreviewPopup (this, showSegment, TextEditor.Allocation.Width * 4 / 7, (int)evnt.Y);
 					previewPopupTimeout = GLib.Timeout.Add (450, new GLib.TimeoutHandler (popup.Run));
 				}
+			} else {
+				RemovePreviewPopupTimeout ();
+				DestroyPreviewWindow ();
 			}
 			return base.OnMotionNotifyEvent (evnt);
 		}
@@ -502,29 +505,38 @@ namespace MonoDevelop.SourceEditor
 		
 		protected void DrawLeftBorder (Cairo.Context cr)
 		{
-			cr.MoveTo (0.5, 0);
+			cr.MoveTo (0.5, 1.5);
 			cr.LineTo (0.5, Allocation.Height);
-			if (TextEditor.ColorStyle != null)
-				cr.Color = TextEditor.ColorStyle.FoldLine.CairoColor;
+			if (TextEditor.ColorStyle != null) {
+				var col = (HslColor)TextEditor.ColorStyle.Default.CairoBackgroundColor;
+				col.L *= 0.90;
+				cr.Color = col;
+				
+			}
 			cr.Stroke ();
+			
 		}
 		
-		protected void DrawBar (Cairo.Context cr)
+		protected virtual void DrawBar (Cairo.Context cr)
 		{
 			if (VAdjustment == null || VAdjustment.Upper <= VAdjustment.PageSize) 
 				return;
 			var h = Allocation.Height - IndicatorHeight;
-			cr.Rectangle (1.5,
-				              h * VAdjustment.Value / VAdjustment.Upper + cr.LineWidth + 0.5,
-				              Allocation.Width - 2,
-				              h * (VAdjustment.PageSize / VAdjustment.Upper));
-			Cairo.Color color = (TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0);
-			color.A = 0.5;
-			cr.Color = color;
-			cr.StrokePreserve ();
 			
-			color.A = 0.05;
-			cr.Color = color;
+			const int barWidth = 8;
+			
+			MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, 
+				0.5 +(Allocation.Width - barWidth) / 2,
+				h * VAdjustment.Value / VAdjustment.Upper + cr.LineWidth + 0.5,
+				barWidth,
+				h * (VAdjustment.PageSize / VAdjustment.Upper),
+				barWidth / 2);
+			
+			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0));
+			color.L = 0.5;
+			var c = (Cairo.Color)color;
+			c.A = 0.6;
+			cr.Color = c;
 			cr.Fill ();
 		}
 		
@@ -555,15 +567,20 @@ namespace MonoDevelop.SourceEditor
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0);
-				grad.AddColorStop (0, TextEditor.ColorStyle.FoldLine.CairoColor);
-				grad.AddColorStop (0.7, TextEditor.ColorStyle.Default.CairoBackgroundColor);
-				grad.AddColorStop (1, TextEditor.ColorStyle.FoldLine.CairoColor);
-				cr.Pattern = grad;
+				
+				if (TextEditor.ColorStyle != null) {
+					var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0);
+					var col = (HslColor)TextEditor.ColorStyle.Default.CairoBackgroundColor;
+					col.L *= 0.95;
+					grad.AddColorStop (0, col);
+					grad.AddColorStop (0.7, TextEditor.ColorStyle.Default.CairoBackgroundColor);
+					grad.AddColorStop (1, col);
+					cr.Pattern = grad;
+				}
 				cr.Fill ();
-				/*
+				
 				cr.Color = (HslColor)Style.Dark (State);
-				cr.MoveTo (0.5, 0.5);
+				cr.MoveTo (-0.5, 0.5);
 				cr.LineTo (Allocation.Width, 0.5);
 				cr.Stroke ();
 				
@@ -580,7 +597,7 @@ namespace MonoDevelop.SourceEditor
 				DrawCaret (cr);
 				
 				DrawBar (cr);
-				DrawLeftBorder (cr);*/
+				DrawLeftBorder (cr);
 			}
 			
 			return true;
@@ -638,6 +655,25 @@ namespace MonoDevelop.SourceEditor
 			});
 		}
 		
+		protected override void DrawBar (Cairo.Context cr)
+		{
+			if (VAdjustment == null || VAdjustment.Upper <= VAdjustment.PageSize) 
+				return;
+			var h = Allocation.Height - IndicatorHeight;
+			cr.Rectangle (1.5,
+				              h * VAdjustment.Value / VAdjustment.Upper + cr.LineWidth + 0.5,
+				              Allocation.Width - 2,
+				              h * (VAdjustment.PageSize / VAdjustment.Upper));
+			Cairo.Color color = (TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0);
+			color.A = 0.5;
+			cr.Color = color;
+			cr.StrokePreserve ();
+			
+			color.A = 0.05;
+			cr.Color = color;
+			cr.Fill ();
+		}
+	
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
