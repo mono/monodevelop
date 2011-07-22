@@ -435,12 +435,40 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		static bool GetXml (string baseName, out FilePath xmlFileName)
+		{
+			string filePattern = Path.GetFileNameWithoutExtension (baseName) + ".*";
+			try {
+				foreach (string fileName in Directory.EnumerateFileSystemEntries (Path.GetDirectoryName (baseName), filePattern)) {
+					if (fileName.ToLower ().EndsWith (".xml")) {
+						xmlFileName = fileName;
+						return true;
+					}
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while retrieving file system entries.", e);
+			}
+			xmlFileName = "";
+			return false;
+		}
+		
 		public static ITypeResolveContext LoadAssemblyContext (string fileName)
 		{
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
 				return null;
-			var result = new CecilLoader ().LoadAssembly (asm);
+			var loader = new CecilLoader ();
+			FilePath xmlDocFile;
+			if (GetXml (fileName, out xmlDocFile)) {
+				try {
+					loader.DocumentationProvider = new ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider (xmlDocFile);
+				} catch (Exception ex) {
+					LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
+				}
+			}
+			loader.InterningProvider = new SimpleInterningProvider ();
+			
+			var result = loader.LoadAssembly (asm);
 			result.AddAnnotation (fileName);
 			return result;
 		}
