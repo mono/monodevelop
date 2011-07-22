@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.MacDev.Plist
 {
-
-
 	public class PlistDate : PlistObject<DateTime>
 	{
 		public PlistDate (DateTime value) : base(value)

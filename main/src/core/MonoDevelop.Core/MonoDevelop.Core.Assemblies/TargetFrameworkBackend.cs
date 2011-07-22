@@ -70,7 +70,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			foreach (string path in runtime.GetToolsPaths (framework)) {
 				string toolPath = Path.Combine (path, toolName);
-				if (PropertyService.IsWindows) {
+				if (Platform.IsWindows) {
 					if (File.Exists (toolPath + ".bat"))
 						return toolPath + ".bat";
 				}

@@ -42,7 +42,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 	{
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
-			if (PropertyService.IsMac || PropertyService.IsWindows)
+			if (Platform.IsMac || Platform.IsWindows)
 				return false;
 			
 			var cmd = command as MoonlightExecutionCommand;

@@ -449,7 +449,6 @@ namespace MonoDevelop.XmlEditor
 		{			
 			if (fileName == null)
 				return false;
-			
 			if (System.IO.Path.IsPathRooted (fileName)) {
 				string vfsname = fileName.Replace ("%", "%25").Replace ("#", "%23").Replace ("?", "%3F");
 				string mimeType = DesktopService.GetMimeTypeForUri (vfsname);
@@ -462,7 +461,10 @@ namespace MonoDevelop.XmlEditor
 		
 		public static bool IsMimeTypeHandled (string mimeType)
 		{
-			return (mimeType != null && (mimeType == TextXmlMimeType || mimeType == ApplicationXmlMimeType));
+			foreach (var m in DesktopService.GetMimeTypeInheritanceChain (mimeType))
+				if (m == TextXmlMimeType || m == ApplicationXmlMimeType)
+					return true;
+			return false;
 		}
 			
 		#endregion

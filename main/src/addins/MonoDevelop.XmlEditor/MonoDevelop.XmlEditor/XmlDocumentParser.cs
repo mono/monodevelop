@@ -37,8 +37,6 @@ using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.XmlEditor
 {
-	
-	
 	public class XmlDocumentParser : ITypeSystemParser
 	{
 		ParsedDocument ITypeSystemParser.Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader content)

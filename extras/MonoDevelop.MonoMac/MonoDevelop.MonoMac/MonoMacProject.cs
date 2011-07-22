@@ -48,10 +48,6 @@ namespace MonoDevelop.MonoMac
 			get { return "MonoMac"; }
 		}
 		
-		public MonoMacCodeBehind CodeBehindGenerator {
-			get; private set;
-		}
-		
 		#region Constructors
 		
 		public MonoMacProject ()
@@ -79,20 +75,19 @@ namespace MonoDevelop.MonoMac
 		
 		XcodeProjectTracker projectTracker;
 		
-		XcodeProjectTracker IXcodeTrackedProject.XcodeProjectTracker { get { return projectTracker; } }
+		XcodeProjectTracker IXcodeTrackedProject.XcodeProjectTracker {
+			get {
+				return projectTracker ?? (projectTracker = new MonoMacXcodeProjectTracker (this));
+			}
+		}
 			
 		void Init ()
 		{
-			if (!XcodeProjectTracker.TrackerEnabled)
-				CodeBehindGenerator = new MonoMacCodeBehind (this);
 		}
 		
 		protected override void OnEndLoad ()
 		{
 			base.OnEndLoad ();
-			
-			if (XcodeProjectTracker.TrackerEnabled)
-				projectTracker = new MonoMacXcodeProjectTracker (this);
 		}
 		
 		public override void Dispose ()

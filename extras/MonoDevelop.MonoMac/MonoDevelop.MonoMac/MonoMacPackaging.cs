@@ -37,6 +37,7 @@ using System.Diagnostics;
 using System.IO;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MonoMac.Gui
 {
@@ -183,11 +184,7 @@ namespace MonoDevelop.MonoMac.Gui
 						mmpInfo.FileAccessPermissions |=  Mono.Unix.FileAccessPermissions.UserExecute;
 					
 					var psi = new ProcessStartInfo (mmpPath, args.ToString ());
-					monitor.Log.WriteLine ("mmp " + psi.Arguments);
-					
-					string err;
-					if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
-						monitor.Log.WriteLine (err);
+					if (MacBuildUtilities.ExecuteBuildCommand (monitor, psi) != 0) {
 						monitor.ReportError ("Merging Mono failed", null);
 						return false;
 					}
@@ -211,11 +208,7 @@ namespace MonoDevelop.MonoMac.Gui
 					args.AddQuoted (bundleKey, workingApp);
 					
 					var psi = new ProcessStartInfo ("codesign", args.ToString ());
-					monitor.Log.WriteLine ("codesign " + psi.Arguments);
-					
-					string err;
-					if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
-						monitor.Log.WriteLine (err);
+					if (MacBuildUtilities.ExecuteBuildCommand (monitor, psi) != 0) {
 						monitor.ReportError ("Signing failed", null);
 						return false;
 					}
@@ -241,19 +234,13 @@ namespace MonoDevelop.MonoMac.Gui
 					args.AddQuoted (target);
 					
 					var psi = new ProcessStartInfo ("productbuild", args.ToString ());
-					monitor.Log.WriteLine ("productbuild " + psi.Arguments);
-					
-					string err;
-					int pbRet;
 					try {
-						pbRet = MacBuildUtilities.ExecuteCommand (monitor, psi, out err);
+						if (MacBuildUtilities.ExecuteBuildCommand (monitor, psi) != 0) {
+							monitor.ReportError ("Package creation failed", null);
+							return false;
+						}
 					} catch (System.ComponentModel.Win32Exception) {
 						monitor.ReportError ("productbuild not found", null);
-						return false;
-					}
-					if (pbRet != 0) {
-						monitor.Log.WriteLine (err);
-						monitor.ReportError ("Package creation failed", null);
 						return false;
 					}
 					monitor.EndTask ();

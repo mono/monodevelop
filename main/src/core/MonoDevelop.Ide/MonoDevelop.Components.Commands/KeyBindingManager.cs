@@ -76,7 +76,7 @@ namespace MonoDevelop.Components.Commands
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		
 		static bool isMac {
-			get { return MonoDevelop.Core.PropertyService.IsMac; }
+			get { return MonoDevelop.Core.Platform.IsMac; }
 		}
 		
 		public void Dispose ()

@@ -57,21 +57,31 @@ namespace CustomControls.Controls
         #region Variables Declaration
         private AddonWindowLocation mStartLocation  = AddonWindowLocation.Right;
         private FolderViewMode      mDefaultViewMode= FolderViewMode.Default;
+		private FileDialog			fileDialog;
         #endregion
 
         #region Constructors
-        public OpenFileDialogEx()
+		public OpenFileDialogEx () : this (new OpenFileDialog ())
+		{
+		}
+		
+        public OpenFileDialogEx (FileDialog fileDialog)
         {
+			if (fileDialog == null)
+				throw new ArgumentNullException ("fileDialog");
+			
             InitializeComponent();
 //            dlgOpen.AutoUpgradeEnabled = false; 
             //SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+			
+			this.fileDialog = fileDialog;
         }
         #endregion
 
         #region Properties
-        public OpenFileDialog OpenDialog
+        public FileDialog FileDialog
         {
-            get {return dlgOpen;}
+            get {return fileDialog;}
         }
 
         [DefaultValue(AddonWindowLocation.Right)]
@@ -123,7 +133,7 @@ namespace CustomControls.Controls
             form.WatchForActivate = true;
             try
             {
-                return dlgOpen.ShowDialog(form);
+                return fileDialog.ShowDialog(form);
             }
             catch (Exception ex)
             {

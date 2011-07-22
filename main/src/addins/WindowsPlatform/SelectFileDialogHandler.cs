@@ -31,7 +31,7 @@ namespace MonoDevelop.Platform
                     return false;
 				
 				if (dlg is FileDialog) {
-					var fileDlg = dlg as OpenFileDialog;
+					var fileDlg = dlg as FileDialog;
 					FilePath[] paths = new FilePath [fileDlg.FileNames.Length];
 					for (int n=0; n < fileDlg.FileNames.Length; n++)
 						paths [n] = fileDlg.FileNames [n];
@@ -52,7 +52,7 @@ namespace MonoDevelop.Platform
 			
 			dialog.AddExtension = true;
 			dialog.Filter = GetFilterFromData (data.Filters);
-			dialog.FilterIndex = data.DefaultFilter == null ? 0 : data.Filters.IndexOf (data.DefaultFilter);
+			dialog.FilterIndex = data.DefaultFilter == null ? 1 : data.Filters.IndexOf (data.DefaultFilter) + 1;
 			
 			dialog.InitialDirectory = data.CurrentFolder;
             if (!string.IsNullOrEmpty (data.InitialFileName))

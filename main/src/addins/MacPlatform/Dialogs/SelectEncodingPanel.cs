@@ -33,7 +33,7 @@ using MonoDevelop.Projects.Text;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacIntegration
 {
 	class SelectEncodingPanel : NSPanel
 	{

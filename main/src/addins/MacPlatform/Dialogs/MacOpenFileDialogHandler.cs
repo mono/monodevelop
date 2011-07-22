@@ -38,7 +38,7 @@ using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacIntegration
 {
 	class MacOpenFileDialogHandler : IOpenFileDialogHandler
 	{

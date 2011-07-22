@@ -38,11 +38,9 @@
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="System.Core">
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-    </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Web" />
     <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -67,9 +65,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MacPlatform.cs" />
-    <Compile Include="Menus\OSXMenu.cs" />
-    <Compile Include="Commands.cs" />
-    <Compile Include="ExternalConsoleProcess.cs" />
     <Compile Include="Dialogs\MacAddFileDialogHandler.cs" />
     <Compile Include="Dialogs\MacOpenFileDialogHandler.cs" />
     <Compile Include="Dialogs\MacSelectFileDialogHandler.cs" />
@@ -88,6 +83,11 @@
     <Compile Include="MacInterop\GtkQuartz.cs" />
     <Compile Include="MacInterop\LaunchServices.cs" />
     <Compile Include="MacInterop\ProcessManager.cs" />
+    <Compile Include="MacInterop\Keychain.cs" />
+    <Compile Include="MacInterop\Cocoa.cs" />
+    <Compile Include="MacIntegrationCommands.cs" />
+    <Compile Include="MacExternalConsoleProcess.cs" />
+    <Compile Include="MacMainMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -115,7 +115,6 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <Folder Include="Menus\" />
     <Folder Include="Dialogs\" />
     <Folder Include="MacInterop\" />
   </ItemGroup>

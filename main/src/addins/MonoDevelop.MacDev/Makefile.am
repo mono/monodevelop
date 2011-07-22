@@ -6,6 +6,7 @@ DEPS =  \
 	../../../build/AddIns/MacPlatform.dll \
 	../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	../../../build/bin/ICSharpCode.NRefactory.dll \
+	../../../build/bin/Mono.TextEditor.dll \
 	../../../build/bin/MonoDevelop.Core.dll \
 	../../../build/bin/MonoDevelop.Ide.dll
 
@@ -14,6 +15,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:../../../../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -21,8 +23,11 @@ REFS =  \
 	-r:System.Xml.Linq
 
 FILES =  \
+	AppleSdkSettings.cs \
+	AppleSdkSettingsPanel.cs \
 	AssemblyInfo.cs \
-	Keychain.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \
@@ -42,6 +47,17 @@ FILES =  \
 	MonoDevelop.MacDev.Plist/PlistObjectBase.cs \
 	MonoDevelop.MacDev.Plist/PlistReal.cs \
 	MonoDevelop.MacDev.Plist/PlistString.cs \
+	MonoDevelop.MacDev.PlistEditor/CloseableExpander.cs \
+	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/ExpanderList.cs \
+	MonoDevelop.MacDev.PlistEditor/ImageChooser.cs \
+	MonoDevelop.MacDev.PlistEditor/IPlistEditingHandler.cs \
+	MonoDevelop.MacDev.PlistEditor/MacExpander.cs \
+	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
+	MonoDevelop.MacDev.PlistEditor/PListEditorViewContent.cs \
+	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \
+	MonoDevelop.MacDev.PlistEditor/PListObject.cs \
+	MonoDevelop.MacDev.PlistEditor/PListScheme.cs \
 	NativeReferences/NativeReference.cs \
 	NativeReferences/NativeReferenceCommandHandler.cs \
 	NativeReferences/NativeReferenceFolderNodeBuilder.cs \
@@ -78,10 +94,11 @@ FILES =  \
 	XcodeSyncing/XcodeSyncContext.cs \
 	XcodeSyncing/XcodeSyncedContent.cs \
 	XcodeSyncing/XcodeSyncedItem.cs \
-	XcodeSyncing/XcodeSyncedType.cs \
-	XibCodeBehind.cs 
+	XcodeSyncing/XcodeSyncedType.cs 
 
-RES = MonoDevelop.MacDev.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	MonoDevelop.MacDev.addin.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \

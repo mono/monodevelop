@@ -27,13 +27,15 @@
 //
 
 using System;
+using System.Collections.Generic;
+using Gtk;
 
 namespace MonoDevelop.DesignerSupport
 {
-	
 	public interface IOutlinedDocument
 	{
-		Gtk.Widget GetOutlineWidget ();
+		Widget GetOutlineWidget ();
+		IEnumerable<Widget> GetToolbarWidgets ();
 		void ReleaseOutlineWidget ();
 	}
 }

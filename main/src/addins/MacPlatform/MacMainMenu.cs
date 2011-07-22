@@ -1,5 +1,5 @@
 //
-// OSXMenu.cs
+// MacMainMenu.cs
 //
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -33,11 +33,10 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.MacInterop;
 using System.Text;
 using MonoDevelop.Ide;
-using MonoDevelop.Platform;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacIntegration
 {
-	static class OSXMenu
+	static class MacMainMenu
 	{
 		static IntPtr rootMenu;
 		static IntPtr appMenu;
@@ -99,11 +98,11 @@ namespace MonoDevelop.Platform.Mac
 		{
 			if (manager == null)
 				throw new ArgumentException ("manager");
-			if (OSXMenu.manager != null) {
-				OSXMenu.manager.CommandActivating -= OnCommandActivating;
+			if (MacMainMenu.manager != null) {
+				MacMainMenu.manager.CommandActivating -= OnCommandActivating;
 			}
-			OSXMenu.manager = manager;
-			OSXMenu.manager.CommandActivating += OnCommandActivating;
+			MacMainMenu.manager = manager;
+			MacMainMenu.manager.CommandActivating += OnCommandActivating;
 			
 			if (rootMenu == IntPtr.Zero) {
 				rootMenu = HIToolbox.CreateMenu (idSeq++, GetName (entrySet), 0);
@@ -673,7 +672,7 @@ namespace MonoDevelop.Platform.Mac
 					string url = "";
 					try {
 						url = linkCommands[(int)refCon];
-						MacPlatform.OpenUrl (url);
+						MacPlatformService.OpenUrl (url);
 					} catch (Exception ex) {
 						Gtk.Application.Invoke (delegate {
 							MonoDevelop.Ide.MessageService.ShowException (ex, MonoDevelop.Core.GettextCatalog.GetString ("Could not open the url {0}", url));

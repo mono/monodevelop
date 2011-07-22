@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Projects
 			this.hpaned1 = new global::Gtk.HPaned ();
 			this.hpaned1.CanFocus = true;
 			this.hpaned1.Name = "hpaned1";
-			this.hpaned1.Position = 603;
+			this.hpaned1.Position = 590;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
@@ -74,6 +74,7 @@ namespace MonoDevelop.Ide.Projects
 			this.hpaned1.Add (this.alignment1);
 			global::Gtk.Paned.PanedChild w4 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.alignment1]));
 			w4.Resize = false;
+			w4.Shrink = false;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.alignment2 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment2.Name = "alignment2";
@@ -153,6 +154,8 @@ namespace MonoDevelop.Ide.Projects
 			w19.Position = 1;
 			this.alignment2.Add (this.boxRefs);
 			this.hpaned1.Add (this.alignment2);
+			global::Gtk.Paned.PanedChild w21 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.alignment2]));
+			w21.Shrink = false;
 			this.vbox5.Add (this.hpaned1);
 			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hpaned1]));
 			w22.Position = 0;

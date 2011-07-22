@@ -33,6 +33,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -40,26 +41,16 @@ namespace MonoDevelop.DesignerSupport
 
 	public class DocumentOutlinePad : AbstractPadContent
 	{
-		Gtk.Alignment          box;
-		IOutlinedDocument      currentOutlineDoc;
-		Document               currentDoc;
-
-		// Sorting related widgets
-
-		DockItemToolbar        toolbar;
-
-		ToggleButton           groupToggleButton;
-		ToggleButton           sortAlphabeticallyToggleButton;
-		DockToolButton         preferencesButton;
-
-		VSeparator             separator;
-
+		Alignment box;
+		IOutlinedDocument currentOutlineDoc;
+		Document currentDoc;
+		DockItemToolbar toolbar;
 
 		public DocumentOutlinePad ()
 		{
 			box = new Gtk.Alignment (0, 0, 1, 1);
 			box.BorderWidth = 0;
-			SetEmptyWidget ();
+			SetWidget (null);
 			box.ShowAll ();
 		}
 
@@ -68,9 +59,8 @@ namespace MonoDevelop.DesignerSupport
 			base.Initialize (window);
 			IdeApp.Workbench.ActiveDocumentChanged += DocumentChangedHandler;
 			CurrentDoc = IdeApp.Workbench.ActiveDocument;
-
-			InitializeSortingWidgets (window);
-
+			toolbar = window.GetToolbar (PositionType.Top);
+			toolbar.Visible = false;
 			Update ();
 		}
 
@@ -78,9 +68,6 @@ namespace MonoDevelop.DesignerSupport
 		{
 			IdeApp.Workbench.ActiveDocumentChanged -= DocumentChangedHandler;
 			CurrentDoc = null;
-
-			DisposeSortingWidgets ();
-
 			ReleaseDoc ();
 			base.Dispose ();
 		}
@@ -118,48 +105,55 @@ namespace MonoDevelop.DesignerSupport
 			IOutlinedDocument outlineDoc = null;
 			if (CurrentDoc != null)
 				outlineDoc = CurrentDoc.GetContent<IOutlinedDocument> ();
+
 			if (currentOutlineDoc == outlineDoc)
 				return;
-
 			ReleaseDoc ();
-
-			Gtk.Widget newWidget = null;
-			if (outlineDoc != null)
-				newWidget = outlineDoc.GetOutlineWidget ();
-			if (newWidget == null)
-				SetEmptyWidget ();
-			else
-				SetWidget (newWidget);
 			currentOutlineDoc = outlineDoc;
 
-			UpdateSorting ();
+			Widget newWidget = null;
+			IEnumerable<Widget> toolbarWidgets = null;
+			if (outlineDoc != null) {
+				newWidget = outlineDoc.GetOutlineWidget ();
+				if (newWidget != null)
+					toolbarWidgets = outlineDoc.GetToolbarWidgets ();
+			}
+			SetWidget (newWidget);
+			SetToolbarWidgets (toolbarWidgets);
 		}
 
 		void ReleaseDoc ()
 		{
-			ReleaseSortableDocumentHandler ();
-
 			RemoveBoxChild ();
 			if (currentOutlineDoc != null)
 				currentOutlineDoc.ReleaseOutlineWidget ();
-
 			currentOutlineDoc = null;
-		}
-
-		void SetEmptyWidget ()
-		{
-			WrappedCentreLabel label = new WrappedCentreLabel (MonoDevelop.Core.GettextCatalog.GetString (
-			    "An outline is not available for the current document."));
-			label.Show ();
-			SetWidget (label);
 		}
 
 		void SetWidget (Gtk.Widget widget)
 		{
+			if (widget == null)
+				widget = new WrappedCentreLabel (MonoDevelop.Core.GettextCatalog.GetString (
+			    	"An outline is not available for the current document."));
 			RemoveBoxChild ();
 			box.Add (widget);
 			widget.Show ();
 			box.Show ();
+		}
+		
+		void SetToolbarWidgets (IEnumerable<Widget> toolbarWidgets)
+		{
+			foreach (var old in toolbar.Children)
+				toolbar.Remove (old);
+			bool any = false;
+			if (toolbarWidgets != null) {
+				foreach (var w in toolbarWidgets) {
+					w.Show ();
+					toolbar.Add (w);
+					any = true;
+				}
+			}
+			toolbar.Visible = any;
 		}
 
 		void RemoveBoxChild ()
@@ -167,131 +161,6 @@ namespace MonoDevelop.DesignerSupport
 			Gtk.Widget curChild = box.Child;
 			if (curChild != null)
 				box.Remove (curChild);
-		}
-
-		void InitializeSortingWidgets (IPadWindow window)
-		{
-			groupToggleButton = new ToggleButton ();
-			groupToggleButton.Image = new Image (ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
-			groupToggleButton.Toggled += new EventHandler (OnButtonGroupClicked);
-			groupToggleButton.TooltipText = GettextCatalog.GetString ("Group entries by type");
-
-			sortAlphabeticallyToggleButton = new ToggleButton ();
-			sortAlphabeticallyToggleButton.Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu);
-			sortAlphabeticallyToggleButton.Toggled += new EventHandler (OnButtonSortAlphabeticallyClicked);
-			sortAlphabeticallyToggleButton.TooltipText = GettextCatalog.GetString ("Sort entries alphabetically");
-
-			preferencesButton = new DockToolButton (Gtk.Stock.Preferences);
-			preferencesButton.Image = new Image (Gtk.Stock.Preferences, IconSize.Menu);
-			preferencesButton.Clicked += new EventHandler (OnButtonPreferencesClicked);
-			preferencesButton.TooltipText = GettextCatalog.GetString ("Open preferences dialog");
-
-			separator = new VSeparator ();
-
-			toolbar = window.GetToolbar (PositionType.Top);
-			toolbar.Add (groupToggleButton);
-			toolbar.Add (sortAlphabeticallyToggleButton);
-			toolbar.Add (separator);
-			toolbar.Add (preferencesButton);
-			toolbar.ShowAll ();
-
-			toolbar.Visible = false;
-		}
-
-		void DisposeSortingWidgets ()
-		{
-			groupToggleButton.Dispose ();
-			groupToggleButton = null;
-
-			sortAlphabeticallyToggleButton.Dispose ();
-			sortAlphabeticallyToggleButton = null;
-
-			preferencesButton.Dispose ();
-			preferencesButton = null;
-
-			separator.Dispose ();
-			separator = null;
-
-			toolbar = null;
-		}
-
-		void UpdateSorting ()
-		{
-			bool isSortableOutline = currentOutlineDoc is ISortableOutline;
-
-			// Only show the toolbar if it is a sortable outline
-
-			toolbar.Visible = isSortableOutline;
-
-			if (isSortableOutline)
-			{
-				// Register for sorting properties change events
-
-				var properties = ((ISortableOutline) currentOutlineDoc).GetSortingProperties ();
-				properties.EventSortingPropertiesChanged += OnSortingPropertiesChanged;
-
-				// Update button state to properties
-
-				OnSortingPropertiesChanged (this, EventArgs.Empty);
-			}
-		}
-
-		void ReleaseSortableDocumentHandler ()
-		{
-			if (currentOutlineDoc is ISortableOutline)
-			{
-				// De-register from sorting properties change events
-
-				var properties = ((ISortableOutline) currentOutlineDoc).GetSortingProperties ();
-				properties.EventSortingPropertiesChanged -= OnSortingPropertiesChanged;
-			}
-		}
-
-		void OnButtonGroupClicked (object sender, EventArgs e)
-		{
-			// Set properties to button state
-
-			var properties = ((ISortableOutline) currentOutlineDoc).GetSortingProperties ();
-
-			properties.IsGrouping = groupToggleButton.Active;
-
-			// Notify listeners on properties changes
-
-			properties.SortingPropertiesChanged (this, EventArgs.Empty);
-		}
-
-		void OnButtonSortAlphabeticallyClicked (object sender, EventArgs e)
-		{
-			// Set properties to button state
-
-			var properties = ((ISortableOutline) currentOutlineDoc).GetSortingProperties ();
-
-			properties.IsSortingAlphabetically = sortAlphabeticallyToggleButton.Active;
-
-			// Notify listeners on properties changes
-
-			properties.SortingPropertiesChanged (this, EventArgs.Empty);
-		}
-
-		void OnButtonPreferencesClicked (object sender, EventArgs e)
-		{
-			var properties = ((ISortableOutline) currentOutlineDoc).GetSortingProperties ();
-
-			SortingPreferencesDialog dialog = new SortingPreferencesDialog (properties);
-
-			dialog.Run ();
-
-			dialog.Destroy ();
-		}
-
-		void OnSortingPropertiesChanged (object sender, EventArgs e)
-		{
-			// Synchronize property state with buttons
-
-			var properties = ((ISortableOutline) currentOutlineDoc).GetSortingProperties ();
-
-			groupToggleButton.Active              = properties.IsGrouping;
-			sortAlphabeticallyToggleButton.Active = properties.IsSortingAlphabetically;
 		}
 
 		private class WrappedCentreLabel : Gtk.Widget
@@ -363,8 +232,6 @@ namespace MonoDevelop.DesignerSupport
 				}
 				base.Dispose ();
 			}
-
-
 		}
 	}
 }

@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -51,8 +52,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			aliases.Add ("SystemFile", "MonoDevelop.Ide.Gui.Pads.ProjectPad.SystemFile");
 			aliases.Add ("ProjectFolder", "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolder");
 			TreeView.ContextMenuTypeNameAliases = aliases;
+			TreeView.Tree.DragDataGet += OnDragDataGet;
 		}
 
+		void OnDragDataGet (object o, Gtk.DragDataGetArgs args)
+		{
+			if (treeView.DragObjects == null)
+				return;
+			const int uriListTarget = 11;
+			if (args.Info == uriListTarget) {
+				StringBuilder sb = new StringBuilder ();
+				foreach (var dobj in treeView.DragObjects) {
+					if (dobj is ProjectFile) {
+						sb.Append (new Uri (((ProjectFile)dobj).FilePath).AbsoluteUri);
+						sb.AppendLine ();
+					}
+				}
+				args.SelectionData.Set (args.SelectionData.Target, args.SelectionData.Format, System.Text.Encoding.UTF8.GetBytes (sb.ToString ()));
+			}
+		}
+	
 		
 		protected override void OnSelectionChanged (object sender, EventArgs args)
 		{

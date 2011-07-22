@@ -53,12 +53,11 @@ namespace MonoDevelop.Startup
 
 			// On Windows log all output to a log file
 
-			string configPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-			configPath = Path.Combine (configPath, "MonoDevelop");
-			if (!Directory.Exists (configPath))
-				Directory.CreateDirectory (configPath);
+			FilePath logDir = UserProfile.Current.LogDir;
+			if (!Directory.Exists (logDir))
+				Directory.CreateDirectory (logDir);
 
-			string file = Path.Combine (configPath, "log.txt");
+			string file = logDir.Combine ("log.txt");
 			try {
 				logFile = new StreamWriter (file);
 				logFile.AutoFlush = true;

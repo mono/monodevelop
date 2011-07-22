@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			};
 			
 			//set a platform-dependent default folder for the dialog if possible
-			if (PropertyService.IsWindows) {
+			if (Platform.IsWindows) {
 				string folder = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86);
 				if (!string.IsNullOrEmpty (folder) && System.IO.Directory.Exists (folder))
 					dlg.CurrentFolder = folder;

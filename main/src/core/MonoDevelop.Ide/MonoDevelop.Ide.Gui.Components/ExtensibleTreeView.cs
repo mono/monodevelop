@@ -116,6 +116,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		
 		public string Id { get; set; }
+
+		internal object[] DragObjects {
+			get {
+				return this.dragObjects;
+			}
+		}
 		
 		public ExtensibleTreeView ()
 		{
@@ -1898,7 +1904,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
 		{
-			var modifier = !PropertyService.IsMac? Gdk.ModifierType.ControlMask
+			var modifier = !Platform.IsMac? Gdk.ModifierType.ControlMask
 				//Mac window manager already uses control-scroll, so use command
 				//Command might be either meta or mod1, depending on GTK version
 				: (Gdk.ModifierType.MetaMask | Gdk.ModifierType.Mod1Mask);

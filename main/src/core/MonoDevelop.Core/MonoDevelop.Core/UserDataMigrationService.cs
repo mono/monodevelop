@@ -37,14 +37,14 @@ namespace MonoDevelop.Core
 {
 	static class UserDataMigrationService
 	{
-		static UserDataLocations profile;
+		static UserProfile profile;
 		static string version;
 		static bool handlerAdded;
 		
 		//TODO: it would be nice to migrate custom addins that are installed after first run
 		//maybe we would maintain a property with IDs of migrated addins, and check that on addin load
 		//and if an unknown addin comes along, re-migrate just nodes of that addin
-		public static void SetMigrationSource (UserDataLocations profile, string version)
+		public static void SetMigrationSource (UserProfile profile, string version)
 		{
 			if (UserDataMigrationService.profile != null)
 				throw new InvalidOperationException ("Already set");
@@ -87,7 +87,7 @@ namespace MonoDevelop.Core
 
 			try {
 				source = profile.GetLocation (node.Kind).Combine (node.SourcePath);
-				target = PropertyService.Locations.GetLocation (node.Kind).Combine (node.TargetPath);
+				target = UserProfile.Current.GetLocation (node.Kind).Combine (node.TargetPath);
 
 				bool sourceIsDirectory = Directory.Exists (source);
 

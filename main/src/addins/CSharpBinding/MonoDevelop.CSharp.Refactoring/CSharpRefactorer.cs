@@ -265,16 +265,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			text.Append ("using ");
 			text.Append (nsName);
 			text.Append (";");
-			if (pos == 0)
-				text.AppendLine ();
 			if (file is Mono.TextEditor.ITextEditorDataProvider) {
 				Mono.TextEditor.TextEditorData data = ((Mono.TextEditor.ITextEditorDataProvider)file).GetTextEditorData ();
+				if (pos == 0)
+					text.Append (data.EolMarker);
 				int caretOffset = data.Caret.Offset;
 				int insertedChars = data.Insert (pos, text.ToString ());
 				if (pos < caretOffset) {
 					data.Caret.Offset = caretOffset + insertedChars;
 				}
 			} else {
+				if (pos == 0)
+					text.AppendLine ();
 				file.InsertText (pos, text.ToString ());
 			}
 		}
@@ -338,16 +340,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			text.Append ("using ");
 			text.Append (nsName);
 			text.Append (";");
-			if (pos == 0)
-				text.AppendLine ();
 			if (file is Mono.TextEditor.ITextEditorDataProvider) {
 				Mono.TextEditor.TextEditorData data = ((Mono.TextEditor.ITextEditorDataProvider)file).GetTextEditorData ();
+				if (pos == 0)
+					text.Append (data.EolMarker);
 				int caretOffset = data.Caret.Offset;
 				int insertedChars = data.Insert (pos, text.ToString ());
 				if (pos < caretOffset) {
 					data.Caret.Offset = caretOffset + insertedChars;
 				}
 			} else {
+				if (pos == 0)
+					text.AppendLine ();
 				file.InsertText (pos, text.ToString ());
 			} 
 		}

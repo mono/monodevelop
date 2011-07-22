@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui
 		readonly static string toolbarsPath    = "/MonoDevelop/Ide/Toolbar";
 		readonly static string stockLayoutsPath    = "/MonoDevelop/Ide/WorkbenchLayouts";
 		
-		static string configFile = PropertyService.Locations.Config.Combine ("EditingLayout.xml");
+		static string configFile = UserProfile.Current.ConfigDir.Combine ("EditingLayout.xml");
 		const string fullViewModeTag = "[FullViewMode]";
 		const int MAX_LASTACTIVEWINDOWS = 10;
 		
@@ -522,7 +522,7 @@ namespace MonoDevelop.Ide.Gui
 		public Properties GetStoredMemento (IViewContent content)
 		{
 			if (content != null && content.ContentName != null) {
-				string directory = PropertyService.Locations.Cache.Combine ("temp");
+				string directory = UserProfile.Current.CacheDir.Combine ("temp");
 				if (!Directory.Exists(directory)) {
 					Directory.CreateDirectory(directory);
 				}
@@ -544,7 +544,7 @@ namespace MonoDevelop.Ide.Gui
 				GetSize (out width, out height);
 				// HACK: always capture bounds on OS X because we don't restore Gdk.WindowState.Maximized due to
 				// the bug mentioned below. So we simular Maximized by capturing the Maximized size.
-				if (GdkWindow.State == 0 || PropertyService.IsMac) {
+				if (GdkWindow.State == 0 || Platform.IsMac) {
 					memento.Bounds = new Rectangle (x, y, width, height);
 				} else {
 					memento.Bounds = normalBounds;
@@ -566,7 +566,7 @@ namespace MonoDevelop.Ide.Gui
 					// GdkWindow.State that means it doesn't reflect the real state, it only reflects values set
 					// internally by GTK e.g. by Maximize calls. Because MD restores state, if it ever becomes 
 					// Maximized it becomes "stuck" and it's difficult for the user to make it "normal".
-					if (memento.WindowState == Gdk.WindowState.Maximized && !PropertyService.IsMac) {
+					if (memento.WindowState == Gdk.WindowState.Maximized && !Platform.IsMac) {
 						Maximize ();
 					} else if (memento.WindowState == Gdk.WindowState.Iconified) {
 						Iconify ();
@@ -638,8 +638,11 @@ namespace MonoDevelop.Ide.Gui
 			foreach (var fv in dock.Layouts)
 				if (fv.EndsWith (fullViewModeTag))
 					dock.DeleteLayout (fv);
-			
-			dock.SaveLayouts (configFile);
+			try {
+				dock.SaveLayouts (configFile);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while saving layout.", ex);
+			}
 			UninstallMenuBar ();
 			Remove (rootWidget);
 			
@@ -851,7 +854,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			fullViewVBox.PackEnd (this.StatusBar, false, true, 0);
 			
-			if (MonoDevelop.Core.PropertyService.IsMac)
+			if (MonoDevelop.Core.Platform.IsMac)
 				this.StatusBar.HasResizeGrip = true;
 			else {
 				if (GdkWindow != null && GdkWindow.State == Gdk.WindowState.Maximized)
@@ -994,7 +997,7 @@ namespace MonoDevelop.Ide.Gui
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			// Handle Alt+1-0 keys
-			Gdk.ModifierType winSwitchModifier = PropertyService.IsMac
+			Gdk.ModifierType winSwitchModifier = Platform.IsMac
 				? KeyBindingManager.SelectionModifierControl
 				: KeyBindingManager.SelectionModifierAlt;
 			

@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide
 			
 			//don't show the splash screen on the Mac, so instead we get the expected "Dock bounce" effect
 			//this also enables the Mac platform service to subscribe to open document events before the GUI loop starts.
-			if (PropertyService.IsMac)
+			if (Platform.IsMac)
 				options.NoLogo = true;
 			
 			IProgressMonitor monitor;

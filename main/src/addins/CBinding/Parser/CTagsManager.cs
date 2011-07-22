@@ -42,7 +42,7 @@ namespace CBinding.Parser
 		protected abstract IEnumerable<string> GetTags (FileInformation fileInfo);
 		protected abstract IEnumerable<string> GetTags (Project project, string filename, IEnumerable<string> headers);
 		
-		public static readonly string SystemTagsDirectory = PropertyService.Locations.Cache.Combine ("CTagsData");
+		public static readonly string SystemTagsDirectory = UserProfile.Current.CacheDir.Combine ("CTagsData");
 		
 		public static string CTagsExecutable {
 			get { return PropertyService.Get<string> ("CBinding.CTagsExecutable", "ctags"); }

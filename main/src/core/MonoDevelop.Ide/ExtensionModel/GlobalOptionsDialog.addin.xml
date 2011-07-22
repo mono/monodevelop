@@ -38,6 +38,7 @@
 	<Section id = "VersionControl" _label = "Version Control" />
 
 	<Section id = "Other" _label = "Other">
+		<Section id = "SdkLocations" _label = "SDK Locations" />
 		<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" />
 	</Section>
 </Extension>

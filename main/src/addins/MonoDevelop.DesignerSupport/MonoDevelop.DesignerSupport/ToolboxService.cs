@@ -75,7 +75,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		static string ToolboxConfigFile {
-			get { return PropertyService.Locations.ConfigLocal.Combine ("Toolbox.xml"); }
+			get { return UserProfile.Current.LocalConfigDir.Combine ("Toolbox.xml"); }
 		}
 		
 		#region Extension loading
@@ -606,7 +606,7 @@ namespace MonoDevelop.DesignerSupport
 		List<ComponentIndexFile> files = new List<ComponentIndexFile> ();
 		
 		static string ToolboxIndexFile {
-			get { return PropertyService.Locations.Cache.Combine ("ToolboxIndex.xml"); }
+			get { return UserProfile.Current.CacheDir.Combine ("ToolboxIndex.xml"); }
 		}
 		
 		internal static ComponentIndex Load ()

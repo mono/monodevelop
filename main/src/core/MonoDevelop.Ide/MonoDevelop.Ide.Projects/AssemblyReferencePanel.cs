@@ -134,7 +134,6 @@ namespace MonoDevelop.Ide.Projects
 			}
 		
 			bool allAssemblies = true;
-			bool allFolders = false;
 			foreach (string file in chooser.Filenames) {
 				try	{
 					SystemAssemblyService.GetAssemblyName (System.IO.Path.GetFullPath (file));

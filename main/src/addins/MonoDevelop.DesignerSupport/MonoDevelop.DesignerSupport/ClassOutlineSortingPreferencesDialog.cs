@@ -1,5 +1,5 @@
 //
-// GroupComparer.cs
+// SortingPreferencesDialog.cs
 //
 // Authors:
 //  Helmut Duregger <helmutduregger@gmx.at>
@@ -28,32 +28,50 @@
 using System;
 using System.Collections.Generic;
 
+using Gtk;
+
+using MonoDevelop.Core;
+
+
 namespace MonoDevelop.DesignerSupport
 {
 	/// <summary>
-	/// Compares items of type Group.
+	/// Provides a priority list of the groups that items in the class outline can be grouped in.
 	/// </summary>
-	public class GroupComparer : IComparer<Group>
+	/// <remarks>
+	/// The user can sort the list with button presses and thereby change the order of groups
+	/// in the outline, while grouping is active.
+	/// </remarks>
+	partial class ClassOutlineSortingPreferencesDialog : Dialog
 	{
-		/// <param name="a">
-		/// A <see cref="Group"/> to compare.
-		/// </param>
-		/// <param name="b">
-		/// A <see cref="Group"/> to compare.
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.Int32"/> indicating which group is sorted higher up.
-		/// </returns>
-		public int Compare (Group a, Group b)
+		ClassOutlineSettings settings;
+		
+		public ClassOutlineSortingPreferencesDialog (ClassOutlineSettings settings)
 		{
-			if (a.SortKey < b.SortKey) {
-				return -1;
-			} else if (a.SortKey == b.SortKey) {
-				return 0;
-			} else {
-				return 1;
+			this.Build ();
+
+			priorityList.Model = new ListStore (typeof (string), typeof (string));
+			priorityList.AppendColumn ("", new CellRendererText (), "text", 1);
+			
+			priorityList.Model.Clear ();
+			foreach (string g in settings.GroupOrder) {
+				priorityList.Model.AppendValues (g, ClassOutlineSettings.GetGroupName (g));
 			}
+			
+			this.settings = settings;
+		}
+		
+		public void SaveSettings ()
+		{
+			TreeIter iter;
+			if (priorityList.Model.GetIterFirst (out iter)) {
+				var order = new List<string> ();
+				do {
+					order.Add ((string) priorityList.Model.GetValue (iter, 0));
+				} while (priorityList.Model.IterNext (ref iter));
+				settings.GroupOrder = order; 
+			}
+			settings.Save ();
 		}
 	}
 }
-

@@ -28,6 +28,7 @@
 <!--  <Extension path = "/MonoDevelop/Components/DialogHandlers">
     <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
     <Class class = "MonoDevelop.Platform.AddFileDialogHandler"/>
+    <Class class = "MonoDevelop.Platform.OpenFileDialogHandler"/>
   </Extension>-->
 	
 </Addin>

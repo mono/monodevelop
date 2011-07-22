@@ -42,11 +42,14 @@ namespace MonoDevelop.MacDev
 		
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			if (ownerProject == null || !XcodeProjectTracker.TrackerEnabled || !(ownerProject is IXcodeTrackedProject))
+			if (!AppleSdkSettings.IsXcode4)
 				return false;
-			if (mimeType == "application/vnd.apple-interface-builder")
-				return true;
-			return fileName.IsNotNull && fileName.HasExtension (".xib");
+			if (fileName.IsNullOrEmpty)
+				return false;
+			var xcp = ownerProject as IXcodeTrackedProject;
+			if (xcp == null)
+				return false;
+			return xcp.XcodeProjectTracker.ShouldOpenInXcode (fileName);
 		}
 
 		public bool CanUseAsDefault {
@@ -56,11 +59,10 @@ namespace MonoDevelop.MacDev
 	
 	class XcodeInterfaceBuilderDesktopApplication : DesktopApplication
 	{
-		public const string XCODE_LOCATION = "/Developer/Applications/Xcode.app";
-		
 		IXcodeTrackedProject project;
 		
-		public XcodeInterfaceBuilderDesktopApplication (IXcodeTrackedProject project) : base (XCODE_LOCATION, "Xcode Interface Builder", true)
+		public XcodeInterfaceBuilderDesktopApplication (IXcodeTrackedProject project)
+			: base (AppleSdkSettings.XcodePath, "Xcode Interface Builder", true)
 		{
 			this.project = project;
 		}

@@ -58,7 +58,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Posix">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Xml.Linq">
     </Reference>
@@ -95,7 +94,6 @@
     <Compile Include="MonoMacExecutionCommand.cs" />
     <Compile Include="MonoMacExecutionHandler.cs" />
     <Compile Include="MonoMacProject.cs" />
-    <Compile Include="MonoMacCodeBehind.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MonoMac.Gui.MonoMacPackagingSettingsWidget.cs" />
     <Compile Include="Gui\MacPackagingSettingsWidget.cs" />

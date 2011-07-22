@@ -632,8 +632,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void UnsetMetadata (string name)
 		{
 			XmlElement elem = Element [name, MSBuildProject.Schema];
-			if (elem != null)
+			if (elem != null) {
 				Element.RemoveChild (elem);
+				if (!Element.HasChildNodes)
+					Element.IsEmpty = true;
+			}
 		}
 		
 		public string GetMetadata (string name)

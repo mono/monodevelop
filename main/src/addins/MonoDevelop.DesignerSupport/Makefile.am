@@ -25,7 +25,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.DesignerSupport.SortingPreferencesDialog.cs \
+	gtk-gui/MonoDevelop.DesignerSupport.ClassOutlineSortingPreferencesDialog.cs \
 	gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs \
 	MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs \
@@ -57,7 +57,8 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \
 	MonoDevelop.DesignerSupport/BindingService.cs \
 	MonoDevelop.DesignerSupport/ClassOutlineNodeComparer.cs \
-	MonoDevelop.DesignerSupport/ClassOutlineSortingProperties.cs \
+	MonoDevelop.DesignerSupport/ClassOutlineSettings.cs \
+	MonoDevelop.DesignerSupport/ClassOutlineSortingPreferencesDialog.cs \
 	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs \
 	MonoDevelop.DesignerSupport/CodeBehind.cs \
 	MonoDevelop.DesignerSupport/CodeBehindWriter.cs \
@@ -66,18 +67,13 @@ FILES =  \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \
 	MonoDevelop.DesignerSupport/DocumentOutlinePad.cs \
 	MonoDevelop.DesignerSupport/ErrorInFileException.cs \
-	MonoDevelop.DesignerSupport/Group.cs \
-	MonoDevelop.DesignerSupport/GroupComparer.cs \
 	MonoDevelop.DesignerSupport/IOutlinedDocument.cs \
 	MonoDevelop.DesignerSupport/IPropertyPadProvider.cs \
 	MonoDevelop.DesignerSupport/IPropertyProvider.cs \
-	MonoDevelop.DesignerSupport/ISortableOutline.cs \
-	MonoDevelop.DesignerSupport/ISortingProperties.cs \
 	MonoDevelop.DesignerSupport/MemberExistsException.cs \
 	MonoDevelop.DesignerSupport/PropertyPad.cs \
 	MonoDevelop.DesignerSupport/PropertyPadVisitor.cs \
 	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \
-	MonoDevelop.DesignerSupport/SortingPreferencesDialog.cs \
 	MonoDevelop.DesignerSupport/SwitchBetweenRelatedFilesCommand.cs \
 	MonoDevelop.DesignerSupport/ToolboxPad.cs \
 	MonoDevelop.DesignerSupport/ToolboxService.cs \

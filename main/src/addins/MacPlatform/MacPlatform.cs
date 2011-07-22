@@ -1,10 +1,11 @@
 //
-// MacPlatform.cs
+// MacPlatformService.cs
 //
 // Author:
 //   Geoff Norton  <gnorton@novell.com>
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007-2011 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -46,9 +47,9 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacIntegration
 {
-	class MacPlatform : PlatformService
+	class MacPlatformService : PlatformService
 	{
 		static TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
 		static TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
@@ -57,7 +58,7 @@ namespace MonoDevelop.Platform.Mac
 		
 		static Dictionary<string, string> mimemap;
 
-		static MacPlatform ()
+		static MacPlatformService ()
 		{
 			timer.BeginTiming ();
 			
@@ -68,8 +69,7 @@ namespace MonoDevelop.Platform.Mac
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
 			Carbon.SetProcessName ("MonoDevelop");
 			
-			timer.Trace ("Initializing NSApplication");
-			MonoMac.AppKit.NSApplication.Init ();
+			MonoDevelop.MacInterop.Cocoa.InitMonoMac ();
 			
 			timer.Trace ("Installing App Event Handlers");
 			GlobalSetup ();
@@ -179,10 +179,10 @@ namespace MonoDevelop.Platform.Mac
 			try {
 				InitApp (commandManager);
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-				OSXMenu.Recreate (commandManager, ces, ignoreCommands);
+				MacMainMenu.Recreate (commandManager, ces, ignoreCommands);
 			} catch (Exception ex) {
 				try {
-					OSXMenu.Destroy (true);
+					MacMainMenu.Destroy (true);
 				} catch {}
 				MonoDevelop.Core.LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
@@ -197,7 +197,7 @@ namespace MonoDevelop.Platform.Mac
 			if (initedApp)
 				return;
 			
-			OSXMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
+			MacMainMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
 			{
 				{ CommandManager.ToCommandId (EditCommands.Copy), CarbonCommandID.Copy },
 				{ CommandManager.ToCommandId (EditCommands.Cut), CarbonCommandID.Cut },
@@ -224,8 +224,8 @@ namespace MonoDevelop.Platform.Mac
 			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
 			
 			initedApp = true;
-			OSXMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
-			OSXMenu.AddAppMenuItems (
+			MacMainMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
+			MacMainMenu.AddAppMenuItems (
 				commandManager,
 			    CommandManager.ToCommandId (HelpCommands.About),
 				CommandManager.ToCommandId (Command.Separator),
@@ -253,22 +253,14 @@ namespace MonoDevelop.Platform.Mac
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
-						IdeApp.Workbench.RootWindow.Show ();
-						
+
 						// This is a workaround to a GTK+ bug. The HasTopLevelFocus flag is not properly
-						// set when the main window is restored. The workaround is to create and quickly
-						// destroy a top level window. GTK+ then detects that the top level focus has
-						// changed and properly sets HasTopLevelFocus.
-						Gtk.Window ww = new Gtk.Window ("");
-						ww.Decorated = false;
-						ww.SetDefaultSize (0, 0);
-						ww.Present ();
+						// set when the main window is restored. The workaround is to hide and re-show it.
+						// Since this happens before the next mainloop cycle, the window isn't actually affected.
+						IdeApp.Workbench.RootWindow.Hide ();
+						IdeApp.Workbench.RootWindow.Show ();
+
 						IdeApp.Workbench.RootWindow.Present ();
-						GLib.Timeout.Add (1, delegate {
-							// Without this small delay, GTK+ crashes when destroying the window
-							ww.Destroy ();
-							return false;
-						});
 						e.Handled = true;
 					}
 				};
@@ -356,7 +348,7 @@ namespace MonoDevelop.Platform.Mac
 		                                                            IDictionary<string, string> environmentVariables,
 		                                                            string title, bool pauseWhenFinished)
 		{
-			return new ExternalConsoleProcess (command, arguments, workingDirectory, environmentVariables,
+			return new MacExternalConsoleProcess (command, arguments, workingDirectory, environmentVariables,
 			                                   title, pauseWhenFinished);
 		}
 		

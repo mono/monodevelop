@@ -10,6 +10,8 @@
        version     = "2.6">
 	
 	<Runtime>
+		<Import assembly="MonoMac.dll" />
+		<ScanExclude path="MonoMac.dll" />
 	</Runtime>
 
 	<Dependencies>
@@ -18,38 +20,38 @@
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">
 		<Class id      = "PlatformService"
-		       class   = "MonoDevelop.Platform.Mac.MacPlatform"/>
+		       class   = "MonoDevelop.MacIntegration.MacPlatformService"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Window">
-		<Command id  = "MonoDevelop.Platform.Mac.Commands.MinimizeWindow"
-				defaultHandler = "MonoDevelop.Platform.Mac.MinimizeWindowHandler"
+		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
+				defaultHandler = "MonoDevelop.MacIntegration.MacMinimizeWindowHandler"
 				_label = "_Minimize"
 				_description = "Minimize the window" 
 				macShortcut = "Meta|M" />
-		<Command id  = "MonoDevelop.Platform.Mac.Commands.HideWindow"
-				defaultHandler = "MonoDevelop.Platform.Mac.HideWindowHandler"
+		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow"
+				defaultHandler = "MonoDevelop.MacIntegration.MacHideWindowHandler"
 				_label = "_Hide MonoDevelop"
 				_description = "Hide MonoDevelop" 
 				macShortcut = "Meta|H" />
-		<Command id  = "MonoDevelop.Platform.Mac.Commands.HideOthers"
-				defaultHandler = "MonoDevelop.Platform.Mac.HideOthersHandler"
+		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers"
+				defaultHandler = "MonoDevelop.MacIntegration.MacHideOthersHandler"
 				_label = "_Hide Others"
 				_description = "Hide other windows" 
 				macShortcut = "Meta|Alt|H" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
-		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.MinimizeWindow"
+		<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
 		             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Components/DialogHandlers">
-		<Class class="MonoDevelop.Platform.Mac.MacSelectFileDialogHandler" />
-		<Class class="MonoDevelop.Platform.Mac.MacAddFileDialogHandler" />
-		<Class class="MonoDevelop.Platform.Mac.MacOpenFileDialogHandler" />
+		<Class class="MonoDevelop.MacIntegration.MacSelectFileDialogHandler" />
+		<Class class="MonoDevelop.MacIntegration.MacAddFileDialogHandler" />
+		<Class class="MonoDevelop.MacIntegration.MacOpenFileDialogHandler" />
 		<!--
-		<Class class="MonoDevelop.Platform.Mac.MacAlertDialogHandler" />
+		<Class class="MonoDevelop.MacIntegration.MacAlertDialogHandler" />
 		-->
 	</Extension>
 </Addin>

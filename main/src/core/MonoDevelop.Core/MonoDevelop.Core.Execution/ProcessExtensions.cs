@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Execution
 	{
 		public static void KillProcessTree (this Process p)
 		{
-			if (PropertyService.IsWindows) {
+			if (Platform.IsWindows) {
 				var procRelations = GetProcRelations ();
 				
 				foreach (int pid in GetAllChildren (procRelations, p.Id)) {

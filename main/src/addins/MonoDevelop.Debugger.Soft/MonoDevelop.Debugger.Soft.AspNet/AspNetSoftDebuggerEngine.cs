@@ -77,7 +77,7 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			FilePath xspPath = fxDir.Combine (xspName).ChangeExtension (".exe");
 			
 			//no idea why xsp is sometimes relocated to a "winhack" dir on Windows
-			if (MonoDevelop.Core.PropertyService.IsWindows && !File.Exists (xspPath)) {
+			if (MonoDevelop.Core.Platform.IsWindows && !File.Exists (xspPath)) {
 				var winhack = fxDir.Combine ("winhack");
 				if (Directory.Exists (winhack))
 					xspPath = winhack.Combine (xspName).ChangeExtension (".exe");

@@ -934,7 +934,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		static FilePath PoliciesFolder {
 			get {
-				return Path.Combine (PropertyService.Locations.Data, "Policies");
+				return UserProfile.Current.UserDataRoot.Combine ("Policies");
 			}
 		}
 		

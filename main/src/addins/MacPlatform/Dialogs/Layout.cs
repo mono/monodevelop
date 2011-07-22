@@ -29,7 +29,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using MonoMac.AppKit;
 using System.Linq;
-namespace MonoDevelop.Platform.Mac
+
+namespace MonoDevelop.MacIntegration
 {
 	interface ILayout
 	{

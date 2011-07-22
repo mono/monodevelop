@@ -27,6 +27,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.MacDev.Plist
 {

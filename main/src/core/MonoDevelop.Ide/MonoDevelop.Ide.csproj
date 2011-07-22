@@ -58,8 +58,7 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="System.Core">
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib">
     </Reference>
     <Reference Include="Mono.Cairo" />
@@ -1486,6 +1485,7 @@
     <Compile Include="MonoDevelop.Ide.Updater\IUpdateHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\AddinsUpdateHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\UpdateCheckHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\SdkLocationPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

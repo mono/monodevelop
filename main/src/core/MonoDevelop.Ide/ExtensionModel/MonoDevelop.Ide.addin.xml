@@ -248,9 +248,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
-		<Migration sourceVersion="2.4" kind="Data" sourcePath="KeyBindings.xml" targetPath="KeyBindings/Custom.kb.xml" />
-		<Migration sourceVersion="2.4" kind="Data" sourcePath="KeyBindingsMac.xml" targetPath="KeyBindings/Custom.kb-mac.xml" />
-		<Migration sourceVersion="2.4" kind="Data" isDirectory="true" sourcePath="templates/code" targetPath="Snippets" />
+		<Migration sourceVersion="2.4" kind="UserData" sourcePath="KeyBindings.xml" targetPath="KeyBindings/Custom.kb.xml" />
+		<Migration sourceVersion="2.4" kind="UserData" sourcePath="KeyBindingsMac.xml" targetPath="KeyBindings/Custom.kb-mac.xml" />
+		<Migration sourceVersion="2.4" kind="UserData" isDirectory="true" sourcePath="templates/code" targetPath="Snippets" />
 		<Migration sourceVersion="2.4" kind="Config" sourcePath="custom-command-modes.xml" />
 		<Migration sourceVersion="2.4" kind="Config" sourcePath="MonoDevelop-tools.xml" />
 		<Migration sourceVersion="2.4" kind="Config" sourcePath="EditingLayout2.xml" targetPath="EditingLayout.xml"/>

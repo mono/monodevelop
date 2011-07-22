@@ -203,8 +203,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			CompilationUnit unit;
 			ResolveVisitor visitor;
 			SemanticResolveVisitorNavigator navi;
-
-			
 			static HashSet<string> contextualKeywords = new HashSet<string> ();
 			
 			static CSharpChunkParser ()
@@ -258,7 +256,6 @@ namespace MonoDevelop.CSharp.Highlighting
 				foreach (var tag in CommentTag.SpecialCommentTags) {
 					tags.Add (tag.Tag);
 				}
-				
 				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
 					unit = document.ParsedDocument.Annotation<CompilationUnit> ();
 					
@@ -414,7 +411,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (semanticStyle != null) {
 						if (endLoc < chunk.EndOffset) {
 							base.AddRealChunk (new Chunk (chunk.Offset, endLoc - chunk.Offset, semanticStyle));
-							AddRealChunk (new Chunk (endLoc, chunk.EndOffset - endLoc, chunk.Style));
+							base.AddRealChunk (new Chunk (endLoc, chunk.EndOffset - endLoc, chunk.Style));
 							return;
 						}
 						chunk.Style = semanticStyle;

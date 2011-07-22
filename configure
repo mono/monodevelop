@@ -173,7 +173,7 @@ create_local_config ()
 	# Copy the .pc file to local-config, and set the base lib directory
 	mkdir -p local-config
 	builddir=`pwd`/$path/build
-	for f in `ls $1/*.pc.in` ; do
+	for f in `ls $1/*.pc.in 2>/dev/null`; do
 		pcfile=`echo $f | sed s,.*/,, | sed s/\.in$//`
 		sed -e s,libdir=.*,libdir=$builddir, -e s/@VERSION@/$ver/g $f> local-config/$pcfile
 	done

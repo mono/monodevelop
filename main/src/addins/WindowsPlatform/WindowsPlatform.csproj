@@ -85,6 +85,9 @@
     </Compile>
     <Compile Include="RecentFiles.cs" />
     <Compile Include="JumpList.cs" />
+    <Compile Include="OpenFileDialogHandler.cs" />
+    <Compile Include="CustomOpenFileDialog.cs" />
+    <Compile Include="EncodingComboBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

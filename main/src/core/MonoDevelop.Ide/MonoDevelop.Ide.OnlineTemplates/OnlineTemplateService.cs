@@ -42,16 +42,16 @@ namespace MonoDevelop.Ide.OnlineTemplates
 		
 		static FilePath ProjectTemplateIndexFile {
 			get {
-				return PropertyService.Locations.Cache.Combine ("OnlineTemplates", "ProjectTemplateIndex.xml");
+				return UserProfile.Current.CacheDir.Combine ("OnlineTemplates", "ProjectTemplateIndex.xml");
 			}
 		}
 		
 		internal static string GetOnlineTemplatesRoot ()
 		{
 			string platform;
-			if (PropertyService.IsWindows)
+			if (Platform.IsWindows)
 				platform = "win32";
-			else if (PropertyService.IsMac)
+			else if (Platform.IsMac)
 				platform = "mac";
 			else
 				platform = "linux";

@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 
@@ -41,7 +42,7 @@ namespace MonoDevelop.Platform
 	//
 	public class WindowsRecentFiles : FdoRecentFiles
 	{
-		public WindowsRecentFiles () : base (MonoDevelop.Core.PropertyService.Locations.Data.Combine ("RecentlyUsed.xml"))
+		public WindowsRecentFiles () : base (UserProfile.Current.LocalConfigDir.Combine ("RecentlyUsed.xml"))
 		{
 		}
 		

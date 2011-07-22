@@ -362,7 +362,7 @@ namespace MonoDevelop.Core
 		public static void SystemRename (string sourceFile, string destFile)
 		{
 			//FIXME: use the atomic System.IO.File.Replace on NTFS
-			if (PropertyService.IsWindows) {
+			if (Platform.IsWindows) {
 				string wtmp = null;
 				if (File.Exists (destFile)) {
 					do {

@@ -336,7 +336,7 @@ namespace MonoDevelop.Ide
 		public static void PlaceDialog (Window child, Window parent)
 		{
 			//HACK: Mac GTK automatic window placement is broken
-			if (PropertyService.IsMac)
+			if (Platform.IsMac)
 				CenterWindow (child, parent ?? GetDefaultParent (child));
 		}
 		

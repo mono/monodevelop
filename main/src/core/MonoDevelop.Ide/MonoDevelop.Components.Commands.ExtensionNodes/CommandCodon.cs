@@ -152,7 +152,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			if (icon != null)
 				cmd.Icon = GetStockId (Addin, icon);
 			
-			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (PropertyService.IsMac? macShortcut : shortcut);
+			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (Platform.IsMac? macShortcut : shortcut);
 			
 			cmd.DisabledVisible = disabledVisible;
 			

@@ -53,8 +53,7 @@
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="System.Core">
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib">
       <Private>False</Private>
     </Reference>
@@ -165,6 +164,8 @@
     <Content Include="Templates\framework_SL_3_0.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Templates\framework_SL_4_0.xml" />
+    <Content Include="Templates\framework_SL_4_0.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

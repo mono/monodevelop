@@ -99,7 +99,7 @@ namespace MonoDevelop.WelcomePage
 		
 		static string NewsFile {
 			get {
-				return PropertyService.Locations.Cache.Combine ("WelcomePageNews.xml");
+				return UserProfile.Current.CacheDir.Combine ("WelcomePageNews.xml");
 			}
 		}
 		

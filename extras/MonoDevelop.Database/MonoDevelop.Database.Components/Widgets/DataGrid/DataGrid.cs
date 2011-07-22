@@ -70,7 +70,6 @@ namespace MonoDevelop.Database.Components
 			
 			//Gtk# 2.10: grid.EnableGridLines = TreeViewGridLines.Both;
 			grid.ButtonPressEvent += new ButtonPressEventHandler (ButtonPressed);
-			grid.Selection.Mode = SelectionMode.Multiple;
 
 			contentRenderers = new Dictionary<Type, IDataGridContentRenderer> ();
 			
@@ -388,10 +387,8 @@ namespace MonoDevelop.Database.Components
 				return;
 			}
 			
-			if (args.Event.Button == 3) {
+			if (args.Event.Button == 3)
 				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/Database/ContextMenu/DataGrid");
-				args.RetVal = true;
-			}
 		}
 		
 		private static string ByteConvertFunc (object obj)
@@ -410,32 +407,6 @@ namespace MonoDevelop.Database.Components
 			
 			sbyte b = (sbyte)obj;
 			return b.ToString ("N");
-		}
-
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Copy)]
-		protected void CopyCommand ()
-		{
-			Gtk.TreePath[] selectedRows = grid.Selection.GetSelectedRows ();
-			string result = String.Empty;
-			TreeIter iter;
-			for (int i = 0; i < selectedRows.Length; i++) {
-				store.GetIter (out iter,selectedRows[i]);
-				string [] row = new string[columnCount];
-				for (int j = 0; j < columnCount; j++) {
-					object val = store.GetValue (iter,j);
-					row[j] =  val != null ? val.ToString (): String.Empty;
-				}
-				result += String.Join ("\t",row);
-				result += System.Environment.NewLine;
-			}
-			Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = result;
-		}
-
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.SelectAll)]
-		protected void SelectAllCommand ()
-		{
-			grid.Selection.SelectAll ();
 		}
 		
 		[CommandHandler (DataGridCommands.VisualizeAsList)]

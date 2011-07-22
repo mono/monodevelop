@@ -35,13 +35,16 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		public override bool IsInstalled {
 			get {
-				//TODO: it should be possible to support any framework by reading the MS framework definition files
 				return base.IsInstalled;
 			}
 		}
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
+			var dir = targetRuntime.FrameworksDirectory.Combine (framework.Id.GetAssemblyDirectoryName ());
+			if (Directory.Exists (dir) && File.Exists (dir.Combine ("RedistList", "FrameworkList.xml")))
+				yield return dir;
+			
 			if (framework.Id.Identifier != TargetFrameworkMoniker.ID_NET_FRAMEWORK)
 				yield break;
 			
@@ -65,31 +68,54 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
 		{
-			Dictionary<string, string> vars = new Dictionary<string, string> ();
-			string path = Environment.GetEnvironmentVariable ("PATH");
-			vars["PATH"] = GetFrameworkToolsPath () + Path.PathSeparator + path;
+			var vars = new Dictionary<string, string> ();
+			var path = new System.Text.StringBuilder ();
+			foreach (var s in GetFrameworkToolsPaths ()) {
+				path.Append (s);
+				path.Append (Path.PathSeparator);
+			}
+			path.Append (Environment.GetEnvironmentVariable ("PATH"));
+			vars["PATH"] = path.ToString ();
 			return vars;
 		}
 
 		public override IEnumerable<string> GetToolsPaths ()
 		{
-			string path = GetFrameworkToolsPath ();
-			if (path != null)
-				yield return path;
-
-			string sdkPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles), "Microsoft SDKs");
-			sdkPath = Path.Combine (sdkPath, "Windows");
-			if (framework.Id.Version == "4.0")
-				yield return Path.Combine (sdkPath, "v7.0A\\bin\\NETFX 4.0 Tools");
-			else if (framework.Id.Version == "3.5") {
-				yield return Path.Combine (sdkPath, "v7.0A\\bin");
-				yield return targetRuntime.RootDirectory.Combine (GetClrVersion (ClrVersion.Net_2_0));
-			} else
-				yield return Path.Combine (sdkPath, "v6.0A\\bin");
-
+			foreach (string s in GetFrameworkToolsPaths ())
+				yield return s;
 			foreach (string s in BaseGetToolsPaths ())
 				yield return s;
 			yield return PropertyService.EntryAssemblyPath;
+		}
+		
+		IEnumerable<string> GetFrameworkToolsPaths ()
+		{
+			//FIXME: use the toolversion from the project file
+			TargetFrameworkToolsVersion toolsVersion = framework.GetToolsVersion ();
+			
+			string sdkPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86),
+				"Microsoft SDKs", "Windows");
+			
+			switch (toolsVersion) {
+			case TargetFrameworkToolsVersion.V1_1:
+				yield return Path.Combine (sdkPath, "v6.0A\\bin");
+				yield return targetRuntime.RootDirectory.Combine (GetClrVersion (ClrVersion.Net_1_1));
+				break;
+			case TargetFrameworkToolsVersion.V2_0:
+				yield return Path.Combine (sdkPath, "v6.0A\\bin");
+				yield return targetRuntime.RootDirectory.Combine (GetClrVersion (ClrVersion.Net_2_0));
+				break;
+			case TargetFrameworkToolsVersion.V3_5:
+				yield return Path.Combine (sdkPath, "v7.0A\\bin");
+				yield return targetRuntime.RootDirectory.Combine ("v3.5");
+				goto case TargetFrameworkToolsVersion.V2_0;
+			case TargetFrameworkToolsVersion.V4_0:
+				yield return Path.Combine (sdkPath, "v7.0A\\bin\\NETFX 4.0 Tools");
+				yield return targetRuntime.RootDirectory.Combine (GetClrVersion (ClrVersion.Net_4_0));
+				break;
+			default:
+				throw new Exception ("Unknown ToolsVersion");
+			}
 		}
 
 		//base isn't verifiably accessible from the enumerator so use this private helper
@@ -97,28 +123,15 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return base.GetToolsPaths ();
 		}
-
-		string GetFrameworkToolsPath ()
-		{
-			var version = framework.Id.Version;
-			if (version == "1.1" || version == "2.0" || version == "4.0")
-				return targetRuntime.RootDirectory.Combine (GetClrVersion (framework.ClrVersion));
-
-			if (version == "3.0")
-				return targetRuntime.RootDirectory.Combine (GetClrVersion (ClrVersion.Net_2_0));
- 
-			return targetRuntime.RootDirectory.Combine ("v" + version);
-		}
 		
 		internal static string GetClrVersion (ClrVersion v)
 		{
 			switch (v) {
 				case ClrVersion.Net_1_1: return "v1.1.4322";
 				case ClrVersion.Net_2_0: return "v2.0.50727";
-				case ClrVersion.Clr_2_1: return "v2.1";
 				case ClrVersion.Net_4_0: return "v4.0.30319";
 			}
-			return "?";
+			return null;
 		}
 	}
 }

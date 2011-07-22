@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		public System.Collections.Generic.IEnumerable<TargetRuntime> CreateRuntimes ()
 		{
-			if (!PropertyService.IsWindows)
+			if (!Platform.IsWindows)
 				yield break;
 			if (Type.GetType ("Mono.Runtime") == null) {
 				yield return new MsNetTargetRuntime (true);

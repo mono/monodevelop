@@ -1899,7 +1899,6 @@ namespace MonoDevelop.Xml.Formatting
 		XmlFormatterWriter formatter;
 		StringBuilder sb;
 		bool inBlock;
-		bool charsWritten;
 		
 		public int Column;
 		public int AttributesPerLine;

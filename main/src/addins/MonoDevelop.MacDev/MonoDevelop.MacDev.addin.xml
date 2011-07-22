@@ -36,22 +36,18 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/MacDev/PlistEditingHandler">
+		<ExtensionNode name="Class" objectType="MonoDevelop.MacDev.PlistEditor.IPlistEditingHandler"/>
+	</ExtensionPoint>
+	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="application/vnd.apple-plist" _description="Mac Property List" isText="false">
 			<File pattern="*.plist" />
 		</MimeType>
-		<Condition id="Platform" value="mac">
-			<MimeType id="application/vnd.apple-interface-builder" _description="Interface Builder file"
-			          isText="false" icon="application-vnd-apple-interface-builder">
-				<File pattern="*.xib" />
-			</MimeType>
-		</Condition>
-		<Condition id="Platform" value="!mac">
-			<MimeType id="application/vnd.apple-interface-builder" _description="Interface Builder file"
-			          baseType="application/xml" icon="application-vnd-apple-interface-builder">
-				<File pattern="*.xib" />
-			</MimeType>
-		</Condition>
+		<MimeType id="application/vnd.apple-interface-builder" _description="Interface Builder file"
+		          baseType="application/xml" icon="application-vnd-apple-interface-builder">
+			<File pattern="*.xib" />
+		</MimeType>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -116,4 +112,11 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other/SdkLocations">
+		<Panel id = "AppleSdkSettings" class="MonoDevelop.MacDev.AppleSdkSettingsPanel"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding class = "MonoDevelop.MacDev.PlistEditor.PListEditorDisplayBinding" />
+	</Extension>
 </Addin>

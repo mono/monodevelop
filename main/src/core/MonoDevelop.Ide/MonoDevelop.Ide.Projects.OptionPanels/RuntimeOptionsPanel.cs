@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Projects;
@@ -65,43 +66,59 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	partial class RuntimeOptionsPanelWidget : Gtk.Bin 
 	{
 		DotNetProject project;
-		ArrayList supportedVersions = new ArrayList (); 
+		List<TargetFramework> frameworks;
 
 		public RuntimeOptionsPanelWidget (DotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
 			Build ();
 			
 			this.project = project;
-			if (project != null) {
-				// Get the list of available versions, and add only those supported by the target language.
-				foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-					if (fx.Hidden)
-						continue;
-					if (fx != project.TargetFramework) {
-						if (!project.TargetRuntime.IsInstalled (fx))
-							continue;
-						if (!project.SupportsFramework (fx))
-							continue;
-					}
+			if (project == null) {
+				Sensitive = false;
+				return;
+			}
+			
+			frameworks = Runtime.SystemAssemblyService.GetTargetFrameworks ()
+				.Where (fx => !fx.Hidden && project.TargetRuntime.IsInstalled (fx) && project.SupportsFramework (fx))
+				.ToList ();
+			
+			bool notInstalled = false;
+			
+			if (!frameworks.Any (fx => fx.Id == project.TargetFramework.Id)) {
+				notInstalled = true;
+				frameworks.Add (project.TargetFramework);
+			}
+				
+			//sort by id ascending, version descending, profile ascending
+			frameworks.Sort ((x, y) => {
+				var cmp = string.CompareOrdinal (x.Id.Identifier, y.Id.Identifier);
+				if (cmp != 0)
+					return cmp;
+				cmp = string.CompareOrdinal (y.Id.Version, x.Id.Version);
+				if (cmp != 0)
+					return cmp;
+				return string.CompareOrdinal (x.Id.Profile, y.Id.Profile);
+			});
+			
+			for (int i = 0; i < frameworks.Count; i++) {
+				var fx = frameworks[i];
+				if (project.TargetFramework.Id == fx.Id) {
+					string name = notInstalled? GettextCatalog.GetString ("{0} (Not installed)", fx.Name) : fx.Name;
+					runtimeVersionCombo.AppendText (name);
+					runtimeVersionCombo.Active = i;
+				} else {
 					runtimeVersionCombo.AppendText (fx.Name);
-					if (project.TargetFramework == fx)
-		 				runtimeVersionCombo.Active = supportedVersions.Count;
-					supportedVersions.Add (fx);
 				}
-				if (supportedVersions.Count <= 1)
-					Sensitive = false;
- 			}
- 			else
- 				Sensitive = false;
+			}
+			
+			Sensitive = frameworks.Count > 1;
 		}
 
 		public void Store ()
 		{	
 			if (project == null || runtimeVersionCombo.Active == -1)
 				return;
-			TargetFramework fx = (TargetFramework) supportedVersions [runtimeVersionCombo.Active];
-			if (project.TargetFramework != fx)
-				project.TargetFramework = fx;
+			project.TargetFramework = frameworks [runtimeVersionCombo.Active];
 		}
 	}
 }

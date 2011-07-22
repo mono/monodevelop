@@ -490,6 +490,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/MaintenanceOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/SdkLocationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs \

@@ -54,21 +54,24 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		bool updatingProjectFiles;
 		
-		static bool? trackerEnabled;
-		public static bool TrackerEnabled {
-			get {
-				if (!trackerEnabled.HasValue) {
-					trackerEnabled = Environment.GetEnvironmentVariable ("MD_XC4_TEST") != null;
-					XC4Debug.Log ("Tracker enabled: {0}", trackerEnabled.Value);
-				}
-				return trackerEnabled.Value;
-			}
-		}
-		
 		public XcodeProjectTracker (DotNetProject dnp, NSObjectInfoService infoService)
 		{
 			this.dnp = dnp;
 			this.infoService = infoService;
+			AppleSdkSettings.Changed += DisableSyncing;
+		}
+		
+		public bool ShouldOpenInXcode (FilePath fileName)
+		{
+			if (!HasPageExtension (fileName))
+				return false;
+			var file = dnp.Files.GetFile (fileName);
+			return file != null && file.BuildAction == BuildAction.Page;
+		}
+		
+		public virtual bool HasPageExtension (FilePath fileName)
+		{
+			return fileName.HasExtension (".xib");
 		}
 		
 		void EnableSyncing ()
@@ -159,9 +162,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return pf.BuildAction == BuildAction.Content;
 		}
 		
-		static bool IsPageOrContent (ProjectFile pf)
+		bool IncludeInSyncedProject (ProjectFile pf)
 		{
-			return pf.BuildAction == BuildAction.Page || pf.BuildAction == BuildAction.Content;
+			return pf.BuildAction == BuildAction.Content
+				|| (pf.BuildAction == BuildAction.Page && HasPageExtension (pf.FilePath));
 		}
 		
 		#region Project change tracking
@@ -218,7 +222,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (finf.ProjectFile.BuildAction == BuildAction.Compile) {
 					updateTypes = update = true;
 					break;
-				} else if (IsPageOrContent (finf.ProjectFile)) {
+				} else if (IncludeInSyncedProject (finf.ProjectFile)) {
 					update = true;
 				}
 			}
@@ -257,7 +261,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		List<XcodeSyncedItem> CreateSyncList ()
 		{
 			var syncList = new List<XcodeSyncedItem> ();
-			foreach (var file in dnp.Files.Where (IsPageOrContent))
+			foreach (var file in dnp.Files.Where (IncludeInSyncedProject))
 				syncList.Add (new XcodeSyncedContent (file));
 			
 			foreach (var type in userTypes) {
@@ -374,6 +378,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				return;
 			disposed = true;
 			DisableSyncing ();
+			AppleSdkSettings.Changed -= DisableSyncing;
 		}
 	}
 	

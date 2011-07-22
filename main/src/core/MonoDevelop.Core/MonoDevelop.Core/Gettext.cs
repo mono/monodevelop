@@ -44,7 +44,7 @@ namespace MonoDevelop.Core
 			// Set the user defined language
 			string lang = PropertyService.Get ("MonoDevelop.Ide.UserInterfaceLanguage", "");
 			if (!string.IsNullOrEmpty (lang)) {
-				if (PropertyService.IsWindows) {
+				if (Platform.IsWindows) {
 					lang = lang.Replace("_", "-");
 					CultureInfo ci = CultureInfo.GetCultureInfo(lang);
 					if (ci.IsNeutralCulture) {
@@ -65,7 +65,7 @@ namespace MonoDevelop.Core
 			if (string.IsNullOrEmpty (catalog)) {
 				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;
 				location = Path.GetDirectoryName (location);
-				if (PropertyService.IsWindows) {
+				if (Platform.IsWindows) {
 					// On windows, load the catalog from a child dir
 					catalog = Path.Combine (location, "locale");
 				}

@@ -327,31 +327,26 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (provider == null)
 				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
 			
-			TextWriter fileStream;
-			if (saveToFile)
-				fileStream = new StreamWriter (fileName);
-			else
-				fileStream = new StringWriter ();
-			
-			try {
-				var pol = project.Policies.Get<TextStylePolicy> ();
+			string text;
+			var pol = project.Policies.Get<TextStylePolicy> ();
+			using (var fileStream = new StringWriter ()) {
 				var options = new CodeGeneratorOptions () {
 					IndentString = pol.TabsToSpaces? new string (' ', pol.TabWidth) : "\t",
 					BlankLinesBetweenMembers = true,
 				};
-				
 				provider.GenerateCodeFromCompileUnit (cu, fileStream, options);
-			} finally {
-				fileStream.Close ();
+				text = fileStream.ToString ();
+				text = FormatGeneratedFile (fileName, text, provider);
 			}
-
+			
+			if (saveToFile)
+				File.WriteAllText (fileName, text);
+			
 			if (ProjectDomService.HasDom (project)) {
 				// Only update the parser database if the project is actually loaded in the IDE.
-				if (saveToFile) {
-					ProjectDomService.Parse (project, fileName);
+				ProjectDomService.Parse (project, fileName, text);
+				if (saveToFile) 
 					FileService.NotifyFileChanged (fileName);
-				} else
-					ProjectDomService.Parse (project, fileName, ((StringWriter)fileStream).ToString ());
 			}
 
 			return fileName;
@@ -492,6 +487,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						timer.Trace ("Generating code for " + unit.Name);
 						provider.GenerateCodeFromCompileUnit (unit, sw, codeGeneratorOptions);
 						string content = sw.ToString ();
+						string eol = pol.GetEolMarker ();
+									
 						timer.Trace ("Formatting code");
 						content = FormatGeneratedFile (fname, content, provider);
 						timer.Trace ("Writing code");
@@ -538,10 +535,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static string FormatGeneratedFile (string file, string content, CodeDomProvider provider)
 		{
 			content = StripHeaderAndBlankLines (content, provider);
+			
+			var pol = PolicyService.InvariantPolicies.Get<TextStylePolicy> ();
+			string eol = pol.GetEolMarker ();
+			if (Environment.NewLine != eol)
+				content = content.Replace (Environment.NewLine, eol);
+			
 			string mt = DesktopService.GetMimeTypeForUri (file);
 			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
 			if (formatter != null)
 				content = formatter.FormatText (PolicyService.InvariantPolicies, content);
+			
 			return content;
 		}
 		

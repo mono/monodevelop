@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Security.Cryptography.X509Certificates;
 
-namespace MonoDevelop.MacDev
+namespace MonoDevelop.MacInterop
 {
 	public static class Keychain
 	{

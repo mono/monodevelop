@@ -39,10 +39,10 @@ using Mono.Addins;
 using MonoDevelop.MacDev;
 using Mono.Unix;
 using MonoDevelop.MacDev.Plist;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.MonoMac
 {
-	
 	public class MonoMacBuildExtension : ProjectServiceExtension
 	{
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
@@ -55,12 +55,7 @@ namespace MonoDevelop.MonoMac
 			var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
 			var appDir = conf.AppDirectory;
 			
-			//make sure the codebehind files are updated before building
-			var res = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, proj.Files);
-			if (res.ErrorCount > 0)
-				return res;
-			
-			res = res.Append (base.Build (monitor, item, configuration));
+			var res = base.Build (monitor, item, configuration);
 			if (res.ErrorCount > 0)
 				return res;
 			
@@ -78,11 +73,11 @@ namespace MonoDevelop.MonoMac
 			}
 			
 			//FIXME: only do this check if there are actually xib files
-			if (!PropertyService.IsMac) {
+			if (!Platform.IsMac) {
 				res.AddWarning ("Cannot compile xib files on non-Mac platforms");
 			} else {
 				//Interface Builder files
-				if (res.Append (MacBuildUtilities.CompileXibFiles (monitor, proj.Files, resDir)).ErrorCount > 0)
+				if (res.Append (CompileXibFiles (monitor, proj.Files, resDir)).ErrorCount > 0)
 					return res;
 			}
 			
@@ -94,7 +89,7 @@ namespace MonoDevelop.MonoMac
 				if (res.Append (MergeInfoPlist (monitor, proj, conf, appInfoIn, plistOut)).ErrorCount > 0)
 					return res;
 			
-			if (PropertyService.IsWindows) {
+			if (Platform.IsWindows) {
 				res.AddWarning ("Cannot create app bundle on Windows");
 			} else {	
 				//launch script
@@ -177,10 +172,10 @@ namespace MonoDevelop.MonoMac
 			if (GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding).Any ())
 				return true;
 			
-			if (PropertyService.IsMac) {
+			if (Platform.IsMac) {
 				//Interface Builder files
 				var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
-				if (MacBuildUtilities.GetIBFilePairs (proj.Files, resDir).Any (NeedsBuilding))
+				if (GetIBFilePairs (proj.Files, resDir).Any (NeedsBuilding))
 					return true;
 			}
 			
@@ -251,6 +246,71 @@ namespace MonoDevelop.MonoMac
 			foreach (var pf in project.Files)
 				if (pf.BuildAction == BuildAction.Content)
 					yield return new FilePair (pf.FilePath, pf.ProjectVirtualPath.ToAbsolute (resDir));
+		}
+		
+		public static BuildResult CompileXibFiles (IProgressMonitor monitor, IEnumerable<ProjectFile> files,
+			FilePath outputRoot)
+		{
+			var result = new BuildResult ();
+			var ibfiles = GetIBFilePairs (files, outputRoot).Where (NeedsBuilding).ToList ();
+			
+			if (ibfiles.Count > 0) {
+				monitor.BeginTask (GettextCatalog.GetString ("Compiling interface definitions"), 0);
+				foreach (var file in ibfiles) {
+					file.EnsureOutputDirectory ();
+					var args = new ProcessArgumentBuilder ();
+					args.Add ("--errors", "--warnings", "--notices", "--output-format", "human-readable-text");
+					args.AddQuoted (file.Input);
+					args.Add ("--compile");
+					args.AddQuoted (file.Output);
+					var psi = new ProcessStartInfo ("ibtool", args.ToString ());
+					monitor.Log.WriteLine (psi.FileName + " " + psi.Arguments);
+					int code;
+					try {
+						code = MacBuildUtilities.ExecuteBuildCommand (monitor, psi);
+					} catch (System.ComponentModel.Win32Exception ex) {
+						LoggingService.LogError ("Error running ibtool", ex);
+						result.AddError (null, 0, 0, null, "ibtool not found. Please ensure the Apple SDK is installed.");
+						return result;
+					}
+					if (monitor.IsCancelRequested)
+						return result;
+					
+					if (code != 0) {
+						result.AddError (null, 0, 0, null, "ibtool returned error code " + code);
+						return result;
+					}
+				}
+				monitor.EndTask ();
+			}
+			return result;
+		}
+		
+		public static IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> files, string outputRoot)
+		{
+			foreach (var pf in files) {
+				if (pf.BuildAction != BuildAction.Page)
+					continue;
+				
+				var name = pf.ProjectVirtualPath;
+				switch (name.Extension) {
+				case ".xib":
+					name = name.ChangeExtension (".nib");
+					break;
+				case ".nib":
+					break;
+				default:
+					//FIXME: warn about unknown type
+					continue;
+				}
+				
+				string[] splits = name.ToString ().Split (Path.DirectorySeparatorChar);
+				name = splits.Last ();
+				if (splits.Length > 1 && splits[0].EndsWith (".lproj"))
+					name = new FilePath (splits[0]).Combine (name);
+				
+				yield return new FilePair (pf.FilePath, name.ToAbsolute (outputRoot));
+			}
 		}
 	}
 }

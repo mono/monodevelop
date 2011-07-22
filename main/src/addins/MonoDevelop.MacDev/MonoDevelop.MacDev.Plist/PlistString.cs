@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.MacDev.Plist
 {

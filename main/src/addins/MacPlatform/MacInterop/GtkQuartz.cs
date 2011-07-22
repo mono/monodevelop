@@ -28,9 +28,9 @@ using System;
 using System.Runtime.InteropServices;
 using MonoMac.AppKit;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacInterop
 {
-	static class GtkQuartz
+	public static class GtkQuartz
 	{
 		//this may be needed to work around focusing issues in GTK/Cocoa interop
 		public static void FocusWindow (Gtk.Window widget)

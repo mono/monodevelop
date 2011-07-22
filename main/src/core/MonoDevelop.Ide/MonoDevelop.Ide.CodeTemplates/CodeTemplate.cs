@@ -419,7 +419,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			TemplateResult template = FillVariables (context);
 			template.InsertPosition = offset;
-			int length = document.Editor.Insert (offset, template.Code);
+			document.Editor.Insert (offset, template.Code);
 			
 			if (template.CaretEndOffset >= 0) {
 				document.Editor.Caret.Offset = offset + template.CaretEndOffset; 

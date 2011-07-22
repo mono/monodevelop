@@ -32,13 +32,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
-    </Reference>
-    <Reference Include="System.Core">
-    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-    </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -53,6 +50,7 @@
       <HintPath>..\..\..\..\extras\MonoDevelop.MonoMac\MonoDevelop.MonoMac\MonoMac.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.MacDev.Plist\" />
@@ -62,6 +60,7 @@
     <Folder Include="NativeReferences\" />
     <Folder Include="XcodeSyncing\" />
     <Folder Include="XcodeIntegration\" />
+    <Folder Include="MonoDevelop.MacDev.PlistEditor\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -84,8 +83,6 @@
     <Compile Include="MonoDevelop.MacDev.Plist\PlistReal.cs" />
     <Compile Include="MonoDevelop.MacDev.Plist\PlistString.cs" />
     <Compile Include="MacBuildUtilities.cs" />
-    <Compile Include="XibCodeBehind.cs" />
-    <Compile Include="Keychain.cs" />
     <Compile Include="SigningIdentityCombo.cs" />
     <Compile Include="ObjCIntegration\IBOutlet.cs" />
     <Compile Include="ObjCIntegration\IBAction.cs" />
@@ -125,10 +122,28 @@
     <Compile Include="XcodeSyncing\XcodeSyncedItem.cs" />
     <Compile Include="XcodeSyncing\XcodeSyncBackContext.cs" />
     <Compile Include="XcodeSyncing\XcodeSyncContext.cs" />
+    <Compile Include="AppleSdkSettingsPanel.cs" />
+    <Compile Include="AppleSdkSettings.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\PListEditorWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\PListEditorDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\PListEditorViewContent.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\CustomPropertiesWidget.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\PListObject.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\PListScheme.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\MacExpander.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\CloseableExpander.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\IPlistEditingHandler.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\ExpanderList.cs" />
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\ImageChooser.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
       <LogicalName>MonoDevelop.MacDev.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -193,6 +208,9 @@
     <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>

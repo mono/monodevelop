@@ -1,10 +1,10 @@
 // 
-// Commands.cs
+// AppleSdkSettingsPanel.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Michael Hutchinson <mhutch@xamarin.com>
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,48 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.MacInterop;
+using System;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.OptionPanels;
+using MonoMac.Foundation;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.MacDev
 {
-	internal enum Commands
+	class AppleSdkSettingsPanel : SdkLocationPanel
 	{
-		MinimizeWindow,
-		HideWindow,
-		HideOthers,
-		CheckForUpdates,
-	}
-	
-	internal class MinimizeWindowHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			IdeApp.Workbench.RootWindow.Iconify ();
-		}
-	}
-	
-	internal class HideWindowHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			HideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
-		}
-	}
-	
-	internal class HideOthersHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			RunMenuCommand (CarbonCommandID.HideOthers);
+		public override string Label {
+			get { return GettextCatalog.GetString ("Apple SDK"); }
 		}
 		
-		internal static void RunMenuCommand (CarbonCommandID commandID)
+		public override FilePath DefaultSdkLocation {
+			get { return AppleSdkSettings.DefaultRoot; }
+		}
+		
+		public override bool ValidateSdkLocation (FilePath location)
 		{
-			var item = HIToolbox.GetMenuItem ((uint)commandID);
-			var cmd = new CarbonHICommand ((uint)commandID, item);
-			Carbon.ProcessHICommand (ref cmd);
+			return AppleSdkSettings.ValidateSdkLocation (location);
+		}
+		
+		public override FilePath LoadSdkLocationSetting ()
+		{
+			return AppleSdkSettings.GetConfiguredSdkLocation ();
+		}
+		
+		public override void SaveSdkLocationSetting (FilePath location)
+		{
+			AppleSdkSettings.SetConfiguredSdkLocation (location);
 		}
 	}
 }

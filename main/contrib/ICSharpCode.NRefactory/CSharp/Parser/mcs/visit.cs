@@ -178,6 +178,11 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
+		
+		public virtual object Visit (EmptyExpression emptyExpression)
+		{
+			return null;
+		}
 
 		public virtual object Visit (If ifStatement)
 		{

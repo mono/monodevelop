@@ -19,6 +19,7 @@ obj/
 # globs
 Makefile.in
 *.sln.cache
+*.suo
 *.pidb
 *.userprefs
 *.usertasks

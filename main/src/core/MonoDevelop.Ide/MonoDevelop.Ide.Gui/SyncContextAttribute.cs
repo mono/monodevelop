@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.Gui
 
 		MethodBase GetRealMethod (IMethodMessage mm)
 		{
-			if (PropertyService.IsWindows) {
+			if (Platform.IsWindows) {
 				// HACK: When running on .NET, mm.MethodBase returns the method for the type of the proxy
 				// instead of the target type. There is no legal way of getting the target type, so we have
 				// to use reflection here.

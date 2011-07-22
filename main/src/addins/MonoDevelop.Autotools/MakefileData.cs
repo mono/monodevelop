@@ -142,7 +142,7 @@ namespace MonoDevelop.Autotools
 		}
 
 		public bool SupportsIntegration {
-			get { return IntegrationEnabled && !PropertyService.IsWindows; }
+			get { return IntegrationEnabled && !Platform.IsWindows; }
 		}
 		
 		[ItemProperty (DefaultValue = "")]

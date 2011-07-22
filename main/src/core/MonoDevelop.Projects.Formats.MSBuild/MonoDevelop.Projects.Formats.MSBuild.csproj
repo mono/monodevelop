@@ -33,12 +33,9 @@
     <Reference Include="System">
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="Microsoft.Build.Engine">
-    </Reference>
-    <Reference Include="Microsoft.Build.Framework">
-    </Reference>
-    <Reference Include="Microsoft.Build.Utilities.v3.5">
-    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Utilities.v3.5" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

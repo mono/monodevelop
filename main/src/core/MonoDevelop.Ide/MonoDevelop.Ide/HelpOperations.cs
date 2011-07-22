@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide
 			if (topic == null || topic.Trim ().Length == 0)
 				return;
 			
-			if (PropertyService.IsMac) {
+			if (Platform.IsMac) {
 				var url = "monodoc://" + System.Web.HttpUtility.UrlEncode (topic);
 				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location)
 					.ParentDirectory
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide
 		
 		public bool CanShowHelp (string topic)
 		{
-			return topic != null && !PropertyService.IsWindows;
+			return topic != null && !Platform.IsWindows;
 		}
 		
 		void CheckExternalMonodoc ()

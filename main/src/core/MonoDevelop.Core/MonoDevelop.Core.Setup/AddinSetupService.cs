@@ -58,9 +58,9 @@ namespace MonoDevelop.Core.Setup
 		public string GetMainRepositoryUrl (UpdateLevel level)
 		{
 			string platform;
-			if (PropertyService.IsWindows)
+			if (Platform.IsWindows)
 				platform = "Win32";
-			else if (PropertyService.IsMac)
+			else if (Platform.IsMac)
 				platform = "Mac";
 			else
 				platform = "Linux";

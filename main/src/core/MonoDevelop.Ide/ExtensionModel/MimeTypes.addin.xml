@@ -6,10 +6,10 @@
 </ExtensionPoint>
 
 <Extension path = "/MonoDevelop/Core/MimeTypes">
-	<MimeType id="text/x-resource" _description=".NET resource" icon="md-resource-file-icon" isText="true">
+	<MimeType id="application/x-resource" _description=".NET binary resource" icon="md-resource-file-icon">
 		<File pattern="*.resources" />
 	</MimeType>
-	<MimeType id="application/x-resource" _description=".NET resource" icon="md-resource-file-icon" isText="true">
+	<MimeType id="text/microsoft-resx" _description=".NET XML resource" icon="md-resource-file-icon" baseType="application/xml">
 		<File pattern="*.resx" />
 	</MimeType>
 	<MimeType id="application/x-addin+xml" _description="Add-in manifest" icon="md-addin-file">

@@ -162,15 +162,16 @@ FILES =  \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/LoggingService.cs \
+	MonoDevelop.Core/Platform.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyBag.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
 	MonoDevelop.Core/StringParserService.cs \
-	MonoDevelop.Core/UserDataLocations.cs \
 	MonoDevelop.Core/UserDataMigrationService.cs \
 	MonoDevelop.Core/UserException.cs \
+	MonoDevelop.Core/UserProfile.cs \
 	MonoDevelop.Core/XmlReadHelper.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
 	MonoDevelop.Projects.Extensions/DotNetProjectNode.cs \

@@ -9,7 +9,6 @@
 // ------------------------------------------------------------------------------
 
 namespace MonoDevelop.MacDev.ObjCIntegration {
-    using MonoDevelop.MacDev.ObjCIntegration;
     using System.Collections.Generic;
     using System.Linq;
     using System;
@@ -18,7 +17,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration {
     public partial class CSharpCodeCodebehind : CodebehindTemplateBase {
         
         
-        #line 43 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+        #line 45 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
         
 void AddParameters (IBAction action)
 {
@@ -77,42 +76,55 @@ bool firstClass = true;
 foreach (var nso in Types) {
 	string name = nso.CliName.Name;
 	BlankLine (ref firstClass);
+	if (nso.IsRegisteredInDesigner) {
 
             
             #line default
             #line hidden
             
-            #line 21 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 22 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\t[Register (\"");
             
             #line default
             #line hidden
             
-            #line 21 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 22 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(nso.ObjCName ));
             
             #line default
             #line hidden
             
-            #line 21 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
-            this.Write("\")]\n\tpartial class ");
+            #line 22 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            this.Write("\")]\n");
             
             #line default
             #line hidden
             
-            #line 22 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 23 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+	} 
+            
+            #line default
+            #line hidden
+            
+            #line 24 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            this.Write("\tpartial class ");
+            
+            #line default
+            #line hidden
+            
+            #line 24 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name ));
             
             #line default
             #line hidden
             
-            #line 22 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 24 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\n\t{\n");
             
             #line default
             #line hidden
             
-            #line 24 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 26 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
 	bool firstMember = true;
 	foreach (var outlet in nso.Outlets.Where (o => o.IsDesigner)) {
 		BlankLine (ref firstMember);
@@ -121,67 +133,67 @@ foreach (var nso in Types) {
             #line default
             #line hidden
             
-            #line 28 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 30 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\t\t[Outlet]\n");
             
             #line default
             #line hidden
             
-            #line 29 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 31 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
 		} else { 
             
             #line default
             #line hidden
             
-            #line 30 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 32 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\t\t[Outlet (\"");
             
             #line default
             #line hidden
             
-            #line 30 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 32 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(outlet.ObjCName));
             
             #line default
             #line hidden
             
-            #line 30 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 32 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\")]\n");
             
             #line default
             #line hidden
             
-            #line 31 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 33 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
 		} 
             
             #line default
             #line hidden
             
-            #line 32 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 34 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\t\t");
             
             #line default
             #line hidden
             
-            #line 32 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 34 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(outlet.CliType));
             
             #line default
             #line hidden
             
-            #line 32 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 34 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(" ");
             
             #line default
             #line hidden
             
-            #line 32 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 34 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(EscapeIdentifier (outlet.CliName)));
             
             #line default
             #line hidden
             
-            #line 32 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 34 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(" { get; set; }\n");
             
             #line default
@@ -195,31 +207,31 @@ foreach (var nso in Types) {
             #line default
             #line hidden
             
-            #line 36 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 38 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\t\t[Action (\"");
             
             #line default
             #line hidden
             
-            #line 36 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 38 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(action.GetObjcFullName ()));
             
             #line default
             #line hidden
             
-            #line 36 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 38 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\")]\n\t\tpartial void ");
             
             #line default
             #line hidden
             
-            #line 37 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 39 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(EscapeIdentifier (action.CliName)));
             
             #line default
             #line hidden
             
-            #line 37 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 39 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(" (");
             
             #line default
@@ -231,31 +243,31 @@ foreach (var nso in Types) {
             #line default
             #line hidden
             
-            #line 38 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 40 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write(");\n");
             
             #line default
             #line hidden
             
-            #line 39 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 41 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
 	} 
             
             #line default
             #line hidden
             
-            #line 40 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 42 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("\t}\n");
             
             #line default
             #line hidden
             
-            #line 41 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 43 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
 } 
             
             #line default
             #line hidden
             
-            #line 42 "/Users/mkrueger/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
+            #line 44 "/Users/michael/Mono/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
             this.Write("}\n");
             
             #line default

@@ -152,6 +152,13 @@ namespace MonoDevelop.Core.Assemblies
 			return val;
 		}
 		
+		public string GetAssemblyDirectoryName ()
+		{
+			if (profile != null)
+				return System.IO.Path.Combine (identifier, "v" + version, "Profile", profile);
+			return System.IO.Path.Combine (identifier, "v" + version);
+		}
+		
 		public bool Equals (TargetFrameworkMoniker other)
 		{
 			return other != null && identifier == other.identifier && version == other.version && profile == other.profile;

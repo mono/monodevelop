@@ -38,8 +38,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core">
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib">
       <Private>False</Private>
     </Reference>
@@ -385,6 +384,8 @@
     <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\MimeTypeExtensionNode.cs" />
     <Compile Include="MonoDevelop.Projects\ILanguageBinding.cs" />
+    <Compile Include="MonoDevelop.Core\Platform.cs" />
+    <Compile Include="MonoDevelop.Core\UserProfile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
