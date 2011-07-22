@@ -249,19 +249,23 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			bool didAppendSemicolon = !appendSemicolon;
+			
 			char lastBracket = '\0';
 			while (bracketStack.Count > 0) {
 				switch (bracketStack.Pop ()) {
 					case '(':
 						wrapper.Append (')');
+						didAppendSemicolon = false;
 						lastBracket = ')';
 						break;
 					case '[':
 						wrapper.Append (']');
+						didAppendSemicolon = false;
 						lastBracket = ']';
 						break;
 					case '<':
 						wrapper.Append ('>');
+						didAppendSemicolon = false;
 						lastBracket = '>';
 						break;
 					case '{':

@@ -1109,5 +1109,24 @@ class Test
 			Assert.IsNotNull (provider.Find ("IO"), "namespace 'IO' not found.");
 		}
 		
+		[Test()]
+		public void TestNamedArgumentContext1 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (@"
+using System;
+
+class Test {
+public static void Query(MySqlConnection conn, string database, string table)
+		{
+			conn.Query(string.Format(""SELECT * FROM {0}"", table))
+			.On(row: delegate (Row data) {
+				$Console.$
+			});
+		}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("WriteLine"), "method 'WriteLine' not found.");
+		}
+		
 	}
 }
