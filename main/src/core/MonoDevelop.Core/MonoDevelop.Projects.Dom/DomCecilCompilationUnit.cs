@@ -91,10 +91,11 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public static AssemblyDefinition ReadAssembly (string fileName)
+		public static AssemblyDefinition ReadAssembly (string fileName, bool useCustomResolver = true)
 		{
 			ReaderParameters parameters = new ReaderParameters ();
-			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
+			if (useCustomResolver)
+				parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
 				return AssemblyDefinition.ReadAssembly (stream, parameters);
 			}
@@ -116,11 +117,11 @@ namespace MonoDevelop.Projects.Dom
 		}
 		*/
 		
-		public static DomCecilCompilationUnit Load (string fileName, bool loadInternals, bool instantiateTypeParameter)
+		public static DomCecilCompilationUnit Load (string fileName, bool loadInternals, bool instantiateTypeParameter, bool customResolver = true)
 		{
 			if (String.IsNullOrEmpty (fileName))
 				return null;
-			DomCecilCompilationUnit result = new DomCecilCompilationUnit (ReadAssembly (fileName), loadInternals, instantiateTypeParameter);
+			DomCecilCompilationUnit result = new DomCecilCompilationUnit (ReadAssembly (fileName, customResolver), loadInternals, instantiateTypeParameter);
 			result.fileName = fileName;
 			return result;
 		}
