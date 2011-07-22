@@ -1691,6 +1691,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return null;
 			}
 			
+			public override object Visit (Mono.CSharp.EmptyExpression emptyExpression)
+			{
+				return new ICSharpCode.NRefactory.CSharp.EmptyExpression (Convert (emptyExpression.Location));
+			}
+			
 			public override object Visit (Mono.CSharp.DefaultParameterValueExpression defaultParameterValueExpression)
 			{
 				return defaultParameterValueExpression.Child.Accept (this);

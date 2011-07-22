@@ -8803,7 +8803,7 @@ namespace Mono.CSharp
 	///   This is also now used as a placeholder where a no-action expression
 	///   is needed (the `New' class).
 	/// </summary>
-	class EmptyExpression : Expression
+	public class EmptyExpression : Expression
 	{
 		sealed class OutAccessExpression : EmptyExpression
 		{
@@ -8854,6 +8854,11 @@ namespace Mono.CSharp
 
 		public override void EmitSideEffect (EmitContext ec)
 		{
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 	
