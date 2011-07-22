@@ -203,9 +203,12 @@ namespace MonoDevelop.Projects
 				for (int i = 0; i < parameters.Count; i++) {
 					if (i > 0)
 						result.Append (',');
-					if (parameters [i].IsRef || parameters [i].IsOut)
+					var p = parameters [i];
+					if (p == null)
+						continue;
+					if (p.IsRef || p.IsOut)
 						result.Append ("&");
-					AppendTypeReference (result, parameters [i].Type);
+					AppendTypeReference (result, p.Type);
 				}
 			}
 			result.Append (')');

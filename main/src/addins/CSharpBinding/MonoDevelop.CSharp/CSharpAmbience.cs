@@ -664,6 +664,8 @@ namespace MonoDevelop.CSharp
 		
 		void AppendParameter (OutputSettings settings, StringBuilder result, IParameter parameter)
 		{
+			if (parameter == null)
+				return;
 			if (parameter.IsOut) {
 				result.Append (settings.Markup ("out"));
 				result.Append (settings.Markup (" "));
