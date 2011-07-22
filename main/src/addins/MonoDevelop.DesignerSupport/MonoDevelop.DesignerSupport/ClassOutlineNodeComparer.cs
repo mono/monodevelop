@@ -288,7 +288,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		internal static DomRegion GetRegion (object o)
 		{
-			var m = o as IMember;
+			var m = o as IEntity;
 			if (m != null)
 				return m.BodyRegion.IsEmpty ? m.Region : m.BodyRegion;
 			return ((FoldingRegion)o).Region;
