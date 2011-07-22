@@ -239,7 +239,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (node is FoldingRegion)
 				return groupTable[GROUP_INDEX_REGIONS];
-			if (node is Namespace)
+			if (node is string)
 				return groupTable[GROUP_INDEX_NAMESPACES];
 			if (node is IType)
 				return groupTable[GROUP_INDEX_TYPES];
@@ -290,13 +290,13 @@ namespace MonoDevelop.DesignerSupport
 		{
 			var m = o as IMember;
 			if (m != null)
-				return m.BodyRegion.IsEmpty ? new DomRegion (m.Location, m.Location) : m.BodyRegion;
+				return m.BodyRegion.IsEmpty ? m.Region : m.BodyRegion;
 			return ((FoldingRegion)o).Region;
 		}
 		
 		internal static int CompareRegion (object o1, object o2)
 		{
-			return GetRegion (o1).CompareTo (GetRegion (o2));
+			return GetRegion (o1).Begin.CompareTo (GetRegion (o2).Begin);
 		}
 	}
 }

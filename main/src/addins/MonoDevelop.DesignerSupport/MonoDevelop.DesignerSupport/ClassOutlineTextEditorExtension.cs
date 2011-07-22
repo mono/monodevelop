@@ -186,7 +186,7 @@ namespace MonoDevelop.DesignerSupport
 				try {
 					if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
 						dialog.SaveSettings ();
-						comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
+						comparer = new ClassOutlineNodeComparer (document.TypeResolveContext, GetAmbience (), settings, outlineTreeModelSort);
 						UpdateSorting ();
 					}
 				} finally {
