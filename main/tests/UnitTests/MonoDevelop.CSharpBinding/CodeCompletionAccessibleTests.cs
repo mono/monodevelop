@@ -1102,21 +1102,11 @@ class Test
 		
 		
 		[Test()]
-		public void TestPrimimitiveTypeCompletionChar ()
+		public void TestUsingContext ()
 		{
-			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
-@"using System;
-
-class Test
-{
-	public static void Foo () 
-	{
-		Console.WriteLine ($''.$);
-	}
-}
-");
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (@"$using System.$");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
+			Assert.IsNotNull (provider.Find ("IO"), "namespace 'IO' not found.");
 		}
 		
 	}

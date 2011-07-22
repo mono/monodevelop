@@ -338,6 +338,10 @@ namespace MonoDevelop.CSharp.Completion
 			if (currentMember == null) {
 				baseUnit = ParseStub ("st {}", false);
 				var type = baseUnit.GetNodeAt<MemberType> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+				if (type == null) {
+					baseUnit = ParseStub ("a;", false);
+					type = baseUnit.GetNodeAt<MemberType> (document.Editor.Caret.Line, document.Editor.Caret.Column);
+				}
 				if (type != null) {
 					// insert target type into compilation unit, to respect the 
 					var target = type.Target;
