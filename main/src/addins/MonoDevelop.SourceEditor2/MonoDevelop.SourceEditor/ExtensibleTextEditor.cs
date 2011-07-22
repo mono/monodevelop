@@ -186,10 +186,17 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{
+			ITooltipProvider provider;
+			try {
+				provider = (ITooltipProvider) a.ExtensionObject;
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't create tooltip provider:"+ a.ExtensionNode, e);
+				return;
+			}
 			if (a.Change == ExtensionChange.Add) {
-				TooltipProviders.Add ((ITooltipProvider) a.ExtensionObject);
+				TooltipProviders.Add (provider);
 			} else {
-				TooltipProviders.Remove ((ITooltipProvider) a.ExtensionObject);
+				TooltipProviders.Remove (provider);
 			}
 		}
 
