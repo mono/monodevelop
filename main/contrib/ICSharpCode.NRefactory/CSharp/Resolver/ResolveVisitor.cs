@@ -548,6 +548,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
+			ScanChildren (anonymousMethodExpression);
 //			throw new NotImplementedException();
 			return errorResult;
 		}
@@ -778,6 +779,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
+			ScanChildren (lambdaExpression);
 //			throw new NotImplementedException();
 			return errorResult;
 		}
@@ -1269,6 +1271,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
+			Console.WriteLine ("named!!!");
+			ScanChildren (namedArgumentExpression);
 //			throw new NotImplementedException();
 			return errorResult;
 		}

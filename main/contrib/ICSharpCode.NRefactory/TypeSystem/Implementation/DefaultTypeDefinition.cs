@@ -353,6 +353,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			bool hasNonInterface = false;
 			if (baseTypes != null && this.ClassType != ClassType.Enum) {
 				foreach (ITypeReference baseTypeRef in baseTypes) {
+					if (baseTypeRef == null)
+						continue;
 					IType baseType = baseTypeRef.Resolve(context);
 					ITypeDefinition baseTypeDef = baseType.GetDefinition();
 					if (baseTypeDef == null || baseTypeDef.ClassType != ClassType.Interface)

@@ -17,7 +17,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (px.Count != py.Count)
 				return false;
 			for (int i = 0; i < px.Count; i++) {
-				if (!px[i].Type.Equals(py[i].Type))
+				var a = px[i];
+				var b = py[i];
+				if (a == null && b == null)
+					continue;
+				if (a == null || b == null || !a.Type.Equals(b.Type))
 					return false;
 			}
 			return true;
