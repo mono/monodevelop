@@ -129,9 +129,6 @@ namespace MonoDevelop.Ide.Templates
 			project.Name = pname;
 			
 			if (project is DotNetProject) {
-				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.CanWrite (item))
-					TryFixingFramework (policyParent.ParentSolution.FileFormat, (DotNetProject)project);
-
 				foreach (ProjectReference projectReference in references)
 					((DotNetProject)project).References.Add (projectReference);
 			}
@@ -156,22 +153,6 @@ namespace MonoDevelop.Ide.Templates
 					LoggingService.LogError (GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name), ex);
 				}
 			}
-		}
-
-		public void TryFixingFramework (FileFormat format, DotNetProject item)
-		{
-			// If the solution format can't write this project it may be due to an unsupported
-			// framework. Try finding a compatible framework.
-
-			TargetFramework curFx = item.TargetFramework;
-			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-				if (!item.TargetRuntime.IsInstalled (fx))
-					continue;
-				item.TargetFramework = fx;
-				if (format.CanWrite (item))
-					return;
-			}
-			item.TargetFramework = curFx;
 		}
 	}
 }
