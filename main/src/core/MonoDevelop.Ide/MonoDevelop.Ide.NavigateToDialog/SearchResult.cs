@@ -142,12 +142,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			this.type = type;
 		}
-		
-		protected override Ambience Ambience { 
-			get {
-				return AmbienceService.GetAmbienceForFile (type.Region.FileName);
-			}
-		}
 	}
 	
 	class FileSearchResult: SearchResult
@@ -209,14 +203,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-			/*	
-		public override string MarkupText {
-			get {
-				return useFullName ? HighlightMatch (Ambience.GetString (member, Flags | OutputFlags.IncludeMarkup), match) : base.MarkupText;
-			}
-		}*/
-
-		
 		public override string PlainText {
 			get {
 				return Ambience.GetString (ctx, member, Flags);
@@ -226,7 +212,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override string File {
 			get { return member.DeclaringTypeDefinition.Region.FileName; }
 		}
-
+		
 		public override Gdk.Pixbuf Icon {
 			get {
 				return ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu);
@@ -267,10 +253,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			return Ambience.GetString (member, settings);
 		}
 		
-		protected virtual Ambience Ambience { 
-			get {
-				return AmbienceService.GetAmbienceForFile (member.DeclaringTypeDefinition.Region.FileName);
-			}
+		internal Ambience Ambience { 
+			get;
+			set;
 		}
 	}
 }

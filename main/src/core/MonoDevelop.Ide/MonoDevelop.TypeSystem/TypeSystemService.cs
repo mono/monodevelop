@@ -457,6 +457,7 @@ namespace MonoDevelop.TypeSystem
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
 				return null;
+			
 			var loader = new CecilLoader ();
 			FilePath xmlDocFile;
 			if (GetXml (fileName, out xmlDocFile)) {
@@ -466,7 +467,7 @@ namespace MonoDevelop.TypeSystem
 					LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
 				}
 			}
-			loader.InterningProvider = new SimpleInterningProvider ();
+//			loader.InterningProvider = new SimpleInterningProvider ();
 			
 			var result = loader.LoadAssembly (asm);
 			result.AddAnnotation (fileName);
@@ -507,7 +508,6 @@ namespace MonoDevelop.TypeSystem
 			SimpleProjectContent content;
 			if (projectContents.TryGetValue (project, out content))
 				contexts.Add (content);
-			
 			foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
 				var referencedProject = pr as Project;
 				if (referencedProject == null)
