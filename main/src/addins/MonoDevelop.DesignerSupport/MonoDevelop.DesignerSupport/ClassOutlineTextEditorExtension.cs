@@ -170,6 +170,7 @@ namespace MonoDevelop.DesignerSupport
 			var sortAlphabeticallyToggleButton = new ToggleButton () {
 				Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Sort entries alphabetically"),
+				Active = settings.IsSorted,
 			};	
 			sortAlphabeticallyToggleButton.Toggled += delegate {
 				if (sortAlphabeticallyToggleButton.Active == settings.IsSorted)
