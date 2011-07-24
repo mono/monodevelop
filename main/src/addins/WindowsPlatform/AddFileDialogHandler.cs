@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Platform;
 using System.Windows.Forms;
@@ -13,6 +14,7 @@ namespace MonoDevelop.Platform
     {
         public bool Run (AddFileDialogData data)
         {
+			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
             CustomAddFilesDialog adlg = new CustomAddFilesDialog();
             adlg.StartLocation = AddonWindowLocation.Bottom;
             adlg.BuildActions = data.BuildActions;
@@ -48,7 +50,8 @@ namespace MonoDevelop.Platform
                 t.Enabled = false;
                 adlg.Dispose();
             }
-
+			
+			parentWindow.Present ();
             return result;
         }
     }
