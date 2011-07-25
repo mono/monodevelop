@@ -1405,11 +1405,15 @@ namespace MonoDevelop.IPhone
 			
 			return MacBuildUtilities.CreateMergedPlist (monitor, template, target, (PlistDocument doc) => {
 				var br = new BuildResult ();
-				var debuggerIP = System.Net.IPAddress.Any;
+				var debuggerIP = "127.0.0.1";
 				bool sim = conf.Platform == IPhoneProject.PLAT_SIM;
 				
 				try {
-					debuggerIP = IPhoneSettings.GetDebuggerHostIP (sim);
+					if (IPhoneSdks.MonoTouch.Version >= new IPhoneSdkVersion (4, 0, 5)) {
+						debuggerIP = "automatic";
+					} else {
+						debuggerIP = IPhoneSettings.GetDebuggerHostIP (sim).ToString ();
+					}
 				} catch {
 					br.AddWarning (GettextCatalog.GetString ("Could not resolve host IP for debugger settings"));
 				}
@@ -1445,7 +1449,7 @@ namespace MonoDevelop.IPhone
 					{ "Key", "__monotouch_debug_host" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", debuggerIP.ToString () }
+					{ "DefaultValue", debuggerIP }
 				});
 					
 				arr.Add (new PlistDictionary (true) {

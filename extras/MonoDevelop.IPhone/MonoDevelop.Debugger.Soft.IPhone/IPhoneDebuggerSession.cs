@@ -57,7 +57,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		{
 			var iphDsi = (IPhoneDebuggerStartInfo) dsi;
 			var args = (SoftDebuggerListenArgs) iphDsi.StartArgs;
-			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...",
+			string message = GettextCatalog.GetString ("Waiting for debugger to connect...",
 				args.Address, args.DebugPort);
 			if (!iphDsi.ExecutionCommand.Simulator)
 				message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
