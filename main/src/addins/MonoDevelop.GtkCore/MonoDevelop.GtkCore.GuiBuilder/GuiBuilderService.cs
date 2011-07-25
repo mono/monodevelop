@@ -41,6 +41,8 @@ using MonoDevelop.Deployment;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.TypeSystem;
+
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -341,13 +343,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			if (saveToFile)
 				File.WriteAllText (fileName, text);
-			
-			if (ProjectDomService.HasDom (project)) {
-				// Only update the parser database if the project is actually loaded in the IDE.
-				ProjectDomService.Parse (project, fileName, text);
-				if (saveToFile) 
-					FileService.NotifyFileChanged (fileName);
-			}
+			TypeSystemService.ParseFile (project, fileName);
+//			
+//			if (ProjectDomService.HasDom (project)) {
+//				// Only update the parser database if the project is actually loaded in the IDE.
+//				ProjectDomService.Parse (project, fileName, text);
+//				if (saveToFile) 
+//					FileService.NotifyFileChanged (fileName);
+//			}
 
 			return fileName;
 		}

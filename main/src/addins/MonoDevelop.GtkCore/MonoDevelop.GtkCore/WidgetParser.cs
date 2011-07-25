@@ -52,10 +52,10 @@ namespace MonoDevelop.GtkCore
 		{
 			Dictionary<string, IType> tb_items = new Dictionary<string, IType> ();
 
-			IType wt = ctx.GetType ("Gtk.Widget", true);
+			var wt = ctx.GetTypeDefinition ("Gtk", "Widget", 0, StringComparer.Ordinal);
 			if (wt != null) {
-				foreach (IType t in ctx.GetSubclasses (wt, true)) {
-					if (t.SourceProjectDom == ctx && IsToolboxWidget (t))
+				foreach (var t in wt.GetSubTypeDefinitions (ctx)) {
+					if (t.ProjectContent == ctx && IsToolboxWidget (t))
 						tb_items [t.FullName] = t;
 				}
 			}
@@ -63,7 +63,7 @@ namespace MonoDevelop.GtkCore
 			return tb_items;
 		}
 
-		public void CollectMembers (IType cls, bool inherited, string topType, ListDictionary properties, ListDictionary events)
+		public void CollectMembers (ITypeDefinition cls, bool inherited, string topType, ListDictionary properties, ListDictionary events)
 		{
 			if (cls.FullName == topType)
 				return;
@@ -77,23 +77,24 @@ namespace MonoDevelop.GtkCore
 					events [ev.Name] = ev;
 					
 			if (inherited) {
-				foreach (IReturnType bt in cls.BaseTypes) {
-					IType bcls = ctx.GetType (bt);
+				foreach (var bt in cls.BaseTypes) {
+					var bcls = bt.Resolve (ctx).GetDefinition ();
 					if (bcls != null && bcls.ClassType != ClassType.Interface)
 						CollectMembers (bcls, true, topType, properties, events);
 				}
 			}
 		}
 		
-		public string GetBaseType (IType cls, Hashtable knownTypes)
+		public string GetBaseType (ITypeDefinition cls, Hashtable knownTypes)
 		{
-			foreach (IReturnType bt in cls.BaseTypes) {
-				if (knownTypes.Contains (bt.FullName))
-					return bt.FullName;
+			foreach (var bt in cls.BaseTypes) {
+				string name = bt.Resolve (ctx).ReflectionName;
+				if (knownTypes.Contains (name))
+					return name;
 			}
 
-			foreach (IReturnType bt in cls.BaseTypes) {
-				IType bcls = ctx.GetType (bt);
+			foreach (var bt in cls.BaseTypes) {
+				var bcls = bt.Resolve (ctx).GetDefinition ();
 				if (bcls != null) {
 					string ret = GetBaseType (bcls, knownTypes);
 					if (ret != null)
@@ -103,11 +104,12 @@ namespace MonoDevelop.GtkCore
 			return null;
 		}
 		
-		public string GetCategory (IMember decoration)
+		public string GetCategory (IEntity decoration)
 		{
 //			foreach (IAttributeSection section in decoration.Attributes) {
 				foreach (IAttribute at in decoration.Attributes) {
-					switch (at.Name) {
+					var type = at.AttributeType.Resolve (ctx);
+					switch (type.ReflectionName) {
 					case "Category":
 					case "CategoryAttribute":
 					case "System.ComponentModel.Category":
@@ -116,10 +118,11 @@ namespace MonoDevelop.GtkCore
 					default:
 						continue;
 					}
-					if (at.PositionalArguments != null && at.PositionalArguments.Count > 0) {
-						CodePrimitiveExpression exp = at.PositionalArguments [0] as CodePrimitiveExpression;
-						if (exp != null && exp.Value != null)
-							return exp.Value.ToString ();
+					var pargs = at.GetPositionalArguments (ctx);
+					if (pargs != null && pargs.Count > 0) {
+						var val = pargs[0].GetValue (ctx);
+						if (val is string)
+							return val.ToString ();
 					}
 				}
 	//	}
@@ -128,7 +131,16 @@ namespace MonoDevelop.GtkCore
 		
 		public IType GetClass (string classname)
 		{
-			return ctx.GetType (classname);
+			string name, ns;
+			int idx =classname.LastIndexOf ('.');
+			if (idx >= 0){
+				ns = classname.Substring (0, idx);
+				name = classname.Substring (idx + 1);
+			} else {
+				ns = "";
+				name = classname;
+			}
+			return ctx.GetTypeDefinition (ns, name, 0, StringComparer.Ordinal);
 		}
 
 		public bool IsBrowsable (IMember member)
@@ -138,15 +150,16 @@ namespace MonoDevelop.GtkCore
 
 			IProperty prop = member as IProperty;
 			if (prop != null) {
-				if (!prop.HasGet || !prop.HasSet)
+				if (!prop.CanGet || !prop.CanSet)
 					return false;
-				if (Array.IndexOf (supported_types, prop.ReturnType.FullName) == -1)
+				if (Array.IndexOf (supported_types, prop.ReturnType.Resolve (ctx).ReflectionName) == -1)
 					return false;
 			}
 
 	//		foreach (IAttributeSection section in member.Attributes) {
 				foreach (IAttribute at in member.Attributes) {
-					switch (at.Name) {
+					var type = at.AttributeType.Resolve (ctx);
+					switch (type.ReflectionName) {
 					case "Browsable":
 					case "BrowsableAttribute":
 					case "System.ComponentModel.Browsable":
@@ -155,10 +168,11 @@ namespace MonoDevelop.GtkCore
 					default:
 						continue;
 					}
-					if (at.PositionalArguments != null && at.PositionalArguments.Count > 0) {
-						CodePrimitiveExpression exp = at.PositionalArguments [0] as CodePrimitiveExpression;
-						if (exp != null && exp.Value != null && exp.Value is bool) {
-							return (bool) exp.Value;
+					var pargs = at.GetPositionalArguments (ctx);
+					if (pargs != null && pargs.Count > 0) {
+						var val = pargs[0].GetValue (ctx);
+						if (val is bool) {
+							return (bool) val;
 						}
 					}
 				}
@@ -166,13 +180,14 @@ namespace MonoDevelop.GtkCore
 			return true;
 		}
 		
-		public bool IsToolboxWidget (IType cls)
+		public bool IsToolboxWidget (ITypeDefinition cls)
 		{
 			if (!cls.IsPublic)
 				return false;
 
 			foreach (IAttribute at in cls.Attributes) {
-				switch (at.Name) {
+				var type = at.AttributeType.Resolve (ctx);
+				switch (type.ReflectionName) {
 				case "ToolboxItem":
 				case "ToolboxItemAttribute":
 				case "System.ComponentModel.ToolboxItem":
@@ -181,19 +196,20 @@ namespace MonoDevelop.GtkCore
 				default:
 					continue;
 				}
-				if (at.PositionalArguments != null && at.PositionalArguments.Count > 0) {
-					CodePrimitiveExpression exp = at.PositionalArguments [0] as CodePrimitiveExpression;
-					if (exp == null || exp.Value == null)
+				var pargs = at.GetPositionalArguments (ctx);
+				if (pargs != null && pargs.Count > 0) {
+					var val = pargs[0].GetValue (ctx);
+					if (val == null)
 						return false;
-					else if (exp.Value is bool)
-						return (bool) exp.Value;
+					else if (val is bool)
+						return (bool) val;
 					else 
-						return exp.Value != null;
+						return val != null;
 				}
 			}
 
-			foreach (IReturnType bt in cls.BaseTypes) {
-				IType bcls = ctx.GetType (bt);
+			foreach (var bt in cls.BaseTypes) {
+				var bcls = bt.Resolve (ctx).GetDefinition ();
 				if (bcls != null && bcls.ClassType != ClassType.Interface)
 					return IsToolboxWidget (bcls);
 			}

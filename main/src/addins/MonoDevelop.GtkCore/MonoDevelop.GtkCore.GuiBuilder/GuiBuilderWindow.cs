@@ -105,9 +105,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return true;
 			
 			// Find the classes that could be bound to this design
-			ProjectDom ctx = fproject.GetParserContext ();
+			var ctx = fproject.GetParserContext ();
 			ArrayList list = new ArrayList ();
-			foreach (IType cls in ctx.Types) {
+			foreach (var cls in ctx.GetAllTypes ()) {
 				if (IsValidClass (ctx, cls))
 					list.Add (cls.FullName);
 			}
@@ -135,73 +135,75 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void CreateClass (string name, string namspace, string folder)
 		{
-			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
+			// TODO: Type system conversion.
 			
-			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution);
-			bool partialSupport = fproject.Project.UsePartialTypes;
-			Stetic.WidgetComponent component = (Stetic.WidgetComponent) rootWidget.Component;
-			
-			CodeTypeDeclaration type = new CodeTypeDeclaration ();
-			type.Name = name;
-			type.IsClass = true;
-			type.IsPartial = partialSupport;
-			type.BaseTypes.Add (new CodeTypeReference (component.Type.ClassName));
-			
-			// Generate the constructor. It contains the call that builds the widget.
-			
-			CodeConstructor ctor = new CodeConstructor ();
-			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-			
-			foreach (object val in component.Type.InitializationValues) {
-				if (val is Enum) {
-					ctor.BaseConstructorArgs.Add (
-						new CodeFieldReferenceExpression (
-							new CodeTypeReferenceExpression (val.GetType ()),
-							val.ToString ()
-						)
-					);
-				}
-				else
-					ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (val));
-			}
-			
-			if (partialSupport) {
-				CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
-					new CodeMethodReferenceExpression (
-						new CodeThisReferenceExpression (),
-						"Build"
-					)
-				);
-				ctor.Statements.Add (call);
-			} else {
-				CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
-					new CodeMethodReferenceExpression (
-						new CodeTypeReferenceExpression ("Stetic.Gui"),
-						"Build"
-					),
-					new CodeThisReferenceExpression (),
-					new CodeTypeOfExpression (fullName)
-				);
-				ctor.Statements.Add (call);
-			}
-			type.Members.Add (ctor);
-			
-			// Add signal handlers
-			
-			AddSignalsRec (type, component);
-			foreach (Stetic.Component ag in component.GetActionGroups ())
-				AddSignalsRec (type, ag);
-			
-			// Create the class
-			IType cls = gen.CreateClass (Project.Project, ((DotNetProject)Project.Project).LanguageName, folder, namspace, type);
-			if (cls == null)
-				throw new UserException ("Could not create class " + fullName);
-			
-			Project.Project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
-			IdeApp.ProjectOperations.Save (Project.Project);
-			
-			// Make sure the database is up-to-date
-			ProjectDomService.Parse (Project.Project, cls.CompilationUnit.FileName);
+//			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
+//			
+//			var gen = new CodeRefactorer (fproject.Project.ParentSolution);
+//			bool partialSupport = fproject.Project.UsePartialTypes;
+//			Stetic.WidgetComponent component = (Stetic.WidgetComponent) rootWidget.Component;
+//			
+//			CodeTypeDeclaration type = new CodeTypeDeclaration ();
+//			type.Name = name;
+//			type.IsClass = true;
+//			type.IsPartial = partialSupport;
+//			type.BaseTypes.Add (new CodeTypeReference (component.Type.ClassName));
+//			
+//			// Generate the constructor. It contains the call that builds the widget.
+//			
+//			CodeConstructor ctor = new CodeConstructor ();
+//			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+//			
+//			foreach (object val in component.Type.InitializationValues) {
+//				if (val is Enum) {
+//					ctor.BaseConstructorArgs.Add (
+//						new CodeFieldReferenceExpression (
+//							new CodeTypeReferenceExpression (val.GetType ()),
+//							val.ToString ()
+//						)
+//					);
+//				}
+//				else
+//					ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (val));
+//			}
+//			
+//			if (partialSupport) {
+//				CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
+//					new CodeMethodReferenceExpression (
+//						new CodeThisReferenceExpression (),
+//						"Build"
+//					)
+//				);
+//				ctor.Statements.Add (call);
+//			} else {
+//				CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
+//					new CodeMethodReferenceExpression (
+//						new CodeTypeReferenceExpression ("Stetic.Gui"),
+//						"Build"
+//					),
+//					new CodeThisReferenceExpression (),
+//					new CodeTypeOfExpression (fullName)
+//				);
+//				ctor.Statements.Add (call);
+//			}
+//			type.Members.Add (ctor);
+//			
+//			// Add signal handlers
+//			
+//			AddSignalsRec (type, component);
+//			foreach (Stetic.Component ag in component.GetActionGroups ())
+//				AddSignalsRec (type, ag);
+//			
+//			// Create the class
+//			IType cls = gen.CreateClass (Project.Project, ((DotNetProject)Project.Project).LanguageName, folder, namspace, type);
+//			if (cls == null)
+//				throw new UserException ("Could not create class " + fullName);
+//			
+//			Project.Project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
+//			IdeApp.ProjectOperations.Save (Project.Project);
+//			
+//			// Make sure the database is up-to-date
+//			ProjectDomService.Parse (Project.Project, cls.CompilationUnit.FileName);
 		}
 		
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)
@@ -224,15 +226,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal bool IsValidClass (ITypeResolveContext ctx, IType cls)
 		{
-			if (cls.BaseTypes != null) {
-				foreach (IReturnType bt in cls.BaseTypes) {
-					if (bt.FullName == rootWidget.Component.Type.ClassName)
-						return true;
-					
-					IType baseCls = ctx.GetType (bt);
-					if (baseCls != null && IsValidClass (ctx, baseCls))
-						return true;
-				}
+			foreach (var bt in cls.GetBaseTypes (ctx)) {
+				if (bt.Resolve (ctx).ReflectionName == rootWidget.Component.Type.ClassName)
+					return true;
+				
+				var baseCls = bt.Resolve (ctx);
+				if (baseCls != null && IsValidClass (ctx, baseCls))
+					return true;
 			}
 			return false;
 		}

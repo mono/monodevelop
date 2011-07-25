@@ -36,21 +36,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	internal class ClassUtils
 	{
-		public static IField FindWidgetField (IType cls, string name)
+		public static IField FindWidgetField (ITypeResolveContext ctx, ITypeDefinition cls, string name)
 		{
 			foreach (IField field in cls.Fields) {
-				if (name == GetWidgetFieldName (field))
+				if (name == GetWidgetFieldName (ctx, field))
 					return field;
 			}
 			return null;
 		}
 		
-		public static string GetWidgetFieldName (IField field)
+		public static string GetWidgetFieldName (ITypeResolveContext ctx, IField field)
 		{
 			foreach (IAttribute att in field.Attributes)	{
-				if (att.Name == "Glade.Widget" || att.Name == "Widget" || att.Name == "Glade.WidgetAttribute" || att.Name == "WidgetAttribute") {
-					if (att.PositionalArguments != null && att.PositionalArguments.Count > 0) {
-						CodePrimitiveExpression exp = att.PositionalArguments [0] as CodePrimitiveExpression;
+				var type = att.AttributeType.Resolve (ctx);
+				if (type.ReflectionName == "Glade.Widget" || type.ReflectionName == "Widget" || type.ReflectionName == "Glade.WidgetAttribute" || type.ReflectionName == "WidgetAttribute") {
+					var pArgs = att.GetPositionalArguments (ctx);
+					if (pArgs != null && pArgs.Count > 0) {
+						CodePrimitiveExpression exp = pArgs[0] as CodePrimitiveExpression;
 						if (exp != null)
 							return exp.Value.ToString ();
 					} else {

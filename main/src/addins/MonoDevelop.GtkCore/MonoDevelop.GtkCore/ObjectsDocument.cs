@@ -160,7 +160,7 @@ namespace MonoDevelop.GtkCore
 //			Save ();
 //		}
 
-		void UpdateClass (WidgetParser parser, Stetic.Project stetic, IType widgetClass, IType wrapperClass)
+		void UpdateClass (WidgetParser parser, Stetic.Project stetic, ITypeDefinition widgetClass, ITypeDefinition wrapperClass)
 		{
 			string typeName = widgetClass.FullName;
 			string basetypeName = GetBaseType (parser, widgetClass, stetic);
@@ -194,7 +194,7 @@ namespace MonoDevelop.GtkCore
 			UpdateObject (parser, basetypeName, objectElem, widgetClass, wrapperClass);
 		}
 		
-		string GetBaseType (WidgetParser parser, IType widgetClass, Stetic.Project stetic)
+		string GetBaseType (WidgetParser parser, ITypeDefinition widgetClass, Stetic.Project stetic)
 		{
 			string[] types = stetic.GetWidgetTypes ();
 			Hashtable typesHash = new Hashtable ();
@@ -205,7 +205,7 @@ namespace MonoDevelop.GtkCore
 			return ret ?? "Gtk.Widget";
 		}
 		
-		void UpdateObject (WidgetParser parser, string topType, XmlElement objectElem, IType widgetClass, IType wrapperClass)
+		void UpdateObject (WidgetParser parser, string topType, XmlElement objectElem, ITypeDefinition widgetClass, ITypeDefinition wrapperClass)
 		{
 			if (widgetClass.IsPublic)
 				objectElem.RemoveAttribute ("internal");

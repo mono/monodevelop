@@ -200,11 +200,13 @@ namespace MonoDevelop.GtkCore
 
 		public static bool SupportsRefactoring (DotNetProject project)
 		{
-			if (project == null || project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
+			//TODO:Type system conversion.
+			return false;
+/*			if (project == null || project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
 				return false;
-			RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
-			CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
-			return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); 
+			var ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
+			var cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
+			return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); */
 		}
 		
 		static bool IsGtkReference (ProjectReference pref)
@@ -318,7 +320,8 @@ namespace MonoDevelop.GtkCore
 				return;
 
 			ObjectsDocument doc = new ObjectsDocument (ObjectsFile);
-			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject, IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution));
+			// TODO:Type system conversion.
+//			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject, IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution));
 		}
 
 		public static void DisableProject (Project project)

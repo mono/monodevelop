@@ -320,15 +320,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnFileAdded (object sender, ProjectFileEventArgs e)
 		{
 			foreach (ProjectFileEventInfo args in e) {
-				ParsedDocument doc = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (args.Project), args.ProjectFile.Name);
-				if (doc == null || doc.CompilationUnit == null)
+				var doc = TypeSystemService.ParseFile (args.Project, args.ProjectFile.Name);
+				if (doc == null)
 					continue;
 	
 				string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
 				if (!Directory.Exists (dir) || Directory.GetFiles (dir).Length == 0)
 					continue;
 	
-				foreach (IType t in doc.CompilationUnit.Types) {
+				foreach (var t in doc.TopLevelTypeDefinitions) {
 					string path = Path.Combine (dir, t.FullName + ".xml");
 					if (!System.IO.File.Exists (path))
 						continue;
@@ -345,11 +345,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ArrayList toDelete = new ArrayList ();
 
 			foreach (ProjectFileEventInfo args in e) {
-				ParsedDocument doc = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (args.Project), args.ProjectFile.Name);
-				if (doc == null || doc.CompilationUnit == null)
+				var doc = TypeSystemService.ParseFile (args.Project, args.ProjectFile.Name);
+				if (doc == null)
 					continue;
 	
-				foreach (IType t in doc.CompilationUnit.Types) {
+				foreach (var t in doc.TopLevelTypeDefinitions) {
 					GuiBuilderWindow win = GetWindowForClass (t.FullName);
 					if (win != null)
 						toDelete.Add (win);
@@ -472,45 +472,45 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public FilePath GetSourceCodeFile (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
-			IType cls = GetClass (obj, getUserClass);
-			if (cls != null && cls.CompilationUnit != null)
-				return cls.CompilationUnit.FileName;
+			var cls = GetClass (obj, getUserClass);
+			if (cls != null)
+				return cls.Region.FileName;
 			return null;
 		}
 		
-		IType GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
+		ITypeDefinition GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			string name = CodeBinder.GetClassName (obj);
 			return FindClass (name, getUserClass);
 		}
 		
-		public IType FindClass (string className)
+		public ITypeDefinition FindClass (string className)
 		{
 			return FindClass (className, true);
 		}
 		
-		public IType FindClass (string className, bool getUserClass)
+		public ITypeDefinition FindClass (string className, bool getUserClass)
 		{
 			FilePath gui_folder = GtkDesignInfo.FromProject (project).GtkGuiFolder;
-			ProjectDom ctx = GetParserContext ();
+			var ctx = GetParserContext ();
 			if (ctx == null)
 				return null;
-			IEnumerable<IType> classes = ctx.Types;
+			var classes = ctx.GetTypes ();
 			if (classes == null)
 				return null;
-			foreach (IType cls in classes) {
+			foreach (var cls in classes) {
 				if (cls.FullName == className) {
 					if (getUserClass) {
 						// Return this class only if it is declared outside the gtk-gui
 						// folder. Generated partial classes will be ignored.
-						foreach (IType part in cls.Parts) {
-							if (part.CompilationUnit != null && !part.CompilationUnit.FileName.IsNullOrEmpty && !part.CompilationUnit.FileName.IsChildPathOf (gui_folder)) {
+						foreach (var part in cls.GetParts ()) {
+							if (!string.IsNullOrEmpty (part.Region.FileName) && !((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder)) {
 								return part;
 							}
 						}
 						continue;
 					}
-					if (getUserClass && cls.CompilationUnit != null && !string.IsNullOrEmpty (cls.CompilationUnit.FileName) && cls.CompilationUnit.FileName.IsChildPathOf (gui_folder))
+					if (getUserClass && !string.IsNullOrEmpty (cls.Region.FileName) && ((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder))
 						continue;
 					return cls;
 				}
