@@ -303,7 +303,7 @@ namespace MonoDevelop.Projects
 		
 		public static XmlNode GetMonodocDocumentation (this IType member)
 		{
-			var helpXml = HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ());
+			var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ()) : null;
 			if (helpXml == null)
 				return null;
 			return helpXml.SelectSingleNode ("/Type/Docs");
@@ -312,13 +312,13 @@ namespace MonoDevelop.Projects
 		public static XmlNode GetMonodocDocumentation (this IEntity member)
 		{
 			if (member.EntityType == EntityType.TypeDefinition) {
-				var helpXml = HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ());
+				var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ()) : null;
 				if (helpXml == null)
 					return null;
 				return helpXml.SelectSingleNode ("/Type/Docs");
 			}
 			
-			var declaringXml = HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetHelpUrl ());
+			var declaringXml = HelpService.HelpTree != null && member.DeclaringTypeDefinition != null ? HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetHelpUrl ()) : null;
 			if (declaringXml == null)
 				return null;
 			
