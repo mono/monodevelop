@@ -218,6 +218,7 @@
     <Compile Include="wrapper\Window.cs" />
     <Compile Include="TopLevelDialog.cs" />
     <Compile Include="TopLevelWindow.cs" />
+    <Compile Include="wrapper\NotifyWorkaround.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="stetic.glade">

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Stetic.Wrapper {
 	public abstract class Object : Stetic.ObjectWrapper {
@@ -9,35 +8,20 @@ namespace Stetic.Wrapper {
 		{
 			if (Wrapped == null)
 				return;
-			((GLib.Object)Wrapped).RemoveNotification (NotifyHandler);
+			NotifyWorkaround.RemoveNotification (( GLib.Object)Wrapped, NotifyHandler);
 			base.Dispose ();
 		}
-		
-		IEnumerable<string> GladePropertyNames {
-			get {
-				foreach (ItemGroup group in ClassDescriptor.ItemGroups) {
-					foreach (ItemDescriptor item in group) {
-						TypedPropertyDescriptor prop = item as TypedPropertyDescriptor;
-						if (prop != null && !string.IsNullOrEmpty (prop.GladeName)) {
-							yield return prop.GladeName;
-						}
-					}
-				}
-			}
-		}
-		
+
 		internal protected override void OnDesignerAttach (IDesignArea designer)
 		{
 			base.OnDesignerAttach (designer);
-			foreach (string property in GladePropertyNames)
-				((GLib.Object)Wrapped).AddNotification (property, NotifyHandler);
+			NotifyWorkaround.AddNotification ((GLib.Object)Wrapped, NotifyHandler);
 		}
 		
 		internal protected override void OnDesignerDetach (IDesignArea designer)
 		{
 			base.OnDesignerDetach (designer);
-			foreach (string property in GladePropertyNames)
-				((GLib.Object)Wrapped).RemoveNotification (property, NotifyHandler);
+			NotifyWorkaround.RemoveNotification ((GLib.Object)Wrapped, NotifyHandler);
 		}
 		
 		public static Object Lookup (GLib.Object obj)
