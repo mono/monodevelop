@@ -68,6 +68,11 @@ namespace Stetic.Wrapper
 			ConnectNotification (w, "notify", handler);
 		}
 		
+		public static void AddNotification (GLib.Object w, string property, NotifyHandler handler)
+		{
+			ConnectNotification (w, "notify::" + property, handler);
+		}
+		
 		static void DisconnectNotification (GLib.Object w, string signal, NotifyHandler handler)
 		{
 			var sig = GLib.Signal.Lookup (w, signal, new NotifyDelegate (NotifyCallback));

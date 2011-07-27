@@ -25,7 +25,7 @@ namespace Stetic.Wrapper {
 
 			if (frame.LabelWidget != null)
 				ObjectWrapper.Create (proj, frame.LabelWidget);
-			frame.AddNotification ("label-widget", LabelWidgetChanged);
+			NotifyWorkaround.AddNotification (frame, "label-widget", LabelWidgetChanged);
 		}
 
 		void LabelWidgetChanged (object obj, GLib.NotifyArgs args)
