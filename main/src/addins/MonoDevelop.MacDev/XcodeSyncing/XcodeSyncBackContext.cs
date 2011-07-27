@@ -67,16 +67,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
-		public void ReportError (string error)
-		{
-			//FIXME: present error to user
-			Console.WriteLine (error);
-		}
-		
 		public void ReportError (string errorFormat, params object[] args)
 		{
-			//FIXME: present error to user
-			Console.WriteLine (errorFormat, args);
+			string msg = string.Format (errorFormat, args);
+			Gtk.Application.Invoke (delegate {
+				MonoDevelop.Ide.MessageService.ShowError (msg);
+			});
 		}
 		
 		public Dictionary<string, List<NSObjectTypeInfo>> GetTypeUpdates (out Dictionary<string,ProjectFile> newFiles)
