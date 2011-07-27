@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			var themes = new HashSet<string> ();
 			string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
 			foreach (string themeDir in themeDirs) {
-				if (string.IsNullOrEmpty (themeDir) && !System.IO.Directory.Exists (themeDir))
+				if (string.IsNullOrEmpty (themeDir) || !System.IO.Directory.Exists (themeDir))
 					continue;
 				foreach (FilePath dir in System.IO.Directory.GetDirectories (themeDir)) {
 					if (System.IO.File.Exists (dir.Combine (gtkrc)))
