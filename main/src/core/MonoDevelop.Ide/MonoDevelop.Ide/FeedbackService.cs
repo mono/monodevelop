@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide
 			get { return PropertyService.Get<string> ("MonoDevelop.Feedback.Email"); }
 		}
 		
-		static string FeedbackFile {
+		static FilePath FeedbackFile {
 			get { return UserProfile.Current.LocalConfigDir.Combine ("Feedback.xml"); }
 		}
 		
@@ -97,6 +97,8 @@ namespace MonoDevelop.Ide
 				f.InnerText = body;
 				doc.DocumentElement.AppendChild (f);
 				try {
+					if (!Directory.Exists (FeedbackFile.ParentDirectory))
+						Directory.CreateDirectory (FeedbackFile.ParentDirectory);
 					doc.Save (FeedbackFile);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not save feedback file", ex);
