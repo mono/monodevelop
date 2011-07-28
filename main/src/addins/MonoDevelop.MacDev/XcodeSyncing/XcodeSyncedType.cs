@@ -104,10 +104,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			});
 		}
 		
+		const string supportingFilesGroup = "Supporting Files";
 		public override void AddToProject (XcodeProject project, FilePath syncProjectDir)
 		{
 			project.AddSource (Type.ObjCName + ".h");
-			project.AddSource (Type.ObjCName + ".m");
+			
+			var grp = project.GetGroup (supportingFilesGroup) ?? project.AddGroup (supportingFilesGroup);
+			project.AddSource (grp, Type.ObjCName + ".m");
 		}
 		
 		public override string[] GetTargetRelativeFileNames ()
