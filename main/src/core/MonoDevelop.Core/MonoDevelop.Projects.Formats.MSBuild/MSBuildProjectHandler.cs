@@ -904,7 +904,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// Don't save the file to disk if the content did not change
 			if (txt != fileContent) {
-				File.WriteAllText (eitem.FileName, txt);
+				MonoDevelop.Projects.Text.TextFile.WriteFile (eitem.FileName, txt, "UTF-8");
 				fileContent = txt;
 				
 				if (projectBuilder != null)
