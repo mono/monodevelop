@@ -39,5 +39,15 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				return hc.ToString ("X").PadRight (24, '0');
 			}
 		}
+		
+		/// <summary>
+		/// Quotes a string, if it contains white spaces.
+		/// </summary>
+		protected static string QuoteOnDemand (string name)
+		{
+			if (name.IndexOf (' ') >= 0)
+				return "\"" + name + "\"";
+			return name;
+		}
 	}
 }

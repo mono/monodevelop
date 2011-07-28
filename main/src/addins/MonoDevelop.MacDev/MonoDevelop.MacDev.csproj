@@ -137,6 +137,7 @@
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IPlistEditingHandler.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\ExpanderList.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\ImageChooser.cs" />
+    <Compile Include="XcodeSyncing\XcodeSyncedResource.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

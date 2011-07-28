@@ -105,33 +105,21 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		public string Name { get { return name; } }
 
-		PBXBuildFile AddFile (string name, string path, string tree)
+		PBXBuildFile AddFile (string name, string path, string tree, PBXGroup grp = null)
 		{
 			var fileref = new PBXFileReference (name, path, tree);
 			var buildfile = new PBXBuildFile (fileref);
 
 			files.Add (fileref);
 			sources.Add (buildfile);
-			group.AddChild (fileref);
+			(grp ?? this.group).AddChild (fileref);
 
 			return buildfile;
 		}
 
-		PBXBuildFile AddFile (PBXGroup grp, string name, string path, string tree)
+		void AddResource (string name, string path, PBXGroup grp = null)
 		{
-			var fileref = new PBXFileReference (name, path, tree);
-			var buildfile = new PBXBuildFile (fileref);
-
-			files.Add (fileref);
-			sources.Add (buildfile);
-			grp.AddChild (fileref);
-
-			return buildfile;
-		}
-
-		void AddResource (string name, string path)
-		{
-			resourcesBuildPhase.AddResource (AddFile (name, path, "\"<group>\""));
+			resourcesBuildPhase.AddResource (AddFile (name, path, "\"<group>\"", grp));
 		}
 
 		public void AddPlist (string name)
@@ -140,16 +128,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			files.Add (fileref);
 		}
 
-		public void AddSource (string name)
+		internal void AddSource (string name, PBXGroup grp = null)
 		{
 			//sourcesBuildPhase.AddSource (AddFile (Path.GetFileName (name), Path.GetDirectoryName (name), "\"<group>\""));
-			sourcesBuildPhase.AddSource (AddFile (name, name, "\"<group>\""));
-		}
-		
-		internal void AddSource (PBXGroup grp, string name)
-		{
-			//sourcesBuildPhase.AddSource (AddFile (Path.GetFileName (name), Path.GetDirectoryName (name), "\"<group>\""));
-			sourcesBuildPhase.AddSource (AddFile (grp, name, name, "\"<group>\""));
+			sourcesBuildPhase.AddSource (AddFile (name, name, "\"<group>\"", grp));
 		}
 		
 		internal PBXGroup AddGroup (string name)
@@ -165,9 +147,9 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			return groups.FirstOrDefault (g => g.Name == name);
 		}
 		
-		public void AddResource (string name)
+		internal void AddResource (string name, PBXGroup grp = null)
 		{
-			AddResource (name, name);
+			AddResource (name, name, grp);
 		}
 		
 		public void AddResourceDirectory (string name)

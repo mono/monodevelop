@@ -58,13 +58,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			}
 		}
 
-		static string QuoteOnDemand (string name)
-		{
-			if (name.IndexOf (' ') >= 0)
-				return "\"" + name + "\"";
-			return name;
-		}
-
 		public override string ToString ()
 		{
 			var sb = new StringBuilder ();

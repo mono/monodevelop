@@ -110,7 +110,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			project.AddSource (Type.ObjCName + ".h");
 			
 			var grp = project.GetGroup (supportingFilesGroup) ?? project.AddGroup (supportingFilesGroup);
-			project.AddSource (grp, Type.ObjCName + ".m");
+			project.AddSource (Type.ObjCName + ".m", grp);
 		}
 		
 		public override string[] GetTargetRelativeFileNames ()
