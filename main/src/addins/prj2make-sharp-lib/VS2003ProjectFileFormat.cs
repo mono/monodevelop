@@ -238,6 +238,11 @@ namespace MonoDevelop.Prj2Make
 		{
 			yield break;
 		}
+		
+		public bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
+		{
+			return framework.Id == MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_1_1;
+		}
 	}
 
 	enum TargetConvert

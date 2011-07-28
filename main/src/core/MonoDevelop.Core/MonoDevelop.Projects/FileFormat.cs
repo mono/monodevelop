@@ -77,6 +77,11 @@ namespace MonoDevelop.Projects
 			get { return format.SupportsMixedFormats; }
 		}
 		
+		public bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
+		{
+			return format.SupportsFramework (framework);
+		}
+		
 		internal IFileFormat Format {
 			get { return format; }
 		}

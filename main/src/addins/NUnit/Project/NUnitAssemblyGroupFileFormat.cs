@@ -116,6 +116,11 @@ namespace MonoDevelop.NUnit
 		{
 			yield break;
 		}
+		
+		public bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
+		{
+			return true;
+		}
 	}
 }
 
