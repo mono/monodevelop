@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			yield return genericItemTypeNode;
 		}
 		
-		static IEnumerable<DotNetProjectSubtypeNode> GetItemSubtypeNodes ()
+		internal static IEnumerable<DotNetProjectSubtypeNode> GetItemSubtypeNodes ()
 		{
 			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ItemTypesExtensionPath)) {
 				if (node is DotNetProjectSubtypeNode)
@@ -279,7 +279,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return file.ToRelative (basePath);
 		}
 
-		internal static string FromMSBuildPath (string basePath, string relPath)
+		public static string FromMSBuildPath (string basePath, string relPath)
 		{
 			string res;
 			FromMSBuildPath (basePath, relPath, out res);
