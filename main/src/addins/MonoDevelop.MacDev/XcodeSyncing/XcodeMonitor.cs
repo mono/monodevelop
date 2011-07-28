@@ -38,6 +38,8 @@ using MonoDevelop.MacDev.XcodeIntegration;
 using MonoDevelop.MacInterop;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoDevelop.Ide.ProgressMonitoring;
+
 
 namespace MonoDevelop.MacDev.XcodeSyncing
 {
@@ -69,7 +71,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public void UpdateProject (List<XcodeSyncedItem> allItems, XcodeProject emptyProject)
 		{
 			items = allItems;
+			int workItem = 1;
 			
+			Ide.IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Updating synchronized project..."));
 			XC4Debug.Log ("Updating synced project with {0} items", items.Count);
 			
 			var ctx = new XcodeSyncContext (projectDir, syncTimeCache);
@@ -130,12 +134,17 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			foreach (var item in syncList) {
 				XC4Debug.Log ("Syncing item {0}", item.GetTargetRelativeFileNames ()[0]);
 				item.SyncOut (ctx);
+				Ide.IdeApp.Workbench.StatusBar.SetProgressFraction (workItem * 100.0 / syncList.Count);
+				workItem++;
 			}
 			
 			if (updateProject) {
 				XC4Debug.Log ("Queuing Xcode project {0} to write when opened", projectDir);
 				pendingProjectWrite = emptyProject;
 			}
+			
+			Ide.IdeApp.Workbench.StatusBar.EndProgress ();
+			Ide.IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Synchronized project updated."));
 		}
 		
 		// Xcode keeps some kind of internal lock on project files while it's running and
@@ -172,10 +181,16 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public XcodeSyncBackContext GetChanges (NSObjectInfoService infoService, DotNetProject project)
 		{
 			var ctx = new XcodeSyncBackContext (projectDir, syncTimeCache, infoService, project);
-			foreach (var item in items) {
-				if (item.NeedsSyncBack (ctx)) {
+			var needsSync = new List<XcodeSyncedItem> (items.Where (i => i.NeedsSyncBack (ctx)));
+			if (needsSync.Count > 0) {
+				Ide.IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Synchronizing external project changes..."));
+				for (int i = 0; i < needsSync.Count; i++) {
+					var item = needsSync [i];
 					item.SyncBack (ctx);
+					Ide.IdeApp.Workbench.StatusBar.SetProgressFraction ((i + 1) * 100.0 / needsSync.Count);
 				}
+				Ide.IdeApp.Workbench.StatusBar.EndProgress ();
+				Ide.IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count));
 			}
 			return ctx;
 		}
