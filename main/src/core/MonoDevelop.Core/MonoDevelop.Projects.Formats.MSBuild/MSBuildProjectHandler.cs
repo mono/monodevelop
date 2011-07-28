@@ -261,7 +261,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			try {
 				timer.Trace ("Create item instance");
 				ProjectExtensionUtil.BeginLoadOperation ();
-				Item = CreateSolutionItem (language, projectTypeGuids, itemType, itemClass);
+				Item = CreateSolutionItem (p, fileName, language, projectTypeGuids, itemType, itemClass);
 	
 				Item.SetItemHandler (this);
 				MSBuildProjectService.SetId (Item, itemGuid);
@@ -285,10 +285,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set { useXBuild = value; }
 		}
 		
-		SolutionItem CreateSolutionItem (string language, string typeGuids, string itemType, Type itemClass)
+		// All of the last 4 parameters are optional, but at least one must be provided.
+		SolutionItem CreateSolutionItem (MSBuildProject p, string fileName, string language, string typeGuids,
+			string itemType, Type itemClass)
 		{
-			// All the parameters are optional, but at least one must be provided.
-			
 			SolutionItem item = null;
 			
 			if (!string.IsNullOrEmpty (typeGuids)) {
@@ -296,6 +296,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (st != null) {
 					item = st.CreateInstance (language);
 					useXBuild = useXBuild || st.UseXBuild;
+					if (st.IsMigration) {
+						if (!st.MigrationHandler.Migrate (p, fileName, language))
+							throw new Exception ("Could not migrate project");
+						
+						var oldSt = st;
+						st = MSBuildProjectService.GetItemSubtypeNodes ()
+							.Where (t => t.CanHandleItem ((SolutionEntityItem)item)).Last ();
+						for (int i = 0; i < subtypeGuids.Count; i++) {
+							if (string.Equals (subtypeGuids[i], oldSt.Guid, StringComparison.OrdinalIgnoreCase)) {
+								subtypeGuids[i] = st.Guid;
+								oldSt = null;
+								break;
+							}
+						}
+						if (oldSt != null)
+							throw new Exception ("Unable to correct flavor GUID");
+						p.GetGlobalPropertyGroup ().SetPropertyValue ("ProjectTypeGuids", string.Join (";", SubtypeGuids));
+						fileContent = p.Save ();
+						MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, fileContent, "UTF-8");
+					}
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 				} else
 					throw new UnknownSolutionItemTypeException (typeGuids);

@@ -54,6 +54,9 @@ namespace MonoDevelop.Projects.Extensions
 
 		[NodeAttribute]
 		bool useXBuild = false;
+		
+		[NodeAttribute]
+		string migrationHandler;
 
 		Type itemType;
 
@@ -86,8 +89,20 @@ namespace MonoDevelop.Projects.Extensions
 			}
 		}
 		
+		public string Guid {
+			get { return guid; }
+		}
+		
 		public bool UseXBuild {
 			get { return useXBuild; }
+		}
+		
+		public bool IsMigration {
+			get { return migrationHandler != null; }
+		}
+		
+		public IDotNetSubtypeMigrationHandler MigrationHandler {
+			get { return (IDotNetSubtypeMigrationHandler) Addin.CreateInstance (migrationHandler); }
 		}
 		
 		public bool SupportsType (string guid)
@@ -102,7 +117,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public virtual bool CanHandleItem (SolutionEntityItem item)
 		{
-			return Type.IsAssignableFrom (item.GetType ());
+			return !IsMigration && Type.IsAssignableFrom (item.GetType ());
 		}
 		
 		public virtual bool CanHandleFile (string fileName, string typeGuid)
@@ -157,5 +172,10 @@ namespace MonoDevelop.Projects.Extensions
 		public string Projects { get; set; }
 		
 		public bool IsAdd { get; private set; }
+	}
+	
+	public interface IDotNetSubtypeMigrationHandler
+	{
+		bool Migrate (MSBuildProject project, string fileName, string language);
 	}
 }
