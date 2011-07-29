@@ -231,7 +231,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.Append ("	};\n");
 			sb.AppendFormat ("	rootObject = {0};\n", project.Token);
 			sb.Append ("}");
-			Console.WriteLine (sb);
 			return sb.ToString ();
 		}
 	}
