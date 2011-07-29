@@ -128,47 +128,53 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("textEditor");
 			this.textEditor = textEditor;
 
-			textEditor.Document.TextReplaced += delegate(object sender,ReplaceEventArgs e) {
-				RemoveCachedLine (Document.GetLineByOffset (e.Offset));
-				if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
-					int delta = -e.Count;
-					if (!string.IsNullOrEmpty (e.Value))
-						delta += e.Value.Length;
-					mouseWordStart += delta;
-					mouseWordEnd += delta;
-				}
-			};
+			textEditor.Document.TextReplaced += HandleTextReplaced;
 			base.cursor = xtermCursor;
 			textEditor.HighlightSearchPatternChanged += delegate {
 				selectedRegions.Clear ();
-				RefreshSearchMarker ();
-			};
-			//			textEditor.SelectionChanged += delegate { DisposeLayoutDict (); };
-			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
-				if (selectedRegions.Count == 0)
-					return;
-				List<ISegment> newRegions = new List<ISegment> (this.selectedRegions);
-				Document.UpdateSegments (newRegions, e);
-				this.selectedRegions = newRegions;
 				RefreshSearchMarker ();
 			};
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = PangoUtil.CreateLayout (textEditor);
 
-			textEditor.Document.EndUndo += delegate {
-				if (!textEditor.Document.IsInAtomicUndo)
-					UpdateBracketHighlighting (this, EventArgs.Empty);
-			};
+			textEditor.Document.EndUndo += HandleEndUndo;
 			textEditor.SelectionChanged += UpdateBracketHighlighting;
-			textEditor.Document.Undone += delegate {
-				UpdateBracketHighlighting (this, EventArgs.Empty);
-			};
-			textEditor.Document.Redone += delegate {
-				UpdateBracketHighlighting (this, EventArgs.Empty);
-			};
+			textEditor.Document.Undone += HandleUndone; 
+			textEditor.Document.Redone += HandleUndone;
+			
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
+		}
+
+		void HandleUndone (object sender, EventArgs e)
+		{
+			UpdateBracketHighlighting (this, EventArgs.Empty);
+		}
+
+		void HandleEndUndo (object sender, EventArgs e)
+		{
+			if (!textEditor.Document.IsInAtomicUndo)
+				UpdateBracketHighlighting (this, EventArgs.Empty);
+		}
+
+		void HandleTextReplaced (object sender, ReplaceEventArgs e)
+		{
+			RemoveCachedLine (Document.GetLineByOffset (e.Offset));
+			if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
+				int delta = -e.Count;
+				if (!string.IsNullOrEmpty (e.Value))
+					delta += e.Value.Length;
+				mouseWordStart += delta;
+				mouseWordEnd += delta;
+			}
+			
+			if (selectedRegions.Count > 0) {
+				List<ISegment> newRegions = new List<ISegment> (this.selectedRegions);
+				Document.UpdateSegments (newRegions, e);
+				this.selectedRegions = newRegions;
+				RefreshSearchMarker ();
+			}
 		}
 
 		void TextEditorDocumentLineChanged (object sender, LineEventArgs e)
@@ -531,7 +537,13 @@ namespace Mono.TextEditor
 			StopCaretThread ();
 			DisposeHighightBackgroundWorker ();
 			DisposeSearchPatternWorker ();
-
+			
+			textEditor.Document.TextReplaced -= HandleTextReplaced;
+			textEditor.Document.LineChanged -= TextEditorDocumentLineChanged;
+			textEditor.Document.EndUndo -= HandleEndUndo;
+			textEditor.Document.Undone -= HandleUndone; 
+			textEditor.Document.Redone -= HandleUndone;
+			
 			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 
