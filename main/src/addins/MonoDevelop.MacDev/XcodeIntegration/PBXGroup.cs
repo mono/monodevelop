@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.XcodeIntegration
 {
-	class PBXGroup : XcodeObject
+	public class PBXGroup : XcodeObject, IEnumerable<XcodeObject>
 	{
 		string name;
 		List<XcodeObject> children;
@@ -71,5 +71,17 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 			return sb.ToString ();
 		}
+
+		#region IEnumerable implementation
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return ((System.Collections.IEnumerable)children).GetEnumerator ();
+		}
+
+		public IEnumerator<XcodeObject> GetEnumerator ()
+		{
+			return children.GetEnumerator ();
+		}
+		#endregion
 	}
 }

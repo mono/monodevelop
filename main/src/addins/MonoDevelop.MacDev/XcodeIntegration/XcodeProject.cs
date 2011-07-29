@@ -39,7 +39,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		PBXProject project;
 		List<PBXFileReference> files;
 		List<PBXBuildFile> sources;
-		PBXGroup group;
+		PBXGroup rootGroup;
 		List<PBXGroup> groups;
 		PBXFileReference target;
 		PBXNativeTarget nativeTarget;
@@ -51,17 +51,23 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		PBXResourcesBuildPhase resourcesBuildPhase;
 		PBXSourcesBuildPhase sourcesBuildPhase;
 
+		public PBXGroup RootGroup {
+			get {
+				return rootGroup;
+			}
+		}
+		
 		public XcodeProject (string name, string sdkRoot, string configName)
 		{
 			this.name = name;
-			group = new PBXGroup ("CustomTemplate");
+			rootGroup = new PBXGroup ("CustomTemplate");
 			this.frameworksBuildPhase = new PBXFrameworksBuildPhase ();
 			this.resourcesBuildPhase = new PBXResourcesBuildPhase ();
 			this.sourcesBuildPhase = new PBXSourcesBuildPhase ();
 			this.files = new List<PBXFileReference> ();
 			this.sources = new List<PBXBuildFile> ();
 			this.groups = new List<PBXGroup> ();
-			this.groups.Add (group);
+			this.groups.Add (rootGroup);
 			
 			this.target = new PBXFileReference (name, string.Format ("{0}.app", name), "BUILT_PRODUCTS_DIR");
 			this.nativeConfigurationList = new XCConfigurationList ();
@@ -69,7 +75,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			this.nativeBuildConfiguration = new XCBuildConfiguration (configName);
 			this.projectBuildConfiguration = new XCBuildConfiguration (configName);
 			this.nativeTarget = new PBXNativeTarget (name, nativeConfigurationList, target);
-			this.project = new PBXProject (projectConfigurationList, group);
+			this.project = new PBXProject (projectConfigurationList, rootGroup);
 
 			nativeBuildConfiguration.AddSetting ("ALWAYS_SEARCH_USER_PATHS", "NO");
 			nativeBuildConfiguration.AddSetting ("COPY_PHASE_STRIP", "NO");
@@ -93,7 +99,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 			this.projectConfigurationList.AddBuildConfiguration (projectBuildConfiguration);
 
-			this.group.AddChild (this.target);
+			this.rootGroup.AddChild (this.target);
 			
 			this.nativeTarget.AddBuildPhase (frameworksBuildPhase);
 			this.nativeTarget.AddBuildPhase (sourcesBuildPhase);
@@ -112,12 +118,12 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 			files.Add (fileref);
 			sources.Add (buildfile);
-			(grp ?? this.group).AddChild (fileref);
+			(grp ?? this.rootGroup).AddChild (fileref);
 
 			return buildfile;
 		}
 
-		void AddResource (string name, string path, PBXGroup grp = null)
+		public void AddResource (string name, string path, PBXGroup grp = null)
 		{
 			resourcesBuildPhase.AddResource (AddFile (name, path, "\"<group>\"", grp));
 		}
@@ -128,26 +134,44 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			files.Add (fileref);
 		}
 
-		internal void AddSource (string name, PBXGroup grp = null)
+		public void AddSource (string name, PBXGroup grp = null)
 		{
 			//sourcesBuildPhase.AddSource (AddFile (Path.GetFileName (name), Path.GetDirectoryName (name), "\"<group>\""));
 			sourcesBuildPhase.AddSource (AddFile (name, name, "\"<group>\"", grp));
 		}
 		
-		internal PBXGroup AddGroup (string name)
+		public PBXGroup AddGroup (PBXGroup parent, string name)
 		{
 			var result = new PBXGroup (name);
-			this.group.AddChild (result);
+			parent.AddChild (result);
 			groups.Insert (0, result);
 			return result;
 		}
 		
-		internal PBXGroup GetGroup (string name)
+		public PBXGroup AddGroup (string name)
+		{
+			var result = new PBXGroup (name);
+			this.rootGroup.AddChild (result);
+			groups.Insert (0, result);
+			return result;
+		}
+		
+		public PBXGroup GetGroup (string name)
 		{
 			return groups.FirstOrDefault (g => g.Name == name);
 		}
 		
-		internal void AddResource (string name, PBXGroup grp = null)
+		public PBXGroup GetGroup (PBXGroup parent, string name)
+		{
+			foreach (var obj in parent) {
+				var grp = obj as PBXGroup;
+				if (grp != null && grp.Name ==name)
+					return grp;
+			}
+			return null;
+		}
+		
+		public void AddResource (string name, PBXGroup grp = null)
 		{
 			AddResource (name, name, grp);
 		}
