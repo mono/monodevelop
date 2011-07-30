@@ -835,7 +835,7 @@ namespace MonoDevelop.Projects
 			DotNetExecutionCommand cmd = new DotNetExecutionCommand (configuration.CompiledOutputName);
 			cmd.Arguments = configuration.CommandLineParameters;
 			cmd.WorkingDirectory = Path.GetDirectoryName (configuration.CompiledOutputName);
-			cmd.EnvironmentVariables = new Dictionary<string, string> (configuration.EnvironmentVariables);
+			cmd.EnvironmentVariables = configuration.GetParsedEnvironmentVariables ();
 			cmd.TargetRuntime = TargetRuntime;
 			cmd.UserAssemblyPaths = GetUserAssemblyPaths (configSel);
 			return cmd;
