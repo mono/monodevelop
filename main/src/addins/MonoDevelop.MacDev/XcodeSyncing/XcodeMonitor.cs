@@ -39,6 +39,8 @@ using MonoDevelop.MacInterop;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoDevelop.Ide.ProgressMonitoring;
+using MonoDevelop.MacDev.PlistEditor;
+
 
 
 namespace MonoDevelop.MacDev.XcodeSyncing
@@ -239,6 +241,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				return;
 			if (Directory.Exists (this.originalProjectDir))
 				Directory.Delete (this.originalProjectDir, true);
+			DeleteDerivedData ();
 		}
 		
 		void DeleteProjectArtifacts ()
@@ -246,6 +249,51 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			XC4Debug.Log ("Deleting project artifacts");
 			if (Directory.Exists (xcproj))
 				Directory.Delete (xcproj, true);
+		}
+		
+		static string GetWorkspacePath (string infoPlist)
+		{
+			try {
+				var dict = PDictionary.Load (infoPlist);
+				PString val;
+				if (dict.TryGetValue<PString>("WorkspacePath", out val))
+					return val.Value;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while reading info.plist from:" + infoPlist, e);
+			}
+			return null;
+		}
+		
+		void DeleteDerivedData ()
+		{
+			var derivedDataPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Library/Developer/Xcode/DerivedData");
+			string[] subDirs;
+			
+			try {
+				if (!Directory.Exists (derivedDataPath))
+					return;
+				subDirs = Directory.GetDirectories (derivedDataPath);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting derived data directories.", e);
+				return;
+			}
+			
+			foreach (var subDir in subDirs) {
+				var plistPath = Path.Combine (subDir, "info.plist");
+				var workspacePath = GetWorkspacePath (plistPath);
+				if (workspacePath == null)
+					continue;
+				if (workspacePath == xcproj) {
+					try {
+						XC4Debug.Log ("Deleting derived data directory");
+						Directory.Delete (subDir, true);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while removing derived data directory " + subDir, e);
+					}
+					return;
+				}
+			}
+			XC4Debug.Log ("Couldn't find & delete derived data directory");
 		}
 		
 		public bool IsProjectOpen ()

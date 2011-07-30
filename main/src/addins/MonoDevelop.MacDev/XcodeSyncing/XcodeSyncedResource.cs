@@ -75,12 +75,36 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			throw new InvalidOperationException ();
 		}
-		
+		/*
 		const string resourceFilesGroup = "Resource Files";
 		public override void AddToProject (XcodeProject project, FilePath syncProjectDir)
 		{
 			var grp = project.GetGroup (resourceFilesGroup) ?? project.AddGroup (resourceFilesGroup);
 			project.AddResource (targetRelative, grp);
+		}
+		*/
+		
+		IEnumerable<string> GetGroups ()
+		{
+			var groups = new List<string> ();
+			FilePath parent = targetRelative;
+			while (true) {
+				parent = parent.ParentDirectory;
+				if (parent.IsEmpty)
+					break;
+				groups.Insert (0, parent.FileName);
+			}
+			return groups;
+		}
+		
+		public override void AddToProject (XcodeProject project, FilePath syncProjectDir)
+		{
+			PBXGroup grp = project.RootGroup;
+			
+			foreach (var groupName in GetGroups ())
+				grp = project.GetGroup (grp, groupName) ?? project.AddGroup (grp, groupName);
+			
+			project.AddResource (targetRelative.FileName, targetRelative, grp);
 		}
 		
 		public override string[] GetTargetRelativeFileNames ()

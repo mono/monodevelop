@@ -140,7 +140,7 @@ namespace MonoDevelop.Platform
 		
 		public string SelectedEncodingId {
 			get {
-				return encodingBox == null ? null : encodingBox.ToString ();
+				return encodingBox == null ? null : encodingBox.SelectedEncodingId;
 			}
 		}
 		

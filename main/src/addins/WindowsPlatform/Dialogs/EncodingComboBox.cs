@@ -98,10 +98,17 @@ namespace MonoDevelop.Platform
 		protected override void OnSelectedIndexChanged (EventArgs e)
 		{
 			base.OnSelectedIndexChanged (e);
-
-			// TODO - Implement support for the add/remove encodings panel
-			if (Items.Count > 0 && SelectedIndex == Items.Count -1)
+			
+			// 'Add or Remove...' option
+			if (Items.Count > 0 && SelectedIndex == Items.Count -1) {
+				var encodingsForm = new EncodingSelectionForm ();
+				if (encodingsForm.ShowDialog (Parent) == DialogResult.OK) {
+					TextEncoding.ConversionEncodings = encodingsForm.SelectedEncodings;
+					Populate (true);
+				}
+				
 				SelectedIndex = 0;
+			}
 		}
 	}
 }

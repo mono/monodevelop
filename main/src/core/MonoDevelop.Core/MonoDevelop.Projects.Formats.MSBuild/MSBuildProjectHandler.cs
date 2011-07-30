@@ -312,7 +312,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						}
 						if (oldSt != null)
 							throw new Exception ("Unable to correct flavor GUID");
-						p.GetGlobalPropertyGroup ().SetPropertyValue ("ProjectTypeGuids", string.Join (";", SubtypeGuids));
+						var gg = string.Join (";", subtypeGuids) + ";" + TypeGuid;
+						p.GetGlobalPropertyGroup ().SetPropertyValue ("ProjectTypeGuids", gg.ToUpper ());
 						fileContent = p.Save ();
 						MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, fileContent, "UTF-8");
 					}
