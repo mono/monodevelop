@@ -104,7 +104,10 @@ namespace MonoDevelop.Projects
 		public FilePath GetCommandWorkingDir (IWorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			StringTagModel tagSource = GetTagModel (entry, configuration);
-			return (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : (FilePath) StringParserService.Parse (workingdir, tagSource));
+			if (string.IsNullOrEmpty (workingdir))
+				return entry.BaseDirectory;
+			FilePath dir = StringParserService.Parse (workingdir, tagSource);
+			return dir.ToAbsolute (entry.BaseDirectory);
 		}
 		
 		public CustomCommand Clone ()
@@ -156,6 +159,48 @@ namespace MonoDevelop.Projects
 			args = StringParserService.Parse (args, tagSource);
 		}
 		
+		ProcessExecutionCommand CreateExecutionCommand (IWorkspaceObject entry, ConfigurationSelector configuration)
+		{
+			string exe, args;
+			StringTagModel tagSource = GetTagModel (entry, configuration);
+			ParseCommand (tagSource, out exe, out args);
+			
+			exe = ((FilePath)exe).ToAbsolute (entry.BaseDirectory).FullPath;
+			ProcessExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
+			
+			cmd.Arguments = args;
+			
+			FilePath workingDir = this.workingdir;
+			if (!workingDir.IsNullOrEmpty)
+				workingDir = StringParserService.Parse (workingDir, tagSource);
+			cmd.WorkingDirectory = workingDir.IsNullOrEmpty
+				? entry.BaseDirectory
+				: workingDir.ToAbsolute (entry.BaseDirectory);
+			
+			if (type != CustomCommandType.Execute)
+				return cmd;
+			
+			var proj = entry as Project;
+			if (proj == null)
+				return cmd;
+			
+			var cfg = (ProjectConfiguration) proj.GetConfiguration (configuration);
+			if (cfg == null)
+				return cmd;
+			
+			cmd.EnvironmentVariables = cfg.GetParsedEnvironmentVariables ();
+			string cfgArgs = cfg.CommandLineParameters;
+			if (!string.IsNullOrEmpty (cfgArgs)) {
+				cfgArgs = StringParserService.Parse (cfgArgs, tagSource);
+				if (string.IsNullOrEmpty (args)) {
+					cmd.Arguments = cfgArgs;
+				} else {
+					cmd.Arguments = args + " " + cfgArgs;
+				}
+			}
+			return cmd;
+		}
+		
 		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			Execute (monitor, entry, null, configuration);
@@ -163,30 +208,32 @@ namespace MonoDevelop.Projects
 		
 		public bool CanExecute (IWorkspaceObject entry, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			string exe, args;
-			StringTagModel tagSource = GetTagModel (entry, configuration);
-			ParseCommand (tagSource, out exe, out args);
-			ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
-			return context == null || context.ExecutionHandler.CanExecute (cmd);
+			if (string.IsNullOrEmpty (command))
+				return false;
+			
+			if (context == null)
+				return true;
+			
+			var cmd = CreateExecutionCommand (entry, configuration);
+			return context.ExecutionHandler.CanExecute (cmd);
 		}
 		
-		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, ConfigurationSelector configuration)
+		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context,
+			ConfigurationSelector configuration)
 		{
-			if (string.IsNullOrEmpty (command))
+			ProcessExecutionCommand cmd = CreateExecutionCommand (entry, configuration);
+			
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", cmd.Command, cmd.Arguments));
+			
+			if (!Directory.Exists (cmd.WorkingDirectory)) {
+				monitor.ReportError (GettextCatalog.GetString ("Custom command working directory does not exist"), null);
 				return;
+			}
 			
-			StringTagModel tagSource = GetTagModel (entry, configuration);
-			
-			string exe, args;
-			ParseCommand (tagSource, out exe, out args);
-			
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", exe, args));
-
-			FilePath dir = GetCommandWorkingDir (entry, configuration);
-
-			FilePath localPath = entry.BaseDirectory.Combine (exe);
-			if (File.Exists (localPath))
-				exe = localPath;
+			if (!File.Exists (cmd.Command)) {
+				monitor.ReportError (GettextCatalog.GetString ("Custom command executable not exist"), null);
+				return;
+			}
 			
 			IProcessAsyncOperation oper;
 			
@@ -197,25 +244,21 @@ namespace MonoDevelop.Projects
 						console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole);
 					else
 						console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
-	
-					ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
-					ProcessExecutionCommand pcmd = cmd as ProcessExecutionCommand;
-					if (pcmd != null) {
-						pcmd.Arguments = args;
-						pcmd.WorkingDirectory = dir;
-					}
 					oper = context.ExecutionHandler.Execute (cmd, console);
 				}
 				else {
 					if (externalConsole) {
 						IConsole console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
-						oper = Runtime.ProcessService.StartConsoleProcess (exe, args, dir, console, null);
+						oper = Runtime.ProcessService.StartConsoleProcess (cmd.Command, cmd.Arguments,
+							cmd.WorkingDirectory, console, null);
 					} else {
-						oper = Runtime.ProcessService.StartProcess (exe, args, dir, monitor.Log, monitor.Log, null, false);
+						oper = Runtime.ProcessService.StartProcess (cmd.Command, cmd.Arguments,
+							cmd.WorkingDirectory, monitor.Log, monitor.Log, null, false);
 					}
 				}
 			} catch (Exception ex) {
-				throw new UserException (GettextCatalog.GetString ("Command execution failed: {0}",ex.Message));
+				LoggingService.LogError ("Command execution failed", ex);
+				throw new UserException (GettextCatalog.GetString ("Command execution failed: {0}", ex.Message));
 			}
 			
 			monitor.CancelRequested += delegate {
