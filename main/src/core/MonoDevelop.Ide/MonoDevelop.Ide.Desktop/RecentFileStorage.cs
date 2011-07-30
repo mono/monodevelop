@@ -71,7 +71,10 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			if (watcher != null)
 				return;
-			watcher = new FileSystemWatcher (Path.GetDirectoryName (filePath), Path.GetFileName (filePath));
+			var dirName = Path.GetDirectoryName (filePath);
+			if (!Directory.Exists (dirName))
+				Directory.CreateDirectory (dirName);
+			watcher = new FileSystemWatcher (dirName, Path.GetFileName (filePath));
 			watcher.Created += FileChanged;
 			watcher.Changed += FileChanged;
 			watcher.Deleted += FileChanged;
