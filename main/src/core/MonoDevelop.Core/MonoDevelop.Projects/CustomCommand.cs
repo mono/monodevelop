@@ -32,6 +32,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.StringParsing;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -54,6 +55,16 @@ namespace MonoDevelop.Projects
 		
 		[ItemProperty (DefaultValue = false)]
 		bool pauseExternalConsole;
+		
+		[ItemProperty("EnvironmentVariables", SkipEmpty = true)]
+		[ItemProperty("Variable", Scope = "item")]
+		[ItemProperty("name", Scope = "key")]
+		[ItemProperty("value", Scope = "value")]
+		Dictionary<string, string> environmentVariables = new Dictionary<string, string> ();
+		
+		public Dictionary<string, string> EnvironmentVariables {
+			get { return environmentVariables; }
+		}
 		
 		public CustomCommandType Type {
 			get { return type; }
@@ -159,7 +170,7 @@ namespace MonoDevelop.Projects
 			args = StringParserService.Parse (args, tagSource);
 		}
 		
-		ProcessExecutionCommand CreateExecutionCommand (IWorkspaceObject entry, ConfigurationSelector configuration)
+		public ProcessExecutionCommand CreateExecutionCommand (IWorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			string exe, args;
 			StringTagModel tagSource = GetTagModel (entry, configuration);
@@ -177,27 +188,13 @@ namespace MonoDevelop.Projects
 				? entry.BaseDirectory
 				: workingDir.ToAbsolute (entry.BaseDirectory);
 			
-			if (type != CustomCommandType.Execute)
-				return cmd;
-			
-			var proj = entry as Project;
-			if (proj == null)
-				return cmd;
-			
-			var cfg = (ProjectConfiguration) proj.GetConfiguration (configuration);
-			if (cfg == null)
-				return cmd;
-			
-			cmd.EnvironmentVariables = cfg.GetParsedEnvironmentVariables ();
-			string cfgArgs = cfg.CommandLineParameters;
-			if (!string.IsNullOrEmpty (cfgArgs)) {
-				cfgArgs = StringParserService.Parse (cfgArgs, tagSource);
-				if (string.IsNullOrEmpty (args)) {
-					cmd.Arguments = cfgArgs;
-				} else {
-					cmd.Arguments = args + " " + cfgArgs;
-				}
+			if (environmentVariables != null) {
+				var vars = new Dictionary<string, string> ();
+				foreach (var v in environmentVariables)
+					vars [v.Key] = StringParserService.Parse (v.Value, tagSource);
+				cmd.EnvironmentVariables = vars;
 			}
+			
 			return cmd;
 		}
 		
