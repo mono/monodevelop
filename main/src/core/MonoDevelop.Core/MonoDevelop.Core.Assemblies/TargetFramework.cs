@@ -55,8 +55,6 @@ namespace MonoDevelop.Core.Assemblies
 
 		internal bool RelationsBuilt;
 		
-		internal static int FrameworkCount;
-		internal int Index;
 		string corlibVersion;
 		TargetFrameworkToolsVersion toolsVersion;
 
@@ -66,12 +64,10 @@ namespace MonoDevelop.Core.Assemblies
 
 		internal TargetFramework ()
 		{
-			Index = FrameworkCount++;
 		}
 
 		internal TargetFramework (TargetFrameworkMoniker id)
 		{
-			Index = FrameworkCount++;
 			this.id = id;
 			this.name = id.Profile == null
 				? string.Format ("{0} {1}", id.Identifier, id.Version)

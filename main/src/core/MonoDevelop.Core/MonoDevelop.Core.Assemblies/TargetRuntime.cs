@@ -51,7 +51,7 @@ namespace MonoDevelop.Core.Assemblies
 		object initLock = new object ();
 		object initEventLock = new object ();
 		bool initialized;
-		TargetFrameworkBackend[] frameworkBackends;
+		Dictionary<TargetFrameworkMoniker,TargetFrameworkBackend> frameworkBackends;
 		
 		RuntimeAssemblyContext assemblyContext;
 		ComposedAssemblyContext composedAssemblyContext;
@@ -279,13 +279,12 @@ namespace MonoDevelop.Core.Assemblies
 		
 		protected TargetFrameworkBackend GetBackend (TargetFramework fx)
 		{
-			if (frameworkBackends == null)
-				frameworkBackends = new TargetFrameworkBackend [TargetFramework.FrameworkCount];
-			else if (fx.Index >= frameworkBackends.Length)
-				Array.Resize (ref frameworkBackends, TargetFramework.FrameworkCount);
-			
-			TargetFrameworkBackend backend = frameworkBackends [fx.Index];
-			if (backend == null) {
+			lock (frameworkBackends) {
+				if (frameworkBackends == null)
+					frameworkBackends = new Dictionary<TargetFrameworkMoniker, TargetFrameworkBackend> ();
+				TargetFrameworkBackend backend;
+				if (frameworkBackends.TryGetValue (fx.Id, out backend))
+					return backend;
 				backend = fx.CreateBackendForRuntime (this);
 				if (backend == null) {
 					backend = CreateBackend (fx);
@@ -293,9 +292,9 @@ namespace MonoDevelop.Core.Assemblies
 						backend = new NotSupportedFrameworkBackend ();
 				}
 				backend.Initialize (this, fx);
-				frameworkBackends [fx.Index] = backend;
+				frameworkBackends[fx.Id] = backend;
+				return backend;
 			}
-			return backend;
 		}
 		
 		protected virtual TargetFrameworkBackend CreateBackend (TargetFramework fx)
