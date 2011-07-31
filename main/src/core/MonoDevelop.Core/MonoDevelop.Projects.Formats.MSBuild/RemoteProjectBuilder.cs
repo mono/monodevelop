@@ -80,11 +80,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter,
 			MSBuildVerbosity verbosity)
 		{
+			if (target == null)
+				throw new ArgumentNullException ("target");
+			if (configuration == null)
+				throw new ArgumentNullException ("configuration");
+			
 			return builder.RunTarget (target, configuration, platform, logWriter, verbosity);
 		}
 		
 		public string[] GetAssemblyReferences (string configuration, string platform)
 		{
+			if (configuration == null)
+				throw new ArgumentNullException ("configuration");
 			return builder.GetAssemblyReferences (configuration, platform);
 		}
 		

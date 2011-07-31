@@ -507,7 +507,6 @@
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
-    <None Include="frameworks-source.xml" />
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
   </ItemGroup>
   <ItemGroup>

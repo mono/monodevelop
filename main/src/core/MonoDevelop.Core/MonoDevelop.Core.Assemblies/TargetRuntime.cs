@@ -73,6 +73,10 @@ namespace MonoDevelop.Core.Assemblies
 			};
 		}
 		
+		public bool IsInitialized {
+			get { return initialized; }
+		}
+		
 		internal void StartInitialization ()
 		{
 			// Store the main sync context, since we'll need later on for subscribing
@@ -501,26 +505,6 @@ namespace MonoDevelop.Core.Assemblies
 
 		void CreateFrameworks ()
 		{
-			if ((SystemAssemblyService.UpdateExpandedFrameworksFile || !SystemAssemblyService.UseExpandedFrameworksFile)) {
-				// Read the assembly versions
-				foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-					if (IsInstalled (fx)) {
-						IEnumerable<string> dirs = GetFrameworkFolders (fx);
-						foreach (AssemblyInfo assembly in fx.Assemblies) {
-							foreach (string dir in dirs) {
-								string file = Path.Combine (dir, assembly.Name) + ".dll";
-								if (File.Exists (file)) {
-									if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
-										System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
-										assembly.Update (aname);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			
 			var frameworks = new HashSet<TargetFrameworkMoniker> ();
 			
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetCoreFrameworks ()) {
@@ -537,10 +521,6 @@ namespace MonoDevelop.Core.Assemblies
 					timer.Trace ("Registering assemblies for framework " + fx.Id);
 					RegisterSystemAssemblies (fx);
 				}
-			}
-			
-			if (SystemAssemblyService.UpdateExpandedFrameworksFile && IsRunning) {
-				Runtime.SystemAssemblyService.SaveGeneratedFrameworkInfo ();
 			}
 		}
 		
@@ -560,7 +540,7 @@ namespace MonoDevelop.Core.Assemblies
 				foreach (string dir in dirs) {
 					string file = Path.Combine (dir, assembly.Name) + ".dll";
 					if (File.Exists (file)) {
-						if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
+						if (assembly.Version == null && IsRunning) {
 							try {
 								System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
 								assembly.Update (aname);
