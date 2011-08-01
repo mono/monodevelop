@@ -72,8 +72,7 @@ namespace MonoDevelop.Core.Assemblies
 			
 			// Don't initialize until Current and Default Runtimes are set
 			foreach (TargetRuntime runtime in runtimes) {
-				runtime.Initialized += HandleRuntimeInitialized;
-				runtime.StartInitialization ();
+				InitializeRuntime (runtime);
 			}
 			
 			if (CurrentRuntime == null)
@@ -83,6 +82,12 @@ namespace MonoDevelop.Core.Assemblies
 			userAssemblyContext.Changed += delegate {
 				SaveUserAssemblyContext ();
 			};
+		}
+		
+		void InitializeRuntime (TargetRuntime runtime)
+		{
+			runtime.Initialized += HandleRuntimeInitialized;
+			runtime.StartInitialization ();
 		}
 		
 		void HandleRuntimeInitialized (object sender, EventArgs e)
@@ -100,8 +105,21 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
+		//we initialize runtimes in threads, but consumers of this service aren't aware that runtimes
+		//can be in an uninialized state, so we consider the initialization as purely an opportunistic
+		//attempt at startup parallization, and block as soon as anything actually tries to access the
+		//runtime objects
+		void CheckRuntimesInitialized ()
+		{
+			foreach (var r in runtimes) {
+				if (!r.IsInitialized)
+					r.Initialize ();
+			}
+		}
+		
 		public TargetRuntime DefaultRuntime {
 			get {
+				CheckRuntimesInitialized ();
 				return defaultRuntime;
 			}
 			set {
@@ -121,8 +139,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public void RegisterRuntime (TargetRuntime runtime)
 		{
-			runtime.Initialized += HandleRuntimeInitialized;
-			runtime.StartInitialization ();
+			InitializeRuntime (runtime);
 			runtimes.Add (runtime);
 			if (RuntimesChanged != null)
 				RuntimesChanged (this, EventArgs.Empty);
@@ -146,16 +163,19 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public IEnumerable<TargetFramework> GetTargetFrameworks ()
 		{
+			CheckRuntimesInitialized ();
 			return frameworks.Values;
 		}
 		
 		public IEnumerable<TargetRuntime> GetTargetRuntimes ()
 		{
+			CheckRuntimesInitialized ();
 			return runtimes;
 		}
 		
 		public TargetRuntime GetTargetRuntime (string id)
 		{
+			CheckRuntimesInitialized ();
 			foreach (TargetRuntime r in runtimes) {
 				if (r.Id == id)
 					return r;
@@ -165,6 +185,7 @@ namespace MonoDevelop.Core.Assemblies
 
 		public IEnumerable<TargetRuntime> GetTargetRuntimes (string runtimeId)
 		{
+			CheckRuntimesInitialized ();
 			foreach (TargetRuntime r in runtimes) {
 				if (r.RuntimeId == runtimeId)
 					yield return r;
@@ -173,6 +194,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public TargetFramework GetTargetFramework (TargetFrameworkMoniker id)
 		{
+			CheckRuntimesInitialized ();
 			return GetTargetFramework (id, frameworks);
 		}
 		
@@ -189,6 +211,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public SystemPackage GetPackageFromPath (string assemblyPath)
 		{
+			CheckRuntimesInitialized ();
 			foreach (TargetRuntime r in runtimes) {
 				SystemPackage p = r.AssemblyContext.GetPackageFromPath (assemblyPath);
 				if (p != null)

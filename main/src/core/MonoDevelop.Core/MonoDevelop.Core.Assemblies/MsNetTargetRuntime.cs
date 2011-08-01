@@ -100,7 +100,7 @@ namespace MonoDevelop.Core.Assemblies
 
 			// Extended assembly folders
 
-			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetCoreFrameworks ()) {
 				if (fx.Id.Identifier != ".NETFramework")
 					continue;
 				if (ShuttingDown)
