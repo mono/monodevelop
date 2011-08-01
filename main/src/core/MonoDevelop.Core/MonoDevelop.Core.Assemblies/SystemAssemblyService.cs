@@ -44,7 +44,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.Core.Assemblies
 {
-	public class SystemAssemblyService
+	public sealed class SystemAssemblyService
 	{
 		object frameworkWriteLock = new object ();
 		Dictionary<TargetFrameworkMoniker,TargetFramework> frameworks;
@@ -272,7 +272,7 @@ namespace MonoDevelop.Core.Assemblies
 			return AssemblyContext.NormalizeAsmName (GetAssemblyNameObj (file).ToString ());
 		}
 		
-		protected void CreateFrameworks ()
+		void CreateFrameworks ()
 		{
 			frameworks = new Dictionary<TargetFrameworkMoniker, TargetFramework> ();
 			coreFrameworks = new List<TargetFrameworkMoniker> ();
@@ -315,6 +315,8 @@ namespace MonoDevelop.Core.Assemblies
 			fx.RelationsBuilt = true;
 		}
 		
+		//FIXME: this is totally broken. assemblies can't just belong to one framework
+		// also, it currently only resolves assemblies against the core frameworks
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			try {
@@ -322,7 +324,7 @@ namespace MonoDevelop.Core.Assemblies
 
 				foreach (AssemblyNameReference aname in asm.MainModule.AssemblyReferences) {
 					if (aname.Name == "mscorlib") {
-						foreach (TargetFramework tf in GetTargetFrameworks ()) {
+						foreach (TargetFramework tf in GetCoreFrameworks ()) {
 							if (tf.GetCorlibVersion () == aname.Version.ToString ())
 								return tf.Id;
 						}
