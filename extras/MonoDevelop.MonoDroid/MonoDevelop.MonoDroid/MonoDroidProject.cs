@@ -231,14 +231,21 @@ namespace MonoDevelop.MonoDroid
 		{
 			return new MonoDevelop.Core.Assemblies.TargetFrameworkMoniker (FX_MONODROID, MonoDroidFramework.DefaultAndroidVersion.OSVersion);
 		}
-		
+
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
 			var frameworkId = framework.Id;
 			if (frameworkId.Identifier != FX_MONODROID)
 				return false;
 
-			return MonoDroidFramework.AndroidVersions.Any (version => version.OSVersion == frameworkId.Version);
+			return GetVersion (frameworkId.Version) && MonoDroidFramework.AndroidVersions.Any (version => version.OSVersion == frameworkId.Version);
+		}
+
+		static bool GetVersion (string version)
+		{
+			string apiLevel = MonoDroidMonoFrameworkBackend.GetApiLevelFromVersion (version);
+//			LoggingService.LogDebug ("GetVersion {0} {1} {2}", version, apiLevel, MonoDroidFramework.AndroidBinDir.Combine ("platforms", "android-" + apiLevel));
+			return apiLevel != null && Directory.Exists (MonoDroidFramework.AndroidBinDir.Combine ("platforms", "android-" + apiLevel));
 		}
 		
 		protected override void OnEndLoad ()
