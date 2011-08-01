@@ -284,7 +284,7 @@ namespace MonoDevelop.Projects
 		public TargetFramework TargetFramework {
 			get {
 				if (targetFramework == null) {
-					var id = newProjectTargetFrameworkId ?? GetDefaultTargetFrameworkId ();
+					var id = newProjectTargetFrameworkId ?? GetDefaultTargetFrameworkId (FileFormat);
 					targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (id);
 				}
 				return targetFramework;
@@ -293,7 +293,7 @@ namespace MonoDevelop.Projects
 				if (!SupportsFramework (value))
 					throw new ArgumentException ("Project does not support framework '" + value.Id.ToString () +"'");
 				if (value == null)
-					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId ());
+					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId (FileFormat));
 				if (value.Id == targetFramework.Id)
 					return;
 				bool updateReferences = targetFramework != null;
@@ -308,10 +308,7 @@ namespace MonoDevelop.Projects
 			get { return Runtime.SystemAssemblyService.DefaultRuntime; }
 		}
 		
-		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
-		{
-			return Services.ProjectService.DefaultTargetFramework.Id;
-		}
+		public abstract TargetFrameworkMoniker GetDefaultTargetFrameworkId (FileFormat format);
 
 		public IAssemblyContext AssemblyContext {
 			get {
@@ -745,7 +742,7 @@ namespace MonoDevelop.Projects
 			// Make sure the fx version is sorted out before saving
 			// to avoid changes in project references while saving 
 			if (targetFramework == null)
-				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId ());
+				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId (FileFormat));
 			base.OnSave (monitor);
 		}
 

@@ -44,7 +44,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	internal class SlnFileFormat
+	public class SlnFileFormat
 	{
 		public string GetValidFormatName (object obj, string fileName, MSBuildFileFormat format)
 		{
@@ -741,7 +741,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				try {
 					item = ProjectExtensionUtil.LoadSolutionItem (monitor, projectPath, delegate {
-						return MSBuildProjectService.LoadItem (monitor, projectPath, projTypeGuid, projectGuid);
+						return MSBuildProjectService.LoadItem (monitor, projectPath, format, projTypeGuid, projectGuid);
 					});
 					
 					if (item == null) {

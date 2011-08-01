@@ -48,10 +48,10 @@ namespace MonoDevelop.Projects.Extensions
 			return ItemType != null && ItemType.IsAssignableFrom (item.GetType ());
 		}
 		
-		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, string itemGuid)
+		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string itemGuid)
 		{
 			MSBuildProjectHandler handler = CreateHandler<MSBuildProjectHandler> (fileName, itemGuid);
-			return handler.Load (monitor, fileName, null, ItemType);
+			return handler.Load (monitor, fileName, expectedFormat, null, ItemType);
 		}
 	}
 }

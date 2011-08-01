@@ -84,18 +84,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			};
 		}
 		
-		public static SolutionEntityItem LoadItem (IProgressMonitor monitor, string fileName, string typeGuid, string itemGuid)
+		public static SolutionEntityItem LoadItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
 			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (fileName, typeGuid))
-					return node.LoadSolutionItem (monitor, fileName, itemGuid);
+					return node.LoadSolutionItem (monitor, fileName, expectedFormat, itemGuid);
 			}
 			
 			if (string.IsNullOrEmpty (typeGuid) && IsProjectSubtypeFile (fileName)) {
 				typeGuid = LoadProjectTypeGuids (fileName);
 				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 					if (node.CanHandleFile (fileName, typeGuid))
-						return node.LoadSolutionItem (monitor, fileName, itemGuid);
+						return node.LoadSolutionItem (monitor, fileName, expectedFormat, itemGuid);
 				}
 			}
 
@@ -689,10 +689,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, string itemGuid)
+		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string itemGuid)
 		{
 			MSBuildProjectHandler handler = new MSBuildProjectHandler (Guid, Import, itemGuid);
-			return handler.Load (monitor, fileName, null, null);
+			return handler.Load (monitor, fileName, expectedFormat, null, null);
 		}
 	}
 }
