@@ -190,6 +190,9 @@ namespace MonoDevelop.MonoDroid
 			
 			monoDroidAssetsPrefix = "Assets";
 			monoDroidResourcePrefix = "Resources";
+
+			if (projectOptions.Attributes["TargetFrameworkVersion"] == null)
+				TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId ());
 		}
 		
 		string MakePathNative (string path)
