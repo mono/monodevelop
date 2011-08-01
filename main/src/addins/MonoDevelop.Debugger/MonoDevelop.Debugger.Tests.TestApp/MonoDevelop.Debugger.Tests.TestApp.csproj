@@ -9,7 +9,6 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>MonoDevelop.Debugger.Tests.TestApp</RootNamespace>
     <AssemblyName>MonoDevelop.Debugger.Tests.TestApp</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

@@ -8,7 +8,6 @@
     <ProjectGuid>{376889B5-6504-46A1-9D18-A9E4B4A50F49}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>NUnit</RootNamespace>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

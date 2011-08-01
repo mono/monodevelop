@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <AssemblyName>WelcomePage</AssemblyName>
     <RootNamespace>WelcomePage</RootNamespace>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
