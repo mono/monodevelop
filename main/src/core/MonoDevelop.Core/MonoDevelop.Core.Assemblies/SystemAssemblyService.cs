@@ -198,6 +198,12 @@ namespace MonoDevelop.Core.Assemblies
 			return GetTargetFramework (id, frameworks);
 		}
 		
+		//HACK: this is so that MonoTargetRuntime can access the core frameworks while it's doing its broken assembly->framework mapping
+		internal TargetFramework GetCoreFramework (TargetFrameworkMoniker id)
+		{
+			return GetTargetFramework (id, frameworks);
+		}
+		
 		static TargetFramework GetTargetFramework (TargetFrameworkMoniker id, Dictionary<TargetFrameworkMoniker, TargetFramework> frameworks)
 		{
 			TargetFramework fx;
