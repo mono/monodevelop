@@ -1,3 +1,9 @@
+2010-07-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* templates/MonoMacProject.xpt.xml: Added designer file
+	  contents in case it doesn't get generated at project
+	  creation.
+
 2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoMacBuildExtension.cs: Better build output.

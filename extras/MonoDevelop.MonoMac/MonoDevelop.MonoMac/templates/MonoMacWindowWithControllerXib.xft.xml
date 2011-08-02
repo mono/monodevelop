@@ -66,20 +66,20 @@ namespace ${Namespace}
 		#region Constructors
 		
 		// Called when created from unmanaged code
-		public ${Name} (IntPtr handle) : base (handle)
+		public ${Name}Controller (IntPtr handle) : base (handle)
 		{
 			Initialize ();
 		}
 		
 		// Called when created directly from a XIB file
 		[Export ("initWithCoder:")]
-		public ${Name} (NSCoder coder) : base (coder)
+		public ${Name}Controller (NSCoder coder) : base (coder)
 		{
 			Initialize ();
 		}
 		
 		// Call to load from the XIB/NIB file
-		public ${Name} () : base ("${Name}")
+		public ${Name}Controller () : base ("${Name}")
 		{
 			Initialize ();
 		}

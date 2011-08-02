@@ -44,9 +44,13 @@ namespace MonoDevelop.MonoMac
 		{
 		}
 		
-		string AppName {
+		public string AppName {
 			get {
-				return Path.GetFileNameWithoutExtension (OutputAssembly);
+				string asm = OutputAssembly;
+				var cmp = StringComparison.OrdinalIgnoreCase;
+				if (asm.EndsWith (".exe", cmp) || asm.EndsWith (".dll", cmp))
+					asm = asm.Substring (0, asm.Length - ".exe".Length);
+				return asm;
 			}
 		}
 		

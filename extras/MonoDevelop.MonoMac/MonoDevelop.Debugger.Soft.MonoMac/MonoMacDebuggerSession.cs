@@ -36,13 +36,14 @@ using MonoDevelop.Core;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger.Soft.MonoMac
 {
 
 	public class MonoMacDebuggerSession : RemoteSoftDebuggerSession
 	{
-		Process process;
+		MonoMacProcess process;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
@@ -51,23 +52,16 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 		
 			StartListening (dsi);
 			
-			var psi = new ProcessStartInfo (cmd.LaunchScript) {
-				Arguments = "",
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-				UseShellExecute = false
-			};
-			psi.EnvironmentVariables["MONO_OPTIONS"] = 
-				string.Format ("--debug --debugger-agent=transport=dt_socket,address={0}:{1}",
-				              dsi.Address, dsi.DebugPort);
+			Action<string> stdout = s => OnTargetOutput (false, s);
+			Action<string> stderr = s => OnTargetOutput (true, s);
 			
-			process = System.Diagnostics.Process.Start (psi);
+			var asi = new ApplicationStartInfo (cmd.AppPath);
+			asi.Environment ["MONOMAC_DEBUGLAUNCHER_OPTIONS"]
+				= string.Format ("--debug --debugger-agent=transport=dt_socket,address={0}:{1}", dsi.Address, dsi.DebugPort);
 			
-			ConnectOutput (process.StandardOutput, false);
-			ConnectOutput (process.StandardError, true);
+			process = MonoMacExecutionHandler.OpenApplication (cmd, asi, stdout, stderr);
 			
-			process.EnableRaisingEvents = true;
-			process.Exited += delegate {
+			process.Completed += delegate {
 				EndSession ();
 				process = null;
 			};
@@ -76,8 +70,8 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 		protected override void EnsureExited ()
 		{
 			try {
-				if (process != null && !process.HasExited)
-					process.Kill ();
+				if (process != null && !process.IsCompleted)
+					process.Cancel ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error force-terminating soft debugger process", ex);
 			}

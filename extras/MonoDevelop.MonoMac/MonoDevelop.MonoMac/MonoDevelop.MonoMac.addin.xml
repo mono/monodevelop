@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing MonoMac applications"
        category    = "Mac Development"
-       version     = "2.4">
+       version     = "2.4.2.4">
 	
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
@@ -19,14 +19,29 @@
 		<Import file = "templates/MonoMacEmptyXib.xft.xml"/>
 		<Import file = "templates/MonoMacApplicationManifest.xft.xml"/>
 		<Import file = "templates/MonoMacPlist.xft.xml"/>
+		<Import file = "templates/MonoMacApplicationDocumentManifest.xft.xml"/>
+		<Import file = "templates/MonoMacDocument.xpt.xml"/>
 		<Import file = "MonoMac.dll"/>
+		<Import file = "MonoMac.dll.mdb"/>
 		<Import file = "MonoMacLaunchScript.sh"/>
+		<Import file = "mono-version-check"/>
+		<Import file = "mmp"/>
+		<Import file = "docs/monomac-docs.source"/>
+		<Import file = "docs/monomac-lib.tree"/>
+		<Import file = "docs/monomac-lib.zip"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.4"/>
-		<Addin id="Ide"  version="2.4"/>
+		<Addin id="Core" version="2.4.2"/>
+		<Addin id="Ide"  version="2.4.2"/>
+		<Addin id="MacDev" version="2.4"/>
 	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/Core/Applications">
+		<Application id = "mac-bundle"
+			      class = "MonoDevelop.MonoMac.MonoMacPackagingTool"
+			description = "Mac application bundle and installer generator."/>
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "MonoMacPlist"
@@ -45,6 +60,9 @@
 		            file = "templates/MonoMacDocumentWindowXib.xft.xml"/>
 		<FileTemplate id = "MonoMacEmptyXib"
 		            file = "templates/MonoMacEmptyXib.xft.xml"/>
+		<FileTemplate id = "MonoMacApplicationDocumentManifest"
+			    file = "templates/MonoMacApplicationDocumentManifest.xft.xml"/>
+
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -52,6 +70,8 @@
 				       file = "templates/MonoMacProject.xpt.xml"/>
 		<ProjectTemplate id = "MonoMacProjectEmpty"
 				       file = "templates/MonoMacProjectEmpty.xpt.xml"/>
+		<ProjectTemplate id = "MonoMacDocument"
+				       file = "templates/MonoMacDocument.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -85,4 +105,44 @@
 			<Assembly file="MonoMac.dll" />
 		</Package>
 	</Extension>
+	
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Command id = "MonoDevelop.MonoMac.MonoMacCommands.CreateMacInstaller" 
+			_description = "Creates a Mac Installer"
+			defaultHandler = "MonoDevelop.MonoMac.CreateMacInstallerHandler"
+			_label = "Create Mac Installer..." />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+			<CommandItem id = "MonoDevelop.MonoMac.MonoMacCommands.CreateMacInstaller"
+			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/MonoDocSources">
+		<Source directory="docs" relative="true" />
+	</Extension>
+
+	<!-- debugger addin -->
+	<Module>
+		<Runtime>
+			<Import assembly="MonoDevelop.Debugger.Soft.MonoMac.dll" />
+		</Runtime>
+
+		<Dependencies>
+			<Addin id="Core" version="2.4.2"/>
+			<Addin id="Ide"  version="2.4.2"/>
+			<Addin id="Debugger" version="2.4"/>
+			<Addin id="Debugger.Soft" version="2.4"/>
+		</Dependencies>
+	
+		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+			<Condition id="Platform" value="mac">
+				<DebuggerEngine id="Mono.Debugger.Soft.MonoMac"
+					name="Mono Soft Debugger for MonoMac"
+					features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+					type="MonoDevelop.Debugger.Soft.MonoMac.MonoMacSoftDebuggerEngine" />
+			</Condition>
+		</Extension>
+	</Module>
 </Addin> 
