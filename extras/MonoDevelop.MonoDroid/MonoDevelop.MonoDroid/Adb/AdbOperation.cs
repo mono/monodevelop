@@ -46,11 +46,44 @@ namespace MonoDevelop.MonoDroid
 		public AdbOperation ()
 		{
 		}
-		
+
+#region SocketBug
+		// workaround a socket bug on mono 2.10.2
+		bool socketBugChecked;
+		bool forceSynch;
+		bool ForceSynch {
+			get {
+				if (!socketBugChecked) {
+					socketBugChecked = true;
+					Type t = Type.GetType ("Mono.Runtime");
+					if (t != null) {
+						System.Reflection.MethodInfo mi = t.GetMethod ("GetDisplayName",
+							System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+						if (mi != null) {
+							string s = (string) mi.Invoke (null, null);
+							forceSynch = s.IndexOf ("2.10.2") >= 0;
+						}
+					}
+				}
+				return forceSynch;
+			}
+		}
+#endregion
+
 		protected void BeginConnect ()
 		{
 			client = new AdbClient ();
-			client.BeginConnect (EndConnect, null);
+			if (!ForceSynch)
+				client.BeginConnect (EndConnect, null);
+			else {
+				try {
+					client.Connect ();
+					OnConnected ();
+				} catch (Exception ex) {
+					if (client != null)
+						SetError (ex);
+				}
+			}
 		}
 		
 		void EndConnect (IAsyncResult ar)
