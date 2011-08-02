@@ -164,3 +164,6 @@ distcleancheck_listfiles      = find . -type f -print		# automake-1.9 setting
 distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required filtering
 
 .PHONY: vcrevision
+
+package-monomac:
+	$(MD_LAUNCH_SETUP) mono --debug "build/bin/mdrun.exe" setup pack ../extras/MonoDevelop.MonoMac/build/MonoDevelop.MonoMac.dll

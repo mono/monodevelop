@@ -57,3 +57,6 @@ check-addins:
 
 app-dir:
 	cd main && make app-dir
+
+package-monomac:
+	(cd main; make package-monomac)
