@@ -8,6 +8,7 @@ test "$prefix" = NONE && prefix=/usr/local
 
 usage ()
 {
+	profiles=`ls profiles | sed -e "s/$/,/g" | fmt | sed -e 's/,$//' -e "s/ChangeLog, //"`
 	echo ""
 	echo "Usage : configure [--prefix=PREFIX] [--select] [--profile=PROFILE]"
 	echo ""
@@ -53,7 +54,7 @@ usage ()
 	echo "  add a profile, simply create a file in the 'profiles' directory."
 	echo "  The 'default' profile is used when none is specified."
 	echo ""
-	echo "  Profiles available:" `ls --format=commas profiles | sed -e "s/ChangeLog, //"`
+	echo "  Profiles available:" $profiles 
 	echo ""
 }
 
