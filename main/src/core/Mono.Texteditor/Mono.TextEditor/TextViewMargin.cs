@@ -1702,10 +1702,16 @@ namespace Mono.TextEditor
 			CancelCodeSegmentTooltip ();
 			HideCodeSegmentPreviewWindow ();
 			previewSegment = segment;
-			if (segment == null)
+			if (segment == null || segment.Length == 0)
 				return;
 			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (650, delegate {
 				previewWindow = new CodeSegmentPreviewWindow (this.textEditor, false, segment);
+				if (previewWindow.IsEmptyText) {
+					previewWindow.Destroy ();
+					previewWindow = null;
+					return false;
+				}
+					
 				int ox = 0, oy = 0;
 				this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
 

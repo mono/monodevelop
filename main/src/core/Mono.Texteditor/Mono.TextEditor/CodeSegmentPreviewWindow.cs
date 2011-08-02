@@ -53,6 +53,12 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
+		public bool IsEmptyText {
+			get {
+				return string.IsNullOrEmpty ((layout.Text ?? "").Trim ());
+			}
+		}
+		
 		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
 		{
 		}
