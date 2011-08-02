@@ -39,7 +39,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
-		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (object));
+		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (string));
 		Gtk.TreeView treeview1;
 		PListScheme scheme;
 		HashSet<PObject> expandedObjects = new HashSet<PObject> ();
@@ -309,6 +309,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 			propRenderer.TextColumn = 0;
 			propRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
 				valueStore.Clear ();
+				if (Scheme == null)
+					return;
+				TreeIter iter;
+				if (!treeStore.GetIterFromString (out iter, args.Path)) 
+					return;
+				var pObject = (PObject)treeStore.GetValue (iter, 1);
+				if (pObject == null)
+					return;
+				var key = Parent != null? Scheme.GetKey (pObject.Parent.Key) : null;
+				if (key != null) {
+					foreach (var val in key.Values) {
+						valueStore.AppendValues (val.Description);
+					}
+				}
 			};
 			
 			propRenderer.Edited += delegate(object o, EditedArgs args) {
@@ -316,7 +330,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
 				var pObject = (PObject)treeStore.GetValue (iter, 1);
-				pObject.SetValue (args.NewText);
+				if (pObject == null)
+					return;
+				string newText = args.NewText;
+				var key = Parent != null? Scheme.GetKey (pObject.Parent.Key) : null;
+				if (key != null) {
+					foreach (var val in key.Values) {
+						if (newText == val.Description) {
+							newText = val.Identifier;
+							break;
+						}
+					}
+				}
+				pObject.SetValue (newText);
 			};
 			
 	/*		propRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
