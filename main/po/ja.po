@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-05-21 20:55:03+0200\n"
-"PO-Revision-Date: 2011-08-03 07:11:17+0900\n"
+"PO-Revision-Date: 2011-08-03 08:05:06+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
 "MIME-Version: 1.0\n"
@@ -95,20 +95,24 @@ msgid "File '{0}' not found."
 msgstr "ファイル '{0}' が 見つかりません"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:199
+#, fuzzy
 msgid "Project Configuration"
-msgstr "プロジェクトの構成"
+msgstr "新しいコンフィグレーション"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:200
+#, fuzzy
 msgid "Project Configuration Name"
-msgstr "プロジェクトの構成名"
+msgstr "新しいコンフィグレーション"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:201
+#, fuzzy
 msgid "Project Configuration Platform"
-msgstr "プロジェクトの構成 プラットフォーム"
+msgstr "mono構成ディレクトリ"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:202
+#, fuzzy
 msgid "Target File"
-msgstr "ターゲット ファイル"
+msgstr "ターゲットの名前"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:203
 msgid "Target Name"
@@ -198,32 +202,38 @@ msgid "Unknown entry"
 msgstr "未知のエントリ"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:753
+#, fuzzy
 msgid "Workspace File"
-msgstr "ワークスペース ファイル"
+msgstr "ワークスペース"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:754
+#, fuzzy
 msgid "Workspace Name"
-msgstr "ワークスペース名"
+msgstr "ワークスペースを保存しました"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:755
+#, fuzzy
 msgid "Workspace Directory"
-msgstr "ワークスペース ディレクトリ"
+msgstr "作業ディレクトリ:"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:503
 msgid "Startup item not set"
 msgstr "スタートアップ項目が設定されていません"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:763
+#, fuzzy
 msgid "Solution File"
-msgstr "ソリューションファイル"
+msgstr "ソリューションファイル (_I)"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:764
+#, fuzzy
 msgid "Solution Name"
-msgstr "ソリューション名"
+msgstr "ソリューション名 (_L)"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:765
+#, fuzzy
 msgid "Solution Directory"
-msgstr "ソリューション ディレクトリ"
+msgstr "ソリューション ディレクトリ (_S)"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:555
 msgid "Cyclic dependencies are not supported."
@@ -589,7 +599,7 @@ msgstr "プロジェクト '{0}' のロード中にエラーが発生しまし�
 msgid ""
 "Invalid solution file. There are two projects with the same GUID. The project "
 "{0} will be ignored."
-msgstr "無効なソリューションファイルです。同一のGUIDに2つのプロジェクトが割り当てられています。プロジェクト {0} は無視されます。"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:891
 msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
@@ -798,10 +808,9 @@ msgstr "Mono"
 msgid "Microsoft Visual Studio"
 msgstr "Microsoft Visual Studio"
 
-# used for project model (not of C# term).
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:245
 msgid "Invariant"
-msgstr "汎用"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/templates/AppConfigFile.xft.xml:4
 msgid "Application Configuration File"
@@ -1003,8 +1012,9 @@ msgid "il files"
 msgstr "ilファイル"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:556
+#, fuzzy
 msgid "jay files"
-msgstr "jayファイル"
+msgstr "luaファイル"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:564
 msgid "Main Settings"
@@ -1121,11 +1131,11 @@ msgstr ".NETの命名ポリシー"
 msgid "Code Formatting"
 msgstr "コード フォーマッティング"
 
-# command type
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:666
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:228
+#, fuzzy
 msgid "Hidden"
-msgstr "隠し"
+msgstr "隠す"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:672
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:702
@@ -1678,11 +1688,12 @@ msgstr "印刷プレビューを表示します"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1042
 msgid "Page Set_up"
-msgstr "ページ設定 (_u)"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1043
+#, fuzzy
 msgid "Show page setup"
-msgstr "ページ設定を表示"
+msgstr "起動時に表示"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1048
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1973
@@ -1855,16 +1866,18 @@ msgid "List of programs to open with"
 msgstr "プログラムを選択して開く"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1153
+#, fuzzy
 msgid "Show Next"
-msgstr "次を表示"
+msgstr "次の({0})を表示"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1154
 msgid "Move cursor to next error or search match"
 msgstr "カーソルを次のエラーまたは検索一致項目に移動します"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1159
+#, fuzzy
 msgid "Show Previous"
-msgstr "前を表示"
+msgstr "前の({0})を表示"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1160
 msgid "Move cursor to previous error or search match"
@@ -2002,13 +2015,15 @@ msgstr "分割ウィンドウ間を切り替え (_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1272
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1273
+#, fuzzy
 msgid "Switch to next document"
-msgstr "次のドキュメントに切り替え"
+msgstr "現在のドキュメントを保存"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1278
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1279
+#, fuzzy
 msgid "Switch to previous document"
-msgstr "前のドキュメントに切り替え"
+msgstr "前のウィンドウを表示"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1283
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1286
@@ -2140,12 +2155,14 @@ msgid "Jump to a file in the current workspace"
 msgstr "現在のワークスペースのファイルに移動します"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1379
+#, fuzzy
 msgid "Navigate To..."
-msgstr "ナビゲート..."
+msgstr "ナビゲーション"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1380
+#, fuzzy
 msgid "Jump to a item in the current workspace"
-msgstr "現在のワークスペースの項目に移動します"
+msgstr "現在のワークスペースのファイルに移動します"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1388
 msgid "Toggle bookmark"
@@ -2188,20 +2205,22 @@ msgid "Go to a specific line"
 msgstr "指定行に移動"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1411
+#, fuzzy
 msgid "Use Selection for Find"
-msgstr "選択範囲を検索に使用"
+msgstr "選択範囲を大文字に変換 (_U)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1412
 msgid "Uses the current selection as find string"
-msgstr "現在の選択範囲を検索文字列として使用します"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1414
+#, fuzzy
 msgid "Use Selection for Replace"
-msgstr "選択範囲を置換に使用"
+msgstr "テンプレートを選択してください"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1415
 msgid "Uses the current selection as replace string"
-msgstr "選択範囲を置換文字列として使用します"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1421
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1818
@@ -2214,7 +2233,7 @@ msgstr "補完ウィンドウを表示"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1429
 msgid "Toggle Completion Suggestion Mode"
-msgstr "補完提示モードの切り替え"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1433
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:253
@@ -2295,7 +2314,7 @@ msgstr "行末まで削除"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1475
 msgid "Deletes to end of line, or if at end, deletes line ending"
-msgstr "行末までを、あるいは行末であれば改行文字を、削除します"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1479
 msgid "Move the line or highlighted selection up"
@@ -2394,8 +2413,9 @@ msgid "Insert new line"
 msgstr "新しい行を追加"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1534
+#, fuzzy
 msgid "Insert line break after the caret"
-msgstr "キャレットの後に改行文字を追加"
+msgstr "改行を追加して、キャレットを移動しない"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1537
 msgid "Move caret to EOL and insert new line"
@@ -2430,24 +2450,27 @@ msgid "Expand selection to page up"
 msgstr "選択範囲を前ページまで広げます"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1554
+#, fuzzy
 msgid "Transpose characters"
-msgstr "文字の入れ替え"
+msgstr "1文字右へ進む"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1555
 msgid "Swaps the characters on either side of the caret"
-msgstr "キャレットの両側にある文字を入れ替えます"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1558
+#, fuzzy
 msgid "Recenter editor"
-msgstr "エディタをキャレット中心に表示"
+msgstr "テキストエディタ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1559
 msgid "Scrolls the editor so that the caret is centered"
-msgstr "キャレットが中心に表示されるように、エディタをスクロールします"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1562
+#, fuzzy
 msgid "Toggle block selection mode"
-msgstr "ブロック選択モードの切り替え"
+msgstr "トグル アクション"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1568
 msgid "GNU/Emacs"
@@ -2558,8 +2581,9 @@ msgid "Message Log"
 msgstr "メッセージログ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1791
+#, fuzzy
 msgid "Other Pads"
-msgstr "他のパッド"
+msgstr "他のウィンドウ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1803
 msgid "Preferences"
@@ -2578,8 +2602,9 @@ msgid "Load/Save"
 msgstr "読み込み/保存"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1808
+#, fuzzy
 msgid "Errors and Warnings"
-msgstr "エラーと警告"
+msgstr "警告を有効化:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1809
 msgid "Assembly Folders"
@@ -3325,8 +3350,9 @@ msgid "_Run again"
 msgstr "もう一度実行 (_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:271
+#, fuzzy
 msgid "An application is already running. Do you want to stop it?"
-msgstr "既に実行中のアプリケーションがあります。中断しますか?"
+msgstr "既に実行中の検索があります。中断しますか?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:395
 msgid "C_lean {0}"
@@ -3397,10 +3423,12 @@ msgid "Activate window '{0}'"
 msgstr "ウィンドウ '{0}' に切り替え"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:60
+#, fuzzy
 msgid "Warning/Error"
-msgstr "警告/エラー"
+msgstr "警告"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:61
+#, fuzzy
 msgid "User Task"
 msgstr "ユーザー タスク"
 
@@ -3521,24 +3549,28 @@ msgid "_Save and Quit"
 msgstr "保存して終了 (_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:38
+#, fuzzy
 msgid "Enter a name for the new layout"
-msgstr "新しいレイアウトの名前を入力してください"
+msgstr "新しいレイアウトの作成"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:40
+#, fuzzy
 msgid "Name must start with a letter or number"
-msgstr "名前はレターまたは数字で始まらなければなりません"
+msgstr "名前はレターまたは'_'で始まらなければなりません。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:42
+#, fuzzy
 msgid "Name must contain only letters, numbers and spaces"
-msgstr "名前にはレター、数字または空白のみ利用できます"
+msgstr "名前はレター、数字または'_'で始まらなければなりません。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:44
 msgid "There is already a layout with that name"
-msgstr "既に同名のレイアウトが存在します"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:46
+#, fuzzy
 msgid "Layout name is valid"
-msgstr "レイアウト名は有効です"
+msgstr "名前は有効です"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:40
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:49
@@ -7591,7 +7623,7 @@ msgstr "保存に失敗しました。"
 #  nb.AppendPage (changelog, new Label ("ChangeLog"));
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Task.cs:49
 msgid "Version control operation failed: "
-msgstr "バージョン管理操作が失敗しました:"
+msgstr "バージョン管理コマンドが失敗しました:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UpdateCommand.cs:36
 msgid "Updating..."
