@@ -29,10 +29,10 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.6.0"/>
-		<Addin id="Ide"  version="2.6.0"/>
-		<Addin id="MacDev" version="2.6.0"/>
-		<Addin id="MacPlatform" version="2.6.0"/>
+		<Addin id="Core" version="2.5.93"/>
+		<Addin id="Ide"  version="2.5.93"/>
+		<Addin id="MacDev" version="2.5.93"/>
+		<Addin id="MacPlatform" version="2.5.93"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -124,11 +124,11 @@
 		</Runtime>
 
 		<Dependencies>
-			<Addin id="Core" version="2.6.0"/>
-			<Addin id="Ide"  version="2.6.0"/>
-			<Addin id="Debugger" version="2.6.0"/>
-			<Addin id="Debugger.Soft" version="2.6.0"/>
-			<Addin id="MacPlatform" version="2.6.0"/>
+			<Addin id="Core" version="2.5.93"/>
+			<Addin id="Ide"  version="2.5.93"/>
+			<Addin id="Debugger" version="2.5.93"/>
+			<Addin id="Debugger.Soft" version="2.5.93"/>
+			<Addin id="MacPlatform" version="2.5.93"/>
 		</Dependencies>
 	
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
