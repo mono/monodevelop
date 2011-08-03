@@ -36,6 +36,8 @@ using System.Windows.Forms;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 
+using CustomControls.OS;
+
 namespace MonoDevelop.Platform
 {
     public partial class EncodingSelectionForm : Form
@@ -118,6 +120,19 @@ namespace MonoDevelop.Platform
         {
             DialogResult = DialogResult.Cancel;
         }
+		
+		protected override void WndProc (ref Message m)
+		{
+			base.WndProc (ref m);
+			
+			switch (m.Msg) {
+				// No need to take into account the idle event, as
+				// we are handling it already from WinFormsRoot
+				case (int) Msg.WM_WINDOWPOSCHANGED:
+					MonoDevelop.Ide.DispatchService.RunPendingEvents ();
+					break;
+			}
+		}
     }
 
     public class EncodingListView : ListView
