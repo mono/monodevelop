@@ -63,10 +63,10 @@ namespace MonoDevelop.Platform
 				
 				if (dlg.SelectedEncodingId != null)
 					data.Encoding = dlg.SelectedEncodingId;
-				if (dlg.SelectedViewer != null) {
+				if (dlg.SelectedViewer != null)
 					data.SelectedViewer = dlg.SelectedViewer;
-					data.CloseCurrentWorkspace = dlg.CloseCurrentWorkspace;
-				}
+				
+				data.CloseCurrentWorkspace = dlg.CloseCurrentWorkspace;
 			}
 			
 			parentWindow.Present ();
