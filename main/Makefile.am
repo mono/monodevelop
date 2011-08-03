@@ -166,4 +166,4 @@ distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required f
 .PHONY: vcrevision
 
 package-monomac:
-	$(MD_LAUNCH_SETUP) mono --debug "build/bin/mdrun.exe" setup pack ../extras/MonoDevelop.MonoMac/build/MonoDevelop.MonoMac.dll
+	$(MD_LAUNCH_SETUP) mono --debug "build/bin/mdtool.exe" setup pack ../extras/MonoDevelop.MonoMac/build/MonoDevelop.MonoMac.dll
