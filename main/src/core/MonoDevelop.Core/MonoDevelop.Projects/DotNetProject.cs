@@ -313,7 +313,10 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.DefaultTargetFramework.Id;
 		}
 
-		public abstract TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format);
+		public TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
+		{
+			return GetDefaultTargetFrameworkId ();
+		}
 		
 		public IAssemblyContext AssemblyContext {
 			get {
