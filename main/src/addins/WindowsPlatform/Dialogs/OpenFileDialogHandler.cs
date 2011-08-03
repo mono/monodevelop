@@ -49,8 +49,7 @@ namespace MonoDevelop.Platform
 			SelectFileDialogHandler.SetCommonFormProperties (data, dlg.FileDialog);
 			
 			using (dlg) {
-                WinFormsRoot root = new WinFormsRoot ();
-                if (dlg.ShowDialog (root) == DialogResult.Cancel) {
+                if (dlg.ShowDialog () == DialogResult.Cancel) {
 					parentWindow.Present ();
                     return false;
 				}
