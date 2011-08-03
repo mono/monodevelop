@@ -59,6 +59,10 @@
 	<MimeType id="text/x-jay" _description="jay files" isText="true">
 		<File pattern="*.jay" />
 	</MimeType>
+		
+	<MimeType id="text/x-cgsrc" _description="Cg Shader files" isText="true">
+		<File pattern="*.cg" />
+	</MimeType>
 </Extension>	
 
 </ExtensionModel>
