@@ -398,7 +398,7 @@ namespace MonoDevelop.MonoDroid
 			while ((s = reader.ReadLine ()) != null) {
 				var parts = s.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 				if (parts.Length != 5)
-					return false;
+					continue;
 
 				string partition = parts [0];
 				if (partition != InternalPartition && partition != ExternalPartition)
@@ -406,7 +406,7 @@ namespace MonoDevelop.MonoDroid
 
 				long size;
 				if (!ParseToBytes (parts [3], out size))
-					return false;
+					continue;
 
 				if (partition == InternalPartition)
 					internalSpace = size;
