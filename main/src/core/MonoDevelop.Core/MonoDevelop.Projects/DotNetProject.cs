@@ -308,12 +308,31 @@ namespace MonoDevelop.Projects
 			get { return Runtime.SystemAssemblyService.DefaultRuntime; }
 		}
 		
+		/// <summary>
+		/// Gets the target framework for new projects
+		/// </summary>
+		/// <returns>
+		/// The default target framework identifier.
+		/// </returns>
 		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
 			return Services.ProjectService.DefaultTargetFramework.Id;
 		}
-
-		public TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
+		
+		/// <summary>
+		/// Returns the default framework for a given format
+		/// </summary>
+		/// <returns>
+		/// The default target framework for the format.
+		/// </returns>
+		/// <param name='format'>
+		/// A format
+		/// </param>
+		/// <remarks>
+		/// This method is used to determine what's the correct target framework for a project
+		/// deserialized using a specific format.
+		/// </remarks>
+		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
 		{
 			return GetDefaultTargetFrameworkId ();
 		}
