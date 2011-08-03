@@ -161,6 +161,7 @@ RES =  \
 	SyntaxModes/ActionScriptSyntaxMode.xml \
 	SyntaxModes/AspNetSyntaxMode.xml \
 	SyntaxModes/BooSyntaxMode.xml \
+	SyntaxModes/CGSyntaxMode.xml \
 	SyntaxModes/ChangeLogSyntaxMode.xml \
 	SyntaxModes/CPPSyntaxMode.xml \
 	SyntaxModes/CSharpSyntaxMode.xml \

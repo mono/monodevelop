@@ -278,6 +278,9 @@
     <EmbeddedResource Include="Styles\GeditStyle.xml">
       <LogicalName>GeditStyle.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\CGSyntaxMode.xml">
+      <LogicalName>CGSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
