@@ -401,7 +401,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				//determine the default target framework from the project type's default
 				//overridden by the components in the project
-				var def = dotNetProject.GetDefaultTargetFrameworkId (GetFileFormat ());
+				var def = dotNetProject.GetDefaultTargetFrameworkForFormat (GetFileFormat ());
 				targetFx = new TargetFrameworkMoniker (
 					string.IsNullOrEmpty (frameworkIdentifier)? def.Identifier : frameworkIdentifier,
 					string.IsNullOrEmpty (frameworkVersion)? def.Version : frameworkVersion,
@@ -888,7 +888,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (dotNetProject != null) {
 				var moniker = dotNetProject.TargetFramework.Id;
 				bool supportsMultipleFrameworks = TargetFormat.FrameworkVersions.Length > 0;
-				var def = dotNetProject.GetDefaultTargetFrameworkId (GetFileFormat ());
+				var def = dotNetProject.GetDefaultTargetFrameworkForFormat (GetFileFormat ());
 				bool isDefaultIdentifier = def.Identifier == moniker.Identifier;
 				bool isDefaultVersion = isDefaultIdentifier && def.Version == moniker.Version;
 				bool isDefaultProfile = isDefaultVersion && def.Profile == moniker.Profile;

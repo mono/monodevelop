@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects
 				return base.SupportsFramework (framework);
 		}
 		
-		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId (FileFormat format)
+		public override TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
 		{
 			switch (format.Id) {
 			case "MSBuild05":

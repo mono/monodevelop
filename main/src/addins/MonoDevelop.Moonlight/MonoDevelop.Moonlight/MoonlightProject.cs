@@ -96,7 +96,7 @@ namespace MonoDevelop.Moonlight
 			generateSilverlightManifest = true;
 		}
 		
-		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId (FileFormat format)
+		public override TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
 		{
 			switch (format.Id) {
 			case "MSBuild08":
@@ -104,6 +104,11 @@ namespace MonoDevelop.Moonlight
 			default:
 				return new TargetFrameworkMoniker ("Silverlight", "4.0");
 			}
+		}
+		
+		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
+		{
+			return new TargetFrameworkMoniker ("Silverlight", "4.0");
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
