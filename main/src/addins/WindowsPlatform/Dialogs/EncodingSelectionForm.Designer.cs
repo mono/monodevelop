@@ -144,6 +144,7 @@
             this.Controls.Add (this.availableListView);
             this.Controls.Add (this.label1);
             this.Name = "EncodingSelectionForm";
+            this.ShowInTaskbar = false;
             this.Text = "Select Text Encodings";
             this.ResumeLayout (false);
             this.PerformLayout ();
