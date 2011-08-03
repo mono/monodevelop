@@ -14,6 +14,8 @@ namespace MonoDevelop.Platform
     {
         public bool Run (AddFileDialogData data)
         {
+			Application.EnableVisualStyles ();
+			
 			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
             CustomAddFilesDialog adlg = new CustomAddFilesDialog();
             adlg.StartLocation = AddonWindowLocation.Bottom;

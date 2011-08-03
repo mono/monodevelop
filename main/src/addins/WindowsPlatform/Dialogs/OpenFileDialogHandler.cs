@@ -37,6 +37,8 @@ namespace MonoDevelop.Platform
 	{		
 		public bool Run (OpenFileDialogData data)
 		{			
+			Application.EnableVisualStyles ();
+			
 			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
 			FileDialog fileDlg = null;
 			if (data.Action == Gtk.FileChooserAction.Open)
