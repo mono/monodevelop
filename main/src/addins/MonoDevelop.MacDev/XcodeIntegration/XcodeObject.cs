@@ -45,7 +45,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		/// </summary>
 		protected static string QuoteOnDemand (string name)
 		{
-			if (name.IndexOf (' ') >= 0)
+			if (name.IndexOfAny (new [] { ' ', '@' }) >= 0)
 				return "\"" + name + "\"";
 			return name;
 		}
