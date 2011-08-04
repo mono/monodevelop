@@ -48,11 +48,20 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
+			IPhoneDebuggerStartInfo startInfo;
+			IPhoneUsbConnection usb;
 			var cmd = (IPhoneExecutionCommand) command;
 			
-			var startInfo = new IPhoneDebuggerStartInfo (IPAddress.Any,
-								     IPhoneSettings.DebuggerPort,
-								     IPhoneSettings.DebuggerOutputPort, cmd);
+			
+			if (!cmd.Simulator && IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4, 0, 5)) {
+				usb = new IPhoneUsbConnection (IPhoneSettings.DebuggerPort, IPhoneSettings.DebuggerOutputPort);
+				startInfo = new IPhoneDebuggerStartInfo (usb, cmd);
+			} else {
+				startInfo = new IPhoneDebuggerStartInfo (IPAddress.Any,
+									     IPhoneSettings.DebuggerPort,
+									     IPhoneSettings.DebuggerOutputPort, cmd);
+			}
+			
 			SoftDebuggerEngine.SetUserAssemblyNames (startInfo, cmd.UserAssemblyPaths);
 			return startInfo;
 		}

@@ -1379,6 +1379,7 @@ namespace MonoDevelop.IPhone
 							writer.WriteLine (ip.ToString ());
 						}
 					}
+					writer.WriteLine ("USB Debugging: 1");
 				}
 			}
 			
@@ -1409,7 +1410,7 @@ namespace MonoDevelop.IPhone
 				bool sim = conf.Platform == IPhoneProject.PLAT_SIM;
 				
 				try {
-					if (IPhoneSdks.MonoTouch.Version >= new IPhoneSdkVersion (4, 0, 5)) {
+					if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4, 0, 5)) {
 						debuggerIP = "automatic";
 					} else {
 						debuggerIP = IPhoneSettings.GetDebuggerHostIP (sim).ToString ();

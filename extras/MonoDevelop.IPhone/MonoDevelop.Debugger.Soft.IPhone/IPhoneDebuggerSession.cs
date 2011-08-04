@@ -43,6 +43,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 	public class IPhoneDebuggerSession : SoftDebuggerSession
 	{
 		System.Diagnostics.Process simProcess;
+		IPhoneUsbConnection usbConnection;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
@@ -50,15 +51,20 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			var cmd = dsi.ExecutionCommand;
 			if (cmd.Simulator)
 				StartSimulatorProcess (cmd);
-			StartListening (dsi);
+			
+			if (dsi.USBDebugging) {
+				usbConnection = dsi.UsbConnection;
+				StartConnecting (dsi);
+			} else {
+				StartListening (dsi);
+			}
 		}
 		
 		protected override string GetConnectingMessage (DebuggerStartInfo dsi)
 		{
 			var iphDsi = (IPhoneDebuggerStartInfo) dsi;
-			var args = (SoftDebuggerListenArgs) iphDsi.StartArgs;
 			string message = GettextCatalog.GetString ("Waiting for debugger to connect...",
-				args.Address, args.DebugPort);
+				iphDsi.Address, iphDsi.DebugPort);
 			if (!iphDsi.ExecutionCommand.Simulator)
 				message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
 			return message;
@@ -68,6 +74,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		{
 			base.EndSession ();
 			EndSimProcess ();
+			EndUsbDebugging ();
 		}
 
 		//FIXME: hook up the app's stdin and stdout, and mtouch's stdin and stdout
@@ -102,7 +109,15 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				return false;
 			});
 		}
-		
+
+		void EndUsbDebugging ()
+		{
+			if (usbConnection != null) {
+				usbConnection.Dispose ();
+				usbConnection = null;
+			}
+		}
+
 		protected override void OnStarted (ThreadInfo t)
 		{
 			base.OnStarted (t);
@@ -121,16 +136,32 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		{
 			base.OnExit ();
 			EndSimProcess ();
+			EndUsbDebugging ();
 		}
 	}
 	
 	class IPhoneDebuggerStartInfo : SoftDebuggerStartInfo
 	{
-		public IPhoneExecutionCommand ExecutionCommand { get; private set; }
+		public bool USBDebugging { get { return UsbConnection != null; } }
+ 		public IPhoneExecutionCommand ExecutionCommand { get; private set; }
+		public int DebugPort { get; private set; }
+		public IPAddress Address { get; private set; }
+		public IPhoneUsbConnection UsbConnection { get; private set; }
 		
 		public IPhoneDebuggerStartInfo (IPAddress address, int debugPort, int outputPort, IPhoneExecutionCommand cmd)
 			: base (new SoftDebuggerListenArgs (cmd.AppPath.FileNameWithoutExtension, address, debugPort, outputPort))
 		{
+			DebugPort = debugPort;
+			Address = address;
+			ExecutionCommand = cmd;
+		}
+		
+		public IPhoneDebuggerStartInfo (IPhoneUsbConnection usb, IPhoneExecutionCommand cmd)
+			: base (new SoftDebuggerConnectArgs (cmd.AppPath.FileNameWithoutExtension, usb.IPAddress, usb.DebugPort, usb.OutputPort))
+		{
+			UsbConnection = usb;
+			DebugPort = usb.DebugPort;
+			Address = usb.IPAddress;
 			ExecutionCommand = cmd;
 		}
 	}

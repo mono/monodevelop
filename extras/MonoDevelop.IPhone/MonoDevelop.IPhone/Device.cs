@@ -31,17 +31,18 @@ using System.Runtime.InteropServices;
 
 namespace MonoDevelop.IPhone
 {
-/*
 	public class Device
 	{
 		DeviceNotificationDelegate del;
 		am_device_notification_callback_info info;
 		IntPtr context;
+		IntPtr loop;
 
 		public event EventHandler Connected;
 		public event EventHandler Disconnected;
 		public event EventHandler Unknown;
 
+		/*
 		static void Main (string [] pad) {
 			IntPtr loop = IntPtr.Zero;
 			Device d = new Device ();
@@ -64,6 +65,7 @@ namespace MonoDevelop.IPhone
 			Console.WriteLine ("Press enter to force exit...");
 			Console.ReadLine ();
 		}
+		*/
 
 		public Device () {
 			del = new DeviceNotificationDelegate (NotificationCallback);
@@ -80,9 +82,45 @@ namespace MonoDevelop.IPhone
 			uint ret = AMDeviceNotificationUnsubscribe (context);
 
 			if (ret != 0)
-				throw new Exception ("AMDeviceNotificationUnsubscribe returned: " + ret);
+				throw new InvalidOperationException ("AMDeviceNotificationUnsubscribe returned: " + ret);
 		}
 
+		public void Connect ()
+		{
+			uint ret = AMDeviceConnect (info.am_device);
+
+			if (ret != 0)
+				throw new InvalidOperationException (String.Format ("AMDeviceConnect returned: 0x{0:x}", ret));
+		}
+		
+		public void Disconnect ()
+		{
+			uint ret = AMDeviceDisconnect (info.am_device);
+			
+			if (ret != 0)
+				throw new InvalidOperationException (string.Format ("AMDeviceDisconnect returned: 0x{0:x}", ret));
+		}
+		
+		public int GetConnectionID ()
+		{
+			return AMDeviceGetConnectionID (info.am_device);
+		}
+		
+		public void RunLoop ()
+		{
+			loop = CFRunLoopGetCurrent ();
+			CFRunLoopRun ();
+		}
+		
+		public void StopLoop ()
+		{
+			if (loop == IntPtr.Zero)
+				return;
+
+			CFRunLoopStop (loop);
+			loop = IntPtr.Zero;
+		}
+		
 		private void NotificationCallback (ref am_device_notification_callback_info info) {
 			var args = new DeviceNotificationEventArgs (info);
 			this.info = info;
@@ -105,6 +143,10 @@ namespace MonoDevelop.IPhone
 			}
 		}
 
+		public IntPtr AMDevice {
+			get { return info.am_device; }
+		}
+		
 		internal struct am_device_notification_callback_info {
 			internal IntPtr am_device;
 			internal uint message;
@@ -137,7 +179,19 @@ namespace MonoDevelop.IPhone
 		
 		[DllImport (MOBILEDEVICE_FRAMEWORK)]
 		static extern uint AMDeviceNotificationSubscribe (DeviceNotificationDelegate callback, uint unused0, uint unused1, uint dn_unknown3, out IntPtr context);
-
+		
+		[DllImport (MOBILEDEVICE_FRAMEWORK)]
+		public static extern uint USBMuxConnectByPort (int connection, short port, out int socketHandle);
+		
+		[DllImport (MOBILEDEVICE_FRAMEWORK)]
+		static extern uint AMDeviceConnect (IntPtr device);
+		
+		[DllImport (MOBILEDEVICE_FRAMEWORK)]
+		static extern uint AMDeviceDisconnect (IntPtr device);
+		
+		[DllImport (MOBILEDEVICE_FRAMEWORK)]
+		static extern int AMDeviceGetConnectionID (IntPtr device);
+		
 		[DllImport (CF_FRAMEWORK)]
 		static extern IntPtr CFRunLoopGetCurrent ();
 		
@@ -146,5 +200,5 @@ namespace MonoDevelop.IPhone
 		
 		[DllImport (CF_FRAMEWORK)]
 		static extern void CFRunLoopStop (IntPtr loop);
-	}*/
+	}
 }

@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="IPhoneSoftDebuggerEngine.cs" />
     <Compile Include="IPhoneDebuggerSession.cs" />
+    <Compile Include="IPhoneUsbConnection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.IPhone\MonoDevelop.IPhone.csproj">
