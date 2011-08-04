@@ -175,7 +175,7 @@ namespace MonoDevelop.Platform
 				if (closeSolutionBox != null)
 					closeSolutionBox.Enabled = slnViewerSelected;
 			}
-		
+
 			if (encodingBox != null)
 				encodingBox.Enabled = !slnViewerSelected;
 		}
@@ -186,13 +186,10 @@ namespace MonoDevelop.Platform
 			currentViewers.Clear ();
 			viewerBox.Items.Clear ();
 			
-			if (fileName == null || fileName.Length == 0) {
+			if (String.IsNullOrEmpty (fileName) || Directory.Exists (fileName)) {
 				viewerBox.Enabled = false;
 				return;
 			}
-			
-			if (Directory.Exists (fileName))
-				return;
 			
 			var projectService = IdeApp.Services.ProjectService;
 			if (projectService.IsWorkspaceItemFile (fileName) || projectService.IsSolutionItemFile (fileName)) {
