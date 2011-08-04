@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-05-21 20:55:03+0200\n"
-"PO-Revision-Date: 2011-08-03 07:11:17+0900\n"
+"PO-Revision-Date: 2011-08-04 21:20:14+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
 "MIME-Version: 1.0\n"
@@ -3845,9 +3845,8 @@ msgid "Are you sure you want to permanently delete the folder {0}?"
 msgstr "本当にフォルダ {0} を削除しますか?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:199
-#, fuzzy
 msgid "The folder {0} could not be deleted from disk: {1}"
-msgstr "フォルダ {0} を削除できませんでした"
+msgstr "フォルダ {0} をディスクから削除できませんでした: {1}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:212
 msgid "Do you really want to remove folder {0}?"
@@ -3880,9 +3879,8 @@ msgid "The file {0} could not be deleted"
 msgstr "ファイル {0} を削除できませんでした"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:177
-#, fuzzy
 msgid "Include to Solution"
-msgstr "ソリューションに追加"
+msgstr "ソリューションに含める"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:814
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs:135
@@ -4075,9 +4073,8 @@ msgid "Build Output"
 msgstr "ビルド出力"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:150
-#, fuzzy
 msgid "Show build output"
-msgstr "出力を表示"
+msgstr "ビルド出力を表示"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:291
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:292
@@ -4391,9 +4388,8 @@ msgid "Layout name:"
 msgstr "レイアウト名:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:123
-#, fuzzy
 msgid "Create _Layout"
-msgstr "新しいレイアウトの作成"
+msgstr "レイアウトの作成 (_L)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:71
 msgid "Available encodings:"
@@ -4526,7 +4522,7 @@ msgstr "出力ウィンドウを利用する (_o)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:150
 msgid "To toggle categorized completion mode press {0}."
-msgstr ""
+msgstr "カテゴリ分けされた補完モードを切り替えるには {0} を押します。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:217
 msgid "INS"
@@ -4541,54 +4537,46 @@ msgid "Ready"
 msgstr "準備完了"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:77
-#, fuzzy
 msgid "(Default)"
-msgstr "デフォルト"
+msgstr "(デフォルト)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:128
 msgid ""
 "The user interface language change will take effect the next time you start "
 "MonoDevelop"
-msgstr ""
+msgstr "ユーザーインターフェース言語の切り替えは、次回MonoDevelopを起動した時に有効になります"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:59
-#, fuzzy
 msgid "Very spacious"
-msgstr "バージョン"
+msgstr "非常に幅広い"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:60
-#, fuzzy
 msgid "Spacious"
-msgstr "空白"
+msgstr "幅広い"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:62
-#, fuzzy
 msgid "Compact"
-msgstr "C#フォーマット"
+msgstr "コンパクト"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:63
-#, fuzzy
 msgid "Very compact"
-msgstr "コンマの後"
+msgstr "非常にコンパクト"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:98
 msgid "_Toolbar icon size:"
 msgstr "ツールバーのアイコンサイズ (_T):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:110
-#, fuzzy
 msgid "User Interface Language:"
-msgstr "ユーザーインターフェース"
+msgstr "ユーザーインターフェース言語:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:121
-#, fuzzy
 msgid "User Interface Theme:"
-msgstr "ユーザーインターフェース"
+msgstr "ユーザーインターフェーステーマ:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:132
-#, fuzzy
 msgid "Compactness:"
-msgstr "コード テンプレート"
+msgstr "コンパクトさ:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:139
 msgid "Smallest"
@@ -4603,19 +4591,16 @@ msgid "Large"
 msgstr "大"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:164
-#, fuzzy
 msgid "_Custom font for pads:"
-msgstr "パッドでは別のフォントを使用 (_U):"
+msgstr "パッド用フォント (_C):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:191
-#, fuzzy
 msgid "_Custom font for Output pads:"
-msgstr "パッドでは別のフォントを使用 (_U):"
+msgstr "出力パッド用カスタムフォント (_C):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:214
-#, fuzzy
 msgid "S_how hidden files and directories in File Scout"
-msgstr "隠しファイル・隠しディレクトリを表示 (_H)"
+msgstr "ファイルスカウトに隠しファイル・隠しディレクトリを表示 (_H)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:226
 msgid "_Enable document switch dialog"
@@ -4933,14 +4918,12 @@ msgid "Selection"
 msgstr "選択"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:158
-#, fuzzy
 msgid "Include binary files"
-msgstr "Makefileに含める"
+msgstr "バイナリファイルを含める"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:165
-#, fuzzy
 msgid "Include hidden files and directories"
-msgstr "隠しファイル・隠しディレクトリを表示 (_H)"
+msgstr "隠しファイル・隠しディレクトリを含める"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:223
 msgid "_Path:"
@@ -4956,14 +4939,13 @@ msgstr "ディレクトリを選択して下さい"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:452
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:466
-#, fuzzy
 msgid "Currently there is no open solution."
-msgstr "ソリューションを作成する"
+msgstr "現在開かれているソリューションはありません。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:462
 msgid ""
 "Currently there is no project selected. Search in the solution instead ?"
-msgstr ""
+msgstr "現在選択されているプロジェクトはありません。代わりにソリューションを検索しますか?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:474
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/BaseDirectoryPanel.cs:63
@@ -5045,9 +5027,8 @@ msgstr "置換 (_E)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:57
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:179
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:232
-#, fuzzy
 msgid "Looking in '{0}'"
-msgstr "'{0}' (バイナリ)を追加しています"
+msgstr "'{0}' を検索しています"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:64
 msgid "Looking for '{0}' in current document"
@@ -5067,9 +5048,8 @@ msgstr "現在の選択範囲で '{0}' を置換しています"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:111
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:148
-#, fuzzy
 msgid "Looking in project '{0}'"
-msgstr "プロジェクト '{1}' から '{0}' を検索しています"
+msgstr "プロジェクト '{0}' を検索しています"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:123
 msgid "Looking for '{0}' in all projects"
@@ -5116,7 +5096,6 @@ msgid "Pin results pad"
 msgstr "結果パッドを固定"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:589
-#, fuzzy
 msgid "Search Result"
 msgstr "検索結果"
 
@@ -5570,15 +5549,13 @@ msgid "Enable MonoDevelop Instrumentation"
 msgstr "MonoDevelop使用統計を有効にする"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanelWidget.cs:38
-#, fuzzy
 msgid "Enable automated test support"
-msgstr "gettextサポートを有効にする"
+msgstr "自動テストサポートを有効にする"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskStore.cs:419
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskStore.cs:465
-#, fuzzy
 msgid "End of list"
-msgstr "行末"
+msgstr "リストの最後"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs:26
 msgid ""
@@ -5586,29 +5563,24 @@ msgid ""
 msgstr "MonoDevelopがアセンブリとパッケージを探索するカスタムフォルダ:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:57
-#, fuzzy
 msgid "Error"
-msgstr "エラー {0}件"
+msgstr "エラー"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:58
-#, fuzzy
 msgid "Error or Warning"
-msgstr "これ以上エラーや警告はありません"
+msgstr "エラーまたは警告"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:75
-#, fuzzy
 msgid "Always"
-msgstr "常にコピー"
+msgstr "常時"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:76
-#, fuzzy
 msgid "On Errors"
-msgstr "エラーを表示"
+msgstr "エラー時"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:77
-#, fuzzy
 msgid "On Errors or Warnings"
-msgstr "これ以上エラーや警告はありません"
+msgstr "エラー・警告時"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:81
 #, fuzzy
@@ -5623,28 +5595,24 @@ msgstr "これ以上エラーや警告はありません"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:43
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:56
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:67
-#, fuzzy
 msgid "Never"
-msgstr "変更を破棄する"
+msgstr "なし"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:82
-#, fuzzy
 msgid "Show error pad:"
-msgstr "エラーを表示"
+msgstr "エラーパッドを表示:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:93
-#, fuzzy
 msgid "Show message bubbles:"
-msgstr "メッセージを表示"
+msgstr "メッセージバブルを表示:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:104
-#, fuzzy
 msgid "Jump to first error or warning:"
-msgstr "これ以上エラーや警告はありません"
+msgstr "最初のエラーまたは警告にジャンプ:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:448
 msgid "Console input not supported"
-msgstr ""
+msgstr "コンソール入力はサポートされていません"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:449
 msgid ""
@@ -5655,32 +5623,28 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:111
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:95
-#, fuzzy
 msgid "Custom Tool"
-msgstr "カスタム ポリシー"
+msgstr "カスタム ツール"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:116
-#, fuzzy
 msgid "Running generator '{0}' on file '{1}'..."
-msgstr "ディレクトリ '{1}' の中の '{0}' を検索しています"
+msgstr "ファイル '{1}' の中のジェネレーター '{0}' を実行しています..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:130
 msgid "Cancelled because generator ran again for the same file"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:148
-#, fuzzy
 msgid "Cancelled"
-msgstr "ビルドをキャンセルしました"
+msgstr "キャンセルしました"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:160
-#, fuzzy
 msgid "The '{0}' code generator crashed"
-msgstr "ファイル {0} が作成できませんでした"
+msgstr "コードジェネレーター {0} がクラッシュしました"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:174
 msgid "The '{0}' code generator output invalid filename '{1}'"
-msgstr ""
+msgstr "コードジェネレーター '{0}' が無効な出力ファイル名 '{1}' を出力しました"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FileSelector.cs:38
 msgid "Open file..."
@@ -17810,7 +17774,6 @@ msgstr "カテゴリ:"
 #~ msgstr "コードグループ {0}"
 #~ msgid "<b>Code generation options</b>"
 #~ msgstr "<b>コード生成オプション</b>"
-
 #~ msgid "_Start code block on the same line"
 #~ msgstr "同一の行でコードブロックを開始 (_S)"
 
@@ -18075,7 +18038,6 @@ msgstr "カテゴリ:"
 #~ msgstr "全てのマークが完了しました"
 #~ msgid "Search string not found:"
 #~ msgstr "検索文字列が見つかりませんでした:"
-
 #  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
 #  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
 #  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
