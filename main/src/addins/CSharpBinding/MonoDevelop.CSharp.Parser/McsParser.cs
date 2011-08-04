@@ -462,7 +462,6 @@ namespace MonoDevelop.CSharp.Parser
 					return "";
 				
 				return name.Left != null ? ConvertToString (name.Left)  + "." + name.Name : name.Name;
-				
 			}
 			
 			public override void Visit (ModuleContainer mc)
@@ -687,7 +686,6 @@ namespace MonoDevelop.CSharp.Parser
 				
 				if (optAttributes == null || optAttributes.Attrs == null)
 					return atts;
-				
 				ResolveContext ctx = new ResolveContext (mc);
 				
 				foreach (var attr in optAttributes.Attrs) {
@@ -699,26 +697,33 @@ namespace MonoDevelop.CSharp.Parser
 						for (int i = 0; i < attr.PosArguments.Count; i++) {
 							CodeExpression domExp;
 							var exp = attr.PosArguments [i].Expr;
+							
 							if (exp is TypeOf) {
 								TypeOf tof = (TypeOf)exp;
 								IReturnType rt = ConvertReturnType (tof.TypeExpression);
 								domExp = new CodeTypeOfExpression (rt.FullName);
+							} else if (exp is Binary) {
+								// Currently unsupported in the old dom (will be in the new dom)
+								continue;
+							} else if (exp is Constant) {
+								try {
+									var res = exp.Resolve (ctx);
+									var val = res as Constant;
+									if (val == null)
+										continue;
+									domExp = new CodePrimitiveExpression (val.GetValue ());
+								} catch {
+									continue;
+								}
 							} else {
 								try {
 									domExp = ResolveMemberAccessExpression (exp);
-									// may be literal
-									if (domExp == null) {
-										var res = exp.Resolve (ctx);
-										var val = res as Constant;
-										if (val == null)
-											continue;
-										domExp = new CodePrimitiveExpression (val.GetValue ());
-									}
 								} catch {
 									continue;
 								}
 							}
-							domAttribute.AddPositionalArgument (domExp);
+							if (domExp != null)
+								domAttribute.AddPositionalArgument (domExp);
 						}
 					}
 					if (attr.NamedArguments != null) {
