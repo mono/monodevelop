@@ -294,7 +294,7 @@ namespace MonoDevelop.Projects
 					throw new ArgumentException ("Project does not support framework '" + value.Id.ToString () +"'");
 				if (value == null)
 					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (FileFormat));
-				if (value.Id == targetFramework.Id)
+				if (targetFramework != null && value.Id == targetFramework.Id)
 					return;
 				bool updateReferences = targetFramework != null;
 				targetFramework = value;
