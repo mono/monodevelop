@@ -150,6 +150,8 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public IEnumerable<TargetFramework> GetTargetFrameworks ()
 		{
+			foreach (var r in runtimes)
+				r.EnsureInitialized ();
 			return frameworks.Values;
 		}
 		
