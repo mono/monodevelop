@@ -92,6 +92,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			TargetExited += delegate {
 				EndSimProcess ();
 			};
+			IPhoneUtility.MakeSimulatorGrabFocus ();
 		}
 		
 		void EndSimProcess ()
