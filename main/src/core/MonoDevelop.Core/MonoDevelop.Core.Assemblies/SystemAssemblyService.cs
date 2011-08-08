@@ -148,10 +148,15 @@ namespace MonoDevelop.Core.Assemblies
 				yield return frameworks[id];
 		}
 		
-		public IEnumerable<TargetFramework> GetTargetFrameworks ()
+		void EnsureRuntimesInitialized ()
 		{
 			foreach (var r in runtimes)
 				r.EnsureInitialized ();
+		}
+		
+		public IEnumerable<TargetFramework> GetTargetFrameworks ()
+		{
+			EnsureRuntimesInitialized ();
 			return frameworks.Values;
 		}
 		
@@ -179,6 +184,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public TargetFramework GetTargetFramework (TargetFrameworkMoniker id)
 		{
+			EnsureRuntimesInitialized ();
 			return GetTargetFramework (id, frameworks);
 		}
 		
