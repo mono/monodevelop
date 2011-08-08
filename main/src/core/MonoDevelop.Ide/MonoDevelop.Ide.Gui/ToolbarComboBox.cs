@@ -33,7 +33,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class ToolbarComboBox: CustomItem
+	public class ToolbarComboBox: CustomItem
 	{
 		Gtk.Alignment align;
 		Gtk.ComboBox combo;
