@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Components.Extensions;
@@ -61,8 +62,10 @@ namespace MonoDevelop.Platform
 			dialog.FilterIndex = data.DefaultFilter == null ? 1 : data.Filters.IndexOf (data.DefaultFilter) + 1;
 			
 			dialog.InitialDirectory = data.CurrentFolder;
-            if (!string.IsNullOrEmpty (data.InitialFileName))
-                dialog.FileName = data.InitialFileName;
+
+			// FileDialog.FileName expects anything but a directory name.
+			if (!Directory.Exists (data.InitialFileName))
+				dialog.FileName = data.InitialFileName;
 			
 			OpenFileDialog openDialog = dialog as OpenFileDialog;
 			if (openDialog != null)
