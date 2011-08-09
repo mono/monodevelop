@@ -499,11 +499,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 			list = new List<PObject> ();
 		}
 		
+		public EventHandler<PObjectEventArgs> Added;
+		
+		protected virtual void OnAddedd (PObjectEventArgs e)
+		{
+			var handler = this.Added;
+			if (handler != null)
+				handler (this, e);
+		}
 		
 		public void Add (PObject obj)
 		{
 			obj.Parent = this;
 			list.Add (obj);
+			OnAddedd (new PObjectEventArgs (obj));
 		}
 
 		public void Replace (PObject oldObj, PObject newObject)
@@ -512,15 +521,27 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (list[i] == oldObj) {
 					newObject.Parent = this;
 					list[i] = newObject;
+					OnRemoved (new PObjectEventArgs (oldObj));
+					OnAddedd (new PObjectEventArgs (newObject));
 					QueueRebuild ();
 					break;
 				}
 			}
 		}
 		
+		public EventHandler<PObjectEventArgs> Removed;
+		
+		protected virtual void OnRemoved (PObjectEventArgs e)
+		{
+			var handler = this.Removed;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		public void Remove (PObject obj)
 		{
-			list.Remove (obj);
+			if (list.Remove (obj))
+				OnRemoved (new PObjectEventArgs (obj));
 		}
 
 		public void Clear ()
