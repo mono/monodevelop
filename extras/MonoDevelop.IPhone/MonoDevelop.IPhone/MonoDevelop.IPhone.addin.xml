@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing and deploying iPhone applications using Mono."
        category    = "Mac Development"
-       version     = "2.6">
+       version     = "2.5.93">
        
     <Header>
     	<UpdateRank>MonoDevelop.IPhone.MonoTouchInstalled:Important Minor</UpdateRank>
@@ -40,9 +40,9 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.6"/>
-		<Addin id="Ide" version="2.6"/>
-		<Addin id="MacDev" version="2.6"/>
+		<Addin id="Core" version="2.5.93"/>
+		<Addin id="Ide" version="2.5.93"/>
+		<Addin id="MacDev" version="2.5.93"/>
 	</Dependencies>
 	
 	<ConditionType id="MonoTouchInstalled" type="MonoDevelop.IPhone.MonoTouchInstalledCondition" />
@@ -239,10 +239,10 @@
 		</Runtime>
 
 		<Dependencies>
-			<Addin id="Core" version="2.6"/>
-			<Addin id="Ide"  version="2.6"/>
-			<Addin id="Debugger" version="2.6"/>
-			<Addin id="Debugger.Soft" version="2.6"/>
+			<Addin id="Core" version="2.5.93"/>
+			<Addin id="Ide"  version="2.5.93"/>
+			<Addin id="Debugger" version="2.5.93"/>
+			<Addin id="Debugger.Soft" version="2.5.93"/>
 		</Dependencies>
 	
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">

@@ -6,7 +6,7 @@
        url         = "http://mono-android.net/"
        description = "Support for developing and deploying Mono for Android applications."
        category    = "Mobile Development"
-       version     = "2.6.5.2">
+       version     = "2.5.93.5.2">
        
 	<Header>
 		<Icon32>icons/monodroid-32.png</Icon32>
@@ -39,8 +39,8 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.6"/>
-		<Addin id="Ide" version="2.6"/>
+		<Addin id="Core" version="2.5.93"/>
+		<Addin id="Ide" version="2.5.93"/>
 	</Dependencies>
 	
 	<ConditionType id="MonoDroidInstalled" type="MonoDevelop.MonoDroid.MonoDroidInstalledCondition" />
@@ -272,9 +272,9 @@
 		</Runtime>
 
 		<Dependencies>
-			<Addin id="Core" version="2.6"/>
-			<Addin id="Ide"  version="2.6"/>
-			<Addin id="XmlEditor" version="2.6"/>
+			<Addin id="Core" version="2.5.93"/>
+			<Addin id="Ide"  version="2.5.93"/>
+			<Addin id="XmlEditor" version="2.5.93"/>
 		</Dependencies>
 		
 		<Extension path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
@@ -293,10 +293,10 @@
 		</Runtime>
 
 		<Dependencies>
-			<Addin id="Core" version="2.6"/>
-			<Addin id="Ide"  version="2.6"/>
-			<Addin id="Debugger" version="2.6"/>
-			<Addin id="Debugger.Soft" version="2.6"/>
+			<Addin id="Core" version="2.5.93"/>
+			<Addin id="Ide"  version="2.5.93"/>
+			<Addin id="Debugger" version="2.5.93"/>
+			<Addin id="Debugger.Soft" version="2.5.93"/>
 		</Dependencies>
 	
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
