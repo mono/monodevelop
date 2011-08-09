@@ -78,6 +78,7 @@ namespace MonoDevelop.Core
 			if (args.Change != ExtensionChange.Add)
 				return;
 			
+			//FIXME: support ranges in SourceVersion
 			var node = (UserDataMigrationNode) args.ExtensionNode;
 			if (node.SourceVersion != version)
 				return;
@@ -86,8 +87,8 @@ namespace MonoDevelop.Core
 			FilePath target = FilePath.Null;
 
 			try {
-				source = profile.GetLocation (node.Kind).Combine (node.SourcePath);
-				target = UserProfile.Current.GetLocation (node.Kind).Combine (node.TargetPath);
+				source = profile.GetLocation (node.SourceKind).Combine (node.SourcePath);
+				target = UserProfile.Current.GetLocation (node.TargetKind).Combine (node.TargetPath);
 
 				bool sourceIsDirectory = Directory.Exists (source);
 

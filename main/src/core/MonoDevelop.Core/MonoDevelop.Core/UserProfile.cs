@@ -33,6 +33,13 @@ namespace MonoDevelop.Core
 		const string APP_ID = "MonoDevelop";
 		const string CURRENT_PROFILE_VERSION = "2.7";
 		
+		internal static string[] GetMigratableVersions ()
+		{
+			return new[] {
+				"2.6",
+			};
+		}
+		
 		static readonly UserProfile currentProfile = GetCurrentProfile ();
 		
 		public static UserProfile Current { get { return currentProfile; } }

@@ -86,7 +86,9 @@ namespace MonoDevelop.Core
 				setupService = new AddinSetupService (AddinManager.Registry);
 				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
 				
-				//have to do this after the addin service is initialized
+				PropertyService.Initialize ();
+				
+				//have to do this after the addin service and property service have initialized
 				if (UserDataMigrationService.HasSource) {
 					Counters.RuntimeInitialization.Trace ("Migrating User Data from MD " + UserDataMigrationService.SourceVersion);
 					UserDataMigrationService.StartMigration ();

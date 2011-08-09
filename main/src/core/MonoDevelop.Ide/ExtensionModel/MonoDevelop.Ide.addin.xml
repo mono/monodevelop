@@ -235,11 +235,19 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
-		<Migration sourceVersion="2.4" kind="UserData" sourcePath="KeyBindings.xml" targetPath="KeyBindings/Custom.kb.xml" />
-		<Migration sourceVersion="2.4" kind="UserData" sourcePath="KeyBindingsMac.xml" targetPath="KeyBindings/Custom.kb-mac.xml" />
-		<Migration sourceVersion="2.4" kind="UserData" isDirectory="true" sourcePath="templates/code" targetPath="Snippets" />
-		<Migration sourceVersion="2.4" kind="Config" sourcePath="custom-command-modes.xml" />
-		<Migration sourceVersion="2.4" kind="Config" sourcePath="MonoDevelop-tools.xml" />
-		<Migration sourceVersion="2.4" kind="Config" sourcePath="EditingLayout2.xml" targetPath="EditingLayout.xml"/>
+		<!-- 2.4 -->
+		<Migration sourceVersion="2.4" kind="UserData" path="KeyBindings.xml" targetPath="KeyBindings/Custom.kb.xml" />
+		<Migration sourceVersion="2.4" kind="UserData" path="KeyBindingsMac.xml" targetPath="KeyBindings/Custom.kb-mac.xml" />
+		<Migration sourceVersion="2.4" kind="UserData" path="templates/code" targetPath="Snippets" isDirectory="true" />
+		<Migration sourceVersion="2.4" kind="Config" path="custom-command-modes.xml" />
+		<Migration sourceVersion="2.4" kind="Config" path="MonoDevelop-tools.xml" />
+		<Migration sourceVersion="2.4" kind="Config" path="EditingLayout2.xml" targetPath="EditingLayout.xml"/>
+		<!-- 2.6 -->
+		<Migration sourceVersion="2.6" kind="UserData" path="KeyBindings" isDirectory="true" />
+		<Migration sourceVersion="2.6" kind="UserData" path="Snippets" isDirectory="true" />
+		<Migration sourceVersion="2.6" kind="Config" path="custom-command-modes.xml" />
+		<Migration sourceVersion="2.6" kind="Config" path="MonoDevelop-tools.xml" />
+		<Migration sourceVersion="2.6" kind="Config" path="EditingLayout.xml" />
+		<Migration sourceVersion="2.6" kind="LocalConfig" path="RecentlyUsed.xml" />
 	</Extension>
 </Addin>

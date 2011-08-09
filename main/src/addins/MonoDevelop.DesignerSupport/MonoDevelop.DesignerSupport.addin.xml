@@ -142,6 +142,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
-		<Migration sourceVersion="2.4" kind="LocalConfig" sourcePath="Toolbox.xml" />
+		<!-- 2.4 -->
+		<Migration sourceVersion="2.4" kind="LocalConfig" path="Toolbox.xml" />
+		<!-- 2.6 -->
+		<Migration sourceVersion="2.6" kind="LocalConfig" path="Toolbox.xml" />
 	</Extension>
 </Addin>
