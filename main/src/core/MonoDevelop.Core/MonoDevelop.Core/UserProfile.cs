@@ -31,7 +31,7 @@ namespace MonoDevelop.Core
 	{
 		const string PROFILE_ENV_VAR = "MONODEVELOP_PROFILE";
 		const string APP_ID = "MonoDevelop";
-		const string CURRENT_PROFILE_VERSION = "2.6";
+		const string CURRENT_PROFILE_VERSION = "2.7";
 		
 		static readonly UserProfile currentProfile = GetCurrentProfile ();
 		
