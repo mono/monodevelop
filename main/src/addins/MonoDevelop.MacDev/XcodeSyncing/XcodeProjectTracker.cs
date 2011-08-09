@@ -63,13 +63,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public bool ShouldOpenInXcode (FilePath fileName)
 		{
-			if (!HasPageExtension (fileName))
+			if (!HasInterfaceDefinitionExtension (fileName))
 				return false;
 			var file = dnp.Files.GetFile (fileName);
-			return file != null && file.BuildAction == BuildAction.Page;
+			return file != null && (file.BuildAction == BuildAction.InterfaceDefinition);
 		}
 		
-		public virtual bool HasPageExtension (FilePath fileName)
+		public virtual bool HasInterfaceDefinitionExtension (FilePath fileName)
 		{
 			return fileName.HasExtension (".xib");
 		}
@@ -148,13 +148,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			XC4Debug.Log ("Opening file {0}", file);
 			var xibFile = dnp.Files.GetFile (file);
 			System.Diagnostics.Debug.Assert (xibFile != null);
-			System.Diagnostics.Debug.Assert (IsPage (xibFile));
+			System.Diagnostics.Debug.Assert (IsInterfaceDefinition (xibFile));
 			xcode.OpenFile (xibFile.ProjectVirtualPath);
 		}
 		
-		static bool IsPage (ProjectFile pf)
+		static bool IsInterfaceDefinition (ProjectFile pf)
 		{
-			return pf.BuildAction == BuildAction.Page;
+			return pf.BuildAction == BuildAction.InterfaceDefinition;
 		}
 		
 		static bool IsContent (ProjectFile pf)
@@ -165,7 +165,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		bool IncludeInSyncedProject (ProjectFile pf)
 		{
 			return pf.BuildAction == BuildAction.Content
-				|| (pf.BuildAction == BuildAction.Page && HasPageExtension (pf.FilePath));
+				|| (pf.BuildAction == BuildAction.InterfaceDefinition && HasInterfaceDefinitionExtension (pf.FilePath));
 		}
 		
 		#region Project change tracking
@@ -180,8 +180,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void FileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
-			if (syncing && e.Any (finf => finf.Project == dnp && IsPage (finf.ProjectFile))) {
-				if (!dnp.Files.Any (IsPage)) {
+			if (syncing && e.Any (finf => finf.Project == dnp && IsInterfaceDefinition (finf.ProjectFile))) {
+				if (!dnp.Files.Any (IsInterfaceDefinition)) {
 					XC4Debug.Log ("All page files removed, disabling sync");
 					DisableSyncing ();
 					return;

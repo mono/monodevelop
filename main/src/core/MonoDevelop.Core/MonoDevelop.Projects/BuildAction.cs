@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects
 		public const string EmbeddedResource = "EmbeddedResource"; //EmbedAsResource, "Embed as resource"
 		public const string Content = "Content"; //Exclude
 		public const string ApplicationDefinition = "ApplicationDefinition";
-		public const string Page = "Page";
+		public const string InterfaceDefinition = "InterfaceDefinition";
 		public const string Resource = "Resource";
 		public const string SplashScreen = "SplashScreen";
 		public const string EntityDeploy = "EntityDeploy";
