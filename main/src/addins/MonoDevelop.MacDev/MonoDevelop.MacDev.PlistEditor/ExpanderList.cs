@@ -60,17 +60,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			noContentLabel = new Label ();
 			noContentLabel.Text = noContentMessage;
-			
+			noContentLabel.Xalign = 0F;
+			noContentLabel.Justify = Justification.Left;
+			noContentLabel.SetPadding (6, 6);
 			addButton = new Button ();
 			addButton.Label = addMessage;
-			addButton.Relief = ReliefStyle.None;
+//			addButton.Relief = ReliefStyle.None;
 			addButton.Clicked += delegate {
 				OnCreateNew (EventArgs.Empty);
 			};
 			
 			contentBox = new VBox ();
 			contentBox.PackStart (this.noContentLabel, true, true, 6);
-			contentBox.PackEnd (addButton, false, true, 0);
+			var hbox = new HBox ();
+			hbox.PackStart (addButton, false, false, 0);
+			contentBox.PackEnd (hbox, false, false, 0);
 			
 			PackStart (contentBox, true, true, 6);
 			
