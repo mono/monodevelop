@@ -78,6 +78,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		int expanders = 0;
 		
+		public virtual bool RequestClose (ClosableExpander expander)
+		{
+			return true;
+		}
+		
 		public ClosableExpander AddListItem (string name, Widget widget, PObject obj)
 		{
 			if (noContentLabel != null) {
@@ -92,10 +97,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			expander.SetWidget (widget);
 			expander.BorderWidth = 4;
 			expander.Closed += delegate(object sender, EventArgs e) {
-				expanders--;
 				var expanderWidget = (ClosableExpander)sender;
+				if (!RequestClose (expanderWidget))
+					return;
+				expanders--;
 				obj.Remove ();
-				contentBox.Remove (expanderWidget);
+				if (expanderWidget.Parent == contentBox)
+					contentBox.Remove (expanderWidget);
 				expanderWidget.Destroy ();
 				if (expanders == 0)
 					Clear ();
