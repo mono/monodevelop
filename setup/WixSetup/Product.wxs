@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define ProductShortName = "MonoDevelop" ?>
-<<<<<<< HEAD
-<?define ProductVersion = "2.5.9" ?>
-<?define ProductVersionText = "2.5.9" ?>
-=======
 <?define ProductVersion = "2.5.9.3" ?>
 <?define ProductVersionText = "2.6 RC1" ?>
->>>>>>> 6621d95... Update setup version
 <?define AssemblyVersion = "2.6.0.0" ?>
 <?define Manufacturer = "Novell" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
