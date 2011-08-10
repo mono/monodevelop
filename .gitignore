@@ -163,3 +163,6 @@ autom4te.cache/
 
 #other extras generated stuff
 /extras/JavaBinding/monodevelop-java.pc
+
+#MacOS junk
+.DS_Store
