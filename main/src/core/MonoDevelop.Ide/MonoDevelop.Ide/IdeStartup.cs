@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide
 {
@@ -261,7 +262,9 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.EndTiming ();
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
-				
+			
+			LaunchCrashMonitoringService ();
+			
 			IdeApp.Run ();
 			
 			// unloading services
@@ -297,6 +300,22 @@ namespace MonoDevelop.Ide
 		{
 			if (errorsList != null)
 				errorsList.Add (new AddinError (args.AddinId, args.Message, args.Exception, false));
+		}
+		
+		void LaunchCrashMonitoringService ()
+		{
+			if (Platform.IsMac) {
+				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelop.CrashLog.exe");
+				var pid = Process.GetCurrentProcess ().Id;
+				var logPath = UserProfile.Current.LogDir.Combine ("CrashReporter");
+				var psi = new ProcessStartInfo ("mono", string.Format ("{0} -p {1} -l {2}", crashmonitor, pid, logPath)) {
+					UseShellExecute = false,
+				};
+				Process.Start (psi);
+				return;
+			} else {
+				LoggingService.LogError ("Could not launch crash reporter process. MonoDevelop will not be able to automatically report any crash information.");
+			}
 		}
 
 		void ListenCallback (IAsyncResult state)

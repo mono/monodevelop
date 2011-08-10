@@ -184,6 +184,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdtool", "src\tools\mdtool\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdmonitor", "src\tools\mdmonitor\mdmonitor.csproj", "{D0B5AF2B-4BC1-4EB4-81D3-E5B85DDCE925}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.CrashLog", "src\tools\mdcrashlog\MonoDevelop.CrashLog.csproj", "{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}"
 	ProjectSection(MonoDevelopProperties) = preProject
 		BaseDirectory = tests
@@ -197,6 +199,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 		DebugWin32|x86 = DebugWin32|x86
 		DebugMac|Any CPU = DebugMac|Any CPU
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0413DB7D-8B35-423F-9752-D75C9225E7DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -683,6 +687,18 @@ Global
 		{D1D35409-C814-47F6-B038-B9B5BF0FE490}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{D1D35409-C814-47F6-B038-B9B5BF0FE490}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1D35409-C814-47F6-B038-B9B5BF0FE490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.Debug|Any CPU.Build.0 = Debug|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.Debug|x86.ActiveCfg = Debug|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.Debug|x86.Build.0 = Debug|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.DebugMac|Any CPU.ActiveCfg = Debug|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.DebugMac|Any CPU.Build.0 = Debug|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.DebugWin32|x86.ActiveCfg = Debug|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.DebugWin32|x86.Build.0 = Debug|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.Release|Any CPU.ActiveCfg = Release|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.Release|Any CPU.Build.0 = Release|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.Release|x86.ActiveCfg = Release|x86
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}.Release|x86.Build.0 = Release|x86
 		{DA8EDEA6-7DA8-435D-B1A0-F3A0CA07F424}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA8EDEA6-7DA8-435D-B1A0-F3A0CA07F424}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA8EDEA6-7DA8-435D-B1A0-F3A0CA07F424}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -858,6 +874,7 @@ Global
 		{BFE8691A-D323-4622-9021-7B8B27F81599} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
 		{8A04FF99-5DFE-4E3D-A24F-72A621C8DDC6} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
 		{D0B5AF2B-4BC1-4EB4-81D3-E5B85DDCE925} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
+		{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
 		{1497D0A8-AFF1-4938-BC22-BE79B358BA5B} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
