@@ -365,11 +365,8 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 
-	public sealed class AdbGetAvailableSpaceOperation : AdbBaseShellOperation
+	public sealed class AdbGetAvailableSpaceOperation : IAsyncOperation
 	{
-		long externalSpace = -1;
-		long internalSpace = -1;
-
 		const long Kilobyte = 1024;
 		const long Megabyte = 1024 * 1024;
 		const long Gigabyte = 1024 * 1024 * 1024;
@@ -377,129 +374,181 @@ namespace MonoDevelop.MonoDroid
 		const string InternalPartition = "/data";
 		const string ExternalPartition = "/mnt/sdcard";
 
-		public AdbGetAvailableSpaceOperation (AndroidDevice device) : base (device, "df")
+		ChainedAsyncOperationSequence chop;
+
+		public long InternalSpace { get; private set; }
+		public long ExternalSpace { get; private set; }
+
+		public AdbGetAvailableSpaceOperation (AndroidDevice device)
 		{
-			BeginConnect ();
+			InternalSpace = ExternalSpace = -1;
+			chop = new ChainedAsyncOperationSequence (
+				new ChainedAsyncOperation () {
+					Create = () => new AdbGetSpace (this, device, InternalPartition),
+					Completed = (op) => {
+						if (!op.Success)
+							throw new InvalidOperationException ("Error getting partition size from device:\n" + ((AdbGetSpace)op).Output);
+						InternalSpace = ((AdbGetSpace)op).Value;
+					},
+				},
+				new ChainedAsyncOperation () {
+					Create = () => new AdbGetSpace (this, device, ExternalPartition),
+					Completed = (op) => {
+						if (!op.Success)
+							throw new InvalidOperationException ("Error getting partition size from device:\n" + ((AdbGetSpace)op).Output);
+						ExternalSpace = ((AdbGetSpace)op).Value;
+					},
+				}
+			);
+			chop.Start ();
 		}
 
-		bool ParseDfOutput (string output)
+		long ParseDfOutput (string output)
 		{
 			return output.StartsWith ("Filesystem") ? ParseNewFormat (output) : ParseOldFormat (output);
 		}
 
-		bool ParseNewFormat (string output)
+		long ParseNewFormat (string output)
 		{
+			LoggingService.LogDebug ("ParseNewFormat {0}", output);
 			string s;
+			long size;
 			var reader = new StringReader (output);
 
-			reader.ReadLine (); //  header line
+			reader.ReadLine ();
+			s = reader.ReadToEnd ();
+
+			LoggingService.LogDebug (s);
 
 			// /data      496M    54M   442M   4096
-			while ((s = reader.ReadLine ()) != null) {
-				var parts = s.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-				if (parts.Length != 5)
-					continue;
+			var parts = s.Split (new char [] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-				string partition = parts [0];
-				if (partition != InternalPartition && partition != ExternalPartition)
-					continue;
+			LoggingService.LogDebug ("parts {0} {1}", parts.Length, parts[3]);
+			if (parts.Length < 4)
+				return -1;
 
-				long size;
-				if (!ParseToBytes (parts [3], out size))
-					continue;
-
-				if (partition == InternalPartition)
-					internalSpace = size;
-				else
-					externalSpace = size;
+			if (!ParseToBytes (parts [3], out size)) {
+				LoggingService.LogDebug ("ParseToBytes {0}", size);
+				return -1;
 			}
-
-			// if /data was not found, then something went wrong.
-			return internalSpace > -1;
+			LoggingService.LogDebug ("returning size");
+			return size;
 		}
 
-		bool ParseOldFormat (string output)
+		long ParseOldFormat (string output)
 		{
 			string s;
+			long size;
 			var reader = new StringReader (output);
-			while ((s = reader.ReadLine ()) != null) {
-				int idx = s.IndexOf (':');
-				if (idx < 0)
-					return false;
 
-				long size = 0;
-				string partition = s.Substring (0, idx);
-				if (partition != InternalPartition && partition != ExternalPartition)
-					continue;
+			int idx = s.IndexOf (':');
+			if (idx < 0)
+				return -1;
 
-				// /data/: 508416K total, 98548K used, 409868K available (block size 4096)
-				var parts = s.Split (new char [] { ',' });
-				if (parts.Length != 3 || parts [2].IndexOf ("available") < 0)
-					return false;
+			// /data/: 508416K total, 98548K used, 409868K available (block size 4096)
+			var parts = s.Split (new char [] { ',' });
+			if (parts.Length != 3 || parts [2].IndexOf ("available") < 0)
+				return -1;
 
-				// the actual available component
-				parts = parts [2].Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-				if (!ParseToBytes (parts [0].Trim (), out size))
-					return false;
+			// the actual available component
+			parts = parts [2].Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			if (!ParseToBytes (parts [0].Trim (), out size))
+				return size;
 
-				if (partition == InternalPartition)
-					internalSpace = size;
-				else
-					externalSpace = size;
-			}
-
-			// if /data was not found, then something went wrong.
-			return internalSpace > -1;
+			return -1;
 		}
 
 		bool ParseToBytes (string s, out long value)
 		{
+			value = -1;
+			if (String.IsNullOrEmpty (s))
+				return false;
+
 			var unit = s [s.Length - 1];
-			var available = s.Substring (0, s.Length - 1);
+			bool hasUnit = Char.IsLetter (unit);
+			string available = s;
+
+			if (hasUnit)
+				available = s.Substring (0, s.Length - 1);
+
 			if (!long.TryParse (available, out value))
 				return false;
 
-			switch (unit) {
-				case 'K': value *= Kilobyte;
-					  break;
-				case 'M': value *= Megabyte;
-					  break;
-				case 'G': value *= Gigabyte;
-					  break;
-				default:
-					  return false;
-			}
-
+			if (hasUnit) {
+				switch (unit) {
+					case 'K': value *= Kilobyte;
+						  break;
+					case 'M': value *= Megabyte;
+						  break;
+					case 'G': value *= Gigabyte;
+						  break;
+					default:
+						  return false;
+				}
+			} else
+				value *= Kilobyte;
 			return true;
 		}
 
-		bool? success;
+		class AdbGetSpace : AdbBaseShellOperation
+		{
+			AdbGetAvailableSpaceOperation parent;
+			public AdbGetSpace (AdbGetAvailableSpaceOperation parent, AndroidDevice device, string partition) :
+				base (device, "df " + partition)
+			{
+				this.parent = parent;
+				BeginConnect ();
+			}
 
-		public override bool Success {
-			get {
-				if (!base.Success)
-					return false;
-				if (!success.HasValue)
-					success = ParseDfOutput (Output);
+			public long Value { get; private set; }
 
-				return success.Value;
+			bool? success;
+			public override bool Success {
+				get {
+					if (!base.Success)
+						return false;
+					if (!success.HasValue) {
+						Value = parent.ParseDfOutput (Output);
+						//LoggingService.LogDebug ("Success {0}", Value);
+						success = Value > -1;
+					}
+					return success.Value;
+				}
 			}
 		}
 
-		public long InternalSpace {
+
+		public event OperationHandler Completed {
+			add { chop.Completed += value; }
+			remove { chop.Completed -= value; }
+		}
+
+		public void Cancel ()
+		{
+			chop.Cancel ();
+			chop.Cancel ();
+		}
+
+		public void WaitForCompleted ()
+		{
+			chop.WaitForCompleted ();
+		}
+
+		public bool IsCompleted {
 			get {
-				if (!Success)
-					throw new InvalidOperationException ("Error getting partition size from device:\n" + Output);
-				//Success will have parsed the value 
-				return internalSpace;
+				return chop.IsCompleted;
 			}
 		}
 
-		public long ExternalSpace {
+		public bool Success {
 			get {
-				if (!Success)
-					throw new InvalidOperationException ("Error getting partition size from device:\n" + Output);
-				return externalSpace;
+				return chop.Success;
+			}
+		}
+
+		public bool SuccessWithWarnings {
+			get {
+				return chop.SuccessWithWarnings;
 			}
 		}
 	}
