@@ -1447,14 +1447,8 @@
     <Compile Include="MonoDevelop.Ide.Updater\UpdateRank.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AddExternalFileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.AddExternalFileDialog.cs" />
-<<<<<<< HEAD
-=======
-    <Compile Include="MonoDevelop.Ide.Gui.Components\PriorityList.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.PriorityList.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FilePathEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeedbackDialog.cs" />
     <Compile Include="MonoDevelop.Ide\FeedbackService.cs" />
->>>>>>> e33c734... Add feedback button.
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
