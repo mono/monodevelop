@@ -113,13 +113,14 @@ namespace MonoDevelop.Ide
 				if (sending)
 					return;
 				
-				sending = true;
 				XmlDocument doc = LoadFeedbackDoc ();
 				if (doc.DocumentElement == null)
 					return;
 				XmlElement fe = doc.DocumentElement.FirstChild as XmlElement;
-				if (fe != null)
+				if (fe != null) {
+					sending = true;
 					InternalSendFeedback (fe);
+				}
 			}
 		}
 		
