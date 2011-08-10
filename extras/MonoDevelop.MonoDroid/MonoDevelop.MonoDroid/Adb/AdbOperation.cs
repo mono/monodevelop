@@ -49,12 +49,11 @@ namespace MonoDevelop.MonoDroid
 
 #region SocketBug
 		// workaround a socket bug on mono 2.10.2
-		bool socketBugChecked;
-		bool forceSynch;
+		bool? forceSynch;
 		bool ForceSynch {
 			get {
-				if (!socketBugChecked) {
-					socketBugChecked = true;
+				if (!forceSynch.HasValue) {
+					forceSynch = true;
 					Type t = Type.GetType ("Mono.Runtime");
 					if (t != null) {
 						System.Reflection.MethodInfo mi = t.GetMethod ("GetDisplayName",
@@ -65,7 +64,7 @@ namespace MonoDevelop.MonoDroid
 						}
 					}
 				}
-				return forceSynch;
+				return forceSynch.Value;
 			}
 		}
 #endregion
