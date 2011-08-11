@@ -38,11 +38,11 @@ namespace MonoDevelop.TypeSystem
 	{
 		public NetAmbience () : base ("NET")
 		{
-			classTypes [ClassType.Class] = "Class";
-			classTypes [ClassType.Enum] = "Enumeration";
-			classTypes [ClassType.Interface] = "Interface";
-			classTypes [ClassType.Struct] = "Structure";
-			classTypes [ClassType.Delegate] = "Delegate";
+			classTypes [TypeKind.Class] = "Class";
+			classTypes [TypeKind.Enum] = "Enumeration";
+			classTypes [TypeKind.Interface] = "Interface";
+			classTypes [TypeKind.Struct] = "Structure";
+			classTypes [TypeKind.Delegate] = "Delegate";
 		}
 		
 		public override string SingleLineComment (string text)
@@ -67,7 +67,7 @@ namespace MonoDevelop.TypeSystem
 			if (settings.IncludeModifiers)
 				AppendModifiers (result, settings, type);
 			if (settings.IncludeKeywords)
-				result.Append (settings.EmitKeyword (GetString (type.ClassType)));
+				result.Append (settings.EmitKeyword (GetString (type.Kind)));
 			
 			result.Append (settings.EmitName (type, settings.UseFullName ? type.FullName : type.Name));
 			
@@ -326,9 +326,9 @@ namespace MonoDevelop.TypeSystem
 			return result.ToString ();
 		}
 		
-		Dictionary<ClassType, string> classTypes = new Dictionary<ClassType, string> ();
+		Dictionary<TypeKind, string> classTypes = new Dictionary<TypeKind, string> ();
 		
-		string GetString (ClassType classType)
+		string GetString (TypeKind classType)
 		{
 			string res;
 			if (classTypes.TryGetValue (classType, out res))

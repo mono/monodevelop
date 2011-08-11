@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			publicOnly |= publicProtectedOnly;
 			
 			// Delegates have an Invoke method, which doesn't need to be shown.
-			if (classData.Class.ClassType == ClassType.Delegate)
+			if (classData.Class.Kind == TypeKind.Delegate)
 				return;
 
 			foreach (var innerClass in classData.Class.NestedTypes)

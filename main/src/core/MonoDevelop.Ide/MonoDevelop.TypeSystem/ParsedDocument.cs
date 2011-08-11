@@ -50,6 +50,12 @@ namespace MonoDevelop.TypeSystem
 			get { return parseTime; }
 		}
 		
+		public IList<IAttribute> ModuleAttributes {
+			get {
+				return new IAttribute[0];
+			}
+		}
+		
 		List<Comment> comments = new List<Comment> ();
 		public IList<Comment> Comments {
 			get {
@@ -443,7 +449,7 @@ namespace MonoDevelop.TypeSystem
 				foreach (FoldingRegion f in inner.ToFolds ())
 					yield return f;
 			
-			if (type.ClassType == ClassType.Interface)
+			if (type.Kind == TypeKind.Interface)
 				yield break;
 
 			foreach (IMethod method in type.Methods)

@@ -143,7 +143,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			IParsedFile unit = null;
 			IEnumerable<object> searchNodes = new [] { member };
 			if (member is IVariable) { 
-				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).DeclarationRegion.FileName);
+				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).Region.FileName);
 				dom = doc.GetProjectContext ();
 				unit = doc.ParsedDocument;
 			} else if (member is IType) {
@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (node == null)
 				return RefactoryScope.DeclaringType;
 			
-			if (node.DeclaringTypeDefinition != null && node.DeclaringTypeDefinition.ClassType == ClassType.Interface)
+			if (node.DeclaringTypeDefinition != null && node.DeclaringTypeDefinition.Kind == TypeKind.Interface)
 				return GetScope (node.DeclaringTypeDefinition);
 			
 			if ((node.Accessibility & Accessibility.Public) == Accessibility.Public)

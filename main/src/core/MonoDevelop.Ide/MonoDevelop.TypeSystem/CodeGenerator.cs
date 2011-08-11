@@ -136,7 +136,7 @@ namespace MonoDevelop.TypeSystem
 			List<IMember > implementedMembers = new List<IMember> ();
 			foreach (var baseInterface in interfaceType.GetAllBaseTypes (interfaceType.GetDefinition ().ProjectContent)) {
 				var def = baseInterface.GetDefinition ();
-				if (def != null && def.ClassType != ClassType.Interface)
+				if (def != null && def.Kind != TypeKind.Interface)
 					continue;
 				if (result.Length > 0) {
 					AppendLine (result);
@@ -167,7 +167,7 @@ namespace MonoDevelop.TypeSystem
 					continue;
 				bool needsExplicitly = explicitly;
 				
-				alreadyImplemented = implementingType.GetAllBaseTypes (dom).Any (x => x.GetDefinition ().ClassType != ClassType.Interface && x.GetEvents (dom).Any (y => y.Name == ev.Name));
+				alreadyImplemented = implementingType.GetAllBaseTypes (dom).Any (x => x.GetDefinition ().Kind != TypeKind.Interface && x.GetEvents (dom).Any (y => y.Name == ev.Name));
 				
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember, bool> (ev, needsExplicitly));
@@ -180,7 +180,7 @@ namespace MonoDevelop.TypeSystem
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (var t in implementingType.GetAllBaseTypeDefinitions (dom)) {
-					if (t.ClassType == ClassType.Interface)
+					if (t.Kind == TypeKind.Interface)
 						continue;
 					foreach (var cmet in t.GetMethods (dom)) {
 						if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
@@ -202,7 +202,7 @@ namespace MonoDevelop.TypeSystem
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (IType t in implementingType.GetBaseTypes (dom)) {
-					if (t.GetDefinition ().ClassType == ClassType.Interface)
+					if (t.GetDefinition ().Kind == TypeKind.Interface)
 						continue;
 					foreach (IProperty cprop in t.GetProperties (dom)) {
 						if (cprop.Name == prop.Name) {
