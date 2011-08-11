@@ -47,7 +47,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.info = info;
 		}
 		
-		CompoundTypeDefinition constructedType = null;
+		ITypeDefinition constructedType = null;
 		ITypeDefinition CheckType (ITypeDefinition type)
 		{
 			if (type == null)
@@ -57,10 +57,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (firstType != null && firstType.FullName == type.FullName) {
 				if (constructedType != null)
 					return constructedType;
-				constructedType = new CompoundTypeDefinition ();
-				constructedType.AddPart (firstType);
-				constructedType.AddPart (type);
-				constructedType.AddPart (info.CodeBesideClass);
+				constructedType = CompoundTypeDefinition.Create (new [] { firstType, type, info.CodeBesideClass });
 //				constructedType.GetProjectContent () = this;
 				return constructedType;
 			}
