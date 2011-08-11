@@ -36,7 +36,7 @@ namespace MonoDevelop.CodeMetrics
 		private static void ClassEvaluateInheritanceTree (MetricsContext ctx, ClassProperties cls)
 		{
 			foreach (var ob in cls.Class.GetAllBaseTypeDefinitions (cls.Class.ProjectContent)) {
-				if (ob.ClassType == ClassType.Class && ob != cls.Class && ob.Name!="Object") {
+				if (ob.Kind == TypeKind.Class && ob != cls.Class && ob.Name!="Object") {
 					cls.DepthOfInheritance++;
 					ClassProperties tmp = ctx.GetInstanceOf (ob);
 					// lock tmp here

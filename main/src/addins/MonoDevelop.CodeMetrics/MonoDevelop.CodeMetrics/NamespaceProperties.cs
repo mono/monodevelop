@@ -151,21 +151,21 @@ namespace MonoDevelop.CodeMetrics
 				}
 			}
 	
-			switch(type.ClassType)
+			switch(type.Kind)
 			{
-			case ClassType.Class:
+			case TypeKind.Class:
 				AddClass(type, key);
 				break;
-			case ClassType.Delegate:
+			case TypeKind.Delegate:
 				AddDelegate(type, key);
 				break;
-			case ClassType.Enum:
+			case TypeKind.Enum:
 				AddEnum(type, key);
 				break;
-			case ClassType.Interface:
+			case TypeKind.Interface:
 				AddInterface(type, key);
 				break;
-			case ClassType.Struct:
+			case TypeKind.Struct:
 				AddStruct(type, key);
 				break;
 			}

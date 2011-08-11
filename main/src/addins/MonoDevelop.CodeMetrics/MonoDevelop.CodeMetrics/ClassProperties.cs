@@ -190,20 +190,20 @@ namespace MonoDevelop.CodeMetrics
 		private void EvaluateInnerTypeCount()
 		{
 			foreach (var type in Class.NestedTypes) {
-				switch (type.ClassType) {
-				case ClassType.Class:
+				switch (type.Kind) {
+				case TypeKind.Class:
 					AddInnerClass(type); 
 					break;
-				case ClassType.Enum:
+				case TypeKind.Enum:
 					AddInnerEnum(type);
 					break;
-				case ClassType.Interface:
+				case TypeKind.Interface:
 					AddInnerInterface(type);
 					break;
-				case ClassType.Struct:
+				case TypeKind.Struct:
 					AddInnerStruct(type);
 					break;
-				case ClassType.Delegate:
+				case TypeKind.Delegate:
 					AddInnerDelegate(type);
 					break;
 				}

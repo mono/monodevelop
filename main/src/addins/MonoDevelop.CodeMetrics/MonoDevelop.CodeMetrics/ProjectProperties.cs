@@ -123,21 +123,21 @@ namespace MonoDevelop.CodeMetrics
 			StringBuilder key = new StringBuilder();
 			key.Append(cls.FullName);
 			
-			switch (cls.ClassType)
+			switch (cls.Kind)
 			{
-			case ClassType.Class:
+			case TypeKind.Class:
 				AddClass(cls, key);
 				break;
-			case ClassType.Delegate:
+			case TypeKind.Delegate:
 				AddDelegate(cls, key);
 				break;
-			case ClassType.Enum:
+			case TypeKind.Enum:
 				AddEnum(cls, key);
 				break;
-			case ClassType.Interface:
+			case TypeKind.Interface:
 				AddInterface(cls, key);
 				break;
-			case ClassType.Struct:
+			case TypeKind.Struct:
 				AddStruct(cls, key);
 				break;
 			}
