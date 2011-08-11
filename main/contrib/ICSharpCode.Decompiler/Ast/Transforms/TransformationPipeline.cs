@@ -35,11 +35,12 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				new PushNegation(),
 				new DelegateConstruction(context),
 				new PatternStatementTransform(context),
-				new ReplaceMethodCallsWithOperators(),
+				new ReplaceMethodCallsWithOperators(context),
 				new IntroduceUnsafeModifier(),
 				new AddCheckedBlocks(),
 				new DeclareVariables(context), // should run after most transforms that modify statements
 				new ConvertConstructorCallIntoInitializer(), // must run after DeclareVariables
+				new DecimalConstantTransform(),
 				new IntroduceUsingDeclarations(context),
 				new IntroduceExtensionMethods(context), // must run after IntroduceUsingDeclarations
 				new IntroduceQueryExpressions(context), // must run after IntroduceExtensionMethods

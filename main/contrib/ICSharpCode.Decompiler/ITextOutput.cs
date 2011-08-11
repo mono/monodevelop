@@ -23,7 +23,7 @@ namespace ICSharpCode.Decompiler
 {
 	public interface ITextOutput
 	{
-		int CurrentLine { get; }
+		TextOutputLocation Location { get; }
 		
 		void Indent();
 		void Unindent();
@@ -35,6 +35,12 @@ namespace ICSharpCode.Decompiler
 		
 		void MarkFoldStart(string collapsedText = "...", bool defaultCollapsed = false);
 		void MarkFoldEnd();
+	}
+	
+	public sealed class TextOutputLocation
+	{
+		public int Line { get; set; }
+		public int Column { get; set; }
 	}
 	
 	public static class TextOutputExtensions
