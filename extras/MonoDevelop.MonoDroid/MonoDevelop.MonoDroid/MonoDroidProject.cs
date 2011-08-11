@@ -238,7 +238,9 @@ namespace MonoDevelop.MonoDroid
 			if (frameworkId.Identifier != FX_MONODROID)
 				return false;
 
-			return GetVersion (frameworkId.Version) && MonoDroidFramework.AndroidVersions.Any (version => version.OSVersion == frameworkId.Version);
+			if (MonoDroidFramework.HasAndroidJavaSdks)
+				return GetVersion (frameworkId.Version) && MonoDroidFramework.AndroidVersions.Any (version => version.OSVersion == frameworkId.Version);
+			return false;
 		}
 
 		static bool GetVersion (string version)
