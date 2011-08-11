@@ -162,7 +162,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					//expressible in obj-c. In this case, the best we can do is walk down the 
 					//hierarchy until we find a valid base class
 					foreach (var bt in baseCliType.GetAllBaseTypeDefinitions (dom)) {
-						if (bt.ClassType != ClassType.Class)
+						if (bt.Kind != TypeKind.Class) 
 							continue;
 						if (TryResolveCliToObjc (bt.FullName, out resolved)) {
 							if (resolved.IsModel)
