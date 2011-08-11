@@ -95,8 +95,8 @@ namespace MonoDevelop.Refactoring
 			if (resolveResult is MethodGroupResolveResult) {
 				var mg = ((MethodGroupResolveResult)resolveResult);
 				var method = mg.Methods.FirstOrDefault ();
-				if (method == null && mg.ExtensionMethods.Any ()) 
-					method = mg.ExtensionMethods.First ().FirstOrDefault ();
+				if (method == null && mg.GetExtensionMethods ().Any ()) 
+					method = mg.GetExtensionMethods ().First ().FirstOrDefault ();
 				return method;
 			}
 			if (resolveResult is TypeResolveResult)
@@ -140,7 +140,7 @@ namespace MonoDevelop.Refactoring
 						if (bcls == null)
 							continue;
 						var def = bcls.GetDefinition ();
-						if (def != null && def.ClassType != ClassType.Interface && !def.Region.IsEmpty) {
+						if (def != null && def.Kind != TypeKind.Interface && !def.Region.IsEmpty) {
 							IdeApp.Workbench.OpenDocument (def.Region.FileName, def.Region.BeginLine, def.Region.BeginColumn);
 							return;
 						}
@@ -155,7 +155,7 @@ namespace MonoDevelop.Refactoring
 							continue;
 						var def = bcls.GetDefinition ();
 						
-						if (def != null && def.ClassType != ClassType.Interface && !def.Region.IsEmpty) {
+						if (def != null && def.Kind != TypeKind.Interface && !def.Region.IsEmpty) {
 							IMethod baseMethod = null;
 							foreach (var m in def.Methods) {
 								if (m.Name == method.Name && m.Parameters.Count == m.Parameters.Count) {
@@ -282,13 +282,13 @@ namespace MonoDevelop.Refactoring
 				ITypeDefinition cls = (ITypeDefinition) item;
 				foreach (var rt in cls.BaseTypes) {
 					var bc = rt.Resolve (ctx);
-					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().ClassType != ClassType.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
+					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
 						ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase (ctx, (ITypeDefinition)item).Run));
 						break;
 					}
 				}
-				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface) {
-					ainfo.Add (cls.ClassType != ClassType.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
+				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
+					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
 				}
 			}
 			

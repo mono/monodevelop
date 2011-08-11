@@ -59,7 +59,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			var def = interfaceType.GetDefinition ();
 			if (def == null)
 				return false;
-			return def.ClassType == ClassType.Interface;
+			return def.Kind == TypeKind.Interface;
 		}
 		
 		public override bool IsValid (RefactoringOptions options)

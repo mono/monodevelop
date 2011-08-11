@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring.Rename
 				} else {
 					this.renameFileFlag.Active = false;
 				}
-				if (type.ClassType == ClassType.Interface)
+				if (type.Kind == TypeKind.Interface)
 					this.Title = GettextCatalog.GetString ("Rename Interface");
 				else
 					this.Title = GettextCatalog.GetString ("Rename Class");
@@ -97,7 +97,7 @@ namespace MonoDevelop.Refactoring.Rename
 			} else if (options.SelectedItem is IVariable) {
 				var lvar = (IVariable)options.SelectedItem;
 				entry.Text = lvar.Name;
-				this.fileName = lvar.DeclarationRegion.FileName;
+				this.fileName = lvar.Region.FileName;
 			}
 			entry.SelectRegion (0, -1);
 			
