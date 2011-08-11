@@ -87,7 +87,7 @@ namespace MonoDevelop.Moonlight
 				rootRegion = new DomRegion (doc.XDocument.RootElement.Region.FileName, doc.XDocument.RootElement.Region.Begin, doc.XDocument.RootElement.ClosingTag.Region.End); 
 			
 			var declType = new DefaultTypeDefinition (projectContent, rootNamespace, rootType) {
-				ClassType = ClassType.Class,
+				Kind = TypeKind.Class,
 				Accessibility = Accessibility.Public,
 				Region = rootRegion
 			};
