@@ -1371,7 +1371,7 @@ namespace MonoDevelop.CSharp.Completion
 						return null;
 					var overrideCls = ParsedFile.GetTypeDefinition (location);
 								
-					if (overrideCls != null && (overrideCls.ClassType == ClassType.Class || overrideCls.ClassType == ClassType.Struct)) {
+					if (overrideCls != null && (overrideCls.Kind == TypeKind.Class || overrideCls.Kind == TypeKind.Struct)) {
 						string modifiers = textEditorData.GetTextBetween (firstMod, wordStart);
 						return GetOverrideCompletionData (completionContext, overrideCls, modifiers);
 					}
@@ -1545,7 +1545,7 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			var amb = new CSharpAmbience ();
 			foreach (var m in curType.Methods.Where (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.Properties.Cast<IMember> ())) {
-				if (m.IsSynthetic || curType.ClassType != ClassType.Interface && !(m.IsVirtual || m.IsOverride || m.IsAbstract))
+				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !(m.IsVirtual || m.IsOverride || m.IsAbstract))
 					continue;
 				
 				// filter out the "Finalize" methods, because finalizers should be done with destructors.
@@ -1869,10 +1869,10 @@ namespace MonoDevelop.CSharp.Completion
 //				return member.IsPublic | member.IsProtected;
 	//		if (member.IsStatic && !IsStatic)
 	//			return false;
-			if (member.IsPublic || calledType != null && calledType.ClassType == ClassType.Interface && !member.IsProtected)
+			if (member.IsPublic || calledType != null && calledType.Kind == TypeKind.Interface && !member.IsProtected)
 				return true;
 			if (member.DeclaringTypeDefinition != null) {
-				if (member.DeclaringTypeDefinition.ClassType == ClassType.Interface) 
+				if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) 
 					return IsAccessibleFrom (member.DeclaringTypeDefinition, calledType, currentMember, includeProtected);
 			
 				if (member.IsProtected && !(member.DeclaringTypeDefinition.IsProtectedOrInternal && !includeProtected))
@@ -2057,8 +2057,8 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var typeDefinition in ctx.GetTypes (namespaceName, StringComparer.Ordinal).Where (t => t.IsStatic && t.HasExtensionMethods)) {
 				foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod )) {
 					var pt= m.Parameters.First ().Type.Resolve (ctx);
-					string reflectionName = pt is ParameterizedType ?  ((ParameterizedType)pt).GenericType.ReflectionName : pt.ReflectionName;
-					if (baseTypes.Any (bt => (bt is ParameterizedType ?  ((ParameterizedType)bt).GenericType.ReflectionName : bt.ReflectionName) == reflectionName)) {
+					string reflectionName = pt is ParameterizedType ?  ((ParameterizedType)pt).GetDefinition ().ReflectionName : pt.ReflectionName;
+					if (baseTypes.Any (bt => (bt is ParameterizedType ?  ((ParameterizedType)bt).GetDefinition ().ReflectionName : bt.ReflectionName) == reflectionName)) {
 						result.AddMember (m);
 					}
 				}

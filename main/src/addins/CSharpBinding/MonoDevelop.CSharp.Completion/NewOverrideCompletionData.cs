@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp.Completion
 			var editor = ext.textEditorData;
 			var generator = CodeGenerator.CreateGenerator (editor);
 			bool isExplicit = false;
-			if (member.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+			if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				foreach (var m in type.Members) {
 					if (m.Name == member.Name && !m.ReturnType.Resolve (ext.ctx).Equals (member.ReturnType.Resolve (ext.ctx))) {
 						isExplicit = true;

@@ -190,7 +190,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		Accessibility accessibility = Accessibility.None;
 		public bool AnalyzeInvocation (RefactoringOptions options)
 		{
-			bool isInInterface = declaringType.ClassType == ClassType.Interface;
+			bool isInInterface = declaringType.Kind == TypeKind.Interface;
 			if (isInInterface) {
 	//			modifiers = MonoDevelop.Projects.Dom.Modifiers.None;
 			} else {

@@ -135,7 +135,7 @@ namespace MonoDevelop.CSharp.Resolver
 			var visitor = new ResolveVisitor (csResolver, parsedFile, navigator);
 			unit.AcceptVisitor (visitor, null);
 			var state = visitor.GetResolverStateBefore (node);
-			return state.LookupSimpleNamespaceOrTypeName (expression, new List<IType> (), false);
+			return state.LookupSimpleNameOrTypeName (expression, new List<IType> (), SimpleNameLookupMode.Expression);
 		}
 		
 		
@@ -146,11 +146,11 @@ namespace MonoDevelop.CSharp.Resolver
 		static string namespaceStr = GettextCatalog.GetString ("Namespace");		
 		static string GetString (IType type)
 		{
-			if (type.IsDelegate ())
+			if (type.Kind == TypeKind.Delegate)
 				return GettextCatalog.GetString ("Delegate");
-			if (type.IsEnum ())
+			if (type.Kind == TypeKind.Enum)
 				return GettextCatalog.GetString ("Enum");
-			if (type.GetDefinition () != null && type.GetDefinition ().ClassType == ClassType.Struct)
+			if (type.Kind == TypeKind.Struct)
 				return GettextCatalog.GetString ("Struct");
 			return GettextCatalog.GetString ("Class");
 		}
@@ -223,11 +223,10 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append(methodStr);
 					s.Append("</i></small>\n");
 					var allMethods = new List<IMethod> (mrr.Methods);
-					if (mrr.ExtensionMethods != null) {
-						foreach (var l in mrr.ExtensionMethods) {
-							allMethods.AddRange (l);
-						}
+					foreach (var l in mrr.GetExtensionMethods ()) {
+						allMethods.AddRange (l);
 					}
+					
 					var method = allMethods.FirstOrDefault ();
 					if (method != null) {
 						s.Append(ambience.GetString(method, settings));

@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				valid = searchedMembers.FirstOrDefault (n => n is string && n.ToString () == ns);
 			} else if (result is LocalResolveResult) {
 				var ns = ((LocalResolveResult)result).Variable;
-				valid = searchedMembers.FirstOrDefault (n => n is IVariable && ((IVariable)n).DeclarationRegion == ns.DeclarationRegion);
+				valid = searchedMembers.FirstOrDefault (n => n is IVariable && ((IVariable)n).Region == ns.Region);
 			} else if (result is TypeResolveResult) {
 				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
 			}

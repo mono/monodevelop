@@ -164,20 +164,20 @@ namespace MonoDevelop.CSharp
 			netToCSharpTypes ["System.Decimal"] = "decimal";
 			netToCSharpTypes ["System.String"] = "string";
 			
-			classTypes [ClassType.Class] = "class";
-			classTypes [ClassType.Enum] = "enum";
-			classTypes [ClassType.Interface] = "interface";
-			classTypes [ClassType.Struct] = "struct";
-			classTypes [ClassType.Delegate] = "delegate";
+			classTypes [TypeKind.Class] = "class";
+			classTypes [TypeKind.Enum] = "enum";
+			classTypes [TypeKind.Interface] = "interface";
+			classTypes [TypeKind.Struct] = "struct";
+			classTypes [TypeKind.Delegate] = "delegate";
 		}
 		
 		public CSharpAmbience () : base ("C#")
 		{
 		}
 		
-		static Dictionary<ClassType, string> classTypes = new Dictionary<ClassType, string> ();
+		static Dictionary<TypeKind, string> classTypes = new Dictionary<TypeKind, string> ();
 		
-		static string GetString (ClassType classType)
+		static string GetString (TypeKind classType)
 		{
 			string res;
 			if (classTypes.TryGetValue (classType, out res))
@@ -359,12 +359,12 @@ namespace MonoDevelop.CSharp
 			var def = type;
 			AppendModifiers (result, settings, def);
 			if (settings.IncludeKeywords)
-				result.Append (classTypes [def.ClassType]);
+				result.Append (classTypes [def.Kind]);
 			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
 				result.Append (settings.Markup (" "));
 			
 			
-			if (type.IsDelegate () && settings.ReformatDelegates && settings.IncludeReturnType) {
+			if (type.Kind == TypeKind.Delegate && settings.ReformatDelegates && settings.IncludeReturnType) {
 				var invoke = type.GetDelegateInvokeMethod ();
 				result.Append (GetTypeReferenceString (invoke.ReturnType, settings));
 				result.Append (settings.Markup (" "));

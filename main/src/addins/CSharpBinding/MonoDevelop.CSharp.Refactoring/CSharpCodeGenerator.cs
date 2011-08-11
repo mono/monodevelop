@@ -340,7 +340,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 			}
 			
-			if (options.ImplementingType.ClassType == ClassType.Interface) {
+			if (options.ImplementingType.Kind == TypeKind.Interface) {
 				result.Append (";");
 			} else {
 				AppendBraceStart (result, policy.MethodBraceStyle);
@@ -377,7 +377,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					AppendLine (result);
 				} else if (IsMonoTouchModelMember (options.Ctx, method)) {
 					AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
-				} else if (method.IsAbstract || !(method.IsVirtual || method.IsOverride) || method.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+				} else if (method.IsAbstract || !(method.IsVirtual || method.IsOverride) || method.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 					AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
 				} else {
 					AppendIndent (result);
@@ -431,7 +431,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static string GetModifiers (IType implementingType, IMember member)
 		{
 			StringBuilder result = new StringBuilder ();
-			if (member.IsPublic || (member.DeclaringType != null && member.DeclaringTypeDefinition.ClassType == ClassType.Interface)) {
+			if (member.IsPublic || (member.DeclaringType != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface)) {
 				result.Append ("public ");
 			} else if (member.IsProtectedAndInternal) {
 				result.Append ("protected internal ");
@@ -452,16 +452,16 @@ namespace MonoDevelop.CSharp.Refactoring
 		void AppendModifiers (StringBuilder result, CodeGenerationOptions options, IMember member)
 		{
 			AppendIndent (result);
-			if (options.ExplicitDeclaration || options.ImplementingType.ClassType == ClassType.Interface)
+			if (options.ExplicitDeclaration || options.ImplementingType.Kind == TypeKind.Interface)
 				return;
 			result.Append (GetModifiers (options.ImplementingType, member));
 			
 			bool isFromInterface = false;
-			if (member.DeclaringType != null && member.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+			if (member.DeclaringType != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				isFromInterface = true;
 				if (options.ImplementingType != null) {
 					foreach (var type in options.ImplementingType.GetAllBaseTypeDefinitions (options.Ctx)) {
-						if (type.ClassType == ClassType.Interface)
+						if (type.Kind == TypeKind.Interface)
 							continue;
 						if (type.Members.Any (m => m.Name == member.Name && member.EntityType == m.EntityType /* && DomMethod.ParameterListEquals (member.Parameters, m.Parameters)*/ )) {
 							isFromInterface = false;
@@ -497,13 +497,13 @@ namespace MonoDevelop.CSharp.Refactoring
 				int bodyStartOffset, bodyEndOffset;
 				AppendIndent (result);
 				result.Append ("get");
-				if (options.ImplementingType.ClassType == ClassType.Interface) {
+				if (options.ImplementingType.Kind == TypeKind.Interface) {
 					result.AppendLine (";");
 				} else {
 					AppendBraceStart (result, policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (options.Ctx, property)) {
 						AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
-					} else if (property.IsAbstract || property.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+					} else if (property.IsAbstract || property.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 						AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
 					} else {
 						AppendIndent (result);
@@ -524,13 +524,13 @@ namespace MonoDevelop.CSharp.Refactoring
 				int bodyStartOffset, bodyEndOffset;
 				AppendIndent (result);
 				result.Append ("set");
-				if (options.ImplementingType.ClassType == ClassType.Interface) {
+				if (options.ImplementingType.Kind == TypeKind.Interface) {
 					result.AppendLine (";");
 				} else {
 					AppendBraceStart (result, policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (options.Ctx, property)) {
 						AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
-					} else if (property.IsAbstract || property.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+					} else if (property.IsAbstract || property.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 						AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
 					} else {
 						AppendIndent (result);
