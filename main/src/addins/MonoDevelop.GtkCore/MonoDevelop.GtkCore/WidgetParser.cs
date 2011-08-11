@@ -79,7 +79,7 @@ namespace MonoDevelop.GtkCore
 			if (inherited) {
 				foreach (var bt in cls.BaseTypes) {
 					var bcls = bt.Resolve (ctx).GetDefinition ();
-					if (bcls != null && bcls.ClassType != ClassType.Interface)
+					if (bcls != null && bcls.Kind != TypeKind.Class)
 						CollectMembers (bcls, true, topType, properties, events);
 				}
 			}
@@ -210,7 +210,7 @@ namespace MonoDevelop.GtkCore
 
 			foreach (var bt in cls.BaseTypes) {
 				var bcls = bt.Resolve (ctx).GetDefinition ();
-				if (bcls != null && bcls.ClassType != ClassType.Interface)
+				if (bcls != null && bcls.Kind != TypeKind.Interface)
 					return IsToolboxWidget (bcls);
 			}
 

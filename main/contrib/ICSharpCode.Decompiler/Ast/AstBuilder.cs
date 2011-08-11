@@ -144,6 +144,16 @@ namespace ICSharpCode.Decompiler.Ast
 			astCompileUnit.AcceptVisitor(new OutputVisitor(outputFormatter, formattingPolicy), null);
 		}
 		
+		public void GenerateCode(ITextOutput output, CSharpFormattingOptions formattingPolicy)
+		{
+			if (!transformationsHaveRun)
+				RunTransformations();
+			
+			astCompileUnit.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true }, null);
+			var outputFormatter = new TextOutputFormatter(output);
+			astCompileUnit.AcceptVisitor(new OutputVisitor(outputFormatter, formattingPolicy), null);
+		}
+		
 		public void AddAssembly(AssemblyDefinition assemblyDefinition, bool onlyAssemblyLevel = false)
 		{
 			if (assemblyDefinition.Name.Version != null) {
