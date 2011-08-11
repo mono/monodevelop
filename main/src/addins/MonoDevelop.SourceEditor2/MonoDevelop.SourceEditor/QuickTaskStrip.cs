@@ -918,7 +918,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public QuickTaskStrip ()
 		{
-			ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Normal);
+			ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Map);
 			PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
 			Events |= EventMask.ButtonPressMask;
 		}
