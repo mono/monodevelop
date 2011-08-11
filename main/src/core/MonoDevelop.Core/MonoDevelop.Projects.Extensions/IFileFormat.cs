@@ -64,5 +64,7 @@ namespace MonoDevelop.Projects.Extensions
 		// Returns a list of warnings to show to the user about compatibility issues
 		// that may arise when exporting the object to this format.
 		IEnumerable<string> GetCompatibilityWarnings (object obj);
+		
+		bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework);
 	}
 }

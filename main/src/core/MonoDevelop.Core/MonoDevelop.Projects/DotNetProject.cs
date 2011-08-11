@@ -283,8 +283,8 @@ namespace MonoDevelop.Projects
 				if (!SupportsFramework (value))
 					throw new ArgumentException ("Project does not support framework '" + value.Id.ToString () +"'");
 				if (value == null)
-					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId ());
-				if (value.Id == targetFramework.Id)
+					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (FileFormat));
+				if (targetFramework != null && value.Id == targetFramework.Id)
 					return;
 				bool updateReferences = targetFramework != null;
 				targetFramework = value;
@@ -298,11 +298,35 @@ namespace MonoDevelop.Projects
 			get { return Runtime.SystemAssemblyService.DefaultRuntime; }
 		}
 		
+		/// <summary>
+		/// Gets the target framework for new projects
+		/// </summary>
+		/// <returns>
+		/// The default target framework identifier.
+		/// </returns>
 		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
 			return Services.ProjectService.DefaultTargetFramework.Id;
 		}
-
+		
+		/// <summary>
+		/// Returns the default framework for a given format
+		/// </summary>
+		/// <returns>
+		/// The default target framework for the format.
+		/// </returns>
+		/// <param name='format'>
+		/// A format
+		/// </param>
+		/// <remarks>
+		/// This method is used to determine what's the correct target framework for a project
+		/// deserialized using a specific format.
+		/// </remarks>
+		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
+		{
+			return GetDefaultTargetFrameworkId ();
+		}
+		
 		public IAssemblyContext AssemblyContext {
 			get {
 				if (composedAssemblyContext == null) {
@@ -735,7 +759,7 @@ namespace MonoDevelop.Projects
 			// Make sure the fx version is sorted out before saving
 			// to avoid changes in project references while saving 
 			if (targetFramework == null)
-				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkId ());
+				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (FileFormat));
 			base.OnSave (monitor);
 		}
 
@@ -825,7 +849,7 @@ namespace MonoDevelop.Projects
 			DotNetExecutionCommand cmd = new DotNetExecutionCommand (configuration.CompiledOutputName);
 			cmd.Arguments = configuration.CommandLineParameters;
 			cmd.WorkingDirectory = Path.GetDirectoryName (configuration.CompiledOutputName);
-			cmd.EnvironmentVariables = new Dictionary<string, string> (configuration.EnvironmentVariables);
+			cmd.EnvironmentVariables = configuration.GetParsedEnvironmentVariables ();
 			cmd.TargetRuntime = TargetRuntime;
 			cmd.UserAssemblyPaths = GetUserAssemblyPaths (configSel);
 			return cmd;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Platform;
 using System.Windows.Forms;
@@ -13,25 +14,19 @@ namespace MonoDevelop.Platform
     {
         public bool Run (AddFileDialogData data)
         {
+			Application.EnableVisualStyles ();
+			
+			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
             CustomAddFilesDialog adlg = new CustomAddFilesDialog();
             adlg.StartLocation = AddonWindowLocation.Bottom;
             adlg.BuildActions = data.BuildActions;
-            WinFormsRunner runner = new WinFormsRunner();
             bool result = false;
 			
 			SelectFileDialogHandler.SetCommonFormProperties (data, adlg.FileDialog);
 			
-            Timer t = new Timer();
-            t.Interval = 20;
             try
             {
-                t.Tick += delegate
-                {
-//                    MonoDevelop.Core.Gui.DispatchService.RunPendingEvents();
-                };
-                //t.Enabled = true;
-                WinFormsRoot root = new WinFormsRoot();
-                if (adlg.ShowDialog(root) == DialogResult.Cancel)
+                if (adlg.ShowDialog () == DialogResult.Cancel)
                     result = false;
                 else
                 {
@@ -45,10 +40,10 @@ namespace MonoDevelop.Platform
             }
             finally
             {
-                t.Enabled = false;
                 adlg.Dispose();
             }
-
+			
+			parentWindow.Present ();
             return result;
         }
     }

@@ -34,7 +34,7 @@ using System.Text;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	class MSBuildProject
+	public class MSBuildProject
 	{
 		public XmlDocument doc;
 		Dictionary<XmlElement,MSBuildObject> elemCache = new Dictionary<XmlElement,MSBuildObject> ();
@@ -364,7 +364,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 	
-	class MSBuildProperty: MSBuildObject
+	public class MSBuildProperty: MSBuildObject
 	{
 		public MSBuildProperty (XmlElement elem): base (elem)
 		{
@@ -384,7 +384,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 	
-	interface MSBuildPropertySet
+	public interface MSBuildPropertySet
 	{
 		MSBuildProperty GetProperty (string name);
 		IEnumerable<MSBuildProperty> Properties { get; }
@@ -481,7 +481,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 	
-	class MSBuildPropertyGroup: MSBuildObject, MSBuildPropertySet
+	public class MSBuildPropertyGroup: MSBuildObject, MSBuildPropertySet
 	{
 		Dictionary<string,MSBuildProperty> properties = new Dictionary<string,MSBuildProperty> ();
 		MSBuildProject parent;
@@ -594,7 +594,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 	}
 	
-	class MSBuildItem: MSBuildObject
+	public class MSBuildItem: MSBuildObject
 	{
 		public MSBuildItem (XmlElement elem): base (elem)
 		{
@@ -662,7 +662,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 	
-	class MSBuildItemGroup: MSBuildObject
+	public class MSBuildItemGroup: MSBuildObject
 	{
 		MSBuildProject parent;
 		

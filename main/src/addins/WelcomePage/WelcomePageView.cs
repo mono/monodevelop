@@ -146,62 +146,72 @@ namespace MonoDevelop.WelcomePage
 		
 		static void UpdateNewsXmlAsync ()
 		{
-			//check to see if the online news file has been modified since it was last downloaded
 			string netNewsXml = WelcomePageView.netNewsXml;
 			LoggingService.LogInfo ("Updating Welcome Page from '{0}'.", netNewsXml);
 			
-			var request = (HttpWebRequest) WebRequest.Create (netNewsXml);
+			//HACK: .NET blocks on DNS in BeginGetResponse, so use a threadpool thread
+			// see http://stackoverflow.com/questions/1232139#1232930
+			System.Threading.ThreadPool.QueueUserWorkItem ((state) => {
+				var request = (HttpWebRequest) WebRequest.Create (netNewsXml);
+				
+				try {
+					//check to see if the online news file has been modified since it was last downloaded
+					string localCachedNewsFile = NewsFile;
+					var localNewsXml = new FileInfo (localCachedNewsFile);
+					if (localNewsXml.Exists)
+						request.IfModifiedSince = localNewsXml.LastWriteTime;
+					
+					request.BeginGetResponse (HandleResponse, request);
+				} catch (Exception ex) {
+					LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
+					lock (updateLock)
+						isUpdating = false;
+				}
+			});
+		}
+
+		static void HandleResponse (IAsyncResult ar)
+		{
 			string localCachedNewsFile = NewsFile;
-			var localNewsXml = new FileInfo (localCachedNewsFile);
-			if (localNewsXml.Exists)
-				request.IfModifiedSince = localNewsXml.LastWriteTime;
-			
 			try {
-				request.BeginGetResponse (delegate (IAsyncResult ar) {
-					try {
-						var tempFile = localCachedNewsFile + ".temp";
-						//FIXME: limit this size in case open wifi hotspots provide bad data
-						var response = (HttpWebResponse) request.EndGetResponse (ar);
-						if (response.StatusCode == HttpStatusCode.OK) {
-							using (var fs = File.Create (tempFile))
-								response.GetResponseStream ().CopyTo (fs, 2048);
-						}
-						
-						//check the document is valid, might get bad ones from wifi hotspots etc
-						try {
-							var updateDoc = new XmlDocument ();
-							using (var reader = XmlReader.Create (tempFile, GetSafeReaderSettings ()))
-								updateDoc.Load (reader);
-							updateDoc.SelectSingleNode ("/links");
-						} catch (Exception ex) {
-							LoggingService.LogWarning ("Welcome Page news file is bad, keeping old version.", ex);
-							File.Delete (tempFile);
-							return;
-						}
-						
-						if (File.Exists (localCachedNewsFile))
-							File.Delete (localCachedNewsFile);
-						File.Move (tempFile, localCachedNewsFile);
-						
-						NewsUpdated (null, EventArgs.Empty);
-					} catch (System.Net.WebException wex) {
-						var httpResp = wex.Response as HttpWebResponse;
-						if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotModified) {
-							LoggingService.LogInfo ("Welcome Page already up-to-date.");
-						} else if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotFound) {
-							LoggingService.LogInfo ("Welcome Page update file not found.", netNewsXml);
-						} else {
-							LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", wex);
-						}
-					} catch (Exception ex) {
-						LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
-					} finally {
-						lock (updateLock)
-							isUpdating = false;
-					}
-				}, null);
+				var request = (HttpWebRequest) ar.AsyncState;
+				var tempFile = localCachedNewsFile + ".temp";
+				//FIXME: limit this size in case open wifi hotspots provide bad data
+				var response = (HttpWebResponse) request.EndGetResponse (ar);
+				if (response.StatusCode == HttpStatusCode.OK) {
+					using (var fs = File.Create (tempFile))
+						response.GetResponseStream ().CopyTo (fs, 2048);
+				}
+				
+				//check the document is valid, might get bad ones from wifi hotspots etc
+				try {
+					var updateDoc = new XmlDocument ();
+					using (var reader = XmlReader.Create (tempFile, GetSafeReaderSettings ()))
+						updateDoc.Load (reader);
+					updateDoc.SelectSingleNode ("/links");
+				} catch (Exception ex) {
+					LoggingService.LogWarning ("Welcome Page news file is bad, keeping old version.", ex);
+					File.Delete (tempFile);
+					return;
+				}
+				
+				if (File.Exists (localCachedNewsFile))
+					File.Delete (localCachedNewsFile);
+				File.Move (tempFile, localCachedNewsFile);
+				
+				NewsUpdated (null, EventArgs.Empty);
+			} catch (System.Net.WebException wex) {
+				var httpResp = wex.Response as HttpWebResponse;
+				if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotModified) {
+					LoggingService.LogInfo ("Welcome Page already up-to-date.");
+				} else if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotFound) {
+					LoggingService.LogInfo ("Welcome Page update file not found.", netNewsXml);
+				} else {
+					LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", wex);
+				}
 			} catch (Exception ex) {
 				LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
+			} finally {
 				lock (updateLock)
 					isUpdating = false;
 			}

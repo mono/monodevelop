@@ -27,6 +27,7 @@ using System;
 using System.Windows.Forms;
 using CustomControls.Controls;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Platform;
 
@@ -35,7 +36,10 @@ namespace MonoDevelop.Platform
 	public class OpenFileDialogHandler : IOpenFileDialogHandler
 	{		
 		public bool Run (OpenFileDialogData data)
-		{
+		{			
+			Application.EnableVisualStyles ();
+			
+			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
 			FileDialog fileDlg = null;
 			if (data.Action == Gtk.FileChooserAction.Open)
 				fileDlg = new OpenFileDialog ();
@@ -45,11 +49,12 @@ namespace MonoDevelop.Platform
 			var dlg = new CustomOpenFileDialog (fileDlg, data);
 				
 			SelectFileDialogHandler.SetCommonFormProperties (data, dlg.FileDialog);
-
+			
 			using (dlg) {
-                WinFormsRoot root = new WinFormsRoot ();
-                if (dlg.ShowDialog (root) == DialogResult.Cancel)
+                if (dlg.ShowDialog () == DialogResult.Cancel) {
+					parentWindow.Present ();
                     return false;
+				}
 	
 				FilePath[] paths = new FilePath [fileDlg.FileNames.Length];
 				for (int n = 0; n < fileDlg.FileNames.Length; n++)	
@@ -58,12 +63,13 @@ namespace MonoDevelop.Platform
 				
 				if (dlg.SelectedEncodingId != null)
 					data.Encoding = dlg.SelectedEncodingId;
-				if (dlg.SelectedViewer != null) {
+				if (dlg.SelectedViewer != null)
 					data.SelectedViewer = dlg.SelectedViewer;
-					data.CloseCurrentWorkspace = dlg.CloseCurrentWorkspace;
-				}
+				
+				data.CloseCurrentWorkspace = dlg.CloseCurrentWorkspace;
 			}
-
+			
+			parentWindow.Present ();
 			return true;
 		}
 	}

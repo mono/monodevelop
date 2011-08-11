@@ -4,6 +4,7 @@ using System.Text;
 using MonoDevelop.Components.Extensions;
 using System.Windows.Forms;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Platform
 {
@@ -11,6 +12,9 @@ namespace MonoDevelop.Platform
     {
         public bool Run(SelectFileDialogData data)
         {
+			Application.EnableVisualStyles ();
+			
+			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
             CommonDialog dlg = null;
             if (data.Action == Gtk.FileChooserAction.Open)
                 dlg = new OpenFileDialog();
@@ -24,11 +28,12 @@ namespace MonoDevelop.Platform
 			else
 				SetFolderBrowserProperties (data, dlg as FolderBrowserDialog);
 			
-
 			using (dlg) {
                 WinFormsRoot root = new WinFormsRoot();
-                if (dlg.ShowDialog(root) == DialogResult.Cancel)
+                if (dlg.ShowDialog(root) == DialogResult.Cancel) {
+					parentWindow.Present ();
                     return false;
+				}
 				
 				if (dlg is FileDialog) {
 					var fileDlg = dlg as FileDialog;
@@ -40,7 +45,8 @@ namespace MonoDevelop.Platform
 					var folderDlg = dlg as FolderBrowserDialog;
 					data.SelectedFiles = new [] { new FilePath (folderDlg.SelectedPath) };
 				}
-
+				
+				parentWindow.Present ();
 				return true;
 			}
         }

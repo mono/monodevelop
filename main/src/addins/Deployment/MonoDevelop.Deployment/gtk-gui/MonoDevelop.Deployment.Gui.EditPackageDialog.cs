@@ -21,7 +21,7 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.Label label5;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button okbutton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -108,7 +108,9 @@ namespace MonoDevelop.Deployment.Gui
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.entrySelector = null;
+			this.entrySelector = new global::MonoDevelop.Deployment.Gui.EntrySelectionTree ();
+			this.entrySelector.Events = ((global::Gdk.EventMask)(256));
+			this.entrySelector.Name = "entrySelector";
 			this.vbox4.Add (this.entrySelector);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.entrySelector]));
 			w8.Position = 1;
@@ -127,7 +129,9 @@ namespace MonoDevelop.Deployment.Gui
 			this.pageFiles.Spacing = 6;
 			this.pageFiles.BorderWidth = ((uint)(12));
 			// Container child pageFiles.Gtk.Box+BoxChild
-			this.fileListView = null;
+			this.fileListView = new global::MonoDevelop.Deployment.DeployFileListWidget ();
+			this.fileListView.Events = ((global::Gdk.EventMask)(256));
+			this.fileListView.Name = "fileListView";
 			this.pageFiles.Add (this.fileListView);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.pageFiles [this.fileListView]));
 			w10.Position = 0;
@@ -185,6 +189,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.Hide ();
 			this.notebook.SwitchPage += new global::Gtk.SwitchPageHandler (this.OnNotebookSwitchPage);
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
+			this.entrySelector.SelectionChanged += new global::System.EventHandler (this.OnEntrySelectorSelectionChanged);
 			this.okbutton.Clicked += new global::System.EventHandler (this.OnOkbuttonClicked);
 		}
 	}

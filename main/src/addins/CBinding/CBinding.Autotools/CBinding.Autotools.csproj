@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.CBinding.Autotools</AssemblyName>
     <RootNamespace>CBinding.Autotools</RootNamespace>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

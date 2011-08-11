@@ -36,7 +36,7 @@ using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	class MSBuildFileFormat: IFileFormat
+	public abstract class MSBuildFileFormat: IFileFormat
 	{
 		SlnFileFormat slnFileFormat = new SlnFileFormat ();
 		string productVersion;
@@ -160,7 +160,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (slnFileFormat.CanReadFile (file, this))
 				return slnFileFormat.ReadFile (file, this, monitor);
 			else
-				return MSBuildProjectService.LoadItem (monitor, file, null, null);
+				return MSBuildProjectService.LoadItem (monitor, file, null, null, null);
 		}
 
 		public List<FilePath> GetItemFiles (object obj)
@@ -245,6 +245,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return string.Empty;
 		}
+		
+		public abstract string Id { get; }
+		
+		public static MSBuildFileFormat GetFormatForToolsVersion (string toolsVersion)
+		{
+			switch (toolsVersion) {
+			case "2.0":
+				return new MSBuildFileFormatVS05 ();
+			case "3.5":
+				return new MSBuildFileFormatVS08 ();
+			case "4.0":
+				return new MSBuildFileFormatVS10 ();
+			}
+			throw new Exception ("Unknown ToolsVersion '" + toolsVersion + "'");
+		}
 	}
 	
 	class MSBuildFileFormatVS05: MSBuildFileFormat
@@ -260,6 +275,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public MSBuildFileFormatVS05 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
 		{
+		}
+		
+		public override string Id {
+			get { return "MSBuild05"; }
 		}
 	}
 	
@@ -282,6 +301,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildFileFormatVS08 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
 		{
 		}
+		
+		public override string Id {
+			get { return "MSBuild08"; }
+		}
 	}
 	
 	class MSBuildFileFormatVS10: MSBuildFileFormat
@@ -300,6 +323,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public MSBuildFileFormatVS10 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
 		{
+		}
+		
+		public override string Id {
+			get { return "MSBuild10"; }
 		}
 	}
 }

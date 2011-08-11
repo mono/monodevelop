@@ -57,6 +57,19 @@ namespace MonoDevelop.Projects
 				return base.SupportsFramework (framework);
 		}
 		
+		public override TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
+		{
+			switch (format.Id) {
+			case "MSBuild05":
+				return TargetFrameworkMoniker.NET_2_0;
+			case "MSBuild08":
+				return TargetFrameworkMoniker.NET_3_5;
+			case "MSBuild10":
+				return TargetFrameworkMoniker.NET_4_0;
+			}
+			return Services.ProjectService.DefaultTargetFramework.Id;
+		}
+		
 		protected override string GetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
 		{
 			if (CompileTarget == CompileTarget.Library)

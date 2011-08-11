@@ -118,6 +118,6 @@ namespace MonoDevelop.Projects.Extensions
 			return h;
 		}
 		
-		public abstract SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, string itemGuid);
+		public abstract SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string itemGuid);
 	}
 }

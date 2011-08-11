@@ -32,17 +32,20 @@ namespace MonoDevelop.Core.AddIns
 {
 	class UserDataMigrationNode: ExtensionNode
 	{
-		[NodeAttribute (Required=true)]
+		[NodeAttribute (Required=true, Description="The version of the source profile for this migration applies.")]
 		string sourceVersion;
 		
-		[NodeAttribute (Required=true)]
-		string sourcePath;
+		[NodeAttribute (Required=true, Description="The relative path of the data")]
+		string path;
 		
-		[NodeAttribute ()]
+		[NodeAttribute (Description="The relative path of the target, if it differs from the source")]
 		string targetPath;
 		
-		[NodeAttribute (Required=true)]
+		[NodeAttribute (Required=true, Description="The kind of the data to be migrated")]
 		UserDataKind kind;
+		
+		[NodeAttribute (Description="The kind of the target, if it differs from the source")]
+		string targetKind;
 		
 		[NodeAttribute (Name="handler")]
 		string handlerTypeName;
@@ -52,18 +55,26 @@ namespace MonoDevelop.Core.AddIns
 		}
 		
 		public FilePath SourcePath {
-			get { return FileService.MakePathSeparatorsNative (sourcePath); }
+			get { return FileService.MakePathSeparatorsNative (path); }
 		}
 		
 		public FilePath TargetPath {
 			get {
 				return FileService.MakePathSeparatorsNative (
-					string.IsNullOrEmpty (targetPath)? sourcePath : targetPath);
+					string.IsNullOrEmpty (targetPath)? path : targetPath);
 			}
 		}
 		
-		public UserDataKind Kind {
+		public UserDataKind SourceKind {
 			get { return kind; }
+		}
+		
+		public UserDataKind TargetKind {
+			get {
+				return string.IsNullOrEmpty (targetKind)
+					? kind
+					: (UserDataKind) Enum.Parse (typeof (UserDataKind), targetKind);
+			}
 		}
 		
 		public IUserDataMigrationHandler GetHandler ()
@@ -74,4 +85,3 @@ namespace MonoDevelop.Core.AddIns
 		}
 	}
 }
-

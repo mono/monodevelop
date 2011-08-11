@@ -40,14 +40,13 @@ namespace MonoDevelop.SourceEditor
 		
 		static AutoSave ()
 		{
-			if (!Directory.Exists (autoSavePath)) {
-				try {
+			try {
+				if (!Directory.Exists (autoSavePath))
 					Directory.CreateDirectory (autoSavePath);
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't create auto save path:" + autoSavePath +". Auto save is disabled.", e);
-					autoSaveEnabled = false;
-					return;
-				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't create auto save path:" + autoSavePath +". Auto save is disabled.", e);
+				autoSaveEnabled = false;
+				return;
 			}
 			autoSaveEnabled = true;
 			StartAutoSaveThread ();

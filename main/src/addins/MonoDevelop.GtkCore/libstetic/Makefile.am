@@ -135,6 +135,7 @@ FILES =  \
 	wrapper/MessageDialog.cs \
 	wrapper/Misc.cs \
 	wrapper/Notebook.cs \
+	wrapper/NotifyWorkaround.cs \
 	wrapper/Object.cs \
 	wrapper/OptionMenu.cs \
 	wrapper/Paned.cs \

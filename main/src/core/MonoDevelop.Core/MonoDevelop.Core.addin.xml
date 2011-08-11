@@ -6,8 +6,8 @@
        description = "Provides the core services of the MonoDevelop platform"
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "2.6"
-       compatVersion = "2.6">
+       version     = "2.7"
+       compatVersion = "2.7">
        
 	<ConditionType id="PackageInstalled" type="MonoDevelop.Core.AddIns.PackageInstalledCondition" />
 	<ConditionType id="PackageNotInstalled" type="MonoDevelop.Core.AddIns.PackageNotInstalledCondition" />
@@ -172,10 +172,15 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
-		<Migration sourceVersion="2.4" kind="Config" sourcePath="mono-runtimes.xml" />
-		<Migration sourceVersion="2.4" kind="UserData" sourcePath="DefaultPolicies.xml" targetPath="Policies/Default.mdpolicy.xml" />
+		<!-- 2.4 -->
+		<Migration sourceVersion="2.4" kind="Config" path="mono-runtimes.xml" />
+		<Migration sourceVersion="2.4" kind="UserData" path="DefaultPolicies.xml" targetPath="Policies/Default.mdpolicy.xml" />
 		<!-- the following file belongs to the instrumentation viewer but it's not an addin so can't register for migrations -->
-		<Migration sourceVersion="2.4" kind="Config" sourcePath="monitor-views.xml" />
+		<Migration sourceVersion="2.4" kind="Config" path="monitor-views.xml" />
+		<!-- 2.6 -->
+		<Migration sourceVersion="2.6" kind="Config" targetKind="LocalConfig" path="mono-runtimes.xml" />
+		<Migration sourceVersion="2.6" kind="UserData" path="Policies" isDirectory="true" />
+		<Migration sourceVersion="2.6" kind="Config" path="monitor-views.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/Applications">

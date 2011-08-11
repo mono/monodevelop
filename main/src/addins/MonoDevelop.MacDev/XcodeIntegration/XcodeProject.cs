@@ -28,6 +28,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
+
 
 namespace MonoDevelop.MacDev.XcodeIntegration
 {
@@ -37,7 +39,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		PBXProject project;
 		List<PBXFileReference> files;
 		List<PBXBuildFile> sources;
-		PBXGroup group;
+		PBXGroup rootGroup;
+		List<PBXGroup> groups;
 		PBXFileReference target;
 		PBXNativeTarget nativeTarget;
 		XCConfigurationList nativeConfigurationList;
@@ -48,22 +51,31 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		PBXResourcesBuildPhase resourcesBuildPhase;
 		PBXSourcesBuildPhase sourcesBuildPhase;
 
+		public PBXGroup RootGroup {
+			get {
+				return rootGroup;
+			}
+		}
+		
 		public XcodeProject (string name, string sdkRoot, string configName)
 		{
 			this.name = name;
-			this.group = new PBXGroup ("CustomTemplate");
+			rootGroup = new PBXGroup ("CustomTemplate");
 			this.frameworksBuildPhase = new PBXFrameworksBuildPhase ();
 			this.resourcesBuildPhase = new PBXResourcesBuildPhase ();
 			this.sourcesBuildPhase = new PBXSourcesBuildPhase ();
 			this.files = new List<PBXFileReference> ();
 			this.sources = new List<PBXBuildFile> ();
+			this.groups = new List<PBXGroup> ();
+			this.groups.Add (rootGroup);
+			
 			this.target = new PBXFileReference (name, string.Format ("{0}.app", name), "BUILT_PRODUCTS_DIR");
 			this.nativeConfigurationList = new XCConfigurationList ();
 			this.projectConfigurationList = new XCConfigurationList ();
 			this.nativeBuildConfiguration = new XCBuildConfiguration (configName);
 			this.projectBuildConfiguration = new XCBuildConfiguration (configName);
 			this.nativeTarget = new PBXNativeTarget (name, nativeConfigurationList, target);
-			this.project = new PBXProject (projectConfigurationList, group);
+			this.project = new PBXProject (projectConfigurationList, rootGroup);
 
 			nativeBuildConfiguration.AddSetting ("ALWAYS_SEARCH_USER_PATHS", "NO");
 			nativeBuildConfiguration.AddSetting ("COPY_PHASE_STRIP", "NO");
@@ -87,7 +99,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 			this.projectConfigurationList.AddBuildConfiguration (projectBuildConfiguration);
 
-			this.group.AddChild (this.target);
+			this.rootGroup.AddChild (this.target);
 			
 			this.nativeTarget.AddBuildPhase (frameworksBuildPhase);
 			this.nativeTarget.AddBuildPhase (sourcesBuildPhase);
@@ -99,21 +111,21 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		public string Name { get { return name; } }
 
-		PBXBuildFile AddFile (string name, string path, string tree)
+		PBXBuildFile AddFile (string name, string path, string tree, PBXGroup grp = null)
 		{
 			var fileref = new PBXFileReference (name, path, tree);
 			var buildfile = new PBXBuildFile (fileref);
 
 			files.Add (fileref);
 			sources.Add (buildfile);
-			group.AddChild (fileref);
+			(grp ?? this.rootGroup).AddChild (fileref);
 
 			return buildfile;
 		}
 
-		void AddResource (string name, string path)
+		public void AddResource (string name, string path, PBXGroup grp = null)
 		{
-			resourcesBuildPhase.AddResource (AddFile (name, path, "\"<group>\""));
+			resourcesBuildPhase.AddResource (AddFile (name, path, "\"<group>\"", grp));
 		}
 
 		public void AddPlist (string name)
@@ -122,15 +134,46 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			files.Add (fileref);
 		}
 
-		public void AddSource (string name)
+		public void AddSource (string name, PBXGroup grp = null)
 		{
 			//sourcesBuildPhase.AddSource (AddFile (Path.GetFileName (name), Path.GetDirectoryName (name), "\"<group>\""));
-			sourcesBuildPhase.AddSource (AddFile (name, name, "\"<group>\""));
+			sourcesBuildPhase.AddSource (AddFile (name, name, "\"<group>\"", grp));
 		}
-
-		public void AddResource (string name)
+		
+		public PBXGroup AddGroup (PBXGroup parent, string name)
 		{
-			AddResource (name, name);
+			var result = new PBXGroup (name);
+			parent.AddChild (result);
+			groups.Insert (0, result);
+			return result;
+		}
+		
+		public PBXGroup AddGroup (string name)
+		{
+			var result = new PBXGroup (name);
+			this.rootGroup.AddChild (result);
+			groups.Insert (0, result);
+			return result;
+		}
+		
+		public PBXGroup GetGroup (string name)
+		{
+			return groups.FirstOrDefault (g => g.Name == name);
+		}
+		
+		public PBXGroup GetGroup (PBXGroup parent, string name)
+		{
+			foreach (var obj in parent) {
+				var grp = obj as PBXGroup;
+				if (grp != null && grp.Name ==name)
+					return grp;
+			}
+			return null;
+		}
+		
+		public void AddResource (string name, PBXGroup grp = null)
+		{
+			AddResource (name, name, grp);
 		}
 		
 		public void AddResourceDirectory (string name)
@@ -179,7 +222,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.Append ("/* End PBXFrameworksBuildPhase section */\n\n");
 
 			sb.Append ("/* Begin PBXGroup section */\n");
-			sb.AppendFormat ("		{0}\n", group);
+			foreach (var grp in groups)
+				sb.AppendFormat ("		{0}\n", grp);
 			sb.Append ("/* End PBXGroup section */\n\n");
 
 			sb.Append ("/* Begin PBXNativeTarget section */\n");
@@ -211,7 +255,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.Append ("	};\n");
 			sb.AppendFormat ("	rootObject = {0};\n", project.Token);
 			sb.Append ("}");
-		
 			return sb.ToString ();
 		}
 	}

@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using System.IO;
 using System.Collections.Generic;
 using System.Xml;
+using System.Linq;
 
 
 namespace MonoDevelop.Ide.Templates
@@ -128,12 +129,13 @@ namespace MonoDevelop.Ide.Templates
 			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, pname);
 			project.Name = pname;
 			
-			if (project is DotNetProject) {
-				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.CanWrite (item))
-					TryFixingFramework (policyParent.ParentSolution.FileFormat, (DotNetProject)project);
-
+			var dnp = project as DotNetProject;
+			if (dnp != null) {
+				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.SupportsFramework (dnp.TargetFramework)) {
+					SetClosestSupportedTargetFramework (policyParent.ParentSolution.FileFormat, dnp);
+				}
 				foreach (ProjectReference projectReference in references)
-					((DotNetProject)project).References.Add (projectReference);
+					dnp.References.Add (projectReference);
 			}
 
 			foreach (SingleFileDescriptionTemplate resourceTemplate in resources) {
@@ -147,7 +149,6 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 
-
 			foreach (FileDescriptionTemplate fileTemplate in files) {
 				try {
 					fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
@@ -157,21 +158,30 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 		}
-
-		public void TryFixingFramework (FileFormat format, DotNetProject item)
+		
+		static void SetClosestSupportedTargetFramework (FileFormat format, DotNetProject project)
 		{
-			// If the solution format can't write this project it may be due to an unsupported
-			// framework. Try finding a compatible framework.
-
-			TargetFramework curFx = item.TargetFramework;
-			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-				if (!item.TargetRuntime.IsInstalled (fx))
-					continue;
-				item.TargetFramework = fx;
-				if (format.CanWrite (item))
-					return;
-			}
-			item.TargetFramework = curFx;
+			// If the solution format can't write this project due to an unsupported framework, try finding the
+			// closest valid framework. DOn't worry about whether it's installed, that's up to the user to correct.
+			TargetFramework curFx = project.TargetFramework;
+			var candidates = Runtime.SystemAssemblyService.GetTargetFrameworks ()
+				.Where (fx =>
+					//only frameworks with the same ID, else version comparisons are meaningless
+					fx.Id.Identifier == curFx.Id.Identifier &&
+					//don't consider profiles, only full frameworks
+					fx.Id.Profile == null &&
+					//and the project and format must support the framework
+					project.SupportsFramework (fx) && format.SupportsFramework (fx))
+					//FIXME: string comparisons aren't a valid way to compare profiles, but it works w/released .NET versions
+				.OrderBy (fx => fx.Id.Version)
+				.ToList ();
+			
+			TargetFramework newFx =
+				candidates.FirstOrDefault (fx => string.CompareOrdinal (fx.Id.Version, curFx.Id.Version) > 0)
+				 ?? candidates.LastOrDefault ();
+			
+			if (newFx != null)
+				project.TargetFramework = newFx;
 		}
 	}
 }

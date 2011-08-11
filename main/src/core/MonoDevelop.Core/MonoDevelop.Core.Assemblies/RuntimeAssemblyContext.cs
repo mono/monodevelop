@@ -40,7 +40,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		protected override void Initialize ()
 		{
-			runtime.Initialize ();
+			runtime.EnsureInitialized ();
 		}
 		
 		public override bool AssemblyIsInGac (string aname)

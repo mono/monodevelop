@@ -137,8 +137,9 @@ using Npgsql;
 									ColumnSchema column = new ColumnSchema (this, table);
 									column.Name = r.GetString (0);
 									column.DataTypeName = r.GetString (3);
-									column.IsNullable = r.GetBoolean (1);
+									column.IsNullable = !r.GetBoolean (1);
 									column.DefaultValue = r.IsDBNull (4) ? null : r.GetString (4);
+									column.HasDefaultValue = !r.IsDBNull (4);
 									// TODO: fill column.Definition
 									columns.Add (column);
 								}

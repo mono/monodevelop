@@ -40,13 +40,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	class XcodeSyncedContent : XcodeSyncedItem
 	{
 		FilePath targetRelative, source;
-		bool isPage;
+		bool isInterfaceDefinition;
 		
 		public XcodeSyncedContent (ProjectFile p)
 		{
 			this.targetRelative = p.ProjectVirtualPath;
 			this.source = p.FilePath;
-			isPage = p.BuildAction == BuildAction.Page;
+			isInterfaceDefinition = p.BuildAction == BuildAction.InterfaceDefinition;
 		}
 		
 		public override bool NeedsSyncOut (XcodeSyncContext context)
@@ -70,7 +70,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public override bool NeedsSyncBack (XcodeSyncContext context)
 		{
-			if (!isPage)
+			if (!isInterfaceDefinition)
 				return false;
 			string target = context.ProjectDir.Combine (targetRelative);
 			return File.GetLastWriteTime (target) > context.GetSyncTime (targetRelative);

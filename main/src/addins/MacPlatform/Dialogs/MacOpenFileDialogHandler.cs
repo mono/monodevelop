@@ -141,7 +141,6 @@ namespace MonoDevelop.MacIntegration
 				if (box.Count > 0) {
 					box.Layout ();
 					panel.AccessoryView = box.View;
-					box.Layout (box.View.Superview.Frame.Size);
 				}
 				
 				panel.SelectionDidChange += delegate(object sender, EventArgs e) {
@@ -158,7 +157,7 @@ namespace MonoDevelop.MacIntegration
 								closeSolutionButton.Hidden = false;
 							slnViewerSelected = true;
 						}
-						box.Layout (box.View.Superview.Frame.Size);
+						box.Layout ();
 					} 
 					if (encodingSelector != null)
 						encodingSelector.Enabled = !slnViewerSelected;

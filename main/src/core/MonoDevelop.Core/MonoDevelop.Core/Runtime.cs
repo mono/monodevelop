@@ -68,12 +68,17 @@ namespace MonoDevelop.Core
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
 			
+			//provides a development-time way to load addins that are being developed in a asperate solution
+			var devAddinDir = Environment.GetEnvironmentVariable ("MONODEVELOP_DEV_ADDINS");
+			if (devAddinDir != null && devAddinDir.Length == 0)
+				devAddinDir = null;
+			
 			try {
 				Counters.RuntimeInitialization.Trace ("Initializing Addin Manager");
 				AddinManager.Initialize (
 					UserProfile.Current.ConfigDir,
-					UserProfile.Current.LocalInstallDir,
-					UserProfile.Current.CacheDir);
+					devAddinDir ?? UserProfile.Current.LocalInstallDir.Combine ("Addins"),
+					devAddinDir ?? UserProfile.Current.CacheDir);
 				AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
 				
 				if (updateAddinRegistry)
@@ -81,7 +86,9 @@ namespace MonoDevelop.Core
 				setupService = new AddinSetupService (AddinManager.Registry);
 				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
 				
-				//have to do this after the addin service is initialized
+				PropertyService.Initialize ();
+				
+				//have to do this after the addin service and property service have initialized
 				if (UserDataMigrationService.HasSource) {
 					Counters.RuntimeInitialization.Trace ("Migrating User Data from MD " + UserDataMigrationService.SourceVersion);
 					UserDataMigrationService.StartMigration ();

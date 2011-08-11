@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using Gtk;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -76,19 +77,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			comboLanguage.Active = i / 2;
 			
 			comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
-			List<string> themes = new List<string> ();
 
-			// Code for getting the list of themes taken from f-spot
-			string homeDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-			string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
-			string [] search = {System.IO.Path.Combine (homeDir, ".themes"), "/usr/share/themes"};
-			foreach (string path in search)
-				if (System.IO.Directory.Exists (path))
-					foreach (string dir in System.IO.Directory.GetDirectories (path))
-						if (System.IO.File.Exists (System.IO.Path.Combine (dir, gtkrc)))
-							themes.Add (System.IO.Path.GetFileName (dir));
-			
+			FilePath homeDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+			string[] searchDirs = { homeDir.Combine (".themes"), Gtk.Rc.ThemeDir };
+			var themes = FindThemes (searchDirs).ToList ();
 			themes.Sort ();
+			
 			foreach (string t in themes)
 				comboTheme.AppendText (t);
 			
@@ -110,6 +104,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			toolbarCombobox.Active = Array.IndexOf (sizes, curSize);
 			
 			comboCompact.Active = (int) IdeApp.Preferences.WorkbenchCompactness;
+		}
+		
+		// Code for getting the list of themes based on f-spot
+		ICollection<string> FindThemes (params string[] themeDirs)
+		{
+			var themes = new HashSet<string> ();
+			string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
+			foreach (string themeDir in themeDirs) {
+				if (string.IsNullOrEmpty (themeDir) || !System.IO.Directory.Exists (themeDir))
+					continue;
+				foreach (FilePath dir in System.IO.Directory.GetDirectories (themeDir)) {
+					if (System.IO.File.Exists (dir.Combine (gtkrc)))
+						themes.Add (dir.FileName);
+				}
+			}
+			return themes;
 		}
 		
 		void FontOutputCheckboxToggled (object sender, EventArgs e)

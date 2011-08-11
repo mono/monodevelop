@@ -1090,7 +1090,7 @@ namespace MonoDevelop.Components.Commands
 			lastFocused = newFocused;
 			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
 			
-			if (win.IsRealized) {
+			if (win != null && win.IsRealized) {
 				RegisterTopWindow (win);
 				return win;
 			}

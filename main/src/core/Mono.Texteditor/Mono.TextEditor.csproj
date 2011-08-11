@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.TextEditor</AssemblyName>
     <RootNamespace>Mono.TextEditor</RootNamespace>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -278,6 +277,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Styles\GeditStyle.xml">
       <LogicalName>GeditStyle.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\CGSyntaxMode.xml">
+      <LogicalName>CGSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

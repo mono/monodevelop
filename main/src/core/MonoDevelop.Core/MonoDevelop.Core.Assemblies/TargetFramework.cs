@@ -55,8 +55,6 @@ namespace MonoDevelop.Core.Assemblies
 
 		internal bool RelationsBuilt;
 		
-		internal static int FrameworkCount;
-		internal int Index;
 		string corlibVersion;
 		TargetFrameworkToolsVersion toolsVersion;
 
@@ -66,12 +64,10 @@ namespace MonoDevelop.Core.Assemblies
 
 		internal TargetFramework ()
 		{
-			Index = FrameworkCount++;
 		}
 
 		internal TargetFramework (TargetFrameworkMoniker id)
 		{
-			Index = FrameworkCount++;
 			this.id = id;
 			this.name = id.Profile == null
 				? string.Format ("{0} {1}", id.Identifier, id.Version)
@@ -264,30 +260,41 @@ namespace MonoDevelop.Core.Assemblies
 					}
 				}
 				
-				if (!reader.ReadToFollowing ("File"))
-					throw new Exception ("No File element");
-				
 				var assemblies = new List<AssemblyInfo> ();
-				do {
-					var ainfo = new AssemblyInfo ();
-					assemblies.Add (ainfo);
-					if (reader.MoveToAttribute ("AssemblyName") && reader.ReadAttributeValue ())
-						ainfo.Name = reader.ReadContentAsString ();
-					if (string.IsNullOrEmpty (ainfo.Name))
-						throw new Exception ("Missing AssemblyName attribute");
-					if (reader.MoveToAttribute ("Version") && reader.ReadAttributeValue ())
-						ainfo.Version = reader.ReadContentAsString ();
-					if (reader.MoveToAttribute ("PublicKeyToken") && reader.ReadAttributeValue ())
-						ainfo.PublicKeyToken = reader.ReadContentAsString ();
-					if (reader.MoveToAttribute ("Culture") && reader.ReadAttributeValue ())
-						ainfo.Culture = reader.ReadContentAsString ();
-					if (reader.MoveToAttribute ("ProcessorArchitecture") && reader.ReadAttributeValue ())
-						ainfo.ProcessorArchitecture = (ProcessorArchitecture)
-							Enum.Parse (typeof (ProcessorArchitecture), reader.ReadContentAsString (), true);
-					if (reader.MoveToAttribute ("InGac") && reader.ReadAttributeValue ())
-						ainfo.InGac = reader.ReadContentAsBoolean ();
-				} while (reader.ReadToFollowing ("File"));
-				
+				if (reader.ReadToFollowing ("File")) {
+					do {
+						var ainfo = new AssemblyInfo ();
+						assemblies.Add (ainfo);
+						if (reader.MoveToAttribute ("AssemblyName") && reader.ReadAttributeValue ())
+							ainfo.Name = reader.ReadContentAsString ();
+						if (string.IsNullOrEmpty (ainfo.Name))
+							throw new Exception ("Missing AssemblyName attribute");
+						if (reader.MoveToAttribute ("Version") && reader.ReadAttributeValue ())
+							ainfo.Version = reader.ReadContentAsString ();
+						if (reader.MoveToAttribute ("PublicKeyToken") && reader.ReadAttributeValue ())
+							ainfo.PublicKeyToken = reader.ReadContentAsString ();
+						if (reader.MoveToAttribute ("Culture") && reader.ReadAttributeValue ())
+							ainfo.Culture = reader.ReadContentAsString ();
+						if (reader.MoveToAttribute ("ProcessorArchitecture") && reader.ReadAttributeValue ())
+							ainfo.ProcessorArchitecture = (ProcessorArchitecture)
+								Enum.Parse (typeof (ProcessorArchitecture), reader.ReadContentAsString (), true);
+						if (reader.MoveToAttribute ("InGac") && reader.ReadAttributeValue ())
+							ainfo.InGac = reader.ReadContentAsBoolean ();
+					} while (reader.ReadToFollowing ("File"));
+				} else {
+					var files = System.IO.Directory.GetFiles (dir, "*.dll");
+					foreach (var f in files) {
+						try {
+							var an = SystemAssemblyService.GetAssemblyNameObj (dir.Combine (f));
+							var ainfo = new AssemblyInfo ();
+							ainfo.Update (an);
+							assemblies.Add (ainfo);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error reading name for assembly '{0}' in framework '{1}':\n{2}",
+								f, fx.Id, ex.ToString ());
+						}
+					}
+				}
 				fx.Assemblies = assemblies.ToArray ();
 			}
 			

@@ -57,7 +57,7 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonBack;
 		private global::Gtk.Button buttonNext;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -187,7 +187,9 @@ namespace MonoDevelop.Deployment.Gui
 			w12.Expand = false;
 			w12.Fill = false;
 			// Container child pageSelectProject.Gtk.Box+BoxChild
-			this.entryTree = null;
+			this.entryTree = new global::MonoDevelop.Deployment.Gui.EntrySelectionTree ();
+			this.entryTree.Events = ((global::Gdk.EventMask)(256));
+			this.entryTree.Name = "entryTree";
 			this.pageSelectProject.Add (this.entryTree);
 			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.pageSelectProject [this.entryTree]));
 			w13.Position = 3;

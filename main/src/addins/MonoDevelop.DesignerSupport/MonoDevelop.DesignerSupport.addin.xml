@@ -7,15 +7,15 @@
        description = "Supporting services and pads for visual design tools."
 	   category    = "MonoDevelop Core"
        flags = "Hidden"
-       version     = "2.6">
+       version     = "2.7">
 	
 	<Runtime>
 		<Import assembly = "MonoDevelop.DesignerSupport.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.6"/>
-		<Addin id="Ide" version="2.6"/>
+		<Addin id="Core" version="2.7"/>
+		<Addin id="Ide" version="2.7"/>
 	</Dependencies>
 
 	<!-- Extension points -->
@@ -142,6 +142,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
-		<Migration sourceVersion="2.4" kind="LocalConfig" sourcePath="Toolbox.xml" />
+		<!-- 2.4 -->
+		<Migration sourceVersion="2.4" kind="LocalConfig" path="Toolbox.xml" />
+		<!-- 2.6 -->
+		<Migration sourceVersion="2.6" kind="LocalConfig" path="Toolbox.xml" />
 	</Extension>
 </Addin>

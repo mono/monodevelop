@@ -206,10 +206,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		public EventHandler<PObjectEventArgs> Added;
+		
+		protected virtual void OnAddedd (PObjectEventArgs e)
+		{
+			var handler = this.Added;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		public void Add (string key, PObject value)
 		{
 			dict.Add (key, value);
 			order.Add (key);
+			OnAddedd (new PObjectEventArgs (value));
 		}
 		
 		public int Count {
@@ -243,11 +253,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			return dict.ContainsKey (name);
 		}
+		
+		public EventHandler<PObjectEventArgs> Removed;
+		
+		protected virtual void OnRemoved (PObjectEventArgs e)
+		{
+			var handler = this.Removed;
+			if (handler != null)
+				handler (this, e);
+		}
 
 		public bool Remove (string key)
 		{
-			if (dict.Remove (key)) {
+			PObject obj;
+			if (dict.TryGetValue (key, out obj)) {
+				dict.Remove (key);
 				order.Remove (key);
+				OnRemoved (new PObjectEventArgs (obj));
 				return true;
 			}
 			return false;
@@ -413,6 +435,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var result = Get<PString> (key);
 			if (result == null) {
 				this[key] = result = new PString (value);
+				OnAddedd (new PObjectEventArgs (result));
 				QueueRebuild ();
 				return;
 			}
@@ -476,11 +499,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 			list = new List<PObject> ();
 		}
 		
+		public EventHandler<PObjectEventArgs> Added;
+		
+		protected virtual void OnAddedd (PObjectEventArgs e)
+		{
+			var handler = this.Added;
+			if (handler != null)
+				handler (this, e);
+		}
 		
 		public void Add (PObject obj)
 		{
 			obj.Parent = this;
 			list.Add (obj);
+			OnAddedd (new PObjectEventArgs (obj));
 		}
 
 		public void Replace (PObject oldObj, PObject newObject)
@@ -489,15 +521,27 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (list[i] == oldObj) {
 					newObject.Parent = this;
 					list[i] = newObject;
+					OnRemoved (new PObjectEventArgs (oldObj));
+					OnAddedd (new PObjectEventArgs (newObject));
 					QueueRebuild ();
 					break;
 				}
 			}
 		}
 		
+		public EventHandler<PObjectEventArgs> Removed;
+		
+		protected virtual void OnRemoved (PObjectEventArgs e)
+		{
+			var handler = this.Removed;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		public void Remove (PObject obj)
 		{
-			list.Remove (obj);
+			if (list.Remove (obj))
+				OnRemoved (new PObjectEventArgs (obj));
 		}
 
 		public void Clear ()
@@ -720,6 +764,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 			base.RenderValue (widget, renderer);
+		}
+	}
+	
+	[Serializable]
+	public sealed class PObjectEventArgs : EventArgs
+	{
+		public PObject PObject {
+			get;
+			private set;
+		}
+		
+		public PObjectEventArgs (PObject pObject)
+		{
+			this.PObject = pObject;
 		}
 	}
 }

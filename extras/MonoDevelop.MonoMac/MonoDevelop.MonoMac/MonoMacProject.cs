@@ -42,7 +42,7 @@ using MonoDevelop.MacDev.NativeReferences;
 
 namespace MonoDevelop.MonoMac
 {
-	public class MonoMacProject : DotNetProject, IXcodeTrackedProject, INativeReferencingProject
+	public class MonoMacProject : DotNetAssemblyProject, IXcodeTrackedProject, INativeReferencingProject
 	{
 		public override string ProjectType {
 			get { return "MonoMac"; }

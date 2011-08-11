@@ -8,7 +8,6 @@
     <ProjectGuid>{8A04FF99-5DFE-4E3D-A24F-72A621C8DDC6}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>mdtool</RootNamespace>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AssemblyName>mdtool</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">

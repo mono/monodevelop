@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects
 		public const string Content = "Content"; //Exclude
 		public const string ApplicationDefinition = "ApplicationDefinition";
 		public const string Page = "Page";
+		public const string InterfaceDefinition = "InterfaceDefinition";
 		public const string Resource = "Resource";
 		public const string SplashScreen = "SplashScreen";
 		public const string EntityDeploy = "EntityDeploy";
@@ -72,7 +73,7 @@ namespace MonoDevelop.Projects
 					Content,
 					EmbeddedResource,
 					ApplicationDefinition,
-					Page,
+					InterfaceDefinition,
 					Resource,
 //					SplashScreen,
 //					EntityDeploy
@@ -88,6 +89,7 @@ namespace MonoDevelop.Projects
 			translations[Content] = GettextCatalog.GetString ("Content");
 			translations[ApplicationDefinition] = GettextCatalog.GetString ("Application definition");
 			translations[Page] = GettextCatalog.GetString ("Page");
+			translations[InterfaceDefinition] = GettextCatalog.GetString ("Interface definition");
 			translations[Resource] = GettextCatalog.GetString ("Resource");
 			translations[SplashScreen] = GettextCatalog.GetString ("Splash screen");
 			translations[EntityDeploy] = GettextCatalog.GetString ("Entity deploy");

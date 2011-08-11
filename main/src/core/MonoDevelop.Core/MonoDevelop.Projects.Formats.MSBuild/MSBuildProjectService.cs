@@ -84,18 +84,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			};
 		}
 		
-		public static SolutionEntityItem LoadItem (IProgressMonitor monitor, string fileName, string typeGuid, string itemGuid)
+		public static SolutionEntityItem LoadItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
 			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (fileName, typeGuid))
-					return node.LoadSolutionItem (monitor, fileName, itemGuid);
+					return node.LoadSolutionItem (monitor, fileName, expectedFormat, itemGuid);
 			}
 			
 			if (string.IsNullOrEmpty (typeGuid) && IsProjectSubtypeFile (fileName)) {
 				typeGuid = LoadProjectTypeGuids (fileName);
 				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 					if (node.CanHandleFile (fileName, typeGuid))
-						return node.LoadSolutionItem (monitor, fileName, itemGuid);
+						return node.LoadSolutionItem (monitor, fileName, expectedFormat, itemGuid);
 				}
 			}
 
@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			yield return genericItemTypeNode;
 		}
 		
-		static IEnumerable<DotNetProjectSubtypeNode> GetItemSubtypeNodes ()
+		internal static IEnumerable<DotNetProjectSubtypeNode> GetItemSubtypeNodes ()
 		{
 			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ItemTypesExtensionPath)) {
 				if (node is DotNetProjectSubtypeNode)
@@ -279,7 +279,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return file.ToRelative (basePath);
 		}
 
-		internal static string FromMSBuildPath (string basePath, string relPath)
+		public static string FromMSBuildPath (string basePath, string relPath)
 		{
 			string res;
 			FromMSBuildPath (basePath, relPath, out res);
@@ -316,56 +316,69 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return false;
 			}
 			
-			if (basePath != null)
-				path = Path.Combine (basePath, path);
+			bool isRooted = Path.IsPathRooted (path);
 			
+			if (!isRooted && basePath != null) {
+				path = Path.Combine (basePath, path);
+				isRooted = Path.IsPathRooted (path);
+			}
+			
+			// Return relative paths as-is, we can't do anything else with them
+			if (!isRooted) {
+				resultPath = FileService.NormalizeRelativePath (path);
+				return true;
+			}
+			
+			// If we're on Windows, don't need to fix file casing.
+			if (Platform.IsWindows) {
+				resultPath = Path.GetFullPath (path);
+				return true;
+			}
+			
+			// If the path exists with the exact casing specified, then we're done
 			if (System.IO.File.Exists (path) || System.IO.Directory.Exists (path)){
 				resultPath = Path.GetFullPath (path);
 				return true;
 			}
-				
-			if (Path.IsPathRooted (path) && !Platform.IsWindows) {
-					
-				// Windows paths are case-insensitive. When mapping an absolute path
-				// we can try to find the correct case for the path.
-				
-				string[] names = path.Substring (1).Split ('/');
-				string part = "/";
-				
-				for (int n=0; n<names.Length; n++) {
-					string[] entries;
+			
+			// Not on Windows, file doesn't exist. That could mean the project was brought from Windows
+			// and the filename case in the project doesn't match the file on disk, because Windows is
+			// case-insensitive. Since we have an absolute path, search the directory for the file with
+			// the correct case.
+			string[] names = path.Substring (1).Split ('/');
+			string part = "/";
+			
+			for (int n=0; n<names.Length; n++) {
+				string[] entries;
 
-					if (names [n] == ".."){
-						if (part == "/")
-							return false; // Can go further back. It's not an existing file
-						part = Path.GetFullPath (part + "/..");
-						continue;
-					}
-					
-					entries = Directory.GetFileSystemEntries (part);
-					
-					string fpath = null;
-					foreach (string e in entries) {
-						if (string.Compare (Path.GetFileName (e), names[n], true) == 0) {
-							fpath = e;
-							break;
-						}
-					}
-					if (fpath == null) {
-						// Part of the path does not exist. Can't do any more checking.
-						part = Path.GetFullPath (part);
-						for (; n < names.Length; n++)
-							part += "/" + names[n];
-						resultPath = part;
-						return true;
-					}
-
-					part = fpath;
+				if (names [n] == ".."){
+					if (part == "/")
+						return false; // Can go further back. It's not an existing file
+					part = Path.GetFullPath (part + "/..");
+					continue;
 				}
-				resultPath = Path.GetFullPath (part);
-			} else {
-				resultPath = Path.GetFullPath (path);
+				
+				entries = Directory.GetFileSystemEntries (part);
+				
+				string fpath = null;
+				foreach (string e in entries) {
+					if (string.Compare (Path.GetFileName (e), names[n], true) == 0) {
+						fpath = e;
+						break;
+					}
+				}
+				if (fpath == null) {
+					// Part of the path does not exist. Can't do any more checking.
+					part = Path.GetFullPath (part);
+					for (; n < names.Length; n++)
+						part += "/" + names[n];
+					resultPath = part;
+					return true;
+				}
+
+				part = fpath;
 			}
+			resultPath = Path.GetFullPath (part);
 			return true;
 		}
 
@@ -676,10 +689,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, string itemGuid)
+		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string itemGuid)
 		{
 			MSBuildProjectHandler handler = new MSBuildProjectHandler (Guid, Import, itemGuid);
-			return handler.Load (monitor, fileName, null, null);
+			return handler.Load (monitor, fileName, expectedFormat, null, null);
 		}
 	}
 }

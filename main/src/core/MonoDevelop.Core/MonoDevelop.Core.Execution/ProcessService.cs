@@ -247,7 +247,7 @@ namespace MonoDevelop.Core.Execution
 			return null;
 		}
 		
-		public ExecutionCommand CreateCommand (string file)
+		public ProcessExecutionCommand CreateCommand (string file)
 		{
 			string f = file.ToLower ();
 			if (f.EndsWith (".exe") || f.EndsWith (".dll"))

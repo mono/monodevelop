@@ -50,7 +50,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		public override string ToString ()
 		{
-			return string.Format ("{0} = {{isa = {1}; name = {2}; path = {3}; sourceTree = {4}; }};", Token, Type, name, path, sourceTree);
+			return string.Format ("{0} = {{isa = {1}; name = {2}; path = {3}; sourceTree = {4}; }};", Token, Type, QuoteOnDemand (name), QuoteOnDemand (path), sourceTree);
 		}
 	}
 }

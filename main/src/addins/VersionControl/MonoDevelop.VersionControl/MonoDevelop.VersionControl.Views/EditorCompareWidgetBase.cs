@@ -1013,9 +1013,7 @@ namespace MonoDevelop.VersionControl.Views
 						}
 						
 						double start  = y *  Allocation.Height;
-						cr.Rectangle (0.5, 0.5 + curY, Allocation.Width, (start - curY));
-						cr.Color = new Cairo.Color (1, 1, 1);
-						cr.Fill ();
+						FillGradient (cr, 0.5 + curY, start - curY);
 						
 						curY = start;
 						double height = Math.Max (cr.LineWidth, count * Allocation.Height);
@@ -1025,26 +1023,50 @@ namespace MonoDevelop.VersionControl.Views
 						curY += height;
 					}
 					
-					cr.Rectangle (0.5, 0.5 + curY, Allocation.Width, Allocation.Height - curY);
-					cr.Color = new Cairo.Color (1, 1, 1);
-					cr.Fill ();
-
-					cr.Rectangle (1,
-					              Allocation.Height * adj.Value / adj.Upper + cr.LineWidth + 0.5,
-					              Allocation.Width - 2,
-					              Allocation.Height * (adj.PageSize / adj.Upper));
-					cr.Color = new Cairo.Color (0, 0, 0, 0.5);
-					cr.StrokePreserve ();
-
-					cr.Color = new Cairo.Color (0, 0, 0, 0.03);
-					cr.Fill ();
+					FillGradient (cr, 0.5 + curY, Allocation.Height - curY);
+					
+					DrawBar (cr, Allocation.Height * adj.Value / adj.Upper + cr.LineWidth + 0.5, Allocation.Height * (adj.PageSize / adj.Upper));
+					
 					cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
 					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 					cr.Stroke ();
 				}
 				return true;
 			}
-
+			
+			void FillGradient (Cairo.Context cr, double y, double h)
+			{
+				cr.Rectangle (0.5, y, Allocation.Width, h);
+				var grad = new Cairo.LinearGradient (0, y, Allocation.Width, y);
+				var col = (Mono.TextEditor.HslColor)Style.Base (StateType.Normal);
+				col.L *= 0.95;
+				grad.AddColorStop (0, col);
+				grad.AddColorStop (0.7, (Mono.TextEditor.HslColor)Style.Base (StateType.Normal));
+				grad.AddColorStop (1, col);
+				cr.Pattern = grad;
+				
+				cr.Fill ();
+			}
+			
+			void DrawBar (Cairo.Context cr, double y, double h)
+			{
+				const int barWidth = 8;
+				
+				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, 
+					0.5 + (Allocation.Width - barWidth) / 2,
+					y,
+					barWidth,
+					h,
+					barWidth / 2);
+				
+				var color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+				color.L = 0.5;
+				var c = (Cairo.Color)color;
+				c.A = 0.6;
+				cr.Color = c;
+				cr.Fill ();
+			}
+	
 			void IncPos(Mono.TextEditor.Utils.Hunk h, ref int pos)
 			{
 				pos += System.Math.Max (h.Inserted, h.Removed);

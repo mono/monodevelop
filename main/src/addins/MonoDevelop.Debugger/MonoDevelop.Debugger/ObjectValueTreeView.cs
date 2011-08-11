@@ -347,6 +347,8 @@ namespace MonoDevelop.Debugger
 			set { pinCol.Visible = value; }
 		}
 		
+		public bool RootPinAlwaysVisible { get; set; }
+		
 		public bool AllowExpanding {
 			get { return this.allowExpanding; }
 			set { this.allowExpanding = value; }
@@ -701,6 +703,8 @@ namespace MonoDevelop.Debugger
 				else
 					store.SetValue (it, LiveUpdateIconCol, noLiveIcon);
 			}
+			if (RootPinAlwaysVisible && (!hasParent && PinnedWatch ==null && AllowPinning))
+				store.SetValue (it, PinIconCol, "md-pin-up");
 			
 			if (val.HasChildren) {
 				// Add dummy node
@@ -936,7 +940,8 @@ namespace MonoDevelop.Debugger
 					if (!it.Equals (lastPinIter)) {
 						store.SetValue (it, PinIconCol, "md-pin-up");
 						CleanPinIcon ();
-						lastPinIter = it;
+						if (path.Depth > 1 || !RootPinAlwaysVisible)
+							lastPinIter = it;
 					}
 				}
 			}

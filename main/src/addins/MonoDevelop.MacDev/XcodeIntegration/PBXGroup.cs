@@ -30,18 +30,24 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.XcodeIntegration
 {
-	class PBXGroup : XcodeObject
+	public class PBXGroup : XcodeObject, IEnumerable<XcodeObject>
 	{
 		string name;
-		List<PBXFileReference> children;
+		List<XcodeObject> children;
+
+		public string Name {
+			get {
+				return name;
+			}
+		}
 
 		public PBXGroup (string name)
 		{
 			this.name = name;
-			this.children = new List<PBXFileReference> ();
+			this.children = new List<XcodeObject> ();
 		}
 
-		public void AddChild (PBXFileReference file)
+		public void AddChild (XcodeObject file)
 		{
 			this.children.Add (file);
 		}
@@ -57,11 +63,25 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			var sb = new StringBuilder ();
 
 			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\tchildren = (\n", Token, Type);
-			foreach (PBXFileReference file in children) 
-				sb.AppendFormat ("\t\t\t\t{0},\n", file.Token);
-			sb.AppendFormat ("\t\t\t);\n\t\t\tname = {0};\n\t\t\tsourceTree = \"<group>\";\n\t\t}};", name);
+			children.Sort ((x, y) => x.ToString ().CompareTo (y.ToString ()));
+			foreach (var child in children) 
+				sb.AppendFormat ("\t\t\t\t{0},\n", child.Token);
+			var quotedName = QuoteOnDemand (name);
+			sb.AppendFormat ("\t\t\t);\n\t\t\tname = {0};\n\t\t\tsourceTree = \"<group>\";\n\t\t}};", quotedName);
 		
 			return sb.ToString ();
 		}
+
+		#region IEnumerable implementation
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return ((System.Collections.IEnumerable)children).GetEnumerator ();
+		}
+
+		public IEnumerator<XcodeObject> GetEnumerator ()
+		{
+			return children.GetEnumerator ();
+		}
+		#endregion
 	}
 }

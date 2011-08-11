@@ -209,7 +209,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				return false;
 			return !(mimeType.StartsWith ("text/") || 
 			         mimeType == "image/x-xbitmap" || 
-			         mimeType == "image/x-xpixmap");
+			         mimeType == "image/x-xpixmap" ||
+				     mimeType.EndsWith ("+xml"));
 		}
 		
 		IEnumerable<string> GetFileNames (IProgressMonitor monitor, FilterOptions filterOptions)

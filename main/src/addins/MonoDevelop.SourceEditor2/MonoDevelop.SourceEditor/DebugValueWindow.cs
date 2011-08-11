@@ -89,7 +89,8 @@ namespace MonoDevelop.SourceEditor
 			tree.AllowAdding = false;
 			tree.AllowEditing = true;
 			tree.HeadersVisible = false;
-			tree.AllowPinning = false;
+			tree.AllowPinning = true;
+			tree.RootPinAlwaysVisible = true;
 			tree.PinnedWatch = watch;
 			DocumentLocation location = editor.Document.OffsetToLocation (offset);
 			tree.PinnedWatchLine = location.Line + 1;
@@ -102,13 +103,13 @@ namespace MonoDevelop.SourceEditor
 				Destroy ();
 			};
 			
-			tree.MotionNotifyEvent += HandleTreeMotionNotifyEvent;
+//			tree.MotionNotifyEvent += HandleTreeMotionNotifyEvent;
 			
 			sw.ShowAll ();
 			
-			pinWindow = new PinWindow (this);
-			pinWindow.SetPinned (false);
-			pinWindow.ButtonPressEvent += HandlePinWindowButtonPressEvent;
+//			pinWindow = new PinWindow (this);
+//			pinWindow.SetPinned (false);
+//			pinWindow.ButtonPressEvent += HandlePinWindowButtonPressEvent;
 			
 			tree.StartEditing += delegate {
 				Modal = true;
@@ -124,49 +125,49 @@ namespace MonoDevelop.SourceEditor
 			tree.CreatePinnedWatch (currentPinIter);
 		}
 		
-		[GLib.ConnectBefore]
-		void HandleTreeMotionNotifyEvent (object o, MotionNotifyEventArgs args)
-		{
-			PlacePinWindow ();
-		}
-		
-		protected override void OnSizeAllocated (Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
-			PlacePinWindow ();
-		}
-		
-		void PlacePinWindow ()
-		{
-			int mx, my;
-			ModifierType mm;
-			if (tree.BinWindow == null)
-				return;
-			tree.BinWindow.GetPointer (out mx, out my, out mm);
-			
-			int cx, cy;
-			TreePath path;
-			TreeViewColumn col;
-			if (!tree.GetPathAtPos (mx, my, out path, out col, out cx, out cy))
-				return;
-			
-			tree.Model.GetIter (out currentPinIter, path);
-			Rectangle cr = tree.GetCellArea (path, tree.Columns [1]);
-		
-			int ox, oy;
-			tree.BinWindow.GetOrigin (out ox, out oy);
-			
-			if (mx < cr.Right - 30) {
-				pinWindow.Hide ();
-				return;
-			}
-			
-			int x, y, w, h;
-			GetPosition (out x, out y);
-			GetSize (out w, out h);
-			pinWindow.Move (x + w, oy + cr.Y);
-			pinWindow.Show ();
-		}
+//		[GLib.ConnectBefore]
+//		void HandleTreeMotionNotifyEvent (object o, MotionNotifyEventArgs args)
+//		{
+//			PlacePinWindow ();
+//		}
+//		
+//		protected override void OnSizeAllocated (Rectangle allocation)
+//		{
+//			base.OnSizeAllocated (allocation);
+//			PlacePinWindow ();
+//		}
+//		
+//		void PlacePinWindow ()
+//		{
+//			int mx, my;
+//			ModifierType mm;
+//			if (tree.BinWindow == null)
+//				return;
+//			tree.BinWindow.GetPointer (out mx, out my, out mm);
+//			
+//			int cx, cy;
+//			TreePath path;
+//			TreeViewColumn col;
+//			if (!tree.GetPathAtPos (mx, my, out path, out col, out cx, out cy))
+//				return;
+//			
+//			tree.Model.GetIter (out currentPinIter, path);
+//			Rectangle cr = tree.GetCellArea (path, tree.Columns [1]);
+//		
+//			int ox, oy;
+//			tree.BinWindow.GetOrigin (out ox, out oy);
+//			
+//			if (mx < cr.Right - 30) {
+//				pinWindow.Hide ();
+//				return;
+//			}
+//			
+//			int x, y, w, h;
+//			GetPosition (out x, out y);
+//			GetSize (out w, out h);
+//			pinWindow.Move (x + w, oy + cr.Y);
+//			pinWindow.Show ();
+//		}
 		
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
 		{
