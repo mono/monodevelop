@@ -184,7 +184,7 @@ namespace CBinding.Parser
 			var klass = new DefaultTypeDefinition (content, "", item.File);
 			if (item is Class || item is Structure) {
 				klass.Region = new DomRegion ((int)item.Line, 1, FindFunctionEnd (contentLines, (int)item.Line-1) + 2, 1);
-				klass.ClassType = item is Class ? ClassType.Class : ClassType.Struct;
+				klass.Kind = item is Class ? TypeKind.Class : TypeKind.Struct;
 				foreach (LanguageItem li in pi.AllItems ()) {
 					if (klass.Equals (li.Parent) && FilePath.Equals (li.File, item.File))
 						AddLanguageItem (content, pi, klass, li, contentLines);
@@ -193,7 +193,7 @@ namespace CBinding.Parser
 			}
 			
 			klass.Region = new DomRegion ((int)item.Line, 1, (int)item.Line + 1, 1);
-			klass.ClassType = ClassType.Enum;
+			klass.Kind = TypeKind.Enum;
 			return klass;
 		}
 		
