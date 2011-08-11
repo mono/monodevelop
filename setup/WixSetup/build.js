@@ -34,6 +34,8 @@ if (build ("extras\\VersionControl.Subversion.Win32\\VersionControl.Subversion.W
     WScript.Quit(1);
 if (build ("extras\\MonoDevelop.Debugger.Win32\\MonoDevelop.Debugger.Win32.sln") != 0)
     WScript.Quit (1);
+if (build ("extras\\MonoDevelop.MonoDroid\\MonoDevelop.MonoDroid.sln") != 0)
+    WScript.Quit (1);
 
 // Copy support assemblies
 
@@ -81,6 +83,10 @@ WScript.Echo ("Setup successfully generated");
 
 function build (file)
 {
+	if (sh.run ("C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe /t:Clean " + MD_DIR + "\\" + file, 5, true) != 0) {
+		WScript.Echo ("Clean failed.\nCommand:\nC:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe " + MD_DIR + "\\" + file);
+		return 1;
+	}
 	if (sh.run ("C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe " + MD_DIR + "\\" + file, 5, true) != 0) {
 		WScript.Echo ("Build failed.\nCommand:\nC:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe " + MD_DIR + "\\" + file);
 		return 1;
