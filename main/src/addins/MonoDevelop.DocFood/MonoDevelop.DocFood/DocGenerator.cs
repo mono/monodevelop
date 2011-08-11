@@ -149,16 +149,16 @@ namespace MonoDevelop.DocFood
 			case EntityType.Property:
 				return "property";
 			case EntityType.TypeDefinition:
-				switch (((ITypeDefinition)member).ClassType) {
-				case ClassType.Class:
+				switch (((ITypeDefinition)member).Kind) {
+				case TypeKind.Class:
 					return "class";
-				case ClassType.Delegate:
+				case TypeKind.Delegate:
 					return "delegate";
-				case ClassType.Enum:
+				case TypeKind.Enum:
 					return "enum";
-				case ClassType.Interface:
+				case TypeKind.Interface:
 					return "interface";
-				case ClassType.Struct:
+				case TypeKind.Struct:
 					return "struct";
 				}
 				break;
@@ -394,20 +394,20 @@ namespace MonoDevelop.DocFood
 			}
 			if (member.DeclaringTypeDefinition != null) {
 				tags["DeclaringType"] = "<see cref=\"" + member.DeclaringTypeDefinition.ReflectionName + "\"/>";
-				switch (member.DeclaringTypeDefinition.ClassType) {
-				case ClassType.Class:
+				switch (member.DeclaringTypeDefinition.Kind) {
+				case TypeKind.Class:
 					tags["DeclaringTypeKind"] = "class";
 					break;
-				case ClassType.Delegate:
+				case TypeKind.Delegate:
 					tags["DeclaringTypeKind"] = "delegate";
 					break;
-				case ClassType.Enum:
+				case TypeKind.Enum:
 					tags["DeclaringTypeKind"] = "enum";
 					break;
-				case ClassType.Interface:
+				case TypeKind.Interface:
 					tags["DeclaringTypeKind"] = "interface";
 					break;
-				case ClassType.Struct:
+				case TypeKind.Struct:
 					tags["DeclaringTypeKind"] = "struct";
 					break;
 				}

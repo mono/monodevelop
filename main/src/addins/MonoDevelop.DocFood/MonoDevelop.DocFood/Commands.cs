@@ -83,7 +83,7 @@ namespace MonoDevelop.DocFood
 						continue;
 					}
 					if (!member.IsPublic) {
-						if (member.DeclaringType != null && member.DeclaringType.GetDefinition ().ClassType != ClassType.Interface)
+						if (member.DeclaringType != null && member.DeclaringType.GetDefinition ().Kind != TypeKind.Interface)
 							continue;
 					}
 					if (!NeedsDocumentation (data, member))
