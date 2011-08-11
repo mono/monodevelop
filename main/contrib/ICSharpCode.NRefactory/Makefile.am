@@ -25,6 +25,7 @@ FILES =  \
 	CSharp/Ast/CSharpTokenNode.cs \
 	CSharp/Ast/CSharpUtil.cs \
 	CSharp/Ast/DepthFirstAstVisitor.cs \
+	CSharp/Ast/ErrorNode.cs \
 	CSharp/Ast/Expressions/AnonymousMethodExpression.cs \
 	CSharp/Ast/Expressions/AnonymousTypeCreateExpression.cs \
 	CSharp/Ast/Expressions/ArrayCreateExpression.cs \
@@ -231,12 +232,15 @@ FILES =  \
 	CSharp/Resolver/ByReferenceResolveResult.cs \
 	CSharp/Resolver/ConstantResolveResult.cs \
 	CSharp/Resolver/ConstantValues.cs \
+	CSharp/Resolver/ConversionResolveResult.cs \
 	CSharp/Resolver/Conversions.cs \
 	CSharp/Resolver/CSharpAttribute.cs \
 	CSharp/Resolver/CSharpResolver.cs \
 	CSharp/Resolver/ErrorResolveResult.cs \
+	CSharp/Resolver/InvocationResolveResult.cs \
 	CSharp/Resolver/IResolveVisitorNavigator.cs \
 	CSharp/Resolver/ITypeOrNamespaceReference.cs \
+	CSharp/Resolver/LambdaResolveResult.cs \
 	CSharp/Resolver/LocalResolveResult.cs \
 	CSharp/Resolver/MapTypeIntoNewContext.cs \
 	CSharp/Resolver/MemberLookup.cs \
@@ -245,16 +249,18 @@ FILES =  \
 	CSharp/Resolver/MethodGroupResolveResult.cs \
 	CSharp/Resolver/NamespaceResolveResult.cs \
 	CSharp/Resolver/NodeListResolveVisitorNavigator.cs \
+	CSharp/Resolver/OperatorResolveResult.cs \
 	CSharp/Resolver/OverloadResolution.cs \
 	CSharp/Resolver/OverloadResolutionErrors.cs \
 	CSharp/Resolver/ResolveResult.cs \
 	CSharp/Resolver/ResolveVisitor.cs \
+	CSharp/Resolver/SimpleNameLookupMode.cs \
 	CSharp/Resolver/SimpleTypeOrNamespaceReference.cs \
 	CSharp/Resolver/TypeInference.cs \
 	CSharp/Resolver/TypeResolveResult.cs \
 	CSharp/Resolver/UnknownMemberResolveResult.cs \
 	CSharp/Resolver/UsingScope.cs \
-	Documentation/BinaryDocumentationProvider.cs \
+	Documentation/IDStringProvider.cs \
 	Documentation/XmlDocumentationProvider.cs \
 	PatternMatching/AnyNode.cs \
 	PatternMatching/Backreference.cs \
@@ -272,7 +278,6 @@ FILES =  \
 	TypeSystem/ArrayType.cs \
 	TypeSystem/ByReferenceType.cs \
 	TypeSystem/CecilLoader.cs \
-	TypeSystem/ClassType.cs \
 	TypeSystem/DomRegion.cs \
 	TypeSystem/EntityType.cs \
 	TypeSystem/Error.cs \
@@ -281,7 +286,6 @@ FILES =  \
 	TypeSystem/IAnnotatable.cs \
 	TypeSystem/IAttribute.cs \
 	TypeSystem/IConstantValue.cs \
-	TypeSystem/IConversions.cs \
 	TypeSystem/IDocumentationProvider.cs \
 	TypeSystem/IEntity.cs \
 	TypeSystem/IEvent.cs \
@@ -294,6 +298,7 @@ FILES =  \
 	TypeSystem/Implementation/AbstractFreezable.cs \
 	TypeSystem/Implementation/AbstractMember.cs \
 	TypeSystem/Implementation/AbstractType.cs \
+	TypeSystem/Implementation/BaseTypeCollector.cs \
 	TypeSystem/Implementation/CompositeTypeResolveContext.cs \
 	TypeSystem/Implementation/CompoundTypeDefinition.cs \
 	TypeSystem/Implementation/DefaultAccessor.cs \
@@ -307,7 +312,6 @@ FILES =  \
 	TypeSystem/Implementation/DefaultTypeDefinition.cs \
 	TypeSystem/Implementation/DefaultTypeParameter.cs \
 	TypeSystem/Implementation/GetClassTypeReference.cs \
-	TypeSystem/Implementation/MethodTypeParameterSubstitution.cs \
 	TypeSystem/Implementation/NestedTypeReference.cs \
 	TypeSystem/Implementation/ProxyTypeResolveContext.cs \
 	TypeSystem/Implementation/SimpleConstantValue.cs \
@@ -315,8 +319,11 @@ FILES =  \
 	TypeSystem/Implementation/SimpleProjectContent.cs \
 	TypeSystem/Implementation/SpecializedEvent.cs \
 	TypeSystem/Implementation/SpecializedField.cs \
+	TypeSystem/Implementation/SpecializedMember.cs \
 	TypeSystem/Implementation/SpecializedMethod.cs \
 	TypeSystem/Implementation/SpecializedProperty.cs \
+	TypeSystem/Implementation/SubstitutionTypeReference.cs \
+	TypeSystem/Implementation/TypeParameterSubstitution.cs \
 	TypeSystem/Implementation/TypeStorage.cs \
 	TypeSystem/Implementation/TypeWithElementType.cs \
 	TypeSystem/Implementation/VoidTypeDefinition.cs \
@@ -343,6 +350,7 @@ FILES =  \
 	TypeSystem/ReflectionHelper.cs \
 	TypeSystem/ReflectionNameParseException.cs \
 	TypeSystem/SharedTypes.cs \
+	TypeSystem/TypeKind.cs \
 	TypeSystem/TypeResolveContextDecorator.cs \
 	TypeSystem/TypeVisitor.cs \
 	Utils/BitVector16.cs \
