@@ -397,8 +397,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			if (val is NSArray) {
 				var result = new PArray ();
-				foreach (var f in NSArray.ArrayFromHandle<NSObject> (((NSArray)val).Handle)) {
-					result.Add (Conv (f));
+				var arr = NSArray.ArrayFromHandle<NSObject> (((NSArray)val).Handle);
+				if (arr == null)
+					return null;
+				foreach (var f in arr) {
+					if (f != null)
+						result.Add (Conv (f));
 				}
 				return result;
 			}
