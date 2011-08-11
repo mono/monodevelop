@@ -1,9 +1,25 @@
-// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
@@ -25,35 +41,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </remarks>
 		public static IEnumerable<IType> GetAllBaseTypes(this IType type, ITypeResolveContext context)
 		{
-			List<IType> output = new List<IType>();
-			Stack<ITypeDefinition> activeTypeDefinitions = new Stack<ITypeDefinition>();
-			CollectAllBaseTypes(type, context, activeTypeDefinitions, output);
-			return output;
+			BaseTypeCollector collector = new BaseTypeCollector(context);
+			collector.CollectBaseTypes(type);
+			return collector;
 		}
 		
-		static void CollectAllBaseTypes(IType type, ITypeResolveContext context, Stack<ITypeDefinition> activeTypeDefinitions, List<IType> output)
+		/// <summary>
+		/// Gets the non-interface base types.
+		/// </summary>
+		/// <remarks>
+		/// When <paramref name="type"/> is an interface, this method will also return base interfaces.
+		/// </remarks>
+		public static IEnumerable<IType> GetNonInterfaceBaseTypes(this IType type, ITypeResolveContext context)
 		{
-			ITypeDefinition def = type.GetDefinition();
-			if (def != null) {
-				// Maintain a stack of currently active type definitions, and avoid having one definition
-				// multiple times on that stack.
-				// This is necessary to ensure the output is finite in the presence of cyclic inheritance:
-				// class C<X> : C<C<X>> {} would not be caught by the 'no duplicate output' check, yet would
-				// produce infinite output.
-				if (activeTypeDefinitions.Contains(def))
-					return;
-				activeTypeDefinitions.Push(def);
-			}
-			// Avoid outputting a type more than once - necessary for "diamond" multiple inheritance
-			// (e.g. C implements I1 and I2, and both interfaces derive from Object)
-			if (!output.Contains(type)) {
-				output.Add(type);
-				foreach (IType baseType in type.GetBaseTypes(context)) {
-					CollectAllBaseTypes(baseType, context, activeTypeDefinitions, output);
-				}
-			}
-			if (def != null)
-				activeTypeDefinitions.Pop();
+			BaseTypeCollector collector = new BaseTypeCollector(context);
+			collector.SkipImplementedInterfaces = true;
+			collector.CollectBaseTypes(type);
+			return collector;
 		}
 		#endregion
 		
@@ -110,6 +114,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets whether the type is an open type (contains type parameters).
 		/// </summary>
+		/// <example>
+		/// <code>
+		/// class X&lt;T&gt; {
+		///   List&lt;T&gt; open;
+		///   X&lt;X&lt;T[]&gt;&gt; open;
+		///   X&lt;string&gt; closed;
+		///   int closed;
+		/// }
+		/// </code>
+		/// </example>
 		public static bool IsOpen(this IType type)
 		{
 			if (type == null)
@@ -120,8 +134,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// Gets whether the type is unbound.
+		/// Gets whether the type is unbound (is a generic type, but no type arguments were provided).
 		/// </summary>
+		/// <remarks>
+		/// In "<c>typeof(List&lt;Dictionary&lt;,&gt;&gt;)</c>", only the Dictionary is unbound, the List is considered
+		/// bound despite containing an unbound type.
+		/// This method returns false for partially parameterized types (<c>Dictionary&lt;string, &gt;</c>).
+		/// </remarks>
 		public static bool IsUnbound(this IType type)
 		{
 			if (type == null)
@@ -134,12 +153,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets whether the type is an enumeration type.
 		/// </summary>
+		[Obsolete("Use type.Kind == TypeKind.Enum instead")]
 		public static bool IsEnum(this IType type)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			ITypeDefinition def = type.GetDefinition();
-			return def != null && def.ClassType == ClassType.Enum;
+			return type.Kind == TypeKind.Enum;
 		}
 		
 		/// <summary>
@@ -152,13 +171,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (context == null)
 				throw new ArgumentNullException("context");
 			ITypeDefinition def = enumType.GetDefinition();
-			if (def != null && def.ClassType == ClassType.Enum) {
+			if (def != null && def.Kind == TypeKind.Enum) {
 				if (def.BaseTypes.Count == 1)
 					return def.BaseTypes[0].Resolve(context);
 				else
 					return KnownTypeReference.Int32.Resolve(context);
 			} else {
-				throw new ArgumentException("enumType must be an enum");
+				return SharedTypes.UnknownType;
 			}
 		}
 		
@@ -166,12 +185,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets whether the type is an delegate type.
 		/// </summary>
 		/// <remarks>This method returns <c>false</c> for System.Delegate itself</remarks>
+		[Obsolete("Use type.Kind == TypeKind.Delegate instead")]
 		public static bool IsDelegate(this IType type)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			ITypeDefinition def = type.GetDefinition();
-			return def != null && def.ClassType == ClassType.Delegate;
+			return type.Kind == TypeKind.Delegate;
 		}
 		
 		/// <summary>
@@ -185,10 +204,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (type == null)
 				throw new ArgumentNullException("type");
 			ITypeDefinition def = type.GetDefinition();
-			if (def != null && def.ClassType == ClassType.Delegate) {
+			if (def != null && def.Kind == TypeKind.Delegate) {
 				foreach (IMethod method in def.Methods) {
-					if (method.Name == "Invoke")
+					if (method.Name == "Invoke") {
+						ParameterizedType pt = type as ParameterizedType;
+						if (pt != null) {
+							return new SpecializedMethod(pt, method);
+						}
 						return method;
+					}
 				}
 			}
 			return null;

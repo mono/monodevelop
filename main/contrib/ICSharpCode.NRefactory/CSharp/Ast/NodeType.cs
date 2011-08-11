@@ -45,6 +45,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		Token,
 		QueryClause,
 		/// <summary>
+		/// Comment or whitespace or pre-processor directive 
+		/// </summary>
+		Whitespace,
+		/// <summary>
 		/// Placeholder for a pattern
 		/// </summary>
 		Pattern

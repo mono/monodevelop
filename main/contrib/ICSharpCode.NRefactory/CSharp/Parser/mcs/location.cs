@@ -762,6 +762,7 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			
 			public Namespace ()
 			{
+				// in case of missing close brace, set it to the highest value.
 				CloseBrace = new Location (int.MaxValue, int.MaxValue);
 			}
 			

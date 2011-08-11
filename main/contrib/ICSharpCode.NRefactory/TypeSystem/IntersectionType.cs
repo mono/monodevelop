@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,6 +22,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
@@ -38,6 +54,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			else
 				return new IntersectionType(arr);
 		}
+		
+		public override TypeKind Kind {
+				get { return TypeKind.Intersection; }
+			}
 		
 		public override string Name {
 			get {
@@ -103,33 +123,37 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return types;
 		}
 		
-		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
-		{
-			filter = FilterNonStatic(filter);
-			return types.SelectMany(t => t.GetEvents(context, filter));
-		}
-		
 		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter)
 		{
-			filter = FilterNonStatic(filter);
-			return types.SelectMany(t => t.GetMethods(context, filter));
+			return ParameterizedType.GetMethods(this, context, FilterNonStatic(filter));
 		}
 		
 		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
 		{
-			filter = FilterNonStatic(filter);
-			return types.SelectMany(t => t.GetProperties(context, filter));
+			return ParameterizedType.GetProperties(this, context, FilterNonStatic(filter));
 		}
 		
 		public override IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter)
 		{
-			filter = FilterNonStatic(filter);
-			return types.SelectMany(t => t.GetFields(context, filter));
+			return ParameterizedType.GetFields(this, context, FilterNonStatic(filter));
+		}
+		
+		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
+		{
+			return ParameterizedType.GetEvents(this, context, FilterNonStatic(filter));
+		}
+		
+		public override IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter)
+		{
+			return ParameterizedType.GetMembers(this, context, FilterNonStatic(filter));
 		}
 		
 		static Predicate<T> FilterNonStatic<T>(Predicate<T> filter) where T : class, IMember
 		{
-			return member => !member.IsStatic && (filter == null || filter(member));
+			if (filter == null)
+				return member => !member.IsStatic;
+			else
+				return member => !member.IsStatic && filter(member);
 		}
 	}
 }

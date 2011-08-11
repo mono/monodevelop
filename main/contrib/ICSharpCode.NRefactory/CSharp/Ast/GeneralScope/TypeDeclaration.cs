@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TypeDeclaration.cs
 //
 // Author:
@@ -30,6 +30,14 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	public enum ClassType
+	{
+		Class,
+		Struct,
+		Interface,
+		Enum
+	}
+	
 	/// <summary>
 	/// class Name&lt;TypeParameters&gt; : BaseTypes where Constraints;
 	/// </summary>

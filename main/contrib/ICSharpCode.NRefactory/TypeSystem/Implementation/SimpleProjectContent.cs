@@ -1,5 +1,20 @@
-// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -19,43 +34,57 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Compared with <see cref="TypeStorage"/>, this class adds support for the IProjectContent interface,
 	/// for partial classes, and for multi-threading.
 	/// </remarks>
-	public sealed class SimpleProjectContent : AbstractAnnotatable, IProjectContent
+	public class SimpleProjectContent : AbstractAnnotatable, IProjectContent
 	{
-		// This class is sealed by design:
-		// the synchronization story doesn't mix well with someone trying to extend this class.
-		// If you wanted to derive from this: use delegation, not inheritance.
-		
 		readonly TypeStorage types = new TypeStorage();
 		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
 		readonly Dictionary<string, IParsedFile> fileDict = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
 		
 		#region AssemblyAttributes
 		readonly List<IAttribute> assemblyAttributes = new List<IAttribute>(); // mutable assembly attribute storage
+		readonly List<IAttribute> moduleAttributes = new List<IAttribute>();
 		
 		volatile IAttribute[] readOnlyAssemblyAttributes = {}; // volatile field with copy for reading threads
+		volatile IAttribute[] readOnlyModuleAttributes = {};
 		
 		/// <inheritdoc/>
 		public IList<IAttribute> AssemblyAttributes {
 			get { return readOnlyAssemblyAttributes;  }
 		}
 		
-		void AddRemoveAssemblyAttributes(ICollection<IAttribute> addedAttributes, ICollection<IAttribute> removedAttributes)
+		/// <inheritdoc/>
+		public IList<IAttribute> ModuleAttributes {
+			get { return readOnlyModuleAttributes;  }
+		}
+		
+		static bool AddRemoveAttributes(ICollection<IAttribute> removedAttributes, ICollection<IAttribute> addedAttributes,
+		                                List<IAttribute> attributeStorage)
 		{
 			// API uses ICollection instead of IEnumerable to discourage users from evaluating
 			// the list inside the lock (this method is called inside the write lock)
 			// [[not an issue anymore; the user now passes IParsedFile]]
 			bool hasChanges = false;
 			if (removedAttributes != null && removedAttributes.Count > 0) {
-				if (assemblyAttributes.RemoveAll(removedAttributes.Contains) > 0)
+				if (attributeStorage.RemoveAll(removedAttributes.Contains) > 0)
 					hasChanges = true;
 			}
 			if (addedAttributes != null) {
-				assemblyAttributes.AddRange(addedAttributes);
+				attributeStorage.AddRange(addedAttributes);
 				hasChanges = true;
 			}
-			
-			if (hasChanges)
+			return hasChanges;
+		}
+		
+		void AddRemoveAssemblyAttributes(ICollection<IAttribute> removedAttributes, ICollection<IAttribute> addedAttributes)
+		{
+			if (AddRemoveAttributes(removedAttributes, addedAttributes, assemblyAttributes))
 				readOnlyAssemblyAttributes = assemblyAttributes.ToArray();
+		}
+		
+		void AddRemoveModuleAttributes(ICollection<IAttribute> removedAttributes, ICollection<IAttribute> addedAttributes)
+		{
+			if (AddRemoveAttributes(removedAttributes, addedAttributes, moduleAttributes))
+				readOnlyModuleAttributes = moduleAttributes.ToArray();
 		}
 		#endregion
 		
@@ -64,19 +93,35 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
-			typeDefinition.Freeze(); // Type definition must be frozen before it can be added to a project content
 			if (typeDefinition.ProjectContent != this)
 				throw new ArgumentException("Cannot add a type definition that belongs to another project content");
 			
-			// TODO: handle partial classes
-			types.UpdateType(typeDefinition);
+			ITypeDefinition existingTypeDef = types.GetTypeDefinition(typeDefinition.Namespace, typeDefinition.Name, typeDefinition.TypeParameterCount, StringComparer.Ordinal);
+			if (existingTypeDef != null) {
+				// Add a part to a compound class
+				var newParts = new List<ITypeDefinition>(existingTypeDef.GetParts());
+				newParts.Add(typeDefinition);
+				types.UpdateType(CompoundTypeDefinition.Create(newParts));
+			} else {
+				types.UpdateType(typeDefinition);
+			}
 		}
 		#endregion
 		
 		#region RemoveType
 		void RemoveType(ITypeDefinition typeDefinition)
 		{
-			types.RemoveType (typeDefinition); // <- Daniel: Correct ?
+			var compoundTypeDef = typeDefinition.GetDefinition() as CompoundTypeDefinition;
+			if (compoundTypeDef != null) {
+				// Remove one part from a compound class
+				var newParts = new List<ITypeDefinition>(compoundTypeDef.GetParts());
+				if (newParts.Remove(typeDefinition)) {
+					((DefaultTypeDefinition)typeDefinition).SetCompoundTypeDefinition(typeDefinition);
+				}
+				types.UpdateType(CompoundTypeDefinition.Create(newParts));
+			} else {
+				types.RemoveType(typeDefinition);
+			}
 		}
 		#endregion
 		
@@ -110,7 +155,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					}
 					fileDict[newFile.FileName] = newFile;
 				}
-				AddRemoveAssemblyAttributes(oldFile != null ? oldFile.AssemblyAttributes : null, newFile != null ? newFile.AssemblyAttributes : null);
+				AddRemoveAssemblyAttributes(oldFile != null ? oldFile.AssemblyAttributes : null,
+				                            newFile != null ? newFile.AssemblyAttributes : null);
+				
+				AddRemoveModuleAttributes(oldFile != null ? oldFile.ModuleAttributes : null,
+				                          newFile != null ? newFile.ModuleAttributes : null);
 			} finally {
 				readerWriterLock.ExitWriteLock();
 			}

@@ -2,7 +2,6 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
-using System.IO;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -93,15 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		// Make debugging easier by giving Statements a ToString() implementation
 		public override string ToString()
 		{
-			if (IsNull)
-				return "Null";
-			StringWriter w = new StringWriter();
-			AcceptVisitor(new OutputVisitor(w, new CSharpFormattingOptions()), null);
-			string text = w.ToString().TrimEnd().Replace("\t", "").Replace(w.NewLine, " ");
-			if (text.Length > 100)
-				return text.Substring(0, 97) + "...";
-			else
-				return text;
+			return DebugToString();
 		}
 	}
 }

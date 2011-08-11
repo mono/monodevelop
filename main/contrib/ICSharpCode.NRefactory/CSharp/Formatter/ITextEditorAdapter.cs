@@ -40,22 +40,16 @@ namespace ICSharpCode.NRefactory
 
 		int Length { get; }
 
-		int LocationToOffset (int line, int col)
-;
-		char GetCharAt (int offset)
-;
+		int LocationToOffset (int line, int col);
+		char GetCharAt (int offset);
 		string GetTextAt (int offset, int length);
 		
 		int LineCount { get; }
 
-		int GetEditableLength (int lineNumber)
-;
-		string GetIndentation (int lineNumber)
-;
-		int GetLineOffset (int lineNumber)
-;
-		int GetLineLength (int lineNumber)
-;
+		int GetEditableLength (int lineNumber);
+		string GetIndentation (int lineNumber);
+		int GetLineOffset (int lineNumber);
+		int GetLineLength (int lineNumber);
 		int GetLineEndOffset (int lineNumber);
 		
 		void Replace (int offset, int count, string text);

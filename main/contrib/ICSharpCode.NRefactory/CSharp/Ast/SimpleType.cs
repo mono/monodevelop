@@ -47,6 +47,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			SetChildByRole (Roles.Identifier, CSharp.Identifier.Create (identifier, location));
 		}
 		
+		public SimpleType (string identifier, IEnumerable<AstType> typeArguments)
+		{
+			this.Identifier = identifier;
+			foreach (var arg in typeArguments) {
+				AddChild (arg, Roles.TypeArgument);
+			}
+		}
+		
+		public SimpleType (string identifier, params AstType[] typeArguments) : this (identifier, (IEnumerable<AstType>)typeArguments)
+		{
+		}
+		
 		public string Identifier {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;

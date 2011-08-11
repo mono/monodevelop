@@ -48,6 +48,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Right = right;
 		}
 		
+		public AssignmentExpression(string left, Expression right)
+		{
+			this.Left = new IdentifierExpression(left);
+			this.Right = right;
+		}
+		
 		public AssignmentExpression(Expression left, AssignmentOperatorType op, Expression right)
 		{
 			this.Left = left;

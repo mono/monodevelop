@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -25,9 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec, §7.4 member lookup
 			if (member is IEvent || member is IMethod)
 				return true;
-			if (member.ReturnType == SharedTypes.Dynamic)
+			IType returnType = member.ReturnType.Resolve(context);
+			if (returnType == SharedTypes.Dynamic)
 				return true;
-			return member.ReturnType.Resolve(context).IsDelegate();
+			return returnType.IsDelegate();
 		}
 		#endregion
 		
@@ -69,7 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// check for members of outer classes (private members of outer classes can be accessed)
 					var lookupTypeDefinition = currentTypeDefinition;
 					while (lookupTypeDefinition != null) {
-						if (entity.DeclaringTypeDefinition.Equals (lookupTypeDefinition)) 
+						if (entity.DeclaringTypeDefinition.Equals (lookupTypeDefinition))
 							return true;
 						lookupTypeDefinition = lookupTypeDefinition.DeclaringTypeDefinition;
 					}
@@ -106,16 +122,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		public ResolveResult LookupType(IType declaringType, string name, IList<IType> typeArguments)
+		public ResolveResult LookupType(IType declaringType, string name, IList<IType> typeArguments, bool parameterizeResultType = true)
 		{
 			int typeArgumentCount = typeArguments.Count;
 			Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
-				return d.TypeParameterCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
+				// inner types contain the type parameters of outer types. therefore this count has to been adjusted.
+				int correctedCount = d.TypeParameterCount - (d.DeclaringType != null ? d.DeclaringType.TypeParameterCount : 0);
+				return correctedCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
 			};
-			List<IType> types = declaringType.GetNestedTypes(context, typeFilter).ToList();
+			List<IType> types;
+			if (parameterizeResultType)
+				types = declaringType.GetNestedTypes(typeArguments, context, typeFilter).ToList();
+			else
+				types = declaringType.GetNestedTypes(context, typeFilter).ToList();
+			
 			RemoveTypesHiddenByOtherTypes(types);
-			if (types.Count > 0)
-				return CreateTypeResolveResult(types[0], types.Count > 1, typeArguments);
+			if (types.Count == 1)
+				return new TypeResolveResult(types[0]);
+			else if (types.Count > 1)
+				return new AmbiguousTypeResolveResult(types[0]);
 			else
 				return new UnknownMemberResolveResult(declaringType, name, typeArguments);
 		}
@@ -140,56 +165,40 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult CreateTypeResolveResult(IType returnedType, bool isAmbiguous, IList<IType> typeArguments)
-		{
-			if (typeArguments.Count > 0) {
-				// parameterize the type if necessary
-				ITypeDefinition returnedTypeDef = returnedType as ITypeDefinition;
-				if (returnedTypeDef != null)
-					returnedType = new ParameterizedType(returnedTypeDef, typeArguments);
-			}
-			if (isAmbiguous)
-				return new AmbiguousTypeResolveResult(returnedType);
-			else
-				return new TypeResolveResult(returnedType);
-		}
-		
 		/// <summary>
 		/// Performs a member lookup.
 		/// </summary>
-		public ResolveResult Lookup(IType type, string name, IList<IType> typeArguments, bool isInvocation)
+		public ResolveResult Lookup(ResolveResult targetResolveResult, string name, IList<IType> typeArguments, bool isInvocation)
 		{
+			IType type = targetResolveResult.Type;
 			int typeArgumentCount = typeArguments.Count;
 			
 			List<IType> types = new List<IType>();
 			List<IMember> members = new List<IMember>();
 			if (!isInvocation) {
-				// Consider nested types only if it's not an invocation. The type parameter count must match in this case.
+				// Consider nested types only if it's not an invocation.
+				// type.GetNestedTypes() is checking the type parameter count for an exact match.
 				Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
-					// inner types contain the type parameters of outer types. therefore this count has to been adjusted.
-					int correctedCount = d.TypeParameterCount - (d.DeclaringType != null ? d.DeclaringType.TypeParameterCount : 0);
-					return correctedCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
+					return d.Name == name && IsAccessible(d, true);
 				};
-				types.AddRange(type.GetNestedTypes(context, typeFilter));
+				types.AddRange(type.GetNestedTypes(typeArguments, context, typeFilter));
 			}
 			
 			bool allowProtectedAccess = IsProtectedAccessAllowed(type);
 			
+			Predicate<IMember> memberFilter = delegate(IMember member) {
+				return !member.IsOverride && member.Name == name && IsAccessible(member, allowProtectedAccess);
+			};
 			if (typeArgumentCount == 0) {
-				Predicate<IMember> memberFilter = delegate(IMember member) {
-					return !member.IsOverride && member.Name == name && IsAccessible(member, allowProtectedAccess);
-				};
 				members.AddRange(type.GetMembers(context, memberFilter));
+				// Note: IsInvocable-checking cannot be done as part of the memberFilter;
+				// because it must be done after type substitution.
 				if (isInvocation)
 					members.RemoveAll(m => !IsInvocable(m, context));
 			} else {
 				// No need to check for isInvocation/isInvocable here:
 				// we filter out all non-methods
-				Predicate<IMethod> memberFilter = delegate(IMethod method) {
-					return method.TypeParameters.Count == typeArgumentCount
-						&& !method.IsOverride && method.Name == name && IsAccessible(method, allowProtectedAccess);
-				};
-				members.AddRange(type.GetMethods(context, memberFilter).SafeCast<IMethod, IMember>());
+				members.AddRange(type.GetMethods(typeArguments, context, memberFilter));
 			}
 			
 			// TODO: can't members also hide types?
@@ -201,6 +210,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (d != null)
 					members.RemoveAll(m => d.IsDerivedFrom(m.DeclaringTypeDefinition, context));
 			}
+			
+			ParameterListComparer parameterListComparer = new ParameterListComparer(context);
+			
 			// remove members hidden by other members
 			for (int i = members.Count - 1; i >= 0; i--) {
 				ITypeDefinition d = members[i].DeclaringTypeDefinition;
@@ -209,7 +221,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				for (int j = i + 1; j < members.Count; j++) {
 					if (mi != null) {
 						IMethod mj = members[j] as IMethod;
-						if (mj != null && !ParameterListComparer.Instance.Equals(mi, mj))
+						if (mj != null && !parameterListComparer.Equals(mi, mj))
 							continue;
 					}
 					ITypeDefinition s = members[j].DeclaringTypeDefinition;
@@ -224,14 +236,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (type is ITypeParameter) {
 				// this can happen only with type parameters
 				for (int i = members.Count - 1; i >= 0; i--) {
-					ITypeDefinition d = members[i].DeclaringTypeDefinition;
-					if (d.ClassType != ClassType.Interface)
+					if (members[i].DeclaringTypeDefinition.Kind != TypeKind.Interface)
 						continue;
 					IMethod mi = members[i] as IMethod;
 					for (int j = 0; j < members.Count; j++) {
 						if (mi != null) {
 							IMethod mj = members[j] as IMethod;
-							if (mj != null && !ParameterListComparer.Instance.Equals(mi, mj))
+							if (mj != null && !parameterListComparer.Equals(mi, mj))
 								continue;
 						}
 						ITypeDefinition s = members[j].DeclaringTypeDefinition;
@@ -246,22 +257,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			if (types.Count > 0) {
 				bool isAmbiguous = !(types.Count == 1 && members.Count == 0);
-				return CreateTypeResolveResult(types[0], isAmbiguous, typeArguments);
+				if (isAmbiguous)
+					return new AmbiguousTypeResolveResult(types[0]);
+				else
+					return new TypeResolveResult(types[0]);
 			}
 			if (members.Count == 0)
 				return new UnknownMemberResolveResult(type, name, typeArguments);
 			IMember firstNonMethod = members.FirstOrDefault(m => !(m is IMethod));
 			if (members.Count == 1 && firstNonMethod != null)
-				return new MemberResolveResult(firstNonMethod, context);
+				return new MemberResolveResult(targetResolveResult, firstNonMethod, context);
 			if (firstNonMethod == null)
-				return new MethodGroupResolveResult(type, name, members.ConvertAll(m => (IMethod)m), typeArguments);
-			return new AmbiguousMemberResultResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
+				return new MethodGroupResolveResult(targetResolveResult, name, members.ConvertAll(m => (IMethod)m), typeArguments);
+			return new AmbiguousMemberResultResult(targetResolveResult, firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
 		}
 
 		static bool IsNonInterfaceType(ITypeDefinition def)
 		{
 			// return type if def is neither an interface nor System.Object
-			return def.ClassType != ClassType.Interface && !(def.Name == "Object" && def.Namespace == "System" && def.TypeParameterCount == 0);
+			return def.Kind != TypeKind.Interface && !(def.Name == "Object" && def.Namespace == "System" && def.TypeParameterCount == 0);
 		}
 		
 		static ITypeDefinition GetDeclaringTypeDef(IType type)

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -54,10 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			ITypeDefinition typeDef = type as ITypeDefinition;
 			if (typeDef != null) {
 				if (typeDef.TypeParameterCount > 0) {
-					// Create an unbound type
+					// Unbound type
 					IType[] typeArguments = new IType[typeDef.TypeParameterCount];
 					for (int i = 0; i < typeArguments.Length; i++) {
-						typeArguments[i] = SharedTypes.UnknownType;
+						typeArguments[i] = SharedTypes.UnboundTypeArgument;
 					}
 					return ConvertTypeDefinition(typeDef, typeArguments);
 				} else {
@@ -103,14 +103,40 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return new PrimitiveType("string");
 			}
 			// There is no type code for System.Void
-			if (typeDef != null && typeDef.Namespace == "System" && typeDef.Name == "Void" && typeDef.TypeParameterCount == 0)
+			if (typeDef.Kind == TypeKind.Void)
 				return new PrimitiveType("void");
-			if (resolver != null && TypeArgumentsTrivial(typeArguments, OuterTypeParameterCount(typeDef))) {
-				TypeResolveResult trr = resolver.ResolveSimpleName(typeDef.Name, typeArguments) as TypeResolveResult;
-				if (trr != null && !trr.IsError && trr.Type.GetDefinition() == typeDef) {
+			
+			// The number of type parameters belonging to outer classes
+			int outerTypeParameterCount;
+			if (typeDef.DeclaringType != null)
+				outerTypeParameterCount = typeDef.DeclaringType.TypeParameterCount;
+			else
+				outerTypeParameterCount = 0;
+			
+			if (resolver != null) {
+				// Look if there's an alias to the target type
+				for (UsingScope usingScope = resolver.UsingScope; usingScope != null; usingScope = usingScope.Parent) {
+					foreach (var pair in usingScope.UsingAliases) {
+						IType type = pair.Value.Resolve(resolver.Context);
+						if (TypeMatches(type, typeDef, typeArguments))
+							return new SimpleType(pair.Key);
+					}
+				}
+				
+				IList<IType> localTypeArguments;
+				if (typeDef.TypeParameterCount > outerTypeParameterCount) {
+					localTypeArguments = new IType[typeDef.TypeParameterCount - outerTypeParameterCount];
+					for (int i = 0; i < localTypeArguments.Count; i++) {
+						localTypeArguments[i] = typeArguments[outerTypeParameterCount + i];
+					}
+				} else {
+					localTypeArguments = EmptyList<IType>.Instance;
+				}
+				TypeResolveResult trr = resolver.ResolveSimpleName(typeDef.Name, localTypeArguments) as TypeResolveResult;
+				if (trr != null && !trr.IsError && TypeMatches(trr.Type, typeDef, typeArguments)) {
 					// We can use the short type name
 					SimpleType shortResult = new SimpleType(typeDef.Name);
-					AddTypeArguments(shortResult, typeArguments, OuterTypeParameterCount(typeDef), typeDef.TypeParameterCount);
+					AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 					return shortResult;
 				}
 			}
@@ -129,33 +155,31 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 			result.MemberName = typeDef.Name;
-			AddTypeArguments(result, typeArguments, OuterTypeParameterCount(typeDef), typeDef.TypeParameterCount);
+			AddTypeArguments(result, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 			return result;
 		}
 		
 		/// <summary>
-		/// Gets the number of type parameters belonging to outer classes.
+		/// Gets whether 'type' is the same as 'typeDef' parameterized with the given type arguments.
 		/// </summary>
-		int OuterTypeParameterCount(ITypeDefinition typeDef)
+		bool TypeMatches(IType type, ITypeDefinition typeDef, IList<IType> typeArguments)
 		{
-			if (typeDef.DeclaringType != null)
-				return typeDef.DeclaringType.TypeParameterCount;
-			else
-				return 0;
-		}
-		
-		/// <summary>
-		/// Gets whether the first <paramref name="num"/> type arguments are trivial,
-		/// that is, they point to a type parameter with the same index.
-		/// </summary>
-		bool TypeArgumentsTrivial(IList<IType> typeArguments, int num)
-		{
-			for (int i = 0; i < num; i++) {
-				ITypeParameter tp = typeArguments[i] as ITypeParameter;
-				if (!(tp != null && tp.OwnerType == EntityType.TypeDefinition && tp.Index == i))
+			if (typeDef.TypeParameterCount == 0) {
+				return typeDef.Equals(type);
+			} else {
+				if (!typeDef.Equals(type.GetDefinition()))
 					return false;
+				ParameterizedType pt = type as ParameterizedType;
+				if (pt == null) {
+					return typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument);
+				}
+				var ta = pt.TypeArguments;
+				for (int i = 0; i < ta.Count; i++) {
+					if (!ta[i].Equals(typeArguments[i]))
+						return false;
+				}
+				return true;
 			}
-			return true;
 		}
 		
 		/// <summary>

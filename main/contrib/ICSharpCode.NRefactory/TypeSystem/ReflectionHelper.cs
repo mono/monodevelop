@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -22,6 +37,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// A reflection class used to represent <c>dynamic</c>.
 		/// </summary>
 		public sealed class Dynamic {}
+		
+		/// <summary>
+		/// A reflection class used to represent an unbound type argument.
+		/// </summary>
+		public sealed class UnboundTypeArgument {}
 		
 		#region ITypeResolveContext.GetTypeDefinition(Type)
 		/// <summary>
@@ -78,10 +98,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				ITypeReference def = ToTypeReference(type.GetGenericTypeDefinition(), entity);
 				Type[] arguments = type.GetGenericArguments();
 				ITypeReference[] args = new ITypeReference[arguments.Length];
+				bool allUnbound = true;
 				for (int i = 0; i < arguments.Length; i++) {
 					args[i] = ToTypeReference(arguments[i], entity);
+					allUnbound &= args[i].Equals(SharedTypes.UnboundTypeArgument);
 				}
-				return new ParameterizedTypeReference(def, args);
+				if (allUnbound)
+					return def;
+				else
+					return new ParameterizedTypeReference(def, args);
 			} else if (type.IsArray) {
 				return new ArrayTypeReference(ToTypeReference(type.GetElementType(), entity), type.GetArrayRank());
 			} else if (type.IsPointer) {
@@ -111,6 +136,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return SharedTypes.Dynamic;
 				else if (type == typeof(Null))
 					return SharedTypes.Null;
+				else if (type == typeof(UnboundTypeArgument))
+					return SharedTypes.UnboundTypeArgument;
 				ITypeReference baseTypeRef = ToTypeReference(type.DeclaringType, entity);
 				int typeParameterCount;
 				string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
@@ -175,7 +202,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			KnownTypeReference.UInt64,
 			KnownTypeReference.Single,
 			KnownTypeReference.Double,
-			new GetClassTypeReference("System", "Decimal", 0),
+			KnownTypeReference.Decimal,
 			new GetClassTypeReference("System", "DateTime", 0),
 			SharedTypes.UnknownType, // (TypeCode)17 has no enum value?
 			KnownTypeReference.String

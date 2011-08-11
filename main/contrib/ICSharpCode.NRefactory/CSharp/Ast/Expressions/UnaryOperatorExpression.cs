@@ -91,6 +91,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					return "*";
 				case UnaryOperatorType.AddressOf:
 					return "&";
+				case UnaryOperatorType.Await:
+					return "await";
 				default:
 					throw new NotSupportedException("Invalid value for UnaryOperatorType");
 			}
@@ -118,7 +120,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>Dereferencing (*a)</summary>
 		Dereference,
 		/// <summary>Get address (&a)</summary>
-		AddressOf
+		AddressOf,
+		/// <summary>C# 5.0 await</summary>
+		Await
 	}
-	
 }

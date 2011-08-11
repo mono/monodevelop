@@ -143,6 +143,7 @@ namespace Mono.CSharp
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
+		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
 		
 		object lastYYVal;
@@ -774,6 +775,9 @@ attribute
 		Arguments [] arguments = (Arguments []) $3;
 		ATypeNameExpression expr = mname.GetTypeExpression ();
 		$$ = new Attribute (current_attr_target, expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname));
+		if (arguments != null) {
+			lbag.AddLocation ($$, savedAttrParenOpenLocation, savedAttrParenCloseLocation);
+		}
 	  }
 	;
 
@@ -785,6 +789,8 @@ opt_attribute_arguments
 	: /* empty */   { $$ = null; }
 	| OPEN_PARENS attribute_arguments CLOSE_PARENS
 	  {
+		savedAttrParenOpenLocation = GetLocation ($1);
+		savedAttrParenCloseLocation = GetLocation ($3);
 		$$ = $2;
 	  }
 	;

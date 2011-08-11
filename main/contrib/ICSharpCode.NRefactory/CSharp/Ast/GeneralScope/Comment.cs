@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Comment.cs
 //  
 // Author:
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public override NodeType NodeType {
 			get {
-				return NodeType.Unknown;
+				return NodeType.Whitespace;
 			}
 		}
 		

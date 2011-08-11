@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AstFormattingVisitor.cs
 //  
 // Author:
