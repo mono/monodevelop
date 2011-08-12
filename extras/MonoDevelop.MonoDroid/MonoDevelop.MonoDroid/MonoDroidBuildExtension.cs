@@ -68,7 +68,7 @@ namespace MonoDevelop.MonoDroid
 				return buildResult;
 			}
 
-			if (!MonoDroidFramework.EnsureSdksInstalled ()) {
+			if (!MonoDroidFramework.HasAndroidJavaSdks) {
 				var buildResult = new BuildResult ();
 				buildResult.AddError ("The Android SDK could not be found, please set the path to it in the Mono for Android SDKs settings panel.");
 				return buildResult;
