@@ -94,6 +94,8 @@ namespace MonoDevelop.SourceEditor
 		Widget container;
 		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
 		{
+			if (widget == null || widget.TextEditor == null)
+				return;
 			int newX = widget.TextEditor.Allocation.Width - this.Allocation.Width - 8;
 			TextEditorContainer.EditorContainerChild containerChild = ((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[container]);
 			if (newX != containerChild.X) {
@@ -520,6 +522,7 @@ But I leave it in in the case I've missed something. Mike
 			this.widget.TextEditor.TextViewMargin.HideSelection = false;
 			widget.TextEditor.Caret.PositionChanged -= HandleWidgetTextEditorCaretPositionChanged;
 			widget.TextEditor.TextViewMargin.SearchRegionsUpdated -= HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
+			this.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
 			widget.TextEditorContainer.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
 			
 			// SearchPatternChanged -= UpdateSearchPattern;
