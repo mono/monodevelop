@@ -52,7 +52,15 @@ namespace MonoDevelop {
 			get; set;
 		}
 		
+		bool ProcessingCrash {
+			get; set;
+		}
+		
 		CrashReporter Reporter {
+			get; set;
+		}
+		
+		bool MonitoredProcessExited {
 			get; set;
 		}
 		
@@ -65,8 +73,14 @@ namespace MonoDevelop {
 				// Wait a few seconds to see if there has been a crash. If not,
 				// lets just gracefully exit.
 				Thread.Sleep (5000);
-				Application.Invoke (delegate { Application.Quit (); });
-				Environment.Exit (0);
+				Application.Invoke (delegate {
+					MonitoredProcessExited = true;
+					
+					// If monodevelop crashed, do not shut down until we've finished
+					// processing the crash log.
+					if (!ProcessingCrash)
+						Environment.Exit (0);
+				});
 			};
 			
 			Monitor.CrashDetected += (sender, e) => {
@@ -82,17 +96,26 @@ namespace MonoDevelop {
 		void ShowCrashUI (string crashLogPath)
 		{
 			Gtk.Application.Invoke (delegate {
-				var dialog = new Gtk.MessageDialog (null, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok, "MonoDevelop has experienced an unexpected error. Details of this error will be uploaded to Xamarin for diagnostic purposes.") {
-					WindowPosition = WindowPosition.Center
-				};
-				
-				var result = dialog.Run ();
-				dialog.Destroy ();
-				if (result == (int) ResponseType.Ok) {
-					Reporter.UploadOrCache (crashLogPath);
-				} else {
-					Console.WriteLine ("Not uploading");
+				try {
+					ProcessingCrash = true;
+					var dialog = new Gtk.MessageDialog (null, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok, "MonoDevelop has experienced an unexpected error. Details of this error will be uploaded to Xamarin for diagnostic purposes.") {
+						WindowPosition = WindowPosition.Center
+					};
+					
+					var result = dialog.Run ();
+					dialog.Destroy ();
+					if (result == (int) ResponseType.Ok) {
+						Reporter.UploadOrCache (crashLogPath);
+					} else {
+						Console.WriteLine ("Not uploading");
+					}
+				} finally {
+					ProcessingCrash = false;
 				}
+				
+				// If MD has gone away and we've processed the crash, we may as well exit.
+				if (MonitoredProcessExited)
+					Environment.Exit (0);
 			});
 		}
 	}
