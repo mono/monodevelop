@@ -44,6 +44,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Posix">
+		<Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq">
     </Reference>

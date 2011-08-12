@@ -36,6 +36,7 @@
 		<Import file = "templates/OpenGLApplication/Resource.cs" />
 		<Import file = "icons/monodroid-project-16.png" />
 		<Import file = "icons/monodroid-project-32.png" />
+		<Import assembly="Mono.Posix.dll" />
 	</Runtime>
 	
 	<Dependencies>
