@@ -1135,7 +1135,7 @@ delegate void BarFoo ();
 						return;
 					var value = ConvertProperty (info.PropertyType, args.NewText);
 					info.SetValue (dialog.profile, value, null);
-					dialog.UpdateExample (dialog.texteditor.Document.Text);
+					dialog.UpdateExample (model, iter);
 				}
 			}
 		}
