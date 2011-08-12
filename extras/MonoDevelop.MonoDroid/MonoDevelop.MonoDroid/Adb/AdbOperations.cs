@@ -437,25 +437,24 @@ namespace MonoDevelop.MonoDroid
 
 		long ParseOldFormat (string output)
 		{
-			string s;
-			long size;
+			long size = -1;
 			var reader = new StringReader (output);
+			string s = reader.ReadLine ();
 
 			int idx = s.IndexOf (':');
 			if (idx < 0)
-				return -1;
+				return size;
 
 			// /data/: 508416K total, 98548K used, 409868K available (block size 4096)
 			var parts = s.Split (new char [] { ',' });
 			if (parts.Length != 3 || parts [2].IndexOf ("available") < 0)
-				return -1;
+				return size;
 
 			// the actual available component
 			parts = parts [2].Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			if (!ParseToBytes (parts [0].Trim (), out size))
-				return size;
+			ParseToBytes (parts [0].Trim (), out size);
 
-			return -1;
+			return size;
 		}
 
 		bool ParseToBytes (string s, out long value)
