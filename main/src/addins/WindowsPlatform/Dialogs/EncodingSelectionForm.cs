@@ -111,6 +111,36 @@ namespace MonoDevelop.Platform
             MoveItem (shownListView, availableListView);
         }
 
+        void ShiftItem (ListView listView, int shift)
+        {
+            if (listView.SelectedIndices.Count == 0)
+                return;
+
+            int selectedIndex = listView.SelectedIndices[0];
+            int newIndex = selectedIndex + shift;
+            if (newIndex < 0 || newIndex >= listView.Items.Count)
+                return;
+
+            listView.BeginUpdate ();
+
+            var item = listView.Items[selectedIndex];
+            listView.Items.RemoveAt (selectedIndex);
+            listView.Items.Insert (newIndex, item);
+            item.Selected = true;
+
+            listView.EndUpdate ();
+        }
+
+        private void upButtonClick (object sender, EventArgs e)
+        {
+            ShiftItem (shownListView, -1);
+        }
+
+        private void downButtonClick (object sender, EventArgs e)
+        {
+            ShiftItem (shownListView, 1);
+        }
+
         private void okButtonClick (object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
@@ -144,6 +174,7 @@ namespace MonoDevelop.Platform
             View = View.Details;
             MultiSelect = false;
 			FullRowSelect = true;
+            HideSelection = false;
 
             Columns.Add ("Name");
             Columns.Add ("Encoding");
