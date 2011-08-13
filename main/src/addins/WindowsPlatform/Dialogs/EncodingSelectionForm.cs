@@ -45,6 +45,7 @@ namespace MonoDevelop.Platform
         public EncodingSelectionForm ()
         {
             InitializeComponent ();
+			LoadStockItems ();
 			Populate ();
         }
 		
@@ -79,6 +80,23 @@ namespace MonoDevelop.Platform
 			}
 			availableListView.AutoResizeColumns (ColumnHeaderAutoResizeStyle.HeaderSize);
 			availableListView.EndUpdate ();
+		}
+
+		void LoadStockItems ()
+		{
+			SetStockImage (addButton, Gtk.Stock.GoForward);
+			SetStockImage (removeButton, Gtk.Stock.GoBack);
+			SetStockImage (upButton, Gtk.Stock.GoUp);
+			SetStockImage (downButton, Gtk.Stock.GoDown);
+		}
+
+		void SetStockImage (Button b, string stockId)
+		{
+			var pixbuf = MonoDevelop.Ide.ImageService.GetPixbuf (stockId, Gtk.IconSize.Button);
+			var stockImage = Image.FromStream (new System.IO.MemoryStream (pixbuf.SaveToBuffer ("png")));
+
+			b.Image = stockImage;
+			b.Text = String.Empty;
 		}
 		
 		public TextEncoding [] SelectedEncodings {
