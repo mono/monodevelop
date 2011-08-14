@@ -81,7 +81,6 @@ namespace MonoDevelop.Platform
 					Location = new Point (labelWidth + 20, location.Y),
 					Width = DialogWidth - (labelWidth + 20 + padding),
 					SelectedEncodingId = data.Encoding,
-					Enabled = false
 				};
 				
 				Controls.AddRange (new Control [] { encodingLabel, encodingBox });
