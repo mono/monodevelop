@@ -1,3 +1,21 @@
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -77,7 +95,7 @@ namespace ICSharpCode.Decompiler.Ast
 			context.CancellationToken.ThrowIfCancellationRequested();
 			ILBlock ilMethod = new ILBlock();
 			ILAstBuilder astBuilder = new ILAstBuilder();
-			ilMethod.Body = astBuilder.Build(methodDef, true);
+			ilMethod.Body = astBuilder.Build(methodDef, true, context);
 			
 			context.CancellationToken.ThrowIfCancellationRequested();
 			ILAstOptimizer bodyGraph = new ILAstOptimizer();
@@ -241,6 +259,9 @@ namespace ICSharpCode.Decompiler.Ast
 				result = node;
 			
 			if (result != null)
+				result = result.WithAnnotation(new TypeInformation(expr.InferredType));
+			
+			if (result != null)
 				return result.WithAnnotation(ilRanges);
 			
 			return result;
@@ -331,8 +352,7 @@ namespace ICSharpCode.Decompiler.Ast
 					}
 					#endregion
 					#region Arrays
-				case ILCode.Newarr:
-					case ILCode.InitArray: {
+					case ILCode.Newarr: {
 						var ace = new Ast.ArrayCreateExpression();
 						ace.Type = operandAsTypeRef;
 						ComposedType ct = operandAsTypeRef as ComposedType;
@@ -346,6 +366,38 @@ namespace ICSharpCode.Decompiler.Ast
 						} else {
 							ace.Arguments.Add(arg1);
 						}
+						return ace;
+					}
+					case ILCode.InitArray: {
+						var ace = new Ast.ArrayCreateExpression();
+						ace.Type = operandAsTypeRef;
+						ComposedType ct = operandAsTypeRef as ComposedType;
+						var arrayType = (ArrayType) operand;
+						if (ct != null)
+						{
+							// change "new (int[,])[10] to new int[10][,]"
+							ct.ArraySpecifiers.MoveTo(ace.AdditionalArraySpecifiers);
+							ace.Initializer = new ArrayInitializerExpression();
+							var first = ace.AdditionalArraySpecifiers.First();
+							first.Remove();
+							ace.Arguments.AddRange(Enumerable.Repeat(0, first.Dimensions).Select(i => new EmptyExpression()));
+						}
+						var newArgs = new List<Expression>();
+						foreach (var arrayDimension in arrayType.Dimensions.Skip(1).Reverse())
+						{
+							int length = (int)arrayDimension.UpperBound - (int)arrayDimension.LowerBound;
+							for (int j = 0; j < args.Count; j += length)
+							{
+								var child = new ArrayInitializerExpression();
+								child.Elements.AddRange(args.GetRange(j, length));
+								newArgs.Add(child);
+							}
+							var temp = args;
+							args = newArgs;
+							newArgs = temp;
+							newArgs.Clear();
+						}
+						ace.Initializer.Elements.AddRange(args);
 						return ace;
 					}
 					case ILCode.Ldlen: return arg1.Member("Length");
@@ -485,9 +537,12 @@ namespace ICSharpCode.Decompiler.Ast
 						return arg1;
 					else
 						return arg1.CastTo(operandAsTypeRef);
-					case ILCode.Isinst:         return arg1.CastAs(operandAsTypeRef);
-					case ILCode.Box:            return arg1;
-					case ILCode.Unbox:          return InlineAssembly(byteCode, args);
+				case ILCode.Isinst:
+					return arg1.CastAs(operandAsTypeRef);
+				case ILCode.Box:
+					return arg1;
+				case ILCode.Unbox:
+					return MakeRef(arg1.CastTo(operandAsTypeRef));
 					#endregion
 					#region Indirect
 				case ILCode.Ldind_Ref:
@@ -539,11 +594,7 @@ namespace ICSharpCode.Decompiler.Ast
 					case ILCode.Endfilter:   return InlineAssembly(byteCode, args);
 					case ILCode.Endfinally:  return null;
 					case ILCode.Initblk:     return InlineAssembly(byteCode, args);
-				case ILCode.Initobj:
-					if (args[0] is DirectionExpression)
-						return new AssignmentExpression(((DirectionExpression)args[0]).Expression.Detach(), MakeDefaultValue((TypeReference)operand));
-					else
-						return InlineAssembly(byteCode, args);
+					case ILCode.Initobj:      return InlineAssembly(byteCode, args);
 				case ILCode.DefaultValue:
 					return MakeDefaultValue((TypeReference)operand);
 					case ILCode.Jmp: return InlineAssembly(byteCode, args);
@@ -602,7 +653,7 @@ namespace ICSharpCode.Decompiler.Ast
 					case ILCode.Ldstr:  return new Ast.PrimitiveExpression(operand);
 				case ILCode.Ldtoken:
 					if (operand is Cecil.TypeReference) {
-						return new Ast.TypeOfExpression { Type = operandAsTypeRef }.Member("TypeHandle");
+						return AstBuilder.CreateTypeOfExpression((TypeReference)operand).Member("TypeHandle");
 					} else {
 						return InlineAssembly(byteCode, args);
 					}
@@ -734,7 +785,13 @@ namespace ICSharpCode.Decompiler.Ast
 							}
 						}
 						ObjectCreateExpression oce = arg1 as ObjectCreateExpression;
+						DefaultValueExpression dve = arg1 as DefaultValueExpression;
 						if (oce != null) {
+							oce.Initializer = initializer;
+							return oce;
+						} else if (dve != null) {
+							oce = new ObjectCreateExpression(dve.Type.Detach());
+							oce.CopyAnnotationsFrom(dve);
 							oce.Initializer = initializer;
 							return oce;
 						} else {
@@ -852,14 +909,21 @@ namespace ICSharpCode.Decompiler.Ast
 					target = ((DirectionExpression)target).Expression;
 					target.Remove(); // detach from DirectionExpression
 				}
-				if (cecilMethodDef != null && cecilMethodDef.DeclaringType.IsInterface) {
-					TypeReference tr = byteCode.Arguments[0].InferredType;
-					if (tr != null) {
-						TypeDefinition td = tr.Resolve();
-						if (td != null && !td.IsInterface) {
-							// Calling an interface method on a non-interface object:
-							// we need to introduce an explicit cast
-							target = target.CastTo(AstBuilder.ConvertType(cecilMethod.DeclaringType));
+				
+				if (cecilMethodDef != null) {
+					// convert null.ToLower() to ((string)null).ToLower()
+					if (target is NullReferenceExpression)
+						target = target.CastTo(AstBuilder.ConvertType(cecilMethod.DeclaringType));
+					
+					if (cecilMethodDef.DeclaringType.IsInterface) {
+						TypeReference tr = byteCode.Arguments[0].InferredType;
+						if (tr != null) {
+							TypeDefinition td = tr.Resolve();
+							if (td != null && !td.IsInterface) {
+								// Calling an interface method on a non-interface object:
+								// we need to introduce an explicit cast
+								target = target.CastTo(AstBuilder.ConvertType(cecilMethod.DeclaringType));
+							}
 						}
 					}
 				}
@@ -895,29 +959,29 @@ namespace ICSharpCode.Decompiler.Ast
 				if (cecilMethodDef.IsGetter && methodArgs.Count == 0) {
 					foreach (var prop in cecilMethodDef.DeclaringType.Properties) {
 						if (prop.GetMethod == cecilMethodDef)
-							return target.Member(prop.Name).WithAnnotation(prop);
+							return target.Member(prop.Name).WithAnnotation(prop).WithAnnotation(cecilMethod);
 					}
 				} else if (cecilMethodDef.IsGetter) { // with parameters
 					PropertyDefinition indexer = GetIndexer(cecilMethodDef);
 					if (indexer != null)
-						return target.Indexer(methodArgs).WithAnnotation(indexer);
+						return target.Indexer(methodArgs).WithAnnotation(indexer).WithAnnotation(cecilMethod);
 				} else if (cecilMethodDef.IsSetter && methodArgs.Count == 1) {
 					foreach (var prop in cecilMethodDef.DeclaringType.Properties) {
 						if (prop.SetMethod == cecilMethodDef)
-							return new Ast.AssignmentExpression(target.Member(prop.Name).WithAnnotation(prop), methodArgs[0]);
+							return new Ast.AssignmentExpression(target.Member(prop.Name).WithAnnotation(prop).WithAnnotation(cecilMethod), methodArgs[0]);
 					}
 				} else if (cecilMethodDef.IsSetter && methodArgs.Count > 1) {
 					PropertyDefinition indexer = GetIndexer(cecilMethodDef);
 					if (indexer != null)
 						return new AssignmentExpression(
-							target.Indexer(methodArgs.GetRange(0, methodArgs.Count - 1)).WithAnnotation(indexer),
+							target.Indexer(methodArgs.GetRange(0, methodArgs.Count - 1)).WithAnnotation(indexer).WithAnnotation(cecilMethod),
 							methodArgs[methodArgs.Count - 1]
 						);
 				} else if (cecilMethodDef.IsAddOn && methodArgs.Count == 1) {
 					foreach (var ev in cecilMethodDef.DeclaringType.Events) {
 						if (ev.AddMethod == cecilMethodDef) {
 							return new Ast.AssignmentExpression {
-								Left = target.Member(ev.Name).WithAnnotation(ev),
+								Left = target.Member(ev.Name).WithAnnotation(ev).WithAnnotation(cecilMethod),
 								Operator = AssignmentOperatorType.Add,
 								Right = methodArgs[0]
 							};
@@ -927,7 +991,7 @@ namespace ICSharpCode.Decompiler.Ast
 					foreach (var ev in cecilMethodDef.DeclaringType.Events) {
 						if (ev.RemoveMethod == cecilMethodDef) {
 							return new Ast.AssignmentExpression {
-								Left = target.Member(ev.Name).WithAnnotation(ev),
+								Left = target.Member(ev.Name).WithAnnotation(ev).WithAnnotation(cecilMethod),
 								Operator = AssignmentOperatorType.Subtract,
 								Right = methodArgs[0]
 							};
@@ -935,7 +999,7 @@ namespace ICSharpCode.Decompiler.Ast
 					}
 				} else if (cecilMethodDef.Name == "Invoke" && cecilMethodDef.DeclaringType.BaseType != null && cecilMethodDef.DeclaringType.BaseType.FullName == "System.MulticastDelegate") {
 					AdjustArgumentsForMethodCall(cecilMethod, methodArgs);
-					return target.Invoke(methodArgs);
+					return target.Invoke(methodArgs).WithAnnotation(cecilMethod);
 				}
 			}
 			// Default invocation
@@ -948,7 +1012,8 @@ namespace ICSharpCode.Decompiler.Ast
 			// Convert 'ref' into 'out' where necessary
 			for (int i = 0; i < methodArgs.Count && i < cecilMethod.Parameters.Count; i++) {
 				DirectionExpression dir = methodArgs[i] as DirectionExpression;
-				if (dir != null && cecilMethod.Parameters[i].IsOut)
+				ParameterDefinition p = cecilMethod.Parameters[i];
+				if (dir != null && p.IsOut && !p.IsIn)
 					dir.FieldDirection = FieldDirection.Out;
 			}
 		}

@@ -17,44 +17,42 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
+using Mono.Cecil;
 
-namespace ICSharpCode.Decompiler.Ast
+namespace ICSharpCode.Decompiler.Ast.Transforms
 {
 	/// <summary>
-	/// Allows storing comments inside IEnumerable{Statement}. Used in the AstMethodBuilder.
-	/// CommentStatement nodes are replaced with regular comments later on.
+	/// Transforms decimal constant fields.
 	/// </summary>
-	class CommentStatement : Statement
+	public class DecimalConstantTransform : DepthFirstAstVisitor<object, object>, IAstTransform
 	{
-		string comment;
+		static readonly PrimitiveType decimalType = new PrimitiveType("decimal");
 		
-		public CommentStatement(string comment)
+		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
-			if (comment == null)
-				throw new ArgumentNullException("comment");
-			this.comment = comment;
-		}
-		
-		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
-		{
-			return default(S);
-		}
-		
-		public static void ReplaceAll(AstNode tree)
-		{
-			foreach (var cs in tree.Descendants.OfType<CommentStatement>()) {
-				cs.Parent.InsertChildBefore(cs, new Comment(cs.comment), Roles.Comment);
-				cs.Remove();
+			const Modifiers staticReadOnly = Modifiers.Static | Modifiers.Readonly;
+			if ((fieldDeclaration.Modifiers & staticReadOnly) == staticReadOnly && decimalType.IsMatch(fieldDeclaration.ReturnType)) {
+				foreach (var attributeSection in fieldDeclaration.Attributes) {
+					foreach (var attribute in attributeSection.Attributes) {
+						TypeReference tr = attribute.Type.Annotation<TypeReference>();
+						if (tr != null && tr.Name == "DecimalConstantAttribute" && tr.Namespace == "System.Runtime.CompilerServices") {
+							attribute.Remove();
+							if (attributeSection.Attributes.Count == 0)
+								attributeSection.Remove();
+							fieldDeclaration.Modifiers = (fieldDeclaration.Modifiers & ~staticReadOnly) | Modifiers.Const;
+							return null;
+						}
+					}
+				}
 			}
+			return null;
 		}
 		
-		protected override bool DoMatch(AstNode other, Match match)
+		public void Run(AstNode compilationUnit)
 		{
-			CommentStatement o = other as CommentStatement;
-			return o != null && MatchString(comment, o.comment);
+			compilationUnit.AcceptVisitor(this, null);
 		}
 	}
 }

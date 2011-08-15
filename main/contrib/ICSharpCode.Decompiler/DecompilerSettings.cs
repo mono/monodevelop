@@ -209,6 +209,53 @@ namespace ICSharpCode.Decompiler
 			}
 		}
 		
+		bool showXmlDocumentation = true;
+		
+		/// <summary>
+		/// Gets/Sets whether to include XML documentation comments in the decompiled code
+		/// </summary>
+		public bool ShowXmlDocumentation {
+			get { return showXmlDocumentation; }
+			set {
+				if (showXmlDocumentation != value) {
+					showXmlDocumentation = value;
+					OnPropertyChanged("ShowXmlDocumentation");
+				}
+			}
+		}
+		
+		#region Options to aid VB decompilation
+		bool introduceIncrementAndDecrement = true;
+		
+		/// <summary>
+		/// Gets/Sets whether to use increment and decrement operators
+		/// </summary>
+		public bool IntroduceIncrementAndDecrement {
+			get { return introduceIncrementAndDecrement; }
+			set {
+				if (introduceIncrementAndDecrement != value) {
+					introduceIncrementAndDecrement = value;
+					OnPropertyChanged("IntroduceIncrementAndDecrement");
+				}
+			}
+		}
+		
+		bool alwaysGenerateExceptionVariableForCatchBlocks = false;
+		
+		/// <summary>
+		/// Gets/Sets whether to always generate exception variables in catch blocks
+		/// </summary>
+		public bool AlwaysGenerateExceptionVariableForCatchBlocks {
+			get { return alwaysGenerateExceptionVariableForCatchBlocks; }
+			set {
+				if (alwaysGenerateExceptionVariableForCatchBlocks != value) {
+					alwaysGenerateExceptionVariableForCatchBlocks = value;
+					OnPropertyChanged("AlwaysGenerateExceptionVariableForCatchBlocks");
+				}
+			}
+		}
+		#endregion
+		
 		public event PropertyChangedEventHandler PropertyChanged;
 		
 		protected virtual void OnPropertyChanged(string propertyName)

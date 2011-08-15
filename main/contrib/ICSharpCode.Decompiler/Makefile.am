@@ -12,6 +12,7 @@ REFS =  \
 	
 
 FILES =  \
+	Ast/Annotations.cs \
 	Ast/AstBuilder.cs \
 	Ast/AstMethodBodyBuilder.cs \
 	Ast/CecilTypeResolveContext.cs \
@@ -24,6 +25,7 @@ FILES =  \
 	Ast/Transforms/CombineQueryExpressions.cs \
 	Ast/Transforms/ContextTrackingVisitor.cs \
 	Ast/Transforms/ConvertConstructorCallIntoInitializer.cs \
+	Ast/Transforms/DecimalConstantTransform.cs \
 	Ast/Transforms/DeclareVariables.cs \
 	Ast/Transforms/DelegateConstruction.cs \
 	Ast/Transforms/IntroduceExtensionMethods.cs \
@@ -75,6 +77,7 @@ FILES =  \
 	PlainTextOutput.cs \
 	Properties/AssemblyInfo.cs \
 	ReferenceResolvingException.cs \
+	Tests/CallOverloadedMethod.cs \
 	TextOutputWriter.cs 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 

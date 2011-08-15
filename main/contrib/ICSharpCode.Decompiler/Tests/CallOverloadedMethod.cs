@@ -17,58 +17,36 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
-public class Loops
+public class CallOverloadedMethod
 {
-	public void ForEach(IEnumerable<string> enumerable)
+	public void OverloadedMethod(object a)
 	{
-		foreach (string current in enumerable)
-		{
-			current.ToLower();
-		}
 	}
 	
-	public void ForEachOverList(List<string> list)
+	public void OverloadedMethod(int? a)
 	{
-		// List has a struct as enumerator, so produces quite different IL than foreach over the IEnumerable interface
-		foreach (string current in list)
-		{
-			current.ToLower();
-		}
 	}
 	
-	public void ForEachOverNonGenericEnumerable(IEnumerable enumerable)
+	public void OverloadedMethod(string a)
 	{
-		foreach (object current in enumerable)
-		{
-			current.ToString();
-		}
 	}
 	
-	public void ForEachOverNonGenericEnumerableWithAutomaticCast(IEnumerable enumerable)
+	public void Call()
 	{
-		foreach (int num in enumerable)
-		{
-			num.ToString();
-		}
+		this.OverloadedMethod("(string)");
+		this.OverloadedMethod((object)"(object)");
+		this.OverloadedMethod(5);
+		this.OverloadedMethod((object)5);
+		this.OverloadedMethod(5L);
+		this.OverloadedMethod((object)null);
+		this.OverloadedMethod((string)null);
+		this.OverloadedMethod((int?)null);
 	}
 	
-//	public void ForEachOverArray(string[] array)
-//	{
-//		foreach (string text in array)
-//		{
-//			text.ToLower();
-//		}
-//	}
-	
-	public void ForOverArray(string[] array)
+	public void CallMethodUsingInterface(List<int> list)
 	{
-		for (int i = 0; i < array.Length; i++)
-		{
-			array[i].ToLower();
-		}
+		((ICollection<int>)list).Clear();
 	}
 }
-
