@@ -174,9 +174,9 @@ namespace MonoDevelop.Refactoring.CreateClass
 			return result;
 		}
 
-		protected virtual ICSharpCode.NRefactory.TypeSystem.ClassType GetNewTypeType ()
+		protected virtual ICSharpCode.NRefactory.CSharp.ClassType GetNewTypeType ()
 		{
-			return ICSharpCode.NRefactory.TypeSystem.ClassType.Class;
+			return ICSharpCode.NRefactory.CSharp.ClassType.Class;
 		}
 
 	}
