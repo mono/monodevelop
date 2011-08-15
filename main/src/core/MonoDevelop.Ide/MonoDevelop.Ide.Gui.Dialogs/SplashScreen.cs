@@ -90,12 +90,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 		public void SetMessage (string Message)
 		{
-			if (bitmap == null) {
+/*			if (bitmap == null) {
 				label.Text = Message;
 			} else {
 				label.Markup = "<span size='small' foreground='white'>" + Message + "</span>";
 			}
-			RunMainLoop ();
+			RunMainLoop ();*/
 		}
 		
 		static void RunMainLoop ()
