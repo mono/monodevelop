@@ -679,7 +679,6 @@ attribute_sections
 			attrs = new Attributes (sect);
 		else
 			attrs.AddAttributes (sect);
-		lbag.AddLocation (sect, savedOpenLocation, savedCloseLocation);
 		$$ = attrs;
 	  }
 	;

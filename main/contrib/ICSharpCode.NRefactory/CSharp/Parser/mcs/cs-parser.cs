@@ -4151,7 +4151,6 @@ void case_51()
 			attrs = new Attributes (sect);
 		else
 			attrs.AddAttributes (sect);
-		lbag.AddLocation (sect, savedOpenLocation, savedCloseLocation);
 		yyVal = attrs;
 	  }
 
