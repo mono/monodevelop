@@ -284,7 +284,7 @@ namespace MonoDevelop.CSharp.Completion
 					DisplayFlags |= DisplayFlags.Obsolete;
 				}
 				var returnType = m.SourceProjectDom.GetType (m.ReturnType);
-				if (returnType != null && returnType.ClassType == ClassType.Delegate) {
+				if (returnType != null && returnType.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 					sb.AppendLine ();
 					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
 					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));

@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 					if (resolveResult == null)
 						return null;
 					IType type = options.Dom.GetType (resolveResult.ResolvedType);
-					if (type == null || type.ClassType != ClassType.Delegate)
+					if (type == null || type.ClassType != MonoDevelop.Projects.Dom.ClassType.Delegate)
 						return null;
 					return type;
 				}

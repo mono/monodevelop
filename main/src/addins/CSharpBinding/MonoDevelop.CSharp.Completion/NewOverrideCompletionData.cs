@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType, editor.Options.TabsToSpaces, editor.Options.TabSize, editor.EolMarker);
 			bool isExplicit = false;
-			if (member.DeclaringType.ClassType == ClassType.Interface) {
+			if (member.DeclaringType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface) {
 				foreach (var m in type.Members) {
 					if (m.Name == member.Name && m.ReturnType.ToInvariantString () != member.ReturnType.ToInvariantString ()) {
 						isExplicit = true;

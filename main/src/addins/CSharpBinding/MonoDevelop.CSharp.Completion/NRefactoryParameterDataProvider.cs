@@ -123,7 +123,7 @@ namespace MonoDevelop.CSharp.Completion
 		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IType type)
 		{
 			if (type != null) {
-				if (type.ClassType == ClassType.Delegate) {
+				if (type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 					IMethod invokeMethod = ExtractInvokeMethod (type);
 					if (type is InstantiatedType) {
 						this.delegateName = ((InstantiatedType)type).UninstantiatedType.Name;
@@ -294,7 +294,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			if (curParameter != null) {
 				var returnType = curParameter.DeclaringMember.SourceProjectDom.GetType (curParameter.ReturnType);
-				if (returnType != null && returnType.ClassType == ClassType.Delegate) {
+				if (returnType != null && returnType.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 					sb.AppendLine ();
 					sb.AppendLine ();
 					sb.Append ("<small>");

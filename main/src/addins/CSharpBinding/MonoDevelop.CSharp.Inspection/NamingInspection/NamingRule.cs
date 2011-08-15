@@ -306,25 +306,25 @@ namespace MonoDevelop.CSharp.Inspection
 			if (MatchKind != 0) {
 				switch (MatchKind) {
 				case DeclarationKinds.Class:
-					if (node.ClassType != ICSharpCode.NRefactory.TypeSystem.ClassType.Class)
+					if (node.ClassType != ICSharpCode.NRefactory.CSharp.ClassType.Class)
 						return false;
 					break;
 				case DeclarationKinds.Enum:
-					if (node.ClassType != ICSharpCode.NRefactory.TypeSystem.ClassType.Enum)
+					if (node.ClassType != ICSharpCode.NRefactory.CSharp.ClassType.Enum)
 						return false;
 					break;
 				case DeclarationKinds.Struct:
-					if (node.ClassType != ICSharpCode.NRefactory.TypeSystem.ClassType.Struct)
+					if (node.ClassType != ICSharpCode.NRefactory.CSharp.ClassType.Struct)
 						return false;
 					break;
 				case DeclarationKinds.Interface:
-					if (node.ClassType != ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
+					if (node.ClassType != ICSharpCode.NRefactory.CSharp.ClassType.Interface)
 						return false;
 					break;
-				case DeclarationKinds.Delegate:
-					if (node.ClassType != ICSharpCode.NRefactory.TypeSystem.ClassType.Delegate)
-						return false;
-					break;
+//				case DeclarationKinds.Delegate:
+//					if (node.ClassType != ICSharpCode.NRefactory.CSharp.ClassType.Delegate)
+//						return false;
+//					break;
 				default:
 					return false;
 				}

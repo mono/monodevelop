@@ -405,7 +405,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			this.Unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
 		}
 		
-		public override AstType CreateShortType (AstType fullType)
+	/*	public override AstType CreateShortType (AstType fullType)
 		{
 			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, fullType.ConvertToReturnType ());
 		}
@@ -414,7 +414,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, fullTypeName);
 		}
-		
+		*/
 		
 		NRefactoryResolver resolver;
 		public NRefactoryResolver Resolver {
@@ -424,7 +424,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				return resolver;
 			}
 		}
-		
+	/*	
 		Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> resolveCache = new Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> ();
 		MonoDevelop.Projects.Dom.ResolveResult Resolve (AstNode node)
 		{
@@ -442,7 +442,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, resolveResult.ResolvedType);
 		}
 		
-		
+		*/
 		ParsedFile ParsedFile {
 			get {
 				var visitor = new TypeSystemConvertVisitor ((IProjectContent) TypeResolveContext, Document.FileName);
@@ -451,7 +451,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 		}
 		
-		public override IEnumerable<ICSharpCode.NRefactory.TypeSystem.IMember> ResolveMember (Expression expression)
+	/*	public override IEnumerable<ICSharpCode.NRefactory.TypeSystem.IMember> ResolveMember (Expression expression)
 		{
 			var pf = ParsedFile;
 			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
@@ -470,23 +470,23 @@ namespace MonoDevelop.CSharp.ContextAction
 				foreach (var m in mgg.Methods)
 					yield return m;
 			}
-		}
+		}*/	
 		
 		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, MemberDeclaration replaceWidth)
 		{
 			// TODO
 		}
 		
-		public override ICSharpCode.NRefactory.TypeSystem.ITypeDefinition GetDefinition (AstType resolvedType)
-		{
-			var rr = Resolve (resolvedType);
-			if (rr == null)
-				return null;
-			var type = Document.Dom.GetType (rr.ResolvedType);
-			if (type == null)
-				return null;
-			return TypeResolveContext.GetClass (type.Namespace, type.Name, type.TypeParameters.Count, StringComparer.InvariantCulture);
-		}
+//		public override ICSharpCode.NRefactory.TypeSystem.ITypeDefinition GetDefinition (AstType resolvedType)
+//		{
+//			var rr = Resolve (resolvedType);
+//			if (rr == null)
+//				return null;
+//			var type = Document.Dom.GetType (rr.ResolvedType);
+//			if (type == null)
+//				return null;
+//			return TypeResolveContext.GetClass (type.Namespace, type.Name, type.TypeParameters.Count, StringComparer.InvariantCulture);
+//		}
 		
 		/*
 		public bool IsValid {
@@ -555,5 +555,22 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 
 		*/
+		
+		//these methods don't get used in 2.8
+		
+		public override AstType CreateShortType (AstType fullType)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public override AstType CreateShortType (ICSharpCode.NRefactory.TypeSystem.IType fullType)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public override ResolveResult Resolve (AstNode expression)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
