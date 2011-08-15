@@ -1,4 +1,4 @@
-﻿// 
+// 
 // FixedFieldDeclaration.cs
 //
 // Author:
@@ -54,10 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole (Roles.Identifier, new Identifier (value, AstLocation.Empty));
+				SetChildByRole (Roles.Identifier, Identifier.Create (value, AstLocation.Empty));
 			}
 		}
-
+		
 		public Identifier NameToken {
 			get {
 				return GetChildByRole (Roles.Identifier);
@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SetChildByRole (Roles.Identifier, value);
 			}
 		}
-
+		
 		public CSharpTokenNode LBracketToken {
 			get { return GetChildByRole (Roles.LBracket); }
 		}

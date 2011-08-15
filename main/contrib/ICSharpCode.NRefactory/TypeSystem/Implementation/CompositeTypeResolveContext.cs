@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -52,10 +67,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			foreach (ITypeResolveContext context in children) {
-				ITypeDefinition d = context.GetClass(nameSpace, name, typeParameterCount, nameComparer);
+				ITypeDefinition d = context.GetTypeDefinition(nameSpace, name, typeParameterCount, nameComparer);
 				if (d != null)
 					return d;
 			}
@@ -63,15 +78,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public IEnumerable<ITypeDefinition> GetClasses()
+		public IEnumerable<ITypeDefinition> GetTypes()
 		{
-			return children.SelectMany(c => c.GetClasses());
+			return children.SelectMany(c => c.GetTypes());
 		}
 		
 		/// <inheritdoc/>
-		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		public IEnumerable<ITypeDefinition> GetTypes(string nameSpace, StringComparer nameComparer)
 		{
-			return children.SelectMany(c => c.GetClasses(nameSpace, nameComparer));
+			return children.SelectMany(c => c.GetTypes(nameSpace, nameComparer));
 		}
 		
 		/// <inheritdoc/>
@@ -94,20 +109,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <inheritdoc/>
 		public virtual ISynchronizedTypeResolveContext Synchronize()
 		{
-			return Synchronize(new CacheManager(), true);
-		}
-		
-		ISynchronizedTypeResolveContext Synchronize(CacheManager cacheManager, bool isTopLevel)
-		{
 			ISynchronizedTypeResolveContext[] sync = new ISynchronizedTypeResolveContext[children.Length];
 			bool success = false;
 			try {
 				for (int i = 0; i < sync.Length; i++) {
 					sync[i] = children[i].Synchronize();
 					if (sync[i] == null)
-						throw new InvalidOperationException(children[i] + ".ToString() returned null");
+						throw new InvalidOperationException(children[i] + ".Synchronize() returned null");
 				}
-				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, cacheManager, isTopLevel);
+				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, new CacheManager(), true);
 				success = true;
 				return r;
 			} finally {
@@ -132,7 +142,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			readonly CacheManager cacheManager;
 			readonly bool isTopLevel;
 			
-			public CompositeSynchronizedTypeResolveContext(ISynchronizedTypeResolveContext[] children, CacheManager cacheManager, bool isTopLevel)
+			public CompositeSynchronizedTypeResolveContext(ITypeResolveContext[] children, CacheManager cacheManager, bool isTopLevel)
 				: base(children)
 			{
 				Debug.Assert(cacheManager != null);
@@ -142,10 +152,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public void Dispose()
 			{
-				foreach (ISynchronizedTypeResolveContext element in children) {
-					element.Dispose();
-				}
 				if (isTopLevel) {
+					foreach (ISynchronizedTypeResolveContext element in children) {
+						element.Dispose();
+					}
 					// When the top-level synchronized block is closed, clear any cached data
 					cacheManager.Dispose();
 				}
@@ -160,7 +170,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public override ISynchronizedTypeResolveContext Synchronize()
 			{
 				// re-use the same cache manager for nested synchronized contexts
-				return base.Synchronize(cacheManager, false);
+				if (isTopLevel)
+					return new CompositeSynchronizedTypeResolveContext(children, cacheManager, false);
+				else
+					return this;
 			}
 		}
 	}

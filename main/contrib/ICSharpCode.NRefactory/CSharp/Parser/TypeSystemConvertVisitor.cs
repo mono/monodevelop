@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -54,6 +69,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
+		public ParsedFile Convert(AstNode node)
+		{
+			node.AcceptVisitor(this, null);
+			return parsedFile;
+		}
+		
 		public ParsedFile ParsedFile {
 			get { return parsedFile; }
 		}
@@ -80,6 +101,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				                  node.GetChildByRole(AstNode.Roles.RBrace).EndLocation);
 		}
 		
+		#region Compilation Unit
+		public override IEntity VisitCompilationUnit (CompilationUnit unit, object data)
+		{
+			parsedFile.Errors = unit.Errors;
+			return base.VisitCompilationUnit (unit, data);
+		}
+		#endregion
+		
 		#region Using Declarations
 		public override IEntity VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration, object data)
 		{
@@ -89,7 +118,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, true) as ITypeOrNamespaceReference;
+			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
 			if (u != null)
 				usingScope.Usings.Add(u);
 			return null;
@@ -97,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override IEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
-			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, true) as ITypeOrNamespaceReference;
+			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
 			if (u != null)
 				usingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(usingDeclaration.Alias, u));
 			return null;
@@ -127,7 +156,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (currentTypeDefinition != null) {
 				newType = new DefaultTypeDefinition(currentTypeDefinition, name);
 				newType.TypeParameters.AddRange(currentTypeDefinition.TypeParameters);
-				currentTypeDefinition.InnerClasses.Add(newType);
+				currentTypeDefinition.NestedTypes.Add(newType);
 			} else {
 				newType = new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
 				parsedFile.TopLevelTypeDefinitions.Add(newType);
@@ -138,22 +167,31 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			var td = currentTypeDefinition = CreateTypeDefinition(typeDeclaration.Name);
-			td.ClassType = typeDeclaration.ClassType;
 			td.Region = MakeRegion(typeDeclaration);
 			td.BodyRegion = MakeBraceRegion(typeDeclaration);
 			td.AddDefaultConstructorIfRequired = true;
 			
-			ConvertAttributes(td.Attributes, typeDeclaration.Attributes);
 			ApplyModifiers(td, typeDeclaration.Modifiers);
-			if (td.ClassType == ClassType.Interface)
-				td.IsAbstract = true; // interfaces are implicitly abstract
-			else if (td.ClassType == ClassType.Enum || td.ClassType == ClassType.Struct)
-				td.IsSealed = true; // enums/structs are implicitly sealed
+			switch (typeDeclaration.ClassType) {
+				case ClassType.Enum:
+					td.Kind = TypeKind.Enum;
+					break;
+				case ClassType.Interface:
+					td.Kind = TypeKind.Interface;
+					td.IsAbstract = true; // interfaces are implicitly abstract
+					break;
+				case ClassType.Struct:
+					td.Kind = TypeKind.Struct;
+					td.IsSealed = true; // enums/structs are implicitly sealed
+					break;
+			}
+			
+			ConvertAttributes(td.Attributes, typeDeclaration.Attributes);
 			
 			ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeParameters, typeDeclaration.Constraints, EntityType.TypeDefinition);
 			
 			foreach (AstType baseType in typeDeclaration.BaseTypes) {
-				td.BaseTypes.Add(ConvertType(baseType));
+				td.BaseTypes.Add(ConvertType(baseType, SimpleNameLookupMode.BaseTypeReference));
 			}
 			
 			foreach (AttributedNode member in typeDeclaration.Members) {
@@ -169,7 +207,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
 			var td = currentTypeDefinition = CreateTypeDefinition(delegateDeclaration.Name);
-			td.ClassType = ClassType.Delegate;
+			td.Kind = TypeKind.Delegate;
 			td.Region = MakeRegion(delegateDeclaration);
 			td.BaseTypes.Add(multicastDelegateReference);
 			
@@ -476,7 +514,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override IEntity VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
-			DefaultProperty p = new DefaultProperty(currentTypeDefinition, "Items");
+			DefaultProperty p = new DefaultProperty(currentTypeDefinition, "Item");
 			p.EntityType = EntityType.Indexer;
 			p.Region = MakeRegion(indexerDeclaration);
 			p.BodyRegion = MakeBraceRegion(indexerDeclaration);
@@ -581,6 +619,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		static void ApplyModifiers(TypeSystem.Implementation.AbstractMember m, Modifiers modifiers)
 		{
+			// members from interfaces are always Public+Abstract.
+			if (m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
+				m.Accessibility = Accessibility.Public;
+				m.IsAbstract = true;
+				return;
+			}
 			m.Accessibility = GetAccessibility(modifiers) ?? Accessibility.Private;
 			m.IsAbstract = (modifiers & Modifiers.Abstract) != 0;
 			m.IsOverride = (modifiers & Modifiers.Override) != 0;
@@ -615,6 +659,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			// non-assembly attributes are handled by their parent entity
 			if (attributeSection.AttributeTarget == "assembly") {
 				ConvertAttributes(parsedFile.AssemblyAttributes, attributeSection);
+			} else if (attributeSection.AttributeTarget == "module") {
+				ConvertAttributes(parsedFile.ModuleAttributes, attributeSection);
 			}
 			return null;
 		}
@@ -633,20 +679,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		internal static ITypeReference ConvertAttributeType(AstType type, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope)
+		{
+			ITypeReference tr = ConvertType(type, parentTypeDefinition, parentMethodDefinition, parentUsingScope, SimpleNameLookupMode.Type);
+			if (!type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
+				// Try to add "Attribute" suffix, but only if the identifier
+				// (=last identifier in fully qualified name) isn't a verbatim identifier.
+				SimpleTypeOrNamespaceReference st = tr as SimpleTypeOrNamespaceReference;
+				MemberTypeOrNamespaceReference mt = tr as MemberTypeOrNamespaceReference;
+				if (st != null)
+					return new AttributeTypeReference(st, st.AddSuffix("Attribute"));
+				else if (mt != null)
+					return new AttributeTypeReference(mt, mt.AddSuffix("Attribute"));
+			}
+			return tr;
+		}
+		
 		IAttribute ConvertAttribute(CSharp.Attribute attr)
 		{
 			DomRegion region = MakeRegion(attr);
-			ITypeReference type = ConvertType(attr.Type);
-			if (!attr.Type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
-				// Try to add "Attribute" suffix, but only if the identifier
-				// (=last identifier in fully qualified name) isn't a verbatim identifier.
-				SimpleTypeOrNamespaceReference st = type as SimpleTypeOrNamespaceReference;
-				MemberTypeOrNamespaceReference mt = type as MemberTypeOrNamespaceReference;
-				if (st != null)
-					type = new AttributeTypeReference(st, st.AddSuffix("Attribute"));
-				else if (mt != null)
-					type = new AttributeTypeReference(mt, mt.AddSuffix("Attribute"));
-			}
+			ITypeReference type = ConvertAttributeType(attr.Type, currentTypeDefinition, currentMethod, usingScope);
 			List<IConstantValue> positionalArguments = null;
 			List<KeyValuePair<string, IConstantValue>> namedCtorArguments = null;
 			List<KeyValuePair<string, IConstantValue>> namedArguments = null;
@@ -675,28 +727,32 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Types
-		ITypeReference ConvertType(AstType type, bool isInUsingDeclaration = false)
+		ITypeReference ConvertType(AstType type, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
 		{
-			return ConvertType(type, currentTypeDefinition, currentMethod, usingScope, isInUsingDeclaration);
+			return ConvertType(type, currentTypeDefinition, currentMethod, usingScope, lookupMode);
 		}
 		
-		internal static ITypeReference ConvertType(AstType type, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope, bool isInUsingDeclaration)
+		internal static ITypeReference ConvertType(AstType type, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope, SimpleNameLookupMode lookupMode)
 		{
 			SimpleType s = type as SimpleType;
 			if (s != null) {
 				List<ITypeReference> typeArguments = new List<ITypeReference>();
 				foreach (var ta in s.TypeArguments) {
-					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
+					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode));
 				}
 				if (typeArguments.Count == 0 && parentMethodDefinition != null) {
-					// SimpleTypeOrNamespaceReference doesn't support method type parameters,
-					// so we directly handle them here.
+					// SimpleTypeOrNamespaceReference doesn't have a 'current method' context
+					// so we have to handle method type parameters here.
 					foreach (ITypeParameter tp in parentMethodDefinition.TypeParameters) {
 						if (tp.Name == s.Identifier)
 							return tp;
 					}
 				}
-				return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
+				if (typeArguments.Count == 0 && string.IsNullOrEmpty(s.Identifier)) {
+					// empty SimpleType is used for typeof(List<>).
+					return SharedTypes.UnboundTypeArgument;
+				}
+				return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, lookupMode);
 			}
 			
 			PrimitiveType p = type as PrimitiveType;
@@ -729,7 +785,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					case "double":
 						return KnownTypeReference.Double;
 					case "decimal":
-						return ReflectionHelper.ToTypeReference(TypeCode.Decimal);
+						return KnownTypeReference.Decimal;
 					case "char":
 						return KnownTypeReference.Char;
 					case "void":
@@ -749,19 +805,19 @@ namespace ICSharpCode.NRefactory.CSharp
 						t = null;
 					}
 				} else {
-					t = ConvertType(m.Target, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration) as ITypeOrNamespaceReference;
+					t = ConvertType(m.Target, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode) as ITypeOrNamespaceReference;
 				}
 				if (t == null)
 					return SharedTypes.UnknownType;
 				List<ITypeReference> typeArguments = new List<ITypeReference>();
 				foreach (var ta in m.TypeArguments) {
-					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
+					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode));
 				}
 				return new MemberTypeOrNamespaceReference(t, m.MemberName, typeArguments, parentTypeDefinition, parentUsingScope);
 			}
 			ComposedType c = type as ComposedType;
 			if (c != null) {
-				ITypeReference t = ConvertType(c.BaseType, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration);
+				ITypeReference t = ConvertType(c.BaseType, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode);
 				if (c.HasNullableSpecifier) {
 					t = NullableType.Create(t);
 				}
@@ -930,26 +986,29 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new ConstantBinaryOperator(left, binaryOperatorExpression.Operator, right);
 			}
 			
-			static readonly GetClassTypeReference systemType = new GetClassTypeReference("System", "Type", 0);
-			
 			public override ConstantExpression VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 			{
 				if (isAttributeArgument) {
-					return new PrimitiveConstantExpression(systemType, convertVisitor.ConvertType(typeOfExpression.Type));
+					return new PrimitiveConstantExpression(KnownTypeReference.Type, convertVisitor.ConvertType(typeOfExpression.Type));
 				} else {
 					return null;
 				}
 			}
 			
-			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayObjectCreateExpression, object data)
+			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 			{
-				var initializer = arrayObjectCreateExpression.Initializer;
-				if (isAttributeArgument && !initializer.IsNull) {
+				var initializer = arrayCreateExpression.Initializer;
+				// Attributes only allow one-dimensional arrays
+				if (isAttributeArgument && !initializer.IsNull && arrayCreateExpression.Arguments.Count < 2) {
 					ITypeReference type;
-					if (arrayObjectCreateExpression.Type.IsNull)
+					if (arrayCreateExpression.Type.IsNull) {
 						type = null;
-					else
-						type = convertVisitor.ConvertType(arrayObjectCreateExpression.Type);
+					} else {
+						type = convertVisitor.ConvertType(arrayCreateExpression.Type);
+						foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
+							type = ArrayTypeReference.Create(type, spec.Dimensions);
+						}
+					}
 					ConstantExpression[] elements = new ConstantExpression[initializer.Elements.Count];
 					int pos = 0;
 					foreach (Expression expr in initializer.Elements) {

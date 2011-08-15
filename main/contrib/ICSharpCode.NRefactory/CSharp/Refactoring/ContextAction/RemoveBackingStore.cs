@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RemoveBackingStore.cs
 //  
 // Author:
@@ -26,6 +26,7 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -79,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			// automatic properties always need getter & setter
 			if (propertyDeclaration == null || propertyDeclaration.Getter.IsNull || propertyDeclaration.Setter.IsNull || propertyDeclaration.Getter.Body.IsNull || propertyDeclaration.Setter.Body.IsNull)
 				return null;
-			if (!context.HasCSharp3Support || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
+			if (!context.HasCSharp3Support || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ClassType.Interface)
 				return null;
 			var getterField = ScanGetter (context, propertyDeclaration);
 			if (getterField == null)
@@ -98,10 +99,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return null;
 			var returnStatement = propertyDeclaration.Getter.Body.Statements.First () as ReturnStatement;
 			
-			var result = context.ResolveMember (returnStatement.Expression);
-			if (result == null)
+			var result = context.Resolve (returnStatement.Expression);
+			if (result == null || !(result is MemberResolveResult))
 				return null;
-			return result.FirstOrDefault () as IField;
+			return ((MemberResolveResult)result).Member as IField;
 		}
 		
 		internal static IField ScanSetter (RefactoringContext context, PropertyDeclaration propertyDeclaration)
@@ -112,10 +113,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var assignment = setAssignment != null ? setAssignment.Expression as AssignmentExpression : null;
 			if (assignment == null || assignment.Operator != AssignmentOperatorType.Assign)
 				return null;
-			var result = context.ResolveMember (assignment.Left);
-			if (result == null)
+			var result = context.Resolve (assignment.Left);
+			if (result == null || !(result is MemberResolveResult))
 				return null;
-			return result.FirstOrDefault () as IField;
+			return ((MemberResolveResult)result).Member as IField;
 		}
 	}
 }

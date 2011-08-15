@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ICSharpCode")]
 [assembly: AssemblyProduct("SharpDevelop/MonoDevelop")]
-[assembly: AssemblyCopyright("Copyright 2010 AlphaSierraPapa")]
+[assembly: AssemblyCopyright("Copyright 2010-2011 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

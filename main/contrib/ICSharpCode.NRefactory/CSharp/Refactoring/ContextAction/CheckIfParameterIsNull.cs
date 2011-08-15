@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CheckIfParameterIsNull.cs
 //  
 // Author:
@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			var statement = new IfElseStatement () {
 				Condition = new BinaryOperatorExpression (new IdentifierExpression (parameter.Name), BinaryOperatorType.Equality, new NullReferenceExpression ()),
-				TrueStatement = new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.ArgumentNullException"), new PrimitiveExpression (parameter.Name)))
+				TrueStatement = new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System", "ArgumentNullException"), new PrimitiveExpression (parameter.Name)))
 			};
 			
 			using (var script = context.StartScript ()) {
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.parameter = parameter;
 			}
 			
-			public object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
+			public override object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
 			{
 				if (ifElseStatement.Condition is BinaryOperatorExpression) {
 					var binOp = ifElseStatement.Condition as BinaryOperatorExpression;

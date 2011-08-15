@@ -1,9 +1,25 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -34,7 +50,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return this.FullName; }
 		}
 		
-		public abstract bool? IsReferenceType { get; }
+		public abstract bool? IsReferenceType(ITypeResolveContext context);
+		
+		public abstract TypeKind Kind { get; }
 		
 		public virtual int TypeParameterCount {
 			get { return 0; }
@@ -59,34 +77,52 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return EmptyList<IType>.Instance;
 		}
 		
-		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
+		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			return EmptyList<IType>.Instance;
 		}
 		
-		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public virtual IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			return EmptyList<IType>.Instance;
+		}
+		
+		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public virtual IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
+		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
+		{
+			return EmptyList<IMethod>.Instance;
+		}
+		
+		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			return EmptyList<IProperty>.Instance;
 		}
 		
-		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
+		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			return EmptyList<IField>.Instance;
 		}
 		
-		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
+		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			return EmptyList<IEvent>.Instance;
+		}
+		
+		public virtual IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			return GetMethods(context, filter, options).SafeCast<IMethod, IMember>()
+				.Concat(GetProperties(context, filter, options).SafeCast<IProperty, IMember>())
+				.Concat(GetFields(context, filter, options).SafeCast<IField, IMember>())
+				.Concat(GetEvents(context, filter, options).SafeCast<IEvent, IMember>());
 		}
 		
 		public override bool Equals(object obj)

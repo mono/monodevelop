@@ -30,6 +30,14 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	public enum ClassType
+	{
+		Class,
+		Struct,
+		Interface,
+		Enum
+	}
+	
 	/// <summary>
 	/// class Name&lt;TypeParameters&gt; : BaseTypes where Constraints;
 	/// </summary>
@@ -55,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole (Roles.Identifier, new Identifier (value, AstLocation.Empty));
+				SetChildByRole (Roles.Identifier, Identifier.Create (value, AstLocation.Empty));
 			}
 		}
 		

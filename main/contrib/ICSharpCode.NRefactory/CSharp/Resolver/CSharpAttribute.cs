@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -41,8 +56,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public IMethod ResolveConstructor(ITypeResolveContext context)
 		{
+			CSharpResolver r = new CSharpResolver(context);
 			IType type = attributeType.Resolve(context);
-			throw new NotImplementedException();
+			int totalArgumentCount = 0;
+			if (positionalArguments != null)
+				totalArgumentCount += positionalArguments.Count;
+			if (namedCtorArguments != null)
+				totalArgumentCount += namedCtorArguments.Count;
+			ResolveResult[] arguments = new ResolveResult[totalArgumentCount];
+			string[] argumentNames = new string[totalArgumentCount];
+			int i = 0;
+			if (positionalArguments != null) {
+				while (i < positionalArguments.Count) {
+					IConstantValue cv = positionalArguments[i];
+					arguments[i] = new ConstantResolveResult(cv.GetValueType(context), cv.GetValue(context));
+					i++;
+				}
+			}
+			if (namedCtorArguments != null) {
+				foreach (var pair in namedCtorArguments) {
+					argumentNames[i] = pair.Key;
+					arguments[i] = new ConstantResolveResult(pair.Value.GetValueType(context), pair.Value.GetValue(context));
+					i++;
+				}
+			}
+			MemberResolveResult mrr = r.ResolveObjectCreation(type, arguments, argumentNames) as MemberResolveResult;
+			return mrr != null ? mrr.Member as IMethod : null;
 		}
 		
 		public IList<IConstantValue> GetPositionalArguments(ITypeResolveContext context)
@@ -107,10 +146,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// If both types exist, C# considers that to be an ambiguity, but we are less strict.
 			IType type = withoutSuffix.Resolve(context);
-			if (type == SharedTypes.UnknownType)
-				return withSuffix.Resolve(context);
-			else
-				return type;
+			var attrType = context.GetTypeDefinition (typeof(System.Attribute));
+			if (attrType == null)
+				return SharedTypes.UnknownType;
+			
+			if (type.GetDefinition() == null || !type.GetDefinition().IsDerivedFrom(attrType, context))
+				type = withSuffix.Resolve(context);
+			
+			return type;
 		}
 		
 		public override string ToString()

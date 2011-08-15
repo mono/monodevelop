@@ -46,10 +46,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			VariableInitializer initializer;
 			var eventDeclaration = GetEventDeclaration (context, out initializer);
-			var type = context.GetDefinition (context.ResolveType (eventDeclaration.ReturnType));
+			var type = context.Resolve (eventDeclaration.ReturnType).Type;
 			if (type == null)
 				return;
-			var invokeMethod = type.Methods.Where (m => m.Name == "Invoke").FirstOrDefault ();
+			var invokeMethod = type.GetDelegateInvokeMethod ();
 			if (invokeMethod == null)
 				return;
 			
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			var methodDeclaration = new MethodDeclaration () {
 				Name = "On" + initializer.Name,
-				ReturnType = context.CreateShortType (eventDeclaration.ReturnType),
+				ReturnType = new PrimitiveType ("void"),
 				Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Virtual,
 				Body = new BlockStatement () {
 					new VariableDeclarationStatement (context.CreateShortType (eventDeclaration.ReturnType), handlerName, new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name)),

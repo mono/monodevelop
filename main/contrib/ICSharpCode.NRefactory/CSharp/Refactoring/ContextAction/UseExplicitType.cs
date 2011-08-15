@@ -26,6 +26,8 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.TypeSystem;
+
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -33,7 +35,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public bool IsValid (RefactoringContext context)
 		{
-			return GetVariableDeclarationStatement (context) != null;
+			var varDecl = GetVariableDeclarationStatement (context);
+			if (varDecl == null)
+				return false;
+			var type = context.Resolve (varDecl.Variables.First ().Initializer).Type;
+			return !type.Equals (SharedTypes.Null) && !type.Equals (SharedTypes.UnknownType);
 		}
 		
 		public void Run (RefactoringContext context)
@@ -41,7 +47,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var varDecl = GetVariableDeclarationStatement (context);
 			
 			using (var script = context.StartScript ()) {
-				script.Replace (varDecl.Type, context.ResolveType (varDecl.Variables.First ().Initializer));
+				var type = context.Resolve (varDecl.Variables.First ().Initializer).Type;
+				script.Replace (varDecl.Type, context.CreateShortType (type));
 			}
 		}
 		
@@ -49,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var result = context.GetNode<VariableDeclarationStatement> ();
 			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (new SimpleType ("var"))) {
-				if (context.ResolveType (result.Variables.First ().Initializer) == null)
+				if (context.Resolve (result.Variables.First ().Initializer) == null)
 					return null;
 				return result;
 			}

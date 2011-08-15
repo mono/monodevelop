@@ -760,6 +760,11 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			public List<object> usings = new List<object> ();
 			public List<object> members = new List<object> ();
 			
+			public Namespace ()
+			{
+				// in case of missing close brace, set it to the highest value.
+				CloseBrace = new Location (int.MaxValue, int.MaxValue);
+			}
 			
 			public virtual void Accept (StructuralVisitor visitor)
 			{

@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var block = context.GetNode<BlockStatement> ();
 			if (block == null || block.LBraceToken.IsNull || block.RBraceToken.IsNull)
 				return null;
-			if (block.Parent.Role == TypeDeclaration.MemberRole)
+			if (!(block.Parent is Statement)) 
 				return null;
 			if (block.Statements.Count () != 1)
 				return null;

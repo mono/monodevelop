@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -36,6 +37,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				return NodeType.Unknown;
 			}
+		}
+		
+		List<Error> errors = new List<Error> ();
+		
+		public List<Error> Errors {
+			get { return errors; }
+		}
+		
+		/// <summary>
+		/// Gets the expression that was on top of the parse stack.
+		/// This is the only way to get an expression that isn't part of a statment.
+		/// (eg. when an error follows an expression).
+		/// 
+		/// This is used for code completion to 'get the expression before a token - like ., <, ('.
+		/// </summary>
+		public AstNode TopExpression {
+			get;
+			internal set;
 		}
 		
 		public CompilationUnit ()

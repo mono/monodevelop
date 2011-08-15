@@ -1,12 +1,26 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
-
+using System.Runtime.CompilerServices;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -16,12 +30,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly IProjectContent projectContent;
 		readonly ITypeDefinition declaringTypeDefinition;
 		
+		volatile ITypeDefinition compoundTypeDefinition;
+		
 		string ns;
 		string name;
 		
 		IList<ITypeReference> baseTypes;
 		IList<ITypeParameter> typeParameters;
-		IList<ITypeDefinition> innerClasses;
+		IList<ITypeDefinition> nestedTypes;
 		IList<IField> fields;
 		IList<IMethod> methods;
 		IList<IProperty> properties;
@@ -32,7 +48,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		DomRegion bodyRegion;
 		
 		// 1 byte per enum + 2 bytes for flags
-		ClassType classType;
+		TypeKind kind = TypeKind.Class;
 		Accessibility accessibility;
 		BitVector16 flags;
 		const ushort FlagSealed    = 0x0001;
@@ -46,7 +62,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			baseTypes = FreezeList(baseTypes);
 			typeParameters = FreezeList(typeParameters);
-			innerClasses = FreezeList(innerClasses);
+			nestedTypes = FreezeList(nestedTypes);
 			fields = FreezeList(fields);
 			methods = FreezeList(methods);
 			properties = FreezeList(properties);
@@ -65,6 +81,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.declaringTypeDefinition = declaringTypeDefinition;
 			this.name = name;
 			this.ns = declaringTypeDefinition.Namespace;
+			
+			this.compoundTypeDefinition = this;
 		}
 		
 		public DefaultTypeDefinition(IProjectContent projectContent, string ns, string name)
@@ -76,13 +94,30 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.projectContent = projectContent;
 			this.ns = ns ?? string.Empty;
 			this.name = name;
+			
+			this.compoundTypeDefinition = this;
 		}
 		
-		public ClassType ClassType {
-			get { return classType; }
+		public TypeKind Kind {
+			get { return kind; }
 			set {
 				CheckBeforeMutation();
-				classType = value;
+				kind = value;
+			}
+		}
+		
+		public bool? IsReferenceType(ITypeResolveContext context)
+		{
+			switch (kind) {
+				case TypeKind.Class:
+				case TypeKind.Interface:
+				case TypeKind.Delegate:
+					return true;
+				case TypeKind.Enum:
+				case TypeKind.Struct:
+					return false;
+				default:
+					return null;
 			}
 		}
 		
@@ -113,11 +148,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public IList<ITypeDefinition> InnerClasses {
+		public IList<ITypeDefinition> NestedTypes {
 			get {
-				if (innerClasses == null)
-					innerClasses = new List<ITypeDefinition>();
-				return innerClasses;
+				if (nestedTypes == null)
+					nestedTypes = new List<ITypeDefinition>();
+				return nestedTypes;
 			}
 		}
 		
@@ -159,22 +194,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					.Concat(this.Properties.SafeCast<IProperty, IMember>())
 					.Concat(this.Methods.SafeCast<IMethod, IMember>())
 					.Concat(this.Events.SafeCast<IEvent, IMember>());
-			}
-		}
-		
-		public bool? IsReferenceType {
-			get {
-				switch (this.ClassType) {
-					case ClassType.Class:
-					case ClassType.Interface:
-					case ClassType.Delegate:
-						return true;
-					case ClassType.Enum:
-					case ClassType.Struct:
-						return false;
-					default:
-						return null;
-				}
 			}
 		}
 		
@@ -266,7 +285,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public virtual string Documentation {
-			get { return null; }
+			get {
+				// To save memory, we don't store the documentation provider within the type,
+				// but use our the project content as a documentation provider:
+				IDocumentationProvider provider = projectContent as IDocumentationProvider;
+				if (provider != null)
+					return provider.GetDocumentation(this);
+				else
+					return null;
+			}
 		}
 		
 		public Accessibility Accessibility {
@@ -313,6 +340,30 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public bool IsPrivate {
+			get { return Accessibility == Accessibility.Private; }
+		}
+		
+		public bool IsPublic {
+			get { return Accessibility == Accessibility.Public; }
+		}
+		
+		public bool IsProtected {
+			get { return Accessibility == Accessibility.Protected; }
+		}
+		
+		public bool IsInternal {
+			get { return Accessibility == Accessibility.Internal; }
+		}
+		
+		public bool IsProtectedOrInternal {
+			get { return Accessibility == Accessibility.ProtectedOrInternal; }
+		}
+		
+		public bool IsProtectedAndInternal {
+			get { return Accessibility == Accessibility.ProtectedAndInternal; }
+		}
+		
 		public bool HasExtensionMethods {
 			get { return flags[FlagHasExtensionMethods]; }
 			set {
@@ -327,41 +378,50 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
+			ITypeDefinition compound = this.compoundTypeDefinition;
+			if (compound != this)
+				return compound.GetBaseTypes(context);
+			else
+				return GetBaseTypesImpl(context);
+		}
+		
+		IEnumerable<IType> GetBaseTypesImpl(ITypeResolveContext context)
+		{
 			bool hasNonInterface = false;
-			if (baseTypes != null && this.ClassType != ClassType.Enum) {
+			if (baseTypes != null && kind != TypeKind.Enum) {
 				foreach (ITypeReference baseTypeRef in baseTypes) {
 					IType baseType = baseTypeRef.Resolve(context);
-					ITypeDefinition baseTypeDef = baseType.GetDefinition();
-					if (baseTypeDef == null || baseTypeDef.ClassType != ClassType.Interface)
+					if (baseType.Kind != TypeKind.Interface)
 						hasNonInterface = true;
 					yield return baseType;
 				}
 			}
 			if (!hasNonInterface && !(this.Name == "Object" && this.Namespace == "System" && this.TypeParameterCount == 0)) {
-				Type primitiveBaseType;
-				switch (classType) {
-					case ClassType.Enum:
-						primitiveBaseType = typeof(Enum);
+				string primitiveBaseType;
+				switch (kind) {
+					case TypeKind.Enum:
+						primitiveBaseType = "Enum";
 						break;
-					case ClassType.Struct:
-						primitiveBaseType = typeof(ValueType);
+					case TypeKind.Struct:
+					case TypeKind.Void:
+						primitiveBaseType = "ValueType";
 						break;
-					case ClassType.Delegate:
-						primitiveBaseType = typeof(Delegate);
+					case TypeKind.Delegate:
+						primitiveBaseType = "Delegate";
 						break;
 					default:
-						primitiveBaseType = typeof(object);
+						primitiveBaseType = "Object";
 						break;
 				}
-				IType t = context.GetClass(primitiveBaseType);
+				IType t = context.GetTypeDefinition("System", primitiveBaseType, 0, StringComparer.Ordinal);
 				if (t != null)
 					yield return t;
 			}
 		}
 		
-		public virtual ITypeDefinition GetCompoundClass()
+		internal void SetCompoundTypeDefinition(ITypeDefinition compoundTypeDefinition)
 		{
-			return this;
+			this.compoundTypeDefinition = compoundTypeDefinition;
 		}
 		
 		public virtual IList<ITypeDefinition> GetParts()
@@ -369,201 +429,173 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return new ITypeDefinition[] { this };
 		}
 		
-		public IType GetElementType()
-		{
-			throw new InvalidOperationException();
-		}
-		
 		public ITypeDefinition GetDefinition()
 		{
-			return this;
+			return compoundTypeDefinition;
 		}
 		
-		public IType Resolve(ITypeResolveContext context)
+		IType ITypeReference.Resolve(ITypeResolveContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			return this;
 		}
 		
-		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
+		#region GetMembers
+		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetNestedTypes(context, filter);
-			
-			List<IType> nestedTypes = new List<IType>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					foreach (var baseTypeRef in this.BaseTypes) {
-						IType baseType = baseTypeRef.Resolve(context);
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && baseTypeDef.ClassType != ClassType.Interface) {
-							// get nested types from baseType (not baseTypeDef) so that generics work correctly
-							nestedTypes.AddRange(baseType.GetNestedTypes(context, filter));
-							break; // there is at most 1 non-interface base
-						}
-					}
-					foreach (ITypeDefinition innerClass in this.InnerClasses) {
-						if (filter == null || filter(innerClass)) {
-							nestedTypes.Add(innerClass);
-						}
+			const GetMemberOptions opt = GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions;
+			if ((options & opt) == opt) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetNestedTypes(context, filter, options);
+				
+				return ApplyFilter(this.NestedTypes, filter);
+			} else {
+				return GetMembersHelper.GetNestedTypes(this, context, filter, options);
+			}
+		}
+		
+		public IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			return GetMembersHelper.GetNestedTypes(this, typeArguments, context, filter, options);
+		}
+		
+		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetMethods(context, filter, options);
+				
+				return ApplyFilter(this.Methods, Utils.ExtensionMethods.And(m => !m.IsConstructor, filter));
+			} else {
+				return GetMembersHelper.GetMethods(this, context, filter, options);
+			}
+		}
+		
+		public virtual IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			return GetMembersHelper.GetMethods(this, typeArguments, context, filter, options);
+		}
+		
+		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
+		{
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetConstructors(context, filter, options);
+				
+				return GetConstructorsImpl(filter);
+			} else {
+				return GetMembersHelper.GetConstructors(this, context, filter, options);
+			}
+		}
+		
+		IEnumerable<IMethod> GetConstructorsImpl(Predicate<IMethod> filter)
+		{
+			bool foundCtor = false;
+			foreach (IMethod m in this.Methods) {
+				if (m.IsConstructor && !m.IsStatic) {
+					foundCtor = true;
+					if (filter == null || filter(m)) {
+						yield return m;
 					}
 				}
 			}
-			return nestedTypes;
-		}
-		
-		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
-		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetMethods(context, filter);
-			
-			List<IMethod> methods = new List<IMethod>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							methods.AddRange(baseType.GetMethods(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(methods);
-					AddFilteredRange(methods, this.Methods.Where(m => !m.IsConstructor), filter);
-				}
-			}
-			return methods;
-		}
-		
-		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
-		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetConstructors(context, filter);
-			
-			List<IMethod> methods = new List<IMethod>();
-			AddFilteredRange(methods, this.Methods.Where(m => m.IsConstructor && !m.IsStatic), filter);
 			
 			if (this.AddDefaultConstructorIfRequired) {
-				if (this.ClassType == ClassType.Class && methods.Count == 0
-				    || this.ClassType == ClassType.Enum || this.ClassType == ClassType.Struct)
+				if (kind == TypeKind.Class && !foundCtor && !this.IsStatic
+				    || kind == TypeKind.Enum || kind == TypeKind.Struct)
 				{
 					var m = DefaultMethod.CreateDefaultConstructor(this);
 					if (filter == null || filter(m))
-						methods.Add(m);
+						yield return m;
 				}
 			}
-			return methods;
 		}
 		
-		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
+		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetProperties(context, filter);
-			
-			List<IProperty> properties = new List<IProperty>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							properties.AddRange(baseType.GetProperties(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(properties);
-					AddFilteredRange(properties, this.Properties, filter);
-				}
-			}
-			return properties;
-		}
-		
-		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
-		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetFields(context, filter);
-			
-			List<IField> fields = new List<IField>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							fields.AddRange(baseType.GetFields(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(fields);
-					AddFilteredRange(fields, this.Fields, filter);
-				}
-			}
-			return fields;
-		}
-		
-		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
-		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetEvents(context, filter);
-			
-			List<IEvent> events = new List<IEvent>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							events.AddRange(baseType.GetEvents(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(events);
-					AddFilteredRange(events, this.Events, filter);
-				}
-			}
-			return events;
-		}
-		
-		static void AddFilteredRange<T>(List<T> targetList, IEnumerable<T> sourceList, Predicate<T> filter) where T : class
-		{
-			if (filter == null) {
-				targetList.AddRange(sourceList);
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetProperties(context, filter, options);
+				
+				return ApplyFilter(this.Properties, filter);
 			} else {
-				foreach (T element in sourceList) {
-					if (filter(element))
-						targetList.Add(element);
-				}
+				return GetMembersHelper.GetProperties(this, context, filter, options);
 			}
 		}
 		
-		/// <summary>
-		/// Removes duplicate members from the list.
-		/// This is necessary when the same member can be inherited twice due to multiple inheritance.
-		/// </summary>
-		static void RemoveDuplicates<T>(List<T> list) where T : class
+		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			if (list.Count > 1) {
-				HashSet<T> hash = new HashSet<T>();
-				list.RemoveAll(m => !hash.Add(m));
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetFields(context, filter, options);
+				
+				return ApplyFilter(this.Fields, filter);
+			} else {
+				return GetMembersHelper.GetFields(this, context, filter, options);
 			}
 		}
 		
-		// we use reference equality
+		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetEvents(context, filter, options);
+				
+				return ApplyFilter(this.Events, filter);
+			} else {
+				return GetMembersHelper.GetEvents(this, context, filter, options);
+			}
+		}
+		
+		public virtual IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			return GetMembersHelper.GetMembers(this, context, filter, options);
+		}
+		
+		static IEnumerable<T> ApplyFilter<T>(IList<T> enumerable, Predicate<T> filter) where T : class
+		{
+			if (enumerable.Count == 0)
+				return EmptyList<T>.Instance;
+			if (filter == null)
+				return enumerable;
+			else
+				return ApplyFilterImpl(enumerable, filter);
+		}
+		
+		static IEnumerable<T> ApplyFilterImpl<T>(IList<T> enumerable, Predicate<T> filter) where T : class
+		{
+			foreach (T item in enumerable)
+				if (filter(item))
+					yield return item;
+		}
+		#endregion
+		
+		#region Equals / GetHashCode
 		bool IEquatable<IType>.Equals(IType other)
 		{
-			return this == other;
+			// Two ITypeDefinitions are considered to be equal if they have the same compound class.
+			ITypeDefinition typeDef = other as ITypeDefinition;
+			return typeDef != null && this.GetDefinition() == typeDef.GetDefinition();
 		}
+		
+		public override bool Equals(object obj)
+		{
+			ITypeDefinition typeDef = obj as ITypeDefinition;
+			return typeDef != null && this.GetDefinition() == typeDef.GetDefinition();
+		}
+		
+		public override int GetHashCode()
+		{
+			return RuntimeHelpers.GetHashCode(compoundTypeDefinition);
+		}
+		#endregion
 		
 		public override string ToString()
 		{

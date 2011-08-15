@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole (Roles.Identifier, new Identifier (value, AstLocation.Empty));
+				SetChildByRole (Roles.Identifier, Identifier.Create (value, AstLocation.Empty));
 			}
 		}
 		
@@ -110,6 +110,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitVariableInitializer (this, data);
+		}
+		
+		public override string ToString()
+		{
+			if (this.Initializer.IsNull)
+				return "[VariableInitializer " + this.Name + "]";
+			else
+				return "[VariableInitializer " + this.Name + " = " + this.Initializer.ToString() + "]";
 		}
 		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)

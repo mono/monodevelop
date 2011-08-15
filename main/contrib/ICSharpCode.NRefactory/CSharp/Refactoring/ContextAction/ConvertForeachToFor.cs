@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -38,10 +39,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return GetForeachStatement (context) != null;
 		}
 
-		static string GetCountProperty (AstType type)
+		static string GetCountProperty (IType type)
 		{
-			if (type is ComposedType && ((ComposedType)type).ArraySpecifiers.Count > 0)
-				return "Length";
+//			if (!type.)
+//				return "Length";
 			return "Count";
 		}
 
@@ -49,8 +50,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var foreachStatement = GetForeachStatement (context);
 			
-			var result = context.ResolveType (foreachStatement.InExpression);
-			var countProperty = GetCountProperty (result);
+			var result = context.Resolve (foreachStatement.InExpression);
+			var countProperty = GetCountProperty (result.Type);
 			
 			var initializer = new VariableDeclarationStatement (new PrimitiveType ("int"), "i", new PrimitiveExpression (0));
 			var id1 = new IdentifierExpression ("i");
@@ -86,7 +87,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (astNode == null)
 				return null;
 			var result = (astNode as ForeachStatement) ?? astNode.Parent as ForeachStatement;
-			if (result == null || context.ResolveType (result.InExpression) == null)
+			if (result == null || context.Resolve (result.InExpression) == null)
 				return null;
 			return result;
 		}

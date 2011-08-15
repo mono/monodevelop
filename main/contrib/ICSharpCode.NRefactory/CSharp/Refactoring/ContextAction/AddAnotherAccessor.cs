@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AddAnotherAccessor.cs
 //  
 // Author:
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (pdecl == null)
 				return false;
 			var type = pdecl.Parent as TypeDeclaration;
-			if (type != null && type.ClassType == ICSharpCode.NRefactory.TypeSystem.ClassType.Interface)
+			if (type != null && type.ClassType == ClassType.Interface)
 				return false;
 			
 			return pdecl.Setter.IsNull || pdecl.Getter.IsNull;
@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return new ReturnStatement (new IdentifierExpression (field.Name));
 			}
 			
-			return new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.NotImplementedException")));
+			return new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System", "NotImplementedException")));
 		}
 		
 		static PropertyDeclaration GetPropertyDeclaration (RefactoringContext context)

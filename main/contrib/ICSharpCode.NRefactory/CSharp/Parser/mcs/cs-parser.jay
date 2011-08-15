@@ -143,7 +143,21 @@ namespace Mono.CSharp
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
+		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
+		
+		object lastYYVal;
+		
+		// Can be used for code completion to get the last valid expression before an error.
+		// needs a hack in yyparse to make it work add 
+		// lastYYVal = yyVal;
+		// after the big switch/case (somewhere around line 3915)
+		public object LastYYVal {
+			get {
+				return lastYYVal;
+			}
+		}
+		
 %}
 
 %token EOF
@@ -739,6 +753,7 @@ attribute_list
 	  {
 		var attrs = (List<Attribute>) $1;
 		attrs.Add ((Attribute) $3);
+		lbag.AppendTo (attrs, GetLocation ($2));
 
 		$$ = attrs;
 	  }
@@ -761,6 +776,9 @@ attribute
 		Arguments [] arguments = (Arguments []) $3;
 		ATypeNameExpression expr = mname.GetTypeExpression ();
 		$$ = new Attribute (current_attr_target, expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname));
+		if (arguments != null) {
+			lbag.AddLocation ($$, savedAttrParenOpenLocation, savedAttrParenCloseLocation);
+		}
 	  }
 	;
 
@@ -772,6 +790,8 @@ opt_attribute_arguments
 	: /* empty */   { $$ = null; }
 	| OPEN_PARENS attribute_arguments CLOSE_PARENS
 	  {
+		savedAttrParenOpenLocation = GetLocation ($1);
+		savedAttrParenCloseLocation = GetLocation ($3);
 		$$ = $2;
 	  }
 	;
@@ -2965,6 +2985,7 @@ type_list
 	  {
 		var types = (List<FullNamedExpression>) $1;
 		types.Add ((FullNamedExpression) $3);
+		lbag.AppendTo (types, GetLocation ($2));
 		$$ = types;
 	  }
 	;
@@ -3160,13 +3181,13 @@ object_or_collection_initializer
 	  		// TODO: lbag
 	  	} else {
 	  		$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
-	  		lbag.AddLocation ($$, GetLocation ($3));
+	  		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
 	  	}
 	  }
 	| OPEN_BRACE member_initializer_list COMMA CLOSE_BRACE
 	  {
 	  	$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
-	  	lbag.AddLocation ($$, GetLocation ($3), GetLocation ($4));
+	  	lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3), GetLocation ($4));
 	  }
 	;
 
@@ -3189,6 +3210,7 @@ member_initializer_list
 	  {
 	  	var a = (List<Expression>)$1;
 	  	a.Add ((Expression) $3);
+		lbag.AppendTo (a, GetLocation ($2));
 	  	$$ = a;
 	  }
 	| member_initializer_list error {
@@ -3517,6 +3539,8 @@ anonymous_type_parameters
 	  {
 	  	var a = (List<AnonymousTypeParameter>) $1;
 	  	a.Add ((AnonymousTypeParameter) $3);
+	  	lbag.AppendTo (a, GetLocation ($2));
+
 	  	$$ = a;
 	  }
 	;
@@ -4102,6 +4126,8 @@ lambda_parameter_list
 		}
 		
 		pars.Add (p);
+		lbag.AppendTo (pars, GetLocation ($2));
+
 		$$ = pars;
 	  }
 	;

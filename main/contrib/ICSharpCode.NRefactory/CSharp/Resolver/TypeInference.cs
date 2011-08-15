@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -72,9 +87,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		IType[] parameterTypes;
 		ResolveResult[] arguments;
 		bool[,] dependencyMatrix;
+		IList<IType> classTypeArguments;
 		
 		#region InferTypeArguments (main function)
-		public IType[] InferTypeArguments(IList<ITypeParameter> typeParameters, IList<ResolveResult> arguments, IList<IType> parameterTypes, out bool success)
+		/// <summary>
+		/// Performs type inference.
+		/// </summary>
+		/// <param name="typeParameters">The method type parameters that should be inferred.</param>
+		/// <param name="arguments">The arguments passed to the method.</param>
+		/// <param name="parameterTypes">The parameter types of the method.</param>
+		/// <param name="success">Out: whether type inference was successful</param>
+		/// <param name="classTypeArguments">
+		/// Class type arguments. These are substituted for class type parameters in the formal parameter types
+		/// when inferring a method group or lambda.
+		/// </param>
+		/// <returns>The inferred type arguments.</returns>
+		public IType[] InferTypeArguments(IList<ITypeParameter> typeParameters, IList<ResolveResult> arguments, IList<IType> parameterTypes, out bool success, IList<IType> classTypeArguments = null)
 		{
 			if (typeParameters == null)
 				throw new ArgumentNullException("typeParameters");
@@ -87,6 +115,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				for (int i = 0; i < this.typeParameters.Length; i++) {
 					if (i != typeParameters[i].Index)
 						throw new ArgumentException("Type parameter has wrong index");
+					if (typeParameters[i].OwnerType != EntityType.Method)
+						throw new ArgumentException("Type parameter must be owned by a method");
 					this.typeParameters[i] = new TP(typeParameters[i]);
 				}
 				this.parameterTypes = new IType[Math.Min(arguments.Count, parameterTypes.Count)];
@@ -97,8 +127,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					this.arguments[i] = arguments[i];
 					this.parameterTypes[i] = parameterTypes[i];
 				}
+				this.classTypeArguments = classTypeArguments;
+				Log.WriteLine("Type Inference");
+				Log.WriteLine("  Signature: M<" + string.Join<TP>(", ", this.typeParameters) + ">"
+				              + "(" + string.Join<IType>(", ", this.parameterTypes) + ")");
+				Log.WriteCollection("  Arguments: ", arguments);
+				Log.Indent();
+				
 				PhaseOne();
 				success = PhaseTwo();
+				
+				Log.Unindent();
+				Log.WriteLine("  Type inference finished " + (success ? "successfully" : "with errors") + ": " +
+				              "M<" + string.Join(", ", this.typeParameters.Select(tp => tp.FixedTo ?? SharedTypes.UnknownType)) + ">");
 				return this.typeParameters.Select(tp => tp.FixedTo ?? SharedTypes.UnknownType).ToArray();
 			} finally {
 				Reset();
@@ -112,6 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.parameterTypes = null;
 			this.arguments = null;
 			this.dependencyMatrix = null;
+			this.classTypeArguments = null;
 		}
 		
 		/// <summary>
@@ -203,11 +245,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		void PhaseOne()
 		{
 			// C# 4.0 spec: §7.5.2.1 The first phase
-			Log("Phase One");
+			Log.WriteLine("Phase One");
 			for (int i = 0; i < arguments.Length; i++) {
 				ResolveResult Ei = arguments[i];
 				IType Ti = parameterTypes[i];
-				// TODO: what if Ei is an anonymous function?
+				
+				LambdaResolveResult lrr = Ei as LambdaResolveResult;
+				if (lrr != null) {
+					MakeExplicitParameterTypeInference(lrr, Ti);
+				}
+				if (lrr != null || Ei is MethodGroupResolveResult) {
+					// this is not in the spec???
+					if (OutputTypeContainsUnfixed(Ei, Ti) && !InputTypesContainsUnfixed(Ei, Ti)) {
+						MakeOutputTypeInference(Ei, Ti);
+					}
+				}
+				
 				IType U = Ei.Type;
 				if (U != SharedTypes.UnknownType) {
 					if (Ti is ByReferenceType) {
@@ -222,18 +275,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool PhaseTwo()
 		{
 			// C# 4.0 spec: §7.5.2.2 The second phase
-			Log("Phase Two");
+			Log.WriteLine("Phase Two");
 			// All unfixed type variables Xi which do not depend on any Xj are fixed.
 			List<TP> typeParametersToFix = new List<TP>();
 			foreach (TP Xi in typeParameters) {
 				if (Xi.IsFixed == false) {
-					if (!typeParameters.Any((TP Xj) => DependsOn(Xi, Xj))) {
+					if (!typeParameters.Any((TP Xj) => !Xj.IsFixed && DependsOn(Xi, Xj))) {
 						typeParametersToFix.Add(Xi);
 					}
 				}
 			}
 			// If no such type variables exist, all unfixed type variables Xi are fixed for which all of the following hold:
 			if (typeParametersToFix.Count == 0) {
+				Log.WriteLine("Type parameters cannot be fixed due to dependency cycles");
+				Log.WriteLine("Trying to break the cycle by fixing any TPs that have non-empty bounds...");
 				foreach (TP Xi in typeParameters) {
 					// Xi has a non­empty set of bounds
 					if (!Xi.IsFixed && Xi.HasBounds) {
@@ -255,6 +310,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool unfixedTypeVariablesExist = typeParameters.Any((TP X) => X.IsFixed == false);
 			if (typeParametersToFix.Count == 0 && unfixedTypeVariablesExist) {
 				// If no such type variables exist and there are still unfixed type variables, type inference fails.
+				Log.WriteLine("Type inference fails: there are still unfixed TPs remaining");
 				return false;
 			} else if (!unfixedTypeVariablesExist) {
 				// Otherwise, if no further unfixed type variables exist, type inference succeeds.
@@ -268,7 +324,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// but the input types (§7.4.2.3) do not
 					if (OutputTypeContainsUnfixed(Ei, Ti) && !InputTypesContainsUnfixed(Ei, Ti)) {
 						// an output type inference (§7.4.2.6) is made for ei with type Ti.
-						Log("MakeOutputTypeInference for #" + i);
+						Log.WriteLine("MakeOutputTypeInference for argument #" + i);
 						MakeOutputTypeInference(Ei, Ti);
 					}
 				}
@@ -284,31 +340,42 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		IType[] InputTypes(ResolveResult e, IType t)
 		{
 			// C# 4.0 spec: §7.5.2.3 Input types
-			/* TODO
-			AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
-			if (amrt != null && amrt.HasImplicitlyTypedParameters || e is MethodGroupReturnType) {
-				IMethod m = GetDelegateOrExpressionTreeSignature(t, amrt != null && amrt.CanBeConvertedToExpressionTree);
+			LambdaResolveResult lrr = e as LambdaResolveResult;
+			if (lrr != null && lrr.IsImplicitlyTyped || e is MethodGroupResolveResult) {
+				IMethod m = GetDelegateOrExpressionTreeSignature(t);
 				if (m != null) {
-					return m.Parameters.Select(p => p.ReturnType);
+					IType[] inputTypes = new IType[m.Parameters.Count];
+					for (int i = 0; i < inputTypes.Length; i++) {
+						inputTypes[i] = m.Parameters[i].Type.Resolve(context);
+					}
+					return inputTypes;
 				}
-			}*/
+			}
 			return emptyTypeArray;
 		}
 		
-		
 		IType[] OutputTypes(ResolveResult e, IType t)
 		{
-			// C# 4.0 spec: §7.5.2.4 Input types
-			/*
-			AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
-			if (amrt != null || e is MethodGroupReturnType) {
-				IMethod m = GetDelegateOrExpressionTreeSignature(T, amrt != null && amrt.CanBeConvertedToExpressionTree);
+			// C# 4.0 spec: §7.5.2.4 Output types
+			LambdaResolveResult lrr = e as LambdaResolveResult;
+			if (lrr != null && lrr.IsImplicitlyTyped || e is MethodGroupResolveResult) {
+				IMethod m = GetDelegateOrExpressionTreeSignature(t);
 				if (m != null) {
-					return new[] { m.ReturnType };
+					return new[] { m.ReturnType.Resolve(context) };
 				}
 			}
-			 */
 			return emptyTypeArray;
+		}
+		
+		static IMethod GetDelegateOrExpressionTreeSignature(IType t)
+		{
+			ParameterizedType pt = t as ParameterizedType;
+			if (pt != null && pt.TypeParameterCount == 1 && pt.Name == "Expression"
+			    && pt.Namespace == "System.Linq.Expressions")
+			{
+				t = pt.GetTypeArgument(0);
+			}
+			return t.GetDelegateInvokeMethod();
 		}
 		
 		bool InputTypesContainsUnfixed(ResolveResult argument, IType parameterType)
@@ -382,53 +449,91 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region MakeOutputTypeInference (§7.5.2.6)
 		void MakeOutputTypeInference(ResolveResult e, IType t)
 		{
+			Log.WriteLine(" MakeOutputTypeInference from " + e + " to " + t);
 			// If E is an anonymous function with inferred return type  U (§7.5.2.12) and T is a delegate type or expression
 			// tree type with return type Tb, then a lower-bound inference (§7.5.2.9) is made from U to Tb.
-			/* TODO AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
-			if (amrt != null) {
-				IMethod m = GetDelegateOrExpressionTreeSignature(T, amrt.CanBeConvertedToExpressionTree);
+			LambdaResolveResult lrr = e as LambdaResolveResult;
+			if (lrr != null) {
+				IMethod m = GetDelegateOrExpressionTreeSignature(t);
 				if (m != null) {
-					IReturnType inferredReturnType;
-					if (amrt.HasParameterList && amrt.MethodParameters.Count == m.Parameters.Count) {
-						var inferredParameterTypes = m.Parameters.Select(p => SubstituteFixedTypes(p.ReturnType)).ToArray();
-						inferredReturnType = amrt.ResolveReturnType(inferredParameterTypes);
+					IType inferredReturnType;
+					if (lrr.IsImplicitlyTyped) {
+						if (m.Parameters.Count != lrr.Parameters.Count)
+							return; // cannot infer due to mismatched parameter lists
+						TypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
+						IType[] inferredParameterTypes = new IType[m.Parameters.Count];
+						for (int i = 0; i < inferredParameterTypes.Length; i++) {
+							IType parameterType = m.Parameters[i].Type.Resolve(context);
+							inferredParameterTypes[i] = parameterType.AcceptVisitor(substitution);
+						}
+						inferredReturnType = lrr.GetInferredReturnType(inferredParameterTypes);
 					} else {
-						inferredReturnType = amrt.ResolveReturnType();
+						inferredReturnType = lrr.GetInferredReturnType(null);
 					}
-					
-					MakeLowerBoundInference(inferredReturnType, m.ReturnType);
+					MakeLowerBoundInference(inferredReturnType, m.ReturnType.Resolve(context));
 					return;
 				}
-			}*/
+			}
 			// Otherwise, if E is a method group and T is a delegate type or expression tree type
 			// with parameter types T1…Tk and return type Tb, and overload resolution
 			// of E with the types T1…Tk yields a single method with return type U, then a lower­-bound
 			// inference is made from U to Tb.
 			MethodGroupResolveResult mgrr = e as MethodGroupResolveResult;
 			if (mgrr != null) {
-				throw new NotImplementedException();
+				IMethod m = GetDelegateOrExpressionTreeSignature(t);
+				if (m != null) {
+					ResolveResult[] args = new ResolveResult[m.Parameters.Count];
+					TypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
+					for (int i = 0; i < args.Length; i++) {
+						IParameter param = m.Parameters[i];
+						IType parameterType = param.Type.Resolve(context);
+						parameterType = parameterType.AcceptVisitor(substitution);
+						if ((param.IsRef || param.IsOut) && parameterType.Kind == TypeKind.ByReference) {
+							parameterType = ((ByReferenceType)parameterType).ElementType;
+							args[i] = new ByReferenceResolveResult(parameterType, param.IsOut);
+						} else {
+							args[i] = new ResolveResult(parameterType);
+						}
+					}
+					var or = mgrr.PerformOverloadResolution(context, args,
+					                                        allowExtensionMethods: false,
+					                                        allowExpandingParams: false);
+					if (or.FoundApplicableCandidate && or.BestCandidateAmbiguousWith == null) {
+						IType returnType = or.BestCandidate.ReturnType.Resolve(context);
+						MakeLowerBoundInference(returnType, m.ReturnType.Resolve(context));
+					}
+				}
+				return;
 			}
 			// Otherwise, if E is an expression with type U, then a lower-bound inference is made from U to T.
 			if (e.Type != SharedTypes.UnknownType) {
 				MakeLowerBoundInference(e.Type, t);
 			}
 		}
+		
+		TypeParameterSubstitution GetSubstitutionForFixedTPs()
+		{
+			IType[] fixedTypes = new IType[typeParameters.Length];
+			for (int i = 0; i < fixedTypes.Length; i++) {
+				fixedTypes[i] = typeParameters[i].FixedTo ?? SharedTypes.UnknownType;
+			}
+			return new TypeParameterSubstitution(classTypeArguments, fixedTypes);
+		}
 		#endregion
 		
 		#region MakeExplicitParameterTypeInference (§7.5.2.7)
-		void MakeExplicitParameterTypeInference(ResolveResult e, IType t)
+		void MakeExplicitParameterTypeInference(LambdaResolveResult e, IType t)
 		{
 			// C# 4.0 spec: §7.5.2.7 Explicit parameter type inferences
-			throw new NotImplementedException();
-			/*AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
-			if (amrt != null && amrt.HasParameterList) {
-				IMethod m = GetDelegateOrExpressionTreeSignature(T, amrt.CanBeConvertedToExpressionTree);
-				if (m != null && amrt.MethodParameters.Count == m.Parameters.Count) {
-					for (int i = 0; i < amrt.MethodParameters.Count; i++) {
-						MakeExactInference(amrt.MethodParameters[i].ReturnType, m.Parameters[i].ReturnType);
-					}
-				}
-			}*/
+			if (e.IsImplicitlyTyped || !e.HasParameterList)
+				return;
+			Log.WriteLine(" MakeExplicitParameterTypeInference from " + e + " to " + t);
+			IMethod m = GetDelegateOrExpressionTreeSignature(t);
+			if (m == null)
+				return;
+			for (int i = 0; i < e.Parameters.Count && i < m.Parameters.Count; i++) {
+				MakeExactInference(e.Parameters[i].Type.Resolve(context), m.Parameters[i].Type.Resolve(context));
+			}
 		}
 		#endregion
 		
@@ -439,12 +544,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void MakeExactInference(IType U, IType V)
 		{
-			Log("MakeExactInference from " + U + " to " + V);
+			Log.WriteLine("MakeExactInference from " + U + " to " + V);
 			
 			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
 			TP tp = GetTPForType(V);
 			if (tp != null && tp.IsFixed == false) {
-				Log(" Add exact bound '" + U + "' to " + tp);
+				Log.WriteLine(" Add exact bound '" + U + "' to " + tp);
 				tp.LowerBounds.Add(U);
 				tp.UpperBounds.Add(U);
 				return;
@@ -470,11 +575,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			    && object.Equals(pU.GetDefinition(), pV.GetDefinition())
 			    && pU.TypeParameterCount == pV.TypeParameterCount)
 			{
-				Debug.Indent();
+				Log.Indent();
 				for (int i = 0; i < pU.TypeParameterCount; i++) {
-					MakeExactInference(pU.TypeArguments[i], pV.TypeArguments[i]);
+					MakeExactInference(pU.GetTypeArgument(i), pV.GetTypeArgument(i));
 				}
-				Debug.Unindent();
+				Log.Unindent();
 			}
 		}
 		
@@ -497,12 +602,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void MakeLowerBoundInference(IType U, IType V)
 		{
-			Log(" MakeLowerBoundInference from " + U + " to " + V);
+			Log.WriteLine(" MakeLowerBoundInference from " + U + " to " + V);
 			
 			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
 			TP tp = GetTPForType(V);
 			if (tp != null && tp.IsFixed == false) {
-				Log("  Add lower bound '" + U + "' to " + tp);
+				Log.WriteLine("  Add lower bound '" + U + "' to " + tp);
 				tp.LowerBounds.Add(U);
 				return;
 			}
@@ -511,10 +616,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ArrayType arrU = U as ArrayType;
 			ArrayType arrV = V as ArrayType;
 			ParameterizedType pV = V as ParameterizedType;
-			if (arrU != null && (arrV != null && arrU.Dimensions == arrV.Dimensions
-			                     || IsIEnumerableCollectionOrList(pV) && arrU.Dimensions == 1))
-			{
+			if (arrU != null && arrV != null && arrU.Dimensions == arrV.Dimensions) {
 				MakeLowerBoundInference(arrU.ElementType, arrV.ElementType);
+				return;
+			} else if (arrU != null && IsIEnumerableCollectionOrList(pV) && arrU.Dimensions == 1) {
+				MakeLowerBoundInference(arrU.ElementType, pV.GetTypeArgument(0));
 				return;
 			}
 			// Handle parameterized types:
@@ -529,12 +635,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return; // cannot make an inference because it's not unique
 					}
 				}
-				Debug.Indent();
+				Log.Indent();
 				if (uniqueBaseType != null) {
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
-						IType Ui = uniqueBaseType.TypeArguments[i];
-						IType Vi = pV.TypeArguments[i];
-						if (Ui.IsReferenceType == true) {
+						IType Ui = uniqueBaseType.GetTypeArgument(i);
+						IType Vi = pV.GetTypeArgument(i);
+						if (Ui.IsReferenceType(context) == true) {
 							// look for variance
 							ITypeParameter Xi = pV.GetDefinition().TypeParameters[i];
 							switch (Xi.Variance) {
@@ -554,7 +660,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				}
-				Debug.Unindent();
+				Log.Unindent();
 			}
 		}
 		
@@ -580,12 +686,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void MakeUpperBoundInference(IType U, IType V)
 		{
-			Log(" MakeUpperBoundInference from " + U + " to " + V);
+			Log.WriteLine(" MakeUpperBoundInference from " + U + " to " + V);
 			
 			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
 			TP tp = GetTPForType(V);
 			if (tp != null && tp.IsFixed == false) {
-				Log("  Add upper bound '" + U + "' to " + tp);
+				Log.WriteLine("  Add upper bound '" + U + "' to " + tp);
 				tp.UpperBounds.Add(U);
 				return;
 			}
@@ -594,10 +700,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ArrayType arrU = U as ArrayType;
 			ArrayType arrV = V as ArrayType;
 			ParameterizedType pU = U as ParameterizedType;
-			if (arrV != null && (arrU != null && arrU.Dimensions == arrV.Dimensions
-			                     || IsIEnumerableCollectionOrList(pU) && arrV.Dimensions == 1))
-			{
+			if (arrV != null && arrU != null && arrU.Dimensions == arrV.Dimensions) {
 				MakeUpperBoundInference(arrU.ElementType, arrV.ElementType);
+				return;
+			} else if (arrV != null && IsIEnumerableCollectionOrList(pU) && arrV.Dimensions == 1) {
+				MakeUpperBoundInference(pU.GetTypeArgument(0), arrV.ElementType);
 				return;
 			}
 			// Handle parameterized types:
@@ -612,12 +719,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return; // cannot make an inference because it's not unique
 					}
 				}
-				Debug.Indent();
+				Log.Indent();
 				if (uniqueBaseType != null) {
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
-						IType Ui = pU.TypeArguments[i];
-						IType Vi = uniqueBaseType.TypeArguments[i];
-						if (Ui.IsReferenceType == true) {
+						IType Ui = pU.GetTypeArgument(i);
+						IType Vi = uniqueBaseType.GetTypeArgument(i);
+						if (Ui.IsReferenceType(context) == true) {
 							// look for variance
 							ITypeParameter Xi = pU.GetDefinition().TypeParameters[i];
 							switch (Xi.Variance) {
@@ -637,7 +744,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				}
-				Debug.Unindent();
+				Log.Unindent();
 			}
 		}
 		#endregion
@@ -645,18 +752,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Fixing (§7.5.2.11)
 		bool Fix(TP tp)
 		{
-			Log(" Trying to fix " + tp);
+			Log.WriteLine(" Trying to fix " + tp);
 			Debug.Assert(!tp.IsFixed);
-			Debug.Indent();
+			Log.Indent();
 			var types = CreateNestedInstance().FindTypesInBounds(tp.LowerBounds.ToArray(), tp.UpperBounds.ToArray());
-			Debug.Unindent();
+			Log.Unindent();
 			if (algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults) {
 				tp.FixedTo = IntersectionType.Create(types);
-				Log("  T was fixed " + (types.Count >= 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
+				Log.WriteLine("  T was fixed " + (types.Count >= 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
 				return types.Count >= 1;
 			} else {
 				tp.FixedTo = GetFirstTypePreferNonInterfaces(types);
-				Log("  T was fixed " + (types.Count == 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
+				Log.WriteLine("  T was fixed " + (types.Count == 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
 				return types.Count == 1;
 			}
 		}
@@ -666,10 +773,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the best common type (C# 4.0 spec: §7.5.2.14) of a set of expressions.
 		/// </summary>
-		public IType GetBestCommonType(IEnumerable<ResolveResult> expressions, out bool success)
+		public IType GetBestCommonType(IList<ResolveResult> expressions, out bool success)
 		{
 			if (expressions == null)
 				throw new ArgumentNullException("expressions");
+			if (expressions.Count == 1) {
+				success = (expressions[0].Type.Kind != TypeKind.Unknown);
+				return expressions[0].Type;
+			}
+			Log.WriteCollection("GetBestCommonType() for ", expressions);
 			try {
 				this.typeParameters = new TP[1] { new TP(DummyTypeParameter.Instance) };
 				foreach (ResolveResult r in expressions) {
@@ -690,8 +802,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return "X"; }
 			}
 			
-			public override bool? IsReferenceType {
-				get { return null; }
+			public override bool? IsReferenceType(ITypeResolveContext context)
+			{
+				return null;
 			}
 			
 			public override int GetHashCode()
@@ -736,14 +849,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return VarianceModifier.Invariant; }
 			}
 			
-			IType ITypeParameter.BoundTo {
-				get { return null; }
-			}
-			
-			ITypeParameter ITypeParameter.UnboundTypeParameter {
-				get { return null; }
-			}
-			
 			bool IFreezable.IsFrozen {
 				get { return true; }
 			}
@@ -754,6 +859,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			DomRegion ITypeParameter.Region {
 				get { return DomRegion.Empty; }
+			}
+			
+			public override TypeKind Kind {
+				get { return TypeKind.TypeParameter; }
 			}
 		}
 		#endregion
@@ -781,7 +890,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		static IType GetFirstTypePreferNonInterfaces(IList<IType> result)
 		{
-			return result.FirstOrDefault(c => c.GetDefinition().ClassType != ClassType.Interface)
+			return result.FirstOrDefault(c => c.Kind != TypeKind.Interface)
 				?? result.FirstOrDefault() ?? SharedTypes.UnknownType;
 		}
 		
@@ -797,9 +906,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return EmptyList<IType>.Instance;
 			
 			// Finds a type X so that "LB <: X <: UB"
-			Log("FindTypesInBound, LowerBounds=", lowerBounds);
-			Log("FindTypesInBound, UpperBounds=", upperBounds);
-			Debug.Indent();
+			Log.WriteCollection("FindTypesInBound, LowerBounds=", lowerBounds);
+			Log.WriteCollection("FindTypesInBound, UpperBounds=", upperBounds);
+			Log.Indent();
 			
 			// First try the Fixing algorithm from the C# spec (§7.5.2.11)
 			List<IType> candidateTypes = lowerBounds.Union(upperBounds)
@@ -831,7 +940,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				candidateTypeDefinitions = hashSet.ToList();
 			} else {
 				// Find candidates by looking at all classes in the project:
-				candidateTypeDefinitions = context.GetAllClasses().ToList();
+				candidateTypeDefinitions = context.GetAllTypes().ToList();
 			}
 			
 			// Now filter out candidates that violate the upper bounds:
@@ -848,7 +957,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (candidateDef.TypeParameterCount == 0) {
 					candidate = candidateDef;
 				} else {
-					Log("Inferring arguments for candidate type definition: " + candidateDef);
+					Log.WriteLine("Inferring arguments for candidate type definition: " + candidateDef);
 					bool success;
 					IType[] result = InferTypeArgumentsFromBounds(
 						candidateDef.TypeParameters,
@@ -858,11 +967,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (success) {
 						candidate = new ParameterizedType(candidateDef, result);
 					} else {
-						Log("Inference failed; ignoring candidate");
+						Log.WriteLine("Inference failed; ignoring candidate");
 						continue;
 					}
 				}
-				Log("Candidate type: " + candidate);
+				Log.WriteLine("Candidate type: " + candidate);
 				
 				if (lowerBounds.Count > 0) {
 					// if there were lower bounds, we aim for the most specific candidate:
@@ -886,31 +995,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
-			Debug.Unindent();
+			Log.Unindent();
 			return candidateTypes;
 		}
 		#endregion
-		
-		[Conditional("DEBUG")]
-		static void Log(string text)
-		{
-			Debug.WriteLine(text);
-		}
-		
-		[Conditional("DEBUG")]
-		static void Log<T>(string text, IEnumerable<T> lines)
-		{
-			#if DEBUG
-			T[] arr = lines.ToArray();
-			if (arr.Length == 0) {
-				Log(text + "<empty collection>");
-			} else {
-				Log(text + (arr[0] != null ? arr[0].ToString() : "<null>"));
-				for (int i = 1; i < arr.Length; i++) {
-					Log(new string(' ', text.Length) + (arr[i] != null ? arr[i].ToString() : "<null>"));
-				}
-			}
-			#endif
-		}
 	}
 }

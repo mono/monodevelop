@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -16,9 +31,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly UsingScope parentUsingScope;
 		readonly string identifier;
 		readonly IList<ITypeReference> typeArguments;
-		readonly bool isInUsingDeclaration;
+		readonly SimpleNameLookupMode lookupMode;
 		
-		public SimpleTypeOrNamespaceReference(string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope, bool isInUsingDeclaration = false)
+		public SimpleTypeOrNamespaceReference(string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
 		{
 			if (identifier == null)
 				throw new ArgumentNullException("identifier");
@@ -26,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 			this.parentTypeDefinition = parentTypeDefinition;
 			this.parentUsingScope = parentUsingScope;
-			this.isInUsingDeclaration = isInUsingDeclaration;
+			this.lookupMode = lookupMode;
 		}
 		
 		/// <summary>
@@ -35,19 +50,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public SimpleTypeOrNamespaceReference AddSuffix(string suffix)
 		{
-			return new SimpleTypeOrNamespaceReference(identifier + suffix, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
+			return new SimpleTypeOrNamespaceReference(identifier + suffix, typeArguments, parentTypeDefinition, parentUsingScope, lookupMode);
 		}
 		
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
 			CSharpResolver r = new CSharpResolver(context);
-			r.CurrentTypeDefinition = parentTypeDefinition != null ? parentTypeDefinition.GetCompoundClass() : null;
+			r.CurrentTypeDefinition = parentTypeDefinition;
 			r.UsingScope = parentUsingScope;
 			IType[] typeArgs = new IType[typeArguments.Count];
 			for (int i = 0; i < typeArgs.Length; i++) {
 				typeArgs[i] = typeArguments[i].Resolve(context);
 			}
-			return r.LookupSimpleNamespaceOrTypeName(identifier, typeArgs, isInUsingDeclaration);
+			return r.LookupSimpleNameOrTypeName(identifier, typeArgs, lookupMode);
 		}
 		
 		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)

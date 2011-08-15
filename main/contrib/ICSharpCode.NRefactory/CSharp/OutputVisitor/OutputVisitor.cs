@@ -1,5 +1,21 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -509,19 +525,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode (undocumentedExpression);
 			switch (undocumentedExpression.UndocumentedExpressionType) {
-			case UndocumentedExpressionType.ArgList:
-			case UndocumentedExpressionType.ArgListAccess:
-				WriteKeyword ("__arglist");
-				break;
-			case UndocumentedExpressionType.MakeRef:
-				WriteKeyword ("__makeref");
-				break;
-			case UndocumentedExpressionType.RefType:
-				WriteKeyword ("__reftype");
-				break;
-			case UndocumentedExpressionType.RefValue:
-				WriteKeyword ("__refvalue");
-				break;
+				case UndocumentedExpressionType.ArgList:
+				case UndocumentedExpressionType.ArgListAccess:
+					WriteKeyword ("__arglist");
+					break;
+				case UndocumentedExpressionType.MakeRef:
+					WriteKeyword ("__makeref");
+					break;
+				case UndocumentedExpressionType.RefType:
+					WriteKeyword ("__reftype");
+					break;
+				case UndocumentedExpressionType.RefValue:
+					WriteKeyword ("__refvalue");
+					break;
 			}
 			if (undocumentedExpression.Arguments.Count > 0) {
 				Space (policy.SpaceBeforeMethodCallParentheses);
@@ -545,25 +561,30 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			StartNode (arrayInitializerExpression);
+			PrintInitializerElements(arrayInitializerExpression.Elements);
+			return EndNode (arrayInitializerExpression);
+		}
+
+		void PrintInitializerElements(AstNodeCollection<Expression> elements)
+		{
 			BraceStyle style;
 			if (policy.PlaceArrayInitializersOnNewLine == ArrayInitializerPlacement.AlwaysNewLine)
 				style = BraceStyle.NextLine;
 			else
 				style = BraceStyle.EndOfLine;
-			OpenBrace (style);
+			OpenBrace(style);
 			bool isFirst = true;
-			foreach (AstNode node in arrayInitializerExpression.Elements) {
+			foreach (AstNode node in elements) {
 				if (isFirst) {
 					isFirst = false;
 				} else {
-					Comma (node);
-					NewLine ();
+					Comma(node, noSpaceAfterComma: true);
+					NewLine();
 				}
-				node.AcceptVisitor (this, null);
+				node.AcceptVisitor(this, null);
 			}
-			NewLine ();
-			CloseBrace (style);
-			return EndNode (arrayInitializerExpression);
+			NewLine();
+			CloseBrace(style);
 		}
 		
 		public object VisitAsExpression (AsExpression asExpression, object data)
@@ -601,43 +622,43 @@ namespace ICSharpCode.NRefactory.CSharp
 			binaryOperatorExpression.Left.AcceptVisitor (this, data);
 			bool spacePolicy;
 			switch (binaryOperatorExpression.Operator) {
-			case BinaryOperatorType.BitwiseAnd:
-			case BinaryOperatorType.BitwiseOr:
-			case BinaryOperatorType.ExclusiveOr:
-				spacePolicy = policy.SpaceAroundBitwiseOperator;
-				break;
-			case BinaryOperatorType.ConditionalAnd:
-			case BinaryOperatorType.ConditionalOr:
-				spacePolicy = policy.SpaceAroundLogicalOperator;
-				break;
-			case BinaryOperatorType.GreaterThan:
-			case BinaryOperatorType.GreaterThanOrEqual:
-			case BinaryOperatorType.LessThanOrEqual:
-			case BinaryOperatorType.LessThan:
-				spacePolicy = policy.SpaceAroundRelationalOperator;
-				break;
-			case BinaryOperatorType.Equality:
-			case BinaryOperatorType.InEquality:
-				spacePolicy = policy.SpaceAroundEqualityOperator;
-				break;
-			case BinaryOperatorType.Add:
-			case BinaryOperatorType.Subtract:
-				spacePolicy = policy.SpaceAroundAdditiveOperator;
-				break;
-			case BinaryOperatorType.Multiply:
-			case BinaryOperatorType.Divide:
-			case BinaryOperatorType.Modulus:
-				spacePolicy = policy.SpaceAroundMultiplicativeOperator;
-				break;
-			case BinaryOperatorType.ShiftLeft:
-			case BinaryOperatorType.ShiftRight:
-				spacePolicy = policy.SpaceAroundShiftOperator;
-				break;
-			case BinaryOperatorType.NullCoalescing:
-				spacePolicy = true;
-				break;
-			default:
-				throw new NotSupportedException ("Invalid value for BinaryOperatorType");
+				case BinaryOperatorType.BitwiseAnd:
+				case BinaryOperatorType.BitwiseOr:
+				case BinaryOperatorType.ExclusiveOr:
+					spacePolicy = policy.SpaceAroundBitwiseOperator;
+					break;
+				case BinaryOperatorType.ConditionalAnd:
+				case BinaryOperatorType.ConditionalOr:
+					spacePolicy = policy.SpaceAroundLogicalOperator;
+					break;
+				case BinaryOperatorType.GreaterThan:
+				case BinaryOperatorType.GreaterThanOrEqual:
+				case BinaryOperatorType.LessThanOrEqual:
+				case BinaryOperatorType.LessThan:
+					spacePolicy = policy.SpaceAroundRelationalOperator;
+					break;
+				case BinaryOperatorType.Equality:
+				case BinaryOperatorType.InEquality:
+					spacePolicy = policy.SpaceAroundEqualityOperator;
+					break;
+				case BinaryOperatorType.Add:
+				case BinaryOperatorType.Subtract:
+					spacePolicy = policy.SpaceAroundAdditiveOperator;
+					break;
+				case BinaryOperatorType.Multiply:
+				case BinaryOperatorType.Divide:
+				case BinaryOperatorType.Modulus:
+					spacePolicy = policy.SpaceAroundMultiplicativeOperator;
+					break;
+				case BinaryOperatorType.ShiftLeft:
+				case BinaryOperatorType.ShiftRight:
+					spacePolicy = policy.SpaceAroundShiftOperator;
+					break;
+				case BinaryOperatorType.NullCoalescing:
+					spacePolicy = true;
+					break;
+				default:
+					throw new NotSupportedException ("Invalid value for BinaryOperatorType");
 			}
 			Space (spacePolicy);
 			WriteToken (BinaryOperatorExpression.GetOperatorSymbol (binaryOperatorExpression.Operator), BinaryOperatorExpression.OperatorRole);
@@ -710,14 +731,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (directionExpression);
 			
 			switch (directionExpression.FieldDirection) {
-			case FieldDirection.Out:
-				WriteKeyword ("out");
-				break;
-			case FieldDirection.Ref:
-				WriteKeyword ("ref");
-				break;
-			default:
-				throw new NotSupportedException ("Invalid value for FieldDirection");
+				case FieldDirection.Out:
+					WriteKeyword ("out");
+					break;
+				case FieldDirection.Ref:
+					WriteKeyword ("ref");
+					break;
+				default:
+					throw new NotSupportedException ("Invalid value for FieldDirection");
 			}
 			Space ();
 			directionExpression.Expression.AcceptVisitor (this, data);
@@ -798,15 +819,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode (namedArgumentExpression);
 			WriteIdentifier (namedArgumentExpression.Identifier);
-			if (namedArgumentExpression.Parent is ArrayInitializerExpression) {
-				Space();
-				WriteToken("=", NamedArgumentExpression.Roles.Assign);
-			} else {
-				WriteToken(":", NamedArgumentExpression.Roles.Colon);
-			}
+			WriteToken(":", NamedArgumentExpression.Roles.Colon);
 			Space ();
 			namedArgumentExpression.Expression.AcceptVisitor (this, data);
 			return EndNode (namedArgumentExpression);
+		}
+		
+		public object VisitNamedExpression (NamedExpression namedExpression, object data)
+		{
+			StartNode (namedExpression);
+			WriteIdentifier (namedExpression.Identifier);
+			Space();
+			WriteToken("=", NamedArgumentExpression.Roles.Assign);
+			Space ();
+			namedExpression.Expression.AcceptVisitor (this, data);
+			return EndNode (namedExpression);
 		}
 		
 		public object VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, object data)
@@ -822,8 +849,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteKeyword ("new");
 			objectCreateExpression.Type.AcceptVisitor (this, data);
 			bool useParenthesis = objectCreateExpression.Arguments.Any() || objectCreateExpression.Initializer.IsNull;
-			// also use parenthesis if there is an '(' token and this isn't an anonymous type
-			if (!objectCreateExpression.LParToken.IsNull && !objectCreateExpression.Type.IsNull)
+			// also use parenthesis if there is an '(' token
+			if (!objectCreateExpression.LParToken.IsNull)
 				useParenthesis = true;
 			if (useParenthesis) {
 				Space (policy.SpaceBeforeMethodCallParentheses);
@@ -838,17 +865,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (anonymousTypeCreateExpression);
 			WriteKeyword ("new");
 			Space ();
-			LPar ();
-			RPar ();
-			Space ();
-			OpenBrace (policy.AnonymousMethodBraceStyle);
-			foreach (AstNode node in anonymousTypeCreateExpression.Initializer) {
-				node.AcceptVisitor (this, null);
-				if (node.NextSibling != null)
-					Comma (node);
-				NewLine ();
-			}
-			CloseBrace (policy.AnonymousMethodBraceStyle);
+			PrintInitializerElements(anonymousTypeCreateExpression.Initializers);
 			return EndNode (anonymousTypeCreateExpression);
 		}
 
@@ -875,6 +892,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public object VisitEmptyExpression (EmptyExpression emptyExpression, object data)
 		{
+			StartNode (emptyExpression);
 			return EndNode (emptyExpression);
 		}
 
@@ -991,32 +1009,32 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static string ConvertChar(char ch)
 		{
 			switch (ch) {
-			case '\\':
-				return "\\\\";
-			case '\0':
-				return "\\0";
-			case '\a':
-				return "\\a";
-			case '\b':
-				return "\\b";
-			case '\f':
-				return "\\f";
-			case '\n':
-				return "\\n";
-			case '\r':
-				return "\\r";
-			case '\t':
-				return "\\t";
-			case '\v':
-				return "\\v";
-			default:
+				case '\\':
+					return "\\\\";
+				case '\0':
+					return "\\0";
+				case '\a':
+					return "\\a";
+				case '\b':
+					return "\\b";
+				case '\f':
+					return "\\f";
+				case '\n':
+					return "\\n";
+				case '\r':
+					return "\\r";
+				case '\t':
+					return "\\t";
+				case '\v':
+					return "\\v";
+				default:
 					if (char.IsControl(ch) || char.IsSurrogate(ch) ||
 					    // print all uncommon white spaces as numbers
 					    (char.IsWhiteSpace(ch) && ch != ' ')) {
-					return "\\u" + ((int)ch).ToString ("x4");
-				} else {
-					return ch.ToString ();
-				}
+						return "\\u" + ((int)ch).ToString ("x4");
+					} else {
+						return ch.ToString ();
+					}
 			}
 		}
 		
@@ -1227,14 +1245,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (queryOrdering);
 			queryOrdering.Expression.AcceptVisitor (this, data);
 			switch (queryOrdering.Direction) {
-			case QueryOrderingDirection.Ascending:
-				Space ();
-				WriteKeyword ("ascending");
-				break;
-			case QueryOrderingDirection.Descending:
-				Space ();
-				WriteKeyword ("descending");
-				break;
+				case QueryOrderingDirection.Ascending:
+					Space ();
+					WriteKeyword ("ascending");
+					break;
+				case QueryOrderingDirection.Descending:
+					Space ();
+					WriteKeyword ("descending");
+					break;
 			}
 			return EndNode (queryOrdering);
 		}
@@ -1331,22 +1349,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteModifiers (typeDeclaration.ModifierTokens);
 			BraceStyle braceStyle;
 			switch (typeDeclaration.ClassType) {
-			case ClassType.Enum:
-				WriteKeyword ("enum");
-				braceStyle = policy.EnumBraceStyle;
-				break;
-			case ClassType.Interface:
-				WriteKeyword ("interface");
-				braceStyle = policy.InterfaceBraceStyle;
-				break;
-			case ClassType.Struct:
-				WriteKeyword ("struct");
-				braceStyle = policy.StructBraceStyle;
-				break;
-			default:
-				WriteKeyword ("class");
-				braceStyle = policy.ClassBraceStyle;
-				break;
+				case ClassType.Enum:
+					WriteKeyword ("enum");
+					braceStyle = policy.EnumBraceStyle;
+					break;
+				case ClassType.Interface:
+					WriteKeyword ("interface");
+					braceStyle = policy.InterfaceBraceStyle;
+					break;
+				case ClassType.Struct:
+					WriteKeyword ("struct");
+					braceStyle = policy.StructBraceStyle;
+					break;
+				default:
+					WriteKeyword ("class");
+					braceStyle = policy.ClassBraceStyle;
+					break;
 			}
 			WriteIdentifier (typeDeclaration.Name);
 			WriteTypeParameters (typeDeclaration.TypeParameters);
@@ -2078,18 +2096,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (parameterDeclaration);
 			WriteAttributes (parameterDeclaration.Attributes);
 			switch (parameterDeclaration.ParameterModifier) {
-			case ParameterModifier.Ref:
-				WriteKeyword ("ref", ParameterDeclaration.ModifierRole);
-				break;
-			case ParameterModifier.Out:
-				WriteKeyword ("out", ParameterDeclaration.ModifierRole);
-				break;
-			case ParameterModifier.Params:
-				WriteKeyword ("params", ParameterDeclaration.ModifierRole);
-				break;
-			case ParameterModifier.This:
-				WriteKeyword ("this", ParameterDeclaration.ModifierRole);
-				break;
+				case ParameterModifier.Ref:
+					WriteKeyword ("ref", ParameterDeclaration.ModifierRole);
+					break;
+				case ParameterModifier.Out:
+					WriteKeyword ("out", ParameterDeclaration.ModifierRole);
+					break;
+				case ParameterModifier.Params:
+					WriteKeyword ("params", ParameterDeclaration.ModifierRole);
+					break;
+				case ParameterModifier.This:
+					WriteKeyword ("this", ParameterDeclaration.ModifierRole);
+					break;
 			}
 			parameterDeclaration.Type.AcceptVisitor (this, data);
 			if (!parameterDeclaration.Type.IsNull && !string.IsNullOrEmpty (parameterDeclaration.Name))
@@ -2228,16 +2246,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (typeParameterDeclaration);
 			WriteAttributes (typeParameterDeclaration.Attributes);
 			switch (typeParameterDeclaration.Variance) {
-			case VarianceModifier.Invariant:
-				break;
-			case VarianceModifier.Covariant:
-				WriteKeyword ("out");
-				break;
-			case VarianceModifier.Contravariant:
-				WriteKeyword ("in");
-				break;
-			default:
-				throw new NotSupportedException ("Invalid value for VarianceModifier");
+				case VarianceModifier.Invariant:
+					break;
+				case VarianceModifier.Covariant:
+					WriteKeyword ("out");
+					break;
+				case VarianceModifier.Contravariant:
+					WriteKeyword ("in");
+					break;
+				default:
+					throw new NotSupportedException ("Invalid value for VarianceModifier");
 			}
 			WriteIdentifier (typeParameterDeclaration.Name);
 			return EndNode (typeParameterDeclaration);

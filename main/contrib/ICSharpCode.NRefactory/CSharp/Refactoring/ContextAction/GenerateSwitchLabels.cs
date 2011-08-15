@@ -35,24 +35,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var switchStatement = GetSwitchStatement (context);
 			if (switchStatement == null)
 				return false;
-			var result = context.ResolveType (switchStatement.Expression);
+			var result = context.Resolve (switchStatement.Expression);
 			if (result == null)
 				return false;
-			var type = context.GetDefinition (result);
-			return type != null && type.ClassType == ClassType.Enum;
+			return result.Type.IsEnum ();
 		}
 		
 		public void Run (RefactoringContext context)
 		{
 			var switchStatement = GetSwitchStatement (context);
 			
-			var result = context.ResolveType (switchStatement.Expression);
-			var type = context.GetDefinition (result);
-			
+			var result = context.Resolve (switchStatement.Expression);
+			var type = result.Type;
 			var newSwitch = (SwitchStatement)switchStatement.Clone ();
 			
-			var target = new TypeReferenceExpression (context.CreateShortType (result));
-			foreach (var field in type.Fields) {
+			var target = new TypeReferenceExpression (context.CreateShortType (result.Type.Resolve (context.TypeResolveContext)));
+			foreach (var field in type.GetFields (context.TypeResolveContext)) {
 				if (field.IsSynthetic || !field.IsConst)
 					continue;
 				newSwitch.SwitchSections.Add (new SwitchSection () {
@@ -70,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					new CaseLabel ()
 				},
 				Statements = {
-					new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.ArgumentOutOfRangeException")))
+					new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System", "ArgumentOutOfRangeException")))
 				}
 			});
 			

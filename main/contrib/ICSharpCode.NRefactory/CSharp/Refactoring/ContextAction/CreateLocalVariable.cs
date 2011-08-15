@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (identifier == null)
 						continue;
 						
-					if (context.ResolveType (identifier) == null && GuessType (context, identifier) != null)
+					if (context.Resolve (identifier) == null && GuessType (context, identifier) != null)
 						expressions.Insert (0, identifier);
 				}
 			}
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return false;
 			if (context.GetNode<Statement> () == null)
 				return false;
-			return context.ResolveType (identifier) == null && GuessType (context, identifier) != null;
+			return context.Resolve (identifier) == null && GuessType (context, identifier) != null;
 		}
 		
 		public void Run (RefactoringContext context)
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			if (identifier != null && (identifier.Parent is InvocationExpression || identifier.Parent.Parent is InvocationExpression)) {
 				var invocation = (identifier.Parent as InvocationExpression) ?? (identifier.Parent.Parent as InvocationExpression);
-				var result = context.ResolveMember (invocation).FirstOrDefault () as IMethod;
+				var result = context.Resolve (invocation).Type.GetDelegateInvokeMethod ();
 				if (result == null)
 					return null;
 				int i = 0;

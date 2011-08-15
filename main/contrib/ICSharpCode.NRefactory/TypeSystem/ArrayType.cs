@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents an array type.
 	/// </summary>
-	public class ArrayType : TypeWithElementType
+	public sealed class ArrayType : TypeWithElementType
 	{
 		readonly int dimensions;
 		
@@ -19,6 +34,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (dimensions <= 0)
 				throw new ArgumentOutOfRangeException("dimensions", dimensions, "dimensions must be positive");
 			this.dimensions = dimensions;
+		}
+		
+		public override TypeKind Kind {
+			get { return TypeKind.Array; }
 		}
 		
 		public int Dimensions {
@@ -31,8 +50,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public override Nullable<bool> IsReferenceType {
-			get { return true; }
+		public override bool? IsReferenceType(ITypeResolveContext context)
+		{
+			return true;
 		}
 		
 		public override int GetHashCode()
@@ -63,19 +83,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return baseTypes;
 		}
 		
-		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return systemArray.Resolve(context).GetMethods(context, filter);
+			return systemArray.Resolve(context).GetMethods(context, filter, options);
 		}
 		
 		static readonly DefaultParameter indexerParam = new DefaultParameter(KnownTypeReference.Int32, string.Empty);
 		
-		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
+		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			ITypeDefinition arrayDef = systemArray.Resolve(context) as ITypeDefinition;
 			if (arrayDef != null) {
-				foreach (IProperty p in arrayDef.GetProperties(context, filter)) {
-					yield return p;
+				if ((options & GetMemberOptions.IgnoreInheritedMembers) == 0) {
+					foreach (IProperty p in arrayDef.GetProperties(context, filter, options)) {
+						yield return p;
+					}
 				}
 				DefaultProperty indexer = new DefaultProperty(arrayDef, "Items") {
 					EntityType = EntityType.Indexer,

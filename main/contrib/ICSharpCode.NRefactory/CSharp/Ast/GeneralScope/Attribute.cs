@@ -47,7 +47,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		public AstNodeCollection<Expression> Arguments {
 			get { return base.GetChildrenByRole (Roles.Argument); }
 		}
-
+		
+		// HasArgumentList == false: [Empty]
+		public bool HasArgumentList {
+			get;
+			set;
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttribute (this, data);

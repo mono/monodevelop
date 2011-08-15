@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +23,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
 
@@ -43,7 +59,32 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets/Sets the interning provider.
 		/// </summary>
 		public IInterningProvider InterningProvider { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the cancellation token used by the cecil loader.
+		/// </summary>
+		public CancellationToken CancellationToken { get; set; }
+		
+		/// <summary>
+		/// Gets a value indicating whether this instance stores references to the cecil objects.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance has references to the cecil objects; otherwise, <c>false</c>.
+		/// </value>
+		public bool HasCecilReferences { get { return typeSystemTranslationTable != null; } }
 		#endregion
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.CecilLoader"/> class.
+		/// </summary>
+		/// <param name='createCecilReferences'>
+		/// If true references to the cecil objects are hold. In this case the cecil loader can do a type system -> cecil mapping.
+		/// </param>
+		public CecilLoader (bool createCecilReferences = false)
+		{
+			if (createCecilReferences)
+				typeSystemTranslationTable = new Dictionary<object, object> ();
+		}
 		
 		#region Load From AssemblyDefinition
 		/// <summary>
@@ -56,21 +97,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("assemblyDefinition");
 			ITypeResolveContext oldEarlyBindContext = this.EarlyBindContext;
 			try {
+				// Read assembly and module attributes
 				IList<IAttribute> assemblyAttributes = new List<IAttribute>();
-				foreach (var attr in assemblyDefinition.CustomAttributes) {
-					assemblyAttributes.Add(ReadAttribute(attr));
-				}
-				if (this.InterningProvider != null)
+				IList<IAttribute> moduleAttributes = new List<IAttribute>();
+				AddAttributes(assemblyDefinition, assemblyAttributes);
+				AddAttributes(assemblyDefinition.MainModule, moduleAttributes);
+				
+				if (this.InterningProvider != null) {
 					assemblyAttributes = this.InterningProvider.InternList(assemblyAttributes);
-				else
+					moduleAttributes = this.InterningProvider.InternList(moduleAttributes);
+				} else {
 					assemblyAttributes = new ReadOnlyCollection<IAttribute>(assemblyAttributes);
+					moduleAttributes = new ReadOnlyCollection<IAttribute>(moduleAttributes);
+				}
 				TypeStorage typeStorage = new TypeStorage();
-				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes, this.DocumentationProvider);
+				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes, moduleAttributes, this.DocumentationProvider);
 				
 				this.EarlyBindContext = CompositeTypeResolveContext.Combine(pc, this.EarlyBindContext);
 				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
 				foreach (ModuleDefinition module in assemblyDefinition.Modules) {
 					foreach (TypeDefinition td in module.Types) {
+						this.CancellationToken.ThrowIfCancellationRequested();
 						if (this.IncludeInternalMembers || (td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
 							string name = td.FullName;
 							if (name.Length == 0 || name[0] == '<')
@@ -90,6 +137,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				foreach (CecilTypeDefinition c in types) {
 					c.Init(this);
 				}
+				if (HasCecilReferences)
+					typeSystemTranslationTable[pc] = assemblyDefinition;
 				return pc;
 			} finally {
 				this.EarlyBindContext = oldEarlyBindContext;
@@ -119,20 +168,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			readonly string assemblyName;
 			readonly IList<IAttribute> assemblyAttributes;
+			readonly IList<IAttribute> moduleAttributes;
 			readonly IDocumentationProvider documentationProvider;
 			
-			public CecilProjectContent(TypeStorage types, string assemblyName, IList<IAttribute> assemblyAttributes, IDocumentationProvider documentationProvider)
+			public CecilProjectContent(TypeStorage types, string assemblyName, IList<IAttribute> assemblyAttributes, IList<IAttribute> moduleAttributes, IDocumentationProvider documentationProvider)
 				: base(types)
 			{
 				Debug.Assert(assemblyName != null);
 				Debug.Assert(assemblyAttributes != null);
+				Debug.Assert(moduleAttributes != null);
 				this.assemblyName = assemblyName;
 				this.assemblyAttributes = assemblyAttributes;
+				this.moduleAttributes = moduleAttributes;
 				this.documentationProvider = documentationProvider;
 			}
 			
 			public IList<IAttribute> AssemblyAttributes {
 				get { return assemblyAttributes; }
+			}
+			
+			public IList<IAttribute> ModuleAttributes {
+				get { return moduleAttributes; }
 			}
 			
 			public override string ToString()
@@ -146,9 +202,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return this;
 			}
 			
-			public void Dispose()
+			void IDisposable.Dispose()
 			{
 				// Disposing the synchronization context has no effect
+			}
+			
+			IParsedFile IProjectContent.GetFile(string fileName)
+			{
+				return null;
+			}
+			
+			IEnumerable<IParsedFile> IProjectContent.Files {
+				get {
+					return EmptyList<IParsedFile>.Instance;
+				}
+			}
+			
+			void IProjectContent.UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile)
+			{
+				throw new NotSupportedException();
 			}
 			
 			string IDocumentationProvider.GetDocumentation(IEntity entity)
@@ -168,7 +240,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("fileName");
 			var param = new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() };
 			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
-			return LoadAssembly(asm);
+			var result = LoadAssembly(asm);
+			if (HasCecilReferences)
+				typeSystemTranslationTable[result] = asm;
+			return result;
 		}
 		
 		// used to prevent Cecil from loading referenced assemblies
@@ -292,7 +367,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
 					var earlyBindContext = this.EarlyBindContext;
 					if (earlyBindContext != null) {
-						IType c = earlyBindContext.GetClass(ns, name, typeParameterCount, StringComparer.Ordinal);
+						IType c = earlyBindContext.GetTypeDefinition(ns, name, typeParameterCount, StringComparer.Ordinal);
 						if (c != null)
 							return c;
 					}
@@ -321,13 +396,50 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Attributes
-		void AddAttributes(ICustomAttributeProvider customAttributeProvider, IEntity targetEntity)
+		#region Assembly Attributes
+		static readonly ITypeReference typeForwardedToAttributeTypeRef = typeof(TypeForwardedToAttribute).ToTypeReference();
+		static readonly ITypeReference assemblyVersionAttributeTypeRef = typeof(System.Reflection.AssemblyVersionAttribute).ToTypeReference();
+		
+		void AddAttributes(AssemblyDefinition assembly, IList<IAttribute> outputList)
 		{
-			if (customAttributeProvider.HasCustomAttributes) {
-				AddCustomAttributes(customAttributeProvider.CustomAttributes, targetEntity.Attributes);
+			if (assembly.HasCustomAttributes) {
+				AddCustomAttributes(assembly.CustomAttributes, outputList);
+			}
+			if (assembly.HasSecurityDeclarations) {
+				AddSecurityAttributes(assembly.SecurityDeclarations, outputList);
+			}
+			
+			// AssemblyVersionAttribute
+			if (assembly.Name.Version != null) {
+				var assemblyVersion = new DefaultAttribute(assemblyVersionAttributeTypeRef, new[] { KnownTypeReference.String });
+				assemblyVersion.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, assembly.Name.Version.ToString()));
+				outputList.Add(assemblyVersion);
+			}
+			
+			// TypeForwardedToAttribute
+			foreach (ExportedType type in assembly.MainModule.ExportedTypes) {
+				if (type.IsForwarder) {
+					int typeParameterCount;
+					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
+					var typeForwardedTo = new DefaultAttribute(typeForwardedToAttributeTypeRef, new[] { KnownTypeReference.Type });
+					var typeRef = new GetClassTypeReference(type.Namespace, name, typeParameterCount);
+					typeForwardedTo.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.Type, typeRef));
+					outputList.Add(typeForwardedTo);
+				}
 			}
 		}
+		#endregion
 		
+		#region Module Attributes
+		void AddAttributes(ModuleDefinition module, IList<IAttribute> outputList)
+		{
+			if (module.HasCustomAttributes) {
+				AddCustomAttributes(module.CustomAttributes, outputList);
+			}
+		}
+		#endregion
+		
+		#region Parameter Attributes
 		static readonly IAttribute inAttribute = new DefaultAttribute(typeof(InAttribute).ToTypeReference(), null);
 		static readonly IAttribute outAttribute = new DefaultAttribute(typeof(OutAttribute).ToTypeReference(), null);
 		
@@ -342,8 +454,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (parameter.HasCustomAttributes) {
 				AddCustomAttributes(parameter.CustomAttributes, targetParameter.Attributes);
 			}
+			if (parameter.HasMarshalInfo) {
+				targetParameter.Attributes.Add(ConvertMarshalInfo(parameter.MarshalInfo));
+			}
 		}
+		#endregion
 		
+		#region Method Attributes
 		static readonly ITypeReference dllImportAttributeTypeRef = typeof(DllImportAttribute).ToTypeReference();
 		static readonly SimpleConstantValue trueValue = new SimpleConstantValue(KnownTypeReference.Boolean, true);
 		static readonly SimpleConstantValue falseValue = new SimpleConstantValue(KnownTypeReference.Boolean, true);
@@ -374,9 +491,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				dllImport.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, info.Module.Name));
 				
 //				if (info.IsBestFitDisabled)
-//					AddNamedArgument(dllImport, "BestFitMapping", falseValue);
+//					dllImport.AddNamedArgument("BestFitMapping", falseValue);
 //				if (info.IsBestFitEnabled)
-//					AddNamedArgument(dllImport, "BestFitMapping", trueValue);
+//					dllImport.AddNamedArgument("BestFitMapping", trueValue);
 				
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
@@ -399,7 +516,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						throw new NotSupportedException("unknown calling convention");
 				}
 				if (callingConvention != CallingConvention.Winapi)
-					AddNamedArgument(dllImport, "CallingConvention", new SimpleConstantValue(callingConventionTypeRef, (int)callingConvention));
+					dllImport.AddNamedArgument("CallingConvention", callingConventionTypeRef, (int)callingConvention);
 				
 				CharSet charSet = CharSet.None;
 				switch (info.Attributes & PInvokeAttributes.CharSetMask) {
@@ -414,27 +531,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						break;
 				}
 				if (charSet != CharSet.None)
-					dllImport.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
-						"CharSet", new SimpleConstantValue(charSetTypeRef, (int)charSet)));
+					dllImport.AddNamedArgument("CharSet", charSetTypeRef, (int)charSet);
 				
 				if (!string.IsNullOrEmpty(info.EntryPoint) && info.EntryPoint != methodDefinition.Name)
-					AddNamedArgument(dllImport, "EntryPoint", new SimpleConstantValue(KnownTypeReference.String, info.EntryPoint));
+					dllImport.AddNamedArgument("EntryPoint", KnownTypeReference.String, info.EntryPoint);
 				
 				if (info.IsNoMangle)
-					AddNamedArgument(dllImport, "ExactSpelling", trueValue);
+					dllImport.AddNamedArgument("ExactSpelling", trueValue);
 				
 				if ((implAttributes & MethodImplAttributes.PreserveSig) == MethodImplAttributes.PreserveSig)
 					implAttributes &= ~MethodImplAttributes.PreserveSig;
 				else
-					AddNamedArgument(dllImport, "PreserveSig", falseValue);
+					dllImport.AddNamedArgument("PreserveSig", falseValue);
 				
 				if (info.SupportsLastError)
-					AddNamedArgument(dllImport, "SetLastError", trueValue);
+					dllImport.AddNamedArgument("SetLastError", trueValue);
 				
 				if (info.IsThrowOnUnmappableCharDisabled)
-					AddNamedArgument(dllImport, "ThrowOnUnmappableChar", falseValue);
+					dllImport.AddNamedArgument("ThrowOnUnmappableChar", falseValue);
 				if (info.IsThrowOnUnmappableCharEnabled)
-					AddNamedArgument(dllImport, "ThrowOnUnmappableChar", trueValue);
+					dllImport.AddNamedArgument("ThrowOnUnmappableChar", trueValue);
 				
 				attributes.Add(dllImport);
 			}
@@ -458,6 +574,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (methodDefinition.HasCustomAttributes) {
 				AddCustomAttributes(methodDefinition.CustomAttributes, attributes);
 			}
+			if (methodDefinition.HasSecurityDeclarations) {
+				AddSecurityAttributes(methodDefinition.SecurityDeclarations, attributes);
+			}
 			if (methodDefinition.MethodReturnType.HasMarshalInfo) {
 				returnTypeAttributes.Add(ConvertMarshalInfo(methodDefinition.MethodReturnType.MarshalInfo));
 			}
@@ -465,23 +584,24 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				AddCustomAttributes(methodDefinition.MethodReturnType.CustomAttributes, returnTypeAttributes);
 			}
 		}
+		#endregion
 		
-		static void AddNamedArgument(DefaultAttribute attribute, string name, IConstantValue value)
-		{
-			attribute.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(name, value));
-		}
-		
+		#region Type Attributes
 		static readonly DefaultAttribute serializableAttribute = new DefaultAttribute(typeof(SerializableAttribute).ToTypeReference(), null);
+		static readonly DefaultAttribute comImportAttribute = new DefaultAttribute(typeof(ComImportAttribute).ToTypeReference(), null);
 		static readonly ITypeReference structLayoutAttributeTypeRef = typeof(StructLayoutAttribute).ToTypeReference();
 		static readonly ITypeReference layoutKindTypeRef = typeof(LayoutKind).ToTypeReference();
 		static readonly ITypeReference charSetTypeRef = typeof(CharSet).ToTypeReference();
 		
 		void AddAttributes(TypeDefinition typeDefinition, ITypeDefinition targetEntity)
 		{
-			#region SerializableAttribute
+			// SerializableAttribute
 			if (typeDefinition.IsSerializable)
 				targetEntity.Attributes.Add(serializableAttribute);
-			#endregion
+			
+			// ComImportAttribute
+			if (typeDefinition.IsImport)
+				targetEntity.Attributes.Add(comImportAttribute);
 			
 			#region StructLayoutAttribute
 			LayoutKind layoutKind = LayoutKind.Auto;
@@ -510,19 +630,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				DefaultAttribute structLayout = new DefaultAttribute(structLayoutAttributeTypeRef, new[] { layoutKindTypeRef });
 				structLayout.PositionalArguments.Add(new SimpleConstantValue(layoutKindTypeRef, (int)layoutKind));
 				if (charSet != CharSet.Ansi) {
-					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
-						"CharSet",
-						new SimpleConstantValue(charSetTypeRef, (int)charSet)));
+					structLayout.AddNamedArgument("CharSet", charSetTypeRef, (int)charSet);
 				}
 				if (typeDefinition.PackingSize > 0) {
-					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
-						"Pack",
-						new SimpleConstantValue(KnownTypeReference.Int32, (int)typeDefinition.PackingSize)));
+					structLayout.AddNamedArgument("Pack", KnownTypeReference.Int32, (int)typeDefinition.PackingSize);
 				}
 				if (typeDefinition.ClassSize > 0) {
-					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
-						"Size",
-						new SimpleConstantValue(KnownTypeReference.Int32, (int)typeDefinition.ClassSize)));
+					structLayout.AddNamedArgument("Size", KnownTypeReference.Int32, (int)typeDefinition.ClassSize);
 				}
 				targetEntity.Attributes.Add(structLayout);
 			}
@@ -531,26 +645,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (typeDefinition.HasCustomAttributes) {
 				AddCustomAttributes(typeDefinition.CustomAttributes, targetEntity.Attributes);
 			}
+			if (typeDefinition.HasSecurityDeclarations) {
+				AddSecurityAttributes(typeDefinition.SecurityDeclarations, targetEntity.Attributes);
+			}
 		}
+		#endregion
 		
+		#region Field Attributes
 		static readonly ITypeReference fieldOffsetAttributeTypeRef = typeof(FieldOffsetAttribute).ToTypeReference();
 		static readonly DefaultAttribute nonSerializedAttribute = new DefaultAttribute(typeof(NonSerializedAttribute).ToTypeReference(), null);
 		
 		void AddAttributes(FieldDefinition fieldDefinition, IEntity targetEntity)
 		{
-			#region FieldOffsetAttribute
+			// FieldOffsetAttribute
 			if (fieldDefinition.HasLayoutInfo) {
 				DefaultAttribute fieldOffset = new DefaultAttribute(fieldOffsetAttributeTypeRef, new[] { KnownTypeReference.Int32 });
 				fieldOffset.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.Int32, fieldDefinition.Offset));
 				targetEntity.Attributes.Add(fieldOffset);
 			}
-			#endregion
 			
-			#region NonSerializedAttribute
+			// NonSerializedAttribute
 			if (fieldDefinition.IsNotSerialized) {
 				targetEntity.Attributes.Add(nonSerializedAttribute);
 			}
-			#endregion
 			
 			if (fieldDefinition.HasMarshalInfo) {
 				targetEntity.Attributes.Add(ConvertMarshalInfo(fieldDefinition.MarshalInfo));
@@ -560,6 +677,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				AddCustomAttributes(fieldDefinition.CustomAttributes, targetEntity.Attributes);
 			}
 		}
+		#endregion
+		
+		#region Event Attributes
+		void AddAttributes(EventDefinition eventDefinition, IEntity targetEntity)
+		{
+			if (eventDefinition.HasCustomAttributes) {
+				AddCustomAttributes(eventDefinition.CustomAttributes, targetEntity.Attributes);
+			}
+		}
+		#endregion
+		
+		#region Property Attributes
+		void AddAttributes(PropertyDefinition propertyDefinition, IEntity targetEntity)
+		{
+			if (propertyDefinition.HasCustomAttributes) {
+				AddCustomAttributes(propertyDefinition.CustomAttributes, targetEntity.Attributes);
+			}
+		}
+		#endregion
 		
 		#region MarshalAsAttribute (ConvertMarshalInfo)
 		static readonly ITypeReference marshalAsAttributeTypeRef = typeof(MarshalAsAttribute).ToTypeReference();
@@ -569,11 +705,42 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			DefaultAttribute attr = new DefaultAttribute(marshalAsAttributeTypeRef, new[] { unmanagedTypeTypeRef });
 			attr.PositionalArguments.Add(new SimpleConstantValue(unmanagedTypeTypeRef, (int)marshalInfo.NativeType));
-			// TODO: handle classes derived from MarshalInfo
+			
+			FixedArrayMarshalInfo fami = marshalInfo as FixedArrayMarshalInfo;
+			if (fami != null) {
+				attr.AddNamedArgument("SizeConst", KnownTypeReference.Int32, (int)fami.Size);
+				if (fami.ElementType != NativeType.None)
+					attr.AddNamedArgument("ArraySubType", unmanagedTypeTypeRef, (int)fami.ElementType);
+			}
+			SafeArrayMarshalInfo sami = marshalInfo as SafeArrayMarshalInfo;
+			if (sami != null && sami.ElementType != VariantType.None) {
+				attr.AddNamedArgument("SafeArraySubType", typeof(VarEnum).ToTypeReference(), (int)sami.ElementType);
+			}
+			ArrayMarshalInfo ami = marshalInfo as ArrayMarshalInfo;
+			if (ami != null) {
+				if (ami.ElementType != NativeType.Max)
+					attr.AddNamedArgument("ArraySubType", unmanagedTypeTypeRef, (int)ami.ElementType);
+				if (ami.Size >= 0)
+					attr.AddNamedArgument("SizeConst", KnownTypeReference.Int32, (int)ami.Size);
+				if (ami.SizeParameterMultiplier != 0 && ami.SizeParameterIndex >= 0)
+					attr.AddNamedArgument("SizeParamIndex", KnownTypeReference.Int16, (short)ami.SizeParameterIndex);
+			}
+			CustomMarshalInfo cmi = marshalInfo as CustomMarshalInfo;
+			if (cmi != null) {
+				attr.AddNamedArgument("MarshalType", KnownTypeReference.String, cmi.ManagedType.FullName);
+				if (!string.IsNullOrEmpty(cmi.Cookie))
+					attr.AddNamedArgument("MarshalCookie", KnownTypeReference.String, cmi.Cookie);
+			}
+			FixedSysStringMarshalInfo fssmi = marshalInfo as FixedSysStringMarshalInfo;
+			if (fssmi != null) {
+				attr.AddNamedArgument("SizeConst", KnownTypeReference.Int32, (int)fssmi.Size);
+			}
+			
 			return attr;
 		}
 		#endregion
 		
+		#region Custom Attributes (ReadAttribute)
 		void AddCustomAttributes(Mono.Collections.Generic.Collection<CustomAttribute> attributes, IList<IAttribute> targetCollection)
 		{
 			foreach (var cecilAttribute in attributes) {
@@ -601,29 +768,51 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			DefaultAttribute a = new DefaultAttribute(ReadTypeReference(attribute.AttributeType), ctorParameters);
-			try {
-				if (attribute.HasConstructorArguments) {
-					foreach (var arg in attribute.ConstructorArguments) {
-						a.PositionalArguments.Add(ReadConstantValue(arg));
-					}
+			if (attribute.HasConstructorArguments) {
+				foreach (var arg in attribute.ConstructorArguments) {
+					a.PositionalArguments.Add(ReadConstantValue(arg));
 				}
-			} catch (InvalidOperationException) {
-				// occurs when Cecil can't decode an argument
 			}
-			try {
-				if (attribute.HasFields || attribute.HasProperties) {
-					foreach (var arg in attribute.Fields) {
-						a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
-					}
-					foreach (var arg in attribute.Properties) {
-						a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
-					}
+			if (attribute.HasFields || attribute.HasProperties) {
+				foreach (var arg in attribute.Fields) {
+					a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
 				}
-			} catch (InvalidOperationException) {
-				// occurs when Cecil can't decode an argument
+				foreach (var arg in attribute.Properties) {
+					a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
+				}
 			}
 			return a;
 		}
+		#endregion
+		
+		#region Security Attributes
+		static readonly ITypeReference securityActionTypeReference = typeof(SecurityAction).ToTypeReference();
+		
+		void AddSecurityAttributes(Mono.Collections.Generic.Collection<SecurityDeclaration> securityDeclarations, IList<IAttribute> targetCollection)
+		{
+			foreach (var secDecl in securityDeclarations) {
+				try {
+					foreach (var secAttribute in secDecl.SecurityAttributes) {
+						ITypeReference attributeType = ReadTypeReference(secAttribute.AttributeType);
+						var a = new DefaultAttribute(attributeType, new[] { securityActionTypeReference });
+						a.PositionalArguments.Add(new SimpleConstantValue(securityActionTypeReference, (ushort)secDecl.Action));
+						
+						if (secAttribute.HasFields || secAttribute.HasProperties) {
+							foreach (var arg in secAttribute.Fields) {
+								a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
+							}
+							foreach (var arg in secAttribute.Properties) {
+								a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
+							}
+						}
+						targetCollection.Add(a);
+					}
+				} catch (Exception) {
+					// occurs when Cecil can't decode an argument
+				}
+			}
+		}
+		#endregion
 		#endregion
 		
 		#region Read Constant Value
@@ -653,7 +842,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Read Type Definition
 		sealed class CecilTypeDefinition : DefaultTypeDefinition
 		{
-			TypeDefinition typeDefinition;
+			internal TypeDefinition typeDefinition;
 			
 			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)
 				: base(pc, typeDefinition.Namespace, ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeDefinition.Name))
@@ -683,6 +872,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public void Init(CecilLoader loader)
 			{
+				loader.CancellationToken.ThrowIfCancellationRequested();
 				InitModifiers();
 				
 				if (typeDefinition.HasGenericParameters) {
@@ -717,8 +907,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				
 				InitMembers(loader);
-				
-				this.typeDefinition = null;
+				if (!loader.HasCecilReferences)
+					this.typeDefinition = null;
 				Freeze(); // freeze after initialization
 				ApplyInterningProvider(loader.InterningProvider);
 			}
@@ -741,11 +931,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						if (name.Length == 0 || name[0] == '<')
 							continue;
 						name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name);
-						InnerClasses.Add(new CecilTypeDefinition(this, name, nestedType));
+						NestedTypes.Add(new CecilTypeDefinition(this, name, nestedType));
 					}
 				}
-				foreach (CecilTypeDefinition innerClass in this.InnerClasses) {
-					innerClass.Init(loader);
+				foreach (CecilTypeDefinition nestedType in this.NestedTypes) {
+					nestedType.Init(loader);
 				}
 			}
 			
@@ -754,17 +944,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				TypeDefinition td = this.typeDefinition;
 				// set classtype
 				if (td.IsInterface) {
-					this.ClassType = ClassType.Interface;
+					this.Kind = TypeKind.Interface;
 				} else if (td.IsEnum) {
-					this.ClassType = ClassType.Enum;
+					this.Kind = TypeKind.Enum;
 				} else if (td.IsValueType) {
-					this.ClassType = ClassType.Struct;
+					this.Kind = TypeKind.Struct;
 				} else if (IsDelegate(td)) {
-					this.ClassType = ClassType.Delegate;
+					this.Kind = TypeKind.Delegate;
 				} else if (IsModule(td)) {
-					this.ClassType = ClassType.Module;
+					this.Kind = TypeKind.Module;
 				} else {
-					this.ClassType = ClassType.Class;
+					this.Kind = TypeKind.Class;
 				}
 				this.IsSealed = td.IsSealed;
 				this.IsAbstract = td.IsAbstract;
@@ -820,7 +1010,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			void InitMembers(CecilLoader loader)
 			{
-				this.AddDefaultConstructorIfRequired = (this.ClassType == ClassType.Struct || this.ClassType == ClassType.Enum);
+				this.AddDefaultConstructorIfRequired = (this.Kind == TypeKind.Struct || this.Kind == TypeKind.Enum);
 				if (typeDefinition.HasMethods) {
 					foreach (MethodDefinition method in typeDefinition.Methods) {
 						if (loader.IsVisible(method.Attributes)) {
@@ -908,7 +1098,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				m.IsExtensionMethod = true;
 			}
 			
-			FinishReadMember(m);
+			FinishReadMember(m, method);
 			return m;
 		}
 		
@@ -952,7 +1142,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		void TranslateModifiers(MethodDefinition method, AbstractMember m)
 		{
-			if (m.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+			if (m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				// interface members don't have modifiers, but we want to handle them as "public abstract"
 				m.Accessibility = Accessibility.Public;
 				m.IsAbstract = true;
@@ -1042,7 +1232,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				f.IsVolatile = true;
 			}
 			
-			FinishReadMember(f);
+			FinishReadMember(f, field);
 			return f;
 		}
 		
@@ -1077,7 +1267,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					break;
 			}
 			
-			tp.HasDefaultConstructorConstraint = g.HasReferenceTypeConstraint;
+			tp.HasReferenceTypeConstraint = g.HasReferenceTypeConstraint;
 			tp.HasValueTypeConstraint = g.HasNotNullableValueTypeConstraint;
 			tp.HasDefaultConstructorConstraint = g.HasDefaultConstructorConstraint;
 			
@@ -1111,7 +1301,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			AddAttributes(property, p);
 			
-			FinishReadMember(p);
+			FinishReadMember(p, property);
 			return p;
 		}
 		
@@ -1151,15 +1341,69 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			AddAttributes(ev, e);
 			
-			FinishReadMember(e);
+			FinishReadMember(e, ev);
+			
 			return e;
 		}
 		#endregion
 		
-		void FinishReadMember(AbstractMember member)
+		void FinishReadMember(AbstractMember member, object cecilDefinition)
 		{
 			member.Freeze();
 			member.ApplyInterningProvider(this.InterningProvider);
+			if (HasCecilReferences)
+				typeSystemTranslationTable[member] = cecilDefinition;
 		}
+		
+		#region Type system translation table
+		Dictionary<object, object> typeSystemTranslationTable;
+		
+		T InternalGetCecilObject<T> (object typeSystemObject) where T : class
+		{
+			if (typeSystemObject == null)
+				throw new ArgumentNullException ("typeSystemObject");
+			if (!HasCecilReferences)
+				throw new NotSupportedException ("This instance contains no cecil references.");
+			object result;
+			if (!typeSystemTranslationTable.TryGetValue (typeSystemObject, out result))
+				throw new InvalidOperationException ("No cecil reference stored for " + typeSystemObject);
+			return result as T;
+		}
+		
+		public AssemblyDefinition GetCecilObject (IProjectContent content)
+		{
+			return InternalGetCecilObject<AssemblyDefinition> (content);
+		}
+		
+		public TypeDefinition GetCecilObject (ITypeDefinition type)
+		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			var cecilType = type as CecilTypeDefinition;
+			if (cecilType == null)
+				throw new ArgumentException ("type is no cecil type definition.");
+			return cecilType.typeDefinition;
+		}
+		
+		public MethodDefinition GetCecilObject (IMethod method)
+		{
+			return InternalGetCecilObject<MethodDefinition> (method);
+		}
+		
+		public FieldDefinition GetCecilObject (IField field)
+		{
+			return InternalGetCecilObject<FieldDefinition> (field);
+		}
+		
+		public EventDefinition GetCecilObject (IEvent evt)
+		{
+			return InternalGetCecilObject<EventDefinition> (evt);
+		}
+		
+		public PropertyDefinition GetCecilObject (IProperty property)
+		{
+			return InternalGetCecilObject<PropertyDefinition> (property);
+		}
+		#endregion
 	}
 }

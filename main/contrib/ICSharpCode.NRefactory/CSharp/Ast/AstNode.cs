@@ -27,12 +27,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AstNode : PatternMatching.INode
+	public abstract class AstNode : AbstractAnnotatable, PatternMatching.INode
 	{
 		#region Null
 		public static readonly AstNode Null = new NullAstNode ();
@@ -440,158 +441,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return copy;
 		}
 		
-		#region Annotation support
-		// Annotations: points either null (no annotations), to the single annotation,
-		// or to an AnnotationList.
-		// Once it is pointed at an AnnotationList, it will never change (this allows thread-safety support by locking the list)
-		object annotations;
-		
-		sealed class AnnotationList : List<object>, ICloneable
-		{
-			// There are two uses for this custom list type:
-			// 1) it's private, and thus (unlike List<object>) cannot be confused with real annotations
-			// 2) It allows us to simplify the cloning logic by making the list behave the same as a clonable annotation.
-			public AnnotationList (int initialCapacity) : base(initialCapacity)
-			{
-			}
-			
-			public object Clone ()
-			{
-				lock (this) {
-					AnnotationList copy = new AnnotationList (this.Count);
-					for (int i = 0; i < this.Count; i++) {
-						object obj = this [i];
-						ICloneable c = obj as ICloneable;
-						copy.Add (c != null ? c.Clone () : obj);
-					}
-					return copy;
-				}
-			}
-		}
-		
-		public void AddAnnotation (object annotation)
-		{
-			if (annotation == null)
-				throw new ArgumentNullException ("annotation");
-			if (this.IsNull)
-				throw new InvalidOperationException ("Cannot add annotations to the null node");
-		retry: // Retry until successful
-			object oldAnnotation = Interlocked.CompareExchange (ref this.annotations, annotation, null);
-			if (oldAnnotation == null) {
-				return; // we successfully added a single annotation
-			}
-			AnnotationList list = oldAnnotation as AnnotationList;
-			if (list == null) {
-				// we need to transform the old annotation into a list
-				list = new AnnotationList (4);
-				list.Add (oldAnnotation);
-				list.Add (annotation);
-				if (Interlocked.CompareExchange (ref this.annotations, list, oldAnnotation) != oldAnnotation) {
-					// the transformation failed (some other thread wrote to this.annotations first)
-					goto retry;
-				}
-			} else {
-				// once there's a list, use simple locking
-				lock (list) {
-					list.Add (annotation);
-				}
-			}
-		}
-		
-		public void RemoveAnnotations<T> () where T : class
-		{
-		retry: // Retry until successful
-			object oldAnnotations = this.annotations;
-			AnnotationList list = oldAnnotations as AnnotationList;
-			if (list != null) {
-				lock (list)
-					list.RemoveAll (obj => obj is T);
-			} else if (oldAnnotations is T) {
-				if (Interlocked.CompareExchange (ref this.annotations, null, oldAnnotations) != oldAnnotations) {
-					// Operation failed (some other thread wrote to this.annotations first)
-					goto retry;
-				}
-			}
-		}
-		
-		public void RemoveAnnotations (Type type)
-		{
-			if (type == null)
-				throw new ArgumentNullException ("type");
-		retry: // Retry until successful
-			object oldAnnotations = this.annotations;
-			AnnotationList list = oldAnnotations as AnnotationList;
-			if (list != null) {
-				lock (list)
-					list.RemoveAll (obj => type.IsInstanceOfType (obj));
-			} else if (type.IsInstanceOfType (oldAnnotations)) {
-				if (Interlocked.CompareExchange (ref this.annotations, null, oldAnnotations) != oldAnnotations) {
-					// Operation failed (some other thread wrote to this.annotations first)
-					goto retry;
-				}
-			}
-		}
-		
-		public T Annotation<T> () where T: class
-		{
-			object annotations = this.annotations;
-			AnnotationList list = annotations as AnnotationList;
-			if (list != null) {
-				lock (list) {
-					foreach (object obj in list) {
-						T t = obj as T;
-						if (t != null)
-							return t;
-					}
-					return null;
-				}
-			} else {
-				return annotations as T;
-			}
-		}
-		
-		public object Annotation (Type type)
-		{
-			if (type == null)
-				throw new ArgumentNullException ("type");
-			object annotations = this.annotations;
-			AnnotationList list = annotations as AnnotationList;
-			if (list != null) {
-				lock (list) {
-					foreach (object obj in list) {
-						if (type.IsInstanceOfType (obj))
-							return obj;
-					}
-				}
-			} else {
-				if (type.IsInstanceOfType (annotations))
-					return annotations;
-			}
-			return null;
-		}
-		
-		/// <summary>
-		/// Gets all annotations stored on this AstNode.
-		/// </summary>
-		public IEnumerable<object> Annotations {
-			get {
-				object annotations = this.annotations;
-				AnnotationList list = annotations as AnnotationList;
-				if (list != null) {
-					lock (list) {
-						return list.ToArray ();
-					}
-				} else {
-					if (annotations != null)
-						return new object[] { annotations };
-					else
-						return Enumerable.Empty<object> ();
-				}
-			}
-		}
-
-		#endregion
-		
 		public abstract S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data);
 		
 		#region Pattern Matching
@@ -655,18 +504,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 		
-		public AstNode GetNodeAt (int line, int column)
+		public AstNode GetNodeAt (int line, int column, Predicate<AstNode> pred = null)
 		{
-			return GetNodeAt (new AstLocation (line, column));
+			return GetNodeAt (new AstLocation (line, column), pred);
 		}
 		
-		public AstNode GetNodeAt (AstLocation location)
+		public AstNode GetNodeAt (AstLocation location, Predicate<AstNode> pred = null)
 		{
+			AstNode result = null;
 			AstNode node = this;
 			while (node.FirstChild != null) {
 				var child = node.FirstChild;
 				while (child != null) {
 					if (child.StartLocation <= location && location < child.EndLocation) {
+						if (pred == null || pred (child))
+							result = child;
 						node = child;
 						break;
 					}
@@ -676,7 +528,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (child == null)
 					break;
 			}
-			return node;
+			return result;
 		}
 		
 		public T GetNodeAt<T> (int line, int column) where T : AstNode
@@ -708,6 +560,62 @@ namespace ICSharpCode.NRefactory.CSharp
 					break;
 			}
 			return result;
+		}
+		
+		public AstNode GetResolveableNodeAt (int line, int column)
+		{
+			return GetResolveableNodeAt (new AstLocation (line, column));
+		}
+		
+		/// <summary>
+		/// Gets a node that can be resolved at location.
+		/// </summary>
+		public AstNode GetResolveableNodeAt (AstLocation location)
+		{
+			return GetNodeAt (location, delegate (AstNode n) {
+				
+				if (n is TypeDeclaration) {
+					var decl = (TypeDeclaration)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is DelegateDeclaration) {
+					var decl = (DelegateDeclaration)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is MemberDeclaration) {
+					var decl = (MemberDeclaration)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is ConstructorDeclaration) {
+					var decl = (ConstructorDeclaration)n;
+					return decl.IdentifierToken.StartLocation <= location && location <= decl.IdentifierToken.EndLocation;
+				}
+				
+				if (n is DestructorDeclaration) {
+					var decl = (DestructorDeclaration)n;
+					return decl.IdentifierToken.StartLocation <= location && location <= decl.IdentifierToken.EndLocation;
+				}
+				
+				if (n is VariableInitializer) {
+					var decl = (VariableInitializer)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is ParameterDeclaration) {
+					var decl = (ParameterDeclaration)n;
+					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
+				}
+				
+				if (n is MemberReferenceExpression) {
+					var decl = (MemberReferenceExpression)n;
+					return decl.MemberNameToken.StartLocation <= location && location <= decl.MemberNameToken.EndLocation;
+				}
+				
+				return n is IdentifierExpression || n is AstType;
+			});
 		}
 		
 		public IEnumerable<AstNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)
@@ -746,7 +654,27 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public bool Contains (AstLocation location)
 		{
-			return this.StartLocation <= location && location <= this.EndLocation;
+			return this.StartLocation <= location && location < this.EndLocation;
+		}
+		
+		public override void AddAnnotation (object annotation)
+		{
+			if (this.IsNull)
+				throw new InvalidOperationException ("Cannot add annotations to the null node");
+			base.AddAnnotation (annotation);
+		}
+		
+		internal string DebugToString()
+		{
+			if (IsNull)
+				return "Null";
+			StringWriter w = new StringWriter();
+			AcceptVisitor(new OutputVisitor(w, new CSharpFormattingOptions()), null);
+			string text = w.ToString().TrimEnd().Replace("\t", "").Replace(w.NewLine, " ");
+			if (text.Length > 100)
+				return text.Substring(0, 97) + "...";
+			else
+				return text;
 		}
 		
 		// the Root role must be available when creating the null nodes, so we can't put it in the Roles class
@@ -791,6 +719,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public static readonly Role<CSharpTokenNode> Assign = new Role<CSharpTokenNode> ("Assign", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> Colon = new Role<CSharpTokenNode> ("Colon", CSharpTokenNode.Null);
 			public static readonly Role<Comment> Comment = new Role<Comment> ("Comment");
+			public static readonly Role<ErrorNode> Error = new Role<ErrorNode> ("Error");
 			
 		}
 	}

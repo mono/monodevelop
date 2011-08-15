@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -15,12 +30,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly object constantValue;
 		
 		public LocalResolveResult(IVariable variable, IType type, object constantValue = null)
-			: base(type)
+			: base(UnpackTypeIfByRefParameter(type, variable))
 		{
 			if (variable == null)
 				throw new ArgumentNullException("variable");
 			this.variable = variable;
 			this.constantValue = constantValue;
+		}
+		
+		static IType UnpackTypeIfByRefParameter(IType type, IVariable v)
+		{
+			if (type.Kind == TypeKind.ByReference) {
+				IParameter p = v as IParameter;
+				if (p != null && (p.IsRef || p.IsOut))
+					return ((ByReferenceType)type).ElementType;
+			}
+			return type;
 		}
 		
 		public IVariable Variable {
@@ -41,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override string ToString()
 		{
-			return string.Format("[VariableResolveResult {0}]", variable);
+			return string.Format("[LocalResolveResult {0}]", variable);
 		}
 	}
 }

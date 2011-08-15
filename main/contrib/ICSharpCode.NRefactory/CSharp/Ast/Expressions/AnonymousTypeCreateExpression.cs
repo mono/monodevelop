@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AnonymousTypeCreateExpression.cs
 //  
 // Author:
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public AstNodeCollection<Expression> Initializer {
+		public AstNodeCollection<Expression> Initializers {
 			get { return GetChildrenByRole (Roles.Expression); }
 		}
 		
@@ -53,9 +53,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
-		public AnonymousTypeCreateExpression (IEnumerable<Expression> initializer)
+		public AnonymousTypeCreateExpression (IEnumerable<Expression> initializers)
 		{
-			foreach (var ini in initializer) {
+			foreach (var ini in initializers) {
 				AddChild (ini, Roles.Expression);
 			}
 		}
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			var o = other as AnonymousTypeCreateExpression;
-			return o != null && this.Initializer.DoMatch(o.Initializer, match);
+			return o != null && this.Initializers.DoMatch(o.Initializers, match);
 		}
 	}
 }
