@@ -209,7 +209,7 @@ namespace MonoDevelop.SourceEditor
 //				}
 //				parent.quickTaskProvider.ForEach (p => AddQuickTaskStrip (p));
 			}
-
+			
 			public void AddQuickTaskStrip (IQuickTaskProvider p)
 			{
 //				if (!strip.Visible) {
@@ -514,6 +514,11 @@ namespace MonoDevelop.SourceEditor
 				Thread.Sleep (20);
 		}
 		
+		internal void SetLastActiveEditor (ExtensibleTextEditor editor)
+		{
+			this.lastActiveEditor = editor;
+		}
+			
 		#region Error underlining
 		List<ErrorMarker> errors = new List<ErrorMarker> ();
 		uint resetTimerId;
