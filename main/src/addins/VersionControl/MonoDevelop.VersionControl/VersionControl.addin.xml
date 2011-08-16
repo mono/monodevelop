@@ -171,11 +171,6 @@
 		</Category>
 	</Extension>
 	
-	<Extension path="/MonoDevelop/Ide/MainMenu/File">
-		<SeparatorItem id = "CheckoutSep" insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
-		<CommandItem id="MonoDevelop.VersionControl.Commands.Checkout" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "SaveSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
@@ -186,6 +181,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu">
 		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "Run" >
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Checkout" />
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 			<SeparatorItem/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.UpdateSolution"/>
