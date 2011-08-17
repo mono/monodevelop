@@ -60,7 +60,7 @@ namespace MonoDevelop.MonoDroid
 			if (!project.TargetRuntime.IsInstalled (requiredFramework)) {
 				var message = "Mono 2.8 or newer is required.";
 				MessageService.GenericAlert (MonoDevelop.Ide.Gui.Stock.MonoDevelop, message,
-						"Mono 2.8 or newer is requiered. Please go to http://www.mono-project.com to update your installation.",
+						"Mono 2.8 or newer is required. Please go to http://www.mono-project.com to update your installation.",
 						AlertButton.Ok);
 
 				var buildResult = new BuildResult ();
@@ -71,6 +71,10 @@ namespace MonoDevelop.MonoDroid
 			if (!MonoDroidFramework.HasAndroidJavaSdks) {
 				var buildResult = new BuildResult ();
 				buildResult.AddError ("The Android SDK could not be found, please set the path to it in the Mono for Android SDKs settings panel.");
+				return buildResult;
+			} else if (!MonoDroidFramework.IsPlatformInstalled (project.TargetFramework.Id.Version)) {				
+				var buildResult = new BuildResult ();
+				buildResult.AddError ("The targetted Android api level cannot be found, please use the Android AVD manager to install the platforms you're targetting.");
 				return buildResult;
 			}
 			return base.Build (monitor, item, configuration);

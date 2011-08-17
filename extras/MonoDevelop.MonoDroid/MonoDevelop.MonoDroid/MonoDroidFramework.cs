@@ -463,6 +463,12 @@ namespace MonoDevelop.MonoDroid
 			
 			MessageService.ShowCustomDialog (dialog);
 		}
+
+		internal static bool IsPlatformInstalled (string version)
+		{
+			string apiLevel = MonoDroidMonoFrameworkBackend.GetApiLevelFromVersion (version);
+			return apiLevel != null && Directory.Exists (MonoDroidFramework.AndroidBinDir.Combine ("platforms", "android-" + apiLevel));
+		}
 	}
 	
 	public class MonoDroidInstalledCondition : ConditionType
