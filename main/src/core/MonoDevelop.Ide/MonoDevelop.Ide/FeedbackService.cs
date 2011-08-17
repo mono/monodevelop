@@ -83,6 +83,7 @@ namespace MonoDevelop.Ide
 			
 			string os = Platform.IsMac ? "Mac OSX" : (Platform.IsWindows ? "Windows" : "Linux");
 			header += "Operating System: " + os + " (" + Environment.OSVersion + ")\n";
+			header += "Distributor: " + PropertyService.Get <string> ("MonoDevelop.Distributor", "Xamarin") + "\n";
 			
 			body = header + "\n" + body;
 			
