@@ -279,6 +279,8 @@ src/core/MonoDevelop.Ide/Makefile
 src/core/MonoDevelop.Ide/BuildVariables.cs
 src/core/MonoDevelop.Startup/Makefile
 src/tools/Makefile
+src/tools/MacCrashLogger/Makefile
+src/tools/mdcrashlog/Makefile
 src/tools/mdhost/Makefile
 src/tools/mdtool/Makefile
 src/tools/SharpCoco/Makefile

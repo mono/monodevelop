@@ -305,10 +305,11 @@ namespace MonoDevelop.Ide
 		void LaunchCrashMonitoringService ()
 		{
 			if (Platform.IsMac) {
-				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelop.CrashLog.exe");
+				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MacCrashLogger.app");
 				var pid = Process.GetCurrentProcess ().Id;
 				var logPath = UserProfile.Current.LogDir.Combine ("CrashReporter");
-				var psi = new ProcessStartInfo ("mono", string.Format ("{0} -p {1} -l {2}", crashmonitor, pid, logPath)) {
+				Console.WriteLine ("Invoking: open {0}", string.Format ("-a {0} --args -p {1} -l {2}", crashmonitor, pid, logPath));
+				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} --args -p {1} -l {2}", crashmonitor, pid, logPath)) {
 					UseShellExecute = false,
 				};
 				Process.Start (psi);
