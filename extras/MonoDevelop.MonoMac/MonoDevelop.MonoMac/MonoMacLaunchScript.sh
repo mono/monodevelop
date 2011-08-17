@@ -30,7 +30,7 @@ if [ -z "$MONOMAC_DEBUGLAUNCHER_LOGDIR" ]; then
 	export MONO_ENV_OPTIONS="$MONO_OPTIONS $RESOURCES_PATH/$ASSEMBLY"
 	
 	#run the app
-	exec "$APP_ROOT/$APP_NAME"
+	exec "$APP_ROOT/$APP_NAME" $@
 else
 
 # Running in MonoDevelop or in the debugger
