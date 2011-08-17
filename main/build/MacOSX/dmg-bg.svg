@@ -14,11 +14,11 @@
    height="211.5"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.47 r22583"
-   sodipodi:docname="bg.svg"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="dmg-bg.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
-   inkscape:export-filename="/home/michael/mono/monodevelop/main/build/MacOSX/dmg-bg.png"
+   inkscape:export-filename="/sources/monodevelop/main/build/MacOSX/dmg-bg.png"
    inkscape:export-xdpi="128.65294"
    inkscape:export-ydpi="128.65294">
   <sodipodi:namedview
@@ -30,7 +30,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="2"
      inkscape:cx="366.04202"
-     inkscape:cy="47.79364"
+     inkscape:cy="127.79364"
      inkscape:document-units="px"
      showgrid="false"
      inkscape:grid-points="false"
@@ -40,7 +40,7 @@
      inkscape:guide-bbox="true"
      gridtolerance="10px"
      inkscape:window-width="1836"
-     inkscape:window-height="1076"
+     inkscape:window-height="1036"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:current-layer="layer1"
@@ -159,7 +159,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
       <cc:Work
          rdf:about="">
@@ -265,20 +265,21 @@
        id="rect5520"
        width="56.373768"
        height="17.284218"
-       x="337.59573"
-       y="100.34984"
+       x="234.09573"
+       y="104.84984"
        ry="2.140903" />
     <text
        xml:space="preserve"
        style="font-size:14.2548542px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
-       x="340.30392"
-       y="114.29051"
+       x="236.80392"
+       y="118.79051"
        id="text5522"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan5524"
-         x="340.30392"
-         y="114.29051">Beta 2</tspan></text>
+         x="236.80392"
+         y="118.79051"
+         style="-inkscape-font-specification:'Arial Black, Heavy';font-family:Arial Black;font-weight:900;font-style:normal;font-stretch:normal;font-variant:normal;font-size:13px;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%">Alpha 1</tspan></text>
     <path
        style="fill:url(#radialGradient6336);fill-opacity:1;fill-rule:evenodd;stroke:none"
        d="m 97.432578,142.47548 c 24.598482,53.827 85.095772,55.6064 85.095772,55.6064 l 0.32496,6.7312 14.71258,-16.8766 -16.02061,-12.1812 0.30149,7.3861 c -37.25346,0.9952 -63.19196,-11.7944 -84.414192,-40.6659 z"
@@ -298,7 +299,7 @@
          style="font-size:10.91673565px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Install by dragging MonoDevelop to the Applications directory </tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:38.43881225999999884px;font-style:normal;font-weight:normal;fill:url(#linearGradient6215);fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       style="font-size:38.43881226px;font-style:normal;font-weight:normal;fill:url(#linearGradient6215);fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="227.61166"
        y="98.734352"
        id="text5419"><tspan
@@ -306,7 +307,7 @@
          id="tspan5421"
          x="227.61166"
          y="98.734352"
-         style="font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1">2.4.1</tspan></text>
+         style="font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1">2.8</tspan></text>
   </g>
   <path
      style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
