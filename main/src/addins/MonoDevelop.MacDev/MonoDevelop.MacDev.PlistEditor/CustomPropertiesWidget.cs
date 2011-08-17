@@ -319,8 +319,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 				var key = Parent != null? Scheme.GetKey (pObject.Parent.Key) : null;
 				if (key != null) {
-					foreach (var val in key.Values) {
-						valueStore.AppendValues (val.Description);
+					var descr = new List<string> (key.Values.Select (v => v.Description));
+					descr.Sort ();
+					foreach (var val in descr) {
+						valueStore.AppendValues (val);
 					}
 				}
 			};
@@ -479,7 +481,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			keyStore.Clear ();
 			if (scheme != null) {
-				foreach (var key in scheme.Keys)
+				var sortedKeys = new List<PListScheme.Key> (scheme.Keys);
+				sortedKeys.Sort ((x, y) => x.Description.CompareTo (y.Description));
+				foreach (var key in sortedKeys)
 					keyStore.AppendValues (key.Description, key);
 			}
 			
