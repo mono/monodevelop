@@ -239,15 +239,14 @@ namespace MonoDevelop.MonoDroid
 				return false;
 
 			if (MonoDroidFramework.HasAndroidJavaSdks)
-				return GetVersion (frameworkId.Version) && MonoDroidFramework.AndroidVersions.Any (version => version.OSVersion == frameworkId.Version);
-			return false;
+				return IsValidVersion (frameworkId.Version);
+			return true;
 		}
 
-		static bool GetVersion (string version)
+		static bool IsValidVersion (string version)
 		{
 			string apiLevel = MonoDroidMonoFrameworkBackend.GetApiLevelFromVersion (version);
-//			LoggingService.LogDebug ("GetVersion {0} {1} {2}", version, apiLevel, MonoDroidFramework.AndroidBinDir.Combine ("platforms", "android-" + apiLevel));
-			return apiLevel != null && Directory.Exists (MonoDroidFramework.AndroidBinDir.Combine ("platforms", "android-" + apiLevel));
+			return apiLevel != null && MonoDroidFramework.AndroidVersions.Any (v => v.OSVersion == version);
 		}
 		
 		protected override void OnEndLoad ()
