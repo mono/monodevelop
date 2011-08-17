@@ -1,10 +1,10 @@
 // 
-// CrashEventArgs.cs
+// OptionsParser.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
 // 
-// Copyright (c) Xamarin (http://xamarin.com)
+// Copyright (c) 2011 Xamarin 2011
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,20 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 
-namespace MonoDevelop.Monitoring {
+namespace MonoDevelop {
+	
+	public static class OptionsParser {
 
-	public class CrashEventArgs : EventArgs {
-		
-		public string CrashLogPath {
+		public static string LogPath {
+			get; private set;
+		}
+
+		public static int Pid {
 			get; private set;
 		}
 		
-		public CrashEventArgs (string crashLogPath)
+		public static bool TryParse (string[] args, out string error)
 		{
-			CrashLogPath = crashLogPath;
+			error = null;
+			int pid = -1;
+			string logPath = null;
+			
+			for (int i = 0; i < args.Length - 1; i += 2) {
+				if (args [i] == "-p") {
+					if (!int.TryParse (args [i + 1], out pid)) {
+						pid = -1;
+					}
+				}
+				
+				if (args [i] == "-l") {
+					logPath = args [i + 1];
+				}
+			}
+			
+			if (pid == -1) {
+				error = "The pid of the MonoDevelop process being monitored must be supplied";
+			} else if (string.IsNullOrEmpty (logPath)) {
+				error = "The path to write log files to must be supplied";
+			}
+			
+			Pid = pid;
+			LogPath = logPath;
+			
+			return error == null;
 		}
 	}
 }

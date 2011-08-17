@@ -30,7 +30,7 @@ using System.Threading;
 
 namespace MonoDevelop.Monitoring {
 
-	abstract class CrashMonitor : ICrashMonitor {
+	public abstract class CrashMonitor : ICrashMonitor {
 		
 		public static ICrashMonitor Create (int pid)
 		{
@@ -49,13 +49,13 @@ namespace MonoDevelop.Monitoring {
 			get; set;
 		}
 		
-		public CrashMonitor (int pid, string path)
+		protected CrashMonitor (int pid, string path)
 			: this (pid, path, "")
 		{
 			
 		}
 		
-		public CrashMonitor (int pid, string path, string filter)
+		protected CrashMonitor (int pid, string path, string filter)
 		{
 			Pid = pid;
 			Watcher = new FileSystemWatcher (path, filter);
@@ -73,6 +73,11 @@ namespace MonoDevelop.Monitoring {
 					Thread.Sleep (1000);
 					info.Refresh ();
 				}
+				
+				// If the application has crashed we want to wait a few seconds before
+				// raising this event so we allow time for the native crash reporter to
+				// write its log files.
+				Thread.Sleep (5000);
 				OnApplicationExited ();
 			});
 		}
@@ -88,7 +93,6 @@ namespace MonoDevelop.Monitoring {
 			if (CrashDetected != null)
 				CrashDetected (this, e);
 		}
-
 
 		public void Start () {
 			Watcher.EnableRaisingEvents = true;

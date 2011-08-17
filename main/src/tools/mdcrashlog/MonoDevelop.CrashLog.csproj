@@ -6,7 +6,7 @@
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.CrashLog</RootNamespace>
     <AssemblyName>MonoDevelop.CrashLog</AssemblyName>
   </PropertyGroup>
@@ -32,14 +32,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Package>gtk-sharp-2.0</Package>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Monitoring\ICrashMonitor.cs" />
     <Compile Include="MonoDevelop.Monitoring\CrashEventArgs.cs" />
@@ -48,6 +44,7 @@
     <Compile Include="MonoDevelop.SessionLogging\ISessionLogger.cs" />
     <Compile Include="MonoDevelop.CrashReporting\CrashReporter.cs" />
     <Compile Include="MonoDevelop.CrashReporting\CrashReport.cs" />
+    <Compile Include="OptionsParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
