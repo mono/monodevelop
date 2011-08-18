@@ -104,7 +104,7 @@ namespace MonoDevelop.CrashReporting
 				request.Method = "POST";
 				
 				// Write the log file to the request stream
-				var requestStream = request.GetRequestStream ();
+				using (var requestStream = request.GetRequestStream ())
 				using (var s = File.OpenRead (report.CrashLogPath))
 					s.CopyTo (requestStream);
 				
