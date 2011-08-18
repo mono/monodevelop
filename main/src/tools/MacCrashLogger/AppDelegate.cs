@@ -48,8 +48,12 @@ namespace MacCrashLogger
 				try {
 					ProcessingCrashLog = true;
 					using (var alert = new NSAlert ()) {
-						alert.InformativeText = "Information";
-						alert.MessageText = "A crash was detected";
+						alert.AlertStyle = NSAlertStyle.Critical;
+						alert.MessageText= "MonoDevelop crash detected";
+						alert.InformativeText = "An unexpected error has caused MonoDevelop to crash. " +
+							"Details of the issue will be sent to Xamarin so it can be diagnosed" +
+							" and resolved.";
+						
 						NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
 						var result = alert.RunModal ();
 						if (result == 0) {
