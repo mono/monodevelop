@@ -50,6 +50,7 @@ namespace MacCrashLogger
 					using (var alert = new NSAlert ()) {
 						alert.InformativeText = "Information";
 						alert.MessageText = "A crash was detected";
+						NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
 						var result = alert.RunModal ();
 						if (result == 0) {
 							Reporter.UploadOrCache (e.CrashLogPath);
