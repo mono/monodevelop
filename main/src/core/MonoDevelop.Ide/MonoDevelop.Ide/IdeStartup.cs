@@ -308,8 +308,7 @@ namespace MonoDevelop.Ide
 				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MacCrashLogger.app");
 				var pid = Process.GetCurrentProcess ().Id;
 				var logPath = UserProfile.Current.LogDir.Combine ("CrashReporter");
-				Console.WriteLine ("Invoking: open {0}", string.Format ("-a {0} --args -p {1} -l {2}", crashmonitor, pid, logPath));
-				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} --args -p {1} -l {2}", crashmonitor, pid, logPath)) {
+				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2}", crashmonitor, pid, logPath)) {
 					UseShellExecute = false,
 				};
 				Process.Start (psi);
