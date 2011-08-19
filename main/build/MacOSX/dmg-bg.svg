@@ -29,8 +29,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2"
-     inkscape:cx="367.04202"
-     inkscape:cy="47.79364"
+     inkscape:cx="180.28319"
+     inkscape:cy="107.79364"
      inkscape:document-units="px"
      showgrid="false"
      inkscape:grid-points="false"
@@ -40,9 +40,9 @@
      inkscape:guide-bbox="true"
      gridtolerance="10px"
      inkscape:window-width="1836"
-     inkscape:window-height="1076"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-height="1036"
+     inkscape:window-x="9"
+     inkscape:window-y="0"
      inkscape:current-layer="layer1"
      height="300px"
      width="744.09448px"
@@ -159,7 +159,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
       <cc:Work
          rdf:about="">
@@ -340,7 +340,7 @@
        id="rect5520-2-0"
        width="56.373768"
        height="17.284218"
-       x="238.30112"
+       x="244.30112"
        y="104.1313"
        ry="2.140903"
        inkscape:export-filename="/home/lluis/nowork/mdgit/main/build/MacOSX/dmg-bg.png"
@@ -349,7 +349,7 @@
     <text
        xml:space="preserve"
        style="font-size:14.2548542px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
-       x="241.00931"
+       x="253.00931"
        y="118.07198"
        id="text5522-9-5"
        sodipodi:linespacing="125%"
@@ -358,8 +358,9 @@
        inkscape:export-ydpi="128.64999"><tspan
          sodipodi:role="line"
          id="tspan5524-3-9"
-         x="241.00931"
-         y="118.07198">Beta 3</tspan></text>
+         x="253.00931"
+         y="118.07198"
+         style="font-size:15px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Heavy'">RC 2</tspan></text>
   </g>
   <path
      style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
