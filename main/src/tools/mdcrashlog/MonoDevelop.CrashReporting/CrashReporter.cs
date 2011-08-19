@@ -47,14 +47,18 @@ namespace MonoDevelop.CrashReporting
 			get; set;
 		}
 		
-		public CrashReporter (string logDirectory)
+		string Email {
+			get; set;
+		}
+		
+		public CrashReporter (string logDirectory, string email)
 		{
 			CacheDirectory = logDirectory;
 		}
 		
 		public void UploadOrCache (string crashLog)
 		{
-			var report = new CrashReport { Email = "get_the_users@email.com", CrashLogPath = crashLog  };
+			var report = new CrashReport { Email = Email, CrashLogPath = crashLog  };
 			if (!TryUploadReport (report))
 				AddReportToCache (report);
 		}

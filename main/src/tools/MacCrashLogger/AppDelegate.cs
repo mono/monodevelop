@@ -56,7 +56,7 @@ namespace MacCrashLogger
 		
 		public AppDelegate ()
 		{
-			Reporter = new CrashReporter (OptionsParser.LogPath);
+			Reporter = new CrashReporter (OptionsParser.LogPath, OptionsParser.Email);
 			
 			Monitor = CrashMonitor.Create (OptionsParser.Pid);
 			Monitor.ApplicationExited += HandleMonitorApplicationExited;

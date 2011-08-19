@@ -29,7 +29,11 @@ using System;
 namespace MonoDevelop {
 	
 	public static class OptionsParser {
-
+		
+		public static string Email {
+			get; private set;
+		}
+		
 		public static string LogPath {
 			get; private set;
 		}
@@ -42,28 +46,32 @@ namespace MonoDevelop {
 		{
 			error = null;
 			int pid = -1;
-			string logPath = null;
 			
 			for (int i = 0; i < args.Length - 1; i += 2) {
 				if (args [i] == "-p") {
 					if (!int.TryParse (args [i + 1], out pid)) {
 						pid = -1;
 					}
+					Pid = pid;
 				}
 				
 				if (args [i] == "-l") {
-					logPath = args [i + 1];
+					LogPath = args [i + 1];
+				}
+				
+				if (args [i] == "-email") {
+					Email = args [i + 1];
 				}
 			}
 			
-			if (pid == -1) {
+			if (Pid == -1) {
 				error = "The pid of the MonoDevelop process being monitored must be supplied";
-			} else if (string.IsNullOrEmpty (logPath)) {
+			} else if (string.IsNullOrEmpty (LogPath)) {
 				error = "The path to write log files to must be supplied";
+			} else if (string.IsNullOrEmpty (Email)) {
+				error = "The users email must be supplied";
 			}
 			
-			Pid = pid;
-			LogPath = logPath;
 			
 			return error == null;
 		}
