@@ -54,6 +54,7 @@ namespace MonoDevelop.CrashReporting
 		public CrashReporter (string logDirectory, string email)
 		{
 			CacheDirectory = logDirectory;
+			Email = email;
 		}
 		
 		public void UploadOrCache (string crashLog)
