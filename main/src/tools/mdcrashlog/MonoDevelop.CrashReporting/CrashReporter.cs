@@ -107,16 +107,18 @@ namespace MonoDevelop.CrashReporting
 				Console.WriteLine ("Trying to connect to: {0}", url);
 				var request = WebRequest.Create (url);
 				request.Method = "POST";
-				
-				// Write the log file to the request stream
-				using (var requestStream = request.GetRequestStream ())
-				using (var s = File.OpenRead (report.CrashLogPath))
-					s.CopyTo (requestStream);
+				using (var s = File.OpenRead (report.CrashLogPath)) {
+					request.ContentLength = s.Length;
+					// Write the log file to the request stream
+					using (var requestStream = request.GetRequestStream ())
+						s.CopyTo (requestStream);
+				}
 				
 				// Ensure the server has correctly processed everything.
 				using (var response = request.GetResponse ()) {
-					if (new StreamReader (response.GetResponseStream ()).ReadToEnd () != "OK") {
-						Console.WriteLine ("Server did not respond with success");
+					var responseText = new StreamReader (response.GetResponseStream ()).ReadToEnd (); 
+					if (responseText != "OK") {
+						Console.WriteLine ("Server responded with error: {0}", responseText);
 						return false;
 					}
 				}
@@ -130,4 +132,3 @@ namespace MonoDevelop.CrashReporting
 		}
 	}
 }
-
