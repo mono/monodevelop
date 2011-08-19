@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core;
 using System.Net;
 using System.IO;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -110,6 +111,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			bodyWarningLabel.Hide ();
 			
 			string mail = FeedbackService.ReporterEMail;
+			if (string.IsNullOrEmpty (mail))
+				mail = AuthorInformation.Default.Email;
 			
 			if (string.IsNullOrEmpty (mail)) {
 				headerBox.Hide ();
