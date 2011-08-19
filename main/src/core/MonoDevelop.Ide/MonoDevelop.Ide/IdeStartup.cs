@@ -48,6 +48,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using System.Diagnostics;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide
 {
@@ -308,7 +309,13 @@ namespace MonoDevelop.Ide
 				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MacCrashLogger.app");
 				var pid = Process.GetCurrentProcess ().Id;
 				var logPath = UserProfile.Current.LogDir.Combine ("CrashReporter");
-				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2}", crashmonitor, pid, logPath)) {
+				var email = FeedbackService.ReporterEMail;
+				if (string.IsNullOrEmpty (email))
+					email = AuthorInformation.Default.Email;
+				if (string.IsNullOrEmpty (email))
+					email = "unknown@email.com";
+				
+				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2} -email {3}", crashmonitor, pid, logPath, email)) {
 					UseShellExecute = false,
 				};
 				Process.Start (psi);
