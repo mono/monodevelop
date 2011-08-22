@@ -987,6 +987,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				evt (this, EventArgs.Empty);
 		}
 		
+		public override string ToString ()
+		{
+			return string.Format ("[ProjectDom: Uri={0}]", Uri);
+		}
+		
 		public event EventHandler Unloaded;
 		public event EventHandler ReferencesUpdated;
 	}
