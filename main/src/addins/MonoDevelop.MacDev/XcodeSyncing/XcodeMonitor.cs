@@ -136,7 +136,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			foreach (var item in syncList) {
 				XC4Debug.Log ("Syncing item {0}", item.GetTargetRelativeFileNames ()[0]);
 				item.SyncOut (ctx);
-				Ide.IdeApp.Workbench.StatusBar.SetProgressFraction (workItem * 100.0 / syncList.Count);
+				Ide.IdeApp.Workbench.StatusBar.SetProgressFraction (workItem / syncList.Count);
 				workItem++;
 			}
 			
