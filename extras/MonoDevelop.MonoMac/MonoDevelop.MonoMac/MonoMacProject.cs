@@ -200,7 +200,7 @@ namespace MonoDevelop.MonoMac
 		public override string GetDefaultBuildAction (string fileName)
 		{
 			if (fileName.EndsWith (groupedExtensions[0]))
-				return BuildAction.Page;
+				return BuildAction.InterfaceDefinition;
 			return base.GetDefaultBuildAction (fileName);
 		}
 		
