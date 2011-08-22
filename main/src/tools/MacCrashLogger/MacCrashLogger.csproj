@@ -47,9 +47,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainMenu.xib" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Info.plist" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -59,5 +56,8 @@
       <Project>{D90DF5C6-0ABE-4E13-930D-C3AE95FBE5C4}</Project>
       <Name>MonoDevelop.CrashLog</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <InterfaceDefinition Include="MainMenu.xib" />
   </ItemGroup>
 </Project>
