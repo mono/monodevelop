@@ -31,6 +31,9 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using System.Text;
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
 	public class NSObjectProjectInfo
@@ -127,6 +130,20 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				if (rDom != null && rDom.objcTypes.TryGetValue (objcType, out resolved))
 					return true;
 			}
+			var msg = new StringBuilder ("Can't resolve "+ objcType + Environment.NewLine);
+			foreach (var r in dom.References) {
+				msg.Append ("Referenced dom:");
+				msg.Append (r);
+				var rDom = infoService.GetProjectInfo (r);
+				if (rDom == null) {
+					msg.AppendLine ("projectinfo == null");
+					continue;
+				}
+				msg.Append ("known types:");
+				msg.AppendLine (string.Join (",", rDom.objcTypes.Keys.ToArray()));
+			}
+			LoggingService.LogWarning (msg.ToString ());
+			
 			resolved = null;
 			return false;
 		}
@@ -175,8 +192,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					}
 				}
 				if (outlet.CliType == null) {
-					if (TryResolveObjcToCli (outlet.ObjCType, out resolved))
+					if (TryResolveObjcToCli (outlet.ObjCType, out resolved)) {
 						outlet.CliType = resolved.CliName;
+					} else {
+						MessageService.ShowError (GettextCatalog.GetString ("Error while syncing object c type."),
+							string.Format (GettextCatalog.GetString ("Type '{0}' can't be resolved to a valid cli type."), outlet.ObjCType));
+						outlet.CliType = outlet.ObjCType;
+					}
 				}
 			}
 			
