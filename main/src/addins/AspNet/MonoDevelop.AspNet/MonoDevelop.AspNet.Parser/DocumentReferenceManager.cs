@@ -283,7 +283,7 @@ namespace MonoDevelop.AspNet.Parser
 			MonoDevelop.Projects.ProjectReference pr;
 			if (string.IsNullOrEmpty (assemblyLocation)) {
 				pr = new MonoDevelop.Projects.ProjectReference
-					(MonoDevelop.Projects.ReferenceType.Gac, assemblyName);
+					(MonoDevelop.Projects.ReferenceType.Package, assemblyName);
 			} else {
 				pr =  new MonoDevelop.Projects.ProjectReference
 					(MonoDevelop.Projects.ReferenceType.Assembly, assemblyLocation);

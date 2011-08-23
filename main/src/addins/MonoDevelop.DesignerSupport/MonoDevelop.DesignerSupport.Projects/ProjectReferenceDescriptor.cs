@@ -50,7 +50,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 				switch (pref.ReferenceType) {
 				case ReferenceType.Assembly:
 					return GettextCatalog.GetString ("Assembly");
-				case ReferenceType.Gac:
+				case ReferenceType.Package:
 					return GettextCatalog.GetString ("Package");
 				case ReferenceType.Project:
 					return GettextCatalog.GetString ("Project");
@@ -137,7 +137,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 		[LocalizedDescription ("Package that provides this reference.")]
 		public string Package {
 			get {
-				if (pref.ReferenceType == ReferenceType.Gac && pref.Package != null)
+				if (pref.ReferenceType == ReferenceType.Package && pref.Package != null)
 					return pref.Package.GetDisplayName ();
 				else
 					return string.Empty;

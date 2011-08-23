@@ -95,7 +95,7 @@ namespace MonoDevelop.CSharp
 					continue;
 				foreach (string fileName in lib.GetReferencedFileNames (configSelector)) {
 					switch (lib.ReferenceType) {
-					case ReferenceType.Gac:
+					case ReferenceType.Package:
 						SystemPackage pkg = lib.Package;
 						if (pkg == null) {
 							string msg = string.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);

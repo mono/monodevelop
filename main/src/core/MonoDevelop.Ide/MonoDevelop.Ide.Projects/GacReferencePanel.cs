@@ -1,4 +1,4 @@
-// GacReferencePanel.cs
+// PackageReferencePanel.cs
 //
 // Author:
 //     Todd Berman <tberman@sevenl.net>
@@ -40,7 +40,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Projects
 {
-    internal class GacReferencePanel : VBox, IReferencePanel 
+    internal class PackageReferencePanel : VBox, IReferencePanel 
     {
         ListStore store = null;
         private TreeView treeView = null;
@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Projects
 		const int ColMatchRank = 7;
 		const int ColType = 8;
         
-        public GacReferencePanel (SelectReferenceDialog selectDialog, bool showAll)
+        public PackageReferencePanel (SelectReferenceDialog selectDialog, bool showAll)
         {
             this.selectDialog = selectDialog;
 			this.showAll = showAll;
@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Projects
                 if (systemAssembly.Package.IsFrameworkPackage && systemAssembly.Name == "mscorlib")
                     continue;
 				
-				bool selected = IsSelected (ReferenceType.Gac, systemAssembly.FullName, systemAssembly.Package.Name);
+				bool selected = IsSelected (ReferenceType.Package, systemAssembly.FullName, systemAssembly.Package.Name);
 				int matchRank = 0;
 				string name, version;
 				
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Projects
 					pkg,
 					MonoDevelop.Ide.Gui.Stock.Package,
 					matchRank,
-					ReferenceType.Gac);
+					ReferenceType.Package);
 			}
 			
 			if (showAll) {
@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.Projects
 
         public void SignalRefChange (ProjectReference refInfo, bool newState)
         {
-			if (!showAll && refInfo.ReferenceType != ReferenceType.Gac)
+			if (!showAll && refInfo.ReferenceType != ReferenceType.Package)
 				return;
 			
             TreeIter iter;
@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.Projects
                 do {
 					if (refInfo.ReferenceType == (ReferenceType) store.GetValue(iter, ColType)) {
 						switch (refInfo.ReferenceType) {
-						case ReferenceType.Gac:
+						case ReferenceType.Package:
 							SystemAssembly systemAssembly = store.GetValue(iter, ColAssembly) as SystemAssembly;
 							if ((refInfo.Reference == systemAssembly.FullName) && (refInfo.Package == systemAssembly.Package) )
 								found = true;
@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.Projects
 			string fullName = (string)store.GetValue (iter, ColFullName);
             if ((bool)store.GetValue (iter, ColSelected) == false) {
                 store.SetValue (iter, ColSelected, true);
-				if (rt == ReferenceType.Gac)
+				if (rt == ReferenceType.Package)
 					selectDialog.AddReference (new ProjectReference ((SystemAssembly)store.GetValue (iter, ColAssembly)));
 				else
 					selectDialog.AddReference (new ProjectReference (rt, fullName));

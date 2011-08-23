@@ -125,7 +125,7 @@ namespace MonoDevelop.Projects
 				else if (File.Exists (asm + ".exe"))
 					References.Add (new ProjectReference (ReferenceType.Assembly, asm + ".exe"));
 				else
-					References.Add (new ProjectReference (ReferenceType.Gac, aref.FullName));
+					References.Add (new ProjectReference (ReferenceType.Package, aref.FullName));
 			}*/
 		}
 		

@@ -87,7 +87,8 @@ namespace MonoDevelop.Ide.Templates
 			if (xmlElement["References"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["References"].ChildNodes) {
 					XmlElement elem = (XmlElement)xmlNode;
-					ProjectReference projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), elem.GetAttribute ("type")), elem.GetAttribute ("refto"));
+					var refType = elem.GetAttribute ("type");
+					ProjectReference projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"));
 					string specificVersion = elem.GetAttribute ("SpecificVersion");
 					if (!string.IsNullOrEmpty (specificVersion))
 						projectReference.SpecificVersion = bool.Parse (specificVersion);

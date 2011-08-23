@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Projects {
 					if (!stringMatcher.CalcMatchRank (projectEntry.Name, out matchRank))
 						continue;
 					int[] match = stringMatcher.GetMatch (projectEntry.Name);
-					txt = GacReferencePanel.GetMatchMarkup (treeView, projectEntry.Name, match, 0);
+					txt = PackageReferencePanel.GetMatchMarkup (treeView, projectEntry.Name, match, 0);
 				} else {
 					txt = GLib.Markup.EscapeText (projectEntry.Name);
 				}

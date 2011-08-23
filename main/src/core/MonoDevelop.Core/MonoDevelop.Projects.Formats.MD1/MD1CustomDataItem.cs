@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				if (pref.ReferenceType == ReferenceType.Assembly) {
 					string basePath = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
 					refto = FileService.AbsoluteToRelativePath (basePath, refto);
-				} else if (pref.ReferenceType == ReferenceType.Gac && pref.LoadedReference != null)
+				} else if (pref.ReferenceType == ReferenceType.Package && pref.LoadedReference != null)
 					refto = pref.LoadedReference;
 	
 				data.Add (new DataValue ("refto", refto));

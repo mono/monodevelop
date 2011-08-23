@@ -137,7 +137,7 @@ namespace MonoDevelop.GtkCore {
 			bool gdk = false, gtk = false, posix = false;
 			
 			foreach (ProjectReference r in new List<ProjectReference> (project.References)) {
-				if (r.ReferenceType != ReferenceType.Gac)
+				if (r.ReferenceType != ReferenceType.Package)
 					continue;
 				string name = GetReferenceName (r);
 				if (name == "gdk-sharp")
@@ -156,16 +156,16 @@ namespace MonoDevelop.GtkCore {
 				if (version != assm_version) {
 					project.References.Remove (r);
 					if (name == "gnome-sharp" && assm_version == "Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f") {
-						project.References.Add (new ProjectReference (ReferenceType.Gac, name + ", Version=2.24.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f"));
+						project.References.Add (new ProjectReference (ReferenceType.Package, name + ", Version=2.24.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f"));
 					} else {
-						project.References.Add (new ProjectReference (ReferenceType.Gac, name + ", " + assm_version));
+						project.References.Add (new ProjectReference (ReferenceType.Package, name + ", " + assm_version));
 					}
 					changed = true;
 				}
 			}
 
 			if (!gtk) {
-				project.References.Add (new ProjectReference (ReferenceType.Gac, "gtk-sharp" + ", " + assm_version));
+				project.References.Add (new ProjectReference (ReferenceType.Package, "gtk-sharp" + ", " + assm_version));
 				changed = true;
 			}
 
@@ -174,7 +174,7 @@ namespace MonoDevelop.GtkCore {
 
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			if (!gdk) {
-				project.References.Add (new ProjectReference (ReferenceType.Gac, "gdk-sharp" + ", " + assm_version));
+				project.References.Add (new ProjectReference (ReferenceType.Package, "gdk-sharp" + ", " + assm_version));
 				changed = true;
 			}
 				
@@ -182,7 +182,7 @@ namespace MonoDevelop.GtkCore {
 				// Add a reference to Mono.Posix. Use the version for the selected project's runtime version.
 				string aname = project.AssemblyContext.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756", null, project.TargetFramework);
 				aname = project.AssemblyContext.GetAssemblyNameForVersion (aname, project.TargetFramework);
-				project.References.Add (new ProjectReference (ReferenceType.Gac, aname));
+				project.References.Add (new ProjectReference (ReferenceType.Package, aname));
 				changed = true;
 			}
 			updating = false;
@@ -224,7 +224,7 @@ namespace MonoDevelop.GtkCore {
 			if (MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new AlertButton (GettextCatalog.GetString ("Disable Designer"))))
 				GtkDesignInfo.DisableProject (dnp);
 			else
-				dnp.References.Add (new ProjectReference (ReferenceType.Gac, args.ProjectReference.StoredReference));
+				dnp.References.Add (new ProjectReference (ReferenceType.Package, args.ProjectReference.StoredReference));
 		}
 
 		static string GetReferenceName (ProjectReference pref)
@@ -239,7 +239,7 @@ namespace MonoDevelop.GtkCore {
 
 		static bool IsGtkReference (ProjectReference pref)
 		{
-			if (pref.ReferenceType != ReferenceType.Gac)
+			if (pref.ReferenceType != ReferenceType.Package)
 				return false;
 
 			return GetReferenceName (pref) == "gtk-sharp";

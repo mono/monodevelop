@@ -983,7 +983,7 @@ namespace MonoDevelop.Projects
 		void UpdateSystemReferences ()
 		{
 			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Gac) {
+				if (pref.ReferenceType == ReferenceType.Package) {
 					string newRef = AssemblyContext.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
 					if (newRef == null) {
 						pref.ResetReference ();

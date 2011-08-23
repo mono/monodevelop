@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Templates
 						string res = netProject.AssemblyContext.GetAssemblyFullName (aref, netProject.TargetFramework);
 						res = netProject.AssemblyContext.GetAssemblyNameForVersion (res, netProject.TargetFramework);
 						if (!ContainsReference (netProject, res))
-							netProject.References.Add (new ProjectReference (ReferenceType.Gac, aref));
+							netProject.References.Add (new ProjectReference (ReferenceType.Package, aref));
 					}
 				}
 				
@@ -151,8 +151,8 @@ namespace MonoDevelop.Ide.Templates
 			else
 				aname = aref.Substring (0, i);
 			foreach (ProjectReference pr in project.References) {
-				if (pr.ReferenceType == ReferenceType.Gac && (pr.Reference == aname || pr.Reference.StartsWith (aname + ",")) || 
-					pr.ReferenceType != ReferenceType.Gac && pr.Reference.Contains (aname))
+				if (pr.ReferenceType == ReferenceType.Package && (pr.Reference == aname || pr.Reference.StartsWith (aname + ",")) || 
+					pr.ReferenceType != ReferenceType.Package && pr.Reference.Contains (aname))
 					return true;
 			}
 			return false;

@@ -340,7 +340,7 @@ namespace MonoDevelop.AspNet
 			var dllName = parsed.Name + ".dll";
 			
 			foreach (var reference in References) {
-				if (reference.ReferenceType == ReferenceType.Gac || reference.ReferenceType == ReferenceType.Assembly) {
+				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
 					foreach (string refPath in reference.GetReferencedFileNames (null))
 						if (Path.GetFileName (refPath) == dllName)
 							return ProjectDomService.GetAssemblyDom (TargetRuntime, refPath);

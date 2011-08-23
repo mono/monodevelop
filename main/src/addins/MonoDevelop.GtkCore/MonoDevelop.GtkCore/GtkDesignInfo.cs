@@ -210,7 +210,7 @@ namespace MonoDevelop.GtkCore
 		
 		static bool IsGtkReference (ProjectReference pref)
 		{
-			if (pref.ReferenceType != ReferenceType.Gac)
+			if (pref.ReferenceType != ReferenceType.Package)
 				return false;
 
 			int idx = pref.StoredReference.IndexOf (",");

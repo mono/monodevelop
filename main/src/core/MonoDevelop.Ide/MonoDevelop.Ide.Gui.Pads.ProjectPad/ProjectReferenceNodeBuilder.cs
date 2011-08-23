@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					label = Path.GetFileName(pref.Reference);
 					icon = Context.GetIcon ("md-reference-folder");
 					break;
-				case ReferenceType.Gac:
+				case ReferenceType.Package:
 					label = pref.Reference.Split(',')[0];
 					icon = Context.GetIcon ("md-reference-package");
 					break;

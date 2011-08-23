@@ -550,7 +550,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							if (MSBuildProjectService.IsAbsoluteMSBuildPath (hintPath))
 								pref.ExtendedProperties ["_OriginalMSBuildReferenceIsAbsolute"] = true;
 						} else {
-							pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
+							pref = new ProjectReference (ReferenceType.Package, buildItem.Include);
 							pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] = hintPath;
 						}
 						pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
@@ -563,7 +563,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							asm = "System.Xml";
 						else if (asm == "system")
 							asm = "System";
-						pref = new ProjectReference (ReferenceType.Gac, asm);
+						pref = new ProjectReference (ReferenceType.Package, asm);
 						pref.LocalCopy = false;
 					}
 					pref.Condition = buildItem.Condition;
@@ -1120,7 +1120,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else
 					buildItem.UnsetMetadata ("Private");
 			}
-			else if (pref.ReferenceType == ReferenceType.Gac) {
+			else if (pref.ReferenceType == ReferenceType.Package) {
 				string include = pref.StoredReference;
 				SystemPackage pkg = pref.Package;
 				if (pkg != null && pkg.IsFrameworkPackage) {

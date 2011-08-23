@@ -626,7 +626,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/ExportProjectDialog.cs \
 	MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/FeatureSelectorDialog.cs \
-	MonoDevelop.Ide.Projects/GacReferencePanel.cs \
+	MonoDevelop.Ide.Projects/PackageReferencePanel.cs \
 	MonoDevelop.Ide.Projects/ImportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/IncludeNewFilesDialog.cs \
 	MonoDevelop.Ide.Projects/NewConfigurationDialog.cs \

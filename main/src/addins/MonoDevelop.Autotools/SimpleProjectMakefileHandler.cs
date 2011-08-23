@@ -497,7 +497,7 @@ endif", s.SwitchName.Replace ('-', '_').ToUpperInvariant (), s.Define));
 			// grab pkg-config references
 			foreach (ProjectReference reference in project.References) 
 			{
-				if (reference.ReferenceType == ReferenceType.Gac) 
+				if (reference.ReferenceType == ReferenceType.Package) 
 				{
 					// Get pkg-config keys
 					SystemPackage pkg = reference.Package;

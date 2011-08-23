@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				case ReferenceType.Assembly:
 					label = Path.GetFileName(pref.Reference);
 					break;
-				case ReferenceType.Gac:
+				case ReferenceType.Package:
 					label = pref.Reference.Split(',')[0];
 					break;
 				default:

@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects
 			
 			Assert.AreEqual (1, project.References.Count);
 			ProjectReference pr = project.References [0];
-			Assert.AreEqual (ReferenceType.Gac, pr.ReferenceType);
+			Assert.AreEqual (ReferenceType.Package, pr.ReferenceType);
 			Assert.AreEqual ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
 			
 			// Configurations
@@ -109,15 +109,15 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (3, project.References.Count);
 			
 			ProjectReference pr = project.References [0];
-			Assert.AreEqual (ReferenceType.Gac, pr.ReferenceType);
+			Assert.AreEqual (ReferenceType.Package, pr.ReferenceType);
 			Assert.AreEqual ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
 			
 			pr = project.References [1];
-			Assert.AreEqual (ReferenceType.Gac, pr.ReferenceType);
+			Assert.AreEqual (ReferenceType.Package, pr.ReferenceType);
 			Assert.AreEqual ("System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
 			
 			pr = project.References [2];
-			Assert.AreEqual (ReferenceType.Gac, pr.ReferenceType);
+			Assert.AreEqual (ReferenceType.Package, pr.ReferenceType);
 			Assert.AreEqual ("System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
 			
 			// Configurations
@@ -151,9 +151,9 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, project.Configurations.Count);
 			
 			InitializeProject (dir, project, "TestProject");
-			project.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Gac, "System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Gac, "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Main.cs")));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Resource.xml"), BuildAction.EmbeddedResource));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Excluded.xml"), BuildAction.Content));
@@ -256,14 +256,14 @@ namespace MonoDevelop.Projects
 			folder1.Name = "nested-solution1";
 			
 			DotNetProject projectLib1 = CreateProject (Util.Combine (dir, "nested-solution1", "library1"), "C#", "library1");
-			projectLib1.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			projectLib1.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			projectLib1.Files.Add (new ProjectFile (Path.Combine (projectLib1.BaseDirectory, "MyClass.cs")));
 			projectLib1.Files.Add (new ProjectFile (Path.Combine (projectLib1.BaseDirectory, "AssemblyInfo.cs")));
 			projectLib1.CompileTarget = CompileTarget.Library;
 			folder1.Items.Add (projectLib1);
 			
 			DotNetProject projectLib2 = CreateProject (Util.Combine (dir, "nested-solution1", "library2"), "C#", "library2");
-			projectLib2.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			projectLib2.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			projectLib2.Files.Add (new ProjectFile (Path.Combine (projectLib2.BaseDirectory, "MyClass.cs")));
 			projectLib2.Files.Add (new ProjectFile (Path.Combine (projectLib2.BaseDirectory, "AssemblyInfo.cs")));
 			projectLib2.CompileTarget = CompileTarget.Library;
@@ -278,7 +278,7 @@ namespace MonoDevelop.Projects
 			DotNetProject project2 = CreateProject (Util.Combine (dir, "nested-solution2", "console-project2"), "C#", "console-project2");
 			project2.Files.Add (new ProjectFile (Path.Combine (project2.BaseDirectory, "Main.cs")));
 			project2.Files.Add (new ProjectFile (Path.Combine (project2.BaseDirectory, "AssemblyInfo.cs")));
-			project2.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project2.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			
 			// nested-solution3
 
@@ -286,14 +286,14 @@ namespace MonoDevelop.Projects
 			folder3.Name = "nested-solution3";
 			
 			DotNetProject projectLib3 = CreateProject (Util.Combine (dir, "nested-solution2", "nested-solution3", "library3"), "C#", "library3");
-			projectLib3.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			projectLib3.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			projectLib3.Files.Add (new ProjectFile (Path.Combine (projectLib3.BaseDirectory, "MyClass.cs")));
 			projectLib3.Files.Add (new ProjectFile (Path.Combine (projectLib3.BaseDirectory, "AssemblyInfo.cs")));
 			projectLib3.CompileTarget = CompileTarget.Library;
 			folder3.Items.Add (projectLib3);
 			
 			DotNetProject projectLib4 = CreateProject (Util.Combine (dir, "nested-solution2", "nested-solution3", "library4"), "C#", "library4");
-			projectLib4.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			projectLib4.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			projectLib4.Files.Add (new ProjectFile (Path.Combine (projectLib4.BaseDirectory, "MyClass.cs")));
 			projectLib4.Files.Add (new ProjectFile (Path.Combine (projectLib4.BaseDirectory, "AssemblyInfo.cs")));
 			projectLib4.CompileTarget = CompileTarget.Library;
@@ -305,7 +305,7 @@ namespace MonoDevelop.Projects
 			string file = Path.Combine (dir, "TestSolution.sln");
 			sol.FileName = file;
 			
-			project1.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project1.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project1.References.Add (new ProjectReference (projectLib1));
 			project1.References.Add (new ProjectReference (projectLib2));
 			project1.References.Add (new ProjectReference (projectLib3));

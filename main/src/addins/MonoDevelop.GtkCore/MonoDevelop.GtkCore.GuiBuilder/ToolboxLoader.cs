@@ -50,7 +50,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string rname;
 			
 			if (sp != null) {
-				rt = ReferenceType.Gac;
+				rt = ReferenceType.Package;
 				rname = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (filename, null);
 			} else {
 				rt = ReferenceType.Assembly;

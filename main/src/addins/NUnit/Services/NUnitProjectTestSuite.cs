@@ -109,7 +109,7 @@ namespace MonoDevelop.NUnit
 				DotNetProject project = base.OwnerSolutionItem as DotNetProject;
 				if (project != null) {
 					foreach (ProjectReference pr in project.References) {
-						if (pr.ReferenceType != ReferenceType.Gac && !pr.LocalCopy) {
+						if (pr.ReferenceType != ReferenceType.Package && !pr.LocalCopy) {
 							foreach (string file in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
 								yield return file;
 						}
