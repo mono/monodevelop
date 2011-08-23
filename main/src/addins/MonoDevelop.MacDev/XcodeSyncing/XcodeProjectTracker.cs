@@ -312,7 +312,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			Dictionary<string,ProjectFile> newFiles;
 			XC4Debug.Log ("Getting changed types from Xcode");
 			var updates = context.GetTypeUpdates (out newFiles);
-			if (updates == null) {
+			if (updates == null || updates.Count == 0) {
 				XC4Debug.Log ("No changed types from Xcode found");
 				return;
 			}
