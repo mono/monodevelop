@@ -189,7 +189,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				for (int i = 0; i < needsSync.Count; i++) {
 					var item = needsSync [i];
 					item.SyncBack (ctx);
-					Ide.IdeApp.Workbench.StatusBar.SetProgressFraction ((i + 1) * 100.0 / needsSync.Count);
+					Ide.IdeApp.Workbench.StatusBar.SetProgressFraction ((i + 1.0) / needsSync.Count);
 				}
 				Ide.IdeApp.Workbench.StatusBar.EndProgress ();
 				Ide.IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count));
