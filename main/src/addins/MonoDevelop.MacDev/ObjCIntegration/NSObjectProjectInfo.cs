@@ -45,6 +45,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		ProjectDom dom;
 		bool needsUpdating;
 		
+		public bool ContainsErrors {
+			get;
+			private set;
+		}
+		
 		public NSObjectProjectInfo (ProjectDom dom, NSObjectInfoService infoService)
 		{
 			this.infoService = infoService;
@@ -76,6 +81,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			objcTypes.Clear ();
 			cliTypes.Clear ();
+			ContainsErrors = false;
 			
 			foreach (var type in infoService.GetRegisteredObjects (dom)) {
 				objcTypes.Add (type.ObjCName, type);
@@ -197,6 +203,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					} else {
 						MessageService.ShowError (GettextCatalog.GetString ("Error while syncing object c type."),
 							string.Format (GettextCatalog.GetString ("Type '{0}' can't be resolved to a valid cli type."), outlet.ObjCType));
+						ContainsErrors = true;
 						outlet.CliType = outlet.ObjCType;
 					}
 				}

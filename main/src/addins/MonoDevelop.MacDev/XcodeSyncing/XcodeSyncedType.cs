@@ -96,12 +96,16 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			//FIXME: detect unresolved types
 			parsed.MergeCliInfo (objcType);
 			context.ProjectInfo.ResolveTypes (parsed);
-			
-			context.TypeSyncJobs.Add (new XcodeSyncObjcBackJob () {
-				HFile = hFile,
-				DesignerFile = objcType.GetDesignerFile (),
-				Type = parsed,
-			});
+			if (!context.ProjectInfo.ContainsErrors) {
+				context.TypeSyncJobs.Add (new XcodeSyncObjcBackJob () {
+					HFile = hFile,
+					DesignerFile = objcType.GetDesignerFile (),
+					Type = parsed,
+				});
+			} else {
+				context.SetSyncTimeToNow (Type.ObjCName + ".h");
+				LoggingService.LogWarning ("Sync back skipped because of errors in project info.");
+			}
 		}
 		
 		const string supportingFilesGroup = "Supporting Files";
