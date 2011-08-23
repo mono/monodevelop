@@ -30,6 +30,7 @@ using System.Linq;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
@@ -103,7 +104,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				sw.WriteLine ();
 				
 				foreach (var outlet in Outlets) {
-					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", AsId (outlet.ObjCType), outlet.ObjCName);
+					var type = AsId (outlet.ObjCType);
+					if (string.IsNullOrEmpty (type)) {
+						LoggingService.LogError ("Can't generate outlet property for: " + outlet.CliName +" no obj c type. Using cli type " + outlet.CliType + " instead.");
+						type = AsId (outlet.CliType);
+						sw.WriteLine ("// FIXME: The type '{0}' couldn't be resolved. It may be incorrect.");
+					}
+					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", type, outlet.ObjCName);
 					sw.WriteLine ();
 				}
 				
