@@ -82,6 +82,11 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public string Name {
 			get {
+				if (string.IsNullOrEmpty (name)) {
+					return string.IsNullOrEmpty (id.Profile)
+						? string.Format ("{0} {1}", id.Identifier, id.Version)
+						: string.Format ("{0} {1} ({2})", id.Identifier, id.Version, id.Profile);
+				}
 				return name;
 			}
 		}

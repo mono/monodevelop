@@ -73,6 +73,13 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
+		public string GetDisplayName ()
+		{
+			//for framework packages, the version is part of the name
+			//for other packages, include it in case it isn't
+			return (IsFrameworkPackage || string.IsNullOrEmpty (version))? Name : name + " " + version;
+		}
+		
 		public string Name {
 			get { return name; }
 		}

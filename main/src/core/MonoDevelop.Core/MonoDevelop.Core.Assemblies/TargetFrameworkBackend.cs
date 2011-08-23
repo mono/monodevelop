@@ -102,9 +102,10 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public virtual SystemPackageInfo GetFrameworkPackageInfo (string packageName)
 		{
+			string name = !string.IsNullOrEmpty (packageName)? packageName : framework.Name;
 			SystemPackageInfo info = new SystemPackageInfo ();
-			info.Name = string.IsNullOrEmpty (packageName) ? runtime.DisplayRuntimeName : packageName;
-			info.Description = string.IsNullOrEmpty (packageName) ? framework.Name : packageName;
+			info.Name = name;
+			info.Description = name;
 			info.IsFrameworkPackage = true;
 			info.IsCorePackage = true;
 			info.IsGacPackage = true;

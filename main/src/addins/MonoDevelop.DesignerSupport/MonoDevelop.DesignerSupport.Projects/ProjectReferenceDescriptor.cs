@@ -138,7 +138,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 		public string Package {
 			get {
 				if (pref.ReferenceType == ReferenceType.Gac && pref.Package != null)
-					return pref.Package.Name + " "  + pref.Package.Version;
+					return pref.Package.GetDisplayName ();
 				else
 					return string.Empty;
 			}

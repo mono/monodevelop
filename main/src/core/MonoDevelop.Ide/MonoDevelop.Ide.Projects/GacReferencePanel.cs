@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Projects
 					name = GLib.Markup.EscapeText (systemAssembly.Name);
 					version = GLib.Markup.EscapeText (systemAssembly.Version);
 				}
-				string pkg = systemAssembly.Package.Name;
+				string pkg = systemAssembly.Package.GetDisplayName ();
 				if (systemAssembly.Package.IsInternalPackage)
 					pkg += " " + GettextCatalog.GetString ("(Provided by MonoDevelop)");
 				
