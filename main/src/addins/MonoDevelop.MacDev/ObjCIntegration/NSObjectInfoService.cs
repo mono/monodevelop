@@ -149,7 +149,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 								MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.CompilationUnit.FileName);
 						}
 						//type registered with an explicit type name are up to the user to provide a valid name
-						if (att.PositionalArguments.Count == 1)
+						// Note that the attribute now takes one *or* two parameters.
+						if (att.PositionalArguments.Count == 1 || att.PositionalArguments.Count == 2)
 							objcName = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
 						//non-nested types in the root namespace have names accessible from obj-c
 						else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
