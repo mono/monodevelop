@@ -1302,7 +1302,6 @@
     <Compile Include="MonoDevelop.Ide.Projects\DeleteConfigDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ExportProjectDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\FeatureSelectorDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects\GacReferencePanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewConfigurationDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ProjectFileSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide\ProjectOperations.cs" />
@@ -1455,6 +1454,7 @@
     <Compile Include="MonoDevelop.Ide.Updater\AddinsUpdateHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\UpdateCheckHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\SdkLocationPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\PackageReferencePanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
