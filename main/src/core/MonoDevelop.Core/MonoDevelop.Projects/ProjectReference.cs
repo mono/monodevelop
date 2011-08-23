@@ -179,7 +179,7 @@ namespace MonoDevelop.Projects
 		
 		public bool CanSetLocalCopy {
 			get {
-				return ReferenceType != ReferenceType.Gac;
+				return cachedPackage == null || !cachedPackage.IsFrameworkPackage;
 			}
 		}
 
