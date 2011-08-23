@@ -1260,7 +1260,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 				}
 				if (node == null)
-					node = new DataValue (bprop.Name, bprop.Value);
+					node = new DataValue (bprop.Name, Projects.Dom.Output.AmbienceService.UnescapeText (bprop.Value));
 				
 				ConvertFromMsbuildFormat (node);
 				ditem.ItemData.Add (node);
@@ -1457,7 +1457,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string GetXmlString (DataNode node)
 		{
 			if (node is DataValue)
-				return ((DataValue)node).Value;
+				return Projects.Dom.Output.AmbienceService.EscapeText (((DataValue)node).Value);
 			else {
 				StringWriter sw = new StringWriter ();
 				XmlTextWriter xw = new XmlTextWriter (sw);

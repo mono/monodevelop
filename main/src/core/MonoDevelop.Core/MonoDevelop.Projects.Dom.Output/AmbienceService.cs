@@ -321,6 +321,42 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result.ToString ();
 		}
 		
+		public static string UnescapeText (string text)
+		{
+			var sb = new StringBuilder ();
+			for (int i = 0; i < text.Length; i++) {
+				char ch = text[i];
+				if (ch == '&') {
+					int end = text.IndexOf (';', i);
+					if (end == -1)
+						break;
+					string entity = text.Substring (i + 1, end - i - 1);
+					switch (entity) {
+					case "lt":
+						sb.Append ('<');
+						break;
+					case "gt":
+						sb.Append ('>');
+						break;
+					case "amp":
+						sb.Append ('&');
+						break;
+					case "apos":
+						sb.Append ('\'');
+						break;
+					case "quot":
+						sb.Append ('"');
+						break;
+					}
+					i = end;
+				} else {
+					sb.Append (ch);
+				}
+			}
+			return sb.ToString ();	
+		}
+		
+		
 		public static string GetDocumentationMarkup (string doc)
 		{
 			return GetDocumentationMarkup (doc, DocumentationFormatOptions.Empty);
