@@ -157,6 +157,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					xcode.OpenProject ();
 					return true;
 				} catch (Exception ex) {
+					DisableSyncing ();
 					monitor.ReportError (GettextCatalog.GetString ("Could not open Xcode project"), ex);
 				}
 			}
