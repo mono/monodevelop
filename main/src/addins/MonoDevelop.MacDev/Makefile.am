@@ -84,6 +84,7 @@ FILES =  \
 	XcodeIntegration/XCBuildConfiguration.cs \
 	XcodeIntegration/XCConfigurationList.cs \
 	XcodeIntegration/XcodeObject.cs \
+	XcodeIntegration/XCodeObjectComparer.cs \
 	XcodeIntegration/XcodeProject.cs \
 	XcodeIntegration/XcodeType.cs \
 	XcodeInterfaceBuilderDisplayBinding.cs \

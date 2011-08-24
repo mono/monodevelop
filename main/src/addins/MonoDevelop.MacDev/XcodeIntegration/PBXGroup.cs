@@ -63,7 +63,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			var sb = new StringBuilder ();
 
 			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\tchildren = (\n", Token, Type);
-			children.Sort ((x, y) => x.ToString ().CompareTo (y.ToString ()));
+			children.Sort (new XcodeObjectComparer ());
 			foreach (var child in children) 
 				sb.AppendFormat ("\t\t\t\t{0},\n", child.Token);
 			var quotedName = QuoteOnDemand (name);
