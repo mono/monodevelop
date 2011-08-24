@@ -116,11 +116,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			if (!syncing)
 				return;
 			
-			bool isOpen = xcode != null && xcode.IsProjectOpen ();
-			
-			if (isOpen) {
-				XC4Debug.Log ("Project open, ensuring files are saved");
-				xcode.SaveProject ();
+			bool isOpen = false;
+			try {
+				isOpen = xcode != null && xcode.IsProjectOpen ();
+				if (isOpen) {
+					XC4Debug.Log ("Project open, ensuring files are saved");
+					xcode.SaveProject ();
+				}
+			} catch (Exception ex) {
+				XC4Debug.Log ("XCode could not be made save pending changes: {0}", ex);
+				MonoDevelop.Ide.MessageService.ShowError (
+					"MonoDevelop could not communicate with XCode",
+					"If XCode is still running, please ensure that all changes have been saved and XCode has been exited " +
+					"before continuing, otherwise any new changes may be lost.");
 			}
 			
 			DetectXcodeChanges ();
