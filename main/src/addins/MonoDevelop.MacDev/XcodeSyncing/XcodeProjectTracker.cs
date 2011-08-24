@@ -394,16 +394,30 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	
 	static class XC4Debug
 	{
-		[System.Diagnostics.Conditional ("DEBUG_XCODE_SYNC")]
+		static bool? enabled;
+		
+		public static bool Enabled {
+			get {
+				if (!enabled.HasValue) {
+					var s = Environment.GetEnvironmentVariable ("MD_DEBUG_XCODE_SYNC");
+					enabled = "true".Equals (s, StringComparison.OrdinalIgnoreCase);
+				}
+				return enabled.Value;
+			}
+		}
+		
 		public static void Log (string message)
 		{
+			if (!Enabled)
+				return;
 			Console.Write ("XC4: ");
 			Console.WriteLine (message);
 		}
 		
-		[System.Diagnostics.Conditional ("DEBUG_XCODE_SYNC")]
 		public static void Log (string messageFormat, params object[] values)
 		{
+			if (!Enabled)
+				return;
 			Console.Write ("XC4: ");
 			Console.WriteLine (messageFormat, values);
 		}
