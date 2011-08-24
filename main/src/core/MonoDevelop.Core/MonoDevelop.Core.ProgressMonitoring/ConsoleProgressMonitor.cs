@@ -41,9 +41,15 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		int col = -1;
 		LogTextWriter logger;
 		bool ignoreLogMessages;
+		TextWriter writer;
 		
-		public ConsoleProgressMonitor ()
+		public ConsoleProgressMonitor () : this (Console.Out)
 		{
+		}
+		
+		public ConsoleProgressMonitor (TextWriter writer)
+		{
+			this.writer = writer;
 			logger = new LogTextWriter ();
 			logger.TextWritten += new LogTextEventHandler (WriteLog);
 		}
@@ -138,7 +144,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			while (n < text.Length)
 			{
 				if (col == -1) {
-					Console.Write (new String (' ', leftMargin));
+					writer.Write (new String (' ', leftMargin));
 					col = leftMargin;
 				}
 				
@@ -167,11 +173,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 				else if (col >= maxCols)
 					n = lastWhite + 1;
 				
-				Console.Write (text.Substring (sn, lastWhite - sn));
+				writer.Write (text.Substring (sn, lastWhite - sn));
 				
 				if (eol || col >= maxCols) {
 					col = -1;
-					Console.WriteLine ();
+					writer.WriteLine ();
 					if (eol) n++;
 				}
 			}
@@ -181,7 +187,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			ilevel += isize;
 			if (col != -1) {
-				Console.WriteLine ();
+				writer.WriteLine ();
 				col = -1;
 			}
 		}
@@ -191,7 +197,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			ilevel -= isize;
 			if (ilevel < 0) ilevel = 0;
 			if (col != -1) {
-				Console.WriteLine ();
+				writer.WriteLine ();
 				col = -1;
 			}
 		}
