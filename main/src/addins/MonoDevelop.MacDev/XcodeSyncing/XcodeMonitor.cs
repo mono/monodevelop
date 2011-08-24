@@ -283,7 +283,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				var workspacePath = GetWorkspacePath (plistPath);
 				if (workspacePath == null)
 					continue;
-				if (workspacePath == xcproj) {
+				//clean up derived data for all our hack projects
+				if (workspacePath.StartsWith (originalProjectDir)) {
 					try {
 						XC4Debug.Log ("Deleting derived data directory");
 						Directory.Delete (subDir, true);
