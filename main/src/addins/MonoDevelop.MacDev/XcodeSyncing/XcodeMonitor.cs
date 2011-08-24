@@ -305,6 +305,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public bool CloseProject ()
 		{
+			if (!CheckRunning ())
+				return true;
+			
 			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, projectDir) == "true";
 			XC4Debug.Log ("Closing project: {0}", success);
 			return success;
@@ -312,11 +315,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public bool CloseFile (string fileName)
 		{
+			if (!CheckRunning ())
+				return true;
+			
 			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, fileName) == "true";
 			XC4Debug.Log ("Closing file {0}: {1}", fileName, success);
 			return success;
 		}
-		
+
 		const string XCODE_SAVE_IN_PATH =
 @"tell application ""{0}""
 set pp to ""{1}""
