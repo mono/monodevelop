@@ -626,7 +626,6 @@ FILES =  \
 	MonoDevelop.Ide.Projects/ExportProjectDialog.cs \
 	MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/FeatureSelectorDialog.cs \
-	MonoDevelop.Ide.Projects/PackageReferencePanel.cs \
 	MonoDevelop.Ide.Projects/ImportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/IncludeNewFilesDialog.cs \
 	MonoDevelop.Ide.Projects/NewConfigurationDialog.cs \
@@ -634,6 +633,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/NewPolicySetDialog.cs \
 	MonoDevelop.Ide.Projects/NewProjectDialog.cs \
 	MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs \
+	MonoDevelop.Ide.Projects/PackageReferencePanel.cs \
 	MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs \
 	MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs \
 	MonoDevelop.Ide.Projects/ProjectReferencePanel.cs \

@@ -279,7 +279,9 @@ namespace MonoDevelop.Autotools
 		}
 
 		MakefileVar packageRefVar;
-		[ItemProperty]
+		
+		//FIXME: name is quick hack to avoid changing format
+		[ItemProperty ("GacRefVar")]
 		public MakefileVar PackageRefVar {
 			get {
 				if (packageRefVar == null)
