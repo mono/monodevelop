@@ -70,14 +70,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return Directory.Exists (xcproj);
 		}
 		
-		public void UpdateProject (List<XcodeSyncedItem> allItems, XcodeProject emptyProject)
+		public void UpdateProject (IProgressMonitor monitor, List<XcodeSyncedItem> allItems, XcodeProject emptyProject)
 		{
 			items = allItems;
-			int workItem = 1;
 			
-			Ide.IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Updating synchronized project..."));
+			monitor.BeginTask (GettextCatalog.GetString ("Updating Xcode project..."), items.Count);
+			monitor.Log.WriteLine ("Updating synced project with {0} items", items.Count);
 			XC4Debug.Log ("Updating synced project with {0} items", items.Count);
-			
+		
 			var ctx = new XcodeSyncContext (projectDir, syncTimeCache);
 			
 			var toRemove = new HashSet<string> (itemMap.Keys);
@@ -106,7 +106,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			bool removedOldProject = false;
 			if (updateProject) {
 				if (pendingProjectWrite == null && ProjectExists ()) {
-					XC4Debug.Log ("Project file needs to be updated, closing and removing old project");
+					monitor.Log.WriteLine ("Project file needs to be updated, closing and removing old project");
 					CloseProject ();
 					DeleteProjectArtifacts ();
 					removedOldProject = true;
@@ -134,19 +134,17 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			foreach (var item in syncList) {
-				XC4Debug.Log ("Syncing item {0}", item.GetTargetRelativeFileNames ()[0]);
+				monitor.Log.WriteLine ("Syncing item {0}", item.GetTargetRelativeFileNames ()[0]);
 				item.SyncOut (ctx);
-				Ide.IdeApp.Workbench.StatusBar.SetProgressFraction (workItem / syncList.Count);
-				workItem++;
+				monitor.Step (1);
 			}
 			
 			if (updateProject) {
-				XC4Debug.Log ("Queuing Xcode project {0} to write when opened", projectDir);
+				monitor.Log.WriteLine ("Queuing Xcode project {0} to write when opened", projectDir);
 				pendingProjectWrite = emptyProject;
 			}
-			
-			Ide.IdeApp.Workbench.StatusBar.EndProgress ();
-			Ide.IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Synchronized project updated."));
+			monitor.EndTask ();
+			monitor.ReportSuccess (GettextCatalog.GetString ("Xcode project updated."));
 		}
 		
 		// Xcode keeps some kind of internal lock on project files while it's running and
@@ -206,7 +204,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public void SaveProject ()
 		{
-			XC4Debug.Log ("Saving Xcode project");
 			AppleScript.Run (XCODE_SAVE_IN_PATH, AppleSdkSettings.XcodePath, projectDir);
 		}
 		
