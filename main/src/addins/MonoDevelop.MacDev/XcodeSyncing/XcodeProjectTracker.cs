@@ -394,32 +394,32 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	
 	static class XC4Debug
 	{
-		static bool? enabled;
+		static TextWriter writer;
 		
-		public static bool Enabled {
-			get {
-				if (!enabled.HasValue) {
-					var s = Environment.GetEnvironmentVariable ("MD_DEBUG_XCODE_SYNC");
-					enabled = "true".Equals (s, StringComparison.OrdinalIgnoreCase);
-				}
-				return enabled.Value;
+		static XC4Debug ()
+		{
+			FilePath logDir = UserProfile.Current.LogDir;
+			FilePath logFile = logDir.Combine ("Xcode4Sync.log");
+			FileService.EnsureDirectoryExists (logDir);
+			try {
+				writer = new StreamWriter (logFile) { AutoFlush = true };
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not create Xcode sync logging file", ex);
 			}
 		}
 		
 		public static void Log (string message)
 		{
-			if (!Enabled)
+			if (writer == null)
 				return;
-			Console.Write ("XC4: ");
-			Console.WriteLine (message);
+			writer.WriteLine (message);
 		}
 		
 		public static void Log (string messageFormat, params object[] values)
 		{
-			if (!Enabled)
+			if (writer == null)
 				return;
-			Console.Write ("XC4: ");
-			Console.WriteLine (messageFormat, values);
+			writer.WriteLine (messageFormat, values);
 		}
 	}
 }
