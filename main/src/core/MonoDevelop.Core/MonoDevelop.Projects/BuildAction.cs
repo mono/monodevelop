@@ -46,11 +46,6 @@ namespace MonoDevelop.Projects
 		public const string SplashScreen = "SplashScreen";
 		public const string EntityDeploy = "EntityDeploy";
 		
-		/// <summary>
-		/// Copies to the root of the bundle or lproj.
-		/// </summary>
-		public const string BundleResource = "BundleResource";
-		
 		public static string[] StandardActions {
 			get {
 				return new string[] {
@@ -80,7 +75,6 @@ namespace MonoDevelop.Projects
 					ApplicationDefinition,
 					InterfaceDefinition,
 					Resource,
-					BundleResource
 //					SplashScreen,
 //					EntityDeploy
 				};
@@ -97,7 +91,6 @@ namespace MonoDevelop.Projects
 			translations[Page] = GettextCatalog.GetString ("Page");
 			translations[InterfaceDefinition] = GettextCatalog.GetString ("Interface definition");
 			translations[Resource] = GettextCatalog.GetString ("Resource");
-			translations[BundleResource] = GettextCatalog.GetString ("Bundle resource");
 			translations[SplashScreen] = GettextCatalog.GetString ("Splash screen");
 			translations[EntityDeploy] = GettextCatalog.GetString ("Entity deploy");
 		}
