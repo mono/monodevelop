@@ -95,7 +95,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				}
 				sw.WriteLine ();
 				
-				var baseType = (BaseIsModel || BaseObjCType == null) ? "NSObject" : BaseObjCType;
+				if (BaseObjCType == null && BaseCliType != null && !BaseIsModel) {
+					throw new ObjectiveCGenerationException (string.Format (
+						"Could not generate class '{0}' as its base type '{1}'" +
+						"could not be resolved to Obj-C",
+						CliName, BaseCliType), this);
+				}
+				
+				var baseType = BaseIsModel ? "NSObject" : BaseObjCType;
 				sw.WriteLine ("@interface {0} : {1} {{", ObjCName, baseType);
 				foreach (var outlet in Outlets) {
 					sw.WriteLine ("\t{0} *_{1};", AsId (outlet.ObjCType), outlet.ObjCName);
@@ -106,17 +113,16 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				foreach (var outlet in Outlets) {
 					var type = AsId (outlet.ObjCType);
 					if (string.IsNullOrEmpty (type)) {
-						LoggingService.LogError ("Can't generate outlet property for: " + outlet.CliName +" no obj c type. Using cli type " + outlet.CliType + " instead.");
-						type = AsId (outlet.CliType);
-						sw.WriteLine ("// FIXME: The type '{0}' couldn't be resolved. It may be incorrect.");
+						throw new ObjectiveCGenerationException (string.Format (
+							"Could not generate outlet '{0}' in class '{1}' as its type '{2}' " +
+							"could not be resolved to Obj-C",
+							outlet.CliName, this.CliName, outlet.CliType), this);
 					}
 					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", type, outlet.ObjCName);
 					sw.WriteLine ();
 				}
 				
 				foreach (var action in Actions) {
-					if (action.Parameters.Any (p => p.ObjCType == null))
-						continue;
 					WriteActionSignature (action, sw);
 					sw.WriteLine (";");
 					sw.WriteLine ();
@@ -177,6 +183,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			foreach (var param in action.Parameters) {
 				string paramType = param.ObjCType;
+				if (paramType == null) {
+					throw new ObjectiveCGenerationException (string.Format (
+						"Could not generate Obj-C code for action '{0}' in class '{1}' as the type '{2}'" +
+						 "of its parameter '{3}' could not be resolved to Obj-C",
+						action.CliName, this.CliName, param.CliType, param.Name), this);
+					
+				}
 				if (isFirst && paramType == "NSObject")
 					paramType = "id";
 				else
@@ -341,5 +354,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			return meth;
 		}
+	}
+	
+	class ObjectiveCGenerationException : Exception
+	{
+		NSObjectTypeInfo typeInfo;
+		
+		public ObjectiveCGenerationException (string message, NSObjectTypeInfo typeInfo) : base (message)
+		{
+			this.typeInfo = typeInfo;
+		}
+		
+		public NSObjectTypeInfo TypeInfo { get { return typeInfo; } }
 	}
 }
