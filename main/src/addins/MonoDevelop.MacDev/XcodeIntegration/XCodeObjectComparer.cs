@@ -1,10 +1,10 @@
 // 
-// PBXFileReference.cs
+// XCodeObjectComparer.cs
 //  
 // Author:
-//       Geoff Norton <gnorton@novell.com>
+//       Alan McGovern <alan@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin 2011
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,30 +27,33 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.MacDev.XcodeIntegration
-{
-	class PBXFileReference : XcodeObject
-	{
-		public string Name { get; private set; }
-		public string Path { get; private set; }
-		public string SourceTree {get; private set; }
-
-		public PBXFileReference (string name, string path, string sourceTree)
+namespace MonoDevelop.MacDev.XcodeIntegration {
+	
+	public class XcodeObjectComparer : IComparer<XcodeObject> {
+		
+		public int Compare (XcodeObject x, XcodeObject y)
 		{
-			Name = name;
-			Path = path;
-			SourceTree = sourceTree;
-		}
-
-		public override XcodeType Type {
-			get {
-				return XcodeType.PBXFileReference;
+			if (x == null)
+				return y == null ? 0 : -1;
+			if (y == null)
+				return 1;
+			if (x.GetType () != y.GetType ())
+				return x.GetType ().Name.CompareTo (y.GetType ().Name);
+			
+			if (x is PBXFileReference) {
+				var left = (PBXFileReference) x;
+				var right = (PBXFileReference) y;
+				return left.Path.CompareTo (right.Path);
 			}
-		}
-
-		public override string ToString ()
-		{
-			return string.Format ("{0} = {{isa = {1}; name = {2}; path = {3}; sourceTree = {4}; }};", Token, Type, QuoteOnDemand (Name), QuoteOnDemand (Path), SourceTree);
+			
+			if (x is PBXGroup) {
+				var left = (PBXGroup) x;
+				var right = (PBXGroup) y;
+				return left.Name.CompareTo (right.Name);
+			}
+			
+			return 0;
 		}
 	}
 }
+
