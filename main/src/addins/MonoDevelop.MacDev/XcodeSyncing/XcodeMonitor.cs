@@ -108,7 +108,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (pendingProjectWrite == null && ProjectExists ()) {
 					monitor.Log.WriteLine ("Project file needs to be updated, closing and removing old project");
 					CloseProject ();
-					DeleteProjectArtifacts ();
+					DeleteXcproj ();
 					removedOldProject = true;
 				}
 			} else {
@@ -226,22 +226,23 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public void DeleteProjectDirectory ()
 		{
-			XC4Debug.Log ("Deleting project directory");
-			//if (Directory.Exists (projectDir))
-			//	Directory.Delete (projectDir, true);
-			HackFlushDirs ();
-		}
-		
-		void HackFlushDirs ()
-		{
-			if (CheckRunning ())
-				return;
-			if (Directory.Exists (this.originalProjectDir))
-				Directory.Delete (this.originalProjectDir, true);
+			XC4Debug.Log ("Deleting temp project directories");
+			bool isRunning = CheckRunning ();
+			if (Directory.Exists (projectDir))
+				Directory.Delete (projectDir, true);
+			if (isRunning) {
+				XC4Debug.Log ("Xcode still running, leaving empty directory in place to prevent name re-use");
+				Directory.CreateDirectory (projectDir);
+			} else {
+				XC4Debug.Log ("Xcode not running, removing all temp directories");
+				if (Directory.Exists (this.originalProjectDir))
+					Directory.Delete (this.originalProjectDir, true);
+			}
+			XC4Debug.Log ("Deleting derived data");
 			DeleteDerivedData ();
 		}
 		
-		void DeleteProjectArtifacts ()
+		void DeleteXcproj ()
 		{
 			XC4Debug.Log ("Deleting project artifacts");
 			if (Directory.Exists (xcproj))
