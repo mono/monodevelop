@@ -63,6 +63,10 @@
 	<MimeType id="text/x-cgsrc" _description="Cg Shader files" isText="true">
 		<File pattern="*.cg" />
 	</MimeType>
+	
+	<MimeType id="text/x-apple-strings" _description="Apple Strings" isText="true">
+		<File pattern="*.strings" />
+	</MimeType>
 </Extension>	
 
 </ExtensionModel>

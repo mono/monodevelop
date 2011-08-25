@@ -176,6 +176,7 @@ RES =  \
 	SyntaxModes/MakefileSyntaxMode.xml \
 	SyntaxModes/PythonSyntaxMode.xml \
 	SyntaxModes/RubySyntaxMode.xml \
+	SyntaxModes/StringsSyntaxMode.xml \
 	SyntaxModes/ValaSyntaxMode.xml \
 	SyntaxModes/VBNetSyntaxMode.xml \
 	SyntaxModes/XmlSyntaxMode.xml

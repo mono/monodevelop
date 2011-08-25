@@ -281,6 +281,9 @@
     <EmbeddedResource Include="SyntaxModes\CGSyntaxMode.xml">
       <LogicalName>CGSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\StringsSyntaxMode.xml">
+      <LogicalName>StringsSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
