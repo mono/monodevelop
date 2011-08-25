@@ -50,7 +50,8 @@ namespace MonoDevelop.Ide.Gui
 			this.showTaskTitles = showTaskTitles;
 			this.title = title;
 			this.statusSourcePad = statusSourcePad;
-			icon = ImageService.GetImage (iconName, Gtk.IconSize.Menu);
+			if (!string.IsNullOrEmpty (iconName))
+				icon = ImageService.GetImage (iconName, Gtk.IconSize.Menu);
 			statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
 			statusBar.StatusSourcePad = statusSourcePad;
 			statusBar.BeginProgress (icon, title);
