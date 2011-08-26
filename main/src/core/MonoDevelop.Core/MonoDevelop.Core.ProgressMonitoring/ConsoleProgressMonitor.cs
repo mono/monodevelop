@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	{
 		int columns = 80;
 		bool indent = true;
-		bool wrap = true;
+		bool wrap = false;
 		int ilevel = 0;
 		int isize = 3;
 		int col = -1;
@@ -45,6 +45,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public ConsoleProgressMonitor () : this (Console.Out)
 		{
+			wrap = true;
 		}
 		
 		public ConsoleProgressMonitor (TextWriter writer)
