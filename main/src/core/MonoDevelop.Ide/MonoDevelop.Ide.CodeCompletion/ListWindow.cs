@@ -382,8 +382,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			bool nonShiftModifierActive = ((Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
 				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask)
 				& modifier) != 0;
-			if (nonShiftModifierActive)
+			if (nonShiftModifierActive) {
+				if (modifier.HasFlag (Gdk.ModifierType.ControlMask) && char.IsLetterOrDigit ((char)key))
+					return KeyActions.Process | KeyActions.CloseWindow;
 				return KeyActions.Ignore;
+			}
 			const string commitChars = " <>()[]{}=+-*/%~&|!";
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
