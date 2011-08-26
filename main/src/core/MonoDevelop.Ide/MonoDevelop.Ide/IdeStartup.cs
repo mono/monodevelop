@@ -47,6 +47,8 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
+using System.Diagnostics;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide
 {
@@ -261,7 +263,9 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.EndTiming ();
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
-				
+			
+			LaunchCrashMonitoringService ();
+			
 			IdeApp.Run ();
 			
 			// unloading services
@@ -297,6 +301,28 @@ namespace MonoDevelop.Ide
 		{
 			if (errorsList != null)
 				errorsList.Add (new AddinError (args.AddinId, args.Message, args.Exception, false));
+		}
+		
+		void LaunchCrashMonitoringService ()
+		{
+			if (Platform.IsMac) {
+				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MacCrashLogger.app");
+				var pid = Process.GetCurrentProcess ().Id;
+				var logPath = UserProfile.Current.LogDir.Combine ("CrashReporter");
+				var email = FeedbackService.ReporterEMail;
+				if (string.IsNullOrEmpty (email))
+					email = AuthorInformation.Default.Email;
+				if (string.IsNullOrEmpty (email))
+					email = "unknown@email.com";
+				
+				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2} -email {3}", crashmonitor, pid, logPath, email)) {
+					UseShellExecute = false,
+				};
+				Process.Start (psi);
+				return;
+			} else {
+				LoggingService.LogError ("Could not launch crash reporter process. MonoDevelop will not be able to automatically report any crash information.");
+			}
 		}
 
 		void ListenCallback (IAsyncResult state)
