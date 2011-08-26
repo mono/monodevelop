@@ -105,7 +105,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public override void ReportSuccess (string message)
 		{
-			WriteText (message);
+			WriteText (message + "\n");
 		}
 		
 		public override void ReportWarning (string message)
