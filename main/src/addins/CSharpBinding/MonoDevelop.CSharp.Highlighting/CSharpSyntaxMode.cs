@@ -345,24 +345,24 @@ namespace MonoDevelop.CSharp.Highlighting
 				return null;
 			}
 			
-			protected override void AddRealChunk (Chunk chunk)
-			{
-				var parsedDocument = document != null ? document.ParsedDocument : null;
-				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
-					int endLoc = -1;
-					string semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
-					if (semanticStyle != null) {
-						if (endLoc < chunk.EndOffset) {
-							base.AddRealChunk (new Chunk (chunk.Offset, endLoc - chunk.Offset, semanticStyle));
-							base.AddRealChunk (new Chunk (endLoc, chunk.EndOffset - endLoc, chunk.Style));
-							return;
-						}
-						chunk.Style = semanticStyle;
-					}
-				}
-				
-				base.AddRealChunk (chunk);
-			}
+//			protected override void AddRealChunk (Chunk chunk)
+//			{
+//				var parsedDocument = document != null ? document.ParsedDocument : null;
+//				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
+//					int endLoc = -1;
+//					string semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
+//					if (semanticStyle != null) {
+//						if (endLoc < chunk.EndOffset) {
+//							base.AddRealChunk (new Chunk (chunk.Offset, endLoc - chunk.Offset, semanticStyle));
+//							base.AddRealChunk (new Chunk (endLoc, chunk.EndOffset - endLoc, chunk.Style));
+//							return;
+//						}
+//						chunk.Style = semanticStyle;
+//					}
+//				}
+//				
+//				base.AddRealChunk (chunk);
+//			}
 			
 			protected override string GetStyle (Chunk chunk)
 			{
