@@ -103,9 +103,9 @@ namespace MonoDevelop.Ide.Projects
 		{
 			foreach (Category category in catarray) {
 				if (TreeIter.Zero.Equals (node))
-					InsertCategories (catStore.AppendValues (category.Name, category.Categories, category.Templates, ImageService.GetPixbuf ("md-closed-folder")), category.Categories);
+					InsertCategories (catStore.AppendValues (category.Name, category.Categories, category.Templates), category.Categories);
 				else
-					InsertCategories (catStore.AppendValues (node, category.Name, category.Categories, category.Templates, ImageService.GetPixbuf ("md-closed-folder")), category.Categories);
+					InsertCategories (catStore.AppendValues (node, category.Name, category.Categories, category.Templates), category.Categories);
 			}
 		}
 
@@ -558,7 +558,7 @@ namespace MonoDevelop.Ide.Projects
 			iconView.ShowAll ();
 			boxTemplates.PackStart (iconView, true, true, 0);
 			
-			catStore = new TreeStore (typeof(string), typeof(List<Category>), typeof(List<TemplateItem>), typeof(Pixbuf));
+			catStore = new TreeStore (typeof(string), typeof(List<Category>), typeof(List<TemplateItem>));
 
 			TreeViewColumn treeViewColumn = new TreeViewColumn ();
 			treeViewColumn.Title = "categories";
