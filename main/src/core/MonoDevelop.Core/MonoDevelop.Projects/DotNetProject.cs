@@ -481,16 +481,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			if (!TargetRuntime.IsInstalled (TargetFramework)) {
-				BuildResult res = new BuildResult ();
-				res.AddError (GettextCatalog.GetString ("Framework '{0}' not installed.", TargetFramework.Name));
-				return res;
-			}
-			return base.OnRunTarget (monitor, target, configuration);
-		}
-		
 		internal protected override void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
 		{
 			base.PopulateOutputFileList (list, configuration);

@@ -56,6 +56,12 @@ namespace MonoDevelop.Projects.Formats.MD1
 		{
 			DotNetProject project = Project;
 			
+			if (!project.TargetRuntime.IsInstalled (project.TargetFramework)) {
+				BuildResult res = new BuildResult ();
+				res.AddError (GettextCatalog.GetString ("Framework '{0}' not installed.", project.TargetFramework.Name));
+				return res;
+			}
+			
 			bool hasBuildableFiles = false;
 			foreach (ProjectFile pf in project.Files) {
 				if (pf.BuildAction == BuildAction.Compile || pf.BuildAction == BuildAction.EmbeddedResource) {
