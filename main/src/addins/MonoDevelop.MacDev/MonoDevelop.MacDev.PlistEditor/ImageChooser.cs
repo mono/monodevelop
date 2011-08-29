@@ -80,11 +80,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			//scale image down to fit
 			if (pixbuf != null && (pixbuf.Width > DisplaySize.Width || pixbuf.Height > DisplaySize.Height)) {
-				double aspect = pixbuf.Height / pixbuf.Width;
+				if (DisplaySize.Width == 0 || displaySize.Height == 0)
+					throw new NotSupportedException ("Display size not set.");
+				double aspect = pixbuf.Height / (double)pixbuf.Width;
 				int destWidth = Math.Min ((int) (DisplaySize.Height / aspect), pixbuf.Width);
-				destWidth = Math.Min (DisplaySize.Width, destWidth);
+				destWidth = Math.Max (1, Math.Min (DisplaySize.Width, destWidth));
 				int destHeight = Math.Min ((int) (DisplaySize.Width * aspect), pixbuf.Height);
-				destHeight = Math.Min (DisplaySize.Height, destHeight);
+				destHeight =  Math.Max (1, Math.Min (DisplaySize.Height, destHeight));
 				scaledPixbuf = pixbuf = pixbuf.ScaleSimple (destWidth, destHeight, InterpType.Bilinear);
 			}
 			image.Pixbuf = pixbuf;
@@ -98,7 +100,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			Gtk.Drag.DestSet (this, DestDefaults.Drop, targetEntryTypes, DragAction.Link);
 		}
-
+		
+		public bool CheckImageSize (Pixbuf pb)
+		{
+			if (AcceptedSize.Width > 0) {
+				if (pb.Width != AcceptedSize.Width || pb.Height != AcceptedSize.Height) {
+					MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"),
+						GettextCatalog.GetString (
+							"Only pictures with size {0}x{1} are accepted. Picture was {2}x{3}.",
+							AcceptedSize.Width, AcceptedSize.Height, pb.Width, pb.Height));
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		public bool CheckImage (FilePath path)
 		{
 			Pixbuf pb;
@@ -113,15 +129,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				);
 				return false;
 			}
-			if (AcceptedSize.Width > 0) {
-				if (pb.Width != AcceptedSize.Width || pb.Height != AcceptedSize.Height) {
-					MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"),
-						GettextCatalog.GetString (
-							"Only pictures with size {0}x{1} are accepted. Picture was {2}x{3}.",
-							AcceptedSize.Width, AcceptedSize.Height, pb.Width, pb.Height));
-					return false;
-				}
-			}
+			if (!CheckImageSize (pb))
+				return false;
 			pb.Dispose ();
 			return true;
 		}
