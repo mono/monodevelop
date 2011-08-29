@@ -104,6 +104,16 @@ namespace MonoDevelop.VBNetBinding
 		[ItemProperty ("AdditionalParameters")]
 		string additionalParameters = String.Empty;
 		
+		public override void AddDefineSymbol (string symbol)
+		{
+			DefineConstants += symbol + ";";
+		}
+		
+		public override void RemoveDefineSymbol (string symbol)
+		{
+			DefineConstants = DefineConstants.Replace (symbol + ";", "");
+		}
+		
 		public bool DefineDebug {
 			get { return defineDebug; }
 			set { defineDebug = value; }

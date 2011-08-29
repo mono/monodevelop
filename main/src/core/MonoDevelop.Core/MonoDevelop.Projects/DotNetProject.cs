@@ -126,9 +126,8 @@ namespace MonoDevelop.Projects
 				Configurations.Add (configDebug);
 
 				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release" + platformSuffix) as DotNetProjectConfiguration;
-				if (projectOptions != null)
-					projectOptions.SetAttribute ("DefineDebug", "False");
 				configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
+				configRelease.CompilationParameters.RemoveDefineSymbol ("DEBUG");
 				configRelease.DebugMode = false;
 				configRelease.ExternalConsole = externalConsole;
 				configRelease.PauseConsoleOutput = externalConsole;

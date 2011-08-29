@@ -144,7 +144,17 @@ namespace MonoDevelop.CSharp.Project
 				langVersion = value.ToString ().Replace ('_','-'); 
 			}
 		}
-
+		
+		public override void AddDefineSymbol (string symbol)
+		{
+			definesymbols += symbol + ";";
+		}
+		
+		public override void RemoveDefineSymbol (string symbol)
+		{
+			definesymbols = definesymbols.Replace (symbol + ";", "");
+		}
+		
 #region Code Generation
 		
 		public string DefineSymbols {
