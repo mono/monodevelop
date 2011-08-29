@@ -289,7 +289,7 @@ namespace MonoDevelop.MonoMac
 		public static IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> files, string outputRoot)
 		{
 			foreach (var pf in files) {
-				if (pf.BuildAction != BuildAction.Page)
+				if (pf.BuildAction != BuildAction.InterfaceDefinition)
 					continue;
 				
 				var name = pf.ProjectVirtualPath;
