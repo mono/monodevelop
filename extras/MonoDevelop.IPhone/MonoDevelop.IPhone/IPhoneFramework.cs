@@ -99,6 +99,14 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
+		public static bool SupportsMultiIPDebugging {
+			get { return MonoTouchVersion >= new IPhoneSdkVersion (4, 1, 0); }
+		}
+		
+		public static bool SupportsUsbDebugging {
+			get { return MonoTouchVersion >= new IPhoneSdkVersion (4, 1, 0); }
+		}
+		
 		public static MonoDevelop.Projects.BuildResult GetSimOnlyError ()
 		{
 			var res = new MonoDevelop.Projects.BuildResult ();

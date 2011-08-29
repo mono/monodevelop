@@ -64,5 +64,9 @@ namespace MonoDevelop.IPhone
 			
 			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList;
 		}
+		
+		public static bool UseUsbDebugging {
+			get { return PropertyService.Get ("MonoTouch.Debugger.UsbDebugging", true); }
+		}
 	}
 }
