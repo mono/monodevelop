@@ -219,7 +219,7 @@ namespace MonoDevelop.SourceEditor
 			this.indentStyle = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
-			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", true);
+			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", false);
 			base.ShowTabs = PropertyService.Get ("ShowTabs", false);
 			base.ShowEolMarkers = PropertyService.Get ("ShowEolMarkers", false);
 			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", false);
