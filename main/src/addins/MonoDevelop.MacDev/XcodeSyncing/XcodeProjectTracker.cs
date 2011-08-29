@@ -147,21 +147,26 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		bool OpenXcodeProject ()
 		{
+			bool succeeded = false;
 			using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing to Xcode..."))) {
 				try {
 					EnableSyncing ();
-					if (!UpdateTypes (monitor, true) || monitor.IsCancelRequested)
-						return false;
-					if (!UpdateXcodeProject (monitor) || monitor.IsCancelRequested)
-						return false;
+					if (!UpdateTypes (monitor, true) || monitor.IsCancelRequested) {
+						return succeeded;
+					}
+					if (!UpdateXcodeProject (monitor) || monitor.IsCancelRequested) {
+						return succeeded;
+					}
 					xcode.OpenProject ();
-					return true;
+					succeeded = true;
 				} catch (Exception ex) {
-					DisableSyncing ();
 					monitor.ReportError (GettextCatalog.GetString ("Could not open Xcode project"), ex);
+				} finally {
+					if (!succeeded)
+						DisableSyncing ();
 				}
 			}
-			return false;
+			return succeeded;
 		}
 		
 		public void OpenDocument (string file)
