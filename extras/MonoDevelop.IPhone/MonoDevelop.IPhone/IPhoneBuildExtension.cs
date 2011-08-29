@@ -1357,9 +1357,12 @@ namespace MonoDevelop.IPhone
 
 		static BuildResult CreateDebugConfigureFile (IPhoneProjectConfiguration conf, string target)
 		{
+			var br = new BuildResult ();
+			if (!IPhoneFramework.SupportsMultiIPDebugging)
+				return br;
+			
 			System.Net.IPAddress [] debuggerIPs = null;
 			bool sim = conf.Platform == IPhoneProject.PLAT_SIM;
-			var br = new BuildResult ();
 
 			// We only have this configure file in debug mode
 			if (!conf.DebugMode)
@@ -1379,7 +1382,8 @@ namespace MonoDevelop.IPhone
 							writer.WriteLine (ip.ToString ());
 						}
 					}
-					writer.WriteLine ("USB Debugging: 1");
+					if (IPhoneFramework.SupportsUsbDebugging && IPhoneSettings.UseUsbDebugging)
+						writer.WriteLine ("USB Debugging: 1");
 				}
 			}
 			
@@ -1410,7 +1414,7 @@ namespace MonoDevelop.IPhone
 				bool sim = conf.Platform == IPhoneProject.PLAT_SIM;
 				
 				try {
-					if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4, 0, 5)) {
+					if (IPhoneFramework.SupportsMultiIPDebugging) {
 						debuggerIP = "automatic";
 					} else {
 						debuggerIP = IPhoneSettings.GetDebuggerHostIP (sim).ToString ();

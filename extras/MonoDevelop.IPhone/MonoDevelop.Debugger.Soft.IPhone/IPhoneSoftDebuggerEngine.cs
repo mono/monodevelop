@@ -53,13 +53,14 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			var cmd = (IPhoneExecutionCommand) command;
 			
 			
-			if (!cmd.Simulator && IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4, 0, 5)) {
+			if (!cmd.Simulator && IPhoneFramework.SupportsUsbDebugging && IPhoneSettings.UseUsbDebugging) {
 				usb = new IPhoneUsbConnection (IPhoneSettings.DebuggerPort, IPhoneSettings.DebuggerOutputPort);
 				startInfo = new IPhoneDebuggerStartInfo (usb, cmd);
 			} else {
-				startInfo = new IPhoneDebuggerStartInfo (IPAddress.Any,
-									     IPhoneSettings.DebuggerPort,
-									     IPhoneSettings.DebuggerOutputPort, cmd);
+				IPAddress address = cmd.Simulator? IPAddress.Loopback : IPAddress.Any;
+				int debuggerPort = IPhoneSettings.DebuggerPort;
+				int outputPort = IPhoneSettings.DebuggerOutputPort;
+				startInfo = new IPhoneDebuggerStartInfo (address, debuggerPort, outputPort, cmd);
 			}
 			
 			SoftDebuggerEngine.SetUserAssemblyNames (startInfo, cmd.UserAssemblyPaths);

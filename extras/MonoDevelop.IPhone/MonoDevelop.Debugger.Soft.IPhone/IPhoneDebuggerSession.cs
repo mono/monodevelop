@@ -52,7 +52,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			if (cmd.Simulator)
 				StartSimulatorProcess (cmd);
 			
-			if (dsi.USBDebugging) {
+			if (dsi.UsbDebugging) {
 				usbConnection = dsi.UsbConnection;
 				StartConnecting (dsi);
 			} else {
@@ -143,7 +143,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 	
 	class IPhoneDebuggerStartInfo : SoftDebuggerStartInfo
 	{
-		public bool USBDebugging { get { return UsbConnection != null; } }
+		public bool UsbDebugging { get { return UsbConnection != null; } }
  		public IPhoneExecutionCommand ExecutionCommand { get; private set; }
 		public int DebugPort { get; private set; }
 		public IPAddress Address { get; private set; }
