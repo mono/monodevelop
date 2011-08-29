@@ -17,7 +17,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cs" DependsOn="${Name}.xib" ><![CDATA[
+		<File name="${Name}.${LanguageExtension}" ><![CDATA[
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +52,7 @@ namespace ${Namespace}
 	}
 }
 ]]></File>
-		<File name="${Name}Controller.cs" DependsOn="${Name}.xib" ><![CDATA[
+		<File name="${Name}Controller.cs" ><![CDATA[
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,20 +66,20 @@ namespace ${Namespace}
 		#region Constructors
 		
 		// Called when created from unmanaged code
-		public ${Name} (IntPtr handle) : base (handle)
+		public ${Name}Controller (IntPtr handle) : base (handle)
 		{
 			Initialize ();
 		}
 		
 		// Called when created directly from a XIB file
 		[Export ("initWithCoder:")]
-		public ${Name} (NSCoder coder) : base (coder)
+		public ${Name}Controller (NSCoder coder) : base (coder)
 		{
 			Initialize ();
 		}
 		
 		// Call to load from the XIB/NIB file
-		public ${Name} () : base ("${Name}", NSBundle.MainBundle)
+		public ${Name}Controller () : base ("${Name}", NSBundle.MainBundle)
 		{
 			Initialize ();
 		}
@@ -92,15 +92,15 @@ namespace ${Namespace}
 		#endregion
 		
 		//strongly typed view accessor
-		public new ${Name} View {
+		public new ${Name}Controller View {
 			get {
-				return (${Name}) base.View;
+				return (${Name}Controller) base.View;
 			}
 		}
 	}
 }
 ]]></File>
-		<File name="${Name}.xib.designer.cs" DependsOn="${Name}.xib"
+		<File name="${Name}.designer.${LanguageExtension}" DependsOn="${Name}.${LanguageExtension}"
 		      ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True" ><![CDATA[
 namespace ${Namespace} {
 	
