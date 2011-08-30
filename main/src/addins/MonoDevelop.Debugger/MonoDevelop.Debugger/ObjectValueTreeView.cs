@@ -121,7 +121,7 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (DebugCommands.AddWatch);
 			menuSet.AddSeparator ();
 			menuSet.AddItem (EditCommands.Rename);
-			menuSet.AddItem (EditCommands.Delete);
+			menuSet.AddItem (EditCommands.DeleteKey);
 		}
 		
 		public ObjectValueTreeView ()
