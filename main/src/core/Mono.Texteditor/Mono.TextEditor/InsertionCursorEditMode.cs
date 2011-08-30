@@ -147,7 +147,7 @@ namespace Mono.TextEditor
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
 			editor.Destroyed += HandleEditorDestroy;
-			Gdk.Rectangle geometry = editor.Screen.GetMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
+			Gdk.Rectangle geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
 			int x = System.Math.Min (ox + editor.Allocation.Width - req.Width / 2, geometry.X + geometry.Width - req.Width);
 			int y = System.Math.Min (oy + editor.Allocation.Height - req.Height / 2, geometry.Y + geometry.Height - req.Height);
@@ -161,7 +161,7 @@ namespace Mono.TextEditor
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
 			editor.Destroyed += HandleEditorDestroy;
-			Gdk.Rectangle geometry = editor.Screen.GetMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
+			Gdk.Rectangle geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
 			x = System.Math.Min (x, geometry.X + geometry.Width - req.Width);
 			HelpWindow.Move (ox + x, oy + y - req.Height / 2);

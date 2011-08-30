@@ -299,7 +299,7 @@ namespace MonoDevelop.RegexToolkit
 			int w = tooltipWindow.Child.SizeRequest().Width;
 			int h = tooltipWindow.Child.SizeRequest().Height;
 			
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (this.GdkWindow));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (this.GdkWindow));
 			
 			if (ox + x + w + tooltipXOffset >= geometry.Right ||
 			    oy + y + h >= geometry.Bottom) {

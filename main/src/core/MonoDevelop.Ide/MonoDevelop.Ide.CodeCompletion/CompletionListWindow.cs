@@ -326,14 +326,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!force && previousHeight != h && previousWidth != w)
 				return;
 			
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (X, Y));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (X, Y));
 			
 			previousHeight = h;
 			previousWidth = w;
 			if (X + w > geometry.Right)
 				X = geometry.Right - w;
-
+			
 			if (Y + h > geometry.Bottom || yPosition == WindowPositonY.Top) {
+				// Put the completion-list window *above* the cursor
 				Y = Y - CodeCompletionContext.TriggerTextHeight - h;
 				yPosition = WindowPositonY.Top;
 			} else {
@@ -551,7 +552,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationViewHidden = false;
 			}
 			
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (GdkWindow));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (GdkWindow));
 		
 			Requisition req = declarationviewwindow.SizeRequest ();
 			int dvwWidth = req.Width;

@@ -1721,7 +1721,7 @@ namespace Mono.TextEditor
 				int w = previewWindow.SizeRequest ().Width;
 				int h = previewWindow.SizeRequest ().Height;
 
-				Gdk.Rectangle geometry = this.textEditor.Screen.GetMonitorGeometry (this.textEditor.Screen.GetMonitorAtPoint (ox + x, oy + y));
+				Gdk.Rectangle geometry = this.textEditor.Screen.GetUsableMonitorGeometry (this.textEditor.Screen.GetMonitorAtPoint (ox + x, oy + y));
 
 				if (x + ox + w > geometry.Right)
 					x = hintRectangle.Left - w;

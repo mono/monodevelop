@@ -366,5 +366,10 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			return new DesktopApplication[0];
 		}
+		
+		public virtual Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
+		{
+			return screen.GetMonitorGeometry (monitor);
+		}
 	}
 }

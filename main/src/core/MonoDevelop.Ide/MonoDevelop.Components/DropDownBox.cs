@@ -28,6 +28,8 @@ using System;
 using System.ComponentModel;
 using Gtk;
 
+using MonoDevelop.Ide;
+
 namespace MonoDevelop.Components
 {
 	[Category ("Widgets")]
@@ -107,7 +109,7 @@ namespace MonoDevelop.Components
 			window.WidthRequest = Allocation.Width;
 			int width, height;
 			window.GetSizeRequest (out width, out height);
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (dx, dy));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (dx, dy));
 			
 			if (dy + height > geometry.Bottom)
 				dy = oy + this.Allocation.Y - height;

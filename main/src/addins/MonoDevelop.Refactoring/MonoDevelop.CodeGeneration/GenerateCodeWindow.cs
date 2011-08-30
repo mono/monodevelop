@@ -133,7 +133,7 @@ namespace MonoDevelop.CodeGeneration
 			GetSize (out w, out h);
 			
 			int myMonitor = Screen.GetMonitorAtPoint (x, y);
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (myMonitor);
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, myMonitor);
 
 			if (x + w > geometry.Right)
 				x = geometry.Right - w;
