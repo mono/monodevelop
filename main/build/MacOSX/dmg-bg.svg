@@ -15,10 +15,10 @@
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.48.1 r9760"
-   sodipodi:docname="dmg-bg-lion.svg"
+   sodipodi:docname="dmg-bg.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
-   inkscape:export-filename="/sources/monodevelop/main/build/MacOSX/dmg-bg.png"
+   inkscape:export-filename="/Volumes/%2F/sources/monodevelop/main/build/MacOSX/dmg-bg.png"
    inkscape:export-xdpi="128.65294"
    inkscape:export-ydpi="128.65294">
   <sodipodi:namedview
@@ -300,8 +300,8 @@
        id="rect5520-2-0"
        width="56.373768"
        height="17.284218"
-       x="8.501112"
-       y="-61.988968"
+       x="-77.498886"
+       y="-60.488968"
        ry="2.140903"
        inkscape:export-filename="/home/lluis/nowork/mdgit/main/build/MacOSX/dmg-bg.png"
        inkscape:export-xdpi="128.64999"
@@ -309,8 +309,8 @@
     <text
        xml:space="preserve"
        style="font-size:14.2548542px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
-       x="17.209303"
-       y="-48.048279"
+       x="-68.790695"
+       y="-46.548279"
        id="text5522-9-5"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/lluis/nowork/mdgit/main/build/MacOSX/dmg-bg.png"
@@ -318,8 +318,8 @@
        inkscape:export-ydpi="128.64999"><tspan
          sodipodi:role="line"
          id="tspan5524-3-9"
-         x="17.209303"
-         y="-48.048279"
+         x="-68.790695"
+         y="-46.548279"
          style="font-size:15px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Heavy'">RC 2</tspan></text>
     <path
        inkscape:connector-curvature="0"
