@@ -115,11 +115,11 @@ namespace SetupConfig
 				w.DownloadFileAsync (new Uri ("http://monodevelop.com/files/setup/ExtraFiles.zip"), "ExtraFiles.zip");
 			}
 
-/*			Build (config.MonoDevelopPath, "main\\main.sln /p:Configuration=DebugWin32 /p:Platform=\"x86\"");
+			Build (config.MonoDevelopPath, "main\\main.sln /p:Configuration=DebugWin32 /p:Platform=\"x86\"");
 			Build (config.MonoDevelopPath, "extras\\VersionControl.Subversion.Win32\\VersionControl.Subversion.Win32.sln");
 			Build (config.MonoDevelopPath, "extras\\MonoDevelop.Debugger.Win32\\MonoDevelop.Debugger.Win32.sln");
 			Build (config.MonoDevelopPath, "extras\\MonoDevelop.MonoDroid\\MonoDevelop.MonoDroid.sln");
-*/
+
 			// Copy support assemblies
 
 			ReportInfo ("Copying support libraries");
