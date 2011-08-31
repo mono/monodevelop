@@ -15,16 +15,10 @@ namespace SetupConfig
 	public class Config
 	{
 		public string MonoDevelopPath;
-		public int MajorVersion;
-		public int MinorVersion;
-		public int PointVersion;
-		public int BuildVersion;
+		public string Version;
 		public int InstallerVersion;
 		public string ProductVersionText;
-		public int AssemblyMajorVersion;
-		public int AssemblyMinorVersion;
-		public int AssemblyPointVersion;
-		public int AssemblyBuildVersion;
+		public string AssemblyVersion;
 	}
 
 	class Program
@@ -41,16 +35,10 @@ namespace SetupConfig
 
 				if (!File.Exists ("config.xml")) {
 					Config c = new Config () {
-						MajorVersion = 2,
-						MinorVersion = 6,
-						PointVersion = 0,
-						BuildVersion = 0,
+						Version = "2.6",
 						InstallerVersion = 1,
 						ProductVersionText = "2.6",
-						AssemblyMajorVersion = 2,
-						AssemblyMinorVersion = 6,
-						AssemblyPointVersion = 0,
-						AssemblyBuildVersion = 0
+						AssemblyVersion = "2.6"
 					};
 					using (StreamWriter sw = new StreamWriter ("config.xml")) {
 						XmlTextWriter tw = new XmlTextWriter (sw);
@@ -89,13 +77,14 @@ namespace SetupConfig
 			if (!Directory.Exists (monoLibsPath))
 				throw new Exception ("Mono libraries folder not found.\nGet latest from http://software.xamarin.com/files/MonoLibraries.msi");
 
-			var productVersion = "" + config.MajorVersion + "." + config.MinorVersion + "." + config.PointVersion + (config.BuildVersion != 0 ? "." + config.BuildVersion : "");
-			var assemblyVersion = config.AssemblyMajorVersion + "." + config.AssemblyMinorVersion + "." + config.AssemblyPointVersion + "." + config.AssemblyBuildVersion;
-			var monoProductVersion = "" + config.MajorVersion + config.MinorVersion.ToString ("00") + config.PointVersion.ToString ("00") + config.BuildVersion.ToString ("000");
+			Version ver = new Version (config.Version);
+			int vbuild = ver.Build != -1 ? ver.Build : 0;
+			int vbrev = ver.Revision != -1 ? ver.Revision : 0;
+			var monoProductVersion = "" + ver.Major + ver.Minor.ToString ("00") + vbuild.ToString ("00") + vbrev.ToString ("000");
 
 			ReportInfo ("Product version text: " + config.ProductVersionText);
-			ReportInfo ("Product version:      " + productVersion);
-			ReportInfo ("Assembly version:     " + assemblyVersion);
+			ReportInfo ("Product version:      " + config.Version);
+			ReportInfo ("Assembly version:     " + config.AssemblyVersion);
 			ReportInfo ("Product version Id:   " + monoProductVersion);
 			ReportInfo ("Installer version Id: " + config.InstallerVersion);
 			ReportInfo ("---------------------");
@@ -156,8 +145,8 @@ namespace SetupConfig
 
 			ReportInfo ("Updating version numbers");
 			RegexReplace ("Product.wxs", "ProductVersionText = \".*?\"", "ProductVersionText = \"" + config.ProductVersionText + "\"");
-			RegexReplace ("Product.wxs", "ProductVersion = \".*?\"", "ProductVersion = \"" + productVersion + "\"");
-			RegexReplace ("Product.wxs", "AssemblyVersion = \".*?\"", "AssemblyVersion = \"" + assemblyVersion + "\"");
+			RegexReplace ("Product.wxs", "ProductVersion = \".*?\"", "ProductVersion = \"" + config.Version + "\"");
+			RegexReplace ("Product.wxs", "AssemblyVersion = \".*?\"", "AssemblyVersion = \"" + config.AssemblyVersion + "\"");
 			RegexReplace ("Product.wxs", "BuildRoot = \".*?\"", "BuildRoot = \"" + config.MonoDevelopPath + "\\main\\build\"");
 
 			// Create the updateinfo file

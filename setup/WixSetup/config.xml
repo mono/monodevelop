@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MonoDevelopPath>..\..</MonoDevelopPath>
-  <MajorVersion>2</MajorVersion>
-  <MinorVersion>6</MinorVersion>
-  <PointVersion>0</PointVersion>
-  <BuildVersion>0</BuildVersion>
+  <Version>2.6</Version>
   <InstallerVersion>1</InstallerVersion>
   <ProductVersionText>2.6</ProductVersionText>
-  <AssemblyMajorVersion>2</AssemblyMajorVersion>
-  <AssemblyMinorVersion>6</AssemblyMinorVersion>
-  <AssemblyPointVersion>0</AssemblyPointVersion>
-  <AssemblyBuildVersion>0</AssemblyBuildVersion>
+  <AssemblyVersion>2.6</AssemblyVersion>
 </Config>
