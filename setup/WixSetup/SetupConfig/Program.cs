@@ -147,8 +147,7 @@ namespace SetupConfig
 				if (!File.Exists ("ExtraFiles.zip"))
 					throw new Exception ("./ExtraFiles folder not found.\nYou can get the contents of this folder from:\nhttp://monodevelop.com/files/setup/ExtraFiles.zip");
 				FastZip zip = new FastZip ();
-				Directory.CreateDirectory ("ExtraFiles");
-				zip.ExtractZip ("ExtraFiles.zip", "ExtraFiles", null);
+				zip.ExtractZip ("ExtraFiles.zip", ".", null);
 			}
 
 			CopyFolderContent ("ExtraFiles", config.MonoDevelopPath + "\\main\\build\\bin\\");
