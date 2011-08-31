@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Net;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace SetupConfig
 {
@@ -98,11 +100,26 @@ namespace SetupConfig
 			ReportInfo ("Installer version Id: " + config.InstallerVersion);
 			ReportInfo ("---------------------");
 
-			Build (config.MonoDevelopPath, "main\\main.sln /p:Configuration=DebugWin32 /p:Platform=\"x86\"");
+			var fileDownloaded = new System.Threading.ManualResetEvent (true);
+
+			if (!Directory.Exists ("ExtraFiles")) {
+				fileDownloaded.Reset ();
+				if (File.Exists ("ExtraFiles.zip"))
+					File.Delete ("ExtraFiles.zip");
+				ReportInfo ("Getting ExtraFiles.zip from http://monodevelop.com/files/setup/ExtraFiles.zip");
+				WebClient w = new WebClient ();
+				w.DownloadFileCompleted += delegate
+				{
+					fileDownloaded.Set ();
+				};
+				w.DownloadFileAsync (new Uri ("http://monodevelop.com/files/setup/ExtraFiles.zip"), "ExtraFiles.zip");
+			}
+
+/*			Build (config.MonoDevelopPath, "main\\main.sln /p:Configuration=DebugWin32 /p:Platform=\"x86\"");
 			Build (config.MonoDevelopPath, "extras\\VersionControl.Subversion.Win32\\VersionControl.Subversion.Win32.sln");
 			Build (config.MonoDevelopPath, "extras\\MonoDevelop.Debugger.Win32\\MonoDevelop.Debugger.Win32.sln");
 			Build (config.MonoDevelopPath, "extras\\MonoDevelop.MonoDroid\\MonoDevelop.MonoDroid.sln");
-
+*/
 			// Copy support assemblies
 
 			ReportInfo ("Copying support libraries");
@@ -122,8 +139,17 @@ namespace SetupConfig
 			// Copy support files
 
 			ReportInfo ("Copying support files");
-			if (!Directory.Exists ("ExtraFiles"))
-				throw new Exception ("./ExtraFiles folder not found.\nYou can get the contents of this folder from:\nhttp://monodevelop.com/files/setup/ExtraFiles.zip");
+
+			if (!Directory.Exists ("ExtraFiles")) {
+				ReportInfo ("Waiting for ExtraFiles.zip download to finish.");
+				if (!fileDownloaded.WaitOne (TimeSpan.FromMinutes (10)))
+					throw new Exception ("Timeout while downloading ExtraFiles.zip");
+				if (!File.Exists ("ExtraFiles.zip"))
+					throw new Exception ("./ExtraFiles folder not found.\nYou can get the contents of this folder from:\nhttp://monodevelop.com/files/setup/ExtraFiles.zip");
+				FastZip zip = new FastZip ();
+				Directory.CreateDirectory ("ExtraFiles");
+				zip.ExtractZip ("ExtraFiles.zip", "ExtraFiles", null);
+			}
 
 			CopyFolderContent ("ExtraFiles", config.MonoDevelopPath + "\\main\\build\\bin\\");
 
