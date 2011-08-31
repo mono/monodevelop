@@ -6,16 +6,16 @@
        url         = "http://www.monodevelop.com"
        description = "Python Language binding"
        category    = "Language bindings"
-       version     = "2.7">
+       version     = "2.6.0">
 
     <Runtime>
         <Import assembly = "PyBinding.dll"/>
     </Runtime>
 
     <Dependencies>
-        <Addin id = "Core"          version = "2.5.93"/>
-        <Addin id = "Ide"           version = "2.5.93"/>
-        <Addin id = "SourceEditor2" version = "2.5.93"/>
+        <Addin id = "Core"          version = "2.6.0"/>
+        <Addin id = "Ide"           version = "2.6.0"/>
+        <Addin id = "SourceEditor2" version = "2.6.0"/>
     </Dependencies>
     
     <Extension path = "/MonoDevelop/Core/StockIcons">

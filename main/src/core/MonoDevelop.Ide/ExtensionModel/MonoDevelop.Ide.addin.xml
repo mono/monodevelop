@@ -7,15 +7,15 @@
        description = "The MonoDevelop IDE application."
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "2.5.93"
-       compatVersion = "2.5.93">
+       version     = "2.6.0"
+       compatVersion = "2.6.0">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.Ide.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.5.93"/>
+		<Addin id="Core" version="2.6.0"/>
 	</Dependencies>
 
 	<!-- Extension ponts -->
