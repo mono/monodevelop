@@ -2,6 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "WixSetup", "WixSetup.wixproj", "{33F58FFC-956E-4079-B27A-160A57FFEA7A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{23094CDC-1A62-462A-886E-E86C110329CA} = {23094CDC-1A62-462A-886E-E86C110329CA}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupConfig", "SetupConfig\SetupConfig.csproj", "{23094CDC-1A62-462A-886E-E86C110329CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +18,10 @@ Global
 		{33F58FFC-956E-4079-B27A-160A57FFEA7A}.Debug|x86.Build.0 = Debug|x86
 		{33F58FFC-956E-4079-B27A-160A57FFEA7A}.Release|x86.ActiveCfg = Release|x86
 		{33F58FFC-956E-4079-B27A-160A57FFEA7A}.Release|x86.Build.0 = Release|x86
+		{23094CDC-1A62-462A-886E-E86C110329CA}.Debug|x86.ActiveCfg = Debug|x86
+		{23094CDC-1A62-462A-886E-E86C110329CA}.Debug|x86.Build.0 = Debug|x86
+		{23094CDC-1A62-462A-886E-E86C110329CA}.Release|x86.ActiveCfg = Release|x86
+		{23094CDC-1A62-462A-886E-E86C110329CA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
