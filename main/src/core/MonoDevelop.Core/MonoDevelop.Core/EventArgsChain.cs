@@ -102,14 +102,14 @@ namespace MonoDevelop.Core
 		#endregion
 
 		#region IEnumerable implementation
-		public System.Collections.IEnumerator GetEnumerator ()
+		System.Collections.IEnumerator IEnumerable.GetEnumerator ()
 		{
-			return (IEnumerator) events.GetEnumerator ();
+			return events.GetEnumerator ();
 		}
 		#endregion
 
 		#region IEnumerable[T] implementation
-		IEnumerator<T> IEnumerable<T>.GetEnumerator ()
+		public IEnumerator<T> GetEnumerator ()
 		{
 			return events.GetEnumerator ();
 		}
