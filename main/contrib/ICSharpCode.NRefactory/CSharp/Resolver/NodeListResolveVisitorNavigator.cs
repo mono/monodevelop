@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -32,12 +33,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Creates a new NodeListResolveVisitorNavigator that resolves the specified nodes.
 		/// </summary>
-		public NodeListResolveVisitorNavigator(IEnumerable<AstNode> nodes)
+		public NodeListResolveVisitorNavigator(params AstNode[] nodes)
+			: this((IEnumerable<AstNode>)nodes)
+		{
+		}
+		
+		/// <summary>
+		/// Creates a new NodeListResolveVisitorNavigator that resolves the specified nodes.
+		/// </summary>
+		public NodeListResolveVisitorNavigator(IEnumerable<AstNode> nodes, bool scanOnly = false)
 		{
 			if (nodes == null)
 				throw new ArgumentNullException("nodes");
 			foreach (var node in nodes) {
-				dict[node] = ResolveVisitorNavigationMode.Resolve;
+				dict[node] = scanOnly ? ResolveVisitorNavigationMode.Scan : ResolveVisitorNavigationMode.Resolve;
 				for (var ancestor = node.Parent; ancestor != null && !dict.ContainsKey(ancestor); ancestor = ancestor.Parent) {
 					dict.Add(ancestor, ResolveVisitorNavigationMode.Scan);
 				}
@@ -53,6 +62,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				return ResolveVisitorNavigationMode.Skip;
 			}
+		}
+		
+		void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
+		{
+		}
+		
+		void IResolveVisitorNavigator.ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+		{
 		}
 	}
 }

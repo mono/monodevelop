@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GenerateSwitchLabels.cs
 //  
 // Author:
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var result = context.Resolve (switchStatement.Expression);
 			if (result == null)
 				return false;
-			return result.Type.IsEnum ();
+			return result.Type.Kind == TypeKind.Enum;
 		}
 		
 		public void Run (RefactoringContext context)

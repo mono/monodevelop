@@ -128,11 +128,15 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public enum BinaryOperatorType
 	{
+		/// <summary>
+		/// Any binary operator (used in pattern matching)
+		/// </summary>
+		Any,
+		
 		// We avoid 'logical or' on purpose, because it's not clear if that refers to the bitwise
 		// or to the short-circuiting (conditional) operator:
 		// MCS and old NRefactory used bitwise='|', logical='||'
 		// but the C# spec uses logical='|', conditional='||'
-		
 		/// <summary>left &amp; right</summary>
 		BitwiseAnd,
 		/// <summary>left | right</summary>
@@ -174,11 +178,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		ShiftRight,
 		
 		/// <summary>left ?? right</summary>
-		NullCoalescing,
-		
-		/// <summary>
-		/// Any binary operator (used in pattern matching)
-		/// </summary>
-		Any
+		NullCoalescing
 	}
 }

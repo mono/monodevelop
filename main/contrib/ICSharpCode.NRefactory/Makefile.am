@@ -14,7 +14,6 @@ SIGNING_KEY=$(srcdir)/ICSharpCode.NRefactory.snk
 FILES =  \
 	CSharp/Analysis/ControlFlow.cs \
 	CSharp/Analysis/DefiniteAssignmentAnalysis.cs \
-	CSharp/Analysis/MinimalResolveContext.cs \
 	CSharp/Ast/AstLocation.cs \
 	CSharp/Ast/AstNode.cs \
 	CSharp/Ast/AstNodeCollection.cs \
@@ -48,6 +47,7 @@ FILES =  \
 	CSharp/Ast/Expressions/LambdaExpression.cs \
 	CSharp/Ast/Expressions/MemberReferenceExpression.cs \
 	CSharp/Ast/Expressions/NamedArgumentExpression.cs \
+	CSharp/Ast/Expressions/NamedExpression.cs \
 	CSharp/Ast/Expressions/NullReferenceExpression.cs \
 	CSharp/Ast/Expressions/ObjectCreateExpression.cs \
 	CSharp/Ast/Expressions/ParenthesizedExpression.cs \
@@ -230,18 +230,23 @@ FILES =  \
 	CSharp/Resolver/AliasNamespaceReference.cs \
 	CSharp/Resolver/AmbiguousResolveResult.cs \
 	CSharp/Resolver/ByReferenceResolveResult.cs \
+	CSharp/Resolver/CompositeResolveVisitorNavigator.cs \
 	CSharp/Resolver/ConstantResolveResult.cs \
 	CSharp/Resolver/ConstantValues.cs \
 	CSharp/Resolver/ConversionResolveResult.cs \
 	CSharp/Resolver/Conversions.cs \
 	CSharp/Resolver/CSharpAttribute.cs \
 	CSharp/Resolver/CSharpResolver.cs \
+	CSharp/Resolver/DetectSkippableNodesNavigator.cs \
 	CSharp/Resolver/ErrorResolveResult.cs \
+	CSharp/Resolver/FindReferencedEntities.cs \
+	CSharp/Resolver/FindReferences.cs \
 	CSharp/Resolver/InvocationResolveResult.cs \
 	CSharp/Resolver/IResolveVisitorNavigator.cs \
 	CSharp/Resolver/ITypeOrNamespaceReference.cs \
 	CSharp/Resolver/LambdaResolveResult.cs \
 	CSharp/Resolver/LocalResolveResult.cs \
+	CSharp/Resolver/Log.cs \
 	CSharp/Resolver/MapTypeIntoNewContext.cs \
 	CSharp/Resolver/MemberLookup.cs \
 	CSharp/Resolver/MemberResolveResult.cs \
@@ -252,6 +257,7 @@ FILES =  \
 	CSharp/Resolver/OperatorResolveResult.cs \
 	CSharp/Resolver/OverloadResolution.cs \
 	CSharp/Resolver/OverloadResolutionErrors.cs \
+	CSharp/Resolver/ResolveAtLocation.cs \
 	CSharp/Resolver/ResolveResult.cs \
 	CSharp/Resolver/ResolveVisitor.cs \
 	CSharp/Resolver/SimpleNameLookupMode.cs \
@@ -312,6 +318,9 @@ FILES =  \
 	TypeSystem/Implementation/DefaultTypeDefinition.cs \
 	TypeSystem/Implementation/DefaultTypeParameter.cs \
 	TypeSystem/Implementation/GetClassTypeReference.cs \
+	TypeSystem/Implementation/GetMembersHelper.cs \
+	TypeSystem/Implementation/MethodTypeParameterSubstitution.cs \
+	TypeSystem/Implementation/MinimalResolveContext.cs \
 	TypeSystem/Implementation/NestedTypeReference.cs \
 	TypeSystem/Implementation/ProxyTypeResolveContext.cs \
 	TypeSystem/Implementation/SimpleConstantValue.cs \
@@ -353,6 +362,7 @@ FILES =  \
 	TypeSystem/TypeKind.cs \
 	TypeSystem/TypeResolveContextDecorator.cs \
 	TypeSystem/TypeVisitor.cs \
+	Utils/7BitEncodedInts.cs \
 	Utils/BitVector16.cs \
 	Utils/BusyManager.cs \
 	Utils/CacheManager.cs \
@@ -360,8 +370,10 @@ FILES =  \
 	Utils/DotNet35Compat.cs \
 	Utils/EmptyList.cs \
 	Utils/ExtensionMethods.cs \
+	Utils/FastSerializer.cs \
 	Utils/GraphVizGraph.cs \
 	Utils/Platform.cs \
+	Utils/ReferenceComparer.cs \
 	Utils/TreeTraversal.cs 
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

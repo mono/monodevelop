@@ -8855,7 +8855,7 @@ namespace Mono.CSharp
 		public override void EmitSideEffect (EmitContext ec)
 		{
 		}
-		
+
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
@@ -9527,6 +9527,12 @@ namespace Mono.CSharp
 			}
 		}
 
+		public IList<Expression> Initializers {
+			get {
+				return initializers;
+			}
+		}
+
 		protected override void CloneTo (CloneContext clonectx, Expression target)
 		{
 			CollectionOrObjectInitializers t = (CollectionOrObjectInitializers) target;
@@ -9680,6 +9686,12 @@ namespace Mono.CSharp
 
 		CollectionOrObjectInitializers initializers;
 		IMemoryLocation instance;
+
+		public CollectionOrObjectInitializers Initializers {
+			get {
+				return initializers;
+			}
+		}
 
 		public NewInitialize (FullNamedExpression requested_type, Arguments arguments, CollectionOrObjectInitializers initializers, Location l)
 			: base (requested_type, arguments, l)

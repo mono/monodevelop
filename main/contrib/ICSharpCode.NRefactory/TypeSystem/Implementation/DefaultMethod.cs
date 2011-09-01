@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IMethod" /> interface.
 	/// </summary>
+	[Serializable]
 	public class DefaultMethod : AbstractMember, IMethod
 	{
 		IList<IAttribute> returnTypeAttributes;
@@ -123,7 +124,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			var p = this.Parameters;
 			for (int i = 0; i < p.Count; i++) {
 				if (i > 0) b.Append(", ");
-				b.Append(p[i].ToString());
+				if (p[i] == null)
+					b.Append("null");
+				else
+					b.Append(p[i].ToString());
 			}
 			b.Append("):");
 			b.Append(ReturnType.ToString());

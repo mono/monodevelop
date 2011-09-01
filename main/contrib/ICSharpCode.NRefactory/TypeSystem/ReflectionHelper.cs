@@ -220,25 +220,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region GetTypeCode
-		static readonly Dictionary<string, TypeCode> typeNameToCodeDict = new Dictionary<string, TypeCode> {
-			{ "Object",   TypeCode.Object },
-			{ "DBNull",   TypeCode.DBNull },
-			{ "Boolean",  TypeCode.Boolean },
-			{ "Char",     TypeCode.Char },
-			{ "SByte",    TypeCode.SByte },
-			{ "Byte",     TypeCode.Byte },
-			{ "Int16",    TypeCode.Int16 },
-			{ "UInt16",   TypeCode.UInt16 },
-			{ "Int32",    TypeCode.Int32 },
-			{ "UInt32",   TypeCode.UInt32 },
-			{ "Int64",    TypeCode.Int64 },
-			{ "UInt64",   TypeCode.UInt64 },
-			{ "Single",   TypeCode.Single },
-			{ "Double",   TypeCode.Double },
-			{ "Decimal",  TypeCode.Decimal },
-			{ "DateTime", TypeCode.DateTime },
-			{ "String",   TypeCode.String }
+		static readonly string[] typeNamesByTypeCode = {
+			"Void", "Object", "DBNull", "Boolean", "Char",
+			"SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64",
+			"Single", "Double", "Decimal", "DateTime", null, "String"
 		};
+		
+		static readonly string[] csharpTypeNamesByTypeCode = {
+			"void", "object", null, "bool", "char",
+			"sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong",
+			"float", "double", "decimal", null, null, "string"
+		};
+		
+		internal static int ByTypeCodeArraySize {
+			get { return typeNamesByTypeCode.Length; }
+		}
+		
+		internal static string GetShortNameByTypeCode(TypeCode typeCode)
+		{
+			return typeNamesByTypeCode[(int)typeCode];
+		}
+		
+		internal static string GetCSharpNameByTypeCode(TypeCode typeCode)
+		{
+			return csharpTypeNamesByTypeCode[(int)typeCode];
+		}
 		
 		/// <summary>
 		/// Gets the type code for the specified type, or TypeCode.Empty if none of the other type codes matches.
@@ -246,11 +252,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public static TypeCode GetTypeCode(IType type)
 		{
 			ITypeDefinition def = type as ITypeDefinition;
-			TypeCode typeCode;
-			if (def != null && def.TypeParameterCount == 0 && def.Namespace == "System" && typeNameToCodeDict.TryGetValue(def.Name, out typeCode))
-				return typeCode;
-			else
-				return TypeCode.Empty;
+			if (def != null && def.TypeParameterCount == 0 && def.Namespace == "System") {
+				string[] typeNames = typeNamesByTypeCode;
+				string name = def.Name;
+				for (int i = 1; i < typeNames.Length; i++) {
+					if (name == typeNames[i])
+						return (TypeCode)i;
+				}
+			}
+			return TypeCode.Empty;
 		}
 		#endregion
 		

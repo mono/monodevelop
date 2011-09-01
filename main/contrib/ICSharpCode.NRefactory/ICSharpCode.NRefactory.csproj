@@ -60,7 +60,6 @@
   <ItemGroup>
     <Compile Include="CSharp\Analysis\ControlFlow.cs" />
     <Compile Include="CSharp\Analysis\DefiniteAssignmentAnalysis.cs" />
-    <Compile Include="CSharp\Analysis\MinimalResolveContext.cs" />
     <Compile Include="CSharp\Ast\AstNodeCollection.cs" />
     <Compile Include="CSharp\Ast\Expressions\TypeReferenceExpression.cs" />
     <Compile Include="CSharp\Ast\IAstVisitor.cs" />
@@ -409,6 +408,19 @@
     <Compile Include="TypeSystem\IAnnotatable.cs" />
     <Compile Include="CSharp\Ast\ErrorNode.cs" />
     <Compile Include="TypeSystem\TypeResolveContextDecorator.cs" />
+    <Compile Include="CSharp\Ast\Expressions\NamedExpression.cs" />
+    <Compile Include="CSharp\Resolver\CompositeResolveVisitorNavigator.cs" />
+    <Compile Include="CSharp\Resolver\DetectSkippableNodesNavigator.cs" />
+    <Compile Include="CSharp\Resolver\FindReferencedEntities.cs" />
+    <Compile Include="CSharp\Resolver\FindReferences.cs" />
+    <Compile Include="CSharp\Resolver\ResolveAtLocation.cs" />
+    <Compile Include="CSharp\Resolver\Log.cs" />
+    <Compile Include="Utils\7BitEncodedInts.cs" />
+    <Compile Include="Utils\FastSerializer.cs" />
+    <Compile Include="Utils\ReferenceComparer.cs" />
+    <Compile Include="TypeSystem\Implementation\GetMembersHelper.cs" />
+    <Compile Include="TypeSystem\Implementation\MethodTypeParameterSubstitution.cs" />
+    <Compile Include="TypeSystem\Implementation\MinimalResolveContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

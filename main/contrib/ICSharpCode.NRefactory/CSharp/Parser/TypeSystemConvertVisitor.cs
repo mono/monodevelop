@@ -34,10 +34,21 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TypeSystemConvertVisitor : DepthFirstAstVisitor<object, IEntity>
 	{
-		readonly ParsedFile parsedFile;
+		readonly CSharpParsedFile parsedFile;
 		UsingScope usingScope;
 		DefaultTypeDefinition currentTypeDefinition;
 		DefaultMethod currentMethod;
+		
+		IInterningProvider interningProvider = new SimpleInterningProvider();
+		
+		/// <summary>
+		/// Gets/Sets the interning provider to use.
+		/// The default value is a new <see cref="SimpleInterningProvider"/> instance.
+		/// </summary>
+		public IInterningProvider InterningProvider {
+			get { return interningProvider; }
+			set { interningProvider = value; }
+		}
 		
 		/// <summary>
 		/// Creates a new TypeSystemConvertVisitor.
@@ -50,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException("pc");
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			this.parsedFile = new ParsedFile(fileName, new UsingScope(pc));
+			this.parsedFile = new CSharpParsedFile(fileName, new UsingScope(pc));
 			this.usingScope = parsedFile.RootUsingScope;
 		}
 		
@@ -60,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <param name="parsedFile">The parsed file to which members should be added.</param>
 		/// <param name="currentUsingScope">The current using scope.</param>
 		/// <param name="currentTypeDefinition">The current type definition.</param>
-		public TypeSystemConvertVisitor(ParsedFile parsedFile, UsingScope currentUsingScope = null, DefaultTypeDefinition currentTypeDefinition = null)
+		public TypeSystemConvertVisitor(CSharpParsedFile parsedFile, UsingScope currentUsingScope = null, DefaultTypeDefinition currentTypeDefinition = null)
 		{
 			if (parsedFile == null)
 				throw new ArgumentNullException("parsedFile");
@@ -69,13 +80,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
-		public ParsedFile Convert(AstNode node)
+		public CSharpParsedFile Convert(AstNode node)
 		{
 			node.AcceptVisitor(this, null);
 			return parsedFile;
 		}
 		
-		public ParsedFile ParsedFile {
+		public CSharpParsedFile ParsedFile {
 			get { return parsedFile; }
 		}
 		
@@ -119,16 +130,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
-			if (u != null)
+			if (u != null) {
+				if (interningProvider != null)
+					u = interningProvider.Intern(u);
 				usingScope.Usings.Add(u);
+			}
 			return null;
 		}
 		
 		public override IEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
 			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
-			if (u != null)
+			if (u != null) {
+				if (interningProvider != null)
+					u = interningProvider.Intern(u);
 				usingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(usingDeclaration.Alias, u));
+			}
 			return null;
 		}
 		#endregion
@@ -158,7 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newType.TypeParameters.AddRange(currentTypeDefinition.TypeParameters);
 				currentTypeDefinition.NestedTypes.Add(newType);
 			} else {
-				newType = new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
+				newType = new DefaultTypeDefinition(parsedFile, usingScope.NamespaceName, name);
 				parsedFile.TopLevelTypeDefinitions.Add(newType);
 			}
 			return newType;
@@ -201,6 +218,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			td.HasExtensionMethods = td.Methods.Any(m => m.IsExtensionMethod);
 			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
+			if (interningProvider != null) {
+				td.ApplyInterningProvider(interningProvider);
+			}
 			return td;
 		}
 		
@@ -231,6 +251,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
+			if (interningProvider != null) {
+				td.ApplyInterningProvider(interningProvider);
+			}
 			return td;
 		}
 		
@@ -317,17 +340,23 @@ namespace ICSharpCode.NRefactory.CSharp
 				field.IsReadOnly = (modifiers & Modifiers.Readonly) != 0;
 				
 				field.ReturnType = ConvertType(fieldDeclaration.ReturnType);
-				if ((modifiers & Modifiers.Fixed) != 0) {
-					field.ReturnType = PointerTypeReference.Create(field.ReturnType);
-				}
 				
 				if ((modifiers & Modifiers.Const) != 0) {
 					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
 				}
 				
 				currentTypeDefinition.Fields.Add(field);
+				if (interningProvider != null) {
+					field.ApplyInterningProvider(interningProvider);
+				}
 			}
 			return isSingleField ? field : null;
+		}
+		
+		public override IEntity VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
+		{
+			// TODO: add support for fixed fields
+			return base.VisitFixedFieldDeclaration(fixedFieldDeclaration, data);
 		}
 		
 		public override IEntity VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
@@ -351,6 +380,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			currentTypeDefinition.Fields.Add(field);
+			if (interningProvider != null) {
+				field.ApplyInterningProvider(interningProvider);
+			}
 			return field;
 		}
 		#endregion
@@ -380,6 +412,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			currentTypeDefinition.Methods.Add(m);
 			currentMethod = null;
+			if (interningProvider != null) {
+				m.ApplyInterningProvider(interningProvider);
+			}
 			return m;
 		}
 		
@@ -443,6 +478,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			ConvertParameters(m.Parameters, operatorDeclaration.Parameters);
 			
 			currentTypeDefinition.Methods.Add(m);
+			if (interningProvider != null) {
+				m.ApplyInterningProvider(interningProvider);
+			}
 			return m;
 		}
 		#endregion
@@ -471,6 +509,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				ApplyModifiers(ctor, modifiers);
 			
 			currentTypeDefinition.Methods.Add(ctor);
+			if (interningProvider != null) {
+				ctor.ApplyInterningProvider(interningProvider);
+			}
 			return ctor;
 		}
 		#endregion
@@ -489,6 +530,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
 			
 			currentTypeDefinition.Methods.Add(dtor);
+			if (interningProvider != null) {
+				dtor.ApplyInterningProvider(interningProvider);
+			}
 			return dtor;
 		}
 		#endregion
@@ -509,6 +553,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p.Accessibility);
 			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p.Accessibility);
 			currentTypeDefinition.Properties.Add(p);
+			if (interningProvider != null) {
+				p.ApplyInterningProvider(interningProvider);
+			}
 			return p;
 		}
 		
@@ -529,6 +576,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p.Accessibility);
 			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			currentTypeDefinition.Properties.Add(p);
+			if (interningProvider != null) {
+				p.ApplyInterningProvider(interningProvider);
+			}
 			return p;
 		}
 		
@@ -582,6 +632,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				
 				currentTypeDefinition.Events.Add(ev);
+				if (interningProvider != null) {
+					ev.ApplyInterningProvider(interningProvider);
+				}
 			}
 			return isSingleEvent ? ev : null;
 		}
@@ -604,6 +657,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e.Accessibility);
 			
 			currentTypeDefinition.Events.Add(e);
+			if (interningProvider != null) {
+				e.ApplyInterningProvider(interningProvider);
+			}
 			return e;
 		}
 		#endregion
@@ -837,8 +893,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Constant Values
 		IConstantValue ConvertConstantValue(ITypeReference targetType, AstNode expression)
 		{
-			ConstantValueBuilder b = new ConstantValueBuilder();
-			b.convertVisitor = this;
+			return ConvertConstantValue(targetType, expression, currentTypeDefinition, currentMethod, usingScope);
+		}
+		
+		internal static IConstantValue ConvertConstantValue(ITypeReference targetType, AstNode expression,
+		                                                    ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope)
+		{
+			ConstantValueBuilder b = new ConstantValueBuilder(parentTypeDefinition, parentMethodDefinition, parentUsingScope, false);
 			ConstantExpression c = expression.AcceptVisitor(b, null);
 			if (c == null)
 				return null;
@@ -848,14 +909,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new SimpleConstantValue(targetType, pc.Value);
 			}
 			// cast to the desired type
-			return new CSharpConstantValue(new ConstantCast(targetType, c), usingScope, currentTypeDefinition);
+			return new CSharpConstantValue(new ConstantCast(targetType, c), parentUsingScope, parentTypeDefinition);
 		}
 		
 		IConstantValue ConvertAttributeArgument(Expression expression)
 		{
-			ConstantValueBuilder b = new ConstantValueBuilder();
-			b.convertVisitor = this;
-			b.isAttributeArgument = true;
+			ConstantValueBuilder b = new ConstantValueBuilder(currentTypeDefinition, currentMethod, usingScope, true);
 			ConstantExpression c = expression.AcceptVisitor(b, null);
 			if (c == null)
 				return null;
@@ -870,8 +929,23 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		sealed class ConstantValueBuilder : DepthFirstAstVisitor<object, ConstantExpression>
 		{
-			internal TypeSystemConvertVisitor convertVisitor;
-			internal bool isAttributeArgument;
+			readonly ITypeDefinition currentTypeDefinition;
+			readonly IMethod currentMethod;
+			readonly UsingScope usingScope;
+			readonly bool isAttributeArgument;
+			
+			public ConstantValueBuilder(ITypeDefinition currentTypeDefinition, IMethod currentMethod, UsingScope usingScope, bool isAttributeArgument)
+			{
+				this.currentTypeDefinition = currentTypeDefinition;
+				this.currentMethod = currentMethod;
+				this.usingScope = usingScope;
+				this.isAttributeArgument = isAttributeArgument;
+			}
+			
+			ITypeReference ConvertType(AstType type)
+			{
+				return TypeSystemConvertVisitor.ConvertType(type, currentTypeDefinition, currentMethod, usingScope, SimpleNameLookupMode.Type);
+			}
 			
 			protected override ConstantExpression VisitChildren(AstNode node, object data)
 			{
@@ -897,7 +971,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ITypeReference[] result = new ITypeReference[count];
 				int pos = 0;
 				foreach (AstType type in types) {
-					result[pos++] = convertVisitor.ConvertType(type);
+					result[pos++] = ConvertType(type);
 				}
 				return result;
 			}
@@ -913,7 +987,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (tre != null) {
 					// handle "int.MaxValue"
 					return new ConstantMemberReference(
-						convertVisitor.ConvertType(tre.Type),
+						ConvertType(tre.Type),
 						memberReferenceExpression.MemberName,
 						ConvertTypeArguments(memberReferenceExpression.TypeArguments));
 				}
@@ -935,7 +1009,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ConstantExpression v = castExpression.Expression.AcceptVisitor(this, data);
 				if (v == null)
 					return null;
-				return new ConstantCast(convertVisitor.ConvertType(castExpression.Type), v);
+				return new ConstantCast(ConvertType(castExpression.Type), v);
 			}
 			
 			public override ConstantExpression VisitCheckedExpression(CheckedExpression checkedExpression, object data)
@@ -958,7 +1032,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override ConstantExpression VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 			{
-				return new ConstantDefaultValue(convertVisitor.ConvertType(defaultValueExpression.Type));
+				return new ConstantDefaultValue(ConvertType(defaultValueExpression.Type));
 			}
 			
 			public override ConstantExpression VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -989,21 +1063,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override ConstantExpression VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 			{
 				if (isAttributeArgument) {
-					return new PrimitiveConstantExpression(KnownTypeReference.Type, convertVisitor.ConvertType(typeOfExpression.Type));
+					return new PrimitiveConstantExpression(KnownTypeReference.Type, ConvertType(typeOfExpression.Type));
 				} else {
 					return null;
 				}
 			}
 			
-			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayObjectCreateExpression, object data)
+			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 			{
-				var initializer = arrayObjectCreateExpression.Initializer;
-				if (isAttributeArgument && !initializer.IsNull) {
+				var initializer = arrayCreateExpression.Initializer;
+				// Attributes only allow one-dimensional arrays
+				if (isAttributeArgument && !initializer.IsNull && arrayCreateExpression.Arguments.Count < 2) {
 					ITypeReference type;
-					if (arrayObjectCreateExpression.Type.IsNull)
+					if (arrayCreateExpression.Type.IsNull) {
 						type = null;
-					else
-						type = convertVisitor.ConvertType(arrayObjectCreateExpression.Type);
+					} else {
+						type = ConvertType(arrayCreateExpression.Type);
+						foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
+							type = ArrayTypeReference.Create(type, spec.Dimensions);
+						}
+					}
 					ConstantExpression[] elements = new ConstantExpression[initializer.Elements.Count];
 					int pos = 0;
 					foreach (Expression expr in initializer.Elements) {

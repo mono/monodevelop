@@ -145,6 +145,7 @@ namespace Mono.CSharp
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
 		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
+		List<Location> attributeCommas = new List<Location> ();
 		
 		object lastYYVal;
 		
@@ -670,6 +671,10 @@ attribute_sections
 		var sect = (List<Attribute>) $1;
 		$$ = new Attributes (sect);
 		lbag.AddLocation (sect, savedOpenLocation, savedCloseLocation);
+		if (attributeCommas.Count > 0) {
+			lbag.AppendTo (sect, attributeCommas);
+			attributeCommas.Clear ();
+		}
 	  }
 	| attribute_sections attribute_section
 	  {
@@ -679,7 +684,6 @@ attribute_sections
 			attrs = new Attributes (sect);
 		else
 			attrs.AddAttributes (sect);
-		lbag.AddLocation (sect, savedOpenLocation, savedCloseLocation);
 		$$ = attrs;
 	  }
 	;
@@ -753,6 +757,7 @@ attribute_list
 	  {
 		var attrs = (List<Attribute>) $1;
 		attrs.Add ((Attribute) $3);
+		attributeCommas.Add (GetLocation ($2));
 
 		$$ = attrs;
 	  }
@@ -2984,6 +2989,7 @@ type_list
 	  {
 		var types = (List<FullNamedExpression>) $1;
 		types.Add ((FullNamedExpression) $3);
+		lbag.AppendTo (types, GetLocation ($2));
 		$$ = types;
 	  }
 	;
@@ -3179,13 +3185,13 @@ object_or_collection_initializer
 	  		// TODO: lbag
 	  	} else {
 	  		$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
-	  		lbag.AddLocation ($$, GetLocation ($3));
+	  		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
 	  	}
 	  }
 	| OPEN_BRACE member_initializer_list COMMA CLOSE_BRACE
 	  {
 	  	$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
-	  	lbag.AddLocation ($$, GetLocation ($3), GetLocation ($4));
+	  	lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3), GetLocation ($4));
 	  }
 	;
 
@@ -3208,6 +3214,7 @@ member_initializer_list
 	  {
 	  	var a = (List<Expression>)$1;
 	  	a.Add ((Expression) $3);
+		lbag.AppendTo (a, GetLocation ($2));
 	  	$$ = a;
 	  }
 	| member_initializer_list error {
@@ -3536,6 +3543,8 @@ anonymous_type_parameters
 	  {
 	  	var a = (List<AnonymousTypeParameter>) $1;
 	  	a.Add ((AnonymousTypeParameter) $3);
+	  	lbag.AppendTo (a, GetLocation ($2));
+
 	  	$$ = a;
 	  }
 	;
@@ -4121,6 +4130,8 @@ lambda_parameter_list
 		}
 		
 		pars.Add (p);
+		lbag.AppendTo (pars, GetLocation ($2));
+
 		$$ = pars;
 	  }
 	;

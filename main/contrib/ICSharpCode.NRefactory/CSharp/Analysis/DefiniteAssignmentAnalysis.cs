@@ -23,6 +23,7 @@ using System.Linq;
 using System.Threading;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Analysis
@@ -111,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		
 		public DefiniteAssignmentAnalysis(Statement rootStatement, ITypeResolveContext context, CancellationToken cancellationToken)
 			: this(rootStatement, new ResolveVisitor(new CSharpResolver(context ?? MinimalResolveContext.Instance, cancellationToken),
-			                                         null, ConstantModeResolveVisitorNavigator.Skip))
+			                                         null))
 		{
 		}
 		

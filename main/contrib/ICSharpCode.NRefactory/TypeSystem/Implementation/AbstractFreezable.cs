@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Base class for immutable objects. Provides implementation for IFreezable that reports the
 	/// object as always-frozen.
 	/// </summary>
+	[Serializable]
 	public abstract class Immutable : IFreezable
 	{
 		bool IFreezable.IsFrozen {
@@ -38,6 +39,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 	}
 	
+	[Serializable]
 	public abstract class AbstractFreezable : IFreezable
 	{
 		bool isFrozen;
@@ -78,7 +80,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return new List<T>(inputList);
 		}
 		
-		protected static ReadOnlyCollection<T> FreezeList<T>(IList<T> list) where T : IFreezable
+		protected static IList<T> FreezeList<T>(IList<T> list) where T : IFreezable
 		{
 			if (list == null || list.Count == 0)
 				return EmptyList<T>.Instance;
@@ -89,7 +91,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return result;
 		}
 		
-		protected static ReadOnlyCollection<string> FreezeList(IList<string> list)
+		protected static IList<string> FreezeList(IList<string> list)
 		{
 			if (list == null || list.Count == 0)
 				return EmptyList<string>.Instance;
@@ -97,7 +99,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return new ReadOnlyCollection<string>(list.ToArray());
 		}
 		
-		protected static ReadOnlyCollection<ITypeReference> FreezeList(IList<ITypeReference> list)
+		protected static IList<ITypeReference> FreezeList(IList<ITypeReference> list)
 		{
 			if (list == null || list.Count == 0)
 				return EmptyList<ITypeReference>.Instance;

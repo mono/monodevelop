@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RefactoringContext.cs
 //  
 // Author:
@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
-using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -127,12 +127,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 	}
 	
-	public static class ExtensionMethods
+	public static class RefactoringExtensions
 	{
 		#region ConvertTypes
 		public static ICSharpCode.NRefactory.CSharp.AstType ConvertToAstType (this IType type)
 		{
-			var builder = new TypeSystemAstBuilder ();
+			var builder = new TypeSystemAstBuilder (MinimalResolveContext.Instance);
 			return builder.ConvertType (type);
 		}
 		#endregion

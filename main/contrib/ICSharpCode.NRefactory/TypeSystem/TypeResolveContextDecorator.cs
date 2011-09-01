@@ -41,6 +41,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.ctx = ctx;
 		}
 		
+		public virtual ITypeDefinition GetKnownTypeDefinition (TypeCode typeCode)
+		{
+			return ctx.GetKnownTypeDefinition (typeCode);
+		}
+		
 		public virtual ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			return ctx.GetTypeDefinition(nameSpace, name, typeParameterCount, nameComparer);

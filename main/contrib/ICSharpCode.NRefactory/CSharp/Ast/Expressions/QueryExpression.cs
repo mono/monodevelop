@@ -108,6 +108,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public Identifier IdentifierToken {
+			get { return GetChildByRole (Roles.Identifier); }
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryContinuationClause (this, data);
@@ -137,6 +141,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set {
 				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, AstLocation.Empty));
 			}
+		}
+		
+		public Identifier IdentifierToken {
+			get { return GetChildByRole(Roles.Identifier); }
 		}
 		
 		public Expression Expression {
@@ -170,6 +178,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set {
 				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, AstLocation.Empty));
 			}
+		}
+		
+		public Identifier IdentifierToken {
+			get { return GetChildByRole(Roles.Identifier); }
 		}
 		
 		public CSharpTokenNode AssignToken {
@@ -256,6 +268,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public Identifier JoinIdentifierToken {
+			get { return GetChildByRole(JoinIdentifierRole); }
+		}
+		
 		public CSharpTokenNode InKeyword {
 			get { return GetChildByRole (InKeywordRole); }
 		}
@@ -294,6 +310,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set {
 				SetChildByRole(IntoIdentifierRole, Identifier.Create (value, AstLocation.Empty));
 			}
+		}
+		
+		public Identifier IntoIdentifierToken {
+			get { return GetChildByRole(IntoIdentifierRole); }
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)

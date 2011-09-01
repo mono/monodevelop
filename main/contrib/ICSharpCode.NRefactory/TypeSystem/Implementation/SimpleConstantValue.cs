@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// A simple constant value that is independent of the resolve context.
 	/// </summary>
+	[Serializable]
 	public sealed class SimpleConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
 		ITypeReference type;

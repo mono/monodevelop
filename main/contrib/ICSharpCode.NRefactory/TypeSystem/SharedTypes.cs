@@ -70,6 +70,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		 * would have to return true even though these are two distinct definitions.
 		 */
 		
+		[Serializable]
 		sealed class SharedTypeImpl : AbstractType
 		{
 			readonly TypeKind kind;

@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (type == null)
 				throw new ArgumentNullException("type");
 			ParameterizedType pt = type as ParameterizedType;
-			return pt != null && pt.TypeArguments.Count == 1 && pt.FullName == "System.Nullable";
+			return pt != null && pt.TypeParameterCount == 1 && pt.FullName == "System.Nullable";
 		}
 		
 		public static bool IsNonNullableValueType(IType type, ITypeResolveContext context)
@@ -51,8 +51,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (type == null)
 				throw new ArgumentNullException("type");
 			ParameterizedType pt = type as ParameterizedType;
-			if (pt != null && pt.TypeArguments.Count == 1 && pt.FullName == "System.Nullable")
-				return pt.TypeArguments[0];
+			if (pt != null && pt.TypeParameterCount == 1 && pt.FullName == "System.Nullable")
+				return pt.GetTypeArgument(0);
 			else
 				return type;
 		}

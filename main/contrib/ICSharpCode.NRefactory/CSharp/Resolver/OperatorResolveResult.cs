@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -125,6 +126,89 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override IEnumerable<ResolveResult> GetChildResults()
 		{
 			return new [] { Array }.Concat(Indices);
+		}
+	}
+	
+	/// <summary>
+	/// Resolve result representing an array creation.
+	/// </summary>
+	public class ArrayCreateResolveResult : ResolveResult
+	{
+		/// <summary>
+		/// Gets the size arguments.
+		/// </summary>
+		public readonly ResolveResult[] SizeArguments;
+		
+		/// <summary>
+		/// Gets the initializer elements.
+		/// This field may be null if no initializer was specified.
+		/// </summary>
+		public readonly ResolveResult[] InitializerElements;
+		
+		readonly object[] constantArray;
+		
+		public ArrayCreateResolveResult(IType arrayType, ResolveResult[] sizeArguments, ResolveResult[] initializerElements,
+		                                bool allowArrayConstants)
+			: base(arrayType)
+		{
+			this.SizeArguments = sizeArguments;
+			this.InitializerElements = initializerElements;
+			if (allowArrayConstants) {
+				this.constantArray = MakeConstantArray(sizeArguments, initializerElements);
+			}
+		}
+		
+		static object[] MakeConstantArray(ResolveResult[] sizeArguments, ResolveResult[] initializerElements)
+		{
+			if (initializerElements == null)
+				return null;
+			
+			for (int i = 0; i < initializerElements.Length; i++) {
+				if (!initializerElements[i].IsCompileTimeConstant)
+					return null;
+			}
+			
+			if (sizeArguments != null && sizeArguments.Length > 0) {
+				if (sizeArguments.Length > 1) {
+					// 2D-arrays can't be constant
+					return null;
+				}
+				if (!sizeArguments[0].IsCompileTimeConstant)
+					return null;
+				
+				int expectedSize;
+				try {
+					expectedSize = (int)CSharpPrimitiveCast.Cast(TypeCode.Int32, sizeArguments[0].ConstantValue, true);
+				} catch (InvalidCastException) {
+					return null;
+				} catch (OverflowException) {
+					return null;
+				}
+				if (expectedSize != initializerElements.Length)
+					return null;
+			}
+			
+			object[] constants = new object[initializerElements.Length];
+			for (int i = 0; i < initializerElements.Length; i++) {
+				constants[i] = initializerElements[i].ConstantValue;
+			}
+			return constants;
+		}
+		
+		public override object ConstantValue {
+			get { return constantArray; }
+		}
+		
+		public override bool IsCompileTimeConstant {
+			get { return constantArray != null; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			if (SizeArguments != null && InitializerElements != null)
+				return SizeArguments.Concat(InitializerElements);
+			else
+				return SizeArguments ?? InitializerElements ?? EmptyList<ResolveResult>.Instance;
 		}
 	}
 }

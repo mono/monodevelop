@@ -35,9 +35,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 	}
 	
-	public class AmbiguousMemberResultResult : MemberResolveResult
+	public class AmbiguousMemberResolveResult : MemberResolveResult
 	{
-		public AmbiguousMemberResultResult(ResolveResult targetResult, IMember member, IType returnType) : base(targetResult, member, returnType)
+		public AmbiguousMemberResolveResult(ResolveResult targetResult, IMember member, IType returnType) : base(targetResult, member, returnType)
 		{
 		}
 		

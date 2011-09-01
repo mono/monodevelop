@@ -40,6 +40,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public readonly bool IsExtensionMethodInvocation;
 		
 		/// <summary>
+		/// Gets whether this invocation is calling a delegate (without explicitly calling ".Invoke()").
+		/// </summary>
+		public readonly bool IsDelegateInvocation;
+		
+		/// <summary>
 		/// Gets whether a params-Array is being used in its expanded form.
 		/// </summary>
 		public readonly bool IsExpandedForm;
@@ -70,8 +75,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult targetResult, IParameterizedMember member, IType returnType,
 			IList<ResolveResult> arguments,
 			OverloadResolutionErrors overloadResolutionErrors = OverloadResolutionErrors.None,
-			bool isExtensionMethodInvocation = false, bool isExpandedForm = false,
+			bool isExtensionMethodInvocation = false, 
+			bool isExpandedForm = false,
 			bool isLiftedOperatorInvocation = false,
+			bool isDelegateInvocation = false,
 			IList<int> argumentToParameterMap = null)
 			: base(targetResult, member, returnType)
 		{
@@ -80,6 +87,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.IsExtensionMethodInvocation = isExtensionMethodInvocation;
 			this.IsExpandedForm = isExpandedForm;
 			this.IsLiftedOperatorInvocation = isLiftedOperatorInvocation;
+			this.IsDelegateInvocation = isDelegateInvocation;
 			this.argumentToParameterMap = argumentToParameterMap;
 		}
 		

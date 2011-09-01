@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation for IParameter.
 	/// </summary>
+	[Serializable]
 	public sealed class DefaultParameter : AbstractFreezable, IParameter, ISupportsInterning
 	{
 		string name = string.Empty;

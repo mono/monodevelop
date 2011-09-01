@@ -27,7 +27,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Represents a file that was parsed and converted for the type system.
 	/// </summary>
-	public sealed class ParsedFile : AbstractFreezable, IParsedFile
+	[Serializable]
+	public sealed class CSharpParsedFile : AbstractFreezable, IParsedFile
 	{
 		readonly string fileName;
 		readonly UsingScope rootUsingScope;
@@ -47,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			usingScopes = FreezeList(usingScopes);
 		}
 		
-		public ParsedFile(string fileName, UsingScope rootUsingScope)
+		public CSharpParsedFile(string fileName, UsingScope rootUsingScope)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -61,10 +62,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return fileName; }
 		}
 		
-		DateTime parseTime = DateTime.Now;
-		public DateTime ParseTime {
-			get {
-				return parseTime;
+		DateTime lastWriteTime = DateTime.UtcNow;
+		
+		public DateTime LastWriteTime {
+			get { return lastWriteTime; }
+			set {
+				CheckBeforeMutation();
+				lastWriteTime = value;
 			}
 		}
 		
@@ -111,7 +115,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return FindEntity(topLevelTypeDefinitions, location);
 		}
 		
-		public ITypeDefinition GetTypeDefinition(AstLocation location)
+		public ITypeDefinition GetInnermostTypeDefinition(AstLocation location)
 		{
 			ITypeDefinition parent = null;
 			ITypeDefinition type = GetTopLevelTypeDefinition(location);
@@ -124,7 +128,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IMember GetMember(AstLocation location)
 		{
-			ITypeDefinition type = GetTypeDefinition(location);
+			ITypeDefinition type = GetInnermostTypeDefinition(location);
 			if (type == null)
 				return null;
 			return FindEntity(type.Methods, location)

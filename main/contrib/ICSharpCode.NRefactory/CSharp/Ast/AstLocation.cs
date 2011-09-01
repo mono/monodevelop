@@ -133,5 +133,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return !(left < right);
 		}
+		/*
+		public static implicit operator AstLocation(ICSharpCode.Editor.TextLocation location)
+		{
+			return new AstLocation(location.Line, location.Column);
+		}
+		
+		public static implicit operator ICSharpCode.Editor.TextLocation(AstLocation location)
+		{
+			return new ICSharpCode.Editor.TextLocation(location.Line, location.Column);
+		}*/
 	}
 }

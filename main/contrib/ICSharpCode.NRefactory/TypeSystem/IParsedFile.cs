@@ -38,9 +38,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		string FileName { get; }
 		
 		/// <summary>
-		/// Gets the time of object creation.
+		/// Gets the time when the file was last written.
 		/// </summary>
-		DateTime ParseTime { get; }
+		DateTime LastWriteTime { get; }
 		
 		/// <summary>
 		/// Gets all top-level type definitions.
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the type (potentially a nested type) defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
-		ITypeDefinition GetTypeDefinition(AstLocation location);
+		ITypeDefinition GetInnermostTypeDefinition(AstLocation location);
 		
 		/// <summary>
 		/// Gets the member defined at the specified location.

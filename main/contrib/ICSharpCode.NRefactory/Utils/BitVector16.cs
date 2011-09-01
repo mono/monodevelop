@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.Utils
 	/// <summary>
 	/// Holds 16 boolean values.
 	/// </summary>
+	[Serializable]
 	public struct BitVector16 : IEquatable<BitVector16>
 	{
 		ushort data;

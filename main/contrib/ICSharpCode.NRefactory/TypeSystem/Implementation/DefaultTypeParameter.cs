@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="ITypeParameter"/>.
 	/// </summary>
+	[Serializable]
 	public sealed class DefaultTypeParameter : AbstractFreezable, ITypeParameter, ISupportsInterning
 	{
 		string name;
@@ -137,24 +138,27 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
-		public override int GetHashCode()
-		{
-			unchecked {
-				return (int)ownerType * 178256151 + index;
-			}
-		}
-		
-		public override bool Equals(object obj)
-		{
-			return Equals(obj as IType);
-		}
+//		public override int GetHashCode()
+//		{
+//			unchecked {
+//				return (int)ownerType * 178256151 + index;
+//			}
+//		}
+//
+//		public override bool Equals(object obj)
+//		{
+//			return Equals(obj as IType);
+//		}
 		
 		public bool Equals(IType other)
 		{
-			DefaultTypeParameter p = other as DefaultTypeParameter;
-			if (p == null)
-				return false;
-			return ownerType == p.ownerType && index == p.index;
+			// Use reference equality for type parameters. While we could consider any types with same
+			// ownerType + index as equal for the type system, doing so makes it difficult to cache calculation
+			// results based on types - e.g. the cache in the Conversions class.
+			return this == other;
+			// We can still consider type parameters of different methods/classes to be equal to each other,
+			// if they have been interned. But then also all constraints are equal, so caching conversions
+			// is valid in that case.
 		}
 		
 		public EntityType OwnerType {
@@ -249,44 +253,66 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return c;
 		}
 		
-		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
 		{
-			if (HasDefaultConstructorConstraint || HasValueTypeConstraint) {
-				DefaultMethod m = DefaultMethod.CreateDefaultConstructor(GetDummyClassForTypeParameter());
-				if (filter(m))
-					return new [] { m };
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				if (HasDefaultConstructorConstraint || HasValueTypeConstraint) {
+					DefaultMethod m = DefaultMethod.CreateDefaultConstructor(GetDummyClassForTypeParameter());
+					if (filter(m))
+						return new [] { m };
+				}
+				return EmptyList<IMethod>.Instance;
+			} else {
+				return GetMembersHelper.GetConstructors(this, context, filter, options);
 			}
-			return EmptyList<IMethod>.Instance;
 		}
 		
-		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetMethods(this, context, FilterNonStatic(filter));
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+				return EmptyList<IMethod>.Instance;
+			else
+				return GetMembersHelper.GetMethods(this, context, FilterNonStatic(filter), options);
 		}
 		
-		public IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetMethods(this, typeArguments, context, FilterNonStatic(filter));
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+				return EmptyList<IMethod>.Instance;
+			else
+				return GetMembersHelper.GetMethods(this, typeArguments, context, FilterNonStatic(filter), options);
 		}
 		
-		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
+		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetProperties(this, context, FilterNonStatic(filter));
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+				return EmptyList<IProperty>.Instance;
+			else
+				return GetMembersHelper.GetProperties(this, context, FilterNonStatic(filter), options);
 		}
 		
-		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
+		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetFields(this, context, FilterNonStatic(filter));
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+				return EmptyList<IField>.Instance;
+			else
+				return GetMembersHelper.GetFields(this, context, FilterNonStatic(filter), options);
 		}
 		
-		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
+		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetEvents(this, context, FilterNonStatic(filter));
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+				return EmptyList<IEvent>.Instance;
+			else
+				return GetMembersHelper.GetEvents(this, context, FilterNonStatic(filter), options);
 		}
 		
-		public IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
+		public IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetMembers(this, context, FilterNonStatic(filter));
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+				return EmptyList<IMember>.Instance;
+			else
+				return GetMembersHelper.GetMembers(this, context, FilterNonStatic(filter), options);
 		}
 		
 		static Predicate<T> FilterNonStatic<T>(Predicate<T> filter) where T : class, IMember
@@ -297,12 +323,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return member => !member.IsStatic && filter(member);
 		}
 		
-		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter, GetMemberOptions options)
 		{
 			return EmptyList<IType>.Instance;
 		}
 		
-		IEnumerable<IType> IType.GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		IEnumerable<IType> IType.GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter, GetMemberOptions options)
 		{
 			return EmptyList<IType>.Instance;
 		}
@@ -326,8 +352,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
-			constraints = provider.InternList(constraints);
-			attributes = provider.InternList(attributes);
+			// protect against cyclic constraints
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					constraints = provider.InternList(constraints);
+					attributes = provider.InternList(attributes);
+				}
+			}
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

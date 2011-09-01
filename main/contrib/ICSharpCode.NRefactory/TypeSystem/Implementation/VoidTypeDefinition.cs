@@ -24,6 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Special type definition for 'void'.
 	/// </summary>
+	[Serializable]
 	public class VoidTypeDefinition : DefaultTypeDefinition
 	{
 		public VoidTypeDefinition(IProjectContent projectContent)
@@ -34,37 +35,37 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.IsSealed = true;
 		}
 		
-		public override IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter)
+		public override IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter, GetMemberOptions options)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
+		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter, GetMemberOptions options)
 		{
 			return EmptyList<IEvent>.Instance;
 		}
 		
-		public override IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter)
+		public override IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter, GetMemberOptions options)
 		{
 			return EmptyList<IField>.Instance;
 		}
 		
-		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter)
+		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter, GetMemberOptions options)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public override IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter)
+		public override IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter, GetMemberOptions options)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
+		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter, GetMemberOptions options)
 		{
 			return EmptyList<IProperty>.Instance;
 		}
 		
-		public override IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter)
+		public override IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter, GetMemberOptions options)
 		{
 			return EmptyList<IMember>.Instance;
 		}

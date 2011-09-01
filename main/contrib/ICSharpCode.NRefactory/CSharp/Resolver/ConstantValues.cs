@@ -29,6 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	// Contains representations for constant C# expressions.
 	// We use these instead of storing the full AST to reduce the memory usage.
 	
+	[Serializable]
 	public sealed class CSharpConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
 		ConstantExpression expression;
@@ -52,32 +53,56 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			return new CSharpResolver(context) {
 				CheckForOverflow = false, // TODO: get project-wide overflow setting
 				CurrentTypeDefinition = parentTypeDefinition,
-				UsingScope = parentUsingScope
+				CurrentUsingScope = parentUsingScope
 			};
 		}
 		
-		public IType GetValueType(ITypeResolveContext context)
+		sealed class ConstantValueResult
 		{
+			public readonly IType ValueType;
+			public readonly object Value;
+			
+			public ConstantValueResult(IType valueType, object value)
+			{
+				this.ValueType = valueType;
+				this.Value = value;
+			}
+		}
+		
+		ConstantValueResult DoResolve(ITypeResolveContext context)
+		{
+			CacheManager cache = context.CacheManager;
+			if (cache != null) {
+				ConstantValueResult cachedResult = cache.GetShared(this) as ConstantValueResult;
+				if (cachedResult != null)
+					return cachedResult;
+			}
 			CSharpResolver resolver = CreateResolver(context);
-			IType type = expression.Resolve(resolver).Type;
+			ResolveResult rr = expression.Resolve(resolver);
+			IType type = rr.Type;
+			object val = rr.ConstantValue;
 			if (resolver.Context != context) {
 				// Retrieve the equivalent type in the new resolve context.
 				// E.g. if the constant is defined in a .NET 2.0 project, type might be Int32 from mscorlib 2.0.
 				// However, the calling project might be a .NET 4.0 project, so we need to return Int32 from mscorlib 4.0.
-				return type.AcceptVisitor(new MapTypeIntoNewContext(context));
+				type = type.AcceptVisitor(new MapTypeIntoNewContext(context));
+				// If 'val' is a type or an array containing types, we need to map it to the new context.
+				val = MapToNewContext(val, context);
 			}
-			return type;
+			ConstantValueResult result = new ConstantValueResult(type, val);
+			if (cache != null)
+				cache.SetShared(this, result);
+			return result;
+		}
+		
+		public IType GetValueType(ITypeResolveContext context)
+		{
+			return DoResolve(context).ValueType;
 		}
 		
 		public object GetValue(ITypeResolveContext context)
 		{
-			CSharpResolver resolver = CreateResolver(context);
-			object val = expression.Resolve(resolver).ConstantValue;
-			if (resolver.Context != context) {
-				// If 'val' is a type or an array containing types, we need to map it to the new context.
-				val = MapToNewContext(val, context);
-			}
-			return val;
+			return DoResolve(context).Value;
 		}
 		
 		static object MapToNewContext(object val, ITypeResolveContext context)
@@ -125,6 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	/// <summary>
 	/// Increments an integer <see cref="IConstantValue"/> by a fixed amount without changing the type.
 	/// </summary>
+	[Serializable]
 	public sealed class IncrementConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
 		IConstantValue baseValue;
@@ -178,6 +204,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public abstract class ConstantExpression
 	{
 		public abstract ResolveResult Resolve(CSharpResolver resolver);
@@ -186,6 +213,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	/// <summary>
 	/// C#'s equivalent to the SimpleConstantValue.
 	/// </summary>
+	[Serializable]
 	public sealed class PrimitiveConstantExpression : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference type;
@@ -233,6 +261,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantCast : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
@@ -274,6 +303,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantIdentifierReference : ConstantExpression, ISupportsInterning
 	{
 		string identifier;
@@ -327,6 +357,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantMemberReference : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
@@ -398,6 +429,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantCheckedExpression : ConstantExpression, ISupportsInterning
 	{
 		bool checkForOverflow;
@@ -441,6 +473,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantDefaultValue : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference type;
@@ -474,6 +507,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantUnaryOperator : ConstantExpression, ISupportsInterning
 	{
 		UnaryOperatorType operatorType;
@@ -513,6 +547,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 
+	[Serializable]
 	public sealed class ConstantBinaryOperator : ConstantExpression, ISupportsInterning
 	{
 		ConstantExpression left;
@@ -559,6 +594,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantConditionalOperator : ConstantExpression, ISupportsInterning
 	{
 		ConstantExpression condition, trueExpr, falseExpr;
@@ -614,40 +650,49 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	/// <summary>
 	/// Represents an array creation (as used within an attribute argument)
 	/// </summary>
+	[Serializable]
 	public sealed class ConstantArrayCreation : ConstantExpression, ISupportsInterning
 	{
 		// type may be null when the element is being inferred
-		ITypeReference type;
+		ITypeReference elementType;
 		IList<ConstantExpression> arrayElements;
 		
 		public ConstantArrayCreation(ITypeReference type, IList<ConstantExpression> arrayElements)
 		{
 			if (arrayElements == null)
 				throw new ArgumentNullException("arrayElements");
-			this.type = type;
+			this.elementType = type;
 			this.arrayElements = arrayElements;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			throw new NotImplementedException();
+			ResolveResult[] elements = new ResolveResult[arrayElements.Count];
+			for (int i = 0; i < elements.Length; i++) {
+				elements[i] = arrayElements[i].Resolve(resolver);
+			}
+			if (elementType != null) {
+				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.Context), 1, null, elements, true);
+			} else {
+				return resolver.ResolveArrayCreation(null, 1, null, elements, true);
+			}
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
-			type = provider.Intern(type);
+			elementType = provider.Intern(elementType);
 			arrayElements = provider.InternList(arrayElements);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return (type != null ? type.GetHashCode() : 0) ^ arrayElements.GetHashCode();
+			return (elementType != null ? elementType.GetHashCode() : 0) ^ arrayElements.GetHashCode();
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			ConstantArrayCreation cac = other as ConstantArrayCreation;
-			return cac != null && this.type == cac.type && this.arrayElements == cac.arrayElements;
+			return cac != null && this.elementType == cac.elementType && this.arrayElements == cac.arrayElements;
 		}
 	}
 }

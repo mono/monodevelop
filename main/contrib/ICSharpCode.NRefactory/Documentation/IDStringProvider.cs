@@ -170,6 +170,15 @@ namespace ICSharpCode.NRefactory.Documentation
 				AppendTypeName(b, resolvedType);
 				return;
 			}
+			KnownTypeReference knownType = type as KnownTypeReference;
+			if (knownType != null) {
+				if (!string.IsNullOrEmpty(knownType.Namespace)) {
+					b.Append(knownType.Namespace);
+					b.Append('.');
+				}
+				b.Append(knownType.Name);
+				return;
+			}
 			GetClassTypeReference gctr = type as GetClassTypeReference;
 			if (gctr != null) {
 				if (!string.IsNullOrEmpty(gctr.Namespace)) {

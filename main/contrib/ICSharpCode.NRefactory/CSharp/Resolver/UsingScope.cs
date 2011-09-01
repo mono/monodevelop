@@ -28,6 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Represents a scope that contains "using" statements.
 	/// This is either the file itself, or a namespace declaration.
 	/// </summary>
+	[Serializable]
 	public class UsingScope : AbstractFreezable
 	{
 		readonly IProjectContent projectContent;

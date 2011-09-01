@@ -33,6 +33,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface ITypeResolveContext
 	{
 		/// <summary>
+		/// Gets the definition for a known type.
+		/// </summary>
+		/// <returns>Returns the type definition; or null if the type was not found</returns>
+		/// <remarks>
+		/// This method will may only be called with the 'known types' (see members of KnownTypeReference).
+		/// As a special case, TypeCode.Empty is used to represent System.Void.
+		/// </remarks>
+		ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode);
+		
+		/// <summary>
 		/// Retrieves a type.
 		/// </summary>
 		/// <param name="nameSpace">Namespace that contains the type</param>

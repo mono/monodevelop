@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		/// Gets the try-finally statements that this control flow edge is leaving.
 		/// </summary>
 		public IEnumerable<TryCatchStatement> TryFinallyStatements {
-			get { return jumpOutOfTryFinally ?? Enumerable.Empty<TryCatchStatement>(); }
+			get { return jumpOutOfTryFinally ?? EmptyList<TryCatchStatement>.Instance; }
 		}
 	}
 	
@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			return BuildControlFlowGraph(statement, new ResolveVisitor(
 				new CSharpResolver(context, cancellationToken),
-				null, ConstantModeResolveVisitorNavigator.Skip));
+				null));
 		}
 		
 		public IList<ControlFlowNode> BuildControlFlowGraph(Statement statement, ResolveVisitor resolveVisitor)

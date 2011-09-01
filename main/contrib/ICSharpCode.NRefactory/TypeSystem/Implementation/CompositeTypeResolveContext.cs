@@ -67,6 +67,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
+		public virtual ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
+		{
+			foreach (ITypeResolveContext context in children) {
+				ITypeDefinition d = context.GetKnownTypeDefinition(typeCode);
+				if (d != null)
+					return d;
+			}
+			return null;
+		}
+		
+		/// <inheritdoc/>
 		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			foreach (ITypeResolveContext context in children) {
@@ -117,7 +128,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					if (sync[i] == null)
 						throw new InvalidOperationException(children[i] + ".Synchronize() returned null");
 				}
-				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, new CacheManager(), true);
+				var knownTypeDefinitions = new ITypeDefinition[ReflectionHelper.ByTypeCodeArraySize];
+				var r = new CompositeSynchronizedTypeResolveContext(sync, knownTypeDefinitions, new CacheManager(), true);
 				success = true;
 				return r;
 			} finally {
@@ -141,12 +153,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			readonly CacheManager cacheManager;
 			readonly bool isTopLevel;
+			readonly ITypeDefinition[] knownTypeDefinitions;
 			
-			public CompositeSynchronizedTypeResolveContext(ITypeResolveContext[] children, CacheManager cacheManager, bool isTopLevel)
+			public CompositeSynchronizedTypeResolveContext(ITypeResolveContext[] children, ITypeDefinition[] knownTypeDefinitions, CacheManager cacheManager, bool isTopLevel)
 				: base(children)
 			{
 				Debug.Assert(cacheManager != null);
 				this.cacheManager = cacheManager;
+				this.knownTypeDefinitions = knownTypeDefinitions;
 				this.isTopLevel = isTopLevel;
 			}
 			
@@ -167,11 +181,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				get { return cacheManager; }
 			}
 			
+			public override ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
+			{
+				ITypeDefinition typeDef = knownTypeDefinitions[(int)typeCode];
+				if (typeDef != null)
+					return typeDef;
+				typeDef = base.GetKnownTypeDefinition(typeCode);
+				knownTypeDefinitions[(int)typeCode] = typeDef;
+				return typeDef;
+			}
+			
 			public override ISynchronizedTypeResolveContext Synchronize()
 			{
 				// re-use the same cache manager for nested synchronized contexts
 				if (isTopLevel)
-					return new CompositeSynchronizedTypeResolveContext(children, cacheManager, false);
+					return new CompositeSynchronizedTypeResolveContext(children, knownTypeDefinitions, cacheManager, false);
 				else
 					return this;
 			}

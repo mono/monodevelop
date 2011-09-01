@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents the intersection of several types.
 	/// </summary>
+	[Serializable]
 	public class IntersectionType : AbstractType
 	{
 		readonly ReadOnlyCollection<IType> types;
@@ -123,29 +124,34 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return types;
 		}
 		
-		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter)
+		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter, GetMemberOptions options)
 		{
-			return ParameterizedType.GetMethods(this, context, FilterNonStatic(filter));
+			return GetMembersHelper.GetMethods(this, context, FilterNonStatic(filter), options);
 		}
 		
-		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
+		public override IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter, GetMemberOptions options)
 		{
-			return ParameterizedType.GetProperties(this, context, FilterNonStatic(filter));
+			return GetMembersHelper.GetMethods(this, typeArguments, context, filter, options);
 		}
 		
-		public override IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter)
+		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter, GetMemberOptions options)
 		{
-			return ParameterizedType.GetFields(this, context, FilterNonStatic(filter));
+			return GetMembersHelper.GetProperties(this, context, FilterNonStatic(filter), options);
 		}
 		
-		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
+		public override IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter, GetMemberOptions options)
 		{
-			return ParameterizedType.GetEvents(this, context, FilterNonStatic(filter));
+			return GetMembersHelper.GetFields(this, context, FilterNonStatic(filter), options);
 		}
 		
-		public override IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter)
+		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter, GetMemberOptions options)
 		{
-			return ParameterizedType.GetMembers(this, context, FilterNonStatic(filter));
+			return GetMembersHelper.GetEvents(this, context, FilterNonStatic(filter), options);
+		}
+		
+		public override IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter, GetMemberOptions options)
+		{
+			return GetMembersHelper.GetMembers(this, context, FilterNonStatic(filter), options);
 		}
 		
 		static Predicate<T> FilterNonStatic<T>(Predicate<T> filter) where T : class, IMember

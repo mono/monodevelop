@@ -1,6 +1,6 @@
 ﻿// 
 // UnaryOperatorExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -67,7 +67,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			UnaryOperatorExpression o = other as UnaryOperatorExpression;
-			return o != null && this.Operator == o.Operator && this.Expression.DoMatch(o.Expression, match);
+			return o != null && (this.Operator == UnaryOperatorType.Any || this.Operator == o.Operator)
+				&& this.Expression.DoMatch(o.Expression, match);
 		}
 		
 		public static string GetOperatorSymbol(UnaryOperatorType op)
@@ -101,6 +102,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public enum UnaryOperatorType
 	{
+		/// <summary>
+		/// Any unary operator (used in pattern matching)
+		/// </summary>
+		Any,
+		
 		/// <summary>Logical not (!a)</summary>
 		Not,
 		/// <summary>Bitwise not (~a)</summary>

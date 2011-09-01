@@ -25,9 +25,11 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
+	[Serializable]
 	public class DefaultTypeDefinition : AbstractFreezable, ITypeDefinition
 	{
 		readonly IProjectContent projectContent;
+		readonly IParsedFile parsedFile;
 		readonly ITypeDefinition declaringTypeDefinition;
 		
 		volatile ITypeDefinition compoundTypeDefinition;
@@ -78,9 +80,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentException("name");
 			this.projectContent = declaringTypeDefinition.ProjectContent;
+			this.parsedFile = declaringTypeDefinition.ParsedFile;
 			this.declaringTypeDefinition = declaringTypeDefinition;
+			
 			this.name = name;
 			this.ns = declaringTypeDefinition.Namespace;
+			
+			this.compoundTypeDefinition = this;
+		}
+		
+		public DefaultTypeDefinition(IParsedFile parsedFile, string ns, string name)
+		{
+			if (parsedFile == null)
+				throw new ArgumentNullException("parsedFile");
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentException("name");
+			this.parsedFile = parsedFile;
+			this.projectContent = parsedFile.ProjectContent;
+			this.ns = ns ?? string.Empty;
+			this.name = name;
 			
 			this.compoundTypeDefinition = this;
 		}
@@ -376,6 +394,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return projectContent; }
 		}
 		
+		public IParsedFile ParsedFile {
+			get { return parsedFile; }
+		}
+		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			ITypeDefinition compound = this.compoundTypeDefinition;
@@ -441,71 +463,141 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
-		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
+		#region GetMembers
+		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetNestedTypes(this, context, filter);
+			const GetMemberOptions opt = GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions;
+			if ((options & opt) == opt) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetNestedTypes(context, filter, options);
+				
+				return ApplyFilter(this.NestedTypes, filter);
+			} else {
+				return GetMembersHelper.GetNestedTypes(this, context, filter, options);
+			}
 		}
 		
-		public IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
+		public IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetNestedTypes(this, typeArguments, context, filter);
+			return GetMembersHelper.GetNestedTypes(this, typeArguments, context, filter, options);
 		}
 		
-		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetMethods(this, context, filter);
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetMethods(context, filter, options);
+				
+				return ApplyFilter(this.Methods, Utils.ExtensionMethods.And(m => !m.IsConstructor, filter));
+			} else {
+				return GetMembersHelper.GetMethods(this, context, filter, options);
+			}
 		}
 		
-		public virtual IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public virtual IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetMethods(this, typeArguments, context, filter);
+			return GetMembersHelper.GetMethods(this, typeArguments, context, filter, options);
 		}
 		
-		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
 		{
-			ITypeDefinition compound = this.compoundTypeDefinition;
-			if (compound != this)
-				return compound.GetConstructors(context, filter);
-			
-			List<IMethod> methods = new List<IMethod>();
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetConstructors(context, filter, options);
+				
+				return GetConstructorsImpl(filter);
+			} else {
+				return GetMembersHelper.GetConstructors(this, context, filter, options);
+			}
+		}
+		
+		IEnumerable<IMethod> GetConstructorsImpl(Predicate<IMethod> filter)
+		{
+			bool foundCtor = false;
 			foreach (IMethod m in this.Methods) {
 				if (m.IsConstructor && !m.IsStatic) {
-					if (filter == null || filter(m))
-						methods.Add(m);
+					foundCtor = true;
+					if (filter == null || filter(m)) {
+						yield return m;
+					}
 				}
 			}
 			
 			if (this.AddDefaultConstructorIfRequired) {
-				if (kind == TypeKind.Class && methods.Count == 0 && !this.IsStatic
+				if (kind == TypeKind.Class && !foundCtor && !this.IsStatic
 				    || kind == TypeKind.Enum || kind == TypeKind.Struct)
 				{
 					var m = DefaultMethod.CreateDefaultConstructor(this);
 					if (filter == null || filter(m))
-						methods.Add(m);
+						yield return m;
 				}
 			}
-			return methods;
 		}
 		
-		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
+		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetProperties(this, context, filter);
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetProperties(context, filter, options);
+				
+				return ApplyFilter(this.Properties, filter);
+			} else {
+				return GetMembersHelper.GetProperties(this, context, filter, options);
+			}
 		}
 		
-		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
+		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetFields(this, context, filter);
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetFields(context, filter, options);
+				
+				return ApplyFilter(this.Fields, filter);
+			} else {
+				return GetMembersHelper.GetFields(this, context, filter, options);
+			}
 		}
 		
-		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
+		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetEvents(this, context, filter);
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				ITypeDefinition compound = this.compoundTypeDefinition;
+				if (compound != this)
+					return compound.GetEvents(context, filter, options);
+				
+				return ApplyFilter(this.Events, filter);
+			} else {
+				return GetMembersHelper.GetEvents(this, context, filter, options);
+			}
 		}
 		
-		public virtual IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
+		public virtual IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return ParameterizedType.GetMembers(this, context, filter);
+			return GetMembersHelper.GetMembers(this, context, filter, options);
 		}
+		
+		static IEnumerable<T> ApplyFilter<T>(IList<T> enumerable, Predicate<T> filter) where T : class
+		{
+			if (enumerable.Count == 0)
+				return EmptyList<T>.Instance;
+			if (filter == null)
+				return enumerable;
+			else
+				return ApplyFilterImpl(enumerable, filter);
+		}
+		
+		static IEnumerable<T> ApplyFilterImpl<T>(IList<T> enumerable, Predicate<T> filter) where T : class
+		{
+			foreach (T item in enumerable)
+				if (filter(item))
+					yield return item;
+		}
+		#endregion
 		
 		#region Equals / GetHashCode
 		bool IEquatable<IType>.Equals(IType other)

@@ -25,87 +25,88 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Contains well-known type references.
 	/// </summary>
-	public static class KnownTypeReference
+	[Serializable]
+	public sealed class KnownTypeReference : ITypeReference
 	{
 		/// <summary>
 		/// Gets a type reference pointing to the <c>void</c> type.
 		/// </summary>
-		public static readonly ITypeReference Void = new GetClassTypeReference("System", "Void", 0);
+		public static readonly ITypeReference Void = new KnownTypeReference(TypeCode.Empty);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>object</c> type.
 		/// </summary>
-		public static readonly ITypeReference Object = new GetClassTypeReference("System", "Object", 0);
+		public static readonly ITypeReference Object = new KnownTypeReference(TypeCode.Object);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>bool</c> type.
 		/// </summary>
-		public static readonly ITypeReference Boolean = new GetClassTypeReference("System", "Boolean", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>sbyte</c> type.
-		/// </summary>
-		public static readonly ITypeReference SByte = new GetClassTypeReference("System", "SByte", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>byte</c> type.
-		/// </summary>
-		public static readonly ITypeReference Byte = new GetClassTypeReference("System", "Byte", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>short</c> type.
-		/// </summary>
-		public static readonly ITypeReference Int16 = new GetClassTypeReference("System", "Int16", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>ushort</c> type.
-		/// </summary>
-		public static readonly ITypeReference UInt16 = new GetClassTypeReference("System", "UInt16", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>int</c> type.
-		/// </summary>
-		public static readonly ITypeReference Int32 = new GetClassTypeReference("System", "Int32", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>uint</c> type.
-		/// </summary>
-		public static readonly ITypeReference UInt32 = new GetClassTypeReference("System", "UInt32", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>long</c> type.
-		/// </summary>
-		public static readonly ITypeReference Int64 = new GetClassTypeReference("System", "Int64", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>ulong</c> type.
-		/// </summary>
-		public static readonly ITypeReference UInt64 = new GetClassTypeReference("System", "UInt64", 0);
-		
-		/// <summary>
-		/// Gets a type reference pointing to the <c>string</c> type.
-		/// </summary>
-		public static readonly ITypeReference String = new GetClassTypeReference("System", "String", 0);
+		public static readonly ITypeReference Boolean = new KnownTypeReference(TypeCode.Boolean);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>char</c> type.
 		/// </summary>
-		public static readonly ITypeReference Char = new GetClassTypeReference("System", "Char", 0);
+		public static readonly ITypeReference Char = new KnownTypeReference(TypeCode.Char);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>sbyte</c> type.
+		/// </summary>
+		public static readonly ITypeReference SByte = new KnownTypeReference(TypeCode.SByte);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>byte</c> type.
+		/// </summary>
+		public static readonly ITypeReference Byte = new KnownTypeReference(TypeCode.Byte);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>short</c> type.
+		/// </summary>
+		public static readonly ITypeReference Int16 = new KnownTypeReference(TypeCode.Int16);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>ushort</c> type.
+		/// </summary>
+		public static readonly ITypeReference UInt16 = new KnownTypeReference(TypeCode.UInt16);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>int</c> type.
+		/// </summary>
+		public static readonly ITypeReference Int32 = new KnownTypeReference(TypeCode.Int32);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>uint</c> type.
+		/// </summary>
+		public static readonly ITypeReference UInt32 = new KnownTypeReference(TypeCode.UInt32);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>long</c> type.
+		/// </summary>
+		public static readonly ITypeReference Int64 = new KnownTypeReference(TypeCode.Int64);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>ulong</c> type.
+		/// </summary>
+		public static readonly ITypeReference UInt64 = new KnownTypeReference(TypeCode.UInt64);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>float</c> type.
 		/// </summary>
-		public static readonly ITypeReference Single = new GetClassTypeReference("System", "Single", 0);
+		public static readonly ITypeReference Single = new KnownTypeReference(TypeCode.Single);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>double</c> type.
 		/// </summary>
-		public static readonly ITypeReference Double = new GetClassTypeReference("System", "Double", 0);
+		public static readonly ITypeReference Double = new KnownTypeReference(TypeCode.Double);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>decimal</c> type.
 		/// </summary>
-		public static readonly ITypeReference Decimal = new GetClassTypeReference("System", "Decimal", 0);
+		public static readonly ITypeReference Decimal = new KnownTypeReference(TypeCode.Decimal);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>string</c> type.
+		/// </summary>
+		public static readonly ITypeReference String = new KnownTypeReference(TypeCode.String);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>System.Type</c> type.
@@ -124,6 +125,35 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					Type
 				};
 			}
+		}
+		
+		readonly TypeCode typeCode;
+		
+		public TypeCode TypeCode {
+			get { return typeCode; }
+		}
+		
+		public KnownTypeReference(TypeCode typeCode)
+		{
+			this.typeCode = typeCode;
+		}
+		
+		public IType Resolve(ITypeResolveContext context)
+		{
+			return context.GetKnownTypeDefinition(typeCode) ?? SharedTypes.UnknownType;
+		}
+		
+		public string Namespace {
+			get { return "System"; }
+		}
+		
+		public string Name {
+			get { return ReflectionHelper.GetShortNameByTypeCode(typeCode); }
+		}
+		
+		public override string ToString()
+		{
+			return ReflectionHelper.GetCSharpNameByTypeCode(typeCode) ?? (this.Namespace + "." + this.Name);
 		}
 	}
 }

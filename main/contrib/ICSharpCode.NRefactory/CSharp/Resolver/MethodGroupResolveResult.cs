@@ -26,17 +26,37 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	public class MethodListWithDeclaringType : List<IParameterizedMember>
+	{
+		readonly IType declaringType;
+		
+		public IType DeclaringType {
+			get { return declaringType; }
+		}
+		
+		public MethodListWithDeclaringType(IType declaringType)
+		{
+			this.declaringType = declaringType;
+		}
+		
+		public MethodListWithDeclaringType(IType declaringType, IEnumerable<IParameterizedMember> methods)
+			: base(methods)
+		{
+			this.declaringType = declaringType;
+		}
+	}
+	
 	/// <summary>
 	/// Represents a group of methods.
 	/// </summary>
 	public class MethodGroupResolveResult : ResolveResult
 	{
-		readonly IList<IMethod> methods;
+		readonly IList<MethodListWithDeclaringType> methodLists;
 		readonly IList<IType> typeArguments;
 		readonly ResolveResult targetResult;
 		readonly string methodName;
 		
-		public MethodGroupResolveResult(ResolveResult targetResult, string methodName, IList<IMethod> methods, IList<IType> typeArguments) : base(SharedTypes.UnknownType)
+		public MethodGroupResolveResult(ResolveResult targetResult, string methodName, IList<MethodListWithDeclaringType> methods, IList<IType> typeArguments) : base(SharedTypes.UnknownType)
 		{
 			if (targetResult == null)
 				throw new ArgumentNullException("targetResult");
@@ -44,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("methods");
 			this.targetResult = targetResult;
 			this.methodName = methodName;
-			this.methods = methods;
+			this.methodLists = methods;
 			this.typeArguments = typeArguments ?? EmptyList<IType>.Instance;
 		}
 		
@@ -73,8 +93,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the methods that were found.
 		/// This list does not include extension methods.
 		/// </summary>
-		public IList<IMethod> Methods {
-			get { return methods; }
+		public IEnumerable<IMethod> Methods {
+			get { return methodLists.SelectMany(m => m.Cast<IMethod>()); }
+		}
+		
+		/// <summary>
+		/// Gets the methods that were found.
+		/// This list does not include extension methods.
+		/// </summary>
+		public IEnumerable<MethodListWithDeclaringType> MethodsGroupedByDeclaringType {
+			get { return methodLists; }
 		}
 		
 		/// <summary>
@@ -97,44 +125,48 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets all candidate extension methods.
 		/// </summary>
-		public List<List<IMethod>> GetExtensionMethods()
+		/// <remarks>
+		/// The results are stored in nested lists because they are grouped by using scope.
+		/// That is, for "using SomeExtensions; namespace X { using MoreExtensions; ... }",
+		/// the return value will be
+		/// new List {
+		///    new List { all extensions from MoreExtensions },
+		///    new List { all extensions from SomeExtensions }
+		/// }
+		/// </remarks>
+		public IList<List<IMethod>> GetExtensionMethods()
 		{
 			if (resolver != null) {
 				Debug.Assert(extensionMethods == null);
-				UsingScope oldUsingScope = resolver.UsingScope;
+				UsingScope oldUsingScope = resolver.CurrentUsingScope;
 				try {
-					resolver.UsingScope = usingScope;
+					resolver.CurrentUsingScope = usingScope;
 					extensionMethods = resolver.GetExtensionMethods(this.TargetType, methodName, typeArguments);
 				} finally {
-					resolver.UsingScope = oldUsingScope;
+					resolver.CurrentUsingScope = oldUsingScope;
 					resolver = null;
 					usingScope = null;
 				}
 			}
-			return extensionMethods;
+			return extensionMethods ?? EmptyList<List<IMethod>>.Instance;
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[{0} with {1} method(s)]", GetType().Name, methods.Count);
+			return string.Format("[{0} with {1} method(s)]", GetType().Name, this.Methods.Count());
 		}
 		
-		public OverloadResolution PerformOverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, bool allowExtensionMethods = true, bool allowExpandingParams = true)
+		public OverloadResolution PerformOverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, bool allowExtensionMethods = true, bool allowExpandingParams = true, Conversions conversions = null)
 		{
 			Log.WriteLine("Performing overload resolution for " + this);
 			Log.WriteCollection("  Arguments: ", arguments);
 			
 			var typeArgumentArray = this.TypeArguments.ToArray();
-			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, typeArgumentArray);
+			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, typeArgumentArray, conversions);
 			or.AllowExpandingParams = allowExpandingParams;
-			foreach (IMethod method in this.Methods) {
-				// TODO: grouping by class definition?
-				
-				Log.Indent();
-				OverloadResolutionErrors errors = or.AddCandidate(method);
-				Log.Unindent();
-				LogOverloadResolution("  Candidate", method, errors, or);
-			}
+			
+			or.AddMethodLists(methodLists);
+			
 			if (allowExtensionMethods && !or.FoundApplicableCandidate) {
 				// No applicable match found, so let's try extension methods.
 				
@@ -150,7 +182,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						extArgumentNames = new string[argumentNames.Length + 1];
 						argumentNames.CopyTo(extArgumentNames, 1);
 					}
-					var extOr = new OverloadResolution(context, extArguments, extArgumentNames, typeArgumentArray);
+					var extOr = new OverloadResolution(context, extArguments, extArgumentNames, typeArgumentArray, conversions);
 					extOr.AllowExpandingParams = allowExpandingParams;
 					extOr.IsExtensionMethodInvocation = true;
 					
@@ -159,7 +191,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							Log.Indent();
 							OverloadResolutionErrors errors = extOr.AddCandidate(method);
 							Log.Unindent();
-							LogOverloadResolution("  Extension", method, errors, or);
+							or.LogCandidateAddingResult("  Extension", method, errors);
 						}
 						if (extOr.FoundApplicableCandidate)
 							break;
@@ -175,27 +207,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			Log.WriteLine("Overload resolution finished, best candidate is {0}.", or.GetBestCandidateWithSubstitutedTypeArguments());
 			return or;
-		}
-		
-		[Conditional("DEBUG")]
-		void LogOverloadResolution(string text, IMethod method, OverloadResolutionErrors errors, OverloadResolution or)
-		{
-			#if DEBUG
-			StringBuilder b = new StringBuilder(text);
-			b.Append(' ');
-			b.Append(method);
-			b.Append(" = ");
-			if (errors == OverloadResolutionErrors.None)
-				b.Append("Success");
-			else
-				b.Append(errors);
-			if (or.BestCandidate == method) {
-				b.Append(" (best candidate so far)");
-			} else if (or.BestCandidateAmbiguousWith == method) {
-				b.Append(" (ambiguous)");
-			}
-			Log.WriteLine(b.ToString());
-			#endif
 		}
 		
 		public override IEnumerable<ResolveResult> GetChildResults()

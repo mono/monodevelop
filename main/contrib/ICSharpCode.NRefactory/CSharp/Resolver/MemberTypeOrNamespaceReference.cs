@@ -18,20 +18,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
 	/// Reference to a qualified type or namespace name.
 	/// </summary>
-	public sealed class MemberTypeOrNamespaceReference : ITypeOrNamespaceReference
+	[Serializable]
+	public sealed class MemberTypeOrNamespaceReference : ITypeOrNamespaceReference, ISupportsInterning
 	{
-		readonly ITypeOrNamespaceReference target;
+		ITypeOrNamespaceReference target;
 		readonly ITypeDefinition parentTypeDefinition;
 		readonly UsingScope parentUsingScope;
-		readonly string identifier;
-		readonly IList<ITypeReference> typeArguments;
+		string identifier;
+		IList<ITypeReference> typeArguments;
 		
 		public MemberTypeOrNamespaceReference(ITypeOrNamespaceReference target, string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope)
 		{
@@ -46,6 +49,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.parentUsingScope = parentUsingScope;
 		}
 		
+		public string Identifier {
+			get { return identifier; }
+		}
+		
+		public ITypeOrNamespaceReference Target {
+			get { return target; }
+		}
+		
+		public IList<ITypeReference> TypeArguments {
+			get { return new ReadOnlyCollection<ITypeReference>(typeArguments); }
+		}
+		
 		/// <summary>
 		/// Adds a suffix to the identifier.
 		/// Does not modify the existing type reference, but returns a new one.
@@ -57,17 +72,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
+			CacheManager cacheManager = context.CacheManager;
+			if (cacheManager != null) {
+				ResolveResult cachedResult = cacheManager.GetShared(this) as ResolveResult;;
+				if (cachedResult != null)
+					return cachedResult;
+			}
+			
 			ResolveResult targetRR = target.DoResolve(context);
 			if (targetRR.IsError)
 				return targetRR;
 			CSharpResolver r = new CSharpResolver(context);
 			r.CurrentTypeDefinition = parentTypeDefinition;
-			r.UsingScope = parentUsingScope;
+			r.CurrentUsingScope = parentUsingScope;
 			IType[] typeArgs = new IType[typeArguments.Count];
 			for (int i = 0; i < typeArgs.Length; i++) {
 				typeArgs[i] = typeArguments[i].Resolve(context);
 			}
-			return r.ResolveMemberType(targetRR, identifier, typeArgs);
+			ResolveResult rr = r.ResolveMemberType(targetRR, identifier, typeArgs);
+			if (cacheManager != null)
+				cacheManager.SetShared(this, rr);
+			return rr;
 		}
 		
 		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
@@ -89,6 +114,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return target.ToString() + "." + identifier;
 			else
 				return target.ToString() + "." + identifier + "<" + DotNet35Compat.StringJoin(",", typeArguments) + ">";
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			target = provider.Intern(target);
+			identifier = provider.Intern(identifier);
+			typeArguments = provider.InternList(typeArguments);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			int hashCode = 0;
+			unchecked {
+				hashCode += 1000000007 * target.GetHashCode();
+				if (parentTypeDefinition != null)
+					hashCode += 1000000009 * parentTypeDefinition.GetHashCode();
+				if (parentUsingScope != null)
+					hashCode += 1000000021 * parentUsingScope.GetHashCode();
+				hashCode += 1000000033 * identifier.GetHashCode();
+				hashCode += 1000000087 * typeArguments.GetHashCode();
+			}
+			return hashCode;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			MemberTypeOrNamespaceReference o = other as MemberTypeOrNamespaceReference;
+			return o != null && this.target == o.target && this.parentTypeDefinition == o.parentTypeDefinition
+				&& this.parentUsingScope == o.parentUsingScope && this.identifier == o.identifier
+				&& this.typeArguments == o.typeArguments;
 		}
 	}
 }

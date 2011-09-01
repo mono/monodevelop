@@ -28,6 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// The member lookup performed by the :: operator is handled
 	/// by <see cref="MemberTypeOrNamespaceReference"/>.
 	/// </remarks>
+	[Serializable]
 	public class AliasNamespaceReference : ITypeOrNamespaceReference
 	{
 		readonly UsingScope parentUsingScope;
@@ -41,10 +42,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.parentUsingScope = parentUsingScope;
 		}
 		
+		public string Identifier {
+			get { return identifier; }
+		}
+		
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
 			CSharpResolver r = new CSharpResolver(context);
-			r.UsingScope = parentUsingScope;
+			r.CurrentUsingScope = parentUsingScope;
 			return r.ResolveAlias(identifier);
 		}
 		

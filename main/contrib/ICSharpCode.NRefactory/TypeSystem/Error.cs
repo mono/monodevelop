@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Error.cs
 //  
 // Author:
@@ -42,22 +42,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Descibes an error during parsing.
 	/// </summary>
+	[Serializable]
 	public class Error
 	{
+		readonly ErrorType errorType;
+		readonly string message;
+		readonly DomRegion region;
+		
 		/// <summary>
 		/// The type of the error.
 		/// </summary>
-		public ErrorType ErrorType { get; private set; }
+		public ErrorType ErrorType { get { return errorType; } }
 		
 		/// <summary>
 		/// The error description.
 		/// </summary>
-		public string Message { get; private set; }
+		public string Message { get { return message; } }
 		
 		/// <summary>
 		/// The region of the error.
 		/// </summary>
-		public DomRegion Region { get; private set; }
+		public DomRegion Region { get { return region; } }
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
@@ -73,9 +78,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </param>
 		public Error (ErrorType errorType, string message, DomRegion region)
 		{
-			this.ErrorType = errorType;
-			this.Message = message;
-			this.Region = region;
+			this.errorType = errorType;
+			this.message = message;
+			this.region = region;
 		}
 		
 		/// <summary>
@@ -92,9 +97,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </param>
 		public Error (ErrorType errorType, string message, AstLocation location)
 		{
-			this.ErrorType = errorType;
-			this.Message = message;
-			this.Region = new DomRegion (location, location);
+			this.errorType = errorType;
+			this.message = message;
+			this.region = new DomRegion (location, location);
 		}
 		
 		/// <summary>
@@ -127,9 +132,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </param>
 		public Error (ErrorType errorType, string message)
 		{
-			this.ErrorType = errorType;
-			this.Message = message;
-			this.Region = DomRegion.Empty;
+			this.errorType = errorType;
+			this.message = message;
+			this.region = DomRegion.Empty;
 		}
 	}
 }

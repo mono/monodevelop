@@ -24,6 +24,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	[Serializable]
 	public sealed class CSharpAttribute : Immutable, IAttribute
 	{
 		ITypeReference attributeType;
@@ -128,6 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Type reference used within an attribute.
 	/// Looks up both 'withoutSuffix' and 'withSuffix' and returns the type that exists.
 	/// </summary>
+	[Serializable]
 	public sealed class AttributeTypeReference : ITypeReference, ISupportsInterning
 	{
 		ITypeReference withoutSuffix, withSuffix;

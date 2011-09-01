@@ -21,15 +21,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-
-namespace ICSharpCode.NRefactory.CSharp.Analysis
+namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// Resolve context represents the minimal mscorlib required for evaluating constants.
 	/// </summary>
-	sealed class MinimalResolveContext : AbstractAnnotatable, IProjectContent, ISynchronizedTypeResolveContext
+	public sealed class MinimalResolveContext : AbstractAnnotatable, IProjectContent, ISynchronizedTypeResolveContext
 	{
 		static readonly Lazy<MinimalResolveContext> instance = new Lazy<MinimalResolveContext>(() => new MinimalResolveContext());
 		
@@ -44,14 +41,21 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		private MinimalResolveContext()
 		{
 			List<ITypeDefinition> types = new List<ITypeDefinition>();
-			types.Add(systemObject = new DefaultTypeDefinition(this, "System", "Object") {
-			          	Accessibility = Accessibility.Public
-			          });
-			types.Add(systemValueType = new DefaultTypeDefinition(this, "System", "ValueType") {
-			          	Accessibility = Accessibility.Public,
-			          	BaseTypes = { systemObject }
-			          });
+			
+			systemObject = new DefaultTypeDefinition(this, "System", "Object") {
+				Accessibility = Accessibility.Public
+			};
+			systemValueType = new DefaultTypeDefinition(this, "System", "ValueType") {
+				Accessibility = Accessibility.Public,
+				BaseTypes = { systemObject }
+			};
+			// TypeCode.Empty = void
+			types.Add(new VoidTypeDefinition(this));
+			// types are added in the order they are defined in the TypeCode enum
+			types.Add(systemObject);
+			types.Add(CreateClass("System", "DBNull"));
 			types.Add(CreateStruct("System", "Boolean"));
+			types.Add(CreateStruct("System", "Char"));
 			types.Add(CreateStruct("System", "SByte"));
 			types.Add(CreateStruct("System", "Byte"));
 			types.Add(CreateStruct("System", "Int16"));
@@ -63,14 +67,21 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			types.Add(CreateStruct("System", "Single"));
 			types.Add(CreateStruct("System", "Double"));
 			types.Add(CreateStruct("System", "Decimal"));
-			types.Add(new DefaultTypeDefinition(this, "System", "String") {
-			          	Accessibility = Accessibility.Public,
-			          	BaseTypes = { systemObject }
-			          });
-			types.Add(new VoidTypeDefinition(this));
+			types.Add(CreateStruct("System", "DateTime"));
+			types.Add(systemValueType); // misuse unused enum value (TypeCode)17 for System.ValueType
+			types.Add(CreateClass("System", "String"));
 			foreach (ITypeDefinition type in types)
 				type.Freeze();
 			this.types = types.AsReadOnly();
+		}
+		
+		ITypeDefinition CreateClass(string nameSpace, string name)
+		{
+			return new DefaultTypeDefinition(this, nameSpace, name) {
+				Kind = TypeKind.Class,
+				Accessibility = Accessibility.Public,
+				BaseTypes = { systemObject }
+			};
 		}
 		
 		ITypeDefinition CreateStruct(string nameSpace, string name)
@@ -89,6 +100,11 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					return type;
 			}
 			return null;
+		}
+		
+		public ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
+		{
+			return types[(int)typeCode];
 		}
 		
 		public IEnumerable<ITypeDefinition> GetTypes()
@@ -155,6 +171,10 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		void IProjectContent.UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile)
 		{
 			throw new NotSupportedException();
+		}
+		
+		public string AssemblyName {
+			get { return "MinimalResolveContext"; }
 		}
 	}
 }

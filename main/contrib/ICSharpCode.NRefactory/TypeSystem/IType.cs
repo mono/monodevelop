@@ -145,7 +145,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Base.GetNestedTypes() = { Base`1+Nested`1[`0, unbound] }
 		/// </code>
 		/// </example>
-		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null);
+		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		// Note that we cannot 'leak' the additional type parameter as we leak the normal type parameters, because
 		// the index might collide. For example,
@@ -170,7 +170,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// and thus 'leaked' to the caller in the same way the GetMembers() method does not specialize members
 		/// from an <see cref="ITypeDefinition"/> and 'leaks' type parameters in member signatures.
 		/// </remarks>
-		IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null);
+		IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all instance constructors for this type.
@@ -185,7 +185,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// and the appropriate <see cref="SpecializedMethod"/> will be returned.
 		/// </para>
 		/// </remarks>
-		IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null);
+		IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers);
 		
 		/// <summary>
 		/// Gets all methods that can be called on this type.
@@ -212,7 +212,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// the ambiguity can be avoided.
 		/// </para>
 		/// </remarks>
-		IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null);
+		IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all generic methods that can be called on this type with the specified type arguments.
@@ -233,7 +233,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// and the other overload's remarks about ambiguous signatures apply here as well.
 		/// </para>
 		/// </remarks>
-		IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null);
+		IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all properties that can be called on this type.
@@ -245,7 +245,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// For properties on parameterized types, type substitution will be performed on the property signature,
 		/// and the appropriate <see cref="SpecializedProperty"/> will be returned.
 		/// </remarks>
-		IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null);
+		IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all fields that can be accessed on this type.
@@ -257,7 +257,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// For fields on parameterized types, type substitution will be performed on the field's return type,
 		/// and the appropriate <see cref="SpecializedField"/> will be returned.
 		/// </remarks>
-		IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null);
+		IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all events that can be accessed on this type.
@@ -269,7 +269,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// For fields on parameterized types, type substitution will be performed on the event's return type,
 		/// and the appropriate <see cref="SpecializedEvent"/> will be returned.
 		/// </remarks>
-		IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null);
+		IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all members that can be called on this type.
@@ -288,7 +288,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <see cref="GetMethods(ITypeResolveContext, Predicate{IMethod})"/> method apply here as well.
 		/// </para>
 		/// </remarks>
-		IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null);
+		IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null, GetMemberOptions options = GetMemberOptions.None);
+	}
+	
+	[Flags]
+	public enum GetMemberOptions
+	{
+		/// <summary>
+		/// No options specified - this is the default.
+		/// Members will be specialized, and inherited members will be included.
+		/// </summary>
+		None = 0x00,
+		/// <summary>
+		/// Do not specialize the returned members - directly return the definitions.
+		/// </summary>
+		ReturnMemberDefinitions = 0x01,
+		/// <summary>
+		/// Do not list inherited members - only list members defined directly on this type.
+		/// </summary>
+		IgnoreInheritedMembers = 0x02
 	}
 	
 	#if WITH_CONTRACTS
@@ -319,49 +337,49 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return null;
 		}
 		
-		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter, GetMemberOptions options)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IType>>() != null);
 			return null;
 		}
 
-		IEnumerable<IMethod> IType.GetMethods(ITypeResolveContext context, Predicate<IMethod> filter)
+		IEnumerable<IMethod> IType.GetMethods(ITypeResolveContext context, Predicate<IMethod> filter, GetMemberOptions options)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IMethod>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IMethod> IType.GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter)
+		IEnumerable<IMethod> IType.GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter, GetMemberOptions options)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IMethod>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IProperty> IType.GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
+		IEnumerable<IProperty> IType.GetProperties(ITypeResolveContext context, Predicate<IProperty> filter, GetMemberOptions options)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IProperty>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IField> IType.GetFields(ITypeResolveContext context, Predicate<IField> filter)
+		IEnumerable<IField> IType.GetFields(ITypeResolveContext context, Predicate<IField> filter, GetMemberOptions options)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IField>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IEvent> IType.GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
+		IEnumerable<IEvent> IType.GetEvents(ITypeResolveContext context, Predicate<IEvent> filter, GetMemberOptions options)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IEvent>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IMember> IType.GetEvents(ITypeResolveContext context, Predicate<IMember> filter)
+		IEnumerable<IMember> IType.GetEvents(ITypeResolveContext context, Predicate<IMember> filter, GetMemberOptions options)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IMember>>() != null);

@@ -1121,6 +1121,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (namedArgumentExpression, data);
 		}
 		
+		public event Action<NamedExpression, T> NamedExpressionVisited;
+
+		S IAstVisitor<T, S>.VisitNamedExpression (NamedExpression namedExpression, T data)
+		{
+			var handler = NamedExpressionVisited;
+			if (handler != null)
+				handler (namedExpression, data);
+			return VisitChildren (namedExpression, data);
+		}
+		
 		public event Action<EmptyExpression, T> EmptyExpressionVisited;
 
 		S IAstVisitor<T, S>.VisitEmptyExpression (EmptyExpression emptyExpression, T data)

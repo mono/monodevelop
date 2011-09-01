@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IAttribute"/>.
 	/// </summary>
+	[Serializable]
 	public sealed class DefaultAttribute : AbstractFreezable, IAttribute, ISupportsInterning
 	{
 		ITypeReference attributeType;

@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		//Overloads  = 0x10000,
 		//WithEvents = 0x20000,
 		//Default    = 0x40000,
-		Fixed      = 0x80000,
+		//Fixed      = 0x80000,
 		
 		//ProtectedOrInternal  = Internal | Protected,
 		//ProtectedAndInternal = 0x100000, (not supported in C#)

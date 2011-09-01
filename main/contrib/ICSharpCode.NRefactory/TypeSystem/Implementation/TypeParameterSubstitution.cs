@@ -72,10 +72,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			bool first = true;
 			if (classTypeArguments != null) {
 				for (int i = 0; i < classTypeArguments.Count; i++) {
-					if (first) {
-						first = false;
-						b.Append(", ");
-					}
+					if (first) first = false; else b.Append(", ");
 					b.Append('`');
 					b.Append(i);
 					b.Append(" -> ");
@@ -84,10 +81,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			if (methodTypeArguments != null) {
 				for (int i = 0; i < methodTypeArguments.Count; i++) {
-					if (first) {
-						first = false;
-						b.Append(", ");
-					}
+					if (first) first = false; else b.Append(", ");
 					b.Append("``");
 					b.Append(i);
 					b.Append(" -> ");

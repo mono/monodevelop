@@ -33,6 +33,20 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ArrayInitializerExpression : Expression
 	{
+		public ArrayInitializerExpression()
+		{
+		}
+		
+		public ArrayInitializerExpression(IEnumerable<Expression> elements)
+		{
+			this.Elements.AddRange(elements);
+		}
+		
+		public ArrayInitializerExpression(params Expression[] elements)
+		{
+			this.Elements.AddRange(elements);
+		}
+		
 		#region Null
 		public new static readonly ArrayInitializerExpression Null = new NullArrayInitializerExpression ();
 		
