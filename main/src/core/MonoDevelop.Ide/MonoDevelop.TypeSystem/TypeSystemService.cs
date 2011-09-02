@@ -39,6 +39,8 @@ using Mono.TextEditor;
 using System.Threading;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Collections;
+using System.Xml;
+using ICSharpCode.NRefactory.Utils;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -172,6 +174,125 @@ namespace MonoDevelop.TypeSystem
 			return ParseFile (projectContent, data.FileName, data.MimeType, data.Text);
 		}
 		
+		#region Parser Database Handling
+
+		static string GetWorkspacePath (string dataPath)
+		{
+			try {
+				if (!File.Exists (dataPath))
+					return null;
+				using (var reader = XmlReader.Create (dataPath)) {
+					while (reader.Read ()) {
+						if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File")
+							return reader.GetAttribute ("name");
+					}
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while reading derived data file " + dataPath, e);
+			}
+			return null;
+		}
+		
+		static string GetCacheDirectory (string fileName)
+		{
+			string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
+		
+			string[] subDirs;
+			
+			try {
+				if (!Directory.Exists (derivedDataPath))
+					return null;
+				subDirs = Directory.GetDirectories (derivedDataPath);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting derived data directories.", e);
+				return null;
+			}
+			
+			foreach (var subDir in subDirs) {
+				var dataPath = Path.Combine (subDir, "data.xml");
+				var workspacePath = GetWorkspacePath (dataPath);
+				if (workspacePath == fileName) 
+					return subDir;
+			}
+			return null;
+		}
+		
+		static string CreateCacheDirectory (string fileName)
+		{
+			try {
+				string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
+				string name = Path.GetFileNameWithoutExtension (fileName);
+				string baseName = Path.Combine (derivedDataPath, name);
+				int i = 1;
+				while (File.Exists (baseName + "-" + i))
+					i++;
+				
+				string cacheDir = baseName + "-" + i;
+				
+				Directory.CreateDirectory (cacheDir);
+				
+				System.IO.File.WriteAllText (Path.Combine(cacheDir, "data.xml"), string.Format ("<DerivedData><File name=\"{0}\"/></DerivedData>", fileName));
+				return cacheDir;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error creating cache for " + fileName, e);
+				return null;
+			}
+		}
+		
+		static T ReadCache<T> (string path) where T : class
+		{
+			try {
+				using (var stream = File.OpenRead (path))
+					return new FastSerializer ().Deserialize (stream) as T;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while reading type system cache.", e);
+				return default(T);
+			}
+		}
+		
+		static void WriteContent (string path, object obj)
+		{
+			try {
+				using (var stream = File.OpenWrite (path))
+					new FastSerializer ().Serialize (stream, obj);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while writing type system cache.", e);
+			}
+		}
+		
+		static Dictionary<string, SimpleProjectContent> solutionCache = new Dictionary<string, SimpleProjectContent> ();
+		
+		static void LoadSolutionCache (Solution solution)
+		{
+			string cacheDir = GetCacheDirectory (solution.FileName) ?? CreateCacheDirectory (solution.FileName);
+			solutionCache.Clear ();
+			var cache = ReadCache<List<Tuple<string, SimpleProjectContent>>> (Path.Combine(cacheDir, "completion.cache"));
+			if (cache != null) {
+				foreach (var item in cache)
+					solutionCache.Add (item.Item1, item.Item2);
+			}
+		}
+		
+		static void StoreSolutionCache (Solution solution)
+		{
+			string cacheDir = GetCacheDirectory (solution.FileName) ?? CreateCacheDirectory (solution.FileName);
+			List<Tuple<string, SimpleProjectContent>> contents = new List<Tuple<string, SimpleProjectContent>> ();
+			foreach (var pair in projectContents) {
+				contents.Add (Tuple.Create (pair.Key.FileName.ToString (), pair.Value));
+			}
+			
+			string fileName = Path.GetTempFileName ();
+			
+			WriteContent (fileName, contents);
+			
+			string cacheFile = Path.Combine(cacheDir, "completion.cache");
+			if (File.Exists (cacheFile))
+				System.IO.File.Delete (cacheFile);
+			
+			System.IO.File.Move (fileName, cacheFile);
+		}
+		#endregion
+		
 		#region Project loading
 		public static void Load (WorkspaceItem item)
 		{
@@ -183,6 +304,7 @@ namespace MonoDevelop.TypeSystem
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
 				var solution = (Solution)item;
+				LoadSolutionCache (solution);
 				foreach (Project project in solution.GetAllProjects ())
 					Load (project);
 				solution.SolutionItemAdded += OnSolutionItemAdded;
@@ -201,8 +323,13 @@ namespace MonoDevelop.TypeSystem
 				if (projectContents.ContainsKey (project))
 					return;
 				try {
-					var context = new SimpleProjectContent ();
-					QueueParseJob (context, project);
+					SimpleProjectContent context = null;
+					if (solutionCache.ContainsKey (project.FileName))
+						context = solutionCache[project.FileName];
+					if (context == null) {
+						context = new SimpleProjectContent ();
+						QueueParseJob (context, project);
+					}
 					context.AddAnnotation (project);
 					projectContents [project] = context;
 					referenceCounter [project] = 1;
@@ -244,20 +371,6 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static void StoreSolutionCache (Solution solution)
-		{
-// TODO: Caching!
-//			string fileName = Path.GetTempFileName ();
-//			using (var stream = File.Create (fileName)) {
-//				foreach (var projectContent in projectContents.Values) {
-//					var prj = projectContent.GetProject ();
-//					if (prj.ParentSolution != solution)
-//						continue;
-//				}
-//			}
-//			System.IO.File.Move (fileName, solution.FileName.ChangeExtension (".pidb"));
-		}
-		
 		public static void Unload (Project project)
 		{
 			if (DecLoadCount (project) != 0)
@@ -268,6 +381,7 @@ namespace MonoDevelop.TypeSystem
 					((DotNetProject)project).ReferenceAddedToProject -= OnProjectReferenceAdded;
 					((DotNetProject)project).ReferenceRemovedFromProject -= OnProjectReferenceRemoved;
 				}
+				
 				projectContents.Remove (project);
 				referenceCounter.Remove (project);
 				
@@ -454,6 +568,10 @@ namespace MonoDevelop.TypeSystem
 		
 		public static ITypeResolveContext LoadAssemblyContext (string fileName)
 		{
+			string cache = GetCacheDirectory (fileName);
+			if (cache != null)
+				return ReadCache <ITypeResolveContext> (Path.Combine(cache, "completion.cache"));
+			
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
 				return null;
@@ -470,7 +588,11 @@ namespace MonoDevelop.TypeSystem
 //			loader.InterningProvider = new SimpleInterningProvider ();
 			
 			var result = loader.LoadAssembly (asm);
-			result.AddAnnotation (fileName);
+			cache = CreateCacheDirectory (fileName);
+			if (cache != null) {
+				WriteContent (Path.Combine(cache, "completion.cache"), result);
+			}
+			
 			return result;
 		}
 		
@@ -754,7 +876,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (parsedFile == null)
 				return true;
-			return System.IO.File.GetLastWriteTime (file.FilePath) > parsedFile.ParseTime;
+			return System.IO.File.GetLastWriteTime (file.FilePath) > parsedFile.LastWriteTime;
 		}
 
 		static void CheckModifiedFiles (Project project, SimpleProjectContent content)
