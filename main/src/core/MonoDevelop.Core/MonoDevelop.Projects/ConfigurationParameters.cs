@@ -29,6 +29,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects
 {
+	///<summary>This should really be called DotNetCompilerParameters</summary>
 	[DataItem (FallbackType=typeof(UnknownCompilationParameters))]
 	public abstract class ConfigurationParameters: ProjectParameters
 	{
