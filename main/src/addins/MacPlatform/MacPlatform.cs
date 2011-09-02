@@ -65,7 +65,7 @@ namespace MonoDevelop.MacIntegration
 			
 			LoadMimeMapAsync ();
 			
-			CheckGtkVersion (2, 17, 9);
+			CheckGtkVersion (2, 24, 0);
 			
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
 			Carbon.SetProcessName (BrandingService.ApplicationName);
@@ -78,7 +78,7 @@ namespace MonoDevelop.MacIntegration
 			timer.EndTiming ();
 		}
 		
-		//Mac GTK+ is unstable, even between micro releases
+		//Mac GTK+ behaviour isn't completely stable even between micro releases
 		static void CheckGtkVersion (uint major, uint minor, uint micro)
 		{
 			string url = "http://www.go-mono.com/mono-downloads/download.html";
