@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Resolver
 				return "";
 			var loc = data.OffsetToLocation (offset);
 			var unit       = doc.ParsedDocument.Annotation<CompilationUnit> ();
-			var parsedFile = doc.ParsedDocument.Annotation<ParsedFile> ();
+			var parsedFile = doc.ParsedDocument.Annotation<CSharpParsedFile> ();
 			var node       = unit.GetNodeAt<Expression> (loc.Line, loc.Column);
 			if (unit == null || parsedFile == null || node == null)
 				return "";
@@ -84,24 +84,21 @@ namespace MonoDevelop.CSharp.Resolver
 			var loc = data.OffsetToLocation (offset);
 			
 			var unit       = parsedDocument.Annotation<CompilationUnit> ();
-			var parsedFile = parsedDocument.Annotation<ParsedFile> ();
+			var parsedFile = parsedDocument.Annotation<CSharpParsedFile> ();
 			
 			if (unit == null || parsedFile == null) {
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-			var node   = unit.GetResolveableNodeAt (loc.Line, loc.Column);
+			var node = ResolveAtLocation.Resolve (dom, parsedFile, unit, new AstLocation (loc.Line, loc.Column));
 			if (node == null) {
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
 			
-			var csResolver = new CSharpResolver (doc.TypeResolveContext, System.Threading.CancellationToken.None);
-			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
-			var visitor = new ResolveVisitor (csResolver, parsedFile, navigator);
-			unit.AcceptVisitor (visitor, null);
-			expressionRegion = new DomRegion (node.StartLocation, node.EndLocation);
-			return visitor.Resolve (node);
+			// TODO: Expression region ?
+			expressionRegion = DomRegion.Empty;
+			return node;
 		}
 		
 		public ResolveResult GetLanguageItem (ITypeResolveContext dom, Mono.TextEditor.TextEditorData data, int offset, string expression)
@@ -118,14 +115,13 @@ namespace MonoDevelop.CSharp.Resolver
 			if (parsedDocument == null)
 				return null;
 			var loc = data.OffsetToLocation (offset);
-			
 			var unit       = parsedDocument.Annotation<CompilationUnit> ();
-			var parsedFile = parsedDocument.Annotation<ParsedFile> ();
+			var parsedFile = parsedDocument.Annotation<CSharpParsedFile> ();
 			
 			if (unit == null || parsedFile == null) {
 				return null;
 			}
-			var node   = unit.GetResolveableNodeAt (loc.Line, loc.Column);
+			var node   = unit.GetNodeAt (loc.Line, loc.Column);
 			if (node == null) {
 				return null;
 			}

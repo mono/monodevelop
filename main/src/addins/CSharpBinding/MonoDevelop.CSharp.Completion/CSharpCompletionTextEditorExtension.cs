@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		ParsedFile ParsedFile {
+		CSharpParsedFile CSharpParsedFile {
 			get;
 			set;
 		}
@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharp.Completion
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument != null) {
 				this.Unit = parsedDocument.Annotation<CompilationUnit> ();
-				this.ParsedFile = parsedDocument.Annotation<ParsedFile> ();
+				this.CSharpParsedFile = parsedDocument.Annotation<CSharpParsedFile> ();
 			}
 			
 			Document.DocumentParsed += delegate {
@@ -117,7 +117,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (newDocument == null) 
 					return;
 				this.Unit = newDocument.Annotation<CompilationUnit> ();
-				this.ParsedFile = newDocument.Annotation<ParsedFile> ();
+				this.CSharpParsedFile = newDocument.Annotation<CSharpParsedFile> ();
 				var textEditor = Editor.Parent;
 				if (textEditor != null) {
 					textEditor.TextViewMargin.PurgeLayoutCache ();
@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		Tuple<ResolveResult, CSharpResolver> ResolveExpression (ParsedFile file, AstNode expr, CompilationUnit unit)
+		Tuple<ResolveResult, CSharpResolver> ResolveExpression (CSharpParsedFile file, AstNode expr, CompilationUnit unit)
 		{
 			if (expr == null)
 				return null;
@@ -189,7 +189,6 @@ namespace MonoDevelop.CSharp.Completion
 			var visitor = new ResolveVisitor (csResolver, file, navigator);
 			unit.AcceptVisitor (visitor, null);
 			var result = visitor.Resolve (resolveNode);
-
 			var state = visitor.GetResolverStateBefore (resolveNode);
 			return Tuple.Create (result, state);
 		}
@@ -336,7 +335,7 @@ namespace MonoDevelop.CSharp.Completion
 			return Tuple.Create (Document.Editor.GetTextBetween (startOffset, Document.Editor.Caret.Offset), startOffset != 0);
 		}
 		
-		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionBeforeCursor ()
+		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionBeforeCursor ()
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null) {
@@ -352,7 +351,7 @@ namespace MonoDevelop.CSharp.Completion
 					target.Remove ();
 					var node = Unit.GetNodeAt (document.Editor.Caret.Line, document.Editor.Caret.Column) ?? Unit;
 					node.AddChild (target, AstNode.Roles.Type);
-					return Tuple.Create (ParsedFile, (AstNode)target, Unit);
+					return Tuple.Create (CSharpParsedFile, (AstNode)target, Unit);
 				}
 			}
 			
@@ -390,7 +389,7 @@ namespace MonoDevelop.CSharp.Completion
 			node.AcceptVisitor (v, null);
 		}
 		
-		Tuple<ParsedFile, Expression, CompilationUnit> GetExpressionAtCursor ()
+		Tuple<CSharpParsedFile, Expression, CompilationUnit> GetExpressionAtCursor ()
 		{
 			if (currentMember == null && currentType == null)
 				return null;
@@ -420,7 +419,7 @@ namespace MonoDevelop.CSharp.Completion
 			return Tuple.Create (tsvisitor.ParsedFile, expr, Unit);
 		}
 		
-		Tuple<ParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
+		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
 		{
 			CSharpParser parser = new CSharpParser ();
 			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset) + "a; } } } }";
@@ -439,7 +438,7 @@ namespace MonoDevelop.CSharp.Completion
 			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
 		}
 		
-		Tuple<ParsedFile, AstNode, CompilationUnit> GetInvocationBeforeCursor (bool afterBracket)
+		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetInvocationBeforeCursor (bool afterBracket)
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null) {
@@ -451,7 +450,7 @@ namespace MonoDevelop.CSharp.Completion
 					attr.Remove ();
 					var node = Unit.GetNodeAt (document.Editor.Caret.Line, document.Editor.Caret.Column) ?? Unit;
 					node.AddChild (attr, AttributeSection.AttributeRole);
-					return Tuple.Create (ParsedFile, (AstNode)attr, Unit);
+					return Tuple.Create (CSharpParsedFile, (AstNode)attr, Unit);
 				}
 			}
 			
@@ -553,8 +552,8 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			}
 			var loc = new AstLocation (Document.Editor.Caret.Location.Line, Document.Editor.Caret.Location.Column);
-			this.currentType = ParsedFile.GetTypeDefinition (loc);
-			this.currentMember = ParsedFile.GetMember (loc);
+			this.currentType = CSharpParsedFile.GetInnermostTypeDefinition (loc);
+			this.currentMember = CSharpParsedFile.GetMember (loc);
 			switch (completionChar) {
 			// Magic key completion
 			case ':':
@@ -1065,7 +1064,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			var loc = new AstLocation (Editor.Caret.Line, Editor.Caret.Column);
 			var node = unit.GetNodeAt (loc);
-			var rr = ResolveExpression (ParsedFile, node, Unit);
+			var rr = ResolveExpression (CSharpParsedFile, node, Unit);
 			AddContextCompletion (wrapper, rr != null ? rr.Item2 : GetState (), node);
 			
 			return wrapper.Result;
@@ -1074,11 +1073,11 @@ namespace MonoDevelop.CSharp.Completion
 		CSharpResolver GetState ()
 		{
 			var state = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
-			var pf = document.ParsedDocument.Annotation<ParsedFile> ();
+			var pf = document.ParsedDocument.Annotation<CSharpParsedFile> ();
 			var loc = new AstLocation (Editor.Caret.Line, Editor.Caret.Column);
 			state.CurrentMember =  pf.GetMember (loc);
-			state.CurrentTypeDefinition =  pf.GetTypeDefinition (loc);
-			state.UsingScope = pf.GetUsingScope (loc);
+			state.CurrentTypeDefinition =  pf.GetInnermostTypeDefinition (loc);
+			state.CurrentUsingScope = pf.GetUsingScope (loc);
 			if (state.CurrentMember != null) {
 				var unit = document.ParsedDocument.Annotation<CompilationUnit> ();
 				var node = unit.GetNodeAt (Editor.Caret.Line, Editor.Caret.Column);
@@ -1369,7 +1368,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					if (!IsLineEmptyUpToEol ())
 						return null;
-					var overrideCls = ParsedFile.GetTypeDefinition (location);
+					var overrideCls = CSharpParsedFile.GetInnermostTypeDefinition (location);
 								
 					if (overrideCls != null && (overrideCls.Kind == TypeKind.Class || overrideCls.Kind == TypeKind.Struct)) {
 						string modifiers = textEditorData.GetTextBetween (firstMod, wordStart);
@@ -1458,7 +1457,7 @@ namespace MonoDevelop.CSharp.Completion
 				case "in":
 					var inList = new CompletionDataWrapper (this);
 					var node = unit.GetNodeAt (location);
-					var rr = ResolveExpression (ParsedFile, node, Unit);
+					var rr = ResolveExpression (CSharpParsedFile, node, Unit);
 					AddContextCompletion (inList, rr != null ? rr.Item2 : GetState (), node);
 					return inList.Result;
 //				case "where":
@@ -1624,7 +1623,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
-			for (var n = state.UsingScope; n != null; n = n.Parent) {
+			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
 				foreach (var pair in n.UsingAliases) {
 					wrapper.AddNamespace ("", pair.Key);
 				}
@@ -1938,7 +1937,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
 		{
-			if (resolveResult == null || resolveResult.IsError)
+			if (resolveResult == null /*|| resolveResult.IsError*/)
 				return null;
 			var ctx = Document.TypeResolveContext;
 			if (resolveResult is NamespaceResolveResult) {
@@ -2017,7 +2016,7 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				var baseTypes = new List<IType> (type.GetAllBaseTypes (ctx));
 				var conv = new Conversions (ctx);
-				for (var n = state.UsingScope; n != null; n = n.Parent) {
+				for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
 					AddExtensionMethods (result, conv, baseTypes, n.NamespaceName);
 					foreach (var u in n.Usings) {
 						var ns = u.ResolveNamespace (ctx);
@@ -2137,7 +2136,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			if (IsInsideComment () || IsInsideString ())
 				return null;
-			this.currentType = Document.ParsedDocument.GetTypeDefinition (Editor.Caret.Line, Editor.Caret.Column);
+			this.currentType = Document.ParsedDocument.GetInnermostTypeDefinition (Editor.Caret.Line, Editor.Caret.Column);
 			this.currentMember = Document.ParsedDocument.GetMember (Editor.Caret.Line, Editor.Caret.Column);
 			
 			var invoke = GetInvocationBeforeCursor (true);
@@ -2210,7 +2209,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		List<string> GetUsedNamespaces ()
 		{
-			var scope = ParsedFile.GetUsingScope (new AstLocation (document.Editor.Caret.Line, document.Editor.Caret.Column));
+			var scope = CSharpParsedFile.GetUsingScope (new AstLocation (document.Editor.Caret.Line, document.Editor.Caret.Column));
 			List<string> result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);

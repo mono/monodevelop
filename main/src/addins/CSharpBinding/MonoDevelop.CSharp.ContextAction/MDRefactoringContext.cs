@@ -325,7 +325,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
 			{
 				var editor = ctx.Document.Editor;
-				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedDocument.GetTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
+				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedDocument.GetInnermostTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
 				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
@@ -374,7 +374,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			return new MdScript (this);
 		}
-		ParsedFile ParsedFile { get; set; }
+		CSharpParsedFile CSharpParsedFile { get; set; }
 		
 		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
 		{
@@ -383,16 +383,16 @@ namespace MonoDevelop.CSharp.ContextAction
 			this.Document = document;
 			this.Location = new AstLocation (loc.Line, loc.Column);
 			this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
-			this.ParsedFile = document.ParsedDocument.Annotation<ParsedFile> ();
+			this.CSharpParsedFile = document.ParsedDocument.Annotation<CSharpParsedFile> ();
 		}
 		
 		public override AstType CreateShortType (IType fullType)
 		{
 			Console.WriteLine (Environment.StackTrace);
 			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
-			csResolver.CurrentMember = ParsedFile.GetMember (Location);
-			csResolver.CurrentTypeDefinition = ParsedFile.GetTypeDefinition (Location);
-			csResolver.UsingScope = ParsedFile.GetUsingScope (Location);
+			csResolver.CurrentMember = CSharpParsedFile.GetMember (Location);
+			csResolver.CurrentTypeDefinition = CSharpParsedFile.GetInnermostTypeDefinition (Location);
+			csResolver.CurrentUsingScope = CSharpParsedFile.GetUsingScope (Location);
 			TypeSystemAstBuilder builder = new TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);
 		}
@@ -415,7 +415,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public override ResolveResult Resolve (AstNode node)
 		{
-			var pf = ParsedDocument.Annotation<ParsedFile> ();
+			var pf = ParsedDocument.Annotation<CSharpParsedFile> ();
 			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
 			

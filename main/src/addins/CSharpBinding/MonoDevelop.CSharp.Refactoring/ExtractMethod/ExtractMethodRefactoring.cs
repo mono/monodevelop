@@ -471,7 +471,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			ITypeDefinition callingType = null;
 			var cu = options.Document.ParsedDocument;
 			if (cu != null)
-				callingType = cu.GetTypeDefinition (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+				callingType = cu.GetInnermostTypeDefinition (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
 			var newMethod = GenerateMethodStub (options, callingType, param);
 
 			var createdMethod = codeGenerator.CreateMemberImplementation (ctx, callingType, newMethod, false);

@@ -684,7 +684,7 @@ namespace CBinding
 			var result = new List<PathEntry> ();
 			var amb = GetAmbience ();
 			var ctx = document.TypeResolveContext;
-			var type = unit.GetTypeDefinition (loc.Line, loc.Column) ?? unit.TopLevelTypeDefinitions.FirstOrDefault ();
+			var type = unit.GetInnermostTypeDefinition (loc.Line, loc.Column) ?? unit.TopLevelTypeDefinitions.FirstOrDefault ();
 			var curType = type;
 			object lastTag = unit;
 			while (curType != null) {

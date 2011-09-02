@@ -172,7 +172,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var pf = implementingType.ProjectContent.GetFile (implementingType.Region.FileName);
 			if (pf is ParsedDocumentDecorator)
 				pf = ((ParsedDocumentDecorator)pf).ParsedFile;
-			var file = pf as ParsedFile;
+			var file = pf as CSharpParsedFile;
 			var project = implementingType.ProjectContent.Annotation<MonoDevelop.Projects.Project> ();
 			var ctx = TypeSystemService.GetContext (project);
 			var shortType = CreateShortType (ctx, file, loc, type.Resolve (ctx));
@@ -685,7 +685,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)
 		{
 			var loc = new AstLocation (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
-			AstType shortType = CreateShortType (doc.TypeResolveContext, doc.ParsedDocument.Annotation<ParsedFile> (), loc, type);
+			AstType shortType = CreateShortType (doc.TypeResolveContext, doc.ParsedDocument.Annotation<CSharpParsedFile> (), loc, type);
 			return OutputNode (doc, shortType);
 		}
 		
@@ -703,13 +703,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 		
 		
-		static AstType CreateShortType (ITypeResolveContext ctx, ParsedFile file, AstLocation loc, IType fullType)
+		static AstType CreateShortType (ITypeResolveContext ctx, CSharpParsedFile file, AstLocation loc, IType fullType)
 		{
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			
 			csResolver.CurrentMember = file.GetMember (loc);
-			csResolver.CurrentTypeDefinition = file.GetTypeDefinition (loc);
-			csResolver.UsingScope = file.GetUsingScope (loc);
+			csResolver.CurrentTypeDefinition = file.GetInnermostTypeDefinition (loc);
+			csResolver.CurrentUsingScope = file.GetUsingScope (loc);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);

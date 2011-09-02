@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			
 //			var unit = data.ParsedDocument.Annotation<CompilationUnit> ();
-			var pf = data.ParsedDocument.Annotation<ParsedFile> ();
+			var pf = data.ParsedDocument.Annotation<CSharpParsedFile> ();
 			
 			StringBuilder sb = new StringBuilder ();
 			int closingBrackets = 0;

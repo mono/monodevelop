@@ -12,6 +12,8 @@ REFS =  \
 SIGNING_KEY=$(srcdir)/ICSharpCode.NRefactory.snk
 
 FILES =  \
+	Completion/CompletionData.cs \
+	Completion/CSharpCompletionEngine.cs \
 	CSharp/Analysis/ControlFlow.cs \
 	CSharp/Analysis/DefiniteAssignmentAnalysis.cs \
 	CSharp/Ast/AstLocation.cs \

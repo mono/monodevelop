@@ -233,6 +233,16 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 				}
 				
+				public void ProcessConversion (Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+				{
+					
+				}
+				
+				public void Resolved (AstNode node, ResolveResult result)
+				{
+					
+				}
+				
 				public ResolveVisitorNavigationMode Scan (AstNode node)
 				{
 					ResolveVisitorNavigationMode mode;
@@ -262,7 +272,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					if ((visitor = document.ParsedDocument.Annotation <ResolveVisitor> ()) == null) {
 						var resolver = new CSharpResolver (document.TypeResolveContext, System.Threading.CancellationToken.None);
 						navi    = new SemanticResolveVisitorNavigator ();
-						visitor = new ResolveVisitor (resolver, document.ParsedDocument.Annotation <ParsedFile> (), navi);
+						visitor = new ResolveVisitor (resolver, document.ParsedDocument.Annotation <CSharpParsedFile> (), navi);
 						document.ParsedDocument.AddAnnotation (navi);
 						document.ParsedDocument.AddAnnotation (visitor);
 					} else {

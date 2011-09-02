@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				declaringType = type.GetDefinition ().GetParts ().First ();
 				methodName = memberReference.MemberName;
 			} else if (target is Identifier) {
-				declaringType = options.Document.ParsedDocument.GetTypeDefinition (options.Location);
+				declaringType = options.Document.ParsedDocument.GetInnermostTypeDefinition (options.Location);
 				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
 			}
 			return declaringType != null && !HasCompatibleMethod (ctx, declaringType, methodName, invocation);

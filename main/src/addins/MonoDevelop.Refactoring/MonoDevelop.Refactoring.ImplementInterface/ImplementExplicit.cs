@@ -75,7 +75,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			if (!InternalIsValid (options, out interfaceType))
 				return;
 			var loc = options.Document.Editor.Caret.Location;
-			var declaringType = options.Document.ParsedDocument.GetTypeDefinition (loc.Line, loc.Column);
+			var declaringType = options.Document.ParsedDocument.GetInnermostTypeDefinition (loc.Line, loc.Column);
 			if (declaringType == null)
 				return;
 			

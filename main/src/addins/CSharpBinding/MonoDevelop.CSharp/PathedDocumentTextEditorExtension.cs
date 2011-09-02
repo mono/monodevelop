@@ -235,7 +235,7 @@ namespace MonoDevelop.CSharp
 			var result = new List<PathEntry> ();
 			var amb = GetAmbience ();
 			
-			var type = unit.GetTypeDefinition (loc.Line, loc.Column);
+			var type = unit.GetInnermostTypeDefinition (loc.Line, loc.Column);
 			var curType = type;
 			while (curType != null) {
 				var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;

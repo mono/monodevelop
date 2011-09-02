@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (CurrentContext.ParsedDocument == null)
 				return null;
-			var type = CurrentContext.ParsedDocument.GetTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			var type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			if (type == null)
 				return null;
 			return type.Name;
@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (CurrentContext.ParsedDocument == null)
 				return null;
-			var type = CurrentContext.ParsedDocument.GetTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			var type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			if (type == null)
 				return "";
 			return type.IsStatic ? "static " : "public ";

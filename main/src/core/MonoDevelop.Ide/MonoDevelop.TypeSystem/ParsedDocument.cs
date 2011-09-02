@@ -42,12 +42,13 @@ namespace MonoDevelop.TypeSystem
 		None            = 0,
 		NonSerializable = 1
 	}
-		
+	
+	[Serializable]
 	public class ParsedDocument : AbstractAnnotatable, IParsedFile
 	{
-		DateTime parseTime = DateTime.Now;
-		public DateTime ParseTime {
-			get { return parseTime; }
+		DateTime lastWriteTime = DateTime.Now;
+		public DateTime LastWriteTime {
+			get { return lastWriteTime; }
 		}
 		
 		public IList<IAttribute> ModuleAttributes {
@@ -116,8 +117,8 @@ namespace MonoDevelop.TypeSystem
 		{
 			return null;
 		}
-
-		public virtual ITypeDefinition GetTypeDefinition (AstLocation location)
+		
+		public virtual ITypeDefinition GetInnermostTypeDefinition (AstLocation location)
 		{
 			return null;
 		}
@@ -270,7 +271,7 @@ namespace MonoDevelop.TypeSystem
 			return FindEntity(types, location);
 		}
 		
-		public override ITypeDefinition GetTypeDefinition(AstLocation location)
+		public override ITypeDefinition GetInnermostTypeDefinition(AstLocation location)
 		{
 			ITypeDefinition parent = null;
 			ITypeDefinition type = GetTopLevelTypeDefinition(location);
@@ -283,7 +284,7 @@ namespace MonoDevelop.TypeSystem
 		
 		public override IMember GetMember(AstLocation location)
 		{
-			ITypeDefinition type = GetTypeDefinition(location);
+			ITypeDefinition type = GetInnermostTypeDefinition(location);
 			if (type == null)
 				return null;
 			return FindEntity(type.Methods, location)
@@ -319,7 +320,7 @@ namespace MonoDevelop.TypeSystem
 		#endregion
 	}
 	
-	
+	[Serializable]
 	public class ParsedDocumentDecorator : ParsedDocument
 	{
 		IParsedFile parsedFile;
@@ -344,9 +345,9 @@ namespace MonoDevelop.TypeSystem
 			return parsedFile.GetTopLevelTypeDefinition (location);
 		}
 		
-		public override ITypeDefinition GetTypeDefinition (ICSharpCode.NRefactory.CSharp.AstLocation location)
+		public override ITypeDefinition GetInnermostTypeDefinition (ICSharpCode.NRefactory.CSharp.AstLocation location)
 		{
-			return parsedFile.GetTypeDefinition (location);
+			return parsedFile.GetInnermostTypeDefinition (location);
 		}
 
 		public override IMember GetMember (ICSharpCode.NRefactory.CSharp.AstLocation location)
@@ -391,8 +392,8 @@ namespace MonoDevelop.TypeSystem
 			foreach (FoldingRegion fold in commentFolds)
 				yield return fold;
 			
-			if (parsedFile is ParsedFile) {
-				var pf = (ParsedFile)parsedFile;
+			if (parsedFile is CSharpParsedFile) {
+				var pf = (CSharpParsedFile)parsedFile;
 				foreach (var scope in pf.UsingScopes)
 					yield return new FoldingRegion (scope.Region);
 			}

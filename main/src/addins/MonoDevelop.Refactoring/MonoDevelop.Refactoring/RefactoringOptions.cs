@@ -152,7 +152,7 @@ namespace MonoDevelop.Refactoring
 		public static List<string> GetUsedNamespaces (Document doc, AstLocation loc)
 		{
 			var result = new List<string> ();
-			var pf = doc.ParsedDocument.Annotation<ParsedFile> ();
+			var pf = doc.ParsedDocument.Annotation<CSharpParsedFile> ();
 			if (pf == null)
 				return result;
 			var scope = pf.GetUsingScope (loc);
@@ -171,7 +171,7 @@ namespace MonoDevelop.Refactoring
 		
 		public ResolveResult Resolve (AstNode node)
 		{
-			var pf = Document.ParsedDocument.Annotation<ParsedFile> ();
+			var pf = Document.ParsedDocument.Annotation<CSharpParsedFile> ();
 			var unit = Document.ParsedDocument.Annotation<CompilationUnit> ();
 			var csResolver = new CSharpResolver (Document.TypeResolveContext, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
@@ -185,11 +185,11 @@ namespace MonoDevelop.Refactoring
 		{
 			var csResolver = new CSharpResolver (Document.TypeResolveContext, System.Threading.CancellationToken.None);
 			
-			var pf = Document.ParsedDocument.Annotation<ParsedFile> ();
+			var pf = Document.ParsedDocument.Annotation<CSharpParsedFile> ();
 			
 			csResolver.CurrentMember = pf.GetMember (Location);
-			csResolver.CurrentTypeDefinition = pf.GetTypeDefinition (Location);
-			csResolver.UsingScope = pf.GetUsingScope (Location);
+			csResolver.CurrentTypeDefinition = pf.GetInnermostTypeDefinition (Location);
+			csResolver.CurrentUsingScope = pf.GetUsingScope (Location);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);

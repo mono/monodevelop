@@ -71,6 +71,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static string GetCurrentWord (CompletionListWindow window)
 		{
+		
 			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
 			int replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
 			return window.CompletionWidget.GetText (window.CodeCompletionContext.TriggerOffset, window.CodeCompletionContext.TriggerOffset + replaceLength);

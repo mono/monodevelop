@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public void Inspect (MonoDevelop.Ide.Gui.Document doc, ParsedDocument parsedDocument)
 		{
-			var pf = parsedDocument.Annotation<ParsedFile> ();
+			var pf = parsedDocument.Annotation<CSharpParsedFile> ();
 			var unit = parsedDocument.Annotation<CompilationUnit> ();
 			var ctx = doc.TypeResolveContext;
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);

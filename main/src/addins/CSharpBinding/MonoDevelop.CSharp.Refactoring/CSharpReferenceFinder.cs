@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		MemberReference GetReference (ResolveResult result, AstNode node, string fileName, Mono.TextEditor.TextEditorData editor)
+		MemberReference GetReference (ResolveResult result, string fileName, Mono.TextEditor.TextEditorData editor)
 		{
 			if (result == null || result.IsError)
 				return null;
@@ -96,9 +96,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else if (result is TypeResolveResult) {
 				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
 			}
-			if (valid == null)
-				return null;
-			
+			return null;
+			/*
 			if (node is MemberReferenceExpression)
 				node = ((MemberReferenceExpression)node).MemberNameToken;
 			
@@ -113,32 +112,32 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 			
-			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.BeginLine, region.BeginColumn), memberName.Length);
+			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.BeginLine, region.BeginColumn), memberName.Length);*/
 		}
 
-		IEnumerable<MemberReference> InternalFindReferences (ITypeResolveContext ctx, Mono.TextEditor.TextEditorData editor, List<int> positions, ICSharpCode.NRefactory.CSharp.CompilationUnit unit, ParsedFile file)
+		IEnumerable<MemberReference> InternalFindReferences (ITypeResolveContext ctx, Mono.TextEditor.TextEditorData editor, List<int> positions, ICSharpCode.NRefactory.CSharp.CompilationUnit unit, CSharpParsedFile file)
 		{
-			var nodesToResolve = new List<AstNode> ();
+/*			var resolveResult = new List<ResolveResult> ();
 			foreach (var pos in positions) {
 				var loc = editor.OffsetToLocation (pos);
-				var node = unit.GetResolveableNodeAt (loc.Line, loc.Column);
-				if (node != null) {
-					nodesToResolve.Add (node);
-				}
+				var rr = ResolveAtLocation.Resolve (ctx, file, unit, new AstLocation (loc.Line, loc.Column));
+				if (rr != null)
+					resolveResult.Add (rr);
 			}
 			
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
-			var visitor = new ResolveVisitor (csResolver, file, new NodeListResolveVisitorNavigator (nodesToResolve));
+			var visitor = new ResolveVisitor (csResolver, file, new NodeListResolveVisitorNavigator (resolveResult));
 			try {
 				unit.AcceptVisitor (visitor, null);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error in resolver during find references.", e);
 			}
-			foreach (var node in nodesToResolve) {
-				var validReference = GetReference (visitor.Resolve (node), node, editor.FileName, editor);
+			foreach (var node in resolveResult) {
+				var validReference = GetReference (node, node, editor.FileName, editor);
 				if (validReference != null)
 					yield return validReference;
-			}
+			}*/
+			yield break;
 		}
 		
 		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc)
@@ -150,7 +149,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (positions.Count <= 0)
 				return Enumerable.Empty<MemberReference> ();
 			var unit = doc.ParsedDocument.Annotation<CompilationUnit> ();
-			var file = doc.ParsedDocument.Annotation<ParsedFile> ();
+			var file = doc.ParsedDocument.Annotation<CSharpParsedFile> ();
 			
 			return InternalFindReferences (doc.TypeResolveContext, editor, positions, unit, file);
 		}

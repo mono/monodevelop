@@ -91,7 +91,7 @@ namespace MonoDevelop.TypeSystem
 			
 			var generator = CreateCodeGenerator (data);
 
-			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetTypeDefinition (type.GetLocation ()));
+			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()));
 			var generatedCode = generator.CreateMemberImplementation (ctx, type, newMember, implementExplicit);
 			suitableInsertionPoint.Insert (data, generatedCode.Code);
 			if (!isOpen) {
@@ -111,7 +111,7 @@ namespace MonoDevelop.TypeSystem
 			var pf = declaringType.ProjectContent.GetFile (declaringType.Region.FileName);
 			if (pf is ParsedDocumentDecorator)
 				pf = ((ParsedDocumentDecorator)pf).ParsedFile;
-			var file = pf as ParsedFile;
+			var file = pf as CSharpParsedFile;
 			if (file == null)
 				return indentLevel;
 			var scope = file.GetUsingScope (declaringType.Region.Begin);
@@ -140,7 +140,7 @@ namespace MonoDevelop.TypeSystem
 			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, firstNewMember);
 			
 			var generator = CreateCodeGenerator (data);
-			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetTypeDefinition (type.GetLocation ()));
+			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()));
 			StringBuilder sb = new StringBuilder ();
 			foreach (IMember newMember in newMembers) {
 				if (sb.Length > 0) {
@@ -188,7 +188,7 @@ namespace MonoDevelop.TypeSystem
 				throw new ArgumentNullException ("type");
 			
 			// update type from parsed document, since this is always newer.
-			type = parsedDocument.GetTypeDefinition (type.GetLocation ()) ?? type;
+			type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
 			
 			List<InsertionPoint > result = new List<InsertionPoint> ();
 			int offset = data.LocationToOffset (type.GetDefinition ().Region.BeginLine, type.GetDefinition ().Region.BeginColumn);

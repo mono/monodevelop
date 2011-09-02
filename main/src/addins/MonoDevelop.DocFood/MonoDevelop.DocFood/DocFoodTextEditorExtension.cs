@@ -114,7 +114,7 @@ namespace MonoDevelop.DocFood
 		IEntity GetMemberToDocument ()
 		{
 			var parsedDocument = Document.UpdateParseDocument ();
-			var type = parsedDocument.GetTypeDefinition (textEditorData.Caret.Line, textEditorData.Caret.Column);
+			var type = parsedDocument.GetInnermostTypeDefinition (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (type == null) {
 				foreach (var t in parsedDocument.TopLevelTypeDefinitions) {
 					if (t.Region.BeginLine > textEditorData.Caret.Line)

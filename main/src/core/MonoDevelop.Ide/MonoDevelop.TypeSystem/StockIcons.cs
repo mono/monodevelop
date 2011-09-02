@@ -118,7 +118,20 @@ namespace MonoDevelop.TypeSystem
 			var def = entity.GetDefinition ();
 			if (def == null)
 				return Class;
-			return typeIconTable [(int)def.Kind - (int)TypeKind.Class, ModifierToOffset (def.Accessibility)];
+			switch (def.Kind) {
+			case TypeKind.Class:
+				return typeIconTable [0, ModifierToOffset (def.Accessibility)];
+			case TypeKind.Enum:
+				return typeIconTable [1, ModifierToOffset (def.Accessibility)];
+			case TypeKind.Interface:
+				return typeIconTable [2, ModifierToOffset (def.Accessibility)];
+			case TypeKind.Struct:
+				return typeIconTable [3, ModifierToOffset (def.Accessibility)];
+			case TypeKind.Delegate:
+				return typeIconTable [4, ModifierToOffset (def.Accessibility)];
+			default:
+				return typeIconTable [0, ModifierToOffset (def.Accessibility)];
+			}
 		}
 		
 		public static string GetStockIcon (this IField field)

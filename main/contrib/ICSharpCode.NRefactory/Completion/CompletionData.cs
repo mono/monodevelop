@@ -2,9 +2,9 @@
 // CompletionData.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,29 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
-using System.Linq;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.CodeCompletion
+namespace Completion
 {
-	public abstract class CompletionCategory : IComparable<CompletionCategory>
+	[Flags]
+	public enum DisplayFlags
 	{
-		public string DisplayText { get; set; }
-		public IconId Icon { get; set; }
-		
-		public CompletionCategory ()
-		{
-		}
-		
-		public CompletionCategory (string displayText, IconId icon)
-		{
-			this.DisplayText = displayText;
-			this.Icon = icon;
-		}
-		
-		public abstract int CompareTo (CompletionCategory other);
+		None = 0,
+		Obsolete = 1
 	}
+	
+	public class EntityCompletionData : CompletionData
+	{
+		public IEntity Entity {
+			get;
+			set;
+		}
+	}
+	
+	public class CompletionData
+	{
+		protected CompletionData () {}
+		
+		public virtual string DisplayText { get; set; }
+		public virtual string Description { get; set; }
+		
+		public virtual DisplayFlags DisplayFlags { get; set; }
+		
+		public virtual bool IsOverloaded { 
+			get {
+				return false;
+			}
+		}
+		
+		public virtual IEnumerable<CompletionData> OverloadedData {
+			get {
+				throw new System.InvalidOperationException ();
+			}
+		}
+	}
+	
 }
+
