@@ -360,7 +360,7 @@ namespace MonoDevelop.Components
 			
 			var req = widget.SizeRequest ();
 			
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (dx, dy));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (dx, dy));
 			int width = System.Math.Max (req.Width, w);
 			if (width >= geometry.Width - spacing * 2) {
 				width = geometry.Width - spacing * 2;

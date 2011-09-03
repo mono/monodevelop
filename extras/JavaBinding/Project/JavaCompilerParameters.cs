@@ -56,6 +56,16 @@ namespace JavaBinding
 		[ItemProperty("GenWarnings", DefaultValue=false)]
 		bool genwarnings = false;
 		
+		public override void AddDefineSymbol (string symbol)
+		{
+			DefineSymbols += symbol + ";";
+		}
+		
+		public override void RemoveDefineSymbol (string symbol)
+		{
+			DefineSymbols = DefineSymbols.Replace (symbol + ";", "");
+		}
+		
 		public bool GenWarnings {
 			get {
 				return genwarnings;

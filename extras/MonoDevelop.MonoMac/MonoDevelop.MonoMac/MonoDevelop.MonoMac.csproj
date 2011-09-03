@@ -102,6 +102,7 @@
     <Compile Include="MonoMacPackaging.cs" />
     <Compile Include="MonoMacPackagingTool.cs" />
     <Compile Include="MonoMacPackagingToolOptions.cs" />
+    <Compile Include="MonoMacProjectMigrationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoMac.addin.xml">

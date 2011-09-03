@@ -190,9 +190,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Present ()
 		{
-			//FIXME: Present is broken on Mac GTK+. It maximises the window.
-			if (!Platform.IsMac)
-				RootWindow.Present ();
+			//FIXME: this probably needs to do a "request for attention" dock bounce on MacOS
+			RootWindow.Present ();
 		}
 				
 		public bool FullScreen {

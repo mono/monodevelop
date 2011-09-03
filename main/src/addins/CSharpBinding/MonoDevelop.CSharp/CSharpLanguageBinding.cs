@@ -89,7 +89,7 @@ namespace MonoDevelop.CSharp
 					pars.PlatformTarget = platform;
 				string debugAtt = projectOptions.GetAttribute ("DefineDebug");
 				if (string.Compare ("True", debugAtt, true) == 0)
-					pars.DefineSymbols = "DEBUG";
+					pars.AddDefineSymbol ("DEBUG");
 			}
 			return pars;
 		}

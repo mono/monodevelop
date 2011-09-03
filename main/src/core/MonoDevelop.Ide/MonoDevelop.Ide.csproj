@@ -58,8 +58,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="ICSharpCode.SharpZipLib">
-    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />

@@ -180,6 +180,7 @@
     <Compile Include="Mono.TextEditor.Utils\RedBlackTree.cs" />
     <Compile Include="Mono.TextEditor\HeightTree.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ColorSheme.cs" />
+    <Compile Include="Mono.TextEditor\GtkWorkarounds.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

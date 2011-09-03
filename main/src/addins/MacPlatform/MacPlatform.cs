@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -413,6 +414,24 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 				foreach (var file in files)
 					NSWorkspace.SharedWorkspace.OpenFile (file, Id);
 			}
+		}
+		
+		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
+		{
+			NSScreen monitor = NSScreen.Screens[monitor_id];
+			RectangleF visible = monitor.VisibleFrame;
+			RectangleF frame = monitor.Frame;
+			
+			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
+			// to get the menu height, we just figure out the difference between the visibleFrame height
+			// and the actual frame height, then subtract the Dock height.
+			//
+			// We need to swap the Y offset with the menu height because our callers expect the Y offset
+			// to be from the top of the screen, not from the bottom of the screen.
+			float menubar = (frame.Height - visible.Height) - visible.Y;
+			visible.Y = menubar;
+			
+			return new Gdk.Rectangle ((int) visible.X, (int) visible.Y, (int) visible.Width, (int) visible.Height);
 		}
 	}
 }

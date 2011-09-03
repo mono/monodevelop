@@ -30,7 +30,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.DeleteKey"
 				_label = "_Delete"
 				defaultHandler = "MonoDevelop.Ide.Commands.DefaultDeleteKeyHandler"
-				shortcut = "Delete"/>
+				shortcut = "Delete" macShortcut = "BackSpace" />
 	</Category>
 	
 	<!-- EditCommands -->

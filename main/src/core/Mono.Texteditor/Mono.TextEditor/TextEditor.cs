@@ -2379,7 +2379,7 @@ namespace Mono.TextEditor
 			w += 10;
 			
 			int x = xloc + ox + (int)textViewMargin.XOffset - (int) ((double)w * xalign);
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (ox + xloc, oy + yloc));
+			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (ox + xloc, oy + yloc));
 			
 			if (x + w >= geometry.Right)
 				x = geometry.Right - w;

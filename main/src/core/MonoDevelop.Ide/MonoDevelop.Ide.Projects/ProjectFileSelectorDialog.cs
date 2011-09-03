@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Projects
 		string defaultFilterName;
 		string defaultFilterPattern;
 		Project project;
-		TreeStore dirStore = new TreeStore (typeof (string));
+		TreeStore dirStore = new TreeStore (typeof (string), typeof (FilePath));
 		ListStore fileStore = new ListStore (typeof (ProjectFile), typeof (Gdk.Pixbuf));
 		
 		// NOTE: these should not be disposed, since they come from the icon scheme, and must instead be unref'd
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Projects
 			projectCol.SetCellDataFunc (txtRenderer, new TreeCellDataFunc (TxtDataFunc));
 			projectTree.Model = dirStore;
 			projectTree.AppendColumn (projectCol);
-			TreeIter projectIter = dirStore.AppendValues ("");
+			TreeIter projectIter = dirStore.AppendValues ("", FilePath.Empty);
 			InitDirs (projectIter);
 			projectTree.ExpandAll ();
 			projectTree.RowActivated += delegate {
@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.Projects
 				return value;
 			
 			TreeIter parent = InitDir (root, iters, dir.ParentDirectory);
-			value = dirStore.AppendValues (parent, dir.FileName);
+			value = dirStore.AppendValues (parent, dir.FileName, dir);
 			iters.Add (dir, value);
 			
 			return value;
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.Projects
 			TreeIter iter;
 			if (!projectTree.Selection.GetSelected (out iter))
 				return project.BaseDirectory;
-			string dir = (string)dirStore.GetValue (iter, 0);
+			var dir = (FilePath)dirStore.GetValue (iter, 1);
 			return project.BaseDirectory.Combine (dir);
 		}
 		
