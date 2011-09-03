@@ -319,8 +319,8 @@ module Common =
   /// Generates command line options for the compiler specified by the 
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  let generateCompilerOptions (fsconfig:FSharpCompilerParameters) items config =
-    let dashr = generateReferences items config false |> Array.ofSeq
+  let generateCompilerOptions (fsconfig:FSharpCompilerParameters) items config shouldWrap =
+    let dashr = generateReferences items config shouldWrap |> Array.ofSeq
     let defines = fsconfig.DefinedSymbols.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [| yield "--noframework"
        for symbol in defines do yield "--define:" + symbol

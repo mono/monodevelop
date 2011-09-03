@@ -37,7 +37,8 @@ module CompilerService =
 
     // Generate compiler options based on F# specific project settings
     let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
-    yield! Common.generateCompilerOptions fsconfig items configSel }
+    let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
+    yield! Common.generateCompilerOptions fsconfig items configSel shouldWrap }
 
 
   /// Process a single message emitted by the F# compiler
