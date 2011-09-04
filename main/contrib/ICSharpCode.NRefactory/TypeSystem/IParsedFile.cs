@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -61,19 +60,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the top-level type defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
-		ITypeDefinition GetTopLevelTypeDefinition(AstLocation location);
+		ITypeDefinition GetTopLevelTypeDefinition(TextLocation location);
 		
 		/// <summary>
 		/// Gets the type (potentially a nested type) defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
-		ITypeDefinition GetInnermostTypeDefinition(AstLocation location);
+		ITypeDefinition GetInnermostTypeDefinition(TextLocation location);
 		
 		/// <summary>
 		/// Gets the member defined at the specified location.
 		/// Returns null if no member is defined at that location.
 		/// </summary>
-		IMember GetMember(AstLocation location);
+		IMember GetMember(TextLocation location);
 		
 		/// <summary>
 		/// Gets the parser errors.

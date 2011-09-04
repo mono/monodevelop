@@ -105,14 +105,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public object GetDefaultValue(ITypeResolveContext context)
-		{
-			if (defaultValue == null)
-				throw new InvalidOperationException();
-			else
-				return defaultValue.GetValue(context);
-		}
-		
 		public DomRegion Region {
 			get { return region; }
 			set {

@@ -24,7 +24,7 @@ using System.Collections.ObjectModel;
 namespace ICSharpCode.NRefactory
 {
 	[Serializable]
-	sealed class EmptyList<T> : IList<T>, IEnumerator<T>
+	public sealed class EmptyList<T> : IList<T>, IEnumerator<T>
 	{
 		public static readonly IList<T> Instance = new EmptyList<T>();
 		

@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Utils
 	/// <summary>
 	/// Platform-specific code.
 	/// </summary>
-	static class Platform
+	public static class Platform
 	{
 		public static StringComparer FileNameComparer {
 			get {

@@ -17,34 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Editor
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// A line inside a <see cref="IDocument"/>.
+	/// </summary>
+	public interface IDocumentLine : ISegment
 	{
 		/// <summary>
-		/// Resolves the value of this constant.
+		/// Gets the length of this line, including the line delimiter.
 		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
+		int TotalLength { get; }
+		
+		/// <summary>
+		/// Gets the length of the line terminator.
+		/// Returns 1 or 2; or 0 at the end of the document.
+		/// </summary>
+		int DelimiterLength { get; }
+		
+		/// <summary>
+		/// Gets the number of this line.
+		/// The first line has the number 1.
+		/// </summary>
+		int LineNumber { get; }
+		
+		/// <summary>
+		/// Gets the previous line. Returns null if this is the first line in the document.
+		/// </summary>
+		IDocumentLine PreviousLine { get; }
+		
+		/// <summary>
+		/// Gets the next line. Returns null if this is the last line in the document.
+		/// </summary>
+		IDocumentLine NextLine { get; }
 	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
-		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
-		}
-	}
-	#endif
 }

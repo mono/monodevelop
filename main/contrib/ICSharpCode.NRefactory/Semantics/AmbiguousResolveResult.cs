@@ -17,34 +17,32 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Represents an ambiguous type resolve result.
+	/// </summary>
+	public class AmbiguousTypeResolveResult : TypeResolveResult
 	{
-		/// <summary>
-		/// Resolves the value of this constant.
-		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		public AmbiguousTypeResolveResult(IType type) : base(type)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+		}
+		
+		public override bool IsError {
+			get { return true; }
 		}
 	}
-	#endif
+	
+	public class AmbiguousMemberResolveResult : MemberResolveResult
+	{
+		public AmbiguousMemberResolveResult(ResolveResult targetResult, IMember member, IType returnType) : base(targetResult, member, returnType)
+		{
+		}
+		
+		public override bool IsError {
+			get { return true; }
+		}
+	}
 }

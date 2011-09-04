@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Same as 'parameterizedType.TypeArguments[index]', but is a bit more efficient.
 		/// </summary>
-		internal IType GetTypeArgument(int index)
+		public IType GetTypeArgument(int index)
 		{
 			return typeArguments[index];
 		}

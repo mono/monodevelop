@@ -17,34 +17,42 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Resolve result representing an array creation.
+	/// </summary>
+	public class ArrayCreateResolveResult : ResolveResult
 	{
 		/// <summary>
-		/// Resolves the value of this constant.
+		/// Gets the size arguments.
 		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		public readonly ResolveResult[] SizeArguments;
+		
+		/// <summary>
+		/// Gets the initializer elements.
+		/// This field may be null if no initializer was specified.
+		/// </summary>
+		public readonly ResolveResult[] InitializerElements;
+		
+		public ArrayCreateResolveResult(IType arrayType, ResolveResult[] sizeArguments, ResolveResult[] initializerElements)
+			: base(arrayType)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+			this.SizeArguments = sizeArguments;
+			this.InitializerElements = initializerElements;
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			if (SizeArguments != null && InitializerElements != null)
+				return SizeArguments.Concat(InitializerElements);
+			else
+				return SizeArguments ?? InitializerElements ?? EmptyList<ResolveResult>.Instance;
 		}
 	}
-	#endif
 }

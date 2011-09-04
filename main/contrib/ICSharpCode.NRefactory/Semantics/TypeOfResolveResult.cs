@@ -17,34 +17,28 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Represents the 'typeof'.
+	/// </summary>
+	public class TypeOfResolveResult : ResolveResult
 	{
-		/// <summary>
-		/// Resolves the value of this constant.
-		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		readonly IType referencedType;
+		
+		public TypeOfResolveResult(IType systemType, IType referencedType)
+			: base(systemType)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+			this.referencedType = referencedType;
+		}
+		
+		/// <summary>
+		/// The type referenced by the 'typeof'.
+		/// </summary>
+		public IType ReferencedType {
+			get { return referencedType; }
 		}
 	}
-	#endif
 }

@@ -17,34 +17,29 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Represents that an expression resolved to a namespace.
+	/// </summary>
+	public class NamespaceResolveResult : ResolveResult
 	{
-		/// <summary>
-		/// Resolves the value of this constant.
-		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		readonly string namespaceName;
+		
+		public NamespaceResolveResult(string namespaceName) : base(SharedTypes.UnknownType)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+			this.namespaceName = namespaceName;
+		}
+		
+		public string NamespaceName {
+			get { return namespaceName; }
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[{0} {1}]", GetType().Name, namespaceName);
 		}
 	}
-	#endif
 }

@@ -17,34 +17,27 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// The resolved expression refers to a type name.
+	/// </summary>
+	public class TypeResolveResult : ResolveResult
 	{
-		/// <summary>
-		/// Resolves the value of this constant.
-		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		public TypeResolveResult(IType type)
+			: base(type)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+		}
+		
+		public override DomRegion GetDefinitionRegion()
+		{
+			ITypeDefinition def = this.Type.GetDefinition();
+			if (def != null)
+				return def.Region;
+			else
+				return DomRegion.Empty;
 		}
 	}
-	#endif
 }

@@ -17,34 +17,49 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Represents the resolve result of an 'ref x' or 'out x' expression.
+	/// </summary>
+	public class ByReferenceResolveResult : ResolveResult
 	{
-		/// <summary>
-		/// Resolves the value of this constant.
-		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		public bool IsOut { get; private set; }
+		public bool IsRef { get { return !IsOut;} }
+		
+		public readonly ResolveResult ElementResult;
+		
+		public ByReferenceResolveResult(ResolveResult elementResult, bool isOut)
+			: this(elementResult.Type, isOut)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+			this.ElementResult = elementResult;
+		}
+		
+		public ByReferenceResolveResult(IType elementType, bool isOut)
+			: base(new ByReferenceType(elementType))
+		{
+			this.IsOut = isOut;
+		}
+		
+		public IType ElementType {
+			get { return ((ByReferenceType)this.Type).ElementType; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			if (ElementResult != null)
+				return new[] { ElementResult };
+			else
+				return Enumerable.Empty<ResolveResult>();
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[{0} {1} {2}]", GetType().Name, IsOut ? "out" : "ref", ElementType);
 		}
 	}
-	#endif
 }

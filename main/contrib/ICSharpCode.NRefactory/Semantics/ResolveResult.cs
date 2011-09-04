@@ -17,34 +17,56 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Represents the result of resolving an expression.
+	/// </summary>
+	public class ResolveResult
 	{
-		/// <summary>
-		/// Resolves the value of this constant.
-		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		IType type;
+		
+		public ResolveResult(IType type)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+			if (type == null)
+				throw new ArgumentNullException("type");
+			this.type = type;
+		}
+		
+		public IType Type {
+			get { return type; }
+		}
+		
+		public virtual bool IsCompileTimeConstant {
+			get { return false; }
+		}
+		
+		public virtual object ConstantValue {
+			get { return null; }
+		}
+		
+		public virtual bool IsError {
+			get { return false; }
+		}
+		
+		public override string ToString()
+		{
+			return "[" + GetType().Name + " " + type + "]";
+		}
+		
+		public virtual IEnumerable<ResolveResult> GetChildResults()
+		{
+			return Enumerable.Empty<ResolveResult>();
+		}
+		
+		public virtual DomRegion GetDefinitionRegion()
+		{
+			return DomRegion.Empty;
 		}
 	}
-	#endif
 }

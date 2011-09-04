@@ -525,12 +525,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				PInvokeInfo info = methodDefinition.PInvokeInfo;
 				DefaultAttribute dllImport = new DefaultAttribute(dllImportAttributeTypeRef, new[] { KnownTypeReference.String });
 				dllImport.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, info.Module.Name));
-				/*
-				if (info.IsBestFitDisabled)
+				
+/*				if (info.IsBestFitDisabled)
 					dllImport.AddNamedArgument("BestFitMapping", falseValue);
 				if (info.IsBestFitEnabled)
 					dllImport.AddNamedArgument("BestFitMapping", trueValue);
-				*/
+*/				
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
 					case PInvokeAttributes.CallConvCdecl:

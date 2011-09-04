@@ -208,10 +208,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IMember> Members {
 			get {
-				return this.Fields.SafeCast<IField, IMember>()
-					.Concat(this.Properties.SafeCast<IProperty, IMember>())
-					.Concat(this.Methods.SafeCast<IMethod, IMember>())
-					.Concat(this.Events.SafeCast<IEvent, IMember>());
+				IEnumerable<IMember> members = this.Fields;
+				return members
+					.Concat(this.Properties)
+					.Concat(this.Methods)
+					.Concat(this.Events);
 			}
 		}
 		

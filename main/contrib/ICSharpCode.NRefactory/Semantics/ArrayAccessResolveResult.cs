@@ -17,34 +17,34 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Resolve result representing an array access.
+	/// </summary>
+	public class ArrayAccessResolveResult : ResolveResult
 	{
-		/// <summary>
-		/// Resolves the value of this constant.
-		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		public readonly ResolveResult Array;
+		public readonly ResolveResult[] Indices;
+		
+		public ArrayAccessResolveResult(IType elementType, ResolveResult array, ResolveResult[] indices) : base(elementType)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+			if (array == null)
+				throw new ArgumentNullException("array");
+			if (indices == null)
+				throw new ArgumentNullException("indices");
+			this.Array = array;
+			this.Indices = indices;
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			return new [] { Array }.Concat(Indices);
 		}
 	}
-	#endif
 }

@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
+using ICSharpCode.NRefactory.Semantics;
+
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
@@ -44,12 +46,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the positional arguments passed to the attribute.
 		/// </summary>
-		IList<IConstantValue> GetPositionalArguments(ITypeResolveContext context);
+		IList<ResolveResult> GetPositionalArguments(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets the named arguments passed to the attribute.
 		/// </summary>
-		IList<KeyValuePair<string, IConstantValue>> GetNamedArguments(ITypeResolveContext context);
+		IList<KeyValuePair<string, ResolveResult>> GetNamedArguments(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Resolves the constructor method used for this attribute invocation.

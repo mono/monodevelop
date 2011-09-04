@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -95,7 +94,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name='location'>
 		/// The location of the error.
 		/// </param>
-		public Error (ErrorType errorType, string message, AstLocation location)
+		public Error (ErrorType errorType, string message, TextLocation location)
 		{
 			this.errorType = errorType;
 			this.message = message;
@@ -117,7 +116,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name='col'>
 		/// The column of the error.
 		/// </param>
-		public Error (ErrorType errorType, string message, int line, int col) : this (errorType, message, new AstLocation (line, col))
+		public Error (ErrorType errorType, string message, int line, int col) : this (errorType, message, new TextLocation (line, col))
 		{
 		}
 		

@@ -236,12 +236,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			get { return typeNamesByTypeCode.Length; }
 		}
 		
-		internal static string GetShortNameByTypeCode(TypeCode typeCode)
+		public static string GetShortNameByTypeCode(TypeCode typeCode)
 		{
 			return typeNamesByTypeCode[(int)typeCode];
 		}
 		
-		internal static string GetCSharpNameByTypeCode(TypeCode typeCode)
+		public static string GetCSharpNameByTypeCode(TypeCode typeCode)
 		{
 			return csharpTypeNamesByTypeCode[(int)typeCode];
 		}

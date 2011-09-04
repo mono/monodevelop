@@ -17,34 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.Semantics;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+
+namespace ICSharpCode.NRefactory.Semantics
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Represents the result of a method invocation.
+	/// </summary>
+	public abstract class InvocationResolveResult : MemberResolveResult
 	{
 		/// <summary>
-		/// Resolves the value of this constant.
+		/// Gets the arguments that are being passed to the method.
 		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
-		ResolveResult Resolve(ITypeResolveContext context);
-	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
+		public readonly IList<ResolveResult> Arguments;
+		
+		public InvocationResolveResult(
+			ResolveResult targetResult, IParameterizedMember member, IType returnType,
+			IList<ResolveResult> arguments)
+			: base(targetResult, member, returnType)
 		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
+			this.Arguments = arguments ?? EmptyList<ResolveResult>.Instance;
+		}
+		
+		public new IParameterizedMember Member {
+			get { return (IParameterizedMember)base.Member; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			return base.GetChildResults().Concat(this.Arguments);
 		}
 	}
-	#endif
 }

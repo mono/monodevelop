@@ -22,6 +22,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.NRefactory.Semantics;
+
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
@@ -84,9 +86,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		IList<IConstantValue> IAttribute.GetPositionalArguments(ITypeResolveContext context)
+		public IList<ResolveResult> GetPositionalArguments(ITypeResolveContext context)
 		{
-			return this.PositionalArguments;
+			return this.PositionalArguments.Select(a => a.Resolve(context)).ToList();
 		}
 		
 		public IList<KeyValuePair<string, IConstantValue>> NamedArguments {
@@ -97,9 +99,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		IList<KeyValuePair<string, IConstantValue>> IAttribute.GetNamedArguments(ITypeResolveContext context)
+		public IList<KeyValuePair<string, ResolveResult>> GetNamedArguments(ITypeResolveContext context)
 		{
-			return this.NamedArguments;
+			return this.NamedArguments.Select(p => new KeyValuePair<string, ResolveResult>(p.Key, p.Value.Resolve(context))).ToList();
 		}
 		
 		public IMethod ResolveConstructor(ITypeResolveContext context)
