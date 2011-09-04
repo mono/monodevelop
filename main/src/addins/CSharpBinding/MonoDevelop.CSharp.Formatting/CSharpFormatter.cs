@@ -122,90 +122,87 @@ namespace MonoDevelop.CSharp.Formatting
 		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
 			TextEditorData data, int startOffset, int endOffset)
 		{
-			// TODO: Type system conversion.
-			return;
-//			var parser = new CSharpParser ();
-//			var compilationUnit = parser.ParseSnippet (data);
-//			if (compilationUnit == null) {
-//				Console.WriteLine ("couldn't parse : " + data.Text);
-//				return;
-//			}
-//			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-//			var adapter = new TextEditorDataAdapter (data);
-//			
-//			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data)) {
-//				HadErrors =  parser.HasErrors
-//			};
-//			compilationUnit.AcceptVisitor (formattingVisitor, null);
-//			
-//			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-//			changes.AddRange (formattingVisitor.Changes.
-//				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-//			try {
-//				data.Document.BeginAtomicUndo ();
-//				MDRefactoringContext.MdScript.RunActions (changes, null);
-//			} finally {
-//				data.Document.EndAtomicUndo ();
-//			}
+			var parser = new CSharpParser ();
+			var compilationUnit = parser.ParseSnippet (data);
+			if (compilationUnit == null) {
+				Console.WriteLine ("couldn't parse : " + data.Text);
+				return;
+			}
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+			
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, new FormattingActionFactory (data), data.Options.TabsToSpaces, data.Options.IndentationSize) {
+				HadErrors =  parser.HasErrors, 
+				EolMarker = data.EolMarker
+			};
+			compilationUnit.AcceptVisitor (formattingVisitor, null);
+			
+			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
+			changes.AddRange (formattingVisitor.Changes.
+				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
+			try {
+				data.Document.BeginAtomicUndo ();
+				MDRefactoringContext.MdScript.RunActions (changes, null);
+			} finally {
+				data.Document.EndAtomicUndo ();
+			}
 		}
 
 		public string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
-			// TODO: Type system conversion.
-			return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
-//			var data = new TextEditorData ();
-//			data.Document.SuppressHighlightUpdate = true;
-//			data.Document.MimeType = mimeType;
-//			data.Document.FileName = "toformat.cs";
-//			if (textPolicy != null) {
-//				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
-//				data.Options.TabSize = textPolicy.TabWidth;
-//				data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
-//			}
-//			data.Options.OverrideDocumentEolMarker = true;
-//			data.Text = input;
-//
-////			System.Console.WriteLine ("-----");
-////			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
-////			System.Console.WriteLine ("-----");
-//
-//			var parser = new CSharpParser ();
-//			var compilationUnit = parser.Parse (data);
-//			bool hadErrors = parser.HasErrors;
-//			
-//			if (hadErrors) {
-////				foreach (var e in parser.ErrorReportPrinter.Errors)
-////					Console.WriteLine (e.Message);
-//				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
-//			}
-//			var adapter = new TextEditorDataAdapter (data);
-//			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data)) {
-//				HadErrors = hadErrors
-//			};
-//			
-//			compilationUnit.AcceptVisitor (formattingVisitor, null);
-//			
-//			
-//			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-//
-//			changes.AddRange (formattingVisitor.Changes.
-//				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-//			
-//			MDRefactoringContext.MdScript.RunActions (changes, null);
-//			
-//			int end = endOffset;
-//			foreach (TextReplaceAction c in changes) {
-//				end -= c.RemovedChars;
-//				if (c.InsertedText != null)
-//					end += c.InsertedText.Length;
-//			}
-//			
-//		/*			System.Console.WriteLine ("-----");
-//			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
-//			System.Console.WriteLine ("-----");*/
-//			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
-//			data.Dispose ();
-//			return result;
+			var data = new TextEditorData ();
+			data.Document.SuppressHighlightUpdate = true;
+			data.Document.MimeType = mimeType;
+			data.Document.FileName = "toformat.cs";
+			if (textPolicy != null) {
+				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
+				data.Options.TabSize = textPolicy.TabWidth;
+				data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
+			}
+			data.Options.OverrideDocumentEolMarker = true;
+			data.Text = input;
+
+//			System.Console.WriteLine ("-----");
+//			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
+//			System.Console.WriteLine ("-----");
+
+			var parser = new CSharpParser ();
+			var compilationUnit = parser.Parse (data);
+			bool hadErrors = parser.HasErrors;
+			
+			if (hadErrors) {
+//				foreach (var e in parser.ErrorReportPrinter.Errors)
+//					Console.WriteLine (e.Message);
+				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
+			}
+			
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, new FormattingActionFactory (data), data.Options.TabsToSpaces, data.Options.IndentationSize) {
+				HadErrors = hadErrors,
+				EolMarker = data.EolMarker
+			};
+			
+			compilationUnit.AcceptVisitor (formattingVisitor, null);
+			
+			
+			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
+
+			changes.AddRange (formattingVisitor.Changes.
+				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
+			
+			MDRefactoringContext.MdScript.RunActions (changes, null);
+			
+			int end = endOffset;
+			foreach (TextReplaceAction c in changes) {
+				end -= c.RemovedChars;
+				if (c.InsertedText != null)
+					end += c.InsertedText.Length;
+			}
+			
+		/*			System.Console.WriteLine ("-----");
+			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
+			System.Console.WriteLine ("-----");*/
+			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
+			data.Dispose ();
+			return result;
 		}
 
 		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
