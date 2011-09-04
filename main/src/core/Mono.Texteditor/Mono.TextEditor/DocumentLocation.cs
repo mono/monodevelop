@@ -26,6 +26,7 @@
 //
 
 using System;
+using ICSharpCode.NRefactory;
 
 namespace Mono.TextEditor
 {
@@ -83,6 +84,11 @@ namespace Mono.TextEditor
 		public static bool operator >=(DocumentLocation left, DocumentLocation right)
 		{
 			return !(left < right);
+		}
+		
+		public static implicit operator TextLocation(DocumentLocation location)
+		{
+			return new TextLocation (location.Line, location.Column);
 		}
 		
 		public override int GetHashCode()

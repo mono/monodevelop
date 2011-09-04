@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public abstract class LineSegment : ISegment
+	public abstract class LineSegment : ISegment, ICSharpCode.NRefactory.Editor.IDocumentLine
 	{
 		List<TextMarker> markers;
 		public IEnumerable<TextMarker> Markers {
@@ -224,5 +224,57 @@ namespace Mono.TextEditor
 		{
 			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", Offset, Length, DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
 		}
+
+		#region IDocumentLine implementation
+		int ICSharpCode.NRefactory.Editor.IDocumentLine.TotalLength {
+			get {
+				return Length;
+			}
+		}
+
+		int ICSharpCode.NRefactory.Editor.IDocumentLine.DelimiterLength {
+			get {
+				return DelimiterLength;
+			}
+		}
+
+		int ICSharpCode.NRefactory.Editor.IDocumentLine.LineNumber {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		ICSharpCode.NRefactory.Editor.IDocumentLine ICSharpCode.NRefactory.Editor.IDocumentLine.PreviousLine {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		ICSharpCode.NRefactory.Editor.IDocumentLine ICSharpCode.NRefactory.Editor.IDocumentLine.NextLine {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+		#endregion
+
+		#region ISegment implementation
+		int ICSharpCode.NRefactory.Editor.ISegment.Offset {
+			get {
+				return Offset;
+			}
+		}
+
+		int ICSharpCode.NRefactory.Editor.ISegment.Length {
+			get {
+				return EditableLength;
+			}
+		}
+
+		int ICSharpCode.NRefactory.Editor.ISegment.EndOffset {
+			get {
+				return Offset + EditableLength;
+			}
+		}
+		#endregion
 	}
 }
