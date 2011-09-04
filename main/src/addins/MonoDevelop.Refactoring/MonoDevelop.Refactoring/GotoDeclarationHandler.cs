@@ -32,6 +32,7 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Refactoring
 {

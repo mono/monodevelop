@@ -155,7 +155,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						//type registered with an explicit type name are up to the user to provide a valid name
 						var posArgs = att.GetPositionalArguments (dom);
 						if (posArgs.Count == 1)
-							objcName = (string)posArgs[0].GetValue (dom);
+							objcName = posArgs[0].ConstantValue as string;
 						//non-nested types in the root namespace have names accessible from obj-c
 						else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
 							objcName = type.Name;
@@ -195,7 +195,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					string name = null;
 					var posArgs = att.GetPositionalArguments (dom);
 					if (posArgs.Count == 1)
-						name = (string)posArgs[0].GetValue (dom);
+						name = posArgs[0].ConstantValue as string;
 					if (string.IsNullOrEmpty (name))
 						name = prop.Name;
 					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.Resolve (dom).FullName);
@@ -223,7 +223,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					string[] name = null;
 					var posArgs = att.GetPositionalArguments (dom);
 					if (posArgs.Count == 1) {
-						var n = (string)posArgs[0].GetValue (dom);
+						var n = posArgs[0].ConstantValue as string;
 						if (!string.IsNullOrEmpty (n))
 							name = n.Split (colonChar);
 					}

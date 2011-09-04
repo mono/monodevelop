@@ -50,6 +50,7 @@ using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -165,7 +166,7 @@ namespace MonoDevelop.AspNet.Gui
 				//FIXME: get doctype from master page
 				DocType = null;
 			} else {
-				DocType = new MonoDevelop.Xml.StateEngine.XDocType (AstLocation.Empty);
+				DocType = new MonoDevelop.Xml.StateEngine.XDocType (TextLocation.Empty);
 				var matches = DocTypeRegex.Match (aspDoc.Info.DocType);
 				DocType.PublicFpi = matches.Groups["fpi"].Value;
 				DocType.Uri = matches.Groups["uri"].Value;
@@ -780,7 +781,7 @@ namespace MonoDevelop.AspNet.Gui
 						return System.Web.UI.PersistenceMode.Attribute;
 					}
 					
-					return (System.Web.UI.PersistenceMode) expr.GetValue (projectDatabase);
+					return (System.Web.UI.PersistenceMode) expr.ConstantValue;
 				}
 				else if (att.AttributeType.Resolve (projectDatabase).ReflectionName == "System.Web.UI.TemplateContainerAttribute")
 				{
@@ -807,8 +808,8 @@ namespace MonoDevelop.AspNet.Gui
 					return false;
 				}
 				
-				if (expr.GetValue (ctx) is bool) {
-					childrenAsProperties = (bool)expr.GetValue (ctx);
+				if (expr.ConstantValue is bool) {
+					childrenAsProperties = (bool)expr.ConstantValue;
 				} else {
 					//TODO: implement this
 					LoggingService.LogWarning ("ASP.NET completion does not yet handle ParseChildrenAttribute (Type)");
@@ -818,11 +819,11 @@ namespace MonoDevelop.AspNet.Gui
 			
 			if (posArgs.Count > 1) {
 				var expr = posArgs [1];
-				if (expr == null || !(expr.GetValue (ctx) is string)) {
+				if (expr == null || !(expr.ConstantValue is string)) {
 					LoggingService.LogWarning ("Unknown expression '{0}' in IAttribute parameter", expr);
 					return false;
 				}
-				defaultProperty = (string)expr.GetValue (ctx);
+				defaultProperty = (string)expr.ConstantValue;
 			}
 			
 			var namedArgs = att.GetNamedArguments (ctx);
@@ -833,7 +834,7 @@ namespace MonoDevelop.AspNet.Gui
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return false;
 					}
-					childrenAsProperties = (bool)expr.GetValue (ctx);
+					childrenAsProperties = (bool)expr.ConstantValue;
 				}
 				if (namedArgs.Any (p => p.Key == "DefaultProperty")) {
 					var expr = namedArgs.First (p => p.Key == "DefaultProperty").Value;
@@ -841,7 +842,7 @@ namespace MonoDevelop.AspNet.Gui
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return false;
 					}
-					defaultProperty = (string)expr.GetValue (ctx);
+					defaultProperty = (string)expr.ConstantValue;
 				}
 				if (namedArgs.Any (p => p.Key == "ChildControlType")) {
 					//TODO: implement this

@@ -44,7 +44,7 @@ using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -224,7 +224,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			IEditableTextBuffer buf = this.EditableBuffer;
 
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-			AstLocation currentLocation = new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
+			TextLocation currentLocation = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
 			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
 			char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
 

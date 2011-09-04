@@ -149,13 +149,13 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 					Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset);
 					foreach (Span span in stack) {
 						if (span.Color == "string.single" || span.Color == "string.double") {
-							resolveResult = resolver.Resolve (new ExpressionResult (SearchString (data, span.Color == "string.single" ? '\'' : '"', out start, out end)), AstLocation.Empty);
+							resolveResult = resolver.Resolve (new ExpressionResult (SearchString (data, span.Color == "string.single" ? '\'' : '"', out start, out end)), TextLocation.Empty);
 							end++;
 						}
 					}
 				}
 				if (end == 0) {
-					resolveResult = resolver.Resolve (new ExpressionResult (SearchNumber (data, out start, out end)), AstLocation.Empty);
+					resolveResult = resolver.Resolve (new ExpressionResult (SearchNumber (data, out start, out end)), TextLocation.Empty);
 				}
 			} else {
 				start = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.BeginLine, resolveResult.ResolvedExpression.Region.BeginColumn);

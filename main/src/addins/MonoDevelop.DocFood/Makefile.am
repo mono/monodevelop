@@ -52,6 +52,7 @@ REFS =  \
 	-r:../../../build/bin/Mono.TextEditor.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:../../../build/bin/MonoDevelop.Ide.dll \
+	-r:../../../contrib/ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

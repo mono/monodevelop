@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -42,21 +42,21 @@ namespace MonoDevelop.TypeSystem
 			set;
 		}
 		
-		public AstLocation Start {
+		public TextLocation Start {
 			get;
 			set;
 		}
 		
-		public AstLocation End {
+		public TextLocation End {
 			get;
 			set;
 		}
 		
-		public ConditionBlock (string flag) : this (flag, AstLocation.Empty)
+		public ConditionBlock (string flag) : this (flag, TextLocation.Empty)
 		{
 		}
 
-		public ConditionBlock (string flag, AstLocation start)
+		public ConditionBlock (string flag, TextLocation start)
 		{
 			this.Flag = flag;
 			this.Start = start;

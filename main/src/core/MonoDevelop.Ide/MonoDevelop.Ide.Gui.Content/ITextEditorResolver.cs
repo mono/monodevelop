@@ -31,8 +31,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.TextEditor;
 using Mono.Addins;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Content

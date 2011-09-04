@@ -34,9 +34,10 @@ using System.CodeDom;
 using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 using MonoDevelop.TypeSystem;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -203,12 +204,12 @@ namespace MonoDevelop.TypeSystem
 			result [0].LineBefore = NewLineInsertion.None;
 			
 			foreach (IMember member in type.Members) {
-				AstLocation domLocation = member.BodyRegion.End;
+				TextLocation domLocation = member.BodyRegion.End;
 				if (domLocation.Line <= 0) {
 					LineSegment lineSegment = data.GetLine (member.Region.BeginLine);
 					if (lineSegment == null)
 						continue;
-					domLocation = new AstLocation (member.Region.BeginLine, lineSegment.EditableLength + 1);
+					domLocation = new TextLocation (member.Region.BeginLine, lineSegment.EditableLength + 1);
 				}
 				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
 			}
@@ -373,9 +374,9 @@ namespace MonoDevelop.TypeSystem
 	
 	public static class HelperMethods
 	{
-		public static AstLocation Convert (this DocumentLocation location)
+		public static TextLocation Convert (this DocumentLocation location)
 		{
-			return new AstLocation (location.Line, location.Column);
+			return new TextLocation (location.Line, location.Column);
 		}
 	}
 }

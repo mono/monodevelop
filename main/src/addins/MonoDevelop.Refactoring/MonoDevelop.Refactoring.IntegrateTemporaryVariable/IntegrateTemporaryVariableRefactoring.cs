@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			if (unit == null)
 				return null;
 			
-			AstLocation loc = new AstLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+			TextLocation loc = new TextLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
 			return unit.GetNodeAt<AttributedNode> (loc);
 		}
 		

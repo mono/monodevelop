@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -120,7 +121,7 @@ namespace MonoDevelop.CSharp.Refactoring
 /*			var resolveResult = new List<ResolveResult> ();
 			foreach (var pos in positions) {
 				var loc = editor.OffsetToLocation (pos);
-				var rr = ResolveAtLocation.Resolve (ctx, file, unit, new AstLocation (loc.Line, loc.Column));
+				var rr = ResolveAtLocation.Resolve (ctx, file, unit, new TextLocation (loc.Line, loc.Column));
 				if (rr != null)
 					resolveResult.Add (rr);
 			}

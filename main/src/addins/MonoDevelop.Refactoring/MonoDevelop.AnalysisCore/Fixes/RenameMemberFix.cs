@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.Rename;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {

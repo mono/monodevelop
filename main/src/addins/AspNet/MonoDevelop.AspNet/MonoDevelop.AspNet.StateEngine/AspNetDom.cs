@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using MonoDevelop.Xml.StateEngine;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.StateEngine
 {
@@ -43,12 +44,12 @@ namespace MonoDevelop.AspNet.StateEngine
 		XName name;
 		XAttributeCollection attributes;
 		
-		public AspNetDirective (AstLocation start) : base (start)
+		public AspNetDirective (TextLocation start) : base (start)
 		{
 			attributes = new XAttributeCollection (this);
 		}
 		
-		public AspNetDirective (AstLocation start, XName name) : this (start)
+		public AspNetDirective (TextLocation start, XName name) : this (start)
 		{
 			this.name = name;
 		}
@@ -116,7 +117,7 @@ namespace MonoDevelop.AspNet.StateEngine
 	public abstract class AspNetExpression : XNode
 	{
 		public AspNetExpression (DomRegion region) : base (region) {}
-		public AspNetExpression (AstLocation start) : base (start) {}
+		public AspNetExpression (TextLocation start) : base (start) {}
 		protected AspNetExpression () {}
 	}
 	
@@ -124,7 +125,7 @@ namespace MonoDevelop.AspNet.StateEngine
 	public class AspNetRenderExpression : AspNetExpression
 	{
 		public AspNetRenderExpression (DomRegion region) : base (region) {}
-		public AspNetRenderExpression (AstLocation start) : base (start) {}
+		public AspNetRenderExpression (TextLocation start) : base (start) {}
 		protected AspNetRenderExpression () {}
 		
 		protected override XObject NewInstance () { return new AspNetRenderExpression (); }
@@ -142,7 +143,7 @@ namespace MonoDevelop.AspNet.StateEngine
 	public class AspNetHtmlEncodedExpression : AspNetExpression
 	{
 		public AspNetHtmlEncodedExpression (DomRegion region) : base (region) {}
-		public AspNetHtmlEncodedExpression (AstLocation start) : base (start) {}
+		public AspNetHtmlEncodedExpression (TextLocation start) : base (start) {}
 		protected AspNetHtmlEncodedExpression () {}
 		
 		protected override XObject NewInstance () { return new AspNetHtmlEncodedExpression (); }
@@ -160,7 +161,7 @@ namespace MonoDevelop.AspNet.StateEngine
 	public class AspNetDataBindingExpression : AspNetExpression
 	{
 		public AspNetDataBindingExpression (DomRegion region) : base (region) {}
-		public AspNetDataBindingExpression (AstLocation start) : base (start) {}
+		public AspNetDataBindingExpression (TextLocation start) : base (start) {}
 		protected AspNetDataBindingExpression () {}
 		
 		protected override XObject NewInstance () { return new AspNetDataBindingExpression (); }
@@ -178,7 +179,7 @@ namespace MonoDevelop.AspNet.StateEngine
 	public class AspNetResourceExpression : AspNetExpression
 	{
 		public AspNetResourceExpression (DomRegion region) : base (region) {}
-		public AspNetResourceExpression (AstLocation start) : base (start) {}
+		public AspNetResourceExpression (TextLocation start) : base (start) {}
 		protected AspNetResourceExpression () {}
 		
 		protected override XObject NewInstance () { return new AspNetResourceExpression (); }
@@ -196,7 +197,7 @@ namespace MonoDevelop.AspNet.StateEngine
 	public class AspNetServerComment : XNode
 	{
 		public AspNetServerComment (DomRegion region) : base (region) {}
-		public AspNetServerComment (AstLocation start) : base (start) {}
+		public AspNetServerComment (TextLocation start) : base (start) {}
 		protected AspNetServerComment () {}
 		
 		protected override XObject NewInstance () { return new AspNetServerComment (); }
@@ -214,7 +215,7 @@ namespace MonoDevelop.AspNet.StateEngine
 	public class AspNetRenderBlock : XNode
 	{
 		public AspNetRenderBlock (DomRegion region) : base (region) {}
-		public AspNetRenderBlock (AstLocation start) : base (start) {}
+		public AspNetRenderBlock (TextLocation start) : base (start) {}
 		protected AspNetRenderBlock () {}
 		
 		protected override XObject NewInstance () { return new AspNetRenderBlock (); }

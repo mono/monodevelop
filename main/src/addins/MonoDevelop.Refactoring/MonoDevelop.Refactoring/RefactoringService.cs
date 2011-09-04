@@ -35,6 +35,7 @@ using MonoDevelop.Inspection;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CodeGeneration;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Refactoring
 {
@@ -173,7 +174,7 @@ namespace MonoDevelop.Refactoring
 			return inspectors.Where (i => i.MimeType == mimeTye);
 		}
 		
-		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, AstLocation loc, Action<List<ContextAction>> callback)
+		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<ContextAction>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {

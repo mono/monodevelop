@@ -47,6 +47,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Refactoring
 {

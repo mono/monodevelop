@@ -45,6 +45,7 @@ using MonoDevelop.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -113,7 +114,7 @@ namespace MonoDevelop.CSharp.Formatting
 				//	textEditorData.Document.TextReplaced -= TextCut;
 				var dom = Document.TypeResolveContext;
 				var loc = textEditorData.Document.OffsetToLocation (offset);
-				var location = new AstLocation (loc.Line, loc.Column);
+				var location = new TextLocation (loc.Line, loc.Column);
 				//	CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
 				OnTheFlyFormatter.Format (Document, dom, location);
 				//	textEditorData.Document.TextReplaced += TextCut;
@@ -511,7 +512,7 @@ namespace MonoDevelop.CSharp.Formatting
 				//		textEditorData.Document.TextReplaced -= TextCut;
 				
 				var dom = Document.TypeResolveContext;
-				AstLocation location = new AstLocation (textEditorData.Caret.Location.Line + (lastCharInserted == '\n' ? -1 : 0), textEditorData.Caret.Location.Column);
+				TextLocation location = new TextLocation (textEditorData.Caret.Location.Line + (lastCharInserted == '\n' ? -1 : 0), textEditorData.Caret.Location.Column);
 				//				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
 				OnTheFlyFormatter.Format (Document, dom, location, lastCharInserted == '\n');
 

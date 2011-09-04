@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Refactoring
 {

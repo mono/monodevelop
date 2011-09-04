@@ -15,7 +15,8 @@ DEPS =  \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/OldNRefactory.dll
+	$(top_builddir)/build/bin/OldNRefactory.dll \
+	$(top_builddir)/contrib/ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll
 
 
 REFS =  \
@@ -65,7 +66,6 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/Indent.cs \
 	MonoDevelop.CSharp.Formatting/NewFormattingProfileDialog.cs \
 	MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs \
-	MonoDevelop.CSharp.Formatting/TextEditorDataAdapter.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
 	MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs \

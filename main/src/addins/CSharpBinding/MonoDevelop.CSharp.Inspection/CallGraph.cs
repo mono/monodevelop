@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -76,7 +77,7 @@ namespace MonoDevelop.CSharp.Inspection
 			foreach (var r in PossibleTypeReferences) {
 				if (r is PrimitiveType)
 					continue;
-				var loc = new AstLocation (r.StartLocation.Line, r.StartLocation.Column);
+				var loc = new TextLocation (r.StartLocation.Line, r.StartLocation.Column);
 				IType type = doc.Dom.SearchType (doc.CompilationUnit,
 					doc.GetType (loc), 
 					loc,

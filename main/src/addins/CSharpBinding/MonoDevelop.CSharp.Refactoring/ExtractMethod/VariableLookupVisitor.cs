@@ -32,6 +32,8 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Semantics;
 
 
 namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
@@ -120,21 +122,21 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			}
 		}
 		
-		public AstLocation MemberLocation {
+		public TextLocation MemberLocation {
 			get;
 			set;
 		}
 		
-		AstLocation position;
+		TextLocation position;
 		public DomRegion CutRegion {
 			get;
 			set;
 		}
-		public VariableLookupVisitor (RefactoringOptions options, AstLocation position)
+		public VariableLookupVisitor (RefactoringOptions options, TextLocation position)
 		{
 			this.options = options;
 			this.position = position;
-			this.MemberLocation = AstLocation.Empty;
+			this.MemberLocation = TextLocation.Empty;
 		}
 		
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
@@ -148,7 +150,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				if (varDecl.Initializer != null) {
 					if (isDefinedInsideCutRegion) {
 						descr.UsedInCutRegion = true;
-					} else if (variableDeclarationStatement.StartLocation < new AstLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
+					} else if (variableDeclarationStatement.StartLocation < new TextLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
 						descr.UsedBeforeCutRegion = !varDecl.Initializer.IsNull; 
 					} else {
 						descr.UsedAfterCutRegion = true;
@@ -174,7 +176,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (CutRegion.IsInside (identifierExpression.StartLocation.Line, identifierExpression.StartLocation.Column)) {
 				if (!v.IsChangedInsideCutRegion)
 					v.UsedInCutRegion = true;
-			} else if (identifierExpression.StartLocation < new AstLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
+			} else if (identifierExpression.StartLocation < new TextLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
 				v.UsedBeforeCutRegion = true;
 			} else {
 				v.UsedAfterCutRegion = true;
@@ -193,7 +195,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				var v = variables[left.Identifier];
 				v.IsChangedInsideCutRegion = CutRegion.IsInside (assignmentExpression.StartLocation.Line, assignmentExpression.StartLocation.Column);
 				if (!v.IsChangedInsideCutRegion) {
-					if (assignmentExpression.StartLocation < new AstLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
+					if (assignmentExpression.StartLocation < new TextLocation (CutRegion.BeginLine, CutRegion.BeginColumn)) {
 						v.UsedBeforeCutRegion = true;
 					} else {
 						v.UsedAfterCutRegion = true;

@@ -34,6 +34,7 @@ using MonoDevelop.SourceEditor;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.ContextAction
 {
@@ -64,7 +65,7 @@ namespace MonoDevelop.ContextAction
 			base.Dispose ();
 		}
 		
-		public void CreateWidget (List<ContextAction> fixes, AstLocation loc)
+		public void CreateWidget (List<ContextAction> fixes, TextLocation loc)
 		{
 			if (!fixes.Any ())
 				return;
@@ -93,7 +94,7 @@ namespace MonoDevelop.ContextAction
 			CancelQuickFixTimer ();
 			if (Document.ParsedDocument != null) {
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
-					AstLocation loc = new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+					TextLocation loc = new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 					RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<ContextAction> fixes) {
 						Application.Invoke (delegate {
 							RemoveWidget ();

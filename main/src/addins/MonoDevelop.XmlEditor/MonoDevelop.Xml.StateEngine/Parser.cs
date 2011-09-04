@@ -31,8 +31,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using MonoDevelop.Ide.Gui.Content;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -44,7 +44,7 @@ namespace MonoDevelop.Xml.StateEngine
 		bool buildTree;
 		
 		int position;
-		AstLocation location;
+		TextLocation location;
 		int stateTag;
 		StringBuilder keywordBuilder;
 		int currentStateLength;
@@ -91,7 +91,7 @@ namespace MonoDevelop.Xml.StateEngine
 		#region IDocumentStateEngine
 		
 		public int Position { get { return position; } }
-		public AstLocation Location { get { return location; } }
+		public TextLocation Location { get { return location; } }
 		
 		public void Reset ()
 		{
@@ -99,7 +99,7 @@ namespace MonoDevelop.Xml.StateEngine
 			previousState = rootState;
 			position = 0;
 			stateTag = 0;
-			location = new AstLocation (1, 1);
+			location = new TextLocation (1, 1);
 			keywordBuilder = new StringBuilder ();
 			currentStateLength = 0;
 			nodes = new NodeStack ();
@@ -126,9 +126,9 @@ namespace MonoDevelop.Xml.StateEngine
 			try {
 				//track line, column
 				if (c == '\n') {
-					location = new AstLocation (location.Line + 1, 1);
+					location = new TextLocation (location.Line + 1, 1);
 				} else {
-					location = new AstLocation (location.Line, location.Column + 1);
+					location = new TextLocation (location.Line, location.Column + 1);
 				}
 				
 				position++;
@@ -251,11 +251,11 @@ namespace MonoDevelop.Xml.StateEngine
 			set { stateTag = value; }
 		}
 		
-		AstLocation IParseContext.LocationMinus (int colOffset)
+		TextLocation IParseContext.LocationMinus (int colOffset)
 		{
 			int col = Location.Column - colOffset;
 			System.Diagnostics.Debug.Assert (col > 0);
-			return new AstLocation (Location.Line, col);
+			return new TextLocation (Location.Line, col);
 		}
 		
 		DomRegion LocationCurrentChar {
@@ -291,13 +291,13 @@ namespace MonoDevelop.Xml.StateEngine
 				InternalLogError (new Error (ErrorType.Warning, message, LocationCurrentChar));
 		}
 		
-		void IParseContext.LogError (string message, AstLocation location)
+		void IParseContext.LogError (string message, TextLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
 				InternalLogError (new Error (ErrorType.Error, message, location));
 		}
 		
-		void IParseContext.LogWarning (string message, AstLocation location)
+		void IParseContext.LogWarning (string message, TextLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
 				InternalLogError (new Error (ErrorType.Warning, message, location));
@@ -366,15 +366,15 @@ namespace MonoDevelop.Xml.StateEngine
 		int StateTag { get; set; }
 		StringBuilder KeywordBuilder { get; }
 		int CurrentStateLength { get; }
-		AstLocation Location { get; }
-		AstLocation LocationMinus (int colOffset);
+		TextLocation Location { get; }
+		TextLocation LocationMinus (int colOffset);
 		State PreviousState { get; }
 		NodeStack Nodes { get; }
 		bool BuildTree { get; }
 		void LogError (string message);
 		void LogWarning (string message);
-		void LogError (string message, AstLocation location);
-		void LogWarning (string message, AstLocation location);
+		void LogError (string message, TextLocation location);
+		void LogWarning (string message, TextLocation location);
 		void LogError (string message, DomRegion region);
 		void LogWarning (string message, DomRegion region);
 		void EndAll (bool pop);

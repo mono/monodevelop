@@ -33,7 +33,7 @@ using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Debugger;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {

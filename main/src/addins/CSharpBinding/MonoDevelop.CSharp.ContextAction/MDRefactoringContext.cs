@@ -38,6 +38,8 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -112,15 +114,15 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 		}
 
-		public override int GetOffset (AstLocation location)
+		public override int GetOffset (TextLocation location)
 		{
 			return Document.Editor.LocationToOffset (location.Line, location.Column);
 		}
 		
-		public override AstLocation GetLocation (int offset)
+		public override TextLocation GetLocation (int offset)
 		{
 			var loc = Document.Editor.OffsetToLocation (offset);
-			return new AstLocation (loc.Line, loc.Column);
+			return new TextLocation (loc.Line, loc.Column);
 		}
 
 		public override string GetText (int offset, int length)
@@ -376,12 +378,12 @@ namespace MonoDevelop.CSharp.ContextAction
 		}
 		CSharpParsedFile CSharpParsedFile { get; set; }
 		
-		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
+		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			this.Document = document;
-			this.Location = new AstLocation (loc.Line, loc.Column);
+			this.Location = new TextLocation (loc.Line, loc.Column);
 			this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
 			this.CSharpParsedFile = document.ParsedDocument.Annotation<CSharpParsedFile> ();
 		}
@@ -403,7 +405,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			MonoDevelop.Projects.Dom.ResolveResult result;
 			if (!resolveCache.TryGetValue (node, out result))
-				resolveCache [node] = result = Resolver.Resolve (node.ToString (), new  MonoDevelop.Projects.Dom.AstLocation (Location.Line, Location.Column));
+				resolveCache [node] = result = Resolver.Resolve (node.ToString (), new  MonoDevelop.Projects.Dom.TextLocation (Location.Line, Location.Column));
 			return result;
 		}*/
 		

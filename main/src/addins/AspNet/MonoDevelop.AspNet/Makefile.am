@@ -11,7 +11,8 @@ DEPS =  \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/contrib/ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -57,6 +58,7 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
 	MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs \
+	MonoDevelop.AspNet.Gui/TypeResolveContextDecorator.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanel.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs \
 	MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs \

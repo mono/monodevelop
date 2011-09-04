@@ -34,6 +34,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.GtkCore
 {
@@ -120,9 +121,9 @@ namespace MonoDevelop.GtkCore
 					}
 					var pargs = at.GetPositionalArguments (ctx);
 					if (pargs != null && pargs.Count > 0) {
-						var val = pargs[0].GetValue (ctx);
+						var val = pargs[0] as ConstantResolveResult;
 						if (val is string)
-							return val.ToString ();
+							return val.ConstantValue.ToString ();
 					}
 				}
 	//	}
@@ -170,9 +171,9 @@ namespace MonoDevelop.GtkCore
 					}
 					var pargs = at.GetPositionalArguments (ctx);
 					if (pargs != null && pargs.Count > 0) {
-						var val = pargs[0].GetValue (ctx);
-						if (val is bool) {
-							return (bool) val;
+						var val = pargs[0] as ConstantResolveResult;
+						if (val.ConstantValue is bool) {
+							return (bool) val.ConstantValue;
 						}
 					}
 				}
@@ -198,13 +199,13 @@ namespace MonoDevelop.GtkCore
 				}
 				var pargs = at.GetPositionalArguments (ctx);
 				if (pargs != null && pargs.Count > 0) {
-					var val = pargs[0].GetValue (ctx);
-					if (val == null)
+					var val = pargs[0] as ConstantResolveResult;
+					if (val.ConstantValue == null)
 						return false;
-					else if (val is bool)
-						return (bool) val;
+					else if (val.ConstantValue is bool)
+						return (bool) val.ConstantValue;
 					else 
-						return val != null;
+						return val.ConstantValue != null;
 				}
 			}
 

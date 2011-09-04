@@ -33,6 +33,7 @@ using MonoDevelop.CSharp.Project;
 using MonoDevelop.Ide.Tasks;
 using Mono.CSharp;
 using System.Linq;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -115,7 +116,7 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 
-		void CloseConditionBlock (AstLocation loc)
+		void CloseConditionBlock (TextLocation loc)
 		{
 			if (ConditionalRegion == null || ConditionalRegion.ConditionBlocks.Count == 0 || !ConditionalRegion.ConditionBlocks[ConditionalRegion.ConditionBlocks.Count - 1].End.IsEmpty)
 				return;
@@ -126,14 +127,14 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			if (ConditionalRegion == null)
 				return;
-			ConditionalRegion.End = new AstLocation (line, col);
+			ConditionalRegion.End = new TextLocation (line, col);
 			result.Add (ConditionalRegion);
 			conditionalRegions.Pop ();
 		}
 		
 		void VisitPreprocessorDirective (ParsedDocument result, SpecialsBag.PreProcessorDirective directive)
 		{
-			AstLocation loc = new AstLocation (directive.Line, directive.Col);
+			TextLocation loc = new TextLocation (directive.Line, directive.Col);
 			switch (directive.Cmd) {
 			case Tokenizer.PreprocessorDirective.If:
 				conditionalRegions.Push (new ConditionalRegion (directive.Arg));
@@ -141,17 +142,17 @@ namespace MonoDevelop.CSharp.Parser
 				ConditionalRegion.Start = loc;
 				break;
 			case Tokenizer.PreprocessorDirective.Elif:
-				CloseConditionBlock (new AstLocation (directive.EndLine, directive.EndCol));
+				CloseConditionBlock (new TextLocation (directive.EndLine, directive.EndCol));
 				if (ConditionalRegion != null)
 					ConditionalRegion.ConditionBlocks.Add (new ConditionBlock (directive.Arg, loc));
 				break;
 			case Tokenizer.PreprocessorDirective.Else:
-				CloseConditionBlock (new AstLocation (directive.EndLine, directive.EndCol));
+				CloseConditionBlock (new TextLocation (directive.EndLine, directive.EndCol));
 				if (ConditionalRegion != null)
-					ConditionalRegion.ElseBlock = new DomRegion (loc, AstLocation.Empty);
+					ConditionalRegion.ElseBlock = new DomRegion (loc, TextLocation.Empty);
 				break;
 			case Tokenizer.PreprocessorDirective.Endif:
-				AstLocation endLoc = new AstLocation (directive.EndLine, directive.EndCol);
+				TextLocation endLoc = new TextLocation (directive.EndLine, directive.EndCol);
 				CloseConditionBlock (endLoc);
 				if (ConditionalRegion != null && !ConditionalRegion.ElseBlock.Begin.IsEmpty)
 					ConditionalRegion.ElseBlock = new DomRegion (ConditionalRegion.ElseBlock.Begin, endLoc);

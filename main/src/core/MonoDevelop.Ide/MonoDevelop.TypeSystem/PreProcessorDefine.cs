@@ -24,7 +24,7 @@
 // THE SOFTWARE.
 //
 using System;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -35,7 +35,7 @@ namespace MonoDevelop.TypeSystem
 			set;
 		}
 		
-		public AstLocation Location {
+		public TextLocation Location {
 			get;
 			set;
 		}
@@ -44,7 +44,7 @@ namespace MonoDevelop.TypeSystem
 		{
 		}
 		
-		public PreProcessorDefine (string define, AstLocation location)
+		public PreProcessorDefine (string define, TextLocation location)
 		{
 			this.Define = define;
 			this.Location = location;

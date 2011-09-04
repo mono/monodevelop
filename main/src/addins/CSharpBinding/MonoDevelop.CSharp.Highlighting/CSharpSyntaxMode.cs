@@ -45,6 +45,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory;
 
 
 namespace MonoDevelop.CSharp.Highlighting
@@ -287,7 +289,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (unit == null || visitor == null)
 					return null;
 				var loc = doc.OffsetToLocation (chunk.Offset);
-				var node = unit.GetNodeAt (new AstLocation (loc.Line, loc.Column), n => n is Identifier || n is AstType);
+				var node = unit.GetNodeAt (new TextLocation (loc.Line, loc.Column), n => n is Identifier || n is AstType);
 				
 				if (contextualKeywords.Contains (wordbuilder.ToString ())) {
 					if (node is Identifier) {

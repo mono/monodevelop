@@ -39,8 +39,8 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Debugger.Viewers;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 /*
  * Some places we should be doing some error handling we used to toss

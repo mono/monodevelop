@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -255,7 +255,7 @@ namespace MonoDevelop.TypeSystem
 		public abstract string CreateFieldEncapsulation (ITypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly);
 		
 		public abstract void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName);
-		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, AstLocation caretLocation);
+		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation);
 
 		public abstract string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type);
 

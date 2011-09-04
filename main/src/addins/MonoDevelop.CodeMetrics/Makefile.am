@@ -7,7 +7,8 @@ DEPS =  \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/contrib/ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \

@@ -34,7 +34,7 @@ using MonoDevelop.Core.Execution;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Ide
 {

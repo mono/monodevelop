@@ -201,5 +201,18 @@
     <Compile Include="Utils\TreeTraversal.cs" />
     <Compile Include="Role.cs" />
     <Compile Include="TextLocation.cs" />
+    <Compile Include="PatternMatching\AnyNode.cs" />
+    <Compile Include="PatternMatching\Backreference.cs" />
+    <Compile Include="PatternMatching\BacktrackingInfo.cs" />
+    <Compile Include="PatternMatching\Choice.cs" />
+    <Compile Include="PatternMatching\INode.cs" />
+    <Compile Include="PatternMatching\Match.cs" />
+    <Compile Include="PatternMatching\NamedNode.cs" />
+    <Compile Include="PatternMatching\OptionalNode.cs" />
+    <Compile Include="PatternMatching\Pattern.cs" />
+    <Compile Include="PatternMatching\Repeat.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="PatternMatching\" />
   </ItemGroup>
 </Project>

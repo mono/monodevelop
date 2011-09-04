@@ -58,8 +58,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="ICSharpCode.SharpZipLib">
-    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -95,6 +94,10 @@
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
       <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -1515,7 +1518,6 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />

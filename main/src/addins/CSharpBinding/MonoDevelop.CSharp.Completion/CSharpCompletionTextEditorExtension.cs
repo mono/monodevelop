@@ -41,6 +41,8 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Text;
 using MonoDevelop.Ide.CodeTemplates;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -308,13 +310,13 @@ namespace MonoDevelop.CSharp.Completion
 			if (wrapInClass)
 				wrapper.Append ('}');
 			
-			AstLocation memberLocation;
+			TextLocation memberLocation;
 			if (currentMember != null) {
 				memberLocation = currentMember.Region.Begin;
 			} else if (currentType != null) {
 				memberLocation = currentType.Region.Begin;
 			} else {
-				memberLocation = new AstLocation (1, 1);
+				memberLocation = new TextLocation (1, 1);
 			}
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				var parser = new CSharpParser ();
@@ -428,7 +430,7 @@ namespace MonoDevelop.CSharp.Completion
 			stream.Close ();
 			var loc = document.Editor.OffsetToLocation (offset);
 			
-			var expr = completionUnit.GetNodeAt (new AstLocation (loc.Line, loc.Column), n => n is Expression || n is VariableDeclarationStatement);
+			var expr = completionUnit.GetNodeAt (new TextLocation (loc.Line, loc.Column), n => n is Expression || n is VariableDeclarationStatement);
 			
 			if (expr == null)
 				return null;
@@ -551,7 +553,7 @@ namespace MonoDevelop.CSharp.Completion
 			} else if (textEditorData.CurrentMode is Mono.TextEditor.TextLinkEditMode) {
 				return null;
 			}
-			var loc = new AstLocation (Document.Editor.Caret.Location.Line, Document.Editor.Caret.Location.Column);
+			var loc = new TextLocation (Document.Editor.Caret.Location.Line, Document.Editor.Caret.Location.Column);
 			this.currentType = CSharpParsedFile.GetInnermostTypeDefinition (loc);
 			this.currentMember = CSharpParsedFile.GetMember (loc);
 			switch (completionChar) {
@@ -584,7 +586,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				return GetDirectiveCompletionData ();
 			
-			// XML doc completion
+// XML doc completion
 			case '<':
 				if (IsInsideDocComment ())
 					return GetXmlDocumentationCompletionData ();
@@ -860,7 +862,7 @@ namespace MonoDevelop.CSharp.Completion
 //						return CreateCtrlSpaceCompletionData (completionContext, result);
 //					}
 //					CompletionDataList dataList = new ProjectDomCompletionDataList ();
-//					CompletionDataCollector col = new CompletionDataCollector (this, dom, dataList, Document.CompilationUnit, null, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//					CompletionDataCollector col = new CompletionDataCollector (this, dom, dataList, Document.CompilationUnit, null, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //					foreach (string kw in linqKeywords) {
 //						col.Add (kw, "md-keyword");
 //					}
@@ -1062,7 +1064,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			var wrapper = new CompletionDataWrapper (this);
 			
-			var loc = new AstLocation (Editor.Caret.Line, Editor.Caret.Column);
+			var loc = new TextLocation (Editor.Caret.Line, Editor.Caret.Column);
 			var node = unit.GetNodeAt (loc);
 			var rr = ResolveExpression (CSharpParsedFile, node, Unit);
 			AddContextCompletion (wrapper, rr != null ? rr.Item2 : GetState (), node);
@@ -1074,7 +1076,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var state = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var pf = document.ParsedDocument.Annotation<CSharpParsedFile> ();
-			var loc = new AstLocation (Editor.Caret.Line, Editor.Caret.Column);
+			var loc = new TextLocation (Editor.Caret.Line, Editor.Caret.Column);
 			state.CurrentMember =  pf.GetMember (loc);
 			state.CurrentTypeDefinition =  pf.GetInnermostTypeDefinition (loc);
 			state.CurrentUsingScope = pf.GetUsingScope (loc);
@@ -1213,7 +1215,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (IsInsideComment () || IsInsideString ())
 				return null;
-			var location = new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
+			var location = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
 			switch (word) {
 			case "using":
 			case "namespace":
@@ -1227,7 +1229,7 @@ namespace MonoDevelop.CSharp.Completion
 //				case ",":
 //				case ":":
 //					if (result.ExpressionContext == ExpressionContext.InheritableType) {
-//						IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//						IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 //						List<string > namespaceList = GetUsedNamespaces ();
 //						var col = new CSharpTextEditorCompletion.CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, null, location);
@@ -1307,7 +1309,7 @@ namespace MonoDevelop.CSharp.Completion
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 //						ExpressionResult expressionResult = FindExpression (dom, completionContext, wordStart - textEditorData.Caret.Offset);
 //						NRefactoryResolver resolver = CreateResolver ();
-//						ResolveResult resolveResult = resolver.Resolve (expressionResult, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//						ResolveResult resolveResult = resolver.Resolve (expressionResult, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //						if (resolveResult != null && resolveResult.ResolvedType != null) {
 //							CompletionDataCollector col = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 //							IType foundType = null;
@@ -1392,7 +1394,7 @@ namespace MonoDevelop.CSharp.Completion
 //					if (!IsLineEmptyUpToEol ())
 //						return null;
 //					
-//					overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//					overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //					if (overrideCls != null && (overrideCls.ClassType == ClassType.Class || overrideCls.ClassType == ClassType.Struct)) {
 //						string modifiers = textEditorData.GetTextBetween (firstMod, wordStart);
 //						return GetPartialCompletionData (completionContext, overrideCls, modifiers);
@@ -1424,7 +1426,7 @@ namespace MonoDevelop.CSharp.Completion
 						hintType = resolved.Item1.Type;
 				}
 				return CreateTypeCompletionData (hintType);
-//					IType callingType = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new AstLocation (textEditorData.Caret.Line, textEditorData.Caret.Column));
+//					IType callingType = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column));
 //					ExpressionContext newExactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (textEditorData, Document.CompilationUnit, Document.FileName, callingType);
 //					if (newExactContext is ExpressionContext.TypeExpressionContext)
 //						return CreateTypeCompletionData (location, callingType, newExactContext, ((ExpressionContext.TypeExpressionContext)newExactContext).Type, ((ExpressionContext.TypeExpressionContext)newExactContext).UnresolvedType);
@@ -1434,7 +1436,7 @@ namespace MonoDevelop.CSharp.Completion
 //						string yieldToken = GetPreviousToken (ref j, true);
 //						if (token == "return") {
 //							NRefactoryResolver resolver = CreateResolver ();
-//							resolver.SetupResolver (new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//							resolver.SetupResolver (new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //							IReturnType returnType = resolver.CallingMember.ReturnType;
 //							if (yieldToken == "yield" && returnType.GenericArguments.Count > 0)
 //								returnType = returnType.GenericArguments [0];
@@ -1463,7 +1465,7 @@ namespace MonoDevelop.CSharp.Completion
 //				case "where":
 //					CompletionDataList whereDataList = new CompletionDataList ();
 //					NRefactoryResolver constraintResolver = CreateResolver ();
-//					constraintResolver.SetupResolver (new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//					constraintResolver.SetupResolver (new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //					if (constraintResolver.CallingMember is IMethod) {
 //						foreach (ITypeParameter tp in ((IMethod)constraintResolver.CallingMember).TypeParameters) {
 //							whereDataList.Add (tp.Name, "md-keyword");
@@ -1486,7 +1488,7 @@ namespace MonoDevelop.CSharp.Completion
 //						return CreateCtrlSpaceCompletionData (completionContext, result);
 //					}
 //					CompletionDataList dataList = new ProjectDomCompletionDataList ();
-//					CompletionDataCollector col = new CompletionDataCollector (this, dom, dataList, Document.CompilationUnit, null, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//					CompletionDataCollector col = new CompletionDataCollector (this, dom, dataList, Document.CompilationUnit, null, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //					foreach (string kw in linqKeywords) {
 //						col.Add (kw, "md-keyword");
 //					}
@@ -1911,7 +1913,7 @@ namespace MonoDevelop.CSharp.Completion
 			return currentMember.DeclaringTypeDefinition != null && member.DeclaringTypeDefinition.FullName == currentMember.DeclaringTypeDefinition.FullName;
 		}
 		
-		ICompletionDataList CreateTypeAndNamespaceCompletionData (AstLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
+		ICompletionDataList CreateTypeAndNamespaceCompletionData (TextLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
 		{
 			if (resolveResult == null || resolveResult.IsError)
 				return null;
@@ -1935,7 +1937,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result.Result;
 		}
 		
-		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
+		ICompletionDataList CreateCompletionData (TextLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
 		{
 			if (resolveResult == null /*|| resolveResult.IsError*/)
 				return null;
@@ -2192,9 +2194,9 @@ namespace MonoDevelop.CSharp.Completion
 //			case '<':
 //				if (string.IsNullOrEmpty (result.Expression))
 //					return null;
-//				return new NRefactoryTemplateParameterDataProvider (textEditorData, resolver, GetUsedNamespaces (), result, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//				return new NRefactoryTemplateParameterDataProvider (textEditorData, resolver, GetUsedNamespaces (), result, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //			case '[': {
-//				ResolveResult resolveResult = resolver.Resolve (result, new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+//				ResolveResult resolveResult = resolver.Resolve (result, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 //				if (resolveResult != null && !resolveResult.StaticResolve) {
 //					IType type = dom.GetType (resolveResult.ResolvedType);
 //					if (type != null)
@@ -2209,7 +2211,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		List<string> GetUsedNamespaces ()
 		{
-			var scope = CSharpParsedFile.GetUsingScope (new AstLocation (document.Editor.Caret.Line, document.Editor.Caret.Column));
+			var scope = CSharpParsedFile.GetUsingScope (new TextLocation (document.Editor.Caret.Line, document.Editor.Caret.Column));
 			List<string> result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);

@@ -44,6 +44,7 @@ using MonoDevelop.CSharp.Formatting;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 {
@@ -118,7 +119,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			
 			ExtractMethodParameters param = new ExtractMethodParameters () {
 				DeclaringMember = member,
-				Location = new AstLocation (buffer.Caret.Line, buffer.Caret.Column)
+				Location = new TextLocation (buffer.Caret.Line, buffer.Caret.Column)
 			};
 			Analyze (options, param, true);
 			return param;
@@ -156,7 +157,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				set;
 			}
 			
-			public AstLocation Location {
+			public TextLocation Location {
 				get;
 				set;
 			}
@@ -567,7 +568,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
 			node.AcceptVisitor (transformer, null);
 			if (!param.OneChangedVariable && node is Expression) {
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new AstLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new TextLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
 				if (resolveResult.ResolvedType != null)
 					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 			}

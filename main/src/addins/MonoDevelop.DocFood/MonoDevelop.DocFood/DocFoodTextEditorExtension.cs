@@ -31,6 +31,7 @@ using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.DocFood
 {
@@ -125,7 +126,7 @@ namespace MonoDevelop.DocFood
 			
 			IMember result = null;
 			foreach (var member in type.Members) {
-				if (member.Region.Begin > new AstLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
+				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
 					result = member;
 				}
 			}

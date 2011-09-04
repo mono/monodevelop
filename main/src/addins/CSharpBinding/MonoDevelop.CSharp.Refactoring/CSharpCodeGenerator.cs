@@ -33,6 +33,7 @@ using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -636,7 +637,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			doc.Editor.Document.CommitUpdateAll ();
 		}
 		
-		public override void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, AstLocation caretLocation)
+		public override void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation)
 		{
 			var parsedDocument = doc.ParsedDocument;
 			var unit = parsedDocument.Annotation<CompilationUnit> ();
@@ -666,7 +667,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			text.Append (doc.Editor.EolMarker);
 			
 			int offset;
-			AstLocation loc;
+			TextLocation loc;
 			if (node != null) {
 				loc = node == unit.FirstChild ? node.StartLocation : node.EndLocation;
 			} else {
@@ -684,7 +685,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)
 		{
-			var loc = new AstLocation (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+			var loc = new TextLocation (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
 			AstType shortType = CreateShortType (doc.TypeResolveContext, doc.ParsedDocument.Annotation<CSharpParsedFile> (), loc, type);
 			return OutputNode (doc, shortType);
 		}
@@ -703,7 +704,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 		
 		
-		static AstType CreateShortType (ITypeResolveContext ctx, CSharpParsedFile file, AstLocation loc, IType fullType)
+		static AstType CreateShortType (ITypeResolveContext ctx, CSharpParsedFile file, TextLocation loc, IType fullType)
 		{
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			

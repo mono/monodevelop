@@ -30,9 +30,9 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using Gdk;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -81,7 +81,7 @@ namespace MonoDevelop.SourceEditor
 			private set;
 		}
 		
-		public AstLocation Location {
+		public TextLocation Location {
 			get;
 			private set;
 		}
@@ -91,7 +91,7 @@ namespace MonoDevelop.SourceEditor
 			private set;
 		}
 		
-		public QuickTask (string description, AstLocation location, QuickTaskSeverity severity)
+		public QuickTask (string description, TextLocation location, QuickTaskSeverity severity)
 		{
 			this.Description = description;
 			this.Location = location;

@@ -38,6 +38,8 @@ using MonoDevelop.Refactoring;
 using System.IO;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 {
@@ -110,7 +112,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 				if (node != null) {
 					var nodeStack = new Stack<AstNode> ();
 					nodeStack.Push (node);
-					var minLoc = new AstLocation (data.Caret.Line, data.Caret.Column);
+					var minLoc = new TextLocation (data.Caret.Line, data.Caret.Column);
 					while (nodeStack.Count > 0) {
 						var curNode = nodeStack.Pop ();
 						
@@ -220,7 +222,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
 			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
-			var visitor = new VariableLookupVisitor (options, new AstLocation (endPoint.Line, endPoint.Column));
+			var visitor = new VariableLookupVisitor (options, new TextLocation (endPoint.Line, endPoint.Column));
 			var ctx = options.Document.TypeResolveContext;
 			if (options.ResolveResult == null) {
 				LoggingService.LogError ("Declare local error: resolve result == null");
@@ -483,23 +485,23 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			}
 		}
 		
-		public AstLocation MemberLocation {
+		public TextLocation MemberLocation {
 			get;
 			set;
 		}
 		
 		RefactoringOptions resolver;
-		AstLocation position;
+		TextLocation position;
 		public DomRegion CutRegion {
 			get;
 			set;
 		}
 		
-		public VariableLookupVisitor (RefactoringOptions resolver, AstLocation position)
+		public VariableLookupVisitor (RefactoringOptions resolver, TextLocation position)
 		{
 			this.resolver = resolver;
 			this.position = position;
-			this.MemberLocation = AstLocation.Empty;
+			this.MemberLocation = TextLocation.Empty;
 		}
 		
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement localVariableDeclaration, object data)

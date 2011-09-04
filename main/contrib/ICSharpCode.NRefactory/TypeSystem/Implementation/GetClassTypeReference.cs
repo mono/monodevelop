@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		int typeParameterCount;
 		// [NonSerialized] volatile CachedResult v_cachedResult;
 		
-		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount)
+		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount = 0)
 		{
 			if (nameSpace == null)
 				throw new ArgumentNullException("nameSpace");
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.typeParameterCount = typeParameterCount;
 		}
 		
-		public GetClassTypeReference(string fullTypeName, int typeParameterCount)
+		public GetClassTypeReference(string fullTypeName, int typeParameterCount = 0)
 		{
 			if (fullTypeName == null)
 				throw new ArgumentNullException("fullTypeName");

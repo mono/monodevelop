@@ -36,6 +36,8 @@ using MonoDevelop.Core;
 using MonoDevelop.TypeSystem;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Refactoring
 {
@@ -73,9 +75,9 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public AstLocation Location {
+		public TextLocation Location {
 			get {
-				return new AstLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+				return new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 			}
 		}
 		
@@ -149,7 +151,7 @@ namespace MonoDevelop.Refactoring
 			return GetUsedNamespaces (Document, Location);
 		}
 		
-		public static List<string> GetUsedNamespaces (Document doc, AstLocation loc)
+		public static List<string> GetUsedNamespaces (Document doc, TextLocation loc)
 		{
 			var result = new List<string> ();
 			var pf = doc.ParsedDocument.Annotation<CSharpParsedFile> ();

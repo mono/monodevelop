@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Completion
 		List<ITypeParameterMember> types = new List<ITypeParameterMember> ();
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		
-		public NRefactoryTemplateParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, AstLocation loc)
+		public NRefactoryTemplateParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, TextLocation loc)
 		{
 //			this.editor = editor;
 			ResolveResult plainResolveResult = resolver.Resolve (expressionResult, loc);

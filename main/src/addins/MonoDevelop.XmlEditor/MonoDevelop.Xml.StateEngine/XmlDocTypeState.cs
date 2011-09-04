@@ -30,7 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -133,7 +133,7 @@ namespace MonoDevelop.Xml.StateEngine
 				switch (context.StateTag) {
 				case 0:
 					if (c == '[') {
-						doc.InternalDeclarationRegion = new DomRegion (context.Location, AstLocation.Empty);
+						doc.InternalDeclarationRegion = new DomRegion (context.Location, TextLocation.Empty);
 						context.StateTag = 1;
 						return null;
 					}

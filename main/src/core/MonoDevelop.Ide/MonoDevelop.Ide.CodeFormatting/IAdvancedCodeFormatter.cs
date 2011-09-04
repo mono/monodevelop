@@ -28,8 +28,9 @@ using System;
 using System.Collections.Generic;
 using Mono.TextEditor;
 using MonoDevelop.Projects.Policies;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -54,11 +55,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// A <see cref="IParsedFile"/>
 		/// </param>
 		/// <param name="caretLocation">
-		/// A <see cref="AstLocation"/> that should be the end location to which the parsing should occur.
+		/// A <see cref="TextLocation"/> that should be the end location to which the parsing should occur.
 		/// </param>
 		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
 			TextEditorData textEditorData, IType callingType, IMember callingMember, ITypeResolveContext dom,
-			IParsedFile unit, AstLocation endLocation);
+			IParsedFile unit, TextLocation endLocation);
 		
 		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
 			TextEditorData textEditorData, int startOffset, int endOffset);
@@ -71,7 +72,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		public virtual void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
 			TextEditorData data, IType callingType, IMember callingMember, ITypeResolveContext dom,
-			IParsedFile unit, AstLocation endLocation)
+			IParsedFile unit, TextLocation endLocation)
 		{
 			throw new NotSupportedException ();
 		}

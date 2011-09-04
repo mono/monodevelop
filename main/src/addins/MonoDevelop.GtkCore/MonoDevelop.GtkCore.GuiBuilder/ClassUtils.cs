@@ -31,6 +31,7 @@ using System;
 using System.Collections;
 using System.CodeDom;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -52,9 +53,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (type.ReflectionName == "Glade.Widget" || type.ReflectionName == "Widget" || type.ReflectionName == "Glade.WidgetAttribute" || type.ReflectionName == "WidgetAttribute") {
 					var pArgs = att.GetPositionalArguments (ctx);
 					if (pArgs != null && pArgs.Count > 0) {
-						CodePrimitiveExpression exp = pArgs[0] as CodePrimitiveExpression;
+						var exp = pArgs[0] as ConstantResolveResult;
 						if (exp != null)
-							return exp.Value.ToString ();
+							return exp.ConstantValue.ToString ();
 					} else {
 						return field.Name;
 					}

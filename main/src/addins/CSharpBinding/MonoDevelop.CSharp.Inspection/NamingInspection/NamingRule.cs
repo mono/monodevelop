@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -709,7 +710,7 @@ namespace MonoDevelop.CSharp.Inspection
 			sb[sb.Length - word.Length] = char.ToUpper (sb[sb.Length - word.Length]);
 		}
 		
-		public FixableResult GetFixableResult (ICS.AstLocation location, IEntity node, string name)
+		public FixableResult GetFixableResult (TextLocation location, IEntity node, string name)
 		{
 			IList<string> suggestedFixes;
 			var error = GetErrorMessage (name, out suggestedFixes);

@@ -41,6 +41,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Linq;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Refactoring
 {

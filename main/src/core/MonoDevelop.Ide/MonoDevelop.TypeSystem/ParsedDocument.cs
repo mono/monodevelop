@@ -27,11 +27,11 @@ using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 using System.Text;
-using ICSharpCode.NRefactory.CSharp;
 using System.Linq;
 using System.Threading;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.CSharp;
 
 
 namespace MonoDevelop.TypeSystem
@@ -113,17 +113,17 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		#region IParsedFile implementation
-		public virtual ITypeDefinition GetTopLevelTypeDefinition (AstLocation location)
+		public virtual ITypeDefinition GetTopLevelTypeDefinition (TextLocation location)
 		{
 			return null;
 		}
 		
-		public virtual ITypeDefinition GetInnermostTypeDefinition (AstLocation location)
+		public virtual ITypeDefinition GetInnermostTypeDefinition (TextLocation location)
 		{
 			return null;
 		}
 
-		public virtual IMember GetMember (AstLocation location)
+		public virtual IMember GetMember (TextLocation location)
 		{
 			return null;
 		}
@@ -266,12 +266,12 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		#region IParsedFile implementation
-		public override ITypeDefinition GetTopLevelTypeDefinition(AstLocation location)
+		public override ITypeDefinition GetTopLevelTypeDefinition(TextLocation location)
 		{
 			return FindEntity(types, location);
 		}
 		
-		public override ITypeDefinition GetInnermostTypeDefinition(AstLocation location)
+		public override ITypeDefinition GetInnermostTypeDefinition(TextLocation location)
 		{
 			ITypeDefinition parent = null;
 			ITypeDefinition type = GetTopLevelTypeDefinition(location);
@@ -282,7 +282,7 @@ namespace MonoDevelop.TypeSystem
 			return parent;
 		}
 		
-		public override IMember GetMember(AstLocation location)
+		public override IMember GetMember(TextLocation location)
 		{
 			ITypeDefinition type = GetInnermostTypeDefinition(location);
 			if (type == null)
@@ -293,7 +293,7 @@ namespace MonoDevelop.TypeSystem
 				?? (IMember)FindEntity(type.Events, location);
 		}
 		
-		static T FindEntity<T>(IList<T> list, AstLocation location) where T : class, IEntity
+		static T FindEntity<T>(IList<T> list, TextLocation location) where T : class, IEntity
 		{
 			// This could be improved using a binary search
 			foreach (T entity in list) {
@@ -340,17 +340,17 @@ namespace MonoDevelop.TypeSystem
 		}
 	
 		#region IParsedFile implementation
-		public override ITypeDefinition GetTopLevelTypeDefinition (ICSharpCode.NRefactory.CSharp.AstLocation location)
+		public override ITypeDefinition GetTopLevelTypeDefinition (TextLocation location)
 		{
 			return parsedFile.GetTopLevelTypeDefinition (location);
 		}
 		
-		public override ITypeDefinition GetInnermostTypeDefinition (ICSharpCode.NRefactory.CSharp.AstLocation location)
+		public override ITypeDefinition GetInnermostTypeDefinition (TextLocation location)
 		{
 			return parsedFile.GetInnermostTypeDefinition (location);
 		}
 
-		public override IMember GetMember (ICSharpCode.NRefactory.CSharp.AstLocation location)
+		public override IMember GetMember (TextLocation location)
 		{
 			return parsedFile.GetMember (location);
 		}

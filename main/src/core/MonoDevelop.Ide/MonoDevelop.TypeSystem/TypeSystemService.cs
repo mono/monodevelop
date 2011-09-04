@@ -30,7 +30,6 @@ using System.IO;
 using MonoDevelop.Projects;
 using Mono.Cecil;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Addins;
 using MonoDevelop.Core;
@@ -41,6 +40,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Collections;
 using System.Xml;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -66,9 +66,9 @@ namespace MonoDevelop.TypeSystem
 			return type.GetDefinition ().ProjectContent;
 		}
 		
-		public static AstLocation GetLocation (this IType type)
+		public static TextLocation GetLocation (this IType type)
 		{
-			return new AstLocation (type.GetDefinition ().Region.BeginLine, type.GetDefinition ().Region.BeginColumn);
+			return type.GetDefinition ().Region.Begin;
 		}
 		
 		public static string GetDocumentation (this IType type)

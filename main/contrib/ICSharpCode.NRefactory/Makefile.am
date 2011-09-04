@@ -26,6 +26,16 @@ FILES =  \
 	Editor/ReadOnlyDocument.cs \
 	Editor/StringTextSource.cs \
 	Editor/TextChangeEventArgs.cs \
+	PatternMatching/AnyNode.cs \
+	PatternMatching/Backreference.cs \
+	PatternMatching/BacktrackingInfo.cs \
+	PatternMatching/Choice.cs \
+	PatternMatching/INode.cs \
+	PatternMatching/Match.cs \
+	PatternMatching/NamedNode.cs \
+	PatternMatching/OptionalNode.cs \
+	PatternMatching/Pattern.cs \
+	PatternMatching/Repeat.cs \
 	Role.cs \
 	Semantics/AmbiguousResolveResult.cs \
 	Semantics/ArrayAccessResolveResult.cs \

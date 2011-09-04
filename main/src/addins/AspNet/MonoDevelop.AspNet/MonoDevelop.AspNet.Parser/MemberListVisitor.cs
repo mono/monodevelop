@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.AspNet.Parser.Dom;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -90,7 +91,7 @@ namespace MonoDevelop.AspNet.Parser
 				return;
 			}
 			
-			Members [id] = new CodeBehindMember (id, type, new AstLocation (node.Location.BeginLine, node.Location.BeginColumn));
+			Members [id] = new CodeBehindMember (id, type, new TextLocation (node.Location.BeginLine, node.Location.BeginColumn));
 		}
 		
 		internal void AddError (ErrorType type, ILocation location, string message)
@@ -104,7 +105,7 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class CodeBehindMember
 	{
-		public CodeBehindMember (string name, IType type, AstLocation location)
+		public CodeBehindMember (string name, IType type, TextLocation location)
 		{
 			this.Name = name;
 			this.Type = type;
@@ -113,6 +114,6 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public string Name { get; private set; }
 		public IType Type { get; private set; }
-		public AstLocation Location { get; private set; }
+		public TextLocation Location { get; private set; }
 	}
 }

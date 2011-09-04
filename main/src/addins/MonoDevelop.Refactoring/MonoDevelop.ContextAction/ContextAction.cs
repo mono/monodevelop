@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.ContextAction
 {
@@ -48,13 +49,13 @@ namespace MonoDevelop.ContextAction
 			protected set;
 		}
 		
-		public virtual string GetMenuText (MonoDevelop.Ide.Gui.Document document, AstLocation loc)
+		public virtual string GetMenuText (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
 		{
 			return Node.Title;
 		}
 		
-		public abstract void Run (MonoDevelop.Ide.Gui.Document document, AstLocation loc);
-		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, AstLocation loc);
+		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
+		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
 		
 /*		public static ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)
 		{

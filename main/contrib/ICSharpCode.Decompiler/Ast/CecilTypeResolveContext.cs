@@ -41,7 +41,15 @@ namespace ICSharpCode.Decompiler.Ast
 				return null;
 			}
 		}
-		
+		public string AssemblyName {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+		public ITypeDefinition GetKnownTypeDefinition (TypeCode typeCode)
+		{
+			throw new NotImplementedException ();
+		}
 		public void UpdateProjectContent (IParsedFile oldFile, IParsedFile newFile)
 		{
 			

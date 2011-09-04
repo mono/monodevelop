@@ -57,7 +57,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			foreach (var r in visitor.PossibleTypeReferences) {
 				if (r is PrimitiveType)
 					continue;
-				IType type = dom.SearchType (compilationUnit, options.ResolveResult != null ? options.ResolveResult.CallingType : null, new AstLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column), r.ConvertToReturnType ());
+				IType type = dom.SearchType (compilationUnit, options.ResolveResult != null ? options.ResolveResult.CallingType : null, new TextLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column), r.ConvertToReturnType ());
 				if (type != null) {
 					usedUsings.Add (type.Namespace);
 				}

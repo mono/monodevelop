@@ -44,6 +44,7 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Refactoring
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.Refactoring
 			TextEditorData data = doc.Editor;
 			
 			result.InsertNamespace  = false;
-			var loc = new AstLocation (data.Caret.Line, data.Caret.Column);
+			var loc = new TextLocation (data.Caret.Line, data.Caret.Column);
 			foreach (var ns in RefactoringOptions.GetUsedNamespaces (doc, loc)) {
 				if (type.Namespace == ns) {
 					result.GenerateUsing = false;

@@ -36,6 +36,8 @@ using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using System.Linq;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -90,7 +92,7 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-			var node = ResolveAtLocation.Resolve (dom, parsedFile, unit, new AstLocation (loc.Line, loc.Column));
+			var node = ResolveAtLocation.Resolve (dom, parsedFile, unit, new TextLocation (loc.Line, loc.Column));
 			if (node == null) {
 				expressionRegion = DomRegion.Empty;
 				return null;

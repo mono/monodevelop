@@ -420,11 +420,11 @@ namespace MonoDevelop.Refactoring {
 			mode.HelpWindow = helpWindow;
 			mode.CurIndex = mode.InsertionPoints.Count - 1;
 			int idx = -1, i = 0;
-			AstLocation lastLocation = AstLocation.Empty;
+			TextLocation lTextLocation = TextLocation.Empty;
 			foreach (IMember member in declaringType.Members) {
-				if (lastLocation != member.Location && data.Any (d => d.Field.Location == member.Location))
+				if (lTextLocation != member.Location && data.Any (d => d.Field.Location == member.Location))
 					idx = i;
-				lastLocation = member.Location;
+				lTextLocation = member.Location;
 				i++;
 			}
 			if (idx >= 0)

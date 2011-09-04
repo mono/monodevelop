@@ -22,8 +22,8 @@ using System.Linq;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.ILAst;
-using ICSharpCode.NRefactory.CSharp;
 using Mono.Cecil;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.Decompiler.Ast
 {

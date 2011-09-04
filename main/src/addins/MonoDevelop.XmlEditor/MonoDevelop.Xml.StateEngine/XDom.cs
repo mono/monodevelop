@@ -31,7 +31,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -40,9 +40,9 @@ namespace MonoDevelop.Xml.StateEngine
 		DomRegion region;
 		XObject parent;
 		
-		public XObject (AstLocation start)
+		public XObject (TextLocation start)
 		{
-			region = new DomRegion (start, AstLocation.Empty);
+			region = new DomRegion (start, TextLocation.Empty);
 		}
 		
 		protected XObject (DomRegion region)
@@ -75,7 +75,7 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return region; }	
 		}
 		
-		public void End (AstLocation endLocation)
+		public void End (TextLocation endLocation)
 		{
 			Debug.Assert (region.Begin < endLocation, "End must be greater than start.");
 			Debug.Assert (region.Begin < region.End, "XObject cannot be ended multiple times.");
@@ -128,7 +128,7 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public abstract class XNode : XObject
 	{
-		public XNode (AstLocation start) : base (start) {}
+		public XNode (TextLocation start) : base (start) {}
 		protected XNode (DomRegion region) : base (region) {}
 		
 		XNode nextSibling;
@@ -224,7 +224,7 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public abstract class XContainer : XNode
 	{
-		public XContainer (AstLocation start) : base (start) {	}
+		public XContainer (TextLocation start) : base (start) {	}
 		
 		XNode firstNode;
 		XNode lastChild;
@@ -279,12 +279,12 @@ namespace MonoDevelop.Xml.StateEngine
 		XName name;
 		XAttributeCollection attributes;
 		
-		public XElement (AstLocation start) : base (start)
+		public XElement (TextLocation start) : base (start)
 		{
 			attributes = new XAttributeCollection (this);
 		}
 		
-		public XElement (AstLocation start, XName name) : this (start)
+		public XElement (TextLocation start, XName name) : this (start)
 		{
 			this.name = name;
 		}
@@ -402,13 +402,13 @@ namespace MonoDevelop.Xml.StateEngine
 		XName name;
 		string valu;
 		
-		public XAttribute (AstLocation start, XName name, string valu) : base (start)
+		public XAttribute (TextLocation start, XName name, string valu) : base (start)
 		{
 			this.name = name;
 			this.valu = valu;
 		}
 		
-		public XAttribute (AstLocation start) : base (start)
+		public XAttribute (TextLocation start) : base (start)
 		{
 		}
 		
@@ -532,7 +532,7 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XCData : XNode
 	{
-		public XCData (AstLocation start) : base (start) {}
+		public XCData (TextLocation start) : base (start) {}
 		public XCData (DomRegion region) : base (region) {}
 		
 		protected XCData () {}
@@ -546,7 +546,7 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XComment : XNode
 	{
-		public XComment (AstLocation start) : base (start) {}
+		public XComment (TextLocation start) : base (start) {}
 		public XComment (DomRegion region) : base (region) {}
 		
 		protected XComment () {}
@@ -559,7 +559,7 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XProcessingInstruction : XNode
 	{
-		public XProcessingInstruction (AstLocation start) : base (start) {}
+		public XProcessingInstruction (TextLocation start) : base (start) {}
 		public XProcessingInstruction (DomRegion region) : base (region) {}
 		
 		protected XProcessingInstruction () {}
@@ -572,7 +572,7 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XDocType : XNode, INamedXObject 
 	{
-		public XDocType (AstLocation start) : base (start) {}
+		public XDocType (TextLocation start) : base (start) {}
 		public XDocType (DomRegion region) : base (region) {}
 		
 		protected XDocType () {}
@@ -619,9 +619,9 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		XName name;
 		
-		public XClosingTag (AstLocation start) : base (start) {}
+		public XClosingTag (TextLocation start) : base (start) {}
 		
-		public XClosingTag (XName name, AstLocation start) : base (start)
+		public XClosingTag (XName name, TextLocation start) : base (start)
 		{
 			this.name = name;
 		}
@@ -661,7 +661,7 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		public XElement RootElement { get; private set; }
 		
-		public XDocument () : base (new AstLocation (1, 1)) {}
+		public XDocument () : base (new TextLocation (1, 1)) {}
 		protected override XObject NewInstance () { return new XDocument (); }
 		
 		public override string FriendlyPathRepresentation {

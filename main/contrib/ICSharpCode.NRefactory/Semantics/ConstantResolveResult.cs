@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Semantics
 	/// <summary>
 	/// ResolveResult representing a compile-time constant.
 	/// </summary>
-	public class ConstantResolveResult : ResolveResult
+	public class ConstantResolveResult	 : ResolveResult
 	{
 		object constantValue;
 		

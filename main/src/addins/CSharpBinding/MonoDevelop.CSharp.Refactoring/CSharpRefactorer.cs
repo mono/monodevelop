@@ -198,7 +198,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return GetGeneratedClass (ctx, file, cls);
 		}
 		
-		public override AstLocation CompleteStatement (RefactorerContext ctx, string fileName, AstLocation caretLocation)
+		public override TextLocation CompleteStatement (RefactorerContext ctx, string fileName, TextLocation caretLocation)
 		{
 			IEditableTextFile file = ctx.GetFile (fileName);
 			int pos = file.GetPositionFromLineColumn (caretLocation.Line + 1, 1);
@@ -281,7 +281,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		public override void AddLocalNamespaceImport (RefactorerContext ctx, string fileName, string nsName, AstLocation caretLocation)
+		public override void AddLocalNamespaceImport (RefactorerContext ctx, string fileName, string nsName, TextLocation caretLocation)
 		{
 			IEditableTextFile file = ctx.GetFile (fileName);
 			int pos = 0;

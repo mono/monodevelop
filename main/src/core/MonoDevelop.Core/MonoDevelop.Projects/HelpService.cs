@@ -33,10 +33,10 @@ using Mono.Addins;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Extensions;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Text;
 using System.Xml;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Projects
 {
@@ -152,9 +152,10 @@ namespace MonoDevelop.Projects
 			}
 			
 			IMember member = null;
-			if (result is MethodGroupResolveResult)
-				member = ((MethodGroupResolveResult)result).Methods.FirstOrDefault ();
-			else if (result is MemberResolveResult)
+//			if (result is MethodGroupResolveResult)
+//				member = ((MethodGroupResolveResult)result).Methods.FirstOrDefault ();
+//			else 
+				if (result is MemberResolveResult)
 				member = ((MemberResolveResult)result).Member;
 			
 			if (member != null && member.GetMonodocDocumentation () != null)

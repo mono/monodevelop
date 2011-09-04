@@ -86,7 +86,7 @@ namespace MonoDevelop.CodeGeneration
 				// add local variables
 // TODO !!!!
 //				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp);
-//				var location = new AstLocation (editor.Caret.Line, editor.Caret.Column);
+//				var location = new TextLocation (editor.Caret.Line, editor.Caret.Column);
 //				var result = provider.ParseFile (editor.Text);
 //				result.AcceptVisitor (visitor, null);
 //				

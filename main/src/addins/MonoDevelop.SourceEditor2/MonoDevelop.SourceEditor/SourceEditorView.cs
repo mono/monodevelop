@@ -47,9 +47,9 @@ using Services = MonoDevelop.Projects.Services;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {	

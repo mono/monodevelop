@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.SourceEditor;
+using ICSharpCode.NRefactory.Semantics;
 
 
 namespace MonoDevelop.CSharp.Highlighting

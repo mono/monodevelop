@@ -136,7 +136,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
 					return null;
 				
-				AstLocation location = new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 1);
+				TextLocation location = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 1);
 				stateTracker.UpdateEngine ();
 				ExpressionResult result;
 				int cursor, newCursorOffset = 0, cpos;
@@ -244,7 +244,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			//AstLocation location = new AstLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
+			//TextLocation location = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
 			NRefactoryResolver resolver = CreateResolver ();
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
 				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (textEditorData, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
@@ -278,7 +278,7 @@ namespace MonoDevelop.CSharp.Completion
 			col.Add (type);
 		}
 
-		ICompletionDataList CreateCompletionData (AstLocation location, ResolveResult resolveResult, 
+		ICompletionDataList CreateCompletionData (TextLocation location, ResolveResult resolveResult, 
 		                                          ExpressionResult expressionResult, NRefactoryResolver resolver)
 		{
 			if (resolveResult == null || expressionResult == null || dom == null)
@@ -400,7 +400,7 @@ namespace MonoDevelop.CSharp.Completion
 		CompletionDataList CreateCtrlSpaceCompletionData (CodeCompletionContext ctx, ExpressionResult expressionResult)
 		{
 			NRefactoryResolver resolver = CreateResolver ();
-			AstLocation cursorLocation = new AstLocation (ctx.TriggerLine, ctx.TriggerLineOffset);
+			TextLocation cursorLocation = new TextLocation (ctx.TriggerLine, ctx.TriggerLineOffset);
 			resolver.SetupResolver (cursorLocation);
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			CompletionDataCollector col = new CompletionDataCollector (this, dom, result, Document.CompilationUnit, resolver.CallingType, cursorLocation);
@@ -551,7 +551,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		#region case completion
-		ICompletionDataList CreateCaseCompletionData (AstLocation location, ExpressionResult expressionResult)
+		ICompletionDataList CreateCaseCompletionData (TextLocation location, ExpressionResult expressionResult)
 		{
 			NRefactoryResolver resolver = CreateResolver ();
 			
@@ -595,7 +595,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
-			public SwitchFinder (AstLocation location)
+			public SwitchFinder (TextLocation location)
 			{
 				//this.location = new ICSharpCode.OldNRefactory.Location (location.Column, location.Line);
 			}
