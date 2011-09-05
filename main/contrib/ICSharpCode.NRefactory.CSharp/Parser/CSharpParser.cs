@@ -2277,9 +2277,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				var chevronLocs = LocationsBag.GetLocations (typeArguments);
 				if (chevronLocs != null)
-					foreach (var loc in chevronLocs)
-						Console.WriteLine (loc);
-				if (chevronLocs != null)
 					parent.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 2]), 1), InvocationExpression.Roles.LChevron);
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (chevronLocs != null && i > 0 && i - 1 < chevronLocs.Count)
