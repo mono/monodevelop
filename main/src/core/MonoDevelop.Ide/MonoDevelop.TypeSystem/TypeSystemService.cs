@@ -239,7 +239,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static T ReadCache<T> (string path) where T : class
+		static T DeserializeObject<T> (string path) where T : class
 		{
 			try {
 				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
@@ -254,7 +254,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static void WriteContent (string path, object obj)
+		static void SerializeObject (string path, object obj)
 		{
 			try {
 				using (var fs = new FileStream (path, FileMode.Create, FileAccess.Write)) {
@@ -309,17 +309,13 @@ namespace MonoDevelop.TypeSystem
 		
 		static void LoadSolutionCache (Solution solution)
 		{
-			solutionCache.Clear ();
 			string cacheDir = GetCacheDirectory (solution.FileName);
-			if (cacheDir == null)
+			if (cacheDir == null) {
+				solutionCache = new Dictionary<string, SimpleProjectContent> ();
 				return;
-			TouchCache (cacheDir);
-			var cache = ReadCache<List<Tuple<string, SimpleProjectContent>>> (Path.Combine (cacheDir, "completion.cache"));
-			if (cache != null) {
-				foreach (var item in cache) {
-					solutionCache.Add (item.Item1, item.Item2);
-				}
 			}
+			TouchCache (cacheDir);
+			solutionCache = DeserializeObject<Dictionary<string, SimpleProjectContent>> (Path.Combine (cacheDir, "completion.cache")) ?? new Dictionary<string, SimpleProjectContent> ();
 			CleanupCache ();
 		}
 		
@@ -328,16 +324,16 @@ namespace MonoDevelop.TypeSystem
 			string cacheDir = GetCacheDirectory (solution.FileName) ?? CreateCacheDirectory (solution.FileName);
 			TouchCache (cacheDir);
 			
-			List<Tuple<string, SimpleProjectContent>> contents = new List<Tuple<string, SimpleProjectContent>> ();
+			var cache = new Dictionary<string, SimpleProjectContent> ();
 			foreach (var pair in projectContents) {
-				contents.Add (Tuple.Create (pair.Key.FileName.ToString (), pair.Value));
+				cache.Add (pair.Key.FileName.ToString (), pair.Value);
 			}
 			
 			string fileName = Path.GetTempFileName ();
 			
-			WriteContent (fileName, contents);
+			SerializeObject (fileName, cache);
 			
-			string cacheFile = Path.Combine(cacheDir, "completion.cache");
+			string cacheFile = Path.Combine (cacheDir, "completion.cache");
 			
 			try {
 				if (File.Exists (cacheFile))
@@ -628,7 +624,7 @@ namespace MonoDevelop.TypeSystem
 			string cache = GetCacheDirectory (fileName);
 			if (cache != null) {
 				TouchCache (cache);
-				return ReadCache <ITypeResolveContext> (Path.Combine (cache, "completion.cache"));
+				return DeserializeObject <ITypeResolveContext> (Path.Combine (cache, "completion.cache"));
 			}
 			
 			var asm = ReadAssembly (fileName);
@@ -649,7 +645,7 @@ namespace MonoDevelop.TypeSystem
 			var result = loader.LoadAssembly (asm);
 			cache = CreateCacheDirectory (fileName);
 			if (cache != null) {
-				WriteContent (Path.Combine (cache, "completion.cache"), result);
+				SerializeObject (Path.Combine (cache, "completion.cache"), result);
 			}
 			
 			return result;
