@@ -242,8 +242,12 @@ namespace MonoDevelop.TypeSystem
 		static T ReadCache<T> (string path) where T : class
 		{
 			try {
-				using (var stream = File.OpenRead (path))
-					return new FastSerializer ().Deserialize (stream) as T;
+				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
+					using (var reader = new BinaryReaderWith7BitEncodedInts (fs)) {
+						var s = new FastSerializer();
+						return (T)s.Deserialize (reader);
+					}
+				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while reading type system cache.", e);
 				return default(T);
@@ -253,8 +257,12 @@ namespace MonoDevelop.TypeSystem
 		static void WriteContent (string path, object obj)
 		{
 			try {
-				using (var stream = File.OpenWrite (path))
-					new FastSerializer ().Serialize (stream, obj);
+				using (var fs = new FileStream (path, FileMode.Create, FileAccess.Write)) {
+					using (var writer = new BinaryWriterWith7BitEncodedInts (fs)) {
+						FastSerializer s = new FastSerializer ();
+						s.Serialize (writer, obj);
+					}
+				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while writing type system cache.", e);
 			}
@@ -262,20 +270,64 @@ namespace MonoDevelop.TypeSystem
 		
 		static Dictionary<string, SimpleProjectContent> solutionCache = new Dictionary<string, SimpleProjectContent> ();
 		
+		/// <summary>
+		/// Removes all cache directories which are older than 30 days.
+		/// </summary>
+		static void CleanupCache ()
+		{
+			string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
+			string[] subDirs;
+			
+			try {
+				if (!Directory.Exists (derivedDataPath))
+					return;
+				subDirs = Directory.GetDirectories (derivedDataPath);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting derived data directories.", e);
+				return;
+			}
+			
+			foreach (var subDir in subDirs) {
+				try {
+					var days = Math.Abs ((DateTime.Now - Directory.GetLastWriteTime (subDir)).TotalDays);
+					if (days > 30)
+						Directory.Delete (subDir, true);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while removing outdated cache " + subDir, e);
+				}
+			}
+		}
+		
+		static void TouchCache (string cacheDir)
+		{
+			try {
+				Directory.SetLastWriteTime (cacheDir, DateTime.Now);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while touching cache directory " + cacheDir, e);
+			}
+		}
+		
 		static void LoadSolutionCache (Solution solution)
 		{
-			string cacheDir = GetCacheDirectory (solution.FileName) ?? CreateCacheDirectory (solution.FileName);
 			solutionCache.Clear ();
-			var cache = ReadCache<List<Tuple<string, SimpleProjectContent>>> (Path.Combine(cacheDir, "completion.cache"));
+			string cacheDir = GetCacheDirectory (solution.FileName);
+			if (cacheDir == null)
+				return;
+			TouchCache (cacheDir);
+			var cache = ReadCache<List<Tuple<string, SimpleProjectContent>>> (Path.Combine (cacheDir, "completion.cache"));
 			if (cache != null) {
-				foreach (var item in cache)
+				foreach (var item in cache) {
 					solutionCache.Add (item.Item1, item.Item2);
+				}
 			}
+			CleanupCache ();
 		}
 		
 		static void StoreSolutionCache (Solution solution)
 		{
 			string cacheDir = GetCacheDirectory (solution.FileName) ?? CreateCacheDirectory (solution.FileName);
+			TouchCache (cacheDir);
+			
 			List<Tuple<string, SimpleProjectContent>> contents = new List<Tuple<string, SimpleProjectContent>> ();
 			foreach (var pair in projectContents) {
 				contents.Add (Tuple.Create (pair.Key.FileName.ToString (), pair.Value));
@@ -286,10 +338,15 @@ namespace MonoDevelop.TypeSystem
 			WriteContent (fileName, contents);
 			
 			string cacheFile = Path.Combine(cacheDir, "completion.cache");
-			if (File.Exists (cacheFile))
-				System.IO.File.Delete (cacheFile);
 			
-			System.IO.File.Move (fileName, cacheFile);
+			try {
+				if (File.Exists (cacheFile))
+					System.IO.File.Delete (cacheFile);
+				
+				System.IO.File.Move (fileName, cacheFile);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error whil saving cache " + cacheFile, e);
+			}
 		}
 		#endregion
 		
@@ -569,8 +626,10 @@ namespace MonoDevelop.TypeSystem
 		public static ITypeResolveContext LoadAssemblyContext (string fileName)
 		{
 			string cache = GetCacheDirectory (fileName);
-			if (cache != null)
-				return ReadCache <ITypeResolveContext> (Path.Combine(cache, "completion.cache"));
+			if (cache != null) {
+				TouchCache (cache);
+				return ReadCache <ITypeResolveContext> (Path.Combine (cache, "completion.cache"));
+			}
 			
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
@@ -590,7 +649,7 @@ namespace MonoDevelop.TypeSystem
 			var result = loader.LoadAssembly (asm);
 			cache = CreateCacheDirectory (fileName);
 			if (cache != null) {
-				WriteContent (Path.Combine(cache, "completion.cache"), result);
+				WriteContent (Path.Combine (cache, "completion.cache"), result);
 			}
 			
 			return result;

@@ -28,6 +28,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TypeSystem
 {
+	[Serializable]
 	public class FoldingRegion
 	{
 		static string defaultName = "...";

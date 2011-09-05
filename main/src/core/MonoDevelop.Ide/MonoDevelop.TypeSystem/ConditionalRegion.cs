@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.TypeSystem
 {
+	[Serializable]
 	public class ConditionBlock
 	{
 		public string Flag {
@@ -64,6 +65,7 @@ namespace MonoDevelop.TypeSystem
 		}
 	}
 	
+	[Serializable]
 	public class ConditionalRegion : ConditionBlock
 	{
 		public DomRegion ElseBlock {
