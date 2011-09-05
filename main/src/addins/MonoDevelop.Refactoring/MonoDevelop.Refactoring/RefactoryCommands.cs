@@ -89,6 +89,7 @@ namespace MonoDevelop.Refactoring
 		public static object GetItem (ITypeResolveContext ctx, MonoDevelop.Ide.Gui.Document doc, out ResolveResult resolveResult)
 		{
 			resolveResult = GetResolveResult (doc);
+			Console.WriteLine (resolveResult);
 			if (resolveResult is LocalResolveResult) 
 				return ((LocalResolveResult)resolveResult).Variable;
 			if (resolveResult is MemberResolveResult)
@@ -322,7 +323,6 @@ namespace MonoDevelop.Refactoring
 			
 			HashSet<string> possibleNamespaces = new HashSet<string> ();
 			List<string> usedNamespaces = new List<string> ();
-			Console.WriteLine ("result:" + resolveResult);
 			if (resolveResult is UnknownIdentifierResolveResult) {
 				usedNamespaces = options.GetUsedNamespaces ();
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
@@ -371,7 +371,7 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (resolveMenu.CommandInfos.Count > 0) {
-				ainfo.Add (resolveMenu, null);
+				ainfo.Insert (0, resolveMenu);
 				added = true;
 			}
 			

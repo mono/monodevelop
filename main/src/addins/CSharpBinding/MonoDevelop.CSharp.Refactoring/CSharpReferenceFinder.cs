@@ -37,12 +37,14 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
 	using MonoDevelop.Projects;
 	public class CSharpReferenceFinder : ReferenceFinder
 	{
+		ICSharpCode.NRefactory.CSharp.Resolver.FindReferences refFinder = new ICSharpCode.NRefactory.CSharp.Resolver.FindReferences ();
 		List<object> searchedMembers;
 		List<Tuple<IProjectContent, FilePath>> files = new List<Tuple<IProjectContent, FilePath>> ();
 		List<Tuple<IProjectContent, FilePath, MonoDevelop.Ide.Gui.Document>> openDocuments = new List<Tuple<IProjectContent, FilePath, MonoDevelop.Ide.Gui.Document>> ();
@@ -57,7 +59,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override void SetSearchedMembers (IEnumerable<object> searchedMembers)
 		{
 			this.searchedMembers = new List<object> (searchedMembers);
-			var firstMember= searchedMembers.FirstOrDefault ();
+			var firstMember = searchedMembers.FirstOrDefault ();
 			if (firstMember is INamedElement)
 				memberName = ((INamedElement)firstMember).Name;
 			if (firstMember is string)
@@ -78,7 +80,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		MemberReference GetReference (ResolveResult result, string fileName, Mono.TextEditor.TextEditorData editor)
+		MemberReference GetReference (ResolveResult result, AstNode node, string fileName, Mono.TextEditor.TextEditorData editor)
 		{
 			if (result == null || result.IsError)
 				return null;
@@ -97,8 +99,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else if (result is TypeResolveResult) {
 				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
 			}
-			return null;
-			/*
+			
 			if (node is MemberReferenceExpression)
 				node = ((MemberReferenceExpression)node).MemberNameToken;
 			
@@ -113,7 +114,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 			
-			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.BeginLine, region.BeginColumn), memberName.Length);*/
+			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.BeginLine, region.BeginColumn), memberName.Length);
 		}
 
 		IEnumerable<MemberReference> InternalFindReferences (ITypeResolveContext ctx, Mono.TextEditor.TextEditorData editor, List<int> positions, ICSharpCode.NRefactory.CSharp.CompilationUnit unit, CSharpParsedFile file)
@@ -157,6 +158,33 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override IEnumerable<MemberReference> FindReferences ()
 		{
+			var entity = searchedMembers.First () as IEntity;
+			var scopes = refFinder.GetSearchScopes (entity);
+			List<MemberReference> refs = new List<MemberReference> ();
+			Project prj = null;
+			ITypeResolveContext ctx = null;
+			foreach (var file in files) {
+				var editor = TextFileProvider.Instance.GetTextEditorData (file.Item2);
+				
+				var unit = new CSharpParser ().Parse (editor);
+				if (unit == null)
+					continue;
+				
+				var visitor = new TypeSystemConvertVisitor (file.Item1, file.Item2);
+				var curPrj = file.Item1.Annotation<Project> ();
+				if (prj != curPrj) {
+					prj = curPrj;
+					ctx = prj != null ? TypeSystemService.GetContext (prj) : null;
+				}
+				var curCtx = ctx ?? file.Item1;
+				unit.AcceptVisitor (visitor, null);
+				
+				refFinder.FindReferencesInFile (scopes, visitor.ParsedFile, unit, curCtx, (astNode, result) => refs.Add (GetReference (result, astNode, file.Item2, editor)));
+				
+			}
+			
+			return refs;
+			/*
 			if (string.IsNullOrEmpty (memberName))
 				yield break;
 			foreach (var opendoc in openDocuments) {
@@ -191,7 +219,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				unit.AcceptVisitor (visitor, null);
 				foreach (var reference in InternalFindReferences (curCtx, editor, positions, unit, visitor.ParsedFile))
 					yield return reference;
-			}
+			}*/
 		}
 	}
 }

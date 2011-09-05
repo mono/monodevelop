@@ -107,12 +107,14 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (var tuple in GetAllReferencingProjects (solution, sourceProject)) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
-					var project    = tuple.Item1;
+					var project = tuple.Item1;
 					var currentDom = tuple.Item2;
-					foreach (var file in project.Files) {
-						if (monitor != null && monitor.IsCancelRequested)
-							yield break;
-						yield return Tuple.Create (currentDom, file.FilePath);
+					if (project != null) {
+						foreach (var file in project.Files) {
+							if (monitor != null && monitor.IsCancelRequested)
+								yield break;
+							yield return Tuple.Create (currentDom, file.FilePath);
+						}
 					}
 					if (monitor != null)
 						monitor.Step (1);
