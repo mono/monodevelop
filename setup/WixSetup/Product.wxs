@@ -2,7 +2,7 @@
 <?define ProductShortName = "MonoDevelop" ?>
 <?define ProductVersion = "2.6" ?>
 <?define ProductVersionText = "2.6" ?>
-<?define AssemblyVersion = "2.6" ?>
+<?define AssemblyVersion = "2.6.0.0" ?>
 <?define Manufacturer = "Xamarin" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
 
@@ -629,6 +629,7 @@
               <Component Id="MonoDevelop_AddIns_MonoDevelop_MonoDroid" Guid="4592C6A1-DE62-46DA-B4C5-1B4D4F189959">
                 <File Name="MonoDevelop.MonoDroid.dll" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\MonoDevelop.MonoDroid.dll" />
                 <File Name="MonoDevelop.Debugger.Soft.MonoDroid.dll" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\MonoDevelop.Debugger.Soft.MonoDroid.dll" />
+                <File Name="Mono.Posix.dll" Source="$(var.ExtrasRoot)\MonoDevelop.MonoDroid\build\Mono.Posix.dll" />
               </Component>
             </Directory>
 			
