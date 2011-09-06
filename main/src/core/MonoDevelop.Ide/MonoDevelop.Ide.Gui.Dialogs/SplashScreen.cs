@@ -11,7 +11,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 	
 	public class SplashScreenForm : Gtk.Window, IProgressMonitor, IDisposable
 	{
-		const int SplashFontSize = 21;
+		const int SplashFontSize = 10;
 		const string SplashFontFamily = "sans-serif"; 
 		
 		static SplashScreenForm splashScreen;
@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					// Render the image first.
 					bitmap.RenderToDrawable (GdkWindow, new Gdk.GC (GdkWindow), 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
 					
-					var bottomRight = new Cairo.PointD (bitmap.Width - 20, bitmap.Height - 30);
+					var bottomRight = new Cairo.PointD (bitmap.Width - 12, bitmap.Height - 25);
 					// Render the alpha/beta text if we're an alpha or beta. If this
 					// is rendered, the bottomRight point will be shifted upwards to
 					// allow the MonoDevelop version to be rendered above the alpha marker
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			c.SetFontSize (SplashFontSize);
 			
 			var extents = c.TextExtents (text);
-			c.MoveTo (bottomRight.X - extents.Width, bottomRight.Y - extents.Height);
+			c.MoveTo (bottomRight.X - extents.Width - 1, bottomRight.Y - extents.Height);
 			
 			c.Color = new Cairo.Color (1, 1, 1);
 			c.ShowText (text);
@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			c.Color = new Cairo.Color (1, 1, 1);
 			c.ShowText (text);
 			
-			bottomRight.Y -= rectangle.Height;
+			bottomRight.Y -= rectangle.Height - 2;
 		}
 		
 		void DrawRoundedRectangle (Cairo.Context c, Cairo.Rectangle rect)
