@@ -275,6 +275,8 @@ namespace MonoDroid
 		const string MDREG_MONODROID = "InstallDirectory";
 		const string ANDROID_INSTALLER_PATH = @"SOFTWARE\Android SDK Tools";
 		const string ANDROID_INSTALLER_KEY = "Path";
+		const string XAMARIN_ANDROID_INSTALLER_PATH = @"SOFTWARE\Xamarin\MonoAndroid";
+		const string XAMARIN_ANDROID_INSTALLER_KEY = @"PrivateAndroidSdkPath";
 
 		static void SetWindowsConfiguredSdkLocations (string androidSdk, string javaSdk)
 		{
@@ -327,7 +329,11 @@ namespace MonoDroid
 
 			log.LogMessage ("Looking for Android SDK..");
 
-			// Check for the key written by the Android SDK installer first
+			// Check for the key written by the Xamarin installer first
+			if (CheckRegistryKeyForExecutable (RegistryEx.CurrentUser, XAMARIN_ANDROID_INSTALLER_PATH, XAMARIN_ANDROID_INSTALLER_KEY, wow, "platform-tools", AdbTool, log))
+				return RegistryEx.GetValueString (RegistryEx.CurrentUser, XAMARIN_ANDROID_INSTALLER_PATH, XAMARIN_ANDROID_INSTALLER_KEY, wow);
+
+			// Check for the key written by the Android SDK installer
 			foreach (var root in roots)
 				if (CheckRegistryKeyForExecutable (root, ANDROID_INSTALLER_PATH, ANDROID_INSTALLER_KEY, wow, "platform-tools", AdbTool, log))
 					return RegistryEx.GetValueString (root, ANDROID_INSTALLER_PATH, ANDROID_INSTALLER_KEY, wow);
