@@ -475,6 +475,7 @@ namespace MonoDevelop.TypeSystem
 		
 		static void OnProjectReferenceAdded (object sender, ProjectReferenceEventArgs args)
 		{
+			cachedProjectContents.Remove (args.Project);
 //			ITypeResolveContext db = GetProjectDom (args.Project);
 //			if (db != null) 
 //				db.OnProjectReferenceAdded (args.ProjectReference);
@@ -482,6 +483,7 @@ namespace MonoDevelop.TypeSystem
 		
 		static void OnProjectReferenceRemoved (object sender, ProjectReferenceEventArgs args)
 		{
+			cachedProjectContents.Remove (args.Project);
 //			ITypeResolveContext db = GetProjectDom (args.Project);
 //			if (db != null) 
 //				db.OnProjectReferenceRemoved (args.ProjectReference);
@@ -677,9 +679,15 @@ namespace MonoDevelop.TypeSystem
 			content.UpdateProjectContent (null, parsedFile);
 			return content;
 		}
+		
+		static Dictionary<Project, ITypeResolveContext> cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
 
 		public static ITypeResolveContext GetContext (Project project)
 		{
+			ITypeResolveContext result;
+			if (cachedProjectContents.TryGetValue (project, out result))
+				return result;
+			
 			List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
 			
 			SimpleProjectContent content;
@@ -725,7 +733,9 @@ namespace MonoDevelop.TypeSystem
 						contexts.Add (ctx);
 				}
 			}
-			return new CompositeTypeResolveContext (contexts);
+			result = new CompositeTypeResolveContext (contexts);
+			cachedProjectContents[project] = result;
+			return result;
 		}
 		
 		public static void ForceUpdate (ITypeResolveContext context)
