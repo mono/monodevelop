@@ -936,6 +936,7 @@ namespace MonoDevelop.Ide
 				monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));			
 				monitor.ReportSuccess (GettextCatalog.GetString ("Clean successful."));
 				tt.Trace ("End clean event");
+				OnEndClean ();
 			} finally {
 				monitor.Dispose ();
 				tt.End ();
@@ -1734,6 +1735,12 @@ namespace MonoDevelop.Ide
 				EndBuild (this, new BuildEventArgs (monitor, success));
 			}
 		}
+		
+		void OnEndClean ()
+		{
+			if (EndClean != null)
+				EndClean (this, EventArgs.Empty);
+		}
 
 		void IdeAppWorkspaceItemUnloading (object sender, ItemUnloadingEventArgs args)
 		{
@@ -1780,6 +1787,7 @@ namespace MonoDevelop.Ide
 		public event BuildEventHandler StartBuild;
 		public event BuildEventHandler EndBuild;
 		public event EventHandler BeforeStartProject;
+		public event EventHandler EndClean;
 		
 		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
 		public event ProjectEventHandler CurrentProjectChanged;
