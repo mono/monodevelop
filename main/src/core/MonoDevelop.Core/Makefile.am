@@ -374,6 +374,7 @@ FILES =  \
 	MonoDevelop.Projects/BuildEventHandler.cs \
 	MonoDevelop.Projects/BuildResult.cs \
 	MonoDevelop.Projects/BuildTool.cs \
+	MonoDevelop.Projects/CleanEventHandler.cs \
 	MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs \
 	MonoDevelop.Projects/CompiledAssemblyProject.cs \
 	MonoDevelop.Projects/ConfigurationEventHandler.cs \

@@ -895,6 +895,7 @@ namespace MonoDevelop.Ide
 				
 				tt.Trace ("Start clean event");
 				TaskService.Errors.ClearByOwner (this);
+				OnStartClean (monitor);
 				
 				DispatchService.ThreadDispatch (delegate {
 					CleanAsync (entry, monitor, tt);
@@ -945,6 +946,7 @@ namespace MonoDevelop.Ide
 				tt.Trace ("Reporting result");			
 				monitor.ReportSuccess (GettextCatalog.GetString ("Clean successful."));
 				tt.Trace ("End clean event");
+				OnEndClean (monitor);
 			} finally {
 				monitor.Dispose ();
 				tt.End ();
@@ -1743,6 +1745,20 @@ namespace MonoDevelop.Ide
 				EndBuild (this, new BuildEventArgs (monitor, success));
 			}
 		}
+		
+		void OnStartClean (IProgressMonitor monitor)
+		{
+			if (StartClean != null) {
+				StartClean (this, new CleanEventArgs (monitor));
+			}
+		}
+		
+		void OnEndClean (IProgressMonitor monitor)
+		{
+			if (EndClean != null) {
+				EndClean (this, new CleanEventArgs (monitor));
+			}
+		}
 
 		void IdeAppWorkspaceItemUnloading (object sender, ItemUnloadingEventArgs args)
 		{
@@ -1789,6 +1805,8 @@ namespace MonoDevelop.Ide
 		public event BuildEventHandler StartBuild;
 		public event BuildEventHandler EndBuild;
 		public event EventHandler BeforeStartProject;
+		public event CleanEventHandler StartClean;
+		public event CleanEventHandler EndClean;
 		
 		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
 		public event ProjectEventHandler CurrentProjectChanged;
