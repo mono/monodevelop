@@ -5,7 +5,8 @@
 //
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 //
-// Copyright 2009, 2010 Novell, Inc
+// Copyright 2009-2011 Novell, Inc
+// Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
 //
 
 using System;
@@ -962,6 +963,15 @@ namespace Mono.CSharp
 			if (spec.BaseType != null) {
 				var bifaces = spec.BaseType.Interfaces;
 				if (bifaces != null) {
+					//
+					// Before adding base class interfaces close defined interfaces
+					// on type parameter
+					//
+					var tp = spec as TypeParameterSpec;
+					if (tp != null && tp.InterfacesDefined == null) {
+						tp.InterfacesDefined = TypeSpec.EmptyTypes;
+					}
+
 					foreach (var iface in bifaces)
 						spec.AddInterface (iface);
 				}
@@ -1894,6 +1904,15 @@ namespace Mono.CSharp
 				}
 			}
 
+			//
+			// Load base interfaces first to minic behaviour of compiled members
+			//
+			if (declaringType.IsInterface && declaringType.Interfaces != null) {
+				foreach (var iface in declaringType.Interfaces) {
+					cache.AddInterface (iface);
+				}
+			}
+
 			if (!onlyTypes) {
 				//
 				// The logic here requires methods to be returned first which seems to work for both Mono and .NET
@@ -2022,12 +2041,6 @@ namespace Mono.CSharp
 					}
 
 					cache.AddMemberImported (imported);
-				}
-			}
-
-			if (declaringType.IsInterface && declaringType.Interfaces != null) {
-				foreach (var iface in declaringType.Interfaces) {
-					cache.AddInterface (iface);
 				}
 			}
 		}

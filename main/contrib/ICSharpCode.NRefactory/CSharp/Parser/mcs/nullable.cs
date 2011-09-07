@@ -79,7 +79,7 @@ namespace Mono.CSharp.Nullable
 		}
 	}
 
-	public class Unwrap : Expression, IMemoryLocation, IAssignMethod
+	public class Unwrap : Expression, IMemoryLocation
 	{
 		Expression expr;
 
@@ -94,6 +94,11 @@ namespace Mono.CSharp.Nullable
 
 			type = NullableInfo.GetUnderlyingType (expr.Type);
 			eclass = expr.eclass;
+		}
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return expr.ContainsEmitWithAwait ();
 		}
 
 		public static Expression Create (Expression expr)
@@ -132,16 +137,24 @@ namespace Mono.CSharp.Nullable
 		public override void Emit (EmitContext ec)
 		{
 			Store (ec);
+
+			var call = new CallEmitter ();
+			call.InstanceExpression = this;
+
 			if (useDefaultValue)
-				Invocation.EmitCall (ec, this, NullableInfo.GetGetValueOrDefault (expr.Type), null, loc);
+				call.EmitPredefined (ec, NullableInfo.GetGetValueOrDefault (expr.Type), null);
 			else
-				Invocation.EmitCall (ec, this, NullableInfo.GetValue (expr.Type), null, loc);
+				call.EmitPredefined (ec, NullableInfo.GetValue (expr.Type), null);
 		}
 
 		public void EmitCheck (EmitContext ec)
 		{
 			Store (ec);
-			Invocation.EmitCall (ec, this, NullableInfo.GetHasValue (expr.Type), null, loc);
+
+			var call = new CallEmitter ();
+			call.InstanceExpression = this;
+
+			call.EmitPredefined (ec, NullableInfo.GetHasValue (expr.Type), null);
 		}
 
 		public override bool Equals (object obj)
@@ -169,10 +182,10 @@ namespace Mono.CSharp.Nullable
 
 		void Store (EmitContext ec)
 		{
-			if (expr is VariableReference)
+			if (temp != null)
 				return;
 
-			if (temp != null)
+			if (expr is VariableReference)
 				return;
 
 			expr.Emit (ec);
@@ -211,51 +224,6 @@ namespace Mono.CSharp.Nullable
 				return temp;
 			}
 		}
-
-		public void Emit (EmitContext ec, bool leave_copy)
-		{
-			if (leave_copy)
-				Load (ec);
-
-			Emit (ec);
-		}
-
-		public void EmitAssign (EmitContext ec, Expression source,
-					bool leave_copy, bool prepare_for_load)
-		{
-			InternalWrap wrap = new InternalWrap (source, expr.Type, loc);
-			((IAssignMethod) expr).EmitAssign (ec, wrap, leave_copy, false);
-		}
-
-		class InternalWrap : Expression
-		{
-			public Expression expr;
-
-			public InternalWrap (Expression expr, TypeSpec type, Location loc)
-			{
-				this.expr = expr;
-				this.loc = loc;
-				this.type = type;
-
-				eclass = ExprClass.Value;
-			}
-
-			public override Expression CreateExpressionTree (ResolveContext ec)
-			{
-				throw new NotSupportedException ("ET");
-			}
-
-			protected override Expression DoResolve (ResolveContext ec)
-			{
-				return this;
-			}
-
-			public override void Emit (EmitContext ec)
-			{
-				expr.Emit (ec);
-				ec.Emit (OpCodes.Newobj, NullableInfo.GetConstructor (type));
-			}
-		}
 	}
 
 	//
@@ -280,7 +248,9 @@ namespace Mono.CSharp.Nullable
 
 		public override void Emit (EmitContext ec)
 		{
-			Invocation.EmitCall (ec, Child, NullableInfo.GetValue (Child.Type), null, loc);
+			var call = new CallEmitter ();
+			call.InstanceExpression = Child;
+			call.EmitPredefined (ec, NullableInfo.GetValue (Child.Type), null);
 		}
 	}
 
@@ -354,6 +324,7 @@ namespace Mono.CSharp.Nullable
 			value_target.AddressOf (ec, AddressOp.Store);
 			ec.Emit (OpCodes.Initobj, type);
 			value_target.Emit (ec);
+			value_target.Release (ec);
 		}
 
 		public void AddressOf (EmitContext ec, AddressOp Mode)
@@ -385,6 +356,11 @@ namespace Mono.CSharp.Nullable
 		public Lifted (Expression expr, Expression unwrap, TypeSpec type)
 			: this (expr, unwrap as Unwrap, type)
 		{
+		}
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return unwrap.ContainsEmitWithAwait ();
 		}
 		
 		public override Expression CreateExpressionTree (ResolveContext ec)
@@ -677,7 +653,7 @@ namespace Mono.CSharp.Nullable
 			}
 
 			left_unwrap.Emit (ec);
-			ec.Emit (OpCodes.Brtrue_S, load_right);
+			ec.Emit (OpCodes.Brtrue, load_right);
 
 			// value & null, value | null
 			if (right_unwrap != null) {
@@ -733,7 +709,7 @@ namespace Mono.CSharp.Nullable
 			if (left_unwrap != null && (IsRightNullLifted || right.IsNull)) {
 				left_unwrap.EmitCheck (ec);
 				if (Oper == Binary.Operator.Equality) {
-					ec.Emit (OpCodes.Ldc_I4_0);
+					ec.EmitInt (0);
 					ec.Emit (OpCodes.Ceq);
 				}
 				return;
@@ -742,7 +718,7 @@ namespace Mono.CSharp.Nullable
 			if (right_unwrap != null && (IsLeftNullLifted || left.IsNull)) {
 				right_unwrap.EmitCheck (ec);
 				if (Oper == Binary.Operator.Equality) {
-					ec.Emit (OpCodes.Ldc_I4_0);
+					ec.EmitInt (0);
 					ec.Emit (OpCodes.Ceq);
 				}
 				return;
@@ -755,6 +731,11 @@ namespace Mono.CSharp.Nullable
 				user_operator.Emit (ec);
 				ec.Emit (Oper == Operator.Equality ? OpCodes.Brfalse_S : OpCodes.Brtrue_S, dissimilar_label);
 			} else {
+				if (ec.HasSet (BuilderContext.Options.AsyncBody) && right.ContainsEmitWithAwait ()) {
+					left = left.EmitToField (ec);
+					right = right.EmitToField (ec);
+				}
+
 				left.Emit (ec);
 				right.Emit (ec);
 
@@ -774,7 +755,7 @@ namespace Mono.CSharp.Nullable
 					ec.Emit (OpCodes.Ceq);
 			} else {
 				if (Oper == Operator.Inequality) {
-					ec.Emit (OpCodes.Ldc_I4_0);
+					ec.EmitInt (0);
 					ec.Emit (OpCodes.Ceq);
 				}
 			}
@@ -783,9 +764,9 @@ namespace Mono.CSharp.Nullable
 
 			ec.MarkLabel (dissimilar_label);
 			if (Oper == Operator.Inequality)
-				ec.Emit (OpCodes.Ldc_I4_1);
+				ec.EmitInt (1);
 			else
-				ec.Emit (OpCodes.Ldc_I4_0);
+				ec.EmitInt (0);
 
 			ec.MarkLabel (end_label);
 		}
@@ -839,7 +820,7 @@ namespace Mono.CSharp.Nullable
 			ec.MarkLabel (is_null_label);
 
 			if ((Oper & Operator.ComparisonMask) != 0) {
-				ec.Emit (OpCodes.Ldc_I4_0);
+				ec.EmitInt (0);
 			} else {
 				LiftedNull.Create (type, loc).Emit (ec);
 			}
@@ -854,8 +835,14 @@ namespace Mono.CSharp.Nullable
 				return;
 			}
 
-			if (l.IsNullableType)
-				l = TypeManager.GetTypeArguments (l) [0];
+			if (left.Type.IsNullableType) {
+				l = NullableInfo.GetUnderlyingType (left.Type);
+				left = EmptyCast.Create (left, l);
+			}
+
+			if (right.Type.IsNullableType) {
+				right = EmptyCast.Create (right, NullableInfo.GetUnderlyingType (right.Type));
+			}
 
 			base.EmitOperator (ec, l);
 		}
@@ -1149,6 +1136,14 @@ namespace Mono.CSharp.Nullable
 			return this;
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			if (unwrap != null)
+				return unwrap.ContainsEmitWithAwait () || right.ContainsEmitWithAwait ();
+
+			return left.ContainsEmitWithAwait () || right.ContainsEmitWithAwait ();
+		}
+
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			left = left.Resolve (ec);
@@ -1217,75 +1212,58 @@ namespace Mono.CSharp.Nullable
 		}
 	}
 
-	public class LiftedUnaryMutator : ExpressionStatement
+	class LiftedUnaryMutator : UnaryMutator
 	{
-		public readonly UnaryMutator.Mode Mode;
-		Expression expr;
-		UnaryMutator underlying;
-		Unwrap unwrap;
-
-		public LiftedUnaryMutator (UnaryMutator.Mode mode, Expression expr, Location loc)
+		public LiftedUnaryMutator (Mode mode, Expression expr, Location loc)
+			: base (mode, expr, loc)
 		{
-			this.expr = expr;
-			this.Mode = mode;
-			this.loc = loc;
-		}
-
-		public override Expression CreateExpressionTree (ResolveContext ec)
-		{
-			return new SimpleAssign (this, this).CreateExpressionTree (ec);
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
-			expr = expr.Resolve (ec);
-			if (expr == null)
-				return null;
+			var orig_expr = expr;
 
-			unwrap = Unwrap.Create (expr, false);
-			if (unwrap == null)
-				return null;
+			expr = Unwrap.Create (expr);
 
-			underlying = (UnaryMutator) new UnaryMutator (Mode, unwrap, loc).Resolve (ec);
-			if (underlying == null)
-				return null;
+			var res = base.DoResolveOperation (ec);
 
-
-			eclass = ExprClass.Value;
+			expr = orig_expr;
 			type = expr.Type;
-			return this;
+
+			return res;
 		}
 
-		void DoEmit (EmitContext ec, bool is_expr)
+		protected override void EmitOperation (EmitContext ec)
 		{
 			Label is_null_label = ec.DefineLabel ();
 			Label end_label = ec.DefineLabel ();
 
-			unwrap.EmitCheck (ec);
+			LocalTemporary lt = new LocalTemporary (type);
+
+			// Value is on the stack
+			lt.Store (ec);
+
+			var call = new CallEmitter ();
+			call.InstanceExpression = lt;
+			call.EmitPredefined (ec, NullableInfo.GetHasValue (expr.Type), null);
+
 			ec.Emit (OpCodes.Brfalse, is_null_label);
 
-			if (is_expr) {
-				underlying.Emit (ec);
-				ec.Emit (OpCodes.Br_S, end_label);
-			} else {
-				underlying.EmitStatement (ec);
-			}
+			call = new CallEmitter ();
+			call.InstanceExpression = lt;
+			call.EmitPredefined (ec, NullableInfo.GetValue (expr.Type), null);
+
+			lt.Release (ec);
+
+			base.EmitOperation (ec);
+
+			ec.Emit (OpCodes.Newobj, NullableInfo.GetConstructor (type));
+			ec.Emit (OpCodes.Br_S, end_label);
 
 			ec.MarkLabel (is_null_label);
-			if (is_expr)
-				LiftedNull.Create (type, loc).Emit (ec);
+			LiftedNull.Create (type, loc).Emit (ec);
 
 			ec.MarkLabel (end_label);
-		}
-
-		public override void Emit (EmitContext ec)
-		{
-			DoEmit (ec, true);
-		}
-
-		public override void EmitStatement (EmitContext ec)
-		{
-			DoEmit (ec, false);
 		}
 	}
 }

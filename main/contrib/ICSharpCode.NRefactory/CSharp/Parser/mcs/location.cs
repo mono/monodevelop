@@ -516,7 +516,9 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 
 			public readonly Tokenizer.PreprocessorDirective Cmd;
 			public readonly string Arg;
-
+			
+			public bool Take = true;
+			
 			public PreProcessorDirective (int line, int col, int endLine, int endCol, Tokenizer.PreprocessorDirective cmd, string arg)
 			{
 				this.Line = line;
@@ -573,6 +575,15 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		public void AddPreProcessorDirective (int startLine, int startCol, int endLine, int endColumn, Tokenizer.PreprocessorDirective cmd, string arg)
 		{
 			Specials.Add (new PreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
+		}
+
+		public void SkipIf ()
+		{
+			if (Specials.Count > 0) {
+				var directive = Specials[Specials.Count - 1] as PreProcessorDirective;
+				if (directive != null)
+					directive.Take = false;
+			}
 		}
 	}
 
@@ -894,6 +905,12 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		public void EndNamespace (Location optSemicolon)
 		{
 			curNamespace.Peek ().OptSemicolon = optSemicolon;
+			curNamespace.Pop ();
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void EndNamespace ()
+		{
 			curNamespace.Pop ();
 		}
 		

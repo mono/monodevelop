@@ -7,6 +7,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc.
 // Copyright 2003-2008 Novell, Inc.
+// Copyright 2011 Xamarin Inc.
 //
 //
 
@@ -130,22 +131,29 @@ namespace Mono.CSharp {
 			set { type = value; }
 		}
 
-		public Location Location {
-			get { return loc; }
+		public virtual bool IsSideEffectFree {
+			get {
+				return false;
+			}
 		}
 
-		public virtual string GetSignatureForError ()
-		{
-			if (type == null)
-				return "<nullType>";
-			TypeSpec typeSpec = type.GetDefinition ();
-			return typeSpec != null ? typeSpec.GetSignatureForError () : "<nullTypeSpec>";
+		public Location Location {
+			get { return loc; }
 		}
 
 		public virtual bool IsNull {
 			get {
 				return false;
 			}
+		}
+
+		//
+		// Returns true when the expression during Emit phase breaks stack
+		// by using await expression
+		//
+		public virtual bool ContainsEmitWithAwait ()
+		{
+			return false;
 		}
 
 		/// <summary>
@@ -343,6 +351,11 @@ namespace Mono.CSharp {
 				}
 			}
 		}
+
+		public virtual string GetSignatureForError ()
+		{
+			return type.GetDefinition ().GetSignatureForError ();
+		}
 	       
 		/// <summary>
 		///   Resolves an expression and performs semantic analysis on it.
@@ -469,6 +482,107 @@ namespace Mono.CSharp {
 			ec.Emit (OpCodes.Pop);
 		}
 
+		//
+		// Emits the expression into temporary field variable. The method
+		// should be used for await expressions only
+		//
+		public virtual Expression EmitToField (EmitContext ec)
+		{
+			//
+			// This is the await prepare Emit method. When emitting code like
+			// a + b we emit code like
+			//
+			// a.Emit ()
+			// b.Emit ()
+			// Opcodes.Add
+			//
+			// For await a + await b we have to interfere the flow to keep the
+			// stack clean because await yields from the expression. The emit
+			// then changes to
+			//
+			// a = a.EmitToField ()	// a is changed to temporary field access
+			// b = b.EmitToField ()
+			// a.Emit ()
+			// b.Emit ()
+			// Opcodes.Add
+			//
+			//
+			// The idea is to emit expression and leave the stack empty with
+			// result value still available.
+			//
+			// Expressions should override this default implementation when
+			// optimized version can be provided (e.g. FieldExpr)
+			//
+			//
+			// We can optimize for side-effect free expressions, they can be
+			// emitted out of order
+			//
+			if (IsSideEffectFree)
+				return this;
+
+			bool needs_temporary = ContainsEmitWithAwait ();
+			if (!needs_temporary)
+				ec.EmitThis ();
+
+			// Emit original code
+			EmitToFieldSource (ec);
+
+			//
+			// Store the result to temporary field when we
+			// cannot load this directly
+			//
+			var field = ec.GetTemporaryField (type);
+			if (needs_temporary) {
+				//
+				// Create temporary local (we cannot load this before Emit)
+				//
+				var temp = ec.GetTemporaryLocal (type);
+				ec.Emit (OpCodes.Stloc, temp);
+
+				ec.EmitThis ();
+				ec.Emit (OpCodes.Ldloc, temp);
+				field.EmitAssignFromStack (ec);
+
+				ec.FreeTemporaryLocal (temp, type);
+			} else {
+				field.EmitAssignFromStack (ec);
+			}
+
+			return field;
+		}
+
+		protected virtual void EmitToFieldSource (EmitContext ec)
+		{
+			//
+			// Default implementation calls Emit method
+			//
+			Emit (ec);
+		}
+
+		protected static void EmitExpressionsList (EmitContext ec, List<Expression> expressions)
+		{
+			if (ec.HasSet (BuilderContext.Options.AsyncBody)) {
+				bool contains_await = false;
+
+				for (int i = 1; i < expressions.Count; ++i) {
+					if (expressions[i].ContainsEmitWithAwait ()) {
+						contains_await = true;
+						break;
+					}
+				}
+
+				if (contains_await) {
+					for (int i = 0; i < expressions.Count; ++i) {
+						expressions[i] = expressions[i].EmitToField (ec);
+					}
+				}
+			}
+
+			for (int i = 0; i < expressions.Count; ++i) {
+				expressions[i].Emit (ec);
+			}
+		}
+
 		/// <summary>
 		///   Protected constructor.  Only derivate types should
 		///   be able to be created
@@ -498,7 +612,7 @@ namespace Mono.CSharp {
 			return null;
 		}
 
-		protected static MethodSpec ConstructorLookup (ResolveContext rc, TypeSpec type, ref Arguments args, Location loc)
+		public static MethodSpec ConstructorLookup (ResolveContext rc, TypeSpec type, ref Arguments args, Location loc)
 		{
 			var ctors = MemberCache.FindMembers (type, Constructor.ConstructorName, true);
 			if (ctors == null) {
@@ -961,6 +1075,11 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			return child.ContainsEmitWithAwait ();
+		}
+
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
 			Arguments args = new Arguments (2);
@@ -1140,6 +1259,12 @@ namespace Mono.CSharp {
 			get { return child.IsOneInteger; }
 		}
 
+		public override bool IsSideEffectFree {
+			get {
+				return child.IsSideEffectFree;
+			}
+		}
+
 		public override bool IsZeroInteger {
 			get { return child.IsZeroInteger; }
 		}
@@ -1274,6 +1399,12 @@ namespace Mono.CSharp {
 		public override bool IsDefaultValue {
 			get {
 				return Child.IsDefaultValue;
+			}
+		}
+
+		public override bool IsSideEffectFree {
+			get {
+				return Child.IsSideEffectFree;
 			}
 		}
 
@@ -1731,6 +1862,17 @@ namespace Mono.CSharp {
 					c = new ReducedConstantExpression (c, orig_expr);
 				return c;
 			}
+
+			public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+			{
+				//
+				// LAMESPEC: Reduced conditional expression is allowed as an attribute argument
+				//
+				if (orig_expr is Conditional)
+					child.EncodeAttributeValue (rc, enc, targetType);
+				else
+					base.EncodeAttributeValue (rc, enc, targetType);
+			}
 		}
 
 		sealed class ReducedExpressionStatement : ExpressionStatement
@@ -1746,6 +1888,11 @@ namespace Mono.CSharp {
 				this.type = stm.Type;
 
 				this.loc = orig.Location;
+			}
+
+			public override bool ContainsEmitWithAwait ()
+			{
+				return stm.ContainsEmitWithAwait ();
 			}
 
 			public override Expression CreateExpressionTree (ResolveContext ec)
@@ -1789,6 +1936,11 @@ namespace Mono.CSharp {
 		}
 
 		#endregion
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return expr.ContainsEmitWithAwait ();
+		}
 
 		//
 		// Creates fully resolved expression switcher
@@ -1873,6 +2025,11 @@ namespace Mono.CSharp {
 			this.loc = expr.Location;
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			return expr.ContainsEmitWithAwait ();
+		}
+
 		public override Expression CreateExpressionTree (ResolveContext rc)
 		{
 			return expr.CreateExpressionTree (rc);
@@ -1928,6 +2085,11 @@ namespace Mono.CSharp {
 
 			ShimExpression target = (ShimExpression) t;
 			target.expr = expr.Clone (clonectx);
+		}
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return expr.ContainsEmitWithAwait ();
 		}
 
 		public override Expression CreateExpressionTree (ResolveContext ec)
@@ -2090,7 +2252,6 @@ namespace Mono.CSharp {
 				}
 			}
 
-			// MSAF
 			var retval = ctx.LookupNamespaceOrType (Name, Arity, LookupMode.IgnoreAccessibility, loc);
 			if (retval != null) {
 				ctx.Module.Compiler.Report.SymbolRelatedToPreviousError (retval.Type);
@@ -2379,6 +2540,11 @@ namespace Mono.CSharp {
 			// resolved to different type
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			return false;
+		}
+
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
 			throw new NotSupportedException ("ET");
@@ -2626,6 +2792,11 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			return InstanceExpression != null && InstanceExpression.ContainsEmitWithAwait ();
+		}
+
 		static bool IsSameOrBaseQualifier (TypeSpec type, TypeSpec qtype)
 		{
 			do {
@@ -2814,6 +2985,7 @@ namespace Mono.CSharp {
 					InstanceExpression.Emit (ec);
 					t.Store (ec);
 					t.AddressOf (ec, AddressOp.Store);
+					t.Release (ec);
 				}
 			} else {
 				InstanceExpression.Emit (ec);
@@ -2830,18 +3002,57 @@ namespace Mono.CSharp {
 		public abstract void SetTypeArguments (ResolveContext ec, TypeArguments ta);
 	}
 
+	public class ExtensionMethodCandidates
+	{
+		NamespaceContainer container;
+		Namespace ns;
+		IList<MethodSpec> methods;
+
+		public ExtensionMethodCandidates (IList<MethodSpec> methods, NamespaceContainer nsContainer)
+			: this (methods, nsContainer, null)
+		{
+		}
+
+		public ExtensionMethodCandidates (IList<MethodSpec> methods, NamespaceContainer nsContainer, Namespace ns)
+		{
+			this.methods = methods;
+			this.container = nsContainer;
+			this.ns = ns;
+		}
+
+		public NamespaceContainer Container {
+			get {
+				return container;
+			}
+		}
+
+		public bool HasUninspectedMembers { get; set; }
+
+		public Namespace Namespace {
+			get {
+				return ns;
+			}
+		}
+
+		public IList<MethodSpec> Methods {
+			get {
+				return methods;
+			}
+		}
+	}
+
 	// 
 	// Represents a group of extension method candidates for whole namespace
 	// 
 	class ExtensionMethodGroupExpr : MethodGroupExpr, OverloadResolver.IErrorHandler
 	{
-		NamespaceContainer namespace_entry;
+		ExtensionMethodCandidates candidates;
 		public readonly Expression ExtensionExpression;
 
-		public ExtensionMethodGroupExpr (IList<MethodSpec> list, NamespaceContainer n, Expression extensionExpr, Location l)
-			: base (list.Cast<MemberSpec>().ToList (), extensionExpr.Type, l)
+		public ExtensionMethodGroupExpr (ExtensionMethodCandidates candidates, Expression extensionExpr, Location loc)
+			: base (candidates.Methods.Cast<MemberSpec>().ToList (), extensionExpr.Type, loc)
 		{
-			this.namespace_entry = n;
+			this.candidates = candidates;
 			this.ExtensionExpression = extensionExpr;
 		}
 
@@ -2849,21 +3060,55 @@ namespace Mono.CSharp {
 			get { return true; }
 		}
 
+		//
+		// For extension methodgroup we are not looking for base members but parent
+		// namespace extension methods
+		//
 		public override IList<MemberSpec> GetBaseMembers (TypeSpec baseType)
 		{
-			if (namespace_entry == null)
+			// TODO: candidates are null only when doing error reporting, that's
+			// incorrect. We have to discover same extension methods in error mode
+			if (candidates == null)
 				return null;
 
-			//
-			// For extension methodgroup we are not looking for base members but parent
-			// namespace extension methods
-			//
 			int arity = type_arguments == null ? 0 : type_arguments.Count;
-			var found = namespace_entry.LookupExtensionMethod (DeclaringType, Name, arity, ref namespace_entry);
-			if (found == null)
+
+			//
+			// Here we try to resume the search for extension method at the point
+			// where the last bunch of candidates was found. It's more tricky than
+			// it seems as we have to check both namespace containers and namespace
+			// in correct order.
+			//
+			// Consider:
+			// 
+			// namespace A {
+			//	using N1;
+			//  namespace B.C.D {
+			//		<our first search found candidates in A.B.C.D
+			//  }
+			// }
+			//
+			// In the example above namespace A.B.C.D, A.B.C and A.B have to be
+			// checked before we hit A.N1 using
+			//
+			if (candidates.Namespace == null) {
+				Namespace scope;
+				var methods = candidates.Container.NS.LookupExtensionMethod (candidates.Container, ExtensionExpression.Type, Name, arity, out scope);
+				if (methods != null) {
+					candidates = new ExtensionMethodCandidates (null, candidates.Container, scope);
+					return methods.Cast<MemberSpec> ().ToList ();
+				}
+			}
+
+			var ns_container = candidates.HasUninspectedMembers ? candidates.Container : candidates.Container.Parent;
+			if (ns_container == null)
 				return null;
 
-			return found.Cast<MemberSpec> ().ToList ();
+			candidates = ns_container.LookupExtensionMethod (ExtensionExpression.Type, Name, arity);
+			if (candidates == null)
+				return null;
+
+			return candidates.Methods.Cast<MemberSpec> ().ToList ();
 		}
 
 		public override MethodGroupExpr LookupExtensionMethod (ResolveContext rc)
@@ -3072,7 +3317,9 @@ namespace Mono.CSharp {
 		
 		public void EmitCall (EmitContext ec, Arguments arguments)
 		{
-			Invocation.EmitCall (ec, InstanceExpression, best_candidate, arguments, loc);			
+			var call = new CallEmitter ();
+			call.InstanceExpression = InstanceExpression;
+			call.Emit (ec, best_candidate, arguments, loc);			
 		}
 
 		public override void Error_ValueCannotBeConverted (ResolveContext ec, Location loc, TypeSpec target, bool expl)
@@ -3197,12 +3444,11 @@ namespace Mono.CSharp {
 				return null;
 
 			int arity = type_arguments == null ? 0 : type_arguments.Count;
-			NamespaceContainer methods_scope = null;
-			var methods = rc.LookupExtensionMethod (InstanceExpression.Type, Methods[0].Name, arity, ref methods_scope);
+			var methods = rc.LookupExtensionMethod (InstanceExpression.Type, Methods[0].Name, arity);
 			if (methods == null)
 				return null;
 
-			var emg = new ExtensionMethodGroupExpr (methods, methods_scope, InstanceExpression, loc);
+			var emg = new ExtensionMethodGroupExpr (methods, InstanceExpression, loc);
 			emg.SetTypeArguments (rc, type_arguments);
 			return emg;
 		}
@@ -3969,9 +4215,11 @@ namespace Mono.CSharp {
 						//
 						// Indentity, implicit reference or boxing conversion must exist for the extension parameter
 						//
+						// LAMESPEC: or implicit type parameter conversion
+						//
 						var at = a.Type;
 						if (at == pt || TypeSpecComparer.IsEqual (at, pt) ||
-							Convert.ImplicitReferenceConversionExists (at, pt) ||
+							Convert.ImplicitReferenceConversionExists (at, pt, false) ||
 							Convert.ImplicitBoxingConversion (null, at, pt) != null) {
 							score = 0;
 							continue;
@@ -4756,10 +5004,11 @@ namespace Mono.CSharp {
 		}
 	}
 
-	/// <summary>
-	///   Fully resolved expression that evaluates to a Field
-	/// </summary>
-	public class FieldExpr : MemberExpr, IDynamicAssign, IMemoryLocation, IVariableReference {
+	//
+	// Fully resolved expression that references a Field
+	//
+	public class FieldExpr : MemberExpr, IDynamicAssign, IMemoryLocation, IVariableReference
+	{
 		protected FieldSpec spec;
 		VariableInfo variable_info;
 		
@@ -4929,7 +5178,7 @@ namespace Mono.CSharp {
 				} else if (var != null && var.IsHoisted) {
 					AnonymousMethodExpression.Error_AddressOfCapturedVar (ec, var, loc);
 				}
-				
+
 				return new FixedBufferPtr (this, fb.ElementType, loc).Resolve (ec);
 			}
 
@@ -5108,22 +5357,26 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load)
+		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound)
 		{
-			var await_expr = source as Await;
-			if (await_expr != null) {
-				//
-				// Await is not ordinary expression (it contains jump), hence the usual flow cannot be used
-				// to emit instance load before expression
-				//
-				await_expr.EmitAssign (ec, this);
-			} else {
-				prepared = prepare_for_load && !(source is DynamicExpressionStatement);
-				if (IsInstance)
-					EmitInstance (ec, prepared);
-
-				source.Emit (ec);
+			bool has_await_source = ec.HasSet (BuilderContext.Options.AsyncBody) && source.ContainsEmitWithAwait ();
+			if (isCompound && !(source is DynamicExpressionStatement)) {
+				if (has_await_source) {
+					if (IsInstance)
+						InstanceExpression = InstanceExpression.EmitToField (ec);
+				} else {
+					prepared = true;
+				}
 			}
+
+			if (IsInstance) {
+				if (has_await_source)
+					source = source.EmitToField (ec);
+
+				EmitInstance (ec, prepared);
+			}
+
+			source.Emit (ec);
 
 			if (leave_copy) {
 				ec.Emit (OpCodes.Dup);
@@ -5147,6 +5400,18 @@ namespace Mono.CSharp {
 				temp.Emit (ec);
 				temp.Release (ec);
 				temp = null;
+			}
+		}
+
+		//
+		// Emits store to field with prepared values on stack
+		//
+		public void EmitAssignFromStack (EmitContext ec)
+		{
+			if (IsStatic) {
+				ec.Emit (OpCodes.Stsfld, spec);
+			} else {
+				ec.Emit (OpCodes.Stfld, spec);
 			}
 		}
 
@@ -5187,12 +5452,12 @@ namespace Mono.CSharp {
 			} else
 				need_copy = false;
 			
-			if (need_copy){
-				LocalBuilder local;
+			if (need_copy) {
 				Emit (ec);
-				local = ec.DeclareLocal (type, false);
-				ec.Emit (OpCodes.Stloc, local);
-				ec.Emit (OpCodes.Ldloca, local);
+				var temp = ec.GetTemporaryLocal (type);
+				ec.Emit (OpCodes.Stloc, temp);
+				ec.Emit (OpCodes.Ldloca, temp);
+				ec.FreeTemporaryLocal (temp, type);
 				return;
 			}
 
@@ -5229,14 +5494,13 @@ namespace Mono.CSharp {
 	}
 
 	
-	/// <summary>
-	///   Expression that evaluates to a Property.  The Assign class
-	///   might set the `Value' expression if we are in an assignment.
-	///
-	///   This is not an LValue because we need to re-write the expression, we
-	///   can not take data from the stack and store it.  
-	/// </summary>
-	class PropertyExpr : PropertyOrIndexerExpr<PropertySpec>
+	//
+	// Expression that evaluates to a Property.
+	//
+	// This is not an LValue because we need to re-write the expression. We
+	// can not take data from the stack and store it.
+	//
+	sealed class PropertyExpr : PropertyOrIndexerExpr<PropertySpec>
 	{
 		public PropertyExpr (PropertySpec spec, Location l)
 			: base (l)
@@ -5246,6 +5510,14 @@ namespace Mono.CSharp {
 		}
 
 		#region Properties
+
+		protected override Arguments Arguments {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
 
 		protected override TypeSpec DeclaringType {
 			get {
@@ -5278,6 +5550,14 @@ namespace Mono.CSharp {
 		}
 
 		#endregion
+
+		public static PropertyExpr CreatePredefined (PropertySpec spec, Location loc)
+		{
+			return new PropertyExpr (spec, loc) {
+				Getter = spec.Get,
+				Setter = spec.Set
+			};
+		}
 
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
@@ -5347,36 +5627,41 @@ namespace Mono.CSharp {
 			// Special case: length of single dimension array property is turned into ldlen
 			//
 			if (IsSingleDimensionalArrayLength ()) {
-				if (!prepared)
-					EmitInstance (ec, false);
+				EmitInstance (ec, false);
 				ec.Emit (OpCodes.Ldlen);
 				ec.Emit (OpCodes.Conv_I4);
 				return;
 			}
 
-			Invocation.EmitCall (ec, InstanceExpression, Getter, null, loc, prepared, false);
-			
-			if (leave_copy) {
-				ec.Emit (OpCodes.Dup);
-				if (!IsStatic) {
-					temp = new LocalTemporary (this.Type);
-					temp.Store (ec);
-				}
-			}
+			base.Emit (ec, leave_copy);
 		}
 
-		public override void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load)
+		public override void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound)
 		{
 			Arguments args;
+			LocalTemporary await_source_arg = null;
 
-			if (prepare_for_load && !(source is DynamicExpressionStatement)) {
-				args = new Arguments (0);
-				prepared = true;
+			if (isCompound && !(source is DynamicExpressionStatement)) {
+				emitting_compound_assignment = true;
 				source.Emit (ec);
-				
-				if (leave_copy) {
-					ec.Emit (OpCodes.Dup);
-					if (!IsStatic) {
+
+				if (has_await_arguments) {
+					await_source_arg = new LocalTemporary (Type);
+					await_source_arg.Store (ec);
+
+					args = new Arguments (1);
+					args.Add (new Argument (await_source_arg));
+
+					if (leave_copy) {
+						temp = await_source_arg;
+					}
+
+					has_await_arguments = false;
+				} else {
+					args = null;
+
+					if (leave_copy) {
+						ec.Emit (OpCodes.Dup);
 						temp = new LocalTemporary (this.Type);
 						temp.Store (ec);
 					}
@@ -5394,11 +5679,22 @@ namespace Mono.CSharp {
 				}
 			}
 
-			Invocation.EmitCall (ec, InstanceExpression, Setter, args, loc, false, prepared);
-			
+			emitting_compound_assignment = false;
+
+			var call = new CallEmitter ();
+			call.InstanceExpression = InstanceExpression;
+			if (args == null)
+				call.InstanceExpressionOnStack = true;
+
+			call.Emit (ec, Setter, args, loc);
+
 			if (temp != null) {
 				temp.Emit (ec);
 				temp.Release (ec);
+			}
+
+			if (await_source_arg != null) {
+				await_source_arg.Release (ec);
 			}
 		}
 
@@ -5437,7 +5733,8 @@ namespace Mono.CSharp {
 		protected T best_candidate;
 
 		protected LocalTemporary temp;
-		protected bool prepared;
+		protected bool emitting_compound_assignment;
+		protected bool has_await_arguments;
 
 		protected PropertyOrIndexerExpr (Location l)
 		{
@@ -5445,6 +5742,8 @@ namespace Mono.CSharp {
 		}
 
 		#region Properties
+
+		protected abstract Arguments Arguments { get; set; }
 
 		public MethodSpec Getter {
 			get {
@@ -5520,11 +5819,40 @@ namespace Mono.CSharp {
 		//
 		// Implements the IAssignMethod interface for assignments
 		//
-		public abstract void Emit (EmitContext ec, bool leave_copy);
-		public abstract void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load);
+		public virtual void Emit (EmitContext ec, bool leave_copy)
+		{
+			var call = new CallEmitter ();
+			call.InstanceExpression = InstanceExpression;
+			if (has_await_arguments)
+				call.HasAwaitArguments = true;
+			else
+				call.DuplicateArguments = emitting_compound_assignment;
+
+			call.Emit (ec, Getter, Arguments, loc);
+
+			if (call.HasAwaitArguments) {
+				InstanceExpression = call.InstanceExpression;
+				Arguments = call.EmittedArguments;
+				has_await_arguments = true;
+			}
+
+			if (leave_copy) {
+				ec.Emit (OpCodes.Dup);
+				temp = new LocalTemporary (Type);
+				temp.Store (ec);
+			}
+		}
+
+		public abstract void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound);
 
 		public override void Emit (EmitContext ec)
 		{
+			Emit (ec, false);
+		}
+
+		protected override void EmitToFieldSource (EmitContext ec)
+		{
+			has_await_arguments = true;
 			Emit (ec, false);
 		}
 
@@ -5716,14 +6044,17 @@ namespace Mono.CSharp {
 			throw new NotImplementedException ();
 		}
 
-		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load)
+		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound)
 		{
-			if (leave_copy || !prepare_for_load)
+			if (leave_copy || !isCompound)
 				throw new NotImplementedException ("EventExpr::EmitAssign");
 
 			Arguments args = new Arguments (1);
 			args.Add (new Argument (source));
-			Invocation.EmitCall (ec, InstanceExpression, op, args, loc);
+
+			var call = new CallEmitter ();
+			call.InstanceExpression = InstanceExpression;
+			call.Emit (ec, op, args, loc);
 		}
 
 		#endregion
@@ -5810,20 +6141,15 @@ namespace Mono.CSharp {
 			return new TemporaryVariableReference (li, loc);
 		}
 
-		public override Expression CreateExpressionTree (ResolveContext ec)
-		{
-			throw new NotSupportedException ("ET");
-		}
-
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			eclass = ExprClass.Variable;
 
 			//
 			// Don't capture temporary variables except when using
-			// iterator redirection
+			// state machine redirection
 			//
-			if (ec.CurrentAnonymousMethod != null && ec.CurrentAnonymousMethod.IsIterator && ec.IsVariableCapturingRequired) {
+			if (ec.CurrentAnonymousMethod != null && ec.CurrentAnonymousMethod is StateMachineInitializer && ec.IsVariableCapturingRequired) {
 				AnonymousMethodStorey storey = li.Block.Explicit.CreateAnonymousMethodStorey (ec);
 				storey.CaptureLocalVariable (ec, li);
 			}
@@ -5877,7 +6203,7 @@ namespace Mono.CSharp {
 		}
 
 		public override VariableInfo VariableInfo {
-			get { throw new NotImplementedException (); }
+			get { return null; }
 		}
 	}
 

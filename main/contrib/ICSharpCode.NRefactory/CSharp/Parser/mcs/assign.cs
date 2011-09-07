@@ -51,7 +51,7 @@ namespace Mono.CSharp {
 		// be data on the stack that it can use to compuatate its value. This is
 		// for expressions like a [f ()] ++, where you can't call `f ()' twice.
 		//
-		void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load);
+		void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound);
 
 		/*
 		For simple assignments, this interface is very simple, EmitAssign is called with source
@@ -201,6 +201,11 @@ namespace Mono.CSharp {
 			builder = null;
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			return false;
+		}
+
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
 			Arguments args = new Arguments (1);
@@ -236,9 +241,9 @@ namespace Mono.CSharp {
 				Emit (ec);
 		}
 
-		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load)
+		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound)
 		{
-			if (prepare_for_load)
+			if (isCompound)
 				throw new NotImplementedException ();
 
 			source.Emit (ec);
@@ -294,12 +299,6 @@ namespace Mono.CSharp {
 			this.loc = loc;
 		}
 		
-		public override Expression CreateExpressionTree (ResolveContext ec)
-		{
-			ec.Report.Error (832, loc, "An expression tree cannot contain an assignment operator");
-			return null;
-		}
-
 		public Expression Target {
 			get { return target; }
 		}
@@ -308,6 +307,17 @@ namespace Mono.CSharp {
 			get {
 				return source;
 			}
+		}
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return target.ContainsEmitWithAwait () || source.ContainsEmitWithAwait ();
+		}
+
+		public override Expression CreateExpressionTree (ResolveContext ec)
+		{
+			ec.Report.Error (832, loc, "An expression tree cannot contain an assignment operator");
+			return null;
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
@@ -546,10 +556,6 @@ namespace Mono.CSharp {
 				base.EmitStatement (ec);
 		}
 		
-		public bool IsComplexInitializer {
-			get { return !(source is Constant); }
-		}
-
 		public bool IsDefaultInitializer {
 			get {
 				Constant c = source as Constant;
@@ -558,6 +564,12 @@ namespace Mono.CSharp {
 				
 				FieldExpr fe = (FieldExpr)target;
 				return c.IsDefaultInitializer (fe.Type);
+			}
+		}
+
+		public override bool IsSideEffectFree {
+			get {
+				return source.IsSideEffectFree;
 			}
 		}
 	}
@@ -570,11 +582,17 @@ namespace Mono.CSharp {
 		// This is just a hack implemented for arrays only
 		public sealed class TargetExpression : Expression
 		{
-			Expression child;
+			readonly Expression child;
+
 			public TargetExpression (Expression child)
 			{
 				this.child = child;
 				this.loc = child.Location;
+			}
+
+			public override bool ContainsEmitWithAwait ()
+			{
+				return child.ContainsEmitWithAwait ();
 			}
 
 			public override Expression CreateExpressionTree (ResolveContext ec)
@@ -592,6 +610,11 @@ namespace Mono.CSharp {
 			public override void Emit (EmitContext ec)
 			{
 				child.Emit (ec);
+			}
+
+			public override Expression EmitToField (EmitContext ec)
+			{
+				return child.EmitToField (ec);
 			}
 		}
 

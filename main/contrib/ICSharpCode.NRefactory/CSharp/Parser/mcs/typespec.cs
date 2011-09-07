@@ -6,6 +6,7 @@
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 //
 // Copyright 2010 Novell, Inc
+// Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
 //
 
 using System;
@@ -464,12 +465,13 @@ namespace Mono.CSharp
 		{
 			var t = this;
 			do {
-				if (t.Interfaces != null) {
-					foreach (TypeSpec i in t.Interfaces) {
-						if (i == iface || TypeSpecComparer.IsEqual (i, iface))
+				var ifaces = t.Interfaces;
+				if (ifaces != null) {
+					for (int i = 0; i < ifaces.Count; ++i) {
+						if (TypeSpecComparer.IsEqual (ifaces[i], iface))
 							return true;
 
-						if (variantly && TypeSpecComparer.Variant.IsEqual (i, iface))
+						if (variantly && TypeSpecComparer.Variant.IsEqual (ifaces[i], iface))
 							return true;
 					}
 				}
@@ -535,6 +537,7 @@ namespace Mono.CSharp
 				return ((TypeParameterSpec) t).IsReferenceType;
 			case MemberKind.Struct:
 			case MemberKind.Enum:
+			case MemberKind.Void:
 				return false;
 			case MemberKind.InternalCompilerType:
 				//
@@ -1016,10 +1019,11 @@ namespace Mono.CSharp
 				}
 
 				for (int i = 0; i < targs_definition.Length; ++i) {
+					if (TypeSpecComparer.IsEqual (t1_targs[i], t2_targs[i]))
+						continue;
+
 					Variance v = targs_definition[i].Variance;
 					if (v == Variance.None) {
-						if (t1_targs[i] == t2_targs[i])
-							continue;
 						return false;
 					}
 

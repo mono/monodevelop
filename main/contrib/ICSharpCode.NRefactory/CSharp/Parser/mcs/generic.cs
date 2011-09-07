@@ -9,7 +9,9 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004-2008 Novell, Inc
+// Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
 //
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -723,8 +725,8 @@ namespace Mono.CSharp {
 						}
 					}
 
-					if (ifaces_defined == null && ifaces != null)
-						ifaces_defined = ifaces.ToArray ();
+					if (ifaces_defined == null)
+						ifaces_defined = ifaces == null ? TypeSpec.EmptyTypes : ifaces.ToArray ();
 
 					state |= StateFlags.InterfacesExpanded;
 				}
@@ -738,13 +740,19 @@ namespace Mono.CSharp {
 		//
 		public TypeSpec[] InterfacesDefined {
 			get {
-				if (ifaces_defined == null && ifaces != null)
-					ifaces_defined = ifaces.ToArray ();
+				if (ifaces_defined == null) {
+					if (ifaces == null)
+						return null;
 
-				return ifaces_defined;
+					ifaces_defined = ifaces.ToArray ();
+				}
+
+				return ifaces_defined.Length == 0 ? null : ifaces_defined;
 			}
 			set {
-				ifaces = ifaces_defined = value;
+				ifaces_defined = value;
+				if (value != null && value.Length != 0)
+					ifaces = value;
 			}
 		}
 
@@ -974,10 +982,13 @@ namespace Mono.CSharp {
 
 			// Check interfaces implementation -> definition
 			if (InterfacesDefined != null) {
-				foreach (var iface in InterfacesDefined) {
+				//
+				// Iterate over inflated interfaces
+				//
+				foreach (var iface in Interfaces) {
 					found = false;
 					if (other.InterfacesDefined != null) {
-						foreach (var oiface in other.InterfacesDefined) {
+						foreach (var oiface in other.Interfaces) {
 							if (TypeSpecComparer.Override.IsEqual (iface, oiface)) {
 								found = true;
 								break;
@@ -1007,9 +1018,12 @@ namespace Mono.CSharp {
 				if (InterfacesDefined == null)
 					return false;
 
-				foreach (var oiface in other.InterfacesDefined) {
+				//
+				// Iterate over inflated interfaces
+				//
+				foreach (var oiface in other.Interfaces) {
 					found = false;
-					foreach (var iface in InterfacesDefined) {
+					foreach (var iface in Interfaces) {
 						if (TypeSpecComparer.Override.IsEqual (iface, oiface)) {
 							found = true;
 							break;
@@ -2789,7 +2803,7 @@ namespace Mono.CSharp {
 			// Some types cannot be used as type arguments
 			//
 			if (bound.Type.Kind == MemberKind.Void || bound.Type.IsPointer || bound.Type.IsSpecialRuntimeType ||
-				bound.Type == InternalType.MethodGroup)
+				bound.Type == InternalType.MethodGroup || bound.Type == InternalType.AnonymousMethod)
 				return;
 
 			var a = bounds [index];

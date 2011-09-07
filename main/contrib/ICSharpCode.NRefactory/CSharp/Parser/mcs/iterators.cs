@@ -8,6 +8,7 @@
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 // Copyright 2003 Ximian, Inc.
 // Copyright 2003-2008 Novell, Inc.
+// Copyright 2011 Xamarin Inc.
 //
 
 // TODO:
@@ -28,7 +29,7 @@ namespace Mono.CSharp
 	public abstract class YieldStatement<T> : ResumableStatement where T : StateMachineInitializer
 	{
 		protected Expression expr;
-		bool unwind_protect;
+		protected bool unwind_protect;
 		protected T machine_initializer;
 		int resume_pc;
 		
@@ -62,7 +63,7 @@ namespace Mono.CSharp
 			machine_initializer = bc.CurrentAnonymousMethod as T;
 
 			if (!bc.CurrentBranching.CurrentUsageVector.IsUnreachable)
-				unwind_protect = bc.CurrentBranching.AddResumePoint (this, loc, out resume_pc);
+				unwind_protect = bc.CurrentBranching.AddResumePoint (this, out resume_pc);
 
 			return true;
 		}
@@ -156,7 +157,6 @@ namespace Mono.CSharp
 			Start = 0
 		}
 
-		Field disposing_field;
 		Field pc_field;
 		int local_name_idx;
 		StateMachineMethod method;
@@ -167,12 +167,6 @@ namespace Mono.CSharp
 		}
 
 		#region Properties
-
-		public Field DisposingField {
-			get {
-				return disposing_field;
-			}
-		}
 
 		public StateMachineMethod StateMachineMethod {
 			get {
@@ -200,14 +194,13 @@ namespace Mono.CSharp
 		protected override bool DoDefineMembers ()
 		{
 			pc_field = AddCompilerGeneratedField ("$PC", new TypeExpression (Compiler.BuiltinTypes.Int, Location));
-			disposing_field = AddCompilerGeneratedField ("$disposing", new TypeExpression (Compiler.BuiltinTypes.Bool, Location));
 
 			return base.DoDefineMembers ();
 		}
 
 		protected override string GetVariableMangledName (LocalVariable local_info)
 		{
-			return "<" + local_info.Name + ">__" + local_name_idx++.ToString ();
+			return "<" + local_info.Name + ">__" + local_name_idx++.ToString ("X");
 		}
 	}
 
@@ -280,7 +273,7 @@ namespace Mono.CSharp
 				{
 					Label label_init = ec.DefineLabel ();
 
-					ec.Emit (OpCodes.Ldarg_0);
+					ec.EmitThis ();
 					ec.Emit (OpCodes.Ldflda, host.PC.Spec);
 					ec.EmitInt ((int) State.Start);
 					ec.EmitInt ((int) State.Uninitialized);
@@ -292,7 +285,7 @@ namespace Mono.CSharp
 					ec.EmitInt ((int) State.Uninitialized);
 					ec.Emit (OpCodes.Bne_Un_S, label_init);
 
-					ec.Emit (OpCodes.Ldarg_0);
+					ec.EmitThis ();
 					ec.Emit (OpCodes.Ret);
 
 					ec.MarkLabel (label_init);
@@ -396,6 +389,7 @@ namespace Mono.CSharp
 
 		TypeExpr iterator_type_expr;
 		Field current_field;
+		Field disposing_field;
 
 		TypeExpr enumerator_type;
 		TypeExpr enumerable_type;
@@ -411,7 +405,15 @@ namespace Mono.CSharp
 		}
 
 		public Field CurrentField {
-			get { return current_field; }
+			get {
+				return current_field;
+			}
+		}
+
+		public Field DisposingField {
+			get {
+				return disposing_field;
+			}
 		}
 
 		public IList<HoistedParameter> HoistedParameters {
@@ -457,6 +459,7 @@ namespace Mono.CSharp
 		protected override bool DoDefineMembers ()
 		{
 			current_field = AddCompilerGeneratedField ("$current", iterator_type_expr);
+			disposing_field = AddCompilerGeneratedField ("$disposing", new TypeExpression (Compiler.BuiltinTypes.Bool, Location));
 
 			if (hoisted_params != null) {
 				//
@@ -578,6 +581,10 @@ namespace Mono.CSharp
 		{
 			EmitContext ec = new EmitContext (this, ig, MemberType);
 			ec.CurrentAnonymousMethod = expr;
+
+			if (expr is AsyncInitializer)
+				ec.With (BuilderContext.Options.AsyncBody, true);
+
 			return ec;
 		}
 	}
@@ -617,9 +624,11 @@ namespace Mono.CSharp
 		// The state as we generate the machine
 		//
 		Label move_next_ok;
+		Label iterator_body_end;
 		protected Label move_next_error;
-		protected LocalBuilder skip_finally, current_pc;
-		List<ResumableStatement> resume_points;
+		LocalBuilder skip_finally;
+		protected LocalBuilder current_pc;
+		protected List<ResumableStatement> resume_points;
 
 		protected StateMachineInitializer (ParametersBlock block, TypeContainer host, TypeSpec returnType)
 			: base (block, returnType, block.StartLocation)
@@ -627,11 +636,34 @@ namespace Mono.CSharp
 			this.Host = host;
 		}
 
+		#region Properties
+
+		public Label BodyEnd {
+			get {
+				return iterator_body_end;
+			}
+		}
+
+		public LocalBuilder CurrentPC
+		{
+			get {
+				return current_pc;
+			}
+		}
+
+		public LocalBuilder SkipFinally {
+			get {
+				return skip_finally;
+			}
+		}
+
 		public override AnonymousMethodStorey Storey {
 			get {
 				return storey;
 			}
 		}
+
+		#endregion
 
 		public int AddResumePoint (ResumableStatement stmt)
 		{
@@ -660,7 +692,6 @@ namespace Mono.CSharp
 
 			var ctx = CreateBlockContext (ec);
 
-			ctx.StartFlowBranching (this, ec.CurrentBranching);
 			Block.Resolve (ctx);
 
 			//
@@ -690,69 +721,25 @@ namespace Mono.CSharp
 			storey.Instance.Emit (ec);
 		}
 
-		public void EmitDispose (EmitContext ec)
-		{
-			Label end = ec.DefineLabel ();
-
-			Label[] labels = null;
-			int n_resume_points = resume_points == null ? 0 : resume_points.Count;
-			for (int i = 0; i < n_resume_points; ++i) {
-				ResumableStatement s = resume_points[i];
-				Label ret = s.PrepareForDispose (ec, end);
-				if (ret.Equals (end) && labels == null)
-					continue;
-				if (labels == null) {
-					labels = new Label[resume_points.Count + 1];
-					for (int j = 0; j <= i; ++j)
-						labels[j] = end;
-				}
-
-				labels[i + 1] = ret;
-			}
-
-			if (labels != null) {
-				current_pc = ec.GetTemporaryLocal (ec.BuiltinTypes.UInt);
-				ec.Emit (OpCodes.Ldarg_0);
-				ec.Emit (OpCodes.Ldfld, storey.PC.Spec);
-				ec.Emit (OpCodes.Stloc, current_pc);
-			}
-
-			ec.Emit (OpCodes.Ldarg_0);
-			ec.EmitInt (1);
-			ec.Emit (OpCodes.Stfld, storey.DisposingField.Spec);
-
-			ec.Emit (OpCodes.Ldarg_0);
-			ec.EmitInt ((int) IteratorStorey.State.After);
-			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
-
-			if (labels != null) {
-				//SymbolWriter.StartIteratorDispatcher (ec.ig);
-				ec.Emit (OpCodes.Ldloc, current_pc);
-				ec.Emit (OpCodes.Switch, labels);
-				//SymbolWriter.EndIteratorDispatcher (ec.ig);
-
-				foreach (ResumableStatement s in resume_points)
-					s.EmitForDispose (ec, current_pc, end, true);
-			}
-
-			ec.MarkLabel (end);
-		}
-
 		void EmitMoveNext_NoResumePoints (EmitContext ec, Block original_block)
 		{
-			ec.Emit (OpCodes.Ldarg_0);
+			ec.EmitThis ();
 			ec.Emit (OpCodes.Ldfld, storey.PC.Spec);
 
-			ec.Emit (OpCodes.Ldarg_0);
+			ec.EmitThis ();
 			ec.EmitInt ((int) IteratorStorey.State.After);
 			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
 
 			// We only care if the PC is zero (start executing) or non-zero (don't do anything)
 			ec.Emit (OpCodes.Brtrue, move_next_error);
 
+			iterator_body_end = ec.DefineLabel ();
+
 			SymbolWriter.StartIteratorBody (ec);
 			original_block.Emit (ec);
 			SymbolWriter.EndIteratorBody (ec);
+
+			ec.MarkLabel (iterator_body_end);
 
 			EmitMoveNextEpilogue (ec);
 
@@ -773,14 +760,14 @@ namespace Mono.CSharp
 				EmitMoveNext_NoResumePoints (ec, block);
 				return;
 			}
-
+			
 			current_pc = ec.GetTemporaryLocal (ec.BuiltinTypes.UInt);
-			ec.Emit (OpCodes.Ldarg_0);
+			ec.EmitThis ();
 			ec.Emit (OpCodes.Ldfld, storey.PC.Spec);
 			ec.Emit (OpCodes.Stloc, current_pc);
 
 			// We're actually in state 'running', but this is as good a PC value as any if there's an abnormal exit
-			ec.Emit (OpCodes.Ldarg_0);
+			ec.EmitThis ();
 			ec.EmitInt ((int) IteratorStorey.State.After);
 			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
 
@@ -796,18 +783,24 @@ namespace Mono.CSharp
 
 			if (need_skip_finally) {
 				skip_finally = ec.GetTemporaryLocal (ec.BuiltinTypes.Bool);
-				ec.Emit (OpCodes.Ldc_I4_0);
+				ec.EmitInt (0);
 				ec.Emit (OpCodes.Stloc, skip_finally);
 			}
+
+			var async_init = this as AsyncInitializer;
+			if (async_init != null)
+				ec.BeginExceptionBlock ();
 
 			SymbolWriter.StartIteratorDispatcher (ec);
 			ec.Emit (OpCodes.Ldloc, current_pc);
 			ec.Emit (OpCodes.Switch, labels);
 
-			ec.Emit (OpCodes.Br, move_next_error);
+			ec.Emit (async_init != null ? OpCodes.Leave : OpCodes.Br, move_next_error);
 			SymbolWriter.EndIteratorDispatcher (ec);
 
 			ec.MarkLabel (labels[0]);
+
+			iterator_body_end = ec.DefineLabel ();
 
 			SymbolWriter.StartIteratorBody (ec);
 			block.Emit (ec);
@@ -815,14 +808,32 @@ namespace Mono.CSharp
 
 			SymbolWriter.StartIteratorDispatcher (ec);
 
-			ec.Emit (OpCodes.Ldarg_0);
+			ec.MarkLabel (iterator_body_end);
+
+			if (async_init != null) {
+				var catch_value = LocalVariable.CreateCompilerGenerated (ec.Module.Compiler.BuiltinTypes.Exception, block, Location);
+
+				ec.BeginCatchBlock (catch_value.Type);
+				catch_value.EmitAssign (ec);
+
+				ec.EmitThis ();
+				ec.EmitInt ((int) IteratorStorey.State.After);
+				ec.Emit (OpCodes.Stfld, storey.PC.Spec);
+
+				((AsyncTaskStorey) async_init.Storey).EmitSetException (ec, new LocalVariableReference (catch_value, Location));
+
+				ec.Emit (OpCodes.Leave, move_next_ok);
+				ec.EndExceptionBlock ();
+			}
+
+			ec.EmitThis ();
 			ec.EmitInt ((int) IteratorStorey.State.After);
 			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
 
 			EmitMoveNextEpilogue (ec);
 
 			ec.MarkLabel (move_next_error);
-
+			
 			if (ReturnType.Kind != MemberKind.Void) {
 				ec.EmitInt (0);
 				ec.Emit (OpCodes.Ret);
@@ -842,6 +853,12 @@ namespace Mono.CSharp
 		{
 		}
 
+		public void EmitLeave (EmitContext ec, bool unwind_protect)
+		{
+			// Return ok
+			ec.Emit (unwind_protect ? OpCodes.Leave : OpCodes.Br, move_next_ok);
+		}
+
 		//
 		// Called back from YieldStatement
 		//
@@ -851,28 +868,29 @@ namespace Mono.CSharp
 			// Guard against being disposed meantime
 			//
 			Label disposed = ec.DefineLabel ();
-			ec.Emit (OpCodes.Ldarg_0);
-			ec.Emit (OpCodes.Ldfld, storey.DisposingField.Spec);
-			ec.Emit (OpCodes.Brtrue_S, disposed);
+			var iterator = storey as IteratorStorey;
+			if (iterator != null) {
+				ec.EmitThis ();
+				ec.Emit (OpCodes.Ldfld, iterator.DisposingField.Spec);
+				ec.Emit (OpCodes.Brtrue_S, disposed);
+			}
 
 			//
 			// store resume program-counter
 			//
-			ec.Emit (OpCodes.Ldarg_0);
+			ec.EmitThis ();
 			ec.EmitInt (resume_pc);
 			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
-			ec.MarkLabel (disposed);
+
+			if (iterator != null) {
+				ec.MarkLabel (disposed);
+			}
 
 			// mark finally blocks as disabled
 			if (unwind_protect && skip_finally != null) {
 				ec.EmitInt (1);
 				ec.Emit (OpCodes.Stloc, skip_finally);
 			}
-
-			// Return ok
-			ec.Emit (unwind_protect ? OpCodes.Leave : OpCodes.Br, move_next_ok);
-
-			ec.MarkLabel (resume_point);
 		}
 	}
 
@@ -892,14 +910,6 @@ namespace Mono.CSharp
 			this.OriginalIteratorType = iterator_type;
 			this.IsEnumerable = is_enumerable;
 			this.type = method.ReturnType;
-		}
-
-		public LocalBuilder SkipFinally {
-			get { return skip_finally; }
-		}
-
-		public LocalBuilder CurrentPC {
-		    get { return current_pc; }
 		}
 
 		public Block Container {
@@ -951,6 +961,54 @@ namespace Mono.CSharp
 			}
 		}
 
+		public void EmitDispose (EmitContext ec)
+		{
+			Label end = ec.DefineLabel ();
+
+			Label[] labels = null;
+			int n_resume_points = resume_points == null ? 0 : resume_points.Count;
+			for (int i = 0; i < n_resume_points; ++i) {
+				ResumableStatement s = resume_points[i];
+				Label ret = s.PrepareForDispose (ec, end);
+				if (ret.Equals (end) && labels == null)
+					continue;
+				if (labels == null) {
+					labels = new Label[resume_points.Count + 1];
+					for (int j = 0; j <= i; ++j)
+						labels[j] = end;
+				}
+
+				labels[i + 1] = ret;
+			}
+
+			if (labels != null) {
+				current_pc = ec.GetTemporaryLocal (ec.BuiltinTypes.UInt);
+				ec.EmitThis ();
+				ec.Emit (OpCodes.Ldfld, storey.PC.Spec);
+				ec.Emit (OpCodes.Stloc, current_pc);
+			}
+
+			ec.EmitThis ();
+			ec.EmitInt (1);
+			ec.Emit (OpCodes.Stfld, ((IteratorStorey) storey).DisposingField.Spec);
+
+			ec.EmitThis ();
+			ec.EmitInt ((int) IteratorStorey.State.After);
+			ec.Emit (OpCodes.Stfld, storey.PC.Spec);
+
+			if (labels != null) {
+				//SymbolWriter.StartIteratorDispatcher (ec.ig);
+				ec.Emit (OpCodes.Ldloc, current_pc);
+				ec.Emit (OpCodes.Switch, labels);
+				//SymbolWriter.EndIteratorDispatcher (ec.ig);
+
+				foreach (ResumableStatement s in resume_points)
+					s.EmitForDispose (ec, current_pc, end, true);
+			}
+
+			ec.MarkLabel (end);
+		}
+
 		public override void EmitStatement (EmitContext ec)
 		{
 			throw new NotImplementedException ();
@@ -964,6 +1022,17 @@ namespace Mono.CSharp
 			fe.EmitAssign (ec, expr, false, false);
 
 			base.InjectYield (ec, expr, resume_pc, unwind_protect, resume_point);
+
+			EmitLeave (ec, unwind_protect);
+
+			ec.MarkLabel (resume_point);
+		}
+
+		protected override BlockContext CreateBlockContext (ResolveContext rc)
+		{
+			var bc = base.CreateBlockContext (rc);
+			bc.StartFlowBranching (this, rc.CurrentBranching);
+			return bc;
 		}
 
 		public static void CreateIterator (IMethodData method, TypeContainer parent, Modifiers modifiers)

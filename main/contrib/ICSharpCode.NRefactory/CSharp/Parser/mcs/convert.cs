@@ -8,6 +8,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc.
 // Copyright 2003-2008 Novell, Inc.
+// Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
 //
 
 using System;
@@ -198,7 +199,7 @@ namespace Mono.CSharp {
 			return ImplicitReferenceConversionExists (expr_type, target_type, true);
 		}
 
-		static bool ImplicitReferenceConversionExists (TypeSpec expr_type, TypeSpec target_type, bool refOnlyTypeParameter)
+		public static bool ImplicitReferenceConversionExists (TypeSpec expr_type, TypeSpec target_type, bool refOnlyTypeParameter)
 		{
 			// It's here only to speed things up
 			if (target_type.IsStruct)

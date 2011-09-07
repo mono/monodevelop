@@ -434,6 +434,11 @@ namespace Mono.CSharp {
 		protected MethodSpec constructor_method;
 		protected MethodGroupExpr method_group;
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			return false;
+		}
+
 		public static Arguments CreateDelegateMethodArguments (AParametersCollection pd, TypeSpec[] types, Location loc)
 		{
 			Arguments delegate_arguments = new Arguments (pd.Count);
@@ -541,7 +546,7 @@ namespace Mono.CSharp {
 		public override void Emit (EmitContext ec)
 		{
 			if (method_group.InstanceExpression == null)
-				ec.Emit (OpCodes.Ldnull);
+				ec.EmitNull ();
 			else
 				method_group.InstanceExpression.Emit (ec);
 
@@ -717,6 +722,11 @@ namespace Mono.CSharp {
 			this.arguments = args;
 			this.loc = loc;
 		}
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return InstanceExpr.ContainsEmitWithAwait () || (arguments != null && arguments.ContainsEmitWithAwait ());
+		}
 		
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
@@ -753,7 +763,9 @@ namespace Mono.CSharp {
 			// Invocation on delegates call the virtual Invoke member
 			// so we are always `instance' calls
 			//
-			Invocation.EmitCall (ec, InstanceExpr, method, arguments, loc);
+			var call = new CallEmitter ();
+			call.InstanceExpression = InstanceExpr;
+			call.EmitPredefined (ec, method, arguments);
 		}
 
 		public override void EmitStatement (EmitContext ec)

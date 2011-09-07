@@ -893,6 +893,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 //			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.StartLocation.Line);
 			int rbraceOffset = data.LocationToOffset (rbrace.StartLocation.Line, rbrace.StartLocation.Column);
+			if (lbraceOffset <= 0 || rbraceOffset <= 0)
+				return;
 			int whitespaceStart = SearchWhitespaceStart (lbraceOffset);
 			int whitespaceEnd = SearchWhitespaceLineStart (rbraceOffset);
 			string startIndent = "";

@@ -49,6 +49,12 @@ namespace Mono.CSharp {
 		
 		public bool IsDoubleColon { get { return is_double_colon; } }
 
+#if FULL_AST
+		public Location DotLocation {
+			get;
+			set;
+		}
+#endif
 		private MemberName (MemberName left, string name, bool is_double_colon,
 				    Location loc)
 		{
@@ -154,7 +160,11 @@ namespace Mono.CSharp {
 			}
 
 			Expression lexpr = Left.GetTypeExpression ();
-			return new MemberAccess (lexpr, Name, TypeArguments, Location);
+			var result = new MemberAccess (lexpr, Name, TypeArguments, Location);
+#if FULL_AST
+			result.DotLocation = DotLocation;
+#endif
+			return result;
 		}
 
 		public MemberName Clone ()
@@ -694,9 +704,9 @@ namespace Mono.CSharp {
 			return true;
 		}
 
-		public virtual IList<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, string name, int arity, ref NamespaceContainer scope)
+		public virtual ExtensionMethodCandidates LookupExtensionMethod (TypeSpec extensionType, string name, int arity)
 		{
-			return Parent.LookupExtensionMethod (extensionType, name, arity, ref scope);
+			return Parent.LookupExtensionMethod (extensionType, name, arity);
 		}
 
 		public virtual FullNamedExpression LookupNamespaceAlias (string name)
@@ -1440,6 +1450,21 @@ namespace Mono.CSharp {
 		public List<Constraints> PlainConstraints {
 			get;
 			private set;
+		}
+		
+		public bool HasOptionalSemicolon {
+			get;
+			private set;
+		}
+		Location optionalSemicolon;
+		public Location OptionalSemicolon {
+			get {
+				return optionalSemicolon;
+			}
+			set {
+				optionalSemicolon = value;
+				HasOptionalSemicolon = true;
+			}
 		}
 #endif
 

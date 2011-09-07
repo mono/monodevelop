@@ -6,6 +6,7 @@
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 //
 // Copyright 2009 Novell, Inc
+// Copyright 2011 Xamarin Inc.
 //
 
 using System;
@@ -95,9 +96,14 @@ namespace Mono.CSharp
 			throw new NotImplementedException ();
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			throw new NotSupportedException ();
+		}
+
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
-			throw new NotImplementedException ();
+			throw new NotSupportedException ();
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
@@ -122,7 +128,7 @@ namespace Mono.CSharp
 			throw new NotImplementedException ();
 		}
 
-		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load)
+		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound)
 		{
 			throw new NotImplementedException ();
 		}
@@ -260,6 +266,11 @@ namespace Mono.CSharp
 			get {
 				return arguments;
 			}
+		}
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return arguments.ContainsEmitWithAwait ();
 		}
 
 		public override Expression CreateExpressionTree (ResolveContext ec)
@@ -714,7 +725,7 @@ namespace Mono.CSharp
 
 	class DynamicInvocation : DynamicExpressionStatement, IDynamicBinder
 	{
-		ATypeNameExpression member;
+		readonly ATypeNameExpression member;
 
 		public DynamicInvocation (ATypeNameExpression member, Arguments args, Location loc)
 			: base (null, args, loc)
@@ -897,7 +908,7 @@ namespace Mono.CSharp
 			throw new NotImplementedException ();
 		}
 
-		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load)
+		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound)
 		{
 			EmitCall (ec, setter, setter_args, !leave_copy);
 		}

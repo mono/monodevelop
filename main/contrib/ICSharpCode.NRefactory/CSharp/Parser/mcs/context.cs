@@ -7,17 +7,12 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc.
 // Copyright 2004-2009 Novell, Inc.
+// Copyright 2011 Xamarin Inc.
 //
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-
-#if STATIC
-using IKVM.Reflection.Emit;
-#else
-using System.Reflection.Emit;
-#endif
 
 namespace Mono.CSharp
 {
@@ -58,7 +53,7 @@ namespace Mono.CSharp
 
 		string GetSignatureForError ();
 
-		IList<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, string name, int arity, ref NamespaceContainer scope);
+		ExtensionMethodCandidates LookupExtensionMethod (TypeSpec extensionType, string name, int arity);
 		FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc);
 		FullNamedExpression LookupNamespaceAlias (string name);
 	}
@@ -75,18 +70,7 @@ namespace Mono.CSharp
 	{
 		FlowBranching current_flow_branching;
 
-		TypeSpec return_type;
-
-		/// <summary>
-		///   The location where return has to jump to return the
-		///   value
-		/// </summary>
-		public Label ReturnLabel;	// TODO: It's emit dependant
-
-		/// <summary>
-		///   If we already defined the ReturnLabel
-		/// </summary>
-		public bool HasReturnLabel;
+		readonly TypeSpec return_type;
 
 		public int FlowOffset;
 
@@ -114,6 +98,10 @@ namespace Mono.CSharp
 
 		public override FlowBranching CurrentBranching {
 			get { return current_flow_branching; }
+		}
+
+		public TypeSpec ReturnType {
+			get { return return_type; }
 		}
 
 		// <summary>
@@ -145,9 +133,9 @@ namespace Mono.CSharp
 			return branching;
 		}
 
-		public FlowBranchingException StartFlowBranching (ExceptionStatement stmt)
+		public FlowBranchingTryFinally StartFlowBranching (TryFinallyBlock stmt)
 		{
-			FlowBranchingException branching = new FlowBranchingException (CurrentBranching, stmt);
+			FlowBranchingTryFinally branching = new FlowBranchingTryFinally (CurrentBranching, stmt);
 			current_flow_branching = branching;
 			return branching;
 		}
@@ -159,9 +147,16 @@ namespace Mono.CSharp
 			return branching;
 		}
 
-		public FlowBranchingIterator StartFlowBranching (StateMachineInitializer iterator, FlowBranching parent)
+		public FlowBranchingIterator StartFlowBranching (Iterator iterator, FlowBranching parent)
 		{
 			FlowBranchingIterator branching = new FlowBranchingIterator (parent, iterator);
+			current_flow_branching = branching;
+			return branching;
+		}
+
+		public FlowBranchingAsync StartFlowBranching (AsyncInitializer asyncBody, FlowBranching parent)
+		{
+			var branching = new FlowBranchingAsync (parent, asyncBody);
 			current_flow_branching = branching;
 			return branching;
 		}
@@ -196,19 +191,11 @@ namespace Mono.CSharp
 			current_flow_branching = current_flow_branching.Parent;
 		}
 
-		//
-		// This method is used during the Resolution phase to flag the
-		// need to define the ReturnLabel
-		//
+#if !STATIC
 		public void NeedReturnLabel ()
 		{
-			if (!HasReturnLabel)
-				HasReturnLabel = true;
 		}
-
-		public TypeSpec ReturnType {
-			get { return return_type; }
-		}
+#endif
 	}
 
 	//
@@ -484,7 +471,7 @@ namespace Mono.CSharp
 
 			// FIXME: IsIterator is too aggressive, we should capture only if child
 			// block contains yield
-			if (CurrentAnonymousMethod.IsIterator)
+			if (CurrentAnonymousMethod.IsIterator || CurrentAnonymousMethod is AsyncInitializer)
 				return true;
 
 			return local.Block.ParametersBlock != CurrentBlock.ParametersBlock.Original;
@@ -519,9 +506,9 @@ namespace Mono.CSharp
 			return MemberContext.GetSignatureForError ();
 		}
 
-		public IList<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, string name, int arity, ref NamespaceContainer scope)
+		public ExtensionMethodCandidates LookupExtensionMethod (TypeSpec extensionType, string name, int arity)
 		{
-			return MemberContext.LookupExtensionMethod (extensionType, name, arity, ref scope);
+			return MemberContext.LookupExtensionMethod (extensionType, name, arity);
 		}
 
 		public FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
@@ -685,18 +672,11 @@ namespace Mono.CSharp
 			/// </summary>
 			CheckedScope = 1 << 0,
 
-			/// <summary>
-			///   The constant check state is always set to `true' and cant be changed
-			///   from the command line.  The source code can change this setting with
-			///   the `checked' and `unchecked' statements and expressions. 
-			/// </summary>
-			ConstantCheckState = 1 << 1,
-
-			AllCheckStateFlags = CheckedScope | ConstantCheckState,
-
 			OmitDebugInfo = 1 << 2,
 
-			ConstructorScope = 1 << 3
+			ConstructorScope = 1 << 3,
+
+			AsyncBody = 1 << 4
 		}
 
 		// utility helper for CheckExpr, UnCheckExpr, Checked and Unchecked statements
@@ -725,7 +705,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		Options flags;
+		protected Options flags;
 
 		public bool HasSet (Options options)
 		{

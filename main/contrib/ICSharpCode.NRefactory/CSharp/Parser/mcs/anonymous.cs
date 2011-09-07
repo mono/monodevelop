@@ -193,7 +193,7 @@ namespace Mono.CSharp {
 		protected HoistedThis hoisted_this;
 
 		// Local variable which holds this storey instance
-		public LocalTemporary Instance;
+		public Expression Instance;
 
 		public AnonymousMethodStorey (Block block, TypeContainer parent, MemberBase host, TypeParameter[] tparams, string name)
 			: base (parent, MakeMemberName (host, name, unique_id, tparams, block.StartLocation),
@@ -236,7 +236,12 @@ namespace Mono.CSharp {
 
 		protected Field AddCompilerGeneratedField (string name, FullNamedExpression type)
 		{
-			const Modifiers mod = Modifiers.INTERNAL | Modifiers.COMPILER_GENERATED;
+			return AddCompilerGeneratedField (name, type, false);
+		}
+
+		protected Field AddCompilerGeneratedField (string name, FullNamedExpression type, bool privateAccess)
+		{
+			Modifiers mod = Modifiers.COMPILER_GENERATED | (privateAccess ? Modifiers.PRIVATE : Modifiers.INTERNAL);
 			Field f = new Field (this, type, mod, new MemberName (name, Location), null);
 			AddField (f);
 			return f;
@@ -391,21 +396,47 @@ namespace Mono.CSharp {
 			SymbolWriter.OpenCompilerGeneratedBlock (ec);
 
 			//
-			// Create an instance of a storey
+			// Create an instance of this storey
 			//
-			var storey_type_expr = CreateStoreyTypeExpression (ec);
-
 			ResolveContext rc = new ResolveContext (ec.MemberContext);
 			rc.CurrentBlock = block;
-			Expression e = new New (storey_type_expr, null, Location).Resolve (rc);
-			e.Emit (ec);
 
-			Instance = new LocalTemporary (storey_type_expr.Type);
-			Instance.Store (ec);
+			var storey_type_expr = CreateStoreyTypeExpression (ec);
+			var source = new New (storey_type_expr, null, Location).Resolve (rc);
+
+			//
+			// When the current context is async (or iterator) lift local storey
+			// instantiation to the currect storey
+			//
+			if (ec.CurrentAnonymousMethod is StateMachineInitializer) {
+				//
+				// Unfortunately, normal capture mechanism could not be used because we are
+				// too late in the pipeline and standart assign cannot be used either due to
+				// recursive nature of GetStoreyInstanceExpression
+				//
+				var field = ec.CurrentAnonymousMethod.Storey.AddCompilerGeneratedField (
+					LocalVariable.GetCompilerGeneratedName (block), storey_type_expr, true);
+
+				field.Define ();
+				field.Emit ();
+
+				var fexpr = new FieldExpr (field, Location);
+				fexpr.InstanceExpression = new CompilerGeneratedThis (ec.CurrentType, Location);
+				fexpr.EmitAssign (ec, source, false, false);
+
+				Instance = fexpr;
+			} else {
+				var local = TemporaryVariableReference.Create (source.Type, block, Location);
+				local.EmitAssign (ec, source);
+
+				Instance = local;
+			}
 
 			EmitHoistedFieldsInitialization (rc, ec);
 
-			SymbolWriter.DefineScopeVariable (ID, Instance.Builder);
+			// TODO: Implement properly
+			//SymbolWriter.DefineScopeVariable (ID, Instance.Builder);
+
 			SymbolWriter.CloseCompilerGeneratedBlock (ec);
 		}
 
@@ -526,10 +557,11 @@ namespace Mono.CSharp {
 			if (f == null) {
 				if (am.Storey == this) {
 					//
-					// Access inside of same storey (S -> S)
+					// Access from inside of same storey (S -> S)
 					//
 					return new CompilerGeneratedThis (CurrentType, Location);
 				}
+
 				//
 				// External field access
 				//
@@ -581,6 +613,11 @@ namespace Mono.CSharp {
 			public ExpressionTreeVariableReference (HoistedVariable hv)
 			{
 				this.hv = hv;
+			}
+
+			public override bool ContainsEmitWithAwait ()
+			{
+				return false;
 			}
 
 			public override Expression CreateExpressionTree (ResolveContext ec)
@@ -635,6 +672,11 @@ namespace Mono.CSharp {
 		public void Emit (EmitContext ec)
 		{
 			GetFieldExpression (ec).Emit (ec);
+		}
+
+		public Expression EmitToField (EmitContext ec)
+		{
+			return GetFieldExpression (ec);
 		}
 
 		//
@@ -692,7 +734,7 @@ namespace Mono.CSharp {
 			GetFieldExpression (ec).Emit (ec, leave_copy);
 		}
 
-		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool prepare_for_load)
+		public void EmitAssign (EmitContext ec, Expression source, bool leave_copy, bool isCompound)
 		{
 			GetFieldExpression (ec).EmitAssign (ec, source, leave_copy, false);
 		}
@@ -760,10 +802,18 @@ namespace Mono.CSharp {
 	{
 		readonly string name;
 
-		public HoistedLocalVariable (AnonymousMethodStorey scope, LocalVariable local, string name)
-			: base (scope, name, local.Type)
+		public HoistedLocalVariable (AnonymousMethodStorey storey, LocalVariable local, string name)
+			: base (storey, name, local.Type)
 		{
 			this.name = local.Name;
+		}
+
+		//
+		// For compiler generated local variables
+		//
+		public HoistedLocalVariable (AnonymousMethodStorey storey, Field field)
+			: base (storey, field)
+		{
 		}
 
 		public override void EmitSymbolInfo ()
@@ -1021,7 +1071,7 @@ namespace Mono.CSharp {
 				var body = CompatibleMethodBody (ec, tic, InternalType.Arglist, delegate_type);
 				if (body != null) {
 					if (is_async) {
-						AsyncInitializer.Create (body.Block, body.Parameters, ec.CurrentMemberDefinition.Parent, null, loc);
+						AsyncInitializer.Create (ec, body.Block, body.Parameters, ec.CurrentMemberDefinition.Parent, null, loc);
 					}
 
 					am = body.Compatible (ec, body, is_async);
@@ -1035,6 +1085,11 @@ namespace Mono.CSharp {
 
 //			compatibles.Add (delegate_type, am);
 			return am.ReturnType;
+		}
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return false;
 		}
 
 		//
@@ -1102,7 +1157,7 @@ namespace Mono.CSharp {
 					}
 				} else {
 					if (is_async) {
-						AsyncInitializer.Create (body.Block, body.Parameters, ec.CurrentMemberDefinition.Parent, body.ReturnType, loc);
+						AsyncInitializer.Create (ec, body.Block, body.Parameters, ec.CurrentMemberDefinition.Parent, body.ReturnType, loc);
 					}
 
 					am = body.Compatible (ec);
@@ -1190,12 +1245,13 @@ namespace Mono.CSharp {
 			if (!DoResolveParameters (ec))
 				return null;
 
+#if !STATIC
 			// FIXME: The emitted code isn't very careful about reachability
 			// so, ensure we have a 'ret' at the end
 			BlockContext bc = ec as BlockContext;
 			if (bc != null && bc.CurrentBranching != null && bc.CurrentBranching.CurrentUsageVector.IsUnreachable)
 				bc.NeedReturnLabel ();
-
+#endif
 			return this;
 		}
 
@@ -1280,11 +1336,6 @@ namespace Mono.CSharp {
 			{
 				EmitContext ec = new EmitContext (this, ig, ReturnType);
 				ec.CurrentAnonymousMethod = AnonymousMethod;
-				if (AnonymousMethod.return_label != null) {
-					ec.HasReturnLabel = true;
-					ec.ReturnLabel = (Label) AnonymousMethod.return_label;
-				}
-
 				return ec;
 			}
 
@@ -1329,8 +1380,6 @@ namespace Mono.CSharp {
 		protected ParametersBlock block;
 
 		public TypeSpec ReturnType;
-
-		object return_label;
 
 		protected AnonymousExpression (ParametersBlock block, TypeSpec return_type, Location loc)
 		{
@@ -1380,9 +1429,6 @@ namespace Mono.CSharp {
 
 			bool res = Block.Resolve (ec.CurrentBranching, aec, null);
 
-			if (aec.HasReturnLabel)
-				return_label = aec.ReturnLabel;
-
 			if (am != null && am.ReturnTypeInference != null) {
 				am.ReturnTypeInference.FixAllTypes (ec);
 				ReturnType = am.ReturnTypeInference.InferredTypeArguments [0];
@@ -1401,6 +1447,11 @@ namespace Mono.CSharp {
 				return null;
 
 			return res ? this : null;
+		}
+
+		public override bool ContainsEmitWithAwait ()
+		{
+			return false;
 		}
 
 		public void SetHasThisAccess ()
@@ -1629,13 +1680,13 @@ namespace Mono.CSharp {
 			//
 
 			if (is_static) {
-				ec.Emit (OpCodes.Ldnull);
+				ec.EmitNull ();
 			} else if (storey != null) {
 				Expression e = storey.GetStoreyInstanceExpression (ec).Resolve (new ResolveContext (ec.MemberContext));
 				if (e != null)
 					e.Emit (ec);
 			} else {
-				ec.Emit (OpCodes.Ldarg_0);
+				ec.EmitThis ();
 			}
 
 			var delegate_method = method.Spec;
