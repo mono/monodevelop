@@ -641,7 +641,11 @@ namespace MonoDevelop.Projects
 
 			DeleteSupportFiles (monitor, configuration);
 
+			monitor.BeginTask (GettextCatalog.GetString ("Performing clean..."), 0);
 			DoClean (monitor, config.Selector);
+			monitor.Log.WriteLine ();
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Clean complete"));
+			monitor.EndTask ();
 		}
 
 		protected virtual void DoClean (IProgressMonitor monitor, ConfigurationSelector configuration)
