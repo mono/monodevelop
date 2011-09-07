@@ -52,7 +52,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		public void AddNativeTarget (PBXNativeTarget target)
 		{
-			this.targets.Add (target);
+			targets.Add (target);
 		}
 
 		public override string Name {
@@ -68,7 +68,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		public override string ToString ()
 		{
 			var sb = new StringBuilder ();
-			sb.AppendFormat ("{0} = {{\n", Token);
+			sb.AppendFormat ("{0} /* Project object */ = {{\n", Token);
 			sb.AppendFormat ("\t\t\tisa = {0};\n", Type);
 			sb.AppendFormat ("\t\t\tattributes = {{ }};\n");
 			sb.AppendFormat ("\t\t\tbuildConfigurationList = {0} /* {1} */;\n",

@@ -129,6 +129,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 			this.files.Add (target);
 			this.project.AddNativeTarget (nativeTarget);
+
+			AddFramework ("UIKit");
+			AddFramework ("Foundation");
+			AddFramework ("CoreGraphics");
 		}
 		
 		public string Name { get { return name; } }

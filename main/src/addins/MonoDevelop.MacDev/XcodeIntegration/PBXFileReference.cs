@@ -61,7 +61,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				switch (Path.Substring (dot + 1)) {
 				case "framework": sb.AppendFormat ("lastKnownFileType = wrapper.framework; name = {0}; ", Name); break;
 				case "app": sb.Append ("explicitFileType = wrapper.application; includeInIndex = 0; "); break;
-				case "storyboard": sb.Append ("lastKnownFileType = file.storyboard; name = en; "); break;
+				case "storyboard": sb.Append ("lastKnownFileType = file.storyboard; "); break;
 				case "strings": sb.Append ("lastKnownFileType = text.plist.xml; "); break;
 				case "plist": sb.Append ("lastKnownFileType = text.plist.xml; "); break;
 				case "m": sb.Append ("lastKnownFileType = sourcecode.c.objc; "); break;
