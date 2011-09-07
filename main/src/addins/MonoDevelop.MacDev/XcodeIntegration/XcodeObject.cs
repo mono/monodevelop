@@ -1,10 +1,12 @@
 // 
 // XcodeObject.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +33,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	public abstract class XcodeObject
 	{
+		public abstract string Name { get; }
 		public abstract XcodeType Type { get; }
 
 		public string Token {

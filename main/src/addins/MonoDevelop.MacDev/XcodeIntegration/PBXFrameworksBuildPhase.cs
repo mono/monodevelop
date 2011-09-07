@@ -1,10 +1,12 @@
 // 
 // PBXFrameworksBuildPhase.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,16 +34,21 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	class PBXFrameworksBuildPhase : XcodeObject
 	{
-		public List<PBXBuildFile> frameworks;
+		List<PBXBuildFile> frameworks;
 
 		public PBXFrameworksBuildPhase ()
 		{
-			this.frameworks = new List<PBXBuildFile> ();
+			frameworks = new List<PBXBuildFile> ();
 		}
 
 		public void AddFramework (PBXBuildFile framework)
 		{
-			this.frameworks.Add (framework);
+			framework.BuildPhase = this;
+			frameworks.Add (framework);
+		}
+
+		public override string Name {
+			get { return "Frameworks"; }
 		}
 
 		public override XcodeType Type {
@@ -54,11 +61,16 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			var sb = new StringBuilder ();
 
-			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\tbuildActionMask = 2147483647;\n\t\t\tfiles = (\n", Token, Type);
-			foreach (PBXBuildFile framework in frameworks) 
-				sb.AppendFormat ("\t\t\t\t{0},\n", framework.Token);
-			sb.AppendFormat ("\t\t\t);\n\t\t\trunOnlyForDeploymentPostprocessing = 0;\n\t\t}};");
-		
+			sb.AppendFormat ("{0} /* {1} */ = {{\n", Token, Name);
+			sb.AppendFormat ("\t\t\tisa = {0};\n", Type);
+			sb.AppendFormat ("\t\t\tbuildActionMask = 2147483647;\n");
+			sb.AppendFormat ("\t\t\tfiles = (\n");
+			foreach (PBXBuildFile framework in frameworks)
+				sb.AppendFormat ("\t\t\t\t{0} /* {1} in {2} */,\n", framework.Token, framework.Name, Name);
+			sb.AppendFormat ("\t\t\t);\n");
+			sb.AppendFormat ("\t\t\trunOnlyForDeploymentPostprocessing = 0;\n");
+			sb.AppendFormat ("\t\t}};");
+
 			return sb.ToString ();
 		}
 	}

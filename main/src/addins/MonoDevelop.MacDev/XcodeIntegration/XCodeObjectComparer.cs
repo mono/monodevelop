@@ -28,8 +28,19 @@ using System;
 using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.XcodeIntegration {
+	public enum XcodeObjectSortDirection {
+		Descending = -1,
+		None       = 0,
+		Ascending  = 1,
+	};
 	
 	public class XcodeObjectComparer : IComparer<XcodeObject> {
+		int sign;
+		
+		public XcodeObjectComparer (XcodeObjectSortDirection direction = XcodeObjectSortDirection.Ascending)
+		{
+			sign = (int) direction;
+		}
 		
 		public int Compare (XcodeObject x, XcodeObject y)
 		{
@@ -38,18 +49,18 @@ namespace MonoDevelop.MacDev.XcodeIntegration {
 			if (y == null)
 				return 1;
 			if (x.GetType () != y.GetType ())
-				return x.GetType ().Name.CompareTo (y.GetType ().Name);
+				return x.GetType ().Name.CompareTo (y.GetType ().Name) * sign;
 			
 			if (x is PBXFileReference) {
 				var left = (PBXFileReference) x;
 				var right = (PBXFileReference) y;
-				return left.Path.CompareTo (right.Path);
+				return left.Path.CompareTo (right.Path) * sign;
 			}
 			
 			if (x is PBXGroup) {
 				var left = (PBXGroup) x;
 				var right = (PBXGroup) y;
-				return left.Name.CompareTo (right.Name);
+				return left.Name.CompareTo (right.Name) * sign;
 			}
 			
 			return 0;
