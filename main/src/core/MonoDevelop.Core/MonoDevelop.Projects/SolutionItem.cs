@@ -466,7 +466,8 @@ namespace MonoDevelop.Projects
 					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (configuration) : null;
 					string confName = iconf != null ? iconf.Id : configuration.ToString ();
 					monitor.BeginTask (GettextCatalog.GetString ("Cleaning: {0} ({1})", Name, confName), 1);
-					RunTarget (monitor, ProjectService.CleanTarget, configuration);	
+					RunTarget (monitor, ProjectService.CleanTarget, configuration);
+					monitor.Step (1);
 				} finally {
 					monitor.EndTask ();
 				}
