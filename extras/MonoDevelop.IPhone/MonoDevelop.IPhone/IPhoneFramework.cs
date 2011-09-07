@@ -170,7 +170,10 @@ namespace MonoDevelop.IPhone
 			
 			settings.CanonicalName = ((PlistString)dict["CanonicalName"]).Value;
 			var props = (PlistDictionary) dict["DefaultProperties"];
-			settings.DTCompiler = ((PlistString)props["GCC_VERSION"]).Value;
+			if (props.ContainsKey ("GCC_VERSION"))
+				settings.DTCompiler = ((PlistString)props["GCC_VERSION"]).Value;
+			else
+				settings.DTCompiler = "com.apple.compilers.llvm.clang.1_0";
 			
 			TargetDevice deviceFamilies = TargetDevice.NotSet;
 			PlistArray deviceFamiliesArr;
