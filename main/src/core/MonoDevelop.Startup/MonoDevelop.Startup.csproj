@@ -125,5 +125,8 @@
     <EmbeddedResource Include="branding\SplashScreen.png">
       <LogicalName>SplashScreen.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="branding\BrandingStrings.xml">
+      <LogicalName>BrandingStrings.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

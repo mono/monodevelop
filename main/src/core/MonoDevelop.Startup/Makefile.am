@@ -8,6 +8,7 @@ FILES =  \
 RES =  \
 	branding/AboutImage.png \
 	branding/AboutImageSep.png \
+	branding/BrandingStrings.xml \
 	branding/SplashScreen.png
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
