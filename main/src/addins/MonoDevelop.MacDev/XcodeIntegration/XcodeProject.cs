@@ -117,7 +117,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			this.projectConfigurationList.AddBuildConfiguration (projectBuildConfiguration);
 
 			nativeBuildConfiguration.AddSetting ("GCC_PRECOMPILE_PREFIX_HEADER", "NO");
-			nativeBuildConfiguration.AddSetting ("INFOPLIST_FILE", "\"Info.plist\"");
+			//nativeBuildConfiguration.AddSetting ("INFOPLIST_FILE", "\"Info.plist\"");
 			nativeBuildConfiguration.AddSetting ("PRODUCT_NAME", name);
 			nativeBuildConfiguration.AddSetting ("WRAPPER_EXTENSION", "app");
 
@@ -209,6 +209,19 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				Directory.CreateDirectory (dir);
 			
 			File.WriteAllText (Path.Combine (dir, "project.pbxproj"), this.ToString ());
+
+			dir = Path.Combine (dir, "project.xcworkspacedata");
+			if (!Directory.Exists (dir))
+				Directory.CreateDirectory (dir);
+
+			File.WriteAllText (Path.Combine (dir, "contents.xcworkspace"), string.Format (
+					   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+					   "<Workspace\n" +
+					   "   version=\"1.0\"\n" +
+					   "  <FileRef\n" +
+					   "    location = \"self:{0}.xcodeproj\">\n" +
+					   "  </FileRef>\n" +
+					   "</Workspace>\n", name));
 		}
 
 		public override string ToString ()
