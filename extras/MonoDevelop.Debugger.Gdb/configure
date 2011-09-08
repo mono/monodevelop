@@ -1,10 +1,10 @@
 #!/bin/bash
-VERSION=2.7
+VERSION=2.7.20
 PACKAGE=monodevelop-debugger-gdb
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" monodevelop;2.7"
+common_packages=" monodevelop;2.7.20"
 
 
 usage ()
