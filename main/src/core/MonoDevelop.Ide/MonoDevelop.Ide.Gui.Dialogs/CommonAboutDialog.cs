@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		public CommonAboutDialog ()
 		{
-			Title = GettextCatalog.GetString ("About MonoDevelop");
+			Title = string.Format (GettextCatalog.GetString ("About {0}"), PropertyService.ApplicationName);
 			TransientFor = IdeApp.Workbench.RootWindow;
 			AllowGrow = false;
 			HasSeparator = false;
