@@ -562,7 +562,8 @@ type internal LanguageService private () =
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
         
         // Order files using the configuration settings & get options
-        let args = Common.generateCompilerOptions fsconfig dom.Project.Items config
+        let shouldWrap = false //It is unknown if the IntelliSense fails to load assemblies with wrapped paths.
+        let args = Common.generateCompilerOptions fsconfig dom.Project.Items config shouldWrap
         let root = System.IO.Path.GetDirectoryName(dom.Project.FileName.FullPath.ToString())
         let files = Common.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofSeq
         CheckOptions.Create(projFile, files, args, false, false) 
