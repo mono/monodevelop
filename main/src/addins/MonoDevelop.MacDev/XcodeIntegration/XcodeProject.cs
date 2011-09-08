@@ -219,7 +219,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 					   "<Workspace\n" +
 					   "   version=\"1.0\"\n" +
 					   "  <FileRef\n" +
-					   "    location = \"self:{0}.xcodeproj\">\n" +
+					   "     location = \"self:{0}.xcodeproj\">\n" +
 					   "  </FileRef>\n" +
 					   "</Workspace>\n", name));
 		}
