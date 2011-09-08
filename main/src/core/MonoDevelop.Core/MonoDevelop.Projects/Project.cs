@@ -629,6 +629,7 @@ namespace MonoDevelop.Projects
 				return;
 			}
 			
+			monitor.BeginTask (GettextCatalog.GetString ("Performing clean..."), 0);
 			// Delete generated files
 			
 			foreach (FilePath file in GetOutputFiles (configuration)) {
@@ -640,8 +641,6 @@ namespace MonoDevelop.Projects
 			}
 
 			DeleteSupportFiles (monitor, configuration);
-
-			monitor.BeginTask (GettextCatalog.GetString ("Performing clean..."), 0);
 			DoClean (monitor, config.Selector);
 			monitor.Log.WriteLine ();
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Clean complete"));
