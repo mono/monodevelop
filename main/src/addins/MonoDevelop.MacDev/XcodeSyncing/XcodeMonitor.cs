@@ -206,22 +206,27 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			AppleScript.Run (XCODE_SAVE_IN_PATH, AppleSdkSettings.XcodePath, projectDir);
 		}
-		
-		public void OpenProject ()
+
+		void OpenProjectFile (string path)
 		{
 			if (pendingProjectWrite != null) {
 				pendingProjectWrite.Generate (projectDir);
 				pendingProjectWrite = null;
 			}
-			if (!NSWorkspace.SharedWorkspace.OpenFile (xcproj, AppleSdkSettings.XcodePath))
+			
+			if (!NSWorkspace.SharedWorkspace.OpenFile (path, AppleSdkSettings.XcodePath))
 				throw new Exception ("Failed to open Xcode project");
+		}
+		
+		public void OpenProject ()
+		{
+			OpenProjectFile (xcproj);
 		}
 		
 		public void OpenFile (string relativeName)
 		{
 			XC4Debug.Log ("Opening file in Xcode: {0}", relativeName);
-			OpenProject ();
-			NSWorkspace.SharedWorkspace.OpenFile (projectDir.Combine (relativeName), AppleSdkSettings.XcodePath);
+			OpenProjectFile (projectDir.Combine (relativeName));
 		}
 		
 		public void DeleteProjectDirectory ()

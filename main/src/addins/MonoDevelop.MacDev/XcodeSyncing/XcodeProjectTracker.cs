@@ -145,7 +145,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
-		bool OpenXcodeProject ()
+		bool OpenXcodeProject (string path)
 		{
 			bool succeeded = false;
 			using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing to Xcode..."))) {
@@ -157,7 +157,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					if (!UpdateXcodeProject (monitor) || monitor.IsCancelRequested) {
 						return succeeded;
 					}
-					xcode.OpenProject ();
+					xcode.OpenFile (path);
 					succeeded = true;
 				} catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Could not open Xcode project"), ex);
@@ -169,16 +169,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return succeeded;
 		}
 		
-		public void OpenDocument (string file)
+		public bool OpenDocument (string file)
 		{
-			if (!OpenXcodeProject ())
-				return;
-			
 			XC4Debug.Log ("Opening file {0}", file);
 			var xibFile = dnp.Files.GetFile (file);
 			System.Diagnostics.Debug.Assert (xibFile != null);
 			System.Diagnostics.Debug.Assert (IsInterfaceDefinition (xibFile));
-			xcode.OpenFile (xibFile.ProjectVirtualPath);
+			
+			return OpenXcodeProject (xibFile.ProjectVirtualPath);
 		}
 		
 		static bool IsInterfaceDefinition (ProjectFile pf)
