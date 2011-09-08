@@ -214,7 +214,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			if (!Directory.Exists (dir))
 				Directory.CreateDirectory (dir);
 
-			File.WriteAllText (Path.Combine (dir, "contents.xcworkspace"), string.Format (
+			File.WriteAllText (Path.Combine (dir, "contents.xcworkspacedata"), string.Format (
 					   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 					   "<Workspace\n" +
 					   "   version=\"1.0\"\n" +
