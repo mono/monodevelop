@@ -30,7 +30,7 @@ namespace MonoDevelop.Core
 	public class UserProfile
 	{
 		const string PROFILE_ENV_VAR = "MONODEVELOP_PROFILE";
-		const string APP_ID = "MonoDevelop";
+		static readonly string APP_ID = PropertyService.ApplicationName;
 		const string CURRENT_PROFILE_VERSION = "2.7";
 		
 		internal static string[] GetMigratableVersions ()
@@ -201,7 +201,7 @@ namespace MonoDevelop.Core
 		internal static UserProfile ForMD24 ()
 		{
 			FilePath appdata = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-			var mdConfig = appdata.Combine ("MonoDevelop");
+			var mdConfig = appdata.Combine (PropertyService.ApplicationName);
 			return new UserProfile () {
 				UserDataRoot = mdConfig,
 				ConfigDir = mdConfig,

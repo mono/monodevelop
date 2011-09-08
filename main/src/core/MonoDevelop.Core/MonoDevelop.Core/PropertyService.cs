@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace MonoDevelop.Core
 {
@@ -41,6 +42,8 @@ namespace MonoDevelop.Core
 		internal static void Initialize ()
 		{
 		}
+		
+		public static readonly string ApplicationName;
 		
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
@@ -72,6 +75,15 @@ namespace MonoDevelop.Core
 		static PropertyService ()
 		{
 			Counters.PropertyServiceInitialization.BeginTiming ();
+			
+			using (var reader = new XmlTextReader (Assembly.GetEntryAssembly ().GetManifestResourceStream ("BrandingStrings.xml"))) {
+				while (reader.Read ()) {
+					if (reader.LocalName == "ApplicationName") {
+						ApplicationName = reader.GetAttribute ("value");
+						break;
+					}
+				}
+			}
 			
 			string migrateVersion = null;
 			UserProfile migratableProfile = null;
