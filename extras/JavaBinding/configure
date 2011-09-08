@@ -86,6 +86,8 @@ done
 check_required_packages
 [ $? -eq 1 ] && exit 1
 
+sed -e "s,@VERSION@,$VERSION," < monodevelop-java.spec.in > monodevelop-java.spec
+
 echo "prefix=$prefix" > config.make
 echo "RUNTIME=mono" >> config.make
 echo "ASSEMBLY_VERSION=$VERSION.0.0" >> config.make

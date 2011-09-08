@@ -133,6 +133,8 @@ if [ -z "$datadir" ]; then
 	datadir=$prefix/share
 fi
 
+sed -e "s,@VERSION@,$VERSION," < monodevelop-python.spec.in > monodevelop-python.spec
+
 echo "prefix=$prefix" > config.make
 echo "libdir=$libdir" >> config.make
 echo "bindir=$bindir" >> config.make

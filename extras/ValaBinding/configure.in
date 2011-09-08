@@ -104,4 +104,5 @@ AC_SUBST(CSC_FLAGS)
 
 AC_OUTPUT([
 Makefile
+monodevelop-vala.spec
 ])

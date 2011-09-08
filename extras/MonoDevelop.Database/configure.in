@@ -141,6 +141,7 @@ AC_SUBST(MD_DIR)
 AC_OUTPUT([
 Makefile
 monodevelop-database.pc
+monodevelop-database.spec
 MonoDevelop.Database.Sql/Makefile
 MonoDevelop.Database.Sql.MySql/Makefile
 MonoDevelop.Database.Sql.Npgsql/Makefile
