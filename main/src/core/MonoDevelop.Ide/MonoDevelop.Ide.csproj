@@ -119,9 +119,6 @@
     <EmbeddedResource Include="templates\EmptyXMLFile.xft.xml">
       <LogicalName>EmptyXMLFile.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\SplashScreen.png">
-      <LogicalName>SplashScreen.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\Icons.16x16.LinkOverlay.png">
       <LogicalName>Icons.16x16.LinkOverlay.png</LogicalName>
     </EmbeddedResource>
@@ -182,9 +179,6 @@
     <EmbeddedResource Include="icons\navigate-previous-24.png">
       <LogicalName>navigate-previous-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\AboutImage.png">
-      <LogicalName>AboutImage.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="options\KeyBindingSchemeMonoDevelop2.xml">
       <LogicalName>KeyBindingSchemeMonoDevelop2.xml</LogicalName>
     </EmbeddedResource>
@@ -205,9 +199,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.StandardHeader\NewBSDLicencePolicy.xml">
       <LogicalName>NewBSDLicencePolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\AboutImageSep.png">
-      <LogicalName>AboutImageSep.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.CodeTemplates\MonoDevelop-templates.xml">
       <LogicalName>MonoDevelop-templates.xml</LogicalName>
@@ -1521,5 +1512,7 @@
     <Folder Include="MonoDevelop.Ide.Fonts\" />
     <Folder Include="MonoDevelop.Ide.Codons\" />
     <Folder Include="ExtensionModel\" />
+    <Folder Include="icons\" />
+    <Folder Include="icons\" />
   </ItemGroup>
 </Project>

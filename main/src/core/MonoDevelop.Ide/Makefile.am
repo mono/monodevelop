@@ -713,8 +713,6 @@ RES =  \
 	ExtensionModel/StockIcons.addin.xml \
 	ExtensionModel/Templates.addin.xml \
 	gtk-gui/gui.stetic \
-	icons/AboutImage.png \
-	icons/AboutImageSep.png \
 	icons/add-namespace-16.png \
 	icons/assembly-project-16.png \
 	icons/author-information-16.png \
@@ -861,7 +859,6 @@ RES =  \
 	icons/solution-folder-open-16.png \
 	icons/solution-new-16.png \
 	icons/sort-namespace-16.png \
-	icons/SplashScreen.png \
 	icons/static-16.png \
 	icons/syntax-highlighting-16.png \
 	icons/syntax-highlighting-24.png \

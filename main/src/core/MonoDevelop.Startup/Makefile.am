@@ -5,7 +5,10 @@ FILES =  \
 	AssemblyInfo.cs \
 	MonoDevelop.Startup/MonoDevelopMain.cs
 
-RES =
+RES =  \
+	branding/AboutImage.png \
+	branding/AboutImageSep.png \
+	branding/SplashScreen.png
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 

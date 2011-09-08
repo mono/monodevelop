@@ -37,6 +37,7 @@ using Gdk;
 using Gtk;
 using GLib;
 using Pango;
+using System.Reflection;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			aboutPictureScrollBox = new ScrollBox ();
 
 			PackStart (aboutPictureScrollBox, false, false, 0);
-			imageSep = new Pixbuf (typeof(CommonAboutDialog).Assembly, "AboutImageSep.png");
+			imageSep = new Pixbuf (Assembly.GetEntryAssembly (), "AboutImageSep.png");
 			PackStart (new Gtk.Image (imageSep), false, false, 0);
 			
 			var label = new Label ();
@@ -195,7 +196,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				this.Realized += new EventHandler (OnRealized);
 				this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
 				
-				image = new Gdk.Pixbuf (GetType ().Assembly, "AboutImage.png");
+				image = new Gdk.Pixbuf (Assembly.GetEntryAssembly (), "AboutImage.png");
 				monoPowered = new Gdk.Pixbuf (GetType ().Assembly, "mono-powered.png");
 				this.SetSizeRequest (450, image.Height - 1);
 				
