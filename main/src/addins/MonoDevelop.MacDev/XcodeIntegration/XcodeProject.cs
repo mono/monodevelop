@@ -210,14 +210,14 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			
 			File.WriteAllText (Path.Combine (dir, "project.pbxproj"), this.ToString ());
 
-			dir = Path.Combine (dir, "project.xcworkspacedata");
+			dir = Path.Combine (dir, "project.xcworkspace");
 			if (!Directory.Exists (dir))
 				Directory.CreateDirectory (dir);
 
 			File.WriteAllText (Path.Combine (dir, "contents.xcworkspacedata"), string.Format (
 					   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 					   "<Workspace\n" +
-					   "   version=\"1.0\"\n" +
+					   "   version = \"1.0\">\n" +
 					   "  <FileRef\n" +
 					   "     location = \"self:{0}.xcodeproj\">\n" +
 					   "  </FileRef>\n" +
