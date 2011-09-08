@@ -145,7 +145,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
-		bool OpenXcodeProject (string path)
+		bool OpenFileInXcodeProject (string path)
 		{
 			bool succeeded = false;
 			using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing to Xcode..."))) {
@@ -160,7 +160,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					xcode.OpenFile (path);
 					succeeded = true;
 				} catch (Exception ex) {
-					monitor.ReportError (GettextCatalog.GetString ("Could not open Xcode project"), ex);
+					monitor.ReportError (GettextCatalog.GetString ("Could not open file in Xcode project"), ex);
 				} finally {
 					if (!succeeded)
 						DisableSyncing ();
@@ -176,7 +176,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			System.Diagnostics.Debug.Assert (xibFile != null);
 			System.Diagnostics.Debug.Assert (IsInterfaceDefinition (xibFile));
 			
-			return OpenXcodeProject (xibFile.ProjectVirtualPath);
+			return OpenFileInXcodeProject (xibFile.ProjectVirtualPath);
 		}
 		
 		static bool IsInterfaceDefinition (ProjectFile pf)

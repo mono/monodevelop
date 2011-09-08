@@ -207,26 +207,25 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			AppleScript.Run (XCODE_SAVE_IN_PATH, AppleSdkSettings.XcodePath, projectDir);
 		}
 
-		void OpenProjectFile (string path)
+		void SyncProject ()
 		{
 			if (pendingProjectWrite != null) {
 				pendingProjectWrite.Generate (projectDir);
 				pendingProjectWrite = null;
 			}
-			
-			if (!NSWorkspace.SharedWorkspace.OpenFile (path, AppleSdkSettings.XcodePath))
-				throw new Exception ("Failed to open Xcode project");
 		}
 		
 		public void OpenProject ()
 		{
-			OpenProjectFile (xcproj);
+			SyncProject ();
+			AppleScript.Run (XCODE_OPEN_PROJECT, AppleSdkSettings.XcodePath, xcproj);
 		}
 		
 		public void OpenFile (string relativeName)
 		{
 			XC4Debug.Log ("Opening file in Xcode: {0}", relativeName);
-			OpenProjectFile (projectDir.Combine (relativeName));
+			SyncProject ();
+			AppleScript.Run (XCODE_OPEN_PROJECT_FILE, AppleSdkSettings.XcodePath, xcproj, projectDir.Combine (relativeName));
 		}
 		
 		public void DeleteProjectDirectory ()
@@ -327,9 +326,22 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return success;
 		}
 
+		const string XCODE_OPEN_PROJECT =
+@"tell application ""{0}""
+	activate
+	open ""{1}""
+end tell";
+
+		const string XCODE_OPEN_PROJECT_FILE =
+@"tell application ""{0}""
+	activate
+	open ""{1}""
+	open ""{2}""
+end tell";
+
 		const string XCODE_SAVE_IN_PATH =
 @"tell application ""{0}""
-set pp to ""{1}""
+	set pp to ""{1}""
 	set ext to {{ "".xib"", "".h"", "".m"" }}
 	repeat with d in documents
 		if d is modified then
