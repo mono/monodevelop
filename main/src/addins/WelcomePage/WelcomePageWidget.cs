@@ -38,6 +38,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Desktop;
+using System.Reflection;
 
 namespace MonoDevelop.WelcomePage
 {
@@ -49,12 +50,9 @@ namespace MonoDevelop.WelcomePage
 		
 		const string headerSize = "x-large";
 		const string textSize = "medium";
-		static readonly string headerFormat = "<span size=\"" + headerSize + "\"  foreground=\"#4e6d9f\">{0}</span>";
-		static readonly string tableHeaderFormat = "<span size=\"" + textSize + "\" weight=\"bold\" foreground=\"#4e6d9f\">{0}</span>";
+		static readonly string headerFormat = "<span size=\"" + headerSize + "\" foreground=\"" + WelcomePageView.HeaderTextColor + "\">{0}</span>";
+		static readonly string tableHeaderFormat = "<span size=\"" + textSize + "\" weight=\"bold\" foreground=\"" + WelcomePageView.HeaderTextColor + "\">{0}</span>";
 		static readonly string textFormat = "<span size=\"" + textSize + "\">{0}</span>";
-		
-		const uint spacing = 20;
-		const uint logoHeight = 90;
 		
 		//keep ref to delegates, as we're going to use them a lot
 		Gtk.LeaveNotifyEventHandler linkHoverLeaveEventHandler;
@@ -73,8 +71,11 @@ namespace MonoDevelop.WelcomePage
 			logoPixbuf = new Gdk.Pixbuf (Assembly.GetEntryAssembly (), "WelcomePage_Logo.png");
 			bgPixbuf = new Gdk.Pixbuf (Assembly.GetEntryAssembly (), "WelcomePage_TopBorderRepeat.png");
 			
-			alignment1.SetPadding (logoHeight + spacing, 0, spacing, 0);
-			ModifyBg (StateType.Normal, Style.White);
+			alignment1.SetPadding (WelcomePageView.LogoHeight + WelcomePageView.Spacing, 0, WelcomePageView.Spacing, 0);
+			Gdk.Color color;
+			if (!Gdk.Color.Parse (WelcomePageView.BackgroundColor, ref color))
+				color = Style.White;
+			ModifyBg (StateType.Normal, color);
 			
 			BuildFromXml ();
 			LoadRecent ();
@@ -310,8 +311,7 @@ namespace MonoDevelop.WelcomePage
 				button.HoverMessage = ri.FileName;
 				button.LinkUrl = "project://" + ri.FileName;
 				button.Icon = icon;
-				label.Markup = string.Format (textFormat, WelcomePageView.TimeSinceEdited (ri.TimeStamp));
-				
+				label.Markup = "<span foreground=\"" + WelcomePageView.TextColor + "\">" + string.Format (textFormat, WelcomePageView.TimeSinceEdited (ri.TimeStamp)) + "</span>";
 				i++;
 				
 				button.InnerLabel.MaxWidthChars = 22;
@@ -324,8 +324,6 @@ namespace MonoDevelop.WelcomePage
 	
 	[System.ComponentModel.Category("WelcomePage")]
 	[System.ComponentModel.ToolboxItem(true)]
-	
-	
 	public class LinkButton : Gtk.Button
 	{
 		string hoverMessage = null;
@@ -381,9 +379,9 @@ namespace MonoDevelop.WelcomePage
 			} else {
 				image.Visible = false;
 			}
-			string markup = string.Format ("<span underline=\"single\" foreground=\"#5a7ac7\">{0}</span>", text);
+			string markup = string.Format ("<span underline=\"single\" foreground=\"{1}\">{0}</span>", text, WelcomePageView.LinkColor);
 			if (!string.IsNullOrEmpty (desc))
-				markup += "\n<span size=\"small\">" + desc + "</span>";
+				markup += "\n<span size=\"small\" foreground=\"" + WelcomePageView.TextColor + "\" >" + desc + "</span>";
 			label.Markup = markup;
 		}
 		

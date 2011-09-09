@@ -81,9 +81,6 @@
     <EmbeddedResource Include="WelcomePage.addin.xml">
       <LogicalName>WelcomePage.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="WelcomePageContent.xml">
-      <LogicalName>WelcomePageContent.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>

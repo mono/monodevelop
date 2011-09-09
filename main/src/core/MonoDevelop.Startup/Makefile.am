@@ -8,10 +8,10 @@ FILES =  \
 RES =  \
 	branding/AboutImage.png \
 	branding/AboutImageSep.png \
-	branding/BrandingStrings.xml \
+	branding/BrandingData.xml \
 	branding/SplashScreen.png \
 	branding/WelcomePage_Logo.png \
-	branding/WelcomePage_TopBorderRepeat.png,WelcomePage_md-bg.png
+	branding/WelcomePage_TopBorderRepeat.png
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 

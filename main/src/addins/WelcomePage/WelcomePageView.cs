@@ -48,12 +48,69 @@ namespace MonoDevelop.WelcomePage
 		
 		EventHandler newsUpdatedHandler;
 		
+		#region Branding values
 		// netNewsXml is where online the news.xml file can be found
-		static string netNewsXml {
-			get {
-				return "http://www.monodevelop.com/files/news/news.xml";
+		internal static string netNewsXml {
+			get;
+			private set;
+		}
+		
+		internal static string BackgroundColor {
+			get;
+			private set;
+		}
+		
+		internal static string TextColor {
+			get;
+			private set;
+		}
+		
+		internal static string LinkColor {
+			get;
+			private set;
+		}
+		
+		internal static string HeaderTextColor {
+			get;
+			private set;
+		}
+		
+		internal static uint Spacing {
+			get;
+			private set;
+		}
+
+		internal static uint LogoHeight {
+			get;
+			private set;
+		}
+		
+		internal static string DefaultNewsContent {
+			get;
+			private set;
+		}
+		
+		static void ReadBrandingValues ()
+		{
+			Console.WriteLine ("Read branding values");
+			try {
+				var welcomePageElement = PropertyService.BrandingDocument.DocumentElement ["WelcomePage"];
+				
+				netNewsXml = welcomePageElement ["NewsUrl"].InnerXml;
+				BackgroundColor = welcomePageElement ["BackgroundColor"].InnerXml;
+				LinkColor = welcomePageElement ["LinkColor"].InnerXml;
+				HeaderTextColor = welcomePageElement ["HeaderTextColor"].InnerXml;
+				TextColor = welcomePageElement ["TextColor"].InnerXml;
+				Console.WriteLine (welcomePageElement ["Spacing"].InnerXml);
+				Spacing = uint.Parse (welcomePageElement ["Spacing"].InnerXml);
+				LogoHeight = uint.Parse (welcomePageElement ["LogoHeight"].InnerXml);
+				DefaultNewsContent = welcomePageElement ["DefaultNewsContent"].InnerXml;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while reading welcome page data from branding xml.", e);
+				
 			}
 		}
+		#endregion
 		
 		public override string StockIconId {
 			get { return Gtk.Stock.Home; }
@@ -70,6 +127,11 @@ namespace MonoDevelop.WelcomePage
 		
 		public override Widget Control {
 			get { return scroller;  }
+		}
+		
+		static WelcomePageView ()
+		{
+			ReadBrandingValues ();
 		}
 		
 		public WelcomePageView () : base ()
@@ -118,10 +180,11 @@ namespace MonoDevelop.WelcomePage
 			string localCachedNewsFile = NewsFile;
 			var settings = GetSafeReaderSettings ();
 			
-			var stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("WelcomePageContent.xml");
-			var contentDoc = new XmlDocument ();
-			using (var reader = XmlReader.Create (stream, settings))
-				contentDoc.Load (reader);
+			var contentDoc = new XmlDocument (); 
+			if (!string.IsNullOrEmpty (DefaultNewsContent)) {
+				using (var reader = XmlReader.Create (new StringReader (DefaultNewsContent), settings))
+					contentDoc.Load (reader);
+			}
 			
 			try {
 				if (File.Exists (localCachedNewsFile)) {
@@ -133,7 +196,7 @@ namespace MonoDevelop.WelcomePage
 					XmlNode oNodeWhereInsert =
 						contentDoc.SelectSingleNode ("/WelcomePage/Links[@_title=\"News Links\"]"); 
 					foreach (XmlNode link in updateDoc.SelectSingleNode ("/links")) 
-						oNodeWhereInsert.AppendChild (contentDoc.ImportNode (link,true)); 
+						oNodeWhereInsert.AppendChild (contentDoc.ImportNode (link, true)); 
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error reading Welcome Page content file.", ex);
@@ -147,12 +210,16 @@ namespace MonoDevelop.WelcomePage
 		static void UpdateNewsXmlAsync ()
 		{
 			string netNewsXml = WelcomePageView.netNewsXml;
+			if (string.IsNullOrEmpty (netNewsXml)) {
+				LoggingService.LogWarning ("Welcome Page net news url invalid.");
+				return;
+			}
 			LoggingService.LogInfo ("Updating Welcome Page from '{0}'.", netNewsXml);
 			
 			//HACK: .NET blocks on DNS in BeginGetResponse, so use a threadpool thread
 			// see http://stackoverflow.com/questions/1232139#1232930
 			System.Threading.ThreadPool.QueueUserWorkItem ((state) => {
-				var request = (HttpWebRequest) WebRequest.Create (netNewsXml);
+				var request = (HttpWebRequest)WebRequest.Create (netNewsXml);
 				
 				try {
 					//check to see if the online news file has been modified since it was last downloaded
