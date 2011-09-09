@@ -539,8 +539,8 @@ namespace MonoDevelop.CSharp.Parser
 				newType.ClassType = classType;
 				var location = LocationsBag.GetMemberLocation (c);
 				
-				if (location != null && location.Count > 2) {
-					var region = ConvertRegion (c.MemberName.Location, location[2]);
+				if (location != null && location.Count > 1) {
+					var region = ConvertRegion (c.MemberName.Location, location[location.Count - 1]);
 					region.Start = new DomLocation (region.Start.Line, region.Start.Column + c.MemberName.Name.Length);
 					newType.BodyRegion =  region;
 				} else {
@@ -916,7 +916,7 @@ namespace MonoDevelop.CSharp.Parser
 				evt.ReturnType = ConvertReturnType (e.TypeName);
 				var location = LocationsBag.GetMemberLocation (e);
 				if (location != null)
-					evt.BodyRegion = ConvertRegion (location[1], location[2]);
+					evt.BodyRegion = ConvertRegion (location[1], location[location.Count - 1]);
 				
 				AddAttributes (evt, e.OptAttributes, e);
 				AddExplicitInterfaces (evt, e);
@@ -935,7 +935,7 @@ namespace MonoDevelop.CSharp.Parser
 				
 				var location = LocationsBag.GetMemberLocation (p);
 				if (location != null && location.Count >= 1) {
-					var endLoc = location.Count == 1 ? location[0] : location[1];
+					var endLoc = location.Count == 1 ? location[0] : location[location.Count - 1];
 					property.BodyRegion = ConvertRegion (location[0], endLoc);
 				} else {
 					property.BodyRegion = DomRegion.Empty;
@@ -1011,7 +1011,7 @@ namespace MonoDevelop.CSharp.Parser
 				indexer.GetterModifier = indexer.SetterModifier = ConvertModifiers (i.ModFlags);
 				var location = LocationsBag.GetMemberLocation (i);
 				if (location != null && location.Count >= 1) {
-					var endLoc = location.Count == 1 ? location[0] : location[1];
+					var endLoc = location.Count == 1 ? location[0] : location[location.Count - 1];
 					indexer.BodyRegion = ConvertRegion (location[0], endLoc);
 				} else {
 					indexer.BodyRegion = DomRegion.Empty;
