@@ -89,7 +89,7 @@ namespace MonoDevelop.CSharp.Parser
 					CSharpCompilerParameters par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
 					if (par != null) {
 						if (!string.IsNullOrEmpty (par.DefineSymbols)) {
-							compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t')));
+							compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s))));
 						}
 						if (par.UnsafeCode)
 							compilerArguments.Add ("-unsafe");
