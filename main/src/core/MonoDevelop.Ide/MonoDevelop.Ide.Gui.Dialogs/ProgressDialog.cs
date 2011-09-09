@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public ProgressDialog (Window parent, bool allowCancel, bool showDetails)
 		{
 			this.Build ();
-			this.Title = PropertyService.ApplicationName;
+			this.Title = BrandingService.ApplicationName;
 			HasSeparator = false;
 			ActionArea.Hide ();
 			DefaultHeight = 5;

@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide
 			var optionsSet = new Mono.Options.OptionSet () {
 				{ "nologo", "Do not display splash screen.", s => options.NoLogo = true },
 				{ "ipc-tcp", "Use the Tcp channel for inter-process comunication.", s => options.IpcTcp = true },
-				{ "newwindow", "Do not open in an existing instance of " + PropertyService.ApplicationName, s => options.NewWindow = true },
+				{ "newwindow", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => options.NewWindow = true },
 				{ "h|?|help", "Show help", s => options.ShowHelp = true },
 				{ "clog", "Log internal counter data", s => options.LogCounters = true },
 				{ "clog-interval=", "Interval between counter logs (in miliseconds)", s => options.LogCountersInterval = int.Parse (s) },
@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Initializing Runtime");
-			monitor.BeginTask (GettextCatalog.GetString ("Starting " + PropertyService.ApplicationName), 3);
+			monitor.BeginTask (GettextCatalog.GetString ("Starting " + BrandingService.ApplicationName), 3);
 			monitor.Step (1);
 			Runtime.Initialize (true);
 			

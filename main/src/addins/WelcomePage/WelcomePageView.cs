@@ -94,7 +94,7 @@ namespace MonoDevelop.WelcomePage
 		{
 			Console.WriteLine ("Read branding values");
 			try {
-				var welcomePageElement = PropertyService.BrandingDocument.DocumentElement ["WelcomePage"];
+				var welcomePageElement = BrandingService.BrandingDocument.DocumentElement ["WelcomePage"];
 				
 				netNewsXml = welcomePageElement ["NewsUrl"].InnerXml;
 				BackgroundColor = welcomePageElement ["BackgroundColor"].InnerXml;

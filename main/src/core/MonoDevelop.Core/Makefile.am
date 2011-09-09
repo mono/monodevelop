@@ -146,6 +146,7 @@ FILES =  \
 	MonoDevelop.Core.Text/LaneStringMatcher.cs \
 	MonoDevelop.Core.Text/StringMatcher.cs \
 	MonoDevelop.Core/ApplicationService.cs \
+	MonoDevelop.Core/BrandingService.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/ComponentModelLocalization.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \

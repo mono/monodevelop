@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public GtkErrorDialog (Window parent)
 		{
 			this.Build ();
-			this.Title = PropertyService.ApplicationName;
+			this.Title = BrandingService.ApplicationName;
 			TransientFor = parent;
 			descriptionLabel.ModifyBg (StateType.Normal, new Gdk.Color (255,0,0));
 			

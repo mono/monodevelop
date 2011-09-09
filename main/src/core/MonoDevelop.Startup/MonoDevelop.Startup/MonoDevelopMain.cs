@@ -24,12 +24,12 @@ namespace MonoDevelop.Startup
 					return app.Run (args);
 				} catch (Exception ex) {
 					if (!retry && AddinManager.IsInitialized) {
-						LoggingService.LogWarning (PropertyService.ApplicationName + " failed to start. Rebuilding addins registry.");
+						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.");
 						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
 						LoggingService.LogInfo ("Addin registry rebuilt. Restarting MonoDevelop.");
 						retry = true;
 					} else {
-						LoggingService.LogFatalError (PropertyService.ApplicationName + " failed to start. Some of the assemblies required to run MonoDevelop (for example gtk-sharp, gnome-sharp or gtkhtml-sharp) may not be properly installed in the GAC.", ex);
+						LoggingService.LogFatalError (BrandingService.ApplicationName + " failed to start. Some of the assemblies required to run MonoDevelop (for example gtk-sharp, gnome-sharp or gtkhtml-sharp) may not be properly installed in the GAC.", ex);
 						retry = false;
 					}
 				} finally {

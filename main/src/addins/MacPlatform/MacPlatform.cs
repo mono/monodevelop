@@ -68,7 +68,7 @@ namespace MonoDevelop.MacIntegration
 			CheckGtkVersion (2, 17, 9);
 			
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
-			Carbon.SetProcessName (PropertyService.ApplicationName);
+			Carbon.SetProcessName (BrandingService.ApplicationName);
 			
 			MonoDevelop.MacInterop.Cocoa.InitMonoMac ();
 			
@@ -221,7 +221,7 @@ namespace MonoDevelop.MacIntegration
 			//mac-ify these command names
 			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Custom Policies...");
-			commandManager.GetCommand (HelpCommands.About).Text = string.Format (GettextCatalog.GetString ("About {0}"), PropertyService.ApplicationName);
+			commandManager.GetCommand (HelpCommands.About).Text = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationName);
 			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
 			
 			initedApp = true;

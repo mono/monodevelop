@@ -42,9 +42,6 @@ namespace MonoDevelop.Core
 		internal static void Initialize ()
 		{
 		}
-		public static readonly XmlDocument BrandingDocument;
-		public static readonly string ApplicationName;
-		
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
 
@@ -75,17 +72,6 @@ namespace MonoDevelop.Core
 		static PropertyService ()
 		{
 			Counters.PropertyServiceInitialization.BeginTiming ();
-			
-			var brandingData = new XmlDocument (); 
-			using (var stream = Assembly.GetEntryAssembly ().GetManifestResourceStream ("BrandingData.xml"))
-				brandingData.Load (stream);
-			BrandingDocument = brandingData;
-			try {
-				ApplicationName = brandingData.DocumentElement ["ApplicationName"].GetAttribute ("value");
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while reading application name from branding xml.", e);
-				ApplicationName = "Unknown";
-			}
 			
 			string migrateVersion = null;
 			UserProfile migratableProfile = null;
