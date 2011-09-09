@@ -39,9 +39,24 @@ namespace MonoDevelop.Core
 		
 		static BrandingService ()
 		{
-			var brandingData = new XmlDocument (); 
-			using (var stream = Assembly.GetEntryAssembly ().GetManifestResourceStream ("BrandingData.xml"))
-				brandingData.Load (stream);
+			XmlDocument brandingData = null;
+			try {
+				using (var stream = Assembly.GetEntryAssembly ().GetManifestResourceStream ("BrandingData.xml")) {
+					if (stream != null) {
+						brandingData = new XmlDocument ();
+						brandingData.Load (stream);
+					}
+				}
+			} catch (Exception) {
+				brandingData = null;
+			}
+			
+			// may happen in mdtool.
+			if (brandingData == null) {
+				ApplicationName = "MonoDevelop";
+				return;
+			}
+			
 			BrandingDocument = brandingData;
 			try {
 				ApplicationName = brandingData.DocumentElement ["ApplicationName"].GetAttribute ("value");
