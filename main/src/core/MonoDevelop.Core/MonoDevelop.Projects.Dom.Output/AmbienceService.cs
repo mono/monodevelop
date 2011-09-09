@@ -151,7 +151,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		public static string GetDocumentationSummary (IMember member)
 		{
-			if (member == null)
+			if (member == null || member.SourceProjectDom == null)
 				return null;
 			string documentation = member.SourceProjectDom.GetDocumentation (member);
 			
