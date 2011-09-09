@@ -70,10 +70,8 @@ namespace MonoDevelop.WelcomePage
 			linkHoverEnterEventHandler = new Gtk.EnterNotifyEventHandler (handleHoverEnter);
 			linkClickedEventHandler = new EventHandler (HandleLink);
 
-			string logoPath = AddinManager.CurrentAddin.GetFilePath ("md-logo.png");
-			logoPixbuf = new Gdk.Pixbuf (logoPath);
-			string bgPath = AddinManager.CurrentAddin.GetFilePath ("md-bg.png");
-			bgPixbuf = new Gdk.Pixbuf (bgPath);
+			logoPixbuf = new Gdk.Pixbuf (Assembly.GetEntryAssembly (), "WelcomePage_Logo.png");
+			bgPixbuf = new Gdk.Pixbuf (Assembly.GetEntryAssembly (), "WelcomePage_TopBorderRepeat.png");
 			
 			alignment1.SetPadding (logoHeight + spacing, 0, spacing, 0);
 			ModifyBg (StateType.Normal, Style.White);

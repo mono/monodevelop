@@ -29,9 +29,7 @@ RES =  \
 	WelcomePage.addin.xml \
 	WelcomePageContent.xml
  
-DATA_FILES =  \
-	md-bg.png \
-	md-logo.png
+DATA_FILES =
 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))

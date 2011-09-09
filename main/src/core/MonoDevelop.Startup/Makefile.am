@@ -9,7 +9,9 @@ RES =  \
 	branding/AboutImage.png \
 	branding/AboutImageSep.png \
 	branding/BrandingStrings.xml \
-	branding/SplashScreen.png
+	branding/SplashScreen.png \
+	branding/WelcomePage_Logo.png \
+	branding/WelcomePage_TopBorderRepeat.png,WelcomePage_md-bg.png
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 

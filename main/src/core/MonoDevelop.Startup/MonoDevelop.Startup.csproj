@@ -128,5 +128,13 @@
     <EmbeddedResource Include="branding\BrandingStrings.xml">
       <LogicalName>BrandingStrings.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="branding\WelcomePage_Logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <LogicalName>WelcomePage_Logo.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="branding\WelcomePage_TopBorderRepeat.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <LogicalName>WelcomePage_md-bg.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
