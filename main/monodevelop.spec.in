@@ -1,39 +1,80 @@
+#
+# spec file for package monodevelop
+#
+# Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
+# norootforbuild
+
+
 Name:           monodevelop
-Url:            http://www.go-mono.com/
-License:        GPL v2 or later
-Group:          Development/Languages/Mono
-Version:        @VERSION@
-Release:        0
-Summary:        A Full-Featured IDE for Mono and Gtk#
-Source:         %{name}-%{version}.tar.bz2
 BuildRequires:  gconf-sharp2
 BuildRequires:  glade-sharp2
-BuildRequires:  gnome-print-sharp
 BuildRequires:  gnome-sharp2
 BuildRequires:  mono-addins
 BuildRequires:  mono-devel
 BuildRequires:  mono-wcf
 BuildRequires:  monodoc-core
-BuildRequires:  desktop-file-utils update-desktop-files
+Url:            http://www.go-mono.com/
+License:        GPLv2+
+Group:          Development/Languages/Mono
+AutoReqProv:    on
+Version:        @VERSION@
+Release:        1
+Summary:        A Full-Featured IDE for Mono and Gtk#
+Source:         %{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
+Requires:       xsp
 Requires:       mono-basic
 Requires:       mono-devel
 Requires:       mono-tools
 Requires:       pkgconfig
-Requires:       xsp
 PreReq:         shared-mime-info
+%if 0%{?suse_version}
+%if %{suse_version} > 1100
+BuildRequires:  gnome-print-sharp
+%endif
+BuildRequires:  desktop-file-utils update-desktop-files
+%endif
+# TODO: Add build requirements for xulrunner/mozilla, etc... md does some checks at build time for aspnetedit
+#  (not currently enabled, but we'll need those checks when it is)
+%if 0%{?fedora_version}
+%define env_options export MONO_SHARED_DIR=/tmp
+# TODO: what to do here on fedora?
+%define suse_update_desktop_file true
+%define run_suseconfig true
+%endif
+%if 0%{?rhel_version}
+%define env_options export MONO_SHARED_DIR=/tmp
+%define suse_update_desktop_file true
+%define run_suseconfig true
+%endif
 
 %description
-MonoDevelop is intended to be a full-featured integrated development
+MonoDevelop is a full-featured integrated development
 environment (IDE) for mono and Gtk#. It was originally a port of
 SharpDevelop 0.98. See http://monodevelop.com/ for more information.
+
+
 
 %prep
 %setup -q
 
 %build
 autoreconf -f -i
+%{?env_options}
 %configure \
 	    --enable-subversion \
 	    --enable-monoextensions \
@@ -43,35 +84,42 @@ autoreconf -f -i
 make
 
 %install
-make install DESTDIR=%{buildroot} GACUTIL_FLAGS="/package monodevelop /root %{buildroot}%{_prefix}/lib"
-# noarch .pc files go in /usr/share
-mkdir -p %{buildroot}%{_datadir}/pkgconfig
-mv %{buildroot}%{_prefix}/lib/pkgconfig/* %{buildroot}%{_datadir}/pkgconfig
+%{?env_options}
+make install DESTDIR=$RPM_BUILD_ROOT GACUTIL_FLAGS="/package monodevelop /root ${RPM_BUILD_ROOT}/usr/%_lib"
+#
+mkdir -p $RPM_BUILD_ROOT/usr/share/pkgconfig
+mv $RPM_BUILD_ROOT/usr/lib/pkgconfig/* $RPM_BUILD_ROOT/usr/share/pkgconfig
 %suse_update_desktop_file -N "Mono Development Environment" -G "Integrated Development Environment" -C "Develop software using Mono tools" %name "Application Development IDE"
 %find_lang %{name}
 
 %clean
-rm -rf %{buildroot}
+rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%{_bindir}/*
-%{_datadir}/applications/monodevelop.desktop
+%{_prefix}/bin/*
+%{_prefix}/share/applications/monodevelop.desktop
+%{_prefix}/share/mime/packages/monodevelop.xml
 %{_datadir}/icons/hicolor/*/apps/monodevelop.png
 %{_datadir}/icons/hicolor/scalable/apps/monodevelop.svg
-%{_datadir}/mime/packages/monodevelop.xml
-%{_datadir}/pkgconfig/monodevelop-core-addins.pc
-%{_datadir}/pkgconfig/monodevelop.pc
-%{_mandir}/man1/mdtool.1%ext_man
-%{_mandir}/man1/monodevelop.1%ext_man
 %{_prefix}/lib/monodevelop
+%{_prefix}/share/pkgconfig/monodevelop.pc
+%{_prefix}/share/pkgconfig/monodevelop-core-addins.pc
+%{_mandir}/man1/mdtool.1.gz
+%{_mandir}/man1/monodevelop.1.gz
 
 %post
-update-mime-database %{_datadir}/mime >/dev/null || :
+update-mime-database /usr/share/mime >/dev/null || :
 %run_suseconfig -m gtk2
 
 %postun
-update-mime-database %{_datadir}/mime >/dev/null || :
+update-mime-database /usr/share/mime >/dev/null || :
 %run_suseconfig -m gtk2
+%if 0%{?fedora_version} || 0%{?rhel_version}
+# Allows overrides of __find_provides in fedora distros... (already set to zero on newer suse distros)
+%define _use_internal_dependency_generator 0
+%endif
+%define __find_provides env sh -c 'filelist=($(cat)) && { printf "%s\\n" "${filelist[@]}" | /usr/lib/rpm/find-provides && printf "%s\\n" "${filelist[@]}" | /usr/bin/mono-find-provides ; } | sort | uniq'
+%define __find_requires env sh -c 'filelist=($(cat)) && { printf "%s\\n" "${filelist[@]}" | /usr/lib/rpm/find-requires && printf "%s\\n" "${filelist[@]}" | /usr/bin/mono-find-requires ; } | sort | uniq'
 
 %changelog
