@@ -371,11 +371,6 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IdeApp.Exit ();
 		}
-
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = true;
-		}
 	}
 	// MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis    Implemented in FileTabCommands.cs
 	// MonoDevelop.Ide.Commands.CopyPathNameHandler                Implemented in FileTabCommands.cs
