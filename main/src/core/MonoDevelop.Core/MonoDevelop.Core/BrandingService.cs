@@ -26,6 +26,8 @@
 using System;
 using System.Xml;
 using System.Reflection;
+using System.IO;
+
 
 namespace MonoDevelop.Core
 {
@@ -64,6 +66,11 @@ namespace MonoDevelop.Core
 				LoggingService.LogError ("Error while reading application name from branding xml.", e);
 				ApplicationName = "Unknown";
 			}
+		}
+		
+		public static Stream OpenStream (string name)
+		{
+			return Assembly.GetEntryAssembly ().GetManifestResourceStream (name);
 		}
 	}
 }

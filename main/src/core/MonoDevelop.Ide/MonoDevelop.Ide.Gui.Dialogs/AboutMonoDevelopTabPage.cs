@@ -195,8 +195,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			{
 				this.Realized += new EventHandler (OnRealized);
 				this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
-				
-				image = new Gdk.Pixbuf (Assembly.GetEntryAssembly (), "AboutImage.png");
+				using (var stream = BrandingService.OpenStream ("AboutImage.png"))
+					image = new Gdk.Pixbuf (stream);
 				monoPowered = new Gdk.Pixbuf (GetType ().Assembly, "mono-powered.png");
 				this.SetSizeRequest (450, image.Height - 1);
 				

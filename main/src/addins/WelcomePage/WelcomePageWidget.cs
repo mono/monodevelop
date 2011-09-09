@@ -68,8 +68,10 @@ namespace MonoDevelop.WelcomePage
 			linkHoverEnterEventHandler = new Gtk.EnterNotifyEventHandler (handleHoverEnter);
 			linkClickedEventHandler = new EventHandler (HandleLink);
 
-			logoPixbuf = new Gdk.Pixbuf (Assembly.GetEntryAssembly (), "WelcomePage_Logo.png");
-			bgPixbuf = new Gdk.Pixbuf (Assembly.GetEntryAssembly (), "WelcomePage_TopBorderRepeat.png");
+			using (var stream = BrandingService.OpenStream ("WelcomePage_Logo.png"))
+				logoPixbuf = new Gdk.Pixbuf (stream);
+			using (var stream = BrandingService.OpenStream ("WelcomePage_TopBorderRepeat.png"))
+				bgPixbuf = new Gdk.Pixbuf (stream);
 			
 			alignment1.SetPadding (WelcomePageView.LogoHeight + WelcomePageView.Spacing, 0, WelcomePageView.Spacing, 0);
 			Gdk.Color color;
