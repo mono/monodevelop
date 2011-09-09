@@ -31,7 +31,8 @@ namespace MonoDevelop.Core
 	{
 		const string PROFILE_ENV_VAR = "MONODEVELOP_PROFILE";
 		const string CURRENT_PROFILE_VERSION = "2.7";
-		
+		const string APP_ID = "MonoDevelop";
+
 		internal static string[] GetMigratableVersions ()
 		{
 			return new[] {
@@ -112,7 +113,7 @@ namespace MonoDevelop.Core
 		/// </summary>
 		internal static UserProfile ForTest (string version, FilePath profileLocation)
 		{
-			string appId = BrandingService.ApplicationName + "-" + version;
+			string appId = APP_ID + "-" + version;
 			return new UserProfile () {
 				CacheDir = profileLocation.Combine (appId, "Cache"),
 				UserDataRoot = profileLocation.Combine (appId, "UserData"),
@@ -126,7 +127,7 @@ namespace MonoDevelop.Core
 		
 		internal static UserProfile ForWindows (string version)
 		{
-			string appId = BrandingService.ApplicationName + "-" + version;
+			string appId = APP_ID + "-" + version;
 			FilePath local = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
 			FilePath roaming = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
 			//FilePath localLow = GetKnownFolderPath (new Guid ("A520A1A4-1780-4FF6-BD18-167343C5AF16"));
@@ -147,7 +148,7 @@ namespace MonoDevelop.Core
 		
 		internal static UserProfile ForMac (string version)
 		{
-			string appId = BrandingService.ApplicationName + "-" + version;
+			string appId = APP_ID + "-" + version;
 			FilePath home = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 			FilePath library = home.Combine ("Library");
 			
@@ -181,7 +182,7 @@ namespace MonoDevelop.Core
 			if (xdgCacheHome.IsNullOrEmpty)
 				xdgCacheHome = home.Combine (".cache");
 			
-			string appId = BrandingService.ApplicationName + "-" + version;
+			string appId = APP_ID + "-" + version;
 			FilePath data = xdgDataHome.Combine (appId);
 			FilePath config = xdgConfigHome.Combine (appId);
 			FilePath cache = xdgCacheHome.Combine (appId);
@@ -200,7 +201,7 @@ namespace MonoDevelop.Core
 		internal static UserProfile ForMD24 ()
 		{
 			FilePath appdata = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-			var mdConfig = appdata.Combine (BrandingService.ApplicationName); 
+			var mdConfig = appdata.Combine (APP_ID); 
 			return new UserProfile () {
 				UserDataRoot = mdConfig,
 				ConfigDir = mdConfig,
