@@ -131,8 +131,8 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// </summary>
 		public DataType DataType {
 			get { 
-				IntPtr datatype = afrodite_symbol_get_data_type (instance);
-				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_data_type (instance));
+				IntPtr datatype = afrodite_symbol_get_symbol_type (instance);
+				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_type (instance));
 			}
 		}
 		
@@ -142,7 +142,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		public DataType ReturnType {
 			get { 
 				IntPtr datatype = afrodite_symbol_get_return_type (instance);
-				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_data_type (instance));
+				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_type (instance));
 			}
 		}
 		
@@ -355,7 +355,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		static extern int afrodite_symbol_get_member_type (IntPtr instance);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_symbol_get_data_type (IntPtr instance);
+		static extern IntPtr afrodite_symbol_get_symbol_type (IntPtr instance);
 		
 		[DllImport("afrodite")]
 		static extern IntPtr afrodite_symbol_get_return_type (IntPtr instance);
