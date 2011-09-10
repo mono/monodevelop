@@ -142,7 +142,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		public DataType ReturnType {
 			get { 
 				IntPtr datatype = afrodite_symbol_get_return_type (instance);
-				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_type (instance));
+				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_return_type (instance));
 			}
 		}
 		
