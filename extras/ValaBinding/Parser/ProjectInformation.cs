@@ -115,7 +115,7 @@ namespace MonoDevelop.ValaBinding.Parser
 					if (null == symbol){ LoggingService.LogDebug ("CompleteType: Unable to lookup {0} in {1} at {2}:{3}", typename, filename, linenum, column); }
 					else{ nodes = symbol.Children; }
 				} else {
-					LoggingService.LogDebug ("CompleteType: Unable to acquire codeom");
+					LoggingService.LogDebug ("CompleteType: Unable to acquire codedom");
 				}
 			}
 			
