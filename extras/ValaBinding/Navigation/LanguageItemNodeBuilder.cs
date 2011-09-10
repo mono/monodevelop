@@ -102,8 +102,8 @@ namespace MonoDevelop.ValaBinding.Navigation
 				         otherCN = otherNode.DataItem as Symbol;
 	
 				if (null != thisCN && null != otherCN) {
-					return Array.IndexOf<string>(types, thisCN.SymbolType) - 
-					       Array.IndexOf<string>(types, otherCN.SymbolType);
+					return Array.IndexOf<string>(types, thisCN.MemberType) - 
+					       Array.IndexOf<string>(types, otherCN.MemberType);
 				}
 			}
 
