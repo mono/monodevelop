@@ -217,8 +217,8 @@ namespace MonoDevelop.ValaBinding.Parser
 					LoggingService.LogDebug ("GetExpressionType: Looking up symbol at {0}:{1}:{2}", filename, line, column);
 					Afrodite.Symbol sym = parseTree.LookupSymbolAt (filename, line, column);
 					if (null != sym) {
-						LoggingService.LogDebug ("Got {0}", sym.DataType.TypeName);
-						return sym.DataType.TypeName;
+						LoggingService.LogDebug ("Got {0}", sym.SymbolType.TypeName);
+						return sym.SymbolType.TypeName;
 					}
 				} else {
 					LoggingService.LogDebug ("GetExpressionType: Unable to acquire codedom");

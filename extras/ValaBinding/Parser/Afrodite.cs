@@ -129,7 +129,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// <summary>
 		/// The type of this symbol
 		/// </summary>
-		public DataType DataType {
+		public DataType SymbolType {
 			get { 
 				IntPtr datatype = afrodite_symbol_get_symbol_type (instance);
 				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_type (instance));
