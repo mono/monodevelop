@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.ValaBinding.Parser.Afrodite
 {
 	/// <summary>
-	/// Afrodite completion engine - interface for queueing source and getting CodeDoms
+	/// Afrodite completion engine - interface for queueing source and getting CodeDOMs
 	/// </summary>
 	internal class CompletionEngine
 	{
@@ -64,7 +64,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		}
 		
 		/// <summary>
-		/// Attempt to acquire the current CodeDom
+		/// Attempt to acquire the current CodeDOM
 		/// </summary>
 		/// <returns>
 		/// A <see cref="CodeDom"/>: null if unable to acquire
@@ -76,7 +76,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		}
 		
 		/// <summary>
-		/// Release the given CodeDom (required for continued parsing)
+		/// Release the given CodeDOM (required for continued parsing)
 		/// </summary>
 		public void ReleaseCodeDom (CodeDom codeDom)
 		{
@@ -364,7 +364,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 	}
 	
 	/// <summary>
-	/// Represents a Vala CodeDom
+	/// Represents a Vala CodeDOM
 	/// </summary>
 	/// <remarks>
 	/// MUST be disposed for parsing to continue
@@ -374,13 +374,13 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		CompletionEngine engine;
 		
 		/// <summary>
-		/// Create a new CodeDom wrapper
+		/// Create a new CodeDOM wrapper
 		/// </summary>
 		/// <param name="instance">
-		/// A <see cref="IntPtr"/>: The native pointer for this CodeDom
+		/// A <see cref="IntPtr"/>: The native pointer for this CodeDOM
 		/// </param>
 		/// <param name="engine">
-		/// A <see cref="CompletionEngine"/>: The completion engine to which this CodeDom belongs
+		/// A <see cref="CompletionEngine"/>: The completion engine to which this CodeDOM belongs
 		/// </param>
 		public CodeDom (IntPtr instance, CompletionEngine engine)
 		{
@@ -432,7 +432,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		}
 		
 		/// <summary>
-		/// Get the source files used to create this CodeDom
+		/// Get the source files used to create this CodeDOM
 		/// </summary>
 		public List<SourceFile> SourceFiles {
 			get {
@@ -490,7 +490,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		#region IDisposable implementation
 		
 		/// <summary>
-		/// Release this CodeDom for reuse
+		/// Release this CodeDOM for reuse
 		/// </summary>
 		public void Dispose ()
 		{
@@ -501,7 +501,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 	}
 	
 	/// <summary>
-	/// Utility class for dumping an CodeDom to Console.Out
+	/// Utility class for dumping a CodeDOM to Console.Out
 	/// </summary>
 	internal class CodeDomDumper
 	{
@@ -600,7 +600,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 	}
 	
 	/// <summary>
-	/// Options for querying an CodeDom
+	/// Options for querying a CodeDOM
 	/// </summary>
 	internal class QueryOptions
 	{
@@ -846,7 +846,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 	}
 	
 	/// <summary>
-	/// Class to represent an CodeDom source file
+	/// Class to represent a CodeDOM source file
 	/// </summary>
 	internal class SourceFile
 	{
