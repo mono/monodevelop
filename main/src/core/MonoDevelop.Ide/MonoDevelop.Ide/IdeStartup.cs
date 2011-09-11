@@ -4,7 +4,8 @@
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2011 Xamarin Inc (http://xamarin.com)
+// Copyright (C) 2005-2011 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -153,7 +154,7 @@ namespace MonoDevelop.Ide
 
 			if (options.IpcTcp) {
 				listen_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-				ep = new IPEndPoint (IPAddress.Loopback, ipcBasePort + HashSDBMBounded (Environment.UserName));
+				ep = new IPEndPoint (IPAddress.Loopback, ipcBasePort + HashSdbmBounded (Environment.UserName));
 			} else {
 				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
 				listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
@@ -463,21 +464,14 @@ namespace MonoDevelop.Ide
 			};
 		}
 		
-		/// <summary>
-		/// Implementation of sdbm-style hash, bounded to a range of 1000.
-		/// </summary>
-		public static int HashSDBMBounded (string input)
+		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>
+		static int HashSdbmBounded (string input)
 		{
 			ulong hash = 0;
-
-			try {
-				foreach (char c in input) {
-					unchecked {
-						hash = (ulong)char.GetNumericValue(c) + (hash << 6) + (hash << 16) - hash;
-					}
+			for (int i = 0; i < input.Length; i++) {
+				unchecked {
+					hash = ((ulong)input[i]) + (hash << 6) + (hash << 16) - hash;
 				}
-			} catch {
-				// If we overflow, return the intermediate result
 			}
 				
 			return (int)(hash % 1000);
