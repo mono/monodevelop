@@ -53,7 +53,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			aboutPictureScrollBox = new ScrollBox ();
 
 			PackStart (aboutPictureScrollBox, false, false, 0);
-			imageSep = new Pixbuf (Assembly.GetEntryAssembly (), "AboutImageSep.png");
+			using (var stream = BrandingService.OpenStream ("AboutImageSep.png"))
+				imageSep = new Pixbuf (stream);
 			PackStart (new Gtk.Image (imageSep), false, false, 0);
 			
 			var label = new Label ();
