@@ -23,55 +23,61 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Xml;
 using System.Reflection;
 using System.IO;
+using System.Xml;
 
 
 namespace MonoDevelop.Core
 {
 	/// <summary>
-	/// Branding service do access monodevelop branding data file.
+	/// Access to branding information. Only the ApplicationName is guaranteed to be non-null.
 	/// </summary>
 	public static class BrandingService
 	{
+		static FilePath brandingDir;
+		
 		public static readonly XmlDocument BrandingDocument;
 		public static readonly string ApplicationName;
 		
 		static BrandingService ()
 		{
-			XmlDocument brandingData = null;
 			try {
-				using (var stream = Assembly.GetEntryAssembly ().GetManifestResourceStream ("BrandingData.xml")) {
+				FilePath asmPath = typeof (BrandingService).Assembly.Location;
+				brandingDir = asmPath.ParentDirectory.Combine ("branding");
+				if (!Directory.Exists (brandingDir))
+					brandingDir = null;
+				
+				using (var stream = OpenStream ("BrandingData.xml")) {
 					if (stream != null) {
-						brandingData = new XmlDocument ();
-						brandingData.Load (stream);
+						var doc = new XmlDocument ();
+						doc.Load (stream);
+						BrandingDocument = doc;
 					}
 				}
-			} catch (Exception) {
-				brandingData = null;
-			}
-			
-			// may happen in mdtool.
-			if (brandingData == null) {
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not read branding document", ex);
 				ApplicationName = "MonoDevelop";
-				return;
 			}
 			
-			BrandingDocument = brandingData;
 			try {
-				ApplicationName = brandingData.DocumentElement ["ApplicationName"].GetAttribute ("value");
+				ApplicationName = BrandingDocument["ApplicationName"].GetAttribute ("value");
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while reading application name from branding xml.", e);
-				ApplicationName = "Unknown";
 			}
 		}
 		
 		public static Stream OpenStream (string name)
 		{
+			//read file first, fall back to resources
+			if (brandingDir != null) {
+				var file = brandingDir.Combine (name);
+				if (File.Exists (file))
+					return File.OpenRead (file);
+			}
 			return Assembly.GetEntryAssembly ().GetManifestResourceStream (name);
 		}
 	}
 }
-
