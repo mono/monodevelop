@@ -74,7 +74,7 @@ namespace MonoDevelop.WelcomePage
 				bgPixbuf = new Gdk.Pixbuf (stream);
 			
 			alignment1.SetPadding (WelcomePageView.LogoHeight + WelcomePageView.Spacing, 0, WelcomePageView.Spacing, 0);
-			Gdk.Color color;
+			Gdk.Color color = Gdk.Color.Zero;
 			if (!Gdk.Color.Parse (WelcomePageView.BackgroundColor, ref color))
 				color = Style.White;
 			ModifyBg (StateType.Normal, color);
