@@ -39,58 +39,71 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class VersionInformationTabPage: VBox
 	{
-		string VersionInformation {
-			get {
-				var sb = new StringBuilder ();
-				sb.AppendLine ("Operating System:");
-				sb.Append ("\t");
-				if (Platform.IsMac) {
-					sb.Append ("Mac OS X ");
-				} else if (Platform.IsWindows) {
-					sb.Append ("Windows ");
-				} else {
-					sb.Append ("Linux ");
-				}
-				sb.AppendLine (" version " + Environment.OSVersion.Version.ToString ());
+		//FIXME: move this somewhere it can be accessed by the error reporting code
+		static string GetVersionInformation ()
+		{
+			var sb = new StringBuilder ();
+			
+			string mdversion = BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel
+				? BuildVariables.PackageVersionLabel
+				: string.Format ("{0} ({1})",  BuildVariables.PackageVersionLabel, BuildVariables.PackageVersion);
+			sb.Append ("MonoDevelop ");
+			sb.AppendLine (mdversion);
+			
+			sb.AppendLine ("Operating System:");
+			if (Platform.IsMac) {
+				sb.Append ("\tMac OS X ");
+			} else if (Platform.IsWindows) {
+				sb.Append ("\tWindows ");
+			} else {
+				sb.Append ("\tLinux ");
+			}
+			sb.Append (Environment.OSVersion.Version.ToString ());
+			if (IntPtr.Size == 8 || Environment.GetEnvironmentVariable ("PROCESSOR_ARCHITEW6432") != null)
+				sb.Append (" (64-bit)");
+			sb.AppendLine ();
+			
+			sb.AppendLine ("Runtime:");
+			if (IsMono ()) {
+				sb.Append ("\tMono " + GetMonoVersionNumber ());
+			} else {
+				sb.Append ("\tMicrosoft .NET " + Environment.Version);
+			}
+			if (IntPtr.Size == 8)
+				sb.Append (" (64-bit)");
+			sb.AppendLine ();
 				
-				sb.Append ("\t.NET runtime ");
-				if (IsMicrosoftCLR ()) {
-					sb.Append (".NET " + Environment.Version);
-				} else {
-					sb.Append ("Mono " + GetMonoVersionNumber ());
-				}
-				sb.AppendLine ();
+			sb.Append ("\tGTK " + GetGtkVersion ());
+			sb.AppendLine (" (GTK# " + typeof(VBox).Assembly.GetName ().Version + ")");
 				
-				sb.Append ("\tGTK " + GetGtkVersion ());
-				sb.AppendLine (" (GTK# " + typeof(VBox).Assembly.GetName ().Version + ")");
-				
+			if (Platform.IsMac) {
 				var mtVersion = GetMonotouchVersion ();
-				
 				if (mtVersion != null)
-					sb.AppendLine ("\tMonoTouch: " + mtVersion);
+					sb.AppendLine ("MonoTouch: " + mtVersion);
+			}
+				
 // TODO:Get mono droid version.
 //				var droidVersion = GetMonoDroidVersion ();
 //				if (droidVersion != null)
 //					sb.AppendLine ("\tMono for Android: " + droidVersion);
-				
-				sb.AppendLine ();
-				string version = BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel ? BuildVariables.PackageVersionLabel : string.Format ("{0} ({1})", 
-					BuildVariables.PackageVersionLabel, 
-					BuildVariables.PackageVersion);
-				sb.Append ("MonoDevelop: ");
-				sb.AppendLine (version);
-				var biFile = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (GetType ().Assembly.Location), "buildinfo");
-				if (File.Exists (biFile))
-					sb.AppendLine (File.ReadAllText (biFile).TrimEnd ());
-				
-				
-				return sb.ToString ();
+			
+			var biFile = ((FilePath)typeof (VersionInformationTabPage).Assembly.Location).ParentDirectory.Combine ("buildinfo");
+			if (File.Exists (biFile)) {
+				sb.AppendLine ("Build information:");
+				foreach (var line in File.ReadAllLines (biFile)) {
+					if (!string.IsNullOrWhiteSpace (line)) {
+						sb.Append ("\t");
+						sb.AppendLine (line.Trim ());
+					}
+				}
 			}
+			
+			return sb.ToString ();
 		}
 		
-		static bool IsMicrosoftCLR ()
+		static bool IsMono ()
 		{
-			return Type.GetType ("Mono.Runtime") == null;
+			return Type.GetType ("Mono.Runtime") != null;
 		}
 		
 		static string GetMonoVersionNumber ()
@@ -108,18 +121,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		static string GetGtkVersion ()
 		{
-			uint v1 = 0, v2 = 0, v3 = 0;
+			uint v1 = 2, v2 = 0, v3 = 0;
 			
-			v1 = 99;
-			while (v1 > 0 && Gtk.Global.CheckVersion (v1, v2, v3) != null)
-				v1--;
-			v2 = 99;
-			while (v2 > 0 && Gtk.Global.CheckVersion (v1, v2, v3) != null)
-				v2--;
-			v3 = 99;
-			while (v3 > 0 && Gtk.Global.CheckVersion (v1, v2, v3) != null)
-				v3--;
-			if (v1 == 0 || v2 == 0 || v3 == 0)
+			while (v1 < 99 && Gtk.Global.CheckVersion (v1, v2, v3) == null)
+				v1++;
+			v1--;
+			
+			while (v2 < 99 && Gtk.Global.CheckVersion (v1, v2, v3) == null)
+				v2++;
+			v2--;
+			
+			v3 = 0;
+			while (v3 < 99 && Gtk.Global.CheckVersion (v1, v2, v3) == null)
+				v3++;
+			v3--;
+			
+			if (v1 == 99 || v2 == 99 || v3 == 99)
 				return "unknown";
 			return v1 +"." + v2 + "."+ v3;
 		}
@@ -227,7 +244,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public VersionInformationTabPage ()
 		{
 			var buf = new TextBuffer (null);
-			buf.Text = VersionInformation;
+			buf.Text = GetVersionInformation ();
 			
 			var sw = new ScrolledWindow () {
 				BorderWidth = 6,
