@@ -47,6 +47,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			Outlets = new List<IBOutlet> ();
 			Actions = new List<IBAction> ();
 			UserTypeReferences = new HashSet<string> ();
+			Frameworks = new HashSet<string> ();
+			
+			// FIXME: fix these frameworks for MonoMac
+			Frameworks.Add ("UIKit");
 		}
 		
 		public string ObjCName { get; private set; }
@@ -75,6 +79,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 		
 		public HashSet<string> UserTypeReferences { get; private set; }
+		public HashSet<string> Frameworks { get; private set; }
 		
 		public void GenerateObjcType (string directory)
 		{
@@ -88,11 +93,12 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				sw.WriteLine (modificationWarning);
 				sw.WriteLine ();
 				
-				//FIXME: fix these imports for MonoMac
-				sw.WriteLine ("#import <UIKit/UIKit.h>");
-				foreach (var reference in UserTypeReferences) {
+				foreach (var framework in Frameworks)
+					sw.WriteLine ("#import <{0}/{0}.h>", framework);
+				
+				foreach (var reference in UserTypeReferences)
 					sw.WriteLine ("#import \"{0}.h\"", reference);
-				}
+				
 				sw.WriteLine ();
 				
 				if (BaseObjCType == null && BaseCliType != null && !BaseIsModel) {
@@ -227,25 +233,21 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			foreach (var a in Actions) {
 				IBAction existing;
 				if (existingActions.TryGetValue (a.ObjCName, out existing)) {
+					a.IsDesigner = existing.IsDesigner;
 					a.CliName = existing.CliName;
 					if (!existing.IsDesigner)
 						continue;
-				} else {
-					a.CliName = a.ObjCName;
 				}
-				a.IsDesigner = true;
 			}
 			
 			foreach (var o in Outlets) {
 				IBOutlet existing;
 				if (existingOutlets.TryGetValue (o.ObjCName, out existing)) {
+					o.IsDesigner = existing.IsDesigner;
 					o.CliName = existing.CliName;
 					if (!existing.IsDesigner)
 						continue;
-				} else {
-					o.CliName = o.ObjCName;
 				}
-				o.IsDesigner = true;
 			}
 		}
 		

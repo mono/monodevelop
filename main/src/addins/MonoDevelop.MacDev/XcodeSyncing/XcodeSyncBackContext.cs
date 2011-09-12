@@ -61,6 +61,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			get { return fileSyncJobs; }
 		}
 		
+		public DotNetProject Project {
+			get { return project; }
+		}
+		
 		public NSObjectProjectInfo ProjectInfo {
 			get {
 				return pinfo ?? (pinfo = infoService.GetProjectInfo (project));
@@ -89,6 +93,15 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			newFiles = null;
 			XC4Debug.Log ("Aggregating {0} type updates", typeSyncJobs.Count);
 			foreach (var job in TypeSyncJobs) {
+				//if (job.IsNewSourceFile) {
+				//	var sf = CreateSourceFile (job);
+				//	job.SourceFile = sf.FilePath;
+				//	if (newFiles == null)
+				//		newFiles = new Dictionary<string, ProjectFile> ();
+				//	if (!newFiles.ContainsKey (job.SourceFile))
+				//		newFiles.Add (job.SourceFile, sf);
+				//}
+				
 				//generate designer filenames for classes without designer files
 				if (job.DesignerFile == null) {
 					var df = CreateDesignerFile (job);
@@ -98,6 +111,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					if (!newFiles.ContainsKey (job.DesignerFile))
 						newFiles.Add (job.DesignerFile, df);
 				}
+				
 				//group all the types by designer file
 				List<NSObjectTypeInfo> types;
 				if (!designerFiles.TryGetValue (job.DesignerFile, out types))
@@ -106,6 +120,18 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				types.Add (job.Type);
 			}
 		}
+		
+		//ProjectFile CreateSourceFile (XcodeSyncObjcBackJob job)
+		//{
+		//	CodeDomProvider dom = project.LanguageBinding.GetCodeDomProvider ();
+		//	string baseName = Path.GetFileNameWithoutExtension (job.HFile);
+		//	FilePath baseDir = Project.BaseDirectory.CanonicalPath;
+		//	string name = baseName + "." + dom.FileExtension;
+		//	string path = Path.Combine (baseDir, name);
+		//	FilePath sourceFile = new FilePath (path);
+		//	
+		//	return new ProjectFile (sourceFile, BuildAction.Compile);
+		//}
 		
 		//FIXME: is this overkill?
 		ProjectFile CreateDesignerFile (XcodeSyncObjcBackJob job)

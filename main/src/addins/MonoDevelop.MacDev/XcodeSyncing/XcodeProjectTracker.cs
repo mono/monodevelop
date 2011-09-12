@@ -342,7 +342,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Detecting changed files in Xcode"), 0);
-				var changeCtx = xcode.GetChanges (infoService, dnp);
+				var changeCtx = xcode.GetChanges (monitor, infoService, dnp);
 				monitor.EndTask ();
 				updatingProjectFiles = true;
 				UpdateCliTypes (monitor, changeCtx);
@@ -395,6 +395,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			monitor.BeginTask (GettextCatalog.GetString ("Updating types in MonoDevelop"), updates.Count);
 			foreach (var df in updates) {
 				monitor.Log.WriteLine ("Syncing {0} types from Xcode to file '{1}'", df.Value.Count, df.Key);
+				Console.WriteLine ("Syncing {0} types from Xcode to file '{1}'", df.Value.Count, df.Key);
 				if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 					var cs = new CSharpCodeCodebehind () {
 						Types = df.Value,

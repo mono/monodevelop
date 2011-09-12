@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -40,6 +41,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 	public class NSObjectInfoService
 	{
 		static readonly Regex ibRegex = new Regex ("(- \\(IBAction\\)|IBOutlet)([^;]*);", RegexOptions.Compiled);
+		static readonly Regex frameworkRegex = new Regex ("#import\\s+<([A-Z][A-Za-z]*)/\\w*\\.h>", RegexOptions.Compiled);
+		static readonly Regex typeInfoRegex = new Regex ("@(interface|protocol)\\s+(\\w*)\\s*:\\s*(\\w*)", RegexOptions.Compiled);
 		static readonly char[] colonChar = { ':' };
 		static readonly char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
 		static readonly char[] splitActionParamsChars = { ' ', '\t', '\n', '\r', '*', '(', ')' };
@@ -235,11 +238,45 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 		}
 		
-		public static NSObjectTypeInfo ParseHeader (string headerFile)
+		public static NSObjectTypeInfo ParseHeader (string defaultNamespace, string headerFile, string[] definedIn)
 		{
-			var text = System.IO.File.ReadAllText (headerFile);
-			var matches = ibRegex.Matches (text);
-			var type = new NSObjectTypeInfo (System.IO.Path.GetFileNameWithoutExtension (headerFile), null, null, null, false);
+			string text = File.ReadAllText (headerFile);
+			List<string> frameworks = new List<string> ();
+			string objcType = null, objcBaseType = null;
+			MatchCollection matches;
+			
+			// First, grep for frameworks
+			matches = frameworkRegex.Matches (text);
+			foreach (Match match in matches)
+				frameworks.Add (match.Groups[1].Value);
+			
+			// Then grep for classes
+			matches = typeInfoRegex.Matches (text);
+			foreach (Match match in matches) {
+				if (match.Groups[1].Value != "interface")
+					continue;
+				
+				if (objcType != null)
+					return null;
+				
+				objcType = match.Groups[2].Value;
+				objcBaseType = match.Groups[3].Value;
+			}
+			
+			if (objcType == null)
+				return null;
+			
+			string cliType = defaultNamespace != null ? defaultNamespace + "." + objcType : objcType;
+			NSObjectTypeInfo type = new NSObjectTypeInfo (objcType, cliType, objcBaseType, null, false);
+			type.IsRegisteredInDesigner = true;
+			type.DefinedIn = definedIn;
+			type.IsUserType = true;
+			
+			foreach (var framework in frameworks)
+				type.Frameworks.Add (framework);
+			
+			// Finally, grep for IBActions and IBOutlets
+			matches = ibRegex.Matches (text);
 			foreach (Match match in matches) {
 				var kind = match.Groups[1].Value;
 				var def = match.Groups[2].Value;
@@ -248,7 +285,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					if (split.Length != 2)
 						continue;
 					string objcName = split[1].TrimStart ('*');
-					string objcType = split[0].TrimEnd ('*');
+					objcType = split[0].TrimEnd ('*');
 					if (objcType == "id")
 						objcType = "NSObject";
 					if (string.IsNullOrEmpty (objcType)) {
@@ -256,14 +293,19 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							string.Format (GettextCatalog.GetString ("The definition '{0}' can't be parsed."), def));
 						objcType = "NSObject";
 					}
-					type.Outlets.Add (new IBOutlet (objcName, null, objcType, null));
+					
+					IBOutlet outlet = new IBOutlet (objcName, objcName, objcType, objcType);
+					outlet.IsDesigner = true;
+					
+					type.Outlets.Add (outlet);
 				} else {
 					string[] split = def.Split (colonChar);
-					var action = new IBAction (split[0].Trim (), null);
+					var action = new IBAction (split[0].Trim (), split[0].Trim ());
+					action.IsDesigner = true;
 					string label = null;
 					for (int i = 1; i < split.Length; i++) {
 						var s = split[i].Split (splitActionParamsChars, StringSplitOptions.RemoveEmptyEntries);
-						string objcType = s[0];
+						objcType = s[0];
 						if (objcType == "id")
 							objcType = "NSObject";
 						var par = new IBActionParameter (label, s[1], objcType, null);
