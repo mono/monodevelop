@@ -2240,7 +2240,7 @@ namespace Mono.CSharp
 				if (position_stack.Count == 0)
 					sbag.PushCommentChar (c);
 				var pc = peek_char ();
-				if (pc == '\n' || pc == -1 && position_stack.Count == 0) 
+				if ((pc == '\n' || pc == -1) && position_stack.Count == 0) 
 					sbag.EndComment (line, col + 1);
 			} while (c != -1 && c != '\n');
 		}
@@ -3215,13 +3215,15 @@ namespace Mono.CSharp
 						}
 						
 						d = peek_char ();
-						
+						int endLine = line, endCol = col;
 						while ((d = get_char ()) != -1 && (d != '\n') && d != '\r') {
 							if (position_stack.Count == 0)
 								sbag.PushCommentChar (d);
+							endLine = line;
+							endCol = col;
 						}
 						if (position_stack.Count == 0)
-							sbag.EndComment (line, col + 1);
+							sbag.EndComment (endLine, endCol + 1);
 						
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
