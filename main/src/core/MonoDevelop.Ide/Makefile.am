@@ -700,6 +700,12 @@ FILES =  \
 	MonoDevelop.Ide/WebBrowserService.cs
 
 RES =  \
+	branding/AboutImage.png \
+	branding/AboutImageSep.png \
+	branding/SplashScreen.png \
+	branding/WelcomePage.xml \
+	branding/WelcomePage_Logo.png \
+	branding/WelcomePage_TopBorderRepeat.png \
 	ExtensionModel/Commands.addin.xml \
 	ExtensionModel/DefaultPolicyPanels.addin.xml \
 	ExtensionModel/GlobalOptionsDialog.addin.xml \
@@ -926,13 +932,7 @@ RES =  \
 	templates/EmptyTextFile.xft.xml \
 	templates/EmptyXMLFile.xft.xml \
 	templates/GenericProject.xpt.xml \
-	templates/Workspace.xpt.xml \
-	branding/AboutImage.png \
-	branding/AboutImageSep.png \
-	branding/WelcomePageContent.xml \
-	branding/SplashScreen.png \
-	branding/WelcomePage_Logo.png \
-	branding/WelcomePage_TopBorderRepeat.png
+	templates/Workspace.xpt.xml
 
 OPTIONS = \
 options/DefaultEditingLayout.xml \
