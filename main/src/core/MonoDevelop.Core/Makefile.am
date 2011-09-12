@@ -477,7 +477,8 @@ REFS =  \
 	-r:System.Configuration \
 	-r:System.Core \
 	-r:System.Runtime.Remoting \
-	-r:System.Xml
+	-r:System.Xml	\
+	-r:System.Xml.Linq
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
