@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.NewProjectDialog
-			this.WidthRequest = 630;
+			this.WidthRequest = 930;
 			this.Name = "MonoDevelop.Ide.Projects.NewProjectDialog";
 			this.Title = "New Solution";
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Projects
 			this.panedTemplates = new global::Gtk.HPaned ();
 			this.panedTemplates.CanFocus = true;
 			this.panedTemplates.Name = "panedTemplates";
-			this.panedTemplates.Position = 308;
+			this.panedTemplates.Position = 430;
 			// Container child panedTemplates.Gtk.Paned+PanedChild
 			this.boxTemplates = new global::Gtk.VBox ();
 			this.boxTemplates.Name = "boxTemplates";
@@ -362,7 +362,7 @@ namespace MonoDevelop.Ide.Projects
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 735;
+			this.DefaultWidth = 930;
 			this.DefaultHeight = 539;
 			this.lbl_name.MnemonicWidget = this.txt_name;
 			this.lbl_subdirectory.MnemonicWidget = this.txt_subdirectory;
