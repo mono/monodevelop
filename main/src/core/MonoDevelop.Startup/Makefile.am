@@ -5,14 +5,6 @@ FILES =  \
 	AssemblyInfo.cs \
 	MonoDevelop.Startup/MonoDevelopMain.cs
 
-RES =  \
-	branding/AboutImage.png \
-	branding/AboutImageSep.png \
-	branding/BrandingData.xml \
-	branding/SplashScreen.png \
-	branding/WelcomePage_Logo.png \
-	branding/WelcomePage_TopBorderRepeat.png
-
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
 DEPS =  \
@@ -39,7 +31,6 @@ assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config $(ASSEMBLY).addin
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(RES) app.config MonoDevelop.exe.addins
+EXTRA_DIST = $(FILES) app.config MonoDevelop.exe.addins
 
 include $(top_srcdir)/Makefile.include
-

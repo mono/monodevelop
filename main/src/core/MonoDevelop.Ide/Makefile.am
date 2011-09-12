@@ -926,7 +926,13 @@ RES =  \
 	templates/EmptyTextFile.xft.xml \
 	templates/EmptyXMLFile.xft.xml \
 	templates/GenericProject.xpt.xml \
-	templates/Workspace.xpt.xml
+	templates/Workspace.xpt.xml \
+	branding/AboutImage.png \
+	branding/AboutImageSep.png \
+	branding/WelcomePage.xml \
+	branding/SplashScreen.png \
+	branding/WelcomePage_Logo.png \
+	branding/WelcomePage_TopBorderRepeat.png
 
 OPTIONS = \
 options/DefaultEditingLayout.xml \
