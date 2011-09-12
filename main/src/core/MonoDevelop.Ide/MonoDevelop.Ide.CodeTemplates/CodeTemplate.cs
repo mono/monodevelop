@@ -65,11 +65,23 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set; 
 		}
 		
+		string shortcut;
 		public string Shortcut {
-			get;
-			set;
+			get {
+				return shortcut;
+			}
+			set {
+				if (value != null) {
+					var trimmedValue = value.Trim ();
+					if (trimmedValue != value)
+						LoggingService.LogWarning ("Trimmed code template shortcut for:" + trimmedValue);
+					shortcut = trimmedValue;
+				} else {
+					shortcut = null;
+				}
+			}
 		}
-		
+
 		public CodeTemplateType CodeTemplateType {
 			get;
 			set;
