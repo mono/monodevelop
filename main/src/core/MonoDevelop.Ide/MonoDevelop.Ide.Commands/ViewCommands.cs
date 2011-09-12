@@ -54,7 +54,8 @@ namespace MonoDevelop.Ide.Commands
 		ZoomIn,
 		ZoomOut,
 		ZoomReset,
-		FocusCurrentDocument
+		FocusCurrentDocument,
+		ShowWelcomePage
 	}
 
 	// MonoDevelop.Ide.Commands.ViewCommands.ViewList

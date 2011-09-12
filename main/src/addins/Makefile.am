@@ -20,7 +20,6 @@ SUBDIRS = \
 	MonoDeveloperExtensions \
 	VBNetBinding \
 	prj2make-sharp-lib \
-	WelcomePage \
 	MonoDevelop.GtkCore \
 	ChangeLogAddIn \
 	MonoDevelop.WebReferences \

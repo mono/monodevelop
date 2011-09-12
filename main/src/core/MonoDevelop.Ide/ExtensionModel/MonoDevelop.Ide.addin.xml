@@ -166,6 +166,7 @@
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.Ide.Updater.UpdateCheckHandler"/>
 		<Class class = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayStartup"/>
+		<Class class = "MonoDevelop.Ide.WelcomePage.WelcomePageStartUp"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">

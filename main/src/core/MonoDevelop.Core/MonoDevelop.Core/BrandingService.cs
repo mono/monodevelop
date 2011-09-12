@@ -27,8 +27,8 @@
 using System;
 using System.Reflection;
 using System.IO;
-using System.Xml;
-
+using System.Xml.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Core
 {
@@ -38,8 +38,6 @@ namespace MonoDevelop.Core
 	public static class BrandingService
 	{
 		static FilePath brandingDir;
-		
-		public static readonly XmlDocument BrandingDocument;
 		public static readonly string ApplicationName;
 		
 		static BrandingService ()
@@ -50,34 +48,29 @@ namespace MonoDevelop.Core
 				if (!Directory.Exists (brandingDir))
 					brandingDir = null;
 				
-				using (var stream = OpenStream ("BrandingData.xml")) {
-					if (stream != null) {
-						var doc = new XmlDocument ();
-						doc.Load (stream);
-						BrandingDocument = doc;
-					}
+				var brandingFile = brandingDir.Combine ("Branding.xml");
+				if (File.Exists (brandingFile)) {
+					var brandingDocument = XDocument.Load (brandingFile);
+					ApplicationName = brandingDocument.Root.Element ("ApplicationName").Value;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not read branding document", ex);
-				ApplicationName = "MonoDevelop";
 			}
 			
-			try {
-				ApplicationName = BrandingDocument["ApplicationName"].GetAttribute ("value");
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while reading application name from branding xml.", e);
-			}
+			if (string.IsNullOrEmpty (ApplicationName))
+				ApplicationName = "MonoDevelop";
 		}
 		
+		[MethodImpl (MethodImplOptions.NoInlining)]
 		public static Stream OpenStream (string name)
 		{
-			//read file first, fall back to resources
+			//read branding directory, then calling assembly's resources
 			if (brandingDir != null) {
 				var file = brandingDir.Combine (name);
 				if (File.Exists (file))
 					return File.OpenRead (file);
 			}
-			return Assembly.GetEntryAssembly ().GetManifestResourceStream (name);
+			return Assembly.GetCallingAssembly ().GetManifestResourceStream (name);
 		}
 	}
 }

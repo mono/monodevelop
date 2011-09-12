@@ -115,6 +115,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
 		<SeparatorItem id = "ViewItemsSeparator4" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 	</ItemSet>
 	

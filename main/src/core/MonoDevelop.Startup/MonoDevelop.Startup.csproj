@@ -112,29 +112,4 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <ItemGroup>
-    <Folder Include="branding\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="branding\AboutImage.png">
-      <LogicalName>AboutImage.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="branding\AboutImageSep.png">
-      <LogicalName>AboutImageSep.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="branding\SplashScreen.png">
-      <LogicalName>SplashScreen.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="branding\WelcomePage_Logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <LogicalName>WelcomePage_Logo.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="branding\WelcomePage_TopBorderRepeat.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <LogicalName>WelcomePage_TopBorderRepeat.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="branding\BrandingData.xml">
-      <LogicalName>BrandingData.xml</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
 </Project>

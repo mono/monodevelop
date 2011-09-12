@@ -590,6 +590,10 @@
 			_label = "_Focus Document"
 			shortcut = "Alt|C"
 			_description = "Focus current document" />
+	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage"
+			defaultHandler = "MonoDevelop.Ide.WelcomePage.ShowWelcomePageHandler"
+			_label = "Welcome Page"
+			icon = "gtk-home"/>
 	</Category>
 	
 	<!-- ToolCommands -->
