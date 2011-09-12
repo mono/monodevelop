@@ -166,7 +166,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					if (resolved.IsUserType)
 						type.UserTypeReferences.Add (resolved.ObjCName);
 				} else {
-					//managed classes may have implicitly registered base classes with a name not
+					//managed classes many have implicitly registered base classes with a name not
 					//expressible in obj-c. In this case, the best we can do is walk down the 
 					//hierarchy until we find a valid base class
 					foreach (var bt in dom.GetInheritanceTree (dom.GetType (type.BaseCliType))) {

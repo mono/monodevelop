@@ -75,33 +75,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public override void SyncBack (XcodeSyncBackContext context)
 		{
-			string hFile = context.ProjectDir.Combine (Type.ObjCName + ".h");
-			var objcType = context.ProjectInfo.GetType (Type.ObjCName);
+			var hFile = context.ProjectDir.Combine (Type.ObjCName + ".h");
+			var parsed = NSObjectInfoService.ParseHeader (hFile);
 			
+			var objcType = context.ProjectInfo.GetType (Type.ObjCName);
 			if (objcType == null) {
 				context.ReportError ("Missing objc type {0}", Type.ObjCName);
 				return;
 			}
-			
-			int dot = objcType.CliName.LastIndexOf ('.');
-			string defaultNamespace = null;
-			
-			if (dot != -1)
-				defaultNamespace = objcType.CliName.Substring (0, dot);
-			
-			var parsed = NSObjectInfoService.ParseHeader (defaultNamespace, hFile, objcType.DefinedIn);
-			
-			if (parsed == null) {
-				context.ReportError ("Error parsing objc type {0}", Type.ObjCName);
-				return;
-			}
-			
 			if (parsed.ObjCName != objcType.ObjCName) {
 				context.ReportError ("Parsed type name {0} does not match original {1}",
 					parsed.ObjCName, objcType.ObjCName);
 				return;
 			}
-			
 			if (!objcType.IsUserType) {
 				context.ReportError ("Parsed type {0} is not a user type", objcType);
 				return;
