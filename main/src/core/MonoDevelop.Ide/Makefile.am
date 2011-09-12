@@ -703,9 +703,9 @@ RES =  \
 	branding/AboutImage.png \
 	branding/AboutImageSep.png \
 	branding/SplashScreen.png \
-	branding/WelcomePage.xml \
 	branding/WelcomePage_Logo.png \
 	branding/WelcomePage_TopBorderRepeat.png \
+	branding/WelcomePageContent.xml \
 	ExtensionModel/Commands.addin.xml \
 	ExtensionModel/DefaultPolicyPanels.addin.xml \
 	ExtensionModel/GlobalOptionsDialog.addin.xml \
