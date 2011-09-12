@@ -32,55 +32,67 @@ namespace MonoDevelop.Ide.WelcomePage
 {
 	static class WelcomePageBranding
 	{
-		public static readonly XElement Content;
-		public static readonly string HeaderTextSize, HeaderTextColor, BackgroundColor, TextColor, TextSize, LinkColor;
-		public static readonly uint Spacing, LogoHeight;
+		public static readonly XDocument Content;
+		
+		public static readonly string HeaderTextSize = "x-large";
+		public static readonly string HeaderTextColor = "#4e6d9f";
+		public static readonly string BackgroundColor = "white";
+		public static readonly string TextColor = "black";
+		public static readonly string TextSize = "medium";
+		public static readonly string LinkColor = "#5a7ac7";
+		public static readonly uint Spacing = 20;
+		public static readonly uint LogoHeight = 90;
 		
 		static WelcomePageBranding ()
 		{
 			try {
-				var streams = new Func<System.IO.Stream> [] {
-					() => typeof (WelcomePageBranding).Assembly.GetManifestResourceStream ("WelcomePage.xml"),
-					() => BrandingService.OpenStream ("WelcomePage.xml"),
-				};
-				foreach (var sf in streams) {
-					using (var s = sf ()) {
-						var doc = XDocument.Load (s);
-						foreach (var el in doc.Root.Elements ()) {
-							switch (el.Name.ToString ()) {
-							case "HeaderTextSize":
-								HeaderTextSize = (string) el;
-								break;
-							case "HeaderTextColor":
-								HeaderTextColor = (string) el;
-								break;
-							case "BackgroundColor":
-								BackgroundColor = (string) el;
-								break;
-							case "TextColor":
-								TextColor = (string) el;
-								break;
-							case "TextSize":
-								TextSize = (string) el;
-								break;
-							case "LinkColor":
-								LinkColor = (string) el;
-								break;
-							case "Spacing":
-								Spacing = (uint) el;
-								break;
-							case "LogoHeight":
-								LogoHeight = (uint) el;
-								break;
-							case "Content":
-								Content = el;
-								break;
-							}
-						}
+				using (var stream = BrandingService.OpenStream ("WelcomePageContent.xml")) {
+					Content = XDocument.Load (stream);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while reading welcome page contents.", ex);
+				using (var stream = typeof (WelcomePageBranding).Assembly.GetManifestResourceStream ("WelcomePageContent.xml")) {
+					Content = XDocument.Load (stream);
+				}
+			}
+			
+			try {
+				if (BrandingService.BrandingDocument == null)
+					return;
+				var branding = BrandingService.BrandingDocument.Root.Element ("WelcomePage");
+				if (branding == null)
+					return;
+				
+				foreach (var el in branding.Elements ()) {
+					switch (el.Name.ToString ()) {
+					case "HeaderTextSize":
+						HeaderTextSize = (string) el;
+						break;
+					case "HeaderTextColor":
+						HeaderTextColor = (string) el;
+						break;
+					case "BackgroundColor":
+						BackgroundColor = (string) el;
+						break;
+					case "TextColor":
+						TextColor = (string) el;
+						break;
+					case "TextSize":
+						TextSize = (string) el;
+						break;
+					case "LinkColor":
+						LinkColor = (string) el;
+						break;
+					case "Spacing":
+						Spacing = (uint) el;
+						break;
+					case "LogoHeight":
+						LogoHeight = (uint) el;
+						break;
 					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while reading welcome page data from branding xml.", e);
+				LoggingService.LogError ("Error while reading welcome page branding.", e);
 			}
 		}
 		

@@ -191,11 +191,36 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				"Yan-ren Tsai",
 				"Zach Lute"
 			};
-	
+			
+			Gdk.Color bgColor = new Gdk.Color (49, 49, 74);
+			Gdk.Color textColor = new Gdk.Color (0xFF, 0xFF, 0xFF);
+			
+			void LoadBranding ()
+			{
+				try {
+					var brandingDoc = BrandingService.BrandingDocument;
+					if (brandingDoc == null)
+						return;
+					var aboutEl = brandingDoc.Root.Element ("AboutBox");
+					if (aboutEl == null)
+						return;
+					var textColEl = aboutEl.Element ("TextColor");
+					if (textColEl != null)
+						Gdk.Color.Parse ((string)textColEl.Value, ref textColor);
+					var bgColEl = aboutEl.Element ("BackgroundColor");
+					if (bgColEl != null)
+						Gdk.Color.Parse ((string)bgColEl.Value, ref bgColor);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error loading about box branding", ex);
+				}
+			}
+			
 			public ScrollBox ()
 			{
+				LoadBranding ();
 				this.Realized += new EventHandler (OnRealized);
-				this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
+				this.ModifyBg (Gtk.StateType.Normal, bgColor);
+				this.ModifyText (Gtk.StateType.Normal, textColor);
 				using (var stream = BrandingService.OpenStream ("AboutImage.png"))
 					image = new Gdk.Pixbuf (stream);
 				monoPowered = new Gdk.Pixbuf (GetType ().Assembly, "mono-powered.png");
@@ -270,7 +295,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				int widthPixel, heightPixel;
 				layout.GetPixelSize (out widthPixel, out heightPixel);
 				
-				GdkWindow.DrawLayout (Style.WhiteGC, 0, textTop - scroll, layout);
+				GdkWindow.DrawLayout (Style.TextGC (StateType.Normal), 0, textTop - scroll, layout);
 				GdkWindow.DrawPixbuf (backGc, monoPowered, 0, 0, (width / 2) - (monoPowered.Width / 2), textTop - scroll + heightPixel + monoLogoSpacing, -1, -1, RgbDither.Normal, 0, 0);
 				
 				heightPixel = heightPixel - 80 + image.Height;
@@ -313,7 +338,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				layout.SetMarkup (CreditText);
 				
 				backGc = new Gdk.GC (GdkWindow);
-				backGc.RgbBgColor = new Gdk.Color (49, 49, 74);
+				backGc.RgbBgColor = bgColor;
 			}
 			
 			protected override void OnDestroyed ()

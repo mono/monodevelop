@@ -929,7 +929,7 @@ RES =  \
 	templates/Workspace.xpt.xml \
 	branding/AboutImage.png \
 	branding/AboutImageSep.png \
-	branding/WelcomePage.xml \
+	branding/WelcomePageContent.xml \
 	branding/SplashScreen.png \
 	branding/WelcomePage_Logo.png \
 	branding/WelcomePage_TopBorderRepeat.png

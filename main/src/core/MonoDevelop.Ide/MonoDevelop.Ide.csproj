@@ -785,8 +785,8 @@
     <EmbeddedResource Include="branding\SplashScreen.png">
       <LogicalName>SplashScreen.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\WelcomePage.xml">
-      <LogicalName>WelcomePage.xml</LogicalName>
+    <EmbeddedResource Include="branding\WelcomePageContent.xml">
+      <LogicalName>WelcomePageContent.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

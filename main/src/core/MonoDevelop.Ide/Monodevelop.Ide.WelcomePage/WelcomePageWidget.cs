@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		void BuildContent ()
 		{
-			foreach (var col in WelcomePageBranding.Content.Elements ("Column")) {
+			foreach (var col in WelcomePageBranding.Content.Root.Elements ("Column")) {
 				var colWidget = new Gtk.VBox (false, (int) WelcomePageBranding.Spacing);
 				var widthAtt = col.Attribute ("minWidth");
 				if (widthAtt != null) {

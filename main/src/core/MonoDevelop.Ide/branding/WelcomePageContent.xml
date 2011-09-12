@@ -1,0 +1,28 @@
+<WelcomePage>
+	<Column minWidth="200">
+		<Links iconSize="LargeToolbar" homogeneous="true">
+			<Link href="monodevelop://MonoDevelop.Ide.Commands.FileCommands.OpenFile" _title="Open Solution or File..." icon="gtk-open" />
+			<Link href="monodevelop://MonoDevelop.Ide.Commands.FileCommands.NewProject" _title="Start New Solution.." icon="gtk-new" />
+		</Links>
+		<RecentProjects _title="Recent Projects" />
+	</Column>
+	<Column minWidth="200">
+		<Links _title="Support Links">
+			<Link _title="Report a Bug" href="http://bugzilla.xamarin.com/enter_bug.cgi?product=MonoDevelop" />
+			<Link _title="MonoDevelop Home Page" href="http://www.monodevelop.com" />
+			<Link _title="Mono Project Home Page" href="http://www.mono-project.com/Main_Page" />
+		</Links>	
+		<Links _title="Development Links">
+			<Link _title="Mono Documentation Library" href="http://www.go-mono.com/docs/"
+				_desc="Online documentation for Mono libraries."
+			/>
+			<Link _title="MSDN Class Library Reference" href="http://msdn.microsoft.com/en-us/library/ff361664.aspx"
+				_desc="Documentation for Microsoft's implementation of the .NET framework."
+			/>
+			<Link _title="The Code Project" href="http://www.codeproject.com/"
+				_desc="A popular site for .NET articles, code snippets, and discussions."
+			/>
+		</Links>
+		<NewsFeed _title="News Links" src="http://www.monodevelop.com/files/news/news.xml" id="NewsLinks" />
+	</Column>
+</WelcomePage>	

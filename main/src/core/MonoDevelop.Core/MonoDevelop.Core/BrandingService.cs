@@ -39,19 +39,21 @@ namespace MonoDevelop.Core
 	{
 		static FilePath brandingDir;
 		public static readonly string ApplicationName;
+		public static XDocument BrandingDocument;
 		
 		static BrandingService ()
 		{
 			try {
 				FilePath asmPath = typeof (BrandingService).Assembly.Location;
 				brandingDir = asmPath.ParentDirectory.Combine ("branding");
-				if (!Directory.Exists (brandingDir))
+				if (!Directory.Exists (brandingDir)) {
 					brandingDir = null;
-				
-				var brandingFile = brandingDir.Combine ("Branding.xml");
-				if (File.Exists (brandingFile)) {
-					var brandingDocument = XDocument.Load (brandingFile);
-					ApplicationName = brandingDocument.Root.Element ("ApplicationName").Value;
+				} else {
+					var brandingFile = brandingDir.Combine ("Branding.xml");
+					if (File.Exists (brandingFile)) {
+						BrandingDocument = XDocument.Load (brandingFile);
+						ApplicationName = BrandingDocument.Root.Element ("ApplicationName").Value;
+					}
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not read branding document", ex);
