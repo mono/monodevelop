@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MonoDevelopPath>..\..</MonoDevelopPath>
-  <Version>2.6</Version>
+  <Version>2.6.0.1</Version>
   <InstallerVersion>1</InstallerVersion>
-  <ProductVersionText>2.6</ProductVersionText>
+  <ProductVersionText>2.6.0.1</ProductVersionText>
   <AssemblyVersion>2.6.0.0</AssemblyVersion>
 </Config>
