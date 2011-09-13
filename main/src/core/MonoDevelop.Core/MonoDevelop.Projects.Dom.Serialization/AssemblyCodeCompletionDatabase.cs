@@ -147,7 +147,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			if (member == null)
 				return null; 
-			
+			if (!string.IsNullOrEmpty (member.Documentation))
+				return member.Documentation;
+				
 			if (xmlDocumentation == null) {
 				FilePath xmlFileName;
 				GetXml (assemblyFile, out xmlFileName);

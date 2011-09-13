@@ -172,30 +172,6 @@ namespace MonoDevelop.Projects.Dom.Output
 				return CleanEmpty (result);
 			}
 			
-			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
-			if (node != null) {
-				string innerXml = (node["summary"].InnerXml ?? "").Trim ();
-				StringBuilder sb = new StringBuilder ();
-				bool wasWhiteSpace = false;
-				for (int i = 0; i < innerXml.Length; i++) {
-					char ch = innerXml[i];
-					switch (ch) {
-					case '\n':
-					case '\r':
-						break;
-					default:
-						bool isWhiteSpace = Char.IsWhiteSpace (ch);
-						if (isWhiteSpace && wasWhiteSpace)
-							continue;
-						wasWhiteSpace = isWhiteSpace;
-						sb.Append (ch);
-						break;
-					}
-				}
-				
-			
-				return CleanEmpty (sb.ToString ());
-			}
 			return CleanEmpty (documentation);
 		}
 		

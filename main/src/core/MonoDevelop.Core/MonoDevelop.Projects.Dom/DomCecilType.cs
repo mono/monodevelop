@@ -97,13 +97,13 @@ namespace MonoDevelop.Projects.Dom
 		public DomCecilType (TypeDefinition typeDefinition, bool loadInternal)
 		{
 			this.typeDefinition = typeDefinition;
-			this.loadInternal   = loadInternal;
-			this.classType      = GetClassType (typeDefinition);
+			this.loadInternal = loadInternal;
+			this.classType = GetClassType (typeDefinition);
 			
-			this.Name           = DomCecilType.RemoveGenericParamSuffix (typeDefinition.Name);
-			this.Namespace      = typeDefinition.Namespace;
+			this.Name = DomCecilType.RemoveGenericParamSuffix (typeDefinition.Name);
+			this.Namespace = typeDefinition.Namespace;
 			
-			this.Modifiers      = GetModifiers (typeDefinition.Attributes);
+			this.Modifiers = GetModifiers (typeDefinition.Attributes);
 			
 			if (typeDefinition.BaseType != null)
 				this.baseType = DomCecilMethod.GetReturnType (typeDefinition.BaseType);
@@ -122,10 +122,38 @@ namespace MonoDevelop.Projects.Dom
 				}
 				AddTypeParameter (tp);
 			}
+			AddDocumentation (this);
 		}
-		
+
 		bool loadInternal;
 		bool isInitialized = false;
+
+		static void AddDocumentation (IMember member)
+		{
+			var node = member.GetMonodocDocumentation ();
+			if (node != null) {
+				string innerXml = (node.InnerXml ?? "").Trim ();
+				var sb = new StringBuilder ();
+				bool wasWhiteSpace = false;
+				for (int i = 0; i < innerXml.Length; i++) {
+					char ch = innerXml [i];
+					switch (ch) {
+					case '\n':
+					case '\r':
+						break;
+					default:
+						bool isWhiteSpace = Char.IsWhiteSpace (ch);
+						if (isWhiteSpace && wasWhiteSpace)
+							continue;
+						wasWhiteSpace = isWhiteSpace;
+						sb.Append (ch);
+						break;
+					}
+				}
+				member.Documentation = sb.ToString ();
+			}
+		}
+		
 		void CheckInitialization ()
 		{
 			if (isInitialized)
@@ -135,15 +163,19 @@ namespace MonoDevelop.Projects.Dom
 			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (fieldDefinition)))
 					continue;
-				base.Add (new DomCecilField (fieldDefinition));
+				var field = new DomCecilField (fieldDefinition);
+				base.Add (field);
+				AddDocumentation (field);
 			}
 			foreach (MethodDefinition methodDefinition in typeDefinition.Methods.Where (m => !m.IsConstructor)) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
-				base.Add (new DomCecilMethod (methodDefinition));
+				var method = new DomCecilMethod (methodDefinition);
+				base.Add (method);
+				AddDocumentation (method);
 			}
 			
-			bool internalOnly    = true;
+			bool internalOnly = true;
 			bool hasConstructors = false;
 			foreach (MethodDefinition methodDefinition in typeDefinition.Methods.Where (m => m.IsConstructor)) {
 				hasConstructors = true;
