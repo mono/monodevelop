@@ -58,6 +58,7 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Resolver;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -200,42 +201,40 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation)
 		{
-			IEditableTextFile file = ctx.GetFile (fileName);
-			int pos = file.GetPositionFromLineColumn (caretLocation.Line + 1, 1);
+			var provider = ctx.GetFile (fileName) as ITextEditorDataProvider;
+			if (provider == null)
+				return caretLocation;
+			var file = provider.GetTextEditorData ();
 			
-			StringBuilder line = new StringBuilder ();
-			int lineNr = caretLocation.Line + 1, column = 1, maxColumn = 1, lastPos = pos;
+			var line = file.GetLine (caretLocation.Line);
+			var maxColumn = line.EditableLength;
+			var lastPos = line.Offset + line.EditableLength;
 			
-			while (lineNr == caretLocation.Line + 1) {
-				maxColumn = column;
-				lastPos = pos;
-				line.Append (file.GetCharAt (pos));
-				pos++;
-				file.GetLineColumnFromPosition (pos, out lineNr, out column);
-			}
-			string trimmedline = line.ToString ().Trim ();
-			string indent      = line.ToString ().Substring (0, line.Length - line.ToString ().TrimStart (' ', '\t').Length);
+			string trimmedline = file.GetLineText (caretLocation.Line, false).Trim ();
+			string indent      = file.GetLineIndent (line);
+			
 			if (trimmedline.EndsWith (";") || trimmedline.EndsWith ("{"))
 				return caretLocation;
+			
 			if (trimmedline.StartsWith ("if") || 
 			    trimmedline.StartsWith ("while") ||
 			    trimmedline.StartsWith ("switch") ||
 			    trimmedline.StartsWith ("for") ||
 			    trimmedline.StartsWith ("foreach")) {
 				if (!trimmedline.EndsWith (")")) {
-					file.InsertText (lastPos, " () {" + Environment.NewLine + indent + TextEditorProperties.IndentString + Environment.NewLine + indent + "}");
+					file.Insert (lastPos, " () {" + file.EolMarker + indent + TextEditorProperties.IndentString + file.EolMarker + indent + "}");
 					caretLocation.Column = maxColumn + 1;
 				} else {
-					file.InsertText (lastPos, " {" + Environment.NewLine + indent + TextEditorProperties.IndentString + Environment.NewLine + indent + "}");
-					caretLocation.Column = indent.Length + 1;
+					file.Insert (lastPos, " {" + file.EolMarker + indent + TextEditorProperties.IndentString + file.EolMarker + indent + "}");
+					caretLocation.Column = maxColumn + 1;
 					caretLocation.Line++;
 				}
 			} else if (trimmedline.StartsWith ("do")) {
-				file.InsertText (lastPos, " {" + Environment.NewLine + indent + TextEditorProperties.IndentString + Environment.NewLine + indent + "} while ();");
+				file.Insert (lastPos, " {" + file.EolMarker + indent + TextEditorProperties.IndentString + file.EolMarker + indent + "} while ();");
 				caretLocation.Column = indent.Length + 1;
 				caretLocation.Line++;
 			} else {
-				file.InsertText (lastPos, ";" + Environment.NewLine + indent);
+				file.Insert (lastPos, ";" + file.EolMarker + indent);
 				caretLocation.Column = indent.Length;
 				caretLocation.Line++;
 			}
