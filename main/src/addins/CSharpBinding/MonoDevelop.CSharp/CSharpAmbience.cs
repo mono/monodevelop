@@ -141,6 +141,28 @@ namespace MonoDevelop.CSharp
 			"equals"
 		});
 		
+		static HashSet<string> optionalKeywords = new HashSet<string> (new [] {
+			"where",
+			"get",
+			"set",
+			"add",
+			"value",
+			"remove",
+			"yield",
+			"select",
+			"group",
+			"by",
+			"into",
+			"from",
+			"ascending",
+			"descending",
+			"orderby",
+			"let",
+			"join",
+			"on",
+			"equals"
+		});
+		
 		static CSharpAmbience ()
 		{
 			netToCSharpTypes["System.Void"]    = "void";
@@ -260,7 +282,7 @@ namespace MonoDevelop.CSharp
 		
 		internal static string FilterName (string name)
 		{
-			if (keywords.Contains (name))
+			if (keywords.Contains (name) && !optionalKeywords.Contains (name))
 				return "@" + name;
 			return name;
 		}
