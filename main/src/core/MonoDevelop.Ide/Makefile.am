@@ -681,6 +681,16 @@ FILES =  \
 	MonoDevelop.Ide.WebBrowser/LocationChangingEventArgs.cs \
 	MonoDevelop.Ide.WebBrowser/StatusMessageChangedEventArgs.cs \
 	MonoDevelop.Ide.WebBrowser/TitleChangedEventArgs.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageBranding.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageLinksList.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageNewsFeed.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageOptions.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageRecentProjectsList.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageView.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageWidget.cs \
 	MonoDevelop.Ide/AddEntryEventHandler.cs \
 	MonoDevelop.Ide/CodeGenerationService.cs \
 	MonoDevelop.Ide/DesktopService.cs \
