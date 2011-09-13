@@ -6,7 +6,7 @@
         url         = "http://monodevelop.com"
         description = "Allows generating simple makefiles and Autotools based makefiles for projects"
         category    = "Project Import and Export"
-        version     = "2.7.20">
+        version     = "2.7.21">
         
 	<Runtime>
 		<Import assembly="MonoDevelop.Autotools.dll" />
@@ -19,10 +19,10 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.7.20"/>
-		<Addin id="Ide" version="2.7.20"/>
-		<Addin id="Deployment" version="2.7.20"/>
-		<Addin id="DesignerSupport" version="2.7.20"/>
+		<Addin id="Core" version="2.7.21"/>
+		<Addin id="Ide" version="2.7.21"/>
+		<Addin id="Deployment" version="2.7.21"/>
+		<Addin id="DesignerSupport" version="2.7.21"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Autotools/SimpleSetups">

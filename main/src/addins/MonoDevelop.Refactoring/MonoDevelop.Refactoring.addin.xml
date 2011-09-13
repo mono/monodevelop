@@ -7,19 +7,19 @@
         url = "http://www.monodevelop.com/"
         description = "Provides refactoring support to MonoDevelop"
         category = "IDE extensions"
-        version = "2.7.20">
+        version = "2.7.21">
 
 	<Runtime>
 		<Import assembly = "MonoDevelop.Refactoring.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.7.20"/>
-		<Addin id="Ide" version="2.7.20"/>
-		<Addin id="DesignerSupport" version="2.7.20"/>
-		<Addin id="Autotools" version="2.7.20"/>
-		<Addin id="Deployment" version="2.7.20"/>
-		<Addin id="SourceEditor2" version="2.7.20"/>
+		<Addin id="Core" version="2.7.21"/>
+		<Addin id="Ide" version="2.7.21"/>
+		<Addin id="DesignerSupport" version="2.7.21"/>
+		<Addin id="Autotools" version="2.7.21"/>
+		<Addin id="Deployment" version="2.7.21"/>
+		<Addin id="SourceEditor2" version="2.7.21"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->
