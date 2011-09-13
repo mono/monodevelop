@@ -181,6 +181,7 @@
     <Compile Include="Mono.TextEditor\HeightTree.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ColorSheme.cs" />
     <Compile Include="Mono.TextEditor\GtkWorkarounds.cs" />
+    <Compile Include="Mono.TextEditor\Annotatable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

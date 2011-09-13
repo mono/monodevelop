@@ -35,7 +35,7 @@ using System.ComponentModel;
 
 namespace Mono.TextEditor
 {
-	public class Document : IBuffer
+	public class Document : AbstractAnnotatable, IBuffer
 	{
 		IBuffer      buffer;
 		internal ILineSplitter splitter;

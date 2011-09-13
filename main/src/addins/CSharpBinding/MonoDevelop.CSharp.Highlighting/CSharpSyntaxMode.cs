@@ -385,9 +385,42 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				HashSet<string> symbols = new HashSet<string> ();
 				
+			
+				MonoDevelop.Projects.Project GetProject (Mono.TextEditor.Document doc)
+				{
+					// There is no reference between document & higher level infrastructure,
+					// therefore it's a bit tricky to find the right project.
+					
+					MonoDevelop.Projects.Project project = null;
+					var view = doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView> ();
+					if (view != null)
+						project = view.Project;
+					
+					if (project == null) {
+						var ideDocument = IdeApp.Workbench.GetDocument (doc.FileName);
+						if (ideDocument != null)
+							project = ideDocument.Project;
+					}
+					
+					if (project == null)
+						project = IdeApp.Workspace.GetProjectContainingFile (doc.FileName);
+					
+					return project;
+				}
+				
 				public ConditinalExpressionEvaluator (Mono.TextEditor.Document doc)
 				{
-					var project = IdeApp.ProjectOperations.CurrentSelectedProject;
+					var project = GetProject (doc);
+					
+					if (project == null) {
+						var ideDocument = IdeApp.Workbench.GetDocument (doc.FileName);
+						if (ideDocument != null)
+							project = ideDocument.Project;
+					}
+					
+					if (project == null)
+						project = IdeApp.Workspace.GetProjectContainingFile (doc.FileName);
+					
 					if (project != null) {
 						var configuration = project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 						if (configuration != null) {
@@ -463,7 +496,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 				int textOffset = i - StartOffset;
 				if (CurText.IsAt (textOffset, "#else")) {
-					if (!spanStack.Any (s => s is IfBlockSpan || s is ElseIfBlockSpan)) {
+					if (!spanStack.Any (s => s is IfBlockSpan || s is ElseIfBlockSpan)) {
 						base.ScanSpan (ref i);
 						return;
 					}
@@ -486,7 +519,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					var elseBlockSpan = new ElseBlockSpan (!previousResult);
 					if (ifBlock != null) {
 						elseBlockSpan.Disabled = ifBlock.Disabled;
-					} else if (elseIfBlock != null) {
+					} else if (elseIfBlock != null) {
 						elseBlockSpan.Disabled = elseIfBlock.Disabled;
 					}
 					FoundSpanBegin (elseBlockSpan, i, "#else".Length);
