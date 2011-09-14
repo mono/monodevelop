@@ -321,6 +321,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						if (objcType == "id")
 							objcType = "NSObject";
 						var par = new IBActionParameter (label, s[1], objcType, null);
+						if (info.TryResolveObjcToCli (objcType, out resolved))
+							par.CliType = resolved.CliName;
+						
 						label = s.Length == 3? s[2] : null;
 						action.Parameters.Add (par);
 					}

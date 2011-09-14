@@ -230,25 +230,20 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			foreach (var a in Actions) {
 				IBAction existing;
 				if (existingActions.TryGetValue (a.ObjCName, out existing)) {
+					a.IsDesigner = existing.IsDesigner;
 					a.CliName = existing.CliName;
-					if (!existing.IsDesigner)
-						continue;
-				} else {
-					a.CliName = a.ObjCName;
+					
+					for (int i = 0; i < a.Parameters.Count; i++)
+						a.Parameters[i].CliType = existing.Parameters[i].CliType;
 				}
-				a.IsDesigner = true;
 			}
 			
 			foreach (var o in Outlets) {
 				IBOutlet existing;
 				if (existingOutlets.TryGetValue (o.ObjCName, out existing)) {
+					o.IsDesigner = existing.IsDesigner;
 					o.CliName = existing.CliName;
-					if (!existing.IsDesigner)
-						continue;
-				} else {
-					o.CliName = o.ObjCName;
 				}
-				o.IsDesigner = true;
 			}
 		}
 		
