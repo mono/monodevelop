@@ -445,7 +445,7 @@ namespace Mono.CSharp
 					Location.Initialize (files);
 
 					// TODO: encoding from driver
-					SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
+					SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.UTF8);
 				
 					RootContext.ToplevelTypes = module;
 					
