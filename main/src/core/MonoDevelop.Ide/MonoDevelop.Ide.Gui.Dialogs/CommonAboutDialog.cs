@@ -56,11 +56,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	
 	internal class CommonAboutDialog : Dialog
 	{
-		public static List<IAboutInformation> AdditionalInformation = new List<IAboutInformation> ();
+		public static readonly List<IAboutInformation> AdditionalInformation = new List<IAboutInformation> ();
 		
 		static CommonAboutDialog ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/AboutBoxInformation", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/AboutInformation", delegate(object sender, ExtensionNodeEventArgs args) {
 				var codon = (IAboutInformation)args.ExtensionObject;
 				switch (args.Change) {
 				case ExtensionChange.Add:

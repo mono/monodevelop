@@ -150,8 +150,8 @@
 		<ExtensionNode name="Type" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/AboutBoxInformation" name = "About box information">
-		<ExtensionNode name="Class" />
+	<ExtensionPoint path = "/MonoDevelop/Ide/AboutInformation" name = "Adddional about information">
+		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.Gui.Dialogs.IAboutInformation" />
 	</ExtensionPoint>
 	
 	<!-- Extensions -->
