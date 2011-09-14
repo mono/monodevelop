@@ -314,6 +314,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					string[] split = def.Split (colonChar);
 					string name = split[0].Trim ();
 					var action = new IBAction (name, name);
+					action.IsDesigner = true;
+					
 					string label = null;
 					for (int i = 1; i < split.Length; i++) {
 						var s = split[i].Split (splitActionParamsChars, StringSplitOptions.RemoveEmptyEntries);

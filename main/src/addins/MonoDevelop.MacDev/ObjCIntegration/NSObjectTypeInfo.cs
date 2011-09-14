@@ -234,7 +234,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					a.CliName = existing.CliName;
 					
 					for (int i = 0; i < a.Parameters.Count; i++)
-						a.Parameters[i].CliType = existing.Parameters[i].CliType;
+						a.Parameters[i].CliName = existing.Parameters[i].CliName;
 				}
 			}
 			
