@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using System.Reflection;
 using System.Text;
 using System.IO;
+using MonoDevelop.Ide.Fonts;
 
 
 namespace MonoDevelop.Ide.Gui.Dialogs
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			string mdversion = BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel
 				? BuildVariables.PackageVersionLabel
-				: string.Format ("{0} ({1})",  BuildVariables.PackageVersionLabel, BuildVariables.PackageVersion);
+				: string.Format ("{0} ({1})", BuildVariables.PackageVersionLabel, BuildVariables.PackageVersion);
 			sb.Append ("MonoDevelop ");
 			sb.AppendLine (mdversion);
 			
@@ -69,6 +70,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			} else {
 				sb.Append ("\tMicrosoft .NET " + Environment.Version);
 			}
+			
 			if (IntPtr.Size == 8)
 				sb.Append (" (64-bit)");
 			sb.AppendLine ();
@@ -76,18 +78,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			sb.Append ("\tGTK " + GetGtkVersion ());
 			sb.AppendLine (" (GTK# " + typeof(VBox).Assembly.GetName ().Version + ")");
 				
-			if (Platform.IsMac) {
-				var mtVersion = GetMonotouchVersion ();
-				if (mtVersion != null)
-					sb.AppendLine ("MonoTouch: " + mtVersion);
+			foreach (var info in CommonAboutDialog.AdditionalInformation) {
+				sb.AppendLine (info.Description);
 			}
-				
-// TODO:Get mono droid version.
-//				var droidVersion = GetMonoDroidVersion ();
-//				if (droidVersion != null)
-//					sb.AppendLine ("\tMono for Android: " + droidVersion);
 			
-			var biFile = ((FilePath)typeof (VersionInformationTabPage).Assembly.Location).ParentDirectory.Combine ("buildinfo");
+			var biFile = ((FilePath)typeof(VersionInformationTabPage).Assembly.Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
 				sb.AppendLine ("Build information:");
 				foreach (var line in File.ReadAllLines (biFile)) {
@@ -98,7 +93,40 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 			
+			sb.AppendLine ("Loaded assemblies:");
+			
+			int nameLength = 0;
+			int versionLength = 0;
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
+				try {
+					if (assembly.IsDynamic)
+						continue;
+					var assemblyName = assembly.GetName ();
+					nameLength = Math.Max (nameLength, assemblyName.Name.Length);
+					versionLength = Math.Max (versionLength, assemblyName.Version.ToString ().Length);
+				} catch {
+				}
+			}
+			nameLength++;
+			versionLength++;
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
+				try {
+					if (assembly.IsDynamic)
+						continue;
+					var assemblyName = assembly.GetName ();
+					sb.AppendLine (ForceLength (assemblyName.Name, nameLength) + ForceLength (assemblyName.Version.ToString (), versionLength) + System.IO.Path.GetFullPath (assembly.Location));
+				} catch {
+				}
+			}
+			
 			return sb.ToString ();
+		}
+		
+		static string ForceLength (string str, int length)
+		{
+			if (str.Length < length)
+				return str + new string (' ', length - str.Length);
+			return str;
 		}
 		
 		static bool IsMono ()
@@ -141,106 +169,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return v1 +"." + v2 + "."+ v3;
 		}
 		
-		#region Monotouch
-		static string GetMonotouchVersion ()
-		{
-			var mtdir = GetMonotouchLocation ();
-			var mtouch = System.IO.Path.Combine (mtdir, "usr/bin/mtouch");
-			if (!File.Exists (mtouch))
-				return mtouch + "not found.";
-			var version = System.IO.Path.Combine (mtdir, "Version");
-			if (!File.Exists (version))
-				return "unknown version";
-			bool isEvaluation = !File.Exists (System.IO.Path.Combine (mtdir, "usr/bin/arm-darwin-mono"));
-			if (isEvaluation)
-				return File.ReadAllText (version).Trim () + " (Evaluation)";
-			return File.ReadAllText (version);
-		}
-
-		static string GetMonotouchLocation ()
-		{
-			const string DefaultLocation = "/Developer/MonoTouch";
-			const string MTOUCH_LOCATION_ENV_VAR = "MD_MTOUCH_SDK_ROOT";
-			var mtRoot = Environment.GetEnvironmentVariable (MTOUCH_LOCATION_ENV_VAR);
-			return mtRoot ?? GetConfiguredMonoTouchSdkRoot () ?? DefaultLocation;
-		}
-		
-		static string GetConfiguredMonoTouchSdkRoot ()
-		{
-			const string MTOUCH_SDK_KEY = "MonoDevelop.IPhone.MonoTouchSdkRoot";
-			return PropertyService.Get<string> (MTOUCH_SDK_KEY, null);
-		}
-		#endregion
-		
-		#region MonoDroid
-		static string GetMonoDroidVersion ()
-		{
-			string monoDroidBinDir;
-			string monoDroidFrameworkDir;
-			GetMonoDroidSdk (out monoDroidBinDir, out monoDroidFrameworkDir);
-			return monoDroidBinDir;
-		}
-		
-		static void GetMonoDroidSdk (out string monoDroidBinDir, out string monoDroidFrameworkDir)
-		{
-			monoDroidBinDir = monoDroidFrameworkDir = null;
-
-			if (Platform.IsWindows) {
-				// Find user's \Program Files
-				var programFilesX86 = GetProgramFilesX86 ();
-
-				// We keep our tools in:
-				// \Program Files\MSBuild\Novell
-				monoDroidBinDir = programFilesX86 + @"\MSBuild\Novell";
-
-				// This will probably never be used on Windows
-				var fxDir = programFilesX86 + @"\Reference Assemblies\Microsoft\Framework\MonoAndroid\v1.0";
-				
-				if (System.IO.File.Exists (fxDir + @"\mscorlib.dll"))
-					monoDroidFrameworkDir = fxDir;
-				else
-					monoDroidFrameworkDir = null;
-
-				return;
-			} 
-			
-			string monoAndroidPath = Environment.GetEnvironmentVariable ("MONO_ANDROID_PATH");
-			string libmandroid = System.IO.Path.Combine ("lib", "mandroid");
-			string debugRuntime = "Mono.Android.DebugRuntime-debug.apk";
-
-			foreach (var loc in new[]{
-					new { D = monoAndroidPath,              L = libmandroid,  E = debugRuntime },
-					new { D = "/Developer/MonoAndroid/usr", L = libmandroid,  E = debugRuntime },
-					new { D = "/opt/mono-android",          L = libmandroid,  E = debugRuntime }})
-				if (CheckMonoDroidPath (loc.D, loc.L, loc.E, out monoDroidBinDir, out monoDroidFrameworkDir))
-					return;
-		}
-		
-		static bool CheckMonoDroidPath (string monoDroidPath, string relBinPath, string mandroid, out string monoDroidBinDir, out string monoDroidFrameworkDir)
-		{
-			monoDroidBinDir = monoDroidFrameworkDir = null;
-			
-			if (string.IsNullOrEmpty (monoDroidPath))
-				return false;
-			
-			var bin = System.IO.Path.Combine (monoDroidPath, relBinPath);
-			if (!System.IO.File.Exists (System.IO.Path.Combine (bin, mandroid)))
-				return false;
-			
-			monoDroidBinDir = bin;
-			monoDroidFrameworkDir = System.IO.Path.Combine (monoDroidPath, "lib", "mono", "2.1");
-			return true;
-		}
-		
-		static string GetProgramFilesX86 ()
-		{
-			if (IntPtr.Size == 8 || !string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("PROCESSOR_ARCHITEW6432")))
-				return Environment.GetEnvironmentVariable ("PROGRAMFILES(X86)");
-			else
-				return Environment.GetEnvironmentVariable ("PROGRAMFILES");
-		}
-		#endregion
-		
 		public VersionInformationTabPage ()
 		{
 			var buf = new TextBuffer (null);
@@ -258,6 +186,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			};
 			
+			sw.Child.ModifyFont (Pango.FontDescription.FromString (FontService.GetFontDescription ("Editor").Family + " 12"));
 			PackStart (sw, true, true, 0);
 		}
 	}

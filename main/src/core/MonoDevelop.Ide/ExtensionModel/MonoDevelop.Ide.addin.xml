@@ -149,8 +149,12 @@
 	<ExtensionPoint path = "/MonoDevelop/Ide/Updater/UpdateHandlers" name = "Update handlers">
 		<ExtensionNode name="Type" />
 	</ExtensionPoint>
-
-		<!-- Extensions -->
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/AboutBoxInformation" name = "About box information">
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+	
+	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"

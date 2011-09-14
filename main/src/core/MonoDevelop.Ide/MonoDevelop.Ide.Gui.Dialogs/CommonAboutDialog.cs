@@ -42,11 +42,37 @@ using Gtk;
 using GLib;
 using Pango;
 using System.IO;
+using Mono.Addins;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
+	public interface IAboutInformation
+	{
+		string Description {
+			get;
+		}
+	}
+	
 	internal class CommonAboutDialog : Dialog
 	{
+		public static List<IAboutInformation> AdditionalInformation = new List<IAboutInformation> ();
+		
+		static CommonAboutDialog ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/AboutBoxInformation", delegate(object sender, ExtensionNodeEventArgs args) {
+				var codon = (IAboutInformation)args.ExtensionObject;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					AdditionalInformation.Add (codon);
+					break;
+				case ExtensionChange.Remove:
+					AdditionalInformation.Remove (codon);
+					break;
+				}
+			}); 
+		}
+		
 		public CommonAboutDialog ()
 		{
 			Title = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationName);
