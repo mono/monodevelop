@@ -90,7 +90,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				return;
 			}
 			
-			var parsed = context.InfoService.ParseHeader (context.Project, context.ProjectInfo, hFile);
+			var parsed = NSObjectInfoService.ParseHeader (context.Project, context.ProjectInfo, hFile);
 			
 			if (parsed == null) {
 				context.ReportError ("Error parsing objc type {0}", Type.ObjCName);

@@ -239,7 +239,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 		}
 		
-		public NSObjectTypeInfo ParseHeader (DotNetProject project, NSObjectProjectInfo info, string headerFile)
+		public static NSObjectTypeInfo ParseHeader (DotNetProject project, NSObjectProjectInfo info, string headerFile)
 		{
 			string text = File.ReadAllText (headerFile);
 			string userType = null, userBaseType = null;
