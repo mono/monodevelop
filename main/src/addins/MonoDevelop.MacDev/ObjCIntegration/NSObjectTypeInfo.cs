@@ -76,23 +76,26 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public HashSet<string> UserTypeReferences { get; private set; }
 		
-		public void GenerateObjcType (string directory)
+		public void GenerateObjcType (string directory, string[] frameworks)
 		{
 			if (IsModel)
 				throw new ArgumentException ("Cannot generate definition for model");
 			
-			string hFilePath = System.IO.Path.Combine (directory, ObjCName + ".h");
-			string mFilePath = System.IO.Path.Combine (directory, ObjCName + ".m");
+			string hFilePath = Path.Combine (directory, ObjCName + ".h");
+			string mFilePath = Path.Combine (directory, ObjCName + ".m");
 			
-			using (var sw = System.IO.File.CreateText (hFilePath)) {
+			using (var sw = File.CreateText (hFilePath)) {
 				sw.WriteLine (modificationWarning);
 				sw.WriteLine ();
 				
-				//FIXME: fix these imports for MonoMac
-				sw.WriteLine ("#import <UIKit/UIKit.h>");
-				foreach (var reference in UserTypeReferences) {
+				foreach (var framework in frameworks)
+					sw.WriteLine ("#import <{0}/{0}.h>", framework);
+				
+				sw.WriteLine ();
+				
+				foreach (var reference in UserTypeReferences)
 					sw.WriteLine ("#import \"{0}.h\"", reference);
-				}
+				
 				sw.WriteLine ();
 				
 				if (BaseObjCType == null && BaseCliType != null && !BaseIsModel) {
@@ -131,7 +134,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				sw.WriteLine ("@end");
 			}
 			
-			using (var sw = System.IO.File.CreateText (mFilePath)) {
+			using (var sw = File.CreateText (mFilePath)) {
 				sw.WriteLine (modificationWarning);
 				sw.WriteLine ();
 				

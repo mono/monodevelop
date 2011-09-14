@@ -4,7 +4,7 @@
 // Author:
 //       Michael Hutchinson <mhutch@xamarin.com>
 // 
-// Copyright (c) Xamarin, Inc. (http://xamarin.com)
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,18 +39,24 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 {
 	class XcodeSyncBackContext : XcodeSyncContext
 	{
-		NSObjectInfoService infoService;
-		DotNetProject project;
-		NSObjectProjectInfo pinfo;
 		List<XcodeSyncObjcBackJob> typeSyncJobs = new List<XcodeSyncObjcBackJob> ();
 		List<XcodeSyncFileBackJob> fileSyncJobs = new List<XcodeSyncFileBackJob> ();
+		NSObjectProjectInfo pinfo;
 		
 		public XcodeSyncBackContext (FilePath projectDir, Dictionary<string,DateTime> syncTimes,
 			NSObjectInfoService infoService, DotNetProject project)
 			: base (projectDir, syncTimes)
 		{
-			this.project = project;
-			this.infoService = infoService;
+			InfoService = infoService;
+			Project = project;
+		}
+		
+		public NSObjectInfoService InfoService {
+			get; private set;
+		}
+		
+		public DotNetProject Project {
+			get; private set;
 		}
 
 		public List<XcodeSyncObjcBackJob> TypeSyncJobs {
@@ -63,7 +69,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public NSObjectProjectInfo ProjectInfo {
 			get {
-				return pinfo ?? (pinfo = infoService.GetProjectInfo (project));
+				return pinfo ?? (pinfo = InfoService.GetProjectInfo (Project));
 			}
 		}
 		
@@ -117,7 +123,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				string suffix = (i > 0? i.ToString () : "");
 				string name = f.FileNameWithoutExtension + suffix + ".designer" + f.Extension;
 				designerFile = f.ParentDirectory.Combine (name);
-			} while (project.Files.GetFileWithVirtualPath (designerFile.ToRelative (project.BaseDirectory)) != null);
+			} while (Project.Files.GetFileWithVirtualPath (designerFile.ToRelative (Project.BaseDirectory)) != null);
 			var dependsOn = ((FilePath)job.Type.DefinedIn[0]).FileName;
 			return new ProjectFile (designerFile, BuildAction.Compile) { DependsOn = dependsOn };
 		}

@@ -41,8 +41,6 @@ using MonoMac.Foundation;
 using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.MacDev.PlistEditor;
 
-
-
 namespace MonoDevelop.MacDev.XcodeSyncing
 {
 	class XcodeMonitor

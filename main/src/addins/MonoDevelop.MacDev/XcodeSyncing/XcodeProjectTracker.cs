@@ -74,6 +74,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return fileName.HasExtension (".xib");
 		}
 		
+		protected virtual string[] GetFrameworks ()
+		{
+			return new string[] { "Foundation" };
+		}
+		
 		void EnableSyncing ()
 		{
 			if (syncing)
@@ -328,9 +333,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			foreach (var file in dnp.Files.Where (f => f.BuildAction == BuildAction.Resource))
 				syncList.Add (new XcodeSyncedResource (file));
 			
-			foreach (var type in userTypes) {
-				syncList.Add (new XcodeSyncedType (type));
-			}
+			foreach (var type in userTypes)
+				syncList.Add (new XcodeSyncedType (type, GetFrameworks ()));
+			
 			return syncList;
 		}
 		

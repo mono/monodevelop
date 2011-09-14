@@ -5,6 +5,7 @@
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -39,6 +41,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 {
 	public class NSObjectInfoService
 	{
+		//static readonly Regex frameworkRegex = new Regex ("#import\\s+<([A-Z][A-Za-z]*)/([A-Z][A-Za-z]*)\\.h>", RegexOptions.Compiled);
+		static readonly Regex typeInfoRegex = new Regex ("@(interface|protocol)\\s+(\\w*)\\s*:\\s*(\\w*)", RegexOptions.Compiled);
 		static readonly Regex ibRegex = new Regex ("(- \\(IBAction\\)|IBOutlet)([^;]*);", RegexOptions.Compiled);
 		static readonly char[] colonChar = { ':' };
 		static readonly char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
@@ -235,11 +239,54 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 		}
 		
-		public static NSObjectTypeInfo ParseHeader (string headerFile)
+		public NSObjectTypeInfo ParseHeader (DotNetProject project, NSObjectProjectInfo info, string headerFile)
 		{
-			var text = System.IO.File.ReadAllText (headerFile);
-			var matches = ibRegex.Matches (text);
-			var type = new NSObjectTypeInfo (System.IO.Path.GetFileNameWithoutExtension (headerFile), null, null, null, false);
+			string text = File.ReadAllText (headerFile);
+			string userType = null, userBaseType = null;
+			NSObjectTypeInfo resolved, type;
+			MatchCollection matches;
+			string cliName;
+			bool isModel;
+			
+			// First, grep for classes
+			matches = typeInfoRegex.Matches (text);
+			foreach (Match match in matches) {
+				if (match.Groups[1].Value != "interface")
+					continue;
+				
+				if (userType != null) {
+					// UNSUPPORTED: more than 1 user-type defined in this header
+					return null;
+				}
+				
+				userType = match.Groups[2].Value;
+				userBaseType = match.Groups[3].Value;
+			}
+			
+			if (userType == null)
+				return null;
+			
+			// Try resolving the type...
+			if (info.TryResolveObjcToCli (userType, out resolved)) {
+				// Ooooh, we got lucky...
+				cliName = resolved.CliName;
+				isModel = resolved.IsModel;
+			} else {
+				// Make an educated guess...
+				cliName = project.DefaultNamespace + "." + userType;
+				isModel = false;
+			}
+			
+			type = new NSObjectTypeInfo (userType, cliName, userBaseType, null, isModel);
+			
+			// Try resolving the base type...
+			if (info.TryResolveObjcToCli (userBaseType, out resolved)) {
+				type.BaseCliType = resolved.CliName;
+				type.BaseIsModel = resolved.IsModel;
+			}
+			
+			// Now grep for IBActions and IBOutlets
+			matches = ibRegex.Matches (text);
 			foreach (Match match in matches) {
 				var kind = match.Groups[1].Value;
 				var def = match.Groups[2].Value;
@@ -256,10 +303,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							string.Format (GettextCatalog.GetString ("The definition '{0}' can't be parsed."), def));
 						objcType = "NSObject";
 					}
-					type.Outlets.Add (new IBOutlet (objcName, null, objcType, null));
+					
+					IBOutlet outlet = new IBOutlet (objcName, objcName, objcType, null);
+					if (info.TryResolveObjcToCli (objcType, out resolved))
+						outlet.CliType = resolved.CliName;
+					outlet.IsDesigner = true;
+					
+					type.Outlets.Add (outlet);
 				} else {
 					string[] split = def.Split (colonChar);
-					var action = new IBAction (split[0].Trim (), null);
+					string name = split[0].Trim ();
+					var action = new IBAction (name, name);
 					string label = null;
 					for (int i = 1; i < split.Length; i++) {
 						var s = split[i].Split (splitActionParamsChars, StringSplitOptions.RemoveEmptyEntries);

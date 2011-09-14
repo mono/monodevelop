@@ -115,7 +115,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			cliTypes[type.CliName] = type;
 		}
 		
-		bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
+		public bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
 		{
 			if (cliTypes.TryGetValue (cliType, out resolved))
 				return true;
@@ -128,7 +128,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return false;
 		}
 		
-		bool TryResolveObjcToCli (string objcType, out NSObjectTypeInfo resolved)
+		public bool TryResolveObjcToCli (string objcType, out NSObjectTypeInfo resolved)
 		{
 			if (objcTypes.TryGetValue (objcType, out resolved))
 				return true;
