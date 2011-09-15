@@ -2488,12 +2488,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					var location = LocationsBag.GetLocations (par);
 
 					if (location == null) {
-						result.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
+						if (par.Expr != null)
+							result.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
 					} else {
 						var namedExpression = new NamedExpression ();
 						namedExpression.AddChild (Identifier.Create (par.Name, Convert (par.Location)), AnonymousTypeCreateExpression.Roles.Identifier);
 						namedExpression.AddChild (new CSharpTokenNode (Convert (location[0]), 1), AnonymousTypeCreateExpression.Roles.Assign);
-						namedExpression.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
+						if (par.Expr != null)
+							namedExpression.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
 						result.AddChild (namedExpression, AnonymousTypeCreateExpression.Roles.Expression);
 					}
 				}
