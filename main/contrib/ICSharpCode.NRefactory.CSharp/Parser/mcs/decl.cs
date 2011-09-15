@@ -49,6 +49,12 @@ namespace Mono.CSharp {
 		
 		public bool IsDoubleColon { get { return is_double_colon; } }
 
+#if FULL_AST
+		public Location DotLocation {
+			get;
+			set;
+		}
+#endif
 		private MemberName (MemberName left, string name, bool is_double_colon,
 				    Location loc)
 		{
@@ -138,7 +144,7 @@ namespace Mono.CSharp {
 			return name;
 		}
 
-		public ATypeNameExpression GetTypeExpression (LocationsBag locations = null)
+		public ATypeNameExpression GetTypeExpression ()
 		{
 			if (Left == null) {
 				if (TypeArguments != null)
@@ -155,8 +161,9 @@ namespace Mono.CSharp {
 
 			Expression lexpr = Left.GetTypeExpression ();
 			var result = new MemberAccess (lexpr, Name, TypeArguments, Location);
-			if (locations != null)
-				locations.AddLocation (result, locations.GetLocations (this));
+#if FULL_AST
+			result.DotLocation = DotLocation;
+#endif
 			return result;
 		}
 

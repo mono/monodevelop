@@ -1866,7 +1866,8 @@ namespace Mono.CSharp
 			var cmd = GetPreprocessorDirective (id_builder, TokenizePreprocessorIdentifier (out c, out endLine, out endCol));
 			
 			if ((cmd & PreprocessorDirective.CustomArgumentsParsing) != 0) {
-				sbag.AddPreProcessorDirective (startLine, startCol, line, col, cmd, null);
+				if (position_stack.Count == 0)
+					sbag.AddPreProcessorDirective (startLine, startCol, line, col, cmd, null);
 				return cmd;
 			}
 			
@@ -1932,7 +1933,8 @@ namespace Mono.CSharp
 				// Eat any trailing whitespaces
 				arg = arg.Trim (simple_whitespaces);
 			}
-			sbag.AddPreProcessorDirective (startLine, startCol, endLine, endCol, cmd, arg);
+			if (position_stack.Count == 0)
+				sbag.AddPreProcessorDirective (startLine, startCol, endLine, endCol, cmd, arg);
 
 			return cmd;
 		}
@@ -2229,14 +2231,16 @@ namespace Mono.CSharp
 		{
 			if (peek_char () != '/')
 				Report.Warning (1696, 1, Location, "Single-line comment or end-of-line expected");
-			sbag.StartComment (SpecialsBag.CommentType.Single, startsLine, line, col - 1);
+			if (position_stack.Count == 0)
+				sbag.StartComment (SpecialsBag.CommentType.Single, startsLine, line, col - 1);
 			// Read everything till the end of the line or file
 			int c;
 			do {
 				c = get_char ();
-				sbag.PushCommentChar (c);
+				if (position_stack.Count == 0)
+					sbag.PushCommentChar (c);
 				var pc = peek_char ();
-				if (pc == '\n' || pc == -1) 
+				if (pc == '\n' || pc == -1 && position_stack.Count == 0) 
 					sbag.EndComment (line, col + 1);
 			} while (c != -1 && c != '\n');
 		}
@@ -2574,6 +2578,7 @@ namespace Mono.CSharp
 					ifstack.Push (flags | TAKING);
 					return true;
 				}
+				sbag.SkipIf ();
 				ifstack.Push (flags);
 				return false;
 
@@ -3182,17 +3187,16 @@ namespace Mono.CSharp
 						get_char ();
 						return Token.OP_DIV_ASSIGN;
 					}
-
 					// Handle double-slash comments.
 					if (d == '/') {
 						get_char ();
 						if (doc_processing) {
 							if (peek_char () == '/') {
-								sbag.StartComment (SpecialsBag.CommentType.Documentation, startsLine, line, col - 1);
 								get_char ();
 								// Don't allow ////.
 								if ((d = peek_char ()) != '/') {
-									sbag.PushCommentChar (d);
+									if (position_stack.Count == 0)
+										sbag.PushCommentChar (d);
 									if (doc_state == XmlCommentState.Allowed)
 										handle_one_line_xml_comment ();
 									else if (doc_state == XmlCommentState.NotAllowed)
@@ -3204,39 +3208,41 @@ namespace Mono.CSharp
 							}
 						} else {
 							bool isDoc = peek_char () == '/';
-							sbag.StartComment (isDoc ? SpecialsBag.CommentType.Documentation : SpecialsBag.CommentType.Single, startsLine, line, col - 1);
+							if (position_stack.Count == 0)
+								sbag.StartComment (isDoc ? SpecialsBag.CommentType.Documentation : SpecialsBag.CommentType.Single, startsLine, line, col - 1);
 							if (isDoc)
 								get_char ();
 						}
 						
 						d = peek_char ();
-						if (d == '\n' || d == '\r')
-							sbag.EndComment (line, col + 1);
 						
 						while ((d = get_char ()) != -1 && (d != '\n') && d != '\r') {
-							sbag.PushCommentChar (d);
-							var pc = peek_char ();
-							if (pc == -1 || pc == '\n' || pc == '\r') {
-								sbag.EndComment (line, col + 1);
-							}
+							if (position_stack.Count == 0)
+								sbag.PushCommentChar (d);
 						}
+						if (position_stack.Count == 0)
+							sbag.EndComment (line, col + 1);
 						
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
 						comments_seen = false;
 						continue;
 					} else if (d == '*'){
-						sbag.StartComment (SpecialsBag.CommentType.Multi, startsLine, line, col);
+						if (position_stack.Count == 0)
+							sbag.StartComment (SpecialsBag.CommentType.Multi, startsLine, line, col);
 						get_char ();
 						bool docAppend = false;
 						if (doc_processing && peek_char () == '*') {
 							int ch = get_char ();
-							sbag.PushCommentChar (ch);
+							if (position_stack.Count == 0)
+								sbag.PushCommentChar (ch);
 							// But when it is /**/, just do nothing.
 							if (peek_char () == '/') {
 								ch = get_char ();
-								sbag.PushCommentChar (ch);
-								sbag.EndComment (line, col + 1);
+								if (position_stack.Count == 0) {
+									sbag.PushCommentChar (ch);
+									sbag.EndComment (line, col + 1);
+								}
 								continue;
 							}
 							if (doc_state == XmlCommentState.Allowed)
@@ -3253,11 +3259,14 @@ namespace Mono.CSharp
 						}
 
 						while ((d = get_char ()) != -1){
-							sbag.PushCommentChar (d);
+							if (position_stack.Count == 0)
+								sbag.PushCommentChar (d);
 							if (d == '*' && peek_char () == '/'){
-								sbag.PushCommentChar ('/');
+								if (position_stack.Count == 0)
+									sbag.PushCommentChar ('/');
 								get_char ();
-								sbag.EndComment (line, col + 1);
+								if (position_stack.Count == 0)
+									sbag.EndComment (line, col + 1);
 								comments_seen = true;
 								break;
 							}
@@ -3423,16 +3432,20 @@ namespace Mono.CSharp
 
 		int TokenizeBackslash ()
 		{
+#if FULL_AST
+			int read_start = reader.Position;
+#endif
+			Location start_location = Location;
 			int c = get_char ();
 			tokens_seen = true;
 			if (c == '\'') {
-				val = new CharLiteral (context.BuiltinTypes, (char) c, Location);
-				Report.Error (1011, Location, "Empty character literal");
+				val = new CharLiteral (context.BuiltinTypes, (char) c, start_location);
+				Report.Error (1011, start_location, "Empty character literal");
 				return Token.LITERAL;
 			}
 
-			if (c == '\n') {
-				Report.Error (1010, Location, "Newline in constant");
+			if (c == '\r') {
+				Report.Error (1010, start_location, "Newline in constant");
 				return Token.ERROR;
 			}
 
@@ -3443,11 +3456,12 @@ namespace Mono.CSharp
 			if (d != 0)
 				throw new NotImplementedException ();
 
-			val = new CharLiteral (context.BuiltinTypes, (char) c, Location);
+			ILiteralConstant res = new CharLiteral (context.BuiltinTypes, (char) c, start_location);
+			val = res;
 			c = get_char ();
 
 			if (c != '\'') {
-				Report.Error (1012, Location, "Too many characters in character literal");
+				Report.Error (1012, start_location, "Too many characters in character literal");
 
 				// Try to recover, read until newline or next "'"
 				while ((c = get_char ()) != -1) {
@@ -3455,6 +3469,10 @@ namespace Mono.CSharp
 						break;
 				}
 			}
+
+#if FULL_AST
+			res.ParsedValue = reader.ReadChars (read_start - 1, reader.Position);
+#endif
 
 			return Token.LITERAL;
 		}
@@ -3513,11 +3531,13 @@ namespace Mono.CSharp
 		{
 			int c;
 			while ((c = peek_char ()) == ' ') {
-				sbag.PushCommentChar (c);
+				if (position_stack.Count == 0)
+					sbag.PushCommentChar (c);
 				get_char (); // skip heading whitespaces.
 			}
 			while ((c = peek_char ()) != -1 && c != '\n' && c != '\r') {
-				sbag.PushCommentChar (c);
+				if (position_stack.Count == 0)
+					sbag.PushCommentChar (c);
 				xml_comment_buffer.Append ((char) get_char ());
 			}
 			if (c == '\r' || c == '\n')

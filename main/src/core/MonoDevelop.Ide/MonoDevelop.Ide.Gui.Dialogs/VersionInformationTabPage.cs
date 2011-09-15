@@ -2,8 +2,10 @@
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)
+//   Mike Krüger <mkrueger@xamarin.com>
 //
 // Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,67 +31,57 @@ using System;
 using Gtk;
 using MonoDevelop.Core;
 using System.Reflection;
+using System.Text;
+
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class VersionInformationTabPage: VBox
 	{
-        private ListStore data = null;
-        private CellRenderer cellRenderer = new CellRendererText ();
-
-        public VersionInformationTabPage ()
-        {
-            TreeView treeView = new TreeView ();
-
-            TreeViewColumn treeViewColumnTitle = new TreeViewColumn (GettextCatalog.GetString ("Title"), cellRenderer, "text", 0);
-            treeViewColumnTitle.FixedWidth = 200;
-            treeViewColumnTitle.Sizing = TreeViewColumnSizing.Fixed;
-            treeViewColumnTitle.Resizable = true;
-            treeView.AppendColumn (treeViewColumnTitle);
-
-            TreeViewColumn treeViewColumnVersion = new TreeViewColumn (GettextCatalog.GetString ("Version"), cellRenderer, "text", 1);
-            treeView.AppendColumn (treeViewColumnVersion);
-
-            TreeViewColumn treeViewColumnPath = new TreeViewColumn (GettextCatalog.GetString ("Path"), cellRenderer, "text", 2);
-            treeView.AppendColumn (treeViewColumnPath);
-
-            treeView.RulesHint = true;
-
-            data = new ListStore (typeof (string), typeof (string), typeof (string));
-            treeView.Model = data;
-
-            ScrolledWindow scrolledWindow = new ScrolledWindow ();
-            scrolledWindow.Add (treeView);
-            scrolledWindow.ShadowType = ShadowType.In;
-
-            BorderWidth = 6;
-
-            PackStart (scrolledWindow, true, true, 0);
-
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
-                try {
-                    AssemblyName assemblyName = assembly.GetName ();
-                    data.AppendValues (assemblyName.Name, assemblyName.Version.ToString (), System.IO.Path.GetFullPath (assembly.Location));
-                }
-                catch { }
-            }
-
-            data.SetSortColumnId (0, SortType.Ascending);
-        }
-
-        protected override void OnDestroyed ()
-        {
-            if (cellRenderer != null) {
-                cellRenderer.Destroy ();
-                cellRenderer = null;
-            }
-
-            if (data != null) {
-                data.Dispose ();
-                data = null;
-            }
-
-            base.OnDestroyed ();
-        }
+		string VersionInformation {
+			get {
+				var sb = new StringBuilder ();
+				sb.Append ("Operating System: ");
+				if (Platform.IsMac) {
+					sb.AppendLine ("Mac OS X");
+				} else if (Platform.IsWindows) {
+					sb.AppendLine ("Windows");
+				} else {
+					sb.AppendLine ("Linux");
+				}
+				
+				string version = BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel ? BuildVariables.PackageVersionLabel : string.Format ("{0} ({1})", 
+					BuildVariables.PackageVersionLabel, 
+					BuildVariables.PackageVersion);
+				sb.Append ("MonoDevelop: ");
+				sb.AppendLine (version);
+				
+				sb.Append ("Gtk#:");
+				sb.AppendLine (typeof(VBox).Assembly.GetName ().Version.ToString ());
+				
+				
+				return sb.ToString ();
+			}
+		}
+		
+		public VersionInformationTabPage ()
+		{
+			var buf = new TextBuffer (null);
+			buf.Text = VersionInformation;
+			
+			var sw = new ScrolledWindow () {
+				BorderWidth = 6,
+				ShadowType = ShadowType.EtchedIn,
+				Child = new TextView (buf) {
+					Editable = false,
+					LeftMargin = 4,
+					RightMargin = 4,
+					PixelsAboveLines = 4,
+					PixelsBelowLines = 4
+				}
+			};
+			
+			PackStart (sw, true, true, 0);
+		}
 	}
 }

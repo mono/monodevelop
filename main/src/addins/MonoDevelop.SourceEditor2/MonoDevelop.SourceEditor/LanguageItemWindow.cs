@@ -48,7 +48,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			ITypeResolveContext dom = ed.ITypeResolveContext;
 			Ambience ambience = AmbienceService.GetAmbience (ed.Document.MimeType);
-			
 			string tooltip = null;
 			if (result != null && ed.TextEditorResolverProvider != null) {
 				tooltip = ed.TextEditorResolverProvider.CreateTooltip (dom, unit, result, errorInformations, ambience, modifierState);

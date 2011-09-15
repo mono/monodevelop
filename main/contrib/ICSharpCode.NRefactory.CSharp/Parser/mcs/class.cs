@@ -319,6 +319,12 @@ namespace Mono.CSharp
 			}
 		}
 
+		public TypeSpec[] Interfaces {
+			get {
+				return iface_exprs;
+			}
+		}
+
 		#endregion
 
 		public override void Accept (StructuralVisitor visitor)

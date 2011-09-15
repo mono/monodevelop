@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 			var loc = data.OffsetToLocation (offset);
 			
-			var unit       = parsedDocument.Annotation<CompilationUnit> ();
+			var unit = parsedDocument.Annotation<CompilationUnit> ();
 			var parsedFile = parsedDocument.Annotation<CSharpParsedFile> ();
 			
 			if (unit == null || parsedFile == null) {
