@@ -232,9 +232,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				if (existingActions.TryGetValue (a.ObjCName, out existing)) {
 					a.IsDesigner = existing.IsDesigner;
 					a.CliName = existing.CliName;
-					
-					for (int i = 0; i < a.Parameters.Count; i++)
-						a.Parameters[i].CliName = existing.Parameters[i].CliName;
 				}
 			}
 			
