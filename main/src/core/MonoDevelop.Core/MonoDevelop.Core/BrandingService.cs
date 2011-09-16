@@ -52,7 +52,7 @@ namespace MonoDevelop.Core
 				if (!Directory.Exists (brandingDir)) {
 					brandingDir = null;
 				} else {
-					var langCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+					var langCode = System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
 					localizedBrandingDir = brandingDir.Combine (langCode);
 					if (!Directory.Exists (localizedBrandingDir)) {
 						localizedBrandingDir = null;
@@ -123,7 +123,7 @@ namespace MonoDevelop.Core
 			int idx = 0;
 			XElement el = doc.Root;
 			do {
-				el.Element (keyPath[idx++]);
+				el = el.Element (keyPath[idx++]);
 			} while (idx < keyPath.Length && el != null);
 			return el;
 		}
