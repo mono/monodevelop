@@ -216,16 +216,20 @@ namespace MonoDevelop.Gettext
 				originalNewLine = charsetFinder.NewLine;
 				finished = true;
 			} catch (Exception e) {
+				string msg = "Error during getting charset of file '" + poFile + "'.";
+				LoggingService.LogFatalError (msg, e);
 				if (monitor != null)
-					monitor.ReportError ("Error during getting charset of file '" + poFile + "'.", e);
+					monitor.ReportError (msg, e);
 			}
 			if (!finished)
 				return false;
 
 			LoadParser parser = new LoadParser (this, poFile, Catalog.GetEncoding (this.Charset));
-			if (!parser.Parse()) {
-				// TODO: use loging - GUI!
-				Console.WriteLine ("Error during parsing '{0}' file, file is probably corrupted.", poFile);
+			if (!parser.Parse ()) {
+				string msg = string.Format ("Error during parsing '{0}' file, file is probably corrupted.", poFile);
+				LoggingService.LogError (msg);
+				if (monitor != null)
+					monitor.ReportError (msg, null);
 				return false;
 			}
 
