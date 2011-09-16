@@ -137,15 +137,15 @@ namespace MonoDevelop.Projects
 				result = ((AggregatedResolveResult)result).PrimaryResult;
 			
 			
-			if (result is NamespaceResolveResult)
-			{
+			if (result is NamespaceResolveResult) {
 				string namespc = ((NamespaceResolveResult)result).Namespace;
 				//verify that the namespace exists in the help tree
 				//FIXME: GetHelpXml doesn't seem to work for namespaces, so forced to do full render
 				Monodoc.Node dummy;
 				if (!String.IsNullOrEmpty (namespc) && HelpTree != null && HelpTree.RenderUrl ("N:" + namespc, out dummy) != null)
 					return "N:" + namespc;
-				else return null;
+				else
+					return null;
 			}
 			
 			IMember member = null;
@@ -153,10 +153,11 @@ namespace MonoDevelop.Projects
 				member = ((MethodResolveResult)result).MostLikelyMethod;
 			else if (result is MemberResolveResult)
 				member = ((MemberResolveResult)result).ResolvedMember;
-			
-			if (member != null && member.GetMonodocDocumentation () != null)
-				return member.HelpUrl;
-			
+			try {
+				if (member != null && member.GetMonodocDocumentation () != null)
+					return member.HelpUrl;
+			} catch (Exception) {
+			}
 			IReturnType type = result.ResolvedType;
 			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
 				string t = "T:" + type.FullName;
