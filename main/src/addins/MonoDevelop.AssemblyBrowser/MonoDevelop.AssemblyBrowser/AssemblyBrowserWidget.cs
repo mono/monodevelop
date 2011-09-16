@@ -907,16 +907,19 @@ namespace MonoDevelop.AssemblyBrowser
 				IMember member = nav.DataItem as IMember;
 				string documentation = GettextCatalog.GetString ("No documentation available.");
 				if (member != null) {
-					XmlNode node = member.GetMonodocDocumentation ();
-					if (node != null) {
-						documentation = TransformDocumentation (node) ?? documentation;
-						/*
-						StringWriter writer = new StringWriter ();
-						XmlTextWriter w = new XmlTextWriter (writer);
-						node.WriteTo (w);
-						System.Console.WriteLine ("---------------------------");
-						System.Console.WriteLine (writer);*/
-						
+					try {
+						XmlNode node = member.GetMonodocDocumentation ();
+						if (node != null) {
+							documentation = TransformDocumentation (node) ?? documentation;
+							/*
+							StringWriter writer = new StringWriter ();
+							XmlTextWriter w = new XmlTextWriter (writer);
+							node.WriteTo (w);
+							System.Console.WriteLine ("---------------------------");
+							System.Console.WriteLine (writer);*/
+							
+						}
+					} catch (Exception) {
 					}
 				}
 				this.documentationLabel.Markup = documentation;
