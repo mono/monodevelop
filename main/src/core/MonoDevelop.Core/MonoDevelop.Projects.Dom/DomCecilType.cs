@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects.Dom
 	public class DomCecilType : MonoDevelop.Projects.Dom.DomType
 	{
 		TypeDefinition typeDefinition;
+		internal bool LoadMonotouchDocumentation { get; private set; }
 		
 		static ClassType GetClassType (TypeDefinition typeDefinition)
 		{
@@ -94,8 +95,9 @@ namespace MonoDevelop.Projects.Dom
 			this.Namespace = typeReference.Namespace;
 		}
 		
-		public DomCecilType (TypeDefinition typeDefinition, bool loadInternal)
+		public DomCecilType (TypeDefinition typeDefinition, bool loadInternal, bool loadMonotouchDocumentation = true)
 		{
+			this.LoadMonotouchDocumentation = loadMonotouchDocumentation;
 			this.typeDefinition = typeDefinition;
 			this.loadInternal = loadInternal;
 			this.classType = GetClassType (typeDefinition);
@@ -128,10 +130,14 @@ namespace MonoDevelop.Projects.Dom
 		bool loadInternal;
 		bool isInitialized = false;
 
-		static void AddDocumentation (IMember member)
+		bool AddDocumentation (IMember member)
 		{
-			var node = member.GetMonodocDocumentation ();
-			if (node != null) {
+			if (!LoadMonotouchDocumentation)
+				return false;
+			try {
+				var node = member.GetMonodocDocumentation ();
+				if (node == null)
+					return true;
 				string innerXml = (node.InnerXml ?? "").Trim ();
 				var sb = new StringBuilder ();
 				bool wasWhiteSpace = false;
@@ -151,6 +157,10 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 				member.Documentation = sb.ToString ();
+				return true;
+			} catch (Exception) {
+				LoadMonotouchDocumentation = false;
+				return false;
 			}
 		}
 		

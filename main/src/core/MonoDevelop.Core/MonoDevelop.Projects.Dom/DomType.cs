@@ -325,17 +325,24 @@ namespace MonoDevelop.Projects.Dom
 			this.Location    = location;
 		}
 		
-		System.Xml.XmlDocument helpXml;
+		static Dictionary<string, System.Xml.XmlDocument> helpTreeCache = new Dictionary<string, System.Xml.XmlDocument> ();
 		public System.Xml.XmlDocument HelpXml {
 			get {
-				if (helpXml == null && ProjectDomService.HelpTree != null) {
+				System.Xml.XmlDocument result;
+				var url = HelpUrl;
+				Console.WriteLine ("load:"+ url);
+				if (!helpTreeCache.TryGetValue (url, out result)) {
+					if (ProjectDomService.HelpTree == null)
+						return null;
 					try {
-						helpXml = ProjectDomService.HelpTree.GetHelpXml (this.HelpUrl);
-					} catch {
-						// Ignore
+						result = ProjectDomService.HelpTree.GetHelpXml (url);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while reading monodoc file.", e);
+						throw e;
 					}
+					helpTreeCache.Add (url, result);
 				}
-				return helpXml;
+				return result;
 			}
 		}
 		
