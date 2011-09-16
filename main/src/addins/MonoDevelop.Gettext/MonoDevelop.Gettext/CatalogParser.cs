@@ -34,6 +34,7 @@ using System.IO;
 
 namespace MonoDevelop.Gettext
 {
+	//FIXME: use a StreamReader, implement a real parser
 	public abstract class CatalogParser
 	{
 		internal static readonly string[] LineSplitStrings = { "\n\r", "\r\n", "\r", "\n" };
@@ -167,7 +168,13 @@ namespace MonoDevelop.Gettext
 							i++;
 						}
 						
-						mrefs.Add (dummy.Substring (0, i));
+						//store paths as Unix-type paths, but internally use native style
+						string refpath = dummy.Substring (0, i);
+						if (MonoDevelop.Core.Platform.IsWindows) {
+							refpath = refpath.Replace ('/', '\\');
+						}
+						
+						mrefs.Add (refpath);
 						dummy = dummy.Substring (i).Trim ();
 					}
 					
