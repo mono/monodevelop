@@ -355,7 +355,7 @@ namespace MonoDevelop.Gettext
 		static void SaveMultiLines (StringBuilder sb, string text, string newLine)
 		{
 			if (text != null) {
-				foreach (string line in text.Split (new string[] { "\n\r", "\r\n", "\r", "\n", "\r"}, StringSplitOptions.None)) {
+				foreach (string line in text.Split (CatalogParser.LineSplitStrings, StringSplitOptions.None)) {
 					sb.AppendFormat ("{0}{1}", line, newLine);
 				}
 			}

@@ -36,6 +36,8 @@ namespace MonoDevelop.Gettext
 {
 	public abstract class CatalogParser
 	{
+		internal static readonly string[] LineSplitStrings = { "\n\r", "\r\n", "\r", "\n" };
+		
 		//string fileName;
 		string loadedFile;
 		string[] fileLines;
@@ -57,45 +59,20 @@ namespace MonoDevelop.Gettext
 		
 		static string[] GetLines (string fileStr, out string newLine)
 		{
-			// TODO: probe first new line...
-			int posLN = fileStr.IndexOf ('\n');
-			int posCR = fileStr.IndexOf ('\r');
-			string useNewLineForParsing = String.Empty;
-			newLine = String.Empty;
+			int lf = fileStr.IndexOf ('\n');
+			int cr = fileStr.IndexOf ('\r');
 			
-			if (posLN != -1) {
-				if (posCR - 1 == posLN) {
-					newLine = "\r\n"; //CRLF
-				} else if (posCR == -1) {
-					newLine = "\n"; //LF
-				}
-			} else if (posCR != -1 && posLN == -1) {
-				newLine = "\r"; //LF
+			if (lf >= 0 && cr == lf - 1) {
+				newLine = "\r\n";
+			} else if (lf >= 0) {
+				newLine = "\n";
+			} else if (cr >= 0) {
+				newLine = "\r";
 			} else {
-				newLine = Environment.NewLine; //mixed for writing use system one
-				int countLN = 0;
-				int start = 0;
-				while ((start = fileStr.IndexOf ('\n', start)) != -1)
-					countLN++;
-				
-				int countCR = 0;
-				start = 0;
-				while ((start = fileStr.IndexOf ('\r', start)) != -1)
-					countCR++;
-					
-				// for parsing use one with more occurences
-				useNewLineForParsing = countCR > countLN ? "\r" : "\n";
+				newLine = Environment.NewLine;
 			}
 			
-			if (useNewLineForParsing == String.Empty)
-				useNewLineForParsing = newLine;
-			
-			List<string> lines = new List<string> ();
-			
-			foreach (string line in fileStr.Split (new string[] {useNewLineForParsing}, StringSplitOptions.None)) {
-				lines.Add (line);
-			}
-			return lines.ToArray ();
+			return fileStr.Split (LineSplitStrings, StringSplitOptions.None);
 		}
 		
 		// If input begins with pattern, fill output with end of input (without
