@@ -191,11 +191,6 @@ namespace MonoDevelop.Projects.Dom.Output
 				return null;
 			if (!string.IsNullOrEmpty (member.Documentation))
 				return CleanEmpty (member.Documentation);
-			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
-			if (node != null) {
-				string result = (node.InnerXml ?? "").Trim ();
-				return CleanEmpty (result);
-			}
 			return null;
 		}
 		
