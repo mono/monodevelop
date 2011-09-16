@@ -37,6 +37,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Deployment;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Gettext
 {	
@@ -302,15 +303,24 @@ namespace MonoDevelop.Gettext
 				string poFileName  = translation.PoFile;
 				monitor.BeginTask (GettextCatalog.GetString ("Updating {0}", translation.PoFile), 1);
 				try {
-					Runtime.ProcessService.StartProcess ("msgmerge",
-					                                     " -U \"" + poFileName + "\" -v \"" + Path.Combine (this.BaseDirectory, "messages.po") + "\"",
-					                                     this.BaseDirectory,
-					                                     monitor.Log,
-					                                     monitor.Log,
-					                                     null).WaitForOutput ();
-				} catch (Exception ex) {
+					var pb = new ProcessArgumentBuilder ();
+					pb.Add ("-U");
+					pb.AddQuoted (poFileName);
+					pb.Add ("-v");
+					pb.AddQuoted (this.BaseDirectory.Combine ("messages.po"));
+					
+					var process = Runtime.ProcessService.StartProcess (Translation.GetTool ("msgmerge"),
+						pb.ToString (), this.BaseDirectory, monitor.Log, monitor.Log, null);
+					process.WaitForOutput ();
+				}
+				catch (System.ComponentModel.Win32Exception) {
+					var msg = GettextCatalog.GetString ("Did not find msgmerge. Please ensure that gettext tools are installed.");
+					monitor.ReportError (msg, null);
+				}
+				catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Could not update file {0}", translation.PoFile), ex);
-				} finally {
+				}
+				finally {
 					monitor.EndTask ();
 					monitor.Step (1);
 				}

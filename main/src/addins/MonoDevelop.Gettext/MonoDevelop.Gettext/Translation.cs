@@ -93,19 +93,28 @@ namespace MonoDevelop.Gettext
 			if (!Directory.Exists (moDirectory))
 				Directory.CreateDirectory (moDirectory);
 			
-			ProcessWrapper process = Runtime.ProcessService.StartProcess ("msgfmt",
-		                                     "\"" + PoFile + "\" -o \"" + moFileName + "\"",
-		                                     parentProject.BaseDirectory,
-		                                     monitor.Log,
-		                                     monitor.Log,
-		                                     null);
+			var pb = new ProcessArgumentBuilder ();
+			pb.AddQuoted (PoFile);
+			pb.Add ("-o");
+			pb.AddQuoted (moFileName);
+			
+			ProcessWrapper process = null;
+			try {
+				process = Runtime.ProcessService.StartProcess (GetTool ("msgfmt"), pb.ToString (),
+					parentProject.BaseDirectory, monitor.Log, monitor.Log, null);
+			} catch (System.ComponentModel.Win32Exception) {
+				var msg = GettextCatalog.GetString ("Did not find msgfmt. Please ensure that gettext tools are installed.");
+				monitor.ReportError (msg, null);
+				results.AddError (msg);
+				return results;
+			}
+			
 			process.WaitForOutput ();
 
 			if (process.ExitCode == 0) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", IsoCode));
 			} else {
-				string error   = process.StandardError.ReadToEnd ();
-				string message = String.Format (GettextCatalog.GetString ("Translation {0}: Compilation failed. Reason: {1}"), IsoCode, error);
+				string message = GettextCatalog.GetString ("Translation {0}: Compilation failed. See log for details.", IsoCode);
 				monitor.Log.WriteLine (message);
 				results.AddError (PoFile, 1, 1, "", message);
 				results.FailedBuildCount = 1;
@@ -122,6 +131,30 @@ namespace MonoDevelop.Gettext
 				return true;
 			return File.GetLastWriteTime (PoFile) > File.GetLastWriteTime (moFileName);
 		}
+		
+		// on Windows, we support using gettext from http://gnuwin32.sourceforge.net/packages/gettext.htm
+		static FilePath overrideToolsLocation = FilePath.Null;
+		
+		static Translation ()
+		{
+			if (Platform.IsWindows) {
+				//On WinXP 32-bit, ProgramFilesX86 is null
+				FilePath programFiles = Environment.GetFolderPath (IntPtr.Size == 8?
+					Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
+				var toolsBin = programFiles.Combine ("GnuWin32", "bin");
+				if (File.Exists (toolsBin.Combine ("msgfmt.exe"))) {
+					overrideToolsLocation = toolsBin;
+				}
+			}
+		}
+		
+		public static string GetTool (string name)
+		{
+			if (Platform.IsWindows)
+				name = name + ".exe";
+			if (overrideToolsLocation.IsNull)
+				return name;
+			return overrideToolsLocation.Combine (name);
+		}
 	}
-	
 }
