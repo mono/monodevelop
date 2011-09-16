@@ -59,10 +59,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			ModifyBg (StateType.Normal, color);
 			
 			var mainAlignment = new Gtk.Alignment (0f, 0f, 1f, 1f);
-			mainAlignment.SetPadding (WelcomePageBranding.LogoHeight + WelcomePageBranding.Spacing, 0, WelcomePageBranding.Spacing, 0);
+			mainAlignment.SetPadding ((uint) (WelcomePageBranding.LogoHeight + WelcomePageBranding.Spacing), 0, (uint) WelcomePageBranding.Spacing, 0);
 			this.Add (mainAlignment);
 			
-			colBox = new Gtk.HBox (false, (int) WelcomePageBranding.Spacing);
+			colBox = new Gtk.HBox (false, WelcomePageBranding.Spacing);
 			mainAlignment.Add (colBox);
 			
 			BuildContent ();
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		void BuildContent ()
 		{
 			foreach (var col in WelcomePageBranding.Content.Root.Elements ("Column")) {
-				var colWidget = new Gtk.VBox (false, (int) WelcomePageBranding.Spacing);
+				var colWidget = new Gtk.VBox (false, WelcomePageBranding.Spacing);
 				var widthAtt = col.Attribute ("minWidth");
 				if (widthAtt != null) {
 					int width = (int) widthAtt;
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				colBox.PackStart (colWidget, false, false, 0);
 				
 				foreach (var el in col.Elements ()) {
-					string title = (string) el.Attribute ("_title");
+					string title = (string) (el.Attribute ("title") ?? el.Attribute ("_title"));
 					if (!string.IsNullOrEmpty (title))
 						title = GettextCatalog.GetString (title);
 					

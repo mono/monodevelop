@@ -40,13 +40,13 @@ namespace MonoDevelop.Ide.WelcomePage
 		public static readonly string TextColor = "black";
 		public static readonly string TextSize = "medium";
 		public static readonly string LinkColor = "#5a7ac7";
-		public static readonly uint Spacing = 20;
-		public static readonly uint LogoHeight = 90;
+		public static readonly int Spacing = 20;
+		public static readonly int LogoHeight = 90;
 		
 		static WelcomePageBranding ()
 		{
 			try {
-				using (var stream = BrandingService.OpenStream ("WelcomePageContent.xml")) {
+				using (var stream = BrandingService.GetStream ("WelcomePageContent.xml")) {
 					Content = XDocument.Load (stream);
 				}
 			} catch (Exception ex) {
@@ -57,40 +57,14 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 			
 			try {
-				if (BrandingService.BrandingDocument == null)
-					return;
-				var branding = BrandingService.BrandingDocument.Root.Element ("WelcomePage");
-				if (branding == null)
-					return;
-				
-				foreach (var el in branding.Elements ()) {
-					switch (el.Name.ToString ()) {
-					case "HeaderTextSize":
-						HeaderTextSize = (string) el;
-						break;
-					case "HeaderTextColor":
-						HeaderTextColor = (string) el;
-						break;
-					case "BackgroundColor":
-						BackgroundColor = (string) el;
-						break;
-					case "TextColor":
-						TextColor = (string) el;
-						break;
-					case "TextSize":
-						TextSize = (string) el;
-						break;
-					case "LinkColor":
-						LinkColor = (string) el;
-						break;
-					case "Spacing":
-						Spacing = (uint) el;
-						break;
-					case "LogoHeight":
-						LogoHeight = (uint) el;
-						break;
-					}
-				}
+				HeaderTextSize = BrandingService.GetString ("WelcomePage", "HeaderTextSize") ?? HeaderTextSize;
+				HeaderTextColor = BrandingService.GetString ("WelcomePage", "HeaderTextColor") ?? HeaderTextColor;
+				BackgroundColor = BrandingService.GetString ("WelcomePage", "BackgroundColor") ?? BackgroundColor;
+				TextColor = BrandingService.GetString ("WelcomePage", "TextColor") ?? TextColor;
+				TextSize = BrandingService.GetString ("WelcomePage", "TextSize") ?? TextSize;
+				LinkColor = BrandingService.GetString ("WelcomePage", "LinkColor") ?? LinkColor;
+				Spacing = BrandingService.GetInt ("WelcomePage", "Spacing") ?? Spacing;
+				LogoHeight = BrandingService.GetInt ("WelcomePage", "LogoHeight") ?? LogoHeight;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while reading welcome page branding.", e);
 			}
@@ -98,13 +72,13 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		public static Gdk.Pixbuf GetLogoImage ()
 		{
-			using (var stream = BrandingService.OpenStream ("WelcomePage_Logo.png"))
+			using (var stream = BrandingService.GetStream ("WelcomePage_Logo.png"))
 				return new Gdk.Pixbuf (stream);
 		}
 		
 		public static Gdk.Pixbuf GetTopBorderImage ()
 		{
-			using (var stream = BrandingService.OpenStream ("WelcomePage_TopBorderRepeat.png"))
+			using (var stream = BrandingService.GetStream ("WelcomePage_TopBorderRepeat.png"))
 				return new Gdk.Pixbuf (stream);
 		}
 	}

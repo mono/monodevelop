@@ -38,8 +38,11 @@ namespace MonoDevelop.Core
 	public static class BrandingService
 	{
 		static FilePath brandingDir;
+		static FilePath localizedBrandingDir;
+		static XDocument brandingDocument;
+		static XDocument localizedBrandingDocument;
+		
 		public static readonly string ApplicationName;
-		public static XDocument BrandingDocument;
 		
 		static BrandingService ()
 		{
@@ -49,12 +52,27 @@ namespace MonoDevelop.Core
 				if (!Directory.Exists (brandingDir)) {
 					brandingDir = null;
 				} else {
-					var brandingFile = brandingDir.Combine ("Branding.xml");
-					if (File.Exists (brandingFile)) {
-						BrandingDocument = XDocument.Load (brandingFile);
-						ApplicationName = BrandingDocument.Root.Element ("ApplicationName").Value;
+					var langCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+					localizedBrandingDir = brandingDir.Combine (langCode);
+					if (!Directory.Exists (localizedBrandingDir)) {
+						localizedBrandingDir = null;
 					}
 				}
+				
+				//read the files after detecting both directories, in case there's an error
+				if (brandingDir != null) { 
+					var brandingFile = brandingDir.Combine ("Branding.xml");
+					if (File.Exists (brandingFile)) {
+						brandingDocument = XDocument.Load (brandingFile);
+					}
+					if (localizedBrandingDir != null) {
+						var localizedBrandingFile = brandingDir.Combine ("Branding.xml");
+						if (File.Exists (localizedBrandingFile)) {
+							localizedBrandingDocument = XDocument.Load (localizedBrandingFile);
+						}
+					}
+				}
+				ApplicationName = GetString ("ApplicationName");
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not read branding document", ex);
 			}
@@ -63,15 +81,69 @@ namespace MonoDevelop.Core
 				ApplicationName = "MonoDevelop";
 		}
 		
+		public static string GetString (params string[] keyPath)
+		{
+			var el = GetElement (keyPath);
+			return el == null? null : (string) el;
+		}
+		
+		public static int? GetInt (params string[] keyPath)
+		{
+			return (int?) GetElement (keyPath);
+		}
+		
+		public static bool? GetBool (params string[] keyPath)
+		{
+			return (bool?) GetElement (keyPath);
+		}
+		
+		public static XElement GetElement (params string[] keyPath)
+		{
+			if (keyPath == null)
+				throw new ArgumentNullException ();
+			if (keyPath.Length == 0)
+				throw new ArgumentException ();
+			
+			if (localizedBrandingDocument != null) {
+				var el = GetElement (localizedBrandingDocument, keyPath);
+				if (el != null)
+					return el;
+			}
+			
+			if (brandingDocument != null) {
+				var el = GetElement (brandingDocument, keyPath);
+				if (el != null)
+					return el;
+			}
+			return null;
+		}
+		
+		static XElement GetElement (XDocument doc, string[] keyPath)
+		{
+			int idx = 0;
+			XElement el = doc.Root;
+			do {
+				el.Element (keyPath[idx++]);
+			} while (idx < keyPath.Length && el != null);
+			return el;
+		}
+		
 		[MethodImpl (MethodImplOptions.NoInlining)]
-		public static Stream OpenStream (string name)
+		public static Stream GetStream (string name)
 		{
 			//read branding directory, then calling assembly's resources
+			if (localizedBrandingDir != null) {
+				var file = localizedBrandingDir.Combine (name);
+				if (File.Exists (file))
+					return File.OpenRead (file);
+			}
+			
 			if (brandingDir != null) {
 				var file = brandingDir.Combine (name);
 				if (File.Exists (file))
 					return File.OpenRead (file);
 			}
+			
 			return Assembly.GetCallingAssembly ().GetManifestResourceStream (name);
 		}
 	}

@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			aboutPictureScrollBox = new ScrollBox ();
 
 			PackStart (aboutPictureScrollBox, false, false, 0);
-			using (var stream = BrandingService.OpenStream ("AboutImageSep.png"))
+			using (var stream = BrandingService.GetStream ("AboutImageSep.png"))
 				imageSep = new Pixbuf (stream);
 			PackStart (new Gtk.Image (imageSep), false, false, 0);
 			
@@ -198,18 +198,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			void LoadBranding ()
 			{
 				try {
-					var brandingDoc = BrandingService.BrandingDocument;
-					if (brandingDoc == null)
-						return;
-					var aboutEl = brandingDoc.Root.Element ("AboutBox");
-					if (aboutEl == null)
-						return;
-					var textColEl = aboutEl.Element ("TextColor");
-					if (textColEl != null)
-						Gdk.Color.Parse ((string)textColEl.Value, ref textColor);
-					var bgColEl = aboutEl.Element ("BackgroundColor");
-					if (bgColEl != null)
-						Gdk.Color.Parse ((string)bgColEl.Value, ref bgColor);
+					var textColStr = BrandingService.GetString ("AboutBox", "TextColor");
+					if (textColStr != null)
+						Gdk.Color.Parse (textColStr, ref textColor);
+					var bgColStr = BrandingService.GetString ("AboutBox", "BackgroundColor");
+					if (bgColStr != null)
+						Gdk.Color.Parse (bgColStr, ref bgColor);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error loading about box branding", ex);
 				}
@@ -221,7 +215,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				this.Realized += new EventHandler (OnRealized);
 				this.ModifyBg (Gtk.StateType.Normal, bgColor);
 				this.ModifyText (Gtk.StateType.Normal, textColor);
-				using (var stream = BrandingService.OpenStream ("AboutImage.png"))
+				using (var stream = BrandingService.GetStream ("AboutImage.png"))
 					image = new Gdk.Pixbuf (stream);
 				monoPowered = new Gdk.Pixbuf (GetType ().Assembly, "mono-powered.png");
 				this.SetSizeRequest (450, image.Height - 1);

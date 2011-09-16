@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			this.iconSize = iconSize;
 			
-			string title = (string) el.Attribute ("_title");
+			string title = (string) (el.Attribute ("title") ?? el.Attribute ("_title"));
 			if (string.IsNullOrEmpty (title))
 				throw new InvalidOperationException ("Link is missing title");
 			this.text = GettextCatalog.GetString (title);
@@ -63,11 +63,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				throw new InvalidOperationException ("Link is missing href");
 			this.LinkUrl = href;
 			
-			string desc = (string) el.Attribute ("_desc");
+			string desc = (string) (el.Attribute ("desc") ?? el.Attribute ("_desc"));
 			if (!string.IsNullOrEmpty (desc))
 				this.desc = GettextCatalog.GetString (desc);
 			
-			string tooltip = (string) el.Attribute ("_tooltip");
+			string tooltip = (string) (el.Attribute ("tooltip") ?? el.Attribute ("_tooltip"));
 			if (!string.IsNullOrEmpty (tooltip))
 				this.TooltipText = GettextCatalog.GetString (tooltip);
 			
