@@ -35,7 +35,7 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CustomPropertiesWidget : Gtk.Bin
+	public partial class CustomPropertiesWidget : Gtk.Bin, IPListDisplayWidget
 	{
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
@@ -59,18 +59,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		PDictionary nsDictionary;
-		public PDictionary NSDictionary {
-			get {
-				return nsDictionary;
-			}
-			set {
-				nsDictionary = value;
-				nsDictionary.Changed += delegate {
-					QueueDraw ();
-				};
-				RefreshTree ();
-			}
+		PObject nsDictionary;
+		public void SetPListContainer (PObjectContainer value)
+		{
+			nsDictionary = value;
+			nsDictionary.Changed += delegate {
+				QueueDraw ();
+			};
+			RefreshTree ();
 		}
 
 		public static PObject CreateNewObject (string type)
@@ -488,8 +484,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			
 			treeStore.Clear ();
-			if (nsDictionary != null)
-				AddToTree (treeStore, Gtk.TreeIter.Zero, nsDictionary);
+			if (nsDictionary is PDictionary) 
+				AddToTree (treeStore, Gtk.TreeIter.Zero, (PDictionary)nsDictionary);
+			if (nsDictionary is PArray) 
+				AddToTree (treeStore, Gtk.TreeIter.Zero, (PArray)nsDictionary);
 		}
 		
 		/*public class CellRendererProperty : CellRenderer

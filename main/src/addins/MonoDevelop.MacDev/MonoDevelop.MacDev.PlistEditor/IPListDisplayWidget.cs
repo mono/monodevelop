@@ -1,8 +1,8 @@
 // 
-// IPlistEditingHandler.cs
+// IPListDisplayWidget.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutch@xamarin.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
 // Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
@@ -23,30 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
-	public interface IPlistEditingHandler
+	public interface IPListDisplayWidget
 	{
-		bool CanHandle (Project project, string projectVirtualPath);
-		IEnumerable<PlistEditingSection> GetSections (Project project, PObject dictionary);
-	}
-	
-	public class PlistEditingSection
-	{
-		public PlistEditingSection (string name, Gtk.Widget widget)
-		{
-			this.Name = name;
-			this.Widget = widget;
-		}
-		
-		public string Name { get; private set; }
-		public Gtk.Widget Widget { get; private set; }
-		public bool IsAdvanced { get; set; }
-		public Func<PObject,bool> CheckVisible { get; set; }
+		void SetPListContainer (PObjectContainer container);
 	}
 }
+

@@ -32,6 +32,7 @@ using MonoMac.Foundation;
 using System.Runtime.InteropServices;
 using Gtk;
 using System.Text;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -148,6 +149,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public event EventHandler Changed;
 	}
 	
+	public abstract class PObjectContainer : PObject
+	{
+		public abstract bool Reload (string fileName);
+		public abstract void Save (string fileName);
+	}
+	
 	public abstract class PValueObject<T> : PObject
 	{
 		T val;
@@ -182,7 +189,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 	}
 	
-	public class PDictionary : PObject, IEnumerable<KeyValuePair<string, PObject>>
+	public class PDictionary : PObjectContainer, IEnumerable<KeyValuePair<string, PObject>>
 	{
 		Dictionary<string, PObject> dict;
 		List<string> order;
@@ -346,7 +353,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSDictionary.FromObjectsAndKeys (objs.ToArray (), keys.ToArray ());
 		}
 		
-		public void Save (string fileName)
+		public override  void Save (string fileName)
 		{
 			using (new NSAutoreleasePool ()) {
 				var dict = (NSDictionary)Convert ();
@@ -362,27 +369,34 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		public void Reload (string fileName)
+		public override bool Reload (string fileName)
 		{
+			if (string.IsNullOrEmpty (fileName))
+				throw new ArgumentNullException ("fileName");
 			var pool = new NSAutoreleasePool ();
 			SuppressChangeEvents = true;
 			try {
 				dict.Clear ();
 				order.Clear ();
 				var nsd = NSDictionary.FromFile (fileName);
-				foreach (var pair in nsd) {
-					string k = pair.Key.ToString ();
-					this[k] = Conv (pair.Value);
+				if (nsd != null) {
+					foreach (var pair in nsd) {
+						string k = pair.Key.ToString ();
+						this [k] = Conv (pair.Value);
+					}
+				} else {
+					return false;
 				}
 			} finally {
 				SuppressChangeEvents = false;
 				pool.Dispose ();
 			}
 			OnChanged (EventArgs.Empty);
+			return true;
 		}
 		
 		static IntPtr selObjCType = MonoMac.ObjCRuntime.Selector.GetHandle ("objCType");
-		static PObject Conv (NSObject val)
+		internal static PObject Conv (NSObject val)
 		{
 			if (val == null)
 				return null;
@@ -476,7 +490,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public event EventHandler Rebuild;
 	}
 	
-	public class PArray : PObject, IEnumerable<PObject>
+	public class PArray : PObjectContainer, IEnumerable<PObject>
 	{
 		List<PObject> list;
 		
@@ -512,6 +526,39 @@ namespace MonoDevelop.MacDev.PlistEditor
 				handler (this, e);
 		}
 		
+		public override bool Reload (string fileName)
+		{
+			if (string.IsNullOrEmpty (fileName))
+				throw new ArgumentNullException ("fileName");
+			var pool = new NSAutoreleasePool ();
+			SuppressChangeEvents = true;
+			try {
+				list.Clear ();
+				var nsa = NSArray.FromFile (fileName);
+				if (nsa != null) {
+					var arr = NSArray.ArrayFromHandle<NSObject> (nsa.Handle);
+					foreach (var f in arr) {
+						list.Add (PDictionary.Conv (f));
+					}
+				} else {
+					return false;
+				}
+			} finally {
+				SuppressChangeEvents = false;
+				pool.Dispose ();
+			}
+			OnChanged (EventArgs.Empty);
+			return true;
+		}
+		
+		public override void Save (string fileName)
+		{
+			using (new NSAutoreleasePool ()) {
+				var arr = (NSArray)Convert ();
+				arr.WriteToFile (fileName, false);
+			}
+		}
+
 		public void Add (PObject obj)
 		{
 			obj.Parent = this;

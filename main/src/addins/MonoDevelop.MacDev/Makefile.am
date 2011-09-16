@@ -50,6 +50,7 @@ FILES =  \
 	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/ExpanderList.cs \
 	MonoDevelop.MacDev.PlistEditor/ImageChooser.cs \
+	MonoDevelop.MacDev.PlistEditor/IPListDisplayWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/IPlistEditingHandler.cs \
 	MonoDevelop.MacDev.PlistEditor/MacExpander.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
