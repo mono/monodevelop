@@ -120,7 +120,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 		[LocalizedDisplayName ("Local Copy")]
 		[LocalizedDescription ("Copy the referenced assembly to the output directory.")]
 		public bool LocalCopy {
-			get { return pref.LocalCopy; }
+			get { return pref.LocalCopy && pref.CanSetLocalCopy; }
 			set { pref.LocalCopy = value; }
 		}
 		

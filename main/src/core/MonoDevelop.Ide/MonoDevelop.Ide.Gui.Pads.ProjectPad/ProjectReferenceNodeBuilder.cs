@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					info.Enabled = false;
 				if (lastRef == null || lastRef.LocalCopy == pref.LocalCopy) {
 					lastRef = pref;
-					info.Checked = pref.LocalCopy;
+					info.Checked = info.Enabled && pref.LocalCopy;
 				} else {
 					info.CheckedInconsistent = true;
 				}
