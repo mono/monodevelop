@@ -564,7 +564,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						else if (asm == "system")
 							asm = "System";
 						pref = new ProjectReference (ReferenceType.Package, asm);
-						pref.LocalCopy = false;
+						pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
 					}
 					pref.Condition = buildItem.Condition;
 					string specificVersion = buildItem.GetMetadata ("SpecificVersion");
@@ -1115,6 +1115,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				
 				buildItem.SetMetadata ("HintPath", hintPath);
+				
 				if (!pref.LocalCopy && pref.CanSetLocalCopy)
 					buildItem.SetMetadata ("Private", "False");
 				else
@@ -1153,6 +1154,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					buildItem.SetMetadata ("HintPath", hintPath);
 				else
 					buildItem.UnsetMetadata ("HintPath");
+				
+				if (!pref.LocalCopy && pref.CanSetLocalCopy)
+					buildItem.SetMetadata ("Private", "False");
+				else
+					buildItem.UnsetMetadata ("Private");
 			}
 			else if (pref.ReferenceType == ReferenceType.Project) {
 				Project refProj = Item.ParentSolution.FindProjectByName (pref.Reference);
