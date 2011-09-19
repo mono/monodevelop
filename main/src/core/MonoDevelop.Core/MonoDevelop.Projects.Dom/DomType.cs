@@ -330,7 +330,6 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				System.Xml.XmlDocument result;
 				var url = HelpUrl;
-				Console.WriteLine ("load:"+ url);
 				if (!helpTreeCache.TryGetValue (url, out result)) {
 					if (ProjectDomService.HelpTree == null)
 						return null;
