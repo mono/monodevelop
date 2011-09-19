@@ -309,7 +309,7 @@ namespace MonoDevelop.MacIntegration
 			}
 			
 			if (icon == null)
-				base.OnGetPixbufForFile (filename, size);
+				return base.OnGetPixbufForFile (filename, size);
 			
 			int w, h;
 			if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h))
