@@ -94,6 +94,7 @@ namespace MonoDevelop.Ide
 			fr.Add (feedbackButton);
 			PackStart (fr, false, false, 0);
 			feedbackButton.Clicked += HandleFeedbackButtonClicked;
+			feedbackButton.ButtonPressEvent += HandleFeedbackButtonButtonPressEvent;;
 			feedbackButton.ClickOnRelease = true;
 			FeedbackService.FeedbackPositionGetter = delegate {
 				int x, y;
@@ -192,10 +193,21 @@ namespace MonoDevelop.Ide
 				}
 			};
 		}
+		
+		
+		bool ignoreFeedbackButtonClick;
+		
+		void HandleFeedbackButtonButtonPressEvent (object o, ButtonPressEventArgs args)
+		{
+			if (FeedbackService.IsFeedbackWindowVisible)
+				ignoreFeedbackButtonClick = true;
+		}
 
 		void HandleFeedbackButtonClicked (object sender, EventArgs e)
 		{
-			FeedbackService.ShowFeedbackWidnow ();
+			if (!ignoreFeedbackButtonClick)
+				FeedbackService.ShowFeedbackWidnow ();
+			ignoreFeedbackButtonClick = false;
 		}
 
 		void HandleEventMessageBoxButtonPressEvent (object o, ButtonPressEventArgs args)

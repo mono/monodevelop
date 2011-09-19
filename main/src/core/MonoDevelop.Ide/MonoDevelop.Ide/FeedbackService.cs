@@ -39,12 +39,27 @@ namespace MonoDevelop.Ide
 	{
 		static bool sending;
 		static object sendingLock = new object ();
+		static FeedbackDialog currentFeedbackDialog;
+		static DateTime lastHideTime;
+		
+		public static bool IsFeedbackWindowVisible {
+			get { return currentFeedbackDialog != null && currentFeedbackDialog.Visible; }
+		}
 		
 		public static void ShowFeedbackWidnow ()
 		{
-			var p = FeedbackPositionGetter ();
-			FeedbackDialog d = new FeedbackDialog (p.X, p.Y);
-			d.Show ();
+			if (currentFeedbackDialog == null) {
+				var p = FeedbackPositionGetter ();
+				currentFeedbackDialog = new FeedbackDialog (p.X, p.Y);
+				currentFeedbackDialog.Show ();
+				currentFeedbackDialog.Destroyed += delegate {
+					currentFeedbackDialog = null;
+				};
+				currentFeedbackDialog.Hidden += delegate {
+					lastHideTime = DateTime.Now;
+				};
+			} else
+				currentFeedbackDialog.Show ();
 		}
 		
 		internal static Func<Gdk.Point> FeedbackPositionGetter { get; set; }
