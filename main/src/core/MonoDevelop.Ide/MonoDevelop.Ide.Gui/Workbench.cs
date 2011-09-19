@@ -1063,9 +1063,15 @@ namespace MonoDevelop.Ide.Gui
 			
 			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();
 			if (fileInfo.Line != -1 && ipos != null) {
-				GLib.Timeout.Add (10, new GLib.TimeoutHandler (JumpToLine));
+				newContent.Control.Realized += HandleNewContentControlRealized;
 			}
 			fileInfo.NewContent = newContent;
+		}
+
+		void HandleNewContentControlRealized (object sender, EventArgs e)
+		{
+			JumpToLine ();
+			newContent.Control.Realized -= HandleNewContentControlRealized;
 		}
 		
 		public bool JumpToLine ()
