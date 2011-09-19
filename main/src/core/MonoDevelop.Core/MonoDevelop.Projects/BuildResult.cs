@@ -98,9 +98,12 @@ namespace MonoDevelop.Projects
 		
 		public void AddWarning (string text)
 		{
-			BuildError ce = new BuildError (null, 0, 0, null, text);
-			ce.IsWarning = true;
-			Append (ce);
+			AddWarning (text, null);
+		}
+		
+		public void AddWarning (string text, string file)
+		{
+			AddWarning (file, 0, 0, null, text);
 		}
 		
 		public BuildResult Append (BuildResult res)
