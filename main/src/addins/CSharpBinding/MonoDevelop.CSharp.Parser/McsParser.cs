@@ -110,7 +110,7 @@ namespace MonoDevelop.CSharp.Parser
 				
 				CompilerCompilationUnit top;
 				ErrorReportPrinter errorReportPrinter = new ErrorReportPrinter ();
-				using (var stream = new MemoryStream (Encoding.Default.GetBytes (content))) {
+				using (var stream = new MemoryStream (Encoding.UTF8.GetBytes (content))) {
 					top = CompilerCallableEntryPoint.ParseFile (compilerArguments.ToArray (), stream, fileName, errorReportPrinter);
 				}
 				if (top == null)
