@@ -115,6 +115,26 @@ namespace MonoDevelop.Refactoring
 		throw new System.NotImplementedException ();
 	}");
 		}
+		
+		/// <summary>
+		/// Bug 243 - Implement implicit interface doesn't handle overloads correctly. 
+		/// </summary>
+		[Test()]
+		public void TestBug243 ()
+		{
+			TestCreateInterface (@"interface ITest {
+	void Inc (int n);
+	void Inc (string message);
+}", @"public void Inc (int n)
+	{
+		throw new System.NotImplementedException ();
+	}
+
+	public void Inc (string message)
+	{
+		throw new System.NotImplementedException ();
+	}");
+		}
 	}
 }
 
