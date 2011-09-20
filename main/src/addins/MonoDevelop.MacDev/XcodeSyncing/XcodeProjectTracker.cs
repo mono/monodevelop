@@ -366,7 +366,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				// Notify MonoDevelop of file changes.
 				Gtk.Application.Invoke (delegate {
 					// FIXME: this should probably filter out any IsFreshlyAdded file jobs
-					FileService.NotifyFilesChanged (context.FileSyncJobs.Select (f => f.Original));
+					FileService.NotifyFilesChanged (changeCtx.FileSyncJobs.Select (f => f.Original));
 				});
 				return true;
 			} catch (Exception ex) {
