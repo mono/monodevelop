@@ -181,14 +181,15 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var ctx = new XcodeSyncBackContext (projectDir, syncTimeCache, infoService, project);
 			var needsSync = new List<XcodeSyncedItem> (items.Where (i => i.NeedsSyncBack (ctx)));
 			if (needsSync.Count > 0) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Synchronizing external project changes..."));
+				monitor.BeginStepTask (GettextCatalog.GetString ("Synchronizing Xcode project changes"), needsSync.Count, 1);
 				for (int i = 0; i < needsSync.Count; i++) {
 					var item = needsSync [i];
 					item.SyncBack (ctx);
-					Ide.IdeApp.Workbench.StatusBar.SetProgressFraction ((i + 1.0) / needsSync.Count);
+					monitor.Step (1);
 				}
 				
 				monitor.Log.WriteLine (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count);
+				monitor.EndTask ();
 			}
 			return ctx;
 		}
