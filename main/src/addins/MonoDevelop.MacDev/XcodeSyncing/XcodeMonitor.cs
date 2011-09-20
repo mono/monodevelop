@@ -175,11 +175,66 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			} while (Directory.Exists (this.projectDir));
 			this.xcproj = projectDir.Combine (name + ".xcodeproj");
 		}
+		
+		HashSet<string> GetKnownFiles ()
+		{
+			HashSet<string> knownItems = new HashSet<string> ();
+			
+			foreach (var item in items) {
+				foreach (var file in item.GetTargetRelativeFileNames ())
+					knownItems.Add (Path.Combine (projectDir, file));
+			}
+			
+			return knownItems;
+		}
+		
+		void ScanForAddedFiles (XcodeSyncBackContext ctx, HashSet<string> knownFiles, string directory, string relativePath)
+		{
+			foreach (var file in Directory.EnumerateFiles (directory)) {
+				if (file.EndsWith ("~") || file.EndsWith (".m"))
+					continue;
+				
+				if (knownFiles.Contains (file))
+					continue;
+				
+				if (file.EndsWith (".h")) {
+					NSObjectTypeInfo parsed = NSObjectInfoService.ParseHeader (file);
+					
+					ctx.TypeSyncJobs.Add (XcodeSyncObjcBackJob.NewType (parsed, relativePath));
+				} else {
+					FilePath original, relative;
+					
+					if (relativePath != null)
+						relative = new FilePath (Path.Combine (relativePath, Path.GetFileName (file)));
+					else
+						relative = new FilePath (Path.GetFileName (file));
+					
+					original = ctx.Project.BaseDirectory.Combine (relative);
+					
+					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, true));
+				}
+			}
+			
+			foreach (var dir in Directory.EnumerateDirectories (directory)) {
+				string relative;
+				
+				if (relativePath != null)
+					relative = Path.Combine (relativePath, Path.GetFileName (dir));
+				else
+					relative = Path.GetFileName (dir);
+				
+				ScanForAddedFiles (ctx, knownFiles, dir, relative);
+			}
+		}
 
 		public XcodeSyncBackContext GetChanges (IProgressMonitor monitor, NSObjectInfoService infoService, DotNetProject project)
 		{
 			var ctx = new XcodeSyncBackContext (projectDir, syncTimeCache, infoService, project);
 			var needsSync = new List<XcodeSyncedItem> (items.Where (i => i.NeedsSyncBack (ctx)));
+			var knownFiles = GetKnownFiles ();
+			
+			ScanForAddedFiles (ctx, knownFiles, projectDir, null);
+			
 			if (needsSync.Count > 0) {
 				monitor.BeginStepTask (GettextCatalog.GetString ("Synchronizing Xcode project changes"), needsSync.Count, 1);
 				for (int i = 0; i < needsSync.Count; i++) {
@@ -191,6 +246,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.Log.WriteLine (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count);
 				monitor.EndTask ();
 			}
+			
 			return ctx;
 		}
 		

@@ -135,12 +135,20 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (job.IsFreshlyAdded) {
 					// Need to define what file this new type is defined in
 					string filename = job.Type.ObjCName + "." + provider.FileExtension;
-					string path = Path.Combine (Project.BaseDirectory.FileName, job.RelativePath, filename);
+					string path;
+					
+					if (job.RelativePath != null)
+						path = Path.Combine (Project.BaseDirectory.FileName, job.RelativePath, filename);
+					else
+						path = Path.Combine (Project.BaseDirectory.FileName, filename);
+					
 					job.Type.DefinedIn = new string[] { path };
+					
 					if (newFiles == null)
 						newFiles = new Dictionary<string, ProjectFile> ();
 					if (!newFiles.ContainsKey (path))
 						newFiles.Add (path, new ProjectFile (path));
+					
 					if (newTypes == null)
 						newTypes = new Dictionary<string, NSObjectTypeInfo> ();
 					if (!newTypes.ContainsKey (path))
@@ -224,5 +232,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public FilePath Original;
 		public FilePath SyncedRelative;
 		public bool IsFreshlyAdded;
+		
+		public XcodeSyncFileBackJob (FilePath original, FilePath syncedRelative, bool isFreshlyAdded)
+		{
+			IsFreshlyAdded = isFreshlyAdded;
+			SyncedRelative = syncedRelative;
+			Original = original;
+		}
 	}
 }
