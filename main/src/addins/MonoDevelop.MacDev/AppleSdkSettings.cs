@@ -99,12 +99,14 @@ namespace MonoDevelop.MacDev
 					return;
 				lastWritten = File.GetLastWriteTime (plist);
 				
+				// DTXCode was introduced after xcode 3.2.6 so it may not exist
 				using (var pool = new NSAutoreleasePool ()) {
 					var dict = NSDictionary.FromFile (plist);
-					var val = (NSString) dict.ObjectForKey (new NSString ("DTXcode"));
-					DTXcode = val.ToString ();
+					NSObject value;
+					if (dict.TryGetValue (new NSString ("DTXcode"), out value))
+						DTXcode = ((NSString) value).ToString ();
 				}
-				IsXcode4 = int.Parse (DTXcode) >= 0400;
+				IsXcode4 = !string.IsNullOrEmpty (DTXcode) && int.Parse (DTXcode) >= 0400;
 				IsValid = true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error loading Xcode information for prefix '" + DeveloperRoot + "'", ex);
