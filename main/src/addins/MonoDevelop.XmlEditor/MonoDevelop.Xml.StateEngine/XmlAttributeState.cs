@@ -47,6 +47,15 @@ namespace MonoDevelop.Xml.StateEngine
 		const int GETTINGEQ = 1;
 		const int GETTINGVAL = 2;
 		
+		public bool AllowOpeningTagCharInsideAttributeValue {
+			get {
+				return SingleQuotedAttributeValueState.AllowOpeningTagCharInside;
+			}
+			set {
+				SingleQuotedAttributeValueState.AllowOpeningTagCharInside = DoubleQuotedAttributeValueState.AllowOpeningTagCharInside = value;
+			}
+		}
+		
 		public XmlAttributeState () : this (
 			new XmlNameState (),
 			new XmlDoubleQuotedAttributeValueState (),
