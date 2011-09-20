@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Commands
 				commandInfo.Description = GettextCatalog.GetString ("Activate window '{0}'", commandInfo.Text);
 				if (document.Window.ShowNotification) {
 					commandInfo.UseMarkup = true;
-					document.Window.Title = "<span foreground=" + '"' + "blue" + '"' + ">" + commandInfo.Text + "</span>";
+					commandInfo.Text = "<span foreground=" + '"' + "blue" + '"' + ">" + commandInfo.Text + "</span>";
 				}
 
 				//Add AccelKey
