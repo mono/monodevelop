@@ -347,7 +347,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Detecting changed files in Xcode"), 0);
-				var changeCtx = xcode.GetChanges (infoService, dnp);
+				var changeCtx = xcode.GetChanges (monitor, infoService, dnp);
 				monitor.EndTask ();
 				updatingProjectFiles = true;
 				UpdateCliTypes (monitor, changeCtx);
