@@ -1605,7 +1605,8 @@ namespace Mono.TextEditor
 			}
 
 			DocumentLocation docLocation = PointToLocation (args.X, args.Y);
-			if (args.Button == 2 && this.textEditor.CanEdit (docLocation.Line)) {
+			// disable middle click on windows.
+			if (!Platform.IsWindows && args.Button == 2 && this.textEditor.CanEdit (docLocation.Line)) {
 				ISegment selectionRange = null;
 				int offset = Document.LocationToOffset (docLocation);
 				if (selection != null)
