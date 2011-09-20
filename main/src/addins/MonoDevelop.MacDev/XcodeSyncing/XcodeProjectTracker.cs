@@ -359,6 +359,15 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				
 				// Finally, add any newly created resource files to the DotNetProject.
 				AddFilesToMD (monitor, changeCtx);
+				
+				// Save the DotNetProject.
+				changeCtx.Project.Save (monitor);
+				
+				// Notify MonoDevelop of file changes.
+				Gtk.Application.Invoke (delegate {
+					// FIXME: this should probably filter out any IsFreshlyAdded file jobs
+					FileService.NotifyFilesChanged (context.FileSyncJobs.Select (f => f.Original));
+				});
 				return true;
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Error synchronizing changes from Xcode"), ex);
@@ -389,10 +398,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				FileService.SystemRename (tempFile, file.Original);
 				context.SetSyncTimeToNow (file.SyncedRelative);
 			}
-			
-			Gtk.Application.Invoke (delegate {
-				FileService.NotifyFilesChanged (context.FileSyncJobs.Select (f => f.Original));
-			});
 			
 			monitor.EndTask ();
 		}
