@@ -188,7 +188,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					Ide.IdeApp.Workbench.StatusBar.SetProgressFraction ((i + 1.0) / needsSync.Count);
 				}
 				
-				monitor.Log.WriteLine (string.Format (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count));
+				monitor.Log.WriteLine (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count);
 			}
 			return ctx;
 		}
