@@ -436,23 +436,28 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void UpdateCliTypes (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
-			
 			var provider = dnp.LanguageBinding.GetCodeDomProvider ();
 			var options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Detecting changed types from Xcode"), 0);
-			Dictionary<string,ProjectFile> newFiles;
-			var updates = context.GetTypeUpdates (out newFiles);
+			Dictionary<string, NSObjectTypeInfo> newTypes;
+			Dictionary<string, ProjectFile> newFiles;
+			var updates = context.GetTypeUpdates (provider, out newTypes, out newFiles);
 			if (updates == null || updates.Count == 0) {
 				monitor.Log.WriteLine ("No changed types found");
 				monitor.EndTask ();
 				return;
 			}
+			
 			monitor.Log.WriteLine ("Found {0} changed types", updates.Count);
 			monitor.EndTask ();
 			
+			// First, add new types...
+			// FIXME: implement me
+			
+			// Next, generate the designer files for any added/changed types
 			monitor.BeginTask (GettextCatalog.GetString ("Updating types in MonoDevelop"), updates.Count);
 			foreach (var df in updates) {
 				monitor.Log.WriteLine ("Syncing {0} types from Xcode to file '{1}'", df.Value.Count, df.Key);
@@ -471,6 +476,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			writer.WriteOpenFiles ();
 			
+			// Update sync timestamps
 			foreach (var df in updates) {
 				foreach (var type in df.Value) {
 					context.SetSyncTimeToNow (type.ObjCName + ".h");
@@ -478,10 +484,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				}
 			}
 			
-			foreach (var job in context.TypeSyncJobs) {
-				context.ProjectInfo.InsertUpdatedType (job.Type);
-			}
-			
+			// Add new files to the DotNetProject
 			if (newFiles != null) {
 				foreach (var f in newFiles) {
 					monitor.Log.WriteLine ("Added new designer file {0}", f.Key);

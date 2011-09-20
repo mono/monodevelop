@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using System.IO;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
@@ -81,21 +82,72 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			});
 		}
 		
-		public Dictionary<string, List<NSObjectTypeInfo>> GetTypeUpdates (out Dictionary<string,ProjectFile> newFiles)
+		public Dictionary<string, List<NSObjectTypeInfo>> GetTypeUpdates (CodeDomProvider provider,
+			out Dictionary<string, NSObjectTypeInfo> newTypes,
+			out Dictionary<string, ProjectFile> newFiles)
 		{
-			var designerFiles = new Dictionary<string, List<NSObjectTypeInfo>> ();
-			AggregateTypeUpdates (designerFiles, out newFiles);
+			Dictionary<string, List<NSObjectTypeInfo>> designerFiles = new Dictionary<string, List<NSObjectTypeInfo>> ();
+			
+			int prevUnresolved = Int32.MaxValue;
+			int unresolved = 0;
+			
+			// Make a first pass at resolving parsed types
+			foreach (var job in TypeSyncJobs) {
+				unresolved += ProjectInfo.ResolveObjcToCli (job.Type, Project, false);
+				ProjectInfo.InsertUpdatedType (job.Type);
+			}
+			
+			// Keep making more passes at resolving types until we are just spinning our wheels...
+			// Note: we do this because there may be inter-related types.
+			while (unresolved > 0 && unresolved < prevUnresolved) {
+				prevUnresolved = unresolved;
+				unresolved = 0;
+				
+				foreach (var job in TypeSyncJobs) {
+					unresolved += ProjectInfo.ResolveObjcToCli (job.Type, Project, false);
+					ProjectInfo.InsertUpdatedType (job.Type);
+				}
+			}
+			
+			// If we have any remaining unresolved types, force type resolution.
+			if (unresolved > 0) {
+				foreach (var job in TypeSyncJobs) {
+					ProjectInfo.ResolveObjcToCli (job.Type, Project, true);
+					ProjectInfo.InsertUpdatedType (job.Type);
+				}
+			}
+			
+			AggregateTypeUpdates (provider, designerFiles, out newTypes, out newFiles);
 			MergeExistingTypes (designerFiles);
+			
 			return designerFiles;
 		}
 		
-		void AggregateTypeUpdates (Dictionary<string, List<NSObjectTypeInfo>> designerFiles,
-			out Dictionary<string,ProjectFile> newFiles)
+		void AggregateTypeUpdates (CodeDomProvider provider, Dictionary<string, List<NSObjectTypeInfo>> designerFiles,
+			out Dictionary<string, NSObjectTypeInfo> newTypes,
+			out Dictionary<string, ProjectFile> newFiles)
 		{
-			newFiles = null;
 			XC4Debug.Log ("Aggregating {0} type updates", typeSyncJobs.Count);
+			newFiles = null;
+			newTypes = null;
+			
 			foreach (var job in TypeSyncJobs) {
-				//generate designer filenames for classes without designer files
+				if (job.IsFreshlyAdded) {
+					// Need to define what file this new type is defined in
+					string filename = job.Type.ObjCName + "." + provider.FileExtension;
+					string path = Path.Combine (Project.BaseDirectory.FileName, job.RelativePath, filename);
+					job.Type.DefinedIn = new string[] { path };
+					if (newFiles == null)
+						newFiles = new Dictionary<string, ProjectFile> ();
+					if (!newFiles.ContainsKey (path))
+						newFiles.Add (path, new ProjectFile (path));
+					if (newTypes == null)
+						newTypes = new Dictionary<string, NSObjectTypeInfo> ();
+					if (!newTypes.ContainsKey (path))
+						newTypes.Add (path, job.Type);
+				}
+				
+				// generate designer filenames for classes without designer files
 				if (job.DesignerFile == null) {
 					var df = CreateDesignerFile (job);
 					job.DesignerFile = df.FilePath;
@@ -104,7 +156,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					if (!newFiles.ContainsKey (job.DesignerFile))
 						newFiles.Add (job.DesignerFile, df);
 				}
-				//group all the types by designer file
+				
+				// group all the types by designer file
 				List<NSObjectTypeInfo> types;
 				if (!designerFiles.TryGetValue (job.DesignerFile, out types))
 					designerFiles[job.DesignerFile] = types = new List<NSObjectTypeInfo> ();
@@ -113,18 +166,16 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
-		//FIXME: is this overkill?
 		ProjectFile CreateDesignerFile (XcodeSyncObjcBackJob job)
 		{
-			int i = 0;
 			FilePath designerFile = null;
-			do {
-				FilePath f = job.Type.DefinedIn[0];
-				string suffix = (i > 0? i.ToString () : "");
-				string name = f.FileNameWithoutExtension + suffix + ".designer" + f.Extension;
-				designerFile = f.ParentDirectory.Combine (name);
-			} while (Project.Files.GetFileWithVirtualPath (designerFile.ToRelative (Project.BaseDirectory)) != null);
-			var dependsOn = ((FilePath)job.Type.DefinedIn[0]).FileName;
+			
+			FilePath f = job.Type.DefinedIn[0];
+			string name = f.FileNameWithoutExtension + ".designer" + f.Extension;
+			designerFile = f.ParentDirectory.Combine (name);
+			
+			var dependsOn = ((FilePath) job.Type.DefinedIn[0]).FileName;
+			
 			return new ProjectFile (designerFile, BuildAction.Compile) { DependsOn = dependsOn };
 		}
 		
@@ -145,9 +196,27 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	
 	class XcodeSyncObjcBackJob
 	{
-		public string HFile;
 		public string DesignerFile;
 		public NSObjectTypeInfo Type;
+		public bool IsFreshlyAdded;
+		public string RelativePath;
+		
+		public static XcodeSyncObjcBackJob NewType (NSObjectTypeInfo type, string relativePath)
+		{
+			return new XcodeSyncObjcBackJob () {
+				RelativePath = relativePath,
+				IsFreshlyAdded = true,
+				Type = type,
+			};
+		}
+		
+		public static XcodeSyncObjcBackJob UpdateType (NSObjectTypeInfo type, string designerFile)
+		{
+			return new XcodeSyncObjcBackJob () {
+				DesignerFile = designerFile,
+				Type = type,
+			};
+		}
 	}
 	
 	class XcodeSyncFileBackJob

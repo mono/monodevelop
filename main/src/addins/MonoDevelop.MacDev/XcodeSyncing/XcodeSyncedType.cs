@@ -104,16 +104,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			parsed.MergeCliInfo (objcType);
-			if (context.ProjectInfo.ResolveObjcToCli (parsed, false) == 0) {
-				context.TypeSyncJobs.Add (new XcodeSyncObjcBackJob () {
-					HFile = hFile,
-					DesignerFile = objcType.GetDesignerFile (),
-					Type = parsed,
-				});
-			} else {
-				context.SetSyncTimeToNow (Type.ObjCName + ".h");
-				LoggingService.LogWarning ("Sync back skipped because of errors in project info.");
-			}
+			
+			context.TypeSyncJobs.Add (XcodeSyncObjcBackJob.UpdateType (parsed, objcType.GetDesignerFile ()));
 		}
 		
 		const string supportingFilesGroup = "Supporting Files";

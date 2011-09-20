@@ -222,11 +222,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		/// The NSObjectTypeInfo that contains the known Objective-C type information.
 		/// Typically this will be the result of NSObjectInfoService.ParseHeader().
 		/// </param>
+		/// <param name='project'>
+		/// The DotNetProject this type belongs to.
+		/// </param>
 		/// <param name='force'>
 		/// Force resolution of type information even if there isn't a known mapping.
 		/// This will use a "best guess" approach.
 		/// </param>
-		public int ResolveObjcToCli (NSObjectTypeInfo type, /* DotNetProject project - we'll likely need this for context if force is true, */ bool force)
+		public int ResolveObjcToCli (NSObjectTypeInfo type, DotNetProject project, bool force)
 		{
 			NSObjectTypeInfo resolved;
 			int unresolved = 0;
@@ -237,7 +240,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					type.CliName = resolved.CliName;
 					type.IsModel = resolved.IsModel;
 				} else if (force) {
-					// FIXME: what do we do here?
+					type.CliName = project.DefaultNamespace + "." + type.ObjCName;
 				} else {
 					unresolved++;
 				}
@@ -248,7 +251,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				if (TryResolveObjcToCli (type.BaseObjCType, out resolved)) {
 					type.BaseCliType = resolved.CliName;
 				} else if (force) {
-					// FIXME: what do we do here?
+					type.BaseCliType = project.DefaultNamespace + "." + type.BaseObjCType;
 				} else {
 					unresolved++;
 				}
@@ -262,8 +265,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				if (TryResolveObjcToCli (outlet.ObjCType, out resolved)) {
 					outlet.CliType = resolved.CliName;
 				} else if (force) {
-					// FIXME: maybe we can use the namespace of the ObjCType to map to a FQN? UI -> MonoTouch.UIKit.ObjCType?
-					outlet.CliType = outlet.ObjCType;
+					outlet.CliType = project.DefaultNamespace + "." + outlet.ObjCType;
 				} else {
 					unresolved++;
 				}
@@ -278,8 +280,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					if (TryResolveObjcToCli (param.ObjCType, out resolved)) {
 						param.CliType = resolved.CliName;
 					} else if (force) {
-						// FIXME: maybe we can use the namespace of the ObjCType to map to a FQN? UI -> MonoTouch.UIKit.ObjCType?
-						param.CliType = param.ObjCType;
+						param.CliType = project.DefaultNamespace + "." + param.ObjCType;
 					} else {
 						unresolved++;
 					}
