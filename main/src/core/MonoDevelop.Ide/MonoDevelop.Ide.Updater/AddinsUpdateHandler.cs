@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Updater
 			Instance = this;
 		}
 		
-		public void CheckUpdates (IProgressMonitor monitor)
+		public void CheckUpdates (IProgressMonitor monitor, bool automatic)
 		{
 			updateMonitor = monitor;
 			try {

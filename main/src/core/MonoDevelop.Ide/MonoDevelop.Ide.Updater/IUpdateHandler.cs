@@ -30,7 +30,17 @@ namespace MonoDevelop.Ide.Updater
 {
 	public interface IUpdateHandler
 	{
-		void CheckUpdates (IProgressMonitor monitor);
+		/// <summary>
+		/// Called to check if there are updates available
+		/// </summary>
+		/// <param name='monitor'>
+		/// Progress monitor.
+		/// </param>
+		/// <param name='automatic'>
+		/// 'True' if the check has been automatically started by MD (e.g. when MD starts). 
+		/// 'False' if the check was started explicitly by the user.
+		/// </param>
+		void CheckUpdates (IProgressMonitor monitor, bool automatic);
 	}
 }
 
