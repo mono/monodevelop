@@ -350,8 +350,15 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				var changeCtx = xcode.GetChanges (monitor, infoService, dnp);
 				monitor.EndTask ();
 				updatingProjectFiles = true;
-				UpdateCliTypes (monitor, changeCtx);
+				
+				// First, copy any changed/added resource files to MonoDevelop's project directory.
 				CopyFilesToMD (monitor, changeCtx);
+				
+				// Then update CLI types.
+				UpdateCliTypes (monitor, changeCtx);
+				
+				// Finally, add any newly created resource files to the DotNetProject.
+				AddFilesToMD (monitor, changeCtx);
 				return true;
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Error synchronizing changes from Xcode"), ex);
@@ -361,21 +368,65 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
+		/// <summary>
+		/// Copies resource files from the Xcode project (back) to the MonoDevelop project directory.
+		/// </summary>
+		/// <param name='monitor'>
+		/// A progress monitor.
+		/// </param>
+		/// <param name='context'>
+		/// The sync context.
+		/// </param>
 		void CopyFilesToMD (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
 			if (context.FileSyncJobs.Count == 0)
 				return;
+			
 			foreach (var file in context.FileSyncJobs) {
-				monitor.Log.WriteLine ("Copying changed file from Xcode: {0}", file.SyncedRelative);
+				monitor.Log.WriteLine ("Copying {0} file from Xcode: {1}", file.IsFreshlyAdded ? "added" : "changed", file.SyncedRelative);
 				var tempFile = file.Original.ParentDirectory.Combine (".#" + file.Original.ParentDirectory.FileName);
 				File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
 				FileService.SystemRename (tempFile, file.Original);
 				context.SetSyncTimeToNow (file.SyncedRelative);
 			}
+			
 			Gtk.Application.Invoke (delegate {
 				FileService.NotifyFilesChanged (context.FileSyncJobs.Select (f => f.Original));
 			});
+			
 			monitor.EndTask ();
+		}
+		
+		/// <summary>
+		/// Adds any newly created resource files to MonoDevelop's DotNetProject.
+		/// </summary>
+		/// <param name='monitor'>
+		/// A progress monitor.
+		/// </param>
+		/// <param name='context'>
+		/// The sync context.
+		/// </param>
+		void AddFilesToMD (IProgressMonitor monitor, XcodeSyncBackContext context)
+		{
+			bool needsEndTask = false;
+			
+			if (context.FileSyncJobs.Count == 0)
+				return;
+			
+			foreach (var file in context.FileSyncJobs) {
+				if (!file.IsFreshlyAdded)
+					continue;
+				
+				monitor.Log.WriteLine ("Adding new file to project: {0}", file.SyncedRelative);
+				
+				FilePath path = new FilePath (file.Original);
+				string buildAction = HasInterfaceDefinitionExtension (path) ? BuildAction.InterfaceDefinition : BuildAction.Content;
+				context.Project.AddFile (path, buildAction);
+				needsEndTask = true;
+			}
+			
+			if (needsEndTask)
+				monitor.EndTask ();
 		}
 		
 		void UpdateCliTypes (IProgressMonitor monitor, XcodeSyncBackContext context)

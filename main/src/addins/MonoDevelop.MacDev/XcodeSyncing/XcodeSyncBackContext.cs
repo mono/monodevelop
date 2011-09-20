@@ -154,5 +154,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	{
 		public FilePath Original;
 		public FilePath SyncedRelative;
+		public bool IsFreshlyAdded;
 	}
 }
