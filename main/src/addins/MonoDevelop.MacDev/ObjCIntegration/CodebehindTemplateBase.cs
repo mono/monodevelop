@@ -83,6 +83,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public string WrapperNamespace { get; set; }
 		public System.CodeDom.Compiler.CodeDomProvider Provider { get; set; }
 		public List<NSObjectTypeInfo> Types { get; set; }
+		public NSObjectTypeInfo Type { get; set; }
 		
 		protected string GetNs (string fullname)
 		{

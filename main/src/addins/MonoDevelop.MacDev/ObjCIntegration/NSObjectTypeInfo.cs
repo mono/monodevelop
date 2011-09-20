@@ -76,6 +76,44 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public HashSet<string> UserTypeReferences { get; private set; }
 		
+		static void AddNamespaceForCliType (HashSet<string> namespaces, string ignore, string typeName)
+		{
+			string ns;
+			int dot;
+			
+			if (typeName == null)
+				return;
+			
+			if ((dot = typeName.LastIndexOf ('.')) == -1)
+				return;
+			
+			ns = typeName.Substring (0, dot);
+			if (ns != ignore && !namespaces.Contains (ns))
+				namespaces.Add (ns);
+		}
+		
+		public HashSet<string> GetNamespaces ()
+		{
+			HashSet<string> namespaces = new HashSet<string> ();
+			string ignore = null;
+			int dot;
+			
+			if ((dot = CliName.LastIndexOf ('.')) != -1)
+				ignore = CliName.Substring (0, dot);
+			
+			AddNamespaceForCliType (namespaces, ignore, BaseCliType);
+			
+			foreach (var outlet in Outlets)
+				AddNamespaceForCliType (namespaces, ignore, outlet.CliType);
+			
+			foreach (var action in Actions) {
+				foreach (var param in action.Parameters)
+					AddNamespaceForCliType (namespaces, ignore, param.CliType);
+			}
+			
+			return namespaces;
+		}
+		
 		public void GenerateObjcType (string directory, string[] frameworks)
 		{
 			if (IsModel)

@@ -138,6 +138,9 @@
     <Compile Include="XcodeSyncing\XcodeSyncedResource.cs" />
     <Compile Include="XcodeIntegration\XCodeObjectComparer.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IPListDisplayWidget.cs" />
+    <Compile Include="ObjCIntegration\CSharpCodeTypeDefinition.cs">
+      <DependentUpon>CSharpCodeTypeDefinition.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
@@ -181,6 +184,11 @@
     <None Include="ObjCIntegration\CSharpCodeCodebehind.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CSharpCodeCodebehind.cs</LastGenOutput>
+      <CustomToolNamespace>MonoDevelop.MacDev.ObjCIntegration</CustomToolNamespace>
+    </None>
+    <None Include="ObjCIntegration\CSharpCodeTypeDefinition.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CSharpCodeTypeDefinition.cs</LastGenOutput>
       <CustomToolNamespace>MonoDevelop.MacDev.ObjCIntegration</CustomToolNamespace>
     </None>
   </ItemGroup>

@@ -454,11 +454,31 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			monitor.Log.WriteLine ("Found {0} changed types", updates.Count);
 			monitor.EndTask ();
 			
+			int count = updates.Count + (newTypes != null ? newTypes.Count : 0);
+			monitor.BeginTask (GettextCatalog.GetString ("Updating types in MonoDevelop"), count);
+			
 			// First, add new types...
-			// FIXME: implement me
+			if (newTypes != null && newTypes.Count > 0) {
+				foreach (var nt in newTypes) {
+					if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+						var cs = new CSharpCodeTypeDefinition () {
+							WrapperNamespace = infoService.WrapperRoot,
+							Provider = provider,
+							Type = nt.Value,
+						};
+						
+						writer.WriteFile (nt.Key, cs.TransformText ());
+					} else {
+						// FIXME: implement support for non-C# languages
+					}
+					
+					context.Project.AddFile (nt.Key, BuildAction.Compile);
+					
+					monitor.Step (1);
+				}
+			}
 			
 			// Next, generate the designer files for any added/changed types
-			monitor.BeginTask (GettextCatalog.GetString ("Updating types in MonoDevelop"), updates.Count);
 			foreach (var df in updates) {
 				monitor.Log.WriteLine ("Syncing {0} types from Xcode to file '{1}'", df.Value.Count, df.Key);
 				if (provider is Microsoft.CSharp.CSharpCodeProvider) {

@@ -66,6 +66,7 @@ FILES =  \
 	NativeReferences/ProjectNodeBuilder.cs \
 	ObjCIntegration/CodebehindTemplateBase.cs \
 	ObjCIntegration/CSharpCodeCodebehind.cs \
+	ObjCIntegration/CSharpCodeTypeDefinition.cs \
 	ObjCIntegration/IBAction.cs \
 	ObjCIntegration/IBActionParameter.cs \
 	ObjCIntegration/IBOutlet.cs \
