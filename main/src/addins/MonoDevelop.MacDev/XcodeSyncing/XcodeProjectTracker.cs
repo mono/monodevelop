@@ -393,6 +393,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			foreach (var file in context.FileSyncJobs) {
 				monitor.Log.WriteLine ("Copying {0} file from Xcode: {1}", file.IsFreshlyAdded ? "added" : "changed", file.SyncedRelative);
+				
+				if (!Directory.Exists (file.Original.ParentDirectory))
+					Directory.CreateDirectory (file.Original.ParentDirectory);
+				
 				var tempFile = file.Original.ParentDirectory.Combine (".#" + file.Original.ParentDirectory.FileName);
 				File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
 				FileService.SystemRename (tempFile, file.Original);

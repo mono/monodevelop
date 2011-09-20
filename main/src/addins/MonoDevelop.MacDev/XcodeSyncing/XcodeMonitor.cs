@@ -218,6 +218,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			foreach (var dir in Directory.EnumerateDirectories (directory)) {
 				string relative;
 				
+				if (dir.EndsWith (".xcodeproj"))
+					continue;
+				
 				if (relativePath != null)
 					relative = Path.Combine (relativePath, Path.GetFileName (dir));
 				else

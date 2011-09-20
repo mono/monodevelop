@@ -159,7 +159,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			NSObjectTypeInfo resolved;
 			
-			if (type.BaseObjCType == null) {
+			if (type.BaseObjCType == null && type.BaseCliType != null) {
 				if (TryResolveCliToObjc (type.BaseCliType, out resolved)) {
 					if (resolved.IsModel)
 						type.BaseIsModel = true;
