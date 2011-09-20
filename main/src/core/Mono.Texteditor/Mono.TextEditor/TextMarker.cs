@@ -102,7 +102,7 @@ namespace Mono.TextEditor
 		Email
 	}
 	
-	public class UrlMarker : TextMarker
+	public class UrlMarker : TextMarker, IDisposable
 	{
 		string url;
 		string style;
@@ -110,6 +110,7 @@ namespace Mono.TextEditor
 		int endColumn;
 		LineSegment line;
 		UrlType urlType;
+		Document doc;
 		
 		public string Url {
 			get {
@@ -135,14 +136,27 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public UrlMarker (LineSegment line, string url, UrlType urlType, string style, int startColumn, int endColumn)
+		public UrlMarker (Document doc, LineSegment line, string url, UrlType urlType, string style, int startColumn, int endColumn)
 		{
-			this.line        = line;
-			this.url         = url;
-			this.urlType     = urlType;
-			this.style       = style;
+			this.doc = doc;
+			this.line = line;
+			this.url = url;
+			this.urlType = urlType;
+			this.style = style;
 			this.startColumn = startColumn;
-			this.endColumn   = endColumn;
+			this.endColumn = endColumn;
+			doc.LineChanged += HandleDocLineChanged;
+		}
+		
+		void HandleDocLineChanged (object sender, LineEventArgs e)
+		{
+			if (line == e.Line)
+				doc.RemoveMarker (this);
+		}
+		
+		public void Dispose ()
+		{
+			doc.LineChanged -= HandleDocLineChanged;
 		}
 		
 		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)

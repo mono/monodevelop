@@ -1211,6 +1211,9 @@ namespace Mono.TextEditor
 				}
 			}
 			
+			if (marker is IDisposable)
+				((IDisposable)marker).Dispose ();
+			
 			line.RemoveMarker (marker);
 			OnMarkerRemoved (new TextMarkerEvent (line, marker));
 			if (updateLine)
