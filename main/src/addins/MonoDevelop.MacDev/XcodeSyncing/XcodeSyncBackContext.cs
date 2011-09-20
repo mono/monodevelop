@@ -94,7 +94,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			// Make a first pass at resolving parsed types
 			foreach (var job in TypeSyncJobs) {
 				unresolved += ProjectInfo.ResolveObjcToCli (job.Type, Project, false);
-				ProjectInfo.InsertUpdatedType (job.Type);
+				if (job.Type.CliName != null)
+					ProjectInfo.InsertUpdatedType (job.Type);
 			}
 			
 			// Keep making more passes at resolving types until we are just spinning our wheels...
@@ -105,7 +106,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				
 				foreach (var job in TypeSyncJobs) {
 					unresolved += ProjectInfo.ResolveObjcToCli (job.Type, Project, false);
-					ProjectInfo.InsertUpdatedType (job.Type);
+					if (job.Type.CliName != null)
+						ProjectInfo.InsertUpdatedType (job.Type);
 				}
 			}
 			
@@ -138,9 +140,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					string path;
 					
 					if (job.RelativePath != null)
-						path = Path.Combine (Project.BaseDirectory.FileName, job.RelativePath, filename);
+						path = Path.Combine (Project.BaseDirectory, job.RelativePath, filename);
 					else
-						path = Path.Combine (Project.BaseDirectory.FileName, filename);
+						path = Path.Combine (Project.BaseDirectory, filename);
 					
 					job.Type.DefinedIn = new string[] { path };
 					

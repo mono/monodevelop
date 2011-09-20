@@ -471,12 +471,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 							Type = nt.Value,
 						};
 						
+						string baseDir = Path.GetDirectoryName (nt.Key);
+						if (!Directory.Exists (baseDir))
+							Directory.CreateDirectory (baseDir);
+						
 						writer.WriteFile (nt.Key, cs.TransformText ());
 					} else {
 						// FIXME: implement support for non-C# languages
 					}
-					
-					context.Project.AddFile (nt.Key, BuildAction.Compile);
 					
 					monitor.Step (1);
 				}
