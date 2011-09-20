@@ -129,10 +129,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 				);
 				return false;
 			}
-			if (!CheckImageSize (pb))
-				return false;
-			pb.Dispose ();
-			return true;
+			
+			using (pb)
+				return CheckImageSize (pb);
 		}
 		
 		protected override void OnClicked ()
