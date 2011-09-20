@@ -90,7 +90,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				return;
 			}
 			
-			var parsed = NSObjectInfoService.ParseHeader (context.Project, context.ProjectInfo, hFile);
+			var parsed = NSObjectInfoService.ParseHeader (hFile);
 			
 			if (parsed == null) {
 				context.ReportError ("Error parsing objc type {0}", Type.ObjCName);
@@ -104,7 +104,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			parsed.MergeCliInfo (objcType);
-			if (!context.ProjectInfo.ContainsErrors) {
+			if (context.ProjectInfo.ResolveObjcToCli (parsed, false) == 0) {
 				context.TypeSyncJobs.Add (new XcodeSyncObjcBackJob () {
 					HFile = hFile,
 					DesignerFile = objcType.GetDesignerFile (),

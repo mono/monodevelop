@@ -239,14 +239,12 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 		}
 		
-		public static NSObjectTypeInfo ParseHeader (DotNetProject project, NSObjectProjectInfo info, string headerFile)
+		public static NSObjectTypeInfo ParseHeader (string headerFile)
 		{
 			string text = File.ReadAllText (headerFile);
 			string userType = null, userBaseType = null;
-			NSObjectTypeInfo resolved, type;
 			MatchCollection matches;
-			string cliName;
-			bool isModel;
+			NSObjectTypeInfo type;
 			
 			// First, grep for classes
 			matches = typeInfoRegex.Matches (text);
@@ -266,24 +264,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (userType == null)
 				return null;
 			
-			// Try resolving the type...
-			if (info.TryResolveObjcToCli (userType, out resolved)) {
-				// Ooooh, we got lucky...
-				cliName = resolved.CliName;
-				isModel = resolved.IsModel;
-			} else {
-				// Make an educated guess...
-				cliName = project.DefaultNamespace + "." + userType;
-				isModel = false;
-			}
-			
-			type = new NSObjectTypeInfo (userType, cliName, userBaseType, null, isModel);
-			
-			// Try resolving the base type...
-			if (info.TryResolveObjcToCli (userBaseType, out resolved)) {
-				type.BaseCliType = resolved.CliName;
-				type.BaseIsModel = resolved.IsModel;
-			}
+			type = new NSObjectTypeInfo (userType, null, userBaseType, null, false);
 			
 			// Now grep for IBActions and IBOutlets
 			matches = ibRegex.Matches (text);
@@ -305,8 +286,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					}
 					
 					IBOutlet outlet = new IBOutlet (objcName, objcName, objcType, null);
-					if (info.TryResolveObjcToCli (objcType, out resolved))
-						outlet.CliType = resolved.CliName;
 					outlet.IsDesigner = true;
 					
 					type.Outlets.Add (outlet);
@@ -323,15 +302,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						if (objcType == "id")
 							objcType = "NSObject";
 						var par = new IBActionParameter (label, s[1], objcType, null);
-						if (info.TryResolveObjcToCli (objcType, out resolved))
-							par.CliType = resolved.CliName;
-						
 						label = s.Length == 3? s[2] : null;
 						action.Parameters.Add (par);
 					}
+					
 					type.Actions.Add (action);
 				}
 			}
+			
 			return type;
 		}
 	}

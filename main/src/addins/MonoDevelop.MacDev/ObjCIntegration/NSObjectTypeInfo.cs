@@ -50,7 +50,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 		
 		public string ObjCName { get; private set; }
-		public string CliName { get; private set; }
+		public string CliName { get; internal set; }
 		public bool IsModel { get; internal set; }
 		
 		public string BaseObjCType { get; internal set; }

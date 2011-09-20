@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Text;
+
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
 	public class NSObjectProjectInfo
@@ -44,11 +45,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		NSObjectInfoService infoService;
 		ProjectDom dom;
 		bool needsUpdating;
-		
-		public bool ContainsErrors {
-			get;
-			private set;
-		}
 		
 		public NSObjectProjectInfo (ProjectDom dom, NSObjectInfoService infoService)
 		{
@@ -82,16 +78,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			objcTypes.Clear ();
 			cliTypes.Clear ();
-			ContainsErrors = false;
 			
 			foreach (var type in infoService.GetRegisteredObjects (dom)) {
 				objcTypes.Add (type.ObjCName, type);
 				cliTypes.Add (type.CliName, type);
 			}
 			
-			foreach (var type in objcTypes.Values) {
-				ResolveTypes (type);
-			}
+			foreach (var type in cliTypes.Values)
+				ResolveCliToObjc (type);
 			
 			needsUpdating = false;
 		}
@@ -115,7 +109,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			cliTypes[type.CliName] = type;
 		}
 		
-		public bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
+		bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
 		{
 			if (cliTypes.TryGetValue (cliType, out resolved))
 				return true;
@@ -128,7 +122,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return false;
 		}
 		
-		public bool TryResolveObjcToCli (string objcType, out NSObjectTypeInfo resolved)
+		bool TryResolveObjcToCli (string objcType, out NSObjectTypeInfo resolved)
 		{
 			if (objcTypes.TryGetValue (objcType, out resolved))
 				return true;
@@ -155,10 +149,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return false;
 		}
 		
-		public void ResolveTypes (NSObjectTypeInfo type)
+		/// <summary>
+		/// Resolves the Objective-C types by mapping the known .NET type information.
+		/// </summary>
+		/// <param name='type'>
+		/// An NSObjectTypeInfo with the .NET type information filled in.
+		/// </param>
+		public void ResolveCliToObjc (NSObjectTypeInfo type)
 		{
 			NSObjectTypeInfo resolved;
-			if (type.BaseObjCType == null && type.BaseCliType != null) {
+			
+			if (type.BaseObjCType == null) {
 				if (TryResolveCliToObjc (type.BaseCliType, out resolved)) {
 					if (resolved.IsModel)
 						type.BaseIsModel = true;
@@ -167,12 +168,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					if (resolved.IsUserType)
 						type.UserTypeReferences.Add (resolved.ObjCName);
 				} else {
-					//managed classes may have implicitly registered base classes with a name not
-					//expressible in obj-c. In this case, the best we can do is walk down the 
-					//hierarchy until we find a valid base class
+					// managed classes may have implicitly registered base classes with a name not
+					// expressible in obj-c. In this case, the best we can do is walk down the 
+					// hierarchy until we find a valid base class
 					foreach (var bt in dom.GetInheritanceTree (dom.GetType (type.BaseCliType))) {
 						if (bt.ClassType != ClassType.Class)
 							continue;
+						
 						if (TryResolveCliToObjc (bt.FullName, out resolved)) {
 							if (resolved.IsModel)
 								type.BaseIsModel = true;
@@ -185,46 +187,106 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				}
 			}
 			
-			if (type.BaseCliType == null && type.BaseObjCType != null) {
-				if (TryResolveObjcToCli (type.BaseObjCType, out resolved))
-					type.BaseCliType = resolved.CliName;
-			}
-			
 			foreach (var outlet in type.Outlets) {
-				if (outlet.ObjCType == null) {
-					if (TryResolveCliToObjc (outlet.CliType, out resolved)) {
-						outlet.ObjCType = resolved.ObjCName;
-						if (resolved.IsUserType)
-							type.UserTypeReferences.Add (resolved.ObjCName);
-					}
-				}
-				if (outlet.CliType == null) {
-					if (TryResolveObjcToCli (outlet.ObjCType, out resolved)) {
-						outlet.CliType = resolved.CliName;
-					} else {
-						MessageService.ShowError (GettextCatalog.GetString ("Error while syncing object c type."),
-							string.Format (GettextCatalog.GetString ("Type '{0}' can't be resolved to a valid cli type."), outlet.ObjCType));
-						ContainsErrors = true;
-						outlet.CliType = outlet.ObjCType;
-					}
+				if (outlet.ObjCType != null)
+					continue;
+				
+				if (TryResolveCliToObjc (outlet.CliType, out resolved)) {
+					outlet.ObjCType = resolved.ObjCName;
+					if (resolved.IsUserType)
+						type.UserTypeReferences.Add (resolved.ObjCName);
 				}
 			}
 			
 			foreach (var action in type.Actions) {
 				foreach (var param in action.Parameters) {
-					if (param.ObjCType == null) {
-						if (TryResolveCliToObjc (param.CliType, out resolved)) {
-							param.ObjCType = resolved.ObjCName;
-							if (resolved.IsUserType)
-								type.UserTypeReferences.Add (resolved.ObjCName);
-						}
-					}
-					if (param.CliType == null) {
-						if (TryResolveObjcToCli (param.ObjCType, out resolved))
-							param.CliType = resolved.CliName;
+					if (param.ObjCType != null)
+						continue;
+					
+					if (TryResolveCliToObjc (param.CliType, out resolved)) {
+						param.ObjCType = resolved.ObjCName;
+						if (resolved.IsUserType)
+							type.UserTypeReferences.Add (resolved.ObjCName);
 					}
 				}
 			}
+		}
+		
+		/// <summary>
+		/// Resolves the type by mapping the known Objective-C type information to .NET types.
+		/// </summary>
+		/// <returns>
+		/// The number of unresolved types still remaining.
+		/// </returns>
+		/// <param name='type'>
+		/// The NSObjectTypeInfo that contains the known Objective-C type information.
+		/// Typically this will be the result of NSObjectInfoService.ParseHeader().
+		/// </param>
+		/// <param name='force'>
+		/// Force resolution of type information even if there isn't a known mapping.
+		/// This will use a "best guess" approach.
+		/// </param>
+		public int ResolveObjcToCli (NSObjectTypeInfo type, /* DotNetProject project - we'll likely need this for context if force is true, */ bool force)
+		{
+			NSObjectTypeInfo resolved;
+			int unresolved = 0;
+			
+			// Resolve our type
+			if (type.CliName == null) {
+				if (TryResolveObjcToCli (type.ObjCName, out resolved)) {
+					type.CliName = resolved.CliName;
+					type.IsModel = resolved.IsModel;
+				} else if (force) {
+					// FIXME: what do we do here?
+				} else {
+					unresolved++;
+				}
+			}
+			
+			// Resolve our base type
+			if (type.BaseCliType == null) {
+				if (TryResolveObjcToCli (type.BaseObjCType, out resolved)) {
+					type.BaseCliType = resolved.CliName;
+				} else if (force) {
+					// FIXME: what do we do here?
+				} else {
+					unresolved++;
+				}
+			}
+			
+			// Resolve [Outlet] types
+			foreach (var outlet in type.Outlets) {
+				if (outlet.CliType != null)
+					continue;
+				
+				if (TryResolveObjcToCli (outlet.ObjCType, out resolved)) {
+					outlet.CliType = resolved.CliName;
+				} else if (force) {
+					// FIXME: maybe we can use the namespace of the ObjCType to map to a FQN? UI -> MonoTouch.UIKit.ObjCType?
+					outlet.CliType = outlet.ObjCType;
+				} else {
+					unresolved++;
+				}
+			}
+			
+			// Resolve [Action] param types
+			foreach (var action in type.Actions) {
+				foreach (var param in action.Parameters) {
+					if (param.CliType != null)
+						continue;
+					
+					if (TryResolveObjcToCli (param.ObjCType, out resolved)) {
+						param.CliType = resolved.CliName;
+					} else if (force) {
+						// FIXME: maybe we can use the namespace of the ObjCType to map to a FQN? UI -> MonoTouch.UIKit.ObjCType?
+						param.CliType = param.ObjCType;
+					} else {
+						unresolved++;
+					}
+				}
+			}
+			
+			return unresolved;
 		}
 	}
 }
