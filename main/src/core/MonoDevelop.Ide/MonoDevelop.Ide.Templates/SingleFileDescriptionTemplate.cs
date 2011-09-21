@@ -142,8 +142,26 @@ namespace MonoDevelop.Ide.Templates
 				return null;
 		}
 		
+		public override bool SupportsProject (Project project, string projectPath)
+		{
+			DotNetProject netProject = project as DotNetProject;
+			if (netProject != null) {
+				// Ensure that the references are valid inside the project's target framework.
+				foreach (string aref in references) {
+					string res = netProject.AssemblyContext.GetAssemblyFullName (aref, netProject.TargetFramework);
+					res = netProject.AssemblyContext.GetAssemblyNameForVersion (res, netProject.TargetFramework);
+					if (string.IsNullOrEmpty (res))
+						return false;
+				}
+			}
+			
+			return true;
+		}
+		
 		bool ContainsReference (DotNetProject project, string aref)
 		{
+			if (string.IsNullOrEmpty (aref))
+				return false;
 			string aname;
 			int i = aref.IndexOf (',');
 			if (i == -1)
