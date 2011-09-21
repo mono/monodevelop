@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ItemType>TranslationProject</ItemType>
-    <relPath>../../build/po/</relPath>
+    <relPath>../../build/bin/locale/</relPath>
     <translations>
       <translations>
         <Translation isoCode="ca" />
