@@ -804,7 +804,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					bool newConf = false;
 					ConfigData cdata = FindPropertyGroup (configData, conf);
 					if (cdata == null) {
-						MSBuildPropertyGroup pg = msproject.AddNewPropertyGroup (false);
+						MSBuildPropertyGroup pg = msproject.AddNewPropertyGroup (true);
 						pg.Condition = BuildConfigCondition (conf.Name, conf.Platform);
 						cdata = new ConfigData (conf.Name, conf.Platform, pg);
 						cdata.IsNew = true;
@@ -819,7 +819,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 					// Force the serialization of properties defined in
 					// the base group, so that they can be later unmerged
-					ForceDefaultValueSerialization (ser, baseGroup, conf);
+					if (baseGroup != null)
+						ForceDefaultValueSerialization (ser, baseGroup, conf);
 					DataItem ditem = (DataItem) ser.Serialize (conf);
 					ser.SerializationContext.ResetDefaultValueSerialization ();
 					
@@ -833,7 +834,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							if (n != null)
 								ditem.ItemData.Remove (n);
 						}
-						ForceDefaultValueSerialization (ser, baseGroup, netConfig.CompilationParameters);
+						if (baseGroup != null)
+							ForceDefaultValueSerialization (ser, baseGroup, netConfig.CompilationParameters);
 						DataItem ditemComp = (DataItem) ser.Serialize (netConfig.CompilationParameters);
 						ser.SerializationContext.ResetDefaultValueSerialization ();
 						ditem.ItemData.AddRange (ditemComp.ItemData);
@@ -846,7 +848,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					CollectMergetoprojectProperties (propGroup, mergeToProjectPropertyNames, mergeToProjectProperties);
 					
-					propGroup.UnMerge (baseGroup, mergeToProjectPropertyNamesCopy);
+					if (baseGroup != null)
+						propGroup.UnMerge (baseGroup, mergeToProjectPropertyNamesCopy);
 				}
 				
 				// Move properties with common values from configurations to the main

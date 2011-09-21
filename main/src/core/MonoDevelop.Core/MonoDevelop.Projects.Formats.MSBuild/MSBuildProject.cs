@@ -172,11 +172,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			XmlElement elem = doc.CreateElement (null, "PropertyGroup", MSBuildProject.Schema);
 			
-			XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:PropertyGroup[last()]", XmlNamespaceManager) as XmlElement;
-			if (last != null)
-				doc.DocumentElement.InsertAfter (elem, last);
-			else
-				doc.DocumentElement.AppendChild (elem);
+			if (insertAtEnd) {
+				XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:PropertyGroup[last()]", XmlNamespaceManager) as XmlElement;
+				if (last != null)
+					doc.DocumentElement.InsertAfter (elem, last);
+			} else {
+				XmlElement first = doc.DocumentElement.SelectSingleNode ("tns:PropertyGroup", XmlNamespaceManager) as XmlElement;
+				if (first != null)
+					doc.DocumentElement.InsertBefore (elem, first);
+			}
+			
+			if (elem.ParentNode == null) {
+				XmlElement first = doc.DocumentElement.SelectSingleNode ("tns:ItemGroup", XmlNamespaceManager) as XmlElement;
+				if (first != null)
+					doc.DocumentElement.InsertBefore (elem, first);
+				else
+					doc.DocumentElement.AppendChild (elem);
+			}
 			
 			return GetGroup (elem);
 		}
