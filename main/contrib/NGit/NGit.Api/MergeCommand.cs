@@ -174,12 +174,14 @@ namespace NGit.Api
 					}
 					else
 					{
-						repo.WriteMergeCommitMsg(new MergeMessageFormatter().Format(commits, head));
+						string mergeMessage = new MergeMessageFormatter().Format(commits, head);
+						repo.WriteMergeCommitMsg(mergeMessage);
 						repo.WriteMergeHeads(Arrays.AsList(@ref.GetObjectId()));
 						ThreeWayMerger merger = (ThreeWayMerger)mergeStrategy.NewMerger(repo);
 						bool noProblems;
 						IDictionary<string, MergeResult<NGit.Diff.Sequence>> lowLevelResults = null;
 						IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = null;
+						IList<string> unmergedPaths = null;
 						if (merger is ResolveMerger)
 						{
 							ResolveMerger resolveMerger = (ResolveMerger)merger;
@@ -188,6 +190,7 @@ namespace NGit.Api
 							noProblems = merger.Merge(headCommit, srcCommit);
 							lowLevelResults = resolveMerger.GetMergeResults();
 							failingPaths = resolveMerger.GetFailingPaths();
+							unmergedPaths = resolveMerger.GetUnmergedPaths();
 						}
 						else
 						{
@@ -215,6 +218,9 @@ namespace NGit.Api
 							}
 							else
 							{
+								string mergeMessageWithConflicts = new MergeMessageFormatter().FormatWithConflicts
+									(mergeMessage, unmergedPaths);
+								repo.WriteMergeCommitMsg(mergeMessageWithConflicts);
 								return new MergeCommandResult(null, merger.GetBaseCommit(0, 1), new ObjectId[] { 
 									headCommit.Id, srcCommit.Id }, MergeStatus.CONFLICTING, mergeStrategy, lowLevelResults
 									, null);

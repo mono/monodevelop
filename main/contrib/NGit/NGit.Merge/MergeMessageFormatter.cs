@@ -129,8 +129,30 @@ namespace NGit.Merge
 			string targetName = target.GetLeaf().GetName();
 			if (!targetName.Equals(Constants.R_HEADS + Constants.MASTER))
 			{
-				string targetShortName = Repository.ShortenRefName(target.GetName());
+				string targetShortName = Repository.ShortenRefName(targetName);
 				sb.Append(" into " + targetShortName);
+			}
+			return sb.ToString();
+		}
+
+		/// <summary>Add section with conflicting paths to merge message.</summary>
+		/// <remarks>Add section with conflicting paths to merge message.</remarks>
+		/// <param name="message">the original merge message</param>
+		/// <param name="conflictingPaths">the paths with conflicts</param>
+		/// <returns>merge message with conflicting paths added</returns>
+		public virtual string FormatWithConflicts(string message, IList<string> conflictingPaths
+			)
+		{
+			StringBuilder sb = new StringBuilder(message);
+			if (!message.EndsWith("\n"))
+			{
+				sb.Append("\n");
+			}
+			sb.Append("\n");
+			sb.Append("Conflicts:\n");
+			foreach (string conflictingPath in conflictingPaths)
+			{
+				sb.Append('\t').Append(conflictingPath).Append('\n');
 			}
 			return sb.ToString();
 		}

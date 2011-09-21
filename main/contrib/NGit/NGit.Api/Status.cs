@@ -131,5 +131,14 @@ namespace NGit.Api
 		{
 			return Sharpen.Collections.UnmodifiableSet(diff.GetUntracked());
 		}
+
+		/// <returns>
+		/// list of files that are in conflict. (e.g what you get if you
+		/// modify file that was modified by someone else in the meantime)
+		/// </returns>
+		public virtual ICollection<string> GetConflicting()
+		{
+			return Sharpen.Collections.UnmodifiableSet(diff.GetConflicting());
+		}
 	}
 }

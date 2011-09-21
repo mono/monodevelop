@@ -458,6 +458,11 @@ namespace NGit.Dircache
 				}
 				// ignore
 				DirCacheEntry entry = dc.GetEntry(path);
+				// submodules are handled with separate operations
+				if (FileMode.GITLINK.Equals(entry.RawMode))
+				{
+					continue;
+				}
 				CheckoutEntry(repo, file, entry);
 			}
 			// commit the index builder - a new index is persisted

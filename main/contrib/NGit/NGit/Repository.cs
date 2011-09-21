@@ -1187,7 +1187,7 @@ namespace NGit
 				return RepositoryState.REBASING_MERGE;
 			}
 			// Both versions
-			if (new FilePath(Directory, "MERGE_HEAD").Exists())
+			if (new FilePath(Directory, Constants.MERGE_HEAD).Exists())
 			{
 				// we are merging - now check whether we have unmerged paths
 				try
@@ -1210,6 +1210,23 @@ namespace NGit
 			if (new FilePath(Directory, "BISECT_LOG").Exists())
 			{
 				return RepositoryState.BISECTING;
+			}
+			if (new FilePath(Directory, Constants.CHERRY_PICK_HEAD).Exists())
+			{
+				try
+				{
+					if (!ReadDirCache().HasUnmergedPaths())
+					{
+						// no unmerged paths
+						return RepositoryState.CHERRY_PICKING_RESOLVED;
+					}
+				}
+				catch (IOException e)
+				{
+					// fall through to CHERRY_PICKING
+					Sharpen.Runtime.PrintStackTrace(e);
+				}
+				return RepositoryState.CHERRY_PICKING;
 			}
 			return RepositoryState.SAFE;
 		}
@@ -1492,17 +1509,8 @@ namespace NGit
 			{
 				throw new NoWorkTreeException();
 			}
-			FilePath mergeHeadFile = new FilePath(Directory, Constants.MERGE_HEAD);
-			byte[] raw;
-			try
-			{
-				raw = IOUtil.ReadFully(mergeHeadFile);
-			}
-			catch (FileNotFoundException)
-			{
-				return null;
-			}
-			if (raw.Length == 0)
+			byte[] raw = ReadGitDirectoryFile(Constants.MERGE_HEAD);
+			if (raw == null)
 			{
 				return null;
 			}
@@ -1529,10 +1537,92 @@ namespace NGit
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		public virtual void WriteMergeHeads(IList<ObjectId> heads)
 		{
-			FilePath mergeHeadFile = new FilePath(gitDir, Constants.MERGE_HEAD);
+			WriteHeadsFile(heads, Constants.MERGE_HEAD);
+		}
+
+		/// <summary>Return the information stored in the file $GIT_DIR/CHERRY_PICK_HEAD.</summary>
+		/// <remarks>Return the information stored in the file $GIT_DIR/CHERRY_PICK_HEAD.</remarks>
+		/// <returns>
+		/// object id from CHERRY_PICK_HEAD file or
+		/// <code>null</code>
+		/// if this file
+		/// doesn't exist. Also if the file exists but is empty
+		/// <code>null</code>
+		/// will be returned
+		/// </returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		/// <exception cref="NGit.Errors.NoWorkTreeException">
+		/// if this is bare, which implies it has no working directory.
+		/// See
+		/// <see cref="IsBare()">IsBare()</see>
+		/// .
+		/// </exception>
+		public virtual ObjectId ReadCherryPickHead()
+		{
+			if (IsBare || Directory == null)
+			{
+				throw new NoWorkTreeException();
+			}
+			byte[] raw = ReadGitDirectoryFile(Constants.CHERRY_PICK_HEAD);
+			if (raw == null)
+			{
+				return null;
+			}
+			return ObjectId.FromString(raw, 0);
+		}
+
+		/// <summary>Write cherry pick commit into $GIT_DIR/CHERRY_PICK_HEAD.</summary>
+		/// <remarks>
+		/// Write cherry pick commit into $GIT_DIR/CHERRY_PICK_HEAD. This is used in
+		/// case of conflicts to store the cherry which was tried to be picked.
+		/// </remarks>
+		/// <param name="head">
+		/// an object id of the cherry commit or <code>null</code> to
+		/// delete the file
+		/// </param>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public virtual void WriteCherryPickHead(ObjectId head)
+		{
+			IList<ObjectId> heads = (head != null) ? Sharpen.Collections.SingletonList(head) : 
+				null;
+			WriteHeadsFile(heads, Constants.CHERRY_PICK_HEAD);
+		}
+
+		/// <summary>Read a file from the git directory.</summary>
+		/// <remarks>Read a file from the git directory.</remarks>
+		/// <param name="filename"></param>
+		/// <returns>the raw contents or null if the file doesn't exist or is empty</returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		private byte[] ReadGitDirectoryFile(string filename)
+		{
+			FilePath file = new FilePath(Directory, filename);
+			try
+			{
+				byte[] raw = IOUtil.ReadFully(file);
+				return raw.Length > 0 ? raw : null;
+			}
+			catch (FileNotFoundException)
+			{
+				return null;
+			}
+		}
+
+		/// <summary>Write the given heads to a file in the git directory.</summary>
+		/// <remarks>Write the given heads to a file in the git directory.</remarks>
+		/// <param name="heads">
+		/// a list of object ids to write or null if the file should be
+		/// deleted.
+		/// </param>
+		/// <param name="filename"></param>
+		/// <exception cref="System.IO.FileNotFoundException">System.IO.FileNotFoundException
+		/// 	</exception>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		private void WriteHeadsFile(IList<ObjectId> heads, string filename)
+		{
+			FilePath headsFile = new FilePath(Directory, filename);
 			if (heads != null)
 			{
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(mergeHeadFile
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(headsFile
 					));
 				try
 				{
@@ -1549,7 +1639,7 @@ namespace NGit
 			}
 			else
 			{
-				FileUtils.Delete(mergeHeadFile);
+				FileUtils.Delete(headsFile, FileUtils.SKIP_MISSING);
 			}
 		}
 	}

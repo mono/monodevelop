@@ -135,7 +135,7 @@ namespace NGit.Storage.File
 			{
 				return RefUpdate.Result.LOCK_FAILURE;
 			}
-			database.Stored(this, Lock.GetCommitLastModified());
+			database.Stored(this, Lock.GetCommitSnapshot());
 			return status;
 		}
 
@@ -192,7 +192,7 @@ namespace NGit.Storage.File
 			{
 				return RefUpdate.Result.LOCK_FAILURE;
 			}
-			database.StoredSymbolicRef(this, Lock.GetCommitLastModified(), target);
+			database.StoredSymbolicRef(this, Lock.GetCommitSnapshot(), target);
 			if (GetRef().GetStorage() == RefStorage.NEW)
 			{
 				return RefUpdate.Result.NEW;

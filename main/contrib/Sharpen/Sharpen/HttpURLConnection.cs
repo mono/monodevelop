@@ -64,7 +64,16 @@ namespace Sharpen
 		HttpWebResponse Response {
 			get {
 				if (reqResponse == null)
-					reqResponse = (HttpWebResponse) request.GetResponse ();
+				{
+					try
+					{
+						reqResponse = (HttpWebResponse) request.GetResponse ();
+					}
+					catch (WebException ex)
+					{
+						reqResponse = (HttpWebResponse) ex.Response;
+					}
+				}
 				return reqResponse;
 			}
 		}

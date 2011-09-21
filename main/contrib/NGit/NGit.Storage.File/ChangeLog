@@ -1,0 +1,12 @@
+2011-09-21  lluis  <${AuthorEmail}>
+
+	* RefDirectory.cs:
+	* FileSnapshot.cs:
+	* FileRepository.cs:
+	* RefDirectoryUpdate.cs:
+	* ObjectDirectoryPackParser.cs: 
+
+2011-09-21  lluis  <${AuthorEmail}>
+
+	* FileRepository.cs: 
+

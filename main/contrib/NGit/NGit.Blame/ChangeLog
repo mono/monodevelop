@@ -1,0 +1,8 @@
+2011-09-21  lluis  <${AuthorEmail}>
+
+	* Region.cs:
+	* Candidate.cs:
+	* ReverseWalk.cs:
+	* BlameResult.cs:
+	* BlameGenerator.cs: 
+

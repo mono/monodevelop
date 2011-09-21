@@ -150,7 +150,7 @@ namespace NGit.Diff
 					Edit last = e[e.Count - 1];
 					if (last.GetType() == Edit.Type.INSERT)
 					{
-						while (last.endB < b.Size() && cmp.Equals(b, last.beginB, b, region.endB))
+						while (last.endB < b.Size() && cmp.Equals(b, last.beginB, b, last.endB))
 						{
 							last.beginA++;
 							last.endA++;

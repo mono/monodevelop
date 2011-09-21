@@ -128,10 +128,14 @@ namespace Sharpen
 		public static Encoding GetEncoding (string name)
 		{
 //			Encoding e = Encoding.GetEncoding (name, EncoderFallback.ExceptionFallback, DecoderFallback.ExceptionFallback);
-			Encoding e = Encoding.GetEncoding (name.Replace ('_','-'));
-			if (e is UTF8Encoding)
-				return new UTF8Encoding (false, true);
-			return e;
+			try {
+				Encoding e = Encoding.GetEncoding (name.Replace ('_','-'));
+				if (e is UTF8Encoding)
+					return new UTF8Encoding (false, true);
+				return e;
+			} catch (ArgumentException) {
+				throw new UnsupportedCharsetException (name);
+			}
 		}
 		
 		public static ICollection<KeyValuePair<T, U>> EntrySet<T, U> (this IDictionary<T, U> s)
@@ -544,6 +548,11 @@ namespace Sharpen
 		public static string ToOctalString (int val)
 		{
 			return Convert.ToString (val, 8);
+		}
+
+		public static string ToHexString (int val)
+		{
+			return Convert.ToString (val, 16);
 		}
 
 		public static string ToString (object val)

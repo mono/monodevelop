@@ -308,6 +308,13 @@ namespace NGit.Transport
 			public Password() : base(JGitText.Get().credentialPassword, true)
 			{
 			}
+
+			/// <summary>Initialize a new password item, with given prompt.</summary>
+			/// <remarks>Initialize a new password item, with given prompt.</remarks>
+			/// <param name="msg">prompt message</param>
+			public Password(string msg) : base(msg, true)
+			{
+			}
 		}
 	}
 }

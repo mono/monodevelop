@@ -150,7 +150,11 @@ namespace NGit.Api
 						{
 							return new CherryPickResult(merger.GetFailingPaths());
 						}
-						// merge conflicts
+						// there are merge conflicts
+						string message = new MergeMessageFormatter().FormatWithConflicts(srcCommit.GetFullMessage
+							(), merger.GetUnmergedPaths());
+						repo.WriteCherryPickHead(srcCommit.Id);
+						repo.WriteMergeCommitMsg(message);
 						return CherryPickResult.CONFLICT;
 					}
 				}

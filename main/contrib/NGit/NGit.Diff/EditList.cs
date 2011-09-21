@@ -41,7 +41,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System.Collections.Generic;
 using NGit.Diff;
 using Sharpen;
 
@@ -52,8 +51,11 @@ namespace NGit.Diff
 	/// <see cref="Edit">Edit</see>
 	/// s in a document.
 	/// </summary>
-	public class EditList : AbstractList<Edit>
+	[System.Serializable]
+	public class EditList : AList<Edit>
 	{
+		private const long serialVersionUID = 1L;
+
 		/// <summary>Construct an edit list containing a single edit.</summary>
 		/// <remarks>Construct an edit list containing a single edit.</remarks>
 		/// <param name="edit">the edit to return in the list.</param>
@@ -69,13 +71,10 @@ namespace NGit.Diff
 			return res;
 		}
 
-		private readonly AList<Edit> container;
-
 		/// <summary>Create a new, empty edit list.</summary>
 		/// <remarks>Create a new, empty edit list.</remarks>
-		public EditList()
+		public EditList() : base(16)
 		{
-			container = new AList<Edit>();
 		}
 
 		/// <summary>Create an empty edit list with the specified capacity.</summary>
@@ -84,61 +83,13 @@ namespace NGit.Diff
 		/// the initial capacity of the edit list. If additional edits are
 		/// added to the list, it will be grown to support them.
 		/// </param>
-		public EditList(int capacity)
+		public EditList(int capacity) : base(capacity)
 		{
-			container = new AList<Edit>(capacity);
-		}
-
-		public override int Count
-		{
-			get
-			{
-				return container.Count;
-			}
-		}
-
-		public override Edit Get(int index)
-		{
-			return container[index];
-		}
-
-		public override Edit Set(int index, Edit element)
-		{
-			return container.Set(index, element);
-		}
-
-		public override void Add(int index, Edit element)
-		{
-			container.Add(index, element);
-		}
-
-		public override bool AddAll<_T0>(ICollection<_T0> c)
-		{
-			return Sharpen.Collections.AddAll(container, c);
-		}
-
-		public override Edit Remove(int index)
-		{
-			return container.Remove(index);
-		}
-
-		public override int GetHashCode()
-		{
-			return container.GetHashCode();
-		}
-
-		public override bool Equals(object o)
-		{
-			if (o is NGit.Diff.EditList)
-			{
-				return container.Equals(((NGit.Diff.EditList)o).container);
-			}
-			return false;
 		}
 
 		public override string ToString()
 		{
-			return "EditList" + container.ToString();
+			return "EditList" + base.ToString();
 		}
 	}
 }

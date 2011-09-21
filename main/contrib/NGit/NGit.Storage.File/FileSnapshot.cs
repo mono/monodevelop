@@ -124,6 +124,24 @@ namespace NGit.Storage.File
 			return new NGit.Storage.File.FileSnapshot(read, modified);
 		}
 
+		/// <summary>
+		/// Record a snapshot for a file for which the last modification time is
+		/// already known.
+		/// </summary>
+		/// <remarks>
+		/// Record a snapshot for a file for which the last modification time is
+		/// already known.
+		/// <p>
+		/// This method should be invoked before the file is accessed.
+		/// </remarks>
+		/// <param name="modified">the last modification time of the file</param>
+		/// <returns>the snapshot.</returns>
+		public static NGit.Storage.File.FileSnapshot Save(long modified)
+		{
+			long read = Runtime.CurrentTimeMillis();
+			return new NGit.Storage.File.FileSnapshot(read, modified);
+		}
+
 		/// <summary>Last observed modification time of the path.</summary>
 		/// <remarks>Last observed modification time of the path.</remarks>
 		private readonly long lastModified;

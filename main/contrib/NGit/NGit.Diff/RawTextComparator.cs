@@ -383,7 +383,7 @@ namespace NGit.Diff
 		private static int FindForwardLine(IntList lines, int idx, int ptr)
 		{
 			int end = lines.Size() - 2;
-			while (idx < end && lines.Get(idx + 2) <= ptr)
+			while (idx < end && lines.Get(idx + 2) < ptr)
 			{
 				idx++;
 			}

@@ -115,10 +115,10 @@ namespace NGit.Transport
 
 		public virtual bool PromptPassword(string msg)
 		{
-			CredentialItem.StringType v = NewPrompt(msg);
-			if (provider.Get(uri, v))
+			CredentialItem.Password p = new CredentialItem.Password(msg);
+			if (provider.Get(uri, p))
 			{
-				password = v.GetValue();
+				password = new string(p.GetValue());
 				return true;
 			}
 			else

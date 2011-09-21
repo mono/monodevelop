@@ -67,6 +67,9 @@ namespace NGit
 		/// <summary>The "user" section</summary>
 		public static readonly string CONFIG_USER_SECTION = "user";
 
+		/// <summary>The "gerrit" section</summary>
+		public static readonly string CONFIG_GERRIT_SECTION = "gerrit";
+
 		/// <summary>The "algorithm" key</summary>
 		public static readonly string CONFIG_KEY_ALGORITHM = "algorithm";
 
@@ -150,5 +153,8 @@ namespace NGit
 		/// 
 		/// </summary>
 		public static readonly string CONFIG_KEY_LOCAL = "local";
+
+		/// <summary>The "createchangeid" key</summary>
+		public static readonly string CONFIG_KEY_CREATECHANGEID = "createchangeid";
 	}
 }

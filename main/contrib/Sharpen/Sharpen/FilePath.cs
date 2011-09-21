@@ -332,6 +332,15 @@ namespace Sharpen
 				return false;
 			}
 		}
+		
+		public string GetParent ()
+		{
+			string p = Path.GetDirectoryName (path);
+			if (string.IsNullOrEmpty(p) || p == path)
+				return null;
+			else
+				return p;
+		}
 
 		public override string ToString ()
 		{

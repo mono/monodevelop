@@ -67,8 +67,17 @@ namespace NGit.Api
 			FAST_FORWARD
 		}
 
+		internal static readonly NGit.Api.RebaseResult OK_RESULT = new NGit.Api.RebaseResult
+			(RebaseResult.Status.OK);
+
+		internal static readonly NGit.Api.RebaseResult ABORTED_RESULT = new NGit.Api.RebaseResult
+			(RebaseResult.Status.ABORTED);
+
 		internal static readonly NGit.Api.RebaseResult UP_TO_DATE_RESULT = new NGit.Api.RebaseResult
 			(RebaseResult.Status.UP_TO_DATE);
+
+		internal static readonly NGit.Api.RebaseResult FAST_FORWARD_RESULT = new NGit.Api.RebaseResult
+			(RebaseResult.Status.FAST_FORWARD);
 
 		private readonly RebaseResult.Status mySatus;
 
@@ -76,7 +85,7 @@ namespace NGit.Api
 
 		private IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths;
 
-		internal RebaseResult(RebaseResult.Status status)
+		private RebaseResult(RebaseResult.Status status)
 		{
 			this.mySatus = status;
 			currentCommit = null;

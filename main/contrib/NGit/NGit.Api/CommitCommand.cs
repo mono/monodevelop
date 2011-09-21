@@ -235,6 +235,14 @@ namespace NGit.Api
 										repo.WriteMergeCommitMsg(null);
 										repo.WriteMergeHeads(null);
 									}
+									else
+									{
+										if (state == RepositoryState.CHERRY_PICKING_RESOLVED)
+										{
+											repo.WriteMergeCommitMsg(null);
+											repo.WriteCherryPickHead(null);
+										}
+									}
 									return revCommit;
 								}
 
@@ -374,7 +382,7 @@ namespace NGit.Api
 							}
 						}
 						// update index
-						dcEditor.Add(new _PathEdit_356(dcEntry, path));
+						dcEditor.Add(new _PathEdit_359(dcEntry, path));
 						// add to temporary in-core index
 						dcBuilder.Add(dcEntry);
 						if (emptyCommit && (hTree == null || !hTree.IdEqual(fTree)))
@@ -433,9 +441,9 @@ namespace NGit.Api
 			return inCoreIndex;
 		}
 
-		private sealed class _PathEdit_356 : DirCacheEditor.PathEdit
+		private sealed class _PathEdit_359 : DirCacheEditor.PathEdit
 		{
-			public _PathEdit_356(DirCacheEntry dcEntry, string baseArg1) : base(baseArg1)
+			public _PathEdit_359(DirCacheEntry dcEntry, string baseArg1) : base(baseArg1)
 			{
 				this.dcEntry = dcEntry;
 			}

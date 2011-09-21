@@ -157,7 +157,7 @@ namespace NGit.Storage.File
 			{
 				string repositoryFormatVersion = ((FileBasedConfig)GetConfig()).GetString(ConfigConstants
 					.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_REPO_FORMAT_VERSION);
-				if (!"0".Equals(repositoryFormatVersion))
+				if (!string.IsNullOrEmpty (repositoryFormatVersion) && !"0".Equals(repositoryFormatVersion))
 				{
 					throw new IOException(MessageFormat.Format(JGitText.Get().unknownRepositoryFormat2
 						, repositoryFormatVersion));

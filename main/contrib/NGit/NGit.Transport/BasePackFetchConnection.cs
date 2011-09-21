@@ -132,6 +132,8 @@ namespace NGit.Transport
 
 		internal static readonly string OPTION_NO_PROGRESS = "no-progress";
 
+		internal static readonly string OPTION_NO_DONE = "no-done";
+
 		internal class MultiAck
 		{
 			public const int OFF = 0;
@@ -178,6 +180,8 @@ namespace NGit.Transport
 
 		private bool allowOfsDelta;
 
+		private bool noDone;
+
 		private string lockMessage;
 
 		private PackLock packLock;
@@ -215,10 +219,10 @@ namespace NGit.Transport
 
 		private class FetchConfig
 		{
-			private sealed class _SectionParser_212 : Config.SectionParser<BasePackFetchConnection.FetchConfig
+			private sealed class _SectionParser_216 : Config.SectionParser<BasePackFetchConnection.FetchConfig
 				>
 			{
-				public _SectionParser_212()
+				public _SectionParser_216()
 				{
 				}
 
@@ -229,7 +233,7 @@ namespace NGit.Transport
 			}
 
 			internal static readonly Config.SectionParser<BasePackFetchConnection.FetchConfig
-				> KEY = new _SectionParser_212();
+				> KEY = new _SectionParser_216();
 
 			internal readonly bool allowOfsDelta;
 
@@ -480,6 +484,10 @@ namespace NGit.Transport
 			if (WantCapability(line, OPTION_MULTI_ACK_DETAILED))
 			{
 				multiAck = BasePackFetchConnection.MultiAck.DETAILED;
+				if (statelessRPC)
+				{
+					noDone = WantCapability(line, OPTION_NO_DONE);
+				}
 			}
 			else
 			{
@@ -529,13 +537,13 @@ namespace NGit.Transport
 			int havesSinceLastContinue = 0;
 			bool receivedContinue = false;
 			bool receivedAck = false;
-			bool negotiate = true;
+			bool receivedReady = false;
 			if (statelessRPC)
 			{
 				state.WriteTo(@out, null);
 			}
 			NegotiateBegin();
-			while (negotiate)
+			while (!receivedReady)
 			{
 				RevCommit c = walk.Next();
 				if (c == null)
@@ -614,7 +622,7 @@ namespace NGit.Transport
 							havesSinceLastContinue = 0;
 							if (anr == PacketLineIn.AckNackResult.ACK_READY)
 							{
-								negotiate = false;
+								receivedReady = true;
 							}
 							break;
 						}
@@ -648,12 +656,15 @@ SEND_HAVES_break: ;
 			{
 				throw new BasePackFetchConnection.CancelledException();
 			}
-			// When statelessRPC is true we should always leave SEND_HAVES
-			// loop above while in the middle of a request. This allows us
-			// to just write done immediately.
-			//
-			pckOut.WriteString("done\n");
-			pckOut.Flush();
+			if (!receivedReady || !noDone)
+			{
+				// When statelessRPC is true we should always leave SEND_HAVES
+				// loop above while in the middle of a request. This allows us
+				// to just write done immediately.
+				//
+				pckOut.WriteString("done\n");
+				pckOut.Flush();
+			}
 			if (!receivedAck)
 			{
 				// Apparently if we have never received an ACK earlier
@@ -710,12 +721,12 @@ READ_RESULT_break2: ;
 			walk.ResetRetain(REACHABLE, ADVERTISED);
 			walk.MarkStart(reachableCommits);
 			walk.Sort(RevSort.COMMIT_TIME_DESC);
-			walk.SetRevFilter(new _RevFilter_597(this));
+			walk.SetRevFilter(new _RevFilter_605(this));
 		}
 
-		private sealed class _RevFilter_597 : RevFilter
+		private sealed class _RevFilter_605 : RevFilter
 		{
-			public _RevFilter_597(BasePackFetchConnection _enclosing)
+			public _RevFilter_605(BasePackFetchConnection _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}

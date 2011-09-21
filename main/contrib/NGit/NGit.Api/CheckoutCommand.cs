@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
 using System.IO;
 using NGit;
 using NGit.Api;
@@ -48,6 +49,8 @@ using NGit.Api.Errors;
 using NGit.Dircache;
 using NGit.Errors;
 using NGit.Revwalk;
+using NGit.Treewalk;
+using NGit.Treewalk.Filter;
 using Sharpen;
 
 namespace NGit.Api
@@ -66,15 +69,18 @@ namespace NGit.Api
 
 		private CreateBranchCommand.SetupUpstreamMode upstreamMode;
 
-		private string startPoint = Constants.HEAD;
+		private string startPoint = null;
 
 		private RevCommit startCommit;
 
 		private CheckoutResult status;
 
+		private IList<string> paths;
+
 		/// <param name="repo"></param>
 		protected internal CheckoutCommand(Repository repo) : base(repo)
 		{
+			this.paths = new List<string>();
 		}
 
 		/// <exception cref="NGit.Api.Errors.RefAlreadyExistsException">
@@ -95,6 +101,13 @@ namespace NGit.Api
 			ProcessOptions();
 			try
 			{
+				if (!paths.IsEmpty())
+				{
+					CheckoutPaths();
+					status = CheckoutResult.OK_RESULT;
+					SetCallable(false);
+					return null;
+				}
 				if (createBranch)
 				{
 					Git git = new Git(repo);
@@ -203,6 +216,82 @@ namespace NGit.Api
 			}
 		}
 
+		/// <param name="path">Path to update in the working tree and index.</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Api.CheckoutCommand AddPath(string path)
+		{
+			CheckCallable();
+			this.paths.AddItem(path);
+			return this;
+		}
+
+		/// <summary>Checkout paths into index and working directory</summary>
+		/// <returns>this instance</returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		/// <exception cref="NGit.Api.Errors.RefNotFoundException">NGit.Api.Errors.RefNotFoundException
+		/// 	</exception>
+		protected internal virtual NGit.Api.CheckoutCommand CheckoutPaths()
+		{
+			RevWalk revWalk = new RevWalk(repo);
+			DirCache dc = repo.LockDirCache();
+			try
+			{
+				TreeWalk treeWalk = new TreeWalk(revWalk.GetObjectReader());
+				treeWalk.Recursive = true;
+				treeWalk.AddTree(new DirCacheIterator(dc));
+				treeWalk.Filter = PathFilterGroup.CreateFromStrings(paths);
+				IList<string> files = new List<string>();
+				while (treeWalk.Next())
+				{
+					files.AddItem(treeWalk.PathString);
+				}
+				if (startCommit != null || startPoint != null)
+				{
+					DirCacheEditor editor = dc.Editor();
+					TreeWalk startWalk = new TreeWalk(revWalk.GetObjectReader());
+					startWalk.Recursive = true;
+					startWalk.Filter = treeWalk.Filter;
+					startWalk.AddTree(revWalk.ParseCommit(GetStartPoint()).Tree);
+					while (startWalk.Next())
+					{
+						ObjectId blobId = startWalk.GetObjectId(0);
+						editor.Add(new _PathEdit_258(blobId, startWalk.PathString));
+					}
+					editor.Commit();
+				}
+				FilePath workTree = repo.WorkTree;
+				foreach (string file in files)
+				{
+					DirCacheCheckout.CheckoutEntry(repo, new FilePath(workTree, file), dc.GetEntry(file
+						));
+				}
+			}
+			finally
+			{
+				dc.Unlock();
+				revWalk.Release();
+			}
+			return this;
+		}
+
+		private sealed class _PathEdit_258 : DirCacheEditor.PathEdit
+		{
+			public _PathEdit_258(ObjectId blobId, string baseArg1) : base(baseArg1)
+			{
+				this.blobId = blobId;
+			}
+
+			public override void Apply(DirCacheEntry ent)
+			{
+				ent.SetObjectId(blobId);
+			}
+
+			private readonly ObjectId blobId;
+		}
+
 		/// <exception cref="NGit.Errors.AmbiguousObjectException"></exception>
 		/// <exception cref="NGit.Api.Errors.RefNotFoundException"></exception>
 		/// <exception cref="System.IO.IOException"></exception>
@@ -232,7 +321,8 @@ namespace NGit.Api
 		/// <exception cref="NGit.Api.Errors.InvalidRefNameException"></exception>
 		private void ProcessOptions()
 		{
-			if (name == null || !Repository.IsValidRefName(Constants.R_HEADS + name))
+			if (paths.IsEmpty() && (name == null || !Repository.IsValidRefName(Constants.R_HEADS
+				 + name)))
 			{
 				throw new InvalidRefNameException(MessageFormat.Format(JGitText.Get().branchNameInvalid
 					, name == null ? "<null>" : name));

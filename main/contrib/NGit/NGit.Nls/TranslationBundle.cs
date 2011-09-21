@@ -76,7 +76,7 @@ namespace NGit.Nls
 	/// transportError=unknown error talking to {0}
 	/// TransportText_de.properties:
 	/// repositoryNotFound=repository {0} nicht gefunden
-	/// transportError=unbekannter Fehler während der Kommunikation mit {0}
+	/// transportError=unbekannter Fehler w√§hrend der Kommunikation mit {0}
 	/// ...
 	/// </pre>
 	/// Then make use of it:

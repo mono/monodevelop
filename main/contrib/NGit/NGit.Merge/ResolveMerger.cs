@@ -471,6 +471,47 @@ namespace NGit.Merge
 				}
 				modifiedFiles.AddItem(tw.PathString);
 			}
+			else
+			{
+				if (modeO != modeT)
+				{
+					// OURS or THEIRS has been deleted
+					if (((modeO != 0 && !tw.IdEqual(T_BASE, T_OURS)) || (modeT != 0 && !tw.IdEqual(T_BASE
+						, T_THEIRS))))
+					{
+						Add(tw.RawPath, @base, DirCacheEntry.STAGE_1);
+						Add(tw.RawPath, ours, DirCacheEntry.STAGE_2);
+						DirCacheEntry e = Add(tw.RawPath, theirs, DirCacheEntry.STAGE_3);
+						// OURS was deleted checkout THEIRS
+						if (modeO == 0)
+						{
+							// Check worktree before checking out THEIRS
+							if (IsWorktreeDirty())
+							{
+								return false;
+							}
+							if (NonTree(modeT))
+							{
+								if (e != null)
+								{
+									toBeCheckedOut.Put(tw.PathString, e);
+								}
+							}
+						}
+						unmergedPaths.AddItem(tw.PathString);
+						// generate a MergeResult for the deleted file
+						RawText baseText = @base == null ? RawText.EMPTY_TEXT : GetRawText(@base.EntryObjectId
+							, db);
+						RawText ourText = ours == null ? RawText.EMPTY_TEXT : GetRawText(ours.EntryObjectId
+							, db);
+						RawText theirsText = theirs == null ? RawText.EMPTY_TEXT : GetRawText(theirs.EntryObjectId
+							, db);
+						MergeResult<RawText> result = mergeAlgorithm.Merge(RawTextComparator.DEFAULT, baseText
+							, ourText, theirsText);
+						mergeResults.Put(tw.PathString, result.Upcast());
+					}
+				}
+			}
 			return true;
 		}
 

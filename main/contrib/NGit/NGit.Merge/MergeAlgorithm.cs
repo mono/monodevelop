@@ -100,10 +100,55 @@ namespace NGit.Merge
 			sequences.AddItem(ours);
 			sequences.AddItem(theirs);
 			MergeResult<S> result = new MergeResult<S>(sequences);
-			EditList oursEdits = diffAlg.Diff(cmp, @base, ours);
-			Iterator<Edit> baseToOurs = oursEdits.Iterator();
-			EditList theirsEdits = diffAlg.Diff(cmp, @base, theirs);
-			Iterator<Edit> baseToTheirs = theirsEdits.Iterator();
+			if (ours.Size() == 0)
+			{
+				if (theirs.Size() != 0)
+				{
+					EditList theirsEdits = diffAlg.Diff(cmp, @base, theirs);
+					if (!theirsEdits.IsEmpty())
+					{
+						// we deleted, they modified -> Let their complete content
+						// conflict with empty text
+						result.Add(1, 0, 0, MergeChunk.ConflictState.FIRST_CONFLICTING_RANGE);
+						result.Add(2, 0, theirs.Size(), MergeChunk.ConflictState.NEXT_CONFLICTING_RANGE);
+					}
+					else
+					{
+						// we deleted, they didn't modify -> Let our deletion win
+						result.Add(1, 0, 0, MergeChunk.ConflictState.NO_CONFLICT);
+					}
+				}
+				else
+				{
+					// we and they deleted -> return a single chunk of nothing
+					result.Add(1, 0, 0, MergeChunk.ConflictState.NO_CONFLICT);
+				}
+				return result;
+			}
+			else
+			{
+				if (theirs.Size() == 0)
+				{
+					EditList oursEdits = diffAlg.Diff(cmp, @base, ours);
+					if (!oursEdits.IsEmpty())
+					{
+						// we modified, they deleted -> Let our complete content
+						// conflict with empty text
+						result.Add(1, 0, ours.Size(), MergeChunk.ConflictState.FIRST_CONFLICTING_RANGE);
+						result.Add(2, 0, 0, MergeChunk.ConflictState.NEXT_CONFLICTING_RANGE);
+					}
+					else
+					{
+						// they deleted, we didn't modify -> Let their deletion win
+						result.Add(2, 0, 0, MergeChunk.ConflictState.NO_CONFLICT);
+					}
+					return result;
+				}
+			}
+			EditList oursEdits_1 = diffAlg.Diff(cmp, @base, ours);
+			Iterator<Edit> baseToOurs = oursEdits_1.Iterator();
+			EditList theirsEdits_1 = diffAlg.Diff(cmp, @base, theirs);
+			Iterator<Edit> baseToTheirs = theirsEdits_1.Iterator();
 			int current = 0;
 			// points to the next line (first line is 0) of base
 			// which was not handled yet
