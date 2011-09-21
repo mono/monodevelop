@@ -40,7 +40,6 @@ namespace MonoDevelop.Ide
 		static bool sending;
 		static object sendingLock = new object ();
 		static FeedbackDialog currentFeedbackDialog;
-		static DateTime lastHideTime;
 		
 		public static bool IsFeedbackWindowVisible {
 			get { return currentFeedbackDialog != null && currentFeedbackDialog.Visible; }

@@ -35,7 +35,7 @@ using MonoDevelop.Core.Setup;
 
 namespace MonoDevelop.Ide.Updater
 {
-	[Extension("/MonoDevelop/Ide/Updater/UpdateHandlers")]
+	[Extension("/MonoDevelop/Ide/Updater/UpdateHandlers", Id="DefaultUpdateHandler")]
 	public class AddinsUpdateHandler: IUpdateHandler
 	{
 		AddinRepositoryEntry[] updates;
