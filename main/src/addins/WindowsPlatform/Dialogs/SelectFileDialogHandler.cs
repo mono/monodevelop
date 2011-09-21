@@ -12,14 +12,25 @@ namespace MonoDevelop.Platform
 {
     class SelectFileDialogHandler : ISelectFileDialogHandler
     {
+        volatile Form rootForm;
+
         public bool Run (SelectFileDialogData data)
         {
             var parentWindow = data.TransientFor ?? MessageService.RootWindow;
+            parentWindow.FocusInEvent += OnParentFocusIn;
             
             bool result = RunWinUIMethod (RunDialog, data);
 
+            parentWindow.FocusInEvent -= OnParentFocusIn;
             parentWindow.Present ();
+
             return result;
+        }
+
+        void OnParentFocusIn (object o, EventArgs args)
+        {
+            if (rootForm != null)
+                rootForm.BeginInvoke (new Action (() => rootForm.Activate ()));
         }
 
         bool RunDialog (SelectFileDialogData data)
@@ -40,8 +51,8 @@ namespace MonoDevelop.Platform
 				SetFolderBrowserProperties (data, dlg as FolderBrowserDialog);
 			
 			using (dlg) {
-                WinFormsRoot root = new WinFormsRoot();
-                if (dlg.ShowDialog(root) == DialogResult.Cancel) {
+                rootForm = new WinFormsRoot ();
+                if (dlg.ShowDialog (rootForm) == DialogResult.Cancel) {
                     return false;
 				}
 				

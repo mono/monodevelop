@@ -12,14 +12,25 @@ namespace MonoDevelop.Platform
 {
     class AddFileDialogHandler: IAddFileDialogHandler
     {
+        volatile Form rootForm;
+
         public bool Run (AddFileDialogData data)
         {
             var parentWindow = data.TransientFor ?? MessageService.RootWindow;
+            parentWindow.FocusInEvent += OnParentFocusIn;
 
             bool result = SelectFileDialogHandler.RunWinUIMethod (RunDialog, data);
 
+            parentWindow.FocusInEvent -= OnParentFocusIn;
             parentWindow.Present ();
+
             return result;
+        }
+
+        void OnParentFocusIn (object o, EventArgs args)
+        {
+            if (rootForm != null)
+                rootForm.BeginInvoke (new Action (() => rootForm.Activate ()));
         }
 
         bool RunDialog (AddFileDialogData data)
@@ -35,7 +46,8 @@ namespace MonoDevelop.Platform
 			
             try
             {
-                if (adlg.ShowDialog () == DialogResult.Cancel)
+                rootForm = new WinFormsRoot ();
+                if (adlg.ShowDialog (rootForm) == DialogResult.Cancel)
                     result = false;
                 else
                 {
