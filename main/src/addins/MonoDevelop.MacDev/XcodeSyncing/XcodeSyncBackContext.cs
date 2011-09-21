@@ -82,7 +82,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			});
 		}
 		
-		public Dictionary<string, List<NSObjectTypeInfo>> GetTypeUpdates (CodeDomProvider provider,
+		public Dictionary<string, List<NSObjectTypeInfo>> GetTypeUpdates (IProgressMonitor monitor, CodeDomProvider provider,
 			out Dictionary<string, NSObjectTypeInfo> newTypes,
 			out Dictionary<string, ProjectFile> newFiles)
 		{
@@ -102,7 +102,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			// Next we can resolve base-types, outlet types, and action parameter types for each of our user-defined types.
 			foreach (var job in TypeSyncJobs) {
 				defaultNamespace = Project.GetDefaultNamespace (job.RelativePath);
-				ProjectInfo.ResolveObjcToCli (job.Type, provider, defaultNamespace);
+				ProjectInfo.ResolveObjcToCli (monitor, job.Type, provider, defaultNamespace);
 			}
 			
 			AggregateTypeUpdates (provider, designerFiles, out newTypes, out newFiles);

@@ -448,7 +448,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			monitor.BeginTask (GettextCatalog.GetString ("Detecting changed types from Xcode"), 0);
 			Dictionary<string, NSObjectTypeInfo> newTypes;
 			Dictionary<string, ProjectFile> newFiles;
-			var updates = context.GetTypeUpdates (provider, out newTypes, out newFiles);
+			var updates = context.GetTypeUpdates (monitor, provider, out newTypes, out newFiles);
 			if (updates == null || updates.Count == 0) {
 				monitor.Log.WriteLine ("No changed types found");
 				monitor.EndTask ();

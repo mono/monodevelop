@@ -231,19 +231,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		/// <param name='defaultNamespace'>
 		/// The default namespace used when forcing type resolution.
 		/// </param>
-		public void ResolveObjcToCli (NSObjectTypeInfo type, CodeDomProvider provider, string defaultNamespace)
+		public void ResolveObjcToCli (IProgressMonitor monitor, NSObjectTypeInfo type, CodeDomProvider provider, string defaultNamespace)
 		{
 			NSObjectTypeInfo resolved;
-			
-			// Resolve our type
-			if (type.CliName == null) {
-				if (TryResolveObjcToCli (type.ObjCName, out resolved)) {
-					type.CliName = resolved.CliName;
-					type.IsModel = resolved.IsModel;
-				} else  {
-					type.CliName = defaultNamespace + "." + provider.CreateValidIdentifier (type.ObjCName);
-				}
-			}
 			
 			// Resolve our base type
 			if (type.BaseCliType == null) {
@@ -251,6 +241,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					type.BaseCliType = resolved.CliName;
 				} else  {
 					type.BaseCliType = defaultNamespace + "." + provider.CreateValidIdentifier (type.BaseObjCType);
+					monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on type {1}",
+						type.BaseObjCType, type.ObjCName));
 				}
 			}
 			
@@ -263,6 +255,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					outlet.CliType = resolved.CliName;
 				} else {
 					outlet.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (outlet.ObjCType);
+					monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on outlet {1} on type {2}",
+						outlet.ObjCType, outlet.ObjCName, type.ObjCName));
 				}
 			}
 			
@@ -276,6 +270,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						param.CliType = resolved.CliName;
 					} else {
 						param.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (param.ObjCType);
+						monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on action parameter {1} for action {2} on type {3}",
+							param.ObjCType, param.Name, action.ObjCName, type.ObjCName));
 					}
 				}
 			}
