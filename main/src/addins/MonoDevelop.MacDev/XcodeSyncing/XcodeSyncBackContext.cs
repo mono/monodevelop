@@ -87,36 +87,22 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			out Dictionary<string, ProjectFile> newFiles)
 		{
 			Dictionary<string, List<NSObjectTypeInfo>> designerFiles = new Dictionary<string, List<NSObjectTypeInfo>> ();
+			string defaultNamespace;
 			
-			int prevUnresolved = Int32.MaxValue;
-			int unresolved = 0;
-			
-			// Make a first pass at resolving parsed types
+			// First, we need to name any new user-defined types.
 			foreach (var job in TypeSyncJobs) {
-				unresolved += ProjectInfo.ResolveObjcToCli (job.Type, Project, false);
-				if (job.Type.CliName != null)
-					ProjectInfo.InsertUpdatedType (job.Type);
-			}
-			
-			// Keep making more passes at resolving types until we are just spinning our wheels...
-			// Note: we do this because there may be inter-related types.
-			while (unresolved > 0 && unresolved < prevUnresolved) {
-				prevUnresolved = unresolved;
-				unresolved = 0;
+				if (!job.IsFreshlyAdded)
+					continue;
 				
-				foreach (var job in TypeSyncJobs) {
-					unresolved += ProjectInfo.ResolveObjcToCli (job.Type, Project, false);
-					if (job.Type.CliName != null)
-						ProjectInfo.InsertUpdatedType (job.Type);
-				}
+				defaultNamespace = Project.GetDefaultNamespace (job.RelativePath);
+				job.Type.CliName = defaultNamespace + "." + provider.CreateValidIdentifier (job.Type.ObjCName);
+				ProjectInfo.InsertUpdatedType (job.Type);
 			}
 			
-			// If we have any remaining unresolved types, force type resolution.
-			if (unresolved > 0) {
-				foreach (var job in TypeSyncJobs) {
-					ProjectInfo.ResolveObjcToCli (job.Type, Project, true);
-					ProjectInfo.InsertUpdatedType (job.Type);
-				}
+			// Next we can resolve base-types, outlet types, and action parameter types for each of our user-defined types.
+			foreach (var job in TypeSyncJobs) {
+				defaultNamespace = Project.GetDefaultNamespace (job.RelativePath);
+				ProjectInfo.ResolveObjcToCli (job.Type, provider, defaultNamespace);
 			}
 			
 			AggregateTypeUpdates (provider, designerFiles, out newTypes, out newFiles);

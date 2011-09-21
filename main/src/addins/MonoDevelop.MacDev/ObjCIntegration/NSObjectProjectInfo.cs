@@ -26,6 +26,7 @@
 
 using System;
 using System.Linq;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MonoDevelop.Projects;
@@ -126,11 +127,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			if (objcTypes.TryGetValue (objcType, out resolved))
 				return true;
+			
 			foreach (var r in dom.References) {
 				var rDom = infoService.GetProjectInfo (r);
 				if (rDom != null && rDom.objcTypes.TryGetValue (objcType, out resolved))
 					return true;
 			}
+#if false
 			var msg = new StringBuilder ("Can't resolve "+ objcType + Environment.NewLine);
 			foreach (var r in dom.References) {
 				msg.Append ("Referenced dom:");
@@ -144,7 +147,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				msg.AppendLine (string.Join (",", rDom.objcTypes.Keys.ToArray()));
 			}
 			LoggingService.LogWarning (msg.ToString ());
-			
+#endif
 			resolved = null;
 			return false;
 		}
@@ -222,27 +225,23 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		/// The NSObjectTypeInfo that contains the known Objective-C type information.
 		/// Typically this will be the result of NSObjectInfoService.ParseHeader().
 		/// </param>
-		/// <param name='project'>
-		/// The DotNetProject this type belongs to.
+		/// <param name='provider'>
+		/// A CodeDom provider which is used to make sure type names don't conflict with language keywords.
 		/// </param>
-		/// <param name='force'>
-		/// Force resolution of type information even if there isn't a known mapping.
-		/// This will use a "best guess" approach.
+		/// <param name='defaultNamespace'>
+		/// The default namespace used when forcing type resolution.
 		/// </param>
-		public int ResolveObjcToCli (NSObjectTypeInfo type, DotNetProject project, bool force)
+		public void ResolveObjcToCli (NSObjectTypeInfo type, CodeDomProvider provider, string defaultNamespace)
 		{
 			NSObjectTypeInfo resolved;
-			int unresolved = 0;
 			
 			// Resolve our type
 			if (type.CliName == null) {
 				if (TryResolveObjcToCli (type.ObjCName, out resolved)) {
 					type.CliName = resolved.CliName;
 					type.IsModel = resolved.IsModel;
-				} else if (force) {
-					type.CliName = project.DefaultNamespace + "." + type.ObjCName;
-				} else {
-					unresolved++;
+				} else  {
+					type.CliName = defaultNamespace + "." + provider.CreateValidIdentifier (type.ObjCName);
 				}
 			}
 			
@@ -250,10 +249,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (type.BaseCliType == null) {
 				if (TryResolveObjcToCli (type.BaseObjCType, out resolved)) {
 					type.BaseCliType = resolved.CliName;
-				} else if (force) {
-					type.BaseCliType = project.DefaultNamespace + "." + type.BaseObjCType;
-				} else {
-					unresolved++;
+				} else  {
+					type.BaseCliType = defaultNamespace + "." + provider.CreateValidIdentifier (type.BaseObjCType);
 				}
 			}
 			
@@ -264,10 +261,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				
 				if (TryResolveObjcToCli (outlet.ObjCType, out resolved)) {
 					outlet.CliType = resolved.CliName;
-				} else if (force) {
-					outlet.CliType = project.DefaultNamespace + "." + outlet.ObjCType;
 				} else {
-					unresolved++;
+					outlet.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (outlet.ObjCType);
 				}
 			}
 			
@@ -279,15 +274,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					
 					if (TryResolveObjcToCli (param.ObjCType, out resolved)) {
 						param.CliType = resolved.CliName;
-					} else if (force) {
-						param.CliType = project.DefaultNamespace + "." + param.ObjCType;
 					} else {
-						unresolved++;
+						param.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (param.ObjCType);
 					}
 				}
 			}
-			
-			return unresolved;
 		}
 	}
 }
