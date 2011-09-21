@@ -1816,8 +1816,10 @@ namespace MonoDevelop.CSharp.Completion
 			//				} 
 			//			else {
 			//			}
-			if (type == null)
+			if (type == null) {
+				result.AutoCompleteEmptyMatch = true;
 				return result;
+			}
 			HashSet<string > usedNamespaces = new HashSet<string> (GetUsedNamespaces ());
 			if (type.FullName == DomReturnType.Object.FullName) 
 				AddPrimitiveTypes (col);
