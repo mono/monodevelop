@@ -524,6 +524,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 						Directory.CreateDirectory (baseDir);
 					
 					writer.WriteFile (custom.Path, cs.TransformText ());
+					context.ProjectInfo.InsertUpdatedType (custom.Type);
 				} else {
 					// FIXME: implement support for non-C# languages
 				}
@@ -534,7 +535,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.Step (1);
 			}
 			
+			writer.WriteOpenFiles ();
 			
+			Ide.IdeApp.ProjectOperations.Save (dnp);
 			
 			monitor.EndTask ();
 		}
