@@ -30,6 +30,11 @@ using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.Ide.Updater
 {
+	public enum UpdateCommands
+	{
+		CheckForUpdates
+	}
+		
 	class UpdateCheckHandler: CommandHandler
 	{
 		protected override void Run ()

@@ -229,6 +229,7 @@ namespace MonoDevelop.MacIntegration
 			MacMainMenu.AddAppMenuItems (
 				commandManager,
 			    CommandManager.ToCommandId (HelpCommands.About),
+				CommandManager.ToCommandId (MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates),
 				CommandManager.ToCommandId (Command.Separator),
 				CommandManager.ToCommandId (EditCommands.MonodevelopPreferences),
 				CommandManager.ToCommandId (EditCommands.DefaultPolicies),
