@@ -47,18 +47,26 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id    = "Desktop Entry" insertbefore="DefaultDisplayBinding"
+		<Condition id="Platform" value="linux">
+			<DisplayBinding id    = "Desktop Entry" insertbefore="DefaultDisplayBinding"
 		                class = "MonoDevelop.Deployment.Linux.DotDesktopDisplayBinding"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Deployment">
-		<Condition id="ItemType" value="Project">
-			<Section id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
 		</Condition>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Deployment">
+		<ComplexCondition>
+			<And>
+				<Condition id="ItemType" value="Project" />
+				<Condition id="Platform" value="linux" />
+			</And>
+			<Section id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
+		</ComplexCondition>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectoryResolvers">
-		<Class class = "MonoDevelop.Deployment.Linux.LinuxDirectoryResolver" />
+		<Condition id="Platform" value="linux">
+			<Class class = "MonoDevelop.Deployment.Linux.LinuxDirectoryResolver" />
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
@@ -67,19 +75,27 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectories">
-		<DeployDirectory id="Linux.PkgConfig" _label="pkg-config folder" />
-		<DeployDirectory id="Linux.DesktopApplications" _label=".desktop application folder" />
+		<Condition id="Platform" value="linux">
+			<DeployDirectory id="Linux.PkgConfig" _label="pkg-config folder" />
+			<DeployDirectory id="Linux.DesktopApplications" _label=".desktop application folder" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
-		<Class class = "MonoDevelop.Deployment.Linux.LinuxIntegrationProjectFeature" />
+		<Condition id="Platform" value="linux">
+			<Class class = "MonoDevelop.Deployment.Linux.LinuxIntegrationProjectFeature" />
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate resource = "app.desktop.xft.xml"/>
+		<Condition id="Platform" value="linux">
+			<FileTemplate resource = "app.desktop.xft.xml"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class="MonoDevelop.Deployment.Linux.LinuxDeploymentSetup" />
+		<Condition id="Platform" value="linux">
+			<Class class="MonoDevelop.Deployment.Linux.LinuxDeploymentSetup" />
+		</Condition>
 	</Extension>
 </Addin>
