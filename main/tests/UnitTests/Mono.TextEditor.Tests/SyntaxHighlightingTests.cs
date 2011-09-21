@@ -107,5 +107,15 @@ namespace Mono.TextEditor.Tests
 			            "application/xml");
 		}
 		
+		
+		///<summary>
+		/// Bug 603 - Last token in doc comment has wrong color 
+		///</summary>
+		[Test]
+		public void TestBug603 ()
+		{
+			TestOutput ("///<summary>foo bar</summary>",
+		                "<span foreground=\"#4D9A06\">///&lt;summary&gt;foo bar&lt;/summary&gt;</span>");
+		}
 	}
 }

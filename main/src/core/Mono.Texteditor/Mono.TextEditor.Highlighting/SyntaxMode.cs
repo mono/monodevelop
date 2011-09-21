@@ -349,12 +349,12 @@ namespace Mono.TextEditor.Highlighting
 				int textOffset = i - StartOffset;
 				
 				for (int j = 0; j < CurRule.Spans.Length; j++) {
-					Span span = CurRule.Spans[j];
+					Span span = CurRule.Spans [j];
 
 					if ((span.BeginFlags & SpanBeginFlags.StartsLine) == SpanBeginFlags.StartsLine) {
 						if (textOffset != 0) {
-							char ch = CurText[textOffset - 1];
-							if (ch != '\n'&& ch != '\r')
+							char ch = CurText [textOffset - 1];
+							if (ch != '\n' && ch != '\r')
 								continue;
 						}
 					} 
@@ -533,7 +533,7 @@ namespace Mono.TextEditor.Highlighting
 			string GetSpanStyle ()
 			{
 				if (spanParser.SpanStack.Count == 0)
-					return defaultStyle;
+					return spanParser.CurRule.DefaultColor ?? defaultStyle;
 				if (String.IsNullOrEmpty (spanParser.SpanStack.Peek ().Color)) {
 					Span span = spanParser.SpanStack.Pop ();
 					string result = GetSpanStyle ();
@@ -542,7 +542,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 				string rule = spanParser.SpanStack.Peek ().Rule;
 				if (!string.IsNullOrEmpty (rule) && rule.StartsWith ("mode:"))
-					return defaultStyle;
+					return spanParser.CurRule.DefaultColor ?? defaultStyle;
 				return spanParser.SpanStack.Peek ().Color;
 			}
 
@@ -558,12 +558,12 @@ namespace Mono.TextEditor.Highlighting
 			public void FoundSpanBegin (Span span, int offset, int length)
 			{
 				curChunk.Length = offset - curChunk.Offset;
-				curChunk.Style  = GetStyle (curChunk);
+				curChunk.Style = GetStyle (curChunk);
 				if (string.IsNullOrEmpty (curChunk.Style)) {
-					Span tmpSpan = spanParser.SpanStack.Count > 0 ? spanParser.SpanStack.Pop () : null;
+//					Span tmpSpan = spanParser.SpanStack.Count > 0 ? spanParser.SpanStack.Pop () : null;
 					curChunk.Style = GetSpanStyle ();
-					if (tmpSpan != null)
-						spanParser.SpanStack.Push (tmpSpan);
+//					if (tmpSpan != null)
+//						spanParser.SpanStack.Push (tmpSpan);
 				}
 				AddChunk (ref curChunk, 0, curChunk.Style);
 
