@@ -468,6 +468,31 @@ namespace Test {
 ", true);
 		}
 		
+		[Test()]
+		public void TestTestGuessReturnReturnType ()
+		{
+			TestCreateMethod (
+@"class Test
+{
+	public override string ToString ()
+	{
+		return $BeginDownloadingImage (this);
+	}
+}
+", @"class Test
+{
+	public string BeginDownloadingImage (Test par1)
+	{
+		throw new System.NotImplementedException ();
+	}
+	
+	public override string ToString ()
+	{
+		return BeginDownloadingImage (this);
+	}
+}
+", true);
+		}
 	}
 }
 

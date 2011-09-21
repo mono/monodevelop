@@ -180,9 +180,13 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 					var resolveResult = resolver.Resolve (new ExpressionResult (data.GetTextBetween (parentInvocation.StartLocation.Line, parentInvocation.StartLocation.Column, parentInvocation.EndLocation.Line, parentInvocation.EndLocation.Column)), resolvePosition) as MethodResolveResult;
 					if (resolveResult != null) {
 						if (idx < resolveResult.MostLikelyMethod.Parameters.Count)
-							return resolveResult.MostLikelyMethod.Parameters[idx].ReturnType;
+							return resolveResult.MostLikelyMethod.Parameters [idx].ReturnType;
 					}
 					return DomReturnType.Object;
+				}
+				
+				if (node.Parent is ReturnStatement && options.ResolveResult != null && options.ResolveResult.CallingMember != null) {
+					return options.ResolveResult.CallingMember.ReturnType;
 				}
 				
 				node = node.Parent;
