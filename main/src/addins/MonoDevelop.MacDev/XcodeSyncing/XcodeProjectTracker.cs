@@ -28,8 +28,6 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
@@ -365,8 +363,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				// Then update CLI types.
 				UpdateCliTypes (monitor, changeCtx);
 				
-				// Next, parse Storyboard xml files for custom classes
-				AddStoryboardCustomClasses (monitor, changeCtx);
+				// Next, parse UI definition files for custom classes
+				AddCustomClassesFromUIDefinitionFiles (monitor, changeCtx);
 				
 				// Finally, add any newly created resource files to the DotNetProject.
 				AddFilesToMD (monitor, changeCtx);
@@ -449,30 +447,23 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.EndTask ();
 		}
 		
-		class CustomClass {
-			public NSObjectTypeInfo Type;
-			public string Path;
-			
-			public CustomClass (string name, string baseType, string path)
-			{
-				Type = new NSObjectTypeInfo (null, name, null, baseType, false);
-				Path = path;
-			}
+		protected virtual IEnumerable<NSObjectTypeInfo> GetCustomTypesFromUIDefinition (FilePath fileName)
+		{
+			yield break;
 		}
 		
-		void AddStoryboardCustomClasses (IProgressMonitor monitor, XcodeSyncBackContext context)
+		void AddCustomClassesFromUIDefinitionFiles (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
 			var provider = dnp.LanguageBinding.GetCodeDomProvider ();
 			var options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Scanning for custom classes defined in Storyboards"), 0);
+			monitor.BeginTask (GettextCatalog.GetString ("Generating custom classes defined in UI definition files"), 0);
 			
-			// Collect our list of custom classes from the storyboards
-			List<CustomClass> customClasses = new List<CustomClass> ();
+			// Collect our list of custom classes from UI definition files
 			foreach (var job in context.FileSyncJobs) {
-				if (job.Original.Extension != ".storyboard")
+				if (!HasInterfaceDefinitionExtension (job.Original))
 					continue;
 				
 				string relative = job.SyncedRelative.ParentDirectory;
@@ -481,58 +472,31 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (!string.IsNullOrEmpty (relative))
 					dir = Path.Combine (dir, relative);
 				
-				XPathDocument doc = new XPathDocument (job.Original);
-				XPathNavigator navigator = doc.CreateNavigator ();
-				XPathExpression query = navigator.Compile ("//*[@customClass]");
-				
-				foreach (XPathNavigator node in navigator.Select (query)) {
-					if (node.NodeType != XPathNodeType.Element)
+				foreach (var type in GetCustomTypesFromUIDefinition (job.Original)) {
+					if (context.ProjectInfo.ContainsType (type.ObjCName))
 						continue;
 					
-					string baseType = GetTypeFromStoryboardTagName (node.Name);
-					string name = node.GetAttribute ("customClass", string.Empty);
-					
-					if (baseType == null || context.ProjectInfo.ContainsType (name))
-						continue;
-					
-					string path = Path.Combine (dir, name + "." + provider.FileExtension);
+					string path = Path.Combine (dir, type.ObjCName + "." + provider.FileExtension);
 					string ns = dnp.GetDefaultNamespace (path);
-					name = ns + "." + provider.CreateValidIdentifier (name);
 					
-					customClasses.Add (new CustomClass (name, baseType, path));
+					type.CliName = ns + "." + provider.CreateValidIdentifier (type.ObjCName);
+					
+					if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+						var cs = new CSharpCodeTypeDefinition () {
+							WrapperNamespace = infoService.WrapperRoot,
+							Provider = provider,
+							Type = type,
+						};
+						
+						writer.WriteFile (path, cs.TransformText ());
+						context.ProjectInfo.InsertUpdatedType (type);
+					} else {
+						// FIXME: implement support for non-C# languages
+					}
+					
+					dnp.AddFile (path);
+					context.SetSyncTimeToNow (path);
 				}
-			}
-			
-			monitor.EndTask ();
-			
-			if (customClasses.Count == 0)
-				return;
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Generating custom classes from Storyboards"), customClasses.Count);
-			
-			// Now generate .NET classes for any new custom classes
-			foreach (var custom in customClasses) {
-				if (provider is Microsoft.CSharp.CSharpCodeProvider) {
-					var cs = new CSharpCodeTypeDefinition () {
-						WrapperNamespace = infoService.WrapperRoot,
-						Provider = provider,
-						Type = custom.Type,
-					};
-					
-					string baseDir = Path.GetDirectoryName (custom.Path);
-					if (!Directory.Exists (baseDir))
-						Directory.CreateDirectory (baseDir);
-					
-					writer.WriteFile (custom.Path, cs.TransformText ());
-					context.ProjectInfo.InsertUpdatedType (custom.Type);
-				} else {
-					// FIXME: implement support for non-C# languages
-				}
-				
-				dnp.AddFile (custom.Path);
-				context.SetSyncTimeToNow (custom.Path);
-				
-				monitor.Step (1);
 			}
 			
 			writer.WriteOpenFiles ();
