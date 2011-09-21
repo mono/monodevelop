@@ -104,6 +104,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return null;
 		}
 		
+		public bool ContainsType (string objcName)
+		{
+			return objcTypes.ContainsKey (objcName);
+		}
+		
 		internal void InsertUpdatedType (NSObjectTypeInfo type)
 		{
 			objcTypes[type.ObjCName] = type;
