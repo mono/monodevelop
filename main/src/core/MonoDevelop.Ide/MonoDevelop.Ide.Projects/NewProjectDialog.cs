@@ -393,9 +393,10 @@ namespace MonoDevelop.Ide.Projects {
 			if (
 				!FileService.IsValidPath (solution) || 
 			    !FileService.IsValidFileName(name) ||
+				name.IndexOf (' ') >= 0 ||
 				!FileService.IsValidPath(location))
 			{
-				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
+				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'."));
 				return false;
 			}
 
