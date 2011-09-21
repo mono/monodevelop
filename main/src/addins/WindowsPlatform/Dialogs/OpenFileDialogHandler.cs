@@ -36,10 +36,19 @@ namespace MonoDevelop.Platform
 	public class OpenFileDialogHandler : IOpenFileDialogHandler
 	{		
 		public bool Run (OpenFileDialogData data)
+		{
+			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
+
+			bool result = SelectFileDialogHandler.RunWinUIMethod (RunDialog, data);
+
+			parentWindow.Present ();
+			return result;
+		}
+
+		bool RunDialog (OpenFileDialogData data)
 		{			
 			Application.EnableVisualStyles ();
 			
-			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
 			FileDialog fileDlg = null;
 			if (data.Action == Gtk.FileChooserAction.Open)
 				fileDlg = new OpenFileDialog ();
@@ -52,7 +61,6 @@ namespace MonoDevelop.Platform
 			
 			using (dlg) {
                 if (dlg.ShowDialog () == DialogResult.Cancel) {
-					parentWindow.Present ();
                     return false;
 				}
 	
@@ -69,7 +77,6 @@ namespace MonoDevelop.Platform
 				data.CloseCurrentWorkspace = dlg.CloseCurrentWorkspace;
 			}
 			
-			parentWindow.Present ();
 			return true;
 		}
 	}

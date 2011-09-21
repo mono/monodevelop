@@ -14,9 +14,18 @@ namespace MonoDevelop.Platform
     {
         public bool Run (AddFileDialogData data)
         {
+            var parentWindow = data.TransientFor ?? MessageService.RootWindow;
+
+            bool result = SelectFileDialogHandler.RunWinUIMethod (RunDialog, data);
+
+            parentWindow.Present ();
+            return result;
+        }
+
+        bool RunDialog (AddFileDialogData data)
+        {
 			Application.EnableVisualStyles ();
 			
-			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
             CustomAddFilesDialog adlg = new CustomAddFilesDialog();
             adlg.StartLocation = AddonWindowLocation.Bottom;
             adlg.BuildActions = data.BuildActions;
@@ -43,7 +52,6 @@ namespace MonoDevelop.Platform
                 adlg.Dispose();
             }
 			
-			parentWindow.Present ();
             return result;
         }
     }
