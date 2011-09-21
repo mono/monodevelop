@@ -591,6 +591,8 @@ namespace MonoDevelop.Ide
 			Gtk.Application.Invoke (delegate {
 				using (monitor) {
 					try {
+						if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
+							IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
 						if (Items.Count == 1 && loadPreferences) {
 							timer.Trace ("Restoring workspace preferences");
 							RestoreWorkspacePreferences (item);
