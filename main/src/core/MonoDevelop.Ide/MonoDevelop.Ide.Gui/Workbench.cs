@@ -386,9 +386,10 @@ namespace MonoDevelop.Ide.Gui
 				if (openFileInfo.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
-					if (options.HasFlag (OpenDocumentOptions.BringToFront))
+					if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						Present ();
-					doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+						doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+					}
 					return doc;
 				} else {
 					return null;
