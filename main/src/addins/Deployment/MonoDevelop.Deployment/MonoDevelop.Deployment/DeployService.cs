@@ -70,7 +70,14 @@ namespace MonoDevelop.Deployment
 		}
 		
 		public static string CurrentPlatform {
-			get { return "Linux"; }
+			get {
+				if (Platform.IsMac)
+					return "MacOSX";
+				else if (Platform.IsWindows)
+					return "Windows";
+				else
+					return "Linux";
+			}
 		}
 		
 		public static DeployProperties GetDeployProperties (ProjectFile file)
