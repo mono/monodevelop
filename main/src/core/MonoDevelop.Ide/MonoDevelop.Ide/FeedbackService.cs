@@ -54,9 +54,6 @@ namespace MonoDevelop.Ide
 				currentFeedbackDialog.Destroyed += delegate {
 					currentFeedbackDialog = null;
 				};
-				currentFeedbackDialog.Hidden += delegate {
-					lastHideTime = DateTime.Now;
-				};
 			} else
 				currentFeedbackDialog.Show ();
 		}
