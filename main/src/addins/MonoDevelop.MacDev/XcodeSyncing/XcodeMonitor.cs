@@ -218,7 +218,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			foreach (var dir in Directory.EnumerateDirectories (directory)) {
 				string relative;
 				
-				if (dir.EndsWith (".xcodeproj"))
+				// Ignore *.xcodeproj directories and any directories named DerivedData at the toplevel
+				if (dir.EndsWith (".xcodeproj") || (relativePath == null && dir == "DerivedData"))
 					continue;
 				
 				if (relativePath != null)
