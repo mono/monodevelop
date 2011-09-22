@@ -662,6 +662,8 @@ namespace MonoDevelop.CSharp.Completion
 										}
 									}
 								}
+								if (result.ExpressionContext == ExpressionContext.TypeName)
+									autoSelect = false;
 								// Bug 677531 - Auto-complete doesn't always highlight generic parameter in method signature
 								//if (result.ExpressionContext == ExpressionContext.TypeName)
 								//	autoSelect = false;
