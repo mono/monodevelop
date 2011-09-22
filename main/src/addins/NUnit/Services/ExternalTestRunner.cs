@@ -118,13 +118,13 @@ namespace MonoDevelop.NUnit.External
 		
 		public void SuiteFinished (TestSuiteResult result)
 		{
-			testSuites.Pop ();
+//			testSuites.Pop ();
 			wrapped.SuiteFinished (GetTestName (result.Test), GetLocalTestResult (result));
 		}
-		Stack<string> testSuites = new Stack<string>();
+//		Stack<string> testSuites = new Stack<string>();
 		public void SuiteStarted (TestName suite)
 		{
-			testSuites.Push (suite.FullName);
+//			testSuites.Push (suite.FullName);
 			wrapped.SuiteStarted (GetTestName (suite));
 		}
 		
@@ -161,13 +161,10 @@ namespace MonoDevelop.NUnit.External
 		{
 			if (t == null)
 				return null;
-			// Theoretically t.TestName.FullName should work, but when a test class inherits from a base
-			// class that contains tests the full name is that one of the base class, which is wrong.
-			// I suspect that is a NUnit bug, when this is fixed this code should be overworked and the testSuites stack be removed.
-			// see: Bug 677228 - RemotingException isn't counted as failure
-			if (t.TestType != "Test Case" || testSuites.Count == 0)
+//			if (t.TestType != "Test Case" || testSuites.Count == 0)
 				return t.TestName.FullName;
-			return testSuites.Peek () + "." + t.TestName.Name;
+			
+//			return testSuites.Peek () + "." + t.TestName.Name;
 		}
 		
 		public string GetTestName (TestName t)
@@ -359,13 +356,16 @@ namespace MonoDevelop.NUnit.External
 		
 		UnitTest GetLocalTest (string sname)
 		{
-			if (sname == null) return null;
-			if (sname == "<root>") return rootTest;
+			if (sname == null)
+				return null;
+			if (sname == "<root>")
+				return rootTest;
 			
 			if (sname.StartsWith (rootFullName)) {
 				sname = sname.Substring (rootFullName.Length);
 			}
-			if (sname.StartsWith (".")) sname = sname.Substring (1);
+			if (sname.StartsWith ("."))
+				sname = sname.Substring (1);
 			UnitTest tt = FindTest (rootTest, sname);
 			return tt;
 		}
