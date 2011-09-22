@@ -66,6 +66,7 @@ namespace MacCrashLogger
 		public override void FinishedLaunching (NSObject notification)
 		{
 			Monitor.Start ();
+			Reporter.ProcessCache ();
 		}
 		
 		void HandleMonitorCrashDetected (object sender, CrashEventArgs e)

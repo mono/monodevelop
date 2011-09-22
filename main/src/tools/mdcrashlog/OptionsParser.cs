@@ -34,6 +34,10 @@ namespace MonoDevelop {
 			get; private set;
 		}
 		
+		public static bool LogOnly {
+			get; private set;
+		}
+		
 		public static string LogPath {
 			get; private set;
 		}
@@ -47,21 +51,24 @@ namespace MonoDevelop {
 			error = null;
 			int pid = -1;
 			
-			for (int i = 0; i < args.Length - 1; i += 2) {
+			for (int i = 0; i < args.Length; i ++) {
 				if (args [i] == "-p") {
-					if (!int.TryParse (args [i + 1], out pid)) {
+					if (!int.TryParse (args [++ i], out pid)) {
 						pid = -1;
 					}
 					Pid = pid;
 				}
 				
 				if (args [i] == "-l") {
-					LogPath = args [i + 1];
+					LogPath = args [++ i];
 				}
 				
 				if (args [i] == "-email") {
-					Email = args [i + 1];
+					Email = args [++ i];
 				}
+				
+				if (args [i] == "-logonly")
+					LogOnly = true;
 			}
 			
 			if (Pid == -1) {

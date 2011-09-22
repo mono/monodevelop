@@ -35,7 +35,6 @@ using System.Web;
 namespace MonoDevelop.CrashReporting
 {
 	public class CrashReporter {
-		
 		// The file which stores the list of reports which have to be uploaded
 		string CacheFile {
 			get { return Path.Combine (CacheDirectory, "crashlogs.xml"); }
@@ -51,17 +50,63 @@ namespace MonoDevelop.CrashReporting
 			get; set;
 		}
 		
+		StreamWriter Logger {
+			get; set;
+		}
+		
+		XmlSerializer Serializer {
+			get; set;
+		}
+		
 		public CrashReporter (string logDirectory, string email)
 		{
 			CacheDirectory = logDirectory;
 			Email = email;
+			Logger = new StreamWriter (Path.Combine (CacheDirectory, "errors.log"));
+			Logger.AutoFlush = true;
+			Serializer = new XmlSerializer (typeof (List<CrashReport>));
+		}
+		
+		public void ProcessCache ()
+		{
+			try {
+				// If log only mode is enabled, don't try to process the cache
+				if (OptionsParser.LogOnly)
+					return;
+				
+				var reports = ReadCachedReports ();
+				File.Delete (CacheFile);
+				foreach (var v in reports)
+					UploadOrCache (v);
+			} catch (Exception ex) {
+				Logger.WriteLine ("Exception processing stored cache: {0}", ex);
+			}
 		}
 		
 		public void UploadOrCache (string crashLog)
 		{
-			var report = new CrashReport { Email = Email, CrashLogPath = crashLog  };
-			if (!TryUploadReport (report))
+			UploadOrCache (new CrashReport { Email = Email, CrashLogPath = crashLog  });
+		}
+		
+		void UploadOrCache (CrashReport report)
+		{
+			if (!TryUploadReport (report)) {
+				Logger.WriteLine ("Did not upload report, caching");
 				AddReportToCache (report);
+			}
+		}
+		
+		List<CrashReport> ReadCachedReports ()
+		{
+			try {
+				var fileInfo = new FileInfo (CacheFile);
+				if (fileInfo.Exists)
+					using (var s = fileInfo.OpenRead ())
+						return (List<CrashReport>) Serializer.Deserialize (s);
+			} catch {
+				Logger.WriteLine ("Exception deserializing cached reports, ignoring");
+			}
+			return new List<CrashReport> ();
 		}
 		
 		void AddReportToCache (CrashReport report)
@@ -73,38 +118,39 @@ namespace MonoDevelop.CrashReporting
 				
 				// Make a copy of the crash log in our own cache and update the crash report info
 				var newPath = Path.Combine (CacheDirectory, Path.GetFileName (report.CrashLogPath));
-				File.Copy (report.CrashLogPath, newPath);
+				if (report.CrashLogPath != newPath)
+					File.Copy (report.CrashLogPath, newPath, true);
 				report.CrashLogPath = newPath;
 				
 				// Update the list of pending crashes which we want to upload
-				List<CrashReport> reports = null;
-				var serializer = new XmlSerializer (typeof (List<CrashReport>));
-				using (var s = File.Open (CacheFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None)) {
-					try {
-						reports = (List<CrashReport>) serializer.Deserialize (s);
-					} catch {
-						// If we can't deserialize, just ignore it. We don't care about corrupt lists.
-						reports = new List<CrashReport> ();
-					}
-					
-					reports.Add (report);
-					s.SetLength (0);
-					serializer.Serialize (s, reports);
-				}
-			} catch {
-				Console.WriteLine ("Could not append crash information to the list of pending uploads.");
+				var reports = ReadCachedReports ();
+				reports.Add (report);
+				WriteReportsToCache (reports);
+			} catch (Exception ex) {
+				Logger.WriteLine ("Exception occurred when appending a crash report to the cache: {0}", ex);
 			}
+		}
+		
+		void WriteReportsToCache (List<CrashReport> reports)
+		{
+			using (var s = File.Open (CacheFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+				Serializer.Serialize (s, reports);
 		}
 		
 		bool TryUploadReport (CrashReport report)
 		{
 			try {
+				if (OptionsParser.LogOnly) {
+					Logger.WriteLine ("CrashReporter is in log only mode. All crashes will be cached");
+					return false;
+				}
+				
 				var server = Environment.GetEnvironmentVariable ("CRASHREPORT_SERVER");
 				if (string.IsNullOrEmpty (server))
 					server = "software.xamarin.com";
 
 				var url = string.Format ("http://{0}/Service/IssueLogging?m={1}&n={2}", server, HttpUtility.UrlEncode (report.Email), HttpUtility.UrlEncode (Path.GetFileName (report.CrashLogPath)));
-				Console.WriteLine ("Trying to connect to: {0}", url);
+				Logger.WriteLine ("Trying to connect to: {0}", url);
 				var request = WebRequest.Create (url);
 				request.Method = "POST";
 				using (var s = File.OpenRead (report.CrashLogPath)) {
@@ -113,21 +159,22 @@ namespace MonoDevelop.CrashReporting
 					using (var requestStream = request.GetRequestStream ())
 						s.CopyTo (requestStream);
 				}
+				Logger.WriteLine ("CrashReport sent to server, awaiting response...");
 				
 				// Ensure the server has correctly processed everything.
 				using (var response = request.GetResponse ()) {
 					var responseText = new StreamReader (response.GetResponseStream ()).ReadToEnd (); 
 					if (responseText != "OK") {
-						Console.WriteLine ("Server responded with error: {0}", responseText);
+						Logger.WriteLine ("Server responded with error: {0}", responseText);
 						return false;
 					}
 				}
 			} catch (Exception ex) {
-				Console.WriteLine ("Failed to upload report to the server.");
-				Console.WriteLine (ex);
+				Logger.WriteLine ("Failed to upload report to the server.");
+				Logger.WriteLine (ex);
 				return false;
 			}
-			Console.WriteLine ("Successfully uploaded");
+			Logger.WriteLine ("Successfully uploaded");
 			return true;
 		}
 	}
