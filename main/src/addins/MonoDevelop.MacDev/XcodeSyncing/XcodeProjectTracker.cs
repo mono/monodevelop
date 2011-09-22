@@ -492,10 +492,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 						
 						writer.WriteFile (path, cs.TransformText ());
 						
+						List<NSObjectTypeInfo> types = new List<NSObjectTypeInfo> ();
+						types.Add (type);
+						
 						cs = new CSharpCodeCodebehind () {
 							WrapperNamespace = infoService.WrapperRoot,
 							Provider = provider,
-							Type = type,
+							Types = types,
 						};
 						
 						writer.WriteFile (designerPath, cs.TransformText ());
@@ -505,8 +508,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 						// FIXME: implement support for non-C# languages
 					}
 					
-					dnp.AddFile (path);
-					context.SetSyncTimeToNow (path);
+					dnp.AddFile (new ProjectFile (path));
+					dnp.AddFile (new ProjectFile (designerPath) { DependsOn = path });
+					
+					context.SetSyncTimeToNow (type.ObjCName + ".h");
+					context.SetSyncTimeToNow (type.ObjCName + ".m");
 				}
 			}
 			
@@ -556,6 +562,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					} else {
 						// FIXME: implement support for non-C# languages
 					}
+					
+					context.SetSyncTimeToNow (nt.Value.ObjCName + ".h");
+					context.SetSyncTimeToNow (nt.Value.ObjCName + ".m");
 					
 					monitor.Step (1);
 				}
