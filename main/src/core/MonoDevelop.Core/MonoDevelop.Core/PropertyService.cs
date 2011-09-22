@@ -170,6 +170,11 @@ namespace MonoDevelop.Core
 			properties.Save (prefsPath);
 		}
 		
+		public static bool HasValue (string property)
+		{
+			return properties.HasValue (property);
+		}
+		
 		public static T Get<T> (string property, T defaultValue)
 		{
 			return properties.Get (property, defaultValue);
