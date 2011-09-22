@@ -597,7 +597,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				foreach (var f in newFiles) {
 					monitor.Log.WriteLine ("Added new designer file {0}", f.Key);
 					dnp.AddFile (f.Value);
-					context.SetSyncTimeToNow (f.Key);
 				}
 			}
 			
