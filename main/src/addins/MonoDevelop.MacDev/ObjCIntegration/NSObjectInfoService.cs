@@ -131,7 +131,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				throw new Exception ("Could not get NSObject from type database");
 			
 			//FIXME: only emit this for the wrapper NS
-			yield return new NSObjectTypeInfo ("NSObject", nsobjectType.FullName, null, null, false);
+			yield return new NSObjectTypeInfo ("NSObject", nsobjectType.FullName, null, null, false, false, false);
 			
 			foreach (var type in dom.GetSubclasses (nso, false)) {
 				var info = ConvertType (dom, type);
@@ -145,6 +145,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			string objcName = null;
 			bool isModel = false;
 			bool registeredInDesigner = true;
+			
 			foreach (var part in type.Parts) {
 				foreach (var att in part.Attributes) {
 					if (att.AttributeType.FullName == registerAttType.FullName) {
@@ -152,6 +153,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							registeredInDesigner &=
 								MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.CompilationUnit.FileName);
 						}
+						
 						//type registered with an explicit type name are up to the user to provide a valid name
 						// Note that the attribute now takes one *or* two parameters.
 						if (att.PositionalArguments.Count == 1 || att.PositionalArguments.Count == 2)
@@ -160,16 +162,18 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
 							objcName = type.Name;
 					}
+					
 					if (att.AttributeType.FullName == modelAttType.FullName) {
 						isModel = true;
 					}
 				}
 			}
+			
 			if (string.IsNullOrEmpty (objcName))
 				return null;
-			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseType.FullName, isModel);
-			info.IsUserType = type.SourceProject != null;
-			info.IsRegisteredInDesigner = registeredInDesigner;
+			
+			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseType.FullName, isModel,
+				type.SourceProject != null, registeredInDesigner);
 			
 			if (info.IsUserType) {
 				UpdateTypeMembers (dom, info, type);
@@ -264,7 +268,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (userType == null)
 				return null;
 			
-			type = new NSObjectTypeInfo (userType, null, userBaseType, null, false);
+			type = new NSObjectTypeInfo (userType, null, userBaseType, null, false, true, true);
 			
 			// Now grep for IBActions and IBOutlets
 			matches = ibRegex.Matches (text);
