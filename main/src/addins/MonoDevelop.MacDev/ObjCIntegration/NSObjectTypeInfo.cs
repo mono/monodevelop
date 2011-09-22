@@ -36,17 +36,19 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 {
 	public class NSObjectTypeInfo
 	{
-		public NSObjectTypeInfo (string objcName, string cliName, string baseObjCName, string baseCliName, bool isModel)
+		public NSObjectTypeInfo (string objcName, string cliName, string baseObjCName, string baseCliName, bool isModel, bool isUserType, bool isRegisteredInDesigner)
 		{
-			this.ObjCName = objcName;
-			this.CliName = cliName;
-			this.BaseObjCType = baseObjCName;
-			this.BaseCliType = baseCliName;
-			this.IsModel = isModel;
+			IsRegisteredInDesigner = isRegisteredInDesigner;
+			BaseObjCType = baseObjCName;
+			BaseCliType = baseCliName;
+			IsUserType = isUserType;
+			ObjCName = objcName;
+			CliName = cliName;
+			IsModel = isModel;
 			
+			UserTypeReferences = new HashSet<string> ();
 			Outlets = new List<IBOutlet> ();
 			Actions = new List<IBAction> ();
-			UserTypeReferences = new HashSet<string> ();
 		}
 		
 		public string ObjCName { get; private set; }

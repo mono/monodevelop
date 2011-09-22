@@ -355,6 +355,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.BeginTask (GettextCatalog.GetString ("Detecting changed files in Xcode"), 0);
 				var changeCtx = xcode.GetChanges (monitor, infoService, dnp);
 				monitor.EndTask ();
+				
 				updatingProjectFiles = true;
 				
 				// First, copy any changed/added resource files to MonoDevelop's project directory.
@@ -476,19 +477,29 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					if (context.ProjectInfo.ContainsType (type.ObjCName))
 						continue;
 					
+					string designerPath = Path.Combine (dir, type.ObjCName + ".designer." + provider.FileExtension);
 					string path = Path.Combine (dir, type.ObjCName + "." + provider.FileExtension);
 					string ns = dnp.GetDefaultNamespace (path);
 					
 					type.CliName = ns + "." + provider.CreateValidIdentifier (type.ObjCName);
 					
 					if (provider is Microsoft.CSharp.CSharpCodeProvider) {
-						var cs = new CSharpCodeTypeDefinition () {
+						CodebehindTemplateBase cs = new CSharpCodeTypeDefinition () {
 							WrapperNamespace = infoService.WrapperRoot,
 							Provider = provider,
 							Type = type,
 						};
 						
 						writer.WriteFile (path, cs.TransformText ());
+						
+						cs = new CSharpCodeCodebehind () {
+							WrapperNamespace = infoService.WrapperRoot,
+							Provider = provider,
+							Type = type,
+						};
+						
+						writer.WriteFile (designerPath, cs.TransformText ());
+						
 						context.ProjectInfo.InsertUpdatedType (type);
 					} else {
 						// FIXME: implement support for non-C# languages
@@ -511,12 +522,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Detecting changed types from Xcode"), 0);
+			monitor.BeginTask (GettextCatalog.GetString ("Detecting changes made in Xcode"), 0);
 			Dictionary<string, NSObjectTypeInfo> newTypes;
 			Dictionary<string, ProjectFile> newFiles;
 			var updates = context.GetTypeUpdates (monitor, provider, out newTypes, out newFiles);
-			if (updates == null || updates.Count == 0) {
-				monitor.Log.WriteLine ("No changed types found");
+			if ((updates == null || updates.Count == 0) && newTypes == null && newFiles == null) {
+				monitor.Log.WriteLine ("No changes found");
 				monitor.EndTask ();
 				return;
 			}
