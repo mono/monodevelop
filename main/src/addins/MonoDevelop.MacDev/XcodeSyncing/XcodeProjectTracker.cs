@@ -510,9 +510,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					
 					dnp.AddFile (new ProjectFile (path));
 					dnp.AddFile (new ProjectFile (designerPath) { DependsOn = path });
-					
-					context.SetSyncTimeToNow (type.ObjCName + ".h");
-					context.SetSyncTimeToNow (type.ObjCName + ".m");
 				}
 			}
 			
@@ -562,9 +559,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					} else {
 						// FIXME: implement support for non-C# languages
 					}
-					
-					context.SetSyncTimeToNow (nt.Value.ObjCName + ".h");
-					context.SetSyncTimeToNow (nt.Value.ObjCName + ".m");
 					
 					monitor.Step (1);
 				}
