@@ -16,6 +16,12 @@ namespace <#= GetNs (Type.CliName) #>
 <#
 string userTypeName = GetName (Type.CliName);
 string baseTypeName = GetName (Type.BaseCliType);
+
+if (!Type.IsRegisteredInDesigner) {
+#>
+    [Register ("<#=Type.ObjCName #>")]
+<#
+}
 #>
 	public partial class <#=userTypeName #> : <#=baseTypeName #>
 	{
