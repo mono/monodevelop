@@ -306,21 +306,36 @@ namespace MonoDevelop.Ide
 		
 		void LaunchCrashMonitoringService ()
 		{
+			string enabledKey = "MonoDevelop.CrashMonitoring.Enabled";
+			
 			if (Platform.IsMac) {
 				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MacCrashLogger.app");
 				var pid = Process.GetCurrentProcess ().Id;
 				var logPath = UserProfile.Current.LogDir.Combine ("CrashReporter");
 				var email = FeedbackService.ReporterEMail;
+				var logOnly = "";
+				
+				var fileInfo = new FileInfo (Path.Combine (logPath, "crashlogs.xml"));
+				if (!PropertyService.HasValue (enabledKey) && fileInfo.Exists && fileInfo.Length > 0) {
+					var result = MessageService.AskQuestion ("A crash has been detected",
+						"MonoDevelop has crashed recently. Details of this crash can be uploaded" +
+						" to Xamarin to help diagnose the issue. Do you wish to take part in annonymous" +
+						" crash report logging. Yeah, you know you want to! ;)",
+						AlertButton.Yes, AlertButton.No);
+					PropertyService.Set (enabledKey, result == AlertButton.Yes);
+				}
+				
 				if (string.IsNullOrEmpty (email))
 					email = AuthorInformation.Default.Email;
 				if (string.IsNullOrEmpty (email))
 					email = "unknown@email.com";
-				
-				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2} -email {3}", crashmonitor, pid, logPath, email)) {
+				if (!PropertyService.Get<bool> (enabledKey))
+					logOnly = "-logonly";
+
+				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2} -email {3} {4}", crashmonitor, pid, logPath, email, logOnly)) {
 					UseShellExecute = false,
 				};
 				Process.Start (psi);
-				return;
 			} else {
 				LoggingService.LogError ("Could not launch crash reporter process. MonoDevelop will not be able to automatically report any crash information.");
 			}
