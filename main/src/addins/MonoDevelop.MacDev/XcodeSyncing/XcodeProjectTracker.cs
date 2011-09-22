@@ -585,8 +585,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					dnp.AddFile (f.Value);
 					context.SetSyncTimeToNow (f.Key);
 				}
-				
-				monitor.Log.WriteLine ("Saving project '{0}'", dnp.Name);
 			}
 			
 			monitor.EndTask ();
