@@ -68,47 +68,75 @@ foreach (var ns in Type.GetNamespaces ())
 string userTypeName = GetName (Type.CliName);
 string baseTypeName = GetName (Type.BaseCliType);
 
+if (!Type.IsRegisteredInDesigner) {
+
             
             #line default
             #line hidden
             
-            #line 20 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            #line 22 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            this.Write("    [Register (\"");
+            
+            #line default
+            #line hidden
+            
+            #line 22 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Type.ObjCName ));
+            
+            #line default
+            #line hidden
+            
+            #line 22 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            this.Write("\")]\n");
+            
+            #line default
+            #line hidden
+            
+            #line 23 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+
+}
+
+            
+            #line default
+            #line hidden
+            
+            #line 26 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
             this.Write("\tpublic partial class ");
             
             #line default
             #line hidden
             
-            #line 20 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            #line 26 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(userTypeName ));
             
             #line default
             #line hidden
             
-            #line 20 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            #line 26 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
             this.Write(" : ");
             
             #line default
             #line hidden
             
-            #line 20 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            #line 26 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(baseTypeName ));
             
             #line default
             #line hidden
             
-            #line 20 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            #line 26 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
             this.Write("\n\t{\n\t\tpublic ");
             
             #line default
             #line hidden
             
-            #line 22 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            #line 28 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(userTypeName ));
             
             #line default
             #line hidden
             
-            #line 22 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
+            #line 28 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeTypeDefinition.tt"
             this.Write(" (IntPtr handle) : base (handle)\n\t\t{\n\t\t}\n\t}\n}\n");
             
             #line default
