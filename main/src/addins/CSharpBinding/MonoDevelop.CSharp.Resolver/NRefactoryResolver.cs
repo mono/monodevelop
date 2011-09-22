@@ -267,6 +267,8 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		void AddInnerTypes (ExpressionContext context, CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
+			if (CallingType == null)
+				return;
 			bool includeProtected = DomType.IncludeProtected (dom, CallingType, CallingMember != null ? CallingMember.DeclaringType : CallingType);
 			foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 				foreach (IMember member in type.Members) {
