@@ -770,6 +770,7 @@ namespace MonoDevelop.Projects.Dom
 			public GenericTypeInstanceResolver Parent;
 			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
 			ProjectDom dom;
+			CopyDomVisitor<object> copyVisitor = new CopyDomVisitor<object> ();
 			
 			public GenericTypeInstanceResolver (ProjectDom dom)
 			{
@@ -797,7 +798,7 @@ namespace MonoDevelop.Projects.Dom
 					if (type.ArrayDimensions == 0 && type.PointerNestingLevel == 0) {
 						return res;
 					}
-					DomReturnType copy = (DomReturnType)base.Visit (res, typeToInstantiate);
+					DomReturnType copy = (DomReturnType)copyVisitor.Visit (res, null);
 					copy.PointerNestingLevel = type.PointerNestingLevel;
 					copy.SetDimensions (type.GetDimensions ());
 					return copy;
