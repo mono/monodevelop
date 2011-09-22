@@ -370,7 +370,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				AddFilesToMD (monitor, changeCtx);
 				
 				// Save the DotNetProject.
-				changeCtx.Project.Save (monitor);
+				Ide.IdeApp.ProjectOperations.Save (dnp);
 				
 				// Notify MonoDevelop of file changes.
 				Gtk.Application.Invoke (delegate {
@@ -501,8 +501,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			writer.WriteOpenFiles ();
 			
-			Ide.IdeApp.ProjectOperations.Save (dnp);
-			
 			monitor.EndTask ();
 		}
 		
@@ -566,8 +564,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					var ccu = GenerateCompileUnit (provider, options, df.Key, df.Value);
 					writer.WriteFile (df.Key, ccu);
 				}
+				
 				monitor.Step (1);
 			}
+			
 			writer.WriteOpenFiles ();
 			
 			// Update sync timestamps
@@ -585,9 +585,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					dnp.AddFile (f.Value);
 					context.SetSyncTimeToNow (f.Key);
 				}
+				
 				monitor.Log.WriteLine ("Saving project '{0}'", dnp.Name);
-				Ide.IdeApp.ProjectOperations.Save (dnp);
 			}
+			
 			monitor.EndTask ();
 		}
 		
