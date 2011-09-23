@@ -75,11 +75,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return fileName.HasExtension (".xib");
 		}
 		
-		public virtual string GetTypeFromStoryboardTagName (string tag)
-		{
-			return null;
-		}
-		
 		protected virtual string[] GetFrameworks ()
 		{
 			return new string[] { "Foundation" };
