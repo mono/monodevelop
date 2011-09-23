@@ -135,6 +135,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				SourceProjectDom.UpdateReferences ();
 		}
 
+		internal static string GetReferenceUri (DotNetProject netProject, string file)
+		{
+			string fileName;
+			if (!Path.IsPathRooted (file)) {
+				fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
+			} else {
+				fileName = Path.GetFullPath (file);
+			}
+			return "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
+		}
+
 		public void UpdateFromProject ()
 		{
 			Hashtable fs = new Hashtable ();
@@ -163,13 +174,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				// Get the assembly references throught the project, since it may have custom references
 				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-					string fileName;
-					if (!Path.IsPathRooted (file)) {
-						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-					} else {
-						fileName = Path.GetFullPath (file);
-					}
-					string refId = "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
+					string refId = GetReferenceUri (netProject, file);
 					fs [refId] = null;
 					if (!HasReference (refId))
 						AddReference (refId);

@@ -127,15 +127,45 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		internal override void OnProjectReferenceAdded (ProjectReference pref)
 		{
-			ProjectCodeCompletionDatabase db = (ProjectCodeCompletionDatabase) database;
-			db.UpdateFromProject ();
+			var netProject = Project as DotNetProject;
+			if (netProject == null)
+				return;
+			
+			var db = (ProjectCodeCompletionDatabase) database;
+			if (pref.ReferenceType != ReferenceType.Project) {
+				foreach (var fileName in pref.GetReferencedFileNames (ConfigurationSelector.Default)){
+					var uri = ProjectCodeCompletionDatabase.GetReferenceUri (netProject, fileName);
+					if (!db.HasReference (uri))
+						db.AddReference (uri);
+				}
+			} else {
+				var uri = "Project:"+ pref.Reference;
+				if (!db.HasReference (uri))
+					db.AddReference (uri);
+			}
+			
 			this.UpdateReferences ();
 		}
 
 		internal override void OnProjectReferenceRemoved (ProjectReference pref)
 		{
-			ProjectCodeCompletionDatabase db = (ProjectCodeCompletionDatabase) database;
-			db.UpdateFromProject ();
+			var netProject = Project as DotNetProject;
+			if (netProject == null)
+				return;
+			
+			var db = (ProjectCodeCompletionDatabase) database;
+			if (pref.ReferenceType != ReferenceType.Project) {
+				foreach (var fileName in pref.GetReferencedFileNames (ConfigurationSelector.Default)){
+					var uri = ProjectCodeCompletionDatabase.GetReferenceUri (netProject, fileName);
+					if (db.HasReference (uri))
+						db.RemoveReference (uri);
+				}
+			} else {
+				var uri = "Project:"+ pref.Reference;
+				if (db.HasReference (uri))
+					db.RemoveReference (uri);
+			}
+			
 			this.UpdateReferences ();
 		}
 
