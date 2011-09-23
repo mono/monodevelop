@@ -65,7 +65,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call "$(FrameworkSDKDir)bin\ildasm.exe" /NOBAR "$(TargetDir)CorApi.dll" /OUT="$(TargetDir)CorApiMDImp.il"
+    <PostBuildEvent>call "$(FrameworkDir)\$(FrameworkVersion)\ildasm.exe" /NOBAR "$(TargetDir)CorApi.dll" /OUT="$(TargetDir)CorApiMDImp.il"
 del /F /Q "$(TargetDir)CorApi.dll" 
 call "$(FrameworkDir)\$(FrameworkVersion)\ilasm.exe" /DLL /DEBUG /OUT="$(TargetDir)CorApi.dll" "$(ProjectDir)refs.il" "$(ProjectDir)context.il" "$(ProjectDir)cordblib.il" "$(ProjectDir)corpublib.il" "$(TargetDir)CorApiMDImp.il"
 del /F /Q "$(TargetDir)CorApiMDImp.il"
