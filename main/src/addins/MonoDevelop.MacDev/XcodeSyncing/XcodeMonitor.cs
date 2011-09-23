@@ -301,8 +301,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (Directory.Exists (this.originalProjectDir))
 					Directory.Delete (this.originalProjectDir, true);
 			}
-			XC4Debug.Log ("Deleting derived data");
-			DeleteDerivedData ();
 		}
 		
 		void DeleteXcproj ()
@@ -323,39 +321,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				LoggingService.LogError ("Error while reading info.plist from:" + infoPlist, e);
 			}
 			return null;
-		}
-		
-		void DeleteDerivedData ()
-		{
-			var derivedDataPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Library/Developer/Xcode/DerivedData");
-			string[] subDirs;
-			
-			try {
-				if (!Directory.Exists (derivedDataPath))
-					return;
-				subDirs = Directory.GetDirectories (derivedDataPath);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting derived data directories.", e);
-				return;
-			}
-			
-			foreach (var subDir in subDirs) {
-				var plistPath = Path.Combine (subDir, "info.plist");
-				var workspacePath = GetWorkspacePath (plistPath);
-				if (workspacePath == null)
-					continue;
-				//clean up derived data for all our hack projects
-				if (workspacePath.StartsWith (originalProjectDir)) {
-					try {
-						XC4Debug.Log ("Deleting derived data directory");
-						Directory.Delete (subDir, true);
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while removing derived data directory " + subDir, e);
-					}
-					return;
-				}
-			}
-			XC4Debug.Log ("Couldn't find & delete derived data directory");
 		}
 		
 		public bool IsProjectOpen ()

@@ -222,6 +222,47 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 					   "     location = \"self:{0}.xcodeproj\">\n" +
 					   "  </FileRef>\n" +
 					   "</Workspace>\n", name));
+			
+			GenerateWorkspaceSettings (dir);
+		}
+		
+		void GenerateWorkspaceSettings (string dir)
+		{
+			// The workspace settings are stored in $(dir)/xcuserdata/$(username).xcuserdatad/WorkspaceSettings.xcsettings
+			// This exists so we can store the xcode generated DerivedData directory in the same place as MonoDevelop generates
+			// the temporary xcode project files
+			dir = Path.Combine (dir, "xcuserdata");
+			if (!Directory.Exists (dir))
+				Directory.CreateDirectory (dir);
+			
+			dir = Path.Combine (dir, Path.GetFileName (Environment.GetFolderPath (Environment.SpecialFolder.Personal)) + ".xcuserdatad");
+			if (!Directory.Exists (dir))
+				Directory.CreateDirectory (dir);
+			
+			using (var writer = new StreamWriter (Path.Combine (dir, "WorkspaceSettings.xcsettings")))
+				writer.Write (@"
+<?xml version=""1.0"" encoding=""UTF-8""?>
+<!DOCTYPE plist PUBLIC ""-//Apple//DTD PLIST 1.0//EN"" ""http://www.apple.com/DTDs/PropertyList-1.0.dtd"">
+<plist version=""1.0"">
+<dict>
+        <key>IDEWorkspaceUserSettings_BuildLocationStyle</key>
+        <integer>0</integer>
+        <key>IDEWorkspaceUserSettings_BuildSubfolderNameStyle</key>
+        <integer>0</integer>
+        <key>IDEWorkspaceUserSettings_DerivedDataCustomLocation</key>
+        <string>DerivedData</string>
+        <key>IDEWorkspaceUserSettings_DerivedDataLocationStyle</key>
+        <integer>2</integer>
+        <key>IDEWorkspaceUserSettings_IssueFilterStyle</key>
+        <integer>0</integer>
+        <key>IDEWorkspaceUserSettings_LiveSourceIssuesEnabled</key>
+        <true/>
+        <key>IDEWorkspaceUserSettings_SnapshotAutomaticallyBeforeSignificantChanges</key>
+        <true/>
+        <key>IDEWorkspaceUserSettings_SnapshotLocationStyle</key>
+        <integer>0</integer>
+</dict>
+</plist>");
 		}
 
 		public override string ToString ()
