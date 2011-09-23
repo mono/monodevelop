@@ -1025,8 +1025,12 @@ namespace MonoDevelop.Ide
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			
-			IAsyncOperation asyncOperation = Clean (entry);
-			asyncOperation.Completed += (aop) => { asyncOperation = Build (entry); };
+			var asyncOperation = new AsyncOperation ();
+			IAsyncOperation cleanOperation = Clean (entry);
+
+			asyncOperation.TrackOperation (cleanOperation, false);
+			
+			cleanOperation.Completed += (aop) => { asyncOperation.TrackOperation (Build (entry), true); };
 			
 			return asyncOperation;
 		}
