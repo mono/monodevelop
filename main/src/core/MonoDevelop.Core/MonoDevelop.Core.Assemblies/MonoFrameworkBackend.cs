@@ -34,6 +34,10 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
+			var dir = targetRuntime.FrameworksDirectory.Combine (framework.Id.GetAssemblyDirectoryName ());
+			if (Directory.Exists (dir) && File.Exists (dir.Combine ("RedistList", "FrameworkList.xml")))
+				yield return dir;
+			
 			if (framework.Id.Identifier != TargetFrameworkMoniker.ID_NET_FRAMEWORK)
 				yield break;
 			
@@ -57,7 +61,9 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override bool IsInstalled {
 			get {
-				if (framework.Id.Version == "3.0") {
+				if (framework.Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK &&
+					framework.Id.Version == "3.0")
+				{
 					// This is a special case. The WCF assemblies are installed in the 2.0 directory.
 					// There are other 3.0 assemblies which belong to the olive package (WCF doesn't)
 					// and which are installed in the 3.0 directory. We consider 3.0 to be installed
@@ -74,7 +80,6 @@ namespace MonoDevelop.Core.Assemblies
 				return base.IsInstalled;
 			}
 		}
-		 
 		
 		public override string GetToolPath (string toolName)
 		{
