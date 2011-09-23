@@ -9,7 +9,7 @@ all:
 	$(MDTOOL_RUN) build $(SOLUTION_FILE) -p:MacCrashLogger
 
 clean-local:
-	rm $(ASSEMBLY) $(ASSEMBLY).mdb
+	rm -f $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = \
 	     $(wildcard MonoDevelop*/*.cs) \
