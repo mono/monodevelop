@@ -8,12 +8,12 @@ all:
 	mkdir -p $(BINDIR)
 	$(MDTOOL_RUN) build $(SOLUTION_FILE) -p:MacCrashLogger
 
+
 clean-local:
 	rm -f $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = \
-	     $(wildcard MonoDevelop*/*.cs) \
-	     AssemblyInfo.cs \
-	     MonoDevelop.CrashLog.csproj
-
+	$(wildcard *.cs) \
+	$(wildcard *.csproj) \
+	$(wildcard *.plist)
 

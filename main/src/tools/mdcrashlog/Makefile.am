@@ -17,7 +17,7 @@ clean-local:
 CLEANFILES = $(MDCRASHLOG) $(MDCRASHLOG_MDB)
 
 EXTRA_DIST = \
-	     $(wildcard MonoDevelop*/*.cs) \
-	     $(wildcard resources/*) \
-	     AssemblyInfo.cs \
-	     MonoDevelop.CrashLog.csproj
+	$(wildcard *.cs) \
+	$(wildcard */*.cs) \
+	$(wildcard *.csproj)
+
