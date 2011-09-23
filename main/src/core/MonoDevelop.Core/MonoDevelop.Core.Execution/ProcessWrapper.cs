@@ -45,7 +45,7 @@ namespace MonoDevelop.Core.Execution
 		{
 			CheckDisposed ();
 			WaitForExit (milliseconds);
-			WaitHandle.WaitAll (new WaitHandle[] {endEventOut});
+			endEventOut.WaitOne ();
 		}
 		
 		public void WaitForOutput ()
@@ -71,7 +71,7 @@ namespace MonoDevelop.Core.Execution
 				// WORKAROUND for "Bug 410743 - wapi leak in System.Diagnostic.Process"
 				// Process leaks when an exit event is registered
 				if (endEventErr != null)
-					WaitHandle.WaitAll (new WaitHandle[] {endEventErr} );
+					endEventErr.WaitOne ();
 
 				OnExited (this, EventArgs.Empty);
 
