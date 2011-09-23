@@ -105,10 +105,9 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		public override FilePath FrameworksDirectory {
-			get {
-				return Path.Combine (monoDir, "xbuild-frameworks");
-			}
+		public override IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
+		{
+			yield return Path.Combine (monoDir, "xbuild-frameworks");
 		}
 
 		public bool UserDefined { get; internal set; }

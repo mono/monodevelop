@@ -76,8 +76,9 @@ namespace MonoDevelop.Core.Assemblies
 			get { return rootDir; }
 		}
 		
-		public override FilePath FrameworksDirectory {
-			get { return newFxDir; }
+		public override IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
+		{
+			yield return newFxDir;
 		}
 		
 		public override string GetAssemblyDebugInfoFile (string assemblyPath)

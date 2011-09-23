@@ -148,11 +148,9 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public abstract bool IsRunning { get; }
 		
-		/// <summary>
-		/// Gets the reference frameworks directory.
-		/// </summary>
-		public virtual FilePath FrameworksDirectory {
-			get { return null; }
+		public virtual IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
+		{
+			yield break;
 		}
 		
 		public IEnumerable<TargetFramework> CustomFrameworks {
@@ -420,12 +418,17 @@ namespace MonoDevelop.Core.Assemblies
 				return;
 			
 			timer.Trace ("Finding custom frameworks");
+			var customFrameworksList = new List<TargetFramework> ();
 			try {
-				if (!string.IsNullOrEmpty (FrameworksDirectory) && Directory.Exists (FrameworksDirectory))
-					customFrameworks = new List<TargetFramework> (FindTargetFrameworks (FrameworksDirectory)).ToArray ();
+				foreach (var dir in GetReferenceFrameworkDirectories ()) {
+					if (!string.IsNullOrEmpty (dir) && Directory.Exists (dir)) {
+						customFrameworksList.AddRange (FindTargetFrameworks (dir));
+					}
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error finding custom frameworks", ex);
 			}
+			customFrameworks = customFrameworksList.ToArray ();
 			
 			timer.Trace ("Creating frameworks");
 			CreateFrameworks ();
