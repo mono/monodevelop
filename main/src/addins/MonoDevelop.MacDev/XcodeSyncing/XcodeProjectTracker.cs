@@ -352,27 +352,37 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.EndTask ();
 				
 				updatingProjectFiles = true;
+				bool filesAdded = false;
+				bool typesAdded = false;
 				
 				// First, copy any changed/added resource files to MonoDevelop's project directory.
 				CopyFilesToMD (monitor, changeCtx);
 				
 				// Then update CLI types.
-				UpdateCliTypes (monitor, changeCtx);
+				if (UpdateCliTypes (monitor, changeCtx, out typesAdded))
+					filesAdded = true;
 				
 				// Next, parse UI definition files for custom classes
-				AddCustomClassesFromUIDefinitionFiles (monitor, changeCtx);
+				if (AddCustomClassesFromUIDefinitionFiles (monitor, changeCtx))
+					typesAdded = true;
 				
 				// Finally, add any newly created resource files to the DotNetProject.
-				AddFilesToMD (monitor, changeCtx);
+				if (AddFilesToMD (monitor, changeCtx))
+					filesAdded = true;
 				
 				// Save the DotNetProject.
-				Ide.IdeApp.ProjectOperations.Save (dnp);
+				if (filesAdded || typesAdded)
+					Ide.IdeApp.ProjectOperations.Save (dnp);
 				
 				// Notify MonoDevelop of file changes.
 				Gtk.Application.Invoke (delegate {
 					// FIXME: this should probably filter out any IsFreshlyAdded file jobs
 					FileService.NotifyFilesChanged (changeCtx.FileSyncJobs.Select (f => f.Original));
 				});
+				
+				if (typesAdded)
+					UpdateXcodeProject (monitor);
+				
 				return true;
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Error synchronizing changes from Xcode"), ex);
@@ -420,12 +430,15 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		/// <param name='context'>
 		/// The sync context.
 		/// </param>
-		void AddFilesToMD (IProgressMonitor monitor, XcodeSyncBackContext context)
+		/// <returns>
+		/// Returns whether or not new files were added to the project.
+		/// </returns>
+		bool AddFilesToMD (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
 			bool needsEndTask = false;
 			
 			if (context.FileSyncJobs.Count == 0)
-				return;
+				return false;
 			
 			foreach (var file in context.FileSyncJobs) {
 				if (!file.IsFreshlyAdded)
@@ -439,8 +452,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				needsEndTask = true;
 			}
 			
-			if (needsEndTask)
+			if (needsEndTask) {
 				monitor.EndTask ();
+				return true;
+			}
+			
+			return false;
 		}
 		
 		protected virtual IEnumerable<NSObjectTypeInfo> GetCustomTypesFromUIDefinition (FilePath fileName)
@@ -448,12 +465,25 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			yield break;
 		}
 		
-		void AddCustomClassesFromUIDefinitionFiles (IProgressMonitor monitor, XcodeSyncBackContext context)
+		/// <summary>
+		/// Adds the custom classes from user interface definition files.
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if new types were added to the project, or <c>false</c> otherwise.
+		/// </returns>
+		/// <param name='monitor'>
+		/// A progress monitor.
+		/// </param>
+		/// <param name='context'>
+		/// A sync-back context.
+		/// </param>
+		bool AddCustomClassesFromUIDefinitionFiles (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
 			var provider = dnp.LanguageBinding.GetCodeDomProvider ();
 			var options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
+			bool addedTypes = false;
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating custom classes defined in UI definition files"), 0);
 			
@@ -505,15 +535,33 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					
 					dnp.AddFile (new ProjectFile (path));
 					dnp.AddFile (new ProjectFile (designerPath) { DependsOn = path });
+					addedTypes = true;
 				}
 			}
 			
 			writer.WriteOpenFiles ();
 			
 			monitor.EndTask ();
+			
+			return addedTypes;
 		}
 		
-		void UpdateCliTypes (IProgressMonitor monitor, XcodeSyncBackContext context)
+		/// <summary>
+		/// Updates the cli types.
+		/// </summary>
+		/// <returns>
+		/// Returns whether or not any files were added to the project.
+		/// </returns>
+		/// <param name='monitor'>
+		/// A progress monitor.
+		/// </param>
+		/// <param name='context'>
+		/// A sync-back context.
+		/// </param>
+		/// <param name='typesAdded'>
+		/// An output variable specifying whether or not any types were added to the project.
+		/// </param>
+		bool UpdateCliTypes (IProgressMonitor monitor, XcodeSyncBackContext context, out bool typesAdded)
 		{
 			var provider = dnp.LanguageBinding.GetCodeDomProvider ();
 			var options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
@@ -527,7 +575,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			if ((updates == null || updates.Count == 0) && newTypes == null && newFiles == null) {
 				monitor.Log.WriteLine ("No changes found");
 				monitor.EndTask ();
-				return;
+				typesAdded = false;
+				return false;
 			}
 			
 			monitor.Log.WriteLine ("Found {0} changed types", updates.Count);
@@ -557,6 +606,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					
 					monitor.Step (1);
 				}
+				
+				typesAdded = true;
+			} else {
+				typesAdded = false;
 			}
 			
 			// Next, generate the designer files for any added/changed types
@@ -596,6 +649,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			monitor.EndTask ();
+			
+			return newFiles != null && newFiles.Count > 0;
 		}
 		
 		System.CodeDom.CodeCompileUnit GenerateCompileUnit (System.CodeDom.Compiler.CodeDomProvider provider,

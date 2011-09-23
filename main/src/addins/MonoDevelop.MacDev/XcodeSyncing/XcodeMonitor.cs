@@ -141,6 +141,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.Log.WriteLine ("Queuing Xcode project {0} to write when opened", projectDir);
 				pendingProjectWrite = emptyProject;
 			}
+			
 			monitor.EndTask ();
 			monitor.ReportSuccess (GettextCatalog.GetString ("Xcode project updated."));
 		}
@@ -366,7 +367,7 @@ end tell";
 		const string XCODE_SAVE_IN_PATH =
 @"tell application ""{0}""
 	set pp to ""{1}""
-	set ext to {{ "".xib"", "".h"", "".m"" }}
+	set ext to {{ "".storyboard"", "".xib"", "".h"", "".m"" }}
 	repeat with d in documents
 		if d is modified then
 			set f to path of d
