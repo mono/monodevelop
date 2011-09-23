@@ -219,7 +219,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				string relative;
 				
 				// Ignore *.xcodeproj directories and any directories named DerivedData at the toplevel
-				if (dir.EndsWith (".xcodeproj") || (relativePath == null && dir == "DerivedData"))
+				if (dir.EndsWith (".xcodeproj") || (relativePath == null && Path.GetFileName (dir) == "DerivedData"))
 					continue;
 				
 				if (relativePath != null)
