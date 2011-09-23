@@ -1030,7 +1030,10 @@ namespace MonoDevelop.Ide
 
 			asyncOperation.TrackOperation (cleanOperation, false);
 			
-			cleanOperation.Completed += (aop) => { asyncOperation.TrackOperation (Build (entry), true); };
+			cleanOperation.Completed += (aop) => {
+				if (aop.Success)
+					asyncOperation.TrackOperation (Build (entry), true);
+			};
 			
 			return asyncOperation;
 		}
