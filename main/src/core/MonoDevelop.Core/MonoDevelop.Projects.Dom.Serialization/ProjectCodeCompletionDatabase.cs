@@ -130,8 +130,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void OnProjectModified (object s, SolutionItemModifiedEventArgs args)
 		{
-			UpdateCorlibReference ();
-			if (UpdateCorlibReference ())
+			if (!args.Any (x => x is SolutionItemModifiedEventInfo && ((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework"))
+				return;
+			if (UpdateFromProject ())
 				SourceProjectDom.UpdateReferences ();
 		}
 
@@ -146,7 +147,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
 		}
 
-		public void UpdateFromProject ()
+		public bool UpdateFromProject ()
 		{
 			Hashtable fs = new Hashtable ();
 			foreach (ProjectFile file in project.Files) {
@@ -186,7 +187,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				if (!fs.Contains (re.Uri) && !IsCorlibReference (re))
 					RemoveReference (re.Uri);
 			}
-			UpdateCorlibReference ();
+			return UpdateCorlibReference ();
 		}
 		
 		bool UpdateCorlibReference ()
