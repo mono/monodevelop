@@ -582,18 +582,27 @@ namespace MonoDevelop.Projects
 			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
 			if (conf == null)
 				return;
-
-			foreach (SolutionItem item in Items) {
-				if (item is SolutionFolder)
-					item.Clean (monitor, configuration);
-				else if (item is SolutionEntityItem) {
-					SolutionEntityItem si = (SolutionEntityItem) item;
-					SolutionConfigurationEntry ce = conf.GetEntryForItem (si);
-					if (ce.Build)
-						si.Clean (monitor, ce.ItemConfigurationSelector);
-				} else {
-					item.Clean (monitor, configuration);
+			
+			try {
+				
+				monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution {0}", Name), Items.Count);
+				
+				foreach (SolutionItem item in Items) {
+					if (item is SolutionFolder)
+						item.Clean (monitor, configuration);
+					else if (item is SolutionEntityItem) {
+						SolutionEntityItem si = (SolutionEntityItem) item;
+						SolutionConfigurationEntry ce = conf.GetEntryForItem (si);
+						if (ce.Build)
+							si.Clean (monitor, ce.ItemConfigurationSelector);
+					} else {
+						item.Clean (monitor, configuration);
+					}
+					monitor.Step (1);
 				}
+			}
+			finally {
+				monitor.EndTask ();
 			}
 		}
 		

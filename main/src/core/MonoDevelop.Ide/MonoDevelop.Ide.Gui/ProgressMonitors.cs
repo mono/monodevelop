@@ -52,10 +52,20 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetBuildProgressMonitor ()
 		{
+			return GetBuildProgressMonitor (GettextCatalog.GetString ("Building..."));
+		}
+		
+		public IProgressMonitor GetCleanProgressMonitor ()
+		{
+			return GetBuildProgressMonitor (GettextCatalog.GetString ("Cleaning..."));
+		}
+		
+		private IProgressMonitor GetBuildProgressMonitor (string statusText)
+		{
 			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
 			ErrorListPad errorPad = (ErrorListPad) pad.Content;
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
-			mon.AddSlaveMonitor (GetStatusProgressMonitor (GettextCatalog.GetString ("Building..."), Stock.BuildCombine, false, true, false, pad));
+			mon.AddSlaveMonitor (GetStatusProgressMonitor (statusText, Stock.BuildCombine, false, true, false, pad));
 			return mon;
 		}
 		

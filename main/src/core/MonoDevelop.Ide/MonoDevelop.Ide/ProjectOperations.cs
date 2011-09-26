@@ -885,9 +885,72 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public void Clean (IBuildTarget entry)
+		public IAsyncOperation Clean (IBuildTarget entry)
 		{
-			entry.RunTarget (new NullProgressMonitor (), ProjectService.CleanTarget, IdeApp.Workspace.ActiveConfiguration);
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
+			
+			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Cleaning " + entry.Name);
+			try {
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetCleanProgressMonitor ();
+				
+				tt.Trace ("Start clean event");
+				TaskService.Errors.ClearByOwner (this);
+				OnStartClean (monitor);
+				
+				DispatchService.ThreadDispatch (delegate {
+					CleanAsync (entry, monitor, tt);
+				}, null);
+				
+				currentBuildOperation = monitor.AsyncOperation;
+				currentBuildOperationOwner = entry;
+				currentBuildOperation.Completed += delegate {
+					currentBuildOperationOwner = null;
+				};
+			}
+			catch {
+				tt.End ();
+				throw;
+			}
+			
+			return currentBuildOperation;
+		}
+		
+		void CleanAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt)
+		{
+			try {
+				tt.Trace ("Cleaning item");
+				SolutionItem it = entry as SolutionItem;
+				if (it != null) {
+					it.Clean (monitor, IdeApp.Workspace.ActiveConfiguration);
+				}
+				else {
+					entry.RunTarget (monitor, ProjectService.CleanTarget, IdeApp.Workspace.ActiveConfiguration);
+				}
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Clean failed."), ex);
+			} finally {
+				tt.Trace ("Done cleaning");
+			}
+			DispatchService.GuiDispatch (
+				delegate {
+					CleanDone (monitor, entry, tt);
+			});
+		}
+		
+		void CleanDone (IProgressMonitor monitor, IBuildTarget entry, ITimeTracker tt)
+		{
+			tt.Trace ("Begin reporting clean result");
+			try {
+				monitor.Log.WriteLine ();
+				monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+				tt.Trace ("Reporting result");			
+				monitor.ReportSuccess (GettextCatalog.GetString ("Clean successful."));
+				tt.Trace ("End clean event");
+				OnEndClean (monitor);
+			} finally {
+				monitor.Dispose ();
+				tt.End ();
+			}
 		}
 		
 		public IAsyncOperation BuildFile (string file)
@@ -961,9 +1024,18 @@ namespace MonoDevelop.Ide
 		public IAsyncOperation Rebuild (IBuildTarget entry)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
+			
+			var asyncOperation = new AsyncOperation ();
+			IAsyncOperation cleanOperation = Clean (entry);
 
-			Clean (entry);
-			return Build (entry);
+			asyncOperation.TrackOperation (cleanOperation, false);
+			
+			cleanOperation.Completed += (aop) => {
+				if (aop.Success)
+					asyncOperation.TrackOperation (Build (entry), true);
+			};
+			
+			return asyncOperation;
 		}
 //		bool errorPadInitialized = false;
 		public IAsyncOperation Build (IBuildTarget entry)
@@ -1680,6 +1752,20 @@ namespace MonoDevelop.Ide
 				EndBuild (this, new BuildEventArgs (monitor, success));
 			}
 		}
+		
+		void OnStartClean (IProgressMonitor monitor)
+		{
+			if (StartClean != null) {
+				StartClean (this, new CleanEventArgs (monitor));
+			}
+		}
+		
+		void OnEndClean (IProgressMonitor monitor)
+		{
+			if (EndClean != null) {
+				EndClean (this, new CleanEventArgs (monitor));
+			}
+		}
 
 		void IdeAppWorkspaceItemUnloading (object sender, ItemUnloadingEventArgs args)
 		{
@@ -1726,6 +1812,8 @@ namespace MonoDevelop.Ide
 		public event BuildEventHandler StartBuild;
 		public event BuildEventHandler EndBuild;
 		public event EventHandler BeforeStartProject;
+		public event CleanEventHandler StartClean;
+		public event CleanEventHandler EndClean;
 		
 		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
 		public event ProjectEventHandler CurrentProjectChanged;

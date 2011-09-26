@@ -504,17 +504,8 @@ namespace MonoDevelop.Projects
 		}
 		
 		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			SolutionConfiguration config = GetConfiguration (configuration);
-			if (config == null)
-				return;
-			
-			foreach (SolutionConfigurationEntry cce in config.Configurations) {
-				if (cce.Item == null)
-					LoggingService.LogWarning ("Combine.OnClean '{0}', configuration '{1}', entry '{2}': Entry is null", Name, config.Id, cce.Item.Name);
-				else if (cce.Build)
-					cce.Item.Clean (monitor, configuration);
-			}
+		{	
+			RootFolder.Clean (monitor, configuration);
 		}
 
 		protected internal override bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration)
