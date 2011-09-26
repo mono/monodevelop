@@ -1040,9 +1040,14 @@ namespace MonoDevelop.Ide.Gui
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 				
 				IEncodedTextContent etc = newContent.GetContent<IEncodedTextContent> ();
-				if (fileInfo.Encoding != null && etc != null)
-					etc.Load (fileName, fileInfo.Encoding);
-				else
+				if (fileInfo.Encoding != null && etc != null) {
+					try {
+						etc.Load (fileName, fileInfo.Encoding);
+					} catch (Exception ex) {
+						fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("Could not open file '{0}' in the {1} encoding: {2}", fileName, fileInfo.Encoding, ex.Message), null);
+						return;
+					}
+				} else
 					newContent.Load (fileName);
 			} catch (Exception ex) {
 				fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
