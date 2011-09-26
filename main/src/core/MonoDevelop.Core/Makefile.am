@@ -94,6 +94,7 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/AsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs \
+	MonoDevelop.Core.ProgressMonitoring/IProjectLoadProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/LogTextWriter.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs \

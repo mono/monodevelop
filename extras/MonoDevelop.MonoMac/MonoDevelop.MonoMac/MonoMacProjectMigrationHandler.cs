@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -40,40 +41,14 @@ namespace MonoDevelop.MonoMac
 {
 	public class MonoMacProjectMigrationHandler : IDotNetSubtypeMigrationHandler
 	{
+		public IEnumerable<string> FilesToBackup (string filename)
+		{
+			// Backup the project file only
+			return new string[] { filename };
+		}
+		
 		public bool Migrate (MSBuildProject project, string fileName, string language)
 		{
-			var buttonBackupAndMigrate = new AlertButton (GettextCatalog.GetString ("Back up and migrate"));
-			var buttonMigrate = new AlertButton (GettextCatalog.GetString ("Migrate"));
-			var buttonIgnore = new AlertButton (GettextCatalog.GetString ("Ignore"));
-			var response = MessageService.AskQuestion (
-				GettextCatalog.GetString ("Migrate MonoMac Project?"),
-				GettextCatalog.GetString (
-					"The MonoMac project '{0}' must be migrated to a new format. " +
-					"After migration, it will not be able to be opened in " +
-					"older versions of MonoDevelop.\n\n" +
-					"If you choose to back up the project before migration, a copy of the project " +
-					"file will be saved in a 'backup' directory in the project directory.", Path.GetFileNameWithoutExtension (fileName)),
-				buttonIgnore, buttonMigrate, buttonBackupAndMigrate);
-			if (response == buttonIgnore)
-				return false;
-			
-			FilePath baseDir = Path.GetDirectoryName (fileName);
-			
-			bool backup = response == buttonBackupAndMigrate;
-			if (backup) {
-				var backupDirFirst = baseDir.Combine ("backup");
-				string backupDir = backupDirFirst;
-				int i = 0;
-				while (Directory.Exists (backupDir)) {
-					backupDir = backupDirFirst + "-" + i.ToString ();
-					if (i > 20) {
-						throw new Exception ("Too many backup directories");
-					}
-				}
-				Directory.CreateDirectory (backupDir);
-				File.Copy (fileName, Path.Combine (backupDir, Path.GetFileName (fileName)));
-			}
-			
 			// Migrate 'Page' build action to 'InterfaceDefinition' (see Bug 147 - XIB files need Build Action other than Page)
 			// NOTE: Work around mono bug by calling ToList() before iterating: http://bugzilla.xamarin.com/show_bug.cgi?id=520
 			foreach (var item in project.GetAllItems ().Where (item => item.Name == "Page").ToList ()) {

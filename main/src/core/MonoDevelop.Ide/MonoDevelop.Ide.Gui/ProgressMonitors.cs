@@ -84,6 +84,11 @@ namespace MonoDevelop.Ide.Gui
 			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.OpenFileIcon, true, false, lockGui);
 		}
 		
+		public IProgressMonitor GetProjectLoadProgressMonitor (bool lockGui)
+		{
+			return new ProjectLoadProgressMonitor (GetLoadProgressMonitor (lockGui));
+		}
+		
 		public IProgressMonitor GetSaveProgressMonitor (bool lockGui)
 		{
 			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.SaveIcon, true, false, lockGui);

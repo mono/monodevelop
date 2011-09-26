@@ -565,6 +565,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/PadFontChanger.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
+	MonoDevelop.Ide.Gui/ProjectLoadProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \

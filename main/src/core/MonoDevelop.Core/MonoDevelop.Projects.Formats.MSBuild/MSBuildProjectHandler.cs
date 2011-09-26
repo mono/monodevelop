@@ -278,7 +278,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			try {
 				timer.Trace ("Create item instance");
 				ProjectExtensionUtil.BeginLoadOperation ();
-				Item = CreateSolutionItem (p, fileName, language, projectTypeGuids, itemType, itemClass);
+				Item = CreateSolutionItem (monitor, p, fileName, language, projectTypeGuids, itemType, itemClass);
 	
 				Item.SetItemHandler (this);
 				MSBuildProjectService.SetId (Item, itemGuid);
@@ -303,7 +303,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 		
 		// All of the last 4 parameters are optional, but at least one must be provided.
-		SolutionItem CreateSolutionItem (MSBuildProject p, string fileName, string language, string typeGuids,
+		SolutionItem CreateSolutionItem (IProgressMonitor monitor, MSBuildProject p, string fileName, string language, string typeGuids,
 			string itemType, Type itemClass)
 		{
 			SolutionItem item = null;
@@ -314,8 +314,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					item = st.CreateInstance (language);
 					useXBuild = useXBuild || st.UseXBuild;
 					if (st.IsMigration) {
-						if (!st.MigrationHandler.Migrate (p, fileName, language))
-							throw new Exception ("Could not migrate project");
+						MigrateProject (monitor, st, p, fileName, language);
 						
 						var oldSt = st;
 						st = MSBuildProjectService.GetItemSubtypeNodes ()
@@ -355,6 +354,41 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				item = (SolutionItem) Activator.CreateInstance (dt.ValueType);
 			}
 			return item;
+		}
+
+		void MigrateProject (IProgressMonitor monitor, DotNetProjectSubtypeNode st, MSBuildProject p, string fileName, string language)
+		{
+			var projectLoadMonitor = monitor as IProjectLoadProgressMonitor;
+			if (projectLoadMonitor == null) {
+				LoggingService.LogError (Environment.StackTrace);
+				monitor.ReportError ("Could not open unmigrated project and no migrator was supplied", null);
+				throw new Exception ("Could not open unmigrated project and no migrator was supplied");
+			}
+			
+			var migrationType = projectLoadMonitor.ShouldMigrateProject ();
+			if (migrationType == MigrationType.Ignore) {
+				monitor.ReportError (string.Format ("MonoDevelop cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName)), null);
+				throw new Exception ("The user choose not to migrate the project");
+			}
+			
+			var baseDir = (FilePath) Path.GetDirectoryName (fileName);
+			if (migrationType == MigrationType.BackupAndMigrate) {
+				var backupDirFirst = baseDir.Combine ("backup");
+				string backupDir = backupDirFirst;
+				int i = 0;
+				while (Directory.Exists (backupDir)) {
+					backupDir = backupDirFirst + "-" + i.ToString ();
+					if (i++ > 20) {
+						throw new Exception ("Too many backup directories");
+					}
+				}
+				Directory.CreateDirectory (backupDir);
+				foreach (var file in st.MigrationHandler.FilesToBackup (fileName))
+					File.Copy (file, Path.Combine (backupDir, Path.GetFileName (file)));
+			}
+			
+			if (!st.MigrationHandler.Migrate (p, fileName, language))
+				throw new Exception ("Could not migrate the project");
 		}
 		
 		FileFormat GetFileFormat ()

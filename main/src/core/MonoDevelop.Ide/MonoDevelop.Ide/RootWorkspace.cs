@@ -512,7 +512,7 @@ namespace MonoDevelop.Ide
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true);
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
 			
 			DispatchService.BackgroundDispatch (delegate {
 				BackgroundLoadWorkspace (monitor, filename, loadPreferences);
@@ -866,7 +866,7 @@ namespace MonoDevelop.Ide
 				IEnumerable<string> closedDocs;
 				
 				if (AllowReload (projects, out closedDocs)) {
-					using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
+					using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 						// Root folders never need to reload
 						entry.ParentFolder.ReloadItem (m, entry);
 						ReattachDocumentProjects (closedDocs);
