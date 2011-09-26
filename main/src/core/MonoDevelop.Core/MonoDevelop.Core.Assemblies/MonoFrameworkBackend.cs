@@ -46,7 +46,7 @@ namespace MonoDevelop.Core.Assemblies
 						string targetDir = reader.ReadContentAsString ();
 						if (!string.IsNullOrEmpty (targetDir)) {
 							targetDir = targetDir.Replace ('\\', System.IO.Path.DirectorySeparatorChar);
-							dir = dir.Combine (targetDir).FullPath;
+							dir = frameworkList.ParentDirectory.Combine (targetDir).FullPath;
 						}
 					}
 				}
