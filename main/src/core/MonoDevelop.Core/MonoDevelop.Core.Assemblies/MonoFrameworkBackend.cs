@@ -44,8 +44,10 @@ namespace MonoDevelop.Core.Assemblies
 				using (var reader = System.Xml.XmlReader.Create (frameworkList)) {
 					if (reader.ReadToDescendant ("FileList") && reader.MoveToAttribute ("TargetFrameworkDirectory") && reader.ReadAttributeValue ()) {
 						string targetDir = reader.ReadContentAsString ();
-						if (!string.IsNullOrEmpty (targetDir))
-							dir = targetDir;
+						if (!string.IsNullOrEmpty (targetDir)) {
+							targetDir = targetDir.Replace ('\\', System.IO.Path.DirectorySeparatorChar);
+							dir = dir.Combine (targetDir).FullPath;
+						}
 					}
 				}
 				return dir;

@@ -268,8 +268,10 @@ namespace MonoDevelop.Core.Assemblies
 				//this is a Mono-specific extension
 				if (reader.MoveToAttribute ("TargetFrameworkDirectory") && reader.ReadAttributeValue ()) {
 					string targetDir = reader.ReadContentAsString ();
-					if (!string.IsNullOrEmpty (targetDir))
-						dir = targetDir;
+					if (!string.IsNullOrEmpty (targetDir)) {
+						targetDir = targetDir.Replace ('\\', System.IO.Path.DirectorySeparatorChar);
+						dir = dir.Combine (targetDir).FullPath;
+					}
 				}
 				
 				var assemblies = new List<AssemblyInfo> ();
