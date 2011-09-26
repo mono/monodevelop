@@ -58,14 +58,20 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.AppendFormat ("{0} /* {1} */ = {{isa = {2}; ", Token, Name, Type);
 
 			if (dot > 0) {
-				switch (Path.Substring (dot + 1)) {
-				case "framework": sb.AppendFormat ("lastKnownFileType = wrapper.framework; name = {0}; ", Name); break;
-				case "app": sb.Append ("explicitFileType = wrapper.application; includeInIndex = 0; "); break;
-				case "storyboard": sb.Append ("lastKnownFileType = file.storyboard; "); break;
-				case "strings": sb.Append ("lastKnownFileType = text.plist.xml; "); break;
-				case "plist": sb.Append ("lastKnownFileType = text.plist.xml; "); break;
-				case "m": sb.Append ("lastKnownFileType = sourcecode.c.objc; "); break;
-				case "h": sb.Append ("lastKnownFileType = sourcecode.c.h; "); break;
+				switch (Path.Substring (dot)) {
+				case ".framework": sb.AppendFormat ("lastKnownFileType = wrapper.framework; name = {0}; ", Name); break;
+				case ".app": sb.Append ("explicitFileType = wrapper.application; includeInIndex = 0; "); break;
+				case ".storyboard": sb.Append ("lastKnownFileType = file.storyboard; "); break;
+				case ".strings": sb.Append ("lastKnownFileType = text.plist.xml; "); break;
+				case ".plist": sb.Append ("lastKnownFileType = text.plist.xml; "); break;
+				case ".m": sb.Append ("lastKnownFileType = sourcecode.c.objc; "); break;
+				case ".h": sb.Append ("lastKnownFileType = sourcecode.c.h; "); break;
+				case ".zip": sb.Append ("lastKnownFileType = archive.zip; "); break;
+				case ".gz": sb.Append ("lastKnownFileType = archive.gzip; "); break;
+				case ".jpeg": sb.Append ("lastKnownFileType = image.jpeg; "); break;
+				case ".jpg": sb.Append ("lastKnownFileType = image.jpeg; "); break;
+				case ".png": sb.Append ("lastKnownFileType = image.png; "); break;
+				case ".pdf": sb.Append ("lastKnownFileType = image.pdf; "); break;
 				}
 			}
 
