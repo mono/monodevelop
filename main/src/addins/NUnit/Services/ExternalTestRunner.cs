@@ -118,13 +118,14 @@ namespace MonoDevelop.NUnit.External
 		
 		public void SuiteFinished (TestSuiteResult result)
 		{
-//			testSuites.Pop ();
+			testSuites.Pop ();
 			wrapped.SuiteFinished (GetTestName (result.Test), GetLocalTestResult (result));
 		}
-//		Stack<string> testSuites = new Stack<string>();
+		Stack<string> testSuites = new Stack<string>();
 		public void SuiteStarted (TestName suite)
 		{
-//			testSuites.Push (suite.FullName);
+			Console.WriteLine ("start:"+suite.Name +"/"+suite.GetType ());
+			testSuites.Push (suite.FullName);
 			wrapped.SuiteStarted (GetTestName (suite));
 		}
 		
@@ -161,10 +162,18 @@ namespace MonoDevelop.NUnit.External
 		{
 			if (t == null)
 				return null;
-//			if (t.TestType != "Test Case" || testSuites.Count == 0)
+			if (t.TestType != "Test Case" || testSuites.Count == 0)
 				return t.TestName.FullName;
 			
-//			return testSuites.Peek () + "." + t.TestName.Name;
+			// This is a work around for a nunit bug. 
+			// see Bug 1026 - Test hierarchies are not colored correctly during testing (using Generics) for details
+			// Either t.TestName.FullName is wrong or t.TestName.Name (but not both at the same time) depending on
+			// the base class is generic or not.
+			string name = t.TestName.Name;
+			int idx = name.LastIndexOf ('.');
+			if (idx >= 0)
+				name = name.Substring (idx + 1);
+			return testSuites.Peek () + "." + name;
 		}
 		
 		public string GetTestName (TestName t)
