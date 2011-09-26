@@ -89,7 +89,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			comboTheme.Active = themes.IndexOf (IdeApp.Preferences.UserInterfaceTheme) + 1;
 			
 			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
-			hiddenButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 			fontCheckbox.Active = IdeApp.Preferences.CustomPadFont != null;
 			fontButton.FontName = IdeApp.Preferences.CustomPadFont ?? name;
 			fontButton.Sensitive = fontCheckbox.Active;
@@ -151,7 +150,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (theme != Gtk.Settings.Default.ThemeName)
 				Gtk.Settings.Default.ThemeName = theme;
 			
-			PropertyService.Set ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
 			if (fontCheckbox.Active)
 				IdeApp.Preferences.CustomPadFont = fontButton.FontName;
 			else

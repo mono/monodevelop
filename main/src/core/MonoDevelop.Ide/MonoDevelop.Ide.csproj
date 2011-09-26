@@ -849,7 +849,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads\DefaultMonitorPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\FileList.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\FileListItem.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads\FileScout.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\MonodocTreePad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SolutionFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\FolderNodeBuilder.cs" />
@@ -1227,7 +1226,6 @@
     <Compile Include="MonoDevelop.Components.Docking\PlaceholderWindow.cs" />
     <Compile Include="MonoDevelop.Components.Docking\ShadedContainer.cs" />
     <Compile Include="MonoDevelop.Components.Docking\TabStrip.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Components\FileBrowser.cs" />
     <Compile Include="MonoDevelop.Components\MenuButtonEntry.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\MultiMessageDialog.cs" />

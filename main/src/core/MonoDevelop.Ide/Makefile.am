@@ -400,7 +400,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/EnvVarList.cs \
 	MonoDevelop.Ide.Gui.Components/ExecutionModeComboBox.cs \
 	MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs \
-	MonoDevelop.Ide.Gui.Components/FileBrowser.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs \
@@ -527,7 +526,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/FileList.cs \
 	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
-	MonoDevelop.Ide.Gui.Pads/FileScout.cs \
 	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
 	MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
