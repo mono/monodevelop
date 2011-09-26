@@ -141,9 +141,11 @@ namespace MonoDevelop.Ide.Commands
 			if (focus is Gtk.Editable)
 				info.Enabled = ((Gtk.Editable)focus).IsEditable;
 			else if (focus is Gtk.TextView)
-				info.Enabled =  ((Gtk.TextView)focus).Editable;
+				info.Enabled = ((Gtk.TextView)focus).Editable;
 			else
-				info.Bypass = true;
+				info.Enabled = false;
+				
+			info.Bypass = !info.Enabled;
 		}
 	}
 	
@@ -169,7 +171,8 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			info.Bypass = !(focus is Gtk.Editable || focus is Gtk.TextView); 
+			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
+			info.Bypass = !info.Enabled;
 		}
 	}	
 	
@@ -198,9 +201,11 @@ namespace MonoDevelop.Ide.Commands
 			if (focus is Gtk.Editable)
 				info.Enabled = ((Gtk.Editable)focus).IsEditable;
 			else if (focus is Gtk.TextView)
-				info.Enabled =  ((Gtk.TextView)focus).Editable;
+				info.Enabled = ((Gtk.TextView)focus).Editable;
 			else
-				info.Bypass = true;
+				info.Enabled = false;
+			
+			info.Bypass = !info.Enabled;
 		}
 	}
 	
@@ -231,7 +236,9 @@ namespace MonoDevelop.Ide.Commands
 			else if (focus is Gtk.TextView)
 				info.Enabled = ((Gtk.TextView)focus).Editable;
 			else
-				info.Bypass = true;
+				info.Enabled = false;
+			
+			info.Bypass = !info.Enabled;
 		}
 	}
 	
