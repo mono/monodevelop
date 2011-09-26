@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.Gui
 				{
 					int pos = buffer.CursorPosition;
 					string ch = buffer.GetText (pos, pos + 1);
-					if (!char.IsLower (ch))
+					if (!char.IsLower (ch[0]))
 						return;
 					buffer.DeleteText (pos, 1);
 					buffer.InsertText (pos, ch.ToUpper ());
@@ -270,7 +270,7 @@ namespace MonoDevelop.Ide.Gui
 				{
 					int pos = buffer.CursorPosition;
 					string ch = buffer.GetText (pos, pos + 1);
-					if (!char.IsUpper (ch))
+					if (!char.IsUpper (ch[0]))
 						return;
 					buffer.DeleteText (pos, 1);
 					buffer.InsertText (pos, ch.ToLower ());
