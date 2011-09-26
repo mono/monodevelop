@@ -961,6 +961,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				modifierTable [Mono.CSharp.Modifiers.EXTERN] = ICSharpCode.NRefactory.CSharp.Modifiers.Extern;
 				modifierTable [Mono.CSharp.Modifiers.VOLATILE] = ICSharpCode.NRefactory.CSharp.Modifiers.Volatile;
 				modifierTable [Mono.CSharp.Modifiers.UNSAFE] = ICSharpCode.NRefactory.CSharp.Modifiers.Unsafe;
+				modifierTable [Mono.CSharp.Modifiers.ASYNC] = ICSharpCode.NRefactory.CSharp.Modifiers.Async;
 				
 				keywordTable = new string[255];
 				for (int i = 0; i< keywordTable.Length; i++) 
@@ -988,7 +989,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location == null || location.Modifiers == null)
 					return;
 				foreach (var modifier in location.Modifiers) {
-					parent.AddChild (new CSharpModifierToken (Convert (modifier.Item2), modifierTable[modifier.Item1]), AttributedNode.ModifierRole);
+					ICSharpCode.NRefactory.CSharp.Modifiers mod;
+					if (!modifierTable.TryGetValue (modifier.Item1, out mod)) {
+						Console.WriteLine ("modifier "+ modifier.Item1 + " can't be converted,");
+					}
+					
+					parent.AddChild (new CSharpModifierToken (Convert (modifier.Item2), mod), AttributedNode.ModifierRole);
 				}
 			}
 			
