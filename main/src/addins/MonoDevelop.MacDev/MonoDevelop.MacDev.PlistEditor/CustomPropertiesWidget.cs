@@ -229,7 +229,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 				
 				treeStore.SetValue (selIter, 0, newKey);
-				
+				obj.Replace (CreateNewObject (key.Type));
 			};
 			
 			treeview1.AppendColumn (GettextCatalog.GetString ("Property"), keyRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
