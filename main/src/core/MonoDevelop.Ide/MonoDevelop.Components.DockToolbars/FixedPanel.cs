@@ -94,6 +94,11 @@ namespace MonoDevelop.Components.DockToolbars
 			return false;
 		}
 		
+		public virtual Requisition GetChildRequisition (Widget w)
+		{
+			return w.ChildRequisition;
+		}
+		
 		public int GetChildWidth (Widget w)
 		{
 	//		ResizeChildren ();
@@ -222,7 +227,7 @@ namespace MonoDevelop.Components.DockToolbars
 		{
 			base.OnSizeAllocated (rect);
 			foreach (WidgetPosition pos in widgets) {
-				Requisition req = pos.Widget.ChildRequisition;
+				Requisition req = GetChildRequisition (pos.Widget);
 				Rectangle crect = new Rectangle (pos.X, pos.Y, req.Width, req.Height);
 				switch (placement) {
 					case Placement.Top:
