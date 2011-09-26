@@ -8001,7 +8001,7 @@ msgstr "Entfernen..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:39
 msgid "Checking out {0}..."
-msgstr "Auscheken von {0}..."
+msgstr "Auschecken von {0}..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:82
 msgid "Solution checked out"
