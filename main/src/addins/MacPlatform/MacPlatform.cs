@@ -423,6 +423,9 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			RectangleF visible = monitor.VisibleFrame;
 			RectangleF frame = monitor.Frame;
 			
+			if (visible.Height > frame.Height || visible.Width > frame.Width)
+				return base.GetUsableMonitorGeometry (screen, monitor_id);
+			
 			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
 			// to get the menu height, we just figure out the difference between the visibleFrame height
 			// and the actual frame height, then subtract the Dock height.
