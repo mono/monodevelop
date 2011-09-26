@@ -26,6 +26,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -166,6 +167,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				Gtk.TreeIter iter;
 				if (!pad.GetFirstNode (dataObject, out iter)) return false;
+				if (!iter.Equals (Gtk.TreeIter.Zero) || !store.IterIsValid (iter))  {
+					LoggingService.LogWarning ("Can't move to object:" + dataObject);
+					return false;
+				}
 				MoveToIter (iter);
 				return true;
 			}
