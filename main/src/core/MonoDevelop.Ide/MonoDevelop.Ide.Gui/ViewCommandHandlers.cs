@@ -238,6 +238,8 @@ namespace MonoDevelop.Ide.Gui
 				{
 					int pos = buffer.CursorPosition;
 					string ch = buffer.GetText (pos, pos + 1);
+					if (!char.IsLower (ch))
+						return;
 					buffer.DeleteText (pos, 1);
 					buffer.InsertText (pos, ch.ToUpper ());
 					buffer.CursorPosition = pos + 1;
@@ -251,6 +253,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		[CommandUpdateHandler (EditCommands.UppercaseSelection)]
+		protected void OnUppercaseSelection (CommandInfo info)
+		{
+			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			info.Enabled = buffer != null && buffer.CursorPosition < buffer.Length;
+		}
+		
 		[CommandHandler (EditCommands.LowercaseSelection)]
 		public void OnLowercaseSelection ()
 		{
@@ -261,6 +270,8 @@ namespace MonoDevelop.Ide.Gui
 				{
 					int pos = buffer.CursorPosition;
 					string ch = buffer.GetText (pos, pos + 1);
+					if (!char.IsUpper (ch))
+						return;
 					buffer.DeleteText (pos, 1);
 					buffer.InsertText (pos, ch.ToLower ());
 					buffer.CursorPosition = pos + 1;
@@ -277,7 +288,8 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.LowercaseSelection)]
 		protected void OnLowercaseSelection (CommandInfo info)
 		{
-			info.Enabled = GetContent <IEditableTextBuffer> () != null;
+			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			info.Enabled = buffer != null && buffer.CursorPosition < buffer.Length;
 		}
 		
 
