@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static int ShowCustomDialog (Gtk.Dialog dialog)
 		{
-			return ShowCustomDialog (dialog, rootWindow);
+			return ShowCustomDialog (dialog, null);
 		}
 		
 		public static int ShowCustomDialog (Gtk.Dialog dialog, Window parent)
@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide
 		
 		public static int RunCustomDialog (Gtk.Dialog dialog)
 		{
-			return RunCustomDialog (dialog, rootWindow);
+			return RunCustomDialog (dialog, null);
 		}
 		
 		/// <summary>
