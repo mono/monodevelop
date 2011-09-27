@@ -32,7 +32,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor
 			this.Name = "MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor";
-			this.Title = global::Mono.Unix.Catalog.GetString ("Create new color sheme");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Edit color sheme");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.VBox

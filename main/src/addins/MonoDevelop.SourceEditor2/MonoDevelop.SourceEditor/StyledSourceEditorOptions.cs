@@ -252,6 +252,11 @@ namespace MonoDevelop.SourceEditor
 			get { return DefaultSourceEditorOptions.Instance.EnableAnimations; }
 			set { throw new NotSupportedException (); }
 		}
+		
+		public bool UseAntiAliasing {
+			get { return DefaultSourceEditorOptions.Instance.UseAntiAliasing; }
+			set { throw new NotSupportedException (); }
+		}
 
 		public Mono.TextEditor.IWordFindStrategy WordFindStrategy {
 			get { return DefaultSourceEditorOptions.Instance.WordFindStrategy; }

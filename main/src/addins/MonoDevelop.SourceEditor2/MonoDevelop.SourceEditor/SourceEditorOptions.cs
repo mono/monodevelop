@@ -200,6 +200,9 @@ namespace MonoDevelop.SourceEditor
 			case "EnableAnimations":
 				base.EnableAnimations =  (bool) args.NewValue;
 				break;
+			case "UseAntiAliasing":
+				base.UseAntiAliasing =  (bool) args.NewValue;
+				break;
 			}
 			} catch (Exception ex) {
 				LoggingService.LogError ("SourceEditorOptions error with property value for '" + (args.Key ?? "") + "'", ex);
@@ -238,7 +241,7 @@ namespace MonoDevelop.SourceEditor
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
-			
+			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
 		}
 		
 		#region new options
