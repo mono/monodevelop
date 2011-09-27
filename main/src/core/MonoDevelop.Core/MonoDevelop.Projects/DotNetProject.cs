@@ -370,34 +370,6 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
-		//if possible, find a ClrVersion that the language binding can handle
-		TargetFramework GetValidFrameworkVersion (TargetFramework suggestion)
-		{
-			if (suggestion == null) {
-				if (LanguageBinding == null)
-					return null;
-				else
-					suggestion = Services.ProjectService.DefaultTargetFramework;
-			}
-
-			if (SupportsFramework (suggestion))
-				return suggestion;
-
-			TargetFramework oneSupported = null;
-			foreach (TargetFramework f in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-				if (SupportsFramework (f)) {
-					if (TargetRuntime.IsInstalled (f))
-						return f;
-					else if (oneSupported == null)
-						oneSupported = f;
-				}
-			}
-			if (oneSupported != null)
-				return oneSupported;
-
-			return null;
-		}
-
 		[ItemProperty(DefaultValue = true)]
 		public bool UsePartialTypes {
 			get { return usePartialTypes; }
