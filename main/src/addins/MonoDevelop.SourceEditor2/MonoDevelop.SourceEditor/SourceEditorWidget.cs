@@ -348,12 +348,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.Start.Line <= 0 || region.End.Line <= 0 || region.Start.Line > document.LineCount || region.End.Line > document.LineCount)
-			{
 				return null;
-			}
-			
 			int startOffset = document.LocationToOffset (region.Start.Line, region.Start.Column);
-			int endOffset   = document.LocationToOffset (region.End.Line, region.End.Column );
+			// end doesn't include the char at that position.
+			int endOffset   = document.LocationToOffset (region.End.Line, region.End.Column) - 1;
 			FoldSegment result = new FoldSegment (document, text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
