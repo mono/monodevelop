@@ -2116,7 +2116,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			Gtk.TreePath py = store.GetPath (y);
 			if (px == null || py == null)
 				return false;
-			return x.Equals (y);
+			return px.Equals (py);
 		}
 
 		public int GetHashCode (Gtk.TreeIter obj)
