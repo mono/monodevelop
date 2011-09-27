@@ -89,6 +89,11 @@ namespace MonoDevelop.Projects
 			Append (new BuildError (null, 0, 0, null, text));
 		}
 		
+		public void AddError (string text, string file)
+		{
+			Append (new BuildError (file, 0, 0, null, text));
+		}
+		
 		public void AddWarning (string file, int line, int col, string errorNum, string text)
 		{
 			BuildError ce = new BuildError (file, line, col, errorNum, text);
