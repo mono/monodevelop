@@ -1658,12 +1658,14 @@ namespace MonoDevelop.Ide
 				monitor.Step (1);
 			}
 			
+			var pfolder = sourcePath.ParentDirectory;
+			
 			// If this was the last item in the folder, make sure we keep
 			// a reference to the folder, so it is not deleted from the tree.
-			if (removeFromSource && sourceProject != null) {
-				var folder = sourcePath.ParentDirectory;
-				if (!sourceProject.Files.GetFilesInVirtualPath (folder).Any ()) {
-					var folderFile = new ProjectFile (sourceProject.BaseDirectory.Combine (folder));
+			if (removeFromSource && sourceProject != null && pfolder.CanonicalPath != sourceProject.BaseDirectory.CanonicalPath && pfolder.IsChildPathOf (sourceProject.BaseDirectory)) {
+				pfolder = pfolder.ToRelative (sourceProject.BaseDirectory);
+				if (!sourceProject.Files.GetFilesInVirtualPath (pfolder).Any ()) {
+					var folderFile = new ProjectFile (sourceProject.BaseDirectory.Combine (pfolder));
 					folderFile.Subtype = Subtype.Directory;
 					sourceProject.Files.Add (folderFile);
 				}
