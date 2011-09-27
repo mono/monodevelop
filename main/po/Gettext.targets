@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">	
+	<Target Name="_GettextPrepareInputs">
+		<!-- validate properties -->
+		<Error Condition="'$(OutputPath)' == ''"
+			Text="The OutputPath property has not been set."
+		/>
+		<Error Condition="'$(GettextCatalogName)' == ''"
+			Text="The GettextCatalogName property has not been set."
+		/>
+		<Error Condition="'$(GettextCatalogFile)' == ''"
+			Text="The GettextCatalogFile property has not been set."
+		/>
+		<!-- preprocess properties -->
+		<PropertyGroup>
+			<_OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</_OutputPath>
+			<_OutputPath Condition="'$(_OutputPath)'==''">$(OutputPath)</_OutputPath>
+			<_GettextCatalogName>$(GettextCatalogName)</_GettextCatalogName>
+			<_GettextCatalogFile>$(GettextCatalogFile)</_GettextCatalogFile>
+		</PropertyGroup>
+		<!-- preprocess items -->
+		<ItemGroup>
+			<_Translation Include="@(GettextTranslation)">
+				<MoDir>$(_OutputPath)%(FileName)\LC_MESSAGES\</MoDir>
+				<MoFile>$(_OutputPath)%(FileName)\LC_MESSAGES\$(_GettextCatalogName).mo</MoFile>
+			</_Translation>
+		</ItemGroup>
+		<!-- determine tool locations -->
+		<PropertyGroup>
+			<_msgfmt>msgfmt</_msgfmt>
+			<_msgmerge>msgmerge</_msgmerge>
+		</PropertyGroup>
+		<PropertyGroup Condition="Exists('$(MSBuildProgramFiles32)\GnuWin32\bin\msgfmt.exe')">
+			<_msgfmt>$(MSBuildProgramFiles32)\GnuWin32\bin\msgfmt.exe</_msgfmt>
+			<_msgmerge>Exists('$(MSBuildProgramFiles32)\GnuWin32\bin\msgmerge.exe</_msgmerge>
+		</PropertyGroup>
+	</Target>
+	
+	<Target Name="_GettextCompileTranslations" Inputs="@(_Translation)" Outputs="%(MoFile)">
+		<MakeDir Directories="%(_Translation.MoDir)" />
+		<Exec Command='"$(_msgfmt)" "@(_Translation)" -o "%(MoFile)"' />
+	</Target>
+	
+	<Target Name="_GettextClean" DependsOnTargets="_GettextPrepareInputs">
+		<Delete Files="%(Translation.MoFile)" />
+	</Target>
+	
+	<Target Name="_GettextUpdateTranslations" Inputs="$(CatalogFile)" Outputs="@(Translation)">
+		<Exec Command='"$(_msgmerge)" -U "@(Translation)" -v "$(CatalogFile)"' />
+	</Target>
+	
+	<Target Name="UpdateTranslations" DependsOnTargets="_GettextPrepareInputs;_GettextUpdateTranslations" />
+	<Target Name="CompileTranslations" DependsOnTargets="_GettextPrepareInputs;_GettextCompileTranslations" />
+	<Target Name="Build" DependsOnTargets="BeforeBuild;CompileTranslations;AfterBuild" />
+	<Target Name="Clean" DependsOnTargets="BeforeClean;_GettextClean;AfterClean" />
+	
+	<!-- extension points -->
+	<Target Name="BeforeBuild" />
+	<Target Name="AfterBuild" />
+	<Target Name="BeforeClean" />
+	<Target Name="AfterClean" />
+</Project>
