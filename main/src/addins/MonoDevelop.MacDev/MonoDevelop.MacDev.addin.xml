@@ -71,7 +71,7 @@
 	
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id = "InterfaceBuilder"
-			insertafter ="DefaultDisplayBinding"
+			insertbefore ="DefaultDisplayBinding"
 			class = "MonoDevelop.MacDev.XcodeInterfaceBuilderDisplayBinding" />
 	</Extension>
 	
