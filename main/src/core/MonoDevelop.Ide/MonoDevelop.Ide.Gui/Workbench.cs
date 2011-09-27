@@ -1041,15 +1041,18 @@ namespace MonoDevelop.Ide.Gui
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 				
 				IEncodedTextContent etc = newContent.GetContent<IEncodedTextContent> ();
-				if (fileInfo.Encoding != null && etc != null) {
-					try {
+				try {
+					if (fileInfo.Encoding != null && etc != null)
 						etc.Load (fileName, fileInfo.Encoding);
-					} catch (InvalidEncodingException iex) {
-						fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
-						return;
-					}
-				} else
-					newContent.Load (fileName);
+					else
+						newContent.Load (fileName);
+				} catch (InvalidEncodingException iex) {
+					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
+					return;
+				} catch (OverflowException oex) {
+					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
+					return;
+				}
 			} catch (Exception ex) {
 				fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
 				return;
