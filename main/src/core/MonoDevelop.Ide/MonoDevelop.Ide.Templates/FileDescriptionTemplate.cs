@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		public virtual bool IsValidName (string name, string language)
 		{
-			return name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
+			return name.Length > 0 && name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
 /*			if (name.Length > 0) {
 				if (language != null && language.Length > 0) {
 					IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
