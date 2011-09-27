@@ -646,6 +646,13 @@ namespace MonoDevelop.SourceEditor
 				base.EnableAnimations = value;
 			}
 		}
+		
+		public override bool UseAntiAliasing {
+			set {
+				PropertyService.Set ("UseAntiAliasing", value);
+				base.UseAntiAliasing = value;
+			}
+		}
 
 		public override bool AutoIndent {
 			get {

@@ -1484,8 +1484,10 @@ namespace Mono.TextEditor
 			var cairoArea = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window))
 			using (Cairo.Context textViewCr = Gdk.CairoHelper.Create (e.Window)) {
-				if (!Options.UseAntiAliasing)
+				if (!Options.UseAntiAliasing) {
 					textViewCr.Antialias = Cairo.Antialias.None;
+					cr.Antialias = Cairo.Antialias.None;
+				}
 				
 				UpdateMarginXOffsets ();
 				

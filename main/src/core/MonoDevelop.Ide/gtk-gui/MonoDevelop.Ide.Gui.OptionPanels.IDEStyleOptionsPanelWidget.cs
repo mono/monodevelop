@@ -199,10 +199,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.documentSwitcherButton.DrawIndicator = true;
 			this.documentSwitcherButton.UseUnderline = true;
 			this.vbox13.Add (this.documentSwitcherButton);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.documentSwitcherButton]));
-			w17.Position = 4;
-			w17.Expand = false;
-			w17.Fill = false;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.documentSwitcherButton]));
+			w16.Position = 3;
+			w16.Expand = false;
+			w16.Fill = false;
 			this.Add (this.vbox13);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
