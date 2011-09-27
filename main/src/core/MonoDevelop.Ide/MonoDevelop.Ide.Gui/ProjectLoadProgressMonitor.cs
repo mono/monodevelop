@@ -29,75 +29,16 @@ using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class ProjectLoadProgressMonitor : IProjectLoadProgressMonitor
+	public class ProjectLoadProgressMonitor : WrappedProgressMonitor
 	{
-		public event MonitorHandler CancelRequested {
-			add { WrappedMonitor.CancelRequested += value; }
-			remove { WrappedMonitor.CancelRequested -= value; }
-		}
-
-		public IAsyncOperation AsyncOperation {
-			get { return WrappedMonitor.AsyncOperation; }
-		}
-
-		public bool IsCancelRequested {
-			get { return WrappedMonitor.IsCancelRequested; }
-		}
-		
 		MigrationType? Migration {
-			get; set;
-		}
-
-		public System.IO.TextWriter Log {
-			get { return WrappedMonitor.Log; }
-		}
-
-		public object SyncRoot {
-			get { return WrappedMonitor.SyncRoot; }
-		}
-		
-		IProgressMonitor WrappedMonitor {
 			get; set;
 		}
 		
 		public ProjectLoadProgressMonitor (IProgressMonitor monitor)
+			: base (monitor)
 		{
-			WrappedMonitor = monitor;
-		}
-
-		public void BeginStepTask (string name, int totalWork, int stepSize)
-		{
-			WrappedMonitor.BeginStepTask (name, totalWork, stepSize);
-		}
-
-		public void BeginTask (string name, int totalWork)
-		{
-			WrappedMonitor.BeginTask (name, totalWork);
-		}
-
-		public void Dispose ()
-		{
-			WrappedMonitor.Dispose ();
-		}
-		
-		public void EndTask ()
-		{
-			WrappedMonitor.EndTask ();
-		}
-		
-		public void ReportError (string message, Exception exception)
-		{
-			WrappedMonitor.ReportError (message, exception);
-		}
-		
-		public void ReportSuccess (string message)
-		{
-			WrappedMonitor.ReportSuccess (message);
-		}
-		
-		public void ReportWarning (string message)
-		{
-			WrappedMonitor.ReportWarning (message);
+			
 		}
 		
 		public MigrationType ShouldMigrateProject ()
@@ -126,11 +67,5 @@ namespace MonoDevelop.Ide.Gui
 			
 			return Migration.Value;
 		}
-		
-		public void Step (int work)
-		{
-			WrappedMonitor.Step (work);
-		}
 	}
 }
-

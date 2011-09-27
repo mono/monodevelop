@@ -93,6 +93,7 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs \
+	MonoDevelop.Core.ProgressMonitoring/ConsoleProjectLoadProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/IProjectLoadProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/LogTextWriter.cs \
@@ -102,6 +103,7 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs \
 	MonoDevelop.Core.ProgressMonitoring/SimpleProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs \
+	MonoDevelop.Core.ProgressMonitoring/WrappedProgressMonitor.cs \
 	MonoDevelop.Core.Serialization/ArrayHandler.cs \
 	MonoDevelop.Core.Serialization/ArrayListHandler.cs \
 	MonoDevelop.Core.Serialization/BinaryDataSerializer.cs \

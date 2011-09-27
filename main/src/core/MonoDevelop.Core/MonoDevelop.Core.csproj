@@ -506,6 +506,8 @@
     <Compile Include="MonoDevelop.Core\BrandingService.cs" />
     <Compile Include="MonoDevelop.Projects\CleanEventHandler.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\IProjectLoadProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\WrappedProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProjectLoadProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

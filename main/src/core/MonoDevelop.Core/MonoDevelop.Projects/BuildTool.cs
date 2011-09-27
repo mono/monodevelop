@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 			
-			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
+			IProgressMonitor monitor = new ConsoleProjectLoadProgressMonitor (new ConsoleProgressMonitor ());
 
 			TargetRuntime targetRuntime = null;
 			TargetRuntime defaultRuntime = Runtime.SystemAssemblyService.DefaultRuntime;
