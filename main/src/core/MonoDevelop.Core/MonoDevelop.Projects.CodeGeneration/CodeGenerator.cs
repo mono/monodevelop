@@ -164,6 +164,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 					AppendLine (result);
 				}
 				string implementation = InternalCreateInterfaceImplementation (implementingType, baseInterface, explicitly, implementedMembers);
+				if (string.IsNullOrWhiteSpace (implementation))
+					continue;
 				if (wrapRegions) {
 					result.Append (WrapInRegions (baseInterface.Name + " implementation", implementation));
 				} else {
