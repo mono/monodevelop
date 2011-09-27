@@ -153,9 +153,9 @@ namespace MonoDevelop.Refactoring
 			
 			string itemName = null;
 			if (item is IMember)
-				itemName = ((IMember)item).Name;
+				itemName = ((IMember)item).FullName;
 
-			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.FullName == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
 				// If this occurs, then @item is either its own enclosing item, in
 				// which case, we don't want to show it twice, or it is the base-class
 				// version of @eitem, in which case we don't want to show the base-class

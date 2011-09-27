@@ -55,8 +55,8 @@ namespace MonoDevelop.Refactoring
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			string itemName = null;
 			if (item is IMember)
-				itemName = ((IMember)item).Name;
-			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+				itemName = ((IMember)item).FullName;
+			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.FullName == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
 				item = eitem;
 				eitem = null;
 			}
