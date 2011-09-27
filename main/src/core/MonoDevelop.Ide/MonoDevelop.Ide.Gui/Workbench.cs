@@ -37,6 +37,7 @@ using System.Threading;
 
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
@@ -1043,8 +1044,8 @@ namespace MonoDevelop.Ide.Gui
 				if (fileInfo.Encoding != null && etc != null) {
 					try {
 						etc.Load (fileName, fileInfo.Encoding);
-					} catch (Exception ex) {
-						fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("Could not open file '{0}' in the {1} encoding: {2}", fileName, fileInfo.Encoding, ex.Message), null);
+					} catch (InvalidEncodingException iex) {
+						fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
 						return;
 					}
 				} else
