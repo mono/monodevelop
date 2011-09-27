@@ -99,11 +99,17 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public ClrVersion ClrVersion {
 			get {
+				// Always return a concrete ClrVersion, nothing that uses this can deal with ClrVersion.Default
+				// If the framework didn't specify one, assume the same default as the ToolsVersion.
+				if (clrVersion == ClrVersion.Default) {
+					return ClrVersion.Net_4_0;
+				}
 				return clrVersion;
 			}
 		}
 		
-		public TargetFrameworkToolsVersion GetToolsVersion ()
+		//FIXME: this isn't really valid/useful. anything using MSBuild custom frameworks should use 4.0 tools
+		internal TargetFrameworkToolsVersion GetToolsVersion ()
 		{
 			if (toolsVersion != TargetFrameworkToolsVersion.Unspecified)
 				return toolsVersion;
