@@ -352,32 +352,35 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl)
 		{
-			do {
-				if (IsMatch (nav, helpUrl))
-					return nav;
-				if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
-					DispatchService.RunPendingEvents ();
-					nav.MoveToFirstChild ();
-					ITreeNavigator result = SearchMember (nav, helpUrl);
-					if (result != null)
-						return result;
-					
-					if (!nav.MoveToParent ())
-						return null;
-					try {
-						if (nav.DataItem is DomCecilType && nav.Options["PublicApiOnly"]) {
-							nav.Options["PublicApiOnly"] = false;
-							nav.MoveToFirstChild ();
-							result = SearchMember (nav, helpUrl);
-							if (result != null)
-								return result;
-							nav.MoveToParent ();
+			try {
+				do {
+					if (IsMatch (nav, helpUrl))
+						return nav;
+					if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
+						DispatchService.RunPendingEvents ();
+						nav.MoveToFirstChild ();
+						ITreeNavigator result = SearchMember (nav, helpUrl);
+						if (result != null)
+							return result;
+						
+						if (!nav.MoveToParent ())
+							return null;
+						try {
+							if (nav.DataItem is DomCecilType && nav.Options["PublicApiOnly"]) {
+								nav.Options["PublicApiOnly"] = false;
+								nav.MoveToFirstChild ();
+								result = SearchMember (nav, helpUrl);
+								if (result != null)
+									return result;
+								nav.MoveToParent ();
+							}
+						} catch (Exception) {
+							return null;
 						}
-					} catch (Exception) {
-						return null;
 					}
-				}
-			} while (nav.MoveNext());
+				} while (nav.MoveNext());
+			} catch (Exception) {
+			}
 			return null;
 		}
 		
