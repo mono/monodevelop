@@ -66,13 +66,18 @@ namespace MonoDevelop.Platform
 			}
 			
 			protected override void WndProc (ref Message m)
-			{
+			{					
+				/* Disable the handling of the pending events of the
+				 * MD's UI thread, as we are running them in a separated thread now,
+				 * but leave them here since we may need them when/if the MD's Main
+				 * method is marked with the STAThread attribute.
 				switch (m.Msg) {
 					case (int) Msg.WM_ENTERIDLE:
 					case (int) Msg.WM_WINDOWPOSCHANGED:
 						MonoDevelop.Ide.DispatchService.RunPendingEvents ();
 						break;
 				}
+				 */
 				
 				base.WndProc (ref m);
 			}
