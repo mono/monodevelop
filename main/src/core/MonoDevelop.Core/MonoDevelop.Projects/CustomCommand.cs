@@ -176,7 +176,6 @@ namespace MonoDevelop.Projects
 			StringTagModel tagSource = GetTagModel (entry, configuration);
 			ParseCommand (tagSource, out exe, out args);
 			
-			exe = ((FilePath)exe).ToAbsolute (entry.BaseDirectory).FullPath;
 			ProcessExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
 			
 			cmd.Arguments = args;
@@ -224,11 +223,6 @@ namespace MonoDevelop.Projects
 			
 			if (!Directory.Exists (cmd.WorkingDirectory)) {
 				monitor.ReportError (GettextCatalog.GetString ("Custom command working directory does not exist"), null);
-				return;
-			}
-			
-			if (!File.Exists (cmd.Command)) {
-				monitor.ReportError (GettextCatalog.GetString ("Custom command executable not exist"), null);
 				return;
 			}
 			
