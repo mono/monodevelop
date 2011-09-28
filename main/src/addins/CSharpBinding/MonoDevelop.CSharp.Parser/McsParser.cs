@@ -687,55 +687,57 @@ namespace MonoDevelop.CSharp.Parser
 				if (optAttributes == null || optAttributes.Attrs == null)
 					return atts;
 				ResolveContext ctx = new ResolveContext (mc);
+				foreach (var section in optAttributes.Sections) {
 				
-				foreach (var attr in optAttributes.Attrs) {
-					DomAttribute domAttribute = new DomAttribute ();
-					domAttribute.Name = ConvertQuoted (attr.Name);
-					domAttribute.Region = ConvertRegion (attr.Location, attr.Location);
-					domAttribute.AttributeType = ConvertReturnType (attr.TypeNameExpression);
-					if (attr.PosArguments != null) {
-						for (int i = 0; i < attr.PosArguments.Count; i++) {
-							CodeExpression domExp;
-							var exp = attr.PosArguments [i].Expr;
-							
-							if (exp is TypeOf) {
-								TypeOf tof = (TypeOf)exp;
-								IReturnType rt = ConvertReturnType (tof.TypeExpression);
-								domExp = new CodeTypeOfExpression (rt.FullName);
-							} else if (exp is Binary) {
-								// Currently unsupported in the old dom (will be in the new dom)
-								continue;
-							} else if (exp is Constant) {
-								try {
-									var res = exp.Resolve (ctx);
-									var val = res as Constant;
-									if (val == null)
+					foreach (var attr in section) {
+						DomAttribute domAttribute = new DomAttribute ();
+						domAttribute.Name = ConvertQuoted (attr.Name);
+						domAttribute.Region = ConvertRegion (attr.Location, attr.Location);
+						domAttribute.AttributeType = ConvertReturnType (attr.TypeNameExpression);
+						if (attr.PosArguments != null) {
+							for (int i = 0; i < attr.PosArguments.Count; i++) {
+								CodeExpression domExp;
+								var exp = attr.PosArguments [i].Expr;
+								
+								if (exp is TypeOf) {
+									TypeOf tof = (TypeOf)exp;
+									IReturnType rt = ConvertReturnType (tof.TypeExpression);
+									domExp = new CodeTypeOfExpression (rt.FullName);
+								} else if (exp is Binary) {
+									// Currently unsupported in the old dom (will be in the new dom)
+									continue;
+								} else if (exp is Constant) {
+									try {
+										var res = exp.Resolve (ctx);
+										var val = res as Constant;
+										if (val == null)
+											continue;
+										domExp = new CodePrimitiveExpression (val.GetValue ());
+									} catch {
 										continue;
-									domExp = new CodePrimitiveExpression (val.GetValue ());
-								} catch {
-									continue;
+									}
+								} else {
+									try {
+										domExp = ResolveMemberAccessExpression (exp);
+									} catch {
+										continue;
+									}
 								}
-							} else {
-								try {
-									domExp = ResolveMemberAccessExpression (exp);
-								} catch {
-									continue;
-								}
+								if (domExp != null)
+									domAttribute.AddPositionalArgument (domExp);
 							}
-							if (domExp != null)
-								domAttribute.AddPositionalArgument (domExp);
 						}
-					}
-					if (attr.NamedArguments != null) {
-						for (int i = 0; i < attr.NamedArguments.Count; i++) {
-							var val = attr.NamedArguments [i].Expr as Constant;
-							if (val == null)
-								continue;
-							domAttribute.AddNamedArgument (((NamedArgument)attr.NamedArguments [i]).Name, new CodePrimitiveExpression (val.GetValue ()));
+						if (attr.NamedArguments != null) {
+							for (int i = 0; i < attr.NamedArguments.Count; i++) {
+								var val = attr.NamedArguments [i].Expr as Constant;
+								if (val == null)
+									continue;
+								domAttribute.AddNamedArgument (((NamedArgument)attr.NamedArguments [i]).Name, new CodePrimitiveExpression (val.GetValue ()));
+							}
 						}
+						
+						atts.Add (domAttribute);
 					}
-					
-					atts.Add (domAttribute);
 				}
 				return atts;
 			}
