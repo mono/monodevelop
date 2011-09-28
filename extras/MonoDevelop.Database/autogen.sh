@@ -60,8 +60,8 @@ aclocal $ACLOCAL_FLAGS || {
   exit 1
 }
 
-echo "Running automake --gnu $am_opt ..."
-automake --add-missing --gnu $am_opt ||
+echo "Running automake $am_opt ..."
+automake $am_opt ||
   { echo "**Error**: automake failed."; exit 1; }
 
 echo "Running autoconf ..."
