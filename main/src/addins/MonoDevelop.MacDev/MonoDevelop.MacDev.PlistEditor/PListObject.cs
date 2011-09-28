@@ -224,8 +224,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public void Add (string key, PObject value)
 		{
+			value.Parent = this;
 			dict.Add (key, value);
 			order.Add (key);
+			OnAddedd (new PObjectEventArgs (value));
+		}
+		
+		public void InsertAfter (string keyBefore, string key, PObject value)
+		{
+			value.Parent = this;
+			dict.Add (key, value);
+			order.Insert (order.IndexOf (keyBefore) + 1, key);
 			OnAddedd (new PObjectEventArgs (value));
 		}
 		
