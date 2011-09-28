@@ -146,19 +146,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			return "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
 		}
-		
-		static IEnumerable<string> GetReferenceUris (DotNetProject netProject, ProjectReference pref)
-		{
-			if (pref.ReferenceType == ReferenceType.Project) {
-				var referencedProject = netProject.ParentSolution.FindProjectByName (pref.Reference);
-				if (referencedProject != null) 
-					yield return "Project:" + referencedProject.FileName;
-			} else {
-				foreach (string fileName in pref.GetReferencedFileNames (ConfigurationSelector.Default)) {
-					yield return GetReferenceUri (netProject, fileName);
-				}
-			}
-		}
 
 		public bool UpdateFromProject ()
 		{
@@ -175,15 +162,23 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			fs.Clear ();
-
 			if (project is DotNetProject) {
-				var netProject = (DotNetProject)project;
-				foreach (var pref in netProject.References) {
-					foreach (var refId in GetReferenceUris (netProject, pref)) {
+				DotNetProject netProject = (DotNetProject)project;
+				foreach (SolutionItem pr in netProject.GetReferencedItems (ConfigurationSelector.Default)) {
+					if (pr is Project) {
+						string refId = "Project:" + ((Project)pr).FileName;
 						fs [refId] = null;
 						if (!HasReference (refId))
 							AddReference (refId);
 					}
+				}
+				
+				// Get the assembly references throught the project, since it may have custom references
+				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+					string refId = GetReferenceUri (netProject, file);
+					fs [refId] = null;
+					if (!HasReference (refId))
+						AddReference (refId);
 				}
 			}
 			
