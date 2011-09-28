@@ -442,45 +442,56 @@ namespace MonoDevelop.Ide.FindInFiles
 				
 		Scope GetScope ()
 		{
+							
+			var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+			Scope scope = null;
+				
 			switch (comboboxScope.Active) {
 			case ScopeCurrentDocument:
-				return new DocumentScope ();
+				scope = new DocumentScope ();
+				break;
 			case ScopeSelection:
-				return new SelectionScope ();
+				scope = new SelectionScope ();
+				break;
 			case ScopeWholeSolution:
 				if (!IdeApp.Workspace.IsOpen) {
 					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 					return null;
 				}
-				return new WholeSolutionScope ();
+				scope = new WholeSolutionScope ();
+				break;
 			case ScopeCurrentProject:
 				MonoDevelop.Projects.Project currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 				if (currentSelectedProject != null)
-					return new WholeProjectScope (currentSelectedProject);
+					scope = new WholeProjectScope (currentSelectedProject);
 				if (IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
 					AlertButton alertButton = MessageService.AskQuestion (GettextCatalog.GetString ("Currently there is no project selected. Search in the solution instead ?"), AlertButton.Yes, AlertButton.No);
 					if (alertButton == AlertButton.Yes)
-						return new WholeSolutionScope ();
+						scope = new WholeSolutionScope ();
 				} else {
 					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
+					return null;
 				}
-				return null;
+				break;
 			case ScopeAllOpenFiles:
-				return new AllOpenFilesScope ();
+				scope = new AllOpenFilesScope ();
+				break;
 			case ScopeDirectories: 
 				if (!System.IO.Directory.Exists (comboboxentryPath.Entry.Text)) {
 					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"), comboboxentryPath.Entry.Text));
 					return null;
 				}
-				var directoryScope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active);
 				
-				var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
-				directoryScope.IncludeBinaryFiles = properties.Get ("IncludeBinaryFiles", false);
-				directoryScope.IncludeHiddenFiles = properties.Get ("IncludeHiddenFiles", false);
-				
-				return directoryScope;
+				scope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active) {
+					IncludeHiddenFiles = properties.Get ("IncludeHiddenFiles", false)
+				};
+				break;
+			default:
+				throw new ApplicationException ("Unknown scope:" + comboboxScope.Active);
 			}
-			throw new ApplicationException ("Unknown scope:" + comboboxScope.Active);
+			
+			scope.IncludeBinaryFiles = properties.Get ("IncludeBinaryFiles", false);
+			return scope;
 		}
 
 		FilterOptions GetFilterOptions ()
