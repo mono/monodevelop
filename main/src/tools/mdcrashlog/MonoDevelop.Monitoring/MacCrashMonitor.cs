@@ -27,10 +27,10 @@
 using System;
 using System.IO;
 
-namespace MonoDevelop.Monitoring {
-
-	class MacCrashMonitor : CrashMonitor {
-		
+namespace MonoDevelop.Monitoring
+{
+	class MacCrashMonitor : CrashMonitor
+	{
 		static readonly string CrashLogDirectory = 
 			Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Library/Logs/CrashReporter");
 		

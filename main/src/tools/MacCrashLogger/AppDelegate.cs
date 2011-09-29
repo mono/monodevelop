@@ -33,6 +33,7 @@ using MonoMac.ObjCRuntime;
 using MonoDevelop;
 using MonoDevelop.Monitoring;
 using MonoDevelop.CrashReporting;
+using MonoDevelop.CrashLog;
 
 namespace MacCrashLogger
 {
@@ -56,9 +57,9 @@ namespace MacCrashLogger
 		
 		public AppDelegate ()
 		{
-			Reporter = new CrashReporter (OptionsParser.LogPath, OptionsParser.Email);
+			Reporter = new CrashReporter (CrashLogOptions.LogPath, CrashLogOptions.Email);
 			
-			Monitor = CrashMonitor.Create (OptionsParser.Pid);
+			Monitor = CrashMonitor.Create (CrashLogOptions.Pid);
 			Monitor.ApplicationExited += HandleMonitorApplicationExited;
 			Monitor.CrashDetected += HandleMonitorCrashDetected;
 		}
@@ -71,7 +72,7 @@ namespace MacCrashLogger
 		
 		void HandleMonitorCrashDetected (object sender, CrashEventArgs e)
 		{
-			NSApplication.SharedApplication.InvokeOnMainThread (() => {
+			InvokeOnMainThread (() => {
 				try {
 					ProcessingCrashLog = true;
 					Reporter.UploadOrCache (e.CrashLogPath);
@@ -86,7 +87,7 @@ namespace MacCrashLogger
 
 		void HandleMonitorApplicationExited (object sender, EventArgs e)
 		{
-			NSApplication.SharedApplication.InvokeOnMainThread (() => {
+			InvokeOnMainThread (() => {
 				ShouldExit = true;
 				if (!ProcessingCrashLog) {
 					NSApplication.SharedApplication.Terminate (null);
@@ -95,4 +96,3 @@ namespace MacCrashLogger
 		}
 	}
 }
-

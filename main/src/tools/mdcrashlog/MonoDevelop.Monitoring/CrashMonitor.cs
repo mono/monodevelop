@@ -28,10 +28,10 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace MonoDevelop.Monitoring {
-
-	public abstract class CrashMonitor : ICrashMonitor {
-		
+namespace MonoDevelop.Monitoring
+{
+	public abstract class CrashMonitor : ICrashMonitor
+	{
 		public static ICrashMonitor Create (int pid)
 		{
 			// FIXME: Add in proper detection for mac/windows/linux as appropriate
@@ -103,4 +103,3 @@ namespace MonoDevelop.Monitoring {
 		}
 	}
 }
-

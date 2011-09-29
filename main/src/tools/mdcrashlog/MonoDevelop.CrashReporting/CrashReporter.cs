@@ -31,10 +31,12 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Net;
 using System.Web;
+using MonoDevelop.CrashLog;
 
 namespace MonoDevelop.CrashReporting
 {
-	public class CrashReporter {
+	public class CrashReporter
+	{
 		// The file which stores the list of reports which have to be uploaded
 		string CacheFile {
 			get { return Path.Combine (CacheDirectory, "crashlogs.xml"); }
@@ -71,7 +73,7 @@ namespace MonoDevelop.CrashReporting
 		{
 			try {
 				// If log only mode is enabled, don't try to process the cache
-				if (OptionsParser.LogOnly)
+				if (CrashLogOptions.LogOnly)
 					return;
 				
 				var reports = ReadCachedReports ();
@@ -140,12 +142,12 @@ namespace MonoDevelop.CrashReporting
 		bool TryUploadReport (CrashReport report)
 		{
 			try {
-				if (OptionsParser.LogOnly) {
+				if (CrashLogOptions.LogOnly) {
 					Logger.WriteLine ("CrashReporter is in log only mode. All crashes will be cached");
 					return false;
 				}
 				
-				var server = Environment.GetEnvironmentVariable ("CRASHREPORT_SERVER");
+				var server = Environment.GetEnvironmentVariable ("MONODEVELOP_CRASHREPORT_SERVER");
 				if (string.IsNullOrEmpty (server))
 					server = "software.xamarin.com";
 

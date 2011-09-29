@@ -36,17 +36,17 @@ namespace MacCrashLogger
 {
 	class MainClass
 	{
-		static void Main (string [] args)
+		static int Main (string [] args)
 		{
 			string error;
-			if (!OptionsParser.TryParse (args, out error)) {
-				Console.WriteLine (error);
-				return;
+			if (!MonoDevelop.CrashLog.CrashLogOptions.TryParse (args, out error)) {
+				Console.Error.WriteLine (error);
+				return 1;
 			}
 			
 			NSApplication.Init ();
 			NSApplication.Main (args);
+			return 0;
 		}
 	}
-}	
-
+}

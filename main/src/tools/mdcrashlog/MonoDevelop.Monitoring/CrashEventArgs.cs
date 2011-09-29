@@ -26,10 +26,10 @@
 
 using System;
 
-namespace MonoDevelop.Monitoring {
-
-	public class CrashEventArgs : EventArgs {
-		
+namespace MonoDevelop.Monitoring
+{
+	public class CrashEventArgs : EventArgs
+	{
 		public string CrashLogPath {
 			get; private set;
 		}
@@ -40,4 +40,3 @@ namespace MonoDevelop.Monitoring {
 		}
 	}
 }
-

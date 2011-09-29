@@ -26,10 +26,10 @@
 
 using System;
 
-namespace MonoDevelop {
-	
-	public static class OptionsParser {
-		
+namespace MonoDevelop.CrashLog
+{
+	public static class CrashLogOptions
+	{
 		public static string Email {
 			get; private set;
 		}

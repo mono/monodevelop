@@ -26,11 +26,11 @@
 
 using System;
 
-namespace MonoDevelop.CrashReporting {
-	
+namespace MonoDevelop.CrashReporting
+{
 	[Serializable]
-	public class CrashReport {
-		
+	public class CrashReport
+	{
 		public string CrashLogPath {
 			get; set;
 		}
