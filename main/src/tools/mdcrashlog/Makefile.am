@@ -1,23 +1,38 @@
 BINDIR=$(top_builddir)/build/bin
 
-all: $(MDCRASHLOG)
+ASSEMBLY=$(BINDIR)/MonoDevelop.CrashLog.dll
+PROJECT=MonoDevelop.CrashLog.csproj
 
-MDCRASHLOG_DLL=MonoDevelop.CrashLog.dll
-MDCRASHLOG=$(BINDIR)/$(MDCRASHLOG_DLL)
-MDCRASHLOG_DEBUG=$(BINDIR)/$(MDCRASHLOG_DLL).mdb
-MDCRASHLOG_DIR=$(srcdir)
+REFS =  \
+	/r:System \
+	/r:System.Web \
+	/r:System.Xml
 
-$(MDCRASHLOG): $(MDCRASHLOG_CSFILES)
+FILES =  \
+	AssemblyInfo.cs \
+	CrashLogOptions.cs \
+	MonoDevelop.CrashReporting/CrashReport.cs \
+	MonoDevelop.CrashReporting/CrashReporter.cs \
+	MonoDevelop.Monitoring/CrashEventArgs.cs \
+	MonoDevelop.Monitoring/CrashMonitor.cs \
+	MonoDevelop.Monitoring/ICrashMonitor.cs \
+	MonoDevelop.Monitoring/MacCrashMonitor.cs \
+	MonoDevelop.SessionLogging/ISessionLogger.cs
+
+DEPS =  \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
+
+all: $(ASSEMBLY)
+
+$(ASSEMBLY): $(build_sources) $(DEPS) $(srcdir)/$(PROJECT)
 	mkdir -p $(BINDIR)
-	xbuild $(MDCRASHLOG_DIR)/MonoDevelop.CrashLog.csproj
+	$(CSC) $(CSC_FLAGS) -target:library -debug $(build_sources) $(REFS) $(build_deps) /out:$(ASSEMBLY)
 
-clean-local:
-	xbuild /t:Clean $(MDCRASHLOG_DIR)/MonoDevelop.CrashLog.csproj
-
-CLEANFILES = $(MDCRASHLOG) $(MDCRASHLOG_MDB)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = \
-	$(wildcard *.cs) \
-	$(wildcard */*.cs) \
-	$(wildcard *.csproj)
+	$(FILES) \
+	$(PROJECT)
 
+include $(top_srcdir)/Makefile.include
