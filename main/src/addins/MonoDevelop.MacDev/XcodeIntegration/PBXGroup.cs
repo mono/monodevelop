@@ -55,13 +55,21 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			children.Add (file);
 		}
-
+		
 		public override XcodeType Type {
 			get {
 				return XcodeType.PBXGroup;
 			}
 		}
-
+		
+		public PBXGroup GetGroup (string name)
+		{
+			foreach (var v in children)
+				if (v is PBXGroup && v.Name == name)
+					return (PBXGroup) v;
+			return null;
+		}
+		
 		public override string ToString ()
 		{
 			var sb = new StringBuilder ();

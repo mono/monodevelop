@@ -140,7 +140,15 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 			files.Add (fileref);
 			sources.Add (buildfile);
-			(grp ?? projectGroup).AddChild (fileref);
+			if (grp == null) {
+				grp = projectGroup;
+				
+				var parts = path.Split (new [] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < parts.Length - 1; i ++)
+					grp = (PBXGroup) (grp.GetGroup (parts [i]) ?? AddGroup (grp, parts [i]));
+			}
+			
+			grp.AddChild (fileref);
 
 			return buildfile;
 		}
