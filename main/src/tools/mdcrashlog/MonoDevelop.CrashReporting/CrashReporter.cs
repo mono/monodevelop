@@ -64,6 +64,8 @@ namespace MonoDevelop.CrashReporting
 		{
 			CacheDirectory = logDirectory;
 			Email = email;
+			if (!Directory.Exists (CacheDirectory))
+				Directory.CreateDirectory (CacheDirectory);
 			Logger = new StreamWriter (Path.Combine (CacheDirectory, "errors.log"));
 			Logger.AutoFlush = true;
 			Serializer = new XmlSerializer (typeof (List<CrashReport>));
