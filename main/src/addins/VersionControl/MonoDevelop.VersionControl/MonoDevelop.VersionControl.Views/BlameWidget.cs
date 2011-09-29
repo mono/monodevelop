@@ -294,7 +294,7 @@ namespace MonoDevelop.VersionControl.Views
 			int line = startLine;
 			var color = Style.Dark (State);
 			
-			while (curY < editor.Allocation.Bottom) {
+			while (curY < editor.Allocation.Bottom && line <= editor.LineCount) {
 				Annotation ann = line <= overview.annotations.Count ? overview.annotations[line - 1] : null;
 				double curStart = curY;
 				do {
@@ -723,7 +723,7 @@ namespace MonoDevelop.VersionControl.Views
 					}
 					double curY = startY - widget.Editor.VAdjustment.Value;
 					int line = startLine;
-					while (curY < Allocation.Bottom) {
+					while (curY < Allocation.Bottom && line <= widget.Editor.LineCount) {
 						double curStart = curY;
 //						widget.JumpOverFoldings (ref line);
 						int lineStart = line;
