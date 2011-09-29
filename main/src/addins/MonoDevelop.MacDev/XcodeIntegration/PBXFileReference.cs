@@ -75,7 +75,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				}
 			}
 
-			sb.AppendFormat ("path = {0}; sourceTree = {1}; }};", QuoteOnDemand (Path), SourceTree);
+			sb.AppendFormat ("name = \"{0}\"; path = \"{1}\"; sourceTree = {2}; }};", Name, Path, SourceTree);
 
 			return sb.ToString ();
 		}
