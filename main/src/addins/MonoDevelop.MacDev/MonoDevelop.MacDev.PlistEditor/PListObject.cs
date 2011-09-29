@@ -91,7 +91,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			} else if (Parent is PArray) {
 				var arr = (PArray)Parent;
 				arr.Remove (this);
-				arr.QueueRebuild ();
 			} else {
 				if (Parent == null)
 					throw new InvalidOperationException ("Can't remove from null parent");
@@ -143,7 +142,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 				Parent.OnChanged (e);
 		}
 		
-		internal bool SuppressChangeEvents;
+		protected bool SuppressChangeEvents {
+			get; set;
+		}
 		
 		public event EventHandler Changed;
 	}
@@ -527,9 +528,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		protected virtual void OnAdded (PObjectEventArgs e)
 		{
+			if (SuppressChangeEvents)
+				return;
+			
 			var handler = this.Added;
 			if (handler != null)
 				handler (this, e);
+			OnChanged (EventArgs.Empty);
 		}
 		
 		public override bool Reload (string fileName)
@@ -544,7 +549,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (nsa != null) {
 					var arr = NSArray.ArrayFromHandle<NSObject> (nsa.Handle);
 					foreach (var f in arr) {
-						list.Add (PDictionary.Conv (f));
+						Add (PDictionary.Conv (f));
 					}
 				} else {
 					return false;
@@ -580,7 +585,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 					list[i] = newObject;
 					OnRemoved (new PObjectEventArgs (oldObj));
 					OnAdded (new PObjectEventArgs (newObject));
-					QueueRebuild ();
 					break;
 				}
 			}
@@ -590,9 +594,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		protected virtual void OnRemoved (PObjectEventArgs e)
 		{
+			if (SuppressChangeEvents)
+				return;
+			
 			var handler = this.Removed;
 			if (handler != null)
 				handler (this, e);
+			OnChanged (EventArgs.Empty);
 		}
 		
 		public void Remove (PObject obj)
@@ -604,6 +612,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public void Clear ()
 		{
 			list.Clear ();
+			OnChanged (EventArgs.Empty);
 		}
 		
 		public override void SetValue (string text)
@@ -629,14 +638,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public void AssignStringList (string strList)
 		{
-			Clear ();
-			foreach (var item in strList.Split (',', ' ')) {
-				if (string.IsNullOrEmpty (item))
-					continue;
-				Add (new PString (item));
+			SuppressChangeEvents = true;
+			try {
+				Clear ();
+				foreach (var item in strList.Split (',', ' ')) {
+					if (string.IsNullOrEmpty (item))
+						continue;
+					Add (new PString (item));
+				}
+			} finally {
+				SuppressChangeEvents = false;
 			}
-			
-			QueueRebuild ();
 		}
 		
 		public string ToStringList ()
@@ -650,15 +662,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return sb.ToString ();
 		}
 		
-		public void QueueRebuild ()
-		{
-			if (Rebuild != null)
-				Rebuild (this, EventArgs.Empty);
-			OnChanged (EventArgs.Empty);
-		}
-		
-		public event EventHandler Rebuild;
-
 		#region IEnumerable[PObject] implementation
 		public IEnumerator<PObject> GetEnumerator ()
 		{

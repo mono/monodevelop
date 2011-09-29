@@ -144,7 +144,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (parent is PArray) {
 						var arr = (PArray)parent;
 						arr.Add (newObj);
-						arr.QueueRebuild ();
 						return;
 					}
 					
@@ -334,7 +333,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (parent is PArray) {
 					var arr = (PArray)parent;
 					arr.Add (newObj);
-					arr.QueueRebuild ();
 					return;
 				}
 				
@@ -559,7 +557,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			if (!rebuildArrays.Contains (arr)) {
 				rebuildArrays.Add (arr);
-				arr.Rebuild += HandleArrRebuild;
+				arr.Changed += HandleArrRebuild;
 			}
 		}
 
