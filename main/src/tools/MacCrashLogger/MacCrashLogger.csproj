@@ -8,7 +8,7 @@
     <ProjectGuid>{E414CD46-33C8-4CE1-986F-B601F941EBB9}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>MacCrashLogger</RootNamespace>
-    <AssemblyName>MacCrashLogger</AssemblyName>
+    <AssemblyName>MonoDevelopLogAgent</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

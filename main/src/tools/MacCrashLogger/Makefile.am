@@ -1,9 +1,9 @@
-APP_NAME = MacCrashLogger
-APP_BUNDLE = $(top_builddir)/build/bin/MacCrashLogger.app
+APP_NAME = MonoDevelopLogAgent
+APP_BUNDLE = $(top_builddir)/build/bin/$(APP_NAME).app
 APP_BUNDLE_MACOS = $(APP_BUNDLE)/Contents/MacOS
 APP_BUNDLE_RESOURCES = $(APP_BUNDLE)/Contents/Resources
 
-ASSEMBLY = $(APP_BUNDLE_RESOURCES)/MacCrashLogger.exe
+ASSEMBLY = $(APP_BUNDLE_RESOURCES)/$(APP_NAME).exe
 
 FILES =  \
 	AppDelegate.cs \
@@ -23,10 +23,10 @@ DEPS =  \
 
 BUNDLE_INFOPLIST = $(APP_BUNDLE)/Contents/Info.plist
 BUNDLE_MAINNIB = $(APP_BUNDLE_RESOURCES)/MainMenu.nib
-BUNDLE_SCRIPT = $(APP_BUNDLE_MACOS)/MacCrashLogger
+BUNDLE_SCRIPT = $(APP_BUNDLE_MACOS)/$(APP_NAME)
 BUNDLE_MONOMAC = $(APP_BUNDLE_RESOURCES)/MonoMac.dll
 BUNDLE_CRASHLOG = $(APP_BUNDLE_RESOURCES)/MonoDevelop.CrashLog.dll
-BUNDLE_MONO = $(APP_BUNDLE)/MacCrashLogger
+BUNDLE_MONO = $(APP_BUNDLE)/$(APP_NAME)
 
 INFOPLIST = $(srcdir)/Info.plist
 MAINXIB = $(srcdir)/MainMenu.xib

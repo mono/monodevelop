@@ -309,9 +309,9 @@ namespace MonoDevelop.Ide
 			string enabledKey = "MonoDevelop.CrashMonitoring.Enabled";
 			
 			if (Platform.IsMac) {
-				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MacCrashLogger.app");
+				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
 				var pid = Process.GetCurrentProcess ().Id;
-				var logPath = UserProfile.Current.LogDir.Combine ("CrashReporter");
+				var logPath = UserProfile.Current.LogDir.Combine ("LogAgent");
 				var email = FeedbackService.ReporterEMail;
 				var logOnly = "";
 				

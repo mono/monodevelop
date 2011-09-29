@@ -8,8 +8,8 @@ APP_ROOT=${MACOS_DIR%%/Contents/MacOS}
 CONTENTS_DIR="$APP_ROOT/Contents"
 RESOURCES_PATH="$CONTENTS_DIR/Resources"
 
-APP_NAME=MacCrashLogger
-ASSEMBLY=MacCrashLogger.exe
+APP_NAME=MonoDevelopLogAgent
+ASSEMBLY=MonoDevelopLogAgent.exe
 
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 
