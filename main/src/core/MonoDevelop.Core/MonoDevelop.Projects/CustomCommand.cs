@@ -171,36 +171,21 @@ namespace MonoDevelop.Projects
 			args = StringParserService.Parse (args, tagSource);
 		}
 		
-		static string FindExeInPath (string name)
-		{
-			if (name[0] == '/')
-				return name;
-			
-			string pathEnv = Environment.GetEnvironmentVariable ("PATH");
-			if (string.IsNullOrEmpty (pathEnv))
-				return name;
-			
-			string[] paths = pathEnv.Split (Path.PathSeparator);
-			foreach (var dir in paths) {
-				string path = Path.Combine (dir, name);
-				if (File.Exists (path))
-					return path;
-			}
-			
-			return name;
-		}
-		
 		public ProcessExecutionCommand CreateExecutionCommand (IWorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			string exe, args;
 			StringTagModel tagSource = GetTagModel (entry, configuration);
 			ParseCommand (tagSource, out exe, out args);
 			
-			string fullPath = ((FilePath) exe).ToAbsolute (entry.BaseDirectory).FullPath;
-			if (!File.Exists (fullPath))
-				fullPath = FindExeInPath (exe);
+			//if the executable name matches an executable in the project directory, use that, for back-compat
+			//else fall back and let the execution handler handle it via PATH, working directory, etc.
+			if (!Path.IsPathRooted (exe)) {
+				string localPath = ((FilePath) exe).ToAbsolute (entry.BaseDirectory).FullPath;
+				if (File.Exists (localPath))
+					exe = localPath;
+			}
 			
-			ProcessExecutionCommand cmd = Runtime.ProcessService.CreateCommand (fullPath);
+			ProcessExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
 			
 			cmd.Arguments = args;
 			
@@ -272,7 +257,7 @@ namespace MonoDevelop.Projects
 					}
 				}
 			} catch (Win32Exception w32ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Execution of '{0}' failed: {1}", cmd.Command, w32ex.Message), null);
+				monitor.ReportError (GettextCatalog.GetString ("Failed to execute '{0}': {1}", cmd.Command, w32ex.Message), null);
 				return;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Command execution failed", ex);
