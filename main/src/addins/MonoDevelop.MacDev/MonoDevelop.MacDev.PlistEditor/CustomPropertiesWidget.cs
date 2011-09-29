@@ -349,7 +349,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 					dict.Add (name ,newObj);
 				} else {
 					dict.InsertAfter (obj.Key, name, newObj);
-					dict.QueueRebuild ();
 				}
 			};
 			
@@ -520,7 +519,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			if (!rebuildArrays.Contains (dict)) {
 				rebuildArrays.Add (dict);
-				dict.Rebuild += HandleDictRebuild;
+				dict.Changed += HandleDictRebuild;
 			}
 		}
 

@@ -88,7 +88,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (Parent is PDictionary) {
 				var dict = (PDictionary)Parent;
 				dict.Remove (Key);
-				dict.QueueRebuild ();
 			} else if (Parent is PArray) {
 				var arr = (PArray)Parent;
 				arr.Remove (this);
@@ -205,37 +204,44 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return dict[key];
 			}
 			set {
-				value.Parent = this;
-				if (!dict.ContainsKey (key))
+				PObject existing;
+				bool exists = dict.TryGetValue (key, out existing);
+				if (!exists)
 					order.Add (key);
+				
 				dict[key] = value;
-				QueueRebuild ();
+				value.Parent = this;
+				
+				if (exists)
+					OnRemoved (new PObjectEventArgs (existing));
+				OnAdded (new PObjectEventArgs (value));
 			}
 		}
 		
 		public EventHandler<PObjectEventArgs> Added;
 		
-		protected virtual void OnAddedd (PObjectEventArgs e)
+		protected virtual void OnAdded (PObjectEventArgs e)
 		{
 			var handler = this.Added;
 			if (handler != null)
 				handler (this, e);
+			OnChanged (EventArgs.Empty);
 		}
 		
 		public void Add (string key, PObject value)
 		{
-			value.Parent = this;
 			dict.Add (key, value);
 			order.Add (key);
-			OnAddedd (new PObjectEventArgs (value));
+			value.Parent = this;
+			OnAdded (new PObjectEventArgs (value));
 		}
 		
 		public void InsertAfter (string keyBefore, string key, PObject value)
 		{
-			value.Parent = this;
 			dict.Add (key, value);
 			order.Insert (order.IndexOf (keyBefore) + 1, key);
-			OnAddedd (new PObjectEventArgs (value));
+			value.Parent = this;
+			OnAdded (new PObjectEventArgs (value));
 		}
 		
 		public int Count {
@@ -277,6 +283,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var handler = this.Removed;
 			if (handler != null)
 				handler (this, e);
+			OnChanged (EventArgs.Empty);
 		}
 
 		public bool Remove (string key)
@@ -296,9 +303,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var oldkey = GetKey (obj);
 			if (oldkey == null || dict.ContainsKey (newKey))
 				return false;
+			
 			dict.Remove (oldkey);
 			dict.Add (newKey, obj);
 			order[order.IndexOf (oldkey)] = newKey;
+			OnChanged (EventArgs.Empty);
 			return true;
 		}
 
@@ -462,11 +471,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var result = Get<PString> (key);
 			if (result == null) {
 				this[key] = result = new PString (value);
-				OnAddedd (new PObjectEventArgs (result));
-				QueueRebuild ();
 				return;
 			}
 			result.Value = value;
+			OnChanged (EventArgs.Empty);
 		}
 		
 		public PString GetString (string key)
@@ -474,7 +482,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var result = Get<PString> (key);
 			if (result == null) {
 				this[key] = result = new PString ("");
-				QueueRebuild ();
 			}
 			return result;
 		}
@@ -484,19 +491,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var result = Get<PArray> (key);
 			if (result == null) {
 				this[key] = result = new PArray ();
-				QueueRebuild ();
 			}
 			return result;
 		}
-		
-		public void QueueRebuild ()
-		{
-			if (Rebuild != null)
-				Rebuild (this, EventArgs.Empty);
-			OnChanged (EventArgs.Empty);
-		}
-		
-		public event EventHandler Rebuild;
 	}
 	
 	public class PArray : PObjectContainer, IEnumerable<PObject>
@@ -528,7 +525,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public EventHandler<PObjectEventArgs> Added;
 		
-		protected virtual void OnAddedd (PObjectEventArgs e)
+		protected virtual void OnAdded (PObjectEventArgs e)
 		{
 			var handler = this.Added;
 			if (handler != null)
@@ -572,7 +569,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			obj.Parent = this;
 			list.Add (obj);
-			OnAddedd (new PObjectEventArgs (obj));
+			OnAdded (new PObjectEventArgs (obj));
 		}
 
 		public void Replace (PObject oldObj, PObject newObject)
@@ -582,7 +579,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					newObject.Parent = this;
 					list[i] = newObject;
 					OnRemoved (new PObjectEventArgs (oldObj));
-					OnAddedd (new PObjectEventArgs (newObject));
+					OnAdded (new PObjectEventArgs (newObject));
 					QueueRebuild ();
 					break;
 				}
