@@ -280,7 +280,8 @@ namespace Stetic
 			get {
 				if (missingIcon == null) {
 					try {
-						missingIcon = Gtk.IconTheme.Default.LoadIcon ("gtk-missing-image", 16, 0);
+						if (Gtk.IconTheme.Default.HasIcon (Gtk.Stock.MissingImage))
+							missingIcon = Gtk.IconTheme.Default.LoadIcon (Gtk.Stock.MissingImage, 16, 0);
 					} catch {}
 					if (missingIcon == null) {
 						try {
