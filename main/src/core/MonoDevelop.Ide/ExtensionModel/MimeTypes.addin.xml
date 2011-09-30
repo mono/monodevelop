@@ -67,7 +67,13 @@
 	<MimeType id="text/x-apple-strings" _description="Apple Strings" isText="true">
 		<File pattern="*.strings" />
 	</MimeType>
-</Extension>	
+	<MimeType id="application/json" _description="JSON files" isText="true">
+		<File pattern="*.json" />
+	</MimeType>
+	<MimeType id="application/x-sh" _description="Shell script" isText="true">
+		<File pattern="*.sh" />
+	</MimeType>
+</Extension>
 
 </ExtensionModel>
 
