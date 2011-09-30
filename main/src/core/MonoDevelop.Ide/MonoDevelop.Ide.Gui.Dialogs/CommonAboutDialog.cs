@@ -84,9 +84,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			notebook.BorderWidth = 0;
 			notebook.AppendPage (new AboutMonoDevelopTabPage (), new Label (Title));
 			notebook.AppendPage (new VersionInformationTabPage (), new Label (GettextCatalog.GetString ("Version Info")));
-			var buildInfo = LoadBuildInfo ();
-			if (buildInfo != null)
-				notebook.AppendPage (buildInfo, new Label (GettextCatalog.GetString ("Build Info")));
 			VBox.PackStart (notebook, true, true, 0);
 			
 			AddButton (Gtk.Stock.Close, (int)ResponseType.Close);
@@ -105,35 +102,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (c != null) {
 				foreach (Widget cw in c.Children)
 					ChangeColor (cw);
-			}
-		}
-
-		Widget LoadBuildInfo ()
-		{
-			var biFile = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (GetType ().Assembly.Location), "buildinfo");
-			if (!File.Exists (biFile)) {
-				LoggingService.LogWarning ("Could not find build information file '" + biFile + "'");
-				return null;
-			}
-			
-			try {
-				var buf = new TextBuffer (null);
-				buf.Text = File.ReadAllText (biFile);
-				
-				return new ScrolledWindow () {
-					BorderWidth = 6,
-					ShadowType = ShadowType.EtchedIn,
-					Child = new TextView (buf) {
-						Editable = false,
-						LeftMargin = 4,
-						RightMargin = 4,
-						PixelsAboveLines = 4,
-						PixelsBelowLines = 4
-					}
-				};
-			} catch (IOException ex) {
-				LoggingService.LogError ("Could not read build information", ex);
-				return null;
 			}
 		}
 	}
