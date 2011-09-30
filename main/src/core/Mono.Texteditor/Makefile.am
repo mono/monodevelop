@@ -174,6 +174,7 @@ RES =  \
 	SyntaxModes/JavascriptSyntaxMode.xml \
 	SyntaxModes/JavaSyntaxMode.xml \
 	SyntaxModes/JaySyntaxMode.xml \
+	SyntaxModes/JsonSyntaxMode.xml \
 	SyntaxModes/LuaSyntaxMode.xml \
 	SyntaxModes/MakefileSyntaxMode.xml \
 	SyntaxModes/PythonSyntaxMode.xml \
