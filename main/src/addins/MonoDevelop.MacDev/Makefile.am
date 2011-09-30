@@ -96,7 +96,6 @@ FILES =  \
 	XcodeSyncing/XcodeSyncContext.cs \
 	XcodeSyncing/XcodeSyncedContent.cs \
 	XcodeSyncing/XcodeSyncedItem.cs \
-	XcodeSyncing/XcodeSyncedResource.cs \
 	XcodeSyncing/XcodeSyncedType.cs 
 
 RES =  \

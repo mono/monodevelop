@@ -135,7 +135,6 @@
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IPlistEditingHandler.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\ExpanderList.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\ImageChooser.cs" />
-    <Compile Include="XcodeSyncing\XcodeSyncedResource.cs" />
     <Compile Include="XcodeIntegration\XCodeObjectComparer.cs" />
     <Compile Include="MonoDevelop.MacDev.PlistEditor\IPListDisplayWidget.cs" />
     <Compile Include="ObjCIntegration\CSharpCodeTypeDefinition.cs">

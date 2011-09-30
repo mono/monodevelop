@@ -331,9 +331,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var syncList = new List<XcodeSyncedItem> ();
 			foreach (var file in dnp.Files.Where (IncludeInSyncedProject))
 				syncList.Add (new XcodeSyncedContent (file));
-			foreach (var file in dnp.Files.Where (f => f.BuildAction == BuildAction.Resource))
-				syncList.Add (new XcodeSyncedResource (file));
-			
 			foreach (var type in userTypes)
 				syncList.Add (new XcodeSyncedType (type, GetFrameworks ()));
 			
