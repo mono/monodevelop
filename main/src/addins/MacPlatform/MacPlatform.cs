@@ -58,10 +58,16 @@ namespace MonoDevelop.MacIntegration
 		static bool setupFail, initedApp, initedGlobal;
 		
 		static Dictionary<string, string> mimemap;
+		
+		//this is a BCD value of the form "xxyz", where x = major, y = minor, z = bugfix
+		//eg. 0x1071 = 10.7.1
+		static int systemVersion;
 
 		static MacPlatformService ()
 		{
 			timer.BeginTiming ();
+			
+			systemVersion = Carbon.Gestalt ("sysv");
 			
 			LoadMimeMapAsync ();
 			
@@ -300,6 +306,10 @@ namespace MonoDevelop.MacIntegration
 		
 		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
 		{
+			//this only works on MacOS 10.6.0 and greater
+			if (systemVersion < 0x1060)
+				return base.OnGetPixbufForFile (filename, size);
+			
 			NSImage icon = null;
 			
 			if (Path.IsPathRooted (filename) && File.Exists (filename)) {
