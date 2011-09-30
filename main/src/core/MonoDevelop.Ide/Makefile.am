@@ -537,6 +537,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
 	MonoDevelop.Ide.Gui/AsyncDispatchAttribute.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
+	MonoDevelop.Ide.Gui/CommonTextEditorOptions.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
