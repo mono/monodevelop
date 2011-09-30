@@ -73,6 +73,7 @@
     <Reference Include="MonoDevelop.AspNet, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.Core, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
