@@ -1855,15 +1855,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode (yieldBreakStatement);
 		}
 		
-		public object VisitYieldStatement (YieldStatement yieldStatement, object data)
+		public object VisitYieldReturnStatement (YieldReturnStatement YieldReturnStatement, object data)
 		{
-			StartNode (yieldStatement);
-			WriteKeyword ("yield", YieldStatement.YieldKeywordRole);
-			WriteKeyword ("return", YieldStatement.ReturnKeywordRole);
+			StartNode (YieldReturnStatement);
+			WriteKeyword ("yield", YieldReturnStatement.YieldKeywordRole);
+			WriteKeyword ("return", YieldReturnStatement.ReturnKeywordRole);
 			Space ();
-			yieldStatement.Expression.AcceptVisitor (this, data);
+			YieldReturnStatement.Expression.AcceptVisitor (this, data);
 			Semicolon ();
-			return EndNode (yieldStatement);
+			return EndNode (YieldReturnStatement);
 		}
 
 		#endregion

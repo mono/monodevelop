@@ -1,4 +1,4 @@
-﻿// 
+// 
 // IAstVisitor.cs
 //
 // Author:
@@ -360,9 +360,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (yieldBreakStatement, data);
 		}
 		
-		public virtual S VisitYieldStatement (YieldStatement yieldStatement, T data)
+		public virtual S VisitYieldReturnStatement (YieldReturnStatement YieldReturnStatement, T data)
 		{
-			return VisitChildren (yieldStatement, data);
+			return VisitChildren (YieldReturnStatement, data);
 		}
 		
 		public virtual S VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, T data)

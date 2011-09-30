@@ -653,17 +653,6 @@ namespace Mono.CSharp
 			IVariableReference vr = Expr as IVariableReference;
 			bool is_fixed;
 			if (vr != null) {
-				VariableInfo vi = vr.VariableInfo;
-				if (vi != null) {
-					if (vi.LocalInfo != null)
-						vi.LocalInfo.SetIsUsed ();
-
-					//
-					// A variable is considered definitely assigned if you take its address.
-					//
-					vi.SetAssigned (ec);
-				}
-
 				is_fixed = vr.IsFixed;
 				vr.SetHasAddressTaken ();
 
@@ -4682,13 +4671,14 @@ namespace Mono.CSharp
 
 		#region Abstract
 		public abstract HoistedVariable GetHoistedVariable (AnonymousExpression ae);
+		public abstract void SetHasAddressTaken ();
+		public abstract void VerifyAssigned (ResolveContext rc);
 
 		public abstract bool IsLockedByStatement { get; set; }
 
 		public abstract bool IsFixed { get; }
 		public abstract bool IsRef { get; }
 		public abstract string Name { get; }
-		public abstract void SetHasAddressTaken ();
 
 		//
 		// Variable IL data, it has to be protected to encapsulate hoisted variables
@@ -4915,21 +4905,26 @@ namespace Mono.CSharp
 
 		#endregion
 
-		public bool VerifyAssigned (ResolveContext ec)
+		public override void VerifyAssigned (ResolveContext rc)
 		{
 			VariableInfo variable_info = local_info.VariableInfo;
-			return variable_info == null || variable_info.IsAssigned (ec, loc);
+			if (variable_info == null)
+				return;
+
+			if (variable_info.IsAssigned (rc))
+				return;
+
+			rc.Report.Error (165, loc, "Use of unassigned local variable `{0}'", Name);
+			variable_info.SetAssigned (rc);
 		}
 
 		public override void SetHasAddressTaken ()
 		{
-			local_info.AddressTaken = true;
+			local_info.SetHasAddressTaken ();
 		}
 
 		void DoResolveBase (ResolveContext ec)
 		{
-			VerifyAssigned (ec);
-
 			//
 			// If we are referencing a variable from the external block
 			// flag it for capturing
@@ -4956,6 +4951,8 @@ namespace Mono.CSharp
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			local_info.SetIsUsed ();
+
+			VerifyAssigned (ec);
 
 			DoResolveBase (ec);
 			return this;
@@ -4986,7 +4983,8 @@ namespace Mono.CSharp
 				VariableInfo.SetAssigned (ec);
 			}
 
-			DoResolveBase (ec);
+			if (eclass == ExprClass.Unresolved)
+				DoResolveBase (ec);
 
 			return base.DoResolveLValue (ec, right_side);
 		}
@@ -5089,17 +5087,17 @@ namespace Mono.CSharp
 
 		#endregion
 
-		public bool IsAssigned (ResolveContext ec, Location loc)
+		public override void AddressOf (EmitContext ec, AddressOp mode)
 		{
-			// HACK: Variables are not captured in probing mode
-			if (ec.IsInProbingMode)
-				return true;
-			
-			if (!ec.DoFlowAnalysis || !HasOutModifier || ec.CurrentBranching.IsAssigned (VariableInfo))
-				return true;
+			//
+			// ParameterReferences might already be a reference
+			//
+			if (IsRef) {
+				EmitLoad (ec);
+				return;
+			}
 
-			ec.Report.Error (269, loc, "Use of unassigned out parameter `{0}'", Name);
-			return false;
+			base.AddressOf (ec, mode);
 		}
 
 		public override void SetHasAddressTaken ()
@@ -5157,20 +5155,7 @@ namespace Mono.CSharp
 
 			return Name == pr.Name;
 		}
-
-		public override void AddressOf (EmitContext ec, AddressOp mode)
-		{
-			//
-			// ParameterReferences might already be a reference
-			//
-			if (IsRef) {
-				EmitLoad (ec);
-				return;
-			}
-
-			base.AddressOf (ec, mode);
-		}
-		
+	
 		protected override void CloneTo (CloneContext clonectx, Expression target)
 		{
 			// Nothing to clone
@@ -5203,14 +5188,7 @@ namespace Mono.CSharp
 			if (!DoResolveBase (ec))
 				return null;
 
-			// HACK: Variables are not captured in probing mode
-			if (ec.IsInProbingMode)
-				return this;
-
-			if (HasOutModifier && ec.DoFlowAnalysis &&
-			    (!ec.OmitStructFlowAnalysis || !VariableInfo.TypeInfo.IsStruct) && !IsAssigned (ec, loc))
-				return null;
-
+			VerifyAssigned (ec);
 			return this;
 		}
 
@@ -5221,6 +5199,17 @@ namespace Mono.CSharp
 
 			SetAssigned (ec);
 			return base.DoResolveLValue (ec, right_side);
+		}
+
+		public override void VerifyAssigned (ResolveContext rc)
+		{
+			// HACK: Variables are not captured in probing mode
+			if (rc.IsInProbingMode)
+				return;
+
+			if (HasOutModifier && !VariableInfo.IsAssigned (rc)) {
+				rc.Report.Error (269, loc, "Use of unassigned out parameter `{0}'", Name);
+			}
 		}
 	}
 	
@@ -6934,7 +6923,17 @@ namespace Mono.CSharp
 
 		public void CheckStructThisDefiniteAssignment (ResolveContext rc)
 		{
-			if (variable_info != null && !variable_info.IsAssigned (rc)) {
+			//
+			// It's null for all cases when we don't need to check `this'
+			// definitive assignment
+			//
+			if (variable_info == null)
+				return;
+
+			if (rc.HasSet (ResolveContext.Options.OmitStructFlowAnalysis))
+				return;
+
+			if (!variable_info.IsAssigned (rc)) {
 				rc.Report.Error (188, loc,
 					"The `this' object cannot be used before all of its fields are assigned to");
 			}
@@ -6978,7 +6977,7 @@ namespace Mono.CSharp
 			if (ignoreAnonymous || ec.CurrentAnonymousMethod == null)
 				return true;
 
-			if (ec.CurrentType.IsStruct && ec.CurrentIterator == null)
+			if (ec.CurrentType.IsStruct && !(ec.CurrentAnonymousMethod is StateMachineInitializer))
 				return false;
 
 			return true;
@@ -7010,16 +7009,15 @@ namespace Mono.CSharp
 		{
 			ResolveBase (ec);
 
-			if (variable_info != null && type.IsStruct) {
-				CheckStructThisDefiniteAssignment (ec);
-			}
+			CheckStructThisDefiniteAssignment (ec);
 
 			return this;
 		}
 
-		override public Expression DoResolveLValue (ResolveContext ec, Expression right_side)
+		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
 		{
-			ResolveBase (ec);
+			if (eclass == ExprClass.Unresolved)
+				ResolveBase (ec);
 
 			if (variable_info != null)
 				variable_info.SetAssigned (ec);
@@ -7059,6 +7057,12 @@ namespace Mono.CSharp
 		{
 			// Nothing
 		}
+
+		public override void VerifyAssigned (ResolveContext rc)
+		{
+		
+		}
+
 		
 		public override object Accept (StructuralVisitor visitor)
 		{
@@ -7800,14 +7804,33 @@ namespace Mono.CSharp
 			}
 		}
 
-		protected override Expression DoResolve (ResolveContext ec)
+		protected override Expression DoResolve (ResolveContext rc)
 		{
-			return DoResolveName (ec, null);
+			var e = DoResolveName (rc, null);
+
+			if (!rc.OmitStructFlowAnalysis) {
+				var fe = e as FieldExpr;
+				if (fe != null) {
+					fe.VerifyAssignedStructField (rc, null);
+				}
+			}
+
+			return e;
 		}
 
-		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
+		public override Expression DoResolveLValue (ResolveContext rc, Expression rhs)
 		{
-			return DoResolveName (ec, right_side);
+			var e = DoResolveName (rc, rhs);
+
+			if (!rc.OmitStructFlowAnalysis) {
+				var fe = e as FieldExpr;
+				if (fe != null && fe.InstanceExpression is FieldExpr) {
+					fe = (FieldExpr) fe.InstanceExpression;
+					fe.VerifyAssignedStructField (rc, rhs);
+				}
+			}
+
+			return e;
 		}
 
 		Expression DoResolveName (ResolveContext rc, Expression right_side)
@@ -7861,8 +7884,11 @@ namespace Mono.CSharp
 				if (sn != null) {
 					expr = sn.LookupNameExpression (rc, MemberLookupRestrictions.ReadAccess | MemberLookupRestrictions.ExactArity);
 
-					// Call resolve on expression which does have type set as we need expression type
-					// TODO: I should probably ensure that the type is always set and leave resolve for the final
+					//
+					// Resolve expression which does have type set as we need expression type
+					// with disable flow analysis as we don't know whether left side expression
+					// is used as variable or type
+					//
 					if (expr is VariableReference || expr is ConstantExpr || expr is Linq.TransparentMemberAccess) {
 						using (rc.With (ResolveContext.Options.DoFlowAnalysis, false)) {
 							expr = expr.Resolve (rc);
@@ -7901,6 +7927,16 @@ namespace Mono.CSharp
 				if (me != null)
 					me.ResolveInstanceExpression (rc, null);
 
+				//
+				// Run defined assigned checks on expressions resolved with
+				// disabled flow-analysis
+				//
+				if (sn != null) {
+					var vr = expr as VariableReference;
+					if (vr != null)
+						vr.VerifyAssigned (rc);
+				}
+
 				Arguments args = new Arguments (1);
 				args.Add (new Argument (expr));
 				return new DynamicMemberBinder (Name, args, loc);
@@ -7929,6 +7965,16 @@ namespace Mono.CSharp
 									return null;
 
 								emg.SetTypeArguments (rc, targs);
+							}
+
+							//
+							// Run defined assigned checks on expressions resolved with
+							// disabled flow-analysis
+							//
+							if (sn != null && !errorMode) {
+								var vr = expr as VariableReference;
+								if (vr != null)
+									vr.VerifyAssigned (rc);
 							}
 
 							// TODO: it should really skip the checks bellow
@@ -7994,8 +8040,9 @@ namespace Mono.CSharp
 
 			me = member_lookup as MemberExpr;
 
-			if (sn != null && me.IsStatic)
-				expr = me.ProbeIdenticalTypeName (rc, expr, sn);
+			if (sn != null && me.IsStatic && (expr = me.ProbeIdenticalTypeName (rc, expr, sn)) != expr) {
+				sn = null;
+			}
 
 			me = me.ResolveMemberAccess (rc, expr, sn);
 
@@ -8006,12 +8053,14 @@ namespace Mono.CSharp
 				me.SetTypeArguments (rc, targs);
 			}
 
-			if (sn != null && (!TypeSpec.IsValueType (expr_type) || me is PropertyExpr)) {
-				if (me.IsInstance) {
-					LocalVariableReference var = expr as LocalVariableReference;
-					if (var != null && !var.VerifyAssigned (rc))
-						return null;
-				}
+			//
+			// Run defined assigned checks on expressions resolved with
+			// disabled flow-analysis
+			//
+			if (sn != null && !(me is FieldExpr && TypeSpec.IsValueType (expr_type))) {
+				var vr = expr as VariableReference;
+				if (vr != null)
+					vr.VerifyAssigned (rc);
 			}
 
 			return me;
@@ -8870,7 +8919,12 @@ namespace Mono.CSharp
 				return new DynamicIndexBinder (args, loc);
 			}
 
-			ResolveInstanceExpression (rc, right_side);
+			//
+			// Try to avoid resolving left expression again
+			//
+			if (right_side != null)
+				ResolveInstanceExpression (rc, right_side);
+
 			CheckProtectedMemberAccess (rc, best_candidate);
 			return this;
 		}

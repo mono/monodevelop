@@ -900,7 +900,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (newMethod, m);
 				var location = LocationsBag.GetMemberLocation (m);
 				AddModifiers (newMethod, location);
-				
 				newMethod.AddChild (ConvertToType (m.TypeName), AstNode.Roles.Type);
 				if (m.MethodName.Left != null) {
 					newMethod.AddChild (ConvertToType (m.MethodName.Left), MethodDeclaration.PrivateImplementationTypeRole);
@@ -1879,16 +1878,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (Yield yieldStatement)
 			{
-				var result = new YieldStatement ();
+				var result = new YieldReturnStatement ();
 				var location = LocationsBag.GetLocations (yieldStatement);
 				
-				result.AddChild (new CSharpTokenNode (Convert (yieldStatement.loc), "yield".Length), YieldStatement.YieldKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (yieldStatement.loc), "yield".Length), YieldReturnStatement.YieldKeywordRole);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "return".Length), YieldStatement.ReturnKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "return".Length), YieldReturnStatement.ReturnKeywordRole);
 				if (yieldStatement.Expr != null)
-					result.AddChild ((Expression)yieldStatement.Expr.Accept (this), YieldStatement.Roles.Expression);
+					result.AddChild ((Expression)yieldStatement.Expr.Accept (this), YieldReturnStatement.Roles.Expression);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), ";".Length), YieldStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), ";".Length), YieldReturnStatement.Roles.Semicolon);
 				
 				return result;
 			}
@@ -2891,14 +2890,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new AnonymousMethodExpression ();
 				var location = LocationsBag.GetLocations (anonymousMethodExpression);
+				int l = 0;
+				if (anonymousMethodExpression.IsAsync) {
+					result.IsAsync = true;
+					result.AddChild (new CSharpTokenNode (Convert (location[l++]), "async".Length), AnonymousMethodExpression.AsyncModifierRole);
+				}
 				if (location != null) {
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "delegate".Length), AnonymousMethodExpression.Roles.Keyword);
+					result.AddChild (new CSharpTokenNode (Convert (location[l++]), "delegate".Length), AnonymousMethodExpression.Roles.Keyword);
 					
-					if (location.Count > 1) {
+					if (location.Count > l) {
 						result.HasParameterList = true;
-						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AnonymousMethodExpression.Roles.LPar);
+						result.AddChild (new CSharpTokenNode (Convert (location[l++]), 1), AnonymousMethodExpression.Roles.LPar);
 						AddParameter (result, anonymousMethodExpression.Parameters);
-						result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AnonymousMethodExpression.Roles.RPar);
+						result.AddChild (new CSharpTokenNode (Convert (location[l++]), 1), AnonymousMethodExpression.Roles.RPar);
 					}
 				}
 				result.AddChild ((BlockStatement)anonymousMethodExpression.Block.Accept (this), AnonymousMethodExpression.Roles.Body);
@@ -2909,17 +2913,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new LambdaExpression ();
 				var location = LocationsBag.GetLocations (lambdaExpression);
+				int l = 0;
+				if (lambdaExpression.IsAsync) {
+					result.IsAsync = true;
+					result.AddChild (new CSharpTokenNode (Convert (location [l++]), "async".Length), LambdaExpression.AsyncModifierRole);
+				}
 				
-				if (location == null || location.Count == 1) {
+				if (location == null || location.Count == l + 1) {
 					AddParameter (result, lambdaExpression.Parameters);
 					if (location != null)
-						result.AddChild (new CSharpTokenNode (Convert (location [0]), "=>".Length), LambdaExpression.ArrowRole);
+						result.AddChild (new CSharpTokenNode (Convert (location [l++]), "=>".Length), LambdaExpression.ArrowRole);
 				} else {
-					result.AddChild (new CSharpTokenNode (Convert (lambdaExpression.Location), 1), LambdaExpression.Roles.LPar);
+					result.AddChild (new CSharpTokenNode (Convert (location [l++]), 1), LambdaExpression.Roles.LPar);
 					AddParameter (result, lambdaExpression.Parameters);
 					if (location != null) {
-						result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), LambdaExpression.Roles.RPar);
-						result.AddChild (new CSharpTokenNode (Convert (location [1]), "=>".Length), LambdaExpression.ArrowRole);
+						result.AddChild (new CSharpTokenNode (Convert (location [l++]), 1), LambdaExpression.Roles.RPar);
+						result.AddChild (new CSharpTokenNode (Convert (location [l++]), "=>".Length), LambdaExpression.ArrowRole);
 					}
 				}
 				if (lambdaExpression.Block.IsCompilerGenerated) {
@@ -3190,6 +3199,16 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryWhereClause.Roles.Keyword);
 				}
 				result.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return result;
+			}
+			
+			public override object Visit (Await awaitExpr)
+			{
+				var result = new UnaryOperatorExpression ();
+				result.Operator = UnaryOperatorType.Await;
+				result.AddChild (new CSharpTokenNode (Convert (awaitExpr.Location), 1), UnaryOperatorExpression.OperatorRole);
+				if (awaitExpr.Expression != null)
+					result.AddChild ((Expression)awaitExpr.Expression.Accept (this), UnaryOperatorExpression.Roles.Expression);
 				return result;
 			}
 			#endregion

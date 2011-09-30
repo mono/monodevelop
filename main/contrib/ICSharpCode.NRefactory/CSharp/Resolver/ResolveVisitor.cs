@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -2078,14 +2078,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitYieldStatement(YieldStatement yieldStatement, object data)
+		public override ResolveResult VisitYieldReturnStatement(YieldReturnStatement YieldReturnStatement, object data)
 		{
 			if (resolverEnabled && resolver.CurrentMember != null) {
 				IType returnType = resolver.CurrentMember.ReturnType.Resolve(resolver.Context);
 				IType elementType = GetElementType(returnType, resolver.Context, true);
-				ResolveAndProcessConversion(yieldStatement.Expression, elementType);
+				ResolveAndProcessConversion(YieldReturnStatement.Expression, elementType);
 			} else {
-				Scan(yieldStatement.Expression);
+				Scan(YieldReturnStatement.Expression);
 			}
 			return voidResult;
 		}

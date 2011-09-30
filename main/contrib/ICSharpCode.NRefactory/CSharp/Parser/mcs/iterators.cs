@@ -26,7 +26,7 @@ using System.Reflection.Emit;
 
 namespace Mono.CSharp
 {
-	public abstract class YieldStatement<T> : ResumableStatement where T : StateMachineInitializer
+	public abstract class YieldReturnStatement<T> : ResumableStatement where T : StateMachineInitializer
 	{
 		protected Expression expr;
 		protected bool unwind_protect;
@@ -37,7 +37,7 @@ namespace Mono.CSharp
 			get { return this.expr; }
 		}
 		
-		protected YieldStatement (Expression expr, Location l)
+		protected YieldReturnStatement (Expression expr, Location l)
 		{
 			this.expr = expr;
 			loc = l;
@@ -45,7 +45,7 @@ namespace Mono.CSharp
 
 		protected override void CloneTo (CloneContext clonectx, Statement t)
 		{
-			var target = (YieldStatement<T>) t;
+			var target = (YieldReturnStatement<T>) t;
 			target.expr = expr.Clone (clonectx);
 		}
 
@@ -69,7 +69,7 @@ namespace Mono.CSharp
 		}
 	}
 
-	public class Yield : YieldStatement<Iterator>
+	public class Yield : YieldReturnStatement<Iterator>
 	{
 		public Yield (Expression expr, Location loc)
 			: base (expr, loc)
@@ -860,7 +860,7 @@ namespace Mono.CSharp
 		}
 
 		//
-		// Called back from YieldStatement
+		// Called back from YieldReturnStatement
 		//
 		public virtual void InjectYield (EmitContext ec, Expression expr, int resume_pc, bool unwind_protect, Label resume_point)
 		{

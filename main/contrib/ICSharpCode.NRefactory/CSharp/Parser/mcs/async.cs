@@ -23,11 +23,17 @@ using System.Reflection.Emit;
 
 namespace Mono.CSharp
 {
-	class Await : ExpressionStatement
+	public class Await : ExpressionStatement
 	{
 		Expression expr;
 		AwaitStatement stmt;
-
+		
+		public Expression Expression {
+			get {
+				return expr;
+			}
+		}
+		
 		public Await (Expression expr, Location loc)
 		{
 			this.expr = expr;
@@ -64,8 +70,7 @@ namespace Mono.CSharp
 			}
 
 			if (rc.IsUnsafe) {
-				// TODO: New error code
-				rc.Report.Error (-1900, loc,
+				rc.Report.Error (4004, loc,
 					"The `await' operator cannot be used in an unsafe context");
 			}
 
@@ -108,9 +113,14 @@ namespace Mono.CSharp
 		{
 			stmt.EmitStatement (ec);
 		}
+
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 
-	class AwaitStatement : YieldStatement<AsyncInitializer>
+	class AwaitStatement : YieldReturnStatement<AsyncInitializer>
 	{
 		sealed class AwaitableMemberAccess : MemberAccess
 		{
@@ -121,12 +131,12 @@ namespace Mono.CSharp
 
 			protected override void Error_TypeDoesNotContainDefinition (ResolveContext rc, TypeSpec type, string name)
 			{
-				Error_WrongGetAwaiter (rc, loc, type);
+				Error_OperatorCannotBeApplied (rc, type);
 			}
 
 			protected override void Error_OperatorCannotBeApplied (ResolveContext rc, TypeSpec type)
 			{
-				rc.Report.Error (1991, loc, "Cannot await `{0}' expression", type.GetSignatureForError ());
+				rc.Report.Error (4001, loc, "Cannot await `{0}' expression", type.GetSignatureForError ());
 			}
 		}
 
@@ -288,16 +298,9 @@ namespace Mono.CSharp
 			}
 		}
 
-		static void Error_WrongGetAwaiter (ResolveContext rc, Location loc, TypeSpec type)
-		{
-			rc.Report.Error (1986, loc,
-				"The `await' operand type `{0}' must have suitable GetAwaiter method",
-				type.GetSignatureForError ());
-		}
-
 		void Error_WrongAwaiterPattern (ResolveContext rc, TypeSpec awaiter)
 		{
-			rc.Report.Error (1999, loc, "The awaiter type `{0}' must have suitable IsCompleted, OnCompleted, and GetResult members",
+			rc.Report.Error (4011, loc, "The awaiter type `{0}' must have suitable IsCompleted, OnCompleted, and GetResult members",
 				awaiter.GetSignatureForError ());
 		}
 
@@ -335,7 +338,10 @@ namespace Mono.CSharp
 			bc.Report.SetPrinter (old);
 
 			if (errors_printer.ErrorsCount > 0 || !MemberAccess.IsValidDotExpression (ama.Type)) {
-				Error_WrongGetAwaiter (bc, expr.Location, expr.Type);
+				bc.Report.Error (1986, expr.Location,
+					"The `await' operand type `{0}' must have suitable GetAwaiter method",
+					expr.Type.GetSignatureForError ());
+
 				return false;
 			}
 
@@ -428,12 +434,6 @@ namespace Mono.CSharp
 
 		public static void Create (IMemberContext context, ParametersBlock block, ParametersCompiled parameters, TypeContainer host, TypeSpec returnType, Location loc)
 		{
-			if (returnType != null && returnType.Kind != MemberKind.Void &&
-				returnType != host.Module.PredefinedTypes.Task.TypeSpec &&
-				!returnType.IsGenericTask) {
-				host.Compiler.Report.Error (1983, loc, "The return type of an async method must be void, Task, or Task<T>");
-			}
-
 			for (int i = 0; i < parameters.Count; i++) {
 				Parameter p = parameters[i];
 				Parameter.Modifier mod = p.ModFlags;
@@ -443,17 +443,15 @@ namespace Mono.CSharp
 					return;
 				}
 
-				// TODO:
 				if (p is ArglistParameter) {
-					host.Compiler.Report.Error (1636, p.Location,
-						"__arglist is not allowed in parameter list of iterators");
+					host.Compiler.Report.Error (4006, p.Location,
+						"__arglist is not allowed in parameter list of async methods");
 					return;
 				}
 
-				// TODO:
 				if (parameters.Types[i].IsPointer) {
-					host.Compiler.Report.Error (1637, p.Location,
-						"Iterators cannot have unsafe parameters or yield types");
+					host.Compiler.Report.Error (4005, p.Location,
+						"Async methods cannot have unsafe parameters");
 					return;
 				}
 			}
@@ -533,41 +531,6 @@ namespace Mono.CSharp
 
 	class AsyncTaskStorey : StateMachine
 	{
-		sealed class ParametersLoadStatement : Statement
-		{
-			readonly FieldSpec[] fields;
-			readonly TypeSpec[] parametersTypes;
-			readonly int thisParameterIndex;
-
-			public ParametersLoadStatement (FieldSpec[] fields, TypeSpec[] parametersTypes, int thisParameterIndex)
-			{
-				this.fields = fields;
-				this.parametersTypes = parametersTypes;
-				this.thisParameterIndex = thisParameterIndex;
-			}
-
-			protected override void CloneTo (CloneContext clonectx, Statement target)
-			{
-				throw new NotImplementedException ();
-			}
-
-			protected override void DoEmit (EmitContext ec)
-			{
-				for (int i = 0; i < fields.Length; ++i) {
-					var field = fields[i];
-					if (field == null)
-						continue;
-
-					ec.EmitArgumentLoad (thisParameterIndex);
-					ec.EmitArgumentLoad (i);
-					if (parametersTypes[i] is ReferenceContainer)
-						ec.EmitLoadFromPtr (field.MemberType);
-
-					ec.Emit (OpCodes.Stfld, field);
-				}
-			}
-		}
-
 		int awaiters;
 		Field builder, continuation;
 		readonly TypeSpec return_type;
@@ -658,22 +621,26 @@ namespace Mono.CSharp
 				bf = pred_members.AsyncTaskMethodBuilderCreate;
 				sr = pred_members.AsyncTaskMethodBuilderSetResult;
 				se = pred_members.AsyncTaskMethodBuilderSetException;
-				task = pred_members.AsyncTaskMethodBuilderTask.Resolve (Location);
+				task = pred_members.AsyncTaskMethodBuilderTask.Get ();
 			} else {
 				builder_type = Module.PredefinedTypes.AsyncTaskMethodBuilderGeneric;
 				bf = pred_members.AsyncTaskMethodBuilderGenericCreate;
 				sr = pred_members.AsyncTaskMethodBuilderGenericSetResult;
 				se = pred_members.AsyncTaskMethodBuilderGenericSetException;
-				task = pred_members.AsyncTaskMethodBuilderGenericTask.Resolve (Location);
+				task = pred_members.AsyncTaskMethodBuilderGenericTask.Get ();
 				has_task_return_type = true;
 			}
 
-			set_result = sr.Resolve (Location);
-			set_exception = se.Resolve (Location);
-			var builder_factory = bf.Resolve (Location);
-			var bt = builder_type.Resolve ();
-			if (bt == null || set_result == null || builder_factory == null || set_exception == null)
-				return false;
+			set_result = sr.Get ();
+			set_exception = se.Get ();
+			var builder_factory = bf.Get ();
+			if (!builder_type.Define () || set_result == null || builder_factory == null || set_exception == null) {
+				Report.Error (1993, Location,
+					"Cannot find compiler required types for asynchronous functions support. Are you targeting the wrong framework version?");
+				return base.DoDefineMembers ();
+			}
+
+			var bt = builder_type.TypeSpec;
 
 			//
 			// Inflate generic Task types

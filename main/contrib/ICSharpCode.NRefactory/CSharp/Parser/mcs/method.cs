@@ -898,6 +898,42 @@ namespace Mono.CSharp {
 
 #endregion
 
+		public static Method Create (DeclSpace parent, GenericMethod generic, FullNamedExpression returnType, Modifiers mod,
+				   MemberName name, ParametersCompiled parameters, Attributes attrs, bool hasConstraints)
+		{
+			var m = new Method (parent, generic, returnType, mod, name, parameters, attrs);
+
+			if (hasConstraints && ((mod & Modifiers.OVERRIDE) != 0 || m.IsExplicitImpl)) {
+				m.Report.Error (460, m.Location,
+					"`{0}': Cannot specify constraints for overrides and explicit interface implementation methods",
+					m.GetSignatureForError ());
+			}
+
+			if ((mod & Modifiers.PARTIAL) != 0) {
+				const Modifiers invalid_partial_mod = Modifiers.AccessibilityMask | Modifiers.ABSTRACT | Modifiers.EXTERN |
+					Modifiers.NEW | Modifiers.OVERRIDE | Modifiers.SEALED | Modifiers.VIRTUAL;
+
+				if ((mod & invalid_partial_mod) != 0) {
+					m.Report.Error (750, m.Location,
+						"A partial method cannot define access modifier or any of abstract, extern, new, override, sealed, or virtual modifiers");
+					mod &= ~invalid_partial_mod;
+				}
+
+				if ((parent.ModFlags & Modifiers.PARTIAL) == 0) {
+					m.Report.Error (751, m.Location, 
+						"A partial method must be declared within a partial class or partial struct");
+				}
+			}
+
+			if ((mod & Modifiers.STATIC) == 0 && parameters.HasExtensionMethodType) {
+				m.Report.Error (1105, m.Location, "`{0}': Extension methods must be declared static",
+					m.GetSignatureForError ());
+			}
+
+
+			return m;
+		}
+
 		public override string GetSignatureForError()
 		{
 			return base.GetSignatureForError () + parameters.GetSignatureForError ();
@@ -1151,6 +1187,12 @@ namespace Mono.CSharp {
 				}
 
 				if ((ModFlags & Modifiers.ASYNC) != 0) {
+					if (ReturnType.Kind != MemberKind.Void &&
+						ReturnType != Module.PredefinedTypes.Task.TypeSpec &&
+						!ReturnType.IsGenericTask) {
+						Report.Error (1983, Location, "The return type of an async method must be void, Task, or Task<T>");
+					}
+
 					AsyncInitializer.Create (this, block, parameters, Parent.PartialContainer, ReturnType, Location);
 				}
 			}
@@ -1190,6 +1232,9 @@ namespace Mono.CSharp {
 					if (Parent.DeclaringAssembly.EntryPoint == null) {
 						if (Parent.IsGeneric || MemberName.IsGeneric) {
 							Report.Warning (402, 4, Location, "`{0}': an entry point cannot be generic or in a generic type",
+								GetSignatureForError ());
+						} else if ((ModFlags & Modifiers.ASYNC) != 0) {
+							Report.Error (4009, Location, "`{0}': an entry point cannot be async method",
 								GetSignatureForError ());
 						} else {
 							SetIsUsed ();
@@ -1621,9 +1666,9 @@ namespace Mono.CSharp {
 				// initializer, it must initialize all of the struct's fields.
 				if ((Parent.PartialContainer.Kind == MemberKind.Struct) &&
 					((ModFlags & Modifiers.STATIC) == 0) && (Initializer == null))
-					block.AddThisVariable (bc, Parent, Location);
+					block.AddThisVariable (bc);
 
-				if (block != null && (ModFlags & Modifiers.STATIC) == 0){
+				if ((ModFlags & Modifiers.STATIC) == 0){
 					if (Parent.PartialContainer.Kind == MemberKind.Class && Initializer == null)
 						Initializer = new GeneratedBaseInitializer (Location);
 

@@ -1,7 +1,7 @@
 //
 // visit.cs: Visitors for parsed dom
 //
-// Authors: Mike Krüger (mkrueger@novell.com)
+// Authors: Mike Krï¿½ger (mkrueger@novell.com)
 //			Marek Safar (marek.safar@gmail.com)
 //
 // Dual licensed under the terms of the MIT X11 or GNU GPL
@@ -328,7 +328,7 @@ namespace Mono.CSharp
 			return null;
 		}
 
-		public virtual object Visit (Yield yieldStatement)
+		public virtual object Visit (Yield YieldReturnStatement)
 		{
 			return null;
 		}
@@ -628,6 +628,11 @@ namespace Mono.CSharp
 		}
 		
 		public virtual object Visit (MakeRefExpr makeRefExpr)
+		{
+			return null;
+		}
+
+		public virtual object Visit (Await awaitExpr)
 		{
 			return null;
 		}

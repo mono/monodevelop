@@ -669,6 +669,9 @@ namespace Mono.CSharp {
 					if ((member.Modifiers & Modifiers.OVERRIDE) != 0 && member.Kind != MemberKind.Event)
 						continue;
 
+					if ((member.Modifiers & Modifiers.BACKING_FIELD) != 0)
+						continue;
+
 					if ((arity > 0 || (restrictions & MemberLookupRestrictions.ExactArity) != 0) && member.Arity != arity)
 						continue;
 
@@ -2230,9 +2233,16 @@ namespace Mono.CSharp {
 			return new SimpleName (Name, targs, loc);
 		}
 
-		protected override Expression DoResolve (ResolveContext ec)
+		protected override Expression DoResolve (ResolveContext rc)
 		{
-			return SimpleNameResolve (ec, null, false);
+			var e = SimpleNameResolve (rc, null, false);
+
+			var fe = e as FieldExpr;
+			if (fe != null) {
+				fe.VerifyAssignedStructField (rc, null);
+			}
+
+			return e;
 		}
 
 		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
@@ -2913,7 +2923,7 @@ namespace Mono.CSharp {
 				}
 
 				InstanceExpression = new This (loc);
-				if (this is FieldExpr && rc.CurrentType.IsStruct) {
+				if (this is FieldExpr && rc.CurrentBlock.ParametersBlock.TopBlock.ThisVariable != null) {
 					using (rc.Set (ResolveContext.Options.OmitStructFlowAnalysis)) {
 						InstanceExpression = InstanceExpression.Resolve (rc);
 					}
@@ -2944,7 +2954,7 @@ namespace Mono.CSharp {
 			// the expression is not field expression which is the only
 			// expression which can use uninitialized this
 			//
-			if (InstanceExpression is This && !(this is FieldExpr) && rc.CurrentType.IsStruct) {
+			if (InstanceExpression is This && !(this is FieldExpr) && rc.CurrentBlock.ParametersBlock.TopBlock.ThisVariable != null) {
 				((This)InstanceExpression).CheckStructThisDefiniteAssignment (rc);
 			}
 
@@ -3674,16 +3684,16 @@ namespace Mono.CSharp {
 				// better conversion is performed between underlying types Y1 and Y2
 				//
 				if (p.IsGenericTask || q.IsGenericTask) {
-					if (p.IsGenericTask != q.IsGenericTask) {
-						return 0;
-					}
-
 					var async_am = a.Expr as AnonymousMethodExpression;
-					if (async_am == null || !async_am.IsAsync)
-						return 0;
+					if (async_am != null && async_am.IsAsync) {
 
-					q = q.TypeArguments[0];
-					p = p.TypeArguments[0];
+						if (p.IsGenericTask != q.IsGenericTask) {
+							return 0;
+						}
+
+						q = q.TypeArguments[0];
+						p = p.TypeArguments[0];
+					}
 				}
 
 				//
@@ -4181,7 +4191,7 @@ namespace Mono.CSharp {
 					// if the type matches
 					//
 					Expression e = pd.FixedParameters[i].DefaultValue;
-					if (!(e is Constant) || e.Type.IsGenericOrParentIsGeneric) {
+					if (!(e is Constant) || e.Type.IsGenericOrParentIsGeneric || e.Type.IsGenericParameter) {
 						//
 						// LAMESPEC: No idea what the exact rules are for System.Reflection.Missing.Value instead of null
 						//
@@ -5096,8 +5106,9 @@ namespace Mono.CSharp {
 		public void SetHasAddressTaken ()
 		{
 			IVariableReference vr = InstanceExpression as IVariableReference;
-			if (vr != null)
+			if (vr != null) {
 				vr.SetHasAddressTaken ();
+			}
 		}
 
 		public override Expression CreateExpressionTree (ResolveContext ec)
@@ -5162,7 +5173,7 @@ namespace Mono.CSharp {
 			IVariableReference var = InstanceExpression as IVariableReference;
 
 			if (lvalue_instance && var != null && var.VariableInfo != null) {
-				var.VariableInfo.SetFieldAssigned (ec, Name);
+				var.VariableInfo.SetStructFieldAssigned (ec, Name);
 			}
 			
 			if (fb != null) {
@@ -5182,18 +5193,43 @@ namespace Mono.CSharp {
 				return new FixedBufferPtr (this, fb.ElementType, loc).Resolve (ec);
 			}
 
+			//
+			// Set flow-analysis variable info for struct member access. It will be check later
+			// for precise error reporting
+			//
+			if (var != null && var.VariableInfo != null && InstanceExpression.Type.IsStruct) {
+				variable_info = var.VariableInfo.GetStructFieldInfo (Name);
+				if (rhs != null && variable_info != null)
+					variable_info.SetStructFieldAssigned (ec, Name);
+			}
+
 			eclass = ExprClass.Variable;
-
-			// If the instance expression is a local variable or parameter.
-			if (var == null || var.VariableInfo == null)
-				return this;
-
-			VariableInfo vi = var.VariableInfo;
-			if (!vi.IsFieldAssigned (ec, Name, loc))
-				return null;
-
-			variable_info = vi.GetSubStruct (Name);
 			return this;
+		}
+
+		public void VerifyAssignedStructField (ResolveContext rc, Expression rhs)
+		{
+			var fe = this;
+
+			do {
+				var var = fe.InstanceExpression as IVariableReference;
+				if (var != null) {
+					var vi = var.VariableInfo;
+
+					if (vi != null && !vi.IsStructFieldAssigned (rc, fe.Name) && (rhs == null || !fe.type.IsStruct)) {
+						if (rhs != null) {
+							rc.Report.Warning (1060, 1, fe.loc, "Use of possibly unassigned field `{0}'", fe.Name);
+						} else {
+							rc.Report.Error (170, fe.loc, "Use of possibly unassigned field `{0}'", fe.Name);
+						}
+
+						return;
+					}
+				}
+
+				fe = fe.InstanceExpression as FieldExpr;
+
+			} while (fe != null);
 		}
 
 		static readonly int [] codes = {
@@ -6204,6 +6240,10 @@ namespace Mono.CSharp {
 
 		public override VariableInfo VariableInfo {
 			get { return null; }
+		}
+
+		public override void VerifyAssigned (ResolveContext rc)
+		{
 		}
 	}
 

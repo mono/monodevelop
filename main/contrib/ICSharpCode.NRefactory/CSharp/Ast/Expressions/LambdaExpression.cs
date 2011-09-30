@@ -1,6 +1,6 @@
 ﻿// 
 // LambdaExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -29,14 +29,17 @@ using System.Linq;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
-	/// Parameters => Body
+	/// [async] Parameters => Body
 	/// </summary>
 	public class LambdaExpression : Expression
 	{
+		public readonly static Role<CSharpTokenNode> AsyncModifierRole = new Role<CSharpTokenNode>("AsyncModifier", CSharpTokenNode.Null);
 		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arrow", CSharpTokenNode.Null);
 		public static readonly Role<AstNode> BodyRole = new Role<AstNode>("Body", AstNode.Null);
 		
-		public AstNodeCollection<ParameterDeclaration> Parameters { 
+		public bool IsAsync { get; set; }
+		
+		public AstNodeCollection<ParameterDeclaration> Parameters {
 			get { return GetChildrenByRole (Roles.Parameter); }
 		}
 		
@@ -49,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (BodyRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitLambdaExpression (this, data);
 		}
@@ -57,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			LambdaExpression o = other as LambdaExpression;
-			return o != null && this.Parameters.DoMatch(o.Parameters, match) && this.Body.DoMatch(o.Body, match);
+			return o != null && this.IsAsync == o.IsAsync && this.Parameters.DoMatch(o.Parameters, match) && this.Body.DoMatch(o.Body, match);
 		}
 	}
 }

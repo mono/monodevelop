@@ -1,6 +1,6 @@
 ﻿// 
 // CSharpModifierToken.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -37,14 +37,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public Modifiers Modifier {
 			get { return modifier; }
 			set {
-				for (int i = 0; i < lengthTable.Count; i++) {
-					if (lengthTable[i].Key == value) {
-						this.modifier = value;
-						this.tokenLength = lengthTable[i].Value;
-						return;
-					}
-				}
-				throw new ArgumentException ("Modifier " + value + " is invalid.");
+				this.tokenLength = GetModifierName(value).Length;
+				this.modifier = value;
 			}
 		}
 		
@@ -56,30 +50,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		// Not worth using a dictionary for such few elements.
 		// This table is sorted in the order that modifiers should be output when generating code.
-		static readonly List<KeyValuePair<Modifiers, int>> lengthTable = new List<KeyValuePair<Modifiers, int>> () {
-			new KeyValuePair<Modifiers, int>(Modifiers.Public, "public".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Protected, "protected".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Private, "private".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Internal, "internal".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.New, "new".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Unsafe, "unsafe".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Abstract, "abstract".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Virtual, "virtual".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Sealed, "sealed".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Static, "static".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Override, "override".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Readonly, "readonly".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Volatile, "volatile".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Extern, "extern".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Partial, "partial".Length),
-			new KeyValuePair<Modifiers, int>(Modifiers.Const, "const".Length),
-			
-			// even though it's used for patterns only, it needs to be in this table to be usable in the AST
-			new KeyValuePair<Modifiers, int>(Modifiers.Any, "any".Length)
+		static readonly Modifiers[] allModifiers = {
+			Modifiers.Public, Modifiers.Protected, Modifiers.Private, Modifiers.Internal,
+			Modifiers.New,
+			Modifiers.Unsafe,
+			Modifiers.Abstract, Modifiers.Virtual, Modifiers.Sealed, Modifiers.Static, Modifiers.Override,
+			Modifiers.Readonly, Modifiers.Volatile,
+			Modifiers.Extern, Modifiers.Partial, Modifiers.Const,
+			Modifiers.Any,
+			Modifiers.Async
 		};
 		
 		public static IEnumerable<Modifiers> AllModifiers {
-			get { return lengthTable.Select(p => p.Key); }
+			get { return allModifiers; }
 		}
 		
 		public CSharpModifierToken (AstLocation location, Modifiers modifier) : base (location, 0)
@@ -122,8 +105,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					return "volatile";
 				case Modifiers.Unsafe:
 					return "unsafe";
-				case Modifiers.Fixed:
-					return "fixed";
+				case Modifiers.Any:
+					// even though it's used for patterns only, it needs to be in this list to be usable in the AST
+					return "any";
+				case Modifiers.Async:
+					// even though it's used for patterns only, it needs to be in this list to be usable in the AST
+					return "async";
 				default:
 					throw new NotSupportedException("Invalid value for Modifiers");
 			}

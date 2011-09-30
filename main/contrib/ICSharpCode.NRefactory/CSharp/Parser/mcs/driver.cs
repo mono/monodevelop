@@ -434,7 +434,8 @@ namespace Mono.CSharp
 					var setting = cmd.ParseArguments (args);
 					if (setting == null || r.Errors > 0)
 						return null;
-
+					setting.Version = LanguageVersion.V_5;
+					
 					CompilerContext ctx = new CompilerContext (setting, r);
 					
 					var files = new List<CompilationSourceFile> ();

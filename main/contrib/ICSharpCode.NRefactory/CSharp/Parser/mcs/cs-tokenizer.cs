@@ -3224,7 +3224,7 @@ namespace Mono.CSharp
 						}
 						if (position_stack.Count == 0)
 							sbag.EndComment (endLine, endCol + 1);
-						
+												
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
 						comments_seen = false;
@@ -3446,7 +3446,7 @@ namespace Mono.CSharp
 				return Token.LITERAL;
 			}
 
-			if (c == '\r') {
+			if (c == '\n') {
 				Report.Error (1010, start_location, "Newline in constant");
 				return Token.ERROR;
 			}
