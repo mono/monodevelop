@@ -461,24 +461,30 @@ namespace MonoDevelop.Ide.FindInFiles
 				scope = new WholeSolutionScope ();
 				break;
 			case ScopeCurrentProject:
-				MonoDevelop.Projects.Project currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
-				if (currentSelectedProject != null)
+				var currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
+				if (currentSelectedProject != null) {
 					scope = new WholeProjectScope (currentSelectedProject);
-				if (scope == null && IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-					AlertButton alertButton = MessageService.AskQuestion (GettextCatalog.GetString ("Currently there is no project selected. Search in the solution instead ?"), AlertButton.Yes, AlertButton.No);
-					if (alertButton == AlertButton.Yes)
-						scope = new WholeSolutionScope ();
-				} else {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
-					return null;
+					break;
 				}
-				break;
+				if (IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+					var question = GettextCatalog.GetString (
+						"Currently there is no project selected. Search in the solution instead ?");
+					if (MessageService.AskQuestion (question, AlertButton.Yes, AlertButton.No) == AlertButton.Yes) {
+						scope = new WholeSolutionScope ();
+						break;
+					} else {
+						return null;
+					}
+				}
+				MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
+				return null;
 			case ScopeAllOpenFiles:
 				scope = new AllOpenFilesScope ();
 				break;
 			case ScopeDirectories: 
 				if (!System.IO.Directory.Exists (comboboxentryPath.Entry.Text)) {
-					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"), comboboxentryPath.Entry.Text));
+					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"),
+						comboboxentryPath.Entry.Text));
 					return null;
 				}
 				
