@@ -29,13 +29,13 @@ using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class ProjectLoadProgressMonitor : WrappedProgressMonitor
+	public class GtkProjectLoadProgressMonitor : WrappedProgressMonitor, IProjectLoadProgressMonitor
 	{
 		MigrationType? Migration {
 			get; set;
 		}
 		
-		public ProjectLoadProgressMonitor (IProgressMonitor monitor)
+		public GtkProjectLoadProgressMonitor (IProgressMonitor monitor)
 			: base (monitor)
 		{
 			

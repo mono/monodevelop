@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetProjectLoadProgressMonitor (bool lockGui)
 		{
-			return new ProjectLoadProgressMonitor (GetLoadProgressMonitor (lockGui));
+			return new GtkProjectLoadProgressMonitor (GetLoadProgressMonitor (lockGui));
 		}
 		
 		public IProgressMonitor GetSaveProgressMonitor (bool lockGui)
