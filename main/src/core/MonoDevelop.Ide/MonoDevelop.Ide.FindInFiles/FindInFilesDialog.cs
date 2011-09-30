@@ -464,7 +464,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				MonoDevelop.Projects.Project currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 				if (currentSelectedProject != null)
 					scope = new WholeProjectScope (currentSelectedProject);
-				if (IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+				if (scope == null && IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
 					AlertButton alertButton = MessageService.AskQuestion (GettextCatalog.GetString ("Currently there is no project selected. Search in the solution instead ?"), AlertButton.Yes, AlertButton.No);
 					if (alertButton == AlertButton.Yes)
 						scope = new WholeSolutionScope ();
