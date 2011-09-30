@@ -351,19 +351,18 @@ namespace MonoDevelop.Ide.Gui
 					
 					//if found, select window and jump to line
 					if (vcFound != null) {
-						if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
-							doc.Select ();
-							doc.Window.SwitchView (vcIndex);
-							Present ();
-						}
-						
 						IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
 						if (line >= 1 && ipos != null) {
 							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 						}
 						
-						NavigationHistoryService.LogActiveDocument ();
-						doc.Window.SelectWindow ();
+						if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
+							doc.Select ();
+							doc.Window.SwitchView (vcIndex);
+							doc.Window.SelectWindow ();
+							NavigationHistoryService.LogActiveDocument ();
+							Present ();
+						}
 						return doc;
 					}
 				}
