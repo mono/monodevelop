@@ -229,7 +229,7 @@
 	<StockIcon stockid = "md-text-editor" resource = "text-editor-22.png" />
 	<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-16.png" size="Menu" />
 	<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-24.png"/>
-	<StockIcon stockid = "md-feedback" resource = "baloon.png" size="Menu" />
+	<StockIcon stockid = "md-feedback" resource = "balloon.png" size = "Menu" />
 	<StockIcon stockid = "md-software-update-available" resource = "software-update-available.png" size="Menu" />
 </Extension>
 
