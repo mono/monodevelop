@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 					foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
-						if (!IncludeBinaryFiles && DesktopService.MimeTypeIsBinary (DesktopService.GetMimeTypeForUri (file.Name)))
+						if (!IncludeBinaryFiles && !DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (file.Name)))
 							continue;
 						yield return new FileProvider (file.Name, project);
 					}
@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (IdeApp.Workspace.IsOpen) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
-					if (!IncludeBinaryFiles && DesktopService.MimeTypeIsBinary (DesktopService.GetMimeTypeForUri (file.Name)))
+					if (!IncludeBinaryFiles && !DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (file.Name)))
 						continue;
 					yield return new FileProvider (file.Name, project);
 				}
@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (string fileName in files) {
 					if (fileName.StartsWith (".") && !IncludeHiddenFiles)
 						continue;
-					if (!IncludeBinaryFiles && DesktopService.MimeTypeIsBinary (DesktopService.GetMimeTypeForUri (fileName))) 
+					if (!IncludeBinaryFiles && !DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (fileName))) 
 						continue;
 					yield return fileName;
 				}

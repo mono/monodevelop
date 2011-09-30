@@ -33,7 +33,7 @@ using System.IO;
 
 namespace MonoDevelop.Ide
 {
-	public class DesktopService
+	public static class DesktopService
 	{
 		static PlatformService platformService;
 		
@@ -128,19 +128,7 @@ namespace MonoDevelop.Ide
 		{
 			return platformService.GetPixbufForType (mimeType, size);
 		}
-		
-		
-		public static bool MimeTypeIsBinary (string mimeType)
-		{
-			if (string.IsNullOrEmpty (mimeType))
-				return false;
-			return !(mimeType.StartsWith ("text/") || 
-			         mimeType == "image/x-xbitmap" || 
-			         mimeType == "image/x-xpixmap" ||
-				     mimeType.EndsWith ("+xml"));
-		}
-		
-		
+
 		public static bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager, string commandMenuAddinPath)
 		{
 			return platformService.SetGlobalMenu (commandManager, commandMenuAddinPath);
