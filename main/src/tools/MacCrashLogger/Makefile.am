@@ -11,7 +11,7 @@ FILES =  \
 	MainMenu.xib.designer.cs
 
 REFS =  \
-	/r:$(top_srcdir)/../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll \
+	/r:../../../../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll \
 	/r:System \
 	/r:System.Core \
 	/r:System.Drawing \
@@ -19,7 +19,7 @@ REFS =  \
 	/r:System.Xml.Linq
 
 DEPS =  \
-	$(top_builddir)/build/bin/MonoDevelop.CrashLog.dll
+	../../../build/bin/MonoDevelop.CrashLog.dll
 
 BUNDLE_INFOPLIST = $(APP_BUNDLE)/Contents/Info.plist
 BUNDLE_MAINNIB = $(APP_BUNDLE_RESOURCES)/MainMenu.nib
