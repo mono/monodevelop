@@ -265,7 +265,10 @@ namespace MonoDevelop.Ide
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			
-			LaunchCrashMonitoringService ();
+			string logAgentEnabled = Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_AGENT_ENABLED");
+			if (string.Equals (logAgentEnabled, "true", StringComparison.OrdinalIgnoreCase)) {
+				LaunchCrashMonitoringService ();
+			}
 			
 			IdeApp.Run ();
 			
