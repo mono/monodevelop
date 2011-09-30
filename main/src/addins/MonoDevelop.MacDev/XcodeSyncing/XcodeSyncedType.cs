@@ -54,7 +54,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			//FIXME: types dep on other types on project, need better regeneration skipping
 			var h = Type.ObjCName + ".h";
 			var path = context.ProjectDir.Combine (h);
-			if (File.Exists (path) && context.GetSyncTime (h) > Type.DefinedIn.Max (f => File.GetLastWriteTime (f)))
+			if (File.Exists (path) && context.GetSyncTime (h) != Type.DefinedIn.Max (f => File.GetLastWriteTime (f)))
 				return false;
 			return true;
 		}
@@ -70,9 +70,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			var h = Type.ObjCName + ".h";
 			var path = context.ProjectDir.Combine (h);
-			if (File.Exists (path) && File.GetLastWriteTime (path) > context.GetSyncTime (h))
-				return true;
-			return false;
+			return File.Exists (path) && File.GetLastWriteTime (path) != context.GetSyncTime (h);
 		}
 		
 		public override void SyncBack (XcodeSyncBackContext context)

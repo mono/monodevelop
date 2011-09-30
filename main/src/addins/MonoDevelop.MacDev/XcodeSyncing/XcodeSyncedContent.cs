@@ -52,7 +52,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public override bool NeedsSyncOut (XcodeSyncContext context)
 		{
 			string target = context.ProjectDir.Combine (targetRelative);
-			return !File.Exists (target) || context.GetSyncTime (targetRelative) < File.GetLastWriteTime (source);
+			return !File.Exists (target) || context.GetSyncTime (targetRelative) != File.GetLastWriteTime (source);
 		}
 		
 		public override void SyncOut (XcodeSyncContext context)
@@ -73,7 +73,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			if (!isInterfaceDefinition)
 				return false;
 			string target = context.ProjectDir.Combine (targetRelative);
-			return File.GetLastWriteTime (target) > context.GetSyncTime (targetRelative);
+			return File.GetLastWriteTime (target) != context.GetSyncTime (targetRelative);
 		}
 		
 		public override void SyncBack (XcodeSyncBackContext context)
