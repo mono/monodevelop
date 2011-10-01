@@ -73,13 +73,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			treeviewCodeTemplates.ExpandAll ();
 			treeviewCodeTemplates.Selection.Changed += HandleChanged;
 			
-			options = new Mono.TextEditor.TextEditorOptions ();
+			options = new MonoDevelop.Ide.Gui.CommonTextEditorOptions ();
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
 			options.ShowInvalidLines = false;
 			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
-			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 			textEditor.Options = options;
 			textEditor.Document.ReadOnly = true;
 			this.buttonAdd.Clicked += ButtonAddClicked;
