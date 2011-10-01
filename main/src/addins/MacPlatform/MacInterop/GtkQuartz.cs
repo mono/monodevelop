@@ -48,6 +48,13 @@ namespace MonoDevelop.MacInterop
 			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSWindow;
 		}
 		
+		public static void EnableFullScreen (Gtk.Window widget)
+		{
+			var window = GetWindow (widget);
+			if (window != null)
+				window.CollectionBehavior = (MonoMac.AppKit.NSWindowCollectionBehavior) 128;
+		}
+
 		public static NSView GetView (Gtk.Widget widget)
 		{
 			var ptr = gdk_quartz_window_get_nsview (widget.GdkWindow.Handle);
