@@ -56,10 +56,6 @@ namespace MonoDevelop.Ide
 				StockIconCodon iconCodon = (StockIconCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					if (iconCodon.File != null) {
-						LoadStockIcon (iconCodon);
-						break;
-					}
 					if (!iconStock.ContainsKey (iconCodon.StockId))
 						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
 					iconStock[iconCodon.StockId].Add (iconCodon);
@@ -68,7 +64,7 @@ namespace MonoDevelop.Ide
 			});
 		}
 		
-		static void LoadStockIcon (StockIconCodon iconCodon)
+		static void LoadStockIcon (StockIconCodon iconCodon, bool forceWildcard)
 		{
 			try {
 				Gdk.Pixbuf pixbuf = null;
@@ -93,8 +89,10 @@ namespace MonoDevelop.Ide
 				} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
 					pixbuf = GetPixbuf (InternalGetStockId (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize), iconCodon.IconSize);
 				}
-				if (pixbuf != null)
-					AddToIconFactory (iconCodon.StockId, pixbuf, iconCodon.IconSize);
+				if (pixbuf != null) {
+					Gtk.IconSize size = forceWildcard? Gtk.IconSize.Invalid : iconCodon.IconSize;
+					AddToIconFactory (iconCodon.StockId, pixbuf, size);
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Error loading icon '{0}'", iconCodon.StockId), ex);
 			}
@@ -211,7 +209,18 @@ namespace MonoDevelop.Ide
 
 			List<StockIconCodon> stockIcon;
 			if (iconStock.TryGetValue (stockId, out stockIcon)) {
-				stockIcon.ForEach (i => LoadStockIcon (i));
+				bool hasWildcard = false;
+				foreach (var i in stockIcon) {
+					if (i.IconSize == Gtk.IconSize.Invalid)
+						hasWildcard = true;
+				}
+				//if (!hasWildcard) {
+				//	LoggingService.LogWarning ("Stock icon '{0}' registered without wildcarded version.", stockId);
+				//}
+				foreach (var i in stockIcon) {
+					LoadStockIcon (i, !hasWildcard);
+					hasWildcard = true;
+				}
 				iconStock.Remove (stockId);
 			}
 		}
