@@ -235,6 +235,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (error != null) {
+				LoggingService.LogFatalError (null, error);
 				MessageService.ShowException (error,
 				                              GettextCatalog.GetString ("MonoDevelop failed to start. The following error has been reported: ") + error.Message);
 				return 1;
