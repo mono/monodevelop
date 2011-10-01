@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			runWithWarningsCheckBox.Active = IdeApp.Preferences.RunWithWarnings;
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
 			checkXBuild.Active = IdeApp.Preferences.BuildWithMSBuild;
-			Console.WriteLine (IdeApp.Preferences.MSBuildVerbosity);
 			verbosityCombo.Active = (int)IdeApp.Preferences.MSBuildVerbosity;
 		}
 		
