@@ -719,7 +719,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Popup)
+		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base (Gtk.WindowType.Toplevel)
 		{
 			this.documents = new List<Document> (IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));
 			this.TransientFor = parent;
