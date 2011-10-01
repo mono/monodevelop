@@ -314,6 +314,8 @@ namespace MonoDevelop.Ide
 			return InternalGetStockIdFromResource (addin, id);
 		}
 		 */
+		
+		[Obsolete ("Easy to misuse and leak memory. Register icon properly, or use pixbuf directly.")]
 		public static string GetStockId (Gdk.Pixbuf pixbuf, Gtk.IconSize size)
 		{
 			string id;
