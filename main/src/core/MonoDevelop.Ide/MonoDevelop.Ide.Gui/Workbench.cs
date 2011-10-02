@@ -191,7 +191,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Present ()
 		{
-			//FIXME: this probably needs to do a "request for attention" dock bounce on MacOS
+			//FIXME: this should do a "request for attention" dock bounce on MacOS but only in some cases.
+			//Doing it for all Present calls is excessive and annoying. Maybe we have too many Present calls...
+			//Mono.TextEditor.GtkWorkarounds.PresentWindowWithNotification (RootWindow);
 			RootWindow.Present ();
 		}
 

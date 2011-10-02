@@ -306,7 +306,7 @@ namespace MonoDevelop.Ide
 			dialog.TransientFor = parent;
 			dialog.DestroyWithParent = true;
 			PlaceDialog (dialog, parent);
-			return dialog.Run ();
+			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 		
 		//make sure modal children are parented on top of other modal children

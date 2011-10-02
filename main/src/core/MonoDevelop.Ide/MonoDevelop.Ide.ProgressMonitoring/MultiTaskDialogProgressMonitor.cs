@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 					TransientFor = parent,
 				};
 				MessageService.PlaceDialog (dialog, parent);
-				dialog.Show ();
+				Mono.TextEditor.GtkWorkarounds.PresentWindowWithNotification (dialog);
 				dialog.AsyncOperation = AsyncOperation;
 				DispatchService.RunPendingEvents ();
 				this.showDetails = showDetails;

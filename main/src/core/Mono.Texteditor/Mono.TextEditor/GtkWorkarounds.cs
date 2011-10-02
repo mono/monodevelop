@@ -32,36 +32,60 @@ namespace Mono.TextEditor
 {
 	public static class GtkWorkarounds
 	{
-		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "sel_registerName")]
+		const string LIBOBJC ="/usr/lib/libobjc.dylib";
+		
+		[DllImport (LIBOBJC, EntryPoint = "sel_registerName")]
 		static extern IntPtr sel_registerName (string selector);
-		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_getClass")]
+		
+		[DllImport (LIBOBJC, EntryPoint = "objc_getClass")]
 		static extern IntPtr objc_getClass (string klass);
-		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
 		static extern IntPtr objc_msgSend_IntPtr (IntPtr klass, IntPtr selector);
-		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend_stret")]
+		
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
+		static extern void objc_msgSend_void_bool (IntPtr klass, IntPtr selector, bool arg);
+		
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
+		static extern bool objc_msgSend_bool (IntPtr klass, IntPtr selector);
+		
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
+		static extern bool objc_msgSend_int_int (IntPtr klass, IntPtr selector, int arg);
+		
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_RectangleF (out RectangleF rect, IntPtr klass, IntPtr selector);
 		
-		static IntPtr cls_NSScreen, sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame;
-		static bool mac_initialized = false;
+		static IntPtr cls_NSScreen;
+		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
+			sel_activateIgnoringOtherApps, sel_isActive, sel_requestUserAttention;
+		static IntPtr sharedApp;
+		
+		const int NSCriticalRequest = 0;
+		const int NSInformationalRequest = 10;
+		
+		static GtkWorkarounds ()
+		{
+			if (Platform.IsMac) {
+				InitMac ();
+			}
+		}
 
 		static void InitMac ()
 		{
-			if (mac_initialized)
-				return;
-			
 			cls_NSScreen = objc_getClass ("NSScreen");
 			sel_screens = sel_registerName ("screens");
 			sel_objectEnumerator = sel_registerName ("objectEnumerator");
 			sel_nextObject = sel_registerName ("nextObject");
 			sel_visibleFrame = sel_registerName ("visibleFrame");
 			sel_frame = sel_registerName ("frame");
-			mac_initialized = true;
+			sel_activateIgnoringOtherApps = sel_registerName ("activateIgnoringOtherApps:");
+			sel_isActive = sel_registerName ("isActive");
+			sel_requestUserAttention = sel_registerName ("requestUserAttention:");
+			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
 		}
 		
 		static Gdk.Rectangle MacGetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
 		{
-			InitMac ();
-			
 			IntPtr array = objc_msgSend_IntPtr (cls_NSScreen, sel_screens);
 			IntPtr iter = objc_msgSend_IntPtr (array, sel_objectEnumerator);
 			RectangleF visible, frame;
@@ -89,12 +113,36 @@ namespace Mono.TextEditor
 			return new Gdk.Rectangle ((int) visible.X, (int) visible.Y, (int) visible.Width, (int) visible.Height);
 		}
 		
+		static void MacRequestAttention (bool critical)
+		{
+			int kind = critical?  NSCriticalRequest : NSInformationalRequest;
+			objc_msgSend_int_int (sharedApp, sel_requestUserAttention, kind);
+		}
+		
 		public static Gdk.Rectangle GetUsableMonitorGeometry (this Gdk.Screen screen, int monitor)
 		{
 			if (Platform.IsMac)
 				return MacGetUsableMonitorGeometry (screen, monitor);
 			
 			return screen.GetMonitorGeometry (monitor);
+		}
+		
+		public static int RunDialogWithNotification (Gtk.Dialog dialog)
+		{
+			if (Platform.IsMac)
+				MacRequestAttention (dialog.Modal);
+			
+			return dialog.Run ();
+		}
+		
+		public static void PresentWindowWithNotification (this Gtk.Window window)
+		{
+			window.Present ();
+			
+			if (Platform.IsMac) {
+				var dialog = window as Gtk.Dialog;
+				MacRequestAttention (dialog == null? false : dialog.Modal);
+			}
 		}
 	}
 }
