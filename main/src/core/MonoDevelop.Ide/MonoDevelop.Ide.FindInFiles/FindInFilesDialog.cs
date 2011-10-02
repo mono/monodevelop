@@ -110,7 +110,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			buttonReplace.Clicked += HandleReplaceClicked;
 			buttonSearch.Clicked += HandleSearchClicked;
-			buttonClose.Clicked += ButtonCloseClicked;
+			buttonClose.Clicked += (sender, e) => Destroy ();
+			DeleteEvent += (o, args) => Destroy ();
 			buttonStop.Clicked += ButtonStopClicked;
 			var scopeStore = new ListStore (typeof(string));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
@@ -146,7 +147,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			comboboxentryFind.Entry.SelectRegion (0, comboboxentryFind.ActiveText.Length);
 			
-			Hidden += delegate { Destroy (); };
+			DeleteEvent += delegate { Destroy (); };
 			UpdateStopButton ();
 			searchentry1.Ready = true;
 			searchentry1.Visible = true;
@@ -169,12 +170,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			};
 			
 			Child.Show ();
-		}
-
-		void ButtonCloseClicked (object sender, EventArgs e)
-		{
-			Hide ();
-			// Hide destroys the dialog
 		}
 
 		Label labelPath;
@@ -403,43 +398,34 @@ namespace MonoDevelop.Ide.FindInFiles
 			base.OnDestroyed ();
 		}
 		
-		static FindInFilesDialog currentFindDialog;
-		static bool IsCurrentDialogClosed {
-			get {
-				return currentFindDialog == null || !currentFindDialog.Visible;
-			}
-		}
-		
 		public static void ShowFind ()
 		{
-			if (!IsCurrentDialogClosed) {
-				currentFindDialog.Destroy ();
-			}
-			currentFindDialog = new FindInFilesDialog (false);
-			MessageService.PlaceDialog (currentFindDialog, null);
-			currentFindDialog.Show ();
+			ShowSingleInstance (new FindInFilesDialog (false));
 		}
 		
 		public static void ShowReplace ()
 		{
-			if (!IsCurrentDialogClosed) {
-				currentFindDialog.Destroy ();
-			}
-			currentFindDialog = new FindInFilesDialog (true);
-			MessageService.PlaceDialog (currentFindDialog, null);
-			currentFindDialog.Show ();
+			ShowSingleInstance (new FindInFilesDialog (true));
 		}
 		
 		public static void FindInPath (string path)
 		{
-			if (!IsCurrentDialogClosed) {
+			ShowSingleInstance (new FindInFilesDialog (false, path));
+		}
+		
+		static FindInFilesDialog currentFindDialog;
+		
+		static void ShowSingleInstance (FindInFilesDialog newDialog)
+		{
+			if (currentFindDialog != null) {
 				currentFindDialog.Destroy ();
 			}
-			currentFindDialog = new FindInFilesDialog (false, path);
+			newDialog.Destroyed += (sender, e) => currentFindDialog = null;
+			currentFindDialog = newDialog;
 			MessageService.PlaceDialog (currentFindDialog, null);
-			currentFindDialog.Show ();
+			currentFindDialog.Present ();
 		}
-				
+		
 		Scope GetScope ()
 		{
 							
@@ -514,13 +500,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
 			SearchReplace (comboboxentryReplace.Entry.Text);
-//			Hide ();
 		}
 
 		void HandleSearchClicked (object sender, EventArgs e)
 		{
 			SearchReplace (null);
-//			Hide ();
 		}
 
 		readonly List<ISearchProgressMonitor> searchesInProgress = new List<ISearchProgressMonitor> ();
