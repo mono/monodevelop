@@ -194,6 +194,11 @@ namespace MonoDevelop.Ide.Gui
 			//FIXME: this probably needs to do a "request for attention" dock bounce on MacOS
 			RootWindow.Present ();
 		}
+
+		public void GrabDesktopFocus ()
+		{
+			DesktopService.GrabDesktopFocus (RootWindow);
+		}
 				
 		public bool FullScreen {
 			get { return workbench.FullScreen; }

@@ -467,5 +467,11 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			
 			return new Gdk.Rectangle ((int) visible.X, (int) visible.Y, (int) visible.Width, (int) visible.Height);
 		}
+		
+		public override void GrabDesktopFocus (Gtk.Window window)
+		{
+			window.Present ();
+			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
+		}
 	}
 }

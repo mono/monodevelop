@@ -371,5 +371,13 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			return screen.GetMonitorGeometry (monitor);
 		}
+		
+		/// <summary>
+		/// Grab the desktop focus for the window.
+		/// </summary>
+		public virtual void GrabDesktopFocus (Gtk.Window window)
+		{
+			window.Present ();
+		}
 	}
 }

@@ -200,5 +200,13 @@ namespace MonoDevelop.Ide
 		{
 			platformService.StartUpdatesInstaller (installerDataFile, updatedInstallerPath);
 		}
+		
+		/// <summary>
+		/// Grab the desktop focus for the window.
+		/// </summary>
+		internal static void GrabDesktopFocus (Gtk.Window window)
+		{
+			platformService.GrabDesktopFocus (window);
+		}
 	}
 }
