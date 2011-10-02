@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide
 		void HandleFeedbackButtonClicked (object sender, EventArgs e)
 		{
 			if (!ignoreFeedbackButtonClick)
-				FeedbackService.ShowFeedbackWidnow ();
+				FeedbackService.ShowFeedbackWindow ();
 			ignoreFeedbackButtonClick = false;
 		}
 

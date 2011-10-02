@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			FeedbackService.ShowFeedbackWidnow ();
+			FeedbackService.ShowFeedbackWindow ();
 		}
 	}
 }

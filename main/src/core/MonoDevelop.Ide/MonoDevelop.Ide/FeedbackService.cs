@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide
 			get { return currentFeedbackDialog != null && currentFeedbackDialog.Visible; }
 		}
 		
-		public static void ShowFeedbackWidnow ()
+		public static void ShowFeedbackWindow ()
 		{
 			if (currentFeedbackDialog == null) {
 				var p = FeedbackPositionGetter ();
