@@ -253,6 +253,17 @@ namespace MonoDevelop.MacIntegration
 			//FIXME: should we remove these when finalizing?
 			try {
 				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e) {
+					//FIXME: can we avoid replying to the message until the app quits?
+					//There's NSTerminateLate but I'm not sure how to access it from carbon, maybe
+					//we need to swizzle methods into the app's NSApplicationDelegate.
+					//Also, it stops the main CFRunLoop, hopefully GTK dialogs use a child runloop.
+					//For now, just bounce.
+					var topDialog = MessageService.GetDefaultModalParent () as Gtk.Dialog;
+					if (topDialog != null && topDialog.Modal) {
+						NSApplication.SharedApplication.RequestUserAttention (
+							NSRequestUserAttentionType.CriticalRequest);
+					}
+					//FIXME: delay this until all existing modal dialogs were closed
 					if (!IdeApp.Exit ())
 						e.UserCancelled = true;
 					e.Handled = true;
