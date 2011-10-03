@@ -191,9 +191,9 @@
 		<!-- the following file belongs to the instrumentation viewer but it's not an addin so can't register for migrations -->
 		<Migration sourceVersion="2.4" kind="Config" path="monitor-views.xml" />
 		<!-- 2.6 -->
-		<Migration sourceVersion="2.6" kind="Config" targetKind="LocalConfig" path="mono-runtimes.xml" />
-		<Migration sourceVersion="2.6" kind="UserData" path="Policies" isDirectory="true" />
-		<Migration sourceVersion="2.6" kind="Config" path="monitor-views.xml" />
+		<Migration sourceVersion="2.6+" kind="Config" targetKind="LocalConfig" path="mono-runtimes.xml" />
+		<Migration sourceVersion="2.6+" kind="UserData" path="Policies" isDirectory="true" />
+		<Migration sourceVersion="2.6+" kind="Config" path="monitor-views.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/Applications">

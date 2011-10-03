@@ -194,7 +194,7 @@
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="syntaxmodes" targetPath="HighlightingSchemes" isDirectory="true" />
-		<!-- 2.6 -->
-		<Migration sourceVersion="2.6" kind="UserData" path="HighlightingSchemes" isDirectory="true" />
+		<!-- 2.6+ -->
+		<Migration sourceVersion="2.6+" kind="UserData" path="HighlightingSchemes" isDirectory="true" />
 	</Extension>
 </Addin>

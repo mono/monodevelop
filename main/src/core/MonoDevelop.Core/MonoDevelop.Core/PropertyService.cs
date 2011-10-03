@@ -117,14 +117,13 @@ namespace MonoDevelop.Core
 			profile = null;
 			version = null;
 			
-			string[] migratableVersions = UserProfile.GetMigratableVersions ();
-			
 			//try versioned profiles
-			for (int i = migratableVersions.Length -1; i >= 0; i--) {
-				var p = UserProfile.GetProfile (migratableVersions[i]);
+			for (int i = UserProfile.MigratableVersions.Length -1; i >= 0; i--) {
+				string v = UserProfile.MigratableVersions[i];
+				var p = UserProfile.GetProfile (v);
 				if (File.Exists (p.ConfigDir.Combine (FileName))) {
 					profile = p;
-					version = migratableVersions[i];
+					version = v;
 					return true;
 				}
 			}

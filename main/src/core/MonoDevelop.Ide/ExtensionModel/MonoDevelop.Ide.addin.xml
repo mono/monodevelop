@@ -247,12 +247,12 @@
 		<Migration sourceVersion="2.4" kind="Config" path="custom-command-modes.xml" />
 		<Migration sourceVersion="2.4" kind="Config" path="MonoDevelop-tools.xml" />
 		<Migration sourceVersion="2.4" kind="Config" path="EditingLayout2.xml" targetPath="EditingLayout.xml"/>
-		<!-- 2.6 -->
-		<Migration sourceVersion="2.6" kind="UserData" path="KeyBindings" isDirectory="true" />
-		<Migration sourceVersion="2.6" kind="UserData" path="Snippets" isDirectory="true" />
-		<Migration sourceVersion="2.6" kind="Config" path="custom-command-modes.xml" />
-		<Migration sourceVersion="2.6" kind="Config" path="MonoDevelop-tools.xml" />
-		<Migration sourceVersion="2.6" kind="Config" path="EditingLayout.xml" />
-		<Migration sourceVersion="2.6" kind="LocalConfig" path="RecentlyUsed.xml" />
+		<!-- 2.6+ -->
+		<Migration sourceVersion="2.6+" kind="UserData" path="KeyBindings" isDirectory="true" />
+		<Migration sourceVersion="2.6+" kind="UserData" path="Snippets" isDirectory="true" />
+		<Migration sourceVersion="2.6+" kind="Config" path="custom-command-modes.xml" />
+		<Migration sourceVersion="2.6+" kind="Config" path="MonoDevelop-tools.xml" />
+		<Migration sourceVersion="2.6+" kind="Config" path="EditingLayout.xml" />
+		<Migration sourceVersion="2.6+" kind="LocalConfig" path="RecentlyUsed.xml" />
 	</Extension>
 </Addin>

@@ -307,8 +307,8 @@
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="Cache" path="version-control-commit-msg" />
 		<Migration sourceVersion="2.4" kind="Config" path="VersionControl.config" />
-		<!-- 2.6 -->
-		<Migration sourceVersion="2.6" kind="Cache" path="version-control-commit-msg" />
-		<Migration sourceVersion="2.6" kind="Config" path="VersionControl.config" />
+		<!-- 2.6+ -->
+		<Migration sourceVersion="2.6+" kind="Cache" path="version-control-commit-msg" />
+		<Migration sourceVersion="2.6+" kind="Config" path="VersionControl.config" />
 	</Extension>
 </Addin>

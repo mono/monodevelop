@@ -150,7 +150,7 @@
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="schemas" targetPath="XmlSchemas" isDirectory="true" />
-		<!-- 2.6 -->
-		<Migration sourceVersion="2.6" kind="UserData" path="XmlSchemas" isDirectory="true" />
+		<!-- 2.6+ -->
+		<Migration sourceVersion="2.6+" kind="UserData" path="XmlSchemas" isDirectory="true" />
 	</Extension>
 </Addin>
