@@ -266,10 +266,7 @@ namespace MonoDevelop.Ide
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			
-			string logAgentEnabled = Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_AGENT_ENABLED");
-			if (string.Equals (logAgentEnabled, "true", StringComparison.OrdinalIgnoreCase)) {
-				LaunchCrashMonitoringService ();
-			}
+			LaunchCrashMonitoringService ();
 			
 			IdeApp.Run ();
 			
@@ -322,9 +319,10 @@ namespace MonoDevelop.Ide
 				var fileInfo = new FileInfo (Path.Combine (logPath, "crashlogs.xml"));
 				if (!PropertyService.HasValue (enabledKey) && fileInfo.Exists && fileInfo.Length > 0) {
 					var result = MessageService.AskQuestion ("A crash has been detected",
-						"MonoDevelop has crashed recently. Details of this crash can be uploaded" +
-						" to Xamarin to help diagnose the issue. Do you wish to take part in annonymous" +
-						" crash report logging. Yeah, you know you want to! ;)",
+						"MonoDevelop has crashed recently. Details of this crash along with your configured " +
+						"email address can be uploaded to Xamarin to help diagnose the issue. This information " +
+						"will be used to help diagnose the crash and notify you of potential workarounds " +
+						"or fixes. Do you wish to upload this information?",
 						AlertButton.Yes, AlertButton.No);
 					PropertyService.Set (enabledKey, result == AlertButton.Yes);
 				}
