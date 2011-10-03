@@ -24,6 +24,6 @@
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
-		<Migration sourceVersion="2.4" kind="Config" path="MonoDevelop.Database.ConnectionManager.xml" />
+		<Migration sourceVersion="2.4+" kind="Config" path="MonoDevelop.Database.ConnectionManager.xml" />
 	</Extension>
 </Addin>
