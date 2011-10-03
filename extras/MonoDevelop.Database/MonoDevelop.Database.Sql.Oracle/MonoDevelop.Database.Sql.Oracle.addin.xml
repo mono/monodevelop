@@ -1,4 +1,4 @@
-<Addin	id		= "MonoDevelop.Database.Sql.Oracle"
+<Addin	id		= "Database.Sql.Oracle"
 	namespace	= "MonoDevelop"
 	name		= "Oracle provider for Mono Data Sql"
 	author		= "Christian Hergert, Daniel Morgan, Ben Motmans"
