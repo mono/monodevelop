@@ -30,12 +30,12 @@ namespace MonoDevelop.Core
 	public class UserProfile
 	{
 		const string PROFILE_ENV_VAR = "MONODEVELOP_PROFILE";
-		const string CURRENT_PROFILE_VERSION = "2.7";
+		const string CURRENT_PROFILE_VERSION = "2.8";
 
 		internal static string[] GetMigratableVersions ()
 		{
 			return new[] {
-				"2.6",
+				"2.6", "2.7"
 			};
 		}
 		
