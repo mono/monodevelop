@@ -194,6 +194,10 @@
 		<Migration sourceVersion="2.6" kind="Config" targetKind="LocalConfig" path="mono-runtimes.xml" />
 		<Migration sourceVersion="2.6" kind="UserData" path="Policies" isDirectory="true" />
 		<Migration sourceVersion="2.6" kind="Config" path="monitor-views.xml" />
+		<!-- 2.7 -->
+		<Migration sourceVersion="2.7" kind="Config" targetKind="LocalConfig" path="mono-runtimes.xml" />
+		<Migration sourceVersion="2.7" kind="UserData" path="Policies" isDirectory="true" />
+		<Migration sourceVersion="2.7" kind="Config" path="monitor-views.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/Applications">

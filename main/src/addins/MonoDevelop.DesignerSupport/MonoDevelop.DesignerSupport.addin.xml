@@ -146,5 +146,7 @@
 		<Migration sourceVersion="2.4" kind="LocalConfig" path="Toolbox.xml" />
 		<!-- 2.6 -->
 		<Migration sourceVersion="2.6" kind="LocalConfig" path="Toolbox.xml" />
+		<!-- 2.7 -->
+		<Migration sourceVersion="2.7" kind="LocalConfig" path="Toolbox.xml" />
 	</Extension>
 </Addin>
