@@ -862,14 +862,21 @@ namespace MonoDevelop.Ide
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
 
-			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
+			NullProgressMonitor monitor = new NullProgressMonitor ();
 
 			DispatchService.ThreadDispatch (delegate {
 				ExecuteSolutionItemAsync (monitor, entry, context);
 			});
 			currentRunOperation = monitor.AsyncOperation;
 			currentRunOperationOwner = entry;
-			currentRunOperation.Completed += delegate { currentRunOperationOwner = null; };
+			currentRunOperation.Completed += delegate {
+			 	DispatchService.GuiDispatch (() => {
+					var error = monitor.Errors.FirstOrDefault ();
+					if (error != null)
+						IdeApp.Workbench.StatusBar.ShowError (error.Message);
+					currentRunOperationOwner = null;
+				});
+			};
 			return currentRunOperation;
 		}
 		
