@@ -63,8 +63,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				Directory.CreateDirectory (dir);
 			if (File.Exists (target))
 				File.Delete (target);
-			var result = Mono.Unix.Native.Syscall.link (source, target);
-			Mono.Unix.UnixMarshal.ThrowExceptionForLastErrorIf (result);
+			try {
+				var result = Mono.Unix.Native.Syscall.link (source, target);
+				Mono.Unix.UnixMarshal.ThrowExceptionForLastErrorIf (result);
+			} catch {
+				File.Copy (source, target);
+			}
 			context.UpdateSyncTime (targetRelative);
 		}
 		
