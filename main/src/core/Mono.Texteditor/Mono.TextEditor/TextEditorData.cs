@@ -103,7 +103,6 @@ namespace Mono.TextEditor
 		void HandleDocTextSet (object sender, EventArgs e)
 		{
 			this.heightTree.Rebuild ();
-			ClearSelection ();
 		}
 
 		public double GetLineHeight (LineSegment line)
