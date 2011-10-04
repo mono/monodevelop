@@ -230,8 +230,7 @@ namespace MonoDevelop.Ide.Commands
 			var toplevel = Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus)
 				?? IdeApp.Workbench.RootWindow;
 			var sw = new DocumentSwitcher (toplevel, next);
-			sw.ShowAll ();
-			sw.GrabFocus ();
+			sw.Present ();
 		}
 		
 		protected override void Update (CommandInfo info)
