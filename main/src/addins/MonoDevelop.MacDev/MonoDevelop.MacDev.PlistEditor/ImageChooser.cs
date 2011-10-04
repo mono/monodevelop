@@ -103,12 +103,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public bool CheckImageSize (Pixbuf pb)
 		{
+			return CheckImageSize (pb.Width, pb.Height);
+		}
+		
+		public bool CheckImageSize (int width, int height)
+		{
 			if (AcceptedSize.Width > 0) {
-				if (pb.Width != AcceptedSize.Width || pb.Height != AcceptedSize.Height) {
+				if (width != AcceptedSize.Width || height != AcceptedSize.Height) {
 					MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"),
 						GettextCatalog.GetString (
 							"Only pictures with size {0}x{1} are accepted. Picture was {2}x{3}.",
-							AcceptedSize.Width, AcceptedSize.Height, pb.Width, pb.Height));
+							AcceptedSize.Width, AcceptedSize.Height, width, height));
 					return false;
 				}
 			}
