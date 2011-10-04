@@ -537,5 +537,36 @@ AAAAAAAA$
 			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsFolded);
 			Assert.AreEqual (new DocumentLocation (3, 3), data.Caret.Location);
 		}
+		
+		/// <summary>
+		/// Bug 1134 - Visually corrupted text when changing line
+		/// </summary>
+		[Test()]
+		public void TestBug1134 ()
+		{
+			var data = CaretMoveActionTests.Create (
+@"0
+1
+-[2
+3
+4]
+5
+-[6
+7
++[8
+9]
+10]
+11");
+			var segments = GetFoldSegments (data.Document);
+			var seg = segments[0];
+			segments.RemoveAt (0);
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (2, data.Document.FoldSegments.Count ());
+			
+			segments.Insert (0, seg);
+			data.Document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (3, data.Document.FoldSegments.Count ());
+			
+		}	
 	}
 }

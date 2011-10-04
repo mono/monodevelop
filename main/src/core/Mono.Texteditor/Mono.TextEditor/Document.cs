@@ -992,6 +992,7 @@ namespace Mono.TextEditor
 						curSegment.isFolded = true;
 					if (curSegment.isFolded)
 						newFoldedSegments.Add (curSegment);
+					oldIndex++;
 				} else {
 					LineSegment startLine = splitter.GetLineByOffset (offset);
 					LineSegment endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
@@ -1005,9 +1006,7 @@ namespace Mono.TextEditor
 						newFoldedSegments.Add (newFoldSegment);
 					foldSegmentTree.Add (newFoldSegment);
 				}
-				oldIndex++;
 			}
-			
 			while (oldIndex < oldSegments.Count) {
 				RemoveFolding (oldSegments [oldIndex]);
 				oldIndex++;
