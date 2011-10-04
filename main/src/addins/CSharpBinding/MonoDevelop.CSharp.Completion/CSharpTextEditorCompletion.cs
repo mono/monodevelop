@@ -1806,11 +1806,9 @@ namespace MonoDevelop.CSharp.Completion
 						if (returnTypeUnresolved.ArrayDimensions == 0)
 							result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 					} else {
-						if (returnType != null) {
-							CompletionData unresovedCompletionData = col.Add (returnType);
-							if (returnType.ArrayDimensions == 0)
-								result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
-						}
+						CompletionData unresovedCompletionData = col.Add (returnType);
+						if (returnType.ArrayDimensions == 0)
+							result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 					}
 				}
 			}
