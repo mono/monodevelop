@@ -63,10 +63,25 @@ namespace Mono.TextEditor
 		const int NSCriticalRequest = 0;
 		const int NSInformationalRequest = 10;
 		
+		static System.Reflection.MethodInfo glibObjectGetProp, glibObjectSetProp;
+		
+		public static int GtkMinorVersion = 12;
+		
 		static GtkWorkarounds ()
 		{
 			if (Platform.IsMac) {
 				InitMac ();
+			}
+			
+			var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+			glibObjectSetProp = typeof (GLib.Object).GetMethod ("SetProperty", flags);
+			glibObjectGetProp = typeof (GLib.Object).GetMethod ("GetProperty", flags);
+			
+			foreach (int i in new [] { 24, 22, 20, 18, 16, 14 }) {
+				if (Gtk.Global.CheckVersion (2, (uint)i, 0) == null) {
+					GtkMinorVersion = i;
+					break;
+				}
 			}
 		}
 
@@ -143,6 +158,16 @@ namespace Mono.TextEditor
 				var dialog = window as Gtk.Dialog;
 				MacRequestAttention (dialog == null? false : dialog.Modal);
 			}
+		}
+		
+		public static GLib.Value GetProperty (this GLib.Object obj, string name)
+		{
+			return (GLib.Value) glibObjectGetProp.Invoke (obj, new object[] { name });
+		}
+		
+		public static void SetProperty (this GLib.Object obj, string name, GLib.Value value)
+		{
+			glibObjectSetProp.Invoke (obj, new object[] { name, value });
 		}
 	}
 }
