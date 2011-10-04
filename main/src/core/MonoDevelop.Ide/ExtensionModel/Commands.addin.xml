@@ -510,6 +510,7 @@
 			_label = "Active Layout"
 			_description = "Switch active layout" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen"
+			type="check"
 			defaultHandler = "MonoDevelop.Ide.Commands.FullScreenHandler"
 			_label = "_Full Screen" 
 			icon = "gtk-fullscreen" 
