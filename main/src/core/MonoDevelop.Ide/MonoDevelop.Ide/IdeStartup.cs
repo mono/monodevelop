@@ -99,6 +99,15 @@ namespace MonoDevelop.Ide
 			
 			//OSXFIXME
 			Gtk.Application.Init ("monodevelop", ref args);
+			
+			//default to Windows IME on Windows
+			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
+				var settings = Gtk.Settings.Default;
+				var val = Mono.TextEditor.GtkWorkarounds.GetProperty (settings, "gtk-im-module");
+				if (string.IsNullOrEmpty (val.Val as string))
+					Mono.TextEditor.GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
+			}
+			
 			InternalLog.Initialize ();
 			string socket_filename = null;
 			EndPoint ep = null;
