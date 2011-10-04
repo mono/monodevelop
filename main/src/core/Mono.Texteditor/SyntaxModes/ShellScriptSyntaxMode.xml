@@ -1,0 +1,90 @@
+<!--
+
+ShellScriptSyntaxMode.xml
+ 
+Author:
+      Mike Krüger <mkrueger@xamarin.com>
+
+Copyright (c) 2011 Xamarin <http://xamarin.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+<SyntaxMode name = "Bourne shell script" mimeTypes="application/x-sh">
+	<Property name="LineComment">#</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
+	
+	<EolSpan color = "comment" rule="Comment">#</EolSpan>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+		<Begin>"</Begin>
+		<End>"</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+		<Begin>&apos;</Begin>
+		<End>&apos;</End>
+	</Span>
+	
+	<Span color = "text.preprocessor" rule="String" stopateol = "true" escape='\'>
+		<Begin>${</Begin>
+		<End>}</End>
+	</Span>
+		
+	<Match color = "string">CSharpNumber</Match>
+	<Match color = "text.preprocessor">\$\w+</Match>
+	
+	<Keywords color = "keyword.selection">
+		<Word>if</Word>
+		<Word>then</Word>
+		<Word>elif</Word>
+		<Word>else</Word>
+		<Word>fi</Word>
+		<Word>case</Word>
+		<Word>in</Word>
+		<Word>esac</Word>
+		<Word>local</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.iteration">
+		<Word>while</Word>
+		<Word>for</Word>
+		<Word>do</Word>
+		<Word>done</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.jump">
+		<Word>return</Word>
+		<Word>continue</Word>
+	</Keywords>
+	
+	<Rule name = "Comment">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
+		</Keywords>	
+	</Rule>
+	<Rule name = "String">
+		<Match color = "text.preprocessor">\$\w+</Match>
+	</Rule>
+</SyntaxMode>
+
