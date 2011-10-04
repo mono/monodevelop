@@ -155,6 +155,8 @@ namespace MonoDevelop.Core.Assemblies
 			
 			string gacs;
 			if (environmentVariables.TryGetValue ("MONO_GAC_PREFIX", out gacs)) {
+				if (string.IsNullOrEmpty (gacs))
+					yield break;
 				foreach (string path in gacs.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries))
 					yield return path;
 			}
