@@ -121,6 +121,26 @@ namespace Mono.TextEditor
 			return imContextMenuItem;
 		}
 		
+		[DllImport (PangoUtil.LIBGTK)]
+		static extern void gtk_im_multicontext_set_context_id (IntPtr context, string context_id);
+		
+		[DllImport (PangoUtil.LIBGTK)]
+		static extern string gtk_im_multicontext_get_context_id (IntPtr context);
+		
+		[GLib.Property ("im-module")]
+		public string IMModule {
+			get {
+				if (GtkWorkarounds.GtkMinorVersion < 16 || imContext == null)
+					return null;
+				return gtk_im_multicontext_get_context_id (imContext.Handle);
+			}
+			set {
+				if (GtkWorkarounds.GtkMinorVersion < 16 || imContext == null)
+					return;
+				gtk_im_multicontext_set_context_id (imContext.Handle, value);
+			}
+		}
+		
 		public ITextEditorOptions Options {
 			get {
 				return textEditorData.Options;
