@@ -109,6 +109,11 @@ namespace Mono.TextEditor
 		
 		public MenuItem CreateInputMethodMenuItem (string label)
 		{
+			if (GtkWorkarounds.GtkMinorVersion >= 16) {
+				bool showMenu = (bool) GtkWorkarounds.GetProperty (Settings, "gtk-show-input-method-menu").Val;
+				if (!showMenu)
+					return null;
+			}
 			MenuItem imContextMenuItem = new MenuItem (label);
 			Menu imContextMenu = new Menu ();
 			imContextMenuItem.Submenu = imContextMenu;

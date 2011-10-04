@@ -580,7 +580,10 @@ namespace MonoDevelop.SourceEditor
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ExtensionContext ?? AddinManager.AddinEngine, "/MonoDevelop/SourceEditor2/ContextMenu/Editor");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 			menu.Append (new SeparatorMenuItem ());
-			menu.Append (CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods")));
+			var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
+			if (imMenu != null) {
+				menu.Append (imMenu);
+			}
 			menu.Destroyed += delegate {
 				this.QueueDraw ();
 			};
