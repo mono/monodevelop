@@ -55,6 +55,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		GeneralizeGenerics       = 0x20000,
 		StaticUsage              = 0x40000, // to distinguish static usage for extension methods.
 		IncludeConstraints       = 0x80000,
+		ReturnTypesLast          = 0x100000,
 		
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
 		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers
