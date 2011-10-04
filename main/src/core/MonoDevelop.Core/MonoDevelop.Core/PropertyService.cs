@@ -117,9 +117,11 @@ namespace MonoDevelop.Core
 			profile = null;
 			version = null;
 			
-			//try versioned profiles
-			for (int i = UserProfile.MigratableVersions.Length -1; i >= 0; i--) {
-				string v = UserProfile.MigratableVersions[i];
+			//try versioned profiles from most recent to oldest
+			//skip the last in the array, it's the current profile
+			int userProfileMostRecent = UserProfile.ProfileVersions.Length - 2;
+			for (int i = userProfileMostRecent; i >= 0; i--) {
+				string v = UserProfile.ProfileVersions[i];
 				var p = UserProfile.GetProfile (v);
 				if (File.Exists (p.ConfigDir.Combine (FileName))) {
 					profile = p;

@@ -75,8 +75,8 @@ namespace MonoDevelop.Core
 		
 		static int IndexOfVersion (UserDataMigrationNode node, string version)
 		{
-			for (int i=0; i < UserProfile.MigratableVersions.Length; i++) {
-				if (string.Equals (UserProfile.MigratableVersions[i], version)) {
+			for (int i=0; i < UserProfile.ProfileVersions.Length; i++) {
+				if (string.Equals (UserProfile.ProfileVersions[i], version)) {
 					return i;
 				}
 			}
