@@ -90,6 +90,8 @@ namespace MonoDevelop.Ide
 				int w, h;
 					
 				foreach (Category cat in categories) {
+					if (cat.Items.Count == 0)
+						continue;
 					yPos = padding;
 					layout.SetMarkup ("<b>" + cat.Title + "</b>");
 					layout.SetMarkup ("");
@@ -174,6 +176,10 @@ namespace MonoDevelop.Ide
 					layout.SetMarkup ("<b>" + cat.Title + "</b>");
 					cr.Color = (HslColor)Style.Text (StateType.Normal);
 					cr.ShowLayout (layout);
+					
+					if (cat.Items.Count == 0)
+						continue;
+					
 					layout.SetMarkup ("");
 					int w2, h2;
 					layout.GetPixelSize (out w2, out h2);
@@ -307,10 +313,11 @@ namespace MonoDevelop.Ide
 					continue;
 				int relIndex = idx - cat.FirstVisibleItem;
 				if (relIndex / maxItems == 0) {
-					if (i > 0) {
-						int newIndex = Math.Min (categories[i -1].Items.Count - 1, categories[i - 1].FirstVisibleItem + relIndex);
-						ActiveItem = categories[i - 1].Items [newIndex];
-					}
+					Category prevCat = GetPrevCat (i);
+					if (prevCat == cat)
+						return;
+					int newIndex = Math.Min (prevCat.Items.Count - 1, prevCat.FirstVisibleItem + relIndex);
+					ActiveItem = prevCat.Items [newIndex];
 				} else {
 					ActiveItem = cat.Items [relIndex - maxItems];
 				}
@@ -327,9 +334,12 @@ namespace MonoDevelop.Ide
 					continue;
 				int relIndex = idx - cat.FirstVisibleItem;
 				if (relIndex / maxItems == maxRows - 1 || relIndex + maxItems >= cat.Items.Count) {
+					Category nextCat = GetNextCat (i);
+					if (nextCat == cat)
+						return;
 					if (i + 1 < categories.Count) {
-						int newIndex = Math.Min (categories[i + 1].Items.Count - 1, categories[i + 1].FirstVisibleItem + relIndex);
-						ActiveItem = categories[i + 1].Items [newIndex];
+						int newIndex = Math.Min (nextCat.Items.Count - 1, nextCat.FirstVisibleItem + relIndex);
+						ActiveItem = nextCat.Items [newIndex];
 					}
 				} else {
 					ActiveItem = cat.Items [relIndex + maxItems];
@@ -350,7 +360,7 @@ namespace MonoDevelop.Ide
 					ActiveItem = cat.Items[idx + 1];
 				} else {
 					if (!stayInCategory) {
-						cat = categories[(i + 1) % (categories.Count)];
+						cat = GetNextCat (i);
 					}
 					cat.FirstVisibleItem = 0;
 					ActiveItem = cat.Items[0];
@@ -372,7 +382,7 @@ namespace MonoDevelop.Ide
 					ActiveItem = cat.Items[idx - 1];
 				} else {
 					if (!stayInCategory) {
-						cat = categories[(categories.Count + i - 1) % (categories.Count)];
+						cat = GetPrevCat (i);
 					}
 					if (cat.Items.Count - 1 > cat.FirstVisibleItem + maxItems * maxRows)
 						cat.FirstVisibleItem = cat.Items.Count - maxItems * maxRows + 1;
@@ -380,6 +390,26 @@ namespace MonoDevelop.Ide
 				}
 				break;
 			}
+		}
+		
+		Category GetNextCat (int i)
+		{
+			Category cat;
+			do {
+				i = (i + 1) % (categories.Count);
+				cat = categories[i];
+			} while (cat.Items.Count == 0);
+			return cat;
+		}
+		
+		Category GetPrevCat (int i)
+		{
+			Category cat;
+			do {
+				i = (categories.Count + i - 1) % (categories.Count);
+				cat = categories[i];
+			} while (cat.Items.Count == 0);
+			return cat;
 		}
 		
 		protected override void OnSizeRequested (ref Requisition req)
@@ -398,10 +428,16 @@ namespace MonoDevelop.Ide
 			layout.Dispose ();
 			int totalWidth = 0;
 			int totalHeight = 0;
+			
+			var firstNonEmptyCat = categories.FirstOrDefault (c => c.Items.Count > 0);
+			if (firstNonEmptyCat == null)
+				return;
+			
+			var icon = firstNonEmptyCat.Items[0].Icon;
+			var iconHeight = Math.Max (h, icon.Height + 2) + itemPadding * 2;
+			var iconWidth = icon.Width + 2 + w  + itemPadding * 2;
 				
 			foreach (var cat in categories) {
-				var iconHeight = Math.Max (h, cat.Items[0].Icon.Height + 2) + itemPadding * 2;
-				var iconWidth = cat.Items[0].Icon.Width + 2 + w  + itemPadding * 2;
 				var headerHeight = h + headerDistance;
 				totalHeight = Math.Max (totalHeight, headerHeight + (Math.Min (cat.Items.Count, maxItems)) * iconHeight);
 				totalWidth += (1 + Math.Min (maxRows - 1, cat.Items.Count / maxItems)) * iconWidth;
