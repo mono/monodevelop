@@ -324,9 +324,7 @@ namespace Mono.TextEditor
 				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 			};
 			imContext.PreeditEnd += delegate {
-				preeditOffset = -1;
-				this.textViewMargin.ForceInvalidateLine (Caret.Line);
-				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+				ResetPreeditString ();
 			};
 			
 			imContext.PreeditChanged += delegate(object sender, EventArgs e) {
@@ -400,6 +398,17 @@ namespace Mono.TextEditor
 			get {
 				return this.preeditString;
 			}
+		}
+		
+		void ResetPreeditString ()
+		{
+			if (preeditOffset < 0)
+				return;
+			preeditOffset = -1;
+			preeditString = null;
+			preeditAttrs = null;
+			this.textViewMargin.ForceInvalidateLine (Caret.Line);
+			this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 		}
 
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
@@ -497,6 +506,7 @@ namespace Mono.TextEditor
 		{
 			if (imContextActive) {
 				imContext.Reset ();
+				ResetPreeditString ();
 				imContextActive = false;
 			}
 		}
@@ -678,7 +688,10 @@ namespace Mono.TextEditor
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
 			if (textEditorData.Options != null)
 				textEditorData.Options.Changed -= OptionsChanged;
-
+			
+			if (imContext != null){
+				ResetIMContext ();
+			}
 			imContext = imContext.Kill (x => x.Commit -= IMCommit);
 
 			if (this.textEditorData.HAdjustment != null)
