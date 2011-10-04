@@ -49,6 +49,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.ContextAction;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -133,13 +134,16 @@ namespace MonoDevelop.CSharp.Formatting
 				Console.WriteLine ("couldn't parse : " + data.Text);
 				return;
 			}
+			
+			if (parser.HasErrors)
+				return;
+			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (data);
 			
 			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data)) {
 				HadErrors =  parser.HasErrors
 			};
-			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (formattingVisitor.Changes.
@@ -194,6 +198,15 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			MDRefactoringContext.MdScript.RunActions (changes, null);
 			
+			// check if the formatter has produced errors
+			parser = new CSharpParser ();
+			parser.Parse (data);
+			if (parser.HasErrors) {
+				LoggingService.LogError ("C# formatter produced source code errors. See console for output.");
+				Console.WriteLine (data.Text);
+				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
+			}
+				
 			int end = endOffset;
 			foreach (TextReplaceAction c in changes) {
 				end -= c.RemovedChars;
