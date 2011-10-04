@@ -247,8 +247,10 @@
 		<Migration sourceVersion="2.4" kind="Config" path="custom-command-modes.xml" />
 		<Migration sourceVersion="2.4" kind="Config" path="MonoDevelop-tools.xml" />
 		<Migration sourceVersion="2.4" kind="Config" path="EditingLayout2.xml" targetPath="EditingLayout.xml"/>
+		<!-- 2.6 and 2.7 incorrectly stored KeyBindings in Config despite migrating 2.4 ones to UserData -->
+		<Migration sourceVersion="2.6-2.7" kind="Config" targetKind="UserData" path="KeyBindings" isDirectory="true" />
 		<!-- 2.6+ -->
-		<Migration sourceVersion="2.6+" kind="Config" path="KeyBindings" isDirectory="true" />
+		<Migration sourceVersion="2.8+" kind="UserData" path="KeyBindings" isDirectory="true" />
 		<Migration sourceVersion="2.6+" kind="UserData" path="Snippets" isDirectory="true" />
 		<Migration sourceVersion="2.6+" kind="Config" path="custom-command-modes.xml" />
 		<Migration sourceVersion="2.6+" kind="Config" path="MonoDevelop-tools.xml" />

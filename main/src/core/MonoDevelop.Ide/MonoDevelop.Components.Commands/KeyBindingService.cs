@@ -64,7 +64,7 @@ namespace MonoDevelop.Components.Commands
 		static string ConfigFileName {
 			get {
 				string file = Platform.IsMac? "Custom.mac-kb.xml" : "Custom.kb.xml";
-				return UserProfile.Current.ConfigDir.Combine ("KeyBindings", file);
+				return UserProfile.Current.UserDataRoot.Combine ("KeyBindings", file);
 			}
 		}
 
