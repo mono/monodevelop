@@ -496,6 +496,10 @@ namespace Mono.TextEditor
 						} else {
 							OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 						}
+						// FIXME: this needs to move IM preedit position
+						var pos = LocationToPoint (Caret.Line, Caret.Column);
+						IMContext.CursorLocation = new Rectangle ((int) pos.X, (int) pos.Y, 0, (int) (LineHeight - 1));
+						// and maybe some gtk window update (redraw) is required.
 					}
 				}
 			} finally {
