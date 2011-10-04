@@ -131,16 +131,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		/// </summary>
 		bool GetXml (string baseName, out FilePath xmlFileName)
 		{
-			try {
-				string filePattern = Path.GetFileNameWithoutExtension (baseName) + ".*";
-				foreach (string fileName in Directory.EnumerateFileSystemEntries (Path.GetDirectoryName (baseName), filePattern)) {
-					if (fileName.ToLower ().EndsWith (".xml")) {
-						xmlFileName = fileName;
-						return true;
-					}
+			string filePattern = Path.GetFileNameWithoutExtension (baseName) + ".*";
+			foreach (string fileName in Directory.EnumerateFileSystemEntries (Path.GetDirectoryName (baseName), filePattern)) {
+				if (fileName.ToLower ().EndsWith (".xml")) {
+					xmlFileName = fileName;
+					return true;
 				}
-			} catch (Exception) {
-				
 			}
 			xmlFileName = "";
 			return false;
