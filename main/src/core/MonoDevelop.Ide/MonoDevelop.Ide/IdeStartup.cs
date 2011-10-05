@@ -347,9 +347,10 @@ namespace MonoDevelop.Ide
 					UseShellExecute = false,
 				};
 				Process.Start (psi);
-			} else {
-				LoggingService.LogError ("Could not launch crash reporter process. MonoDevelop will not be able to automatically report any crash information.");
 			}
+			//else {
+			//	LoggingService.LogError ("Could not launch crash reporter process. MonoDevelop will not be able to automatically report any crash information.");
+			//}
 		}
 
 		void ListenCallback (IAsyncResult state)
