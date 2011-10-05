@@ -958,6 +958,8 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Open (string url)
 		{
 			ITreeNavigator nav = SearchMember (url);
+			if (definitions == null) // we've been disposed
+				return;
 			if (nav == null) {
 				foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
 					foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
