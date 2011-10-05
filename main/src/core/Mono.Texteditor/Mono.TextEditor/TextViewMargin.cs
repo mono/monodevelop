@@ -783,7 +783,7 @@ namespace Mono.TextEditor
 		Dictionary<LineSegment, LayoutDescriptor> layoutDict = new Dictionary<LineSegment, LayoutDescriptor> ();
 		LayoutWrapper GetCachedLayout (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, Action<LayoutWrapper> createNew)
 		{
-			bool containsPreedit = !string.IsNullOrEmpty (textEditor.preeditString) && offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
+			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
 			LayoutDescriptor descriptor;
 			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
@@ -1057,8 +1057,7 @@ namespace Mono.TextEditor
 				var spanStack = line.StartSpan;
 				int lineOffset = line.Offset;
 				string lineText = textBuilder.ToString ();
-				bool containsPreedit = !string.IsNullOrEmpty (textEditor.preeditString)
-					&& offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
+				bool containsPreedit = textEditor.ContainsPreedit (offset, length);
 				uint preeditLength = 0;
 				
 				if (containsPreedit) {
@@ -2430,8 +2429,9 @@ namespace Mono.TextEditor
 			}
 			string lineText = textBuilder.ToString ();
 			char[] lineChars = lineText.ToCharArray ();
-			bool containsPreedit = !string.IsNullOrEmpty (textEditor.preeditString) && lineOffset <= textEditor.preeditOffset && textEditor.preeditOffset <= lineOffset + line.EditableLength;
-			int preeditLength = 0;
+			
+			bool containsPreedit = textEditor.ContainsPreedit (lineOffset, line.EditableLength);
+			uint preeditLength = 0;
 
 			if (containsPreedit) {
 				lineText = lineText.Insert (textEditor.preeditOffset - lineOffset, textEditor.preeditString);
