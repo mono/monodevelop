@@ -80,6 +80,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.OnDestroyed ();
 			bar.Frame.SizeAllocated -= HandleBarFrameSizeAllocated;
+			bar.Frame.ButtonPressEvent -= HandleBarFrameButtonPressEvent;
 		}
 		
 		
