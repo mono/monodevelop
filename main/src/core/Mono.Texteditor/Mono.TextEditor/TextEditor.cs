@@ -68,7 +68,7 @@ namespace Mono.TextEditor
 		Gdk.Key lastIMEventMappedKey;
 		uint lastIMEventMappedChar;
 		Gdk.ModifierType lastIMEventMappedModifier;
-		bool imContextActive;
+		bool imContextNeedsReset;
 		string currentStyleName;
 		
 		double mx, my;
@@ -318,22 +318,7 @@ namespace Mono.TextEditor
 			imContext.Commit += IMCommit;
 			
 			imContext.UsePreedit = true;
-			imContext.PreeditStart += delegate {
-				preeditOffset = Caret.Offset;
-				this.textViewMargin.ForceInvalidateLine (Caret.Line);
-				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
-			};
-			imContext.PreeditEnd += delegate {
-				ResetPreeditString ();
-			};
-			
-			imContext.PreeditChanged += delegate(object sender, EventArgs e) {
-				if (preeditOffset >= 0) {
-					imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos);
-					this.textViewMargin.ForceInvalidateLine (Caret.Line);
-					this.textEditorData.Document.CommitLineUpdate (Caret.Line);
-				}
-			};
+			imContext.PreeditChanged += PreeditStringChanged;
 			
 			imContext.RetrieveSurrounding += delegate (object o, RetrieveSurroundingArgs args) {
 				//use a single line of context, whole document would be very expensive
@@ -384,31 +369,27 @@ namespace Mono.TextEditor
 			window.ShowAll ();
 		}
 		
-		internal int preeditCursorPos = -1, preeditOffset = -1;
+		internal int preeditOffset, preeditLine, preeditCursorPos;
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
 		
-		public int PreeditOffset {
-			get {
-				return this.preeditOffset;
-			}
-		}
-
-		public string PreeditString {
-			get {
-				return this.preeditString;
-			}
-		}
-		
-		void ResetPreeditString ()
+		void PreeditStringChanged (object sender, EventArgs e)
 		{
-			if (preeditOffset < 0)
-				return;
-			preeditOffset = -1;
-			preeditString = null;
-			preeditAttrs = null;
-			this.textViewMargin.ForceInvalidateLine (Caret.Line);
-			this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos);
+			if (!string.IsNullOrEmpty (preeditString)) {
+				//FIXME: respect UTF16 surrogates in cursor pos
+				preeditCursorPos = Math.Max (0, Math.Min (preeditString.Length, preeditCursorPos));
+				if (preeditOffset < 0) {
+					preeditOffset = Caret.Offset;
+					preeditLine = Caret.Line;
+				}
+			} else {
+				preeditOffset = -1;
+				preeditString = null;
+				preeditAttrs = null;
+			}
+			this.textViewMargin.ForceInvalidateLine (preeditLine);
+			this.textEditorData.Document.CommitLineUpdate (preeditLine);
 		}
 
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
@@ -504,43 +485,40 @@ namespace Mono.TextEditor
 		
 		internal void ResetIMContext ()
 		{
-			if (imContextActive) {
+			if (imContextNeedsReset) {
 				imContext.Reset ();
-				ResetPreeditString ();
-				imContextActive = false;
+				imContextNeedsReset = false;
 			}
 		}
 		
 		void IMCommit (object sender, Gtk.CommitArgs ca)
 		{
-			try {
-				if (IsRealized && IsFocus) {
-					//this, if anywhere, is where we should handle UCS4 conversions
-					for (int i = 0; i < ca.Str.Length; i++) {
-						int utf32Char;
-						if (char.IsHighSurrogate (ca.Str, i)) {
-							utf32Char = char.ConvertToUtf32 (ca.Str, i);
-							i++;
-						} else {
-							utf32Char = (int)ca.Str [i];
-						}
-						
-						//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
-						 if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
-							OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
-						} else {
-							OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
-						}
-					}
+			if (!IsRealized || !IsFocus)
+				return;
+			
+			//this, if anywhere, is where we should handle UCS4 conversions
+			for (int i = 0; i < ca.Str.Length; i++) {
+				int utf32Char;
+				if (char.IsHighSurrogate (ca.Str, i)) {
+					utf32Char = char.ConvertToUtf32 (ca.Str, i);
+					i++;
+				} else {
+					utf32Char = (int)ca.Str [i];
 				}
-			} finally {
-				ResetIMContext ();
+				
+				//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
+				 if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
+					OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
+				} else {
+					OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
+				}
 			}
 		}
 		
 		protected override bool OnFocusInEvent (EventFocus evnt)
 		{
 			var result = base.OnFocusInEvent (evnt);
+			imContextNeedsReset = true;
 			IMContext.FocusIn ();
 			RequestResetCaretBlink ();
 			Document.CommitLineUpdate (Caret.Line);
@@ -550,6 +528,7 @@ namespace Mono.TextEditor
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
 			var result = base.OnFocusOutEvent (evnt);
+			imContextNeedsReset = true;
 			imContext.FocusOut ();
 			GLib.Timeout.Add (10, delegate {
 				// Don't immediately hide the tooltip. Wait a bit and check if the tooltip has the focus.
@@ -691,8 +670,8 @@ namespace Mono.TextEditor
 			
 			if (imContext != null){
 				ResetIMContext ();
+				imContext = imContext.Kill (x => x.Commit -= IMCommit);
 			}
-			imContext = imContext.Kill (x => x.Commit -= IMCommit);
 
 			if (this.textEditorData.HAdjustment != null)
 				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
@@ -847,7 +826,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (imContext.FilterKeypress (evt)) {
-				imContextActive = true;
+				imContextNeedsReset = true;
 				return true;
 			} else {
 				return false;
@@ -904,8 +883,9 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyReleaseEvent (EventKey evnt)
 		{
-			if (IMFilterKeyPress (evnt, 0, 0, ModifierType.None))
-				imContextActive = true;
+			if (IMFilterKeyPress (evnt, 0, 0, ModifierType.None)) {
+				imContextNeedsReset = true;
+			}
 			return true;
 		}
 		
