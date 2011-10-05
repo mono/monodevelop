@@ -1920,15 +1920,19 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (TextEditorCommands.MoveBlockUp)]
 		protected void OnMoveBlockUp ()
 		{
-			TextEditor.RunAction (MiscActions.MoveBlockUp);
-			CorrectIndenting ();
+			using (var undo = TextEditor.OpenUndoGroup ()) {
+				TextEditor.RunAction (MiscActions.MoveBlockUp);
+				CorrectIndenting ();
+			}
 		}
 		
 		[CommandHandler (TextEditorCommands.MoveBlockDown)]
 		protected void OnMoveBlockDown ()
 		{
-			TextEditor.RunAction (MiscActions.MoveBlockDown);
-			CorrectIndenting ();
+			using (var undo = TextEditor.OpenUndoGroup ()) {
+				TextEditor.RunAction (MiscActions.MoveBlockDown);
+				CorrectIndenting ();
+			}
 		}
 		
 		[CommandUpdateHandler (TextEditorCommands.ToggleBlockSelectionMode)]
