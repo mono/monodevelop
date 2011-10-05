@@ -394,10 +394,13 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 		}
 		#endregion
+<<<<<<< HEAD
 		
 		public virtual void OnDeserialization(object sender)
 		{
 			cache = new XmlDocumentationCache();
 		}
+=======
+>>>>>>> master
 	}
 }

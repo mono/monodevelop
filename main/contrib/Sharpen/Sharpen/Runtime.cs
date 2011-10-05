@@ -157,6 +157,11 @@ namespace Sharpen
 			Console.WriteLine (ex);
 		}
 
+		public static void PrintStackTrace (Exception ex, TextWriter tw)
+		{
+			tw.WriteLine (ex);
+		}
+
 		public static string Substring (string str, int index)
 		{
 			return str.Substring (index);

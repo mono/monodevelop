@@ -34,12 +34,32 @@ using MonoDevelop.Platform;
 namespace MonoDevelop.Platform
 {
 	public class OpenFileDialogHandler : IOpenFileDialogHandler
-	{		
+	{
+		volatile Form rootForm;
+
 		public bool Run (OpenFileDialogData data)
+		{
+			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
+			parentWindow.FocusInEvent += OnParentFocusIn;
+
+			bool result = SelectFileDialogHandler.RunWinUIMethod (RunDialog, data);
+
+			parentWindow.FocusInEvent -= OnParentFocusIn;
+			parentWindow.Present ();
+
+			return result;
+		}
+
+		void OnParentFocusIn (object o, EventArgs args)
+		{
+			if (rootForm != null)
+				rootForm.BeginInvoke (new Action (() => rootForm.Activate ()));
+		}
+
+		bool RunDialog (OpenFileDialogData data)
 		{			
 			Application.EnableVisualStyles ();
 			
-			var parentWindow = data.TransientFor ?? MessageService.RootWindow;
 			FileDialog fileDlg = null;
 			if (data.Action == Gtk.FileChooserAction.Open)
 				fileDlg = new OpenFileDialog ();
@@ -51,9 +71,9 @@ namespace MonoDevelop.Platform
 			SelectFileDialogHandler.SetCommonFormProperties (data, dlg.FileDialog);
 			
 			using (dlg) {
-                if (dlg.ShowDialog () == DialogResult.Cancel) {
-					parentWindow.Present ();
-                    return false;
+				rootForm = new WinFormsRoot ();
+				if (dlg.ShowDialog (rootForm) == DialogResult.Cancel) {
+					return false;
 				}
 	
 				FilePath[] paths = new FilePath [fileDlg.FileNames.Length];
@@ -69,7 +89,6 @@ namespace MonoDevelop.Platform
 				data.CloseCurrentWorkspace = dlg.CloseCurrentWorkspace;
 			}
 			
-			parentWindow.Present ();
 			return true;
 		}
 	}

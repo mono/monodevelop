@@ -34,6 +34,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Compared with <see cref="TypeStorage"/>, this class adds support for the IProjectContent interface,
 	/// for partial classes, and for multi-threading.
 	/// </remarks>
+<<<<<<< HEAD
 	[Serializable]
 	public class SimpleProjectContent : AbstractAnnotatable, IProjectContent, ISerializable, IDeserializationCallback
 	{
@@ -53,6 +54,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual string AssemblyName {
 			get { return string.Empty; }
 		}
+=======
+	public class SimpleProjectContent : AbstractAnnotatable, IProjectContent
+	{
+		readonly TypeStorage types = new TypeStorage();
+		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
+		readonly Dictionary<string, IParsedFile> fileDict = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
+>>>>>>> master
 		
 		#region AssemblyAttributes
 		readonly List<IAttribute> assemblyAttributes = new List<IAttribute>(); // mutable assembly attribute storage
@@ -129,6 +137,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (compoundTypeDef != null) {
 				// Remove one part from a compound class
 				var newParts = new List<ITypeDefinition>(compoundTypeDef.GetParts());
+<<<<<<< HEAD
 				// We cannot use newParts.Remove() because we need to use reference equality
 				for (int i = 0; i < newParts.Count; i++) {
 					if (newParts[i] == typeDefinition) {
@@ -136,6 +145,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						((DefaultTypeDefinition)typeDefinition).SetCompoundTypeDefinition(typeDefinition);
 						break;
 					}
+=======
+				if (newParts.Remove(typeDefinition)) {
+					((DefaultTypeDefinition)typeDefinition).SetCompoundTypeDefinition(typeDefinition);
+>>>>>>> master
 				}
 				types.UpdateType(CompoundTypeDefinition.Create(newParts));
 			} else {
@@ -186,6 +199,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#endregion
 		
 		#region IProjectContent implementation
+<<<<<<< HEAD
 		public ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
 		{
 			readerWriterLock.EnterReadLock();
@@ -196,6 +210,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+=======
+>>>>>>> master
 		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			readerWriterLock.EnterReadLock();

@@ -52,10 +52,20 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetBuildProgressMonitor ()
 		{
+			return GetBuildProgressMonitor (GettextCatalog.GetString ("Building..."));
+		}
+		
+		public IProgressMonitor GetCleanProgressMonitor ()
+		{
+			return GetBuildProgressMonitor (GettextCatalog.GetString ("Cleaning..."));
+		}
+		
+		private IProgressMonitor GetBuildProgressMonitor (string statusText)
+		{
 			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
 			ErrorListPad errorPad = (ErrorListPad) pad.Content;
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
-			mon.AddSlaveMonitor (GetStatusProgressMonitor (GettextCatalog.GetString ("Building..."), Stock.BuildCombine, false, true, false, pad));
+			mon.AddSlaveMonitor (GetStatusProgressMonitor (statusText, Stock.BuildCombine, false, true, false, pad));
 			return mon;
 		}
 		
@@ -72,6 +82,11 @@ namespace MonoDevelop.Ide.Gui
 		public IProgressMonitor GetLoadProgressMonitor (bool lockGui)
 		{
 			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.OpenFileIcon, true, false, lockGui);
+		}
+		
+		public IProgressMonitor GetProjectLoadProgressMonitor (bool lockGui)
+		{
+			return new GtkProjectLoadProgressMonitor (GetLoadProgressMonitor (lockGui));
 		}
 		
 		public IProgressMonitor GetSaveProgressMonitor (bool lockGui)

@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface ITextBuffer: ITextFile
 	{
+		//FIXME: this should be a method, it's relatively expensive
 		string SelectedText { get; set; }
 		
 		int CursorPosition { get; set; }

@@ -40,6 +40,18 @@ namespace MonoDevelop.MacInterop
 		public const string CarbonLib = "/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon";
 		
 		[DllImport (CarbonLib)]
+		static extern int Gestalt (int selector, out int result);
+		
+		public static int Gestalt (string selector)
+		{
+			int cc = ConvertCharCode (selector);
+			int result;
+			int ret = Gestalt (cc, out result);
+			CheckReturn (ret);
+			return result;
+		}
+		
+		[DllImport (CarbonLib)]
 		public static extern IntPtr GetApplicationEventTarget ();
 		
 		[DllImport (CarbonLib)]

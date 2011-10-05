@@ -1,10 +1,12 @@
 // 
 // PBXGroup.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,43 +34,62 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	public class PBXGroup : XcodeObject, IEnumerable<XcodeObject>
 	{
-		string name;
+		XcodeObjectSortDirection sort;
 		List<XcodeObject> children;
+		string name;
 
-		public string Name {
-			get {
-				return name;
-			}
+		public PBXGroup (string name, XcodeObjectSortDirection sortDirection = XcodeObjectSortDirection.Ascending)
+		{
+			children = new List<XcodeObject> ();
+			this.sort = sortDirection;
+			this.name = name;
 		}
 
-		public PBXGroup (string name)
-		{
-			this.name = name;
-			this.children = new List<XcodeObject> ();
+		public override string Name {
+			get {
+				return name ?? "Main Group";
+			}
 		}
 
 		public void AddChild (XcodeObject file)
 		{
-			this.children.Add (file);
+			children.Add (file);
 		}
-
+		
 		public override XcodeType Type {
 			get {
 				return XcodeType.PBXGroup;
 			}
 		}
-
+		
+		public PBXGroup GetGroup (string name)
+		{
+			foreach (var v in children)
+				if (v is PBXGroup && v.Name == name)
+					return (PBXGroup) v;
+			return null;
+		}
+		
 		public override string ToString ()
 		{
 			var sb = new StringBuilder ();
 
-			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\tchildren = (\n", Token, Type);
-			children.Sort ((x, y) => x.ToString ().CompareTo (y.ToString ()));
+			if (name != null)
+				sb.AppendFormat ("{0} /* {1} */ = {{\n", Token, Name);
+			else
+				sb.AppendFormat ("{0} = {{\n", Token);
+			sb.AppendFormat ("\t\t\tisa = {0};\n", Type);
+			sb.AppendFormat ("\t\t\tchildren = (\n");
+			if (sort != XcodeObjectSortDirection.None)
+				children.Sort (new XcodeObjectComparer (sort));
 			foreach (var child in children) 
-				sb.AppendFormat ("\t\t\t\t{0},\n", child.Token);
-			var quotedName = QuoteOnDemand (name);
-			sb.AppendFormat ("\t\t\t);\n\t\t\tname = {0};\n\t\t\tsourceTree = \"<group>\";\n\t\t}};", quotedName);
-		
+				sb.AppendFormat ("\t\t\t\t{0} /* {1} */,\n", child.Token, child.Name);
+			sb.AppendFormat ("\t\t\t);\n");
+			if (name != null)
+				sb.AppendFormat ("\t\t\tname = \"{0}\";\n", name);
+			sb.AppendFormat ("\t\t\tsourceTree = \"<group>\";\n");
+			sb.AppendFormat ("\t\t}};");
+
 			return sb.ToString ();
 		}
 

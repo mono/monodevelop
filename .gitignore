@@ -127,6 +127,8 @@ autom4te.cache/
 /main/src/tools/mdhost/Makefile
 /main/src/tools/mdmonitor/Makefile
 /main/src/tools/mdtool/Makefile
+/main/src/tools/MacCrashLogger/Makefile
+/main/src/tools/mdcrashlog/Makefile
 /main/tests/Makefile
 /main/tests/UnitTests/Makefile
 /main/theme-icons/Makefile
@@ -153,6 +155,7 @@ autom4te.cache/
 /extras/MonoDevelop.Database/missing
 /extras/MonoDevelop.Database/monodevelop-database.pc
 /extras/MonoDevelop.Database/po/Makefile
+/extras/MonoDevelop.Database/monodevelop-database.spec
 /extras/MonoDevelop.Profiling/INSTALL
 /extras/MonoDevelop.Profiling/Makefile
 /extras/MonoDevelop.Profiling/MonoDevelop.Profiling.HeapBuddy/Makefile

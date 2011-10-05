@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void OnReload ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
+			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				solution.ParentWorkspace.ReloadItem (m, solution);
 			}
 		}

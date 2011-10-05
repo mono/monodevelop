@@ -37,6 +37,7 @@ using System.Threading;
 
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
@@ -190,9 +191,15 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Present ()
 		{
-			//FIXME: Present is broken on Mac GTK+. It maximises the window.
-			if (!Platform.IsMac)
-				RootWindow.Present ();
+			//FIXME: this should do a "request for attention" dock bounce on MacOS but only in some cases.
+			//Doing it for all Present calls is excessive and annoying. Maybe we have too many Present calls...
+			//Mono.TextEditor.GtkWorkarounds.PresentWindowWithNotification (RootWindow);
+			RootWindow.Present ();
+		}
+
+		public void GrabDesktopFocus ()
+		{
+			DesktopService.GrabDesktopFocus (RootWindow);
 		}
 				
 		public bool FullScreen {
@@ -351,18 +358,18 @@ namespace MonoDevelop.Ide.Gui
 					
 					//if found, select window and jump to line
 					if (vcFound != null) {
-						if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
-							doc.Select ();
-							doc.Window.SwitchView (vcIndex);
-							Present ();
-						}
-						
 						IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
 						if (line >= 1 && ipos != null) {
 							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 						}
 						
-						NavigationHistoryService.LogActiveDocument ();
+						if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
+							doc.Select ();
+							doc.Window.SwitchView (vcIndex);
+							doc.Window.SelectWindow ();
+							NavigationHistoryService.LogActiveDocument ();
+							Present ();
+						}
 						return doc;
 					}
 				}
@@ -386,8 +393,10 @@ namespace MonoDevelop.Ide.Gui
 				if (openFileInfo.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
-					if (options.HasFlag (OpenDocumentOptions.BringToFront))
+					if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						Present ();
+						doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+					}
 					return doc;
 				} else {
 					return null;
@@ -1038,10 +1047,18 @@ namespace MonoDevelop.Ide.Gui
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 				
 				IEncodedTextContent etc = newContent.GetContent<IEncodedTextContent> ();
-				if (fileInfo.Encoding != null && etc != null)
-					etc.Load (fileName, fileInfo.Encoding);
-				else
-					newContent.Load (fileName);
+				try {
+					if (fileInfo.Encoding != null && etc != null)
+						etc.Load (fileName, fileInfo.Encoding);
+					else
+						newContent.Load (fileName);
+				} catch (InvalidEncodingException iex) {
+					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
+					return;
+				} catch (OverflowException oex) {
+					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
+					return;
+				}
 			} catch (Exception ex) {
 				fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
 				return;
@@ -1062,9 +1079,15 @@ namespace MonoDevelop.Ide.Gui
 			
 			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();
 			if (fileInfo.Line != -1 && ipos != null) {
-				GLib.Timeout.Add (10, new GLib.TimeoutHandler (JumpToLine));
+				newContent.Control.Realized += HandleNewContentControlRealized;
 			}
 			fileInfo.NewContent = newContent;
+		}
+
+		void HandleNewContentControlRealized (object sender, EventArgs e)
+		{
+			JumpToLine ();
+			newContent.Control.Realized -= HandleNewContentControlRealized;
 		}
 		
 		public bool JumpToLine ()

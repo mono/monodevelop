@@ -593,7 +593,10 @@ namespace MonoDevelop.SourceEditor
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ExtensionContext ?? AddinManager.AddinEngine, "/MonoDevelop/SourceEditor2/ContextMenu/Editor");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 			menu.Append (new SeparatorMenuItem ());
-			menu.Append (CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods")));
+			var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
+			if (imMenu != null) {
+				menu.Append (imMenu);
+			}
 			menu.Destroyed += delegate {
 				this.QueueDraw ();
 			};
@@ -607,7 +610,7 @@ namespace MonoDevelop.SourceEditor
 			x += this.menuPopupLocation.X;
 			y += this.menuPopupLocation.Y;
 			Requisition request = menu.SizeRequest ();
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
 			
 			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom - request.Height));
 			x = Math.Max (geometry.Left, Math.Min (x, geometry.Right - request.Width));

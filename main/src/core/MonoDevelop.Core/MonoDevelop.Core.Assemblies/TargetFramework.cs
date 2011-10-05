@@ -82,6 +82,11 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public string Name {
 			get {
+				if (string.IsNullOrEmpty (name)) {
+					return string.IsNullOrEmpty (id.Profile)
+						? string.Format ("{0} {1}", id.Identifier, id.Version)
+						: string.Format ("{0} {1} ({2})", id.Identifier, id.Version, id.Profile);
+				}
 				return name;
 			}
 		}
@@ -94,11 +99,17 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public ClrVersion ClrVersion {
 			get {
+				// Always return a concrete ClrVersion, nothing that uses this can deal with ClrVersion.Default
+				// If the framework didn't specify one, assume the same default as the ToolsVersion.
+				if (clrVersion == ClrVersion.Default) {
+					return ClrVersion.Net_4_0;
+				}
 				return clrVersion;
 			}
 		}
 		
-		public TargetFrameworkToolsVersion GetToolsVersion ()
+		//FIXME: this isn't really valid/useful. anything using MSBuild custom frameworks should use 4.0 tools
+		internal TargetFrameworkToolsVersion GetToolsVersion ()
 		{
 			if (toolsVersion != TargetFrameworkToolsVersion.Unspecified)
 				return toolsVersion;
@@ -257,6 +268,15 @@ namespace MonoDevelop.Core.Assemblies
 					string include = reader.ReadContentAsString ();
 					if (!string.IsNullOrEmpty (include)) {
 						fx.IncludedFrameworks.Add (new TargetFrameworkMoniker (fx.Id.Identifier, include));
+					}
+				}
+				
+				//this is a Mono-specific extension
+				if (reader.MoveToAttribute ("TargetFrameworkDirectory") && reader.ReadAttributeValue ()) {
+					string targetDir = reader.ReadContentAsString ();
+					if (!string.IsNullOrEmpty (targetDir)) {
+						targetDir = targetDir.Replace ('\\', System.IO.Path.DirectorySeparatorChar);
+						dir = fxList.ParentDirectory.Combine (targetDir).FullPath;
 					}
 				}
 				

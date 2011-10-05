@@ -50,6 +50,7 @@
     <Reference Include="Mono.Addins.Setup, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -384,6 +385,11 @@
     <Compile Include="MonoDevelop.Projects\ILanguageBinding.cs" />
     <Compile Include="MonoDevelop.Core\Platform.cs" />
     <Compile Include="MonoDevelop.Core\UserProfile.cs" />
+    <Compile Include="MonoDevelop.Core\BrandingService.cs" />
+    <Compile Include="MonoDevelop.Projects\CleanEventHandler.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\IProjectLoadProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\WrappedProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProjectLoadProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

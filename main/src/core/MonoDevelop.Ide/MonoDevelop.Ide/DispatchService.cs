@@ -287,7 +287,7 @@ namespace MonoDevelop.Ide
 				}
 				
 				if (wait) {
-					WaitHandle.WaitAll (new WaitHandle[] {backgroundThreadWait});
+					backgroundThreadWait.WaitOne ();
 					continue;
 				}
 				

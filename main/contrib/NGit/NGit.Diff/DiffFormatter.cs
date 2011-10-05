@@ -1145,18 +1145,26 @@ namespace NGit.Diff
 			}
 			if (!ent.GetOldId().Equals(ent.GetNewId()))
 			{
-				o.Write(Constants.EncodeASCII("index " + Format(ent.GetOldId()) + ".." + Format(ent
-					.GetNewId())));
-				//
-				//
-				//
-				if (oldMode.Equals(newMode))
-				{
-					o.Write(' ');
-					newMode.CopyTo(o);
-				}
-				o.Write('\n');
+				FormatIndexLine(o, ent);
 			}
+		}
+
+		/// <param name="o">the stream the formatter will write line data to</param>
+		/// <param name="ent">the DiffEntry to create the FileHeader for</param>
+		/// <exception cref="System.IO.IOException">writing to the supplied stream failed.</exception>
+		protected internal virtual void FormatIndexLine(OutputStream o, DiffEntry ent)
+		{
+			o.Write(Constants.EncodeASCII("index " + Format(ent.GetOldId()) + ".." + Format(ent
+				.GetNewId())));
+			//
+			//
+			//
+			if (ent.GetOldMode().Equals(ent.GetNewMode()))
+			{
+				o.Write(' ');
+				ent.GetNewMode().CopyTo(o);
+			}
+			o.Write('\n');
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

@@ -91,8 +91,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						yield break;
 					SearchedFilesCount++;
 					try {
-						if (!string.IsNullOrEmpty (replacePattern))
-							provider.BeginReplace ();
+						provider.BeginReplace ();
 					} catch (System.IO.FileNotFoundException) {
 						MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
 						continue;
@@ -103,8 +102,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						FoundMatchesCount++;
 						yield return result;
 					}
-					if (!string.IsNullOrEmpty (replacePattern))
-						provider.EndReplace ();
+					provider.EndReplace ();
 					if (SearchedFilesCount % step == 0)
 						monitor.Step (1); 
 				}
@@ -158,8 +156,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						continue;
 					matches.Add(match);
 				}
-				if (!string.IsNullOrEmpty (replacePattern))
-					provider.BeginReplace ();
+				provider.BeginReplace ();
 				int delta = 0;
 				for (int i = 0; !monitor.IsCancelRequested && i < matches.Count; i++) {
 					Match match = matches[i];
@@ -170,8 +167,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						delta += replacement.Length - match.Length;
 					}
 				}
-				if (!string.IsNullOrEmpty (replacePattern))
-					provider.EndReplace ();
+				provider.EndReplace ();
 			}
 			return results;
 		}

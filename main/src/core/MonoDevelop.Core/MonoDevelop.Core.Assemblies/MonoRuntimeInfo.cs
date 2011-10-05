@@ -180,7 +180,10 @@ namespace MonoDevelop.Core.Assemblies
 			
 			rt.SetupPkgconfigPaths (Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH"),
 			                        Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR"));
-			rt.envVars ["PATH"] = Environment.GetEnvironmentVariable ("PATH");
+			
+			foreach (string varName in new [] { "PATH", "MONO_GAC_PREFIX", "XBUILD_FRAMEWORK_FOLDERS_PATH" }) {
+				rt.envVars [varName] = Environment.GetEnvironmentVariable (varName);
+			}
 			
 			rt.IsRunning = true;
 			rt.initialized = true;

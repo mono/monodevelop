@@ -168,5 +168,19 @@ namespace Sharpen
 	class KeyManagementException: Exception
 	{
 	}
+	
+	class IllegalCharsetNameException: Exception
+	{
+		public IllegalCharsetNameException (string msg): base (msg)
+		{
+		}
+	}
+	
+	class UnsupportedCharsetException: Exception
+	{
+		public UnsupportedCharsetException (string msg): base (msg)
+		{
+		}
+	}
 }
 

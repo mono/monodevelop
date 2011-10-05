@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				return false;
 			}
 		}
-
+		
 		InvocationExpression GetInvocation (ICSharpCode.NRefactory.CSharp.CompilationUnit unit, TextEditorData data)
 		{
 			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
@@ -166,6 +166,10 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 						return resolveResult.Type;
 					}
 					return options.Document.TypeResolveContext.GetTypeDefinition (typeof(object));
+				}
+				
+				if (node.Parent is ReturnStatement && options.ResolveResult != null && options.ResolveResult.CallingMember != null) {
+					return options.ResolveResult.CallingMember.ReturnType;
 				}
 				
 				node = node.Parent;

@@ -31,11 +31,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface IProjectContent : ITypeResolveContext, IAnnotatable
 	{
 		/// <summary>
+<<<<<<< HEAD
 		/// Gets the assembly name (short name).
 		/// </summary>
 		string AssemblyName { get; }
 		
 		/// <summary>
+=======
+>>>>>>> master
 		/// Gets the list of all assembly attributes in the project.
 		/// </summary>
 		IList<IAttribute> AssemblyAttributes { get; }

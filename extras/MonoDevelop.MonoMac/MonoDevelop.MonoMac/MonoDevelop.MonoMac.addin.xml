@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing MonoMac applications"
        category    = "Mac Development"
-       version     = "2.7">
+       version     = "2.8">
 	
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
@@ -29,10 +29,10 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.7"/>
-		<Addin id="Ide"  version="2.7"/>
-		<Addin id="MacDev" version="2.7"/>
-		<Addin id="MacPlatform" version="2.7"/>
+		<Addin id="Core" version="2.8"/>
+		<Addin id="Ide"  version="2.8"/>
+		<Addin id="MacDev" version="2.8"/>
+		<Addin id="MacPlatform" version="2.8"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -75,6 +75,11 @@
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
 			guid="{1c533b1c-72dd-4cb1-9f6b-bf11d93bcfbe}"
+			type="MonoDevelop.MonoMac.MonoMacProject"
+			import="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" 
+			migrationHandler="MonoDevelop.MonoMac.MonoMacProjectMigrationHandler" />
+		<DotNetProjectSubtype
+			guid="{948b3504-5b70-4649-8fe4-bde1fb46ec69}"
 			type="MonoDevelop.MonoMac.MonoMacProject"
 			import="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" />
 	</Extension>
@@ -124,11 +129,11 @@
 		</Runtime>
 
 		<Dependencies>
-			<Addin id="Core" version="2.7"/>
-			<Addin id="Ide"  version="2.7"/>
-			<Addin id="Debugger" version="2.7"/>
-			<Addin id="Debugger.Soft" version="2.7"/>
-			<Addin id="MacPlatform" version="2.7"/>
+			<Addin id="Core" version="2.8"/>
+			<Addin id="Ide"  version="2.8"/>
+			<Addin id="Debugger" version="2.8"/>
+			<Addin id="Debugger.Soft" version="2.8"/>
+			<Addin id="MacPlatform" version="2.8"/>
 		</Dependencies>
 	
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">

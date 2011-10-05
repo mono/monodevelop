@@ -21,14 +21,6 @@
 </ExtensionPoint>
 
 <Extension path = "/MonoDevelop/Ide/Pads">
-	<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout"
-		_label = "Files"
-		icon="system-file-manager"
-		class = "MonoDevelop.Ide.Gui.Pads.FileScout"
-		defaultPlacement="Left"
-		defaultStatus="AutoHide"
-		defaultLayout="*" />
-		
 	<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"
 		_label = "Error List"
 		icon="gtk-dialog-error"

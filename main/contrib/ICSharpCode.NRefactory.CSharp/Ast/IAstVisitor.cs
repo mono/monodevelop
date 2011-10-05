@@ -110,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement, T data);
 		S VisitWhileStatement(WhileStatement whileStatement, T data);
 		S VisitYieldBreakStatement(YieldBreakStatement yieldBreakStatement, T data);
-		S VisitYieldStatement(YieldStatement yieldStatement, T data);
+		S VisitYieldReturnStatement(YieldReturnStatement yieldReturnStatement, T data);
 		
 		S VisitAccessor(Accessor accessor, T data);
 		S VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, T data);

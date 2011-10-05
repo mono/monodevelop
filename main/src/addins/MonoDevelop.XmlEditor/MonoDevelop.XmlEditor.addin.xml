@@ -6,7 +6,7 @@
        url         = "http://md-xed.sourceforge.net"
        description = "XML Editor"
        category    = "IDE extensions"
-       version     = "2.7">
+       version     = "2.8">
 	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll" />
 		<Import file="schemas/appconfig.xsd" />
@@ -20,10 +20,10 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.7"/>
-		<Addin id="Ide" version="2.7"/>
-		<Addin id="DesignerSupport" version="2.7"/>
-		<Addin id="SourceEditor2" version="2.7"/>
+		<Addin id="Core" version="2.8"/>
+		<Addin id="Ide" version="2.8"/>
+		<Addin id="DesignerSupport" version="2.8"/>
+		<Addin id="SourceEditor2" version="2.8"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
@@ -150,7 +150,7 @@
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="schemas" targetPath="XmlSchemas" isDirectory="true" />
-		<!-- 2.6 -->
-		<Migration sourceVersion="2.6" kind="UserData" path="XmlSchemas" isDirectory="true" />
+		<!-- 2.6+ -->
+		<Migration sourceVersion="2.6+" kind="UserData" path="XmlSchemas" isDirectory="true" />
 	</Extension>
 </Addin>

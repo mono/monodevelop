@@ -154,6 +154,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (result.ExpressionContext == ExpressionContext.Attribute)
 					return CreateCtrlSpaceCompletionData (completionContext, result);
 				return null;*/
+
 //			case '\n':
 //			case '\r': {
 //				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
@@ -173,6 +174,7 @@ namespace MonoDevelop.CSharp.Completion
 //				}
 			return null;
 		}
+
 		public bool IsInLinqContext (ExpressionResult result)
 		{
 			if (result.Contexts == null)
@@ -254,6 +256,7 @@ namespace MonoDevelop.CSharp.Completion
 			return null;
 		}
 		
+
 		/// <summary>
 		/// Adds a type to completion list. If it's a simple type like System.String it adds the simple
 		/// C# type name "string" as well.
@@ -265,6 +268,7 @@ namespace MonoDevelop.CSharp.Completion
 			string netName = CSharpAmbience.NetToCSharpTypeName (type.FullName);
 			if (!string.IsNullOrEmpty (netName) && netName != type.FullName)
 				col.Add (netName);
+
 			
 			if (!String.IsNullOrEmpty (type.Namespace) && !col.IsNamespaceInScope (type.Namespace)) {
 				string[] ns = type.Namespace.Split ('.');
@@ -308,6 +312,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 
+
 		
 		static string StripGenerics (string str)
 		{
@@ -317,6 +322,7 @@ namespace MonoDevelop.CSharp.Completion
 			return str;
 		}
 		
+
 		
 		static bool ContainsDeclaration (IType type, IMethod method)
 		{
@@ -395,6 +401,7 @@ namespace MonoDevelop.CSharp.Completion
 					col.Add (keyword, "md-keyword");
 				}
 			}
+
 		}
 		
 		CompletionDataList CreateCtrlSpaceCompletionData (CodeCompletionContext ctx, ExpressionResult expressionResult)
@@ -463,12 +470,16 @@ namespace MonoDevelop.CSharp.Completion
 				col.Add ("remove", "md-keyword");
 			} //else if (expressionResult.ExpressionContext == ExpressionContext.FullyQualifiedType) {} 
 			else if (expressionResult.ExpressionContext == ExpressionContext.Default) {
+
 				col.Add ("global", "md-keyword");
 				col.Add ("var", "md-keyword");
 				AddPrimitiveTypes (col);
 				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.ExpressionStart);
+
 				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.ExpressionContent);
+
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
+
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Global) {
 				AddNRefactoryKeywords (col, ICSharpCode.OldNRefactory.Parser.CSharp.Tokens.GlobalLevel);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.ObjectInitializer) {
@@ -565,7 +576,7 @@ namespace MonoDevelop.CSharp.Completion
 				return result;
 			ResolveResult resolveResult = resolver.ResolveExpression (switchFinder.SwitchStatement.SwitchExpression, location);
 			IType type = dom.GetType (resolveResult.ResolvedType);
-			if (type != null && type.ClassType == ClassType.Enum) {
+			if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Enum) {
 				OutputFlags flags = OutputFlags.None;
 				var declaringType = resolver.CallingType;
 				if (declaringType != null && dom != null) {
@@ -601,14 +612,18 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			public override object VisitSwitchStatement (ICSharpCode.OldNRefactory.Ast.SwitchStatement switchStatement, object data)
+
 			{
+
 //				if (switchStatement.StartLocation < caretLocation && caretLocation < switchStatement.EndLocation)
+
 					this.switchStatement = switchStatement;
+
 				return base.VisitSwitchStatement(switchStatement, data);
+
 			}
 
 		}
 		#endregion
-	
 	}
 }

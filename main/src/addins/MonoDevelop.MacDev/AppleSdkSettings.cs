@@ -99,12 +99,14 @@ namespace MonoDevelop.MacDev
 					return;
 				lastWritten = File.GetLastWriteTime (plist);
 				
+				// DTXCode was introduced after xcode 3.2.6 so it may not exist
 				using (var pool = new NSAutoreleasePool ()) {
 					var dict = NSDictionary.FromFile (plist);
-					var val = (NSString) dict.ObjectForKey (new NSString ("DTXcode"));
-					DTXcode = val.ToString ();
+					NSObject value;
+					if (dict.TryGetValue (new NSString ("DTXcode"), out value))
+						DTXcode = ((NSString) value).ToString ();
 				}
-				IsXcode4 = int.Parse (DTXcode) >= 0400;
+				IsXcode4 = !string.IsNullOrEmpty (DTXcode) && int.Parse (DTXcode) >= 0400;
 				IsValid = true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error loading Xcode information for prefix '" + DeveloperRoot + "'", ex);
@@ -137,5 +139,32 @@ namespace MonoDevelop.MacDev
 		public static bool IsXcode4 { get; private set; }
 		
 		public static event Action Changed;
+	}
+	
+	class AppleSdkAboutInformation : MonoDevelop.Ide.Gui.Dialogs.IAboutInformation
+	{
+		public string Description {
+			get {
+				var sb = new System.Text.StringBuilder ();
+				sb.AppendLine ("Apple Developer Tools:");
+				if (!AppleSdkSettings.IsValid) {
+					sb.AppendLine ("\t(Not Found)");
+					return sb.ToString ();
+				}
+				
+				using (var pool = new NSAutoreleasePool ()) {
+					var dict = NSDictionary.FromFile (AppleSdkSettings.XcodePath.Combine ("Contents", "Info.plist"));
+					sb.AppendFormat ("\t Xcode {0} ({1})",
+						dict[(NSString)"CFBundleShortVersionString"],
+						dict[(NSString)"CFBundleVersion"]);
+					sb.AppendLine ();
+					
+					dict = NSDictionary.FromFile (AppleSdkSettings.DeveloperRoot.Combine ("Library", "version.plist"));
+					sb.AppendFormat ("\t Build {0}",
+						dict[(NSString)"ProductBuildVersion"]);
+				}
+				return sb.ToString ();
+			}
+		}
 	}
 }

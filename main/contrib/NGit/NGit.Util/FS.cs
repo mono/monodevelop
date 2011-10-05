@@ -250,7 +250,7 @@ namespace NGit.Util
 		/// <returns>the user's home directory; null if the user does not have one.</returns>
 		protected internal virtual FilePath UserHomeImpl()
 		{
-			string home = AccessController.DoPrivileged(new _PrivilegedAction_234());
+			string home = AccessController.DoPrivileged(new _PrivilegedAction_237());
 			if (home == null || home.Length == 0)
 			{
 				return null;
@@ -258,9 +258,9 @@ namespace NGit.Util
 			return new FilePath(home).GetAbsoluteFile();
 		}
 
-		private sealed class _PrivilegedAction_234 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_237 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_234()
+			public _PrivilegedAction_237()
 			{
 			}
 
@@ -294,19 +294,44 @@ namespace NGit.Util
 		protected internal static string ReadPipe(FilePath dir, string[] command, string 
 			encoding)
 		{
+			bool debug = System.Boolean.Parse(SystemReader.GetInstance().GetProperty("jgit.fs.debug"
+				));
 			try
 			{
+				if (debug)
+				{
+					System.Console.Error.WriteLine("readpipe " + Arrays.AsList(command) + "," + dir);
+				}
 				SystemProcess p = Runtime.GetRuntime().Exec(command, null, dir);
 				BufferedReader lineRead = new BufferedReader(new InputStreamReader(p.GetInputStream
 					(), encoding));
+				p.GetOutputStream().Close();
+				AtomicBoolean gooblerFail = new AtomicBoolean(false);
+				Sharpen.Thread gobbler = new _Thread_280(p, debug, gooblerFail);
+				// ignore
+				// Just print on stderr for debugging
+				// Just print on stderr for debugging
+				gobbler.Start();
 				string r = null;
 				try
 				{
 					r = lineRead.ReadLine();
+					if (debug)
+					{
+						System.Console.Error.WriteLine("readpipe may return '" + r + "'");
+						System.Console.Error.WriteLine("(ignoring remaing output:");
+					}
+					string l;
+					while ((l = lineRead.ReadLine()) != null)
+					{
+						if (debug)
+						{
+							System.Console.Error.WriteLine(l);
+						}
+					}
 				}
 				finally
 				{
-					p.GetOutputStream().Close();
 					p.GetErrorStream().Close();
 					lineRead.Close();
 				}
@@ -314,9 +339,15 @@ namespace NGit.Util
 				{
 					try
 					{
-						if (p.WaitFor() == 0 && r != null && r.Length > 0)
+						int rc = p.WaitFor();
+						gobbler.Join();
+						if (rc == 0 && r != null && r.Length > 0 && !gooblerFail.Get())
 						{
 							return r;
+						}
+						if (debug)
+						{
+							System.Console.Error.WriteLine("readpipe rc=" + rc);
 						}
 						break;
 					}
@@ -328,13 +359,69 @@ namespace NGit.Util
 			catch (IOException e)
 			{
 				// Stop bothering me, I have a zombie to reap.
-				if (SystemReader.GetInstance().GetProperty("jgit.fs.debug") != null)
+				if (debug)
 				{
 					System.Console.Error.WriteLine(e);
 				}
 			}
 			// Ignore error (but report)
+			if (debug)
+			{
+				System.Console.Error.WriteLine("readpipe returns null");
+			}
 			return null;
+		}
+
+		private sealed class _Thread_280 : Sharpen.Thread
+		{
+			public _Thread_280(SystemProcess p, bool debug, AtomicBoolean gooblerFail)
+			{
+				this.p = p;
+				this.debug = debug;
+				this.gooblerFail = gooblerFail;
+			}
+
+			public override void Run()
+			{
+				InputStream @is = p.GetErrorStream();
+				try
+				{
+					int ch;
+					if (debug)
+					{
+						while ((ch = @is.Read()) != -1)
+						{
+							System.Console.Error.Write((char)ch);
+						}
+					}
+					else
+					{
+						while (@is.Read() != -1)
+						{
+						}
+					}
+				}
+				catch (IOException e)
+				{
+					Sharpen.Runtime.PrintStackTrace(e, System.Console.Error);
+					gooblerFail.Set(true);
+				}
+				try
+				{
+					@is.Close();
+				}
+				catch (IOException e)
+				{
+					Sharpen.Runtime.PrintStackTrace(e, System.Console.Error);
+					gooblerFail.Set(true);
+				}
+			}
+
+			private readonly SystemProcess p;
+
+			private readonly bool debug;
+
+			private readonly AtomicBoolean gooblerFail;
 		}
 
 		/// <returns>the $prefix directory C Git would use.</returns>

@@ -1,4 +1,4 @@
-﻿// 
+// 
 // GotoStatement.cs
 //
 // Author:
@@ -52,7 +52,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (string.IsNullOrEmpty(value))
 					SetChildByRole(Roles.Identifier, null);
 				else
+<<<<<<< HEAD
 					SetChildByRole(Roles.Identifier, Identifier.Create (value, TextLocation.Empty));
+=======
+					SetChildByRole(Roles.Identifier, Identifier.Create (value, AstLocation.Empty));
+>>>>>>> master
 			}
 		}
 		

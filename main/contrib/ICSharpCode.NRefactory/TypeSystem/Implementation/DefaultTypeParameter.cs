@@ -268,10 +268,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
+<<<<<<< HEAD
+=======
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
 				return EmptyList<IMethod>.Instance;
 			else
+				return GetMembersHelper.GetMethods(this, context, FilterNonStatic(filter), options);
+		}
+		
+		public IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
+>>>>>>> master
+		{
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+				return EmptyList<IMethod>.Instance;
+			else
+<<<<<<< HEAD
 				return GetMembersHelper.GetMethods(this, context, FilterNonStatic(filter), options);
 		}
 		
@@ -294,6 +306,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+=======
+				return GetMembersHelper.GetMethods(this, typeArguments, context, FilterNonStatic(filter), options);
+		}
+		
+		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+				return EmptyList<IProperty>.Instance;
+			else
+				return GetMembersHelper.GetProperties(this, context, FilterNonStatic(filter), options);
+		}
+		
+		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
+>>>>>>> master
 				return EmptyList<IField>.Instance;
 			else
 				return GetMembersHelper.GetFields(this, context, FilterNonStatic(filter), options);

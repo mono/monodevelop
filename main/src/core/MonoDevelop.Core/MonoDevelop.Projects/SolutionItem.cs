@@ -459,7 +459,22 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			RunTarget (monitor, ProjectService.CleanTarget, configuration);
+			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name);
+			try {
+				try {
+					SolutionEntityItem it = this as SolutionEntityItem;
+					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (configuration) : null;
+					string confName = iconf != null ? iconf.Id : configuration.ToString ();
+					monitor.BeginTask (GettextCatalog.GetString ("Cleaning: {0} ({1})", Name, confName), 1);
+					RunTarget (monitor, ProjectService.CleanTarget, configuration);
+					monitor.Step (1);
+				} finally {
+					monitor.EndTask ();
+				}
+			}
+			finally {
+				tt.End ();
+			}
 		}
 		
 		/// <summary>

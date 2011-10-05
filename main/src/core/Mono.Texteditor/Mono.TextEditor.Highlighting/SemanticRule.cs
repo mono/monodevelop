@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -57,12 +58,13 @@ namespace Mono.TextEditor
 			
 			string text = doc.GetTextAt (startOffset, endOffset - startOffset);
 			int startColumn = startOffset - line.Offset;
-			line.RemoveMarker (typeof(UrlMarker));
+			var markers = new List <UrlMarker> (line.Markers.Where (m => m is UrlMarker).Cast<UrlMarker> ());
+			markers.ForEach (m => doc.RemoveMarker (m));
 			foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {
-				line.AddMarker (new UrlMarker (line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+				line.AddMarker (new UrlMarker (doc, line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
 			}
 			foreach (System.Text.RegularExpressions.Match m in mailRegex.Matches (text)) {
-				line.AddMarker (new UrlMarker (line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+				line.AddMarker (new UrlMarker (doc, line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
 			}
 		}
 		

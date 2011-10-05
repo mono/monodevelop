@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Y = ctx.TriggerYCoord;
 			}
 			
-			Gdk.Rectangle geometry = window.Screen.GetMonitorGeometry (window.Screen.GetMonitorAtPoint (X, Y));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 		
 			if (X + reqSize.Width > geometry.Right)
 				X = geometry.Right - reqSize.Width;

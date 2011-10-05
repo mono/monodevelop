@@ -178,6 +178,16 @@ namespace MonoDevelop.Projects
 	{
 		Hashtable table = new Hashtable ();
 		
+		public override void AddDefineSymbol (string symbol)
+		{
+			// Do nothing
+		}
+		
+		public override void RemoveDefineSymbol (string symbol)
+		{
+			// Do nothing
+		}
+		
 		public IDictionary ExtendedProperties { 
 			get { return table; }
 		}

@@ -53,10 +53,6 @@ namespace MonoDevelop.Projects.Policies
 		
 		public SolutionItem Owner { get; internal set; }
 		
-		protected override bool InheritDefaultPolicies {
-			get { return true; }
-		}
-		
 		public override bool IsRoot {
 			get { return Owner == null || Owner.ParentFolder == null; }
 		}

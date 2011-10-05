@@ -50,8 +50,9 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +122,8 @@
     <Compile Include="ReferenceResolvingException.cs" />
     <Compile Include="TextOutputWriter.cs" />
     <None Include="Properties\AssemblyInfo.template.cs" />
+    <Compile Include="Ast\Annotations.cs" />
+    <Compile Include="Tests\CallOverloadedMethod.cs" />
     <Compile Include="Ast\Transforms\DecimalConstantTransform.cs" />
   </ItemGroup>
   <ItemGroup>

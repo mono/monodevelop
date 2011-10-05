@@ -253,7 +253,7 @@ namespace MonoDevelop.Autotools
 		public bool SyncReferences {
 			get { return syncReferences; }
 			set {
-				GacRefVar.Sync = value;
+				PackageRefVar.Sync = value;
 				AsmRefVar.Sync = value;
 				ProjectRefVar.Sync =value;
 				syncReferences = value;
@@ -278,15 +278,17 @@ namespace MonoDevelop.Autotools
 			get { return ConfiguredPackages != null; }
 		}
 
-		MakefileVar gacRefVar;
-		[ItemProperty]
-		public MakefileVar GacRefVar {
+		MakefileVar packageRefVar;
+		
+		//FIXME: name is quick hack to avoid changing format
+		[ItemProperty ("GacRefVar")]
+		public MakefileVar PackageRefVar {
 			get {
-				if (gacRefVar == null)
-					gacRefVar = new MakefileVar ();
-				return gacRefVar;
+				if (packageRefVar == null)
+					packageRefVar = new MakefileVar ();
+				return packageRefVar;
 			}
-			set { gacRefVar = value; }
+			set { packageRefVar = value; }
 		}
 
 		MakefileVar asmRefVar;
@@ -491,7 +493,7 @@ namespace MonoDevelop.Autotools
 			data.DeployFilesVar = new MakefileVar (this.DeployFilesVar);
 			data.ResourcesVar = new MakefileVar (this.ResourcesVar);
 			data.OthersVar = new MakefileVar (this.OthersVar);
-			data.GacRefVar = new MakefileVar (this.GacRefVar);
+			data.PackageRefVar = new MakefileVar (this.PackageRefVar);
 			data.AsmRefVar = new MakefileVar (this.AsmRefVar);
 			data.ProjectRefVar = new MakefileVar (this.ProjectRefVar);
 
@@ -626,7 +628,7 @@ namespace MonoDevelop.Autotools
 					encodeValues [OthersVar.Name] = false;
 					encodeValues [ResourcesVar.Name] = false;
 
-					encodeValues [GacRefVar.Name] = false;
+					encodeValues [PackageRefVar.Name] = false;
 					encodeValues [AsmRefVar.Name] = false;
 					encodeValues [ProjectRefVar.Name] = false;
 				}
@@ -734,22 +736,22 @@ namespace MonoDevelop.Autotools
 				//Do these for DotNetProject only
 				DotNetProject dotnetProject = ownerProject as DotNetProject;
 				if (dotnetProject != null) {
-					GacRefVar.Extra.Clear ();
+					PackageRefVar.Extra.Clear ();
 					AsmRefVar.Extra.Clear ();
 					ProjectRefVar.Extra.Clear ();
 
-					existingGacRefs = new Dictionary<string, ProjectReference> ();
+					existingPackageRefs = new Dictionary<string, ProjectReference> ();
 					requiredPackageVersions = new Dictionary<string,string> ();
-					newGacRefs = new Dictionary<string, ProjectReference> ();
+					newPackageRefs = new Dictionary<string, ProjectReference> ();
 
 					List<ProjectReference> toRemove = new List<ProjectReference> ();
 					foreach (ProjectReference pref in dotnetProject.References) {
-						if (pref.ReferenceType == ReferenceType.Gac) {
+						if (pref.ReferenceType == ReferenceType.Package) {
 							string [] files = pref.GetReferencedFileNames (ConfigurationSelector.Default);
 							if (files == null)
 								continue;
 
-							if (pref.ReferenceType == ReferenceType.Gac) {
+							if (pref.ReferenceType == ReferenceType.Package) {
 								// Store the package version required by this reference. We'll use
 								// the same version when trying to match references coming from the makefile
 								SystemAssembly asm = assemblyContext.GetAssemblyFromFullName (pref.StoredReference, pref.Package != null ? pref.Package.Name : null, dotnetProject.TargetFramework);
@@ -758,10 +760,10 @@ namespace MonoDevelop.Autotools
 							}
 							// this should help normalize paths like /foo//bar/../
 							string fullpath = Path.GetFullPath (files [0]);
-							if (existingGacRefs.ContainsKey (fullpath))
+							if (existingPackageRefs.ContainsKey (fullpath))
 								toRemove.Add (pref);
 							else
-								existingGacRefs [fullpath] = pref;
+								existingPackageRefs [fullpath] = pref;
 						}
 					}
 
@@ -769,12 +771,12 @@ namespace MonoDevelop.Autotools
 					foreach (ProjectReference pref in toRemove)
 						dotnetProject.References.Remove (pref);
 
-					ReadReferences (GacRefVar, ReferenceType.Gac, "Gac References", dotnetProject);
+					ReadReferences (PackageRefVar, ReferenceType.Package, "Package References", dotnetProject);
 
 					// !SaveReferences indicates that previous ref reading failed
-					if (SaveReferences && String.Compare (AsmRefVar.Name, GacRefVar.Name) != 0)
+					if (SaveReferences && String.Compare (AsmRefVar.Name, PackageRefVar.Name) != 0)
 						ReadReferences (AsmRefVar, ReferenceType.Assembly, "Asm References", dotnetProject);
-					if (SaveReferences && (String.Compare (ProjectRefVar.Name, GacRefVar.Name) != 0) && 
+					if (SaveReferences && (String.Compare (ProjectRefVar.Name, PackageRefVar.Name) != 0) && 
 						(String.Compare (ProjectRefVar.Name, AsmRefVar.Name) != 0))
 						ReadReferences (ProjectRefVar, ReferenceType.Project, "Project References", dotnetProject);
 					
@@ -785,12 +787,12 @@ namespace MonoDevelop.Autotools
 					
 					//only remove unmatched existing refs if everything resolved without errors
 					if (SaveReferences) {
-						foreach (ProjectReference pr in existingGacRefs.Values)
+						foreach (ProjectReference pr in existingPackageRefs.Values)
 							dotnetProject.References.Remove (pr);
 					}
 
-					existingGacRefs.Clear ();
-					newGacRefs.Clear ();
+					existingPackageRefs.Clear ();
+					newPackageRefs.Clear ();
 				}
 			} catch (Exception e) {
 				string msg = GettextCatalog.GetString (
@@ -926,8 +928,8 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		Dictionary<string, ProjectReference> existingGacRefs = null;
-		Dictionary<string, ProjectReference> newGacRefs = null;
+		Dictionary<string, ProjectReference> existingPackageRefs = null;
+		Dictionary<string, ProjectReference> newPackageRefs = null;
 		Dictionary<string, string> requiredPackageVersions = null;
 
 		void ReadReferences (MakefileVar refVar, ReferenceType refType, string id, DotNetProject project)
@@ -1066,13 +1068,13 @@ namespace MonoDevelop.Autotools
 
 				string fullpath = Path.GetFullPath (Path.Combine (BaseDirectory, refname));
 				
-				// if refname is part of a package then add as gac
+				// if refname is part of a package then add as package
 				// but don't do it if the refname exactly matches a file name in the project dir
 				if (refname.IndexOf (Path.DirectorySeparatorChar) < 0 && !File.Exists (fullpath) &&
-					ParseReferenceAsGac (refname, project) != null)
+					ParseReferenceAsPackage (refname, project) != null)
 					continue;
 				
-				if (TryGetExistingGacRef (fullpath) != null)
+				if (TryGetExistingPackageRef (fullpath) != null)
 					continue;
 
 				if (refname.IndexOf (Path.DirectorySeparatorChar) < 0) {
@@ -1084,12 +1086,12 @@ namespace MonoDevelop.Autotools
 					} catch (BadImageFormatException) {
 					}
 
-					// Valid assembly, From a package, add as Gac
+					// Valid assembly, From a package, add as Package
 					SystemPackage pkg = assemblyContext.GetPackageFromPath (fullpath);
 					if (fullname != null && pkg != null) {
 						SystemAssembly sa = assemblyContext.GetAssemblyFromFullName (fullname, pkg.Name, project.TargetFramework);
 						if (sa != null) {
-							AddNewGacReference (project, sa);
+							AddNewPackageReference (project, sa);
 							continue;
 						}
 					}
@@ -1118,17 +1120,17 @@ namespace MonoDevelop.Autotools
 			}
 
 			foreach (SystemAssembly sa in pkg.Assemblies) {
-				if (TryGetExistingGacRef (sa.Location) != null)
+				if (TryGetExistingPackageRef (sa.Location) != null)
 					continue;
 
 				//Get fullname of the assembly
-				AddNewGacReference (project, sa);
+				AddNewPackageReference (project, sa);
 			}
 
 			return true;
 		}
 
-		ProjectReference ParseReferenceAsGac (string rname, DotNetProject project)
+		ProjectReference ParseReferenceAsPackage (string rname, DotNetProject project)
 		{
 			string aname = rname;
 			if (rname.EndsWith (".dll", StringComparison.InvariantCultureIgnoreCase))
@@ -1143,34 +1145,34 @@ namespace MonoDevelop.Autotools
 			if (asm == null)
 				return null;
 
-			ProjectReference pref = TryGetExistingGacRef (asm.Location);
+			ProjectReference pref = TryGetExistingPackageRef (asm.Location);
 			if (pref != null)
 				return pref;
 
-			return AddNewGacReference (project, asm);
+			return AddNewPackageReference (project, asm);
 		}
 
-		ProjectReference TryGetExistingGacRef (string fullpath)
+		ProjectReference TryGetExistingPackageRef (string fullpath)
 		{
-			if (existingGacRefs.ContainsKey (fullpath)) {
-				ProjectReference ret = existingGacRefs [fullpath];
-				existingGacRefs.Remove (fullpath);
-				newGacRefs [fullpath] = ret;
+			if (existingPackageRefs.ContainsKey (fullpath)) {
+				ProjectReference ret = existingPackageRefs [fullpath];
+				existingPackageRefs.Remove (fullpath);
+				newPackageRefs [fullpath] = ret;
 
 				return ret;
 			}
 
-			if (newGacRefs.ContainsKey (fullpath))
-				return newGacRefs [fullpath];
+			if (newPackageRefs.ContainsKey (fullpath))
+				return newPackageRefs [fullpath];
 
 			return null;
 		}
 
-		ProjectReference AddNewGacReference (DotNetProject project, SystemAssembly sa)
+		ProjectReference AddNewPackageReference (DotNetProject project, SystemAssembly sa)
 		{
 			ProjectReference pref = new ProjectReference (sa);
 			project.References.Add (pref);
-			newGacRefs [sa.Location] = pref;
+			newPackageRefs [sa.Location] = pref;
 
 			return pref;
 		}
@@ -1341,11 +1343,11 @@ namespace MonoDevelop.Autotools
 			WriteFiles (ResourcesVar, BuildAction.EmbeddedResource, makeRelative, "Resources");
 
 			if (SyncReferences && SaveReferences) {
-				Makefile.ClearVariableValue (GacRefVar.Name);
+				Makefile.ClearVariableValue (PackageRefVar.Name);
 				Makefile.ClearVariableValue (AsmRefVar.Name);
 				Makefile.ClearVariableValue (ProjectRefVar.Name);
 
-				WriteReferences (GacRefVar, ReferenceType.Gac, makeRelative, "Gac");
+				WriteReferences (PackageRefVar, ReferenceType.Package, makeRelative, "Package");
 				WriteReferences (AsmRefVar, ReferenceType.Assembly, makeRelative, "Assembly");
 				WriteReferences (ProjectRefVar, ReferenceType.Project, makeRelative, "Project");
 			
@@ -1353,17 +1355,17 @@ namespace MonoDevelop.Autotools
 				// but sort only once per distinct var
 				// (Required as we are comparing the full makefile as a string,
 				//  to detect changes!)
-				List<string> list = Makefile.GetListVariable (GacRefVar.Name);
+				List<string> list = Makefile.GetListVariable (PackageRefVar.Name);
 				if (list != null)
 					list.Sort (System.StringComparer.InvariantCulture);
 
-				if (String.Compare (AsmRefVar.Name, GacRefVar.Name) != 0) {
+				if (String.Compare (AsmRefVar.Name, PackageRefVar.Name) != 0) {
 					list = Makefile.GetListVariable (AsmRefVar.Name);
 					if (list != null)
 						list.Sort (System.StringComparer.InvariantCulture);
 				}
 
-				if ((String.Compare (ProjectRefVar.Name, GacRefVar.Name) != 0) && 
+				if ((String.Compare (ProjectRefVar.Name, PackageRefVar.Name) != 0) && 
 					(String.Compare (ProjectRefVar.Name, AsmRefVar.Name) != 0)) {
 					list = Makefile.GetListVariable (ProjectRefVar.Name);
 					if (list != null)
@@ -1439,7 +1441,7 @@ namespace MonoDevelop.Autotools
 		bool WriteReferences (MakefileVar refVar, ReferenceType refType, bool makeRelative, string id)
 		{
 			//Reference vars can be shared too, so use existing list
-			//Eg. REF for both Gac and Asm ref
+			//Eg. REF for both Package and Asm ref
 			List<string> references = Makefile.GetListVariable (refVar.Name);
 			if (references == null) {
 				//Var not found, skip
@@ -1462,9 +1464,9 @@ namespace MonoDevelop.Autotools
 
 				string refstr = String.Empty;
 				switch (refType) {
-				case ReferenceType.Gac:
-					//Assemblies coming from packages are always added as Gac
-					refstr = GacRefToString (pr, hasAcSubstPackages, refVar);
+				case ReferenceType.Package:
+					//Assemblies coming from packages are always added as Package
+					refstr = PackageRefToString (pr, hasAcSubstPackages, refVar);
 					if (refstr == null)
 						continue;
 					break;
@@ -1499,9 +1501,9 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		string GacRefToString (ProjectReference pr, Dictionary<string, bool> hasAcSubstPackages, MakefileVar refVar)
+		string PackageRefToString (ProjectReference pr, Dictionary<string, bool> hasAcSubstPackages, MakefileVar refVar)
 		{
-			//Gac ref can be a full name OR a path!
+			//Package ref can be a full name OR a path!
 			//FIXME: Use GetReferencedFileName and GetPackageFromPath ?
 			string fullname = pr.Reference;
 			SystemPackage pkg = pr.Package;

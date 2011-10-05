@@ -171,7 +171,7 @@ namespace MonoDevelop.VersionControl.Views
 			x += this.menuPopupLocation.X;
 			y += this.menuPopupLocation.Y;
 			Requisition request = menu.SizeRequest ();
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
 			
 			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom - request.Height));
 			x = Math.Max (geometry.Left, Math.Min (x, geometry.Right - request.Width));
@@ -294,7 +294,7 @@ namespace MonoDevelop.VersionControl.Views
 			int line = startLine;
 			var color = Style.Dark (State);
 			
-			while (curY < editor.Allocation.Bottom) {
+			while (curY < editor.Allocation.Bottom && line <= editor.LineCount) {
 				Annotation ann = line <= overview.annotations.Count ? overview.annotations[line - 1] : null;
 				double curStart = curY;
 				do {
@@ -723,7 +723,7 @@ namespace MonoDevelop.VersionControl.Views
 					}
 					double curY = startY - widget.Editor.VAdjustment.Value;
 					int line = startLine;
-					while (curY < Allocation.Bottom) {
+					while (curY < Allocation.Bottom && line <= widget.Editor.LineCount) {
 						double curStart = curY;
 //						widget.JumpOverFoldings (ref line);
 						int lineStart = line;

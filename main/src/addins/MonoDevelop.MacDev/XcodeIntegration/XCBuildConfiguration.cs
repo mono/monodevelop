@@ -1,10 +1,12 @@
 // 
 // XCBuildConfiguration.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,12 +40,16 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		public XCBuildConfiguration (string name)
 		{
 			this.name = name;
-			this.settings = new Dictionary<string, string> ();
+			settings = new Dictionary<string, string> ();
 		}
 
 		public void AddSetting (string key, string val)
 		{
-			this.settings.Add (key, val);
+			settings.Add (key, val);
+		}
+
+		public override string Name {
+			get { return name; }
 		}
 
 		public override XcodeType Type {
@@ -56,11 +62,15 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			var sb = new StringBuilder ();
 
-			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\tbuildSettings = {{\n", Token, Type);
+			sb.AppendFormat ("{0} /* {1} */ = {{\n", Token, Name);
+			sb.AppendFormat ("\t\t\tisa = {0};\n", Type);
+			sb.AppendFormat ("\t\t\tbuildSettings = {{\n");
 			foreach (KeyValuePair <string,string> kvp in settings) 
 				sb.AppendFormat ("\t\t\t\t{0} = {1};\n", kvp.Key, kvp.Value);
-			sb.AppendFormat ("\t\t\t}};\n\t\t\tname = {0};\n\t\t}};", name);
-		
+			sb.AppendFormat ("\t\t\t}};\n");
+			sb.AppendFormat ("\t\t\tname = {0};\n", name);
+			sb.AppendFormat ("\t\t}};");
+
 			return sb.ToString ();
 		}
 	}

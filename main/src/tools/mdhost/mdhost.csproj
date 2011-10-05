@@ -69,5 +69,8 @@
     <Compile Include="src\AssemblyInfo.cs" />
     <Compile Include="src\mdhost.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,0 +1,74 @@
+#
+# spec file for package monodevelop-database
+#
+# Copyright (c) 2010 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
+# norootforbuild
+
+%define db_packages mono-data-postgresql mono-data-sqlite
+
+Name:           monodevelop-database
+Version:        @VERSION@
+Release:        1
+License:        GPLv2+
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+AutoReqProv:    on
+BuildArch:      noarch
+Url:            http://www.monodevelop.com
+Source0:        %{name}-%{version}.tar.bz2
+BuildRequires:  %db_packages mono-devel monodevelop >= %{version}
+Requires:       %db_packages
+BuildRequires:  gtksourceview-sharp2 monodoc-core
+Summary:        Monodevelop Database Addin
+Group:          Development/Languages/Mono
+%if 0%{?fedora_version}
+%define env_options export MONO_SHARED_DIR=/tmp
+%endif
+
+%description
+Addin for MonoDevelop for an integrated database explorer and editor.
+
+
+
+%files -f %{name}.lang
+%defattr(-, root, root)
+%_prefix/share/pkgconfig/monodevelop-database.pc
+%_prefix/lib/monodevelop/AddIns/MonoDevelop.Database
+
+%prep
+%setup -q
+
+%build
+%{?env_options}
+./configure --prefix=%_prefix
+make
+
+%install
+%{?env_options}
+make install DESTDIR=${RPM_BUILD_ROOT}
+mkdir -p $RPM_BUILD_ROOT%_prefix/share/pkgconfig
+mv $RPM_BUILD_ROOT%_prefix/lib/pkgconfig/*.pc $RPM_BUILD_ROOT%_prefix/share/pkgconfig
+%find_lang %{name}
+
+%clean
+rm -rf "$RPM_BUILD_ROOT"
+%if 0%{?fedora_version} || 0%{?rhel_version}
+# Allows overrides of __find_provides in fedora distros... (already set to zero on newer suse distros)
+%define _use_internal_dependency_generator 0
+%endif
+%define __find_provides env sh -c 'filelist=($(grep -v "Mono.Data.Sqlite\\|MySql.Data")) && { printf "%s\\n" "${filelist[@]}" | /usr/lib/rpm/find-provides && printf "%s\\n" "${filelist[@]}" | /usr/bin/mono-find-provides ; } | sort | uniq'
+%define __find_requires env sh -c 'filelist=($(cat)) && { printf "%s\\n" "${filelist[@]}" | /usr/lib/rpm/find-requires && printf "%s\\n" "${filelist[@]}" | /usr/bin/mono-find-requires ; } | sort | uniq'
+
+%changelog

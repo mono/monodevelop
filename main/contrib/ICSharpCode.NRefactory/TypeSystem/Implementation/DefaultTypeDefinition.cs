@@ -87,6 +87,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.ns = declaringTypeDefinition.Namespace;
 			
 			this.compoundTypeDefinition = this;
+<<<<<<< HEAD
 		}
 		
 		public DefaultTypeDefinition(IParsedFile parsedFile, string ns, string name)
@@ -101,6 +102,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.name = name;
 			
 			this.compoundTypeDefinition = this;
+=======
+>>>>>>> master
 		}
 		
 		public DefaultTypeDefinition(IProjectContent projectContent, string ns, string name)
@@ -208,11 +211,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IMember> Members {
 			get {
+<<<<<<< HEAD
 				IEnumerable<IMember> members = this.Fields;
 				return members
 					.Concat(this.Properties)
 					.Concat(this.Methods)
 					.Concat(this.Events);
+=======
+				return this.Fields.SafeCast<IField, IMember>()
+					.Concat(this.Properties.SafeCast<IProperty, IMember>())
+					.Concat(this.Methods.SafeCast<IMethod, IMember>())
+					.Concat(this.Events.SafeCast<IEvent, IMember>());
+>>>>>>> master
 			}
 		}
 		

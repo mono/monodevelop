@@ -158,7 +158,7 @@ namespace NGit.Api
 					{
 						try
 						{
-							return Abort(new RebaseResult(RebaseResult.Status.ABORTED));
+							return Abort(RebaseResult.ABORTED_RESULT);
 						}
 						catch (IOException ioe)
 						{
@@ -188,7 +188,7 @@ namespace NGit.Api
 				}
 				if (monitor.IsCancelled())
 				{
-					return Abort(new RebaseResult(RebaseResult.Status.ABORTED));
+					return Abort(RebaseResult.ABORTED_RESULT);
 				}
 				if (operation == RebaseCommand.Operation.CONTINUE)
 				{
@@ -265,56 +265,62 @@ namespace NGit.Api
 				}
 				if (newHead != null)
 				{
-					// point the previous head (if any) to the new commit
 					string headName = ReadFile(rebaseDir, HEAD_NAME);
-					if (headName.StartsWith(Constants.R_REFS))
-					{
-						RefUpdate rup = repo.UpdateRef(headName);
-						rup.SetNewObjectId(newHead);
-						RefUpdate.Result res_1 = rup.ForceUpdate();
-						switch (res_1)
-						{
-							case RefUpdate.Result.FAST_FORWARD:
-							case RefUpdate.Result.FORCED:
-							case RefUpdate.Result.NO_CHANGE:
-							{
-								break;
-							}
-
-							default:
-							{
-								throw new JGitInternalException("Updating HEAD failed");
-							}
-						}
-						rup = repo.UpdateRef(Constants.HEAD);
-						res_1 = rup.Link(headName);
-						switch (res_1)
-						{
-							case RefUpdate.Result.FAST_FORWARD:
-							case RefUpdate.Result.FORCED:
-							case RefUpdate.Result.NO_CHANGE:
-							{
-								break;
-							}
-
-							default:
-							{
-								throw new JGitInternalException("Updating HEAD failed");
-							}
-						}
-					}
+					UpdateHead(headName, newHead);
 					FileUtils.Delete(rebaseDir, FileUtils.RECURSIVE);
 					if (lastStepWasForward)
 					{
-						return new RebaseResult(RebaseResult.Status.FAST_FORWARD);
+						return RebaseResult.FAST_FORWARD_RESULT;
 					}
-					return new RebaseResult(RebaseResult.Status.OK);
+					return RebaseResult.OK_RESULT;
 				}
-				return new RebaseResult(RebaseResult.Status.UP_TO_DATE);
+				return RebaseResult.FAST_FORWARD_RESULT;
 			}
 			catch (IOException ioe)
 			{
 				throw new JGitInternalException(ioe.Message, ioe);
+			}
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private void UpdateHead(string headName, RevCommit newHead)
+		{
+			// point the previous head (if any) to the new commit
+			if (headName.StartsWith(Constants.R_REFS))
+			{
+				RefUpdate rup = repo.UpdateRef(headName);
+				rup.SetNewObjectId(newHead);
+				RefUpdate.Result res = rup.ForceUpdate();
+				switch (res)
+				{
+					case RefUpdate.Result.FAST_FORWARD:
+					case RefUpdate.Result.FORCED:
+					case RefUpdate.Result.NO_CHANGE:
+					{
+						break;
+					}
+
+					default:
+					{
+						throw new JGitInternalException("Updating HEAD failed");
+					}
+				}
+				rup = repo.UpdateRef(Constants.HEAD);
+				res = rup.Link(headName);
+				switch (res)
+				{
+					case RefUpdate.Result.FAST_FORWARD:
+					case RefUpdate.Result.FORCED:
+					case RefUpdate.Result.NO_CHANGE:
+					{
+						break;
+					}
+
+					default:
+					{
+						throw new JGitInternalException("Updating HEAD failed");
+					}
+				}
 			}
 		}
 
@@ -425,6 +431,9 @@ namespace NGit.Api
 				Constants.CHARACTER_ENCODING));
 			CreateFile(rebaseDir, STOPPED_SHA, repo.NewObjectReader().Abbreviate(commitToPick
 				).Name);
+			// Remove cherry pick state file created by CherryPickCommand, it's not
+			// needed for rebase
+			repo.WriteCherryPickHead(null);
 			return new RebaseResult(commitToPick);
 		}
 
@@ -552,8 +561,6 @@ namespace NGit.Api
 		{
 			// we need to store everything into files so that we can implement
 			// --skip, --continue, and --abort
-			// first of all, we determine the commits to be applied
-			IList<RevCommit> cherryPickList = new AList<RevCommit>();
 			Ref head = repo.GetRef(Constants.HEAD);
 			if (head == null || head.GetObjectId() == null)
 			{
@@ -576,38 +583,38 @@ namespace NGit.Api
 					, Constants.HEAD));
 			}
 			RevCommit headCommit = walk.LookupCommit(headId);
-			monitor.BeginTask(JGitText.Get().obtainingCommitsForCherryPick, ProgressMonitor.UNKNOWN
-				);
-			LogCommand cmd = new Git(repo).Log().AddRange(upstreamCommit, headCommit);
-			Iterable<RevCommit> commitsToUse = cmd.Call();
-			foreach (RevCommit commit in commitsToUse)
-			{
-				cherryPickList.AddItem(commit);
-			}
-			// if the upstream commit is in a direct line to the current head,
-			// the log command will not report any commits; in this case,
-			// we create the cherry-pick list ourselves
-			if (cherryPickList.IsEmpty())
-			{
-				Iterable<RevCommit> parents = new Git(repo).Log().Add(upstreamCommit).Call();
-				foreach (RevCommit parent in parents)
-				{
-					if (parent.Equals(headCommit))
-					{
-						break;
-					}
-					if (parent.ParentCount != 1)
-					{
-						throw new JGitInternalException(JGitText.Get().canOnlyCherryPickCommitsWithOneParent
-							);
-					}
-					cherryPickList.AddItem(parent);
-				}
-			}
-			// nothing to do: return with UP_TO_DATE_RESULT
-			if (cherryPickList.IsEmpty())
+			RevCommit upstream = walk.LookupCommit(upstreamCommit.Id);
+			if (walk.IsMergedInto(upstream, headCommit))
 			{
 				return RebaseResult.UP_TO_DATE_RESULT;
+			}
+			else
+			{
+				if (walk.IsMergedInto(headCommit, upstream))
+				{
+					// head is already merged into upstream, fast-foward
+					monitor.BeginTask(MessageFormat.Format(JGitText.Get().resettingHead, upstreamCommit
+						.GetShortMessage()), ProgressMonitor.UNKNOWN);
+					CheckoutCommit(upstreamCommit);
+					monitor.EndTask();
+					UpdateHead(headName, upstreamCommit);
+					return RebaseResult.FAST_FORWARD_RESULT;
+				}
+			}
+			monitor.BeginTask(JGitText.Get().obtainingCommitsForCherryPick, ProgressMonitor.UNKNOWN
+				);
+			// determine the commits to be applied
+			LogCommand cmd = new Git(repo).Log().AddRange(upstreamCommit, headCommit);
+			Iterable<RevCommit> commitsToUse = cmd.Call();
+			IList<RevCommit> cherryPickList = new AList<RevCommit>();
+			foreach (RevCommit commit in commitsToUse)
+			{
+				if (commit.ParentCount != 1)
+				{
+					throw new JGitInternalException(JGitText.Get().canOnlyCherryPickCommitsWithOneParent
+						);
+				}
+				cherryPickList.AddItem(commit);
 			}
 			Sharpen.Collections.Reverse(cherryPickList);
 			// create the folder for the meta information
@@ -646,7 +653,18 @@ namespace NGit.Api
 			// we rewind to the upstream commit
 			monitor.BeginTask(MessageFormat.Format(JGitText.Get().rewinding, upstreamCommit.GetShortMessage
 				()), ProgressMonitor.UNKNOWN);
-			CheckoutCommit(upstreamCommit);
+			bool checkoutOk = false;
+			try
+			{
+				checkoutOk = CheckoutCommit(upstreamCommit);
+			}
+			finally
+			{
+				if (!checkoutOk)
+				{
+					FileUtils.Delete(rebaseDir, FileUtils.RECURSIVE);
+				}
+			}
 			monitor.EndTask();
 			return null;
 		}
@@ -852,6 +870,7 @@ namespace NGit.Api
 				}
 				// cleanup the files
 				FileUtils.Delete(rebaseDir, FileUtils.RECURSIVE);
+				repo.WriteCherryPickHead(null);
 				return result;
 			}
 			finally
@@ -874,7 +893,7 @@ namespace NGit.Api
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private void CheckoutCommit(RevCommit commit)
+		private bool CheckoutCommit(RevCommit commit)
 		{
 			try
 			{
@@ -908,6 +927,7 @@ namespace NGit.Api
 				walk.Release();
 				monitor.EndTask();
 			}
+			return true;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

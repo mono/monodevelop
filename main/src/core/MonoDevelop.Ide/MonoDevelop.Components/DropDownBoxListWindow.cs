@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Ide;
 using Gtk;
 
 namespace MonoDevelop.Components
@@ -481,7 +482,7 @@ namespace MonoDevelop.Components
 			
 			void CalcVisibleRows ()
 			{
-				Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (GdkWindow));
+				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (GdkWindow));
 				int winHeight = geometry.Height / 2;
 				int lvWidth, lvHeight;
 				this.GetSizeRequest (out lvWidth, out lvHeight);

@@ -1,10 +1,12 @@
 // 
 // XCConfigurationList.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +38,32 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		public XCConfigurationList ()
 		{
-			this.configurations = new List<XCBuildConfiguration> ();
+			configurations = new List<XCBuildConfiguration> ();
 		}
 
 		public void AddBuildConfiguration (XCBuildConfiguration configuration)
 		{
-			this.configurations.Add (configuration);
+			if (DefaultConfiguration == null)
+				DefaultConfiguration = configuration;
+			
+			configurations.Add (configuration);
+		}
+
+		public XCBuildConfiguration DefaultConfiguration {
+			get; set;
+		}
+
+		public override string Name {
+			get {
+				if (Target != null)
+					return string.Format ("Build configuration list for {0} \"{1}\"", Target.Type, Target.Name);
+				else
+					return "Build configuration list";
+			}
+		}
+
+		public XcodeObject Target {
+			get; set;
 		}
 
 		public override XcodeType Type {
@@ -54,11 +76,17 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			var sb = new StringBuilder ();
 
-			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\tbuildConfigurations = (\n", Token, Type);
+			sb.AppendFormat ("{0} /* {1} */ = {{\n", Token, Name);
+			sb.AppendFormat ("\t\t\tisa = {0};\n", Type);
+			sb.AppendFormat ("\t\t\tbuildConfigurations = (\n");
 			foreach (XCBuildConfiguration config in configurations) 
-				sb.AppendFormat ("\t\t\t\t{0},\n", config.Token);
-			sb.AppendFormat ("\t\t\t);\n\t\t\tdefaultConfigurationIsVisible = 0;\n\t\t\tdefaultConfigurationName = Debug;\n\t\t}};");
-		
+				sb.AppendFormat ("\t\t\t\t{0} /* {1} */,\n", config.Token, config.Name);
+			sb.AppendFormat ("\t\t\t);\n");
+			sb.AppendFormat ("\t\t\tdefaultConfigurationIsVisible = 0;\n");
+			if (DefaultConfiguration != null)
+				sb.AppendFormat ("\t\t\tdefaultConfigurationName = {0};\n", DefaultConfiguration.Name);
+			sb.AppendFormat ("\t\t}};");
+
 			return sb.ToString ();
 		}
 	}

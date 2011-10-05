@@ -44,8 +44,12 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			winDir = Path.GetFullPath (Environment.SystemDirectory + "\\..");
 			rootDir = winDir + "\\Microsoft.NET\\Framework";
-			newFxDir = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86);
-			newFxDir = newFxDir + "\\Reference Assemblies\\Microsoft\\Framework";
+			
+			// ProgramFilesX86 is broken on 32-bit WinXP
+			string programFilesX86 = Environment.GetFolderPath (
+				IntPtr.Size == 8? Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
+			
+			newFxDir = programFilesX86 + "\\Reference Assemblies\\Microsoft\\Framework";
 			this.running = running;
 			execHandler = new MsNetExecutionHandler ();
 		}
@@ -72,8 +76,9 @@ namespace MonoDevelop.Core.Assemblies
 			get { return rootDir; }
 		}
 		
-		public override FilePath FrameworksDirectory {
-			get { return newFxDir; }
+		public override IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
+		{
+			yield return newFxDir;
 		}
 		
 		public override string GetAssemblyDebugInfoFile (string assemblyPath)

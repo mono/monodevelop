@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static int ShowCustomDialog (Gtk.Dialog dialog)
 		{
-			return ShowCustomDialog (dialog, rootWindow);
+			return ShowCustomDialog (dialog, null);
 		}
 		
 		public static int ShowCustomDialog (Gtk.Dialog dialog, Window parent)
@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide
 		
 		public static int RunCustomDialog (Gtk.Dialog dialog)
 		{
-			return RunCustomDialog (dialog, rootWindow);
+			return RunCustomDialog (dialog, null);
 		}
 		
 		/// <summary>
@@ -306,7 +306,7 @@ namespace MonoDevelop.Ide
 			dialog.TransientFor = parent;
 			dialog.DestroyWithParent = true;
 			PlaceDialog (dialog, parent);
-			return dialog.Run ();
+			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 		
 		//make sure modal children are parented on top of other modal children
@@ -336,8 +336,14 @@ namespace MonoDevelop.Ide
 		public static void PlaceDialog (Window child, Window parent)
 		{
 			//HACK: Mac GTK automatic window placement is broken
-			if (Platform.IsMac)
-				CenterWindow (child, parent ?? GetDefaultParent (child));
+			if (Platform.IsMac) {
+				if (parent == null) {
+					parent = GetDefaultParent (child);
+				}
+				if (parent != null) {
+					CenterWindow (child, parent);
+				}
+			}
 		}
 		
 		/// <summary>Centers a window relative to its parent.</summary>
@@ -346,8 +352,8 @@ namespace MonoDevelop.Ide
 			child.Child.Show ();
 			int w, h, winw, winh, x, y, winx, winy;
 			child.GetSize (out w, out h);
-			rootWindow.GetSize (out winw, out winh);
-			rootWindow.GetPosition (out winx, out winy);
+			parent.GetSize (out winw, out winh);
+			parent.GetPosition (out winx, out winy);
 			x = Math.Max (0, (winw - w) /2) + winx;
 			y = Math.Max (0, (winh - h) /2) + winy;
 			child.Move (x, y);

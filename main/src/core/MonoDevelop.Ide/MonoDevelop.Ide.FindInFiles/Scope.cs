@@ -37,6 +37,11 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public abstract class Scope
 	{
+		public bool IncludeBinaryFiles {
+			get;
+			set;
+		}
+		
 		public abstract int GetTotalWork (FilterOptions filterOptions);
 		public abstract IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions);
 		public abstract string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern);
@@ -103,6 +108,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 					foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+						if (!IncludeBinaryFiles && !DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (file.Name)))
+							continue;
 						yield return new FileProvider (file.Name, project);
 					}
 				}
@@ -138,9 +145,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
-				return project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name)).Select (f => new FileProvider (f.Name, project));
+				foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+					if (!IncludeBinaryFiles && !DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (file.Name)))
+						continue;
+					yield return new FileProvider (file.Name, project);
+				}
 			}
-			return Enumerable.Empty<FileProvider> ();
 		}
 		
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
@@ -182,11 +192,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		readonly string path;
 		readonly bool recurse;
 		
-		public bool IncludeBinaryFiles {
-			get;
-			set;
-		}
-		
 		public bool IncludeHiddenFiles {
 			get;
 			set;
@@ -201,16 +206,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			this.path = path;
 			this.recurse = recurse;
-		}
-		
-		static bool MimeTypeIsBinary (string mimeType)
-		{
-			if (string.IsNullOrEmpty (mimeType))
-				return false;
-			return !(mimeType.StartsWith ("text/") || 
-			         mimeType == "image/x-xbitmap" || 
-			         mimeType == "image/x-xpixmap" ||
-				     mimeType.EndsWith ("+xml"));
 		}
 		
 		IEnumerable<string> GetFileNames (IProgressMonitor monitor, FilterOptions filterOptions)
@@ -229,7 +224,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (string fileName in files) {
 					if (fileName.StartsWith (".") && !IncludeHiddenFiles)
 						continue;
-					if (!IncludeBinaryFiles && MimeTypeIsBinary (DesktopService.GetMimeTypeForUri (fileName))) 
+					if (!IncludeBinaryFiles && !DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (fileName))) 
 						continue;
 					yield return fileName;
 				}

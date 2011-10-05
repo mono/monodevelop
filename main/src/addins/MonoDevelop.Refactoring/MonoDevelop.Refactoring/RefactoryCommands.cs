@@ -117,7 +117,6 @@ namespace MonoDevelop.Refactoring
 			
 			public void Run ()
 			{
-				Console.WriteLine ("jump to: "+  el);
 				IdeApp.ProjectOperations.JumpToDeclaration (el);
 			}
 		}

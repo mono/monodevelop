@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core;
 using System.Net;
 using System.IO;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -110,6 +111,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			bodyWarningLabel.Hide ();
 			
 			string mail = FeedbackService.ReporterEMail;
+			if (string.IsNullOrEmpty (mail))
+				mail = AuthorInformation.Default.Email;
 			
 			if (string.IsNullOrEmpty (mail)) {
 				headerBox.Hide ();
@@ -174,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			box.ShowAll ();
 
 			mainFrame.Add (box);
-			GLib.Timeout.Add (2000, delegate {
+			GLib.Timeout.Add (1000, delegate {
 				Close ();
 				return false;
 			});
@@ -219,7 +222,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
 			bool res = base.OnFocusOutEvent (evnt);
-			Close ();
+			Hide ();
 			return res;
 		}
 	}

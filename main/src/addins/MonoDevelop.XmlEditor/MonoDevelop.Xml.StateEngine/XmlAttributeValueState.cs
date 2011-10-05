@@ -88,6 +88,8 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XmlSingleQuotedAttributeValueState : XmlAttributeValueState
 	{
+		public bool AllowOpeningTagCharInside { get; set; }
+		
 		public XmlSingleQuotedAttributeValueState () : this (new XmlMalformedTagState ()) {}
 		public XmlSingleQuotedAttributeValueState (XmlMalformedTagState malformedTagState) : base (malformedTagState) {}
 		
@@ -97,7 +99,7 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
-			if (c == '<') {
+			if (!AllowOpeningTagCharInside && c == '<') {
 				//the parent state should report the error
 				rollback = string.Empty;
 				return Parent;

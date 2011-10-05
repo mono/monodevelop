@@ -1,10 +1,12 @@
 // 
 // PBXProject.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,19 +35,28 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 	class PBXProject : XcodeObject
 	{
 		XCConfigurationList configuration;
-		PBXGroup group;
-		public List<PBXNativeTarget> targets;
+		PBXGroup productGroup, mainGroup;
+		List<PBXNativeTarget> targets;
+		string name;
 
-		public PBXProject (XCConfigurationList configuration, PBXGroup group)
+		public PBXProject (string name, XCConfigurationList configuration, PBXGroup mainGroup, PBXGroup productGroup)
 		{
-			this.configuration = configuration;
-			this.group = group;
 			this.targets = new List<PBXNativeTarget> ();
+			this.configuration = configuration;
+			this.productGroup = productGroup;
+			this.mainGroup = mainGroup;
+			this.name = name;
+
+			configuration.Target = this;
 		}
 
 		public void AddNativeTarget (PBXNativeTarget target)
 		{
-			this.targets.Add (target);
+			targets.Add (target);
+		}
+
+		public override string Name {
+			get { return name; }
 		}
 
 		public override XcodeType Type {
@@ -57,12 +68,22 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		public override string ToString ()
 		{
 			var sb = new StringBuilder ();
-
-			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\ttargets = (\n", Token, Type);
+			sb.AppendFormat ("{0} /* Project object */ = {{\n", Token);
+			sb.AppendFormat ("\t\t\tisa = {0};\n", Type);
+			sb.AppendFormat ("\t\t\tattributes = {{ }};\n");
+			sb.AppendFormat ("\t\t\tbuildConfigurationList = {0} /* {1} */;\n",
+					 configuration.Token, configuration.Name);
+			sb.AppendFormat ("\t\t\tcompatibilityVersion = \"Xcode 3.2\";\n");
+			sb.AppendFormat ("\t\t\thasScannedForEncodings = 0;\n");
+			sb.AppendFormat ("\t\t\tmainGroup = {0};\n", mainGroup.Token);
+			sb.AppendFormat ("\t\t\tproductRefGroup = {0} /* {1} */;\n", productGroup.Token, productGroup.Name);
+			sb.AppendFormat ("\t\t\tprojectDirPath = \"\";\n");
+			sb.AppendFormat ("\t\t\tprojectRoot = \"\";\n");
+			sb.AppendFormat ("\t\t\ttargets = (\n");
 			foreach (PBXNativeTarget target in targets) 
-				sb.AppendFormat ("\t\t\t\t{0},\n", target.Token);
-			sb.AppendFormat ("\t\t\t);\n\t\t\tbuildConfigurationList = {0};\n\t\t\tcompatibilityVersion = \"Xcode 3.1\";\n\t\t\thasScannedForEncodings = 1;\n\t\t\tproductRefGroup = {1};\n\t\t\tmainGroup = {1};\n\t\t\tprojectDirPath = \"\";\n\t\t\tprojectRoot = \"\";\n\t\t}};", configuration.Token, group.Token);
-		
+				sb.AppendFormat ("\t\t\t\t{0} /* {1} */,\n", target.Token, target.Name);
+			sb.AppendFormat ("\t\t\t);\n");
+			sb.AppendFormat ("\t\t}};");
 			return sb.ToString ();
 		}
 	}

@@ -65,12 +65,11 @@ namespace MonoDevelop.Debugger
 			editor = new Mono.TextEditor.TextEditor ();
 			editor.Document.ReadOnly = true;
 			
-			TextEditorOptions options = new TextEditorOptions ();
-			options.CopyFrom (TextEditorOptions.DefaultOptions);
-			options.ShowEolMarkers = false;
-			options.ShowInvalidLines = false;
-			options.ShowLineNumberMargin = false;
-			editor.Options = options;
+			editor.Options = new MonoDevelop.Ide.Gui.CommonTextEditorOptions () {
+				ShowEolMarkers = false,
+				ShowInvalidLines = false,
+				ShowLineNumberMargin = false,
+			};
 			
 			sw.Add (editor);
 			sw.HscrollbarPolicy = Gtk.PolicyType.Automatic;

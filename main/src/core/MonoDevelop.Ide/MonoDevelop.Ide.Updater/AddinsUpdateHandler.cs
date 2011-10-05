@@ -35,7 +35,7 @@ using MonoDevelop.Core.Setup;
 
 namespace MonoDevelop.Ide.Updater
 {
-	[Extension("/MonoDevelop/Ide/Updater/UpdateHandlers")]
+	[Extension("/MonoDevelop/Ide/Updater/UpdateHandlers", Id="DefaultUpdateHandler")]
 	public class AddinsUpdateHandler: IUpdateHandler
 	{
 		AddinRepositoryEntry[] updates;
@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Updater
 			Instance = this;
 		}
 		
-		public void CheckUpdates (IProgressMonitor monitor)
+		public void CheckUpdates (IProgressMonitor monitor, bool automatic)
 		{
 			updateMonitor = monitor;
 			try {

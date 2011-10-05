@@ -311,7 +311,7 @@ namespace MonoDevelop.CSharp.ContextAction
 								if (!string.IsNullOrEmpty (replaceChange.InsertedText))
 									change.Offset += replaceChange.InsertedText.Length;
 							} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
-								change.RemovedChars -= replaceChange.RemovedChars;
+								change.RemovedChars = Math.Max (0, change.RemovedChars - replaceChange.RemovedChars);
 								change.Offset = replaceChange.Offset + (!string.IsNullOrEmpty (replaceChange.InsertedText) ? replaceChange.InsertedText.Length : 0);
 							}
 						}
@@ -498,5 +498,22 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 
 		*/
+		
+		//these methods don't get used in 2.8
+		
+		public override AstType CreateShortType (AstType fullType)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public override AstType CreateShortType (ICSharpCode.NRefactory.TypeSystem.IType fullType)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public override ResolveResult Resolve (AstNode expression)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }

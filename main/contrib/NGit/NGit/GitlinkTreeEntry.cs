@@ -56,8 +56,6 @@ namespace NGit
 		)]
 	public class GitlinkTreeEntry : TreeEntry
 	{
-		private const long serialVersionUID = 1L;
-
 		/// <summary>
 		/// Construct a
 		/// <see cref="GitlinkTreeEntry">GitlinkTreeEntry</see>

@@ -4,7 +4,8 @@
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2011 Xamarin Inc (http://xamarin.com)
+// Copyright (C) 2005-2011 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -47,6 +48,8 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
+using System.Diagnostics;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide
 {
@@ -66,7 +69,7 @@ namespace MonoDevelop.Ide
 			var optionsSet = new Mono.Options.OptionSet () {
 				{ "nologo", "Do not display splash screen.", s => options.NoLogo = true },
 				{ "ipc-tcp", "Use the Tcp channel for inter-process comunication.", s => options.IpcTcp = true },
-				{ "newwindow", "Do not open in an existing instance of MonoDevelop", s => options.NewWindow = true },
+				{ "newwindow", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => options.NewWindow = true },
 				{ "h|?|help", "Show help", s => options.ShowHelp = true },
 				{ "clog", "Log internal counter data", s => options.LogCounters = true },
 				{ "clog-interval=", "Interval between counter logs (in miliseconds)", s => options.LogCountersInterval = int.Parse (s) },
@@ -96,6 +99,15 @@ namespace MonoDevelop.Ide
 			
 			//OSXFIXME
 			Gtk.Application.Init ("monodevelop", ref args);
+			
+			//default to Windows IME on Windows
+			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
+				var settings = Gtk.Settings.Default;
+				var val = Mono.TextEditor.GtkWorkarounds.GetProperty (settings, "gtk-im-module");
+				if (string.IsNullOrEmpty (val.Val as string))
+					Mono.TextEditor.GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
+			}
+			
 			InternalLog.Initialize ();
 			string socket_filename = null;
 			EndPoint ep = null;
@@ -141,7 +153,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Initializing Runtime");
-			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 3);
+			monitor.BeginTask (GettextCatalog.GetString ("Starting " + BrandingService.ApplicationName), 3);
 			monitor.Step (1);
 			Runtime.Initialize (true);
 			
@@ -153,7 +165,7 @@ namespace MonoDevelop.Ide
 
 			if (options.IpcTcp) {
 				listen_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-				ep = new IPEndPoint (IPAddress.Loopback, ipcBasePort + HashSDBMBounded (Environment.UserName));
+				ep = new IPEndPoint (IPAddress.Loopback, ipcBasePort + HashSdbmBounded (Environment.UserName));
 			} else {
 				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
 				listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
@@ -232,6 +244,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (error != null) {
+				LoggingService.LogFatalError (null, error);
 				MessageService.ShowException (error,
 				                              GettextCatalog.GetString ("MonoDevelop failed to start. The following error has been reported: ") + error.Message);
 				return 1;
@@ -261,7 +274,9 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.EndTiming ();
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
-				
+			
+			LaunchCrashMonitoringService ();
+			
 			IdeApp.Run ();
 			
 			// unloading services
@@ -297,6 +312,44 @@ namespace MonoDevelop.Ide
 		{
 			if (errorsList != null)
 				errorsList.Add (new AddinError (args.AddinId, args.Message, args.Exception, false));
+		}
+		
+		void LaunchCrashMonitoringService ()
+		{
+			string enabledKey = "MonoDevelop.CrashMonitoring.Enabled";
+			
+			if (Platform.IsMac) {
+				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
+				var pid = Process.GetCurrentProcess ().Id;
+				var logPath = UserProfile.Current.LogDir.Combine ("LogAgent");
+				var email = FeedbackService.ReporterEMail;
+				var logOnly = "";
+				
+				var fileInfo = new FileInfo (Path.Combine (logPath, "crashlogs.xml"));
+				if (!PropertyService.HasValue (enabledKey) && fileInfo.Exists && fileInfo.Length > 0) {
+					var result = MessageService.AskQuestion ("A crash has been detected",
+						"MonoDevelop has crashed recently. Details of this crash along with your configured " +
+						"email address can be uploaded to Xamarin to help diagnose the issue. This information " +
+						"will be used to help diagnose the crash and notify you of potential workarounds " +
+						"or fixes. Do you wish to upload this information?",
+						AlertButton.Yes, AlertButton.No);
+					PropertyService.Set (enabledKey, result == AlertButton.Yes);
+				}
+				
+				if (string.IsNullOrEmpty (email))
+					email = AuthorInformation.Default.Email;
+				if (string.IsNullOrEmpty (email))
+					email = "unknown@email.com";
+				if (!PropertyService.Get<bool> (enabledKey))
+					logOnly = "-logonly";
+
+				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2} -email {3} {4}", crashmonitor, pid, logPath, email, logOnly)) {
+					UseShellExecute = false,
+				};
+				Process.Start (psi);
+			} else {
+				LoggingService.LogError ("Could not launch crash reporter process. MonoDevelop will not be able to automatically report any crash information.");
+			}
 		}
 
 		void ListenCallback (IAsyncResult state)
@@ -463,24 +516,82 @@ namespace MonoDevelop.Ide
 			};
 		}
 		
-		/// <summary>
-		/// Implementation of sdbm-style hash, bounded to a range of 1000.
-		/// </summary>
-		public static int HashSDBMBounded (string input)
+		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>
+		static int HashSdbmBounded (string input)
 		{
 			ulong hash = 0;
-
-			try {
-				foreach (char c in input) {
-					unchecked {
-						hash = (ulong)char.GetNumericValue(c) + (hash << 6) + (hash << 16) - hash;
-					}
+			for (int i = 0; i < input.Length; i++) {
+				unchecked {
+					hash = ((ulong)input[i]) + (hash << 6) + (hash << 16) - hash;
 				}
-			} catch {
-				// If we overflow, return the intermediate result
 			}
 				
 			return (int)(hash % 1000);
+		}
+		
+		public static int Main (string[] args)
+		{
+			bool retry = false;
+
+			EnableFileLogging ();
+			
+			do {
+				try {
+					Runtime.SetProcessName (BrandingService.ApplicationName);
+					var app = new IdeStartup ();
+					return app.Run (args);
+				} catch (Exception ex) {
+					if (!retry && AddinManager.IsInitialized) {
+						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.");
+						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
+						LoggingService.LogInfo ("Addin registry rebuilt. Restarting MonoDevelop.");
+						retry = true;
+					} else {
+						LoggingService.LogFatalError (BrandingService.ApplicationName + " failed to start. Some of the assemblies required to run MonoDevelop (for example gtk-sharp, gnome-sharp or gtkhtml-sharp) may not be properly installed in the GAC.", ex);
+						retry = false;
+					}
+				} finally {
+					Runtime.Shutdown ();
+				}
+			}
+			while (retry);
+
+			if (logFile != null)
+				logFile.Close ();
+
+			return -1;
+		}
+
+		static StreamWriter logFile;
+
+		static void EnableFileLogging ( )
+		{
+			if (Path.DirectorySeparatorChar != '\\')
+				return;
+
+			// On Windows log all output to a log file
+
+			FilePath logDir = UserProfile.Current.LogDir;
+			if (!Directory.Exists (logDir))
+				Directory.CreateDirectory (logDir);
+
+			string file = logDir.Combine ("log.txt");
+			try {
+				logFile = new StreamWriter (file);
+				logFile.AutoFlush = true;
+
+				var tw = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
+				tw.ChainWriter (logFile);
+				tw.ChainWriter (Console.Out);
+				Console.SetOut (tw);
+
+				tw = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
+				tw.ChainWriter (logFile);
+				tw.ChainWriter (Console.Error);
+				Console.SetError (tw);
+			}
+			catch {
+			}
 		}
 	}
 	

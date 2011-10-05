@@ -156,7 +156,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			if (string.IsNullOrEmpty (assemblyLocation)) {
 				return new MonoDevelop.Projects.ProjectReference (
-				    MonoDevelop.Projects.ReferenceType.Gac,
+				    MonoDevelop.Projects.ReferenceType.Package,
 				    assemblyName);
 			} else {
 				return new MonoDevelop.Projects.ProjectReference (

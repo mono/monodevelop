@@ -23,7 +23,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+<<<<<<< HEAD
 using System.Runtime.Serialization;
+=======
+>>>>>>> master
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
@@ -85,9 +88,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (createCecilReferences)
 				typeSystemTranslationTable = new Dictionary<object, object> ();
+<<<<<<< HEAD
 			
 			// Enable interning by default.
 			this.InterningProvider = new SimpleInterningProvider();
+=======
+>>>>>>> master
 		}
 		
 		#region Load From AssemblyDefinition
@@ -196,10 +202,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				get { return moduleAttributes; }
 			}
 			
+<<<<<<< HEAD
 			public string AssemblyName {
 				get { return assemblyName; }
 			}
 			
+=======
+>>>>>>> master
 			public override string ToString()
 			{
 				return "[CecilProjectContent " + assemblyName + "]";
@@ -526,11 +535,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				DefaultAttribute dllImport = new DefaultAttribute(dllImportAttributeTypeRef, new[] { KnownTypeReference.String });
 				dllImport.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, info.Module.Name));
 				
+<<<<<<< HEAD
 /*				if (info.IsBestFitDisabled)
 					dllImport.AddNamedArgument("BestFitMapping", falseValue);
 				if (info.IsBestFitEnabled)
 					dllImport.AddNamedArgument("BestFitMapping", trueValue);
 */				
+=======
+//				if (info.IsBestFitDisabled)
+//					dllImport.AddNamedArgument("BestFitMapping", falseValue);
+//				if (info.IsBestFitEnabled)
+//					dllImport.AddNamedArgument("BestFitMapping", trueValue);
+				
+>>>>>>> master
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
 					case PInvokeAttributes.CallConvCdecl:
@@ -879,7 +896,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Serializable]
 		sealed class CecilTypeDefinition : DefaultTypeDefinition
 		{
+<<<<<<< HEAD
 			[NonSerialized]
+=======
+>>>>>>> master
 			internal TypeDefinition typeDefinition;
 			
 			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)
@@ -1391,6 +1411,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			member.ApplyInterningProvider(this.InterningProvider);
 			if (HasCecilReferences)
 				typeSystemTranslationTable[member] = cecilDefinition;
+<<<<<<< HEAD
 		}
 		
 		#region Type system translation table
@@ -1413,6 +1434,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return InternalGetCecilObject<AssemblyDefinition> (content);
 		}
 		
+=======
+		}
+		
+		#region Type system translation table
+		Dictionary<object, object> typeSystemTranslationTable;
+		
+		T InternalGetCecilObject<T> (object typeSystemObject) where T : class
+		{
+			if (typeSystemObject == null)
+				throw new ArgumentNullException ("typeSystemObject");
+			if (!HasCecilReferences)
+				throw new NotSupportedException ("This instance contains no cecil references.");
+			object result;
+			if (!typeSystemTranslationTable.TryGetValue (typeSystemObject, out result))
+				throw new InvalidOperationException ("No cecil reference stored for " + typeSystemObject);
+			return result as T;
+		}
+		
+		public AssemblyDefinition GetCecilObject (IProjectContent content)
+		{
+			return InternalGetCecilObject<AssemblyDefinition> (content);
+		}
+		
+>>>>>>> master
 		public TypeDefinition GetCecilObject (ITypeDefinition type)
 		{
 			if (type == null)

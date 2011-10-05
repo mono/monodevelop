@@ -144,6 +144,28 @@ namespace MonoDevelop.CSharp
 			"equals"
 		});
 		
+		static HashSet<string> optionalKeywords = new HashSet<string> (new [] {
+			"where",
+			"get",
+			"set",
+			"add",
+			"value",
+			"remove",
+			"yield",
+			"select",
+			"group",
+			"by",
+			"into",
+			"from",
+			"ascending",
+			"descending",
+			"orderby",
+			"let",
+			"join",
+			"on",
+			"equals"
+		});
+		
 		static CSharpAmbience ()
 		{
 			netToCSharpTypes ["System.Void"] = "void";
@@ -432,6 +454,11 @@ namespace MonoDevelop.CSharp
 				result.Append (settings.Markup (" "));
 			}
 			
+			
+			if (settings.IncludeReturnType && !settings.ReturnTypesLast && !method.IsConstructor && !method.IsFinalizer) {
+				result.Append (GetString (method.ReturnType, settings));
+				result.Append (settings.Markup (" "));
+			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
 				result.Append (GetTypeReferenceString (method.DeclaringType, new OutputSettings (OutputFlags.UseFullName) { Context = settings.Context}));

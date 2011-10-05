@@ -30,6 +30,7 @@
               <File Id="MonoAddinsGuidll_inst" Name="Mono.Addins.Gui.dll" Source="lib\Mono.Addins.Gui.dll" Vital="yes" />
               <File Id="MonoAddinsSetupdll_inst" Name="Mono.Addins.Setup.dll" Source="lib\Mono.Addins.Setup.dll" Vital="yes" />
               <File Id="MonoSecuritydll_inst" Name="Mono.Security.dll" Source="lib\Mono.Security.dll" Vital="yes" />
+              <File Id="mautil_inst" Name="mautil.exe" Source="lib\mautil.exe" Vital="yes" />
               <RegistryKey Root='HKLM' Key='SOFTWARE\Microsoft\.NetFramework\AssemblyFolders\MonoLibraries' Action="createAndRemoveOnUninstall">
                 <RegistryValue Type="string" Value='[INSTALLLOCATION]$(var.ProductVersion)' />
               </RegistryKey>

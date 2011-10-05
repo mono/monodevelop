@@ -58,16 +58,11 @@ namespace MonoDevelop.Projects.Policies
 				if (policies.TryGetValue (typeof(T), null, out policy)) {
 					if (!PolicyService.IsUndefinedPolicy (policy))
 						return (T)policy;
-					else if (InheritDefaultPolicies)
-						return PolicyService.GetDefaultPolicy<T> ();
-					else
-						return null;
+					return GetDefaultPolicy<T> ();
 				}
 			}
-			if (!InheritDefaultPolicies)
-				return null;
-			else if (IsRoot)
-				return PolicyService.GetDefaultPolicy<T> ();
+			if (IsRoot)
+				return GetDefaultPolicy<T> ();
 			else
 				return ParentPolicies.Get<T> ();
 		}
@@ -95,10 +90,7 @@ namespace MonoDevelop.Projects.Policies
 						currentBag = currentBag.ParentPolicies;
 				}
 			}
-			if (InheritDefaultPolicies)
-				return PolicyService.GetDefaultPolicy<T>(scopes);
-			else
-				return null;
+			return GetDefaultPolicy<T>(scopes);
 		}
 		
 		public void Set<T> (T value) where T : class, IEquatable<T>, new ()
@@ -364,16 +356,20 @@ namespace MonoDevelop.Projects.Policies
 		
 		#endregion
 		
-		/// <summary>
-		/// When set to true, the container will return a default policy when requesting a
-		/// policy object that is not defined in the container.
-		/// </summary>
-		protected abstract bool InheritDefaultPolicies { get; }
-		
 		protected virtual void OnPolicyChanged (Type policyType, string scope)
 		{
 			if (PolicyChanged != null)
 				PolicyChanged (this, new PolicyChangedEventArgs (policyType, scope));
+		}
+		
+		protected virtual T GetDefaultPolicy<T> () where T : class, IEquatable<T>, new ()
+		{
+			return PolicyService.GetDefaultPolicy<T> ();
+		}
+		
+		protected virtual T GetDefaultPolicy<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
+		{
+			return PolicyService.GetDefaultPolicy<T> (scopes);
 		}
 		
 		public virtual bool ReadOnly {

@@ -1,10 +1,10 @@
 #!/bin/bash
-VERSION=2.7
+VERSION=2.8
 PACKAGE=monodevelop-python
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" gtk-sharp-2.0;2.12.8 mono-addins;0.3 monodevelop;2.7 monodevelop-core-addins;2.7"
+common_packages=" gtk-sharp-2.0;2.12.8 mono-addins;0.3 monodevelop;2.8 monodevelop-core-addins;2.7"
 
 
 usage ()
@@ -132,6 +132,8 @@ fi
 if [ -z "$datadir" ]; then
 	datadir=$prefix/share
 fi
+
+sed -e "s,@VERSION@,$VERSION," < monodevelop-python.spec.in > monodevelop-python.spec
 
 echo "prefix=$prefix" > config.make
 echo "libdir=$libdir" >> config.make

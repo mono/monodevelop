@@ -13,6 +13,13 @@ namespace Sharpen
 			this.dict = new SortedDictionary<T, int> ();
 		}
 
+		public TreeSet (IEnumerable<T> items)
+		{
+			this.dict = new SortedDictionary<T, int> ();
+			foreach (var i in items)
+				AddItem (i);
+		}
+
 		public override bool AddItem (T element)
 		{
 			if (!this.dict.ContainsKey (element)) {

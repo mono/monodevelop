@@ -652,6 +652,10 @@ namespace NGit
 		/// <summary>name of the file containing the IDs of the parents of a merge commit</summary>
 		public static readonly string MERGE_HEAD = "MERGE_HEAD";
 
+		/// <summary>name of the file containing the ID of a cherry pick commit in case of conflicts
+		/// 	</summary>
+		public static readonly string CHERRY_PICK_HEAD = "CHERRY_PICK_HEAD";
+
 		/// <summary>
 		/// name of the ref ORIG_HEAD used by certain commands to store the original
 		/// value of HEAD

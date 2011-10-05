@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects
 			project.Files.Remove ("test2.cs");
 			Assert.AreEqual (2, countFileRemovedFromProject);
 			
-			ProjectReference pr1 = new ProjectReference (ReferenceType.Gac, "SomeTest");
+			ProjectReference pr1 = new ProjectReference (ReferenceType.Package, "SomeTest");
 			project.References.Add (pr1);
 			Assert.AreEqual (1, countReferenceAddedToProject);
 			

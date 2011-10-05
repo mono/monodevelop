@@ -90,9 +90,23 @@ namespace MonoDevelop.Refactoring
 			ResolveResult resolveResult;
 			var item = CurrentRefactoryOperationsHandler.GetItem (ctx, doc, out resolveResult);
 			
+			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
+			string itemName = null;
+			if (item is IMember)
+				itemName = ((IMember)item).FullName;
+			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.FullName == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+				item = eitem;
+				eitem = null;
+			}
+			ITypeDefinition eclass = null;
 			if (item is ITypeDefinition) {
-				FindDerivedClasses ((ITypeDefinition)item);
-				return;
+				if (((ITypeDefinition)item).ClassType == ClassType.Interface)
+					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
+					eclass = (IType)item;
+				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
+					item = eitem;
+					eitem = null;
+				}
 			}
 			
 //			

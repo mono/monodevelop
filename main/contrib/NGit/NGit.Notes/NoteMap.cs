@@ -73,6 +73,22 @@ namespace NGit.Notes
 			return r;
 		}
 
+		/// <summary>
+		/// Shorten the note ref name by trimming off the
+		/// <see cref="NGit.Constants.R_NOTES">NGit.Constants.R_NOTES</see>
+		/// prefix if it exists.
+		/// </summary>
+		/// <param name="noteRefName"></param>
+		/// <returns>a more user friendly note name</returns>
+		public static string ShortenRefName(string noteRefName)
+		{
+			if (noteRefName.StartsWith(Constants.R_NOTES))
+			{
+				return Sharpen.Runtime.Substring(noteRefName, Constants.R_NOTES.Length);
+			}
+			return noteRefName;
+		}
+
 		/// <summary>Load a collection of notes from a branch.</summary>
 		/// <remarks>Load a collection of notes from a branch.</remarks>
 		/// <param name="reader">

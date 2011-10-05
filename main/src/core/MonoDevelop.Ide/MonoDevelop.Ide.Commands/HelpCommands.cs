@@ -71,14 +71,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			var dlg = new CommonAboutDialog ();
-			try {
-				MessageService.PlaceDialog (dlg, null);
-				dlg.Run ();
-			}
-			finally {
-				dlg.Destroy ();
-			}
+			CommonAboutDialog.ShowAboutDialog ();
 		}
 	}
 	
@@ -86,7 +79,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			FeedbackService.ShowFeedbackWidnow ();
+			FeedbackService.ShowFeedbackWindow ();
 		}
 	}
 }

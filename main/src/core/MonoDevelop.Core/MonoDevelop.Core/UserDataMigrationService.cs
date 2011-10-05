@@ -73,14 +73,58 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		static int IndexOfVersion (UserDataMigrationNode node, string version)
+		{
+			for (int i=0; i < UserProfile.ProfileVersions.Length; i++) {
+				if (string.Equals (UserProfile.ProfileVersions[i], version)) {
+					return i;
+				}
+			}
+			if (node != null) {
+				LoggingService.LogWarning ("Migration in addin '{0}' refers to unknown version '{1}'",
+					node.Addin.Id, version);
+			}
+			return -1;
+		}
+		
+		static bool CheckVersion (UserDataMigrationNode node, string version)
+		{
+			var sourceVersion = node.SourceVersion;
+			
+			//exact match
+			if (string.Equals (sourceVersion, version)) {
+				return true;
+			}
+			
+			//open range of form "X+"
+			if (sourceVersion[sourceVersion.Length-1] ==  '+') {
+				var idx = IndexOfVersion (null, version);
+				var lower = IndexOfVersion (node, sourceVersion.Substring (0, sourceVersion.Length-1));
+				return lower >= 0 && idx >= lower;
+			}
+			
+			//closed range of form "X-Y"
+			if (sourceVersion.IndexOf ('-') > 0) {
+				var split = sourceVersion.Split ('-');
+				if (split.Length != 2) {
+					throw new Exception ("Invalid migration sourceVersion range in " + node.Addin.Id);
+				}
+				var idx = IndexOfVersion (null, version);
+				var lower = IndexOfVersion (node, split[0]);
+				var upper = IndexOfVersion (node, split[1]);
+				return lower >= 0 && upper >=0 && idx >= lower && idx >= upper;
+			}
+			
+			return false;
+		}
+		
 		static void HandleUserDataMigration (object sender, ExtensionNodeEventArgs args)
 		{
 			if (args.Change != ExtensionChange.Add)
 				return;
 			
-			//FIXME: support ranges in SourceVersion
 			var node = (UserDataMigrationNode) args.ExtensionNode;
-			if (node.SourceVersion != version)
+			if (!CheckVersion (node, version))
 				return;
 			
 			FilePath source = FilePath.Null;

@@ -162,7 +162,7 @@ namespace MonoDevelop.Deployment
 		
 		public virtual DeployContext CreateDeployContext ()
 		{
-			return new DeployContext (this, "Linux", null);
+			return new DeployContext (this, DeployService.CurrentPlatform, null);
 		}
 		
 		public void SetSolutionItem (SolutionItem entry)

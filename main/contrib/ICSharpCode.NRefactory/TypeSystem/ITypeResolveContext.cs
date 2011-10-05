@@ -33,6 +33,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface ITypeResolveContext
 	{
 		/// <summary>
+<<<<<<< HEAD
 		/// Gets the definition for a known type.
 		/// </summary>
 		/// <returns>Returns the type definition; or null if the type was not found</returns>
@@ -45,6 +46,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Retrieves a type.
 		/// </summary>
+=======
+		/// Retrieves a type.
+		/// </summary>
+>>>>>>> master
 		/// <param name="nameSpace">Namespace that contains the type</param>
 		/// <param name="name">Name of the type</param>
 		/// <param name="typeParameterCount">Number of type parameters</param>

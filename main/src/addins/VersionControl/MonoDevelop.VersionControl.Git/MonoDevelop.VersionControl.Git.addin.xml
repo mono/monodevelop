@@ -6,16 +6,16 @@
        url         = "http://www.monodevelop.com/"
        description = "Git support for the Version Control Add-in"
        category    = "Version Control"
-       version     = "2.7">
+       version     = "2.8">
  
 	<Runtime>
 		<Import assembly="MonoDevelop.VersionControl.Git.dll"/>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="2.7"/>
-	    <Addin id="Ide" version="2.7"/>
-	    <Addin id="VersionControl" version="2.7"/>
+	    <Addin id="Core" version="2.8"/>
+	    <Addin id="Ide" version="2.8"/>
+	    <Addin id="VersionControl" version="2.8"/>
 	</Dependencies>
 	
 	<Extension path="/MonoDevelop/VersionControl/VersionControlSystems">
@@ -101,7 +101,8 @@
 		<StockIcon stockid = "vc-git-branch" resource = "arrow_branch.png"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
+<!--	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.VersionControl.Git.GitSupportFeature" />
 	</Extension>
+-->
 </Addin>

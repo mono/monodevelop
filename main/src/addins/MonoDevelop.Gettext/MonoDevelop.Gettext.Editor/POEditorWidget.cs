@@ -62,6 +62,12 @@ namespace MonoDevelop.Gettext
 		
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
+		//simple escaping to make the messages display in single lines in the treeview
+		static string EscapeForTreeView (string message)
+		{
+			return StringEscaping.ToGettextFormat (message);
+		}
+		
 		public Catalog Catalog {
 			get {
 				return catalog;
@@ -205,7 +211,7 @@ namespace MonoDevelop.Gettext
 				if (this.isUpdating)
 					return;
 				if (this.currentEntry != null) {
-					string[] lines = StringEscaping.FromGettextFormat (textviewComments.Buffer.Text).Split (new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+					string[] lines =  textviewComments.Buffer.Text.Split (CatalogParser.LineSplitStrings, System.StringSplitOptions.None);
 					for (int i = 0; i < lines.Length; i++) {
 						if (!lines[i].StartsWith ("#"))
 							lines[i] = "# " + lines[i];
@@ -281,7 +287,7 @@ namespace MonoDevelop.Gettext
 		void OriginalTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
-			((CellRendererText)cell).Text = StringEscaping.ToGettextFormat (entry.String);
+			((CellRendererText)cell).Text = EscapeForTreeView (entry.String);
 			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
 			((CellRendererText)cell).ForegroundGdk = GetForeColorForEntry (entry);
 		}
@@ -289,7 +295,7 @@ namespace MonoDevelop.Gettext
 		void TranslationTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
-			((CellRendererText)cell).Text = StringEscaping.ToGettextFormat (entry.GetTranslation (0));
+			((CellRendererText)cell).Text = EscapeForTreeView (entry.GetTranslation (0));
 			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
 			((CellRendererText)cell).ForegroundGdk = GetForeColorForEntry (entry);
 		}
@@ -491,7 +497,7 @@ namespace MonoDevelop.Gettext
 					return;
 				try {
 					if (this.currentEntry != null) {
-						string escapedText = StringEscaping.FromGettextFormat (textView.Document.Text);
+						string escapedText = textView.Document.Text;
 						string oldText     = this.currentEntry.GetTranslation (index);
 						this.currentEntry.SetTranslation (escapedText, index);
 						AddChange (this.currentEntry, oldText, escapedText, index);
@@ -616,7 +622,7 @@ namespace MonoDevelop.Gettext
 			try {
 				currentEntry = entry;
 				this.texteditorOriginal.Caret.Offset = 0;
-				this.texteditorOriginal.Document.Text = entry != null ? StringEscaping.ToGettextFormat (entry.String) : "";
+				this.texteditorOriginal.Document.Text = entry != null ? entry.String : "";
 				this.texteditorOriginal.VAdjustment.Value = this.texteditorOriginal.HAdjustment.Value = 0;
 				
 //				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
@@ -629,7 +635,7 @@ namespace MonoDevelop.Gettext
 				
 				if (entry != null && entry.HasPlural) {
 					this.texteditorPlural.Caret.Offset = 0;
-					this.texteditorPlural.Document.Text = StringEscaping.ToGettextFormat (entry.PluralString);
+					this.texteditorPlural.Document.Text = entry.PluralString;
 					this.texteditorPlural.VAdjustment.Value = this.texteditorPlural.HAdjustment.Value = 0;
 //					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
 //						GtkSpell.Attach (this.textviewOriginalPlural, "en");
@@ -651,7 +657,7 @@ namespace MonoDevelop.Gettext
 						if (textView == null)
 							continue;
 						textView.ClearSelection ();
-						textView.Document.Text = entry != null ? StringEscaping.ToGettextFormat (entry.GetTranslation (i)) : "";
+						textView.Document.Text = entry != null ?  entry.GetTranslation (i) : "";
 						textView.Caret.Offset = textView.Document.Text.Length;
 						textView.VAdjustment.Value = textView.HAdjustment.Value = 0;
 						textView.Document.CommitUpdateAll ();
@@ -673,7 +679,7 @@ namespace MonoDevelop.Gettext
 					}
 				}
 				
-				this.textviewComments.Buffer.Text = entry != null ? StringEscaping.ToGettextFormat (entry.Comment) : null;
+				this.textviewComments.Buffer.Text = entry != null ?  entry.Comment : null;
 				
 /*				if (GtkSpell.IsSupported) {
 					foreach (TextView view in this.gtkSpellSet.Keys)
@@ -901,8 +907,8 @@ namespace MonoDevelop.Gettext
 			}
 			store.AppendValues (GetStockForEntry (entry), 
 			                    entry.IsFuzzy,
-			                    StringEscaping.ToGettextFormat (entry.String), 
-			                    StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
+			                    EscapeForTreeView (entry.String), 
+			                    EscapeForTreeView (entry.GetTranslation (0)), 
 			                    entry,
 			                    GetRowColorForEntry (entry),
 			                    GetTypeSortIndicator (entry),

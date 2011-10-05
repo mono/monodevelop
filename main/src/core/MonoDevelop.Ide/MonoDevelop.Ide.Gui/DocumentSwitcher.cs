@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 
+
 namespace MonoDevelop.Ide
 {
 	class DocumentList : Gtk.DrawingArea
@@ -47,6 +49,7 @@ namespace MonoDevelop.Ide
 		const int padding = 6;
 		const int headerDistance = 4;
 		const int maxRows = 2;
+		const int itemPadding = 3;
 		
 		Item activeItem;
 		public Item ActiveItem {
@@ -87,6 +90,8 @@ namespace MonoDevelop.Ide
 				int w, h;
 					
 				foreach (Category cat in categories) {
+					if (cat.Items.Count == 0)
+						continue;
 					yPos = padding;
 					layout.SetMarkup ("<b>" + cat.Title + "</b>");
 					layout.SetMarkup ("");
@@ -97,23 +102,24 @@ namespace MonoDevelop.Ide
 					int curItem = 0;
 					layout.SetText (new string ('X', maxLength));
 					layout.GetPixelSize (out w, out h);
-					var iconHeight = Math.Max (h, cat.Items[0].Icon.Height + 2);
+					var iconHeight = Math.Max (h, cat.Items[0].Icon.Height + 2) + itemPadding * 2;
 					if (cat.FirstVisibleItem > 0) {
 						yPos += iconHeight;
 						curItem++;
 					}
 					for (int i = cat.FirstVisibleItem; i < cat.Items.Count; i++) {
 						var item = cat.Items[i];
-						if (xPos <= x && yPos <= y && x < xPos + w + item.Icon.Width + 2 && y < yPos + iconHeight)
+						int itemWidth = w + item.Icon.Width + 2 + itemPadding * 2;
+						if (xPos <= x && yPos <= y && x < xPos + itemWidth && y < yPos + iconHeight)
 							return item;
 						yPos += iconHeight;
 						if (++curItem >= maxItems) {
 							curItem = 0;
 							yPos = startY;
-							xPos += w + cat.Items[0].Icon.Width + 2 + padding;
+							xPos += w + cat.Items[0].Icon.Width + 2 + padding + itemPadding * 2;
 						}
 					}
-					xPos += w + cat.Items[0].Icon.Width + 2 + padding;
+					xPos += w + cat.Items[0].Icon.Width + 2 + padding + itemPadding * 2;
 				}
 			}
 			return null;
@@ -156,28 +162,8 @@ namespace MonoDevelop.Ide
 		const int upperGradientHeight = 16;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
+			
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
-				cr.Rectangle (0, 0, Allocation.Width, upperGradientHeight);
-				using (var pattern = new Cairo.LinearGradient (0, 0, 0, upperGradientHeight)) {
-					pattern.AddColorStopRgb (0, new Cairo.Color (0.6, 0.8, 0.6));
-					pattern.AddColorStopRgb (1, new Cairo.Color (0.8, 1.0, 0.8));
-					cr.Pattern = pattern;
-					cr.Fill ();
-				}
-				
-				cr.Rectangle (0, upperGradientHeight, Allocation.Width, Allocation.Height - upperGradientHeight);
-				using (var pattern = new Cairo.LinearGradient (0, upperGradientHeight, 0, Allocation.Height)) {
-					pattern.AddColorStop (0, new Cairo.Color (0.8, 1.0, 0.8));
-					pattern.AddColorStop (1, new Cairo.Color (0.6, 0.8, 0.6));
-					cr.Pattern = pattern;
-					cr.Fill ();
-				}
-				
-				cr.LineWidth = 1;
-				cr.Line (0, 0, Allocation.Width, 0);
-				cr.Color = new Cairo.Color (0.4, 0.6, 0.4);
-				cr.Stroke ();
-				
 				double xPos = padding, yPos = padding;
 				var layout = PangoUtil.CreateLayout (this);
 				int w, h;
@@ -190,6 +176,10 @@ namespace MonoDevelop.Ide
 					layout.SetMarkup ("<b>" + cat.Title + "</b>");
 					cr.Color = (HslColor)Style.Text (StateType.Normal);
 					cr.ShowLayout (layout);
+					
+					if (cat.Items.Count == 0)
+						continue;
+					
 					layout.SetMarkup ("");
 					int w2, h2;
 					layout.GetPixelSize (out w2, out h2);
@@ -198,7 +188,7 @@ namespace MonoDevelop.Ide
 					var startY = yPos;
 					int curItem = 0;
 					int row = 0;
-					var iconHeight = Math.Max (h, cat.Items [0].Icon.Height + 2);
+					var iconHeight = Math.Max (h, cat.Items [0].Icon.Height + 2) + itemPadding * 2;
 					if (cat.FirstVisibleItem > 0) {
 						Gtk.Style.PaintArrow (Style, e.Window, State, ShadowType.None, 
 								new Rectangle ((int)xPos, (int)yPos, w, h), 
@@ -232,46 +222,36 @@ namespace MonoDevelop.Ide
 						}
 						
 						if (item == ActiveItem) {
-							cr.Rectangle (xPos + 0.5, yPos + 0.5, w + item.Icon.Width + 2, iconHeight);
-							
-							using (var pattern = new Cairo.LinearGradient (xPos, yPos, xPos, yPos + iconHeight * 2)) {
-								pattern.AddColorStop (0, (HslColor)Style.Base (StateType.Selected));
-								pattern.AddColorStop (1, new Cairo.Color (0.8, 1.0, 0.8));
-								cr.Pattern = pattern;
-								cr.FillPreserve ();
-							}
-							
+							int itemWidth = w + item.Icon.Width + 2 + itemPadding * 2;
+							cr.Rectangle (xPos, yPos, itemWidth, iconHeight);
+							cr.LineWidth = 1;
+							cr.Color = (HslColor)Style.Base (StateType.Selected);
+							cr.Fill ();
+						} else if (item == hoverItem) {
+							int itemWidth = w + item.Icon.Width + 2 + itemPadding * 2;
+							cr.Rectangle (xPos + 0.5, yPos + 0.5, itemWidth - 1, iconHeight);
+							cr.LineWidth = 1;
 							cr.Color = (HslColor)Style.Base (StateType.Selected);
 							cr.Stroke ();
-							cr.Color = (HslColor)Style.Text (StateType.Selected);
-						} else if (item == hoverItem) {
-							cr.Rectangle (xPos + 0.5, yPos + 0.5, w + item.Icon.Width + 2, iconHeight);
-							using (var pattern = new Cairo.LinearGradient (xPos, yPos, xPos, yPos + iconHeight)) {
-								pattern.AddColorStop (0, new Cairo.Color (0.6, 0.8, 0.6));
-								pattern.AddColorStop (1, new Cairo.Color (0.8, 1.0, 0.8));
-								cr.Pattern = pattern;
-								cr.Fill ();
-							}
-							cr.Color = (HslColor)Style.Text (StateType.Normal);
-						} else {
-							cr.Color = (HslColor)Style.Text (StateType.Normal);
 						}
-						cr.MoveTo (xPos + item.Icon.Width + 2, yPos + (iconHeight - h) / 2);
+						cr.Color = (HslColor)Style.Text (item == ActiveItem? StateType.Selected : StateType.Normal);
+						cr.MoveTo (xPos + item.Icon.Width + 2 + itemPadding, yPos + (iconHeight - h) / 2);
 						layout.SetText (Ellipsize (item.ListTitle ?? item.Title, maxLength));
 						cr.ShowLayout (layout);
-						e.Window.DrawPixbuf (Style.BaseGC (StateType.Normal), item.Icon, 0, 0, (int)xPos, (int)(yPos + (iconHeight - item.Icon.Height) / 2), item.Icon.Width, item.Icon.Height, RgbDither.None, 0, 0);
+						e.Window.DrawPixbuf (Style.BaseGC (StateType.Normal), item.Icon, 0, 0, (int)xPos + itemPadding,
+							(int)(yPos + (iconHeight - item.Icon.Height) / 2), item.Icon.Width, item.Icon.Height, RgbDither.None, 0, 0);
 						
 						yPos += iconHeight;
 						if (++curItem >= maxItems) {
 							curItem = 0;
 							yPos = startY;
-							xPos += w + cat.Items [0].Icon.Width + 2 + padding;
+							xPos += w + cat.Items [0].Icon.Width + 2 + padding + itemPadding * 2;
 							row++;
 						}
 					}
 					
 				
-					xPos += w + cat.Items [0].Icon.Width + 2 + padding;
+					xPos += w + cat.Items [0].Icon.Width + 2 + padding + itemPadding * 2;
 				}
 				layout.Dispose ();
 			}
@@ -292,16 +272,16 @@ namespace MonoDevelop.Ide
 				RightItem ();
 				break;
 			case Gdk.Key.Up:
-				PrevItem ();
+				PrevItem (false);
 				break;
 			case Gdk.Key.Down:
-				NextItem ();
+				NextItem (false);
 				break;
 			case Gdk.Key.Tab:
 				if ((mod & ModifierType.ShiftMask) == 0)
-					NextItem ();
+					NextItem (true);
 				else
-					PrevItem ();
+					PrevItem (true);
 				break;
 			}
 			return base.OnKeyPressEvent (evnt);
@@ -333,10 +313,11 @@ namespace MonoDevelop.Ide
 					continue;
 				int relIndex = idx - cat.FirstVisibleItem;
 				if (relIndex / maxItems == 0) {
-					if (i > 0) {
-						int newIndex = Math.Min (categories[i -1].Items.Count - 1, categories[i - 1].FirstVisibleItem + relIndex);
-						ActiveItem = categories[i - 1].Items [newIndex];
-					}
+					Category prevCat = GetPrevCat (i);
+					if (prevCat == cat)
+						return;
+					int newIndex = Math.Min (prevCat.Items.Count - 1, prevCat.FirstVisibleItem + relIndex);
+					ActiveItem = prevCat.Items [newIndex];
 				} else {
 					ActiveItem = cat.Items [relIndex - maxItems];
 				}
@@ -353,9 +334,12 @@ namespace MonoDevelop.Ide
 					continue;
 				int relIndex = idx - cat.FirstVisibleItem;
 				if (relIndex / maxItems == maxRows - 1 || relIndex + maxItems >= cat.Items.Count) {
+					Category nextCat = GetNextCat (i);
+					if (nextCat == cat)
+						return;
 					if (i + 1 < categories.Count) {
-						int newIndex = Math.Min (categories[i + 1].Items.Count - 1, categories[i + 1].FirstVisibleItem + relIndex);
-						ActiveItem = categories[i + 1].Items [newIndex];
+						int newIndex = Math.Min (nextCat.Items.Count - 1, nextCat.FirstVisibleItem + relIndex);
+						ActiveItem = nextCat.Items [newIndex];
 					}
 				} else {
 					ActiveItem = cat.Items [relIndex + maxItems];
@@ -363,9 +347,10 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public void NextItem ()
+		public void NextItem (bool stayInCategory)
 		{
-			foreach (Category cat in categories) {
+			for (int i = 0; i < categories.Count; i++) {
+				var cat = categories[i];
 				int idx = cat.Items.IndexOf (ActiveItem);
 				if (idx < 0)
 					continue;
@@ -374,6 +359,9 @@ namespace MonoDevelop.Ide
 						cat.FirstVisibleItem++;
 					ActiveItem = cat.Items[idx + 1];
 				} else {
+					if (!stayInCategory) {
+						cat = GetNextCat (i);
+					}
 					cat.FirstVisibleItem = 0;
 					ActiveItem = cat.Items[0];
 				}
@@ -381,9 +369,10 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public void PrevItem ()
+		public void PrevItem (bool stayInCategory)
 		{
-			foreach (Category cat in categories) {
+			for (int i = 0; i < categories.Count; i++) {
+				var cat = categories[i];
 				int idx = cat.Items.IndexOf (ActiveItem);
 				if (idx < 0)
 					continue;
@@ -392,12 +381,35 @@ namespace MonoDevelop.Ide
 						cat.FirstVisibleItem--;
 					ActiveItem = cat.Items[idx - 1];
 				} else {
+					if (!stayInCategory) {
+						cat = GetPrevCat (i);
+					}
 					if (cat.Items.Count - 1 > cat.FirstVisibleItem + maxItems * maxRows)
 						cat.FirstVisibleItem = cat.Items.Count - maxItems * maxRows + 1;
 					ActiveItem = cat.Items[cat.Items.Count - 1];
 				}
 				break;
 			}
+		}
+		
+		Category GetNextCat (int i)
+		{
+			Category cat;
+			do {
+				i = (i + 1) % (categories.Count);
+				cat = categories[i];
+			} while (cat.Items.Count == 0);
+			return cat;
+		}
+		
+		Category GetPrevCat (int i)
+		{
+			Category cat;
+			do {
+				i = (categories.Count + i - 1) % (categories.Count);
+				cat = categories[i];
+			} while (cat.Items.Count == 0);
+			return cat;
 		}
 		
 		protected override void OnSizeRequested (ref Requisition req)
@@ -416,10 +428,16 @@ namespace MonoDevelop.Ide
 			layout.Dispose ();
 			int totalWidth = 0;
 			int totalHeight = 0;
+			
+			var firstNonEmptyCat = categories.FirstOrDefault (c => c.Items.Count > 0);
+			if (firstNonEmptyCat == null)
+				return;
+			
+			var icon = firstNonEmptyCat.Items[0].Icon;
+			var iconHeight = Math.Max (h, icon.Height + 2) + itemPadding * 2;
+			var iconWidth = icon.Width + 2 + w  + itemPadding * 2;
 				
 			foreach (var cat in categories) {
-				var iconHeight = Math.Max (h, cat.Items[0].Icon.Height + 2);
-				var iconWidth = cat.Items[0].Icon.Width + 2 + w;
 				var headerHeight = h + headerDistance;
 				totalHeight = Math.Max (totalHeight, headerHeight + (Math.Min (cat.Items.Count, maxItems)) * iconHeight);
 				totalWidth += (1 + Math.Min (maxRows - 1, cat.Items.Count / maxItems)) * iconWidth;
@@ -614,7 +632,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			documentList.ActiveItem = activeItem;
-			documentList.NextItem ();
+			documentList.NextItem (true);
 			documentList.RequestClose += delegate {
 				if (documentList.ActiveItem.Tag is Pad) {
 					((Pad)documentList.ActiveItem.Tag).BringToFront (true);

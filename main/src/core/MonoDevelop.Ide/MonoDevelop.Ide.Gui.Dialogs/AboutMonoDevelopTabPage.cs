@@ -26,7 +26,6 @@
 // THE SOFTWARE.
 //
 //
-
 using System;
 using System.IO;
 using System.Text;
@@ -38,7 +37,7 @@ using Gdk;
 using Gtk;
 using GLib;
 using Pango;
-
+using System.Reflection;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -54,10 +53,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			aboutPictureScrollBox = new ScrollBox ();
 
 			PackStart (aboutPictureScrollBox, false, false, 0);
-			imageSep = new Pixbuf (typeof(CommonAboutDialog).Assembly, "AboutImageSep.png");
+			using (var stream = BrandingService.GetStream ("AboutImageSep.png"))
+				imageSep = new Pixbuf (stream);
 			PackStart (new Gtk.Image (imageSep), false, false, 0);
 			
-			var label = new Label();
+			var label = new Label ();
 			label.Markup = string.Format (
 				"<b>{0}</b>\n    {1}", 
 				GettextCatalog.GetString ("Version"), 
@@ -97,9 +97,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			int scrollPause;
 			int scrollStart;
 			Gdk.GC backGc;
-	
 			internal uint TimerHandle;
-	
 			string[] authors = new string[] {
 				"Lluis Sanchez Gual",
 				"Michael Hutchinson",
@@ -119,7 +117,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				"Andrea Krüger",
 				"Jakub Steiner"
 			};
-			
 			string[] oldAuthors = new string[] {
 				"Aaron Bockover",
 				"Alberto Paro",
@@ -194,13 +191,32 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				"Yan-ren Tsai",
 				"Zach Lute"
 			};
-	
+			
+			Gdk.Color bgColor = new Gdk.Color (49, 49, 74);
+			Gdk.Color textColor = new Gdk.Color (0xFF, 0xFF, 0xFF);
+			
+			void LoadBranding ()
+			{
+				try {
+					var textColStr = BrandingService.GetString ("AboutBox", "TextColor");
+					if (textColStr != null)
+						Gdk.Color.Parse (textColStr, ref textColor);
+					var bgColStr = BrandingService.GetString ("AboutBox", "BackgroundColor");
+					if (bgColStr != null)
+						Gdk.Color.Parse (bgColStr, ref bgColor);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error loading about box branding", ex);
+				}
+			}
+			
 			public ScrollBox ()
 			{
+				LoadBranding ();
 				this.Realized += new EventHandler (OnRealized);
-				this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
-				
-				image = new Gdk.Pixbuf (GetType ().Assembly, "AboutImage.png");
+				this.ModifyBg (Gtk.StateType.Normal, bgColor);
+				this.ModifyText (Gtk.StateType.Normal, textColor);
+				using (var stream = BrandingService.GetStream ("AboutImage.png"))
+					image = new Gdk.Pixbuf (stream);
 				monoPowered = new Gdk.Pixbuf (GetType ().Assembly, "mono-powered.png");
 				this.SetSizeRequest (450, image.Height - 1);
 				
@@ -213,7 +229,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					sb.Append (GettextCatalog.GetString ("<b>Contributors to this Release</b>\n\n"));
 					
 					for (int n = 0; n < authors.Length; n++) {
-						sb.Append (authors[n]);
+						sb.Append (authors [n]);
 						if (n % 2 == 1)
 							sb.Append ("\n");
 						else if (n < authors.Length - 1)
@@ -222,7 +238,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					
 					sb.Append ("\n\n<b>" + GettextCatalog.GetString ("Previous Contributors") + "</b>\n\n");
 					for (int n = 0; n < oldAuthors.Length; n++) {
-						sb.Append (oldAuthors[n]);
+						sb.Append (oldAuthors [n]);
 						if (n % 2 == 1)
 							sb.Append ("\n");
 						else if (n < oldAuthors.Length - 1)
@@ -273,7 +289,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				int widthPixel, heightPixel;
 				layout.GetPixelSize (out widthPixel, out heightPixel);
 				
-				GdkWindow.DrawLayout (Style.WhiteGC, 0, textTop - scroll, layout);
+				GdkWindow.DrawLayout (Style.TextGC (StateType.Normal), 0, textTop - scroll, layout);
 				GdkWindow.DrawPixbuf (backGc, monoPowered, 0, 0, (width / 2) - (monoPowered.Width / 2), textTop - scroll + heightPixel + monoLogoSpacing, -1, -1, RgbDither.Normal, 0, 0);
 				
 				heightPixel = heightPixel - 80 + image.Height;
@@ -291,7 +307,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				this.GdkWindow.GetSize (out w, out h);
 				this.DrawText ();
 				this.DrawImage ();
-	//			this.GdkWindow.DrawRectangle (backGc, true, 0, 210, w, 10);
+				//			this.GdkWindow.DrawRectangle (backGc, true, 0, 210, w, 10);
 				return false;
 			}
 			
@@ -316,14 +332,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				layout.SetMarkup (CreditText);
 				
 				backGc = new Gdk.GC (GdkWindow);
-				backGc.RgbBgColor = new Gdk.Color (49, 49, 74);
+				backGc.RgbBgColor = bgColor;
 			}
 			
 			protected override void OnDestroyed ()
 			{
 				base.OnDestroyed ();
 				backGc.Dispose ();
-				
 				GLib.Source.Remove (TimerHandle);
 			}
 		}

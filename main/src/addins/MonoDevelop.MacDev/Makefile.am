@@ -51,6 +51,7 @@ FILES =  \
 	MonoDevelop.MacDev.PlistEditor/CustomPropertiesWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/ExpanderList.cs \
 	MonoDevelop.MacDev.PlistEditor/ImageChooser.cs \
+	MonoDevelop.MacDev.PlistEditor/IPListDisplayWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/IPlistEditingHandler.cs \
 	MonoDevelop.MacDev.PlistEditor/MacExpander.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
@@ -66,6 +67,7 @@ FILES =  \
 	NativeReferences/ProjectNodeBuilder.cs \
 	ObjCIntegration/CodebehindTemplateBase.cs \
 	ObjCIntegration/CSharpCodeCodebehind.cs \
+	ObjCIntegration/CSharpCodeTypeDefinition.cs \
 	ObjCIntegration/IBAction.cs \
 	ObjCIntegration/IBActionParameter.cs \
 	ObjCIntegration/IBOutlet.cs \
@@ -85,6 +87,7 @@ FILES =  \
 	XcodeIntegration/XCBuildConfiguration.cs \
 	XcodeIntegration/XCConfigurationList.cs \
 	XcodeIntegration/XcodeObject.cs \
+	XcodeIntegration/XCodeObjectComparer.cs \
 	XcodeIntegration/XcodeProject.cs \
 	XcodeIntegration/XcodeType.cs \
 	XcodeInterfaceBuilderDisplayBinding.cs \
@@ -94,7 +97,6 @@ FILES =  \
 	XcodeSyncing/XcodeSyncContext.cs \
 	XcodeSyncing/XcodeSyncedContent.cs \
 	XcodeSyncing/XcodeSyncedItem.cs \
-	XcodeSyncing/XcodeSyncedResource.cs \
 	XcodeSyncing/XcodeSyncedType.cs 
 
 RES =  \

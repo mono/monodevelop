@@ -6,15 +6,15 @@
        url         = "http://monodevelop.com/"
        description = "Windows Platform Support for MonoDevelop"
        category    = "Platform Support"
-       version     = "2.7">
+       version     = "2.8">
 	
 	<Runtime>
 		<Import assembly="WindowsPlatform.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.7"/>
-		<Addin id="Ide" version="2.7"/>
+		<Addin id="Core" version="2.8"/>
+		<Addin id="Ide" version="2.8"/>
   </Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">
@@ -25,10 +25,10 @@
 		<Class class="MonoDevelop.Platform.JumpList" />
 	</Extension>
 
-<!--  <Extension path = "/MonoDevelop/Components/DialogHandlers">
+  <Extension path = "/MonoDevelop/Components/DialogHandlers">
     <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
     <Class class = "MonoDevelop.Platform.AddFileDialogHandler"/>
     <Class class = "MonoDevelop.Platform.OpenFileDialogHandler"/>
-  </Extension>-->
+  </Extension>
 	
 </Addin>

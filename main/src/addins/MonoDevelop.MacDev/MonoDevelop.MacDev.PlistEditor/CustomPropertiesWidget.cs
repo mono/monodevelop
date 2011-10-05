@@ -35,12 +35,12 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CustomPropertiesWidget : Gtk.Bin
+	public partial class CustomPropertiesWidget : Gtk.Bin, IPListDisplayWidget
 	{
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
 		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (string));
-		Gtk.TreeView treeview1;
+		PopupTreeView treeview1;
 		PListScheme scheme;
 		HashSet<PObject> expandedObjects = new HashSet<PObject> ();
 		bool showDescriptions = true;
@@ -59,18 +59,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		PDictionary nsDictionary;
-		public PDictionary NSDictionary {
-			get {
-				return nsDictionary;
-			}
-			set {
-				nsDictionary = value;
-				nsDictionary.Changed += delegate {
-					QueueDraw ();
-				};
-				RefreshTree ();
-			}
+		PObject nsDictionary;
+		public void SetPListContainer (PObjectContainer value)
+		{
+			nsDictionary = value;
+			nsDictionary.Changed += delegate {
+				QueueDraw ();
+			};
+			RefreshTree ();
 		}
 
 		public static PObject CreateNewObject (string type)
@@ -148,7 +144,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (parent is PArray) {
 						var arr = (PArray)parent;
 						arr.Add (newObj);
-						arr.QueueRebuild ();
 						return;
 					}
 					
@@ -183,6 +178,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				IdeApp.CommandService.ShowContextMenu (menu, this);
 				menu.ShowAll ();
 			}
+
 			
 			protected override void OnSizeRequested (ref Requisition requisition)
 			{
@@ -200,11 +196,62 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 		}
 		
+		class CellRendererButton : CellRenderer
+		{
+			Gdk.Pixbuf pixbuf;
+			
+			public bool Collapsed {
+				get;
+				set;
+			}
+			
+			public CellRendererButton (Gdk.Pixbuf pixbuf)
+			{
+				this.pixbuf = pixbuf;
+				base.Mode = CellRendererMode.Editable;
+			}
+			
+			protected virtual void OnClicked (System.EventArgs e)
+			{
+				EventHandler handler = this.Clicked;
+				if (handler != null)
+					handler (this, e);
+			}
+			
+			public event EventHandler Clicked;
+			
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				x_offset = 0;
+				y_offset = 0;
+				width = 2;
+				width += pixbuf.Width;
+				height = pixbuf.Width + 2;
+			}
+			
+			public override CellEditable StartEditing (Gdk.Event evnt, Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, CellRendererState flags)
+			{
+				if (evnt.Type == Gdk.EventType.ButtonPress)
+					OnClicked (EventArgs.Empty);
+				return base.StartEditing (evnt, widget, path, background_area, cell_area, flags);
+			}
+			
+			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+			{
+				if (Collapsed)
+					return;
+				int x = cell_area.X + 1;
+				int y = cell_area.Y + 1;
+				window.DrawPixbuf (widget.Style.BaseGC (StateType.Normal), pixbuf, 0, 0, x, y, pixbuf.Width, pixbuf.Height, Gdk.RgbDither.None, 0, 0);
+			}
+		}
+		
 		public CustomPropertiesWidget (PListScheme scheme)
 		{
 			this.scheme = scheme = scheme ?? PListScheme.Empty;
 			this.Build ();
 			treeview1 = new PopupTreeView  (this);
+			treeview1.HeadersClickable = true;
 			this.vbox1.PackStart (treeview1, true, true, 0);
 			ShowAll ();
 			
@@ -233,10 +280,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 				
 				treeStore.SetValue (selIter, 0, newKey);
-				
+				obj.Replace (CreateNewObject (key.Type));
 			};
-			
-			treeview1.AppendColumn (GettextCatalog.GetString ("Property"), keyRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
+			var col = new TreeViewColumn ();
+			col.Resizable = true;
+			col.Title = GettextCatalog.GetString ("Property");
+			col.PackStart (keyRenderer, true);
+			col.SetCellDataFunc (keyRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				string id = (string)tree_model.GetValue (iter, 0) ?? "";
 				var obj = (PObject)tree_model.GetValue (iter, 1);
@@ -252,6 +302,62 @@ namespace MonoDevelop.MacDev.PlistEditor
 				renderer.Sensitive = true;
 				renderer.Text = key != null && ShowDescriptions ? GettextCatalog.GetString (key.Description) : id;
 			});
+			
+			var removeRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-remove", IconSize.Menu));
+			removeRenderer.Clicked += delegate {
+				TreeIter iter;
+				bool hasSelection = treeview1.Selection.GetSelected (out iter);
+				PObject obj = null;
+				if (hasSelection) {
+					obj = (PObject)treeStore.GetValue (iter, 1);
+					obj.Remove ();
+				}
+			};
+			col.PackEnd (removeRenderer, false);
+			col.SetCellDataFunc (removeRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
+				removeRenderer.Collapsed = !treeview1.Selection.IterIsSelected (iter);
+			});
+			
+			var addRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-add", IconSize.Menu));
+			addRenderer.Clicked += delegate {
+				Gtk.TreeIter iter;
+				bool hasSelection = treeview1.Selection.GetSelected (out iter);
+				PObject obj = null;
+				if (hasSelection)
+					obj = (PObject)treeStore.GetValue (iter, 1);
+				if (obj == null)
+					return;
+				var newObj = new PString ("");
+				
+				PObject parent = obj.Parent;
+				if (parent is PArray) {
+					var arr = (PArray)parent;
+					arr.Add (newObj);
+					return;
+				}
+				
+				var dict = parent as PDictionary;
+				if (dict == null)
+					return;
+				
+				string name = "newNode";
+				while (dict.ContainsKey (name))
+					name += "_";
+				if (obj == null) {
+					dict.Add (name ,newObj);
+				} else {
+					dict.InsertAfter (obj.Key, name, newObj);
+				}
+			};
+			
+			col.PackEnd (addRenderer, false);
+			col.SetCellDataFunc (addRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
+				addRenderer.Collapsed = !treeview1.Selection.IterIsSelected (iter);
+			});
+			
+			
+			treeview1.AppendColumn (col);
+			
 			treeview1.RowExpanded += delegate(object o, RowExpandedArgs args) {
 				var obj = (PObject)treeStore.GetValue (args.Iter, 1);
 				expandedObjects.Add (obj);
@@ -319,8 +425,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 				var key = Parent != null? Scheme.GetKey (pObject.Parent.Key) : null;
 				if (key != null) {
-					foreach (var val in key.Values) {
-						valueStore.AppendValues (val.Description);
+					var descr = new List<string> (key.Values.Select (v => v.Description));
+					descr.Sort ();
+					foreach (var val in descr) {
+						valueStore.AppendValues (val);
 					}
 				}
 			};
@@ -409,7 +517,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			if (!rebuildArrays.Contains (dict)) {
 				rebuildArrays.Add (dict);
-				dict.Rebuild += HandleDictRebuild;
+				dict.Changed += HandleDictRebuild;
 			}
 		}
 
@@ -449,7 +557,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			if (!rebuildArrays.Contains (arr)) {
 				rebuildArrays.Add (arr);
-				arr.Rebuild += HandleArrRebuild;
+				arr.Changed += HandleArrRebuild;
 			}
 		}
 
@@ -479,13 +587,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			keyStore.Clear ();
 			if (scheme != null) {
-				foreach (var key in scheme.Keys)
+				var sortedKeys = new List<PListScheme.Key> (scheme.Keys);
+				sortedKeys.Sort ((x, y) => x.Description.CompareTo (y.Description));
+				foreach (var key in sortedKeys)
 					keyStore.AppendValues (key.Description, key);
 			}
 			
 			treeStore.Clear ();
-			if (nsDictionary != null)
-				AddToTree (treeStore, Gtk.TreeIter.Zero, nsDictionary);
+			if (nsDictionary is PDictionary) 
+				AddToTree (treeStore, Gtk.TreeIter.Zero, (PDictionary)nsDictionary);
+			if (nsDictionary is PArray) 
+				AddToTree (treeStore, Gtk.TreeIter.Zero, (PArray)nsDictionary);
 		}
 		
 		/*public class CellRendererProperty : CellRenderer

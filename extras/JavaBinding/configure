@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.7
+VERSION=2.8
 PACKAGE=monodevelop-java
 prefix=/usr/local
 config=DEBUG
@@ -85,6 +85,8 @@ done
 
 check_required_packages
 [ $? -eq 1 ] && exit 1
+
+sed -e "s,@VERSION@,$VERSION," < monodevelop-java.spec.in > monodevelop-java.spec
 
 echo "prefix=$prefix" > config.make
 echo "RUNTIME=mono" >> config.make

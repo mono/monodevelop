@@ -35,26 +35,38 @@ namespace MonoDevelop.MacDev.PlistEditor
 {
 	public class PListEditorViewContent : AbstractViewContent
 	{
-		PDictionary dict;
-		Gtk.Widget widget;
+		PObjectContainer pobject;
+		IPListDisplayWidget widget;
 		
-		public override Gtk.Widget Control { get { return widget; } }
+		public override Gtk.Widget Control { get { return (Gtk.Widget)widget; } }
 		
 		public PListEditorViewContent (IPlistEditingHandler handler, Project proj)
 		{
-			dict = new PDictionary ();
-			dict.Changed += (sender, e) => IsDirty = true;
 			if (handler != null) {
-				widget =  new PListEditorWidget (handler, proj, dict);
+				widget =  new PListEditorWidget (handler, proj);
 			} else {
-				widget = new CustomPropertiesWidget () { NSDictionary = dict };
+				widget = new CustomPropertiesWidget ();
 			}
 		}
 		
 		public override void Load (string fileName)
 		{
 			ContentName = fileName;
-			dict.Reload (fileName);
+			if (pobject == null) {
+				var dict = new PDictionary ();
+				if (dict.Reload (fileName)) {
+					pobject = dict;
+				} else {
+					var arr = new PArray ();
+					if (!arr.Reload (fileName)) {
+						MessageService.ShowError (GettextCatalog.GetString ("Can't load plist file {0}.", fileName));
+						return;
+					}
+					pobject = arr;
+				}
+				widget.SetPListContainer (pobject);
+				pobject.Changed += (sender, e) => IsDirty = true;
+			}
 			this.IsDirty = false;
 		}
 		
@@ -63,7 +75,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			this.IsDirty = false;
 			ContentName = fileName;
 			try {
-				dict.Save (fileName);
+				pobject.Save (fileName);
 			} catch (Exception e) {
 				MessageService.ShowException (e, GettextCatalog.GetString ("Error while writing plist"));
 			}

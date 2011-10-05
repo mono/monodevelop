@@ -35,6 +35,11 @@ namespace Sharpen
 		{
 		}
 		
+		public AtomicBoolean (bool val)
+		{
+			this.val = val;
+		}
+		
 		public bool Get ()
 		{
 			return val;

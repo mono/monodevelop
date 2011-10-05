@@ -39,10 +39,24 @@ distclean: distclean-recursive
 	
 
 dist: dist-recursive
+	rm -rf tarballs
 	mkdir -p tarballs
 	for t in $(SUBDIRS); do \
 		if test -a $$t/*.tar.gz; then \
 			mv -f $$t/*.tar.gz tarballs ;\
+		fi \
+	done
+	for t in `ls tarballs/*.tar.gz`; do \
+		gunzip $$t ;\
+	done
+	for t in `ls tarballs/*.tar`; do \
+ 		bzip2 $$t ;\
+	done
+	rm -rf specs
+	mkdir -p specs
+	for t in $(SUBDIRS); do \
+		if test -a $$t/*.spec; then \
+			cp -f $$t/*.spec specs ;\
 		fi \
 	done
 

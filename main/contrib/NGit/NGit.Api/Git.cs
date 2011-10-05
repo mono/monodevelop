@@ -556,6 +556,109 @@ namespace NGit.Api
 			return new StatusCommand(repo);
 		}
 
+		/// <summary>Returns a command to add notes to an object</summary>
+		/// <returns>
+		/// a
+		/// <see cref="AddNoteCommand">AddNoteCommand</see>
+		/// </returns>
+		public virtual AddNoteCommand NotesAdd()
+		{
+			return new AddNoteCommand(repo);
+		}
+
+		/// <summary>Returns a command to remove notes on an object</summary>
+		/// <returns>
+		/// a
+		/// <see cref="RemoveNoteCommand">RemoveNoteCommand</see>
+		/// </returns>
+		public virtual RemoveNoteCommand NotesRemove()
+		{
+			return new RemoveNoteCommand(repo);
+		}
+
+		/// <summary>Returns a command to list all notes</summary>
+		/// <returns>
+		/// a
+		/// <see cref="ListNotesCommand">ListNotesCommand</see>
+		/// </returns>
+		public virtual ListNotesCommand NotesList()
+		{
+			return new ListNotesCommand(repo);
+		}
+
+		/// <summary>Returns a command to show notes on an object</summary>
+		/// <returns>
+		/// a
+		/// <see cref="ShowNoteCommand">ShowNoteCommand</see>
+		/// </returns>
+		public virtual ShowNoteCommand NotesShow()
+		{
+			return new ShowNoteCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>ls-remote</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-ls-remote.html"
+		/// *      >Git documentation about ls-remote</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="LsRemoteCommand">LsRemoteCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>status</code>
+		/// command
+		/// </returns>
+		public virtual LsRemoteCommand LsRemote()
+		{
+			return new LsRemoteCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>clean</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-clean.html"
+		/// *      >Git documentation about Clean</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="CleanCommand">CleanCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>clean</code>
+		/// command
+		/// </returns>
+		public virtual CleanCommand Clean()
+		{
+			return new CleanCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>blame</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-blame.html"
+		/// *      >Git documentation about Blame</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="BlameCommand">BlameCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>blame</code>
+		/// command
+		/// </returns>
+		public virtual BlameCommand Blame()
+		{
+			return new BlameCommand(repo);
+		}
+
 		/// <returns>the git repository this class is interacting with</returns>
 		public virtual Repository GetRepository()
 		{

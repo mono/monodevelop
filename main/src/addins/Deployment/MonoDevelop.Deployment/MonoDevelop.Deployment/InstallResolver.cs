@@ -44,7 +44,7 @@ namespace MonoDevelop.Deployment
 		{
 			this.appName = appName;
 			
-			using (DeployContext ctx = new DeployContext (this, "Linux", prefix)) {
+			using (DeployContext ctx = new DeployContext (this, DeployService.CurrentPlatform, prefix)) {
 				InstallEntry (monitor, ctx, entry, configuration);
 			}
 		}

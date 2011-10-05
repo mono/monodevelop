@@ -200,6 +200,9 @@ namespace MonoDevelop.SourceEditor
 			case "EnableAnimations":
 				base.EnableAnimations =  (bool) args.NewValue;
 				break;
+			case "UseAntiAliasing":
+				base.UseAntiAliasing =  (bool) args.NewValue;
+				break;
 			}
 			} catch (Exception ex) {
 				LoggingService.LogError ("SourceEditorOptions error with property value for '" + (args.Key ?? "") + "'", ex);
@@ -219,7 +222,7 @@ namespace MonoDevelop.SourceEditor
 			this.indentStyle = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
-			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", true);
+			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", false);
 			base.ShowTabs = PropertyService.Get ("ShowTabs", false);
 			base.ShowEolMarkers = PropertyService.Get ("ShowEolMarkers", false);
 			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", false);
@@ -238,7 +241,7 @@ namespace MonoDevelop.SourceEditor
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
-			
+			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
 		}
 		
 		#region new options
@@ -641,6 +644,13 @@ namespace MonoDevelop.SourceEditor
 			set {
 				PropertyService.Set ("EnableAnimations", value);
 				base.EnableAnimations = value;
+			}
+		}
+		
+		public override bool UseAntiAliasing {
+			set {
+				PropertyService.Set ("UseAntiAliasing", value);
+				base.UseAntiAliasing = value;
 			}
 		}
 

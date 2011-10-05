@@ -1,10 +1,12 @@
 // 
 // PBXBuildFile.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +40,14 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			this.fileRef = fileRef;
 		}
 
+		public XcodeObject BuildPhase {
+			get; set;
+		}
+
+		public override string Name {
+			get { return fileRef.Name; }
+		}
+
 		public override XcodeType Type {
 			get {
 				return XcodeType.PBXBuildFile;
@@ -46,7 +56,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		public override string ToString ()
 		{
-			return string.Format ("{0} = {{isa = {1}; fileRef = {2}; }};", Token, Type, fileRef.Token);
+			if (BuildPhase != null)
+				return string.Format ("{0} /* {1} in {2} */ = {{isa = {3}; fileRef = {4} /* {1} */; }};", Token, fileRef.Name, BuildPhase.Name, Type, fileRef.Token);
+			else
+				return string.Format ("{0} /* {1} */ = {{isa = {2}; fileRef = {3} /* {1} */; }};", Token, fileRef.Name, Type, fileRef.Token);
 		}
 	}
 }

@@ -982,6 +982,7 @@ namespace NGit.Transport
 				parser.SetAllowThin(true);
 				parser.SetNeedNewObjectIds(checkReferencedIsReachable);
 				parser.SetNeedBaseObjectIds(checkReferencedIsReachable);
+				parser.SetCheckEofAfterPackFooter(!biDirectionalPipe);
 				parser.SetObjectChecking(IsCheckReceivedObjects());
 				parser.SetLockMessage(lockMsg);
 				packLock = parser.Parse(receiving, resolving);

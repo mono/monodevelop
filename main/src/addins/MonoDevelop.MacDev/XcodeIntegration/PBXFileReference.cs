@@ -1,10 +1,12 @@
 // 
 // PBXFileReference.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,21 +27,21 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	class PBXFileReference : XcodeObject
 	{
-		string name;
-		string path;
-		string sourceTree;
+		public override string Name { get { return System.IO.Path.GetFileName (Path); } }
+		public string Path { get; private set; }
+		public string SourceTree { get; private set; }
 
-		public PBXFileReference (string name, string path, string sourceTree)
+		public PBXFileReference (string path, string sourceTree)
 		{
-			this.name = name;
-			this.path = path;
-			this.sourceTree = sourceTree;
+			SourceTree = sourceTree;
+			Path = path;
 		}
 
 		public override XcodeType Type {
@@ -50,7 +52,32 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		public override string ToString ()
 		{
-			return string.Format ("{0} = {{isa = {1}; name = {2}; path = {3}; sourceTree = {4}; }};", Token, Type, QuoteOnDemand (name), QuoteOnDemand (path), sourceTree);
+			StringBuilder sb = new StringBuilder ("");
+			int dot = Path.LastIndexOf ('.');
+
+			sb.AppendFormat ("{0} /* {1} */ = {{isa = {2}; ", Token, Name, Type);
+
+			if (dot > 0) {
+				switch (Path.Substring (dot)) {
+				case ".framework": sb.AppendFormat ("lastKnownFileType = wrapper.framework; name = {0}; ", Name); break;
+				case ".app": sb.Append ("explicitFileType = wrapper.application; includeInIndex = 0; "); break;
+				case ".storyboard": sb.Append ("lastKnownFileType = file.storyboard; "); break;
+				case ".strings": sb.Append ("lastKnownFileType = text.plist.xml; "); break;
+				case ".plist": sb.Append ("lastKnownFileType = text.plist.xml; "); break;
+				case ".m": sb.Append ("lastKnownFileType = sourcecode.c.objc; "); break;
+				case ".h": sb.Append ("lastKnownFileType = sourcecode.c.h; "); break;
+				case ".zip": sb.Append ("lastKnownFileType = archive.zip; "); break;
+				case ".gz": sb.Append ("lastKnownFileType = archive.gzip; "); break;
+				case ".jpeg": sb.Append ("lastKnownFileType = image.jpeg; "); break;
+				case ".jpg": sb.Append ("lastKnownFileType = image.jpeg; "); break;
+				case ".png": sb.Append ("lastKnownFileType = image.png; "); break;
+				case ".pdf": sb.Append ("lastKnownFileType = image.pdf; "); break;
+				}
+			}
+
+			sb.AppendFormat ("name = \"{0}\"; path = \"{1}\"; sourceTree = {2}; }};", Name, Path, SourceTree);
+
+			return sb.ToString ();
 		}
 	}
 }

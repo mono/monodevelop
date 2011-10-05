@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Templates
 						string res = netProject.AssemblyContext.GetAssemblyFullName (aref, netProject.TargetFramework);
 						res = netProject.AssemblyContext.GetAssemblyNameForVersion (res, netProject.TargetFramework);
 						if (!ContainsReference (netProject, res))
-							netProject.References.Add (new ProjectReference (ReferenceType.Gac, aref));
+							netProject.References.Add (new ProjectReference (ReferenceType.Package, aref));
 					}
 				}
 				
@@ -142,8 +142,26 @@ namespace MonoDevelop.Ide.Templates
 				return null;
 		}
 		
+		public override bool SupportsProject (Project project, string projectPath)
+		{
+			DotNetProject netProject = project as DotNetProject;
+			if (netProject != null) {
+				// Ensure that the references are valid inside the project's target framework.
+				foreach (string aref in references) {
+					string res = netProject.AssemblyContext.GetAssemblyFullName (aref, netProject.TargetFramework);
+					res = netProject.AssemblyContext.GetAssemblyNameForVersion (res, netProject.TargetFramework);
+					if (string.IsNullOrEmpty (res))
+						return false;
+				}
+			}
+			
+			return true;
+		}
+		
 		bool ContainsReference (DotNetProject project, string aref)
 		{
+			if (string.IsNullOrEmpty (aref))
+				return false;
 			string aname;
 			int i = aref.IndexOf (',');
 			if (i == -1)
@@ -151,8 +169,8 @@ namespace MonoDevelop.Ide.Templates
 			else
 				aname = aref.Substring (0, i);
 			foreach (ProjectReference pr in project.References) {
-				if (pr.ReferenceType == ReferenceType.Gac && (pr.Reference == aname || pr.Reference.StartsWith (aname + ",")) || 
-					pr.ReferenceType != ReferenceType.Gac && pr.Reference.Contains (aname))
+				if (pr.ReferenceType == ReferenceType.Package && (pr.Reference == aname || pr.Reference.StartsWith (aname + ",")) || 
+					pr.ReferenceType != ReferenceType.Package && pr.Reference.Contains (aname))
 					return true;
 			}
 			return false;

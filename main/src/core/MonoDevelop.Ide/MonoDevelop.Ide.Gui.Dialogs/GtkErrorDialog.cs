@@ -26,6 +26,7 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -37,6 +38,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public GtkErrorDialog (Window parent)
 		{
 			this.Build ();
+			this.Title = BrandingService.ApplicationName;
 			TransientFor = parent;
 			descriptionLabel.ModifyBg (StateType.Normal, new Gdk.Color (255,0,0));
 			

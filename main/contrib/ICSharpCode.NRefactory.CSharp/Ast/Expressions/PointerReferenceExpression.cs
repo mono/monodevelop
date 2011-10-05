@@ -1,4 +1,4 @@
-﻿// 
+// 
 // PointerReferenceExpression.cs
 //  
 // Author:
@@ -45,7 +45,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
+<<<<<<< HEAD
 				SetChildByRole(Roles.Identifier, Identifier.Create (value, TextLocation.Empty));
+=======
+				SetChildByRole(Roles.Identifier, Identifier.Create (value, AstLocation.Empty));
+>>>>>>> master
 			}
 		}
 		

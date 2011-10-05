@@ -52,7 +52,7 @@ namespace ${Namespace}
 	}
 }	
 ]]></File>
-				<File name="AppDelegate.cs" DependsOn="MainMenu.xib">
+				<File name="AppDelegate.cs" >
 <![CDATA[using System;
 using System.Drawing;
 using MonoMac.Foundation;
@@ -77,7 +77,7 @@ namespace ${Namespace}
 	}
 }
 ]]></File>
-				<File name="MainMenu.xib.designer.cs" DependsOn="MainMenu.xib"
+				<File name="AppDelegate.designer.cs" DependsOn="AppDelegate.cs"
 				      ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True" ><![CDATA[
 namespace ${Namespace}
 {

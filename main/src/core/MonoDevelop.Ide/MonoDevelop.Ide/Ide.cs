@@ -445,8 +445,7 @@ namespace MonoDevelop.Ide
 				IdeApp.Workbench.CurrentLayout = "Solution";
 				IdeApp.Workbench.CurrentLayout = "Default";
 				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad> ().Visible = false;
-				IdeApp.Workbench.GetPad<FileScout> ().Visible = false;
-//				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad> ().Visible = false;
+				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad> ().Visible = false;
 				foreach (Pad p in IdeApp.Workbench.Pads) {
 					if (p.Visible)
 						p.AutoHide = true;

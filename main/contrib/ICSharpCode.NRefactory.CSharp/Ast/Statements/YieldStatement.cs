@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// yield return Expression;
 	/// </summary>
-	public class YieldStatement : Statement
+	public class YieldReturnStatement : Statement
 	{
 		public static readonly Role<CSharpTokenNode> YieldKeywordRole = new Role<CSharpTokenNode>("YieldKeyword", CSharpTokenNode.Null);
 		public static readonly Role<CSharpTokenNode> ReturnKeywordRole = new Role<CSharpTokenNode>("ReturnKeyword", CSharpTokenNode.Null);
@@ -51,14 +51,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
-			return visitor.VisitYieldStatement (this, data);
+			return visitor.VisitYieldReturnStatement (this, data);
 		}
 		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
-			YieldStatement o = other as YieldStatement;
+			YieldReturnStatement o = other as YieldReturnStatement;
 			return o != null && this.Expression.DoMatch(o.Expression, match);
 		}
 	}

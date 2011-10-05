@@ -28,11 +28,13 @@
 
 using System;
 using System.IO;
+using System.ComponentModel;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.StringParsing;
 using System.Collections.Generic;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
@@ -176,7 +178,14 @@ namespace MonoDevelop.Projects
 			StringTagModel tagSource = GetTagModel (entry, configuration);
 			ParseCommand (tagSource, out exe, out args);
 			
-			exe = ((FilePath)exe).ToAbsolute (entry.BaseDirectory).FullPath;
+			//if the executable name matches an executable in the project directory, use that, for back-compat
+			//else fall back and let the execution handler handle it via PATH, working directory, etc.
+			if (!Path.IsPathRooted (exe)) {
+				string localPath = ((FilePath) exe).ToAbsolute (entry.BaseDirectory).FullPath;
+				if (File.Exists (localPath))
+					exe = localPath;
+			}
+			
 			ProcessExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
 			
 			cmd.Arguments = args;
@@ -227,25 +236,20 @@ namespace MonoDevelop.Projects
 				return;
 			}
 			
-			if (!File.Exists (cmd.Command)) {
-				monitor.ReportError (GettextCatalog.GetString ("Custom command executable not exist"), null);
-				return;
-			}
-			
-			IProcessAsyncOperation oper;
+			AggregatedOperationMonitor aggMon = null;
+			IProcessAsyncOperation oper = null;
+			IConsole console = null;
 			
 			try {
 				if (context != null) {
-					IConsole console;
 					if (externalConsole)
 						console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole);
 					else
 						console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
 					oper = context.ExecutionHandler.Execute (cmd, console);
-				}
-				else {
+				} else {
 					if (externalConsole) {
-						IConsole console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
+						console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
 						oper = Runtime.ProcessService.StartConsoleProcess (cmd.Command, cmd.Arguments,
 							cmd.WorkingDirectory, console, null);
 					} else {
@@ -253,20 +257,31 @@ namespace MonoDevelop.Projects
 							cmd.WorkingDirectory, monitor.Log, monitor.Log, null, false);
 					}
 				}
+				aggMon = new AggregatedOperationMonitor (monitor, oper);
+				oper.WaitForCompleted ();
+				if (!oper.Success) {
+					monitor.ReportError ("Custom command failed (exit code: " + oper.ExitCode + ")", null);
+				}
+			} catch (Win32Exception w32ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Failed to execute custom command '{0}': {1}",
+					cmd.Command, w32ex.Message), null);
+				return;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Command execution failed", ex);
 				throw new UserException (GettextCatalog.GetString ("Command execution failed: {0}", ex.Message));
-			}
-			
-			monitor.CancelRequested += delegate {
-				if (!oper.IsCompleted)
-					oper.Cancel ();
-			};
-			
-			oper.WaitForCompleted ();
-			if (!oper.Success) {
-				monitor.ReportError ("Custom command failed (exit code: " + oper.ExitCode + ")", null);
-				monitor.AsyncOperation.Cancel ();
+			} finally {
+				if (oper == null || !oper.Success) {
+					monitor.AsyncOperation.Cancel ();
+				}
+				if (oper != null) {
+					oper.Dispose ();
+				}
+				if (console != null) {
+					console.Dispose ();
+				}
+				if (aggMon != null) {
+					aggMon.Dispose ();
+				}
 			}
 		}
 	}

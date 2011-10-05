@@ -38,7 +38,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var result = context.Resolve (switchStatement.Expression);
 			if (result == null)
 				return false;
+<<<<<<< HEAD
 			return result.Type.Kind == TypeKind.Enum;
+=======
+			return result.Type.IsEnum ();
+>>>>>>> master
 		}
 		
 		public void Run (RefactoringContext context)

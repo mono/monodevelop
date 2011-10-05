@@ -233,9 +233,9 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.NewProjectDialog" design-size="735 539">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.NewProjectDialog" design-size="930 539">
     <property name="MemberName" />
-    <property name="WidthRequest">630</property>
+    <property name="WidthRequest">930</property>
     <property name="Visible">False</property>
     <property name="Title">New Solution</property>
     <property name="TypeHint">Dialog</property>
@@ -295,7 +295,7 @@
                                   <widget class="Gtk.HPaned" id="panedTemplates">
                                     <property name="MemberName" />
                                     <property name="CanFocus">True</property>
-                                    <property name="Position">308</property>
+                                    <property name="Position">430</property>
                                     <child>
                                       <widget class="Gtk.VBox" id="boxTemplates">
                                         <property name="MemberName" />
@@ -3964,21 +3964,6 @@ Large</property>
           </widget>
           <packing>
             <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.CheckButton" id="hiddenButton">
-            <property name="MemberName" />
-            <property name="Label" translatable="yes">S_how hidden files and directories in File Scout</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">True</property>
-            <property name="UseUnderline">True</property>
-          </widget>
-          <packing>
-            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

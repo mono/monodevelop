@@ -910,6 +910,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Finds a type X so that "LB <: X <: UB"
 			Log.WriteCollection("FindTypesInBound, LowerBounds=", lowerBounds);
 			Log.WriteCollection("FindTypesInBound, UpperBounds=", upperBounds);
+<<<<<<< HEAD
+=======
+			Log.Indent();
+>>>>>>> master
 			
 			// First try the Fixing algorithm from the C# spec (§7.5.2.11)
 			List<IType> candidateTypes = lowerBounds.Union(upperBounds)

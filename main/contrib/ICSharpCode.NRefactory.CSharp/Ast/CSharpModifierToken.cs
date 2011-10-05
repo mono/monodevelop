@@ -57,7 +57,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			Modifiers.Abstract, Modifiers.Virtual, Modifiers.Sealed, Modifiers.Static, Modifiers.Override,
 			Modifiers.Readonly, Modifiers.Volatile,
 			Modifiers.Extern, Modifiers.Partial, Modifiers.Const,
+<<<<<<< HEAD
 			Modifiers.Any
+=======
+			Modifiers.Any,
+			Modifiers.Async
+>>>>>>> master
 		};
 		
 		public static IEnumerable<Modifiers> AllModifiers {
@@ -107,6 +112,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				case Modifiers.Any:
 					// even though it's used for patterns only, it needs to be in this list to be usable in the AST
 					return "any";
+<<<<<<< HEAD
+=======
+				case Modifiers.Async:
+					// even though it's used for patterns only, it needs to be in this list to be usable in the AST
+					return "async";
+>>>>>>> master
 				default:
 					throw new NotSupportedException("Invalid value for Modifiers");
 			}

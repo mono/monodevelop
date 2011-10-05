@@ -64,6 +64,7 @@ namespace Mono.TextEditor
 		bool highlightCaretLine = false;
 		bool removeTrailingWhitespaces = true;
 		bool allowTabsAfterNonTabs = true;
+		bool useAntiAliasing = true;
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "text";
 		Pango.FontDescription font;
@@ -456,6 +457,18 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public virtual bool UseAntiAliasing {
+			get {
+				return useAntiAliasing;
+			}
+			set {
+				if (useAntiAliasing != value) {
+					useAntiAliasing = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
 		public virtual ColorSheme GetColorStyle (Gtk.Style widgetStyle)
 		{
 			return SyntaxModeService.GetColorStyle (widgetStyle, ColorScheme);
@@ -485,6 +498,7 @@ namespace Mono.TextEditor
 			overrideDocumentEolMarker = other.overrideDocumentEolMarker;
 			defaultEolMarker = other.defaultEolMarker;
 			enableAnimations = other.enableAnimations;
+			useAntiAliasing = other.useAntiAliasing;
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}

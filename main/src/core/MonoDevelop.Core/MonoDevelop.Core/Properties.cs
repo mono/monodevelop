@@ -136,6 +136,11 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		public bool HasValue (string key)
+		{
+			return properties.ContainsKey (key);
+		}
+		
 		public void Set (string key, object val)
 		{
 			object old = Get<object> (key);

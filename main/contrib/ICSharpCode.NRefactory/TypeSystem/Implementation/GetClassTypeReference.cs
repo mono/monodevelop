@@ -87,10 +87,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 //					return cachedType;
 //			}
 			
+<<<<<<< HEAD
 			IType type = context.GetTypeDefinition(nameSpace, name, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
 //			if (cache != null)
 //				cache.SetShared(this, type);
 			return type;
+=======
+		}
+		
+		IType DoResolve(ITypeResolveContext context)
+		{
+			 */
+			return context.GetTypeDefinition(nameSpace, name, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
+>>>>>>> master
 		}
 		
 		public override string ToString()

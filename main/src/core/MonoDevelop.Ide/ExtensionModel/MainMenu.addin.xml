@@ -115,6 +115,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
 		<SeparatorItem id = "ViewItemsSeparator4" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 	</ItemSet>
 	
@@ -164,7 +165,7 @@
 		<SeparatorItem id = "ExportSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		<SeparatorItem id = "OptionsSeparator" />
-		<ItemSet id = "SelectActiveConfiguration" _label = "Active Configuration">
+		<ItemSet id = "SelectActiveConfiguration" _label = "Active Configuration" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration" />
 		</ItemSet>
 		<ItemSet id = "SelectActiveRuntime" _label = "Active Runtime" autohide = "true">
@@ -228,7 +229,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.SendFeedback" />
-		<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
+		<Condition id = "Platform" value = "!mac">
+			<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
+		</Condition>
 		<SeparatorItem id = "Separator2" />
 		<ItemSet id = "Web" _label = "_Web">
 			<LinkItem id = "MonoDevelop" _label = "MonoDevelop" link = "http://www.monodevelop.com" />

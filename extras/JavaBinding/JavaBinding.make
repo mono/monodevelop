@@ -109,6 +109,8 @@ $(JAVABINDING_PC): monodevelop-java.pc
 monodevelop-java.pc: monodevelop-java.pc.in $(top_srcdir)/config.make
 	sed -e "s,@prefix@,$(prefix)," -e "s,@PACKAGE@,$(PACKAGE)," < monodevelop-java.pc.in > monodevelop-java.pc
 
+monodevelop-java.spec: monodevelop-java.spec.in $(top_srcdir)/config.make
+	sed -e "s,@prefix@,$(prefix)," -e "s,@PACKAGE@,$(PACKAGE)," < monodevelop-java.spec.in > monodevelop-java.spec
 
 $(build_xamlg_list): %.xaml.g.cs: %.xaml
 	xamlg '$<'

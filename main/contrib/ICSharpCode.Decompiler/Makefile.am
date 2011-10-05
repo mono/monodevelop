@@ -78,6 +78,7 @@ FILES =  \
 	PlainTextOutput.cs \
 	Properties/AssemblyInfo.cs \
 	ReferenceResolvingException.cs \
+	Tests/CallOverloadedMethod.cs \
 	TextOutputWriter.cs 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 

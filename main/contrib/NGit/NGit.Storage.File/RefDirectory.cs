@@ -93,7 +93,7 @@ namespace NGit.Storage.File
 
 		/// <summary>The names of the additional refs supported by this class</summary>
 		private static readonly string[] additionalRefsNames = new string[] { Constants.MERGE_HEAD
-			, Constants.FETCH_HEAD, Constants.ORIG_HEAD };
+			, Constants.FETCH_HEAD, Constants.ORIG_HEAD, Constants.CHERRY_PICK_HEAD };
 
 		private readonly FileRepository parent;
 
@@ -278,6 +278,7 @@ namespace NGit.Storage.File
 			RefList<RefDirectory.LooseRef> loose;
 			if (scan.newLoose != null)
 			{
+				scan.newLoose.Sort();
 				loose = scan.newLoose.ToRefList();
 				if (looseRefs.CompareAndSet(oldLoose, loose))
 				{
@@ -312,6 +313,7 @@ namespace NGit.Storage.File
 					}
 				}
 			}
+			symbolic.Sort();
 			return new RefMap(prefix, packed, Upcast(loose), symbolic.ToRefList());
 		}
 
@@ -562,10 +564,10 @@ namespace NGit.Storage.File
 			return leaf;
 		}
 
-		internal virtual void StoredSymbolicRef(RefDirectoryUpdate u, long modified, string
-			 target)
+		internal virtual void StoredSymbolicRef(RefDirectoryUpdate u, FileSnapshot snapshot
+			, string target)
 		{
-			PutLooseRef(NewSymbolicRef(modified, u.GetRef().GetName(), target));
+			PutLooseRef(NewSymbolicRef(snapshot, u.GetRef().GetName(), target));
 			FireRefsChanged();
 		}
 
@@ -607,11 +609,11 @@ namespace NGit.Storage.File
 			return new RefDirectoryRename(from, to);
 		}
 
-		internal virtual void Stored(RefDirectoryUpdate update, long modified)
+		internal virtual void Stored(RefDirectoryUpdate update, FileSnapshot snapshot)
 		{
 			ObjectId target = update.GetNewObjectId().Copy();
 			Ref leaf = update.GetRef().GetLeaf();
-			PutLooseRef(new RefDirectory.LooseUnpeeled(modified, leaf.GetName(), target));
+			PutLooseRef(new RefDirectory.LooseUnpeeled(snapshot, leaf.GetName(), target));
 		}
 
 		private void PutLooseRef(RefDirectory.LooseRef @ref)
@@ -959,12 +961,12 @@ namespace NGit.Storage.File
 		private void CommitPackedRefs(LockFile lck, RefList<Ref> refs, RefDirectory.PackedRefList
 			 oldPackedList)
 		{
-			new _RefWriter_782(this, lck, oldPackedList, refs, refs).WritePackedRefs();
+			new _RefWriter_786(this, lck, oldPackedList, refs, refs).WritePackedRefs();
 		}
 
-		private sealed class _RefWriter_782 : RefWriter
+		private sealed class _RefWriter_786 : RefWriter
 		{
-			public _RefWriter_782(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
+			public _RefWriter_786(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
 				 oldPackedList, RefList<Ref> refs, RefList<Ref> baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;
@@ -1067,24 +1069,19 @@ namespace NGit.Storage.File
 		private RefDirectory.LooseRef ScanRef(RefDirectory.LooseRef @ref, string name)
 		{
 			FilePath path = FileFor(name);
-			long modified = path.LastModified();
+			FileSnapshot currentSnapshot = null;
 			if (@ref != null)
 			{
-				if (@ref.GetLastModified() == modified)
+				currentSnapshot = @ref.GetSnapShot();
+				if (!currentSnapshot.IsModified(path))
 				{
 					return @ref;
 				}
 				name = @ref.GetName();
 			}
-			else
-			{
-				if (modified == 0)
-				{
-					return null;
-				}
-			}
 			int limit = 4096;
 			byte[] buf;
+			FileSnapshot otherSnapshot = FileSnapshot.Save(path);
 			try
 			{
 				buf = IOUtil.ReadSome(path, limit);
@@ -1119,7 +1116,13 @@ namespace NGit.Storage.File
 						);
 				}
 				string target = RawParseUtils.Decode(buf, 5, n);
-				return NewSymbolicRef(modified, name, target);
+				if (@ref != null && @ref.IsSymbolic() && @ref.GetTarget().GetName().Equals(target
+					))
+				{
+					currentSnapshot.SetClean(otherSnapshot);
+					return @ref;
+				}
+				return NewSymbolicRef(otherSnapshot, name, target);
 			}
 			if (n < Constants.OBJECT_ID_STRING_LENGTH)
 			{
@@ -1130,6 +1133,12 @@ namespace NGit.Storage.File
 			try
 			{
 				id = ObjectId.FromString(buf, 0);
+				if (@ref != null && !@ref.IsSymbolic() && @ref.GetTarget().GetObjectId().Equals(id
+					))
+				{
+					currentSnapshot.SetClean(otherSnapshot);
+					return @ref;
+				}
 			}
 			catch (ArgumentException)
 			{
@@ -1141,7 +1150,7 @@ namespace NGit.Storage.File
 				throw new IOException(MessageFormat.Format(JGitText.Get().notARef, name, content)
 					);
 			}
-			return new RefDirectory.LooseUnpeeled(modified, name, id);
+			return new RefDirectory.LooseUnpeeled(otherSnapshot, name, id);
 		}
 
 		private static bool IsSymRef(byte[] buf, int n)
@@ -1259,33 +1268,33 @@ namespace NGit.Storage.File
 			}
 		}
 
-		private static RefDirectory.LooseSymbolicRef NewSymbolicRef(long lastModified, string
-			 name, string target)
+		private static RefDirectory.LooseSymbolicRef NewSymbolicRef(FileSnapshot snapshot
+			, string name, string target)
 		{
 			Ref dst = new ObjectIdRef.Unpeeled(RefStorage.NEW, target, null);
-			return new RefDirectory.LooseSymbolicRef(lastModified, name, dst);
+			return new RefDirectory.LooseSymbolicRef(snapshot, name, dst);
 		}
 
 		private interface LooseRef : Ref
 		{
-			long GetLastModified();
+			FileSnapshot GetSnapShot();
 
 			RefDirectory.LooseRef Peel(ObjectIdRef newLeaf);
 		}
 
 		private sealed class LoosePeeledTag : ObjectIdRef.PeeledTag, RefDirectory.LooseRef
 		{
-			private readonly long lastModified;
+			private readonly FileSnapshot snapShot;
 
-			internal LoosePeeledTag(long mtime, string refName, ObjectId id, ObjectId p) : base
-				(RefStorage.LOOSE, refName, id, p)
+			internal LoosePeeledTag(FileSnapshot snapshot, string refName, ObjectId id, ObjectId
+				 p) : base(RefStorage.LOOSE, refName, id, p)
 			{
-				this.lastModified = mtime;
+				this.snapShot = snapshot;
 			}
 
-			public long GetLastModified()
+			public FileSnapshot GetSnapShot()
 			{
-				return lastModified;
+				return snapShot;
 			}
 
 			public RefDirectory.LooseRef Peel(ObjectIdRef newLeaf)
@@ -1296,17 +1305,17 @@ namespace NGit.Storage.File
 
 		private sealed class LooseNonTag : ObjectIdRef.PeeledNonTag, RefDirectory.LooseRef
 		{
-			private readonly long lastModified;
+			private readonly FileSnapshot snapShot;
 
-			internal LooseNonTag(long mtime, string refName, ObjectId id) : base(RefStorage.LOOSE
-				, refName, id)
+			internal LooseNonTag(FileSnapshot snapshot, string refName, ObjectId id) : base(RefStorage
+				.LOOSE, refName, id)
 			{
-				this.lastModified = mtime;
+				this.snapShot = snapshot;
 			}
 
-			public long GetLastModified()
+			public FileSnapshot GetSnapShot()
 			{
-				return lastModified;
+				return snapShot;
 			}
 
 			public RefDirectory.LooseRef Peel(ObjectIdRef newLeaf)
@@ -1317,46 +1326,46 @@ namespace NGit.Storage.File
 
 		private sealed class LooseUnpeeled : ObjectIdRef.Unpeeled, RefDirectory.LooseRef
 		{
-			private readonly long lastModified;
+			private FileSnapshot snapShot;
 
-			internal LooseUnpeeled(long mtime, string refName, ObjectId id) : base(RefStorage
-				.LOOSE, refName, id)
+			internal LooseUnpeeled(FileSnapshot snapShot, string refName, ObjectId id) : base
+				(RefStorage.LOOSE, refName, id)
 			{
-				this.lastModified = mtime;
+				this.snapShot = snapShot;
 			}
 
-			public long GetLastModified()
+			public FileSnapshot GetSnapShot()
 			{
-				return lastModified;
+				return snapShot;
 			}
 
 			public RefDirectory.LooseRef Peel(ObjectIdRef newLeaf)
 			{
 				if (newLeaf.GetPeeledObjectId() != null)
 				{
-					return new RefDirectory.LoosePeeledTag(lastModified, GetName(), GetObjectId(), newLeaf
+					return new RefDirectory.LoosePeeledTag(snapShot, GetName(), GetObjectId(), newLeaf
 						.GetPeeledObjectId());
 				}
 				else
 				{
-					return new RefDirectory.LooseNonTag(lastModified, GetName(), GetObjectId());
+					return new RefDirectory.LooseNonTag(snapShot, GetName(), GetObjectId());
 				}
 			}
 		}
 
 		private sealed class LooseSymbolicRef : SymbolicRef, RefDirectory.LooseRef
 		{
-			private readonly long lastModified;
+			private readonly FileSnapshot snapShot;
 
-			internal LooseSymbolicRef(long mtime, string refName, Ref target) : base(refName, 
-				target)
+			internal LooseSymbolicRef(FileSnapshot snapshot, string refName, Ref target) : base
+				(refName, target)
 			{
-				this.lastModified = mtime;
+				this.snapShot = snapshot;
 			}
 
-			public long GetLastModified()
+			public FileSnapshot GetSnapShot()
 			{
-				return lastModified;
+				return snapShot;
 			}
 
 			public RefDirectory.LooseRef Peel(ObjectIdRef newLeaf)

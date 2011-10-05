@@ -7,6 +7,7 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Autotools.MakefileOptionPanelWidget" design-size="589 368">
@@ -1005,12 +1006,12 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.ComboBox" id="comboGacRefVar">
+                  <widget class="Gtk.ComboBox" id="comboPackageRefVar">
                     <property name="MemberName" />
                     <property name="WidthRequest">200</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
-                    <signal name="Changed" handler="OnComboGacRefVarChanged" />
+                    <signal name="Changed" handler="OnComboPackageRefVarChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -1074,7 +1075,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="entryGacRefPattern">
+                  <widget class="Gtk.Entry" id="entryPackageRefPattern">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
@@ -1265,7 +1266,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="lblGacRef">
+                  <widget class="Gtk.Label" id="lblPackageRef">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Package References</property>

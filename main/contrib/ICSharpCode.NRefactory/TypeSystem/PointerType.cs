@@ -22,8 +22,12 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+<<<<<<< HEAD
 	[Serializable]
 	public sealed class PointerType : TypeWithElementType, ISupportsInterning
+=======
+	public sealed class PointerType : TypeWithElementType
+>>>>>>> master
 	{
 		public PointerType(IType elementType) : base(elementType)
 		{

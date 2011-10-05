@@ -339,6 +339,8 @@ namespace Mono.TextEditor
 		
 		public static void CopyToPrimary (TextEditorData data)
 		{
+			if (Platform.IsWindows) // disable middle click on windows.
+				return;
 			Clipboard clipboard = Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM);
 			clipboard.Text = data.SelectedText;
 		}

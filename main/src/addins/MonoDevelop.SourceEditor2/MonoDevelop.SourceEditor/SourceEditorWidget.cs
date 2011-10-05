@@ -208,7 +208,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				parent.quickTaskProvider.ForEach (p => AddQuickTaskStrip (p));
 			}
-
+			
 			public void AddQuickTaskStrip (IQuickTaskProvider p)
 			{
 				if (!strip.Visible) {
@@ -280,6 +280,10 @@ namespace MonoDevelop.SourceEditor
 			vbox.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
 			this.textEditor.FocusInEvent += (o, s) => lastActiveEditor = (ExtensibleTextEditor)o;
+			this.textEditor.FocusOutEvent += delegate {
+				if (this.splittedTextEditor == null || !splittedTextEditor.HasFocus)
+					OnLostFocus ();
+			};
 			mainsw = new DecoratedScrolledWindow (this);
 			this.textEditorContainer = new TextEditorContainer (textEditor);
 			mainsw.SetTextEditor (textEditorContainer);
@@ -319,6 +323,12 @@ namespace MonoDevelop.SourceEditor
 			parseInformationUpdaterWorkerThread.DoWork += HandleParseInformationUpdaterWorkerThreadDoWork;
 		}
 
+		void OnLostFocus ()
+		{
+			//clears search status messages
+			IdeApp.Workbench.StatusBar.ShowReady ();
+		}
+
 		void UpdateLineColOnEventHandler (object sender, EventArgs e)
 		{
 			this.UpdateLineCol ();
@@ -347,12 +357,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)
-			{
 				return null;
-			}
 			
 			int startOffset = document.LocationToOffset (region.BeginLine, region.BeginColumn);
 			int endOffset   = document.LocationToOffset (region.EndLine, region.EndColumn );
+			
 			FoldSegment result = new FoldSegment (document, text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
@@ -513,6 +522,11 @@ namespace MonoDevelop.SourceEditor
 				Thread.Sleep (20);
 		}
 		
+		internal void SetLastActiveEditor (ExtensibleTextEditor editor)
+		{
+			this.lastActiveEditor = editor;
+		}
+			
 		#region Error underlining
 		List<ErrorMarker> errors = new List<ErrorMarker> ();
 		uint resetTimerId;
@@ -668,6 +682,10 @@ namespace MonoDevelop.SourceEditor
 			secondsw = new DecoratedScrolledWindow (this);
 			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, this.textEditor.Options, textEditor.Document);
 			this.splittedTextEditor.FocusInEvent += (o, s) => lastActiveEditor = (ExtensibleTextEditor)o;
+			this.splittedTextEditor.FocusOutEvent += delegate {
+				 if (!textEditor.HasFocus)
+					OnLostFocus ();
+			};
 			this.splittedTextEditor.Extension = textEditor.Extension;
 			
 			this.splittedTextEditorContainer = new TextEditorContainer (this.splittedTextEditor);
@@ -995,6 +1013,8 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidgetFrame = null;
 				searchAndReplaceWidget = null;
 				result = true;
+				//clears any message it may have set
+				IdeApp.Workbench.StatusBar.ShowReady ();
 			}
 			
 			if (gotoLineNumberWidgetFrame != null) {

@@ -673,7 +673,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				return CreateConnectedEndNode(usingStatement, bodyEnd);
 			}
 			
-			public override ControlFlowNode VisitYieldStatement(YieldStatement yieldStatement, ControlFlowNode data)
+			public override ControlFlowNode VisitYieldReturnStatement(YieldReturnStatement yieldStatement, ControlFlowNode data)
 			{
 				return CreateConnectedEndNode(yieldStatement, data);
 			}

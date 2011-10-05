@@ -237,12 +237,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
+<<<<<<< HEAD
 		public ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
 		{
 			return GetTypeDefinition("System", ReflectionHelper.GetShortNameByTypeCode(typeCode), 0, StringComparer.Ordinal);
 		}
 		
 		/// <inheritdoc/>
+=======
+>>>>>>> master
 		public IEnumerable<ITypeDefinition> GetTypes()
 		{
 			return _typeDicts[0].Values;

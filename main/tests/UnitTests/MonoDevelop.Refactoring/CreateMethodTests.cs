@@ -188,7 +188,7 @@ namespace MonoDevelop.Refactoring.Tests
 	throw new System.NotImplementedException ();
 }");
 		}
-		
+
 		[Test()]
 		public void TestCreateDelegateDeclaration ()
 		{
@@ -439,7 +439,60 @@ namespace Test {
 ", true);
 		}
 		
+		/// <summary>
+		/// Bug 469 - CreateMethod created a method incorrectly
+		/// </summary>
+		[Test()]
+		public void TestBug469 ()
+		{
+			TestCreateMethod (
+@"class Test
+{
+	public override string ToString ()
+	{
+		$BeginDownloadingImage (this);
+	}
+}
+", @"class Test
+{
+	public void BeginDownloadingImage (Test par1)
+	{
+		throw new System.NotImplementedException ();
 	}
 	
+	public override string ToString ()
+	{
+		BeginDownloadingImage (this);
+	}
+}
+", true);
+		}
+		
+		[Test()]
+		public void TestTestGuessReturnReturnType ()
+		{
+			TestCreateMethod (
+@"class Test
+{
+	public override string ToString ()
+	{
+		return $BeginDownloadingImage (this);
+	}
+}
+", @"class Test
+{
+	public string BeginDownloadingImage (Test par1)
+	{
+		throw new System.NotImplementedException ();
+	}
+	
+	public override string ToString ()
+	{
+		return BeginDownloadingImage (this);
+	}
+}
+", true);
+		}
+	}
 }
 

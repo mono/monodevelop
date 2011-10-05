@@ -5,6 +5,7 @@
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -34,10 +36,15 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.TypeSystem;
 
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
 	public class NSObjectInfoService
 	{
+		//static readonly Regex frameworkRegex = new Regex ("#import\\s+<([A-Z][A-Za-z]*)/([A-Z][A-Za-z]*)\\.h>", RegexOptions.Compiled);
+		static readonly Regex typeInfoRegex = new Regex ("@(interface|protocol)\\s+(\\w*)\\s*:\\s*(\\w*)", RegexOptions.Compiled);
 		static readonly Regex ibRegex = new Regex ("(- \\(IBAction\\)|IBOutlet)([^;]*);", RegexOptions.Compiled);
 		static readonly char[] colonChar = { ':' };
 		static readonly char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
@@ -130,7 +137,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				throw new Exception ("Could not get NSObject from type database");
 			
 			//FIXME: only emit this for the wrapper NS
-			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition (), null, null, false);
+			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition (), null, null, false, false, false);
 			
 			foreach (var type in nso.GetAllBaseTypeDefinitions (dom)) {
 				var info = ConvertType (dom, type);
@@ -152,6 +159,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							registeredInDesigner &=
 								MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.Region.FileName);
 						}
+						
 						//type registered with an explicit type name are up to the user to provide a valid name
 						var posArgs = att.GetPositionalArguments (dom);
 						if (posArgs.Count == 1)
@@ -165,9 +173,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					}
 				}
 			}
+			
 			if (string.IsNullOrEmpty (objcName))
 				return null;
-			var info = new NSObjectTypeInfo (objcName, type, null, type.BaseTypes.First (), isModel);
+			var info = new NSObjectTypeInfo (objcName, type, null, type.BaseTypes.First (), isModel, type.SourceProject != null, registeredInDesigner);
 			info.IsUserType = type.GetProjectContent () != null;
 			info.IsRegisteredInDesigner = registeredInDesigner;
 			
@@ -245,9 +254,33 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public static NSObjectTypeInfo ParseHeader (string headerFile)
 		{
-			var text = System.IO.File.ReadAllText (headerFile);
-			var matches = ibRegex.Matches (text);
-			var type = new NSObjectTypeInfo (System.IO.Path.GetFileNameWithoutExtension (headerFile), null, null, null, false);
+			string text = File.ReadAllText (headerFile);
+			string userType = null, userBaseType = null;
+			MatchCollection matches;
+			NSObjectTypeInfo type;
+			
+			// First, grep for classes
+			matches = typeInfoRegex.Matches (text);
+			foreach (Match match in matches) {
+				if (match.Groups[1].Value != "interface")
+					continue;
+				
+				if (userType != null) {
+					// UNSUPPORTED: more than 1 user-type defined in this header
+					return null;
+				}
+				
+				userType = match.Groups[2].Value;
+				userBaseType = match.Groups[3].Value;
+			}
+			
+			if (userType == null)
+				return null;
+			
+			type = new NSObjectTypeInfo (userType, null, userBaseType, null, false, true, true);
+			
+			// Now grep for IBActions and IBOutlets
+			matches = ibRegex.Matches (text);
 			foreach (Match match in matches) {
 				var kind = match.Groups[1].Value;
 				var def = match.Groups[2].Value;
@@ -255,13 +288,26 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					var split = def.Split (whitespaceChars, StringSplitOptions.RemoveEmptyEntries);
 					if (split.Length != 2)
 						continue;
-					string objcType = split[1].TrimStart ('*');
+					string objcName = split[1].TrimStart ('*');
+					string objcType = split[0].TrimEnd ('*');
 					if (objcType == "id")
 						objcType = "NSObject";
-					type.Outlets.Add (new IBOutlet ((objcType), null, split[0].TrimEnd ('*'), null));
+					if (string.IsNullOrEmpty (objcType)) {
+						MessageService.ShowError (GettextCatalog.GetString ("Error while parsing header file."),
+							string.Format (GettextCatalog.GetString ("The definition '{0}' can't be parsed."), def));
+						objcType = "NSObject";
+					}
+					
+					IBOutlet outlet = new IBOutlet (objcName, objcName, objcType, null);
+					outlet.IsDesigner = true;
+					
+					type.Outlets.Add (outlet);
 				} else {
 					string[] split = def.Split (colonChar);
-					var action = new IBAction (split[0].Trim (), null);
+					string name = split[0].Trim ();
+					var action = new IBAction (name, name);
+					action.IsDesigner = true;
+					
 					string label = null;
 					for (int i = 1; i < split.Length; i++) {
 						var s = split[i].Split (splitActionParamsChars, StringSplitOptions.RemoveEmptyEntries);
@@ -272,9 +318,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						label = s.Length == 3? s[2] : null;
 						action.Parameters.Add (par);
 					}
+					
 					type.Actions.Add (action);
 				}
 			}
+			
 			return type;
 		}
 	}

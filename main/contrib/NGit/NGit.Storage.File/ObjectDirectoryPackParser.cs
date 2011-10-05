@@ -224,6 +224,12 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
+		protected internal override void OnPackHeader(long objectCount)
+		{
+		}
+
+		// Ignored, the count is not required.
+		/// <exception cref="System.IO.IOException"></exception>
 		protected internal override void OnBeginWholeObject(long streamPosition, int type
 			, long inflatedSize)
 		{
@@ -258,6 +264,13 @@ namespace NGit.Storage.File
 			return delta;
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
+		protected internal override void OnInflatedObjectData(PackedObjectInfo obj, int typeCode
+			, byte[] data)
+		{
+		}
+
+		// ObjectDirectory ignores this event.
 		/// <exception cref="System.IO.IOException"></exception>
 		protected internal override void OnObjectHeader(PackParser.Source src, byte[] raw
 			, int pos, int len)

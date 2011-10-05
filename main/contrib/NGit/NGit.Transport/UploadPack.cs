@@ -75,6 +75,8 @@ namespace NGit.Transport
 
 		internal static readonly string OPTION_NO_PROGRESS = BasePackFetchConnection.OPTION_NO_PROGRESS;
 
+		internal static readonly string OPTION_NO_DONE = BasePackFetchConnection.OPTION_NO_DONE;
+
 		/// <summary>Database we read the objects from.</summary>
 		/// <remarks>Database we read the objects from.</remarks>
 		private readonly Repository db;
@@ -167,6 +169,8 @@ namespace NGit.Transport
 		/// </summary>
 		private bool? okToGiveUp;
 
+		private bool sentReady;
+
 		/// <summary>Objects we sent in our advertisement list, clients can ask for these.</summary>
 		/// <remarks>Objects we sent in our advertisement list, clients can ask for these.</remarks>
 		private ICollection<ObjectId> advertised;
@@ -193,6 +197,8 @@ namespace NGit.Transport
 		private readonly RevFlagSet SAVE;
 
 		private int multiAck = BasePackFetchConnection.MultiAck.OFF;
+
+		private bool noDone;
 
 		private PackWriter.Statistics statistics;
 
@@ -432,6 +438,7 @@ namespace NGit.Transport
 			if (options.Contains(OPTION_MULTI_ACK_DETAILED))
 			{
 				multiAck = BasePackFetchConnection.MultiAck.DETAILED;
+				noDone = options.Contains(OPTION_NO_DONE);
 			}
 			else
 			{
@@ -482,6 +489,10 @@ namespace NGit.Transport
 			adv.AdvertiseCapability(OPTION_SIDE_BAND_64K);
 			adv.AdvertiseCapability(OPTION_THIN_PACK);
 			adv.AdvertiseCapability(OPTION_NO_PROGRESS);
+			if (!biDirectionalPipe)
+			{
+				adv.AdvertiseCapability(OPTION_NO_DONE);
+			}
 			adv.SetDerefTags(true);
 			advertised = adv.Send(GetAdvertisedRefs());
 			adv.End();
@@ -557,6 +568,11 @@ namespace NGit.Transport
 					{
 						pckOut.WriteString("NAK\n");
 					}
+					if (noDone && sentReady)
+					{
+						pckOut.WriteString("ACK " + last.Name + "\n");
+						return true;
+					}
 					if (!biDirectionalPipe)
 					{
 						return false;
@@ -620,6 +636,7 @@ namespace NGit.Transport
 			IList<ObjectId> toParse = peerHas;
 			HashSet<ObjectId> peerHasSet = null;
 			bool needMissing = false;
+			sentReady = false;
 			if (wantAll.IsEmpty() && !wantIds.IsEmpty())
 			{
 				// We have not yet parsed the want list. Parse it now.
@@ -750,7 +767,6 @@ namespace NGit.Transport
 			// telling us about its history.
 			//
 			bool didOkToGiveUp = false;
-			bool sentReady = false;
 			if (0 < missCnt)
 			{
 				for (int i = peerHas.Count - 1; i >= 0; i--)
@@ -790,6 +806,7 @@ namespace NGit.Transport
 				())
 			{
 				ObjectId id = peerHas[peerHas.Count - 1];
+				sentReady = true;
 				pckOut.WriteString("ACK " + id.Name + " ready\n");
 				sentReady = true;
 			}
@@ -890,6 +907,17 @@ namespace NGit.Transport
 		{
 			bool sideband = options.Contains(OPTION_SIDE_BAND) || options.Contains(OPTION_SIDE_BAND_64K
 				);
+			if (!biDirectionalPipe)
+			{
+				// Ensure the request was fully consumed. Any remaining input must
+				// be a protocol error. If we aren't at EOF the implementation is broken.
+				int eof = rawIn.Read();
+				if (0 <= eof)
+				{
+					throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().expectedEOFReceived
+						, "\\x" + Sharpen.Extensions.ToHexString(eof)));
+				}
+			}
 			ProgressMonitor pm = NullProgressMonitor.INSTANCE;
 			OutputStream packOut = rawOut;
 			SideBandOutputStream msgOut = null;

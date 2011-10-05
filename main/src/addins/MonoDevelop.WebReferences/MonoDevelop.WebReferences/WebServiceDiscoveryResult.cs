@@ -105,15 +105,15 @@ namespace MonoDevelop.WebReferences
 			item = new WebReferenceItem (engine, project, referenceName, basePath, mapFile);
 			
 			// Add references to the project if they do not exist
-			ProjectReference gacRef;
+			ProjectReference packageRef;
 			
 			foreach (string refName in GetAssemblyReferences ()) {
 				string targetName = project.TargetRuntime.AssemblyContext.GetAssemblyNameForVersion (refName, null, project.TargetFramework);
 				//FIXME: warn when we could not find a matching target assembly
 				if (targetName != null) {
-					gacRef = new ProjectReference (ReferenceType.Gac, targetName);
-					if (!project.References.Contains (gacRef))
-						project.References.Add (gacRef);
+					packageRef = new ProjectReference (ReferenceType.Package, targetName);
+					if (!project.References.Contains (packageRef))
+						project.References.Add (packageRef);
 				}
 			}
 			WebReferencesService.NotifyWebReferencesChanged (project);

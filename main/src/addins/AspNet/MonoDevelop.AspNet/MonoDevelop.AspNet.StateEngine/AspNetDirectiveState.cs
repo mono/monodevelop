@@ -55,10 +55,12 @@ namespace MonoDevelop.AspNet.StateEngine
 			this.AttributeState = attributeState;
 			this.NameState = nameState;
 			this.MalformedTagState = malformedTagState;
+			attributeState.AllowOpeningTagCharInsideAttributeValue = true;
 			
 			Adopt (this.AttributeState);
 			Adopt (this.NameState);
 			Adopt (this.MalformedTagState);
+			
 		}
 		
 		const int ENDING = 1;
@@ -96,23 +98,21 @@ namespace MonoDevelop.AspNet.StateEngine
 					} else {
 						directive.End (context.Location);
 						if (context.BuildTree) {
-							XContainer container = (XContainer) context.Nodes.Peek ();
+							XContainer container = (XContainer)context.Nodes.Peek ();
 							container.AddChildNode (directive);
 						}
 					}
 					return Parent;
 				}
 				//ending but not '>'? Error; go to end.
-			}
-			else if (char.IsLetter (c)) {
+			} else if (char.IsLetter (c)) {
 				rollback = string.Empty;
 				if (!directive.IsNamed) {
 					return NameState;
 				} else {
 					return AttributeState;
 				}
-			}
-			else if (char.IsWhiteSpace (c))
+			} else if (char.IsWhiteSpace (c))
 				return null;
 			
 			rollback = string.Empty;

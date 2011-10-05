@@ -52,12 +52,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		bool expanded;
 		public bool Expanded {
 			get {
-				return contentBox.Visible;
+				return expanded;
 			}
 			set {
-				contentBox.Visible = value;
+				contentBox.Visible = expanded = value;
 				header.StartTimeout ();
 			}
 		}
@@ -314,6 +315,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					cr.Stroke ();
 				}
 			};
+			expanded = true;
 			PackStart (contentBox, true, true, 0);
 			ShowAll ();
 		}
@@ -322,6 +324,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			contentBox.PackStart (widget, true, true, 0);
 			header.UpdateInitialExpanderState ();
+		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			if (expanded)
+				contentBox.Show ();
+		}
+		
+		protected override void OnUnrealized ()
+		{
+			base.OnUnrealized ();
+			if (expanded)
+				contentBox.Hide ();
 		}
 	}
 }

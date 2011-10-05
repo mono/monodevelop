@@ -176,6 +176,13 @@ namespace MonoDevelop.Projects.Extensions
 	
 	public interface IDotNetSubtypeMigrationHandler
 	{
+		IEnumerable<string> FilesToBackup (string filename);
 		bool Migrate (MSBuildProject project, string fileName, string language);
+	}
+	
+	public enum MigrationType {
+		Ignore,
+		Migrate,
+		BackupAndMigrate,
 	}
 }

@@ -404,7 +404,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/EnvVarList.cs \
 	MonoDevelop.Ide.Gui.Components/ExecutionModeComboBox.cs \
 	MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs \
-	MonoDevelop.Ide.Gui.Components/FileBrowser.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs \
@@ -531,7 +530,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/FileList.cs \
 	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
-	MonoDevelop.Ide.Gui.Pads/FileScout.cs \
 	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
 	MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
@@ -543,6 +541,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
 	MonoDevelop.Ide.Gui/AsyncDispatchAttribute.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
+	MonoDevelop.Ide.Gui/CommonTextEditorOptions.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
@@ -571,6 +570,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/PadFontChanger.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
+	MonoDevelop.Ide.Gui/ProjectLoadProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
@@ -630,7 +630,6 @@ FILES =  \
 	MonoDevelop.Ide.Projects/ExportProjectDialog.cs \
 	MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/FeatureSelectorDialog.cs \
-	MonoDevelop.Ide.Projects/GacReferencePanel.cs \
 	MonoDevelop.Ide.Projects/ImportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/IncludeNewFilesDialog.cs \
 	MonoDevelop.Ide.Projects/NewConfigurationDialog.cs \
@@ -638,6 +637,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/NewPolicySetDialog.cs \
 	MonoDevelop.Ide.Projects/NewProjectDialog.cs \
 	MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs \
+	MonoDevelop.Ide.Projects/PackageReferencePanel.cs \
 	MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs \
 	MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs \
 	MonoDevelop.Ide.Projects/ProjectReferencePanel.cs \
@@ -688,6 +688,16 @@ FILES =  \
 	MonoDevelop.Ide.WebBrowser/LocationChangingEventArgs.cs \
 	MonoDevelop.Ide.WebBrowser/StatusMessageChangedEventArgs.cs \
 	MonoDevelop.Ide.WebBrowser/TitleChangedEventArgs.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageBranding.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageCommands.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageLinksList.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageNewsFeed.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageOptionPanel.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageOptions.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageRecentProjectsList.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageView.cs \
+	MonoDevelop.Ide.WelcomePage/WelcomePageWidget.cs \
 	MonoDevelop.Ide/AddEntryEventHandler.cs \
 	MonoDevelop.Ide/DesktopService.cs \
 	MonoDevelop.Ide/DispatchService.cs \
@@ -725,6 +735,12 @@ FILES =  \
 	MonoDevelop.TypeSystem/TypeSystemService.cs
 
 RES =  \
+	branding/AboutImage.png \
+	branding/AboutImageSep.png \
+	branding/SplashScreen.png \
+	branding/WelcomePage_Logo.png \
+	branding/WelcomePage_TopBorderRepeat.png \
+	branding/WelcomePageContent.xml \
 	ExtensionModel/Commands.addin.xml \
 	ExtensionModel/DefaultPolicyPanels.addin.xml \
 	ExtensionModel/GlobalOptionsDialog.addin.xml \
@@ -738,8 +754,6 @@ RES =  \
 	ExtensionModel/StockIcons.addin.xml \
 	ExtensionModel/Templates.addin.xml \
 	gtk-gui/gui.stetic \
-	icons/AboutImage.png \
-	icons/AboutImageSep.png \
 	icons/add-namespace-16.png \
 	icons/assembly-project-16.png \
 	icons/author-information-16.png \
@@ -886,7 +900,6 @@ RES =  \
 	icons/solution-folder-open-16.png \
 	icons/solution-new-16.png \
 	icons/sort-namespace-16.png \
-	icons/SplashScreen.png \
 	icons/static-16.png \
 	icons/syntax-highlighting-16.png \
 	icons/syntax-highlighting-24.png \

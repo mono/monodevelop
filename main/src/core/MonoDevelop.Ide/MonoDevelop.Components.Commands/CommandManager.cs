@@ -1710,7 +1710,8 @@ namespace MonoDevelop.Components.Commands
 		MainToolbar,
 		Keybinding,
 		Unknown,
-		MacroPlayback
+		MacroPlayback,
+		WelcomePage
 	}
 	
 	public class CommandTargetRoute

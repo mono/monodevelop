@@ -124,6 +124,8 @@ namespace NGit
 
 		public string bareRepositoryNoWorkdirAndIndex;
 
+		public string blameNotCommittedYet;
+
 		public string blobNotFound;
 
 		public string blobNotFoundForPath;
@@ -332,6 +334,8 @@ namespace NGit
 
 		public string daemonAlreadyRunning;
 
+		public string daysAgo;
+
 		public string deleteBranchUnexpectedResult;
 
 		public string deleteFileFailed;
@@ -406,6 +410,8 @@ namespace NGit
 
 		public string exceptionCaughtDuringExecutionOfFetchCommand;
 
+		public string exceptionCaughtDuringExecutionOfLsRemoteCommand;
+
 		public string exceptionCaughtDuringExecutionOfMergeCommand;
 
 		public string exceptionCaughtDuringExecutionOfPushCommand;
@@ -466,6 +472,8 @@ namespace NGit
 
 		public string funnyRefname;
 
+		public string hoursAgo;
+
 		public string hugeIndexesAreNotSupportedByJgitYet;
 
 		public string hunkBelongsToAnotherFile;
@@ -501,6 +509,8 @@ namespace NGit
 		public string internalRevisionError;
 
 		public string interruptedWriting;
+
+		public string inTheFuture;
 
 		public string invalidAdvertisementOf;
 
@@ -596,6 +606,8 @@ namespace NGit
 
 		public string mergeUsingStrategyResultedInDescription;
 
+		public string minutesAgo;
+
 		public string missingAccesskey;
 
 		public string missingConfigurationForKey;
@@ -617,6 +629,12 @@ namespace NGit
 		public string mkDirFailed;
 
 		public string mkDirsFailed;
+
+		public string month;
+
+		public string months;
+
+		public string monthsAgo;
 
 		public string multipleMergeBasesFor;
 
@@ -828,6 +846,8 @@ namespace NGit
 
 		public string searchForSizes;
 
+		public string secondsAgo;
+
 		public string sequenceTooLargeForDiffAlgorithm;
 
 		public string serviceNotEnabledNoName;
@@ -990,6 +1010,8 @@ namespace NGit
 
 		public string wantNotValid;
 
+		public string weeksAgo;
+
 		public string windowSizeMustBeLesserThanLimit;
 
 		public string windowSizeMustBePowerOf2;
@@ -1007,5 +1029,13 @@ namespace NGit
 		public string wrongDecompressedLength;
 
 		public string wrongRepositoryState;
+
+		public string year;
+
+		public string years;
+
+		public string yearsAgo;
+
+		public string yearsMonthsAgo;
 	}
 }

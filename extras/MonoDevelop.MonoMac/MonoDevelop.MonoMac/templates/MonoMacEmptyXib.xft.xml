@@ -18,9 +18,6 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.xib.designer.${LanguageExtension}" ShowAutogenerationNotice="True" 
-			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.xib" ><![CDATA[
-]]></File>
 		<File name="${Name}.xib" DefaultExtension=".xib" SuppressAutoOpen="True">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">

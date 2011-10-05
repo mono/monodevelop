@@ -50,7 +50,6 @@
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" shortcut="Control+B|P" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" shortcut="Control+B|T" />
 	<binding command="Pad|MonoDevelop.DesignerSupport.DocumentOutlinePad" shortcut="Control+W|U" />
-	<binding command="Pad|MonoDevelop.Ide.Gui.Pads.FileScout" shortcut="Control+W|F" />
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" shortcut="Control+Alt++" />
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" shortcut="Control+Alt+-" />
 	<binding command="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" shortcut="Control+." />

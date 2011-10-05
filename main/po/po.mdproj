@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ItemType>TranslationProject</ItemType>
-    <relPath>../../build/po/</relPath>
+    <relPath>../../build/bin/locale/</relPath>
     <translations>
       <translations>
         <Translation isoCode="ca" />
@@ -40,6 +40,37 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' " />
-  <Target Name="Build" />
-  <Target Name="Clean" />
+  <!--
+  Everything above is for the MD translation project serializer, and isn't really valid MSBuild.
+  The real MSBuild project is below. Need to update MD to serialize this instead.
+  -->
+  <PropertyGroup>
+    <OutputPath>..\build\bin\locale</OutputPath>
+    <GettextCatalogName>monodevelop</GettextCatalogName>
+    <GettextCatalogFile>messages.po</GettextCatalogFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <GettextTranslation Include="ca.po" />
+    <GettextTranslation Include="cs.po" />
+    <GettextTranslation Include="da.po" />
+    <GettextTranslation Include="de.po" />
+    <GettextTranslation Include="es.po" />
+    <GettextTranslation Include="fr.po" />
+    <GettextTranslation Include="gl.po" />
+    <GettextTranslation Include="hu.po" />
+    <GettextTranslation Include="id.po" />
+    <GettextTranslation Include="it.po" />
+    <GettextTranslation Include="ja.po" />
+    <GettextTranslation Include="nl.po" />
+    <GettextTranslation Include="pl.po" />
+    <GettextTranslation Include="pt.po" />
+    <GettextTranslation Include="pt_BR.po" />
+    <GettextTranslation Include="ru.po" />
+    <GettextTranslation Include="sl.po" />
+    <GettextTranslation Include="sv.po" />
+    <GettextTranslation Include="tr.po" />
+    <GettextTranslation Include="zh_CN.po" />
+    <GettextTranslation Include="zh_TW.po" />
+  </ItemGroup>
+  <Import Project="Gettext.targets" />
 </Project>

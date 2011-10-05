@@ -170,9 +170,9 @@ namespace NGit.Util
 			> resolved)
 		{
 			this.prefix = prefix;
-			this.packed = packed;
-			this.loose = loose;
-			this.resolved = resolved;
+			this.packed = (RefList<Ref>)packed;
+			this.loose = (RefList<Ref>)loose;
+			this.resolved = (RefList<Ref>)resolved;
 		}
 
 		public override bool ContainsKey(object name)
@@ -263,14 +263,14 @@ namespace NGit.Util
 		{
 			if (entrySet == null)
 			{
-				entrySet = new _AbstractSet_222(this);
+				entrySet = new _AbstractSet_223(this);
 			}
 			return entrySet;
 		}
 
-		private sealed class _AbstractSet_222 : AbstractSet<KeyValuePair<string, Ref>>
+		private sealed class _AbstractSet_223 : AbstractSet<KeyValuePair<string, Ref>>
 		{
-			public _AbstractSet_222(RefMap _enclosing)
+			public _AbstractSet_223(RefMap _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}

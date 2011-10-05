@@ -140,7 +140,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Same as 'parameterizedType.TypeArguments[index]', but is a bit more efficient.
 		/// </summary>
+<<<<<<< HEAD
 		public IType GetTypeArgument(int index)
+=======
+		internal IType GetTypeArgument(int index)
+>>>>>>> master
 		{
 			return typeArguments[index];
 		}
@@ -348,7 +352,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return false;
 		}
 	}
-	
+
 	/// <summary>
 	/// ParameterizedTypeReference is a reference to generic class that specifies the type parameters.
 	/// Example: List&lt;string&gt;

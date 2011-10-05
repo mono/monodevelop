@@ -5,6 +5,7 @@
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
 // Copyright (c) 2009-2010 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -103,16 +104,25 @@ namespace MonoDevelop.MonoMac
 		{
 			static MonoDevelop.MacDev.ObjCIntegration.NSObjectInfoService infoService =
 				new MonoDevelop.MacDev.ObjCIntegration.NSObjectInfoService ("MonoMac");
+			static string[] Frameworks = new string[] { "Cocoa", "Foundation" };
 			
 			public MonoMacXcodeProjectTracker (MonoMacProject project) : base (project, infoService)
 			{
 			}
 			
+			protected override string[] GetFrameworks ()
+			{
+				return Frameworks;
+			}
+			
 			protected override XcodeProject CreateProject (string name)
 			{
-				var proj = new XcodeProject (name, "macosx", "MonoMac");
-				proj.AddFramework ("Cocoa");
-				return proj;
+				XcodeProject project = new XcodeProject (name, "macosx", "MonoMac");
+				
+				foreach (var framework in Frameworks)
+					project.AddFramework (framework);
+				
+				return project;
 			}
 		}
 		
@@ -200,7 +210,7 @@ namespace MonoDevelop.MonoMac
 		public override string GetDefaultBuildAction (string fileName)
 		{
 			if (fileName.EndsWith (groupedExtensions[0]))
-				return BuildAction.Page;
+				return BuildAction.InterfaceDefinition;
 			return base.GetDefaultBuildAction (fileName);
 		}
 		

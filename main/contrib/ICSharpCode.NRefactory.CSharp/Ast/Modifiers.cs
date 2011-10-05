@@ -54,6 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		Extern    = 0x2000,
 		Volatile  = 0x4000,
 		Unsafe    = 0x8000,
+		Async     = 0x10000,
 		
 		//Overloads  = 0x10000,
 		//WithEvents = 0x20000,

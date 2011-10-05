@@ -63,7 +63,17 @@
 	<MimeType id="text/x-cgsrc" _description="Cg Shader files" isText="true">
 		<File pattern="*.cg" />
 	</MimeType>
-</Extension>	
+	
+	<MimeType id="text/x-apple-strings" _description="Apple Strings" isText="true">
+		<File pattern="*.strings" />
+	</MimeType>
+	<MimeType id="application/json" _description="JSON files" isText="true">
+		<File pattern="*.json" />
+	</MimeType>
+	<MimeType id="application/x-sh" _description="Shell script" isText="true">
+		<File pattern="*.sh" />
+	</MimeType>
+</Extension>
 
 </ExtensionModel>
 

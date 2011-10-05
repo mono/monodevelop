@@ -30,11 +30,15 @@ using System.Linq;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
-	/// delegate(Parameters) {Body}
+	/// [async] delegate(Parameters) {Body}
 	/// </summary>
 	public class AnonymousMethodExpression : Expression
 	{
-		// used to make a difference between delegate {} and delegate () {}
+		public readonly static Role<CSharpTokenNode> AsyncModifierRole = LambdaExpression.AsyncModifierRole;
+		
+		public bool IsAsync { get; set; }
+		
+		// used to tell the difference between delegate {} and delegate () {}
 		public bool HasParameterList {
 			get; set;
 		}
@@ -78,7 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitAnonymousMethodExpression (this, data);
 		}
@@ -86,7 +90,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			AnonymousMethodExpression o = other as AnonymousMethodExpression;
-			return o != null && this.HasParameterList == o.HasParameterList && this.Parameters.DoMatch(o.Parameters, match) && this.Body.DoMatch(o.Body, match);
+			return o != null && this.IsAsync == o.IsAsync && this.HasParameterList == o.HasParameterList
+				&& this.Parameters.DoMatch(o.Parameters, match) && this.Body.DoMatch(o.Body, match);
 		}
 	}
 }

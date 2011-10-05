@@ -30,7 +30,6 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Fonts
 {
-	[System.ComponentModel.ToolboxItem(true)]
 	public partial class FontChooserPanelWidget : Gtk.Bin
 	{
 		TreeStore fontStore;
@@ -74,18 +73,25 @@ namespace MonoDevelop.Ide.Fonts
 					fontStore.SetValue (iter, colValue, GettextCatalog.GetString ("Default"));
 					return;
 				}
-				var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font"));
-				string fontValue = FontService.FilterFontName (GetFont (fontName));
-				selectionDialog.SetFontName (fontValue);
-				selectionDialog.OkButton.Clicked += delegate {
+				var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font")) {
+					Modal = true,
+					DestroyWithParent = true,
+					TransientFor = this.Toplevel as Gtk.Window
+				};
+				try {
+					string fontValue = FontService.FilterFontName (GetFont (fontName));
+					selectionDialog.SetFontName (fontValue);
+					if (MessageService.RunCustomDialog (selectionDialog) != (int) Gtk.ResponseType.Ok) {
+						return;
+					}
 					fontValue = selectionDialog.FontName;
 					if (fontValue ==  FontService.FilterFontName (FontService.GetFont (fontName).FontDescription))
 						fontValue = FontService.GetFont (fontName).FontDescription;
 					SetFont (fontName, fontValue);
 					fontStore.SetValue (iter, colValue, selectionDialog.FontName);
-				};
-				MessageService.ShowCustomDialog (selectionDialog);
-				selectionDialog.Destroy ();
+				} finally {
+					selectionDialog.Destroy ();
+				}
 			};
 			
 			comboRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {

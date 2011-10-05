@@ -1,4 +1,4 @@
-﻿// 
+// 
 // UsingAliasDeclaration.cs
 //  
 // Author:
@@ -49,7 +49,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (AliasRole).Name;
 			}
 			set {
+<<<<<<< HEAD
 				SetChildByRole(AliasRole, Identifier.Create (value, TextLocation.Empty));
+=======
+				SetChildByRole(AliasRole, Identifier.Create (value, AstLocation.Empty));
+>>>>>>> master
 			}
 		}
 		
@@ -72,13 +76,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public UsingAliasDeclaration (string alias, string nameSpace)
 		{
+<<<<<<< HEAD
 			AddChild (Identifier.Create (alias, TextLocation.Empty), AliasRole);
+=======
+			AddChild (Identifier.Create (alias, AstLocation.Empty), AliasRole);
+>>>>>>> master
 			AddChild (new SimpleType (nameSpace), ImportRole);
 		}
 		
 		public UsingAliasDeclaration (string alias, AstType import)
 		{
+<<<<<<< HEAD
 			AddChild (Identifier.Create (alias, TextLocation.Empty), AliasRole);
+=======
+			AddChild (Identifier.Create (alias, AstLocation.Empty), AliasRole);
+>>>>>>> master
 			AddChild (import, ImportRole);
 		}
 		

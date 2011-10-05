@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					label = Path.GetFileName(pref.Reference);
 					icon = Context.GetIcon ("md-reference-folder");
 					break;
-				case ReferenceType.Gac:
+				case ReferenceType.Package:
 					label = pref.Reference.Split(',')[0];
 					icon = Context.GetIcon ("md-reference-package");
 					break;
@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					info.Enabled = false;
 				if (lastRef == null || lastRef.LocalCopy == pref.LocalCopy) {
 					lastRef = pref;
-					info.Checked = pref.LocalCopy;
+					info.Checked = info.Enabled && pref.LocalCopy;
 				} else {
 					info.CheckedInconsistent = true;
 				}

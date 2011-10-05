@@ -208,24 +208,26 @@ namespace MonoDevelop.Gettext
 			fileName = poFile;
 
 			// Load the .po file:
-			bool finished = false;
 			try {
+				//FIXME: this is really wasteful, it reads and splits the whole file just to get a line at the beginning
 				CharsetInfoFinder charsetFinder = new CharsetInfoFinder (parentProj, poFile);
 				charsetFinder.Parse ();
 				Charset = charsetFinder.Charset;
 				originalNewLine = charsetFinder.NewLine;
-				finished = true;
 			} catch (Exception e) {
+				string msg = "Error during getting charset of file '" + poFile + "'.";
+				LoggingService.LogFatalError (msg, e);
 				if (monitor != null)
-					monitor.ReportError ("Error during getting charset of file '" + poFile + "'.", e);
-			}
-			if (!finished)
+					monitor.ReportError (msg, e);
 				return false;
+			}
 
 			LoadParser parser = new LoadParser (this, poFile, Catalog.GetEncoding (this.Charset));
-			if (!parser.Parse()) {
-				// TODO: use loging - GUI!
-				Console.WriteLine ("Error during parsing '{0}' file, file is probably corrupted.", poFile);
+			if (!parser.Parse ()) {
+				string msg = string.Format ("Error during parsing '{0}' file, file is probably corrupted.", poFile);
+				LoggingService.LogError (msg);
+				if (monitor != null)
+					monitor.ReportError (msg, null);
 				return false;
 			}
 
@@ -251,6 +253,8 @@ namespace MonoDevelop.Gettext
 		}
 		
 		// Saves catalog to file.
+		//FIXME: escape all the values that the parser unescapes
+		//FIXME: use a StreamWriter instead of a StringBuilder
 		public bool Save (string poFile)
 		{
 			StringBuilder sb = new StringBuilder ();
@@ -289,7 +293,11 @@ namespace MonoDevelop.Gettext
 						sb.AppendFormat ("#. {0}{1}", autoComment, originalNewLine);
 				}
 				foreach (string reference in data.References) {
-					sb.AppendFormat ("#: {0}{1}", reference, originalNewLine);
+					//store paths as Unix-type paths, but internally use native style
+					string r = reference;
+					if (Platform.IsWindows)
+						r = r.Replace ('\\', '/');
+					sb.AppendFormat ("#: {0}{1}", r, originalNewLine);
 				}
 				if (! String.IsNullOrEmpty (data.Flags)) {
 					sb.Append (data.Flags);
@@ -332,8 +340,9 @@ namespace MonoDevelop.Gettext
 			
 			bool saved = false;
 			try {
+				//FIXME: use a safe write, i.e. write to another file and move over the original one
 				// Write it as bytes, text writer includes BOF for utf-8,
-				// getetext utils are refusing to work with this
+				// gettext utils are refusing to work with this
 				byte[] content = encoding.GetBytes (sb.ToString ());
 				File.WriteAllBytes (poFile, content);
 				saved = true;
@@ -351,7 +360,7 @@ namespace MonoDevelop.Gettext
 		static void SaveMultiLines (StringBuilder sb, string text, string newLine)
 		{
 			if (text != null) {
-				foreach (string line in text.Split (new string[] { "\n\r", "\r\n", "\r", "\n", "\r"}, StringSplitOptions.None)) {
+				foreach (string line in text.Split (CatalogParser.LineSplitStrings, StringSplitOptions.None)) {
 					sb.AppendFormat ("{0}{1}", line, newLine);
 				}
 			}

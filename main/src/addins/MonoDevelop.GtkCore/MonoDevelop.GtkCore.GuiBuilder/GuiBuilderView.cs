@@ -506,7 +506,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (asm == null)
 					return;
 				if (gproject.Project.AssemblyContext.GetPackagesFromFullName (asm).Length > 0) {
-					pref = new ProjectReference (ReferenceType.Gac, asm);
+					pref = new ProjectReference (ReferenceType.Package, asm);
 				} else {
 					asm = gproject.Project.AssemblyContext.GetAssemblyLocation (asm, gproject.Project.TargetFramework);
 					pref = new ProjectReference (ReferenceType.Assembly, asm);

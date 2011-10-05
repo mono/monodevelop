@@ -56,7 +56,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("context");
 			this.context = context;
 			this.cancellationToken = cancellationToken;
+<<<<<<< HEAD
 			this.conversions = Conversions.Get(context);
+=======
+			this.conversions = new Conversions(context);
+>>>>>>> master
 		}
 		#endregion
 		
@@ -274,7 +278,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		/// <summary>
 		/// Opens a new scope for local variables.
+<<<<<<< HEAD
 		/// This works like <see cref="PushBlock"/>, but additionally sets <see cref="IsWithinLambdaExpression"/> to true.
+=======
+>>>>>>> master
 		/// </summary>
 		public void PushLambdaBlock()
 		{
@@ -299,11 +306,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Adds a new variable to the current block.
 		/// </summary>
 		public IVariable AddVariable(ITypeReference type, DomRegion declarationRegion, string name, IConstantValue constantValue = null)
+<<<<<<< HEAD
+=======
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
 			if (name == null)
 				throw new ArgumentNullException("name");
+			return localVariableStack = new LocalVariable(localVariableStack, type, declarationRegion, name, constantValue);
+		}
+		
+		/// <summary>
+		/// Adds a new lambda parameter to the current block.
+		/// </summary>
+		public IParameter AddLambdaParameter(ITypeReference type, DomRegion declarationRegion, string name, bool isRef, bool isOut)
+>>>>>>> master
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (name == null)
+				throw new ArgumentNullException("name");
+<<<<<<< HEAD
 			return localVariableStack = new LocalVariable(localVariableStack, type, declarationRegion, name, constantValue);
 		}
 		
@@ -322,6 +345,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
+=======
+			LambdaParameter p = new LambdaParameter(localVariableStack, type, declarationRegion, name, isRef, isOut);
+			localVariableStack = p;
+			return p;
+		}
+		
+		/// <summary>
+>>>>>>> master
 		/// Gets all currently visible local variables and lambda parameters.
 		/// </summary>
 		public IEnumerable<IVariable> LocalVariables {
@@ -345,6 +376,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return false;
 			}
 		}
+<<<<<<< HEAD
 		#endregion
 		
 		#region Object Initializer Context
@@ -387,6 +419,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public IType CurrentObjectInitializerType {
 			get { return objectInitializerStack != null ? objectInitializerStack.type : SharedTypes.UnknownType; }
 		}
+=======
+>>>>>>> master
 		#endregion
 		
 		#region Clone
@@ -620,7 +654,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isNullable = NullableType.IsNullable(expression.Type);
 			
 			// the operator is overloadable:
+<<<<<<< HEAD
 			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { expression }, conversions: conversions);
+=======
+			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { expression });
+>>>>>>> master
 			foreach (var candidate in GetUserDefinedOperatorCandidates(type, overloadableOperatorName)) {
 				userDefinedOperatorOR.AddCandidate(candidate);
 			}
@@ -668,7 +706,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
+<<<<<<< HEAD
 			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { expression }, conversions: conversions);
+=======
+			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { expression });
+>>>>>>> master
 			foreach (var candidate in methodGroup) {
 				builtinOperatorOR.AddCandidate(candidate);
 			}
@@ -881,7 +923,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType rhsType = NullableType.GetUnderlyingType(rhs.Type);
 			
 			// the operator is overloadable:
+<<<<<<< HEAD
 			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { lhs, rhs }, conversions: conversions);
+=======
+			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { lhs, rhs });
+>>>>>>> master
 			HashSet<IParameterizedMember> userOperatorCandidates = new HashSet<IParameterizedMember>();
 			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(lhsType, overloadableOperatorName));
 			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(rhsType, overloadableOperatorName));
@@ -1097,7 +1143,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
+<<<<<<< HEAD
 			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { lhs, rhs }, conversions: conversions);
+=======
+			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { lhs, rhs });
+>>>>>>> master
 			foreach (var candidate in methodGroup) {
 				builtinOperatorOR.AddCandidate(candidate);
 			}
@@ -1844,14 +1894,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			LiftedUserDefinedOperator lifted = r.BestCandidate as LiftedUserDefinedOperator;
 			if (lifted != null) {
+<<<<<<< HEAD
 				return new CSharpInvocationResolveResult(
+=======
+				return new InvocationResolveResult(
+>>>>>>> master
 					null, lifted.nonLiftedOperator, lifted.ReturnType.Resolve(context),
 					r.GetArgumentsWithConversions(), r.BestCandidateErrors,
 					isLiftedOperatorInvocation: true,
 					argumentToParameterMap: r.GetArgumentToParameterMap()
 				);
 			} else {
+<<<<<<< HEAD
 				return r.CreateResolveResult(null);
+=======
+				return new InvocationResolveResult(null, r, context);
+>>>>>>> master
 			}
 		}
 		#endregion
@@ -1962,7 +2020,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Look in local variables
 					foreach (IVariable v in this.LocalVariables) {
 						if (v.Name == identifier) {
+<<<<<<< HEAD
 							object constantValue = v.IsConst ? v.ConstantValue.Resolve(context).ConstantValue : null;
+=======
+							object constantValue = v.IsConst ? v.ConstantValue.GetValue(context) : null;
+>>>>>>> master
 							return new LocalResolveResult(v, v.Type.Resolve(context), constantValue);
 						}
 					}
@@ -1991,6 +2053,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (parameterizeResultType && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument))
 				parameterizeResultType = false;
 			
+<<<<<<< HEAD
 			ResolveResult r = null;
 			if (currentTypeDefinition != null) {
 				Dictionary<string, ResolveResult> cache = null;
@@ -2048,6 +2111,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult LookInCurrentType(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode, bool parameterizeResultType)
 		{
 			int k = typeArguments.Count;
+=======
+>>>>>>> master
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -2075,12 +2140,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
 					return r;
 			}
+<<<<<<< HEAD
 			return null;
 		}
 		
 		ResolveResult LookInCurrentUsingScope(string identifier, IList<IType> typeArguments, bool isInUsingDeclaration, bool parameterizeResultType)
 		{
 			int k = typeArguments.Count;
+=======
+			
+>>>>>>> master
 			// look in current namespace definitions
 			UsingScope currentUsingScope = this.CurrentUsingScope;
 			for (UsingScope n = currentUsingScope; n != null; n = n.Parent) {
@@ -2206,7 +2275,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (mgrr != null) {
 					Debug.Assert(mgrr.extensionMethods == null);
 					// set the values that are necessary to make MethodGroupResolveResult.GetExtensionMethods() work
+<<<<<<< HEAD
 					mgrr.usingScope = this.CurrentUsingScope;
+=======
+					mgrr.usingScope = this.UsingScope;
+>>>>>>> master
 					mgrr.resolver = this;
 				}
 			}
@@ -2247,6 +2320,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return ErrorResult;
 		}
 		
+<<<<<<< HEAD
 		/// <summary>
 		/// Creates a MemberLookup instance using this resolver's settings.
 		/// </summary>
@@ -2258,6 +2332,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		#region ResolveIdentifierInObjectInitializer
 		public ResolveResult ResolveIdentifierInObjectInitializer(string identifier)
+=======
+		MemberLookup CreateMemberLookup()
+>>>>>>> master
 		{
 			MemberLookup memberLookup = CreateMemberLookup();
 			ResolveResult target = new ResolveResult(this.CurrentObjectInitializerType);
@@ -2315,6 +2392,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets all extension methods available in the current using scope.
 		/// This list includes unaccessible
 		/// </summary>
+<<<<<<< HEAD
 		IList<List<IMethod>> GetAllExtensionMethods()
 		{
 			if (currentUsingScope == null)
@@ -2323,6 +2401,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (extensionMethodGroups != null)
 				return extensionMethodGroups;
 			extensionMethodGroups = new List<List<IMethod>>();
+=======
+		List<List<IMethod>> GetAllExtensionMethods()
+		{
+			// TODO: maybe cache the result?
+			// Idea: class ExtensionMethodGroupCache : List<List<IMethod>>
+			// a new ExtensionMethodGroupCache instance would be created whenever the UsingScope is changed
+			// The list contents would be initialized on-demand.
+			// Because cloning the resolver would re-use the cache, it must be thread-safe.
+			// The cache could be passed to the MethodGroupResolveResult instead of passing the resolver.
+			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+>>>>>>> master
 			List<IMethod> m;
 			for (UsingScope scope = currentUsingScope.UsingScope; scope != null; scope = scope.Parent) {
 				m = GetExtensionMethods(scope.NamespaceName).ToList();
@@ -2377,9 +2466,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
+<<<<<<< HEAD
 				OverloadResolution or = mgrr.PerformOverloadResolution(context, arguments, argumentNames, conversions: conversions);
 				if (or.BestCandidate != null) {
 					return or.CreateResolveResult(mgrr.TargetResult);
+=======
+				OverloadResolution or = mgrr.PerformOverloadResolution(context, arguments, argumentNames);
+				if (or.BestCandidate != null) {
+					return new InvocationResolveResult(mgrr.TargetResult, or, context);
+>>>>>>> master
 				} else {
 					// No candidate found at all (not even an inapplicable one).
 					// This can happen with empty method groups (as sometimes used with extension methods)
@@ -2397,9 +2492,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			IMethod invokeMethod = target.Type.GetDelegateInvokeMethod();
 			if (invokeMethod != null) {
+<<<<<<< HEAD
 				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, conversions: conversions);
 				or.AddCandidate(invokeMethod);
 				return new CSharpInvocationResolveResult(
+=======
+				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames);
+				or.AddCandidate(invokeMethod);
+				return new InvocationResolveResult(
+>>>>>>> master
 					target, invokeMethod, invokeMethod.ReturnType.Resolve(context),
 					or.GetArgumentsWithConversions(), or.BestCandidateErrors,
 					isExpandedForm: or.BestCandidateIsExpandedForm,
@@ -2523,12 +2624,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			// §7.6.6.2 Indexer access
+<<<<<<< HEAD
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, conversions: conversions);
+=======
+			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
+>>>>>>> master
 			MemberLookup lookup = CreateMemberLookup();
 			var indexers = lookup.LookupIndexers(target.Type);
 			or.AddMethodLists(indexers);
 			if (or.BestCandidate != null) {
+<<<<<<< HEAD
 				return or.CreateResolveResult(target);
+=======
+				return new InvocationResolveResult(target, or, context);
+>>>>>>> master
 			} else {
 				return ErrorResult;
 			}
@@ -2580,7 +2689,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				or.AddCandidate(ctor);
 			}
 			if (or.BestCandidate != null) {
+<<<<<<< HEAD
 				return or.CreateResolveResult(null);
+=======
+				return new InvocationResolveResult(null, or, context);
+>>>>>>> master
 			} else {
 				return new ErrorResolveResult(type);
 			}
@@ -2790,7 +2903,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Specifies whether to allow treating single-dimensional arrays like compile-time constants.
 		/// This is used for attribute arguments.
 		/// </param>
+<<<<<<< HEAD
 		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null)
+=======
+		public ResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null, bool allowArrayConstants = false)
+>>>>>>> master
 		{
 			if (sizeArguments != null && dimensions != Math.Max(1, sizeArguments.Length))
 				throw new ArgumentException("dimensions and sizeArguments.Length don't match");
@@ -2809,7 +2926,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					initializerElements[i] = Convert(initializerElements[i], elementType);
 				}
 			}
+<<<<<<< HEAD
 			return new ArrayCreateResolveResult(arrayType, sizeArguments, initializerElements);
+=======
+			return new ArrayCreateResolveResult(arrayType, sizeArguments, initializerElements, allowArrayConstants);
+>>>>>>> master
 		}
 		#endregion
 	}

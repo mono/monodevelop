@@ -88,9 +88,8 @@ namespace MonoDevelop.Gettext
 			return sb.ToString ();
 		}
 		
-		public static string FromGettextFormat (string text)
+		public static void AppendFromGettextFormat (this StringBuilder sb, string text)
 		{
-			StringBuilder sb = new StringBuilder ();
 			for (int i = 0; i < text.Length; i++) {
 				char c = text[i];
 				switch (c) {
@@ -117,15 +116,20 @@ namespace MonoDevelop.Gettext
 							i++;
 							continue;
 						}
-						throw new FormatException (String.Format (MonoDevelop.Core.GettextCatalog.GetString ("Invalid escape sequence '{0}' in string: '{1}'"),
-						                                          nextChar,
-						                                          text));
+						throw new FormatException (MonoDevelop.Core.GettextCatalog.GetString (
+							"Invalid escape sequence '{0}' in string: '{1}'", nextChar, text));
 					}
 					break;
 				}
 				
 				sb.Append (c);
 			}
+		}
+		
+		public static string FromGettextFormat (string text)
+		{
+			var sb = new StringBuilder ();
+			AppendFromGettextFormat(sb, text);
 			return sb.ToString ();
 		}
 		

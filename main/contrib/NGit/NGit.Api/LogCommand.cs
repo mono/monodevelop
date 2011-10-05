@@ -105,7 +105,8 @@ namespace NGit.Api
 			CheckCallable();
 			if (pathFilters.Count > 0)
 			{
-				walk.SetTreeFilter(PathFilterGroup.Create(pathFilters));
+				walk.SetTreeFilter(AndTreeFilter.Create(PathFilterGroup.Create(pathFilters), TreeFilter
+					.ANY_DIFF));
 			}
 			if (!startSpecified)
 			{

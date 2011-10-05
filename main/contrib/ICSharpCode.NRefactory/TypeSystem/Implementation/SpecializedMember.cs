@@ -171,10 +171,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition.ProjectContent; }
 		}
 		
+<<<<<<< HEAD
 		public IParsedFile ParsedFile {
 			get { return memberDefinition.ParsedFile; }
 		}
 		
+=======
+>>>>>>> master
 		public string FullName {
 			get { return memberDefinition.FullName; }
 		}

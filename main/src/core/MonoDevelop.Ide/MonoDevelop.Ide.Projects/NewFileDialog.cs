@@ -103,9 +103,9 @@ namespace MonoDevelop.Ide.Projects
 		{
 			foreach (Category category in catarray) {
 				if (TreeIter.Zero.Equals (node))
-					InsertCategories (catStore.AppendValues (category.Name, category.Categories, category.Templates, ImageService.GetPixbuf ("md-closed-folder")), category.Categories);
+					InsertCategories (catStore.AppendValues (category.Name, category.Categories, category.Templates), category.Categories);
 				else
-					InsertCategories (catStore.AppendValues (node, category.Name, category.Categories, category.Templates, ImageService.GetPixbuf ("md-closed-folder")), category.Categories);
+					InsertCategories (catStore.AppendValues (node, category.Name, category.Categories, category.Templates), category.Categories);
 			}
 		}
 
@@ -354,6 +354,11 @@ namespace MonoDevelop.Ide.Projects
 			UpdateOkStatus ();
 		}
 
+		string GetFileNameFromEntry ()
+		{
+			return nameEntry.Text.Trim ();
+		}
+
 		void UpdateOkStatus ()
 		{
 			try {
@@ -371,11 +376,13 @@ namespace MonoDevelop.Ide.Projects
 					labelTemplateTitle.Markup = "<b>" + GettextCatalog.GetString (item.Name) + "</b>";
 					infoLabel.Text = GettextCatalog.GetString (item.Description);
 
+					string filename = GetFileNameFromEntry ();
+
 					//desensitise the text entry if the name is fixed
 					//careful to store user-entered text so we can replace it if they change their selection
 					if (item.IsFixedFilename) {
 						if (userEditedEntryText == null)
-							userEditedEntryText = nameEntry.Text;
+							userEditedEntryText = filename;
 						nameEntry.Text = item.DefaultFilename;
 						nameEntry.Sensitive = false;
 					} else {
@@ -387,10 +394,11 @@ namespace MonoDevelop.Ide.Projects
 					}
 
 					//fill in a default name if text entry is empty or contains a default name
-					if ((string.IsNullOrEmpty (nameEntry.Text) || (previousDefaultEntryText == nameEntry.Text)) && !string.IsNullOrEmpty (item.DefaultFilename)) {
+					if ((string.IsNullOrEmpty (filename) || (previousDefaultEntryText == filename)) && !string.IsNullOrEmpty (item.DefaultFilename)) {
 						nameEntry.Text = item.DefaultFilename;
 						previousDefaultEntryText = item.DefaultFilename;
 					}
+					
 					Project project = null;
 					string path = null;
 					if (!boxProject.Visible || projectAddCheckbox.Active) {
@@ -399,14 +407,14 @@ namespace MonoDevelop.Ide.Projects
 					}
 					
 					if (projectAddCheckbox.Active) {
-						okButton.Sensitive = item.IsValidName (nameEntry.Text, sel.Language);
+						okButton.Sensitive = item.IsValidName (filename, sel.Language);
 					} else {
-						if (!item.IsValidName (nameEntry.Text, sel.Language)) {
+						if (!item.IsValidName (filename, sel.Language)) {
 							okButton.Sensitive = false;
 						} else {
 							bool sensitive = true;
 							foreach (var file in item.Files) {
-								if (!item.CanCreateUnsavedFiles (file, project, project, path, sel.Language, nameEntry.Text)) {
+								if (!item.CanCreateUnsavedFiles (file, project, project, path, sel.Language, filename)) {
 									sensitive = false;
 									break;
 								}
@@ -445,7 +453,8 @@ namespace MonoDevelop.Ide.Projects
 			if (catView.Selection.GetSelected (out selectedIter))
 				PropertyService.Set (GetCategoryPropertyKey (parentProject), GetCatPath (selectedIter));
 
-			if (iconView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
+			string filename = GetFileNameFromEntry ();
+			if (iconView.CurrentlySelected != null && filename.Length > 0) {
 				TemplateItem titem = (TemplateItem)iconView.CurrentlySelected;
 				FileTemplate item = titem.Template;
 				Project project = null;
@@ -457,7 +466,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 
 				try {
-					if (!item.Create (project, project, path, titem.Language, nameEntry.Text))
+					if (!item.Create (project, project, path, titem.Language, filename))
 						return;
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
@@ -558,7 +567,7 @@ namespace MonoDevelop.Ide.Projects
 			iconView.ShowAll ();
 			boxTemplates.PackStart (iconView, true, true, 0);
 			
-			catStore = new TreeStore (typeof(string), typeof(List<Category>), typeof(List<TemplateItem>), typeof(Pixbuf));
+			catStore = new TreeStore (typeof(string), typeof(List<Category>), typeof(List<TemplateItem>));
 
 			TreeViewColumn treeViewColumn = new TreeViewColumn ();
 			treeViewColumn.Title = "categories";

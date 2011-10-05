@@ -29,10 +29,15 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects
 {
+	///<summary>This should really be called DotNetCompilerParameters</summary>
 	[DataItem (FallbackType=typeof(UnknownCompilationParameters))]
-	public class ConfigurationParameters: ProjectParameters
+	public abstract class ConfigurationParameters: ProjectParameters
 	{
 		DotNetProjectConfiguration configuration;
+		
+		public abstract void AddDefineSymbol (string symbol);
+		
+		public abstract void RemoveDefineSymbol (string symbol);
 		
 		public new ConfigurationParameters Clone ()
 		{

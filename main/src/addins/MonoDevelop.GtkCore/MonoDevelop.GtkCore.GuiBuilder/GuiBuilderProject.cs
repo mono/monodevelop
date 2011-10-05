@@ -398,7 +398,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					path = p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			} else if (pref.ReferenceType == ReferenceType.Assembly) {
 				path = pref.Reference;
-			} else if (pref.ReferenceType == ReferenceType.Gac) {
+			} else if (pref.ReferenceType == ReferenceType.Package) {
 				path = pref.Reference;
 			}
 			if (path != null && GuiBuilderService.SteticApp.IsWidgetLibrary (path))

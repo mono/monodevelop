@@ -289,6 +289,15 @@ namespace NGit.Util
 		public StringUtils()
 		{
 		}
+
 		// Do not create instances
+		/// <summary>Test if a string is empty or null.</summary>
+		/// <remarks>Test if a string is empty or null.</remarks>
+		/// <param name="stringValue">the string to check</param>
+		/// <returns><code>true</code> if the string is <code>null</code> or empty</returns>
+		public static bool IsEmptyOrNull(string stringValue)
+		{
+			return stringValue == null || stringValue.Length == 0;
+		}
 	}
 }

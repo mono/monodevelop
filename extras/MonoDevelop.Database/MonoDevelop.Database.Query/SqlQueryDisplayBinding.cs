@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 namespace MonoDevelop.Database.Query
 {
 	
-	public class SqlQueryDisplayBinding : IDisplayBinding
+	public class SqlQueryDisplayBinding : IViewDisplayBinding
 	{
 		public string Name {
 			get {
@@ -45,8 +45,8 @@ namespace MonoDevelop.Database.Query
 		{
 			return fileName.IsNotNull && fileName.HasExtension (".sql");
 		}
-		
-		public IViewContent CreateContentForFile (string uri)
+
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new SqlQueryView ();
 		}
@@ -56,11 +56,7 @@ namespace MonoDevelop.Database.Query
 			return mimetype == "text/x-sql";
 		}
 
-		public IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
-		{
-			return new SqlQueryView ();
-		}
-		
-		public bool CanUseAsDefault { get { return false; } }
+		public bool CanUseAsDefault { get { return true; } }
+
 	}
 }

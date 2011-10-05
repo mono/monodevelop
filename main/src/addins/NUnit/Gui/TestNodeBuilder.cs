@@ -190,6 +190,12 @@ namespace MonoDevelop.NUnit
 			info.Enabled = test.SourceCodeLocation != null;
 		}
 		
+		[CommandUpdateHandler (ProjectCommands.Options)]
+		protected void OnUpdateShowOptions (CommandInfo info)
+		{
+			info.Visible = !(CurrentNode.DataItem is SolutionFolderTestGroup);
+		}
+		
 		[CommandHandler (ProjectCommands.Options)]
 		protected void OnShowOptions ()
 		{

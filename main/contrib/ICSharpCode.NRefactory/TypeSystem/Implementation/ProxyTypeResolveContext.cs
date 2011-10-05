@@ -25,8 +25,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Proxy that forwards calls to another TypeResolveContext.
 	/// Useful as base class for decorators.
 	/// </summary>
+<<<<<<< HEAD
 	[Serializable]
 	public class ProxyTypeResolveContext : ITypeResolveContext
+=======
+	public class ProxyTypeResolveContext : AbstractAnnotatable, ITypeResolveContext
+>>>>>>> master
 	{
 		protected readonly ITypeResolveContext target;
 		

@@ -1,10 +1,12 @@
 // 
 // XcodeObject.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +33,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	public abstract class XcodeObject
 	{
+		public abstract string Name { get; }
 		public abstract XcodeType Type { get; }
 
 		public string Token {
@@ -38,16 +41,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				int hc = GetHashCode ();
 				return hc.ToString ("X").PadRight (24, '0');
 			}
-		}
-		
-		/// <summary>
-		/// Quotes a string, if it contains white spaces.
-		/// </summary>
-		protected static string QuoteOnDemand (string name)
-		{
-			if (name.IndexOfAny (new [] { ' ', '@' }) >= 0)
-				return "\"" + name + "\"";
-			return name;
 		}
 	}
 }

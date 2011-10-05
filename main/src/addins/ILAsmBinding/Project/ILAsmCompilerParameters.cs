@@ -30,5 +30,13 @@ namespace ILAsmBinding
 {
 	public class ILAsmCompilerParameters : MonoDevelop.Projects.ConfigurationParameters
 	{
+		public override void AddDefineSymbol (string symbol)
+		{
+			// ILAsm has no symbols to define
+		}
+		public override void RemoveDefineSymbol (string symbol)
+		{
+			// ILAsm has no symbols to define
+		}
 	}
 }

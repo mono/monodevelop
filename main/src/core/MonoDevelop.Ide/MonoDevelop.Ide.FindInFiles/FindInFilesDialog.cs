@@ -110,7 +110,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			buttonReplace.Clicked += HandleReplaceClicked;
 			buttonSearch.Clicked += HandleSearchClicked;
-			buttonClose.Clicked += ButtonCloseClicked;
+			buttonClose.Clicked += (sender, e) => Destroy ();
+			DeleteEvent += (o, args) => Destroy ();
 			buttonStop.Clicked += ButtonStopClicked;
 			var scopeStore = new ListStore (typeof(string));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
@@ -146,7 +147,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			comboboxentryFind.Entry.SelectRegion (0, comboboxentryFind.ActiveText.Length);
 			
-			Hidden += delegate { Destroy (); };
+			DeleteEvent += delegate { Destroy (); };
 			UpdateStopButton ();
 			searchentry1.Ready = true;
 			searchentry1.Visible = true;
@@ -169,12 +170,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			};
 			
 			Child.Show ();
-		}
-
-		void ButtonCloseClicked (object sender, EventArgs e)
-		{
-			Hide ();
-			// Hide destroys the dialog
 		}
 
 		Label labelPath;
@@ -403,84 +398,92 @@ namespace MonoDevelop.Ide.FindInFiles
 			base.OnDestroyed ();
 		}
 		
-		static FindInFilesDialog currentFindDialog;
-		static bool IsCurrentDialogClosed {
-			get {
-				return currentFindDialog == null || !currentFindDialog.Visible;
-			}
-		}
-		
 		public static void ShowFind ()
 		{
-			if (!IsCurrentDialogClosed) {
-				currentFindDialog.Destroy ();
-			}
-			currentFindDialog = new FindInFilesDialog (false);
-			MessageService.PlaceDialog (currentFindDialog, null);
-			currentFindDialog.Show ();
+			ShowSingleInstance (new FindInFilesDialog (false));
 		}
 		
 		public static void ShowReplace ()
 		{
-			if (!IsCurrentDialogClosed) {
-				currentFindDialog.Destroy ();
-			}
-			currentFindDialog = new FindInFilesDialog (true);
-			MessageService.PlaceDialog (currentFindDialog, null);
-			currentFindDialog.Show ();
+			ShowSingleInstance (new FindInFilesDialog (true));
 		}
 		
 		public static void FindInPath (string path)
 		{
-			if (!IsCurrentDialogClosed) {
+			ShowSingleInstance (new FindInFilesDialog (false, path));
+		}
+		
+		static FindInFilesDialog currentFindDialog;
+		
+		static void ShowSingleInstance (FindInFilesDialog newDialog)
+		{
+			if (currentFindDialog != null) {
 				currentFindDialog.Destroy ();
 			}
-			currentFindDialog = new FindInFilesDialog (false, path);
+			newDialog.Destroyed += (sender, e) => currentFindDialog = null;
+			currentFindDialog = newDialog;
 			MessageService.PlaceDialog (currentFindDialog, null);
-			currentFindDialog.Show ();
+			currentFindDialog.Present ();
 		}
-				
+		
 		Scope GetScope ()
 		{
+							
+			var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+			Scope scope = null;
+				
 			switch (comboboxScope.Active) {
 			case ScopeCurrentDocument:
-				return new DocumentScope ();
+				scope = new DocumentScope ();
+				break;
 			case ScopeSelection:
-				return new SelectionScope ();
+				scope = new SelectionScope ();
+				break;
 			case ScopeWholeSolution:
 				if (!IdeApp.Workspace.IsOpen) {
 					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 					return null;
 				}
-				return new WholeSolutionScope ();
+				scope = new WholeSolutionScope ();
+				break;
 			case ScopeCurrentProject:
-				MonoDevelop.Projects.Project currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
-				if (currentSelectedProject != null)
-					return new WholeProjectScope (currentSelectedProject);
-				if (IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-					AlertButton alertButton = MessageService.AskQuestion (GettextCatalog.GetString ("Currently there is no project selected. Search in the solution instead ?"), AlertButton.Yes, AlertButton.No);
-					if (alertButton == AlertButton.Yes)
-						return new WholeSolutionScope ();
-				} else {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
+				var currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
+				if (currentSelectedProject != null) {
+					scope = new WholeProjectScope (currentSelectedProject);
+					break;
 				}
+				if (IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+					var question = GettextCatalog.GetString (
+						"Currently there is no project selected. Search in the solution instead ?");
+					if (MessageService.AskQuestion (question, AlertButton.Yes, AlertButton.No) == AlertButton.Yes) {
+						scope = new WholeSolutionScope ();
+						break;
+					} else {
+						return null;
+					}
+				}
+				MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 				return null;
 			case ScopeAllOpenFiles:
-				return new AllOpenFilesScope ();
+				scope = new AllOpenFilesScope ();
+				break;
 			case ScopeDirectories: 
 				if (!System.IO.Directory.Exists (comboboxentryPath.Entry.Text)) {
-					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"), comboboxentryPath.Entry.Text));
+					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"),
+						comboboxentryPath.Entry.Text));
 					return null;
 				}
-				var directoryScope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active);
 				
-				var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
-				directoryScope.IncludeBinaryFiles = properties.Get ("IncludeBinaryFiles", false);
-				directoryScope.IncludeHiddenFiles = properties.Get ("IncludeHiddenFiles", false);
-				
-				return directoryScope;
+				scope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active) {
+					IncludeHiddenFiles = properties.Get ("IncludeHiddenFiles", false)
+				};
+				break;
+			default:
+				throw new ApplicationException ("Unknown scope:" + comboboxScope.Active);
 			}
-			throw new ApplicationException ("Unknown scope:" + comboboxScope.Active);
+			
+			scope.IncludeBinaryFiles = properties.Get ("IncludeBinaryFiles", false);
+			return scope;
 		}
 
 		FilterOptions GetFilterOptions ()
@@ -497,13 +500,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
 			SearchReplace (comboboxentryReplace.Entry.Text);
-//			Hide ();
 		}
 
 		void HandleSearchClicked (object sender, EventArgs e)
 		{
 			SearchReplace (null);
-//			Hide ();
 		}
 
 		readonly List<ISearchProgressMonitor> searchesInProgress = new List<ISearchProgressMonitor> ();

@@ -20,7 +20,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.HBox hbox3;
 		private global::Gtk.CheckButton fontOutputCheckbox;
 		private global::Gtk.FontButton fontOutputButton;
-		private global::Gtk.CheckButton hiddenButton;
 		private global::Gtk.CheckButton documentSwitcherButton;
 		
 		protected virtual void Build ()
@@ -193,17 +192,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w15.Expand = false;
 			w15.Fill = false;
 			// Container child vbox13.Gtk.Box+BoxChild
-			this.hiddenButton = new global::Gtk.CheckButton ();
-			this.hiddenButton.Name = "hiddenButton";
-			this.hiddenButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("S_how hidden files and directories in File Scout");
-			this.hiddenButton.DrawIndicator = true;
-			this.hiddenButton.UseUnderline = true;
-			this.vbox13.Add (this.hiddenButton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.hiddenButton]));
-			w16.Position = 3;
-			w16.Expand = false;
-			w16.Fill = false;
-			// Container child vbox13.Gtk.Box+BoxChild
 			this.documentSwitcherButton = new global::Gtk.CheckButton ();
 			this.documentSwitcherButton.CanFocus = true;
 			this.documentSwitcherButton.Name = "documentSwitcherButton";
@@ -211,10 +199,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.documentSwitcherButton.DrawIndicator = true;
 			this.documentSwitcherButton.UseUnderline = true;
 			this.vbox13.Add (this.documentSwitcherButton);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.documentSwitcherButton]));
-			w17.Position = 4;
-			w17.Expand = false;
-			w17.Fill = false;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.documentSwitcherButton]));
+			w16.Position = 3;
+			w16.Expand = false;
+			w16.Fill = false;
 			this.Add (this.vbox13);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

@@ -671,14 +671,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (yieldBreakStatement, data);
 		}
 		
-		public event Action<YieldStatement, T> YieldStatementVisited;
+		public event Action<YieldReturnStatement, T> YieldReturnStatementVisited;
 
-		S IAstVisitor<T, S>.VisitYieldStatement (YieldStatement yieldStatement, T data)
+		S IAstVisitor<T, S>.VisitYieldReturnStatement (YieldReturnStatement YieldReturnStatement, T data)
 		{
-			var handler = YieldStatementVisited;
+			var handler = YieldReturnStatementVisited;
 			if (handler != null)
-				handler (yieldStatement, data);
-			return VisitChildren (yieldStatement, data);
+				handler (YieldReturnStatement, data);
+			return VisitChildren (YieldReturnStatement, data);
 		}
 		
 		public event Action<AnonymousMethodExpression, T> AnonymousMethodExpressionVisited;

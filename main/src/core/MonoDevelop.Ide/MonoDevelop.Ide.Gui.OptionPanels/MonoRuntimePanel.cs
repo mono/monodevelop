@@ -116,9 +116,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			//set a platform-dependent default folder for the dialog if possible
 			if (Platform.IsWindows) {
-				string folder = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86);
-				if (!string.IsNullOrEmpty (folder) && System.IO.Directory.Exists (folder))
-					dlg.CurrentFolder = folder;
+				// ProgramFilesX86 is broken on 32-bit WinXP
+				string programFilesX86 = Environment.GetFolderPath (
+					IntPtr.Size == 8? Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
+				if (!string.IsNullOrEmpty (programFilesX86) && System.IO.Directory.Exists (programFilesX86))
+					dlg.CurrentFolder = programFilesX86;
 			} else {
 				if (System.IO.Directory.Exists ("/usr"))
 					dlg.CurrentFolder = "/usr";

@@ -60,6 +60,7 @@ namespace Mono.TextEditor
 		bool OverrideDocumentEolMarker { get; set; }
 		bool EnableSyntaxHighlighting { get; set; }
 		bool EnableAnimations { get; }
+		bool UseAntiAliasing { get; set; }
 		string FontName { get;  set; }
 		Pango.FontDescription Font { get;  }
 		

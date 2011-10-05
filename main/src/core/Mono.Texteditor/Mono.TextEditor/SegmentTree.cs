@@ -67,7 +67,7 @@ namespace Mono.TextEditor
 			doc.TextReplaced -= UpdateOnTextReplace;
 		}
 
-		void UpdateOnTextReplace (object sender, ReplaceEventArgs e)
+		public void UpdateOnTextReplace (object sender, ReplaceEventArgs e)
 		{
 			if (e.Count == 0) {
 				var length = (e.Value != null ? e.Value.Length : 0);

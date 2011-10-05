@@ -32,8 +32,11 @@ using MonoDevelop.Projects;
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[System.ComponentModel.ToolboxItem (false)]
-	public partial class PListEditorWidget : Notebook
+	public partial class PListEditorWidget : Notebook, IPListDisplayWidget
 	{
+		Project proj;
+		IPlistEditingHandler handler;
+		
 		class PListEditorSection : CompactScrolledWindow
 		{
 			VBox content = new VBox ();
@@ -57,7 +60,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		public PListEditorWidget (IPlistEditingHandler handler, Project proj, PDictionary plist)
+		public PListEditorWidget (IPlistEditingHandler handler, Project proj)
+		{
+			this.handler = handler;
+			this.proj = proj;
+		}
+		
+		public void SetPListContainer (PObjectContainer container)
 		{
 			var summaryScrolledWindow = new PListEditorSection ();
 			AppendPage (summaryScrolledWindow, new Label (GettextCatalog.GetString ("Summary")));
@@ -65,7 +74,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var advancedScrolledWindow = new PListEditorSection ();
 			AppendPage (advancedScrolledWindow, new Label (GettextCatalog.GetString ("Advanced")));
 			
-			foreach (var section in handler.GetSections (proj, plist)) {
+			foreach (var section in handler.GetSections (proj, container)) {
 				var expander = new MacExpander () {
 					ContentLabel = section.Name,
 					Expandable = true,
@@ -79,11 +88,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 				
 				if (section.CheckVisible != null) {
-					expander.Visible = section.CheckVisible (plist);
+					expander.Visible = section.CheckVisible (container);
 					//capture section for closure
 					var s = section;
-					plist.Changed += delegate {
-						expander.Visible = s.CheckVisible (plist);
+					container.Changed += delegate {
+						expander.Visible = s.CheckVisible (container);
 					};
 				}
 			}

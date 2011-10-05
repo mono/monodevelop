@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class DomCecilCompilationUnit : CompilationUnit
 	{
+		bool loadMonotouchDocumentation = true;
 		AssemblyDefinition assemblyDefinition;
 		public AssemblyDefinition AssemblyDefinition {
 			get {
@@ -210,11 +211,12 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 //				if (type.Name == "SimplePropertyDescriptor")
 //					System.Console.WriteLine(type.Attributes + "/" + DomCecilType.GetModifiers (type.Attributes) + "/" + IsInternal (DomCecilType.GetModifiers (type.Attributes)));
-				DomCecilType loadType = new DomCecilType (type, loadInternal);
+				DomCecilType loadType = new DomCecilType (type, loadInternal, loadMonotouchDocumentation);
 				if (instantiateTypeParameter) {
 					resolver.Visit (loadType, null);
 					resolver.ClearTypes ();
 				}
+				loadMonotouchDocumentation &= loadType.LoadMonotouchDocumentation;
 				Add (loadType);
 				module.Types.Add (loadType);
 			}

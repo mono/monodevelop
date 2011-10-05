@@ -52,7 +52,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public override bool NeedsSyncOut (XcodeSyncContext context)
 		{
 			string target = context.ProjectDir.Combine (targetRelative);
-			return !File.Exists (target) || context.GetSyncTime (targetRelative) < File.GetLastWriteTime (source);
+			return !File.Exists (target) || context.GetSyncTime (targetRelative) != File.GetLastWriteTime (source);
 		}
 		
 		public override void SyncOut (XcodeSyncContext context)
@@ -63,8 +63,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				Directory.CreateDirectory (dir);
 			if (File.Exists (target))
 				File.Delete (target);
-			var result = Mono.Unix.Native.Syscall.link (source, target);
-			Mono.Unix.UnixMarshal.ThrowExceptionForLastErrorIf (result);
+			try {
+				var result = Mono.Unix.Native.Syscall.link (source, target);
+				Mono.Unix.UnixMarshal.ThrowExceptionForLastErrorIf (result);
+			} catch {
+				File.Copy (source, target);
+			}
 			context.UpdateSyncTime (targetRelative);
 		}
 		
@@ -73,15 +77,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			if (!isInterfaceDefinition)
 				return false;
 			string target = context.ProjectDir.Combine (targetRelative);
-			return File.GetLastWriteTime (target) > context.GetSyncTime (targetRelative);
+			return File.GetLastWriteTime (target) != context.GetSyncTime (targetRelative);
 		}
 		
 		public override void SyncBack (XcodeSyncBackContext context)
 		{
-			context.FileSyncJobs.Add (new XcodeSyncFileBackJob () {
-				Original = source,
-				SyncedRelative = targetRelative
-			});
+			context.FileSyncJobs.Add (new XcodeSyncFileBackJob (source, targetRelative, false));
 		}
 		
 		public override void AddToProject (XcodeProject project, FilePath syncProjectDir)

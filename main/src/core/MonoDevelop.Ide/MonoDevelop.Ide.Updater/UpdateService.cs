@@ -112,10 +112,15 @@ namespace MonoDevelop.Ide.Updater
 			}
 				
 			if (check)
-				CheckForUpdates ();
+				CheckForUpdates (true);
 		}
 		
 		public static void CheckForUpdates ()
+		{
+			CheckForUpdates (false);
+		}
+		
+		static void CheckForUpdates (bool automatic)
 		{
 			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
 			PropertyService.SaveProperties ();
@@ -124,25 +129,24 @@ namespace MonoDevelop.Ide.Updater
 			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Looking for updates", "md-software-update"); 
 
 			Thread t = new Thread (delegate () {
-				CheckUpdates (mon, handlers);
+				CheckUpdates (mon, handlers, automatic);
 			});
 			t.Name = "Addin updater";
 			t.Start ();
 		}
 		
-		static void CheckUpdates (IProgressMonitor monitor, object[] handlers)
+		static void CheckUpdates (IProgressMonitor monitor, object[] handlers, bool automatic)
 		{
 			using (monitor) {
-				monitor.BeginTask ("Looking for updates", handlers.Length);
-				foreach (IUpdateHandler uh in handlers) {
-					try {
-						uh.CheckUpdates (monitor);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Updates check failed for handler of type '" + uh.GetType () + "'", ex);
-					}
-					monitor.Step (1);
+				// The handler to use is the last one declared in the extension point
+				if (handlers.Length == 0)
+					return;
+				try {
+					IUpdateHandler uh = (IUpdateHandler) handlers [handlers.Length - 1];
+					uh.CheckUpdates (monitor, automatic);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Updates check failed for handler of type '" + handlers [handlers.Length - 1].GetType () + "'", ex);
 				}
-				monitor.EndTask ();
 			}
 		}
 	}

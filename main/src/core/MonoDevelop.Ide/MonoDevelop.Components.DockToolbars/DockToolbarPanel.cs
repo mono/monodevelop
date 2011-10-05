@@ -828,8 +828,7 @@ namespace MonoDevelop.Components.DockToolbars
 				DockToolbar b = (DockToolbar) bars [n];
 				if (b.DockRow < row) continue;
 				if (b.DockRow > row) return max;
-				if (b.DefaultHeight > max)
-					max = b.DefaultHeight;
+				max = Math.Max (b.DefaultHeight, max);
 			}
 			return max;
 		}
@@ -906,6 +905,20 @@ namespace MonoDevelop.Components.DockToolbars
 			foreach (DockToolbar bar in bars)
 				this.PropagateExpose (bar, evnt);
 			return true;
+		}
+		
+		//ensures that all widgets in each row have consistent allocation
+		public override Requisition GetChildRequisition (Widget w)
+		{
+			var r = w.ChildRequisition;
+			var t = (DockToolbar) w;
+			var size = GetRowSize (t.DockRow);
+			if (orientation == Orientation.Horizontal) {
+				r.Height = size;
+			} else {
+				r.Width = size;
+			}
+			return r;
 		}
 	}
 

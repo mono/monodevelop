@@ -31,22 +31,25 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
 	public class NSObjectTypeInfo
 	{
-		public NSObjectTypeInfo (string objcName, ITypeDefinition cliName, string baseObjCName, ITypeReference baseCliName, bool isModel)
+		public NSObjectTypeInfo (string objcName, ITypeDefinition cliName, string baseObjCName, ITypeReference baseCliName, bool isModel, bool isUserType, bool isRegisteredInDesigner)
 		{
-			this.ObjCName = objcName;
-			this.CliName = cliName;
-			this.BaseObjCType = baseObjCName;
-			this.BaseCliType = baseCliName;
-			this.IsModel = isModel;
+			IsRegisteredInDesigner = isRegisteredInDesigner;
+			BaseObjCType = baseObjCName;
+			BaseCliType = baseCliName;
+			IsUserType = isUserType;
+			ObjCName = objcName;
+			CliName = cliName;
+			IsModel = isModel;
 			
+			UserTypeReferences = new HashSet<string> ();
 			Outlets = new List<IBOutlet> ();
 			Actions = new List<IBAction> ();
-			UserTypeReferences = new HashSet<string> ();
 		}
 		
 		public string ObjCName { get; private set; }
@@ -76,26 +79,74 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public HashSet<string> UserTypeReferences { get; private set; }
 		
-		public void GenerateObjcType (string directory)
+		static void AddNamespaceForCliType (HashSet<string> namespaces, string ignore, string typeName)
+		{
+			string ns;
+			int dot;
+			
+			if (typeName == null)
+				return;
+			
+			if ((dot = typeName.LastIndexOf ('.')) == -1)
+				return;
+			
+			ns = typeName.Substring (0, dot);
+			if (ns != ignore && !namespaces.Contains (ns))
+				namespaces.Add (ns);
+		}
+		
+		public HashSet<string> GetNamespaces ()
+		{
+			HashSet<string> namespaces = new HashSet<string> ();
+			string ignore = null;
+			int dot;
+			
+			if ((dot = CliName.LastIndexOf ('.')) != -1)
+				ignore = CliName.Substring (0, dot);
+			
+			AddNamespaceForCliType (namespaces, ignore, BaseCliType);
+			
+			foreach (var outlet in Outlets)
+				AddNamespaceForCliType (namespaces, ignore, outlet.CliType);
+			
+			foreach (var action in Actions) {
+				foreach (var param in action.Parameters)
+					AddNamespaceForCliType (namespaces, ignore, param.CliType);
+			}
+			
+			return namespaces;
+		}
+		
+		public void GenerateObjcType (string directory, string[] frameworks)
 		{
 			if (IsModel)
 				throw new ArgumentException ("Cannot generate definition for model");
 			
-			string hFilePath = System.IO.Path.Combine (directory, ObjCName + ".h");
-			string mFilePath = System.IO.Path.Combine (directory, ObjCName + ".m");
+			string hFilePath = Path.Combine (directory, ObjCName + ".h");
+			string mFilePath = Path.Combine (directory, ObjCName + ".m");
 			
-			using (var sw = System.IO.File.CreateText (hFilePath)) {
+			using (var sw = File.CreateText (hFilePath)) {
 				sw.WriteLine (modificationWarning);
 				sw.WriteLine ();
 				
-				//FIXME: fix these imports for MonoMac
-				sw.WriteLine ("#import <UIKit/UIKit.h>");
-				foreach (var reference in UserTypeReferences) {
-					sw.WriteLine ("#import \"{0}.h\"", reference);
-				}
+				foreach (var framework in frameworks)
+					sw.WriteLine ("#import <{0}/{0}.h>", framework);
+				
 				sw.WriteLine ();
 				
-				var baseType = (BaseIsModel || BaseObjCType == null) ? "NSObject" : BaseObjCType;
+				foreach (var reference in UserTypeReferences)
+					sw.WriteLine ("#import \"{0}.h\"", reference);
+				
+				sw.WriteLine ();
+				
+				if (BaseObjCType == null && BaseCliType != null && !BaseIsModel) {
+					throw new ObjectiveCGenerationException (string.Format (
+						"Could not generate class '{0}' as its base type '{1}'" +
+						"could not be resolved to Obj-C",
+						CliName, BaseCliType), this);
+				}
+				
+				var baseType = BaseIsModel ? "NSObject" : BaseObjCType;
 				sw.WriteLine ("@interface {0} : {1} {{", ObjCName, baseType);
 				foreach (var outlet in Outlets) {
 					sw.WriteLine ("\t{0} *_{1};", AsId (outlet.ObjCType), outlet.ObjCName);
@@ -104,13 +155,18 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				sw.WriteLine ();
 				
 				foreach (var outlet in Outlets) {
-					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", AsId (outlet.ObjCType), outlet.ObjCName);
+					var type = AsId (outlet.ObjCType);
+					if (string.IsNullOrEmpty (type)) {
+						throw new ObjectiveCGenerationException (string.Format (
+							"Could not generate outlet '{0}' in class '{1}' as its type '{2}' " +
+							"could not be resolved to Obj-C",
+							outlet.CliName, this.CliName, outlet.CliType), this);
+					}
+					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", type, outlet.ObjCName);
 					sw.WriteLine ();
 				}
 				
 				foreach (var action in Actions) {
-					if (action.Parameters.Any (p => p.ObjCType == null))
-						continue;
 					WriteActionSignature (action, sw);
 					sw.WriteLine (";");
 					sw.WriteLine ();
@@ -119,7 +175,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				sw.WriteLine ("@end");
 			}
 			
-			using (var sw = System.IO.File.CreateText (mFilePath)) {
+			using (var sw = File.CreateText (mFilePath)) {
 				sw.WriteLine (modificationWarning);
 				sw.WriteLine ();
 				
@@ -171,6 +227,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			foreach (var param in action.Parameters) {
 				string paramType = param.ObjCType;
+				if (paramType == null) {
+					throw new ObjectiveCGenerationException (string.Format (
+						"Could not generate Obj-C code for action '{0}' in class '{1}' as the type '{2}'" +
+						 "of its parameter '{3}' could not be resolved to Obj-C",
+						action.CliName, this.CliName, param.CliType, param.Name), this);
+					
+				}
 				if (isFirst && paramType == "NSObject")
 					paramType = "id";
 				else
@@ -208,25 +271,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			foreach (var a in Actions) {
 				IBAction existing;
 				if (existingActions.TryGetValue (a.ObjCName, out existing)) {
+					a.IsDesigner = existing.IsDesigner;
 					a.CliName = existing.CliName;
-					if (!existing.IsDesigner)
-						continue;
-				} else {
-					a.CliName = a.ObjCName;
 				}
-				a.IsDesigner = true;
 			}
 			
 			foreach (var o in Outlets) {
 				IBOutlet existing;
 				if (existingOutlets.TryGetValue (o.ObjCName, out existing)) {
+					o.IsDesigner = existing.IsDesigner;
 					o.CliName = existing.CliName;
-					if (!existing.IsDesigner)
-						continue;
-				} else {
-					o.CliName = o.ObjCName;
 				}
-				o.IsDesigner = true;
 			}
 		}
 		
@@ -330,5 +385,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			return meth;
 		}
+	}
+	
+	class ObjectiveCGenerationException : Exception
+	{
+		NSObjectTypeInfo typeInfo;
+		
+		public ObjectiveCGenerationException (string message, NSObjectTypeInfo typeInfo) : base (message)
+		{
+			this.typeInfo = typeInfo;
+		}
+		
+		public NSObjectTypeInfo TypeInfo { get { return typeInfo; } }
 	}
 }

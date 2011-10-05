@@ -11,6 +11,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 	
 	public class SplashScreenForm : Gtk.Window, IProgressMonitor, IDisposable
 	{
+		const int SplashFontSize = 10;
+		const string SplashFontFamily = "sans-serif"; 
+		
 		static SplashScreenForm splashScreen;
 		static ProgressBar progress;
 		static VBox vbox;
@@ -34,7 +37,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.WindowPosition = WindowPosition.Center;
 			this.TypeHint = Gdk.WindowTypeHint.Splashscreen;
 			try {
-				bitmap = new Gdk.Pixbuf (Assembly.GetCallingAssembly(), "SplashScreen.png");
+				using (var stream = BrandingService.GetStream ("SplashScreen.png"))
+					bitmap = new Gdk.Pixbuf (stream);
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't load splash screen pixbuf 'SplashScreen.png'.", e);
 			}
@@ -65,23 +69,98 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evt)
 		{
+			var build = "";
+			var version = "v" + BuildVariables.PackageVersionLabel;
+			
+			var index = version.IndexOf (' ');
+			if (index != -1) {
+				build = version.Substring (index + 1);
+				version = version.Substring (0, index);
+			}
+			
 			if (bitmap != null) {
-				Gdk.GC gc = Style.LightGC (StateType.Normal);
-				GdkWindow.DrawPixbuf (gc, bitmap, 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
-
-				using (Pango.Layout pl = new Pango.Layout (PangoContext)) {
-					Pango.FontDescription des = this.Style.FontDescription.Copy();
-					pl.FontDescription = des;
-					//pl.SetMarkup("<b><span foreground='#cccccc'>" + BuildVariables.PackageVersionLabel + "</span></b>");
-					int w,h;
-					pl.GetPixelSize (out w, out h);
-					GdkWindow.DrawLayout (gc, bitmap.Width - w - 75, 90, pl);
-					des.Dispose ();
+				using (var context = Gdk.CairoHelper.Create (GdkWindow)) {
+					context.Antialias = Cairo.Antialias.Subpixel;
+				
+					// Render the image first.
+					bitmap.RenderToDrawable (GdkWindow, new Gdk.GC (GdkWindow), 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
+					
+					var bottomRight = new Cairo.PointD (bitmap.Width - 12, bitmap.Height - 25);
+					// Render the alpha/beta text if we're an alpha or beta. If this
+					// is rendered, the bottomRight point will be shifted upwards to
+					// allow the MonoDevelop version to be rendered above the alpha marker
+					if (!string.IsNullOrEmpty (build))
+						DrawAlphaBetaMarker (context, ref bottomRight, build);
+						
+					// Render the MonoDevelop version
+					DrawVersionNumber (context, ref bottomRight, version);
 				}
 			}
-			return base.OnExposeEvent (evt);
+
+			return true;
 		}
 		
+		void DrawVersionNumber (Cairo.Context c, ref Cairo.PointD bottomRight, string text)
+		{
+			c.SelectFontFace (SplashFontFamily, Cairo.FontSlant.Normal, Cairo.FontWeight.Normal);
+			c.SetFontSize (SplashFontSize);
+			
+			var extents = c.TextExtents (text);
+			c.MoveTo (bottomRight.X - extents.Width - 1, bottomRight.Y - extents.Height);
+			
+			c.Color = new Cairo.Color (1, 1, 1);
+			c.ShowText (text);
+		}
+		
+		void DrawAlphaBetaMarker (Cairo.Context c, ref Cairo.PointD bottomRight, string text)
+		{
+			c.SelectFontFace (SplashFontFamily, Cairo.FontSlant.Normal, Cairo.FontWeight.Bold);
+			c.SetFontSize (SplashFontSize);
+			
+			// Create a rectangle larger than the text so we can have a nice border
+			var extents = c.TextExtents (text);
+			var x = bottomRight.X - extents.Width * 1.3;
+			var y = bottomRight.Y - extents.Height * 1.5;
+			var rectangle = new Cairo.Rectangle (x, y, bottomRight.X - x, bottomRight.Y - y);
+			
+			// Draw the background color the text will be overlaid on
+			DrawRoundedRectangle (c, rectangle);
+			
+			// Calculate the offset the text will need to be at to be centralised
+			// in the border
+			x = x + extents.XBearing + (rectangle.Width - extents.Width) / 2;
+			y = y - extents.YBearing + (rectangle.Height - extents.Height) / 2;
+			c.MoveTo (x, y);
+			
+			// Draw the text
+			c.Color = new Cairo.Color (1, 1, 1);
+			c.ShowText (text);
+			
+			bottomRight.Y -= rectangle.Height - 2;
+		}
+		
+		void DrawRoundedRectangle (Cairo.Context c, Cairo.Rectangle rect)
+		{
+			double x = rect.X;
+			double y = rect.Y;
+			double width = rect.Width;
+			double height = rect.Height;
+			double radius = 5;
+			
+			c.MoveTo (x, y + radius);
+			c.Arc (x + radius, y + radius, radius, Math.PI, -Math.PI / 2);
+			c.LineTo (x + width - radius, y);
+			c.Arc (x + width - radius, y + radius, radius, -Math.PI / 2, 0);
+			c.LineTo (x + width, y + height - radius);
+			c.Arc (x + width - radius, y + height - radius, radius, 0, Math.PI / 2);
+			c.LineTo (x + radius, y + height);
+			c.Arc (x + radius, y + height - radius, radius, Math.PI / 2, Math.PI);
+			c.ClosePath ();
+			
+			c.Color = new Cairo.Color (161 / 255.0, 40 / 255.0, 48 / 255.0);
+			c.Fill ();
+		}
+
 		public static void SetProgress (double Percentage)
 		{
 			progress.Fraction = Percentage;

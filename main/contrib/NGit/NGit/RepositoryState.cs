@@ -189,6 +189,76 @@ namespace NGit
 			}
 		}
 
+		/// <summary>An unfinished cherry-pick.</summary>
+		/// <remarks>An unfinished cherry-pick. Must resolve or reset before continuing normally
+		/// 	</remarks>
+		public static RepositoryState CHERRY_PICKING = new RepositoryState.CHERRY_PICKING_Class
+			();
+
+		internal class CHERRY_PICKING_Class : RepositoryState
+		{
+			public override bool CanCheckout()
+			{
+				return false;
+			}
+
+			public override bool CanResetHead()
+			{
+				return true;
+			}
+
+			public override bool CanCommit()
+			{
+				return false;
+			}
+
+			public override string GetDescription()
+			{
+				return JGitText.Get().repositoryState_conflicts;
+			}
+
+			public override string Name()
+			{
+				return "CHERRY_PICKING";
+			}
+		}
+
+		/// <summary>A cherry-pick where all conflicts have been resolved.</summary>
+		/// <remarks>
+		/// A cherry-pick where all conflicts have been resolved. The index does not
+		/// contain any unmerged paths.
+		/// </remarks>
+		public static RepositoryState CHERRY_PICKING_RESOLVED = new RepositoryState.CHERRY_PICKING_RESOLVED_Class
+			();
+
+		internal class CHERRY_PICKING_RESOLVED_Class : RepositoryState
+		{
+			public override bool CanCheckout()
+			{
+				return true;
+			}
+
+			public override bool CanResetHead()
+			{
+				return true;
+			}
+
+			public override bool CanCommit()
+			{
+				return true;
+			}
+
+			public override string GetDescription()
+			{
+				return JGitText.Get().repositoryState_merged;
+			}
+
+			public override string Name()
+			{
+				return "CHERRY_PICKING_RESOLVED";
+			}
+		}
+
 		/// <summary>An unfinished rebase or am.</summary>
 		/// <remarks>An unfinished rebase or am. Must resolve, skip or abort before normal work can take place
 		/// 	</remarks>

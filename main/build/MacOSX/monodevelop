@@ -3,7 +3,7 @@
 # Author: Marc Christensen (mchristensen@novell.com)
 #         Michael Hutchinson (mhutchinson@novell.com)
 
-MONODEVELOP_MAJOR_VERSION=2.6
+MONODEVELOP_MAJOR_VERSION=2.7
 
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH"
@@ -26,7 +26,7 @@ export DYLD_FALLBACK_LIBRARY_PATH="$DIR/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 export PKG_CONFIG_PATH="$DIR/lib/pkgconfig:$DIR/share/pkgconfig:$PKG_CONFIG_PATH"
 
 #mono version check
-if ! "$DIR/mono-version-check" MonoDevelop 2 10 1 ; then exit 1; fi
+if ! "$DIR/mono-version-check" MonoDevelop 2 10 4 ; then exit 1; fi
 
 # The Mono "External" folder allows users (such as MonoDroid) to install
 # things without worrying that they'll be removed next time mono is upgraded

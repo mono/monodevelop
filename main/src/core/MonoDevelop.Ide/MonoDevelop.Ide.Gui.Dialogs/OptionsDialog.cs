@@ -47,6 +47,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		HashSet<object> modifiedObjects = new HashSet<object> ();
 		bool removeEmptySections;
 		
+		const string emptyCategoryIcon = "md-empty-category";
+		const Gtk.IconSize treeIconSize = IconSize.Menu;
+		const Gtk.IconSize headerIconSize = IconSize.Button;
+		
 		public object DataObject {
 			get {
 				return mainDataObject;
@@ -82,21 +86,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (parentWindow != null)
 				TransientFor = parentWindow;
 			
-			store = new TreeStore (typeof(OptionsDialogSection), typeof(string), typeof(string), typeof(bool), typeof(string));
+			ImageService.EnsureStockIconIsLoaded (emptyCategoryIcon, treeIconSize);
+			ImageService.EnsureStockIconIsLoaded (emptyCategoryIcon, headerIconSize);
+			
+			store = new TreeStore (typeof(OptionsDialogSection));
 			tree.Model = store;
 			tree.HeadersVisible = false;
 			
 			TreeViewColumn col = new TreeViewColumn ();
-			CellRendererIcon crp = new CellRendererIcon ();
-			crp.StockSize = (uint) IconSize.Menu;
+			var crp = new CellRendererPixbuf ();
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "stock-id", 1);
-			col.AddAttribute (crp, "visible", 3);
-			col.AddAttribute (crp, "cell-background", 4);
-			CellRendererText crt = new CellRendererText ();
+			col.SetCellDataFunc (crp, PixbufCellDataFunc);
+			var crt = new CellRendererText ();
 			col.PackStart (crt, true);
-			col.AddAttribute (crt, "markup", 2);
-			col.AddAttribute (crt, "cell-background", 4);
+			col.SetCellDataFunc (crt, TextCellDataFunc);
 			tree.AppendColumn (col);
 			
 			tree.Selection.Changed += OnSelectionChanged;
@@ -108,6 +111,51 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			FillTree ();
 			ExpandCategories ();
 			this.DefaultResponse = Gtk.ResponseType.Ok;
+		}
+		
+		void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			TreeIter parent;
+			bool toplevel = !model.IterParent (out parent, iter);
+			
+			var crp = (CellRendererPixbuf) cell;
+			crp.Visible = !toplevel;
+			
+			if (toplevel) {
+				return;
+			}
+			
+			var section = (OptionsDialogSection) model.GetValue (iter, 0);
+			
+			//HACK: The mimetype panels can't register a single fake stock ID for all the possible image size.
+			// Instead, give this some awareness of the mime system.
+			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
+			if (mimeSection != null && !string.IsNullOrEmpty (mimeSection.MimeType)) {
+				var pix = DesktopService.GetPixbufForType (mimeSection.MimeType, treeIconSize);
+				if (pix != null) {
+					crp.Pixbuf = pix;
+				} else {
+					crp.Pixbuf = ImageService.GetPixbuf (emptyCategoryIcon, treeIconSize);
+				}
+			} else {
+				string icon = section.Icon.IsNull? emptyCategoryIcon : section.Icon.ToString ();
+				crp.Pixbuf = ImageService.GetPixbuf (icon, treeIconSize);
+			}
+		}
+		
+		void TextCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			TreeIter parent;
+			bool toplevel = !model.IterParent (out parent, iter);
+			
+			var crt = (CellRendererText) cell;
+			var section = (OptionsDialogSection) model.GetValue (iter, 0);
+			
+			if (toplevel) {
+				crt.Markup = "<b>" + GLib.Markup.EscapeText (section.Label) + "</b>";
+			} else {
+				crt.Text = section.Label;
+			}
 		}
 		
 		protected Alignment MainBox {
@@ -226,12 +274,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			TreeIter it;
 			if (parentIter.Equals (TreeIter.Zero)) {
-				string sectionLabel = "<b>" + GLib.Markup.EscapeText (section.Label) + "</b>";
-				it = store.AppendValues (section, null, sectionLabel, false, null);
-			}
-			else {
-				string icon = section.Icon.IsNull ? "md-empty-category" : section.Icon.ToString ();
-				it = store.AppendValues (parentIter, section, icon, section.Label, true, null);
+				it = store.AppendValues (section);
+			} else {
+				it = store.AppendValues (parentIter,section);
 			}
 			
 			if (!section.CustomNode)
@@ -357,10 +402,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				CreatePageWidget (page);
 			
 			labelTitle.Markup = "<span weight=\"bold\" size=\"x-large\">" + GLib.Markup.EscapeText (section.Label) + "</span>";
-			if (!string.IsNullOrEmpty (section.Icon))
-				image.Stock = section.Icon;
-			else
-				image.Stock = "md-empty-category";
+			
+			//HACK: mimetype panels can't provide stock ID for mimetype images. Give this some awareness of mimetypes.
+			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
+			if (mimeSection != null && !string.IsNullOrEmpty (mimeSection.MimeType)) {
+				var pix = DesktopService.GetPixbufForType (mimeSection.MimeType, headerIconSize);
+				if (pix != null) {
+					image.Pixbuf = pix;
+				} else {
+					image.Pixbuf = ImageService.GetPixbuf (emptyCategoryIcon, headerIconSize);
+				}
+			} else {
+				string icon = section.Icon.IsNull? emptyCategoryIcon : section.Icon.ToString ();
+				image.Pixbuf = ImageService.GetPixbuf (icon, headerIconSize);
+			}
+			
 			pageFrame.PackStart (page.Widget, true, true, 0);
 			
 			// Ensures that the Shown event is fired for each panel

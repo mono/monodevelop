@@ -125,6 +125,8 @@ namespace NGit.Transport
 
 		private bool needBaseObjectIds;
 
+		private bool checkEofAfterPackFooter;
+
 		private long objectCount;
 
 		private PackedObjectInfo[] entries;
@@ -296,6 +298,20 @@ namespace NGit.Transport
 		public virtual void SetNeedBaseObjectIds(bool b)
 		{
 			this.needBaseObjectIds = b;
+		}
+
+		/// <returns>true if the EOF should be read from the input after the footer.</returns>
+		public virtual bool IsCheckEofAfterPackFooter()
+		{
+			return checkEofAfterPackFooter;
+		}
+
+		/// <summary>Ensure EOF is read from the input stream after the footer.</summary>
+		/// <remarks>Ensure EOF is read from the input stream after the footer.</remarks>
+		/// <param name="b">true if the EOF should be read; false if it is not checked.</param>
+		public virtual void SetCheckEofAfterPackFooter(bool b)
+		{
+			checkEofAfterPackFooter = b;
 		}
 
 		/// <returns>the new objects that were sent by the user</returns>
@@ -656,6 +672,7 @@ namespace NGit.Transport
 				PackedObjectInfo oe;
 				oe = NewInfo(tempObjectId, visit.delta, visit.parent.id);
 				oe.SetOffset(visit.delta.position);
+				OnInflatedObjectData(oe, type, visit.data);
 				AddObjectAndTrack(oe);
 				visit.id = oe;
 				visit.nextChild = FirstChildOf(oe);
@@ -886,6 +903,7 @@ namespace NGit.Transport
 			}
 			objectCount = NB.DecodeUInt32(buf, p + 8);
 			Use(hdrln);
+			OnPackHeader(objectCount);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -897,6 +915,26 @@ namespace NGit.Transport
 			byte[] srcHash = new byte[20];
 			System.Array.Copy(buf, c, srcHash, 0, 20);
 			Use(20);
+			// The input stream should be at EOF at this point. We do not support
+			// yielding back any remaining buffered data after the pack footer, so
+			// protocols that embed a pack stream are required to either end their
+			// stream with the pack, or embed the pack with a framing system like
+			// the SideBandInputStream does.
+			if (bAvail != 0)
+			{
+				throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().expectedEOFReceived
+					, "\\x" + Sharpen.Extensions.ToHexString(buf[bOffset] & unchecked((int)(0xff))))
+					);
+			}
+			if (IsCheckEofAfterPackFooter())
+			{
+				int eof = @in.Read();
+				if (0 <= eof)
+				{
+					throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().expectedEOFReceived
+						, "\\x" + Sharpen.Extensions.ToHexString(eof)));
+				}
+			}
 			if (!Arrays.Equals(actHash, srcHash))
 			{
 				throw new CorruptObjectException(JGitText.Get().corruptObjectPackfileChecksumIncorrect
@@ -1004,6 +1042,7 @@ namespace NGit.Transport
 			objectDigest.Update(unchecked((byte)' '));
 			objectDigest.Update(Constants.EncodeASCII(sz));
 			objectDigest.Update(unchecked((byte)0));
+			byte[] data;
 			bool checkContentLater = false;
 			if (type == Constants.OBJ_BLOB)
 			{
@@ -1023,10 +1062,11 @@ namespace NGit.Transport
 				inf.Close();
 				tempObjectId.FromRaw(objectDigest.Digest(), 0);
 				checkContentLater = IsCheckObjectCollisions() && readCurs.Has(tempObjectId);
+				data = null;
 			}
 			else
 			{
-				byte[] data = InflateAndReturn(PackParser.Source.INPUT, sz);
+				data = InflateAndReturn(PackParser.Source.INPUT, sz);
 				objectDigest.Update(data);
 				tempObjectId.FromRaw(objectDigest.Digest(), 0);
 				VerifySafeObject(tempObjectId, type, data);
@@ -1034,6 +1074,10 @@ namespace NGit.Transport
 			PackedObjectInfo obj = NewInfo(tempObjectId, null, null);
 			obj.SetOffset(pos);
 			OnEndWholeObject(obj);
+			if (data != null)
+			{
+				OnInflatedObjectData(obj, type, data);
+			}
 			AddObjectAndTrack(obj);
 			if (checkContentLater)
 			{
@@ -1323,6 +1367,22 @@ namespace NGit.Transport
 		/// <exception cref="System.IO.IOException">the stream cannot be archived.</exception>
 		protected internal abstract void OnObjectData(PackParser.Source src, byte[] raw, 
 			int pos, int len);
+
+		/// <summary>Invoked for commits, trees, tags, and small blobs.</summary>
+		/// <remarks>Invoked for commits, trees, tags, and small blobs.</remarks>
+		/// <param name="obj">the object info, populated.</param>
+		/// <param name="typeCode">the type of the object.</param>
+		/// <param name="data">inflated data for the object.</param>
+		/// <exception cref="System.IO.IOException">the object cannot be archived.</exception>
+		protected internal abstract void OnInflatedObjectData(PackedObjectInfo obj, int typeCode
+			, byte[] data);
+
+		/// <summary>Provide the implementation with the original stream's pack header.</summary>
+		/// <remarks>Provide the implementation with the original stream's pack header.</remarks>
+		/// <param name="objCnt">number of objects expected in the stream.</param>
+		/// <exception cref="System.IO.IOException">the implementation refuses to work with this many objects.
+		/// 	</exception>
+		protected internal abstract void OnPackHeader(long objCnt);
 
 		/// <summary>Provide the implementation with the original stream's pack footer.</summary>
 		/// <remarks>Provide the implementation with the original stream's pack footer.</remarks>

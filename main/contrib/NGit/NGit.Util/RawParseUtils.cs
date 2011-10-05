@@ -42,6 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using NGit;
 using NGit.Util;
@@ -59,8 +60,12 @@ namespace NGit.Util
 
 		private static readonly byte[] footerLineKeyChars;
 
+		private static readonly IDictionary<string, System.Text.Encoding> encodingAliases;
+
 		static RawParseUtils()
 		{
+			encodingAliases = new Dictionary<string, System.Text.Encoding>();
+			encodingAliases.Put("latin-1", Sharpen.Extensions.GetEncoding("ISO-8859-1"));
 			digits10 = new byte[(byte)('9') + 1];
 			Arrays.Fill(digits10, unchecked((byte)-1));
 			for (char i = '0'; i <= '9'; i++)
@@ -742,7 +747,29 @@ namespace NGit.Util
 				return Constants.CHARSET;
 			}
 			int lf = NextLF(b, enc);
-			return Sharpen.Extensions.GetEncoding(Decode(Constants.CHARSET, b, enc, lf - 1));
+			string decoded = Decode(Constants.CHARSET, b, enc, lf - 1);
+			try
+			{
+				return Sharpen.Extensions.GetEncoding(decoded);
+			}
+			catch (IllegalCharsetNameException badName)
+			{
+				System.Text.Encoding aliased = CharsetForAlias(decoded);
+				if (aliased != null)
+				{
+					return aliased;
+				}
+				throw;
+			}
+			catch (UnsupportedCharsetException badName)
+			{
+				System.Text.Encoding aliased = CharsetForAlias(decoded);
+				if (aliased != null)
+				{
+					return aliased;
+				}
+				throw;
+			}
 		}
 
 		/// <summary>Parse a name string (e.g.</summary>
@@ -1222,6 +1249,11 @@ namespace NGit.Util
 				pos--;
 			}
 			return pos;
+		}
+
+		private static System.Text.Encoding CharsetForAlias(string name)
+		{
+			return encodingAliases.Get(StringUtils.ToLowerCase(name));
 		}
 
 		public RawParseUtils()

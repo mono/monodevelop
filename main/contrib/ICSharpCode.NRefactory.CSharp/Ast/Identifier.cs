@@ -66,8 +66,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+<<<<<<< HEAD
 		TextLocation startLocation;
 		public override TextLocation StartLocation {
+=======
+		AstLocation startLocation;
+		public override AstLocation StartLocation {
+>>>>>>> master
 			get {
 				return startLocation;
 			}
@@ -89,7 +94,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override TextLocation EndLocation {
 			get {
+<<<<<<< HEAD
 				return new TextLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+=======
+				return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+>>>>>>> master
 			}
 		}
 		
@@ -98,7 +107,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.name = string.Empty;
 		}
 		
+<<<<<<< HEAD
 		protected Identifier (string name, TextLocation location)
+=======
+		protected Identifier (string name, AstLocation location)
+>>>>>>> master
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
@@ -108,10 +121,17 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public static Identifier Create (string name)
 		{
+<<<<<<< HEAD
 			return Create (name, TextLocation.Empty);
 		}
 
 		public static Identifier Create (string name, TextLocation location)
+=======
+			return Create (name, AstLocation.Empty);
+		}
+
+		public static Identifier Create (string name, AstLocation location)
+>>>>>>> master
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
@@ -120,7 +140,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return new Identifier (name, location);
 		}
 		
+<<<<<<< HEAD
 		public static Identifier Create (string name, TextLocation location, bool isVerbatim)
+=======
+		public static Identifier Create (string name, AstLocation location, bool isVerbatim)
+>>>>>>> master
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
@@ -143,9 +167,15 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		class VerbatimIdentifier : Identifier
 		{
+<<<<<<< HEAD
 			public override TextLocation EndLocation {
 				get {
 					return new TextLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length + 1); // @"..."
+=======
+			public override AstLocation EndLocation {
+				get {
+					return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length + 1); // @"..."
+>>>>>>> master
 				}
 			}
 			
@@ -155,7 +185,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
+<<<<<<< HEAD
 			public VerbatimIdentifier(string name, TextLocation location) : base (name, location)
+=======
+			public VerbatimIdentifier(string name, AstLocation location) : base (name, location)
+>>>>>>> master
 			{
 			}
 		}

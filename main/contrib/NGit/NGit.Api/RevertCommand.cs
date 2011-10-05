@@ -152,7 +152,7 @@ namespace NGit.Api
 						dco.SetFailOnConflict(true);
 						dco.Checkout();
 						string newMessage = "Revert \"" + srcCommit.GetShortMessage() + "\"" + "\n\n" + "This reverts commit "
-							 + srcCommit.Id.GetName() + "\n";
+							 + srcCommit.Id.GetName() + ".\n";
 						newHead = new Git(GetRepository()).Commit().SetMessage(newMessage).Call();
 						revertedRefs.AddItem(src);
 					}

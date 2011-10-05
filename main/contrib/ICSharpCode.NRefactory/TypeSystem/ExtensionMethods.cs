@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -251,9 +253,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the type (potentially a nested type) defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
+<<<<<<< HEAD
 		public static ITypeDefinition GetInnermostTypeDefinition (this IParsedFile file, int line, int column)
 		{
 			return file.GetInnermostTypeDefinition (new TextLocation (line, column));
+=======
+		public static ITypeDefinition GetTypeDefinition (this IParsedFile file, int line, int column)
+		{
+			return file.GetTypeDefinition (new AstLocation (line, column));
+>>>>>>> master
 		}
 		
 		/// <summary>
@@ -262,7 +270,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static IMember GetMember (this IParsedFile file, int line, int column)
 		{
+<<<<<<< HEAD
 			return file.GetMember (new TextLocation (line, column));
+=======
+			return file.GetMember (new AstLocation (line, column));
+>>>>>>> master
 		}
 		#endregion
 		

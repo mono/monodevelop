@@ -6,14 +6,14 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category	= "Database"
-	version		= "2.7">
+	version		= "2.8">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.7"/>
+		<Addin id="Core" version="2.8"/>
 	</Dependencies>
 	
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
@@ -24,6 +24,6 @@
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
-		<Migration sourceVersion="2.4" kind="Config" sourcePath="MonoDevelop.Database.ConnectionManager.xml" />
+		<Migration sourceVersion="2.4+" kind="Config" path="MonoDevelop.Database.ConnectionManager.xml" />
 	</Extension>
 </Addin>

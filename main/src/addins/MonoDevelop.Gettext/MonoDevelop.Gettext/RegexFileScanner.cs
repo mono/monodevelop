@@ -200,12 +200,18 @@ namespace MonoDevelop.Gettext
 		
 		int GetLineCount (string text, int startIndex, int endIndex)
 		{
-			int result = 0;
+			int lineCount = 0;
 			for (int i = startIndex; i < endIndex; i++) {
-				if (text[i] == '\n')
-					result++;
+				char c = text[i];
+				if (c == '\r' || c == '\n')
+					lineCount++;
+				if (i+1 < endIndex) {
+					char c2 = text[i+1];
+					if (c2 != c && (c2 == '\r' || c2 == '\n'))
+						i++;
+				}
 			}
-			return result;
+			return lineCount;
 		}
 	}
 }

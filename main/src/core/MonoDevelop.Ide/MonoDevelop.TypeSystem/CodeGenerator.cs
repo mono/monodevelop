@@ -143,6 +143,8 @@ namespace MonoDevelop.TypeSystem
 					AppendLine (result);
 				}
 				string implementation = InternalCreateInterfaceImplementation (ctx, implementingType, baseInterface, explicitly, implementedMembers);
+				if (string.IsNullOrWhiteSpace (implementation))
+					continue;
 				if (wrapRegions) {
 					result.Append (WrapInRegions (baseInterface.Name + " implementation", implementation));
 				} else {
@@ -150,6 +152,19 @@ namespace MonoDevelop.TypeSystem
 				}
 			}
 			return result.ToString ();
+		}
+
+		static bool CompareParameters (System.Collections.ObjectModel.ReadOnlyCollection<MonoDevelop.Projects.Dom.IParameter> parameters1, System.Collections.ObjectModel.ReadOnlyCollection<MonoDevelop.Projects.Dom.IParameter> parameters2)
+		{
+			if (parameters1.Count != parameters2.Count)
+				return false;
+			for (int i = 0; i < parameters1.Count; i++) {
+				var p1 = parameters1 [i];
+				var p2 = parameters2 [i];
+				if (p1.ReturnType.ToInvariantString () != p2.ReturnType.ToInvariantString ())
+					return false;
+			}
+			return true;
 		}
 		
 		protected string InternalCreateInterfaceImplementation (ITypeResolveContext ctx, ITypeDefinition implementingType, IType interfaceType, bool explicitly, List<IMember> implementedMembers)
@@ -183,7 +198,7 @@ namespace MonoDevelop.TypeSystem
 					if (t.Kind == TypeKind.Interface)
 						continue;
 					foreach (var cmet in t.GetMethods (dom)) {
-						if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
+						if (cmet.Name == method.Name && CompareParameters (cmet.Parameters, method.Parameters)) {
 							if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
 								needsExplicitly = true;
 							else
@@ -229,15 +244,7 @@ namespace MonoDevelop.TypeSystem
 					if (member is IMethod && pair.Key is IMethod) {
 						var method = (IMethod)member;
 						var othermethod = (IMethod)pair.Key;
-						isExplicit = member.ReturnType.Equals (othermethod.ReturnType);
-						if (method.Parameters.Count == othermethod.Parameters.Count && othermethod.Parameters.Count > 0) {
-							for (int i = 0; i < method.Parameters.Count; i++) {
-								if (!method.Parameters [i].Type.Equals (othermethod.Parameters [i].Type)) {
-									isExplicit = true;
-									break;
-								}
-							}
-						}
+						isExplicit = member.ReturnType.ToInvariantString () != pair.Key.ReturnType.ToInvariantString () && CompareParameters (member.Parameters, pair.Key.Parameters);
 					} else {
 						isExplicit = true;
 					}

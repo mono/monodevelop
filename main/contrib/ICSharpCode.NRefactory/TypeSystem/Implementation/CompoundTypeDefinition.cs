@@ -25,7 +25,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Type definition that represents a partial class with multiple parts.
 	/// </summary>
+<<<<<<< HEAD
 	[Serializable]
+=======
+>>>>>>> master
 	public class CompoundTypeDefinition : DefaultTypeDefinition
 	{
 		IList<ITypeDefinition> parts;
@@ -35,11 +38,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 		}
 		
+<<<<<<< HEAD
 		private CompoundTypeDefinition(IParsedFile parsedFile, string ns, string name)
 			: base(parsedFile, ns, name)
 		{
 		}
 		
+=======
+>>>>>>> master
 		private CompoundTypeDefinition(IProjectContent projectContent, string ns, string name)
 			: base(projectContent, ns, name)
 		{
@@ -79,10 +85,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (mainPart.DeclaringTypeDefinition != null) {
 				throw new NotImplementedException("nested compound types not implemented");
 			} else {
+<<<<<<< HEAD
 				if (mainPart.ParsedFile != null)
 					compound = new CompoundTypeDefinition(mainPart.ParsedFile, mainPart.Namespace, mainPart.Name);
 				else
 					compound = new CompoundTypeDefinition(mainPart.ProjectContent, mainPart.Namespace, mainPart.Name);
+=======
+				compound = new CompoundTypeDefinition(mainPart.ProjectContent, mainPart.Namespace, mainPart.Name);
+>>>>>>> master
 			}
 			compound.parts = parts;
 			compound.Region = mainPart.Region;

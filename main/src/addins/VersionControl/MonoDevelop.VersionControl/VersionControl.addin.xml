@@ -7,7 +7,7 @@
        description = "A MonoDevelop addin for using version control systems like Subversion"
        category    = "Version Control"
        flags = "Hidden"
-       version   = "2.7">
+       version   = "2.8">
  
 	<Runtime>
 		<Import file="comment.png" />
@@ -24,9 +24,9 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="2.7"/>
-	    <Addin id="Ide" version="2.7"/>
-	    <Addin id="SourceEditor2" version="2.7"/>
+	    <Addin id="Core" version="2.8"/>
+	    <Addin id="Ide" version="2.8"/>
+	    <Addin id="SourceEditor2" version="2.8"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/VersionControlSystems" name = "Version control systems">
@@ -171,11 +171,6 @@
 		</Category>
 	</Extension>
 	
-	<Extension path="/MonoDevelop/Ide/MainMenu/File">
-		<SeparatorItem id = "CheckoutSep" insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
-		<CommandItem id="MonoDevelop.VersionControl.Commands.Checkout" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "SaveSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
@@ -186,6 +181,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu">
 		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "Run" >
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Checkout" />
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 			<SeparatorItem/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.UpdateSolution"/>
@@ -311,8 +307,8 @@
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="Cache" path="version-control-commit-msg" />
 		<Migration sourceVersion="2.4" kind="Config" path="VersionControl.config" />
-		<!-- 2.6 -->
-		<Migration sourceVersion="2.6" kind="Cache" path="version-control-commit-msg" />
-		<Migration sourceVersion="2.6" kind="Config" path="VersionControl.config" />
+		<!-- 2.6+ -->
+		<Migration sourceVersion="2.6+" kind="Cache" path="version-control-commit-msg" />
+		<Migration sourceVersion="2.6+" kind="Config" path="VersionControl.config" />
 	</Extension>
 </Addin>

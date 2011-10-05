@@ -56,8 +56,6 @@ namespace NGit
 		)]
 	public class SymlinkTreeEntry : TreeEntry
 	{
-		private const long serialVersionUID = 1L;
-
 		/// <summary>
 		/// Construct a
 		/// <see cref="SymlinkTreeEntry">SymlinkTreeEntry</see>

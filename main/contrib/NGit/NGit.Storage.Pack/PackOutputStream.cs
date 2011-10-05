@@ -249,7 +249,7 @@ namespace NGit.Storage.Pack
 		}
 
 		/// <returns>total number of bytes written since stream start.</returns>
-		internal long Length()
+		public long Length()
 		{
 			return count;
 		}

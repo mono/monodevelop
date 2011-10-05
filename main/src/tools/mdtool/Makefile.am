@@ -20,7 +20,7 @@ $(ASSEMBLY).config: $(ASSEMBLY) $(srcdir)/app.config
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 EXTRA_DIST = $(FILES) app.config
 
 include $(top_srcdir)/Makefile.include

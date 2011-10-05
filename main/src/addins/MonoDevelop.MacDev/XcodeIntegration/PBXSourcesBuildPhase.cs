@@ -1,10 +1,12 @@
 // 
 // PBXSourcesBuildPhase.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,16 +34,21 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	class PBXSourcesBuildPhase : XcodeObject
 	{
-		public List<PBXBuildFile> sources;
+		List<PBXBuildFile> sources;
 
 		public PBXSourcesBuildPhase ()
 		{
-			this.sources = new List<PBXBuildFile> ();
+			sources = new List<PBXBuildFile> ();
 		}
 
 		public void AddSource (PBXBuildFile source)
 		{
-			this.sources.Add (source);
+			source.BuildPhase = this;
+			sources.Add (source);
+		}
+
+		public override string Name {
+			get { return "Sources"; }
 		}
 
 		public override XcodeType Type {
@@ -54,11 +61,16 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			var sb = new StringBuilder ();
 
-			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\tbuildActionMask = 2147483647;\n\t\t\tfiles = (\n", Token, Type);
+			sb.AppendFormat ("{0} /* {1} */ = {{\n", Token, Name);
+			sb.AppendFormat ("\t\t\tisa = {0};\n", Type);
+			sb.AppendFormat ("\t\t\tbuildActionMask = 2147483647;\n");
+			sb.AppendFormat ("\t\t\tfiles = (\n");
 			foreach (PBXBuildFile source in sources)
-				sb.AppendFormat ("\t\t\t\t{0},\n", source.Token);
-			sb.AppendFormat ("\t\t\t);\n\t\t\trunOnlyForDeploymentPostprocessing = 0;\n\t\t}};");
-		
+				sb.AppendFormat ("\t\t\t\t{0} /* {1} in {2} */,\n", source.Token, source.Name, Name);
+			sb.AppendFormat ("\t\t\t);\n");
+			sb.AppendFormat ("\t\t\trunOnlyForDeploymentPostprocessing = 0;\n");
+			sb.AppendFormat ("\t\t}};");
+
 			return sb.ToString ();
 		}
 	}

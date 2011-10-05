@@ -91,6 +91,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 
+		void FormatAttributedNode (AstNode node)
+		{
+			if (node == null)
+				return;
+			AstNode child = node.FirstChild;
+			while (child != null && child is AttributeSection) {
+				FixIndentationForceNewLine (child.StartLocation);
+				child = child.NextSibling;
+			}
+			if (child != null)
+				FixIndentationForceNewLine (child.StartLocation);
+		}
+
 		public void EnsureBlankLinesAfter (AstNode node, int blankLines)
 		{
 			if (!CorrectBlankLines)
@@ -334,7 +347,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 		{
-			FixIndentationForceNewLine (propertyDeclaration.StartLocation);
+			FormatAttributedNode (propertyDeclaration);
 			bool oneLine = false;
 			switch (policy.PropertyFormatting) {
 			case PropertyFormatting.AllowOneLine:
@@ -445,8 +458,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			FormatCommas (indexerDeclaration, policy.SpaceBeforeIndexerDeclarationParameterComma, policy.SpaceAfterIndexerDeclarationParameterComma);
 
-			
-			FixIndentationForceNewLine (indexerDeclaration.StartLocation);
+			FormatAttributedNode (indexerDeclaration);
 			EnforceBraceStyle (policy.PropertyBraceStyle, indexerDeclaration.LBraceToken, indexerDeclaration.RBraceToken);
 			if (policy.IndentPropertyBody)
 				IndentLevel++;
@@ -488,7 +500,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, object data)
 		{
-			FixIndentationForceNewLine (eventDeclaration.StartLocation);
+			FormatAttributedNode (eventDeclaration);
 			EnforceBraceStyle (policy.EventBraceStyle, eventDeclaration.LBraceToken, eventDeclaration.RBraceToken);
 			if (policy.IndentEventBody)
 				IndentLevel++;
@@ -531,7 +543,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitEventDeclaration (EventDeclaration eventDeclaration, object data)
 		{
-			FixIndentationForceNewLine (eventDeclaration.StartLocation);
+			FormatAttributedNode (eventDeclaration);
 			if (eventDeclaration.NextSibling is EventDeclaration && IsSimpleEvent (eventDeclaration) && IsSimpleEvent (eventDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenEventFields);
 			} else if (IsMember (eventDeclaration.NextSibling)) {
@@ -549,7 +561,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
-			FixIndentationForceNewLine (fieldDeclaration.StartLocation);
+			FormatAttributedNode (fieldDeclaration);
 			FormatCommas (fieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fieldDeclaration.NextSibling is FieldDeclaration || fieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenFields);
@@ -561,7 +573,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, object data)
 		{
-			FixIndentationForceNewLine (fixedFieldDeclaration.StartLocation);
+			FormatAttributedNode (fixedFieldDeclaration);
 			FormatCommas (fixedFieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fixedFieldDeclaration.NextSibling is FieldDeclaration || fixedFieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenFields);
@@ -573,7 +585,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, object data)
 		{
-			FixIndentationForceNewLine (enumMemberDeclaration.StartLocation);
+			FormatAttributedNode (enumMemberDeclaration);
 			return base.VisitEnumMemberDeclaration (enumMemberDeclaration, data);
 		}
 
@@ -607,7 +619,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
-			FixIndentationForceNewLine (methodDeclaration.StartLocation);
+			FormatAttributedNode (methodDeclaration);
 			
 			ForceSpacesBefore (methodDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (methodDeclaration.Parameters.Any ()) {
@@ -635,7 +647,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, object data)
 		{
-			FixIndentationForceNewLine (operatorDeclaration.StartLocation);
+			FormatAttributedNode (operatorDeclaration);
 			
 			ForceSpacesBefore (operatorDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (operatorDeclaration.Parameters.Any ()) {
@@ -663,7 +675,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
 		{
-			FixIndentationForceNewLine (constructorDeclaration.StartLocation);
+			FormatAttributedNode (constructorDeclaration);
 			
 			ForceSpacesBefore (constructorDeclaration.LParToken, policy.SpaceBeforeConstructorDeclarationParentheses);
 			if (constructorDeclaration.Parameters.Any ()) {
@@ -691,8 +703,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
 		{
-			FixIndentationForceNewLine (destructorDeclaration.StartLocation);
-			
+			FormatAttributedNode (destructorDeclaration);
 			CSharpTokenNode lParen = destructorDeclaration.LParToken;
 			int offset = this.document.GetOffset (lParen.StartLocation);
 			ForceSpaceBefore (offset, policy.SpaceBeforeConstructorDeclarationParentheses);
@@ -909,7 +920,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			int lbraceOffset = document.GetOffset (lbrace.StartLocation);
 			
 //			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.StartLocation.Line);
+<<<<<<< HEAD
 			int rbraceOffset = document.GetOffset (rbrace.StartLocation);
+=======
+			int rbraceOffset = data.LocationToOffset (rbrace.StartLocation.Line, rbrace.StartLocation.Column);
+			if (lbraceOffset <= 0 || rbraceOffset <= 0)
+				return;
+>>>>>>> master
 			int whitespaceStart = SearchWhitespaceStart (lbraceOffset);
 			int whitespaceEnd = SearchWhitespaceLineStart (rbraceOffset);
 			string startIndent = "";
@@ -1265,9 +1282,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 
-		public override object VisitYieldStatement (YieldStatement yieldStatement, object data)
+		public override object VisitYieldReturnStatement (YieldReturnStatement YieldReturnStatement, object data)
 		{
-			FixStatementIndentation (yieldStatement.StartLocation);
+			FixStatementIndentation (YieldReturnStatement.StartLocation);
 			return null;
 		}
 

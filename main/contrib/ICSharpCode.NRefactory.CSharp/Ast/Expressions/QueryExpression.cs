@@ -104,7 +104,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
+<<<<<<< HEAD
 				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, TextLocation.Empty));
+=======
+				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, AstLocation.Empty));
+>>>>>>> master
 			}
 		}
 		
@@ -139,7 +143,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
+<<<<<<< HEAD
 				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, TextLocation.Empty));
+=======
+				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, AstLocation.Empty));
+>>>>>>> master
 			}
 		}
 		
@@ -176,7 +184,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole(Roles.Identifier).Name;
 			}
 			set {
+<<<<<<< HEAD
 				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, TextLocation.Empty));
+=======
+				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, AstLocation.Empty));
+>>>>>>> master
 			}
 		}
 		
@@ -264,7 +276,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole(JoinIdentifierRole).Name;
 			}
 			set {
+<<<<<<< HEAD
 				SetChildByRole(JoinIdentifierRole, Identifier.Create (value, TextLocation.Empty));
+=======
+				SetChildByRole(JoinIdentifierRole, Identifier.Create (value, AstLocation.Empty));
+>>>>>>> master
 			}
 		}
 		
@@ -308,7 +324,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (IntoIdentifierRole).Name;
 			}
 			set {
+<<<<<<< HEAD
 				SetChildByRole(IntoIdentifierRole, Identifier.Create (value, TextLocation.Empty));
+=======
+				SetChildByRole(IntoIdentifierRole, Identifier.Create (value, AstLocation.Empty));
+>>>>>>> master
 			}
 		}
 		

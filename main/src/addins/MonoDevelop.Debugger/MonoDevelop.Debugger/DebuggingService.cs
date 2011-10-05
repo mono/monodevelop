@@ -621,7 +621,7 @@ namespace MonoDevelop.Debugger
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
-				IdeApp.Workbench.Present ();
+				IdeApp.Workbench.GrabDesktopFocus ();
 			});
 		}
 		

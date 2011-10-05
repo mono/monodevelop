@@ -41,8 +41,6 @@ using MonoMac.Foundation;
 using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.MacDev.PlistEditor;
 
-
-
 namespace MonoDevelop.MacDev.XcodeSyncing
 {
 	class XcodeMonitor
@@ -70,14 +68,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return Directory.Exists (xcproj);
 		}
 		
-		public void UpdateProject (List<XcodeSyncedItem> allItems, XcodeProject emptyProject)
+		public void UpdateProject (IProgressMonitor monitor, List<XcodeSyncedItem> allItems, XcodeProject emptyProject)
 		{
 			items = allItems;
-			int workItem = 1;
 			
-			Ide.IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Updating synchronized project..."));
+			monitor.BeginTask (GettextCatalog.GetString ("Updating Xcode project..."), items.Count);
+			monitor.Log.WriteLine ("Updating synced project with {0} items", items.Count);
 			XC4Debug.Log ("Updating synced project with {0} items", items.Count);
-			
+		
 			var ctx = new XcodeSyncContext (projectDir, syncTimeCache);
 			
 			var toRemove = new HashSet<string> (itemMap.Keys);
@@ -106,9 +104,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			bool removedOldProject = false;
 			if (updateProject) {
 				if (pendingProjectWrite == null && ProjectExists ()) {
-					XC4Debug.Log ("Project file needs to be updated, closing and removing old project");
+					monitor.Log.WriteLine ("Project file needs to be updated, closing and removing old project");
 					CloseProject ();
-					DeleteProjectArtifacts ();
+					DeleteXcproj ();
 					removedOldProject = true;
 				}
 			} else {
@@ -134,19 +132,18 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			foreach (var item in syncList) {
-				XC4Debug.Log ("Syncing item {0}", item.GetTargetRelativeFileNames ()[0]);
+				monitor.Log.WriteLine ("Syncing item {0}", item.GetTargetRelativeFileNames ()[0]);
 				item.SyncOut (ctx);
-				Ide.IdeApp.Workbench.StatusBar.SetProgressFraction (workItem * 100.0 / syncList.Count);
-				workItem++;
+				monitor.Step (1);
 			}
 			
 			if (updateProject) {
-				XC4Debug.Log ("Queuing Xcode project {0} to write when opened", projectDir);
+				monitor.Log.WriteLine ("Queuing Xcode project {0} to write when opened", projectDir);
 				pendingProjectWrite = emptyProject;
 			}
 			
-			Ide.IdeApp.Workbench.StatusBar.EndProgress ();
-			Ide.IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Synchronized project updated."));
+			monitor.EndTask ();
+			monitor.ReportSuccess (GettextCatalog.GetString ("Xcode project updated."));
 		}
 		
 		// Xcode keeps some kind of internal lock on project files while it's running and
@@ -179,21 +176,82 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			} while (Directory.Exists (this.projectDir));
 			this.xcproj = projectDir.Combine (name + ".xcodeproj");
 		}
+		
+		HashSet<string> GetKnownFiles ()
+		{
+			HashSet<string> knownItems = new HashSet<string> ();
+			
+			foreach (var item in items) {
+				foreach (var file in item.GetTargetRelativeFileNames ())
+					knownItems.Add (Path.Combine (projectDir, file));
+			}
+			
+			return knownItems;
+		}
+		
+		void ScanForAddedFiles (XcodeSyncBackContext ctx, HashSet<string> knownFiles, string directory, string relativePath)
+		{
+			foreach (var file in Directory.EnumerateFiles (directory)) {
+				if (file.EndsWith ("~") || file.EndsWith (".m"))
+					continue;
+				
+				if (knownFiles.Contains (file))
+					continue;
+				
+				if (file.EndsWith (".h")) {
+					NSObjectTypeInfo parsed = NSObjectInfoService.ParseHeader (file);
+					
+					ctx.TypeSyncJobs.Add (XcodeSyncObjcBackJob.NewType (parsed, relativePath));
+				} else {
+					FilePath original, relative;
+					
+					if (relativePath != null)
+						relative = new FilePath (Path.Combine (relativePath, Path.GetFileName (file)));
+					else
+						relative = new FilePath (Path.GetFileName (file));
+					
+					original = ctx.Project.BaseDirectory.Combine (relative);
+					
+					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, true));
+				}
+			}
+			
+			foreach (var dir in Directory.EnumerateDirectories (directory)) {
+				string relative;
+				
+				// Ignore *.xcodeproj directories and any directories named DerivedData at the toplevel
+				if (dir.EndsWith (".xcodeproj") || (relativePath == null && Path.GetFileName (dir) == "DerivedData"))
+					continue;
+				
+				if (relativePath != null)
+					relative = Path.Combine (relativePath, Path.GetFileName (dir));
+				else
+					relative = Path.GetFileName (dir);
+				
+				ScanForAddedFiles (ctx, knownFiles, dir, relative);
+			}
+		}
 
-		public XcodeSyncBackContext GetChanges (NSObjectInfoService infoService, DotNetProject project)
+		public XcodeSyncBackContext GetChanges (IProgressMonitor monitor, NSObjectInfoService infoService, DotNetProject project)
 		{
 			var ctx = new XcodeSyncBackContext (projectDir, syncTimeCache, infoService, project);
 			var needsSync = new List<XcodeSyncedItem> (items.Where (i => i.NeedsSyncBack (ctx)));
+			var knownFiles = GetKnownFiles ();
+			
+			ScanForAddedFiles (ctx, knownFiles, projectDir, null);
+			
 			if (needsSync.Count > 0) {
-				Ide.IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Synchronizing external project changes..."));
+				monitor.BeginStepTask (GettextCatalog.GetString ("Synchronizing Xcode project changes"), needsSync.Count, 1);
 				for (int i = 0; i < needsSync.Count; i++) {
 					var item = needsSync [i];
 					item.SyncBack (ctx);
-					Ide.IdeApp.Workbench.StatusBar.SetProgressFraction ((i + 1) * 100.0 / needsSync.Count);
+					monitor.Step (1);
 				}
-				Ide.IdeApp.Workbench.StatusBar.EndProgress ();
-				Ide.IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count));
+				
+				monitor.Log.WriteLine (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count);
+				monitor.EndTask ();
 			}
+			
 			return ctx;
 		}
 		
@@ -206,45 +264,47 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public void SaveProject ()
 		{
-			XC4Debug.Log ("Saving Xcode project");
 			AppleScript.Run (XCODE_SAVE_IN_PATH, AppleSdkSettings.XcodePath, projectDir);
 		}
-		
-		public void OpenProject ()
+
+		void SyncProject ()
 		{
 			if (pendingProjectWrite != null) {
 				pendingProjectWrite.Generate (projectDir);
 				pendingProjectWrite = null;
 			}
-			if (!NSWorkspace.SharedWorkspace.OpenFile (xcproj, AppleSdkSettings.XcodePath))
-				throw new Exception ("Failed to open Xcode project");
+		}
+		
+		public void OpenProject ()
+		{
+			SyncProject ();
+			AppleScript.Run (XCODE_OPEN_PROJECT, AppleSdkSettings.XcodePath, xcproj);
 		}
 		
 		public void OpenFile (string relativeName)
 		{
 			XC4Debug.Log ("Opening file in Xcode: {0}", relativeName);
-			OpenProject ();
-			NSWorkspace.SharedWorkspace.OpenFile (projectDir.Combine (relativeName), AppleSdkSettings.XcodePath);
+			SyncProject ();
+			AppleScript.Run (XCODE_OPEN_PROJECT_FILE, AppleSdkSettings.XcodePath, xcproj, projectDir.Combine (relativeName));
 		}
 		
 		public void DeleteProjectDirectory ()
 		{
-			XC4Debug.Log ("Deleting project directory");
-			//if (Directory.Exists (projectDir))
-			//	Directory.Delete (projectDir, true);
-			HackFlushDirs ();
+			XC4Debug.Log ("Deleting temp project directories");
+			bool isRunning = CheckRunning ();
+			if (Directory.Exists (projectDir))
+				Directory.Delete (projectDir, true);
+			if (isRunning) {
+				XC4Debug.Log ("Xcode still running, leaving empty directory in place to prevent name re-use");
+				Directory.CreateDirectory (projectDir);
+			} else {
+				XC4Debug.Log ("Xcode not running, removing all temp directories");
+				if (Directory.Exists (this.originalProjectDir))
+					Directory.Delete (this.originalProjectDir, true);
+			}
 		}
 		
-		void HackFlushDirs ()
-		{
-			if (CheckRunning ())
-				return;
-			if (Directory.Exists (this.originalProjectDir))
-				Directory.Delete (this.originalProjectDir, true);
-			DeleteDerivedData ();
-		}
-		
-		void DeleteProjectArtifacts ()
+		void DeleteXcproj ()
 		{
 			XC4Debug.Log ("Deleting project artifacts");
 			if (Directory.Exists (xcproj))
@@ -264,38 +324,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return null;
 		}
 		
-		void DeleteDerivedData ()
-		{
-			var derivedDataPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Library/Developer/Xcode/DerivedData");
-			string[] subDirs;
-			
-			try {
-				if (!Directory.Exists (derivedDataPath))
-					return;
-				subDirs = Directory.GetDirectories (derivedDataPath);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting derived data directories.", e);
-				return;
-			}
-			
-			foreach (var subDir in subDirs) {
-				var plistPath = Path.Combine (subDir, "info.plist");
-				var workspacePath = GetWorkspacePath (plistPath);
-				if (workspacePath == null)
-					continue;
-				if (workspacePath == xcproj) {
-					try {
-						XC4Debug.Log ("Deleting derived data directory");
-						Directory.Delete (subDir, true);
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while removing derived data directory " + subDir, e);
-					}
-					return;
-				}
-			}
-			XC4Debug.Log ("Couldn't find & delete derived data directory");
-		}
-		
 		public bool IsProjectOpen ()
 		{
 			if (!CheckRunning ())
@@ -305,6 +333,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public bool CloseProject ()
 		{
+			if (!CheckRunning ())
+				return true;
+			
 			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, projectDir) == "true";
 			XC4Debug.Log ("Closing project: {0}", success);
 			return success;
@@ -312,15 +343,31 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public bool CloseFile (string fileName)
 		{
+			if (!CheckRunning ())
+				return true;
+			
 			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, fileName) == "true";
 			XC4Debug.Log ("Closing file {0}: {1}", fileName, success);
 			return success;
 		}
-		
+
+		const string XCODE_OPEN_PROJECT =
+@"tell application ""{0}""
+	activate
+	open ""{1}""
+end tell";
+
+		const string XCODE_OPEN_PROJECT_FILE =
+@"tell application ""{0}""
+	activate
+	open ""{1}""
+	open ""{2}""
+end tell";
+
 		const string XCODE_SAVE_IN_PATH =
 @"tell application ""{0}""
-set pp to ""{1}""
-	set ext to {{ "".xib"", "".h"", "".m"" }}
+	set pp to ""{1}""
+	set ext to {{ "".storyboard"", "".xib"", "".h"", "".m"" }}
 	repeat with d in documents
 		if d is modified then
 			set f to path of d

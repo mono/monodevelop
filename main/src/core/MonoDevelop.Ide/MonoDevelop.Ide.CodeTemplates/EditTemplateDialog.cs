@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 		void ButtonOkClicked (object sender, EventArgs e)
 		{
-			template.Shortcut = this.entryShortcut1.Text;
+			template.Shortcut = this.entryShortcut1.Text.Trim ();
 			template.Group = this.comboboxentryGroups.Entry.Text;
 			template.MimeType = this.comboboxentryMime.Entry.Text;
 			template.Description = this.entryDescription.Text;

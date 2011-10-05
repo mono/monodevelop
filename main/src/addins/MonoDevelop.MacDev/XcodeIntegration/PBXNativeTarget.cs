@@ -1,10 +1,12 @@
 // 
 // PBXNativeTarget.cs
 //  
-// Author:
+// Authors:
 //       Geoff Norton <gnorton@novell.com>
+//       Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2011 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +45,12 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			this.configuration = configuration;
 			this.target = target;
 			this.buildphases = new List<XcodeObject> ();
+
+			configuration.Target = this;
+		}
+
+		public override string Name {
+			get { return name; }
 		}
 
 		public override XcodeType Type {
@@ -53,17 +61,29 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		public void AddBuildPhase (XcodeObject phase)
 		{
-			this.buildphases.Add (phase);
+			buildphases.Add (phase);
 		}
 
 		public override string ToString ()
 		{
 			var sb = new StringBuilder ();
 
-			sb.AppendFormat ("{0} = {{\n\t\t\tisa = {1};\n\t\t\tbuildConfigurationList = {2};\n\t\t\tbuildPhases = (\n", Token, Type, configuration.Token);
+			sb.AppendFormat ("{0} /* {1} */ = {{\n", Token, name);
+			sb.AppendFormat ("\t\t\tisa = {0};\n", Type);
+			sb.AppendFormat ("\t\t\tbuildConfigurationList = {0} /* {1} */;\n", configuration.Token, configuration.Name);
+			sb.AppendFormat ("\t\t\tbuildPhases = (\n");
 			foreach (XcodeObject xco in buildphases)
-				sb.AppendFormat ("\t\t\t\t{0},\n", xco.Token);
-			sb.AppendFormat ("\t\t\t);\n\t\t\tbuildRules = ();\n\t\t\tdependencies = ();\n\t\t\tname = {0};\n\t\t\tproductName = {0};\n\t\t\tproductReference = {1};\n\t\t\tproductType = \"com.apple.product-type.application\";\n\t\t}};", name, target.Token);
+				sb.AppendFormat ("\t\t\t\t{0} /* {1} */,\n", xco.Token, xco.Name);
+			sb.AppendFormat ("\t\t\t);\n");
+			sb.AppendFormat ("\t\t\tbuildRules = (\n");
+			sb.AppendFormat ("\t\t\t);\n");
+			sb.AppendFormat ("\t\t\tdependencies = (\n");
+			sb.AppendFormat ("\t\t\t);\n");
+			sb.AppendFormat ("\t\t\tname = {0};\n", name);
+			sb.AppendFormat ("\t\t\tproductName = {0};\n", name);
+			sb.AppendFormat ("\t\t\tproductReference = {0} /* {1} */;\n", target.Token, target.Name);
+			sb.AppendFormat ("\t\t\tproductType = \"com.apple.product-type.application\";\n");
+			sb.AppendFormat ("\t\t}};");
 
 			return sb.ToString ();
 		}

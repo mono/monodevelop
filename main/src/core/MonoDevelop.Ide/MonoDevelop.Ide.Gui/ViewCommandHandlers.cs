@@ -232,52 +232,82 @@ namespace MonoDevelop.Ide.Gui
 		public void OnUppercaseSelection ()
 		{
 			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
-			if (buffer != null)
-			{
-				if (buffer.SelectedText == String.Empty)
-				{
-					int pos = buffer.CursorPosition;
-					string ch = buffer.GetText (pos, pos + 1);
-					buffer.DeleteText (pos, 1);
-					buffer.InsertText (pos, ch.ToUpper ());
+			if (buffer == null)
+				return;
+			
+			string selectedText = buffer.SelectedText;
+			if (string.IsNullOrEmpty (selectedText)) {
+				int pos = buffer.CursorPosition;
+				string ch = buffer.GetText (pos, pos + 1);
+				string upper = ch.ToUpper ();
+				if (upper == ch) {
 					buffer.CursorPosition = pos + 1;
-				} else
-				{
-					string newText = buffer.SelectedText.ToUpper ();
-					int startPos = buffer.SelectionStartPosition;
-					buffer.DeleteText (startPos, buffer.SelectedText.Length);
-					buffer.InsertText (startPos, newText);
+					return;
 				}
+				buffer.BeginAtomicUndo ();
+				buffer.DeleteText (pos, 1);
+				buffer.InsertText (pos, upper);
+				buffer.CursorPosition = pos + 1;
+				buffer.EndAtomicUndo ();
+			} else {
+				string newText = selectedText.ToUpper ();
+				if (newText == selectedText)
+					return;
+				int startPos = buffer.SelectionStartPosition;
+				buffer.BeginAtomicUndo ();
+				buffer.DeleteText (startPos, selectedText.Length);
+				buffer.InsertText (startPos, newText);
+				buffer.Select (startPos, startPos + newText.Length);
+				buffer.EndAtomicUndo ();
 			}
+		}
+		
+		[CommandUpdateHandler (EditCommands.UppercaseSelection)]
+		protected void OnUppercaseSelection (CommandInfo info)
+		{
+			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			info.Enabled = buffer != null && buffer.CursorPosition < buffer.Length;
 		}
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]
 		public void OnLowercaseSelection ()
 		{
 			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
-			if (buffer != null)
-			{
-				if (buffer.SelectedText == String.Empty)
-				{
-					int pos = buffer.CursorPosition;
-					string ch = buffer.GetText (pos, pos + 1);
-					buffer.DeleteText (pos, 1);
-					buffer.InsertText (pos, ch.ToLower ());
+			if (buffer == null)
+				return;
+			
+			string selectedText = buffer.SelectedText;
+			if (string.IsNullOrEmpty (selectedText)) {
+				int pos = buffer.CursorPosition;
+				string ch = buffer.GetText (pos, pos + 1);
+				string lower = ch.ToLower ();
+				if (lower == ch) {
 					buffer.CursorPosition = pos + 1;
-				} else
-				{
-					string newText = buffer.SelectedText.ToLower ();
-					int startPos = buffer.SelectionStartPosition;
-					buffer.DeleteText (startPos, buffer.SelectedText.Length);
-					buffer.InsertText (startPos, newText);
-				}
+					return;
+				};
+				buffer.BeginAtomicUndo ();
+				buffer.DeleteText (pos, 1);
+				buffer.InsertText (pos, lower);
+				buffer.CursorPosition = pos + 1;
+				buffer.EndAtomicUndo ();
+			} else {
+				string newText = selectedText.ToLower ();
+				if (newText == selectedText)
+					return;
+				int startPos = buffer.SelectionStartPosition;
+				buffer.BeginAtomicUndo ();
+				buffer.DeleteText (startPos, selectedText.Length);
+				buffer.InsertText (startPos, newText);
+				buffer.Select (startPos, startPos + newText.Length);
+				buffer.EndAtomicUndo ();
 			}
 		}
 		
 		[CommandUpdateHandler (EditCommands.LowercaseSelection)]
 		protected void OnLowercaseSelection (CommandInfo info)
 		{
-			info.Enabled = GetContent <IEditableTextBuffer> () != null;
+			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			info.Enabled = buffer != null && buffer.CursorPosition < buffer.Length;
 		}
 		
 

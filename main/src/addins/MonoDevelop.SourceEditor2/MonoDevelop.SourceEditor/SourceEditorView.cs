@@ -154,13 +154,13 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
 				UpdateBreakpoints ();
-				if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
-					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
-					if (marker != null) {
+				if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
+					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
+					if (marker != null) {
 						double oldHeight = marker.lastHeight;
 						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); // ensure that the line cache is renewed
-						double newHeight = marker.GetLineHeight (widget.TextEditor);
-						if (oldHeight != newHeight)
+						double newHeight = marker.GetLineHeight (widget.TextEditor);
+						if (oldHeight != newHeight)
 							widget.Document.CommitLineToEndUpdate (widget.TextEditor.Document.OffsetToLineNumber (e.Line.Offset));
 					}
 				}
@@ -245,6 +245,7 @@ namespace MonoDevelop.SourceEditor
 			errorListPad.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
+			Document.AddAnnotation (this);
 		}
 		
 		MessageBubbleHighlightPopupWindow messageBubbleHighlightPopupWindow = null;

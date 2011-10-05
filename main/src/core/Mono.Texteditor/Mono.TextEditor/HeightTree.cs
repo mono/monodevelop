@@ -107,8 +107,8 @@ namespace Mono.TextEditor
 			}
 			
 			foreach (var segment in editor.Document.FoldedSegments) {
-				int start = editor.OffsetToLineNumber (segment.StartLine.Offset);
-				int end = editor.OffsetToLineNumber (segment.EndLine.Offset);
+				int start = editor.OffsetToLineNumber (segment.Offset);
+				int end = editor.OffsetToLineNumber (segment.EndOffset);
 				segment.Marker = Fold (start, end - start);
 			}
 		}

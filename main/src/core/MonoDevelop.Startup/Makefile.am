@@ -5,7 +5,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	MonoDevelop.Startup/MonoDevelopMain.cs
 
-RES =
+RES = 
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
@@ -36,4 +36,3 @@ CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES) app.config MonoDevelop.exe.addins
 
 include $(top_srcdir)/Makefile.include
-

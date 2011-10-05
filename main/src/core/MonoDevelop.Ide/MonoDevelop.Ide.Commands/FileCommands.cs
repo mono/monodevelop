@@ -346,7 +346,7 @@ namespace MonoDevelop.Ide.Commands
 	internal class ClearRecentProjectsHandler : CommandHandler
 	{
 		protected override void Run()
-		{			
+		{
 			try {
 				string title = GettextCatalog.GetString ("Clear recent projects");
 				string question = GettextCatalog.GetString ("Are you sure you want to clear recent projects list?");

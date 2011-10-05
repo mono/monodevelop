@@ -33,7 +33,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public interface IPlistEditingHandler
 	{
 		bool CanHandle (Project project, string projectVirtualPath);
-		IEnumerable<PlistEditingSection> GetSections (Project project, PDictionary dictionary);
+		IEnumerable<PlistEditingSection> GetSections (Project project, PObject dictionary);
 	}
 	
 	public class PlistEditingSection
@@ -47,6 +47,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public string Name { get; private set; }
 		public Gtk.Widget Widget { get; private set; }
 		public bool IsAdvanced { get; set; }
-		public Func<PDictionary,bool> CheckVisible { get; set; }
+		public Func<PObject,bool> CheckVisible { get; set; }
 	}
 }

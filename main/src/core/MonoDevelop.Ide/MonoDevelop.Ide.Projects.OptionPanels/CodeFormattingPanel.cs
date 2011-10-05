@@ -113,10 +113,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			if (chain.Count == 0)
 				return null;
 			MimeTypePanelData data = new MimeTypePanelData ();
-			OptionsDialogSection sec = new OptionsDialogSection (typeof(MimeTypePolicyOptionsSection));
+			OptionsDialogSection sec = new MimetypeOptionsDialogSection (mt);
 			sec.Fill = true;
-			Gdk.Pixbuf icon = DesktopService.GetPixbufForType (mt, Gtk.IconSize.Menu);
-			sec.Icon = ImageService.GetStockId (icon, Gtk.IconSize.Menu);
 			data.Section = sec;
 			data.MimeType = mt;
 			data.TypeDescription = DesktopService.GetMimeTypeDescription (mt);
@@ -248,6 +246,17 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				}
 			}
 		}
+	}
+	
+	class MimetypeOptionsDialogSection : OptionsDialogSection
+	{
+		public MimetypeOptionsDialogSection (string mimetype): base (typeof(MimeTypePolicyOptionsSection))
+		{
+			this.MimeType = mimetype;
+		}
+		
+		//this is used by the options dialog to look up the icon as needed, at required scales
+		public string MimeType { get; private set; }
 	}
 	
 	[System.ComponentModel.ToolboxItem(true)]

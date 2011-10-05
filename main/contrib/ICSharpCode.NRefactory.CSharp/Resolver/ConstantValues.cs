@@ -677,9 +677,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				elements[i] = arrayElements[i].Resolve(resolver);
 			}
 			if (elementType != null) {
+<<<<<<< HEAD
 				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.Context), 1, null, elements);
 			} else {
 				return resolver.ResolveArrayCreation(null, 1, null, elements);
+=======
+				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.Context), 1, null, elements, true);
+			} else {
+				return resolver.ResolveArrayCreation(null, 1, null, elements, true);
+>>>>>>> master
 			}
 		}
 		

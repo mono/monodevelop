@@ -76,8 +76,14 @@ namespace MonoDevelop.Projects.Policies
 			get { return null; }
 		}
 		
-		protected override bool InheritDefaultPolicies {
-			get { return false; }
+		protected override T GetDefaultPolicy<T> ()
+		{
+			return null;
+		}
+		
+		protected override T GetDefaultPolicy<T> (IEnumerable<string> scopes)
+		{
+			return null;
 		}
 		
 		public string Name { get; set; }

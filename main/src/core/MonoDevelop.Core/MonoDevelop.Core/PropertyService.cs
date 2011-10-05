@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace MonoDevelop.Core
 {
@@ -41,7 +42,6 @@ namespace MonoDevelop.Core
 		internal static void Initialize ()
 		{
 		}
-		
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
 
@@ -117,14 +117,15 @@ namespace MonoDevelop.Core
 			profile = null;
 			version = null;
 			
-			string[] migratableVersions = UserProfile.GetMigratableVersions ();
-			
-			//try versioned profiles
-			for (int i = migratableVersions.Length -1; i >= 0; i--) {
-				var p = UserProfile.GetProfile (migratableVersions[i]);
+			//try versioned profiles from most recent to oldest
+			//skip the last in the array, it's the current profile
+			int userProfileMostRecent = UserProfile.ProfileVersions.Length - 2;
+			for (int i = userProfileMostRecent; i >= 0; i--) {
+				string v = UserProfile.ProfileVersions[i];
+				var p = UserProfile.GetProfile (v);
 				if (File.Exists (p.ConfigDir.Combine (FileName))) {
 					profile = p;
-					version = migratableVersions[i];
+					version = v;
 					return true;
 				}
 			}
@@ -168,6 +169,11 @@ namespace MonoDevelop.Core
 			var prefsPath = UserProfile.Current.ConfigDir.Combine (FileName);
 			FileService.EnsureDirectoryExists (prefsPath.ParentDirectory);
 			properties.Save (prefsPath);
+		}
+		
+		public static bool HasValue (string property)
+		{
+			return properties.HasValue (property);
 		}
 		
 		public static T Get<T> (string property, T defaultValue)

@@ -437,11 +437,6 @@ namespace CustomControls.Controls
                             }
                         }
                         break;
-					// Make the Winforms message queue and the MD one collaborate
-					case (int) Msg.WM_WINDOWPOSCHANGED:
-					case (int) Msg.WM_ENTERIDLE:
-						MonoDevelop.Ide.DispatchService.RunPendingEvents ();
-						break;
                     case (int) Msg.WM_IME_NOTIFY:
                         if (m.WParam == (IntPtr) ImeNotify.IMN_CLOSESTATUSWINDOW)
                         {

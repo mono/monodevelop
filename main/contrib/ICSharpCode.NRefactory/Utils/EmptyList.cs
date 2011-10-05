@@ -23,8 +23,12 @@ using System.Collections.ObjectModel;
 
 namespace ICSharpCode.NRefactory
 {
+<<<<<<< HEAD
 	[Serializable]
 	public sealed class EmptyList<T> : IList<T>, IEnumerator<T>
+=======
+	sealed class EmptyList<T> : IList<T>, IEnumerator<T>
+>>>>>>> master
 	{
 		public static readonly IList<T> Instance = new EmptyList<T>();
 		

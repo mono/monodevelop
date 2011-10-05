@@ -17,7 +17,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cs" DependsOn="${Name}.xib" ><![CDATA[
+		<File name="${Name}.${LanguageExtension}" ><![CDATA[
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +52,7 @@ namespace ${Namespace}
 	}
 }
 ]]></File>
-		<File name="${Name}.xib.designer.cs" DependsOn="${Name}.xib"
+		<File name="${Name}.designer.${LanguageExtension}" DependsOn="${Name}.${LanguageExtension}"
 		      ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True" ><![CDATA[
 namespace ${Namespace} {
 	

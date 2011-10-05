@@ -30,19 +30,23 @@ namespace MonoDevelop.Core
 	public class UserProfile
 	{
 		const string PROFILE_ENV_VAR = "MONODEVELOP_PROFILE";
-		const string APP_ID = "MonoDevelop";
-		const string CURRENT_PROFILE_VERSION = "2.7";
 		
-		internal static string[] GetMigratableVersions ()
+		//These are the known profile versions that can be migrated.
+		//MUST BE SORTED, low to high.
+		//The last is the current profile version.
+		//Should be increased only for major MD versions. Cannot contain '+' or '-'.
+		internal static string[] ProfileVersions = new[] {
+			"2.6",
+			"2.7",
+			"2.8",
+		};
+		
+		static UserProfile ()
 		{
-			return new[] {
-				"2.6",
-			};
+			Current = GetProfile (ProfileVersions[ProfileVersions.Length-1]);
 		}
 		
-		static readonly UserProfile currentProfile = GetCurrentProfile ();
-		
-		public static UserProfile Current { get { return currentProfile; } }
+		public static UserProfile Current { get; private set; }
 		
 		/// <summary>Location for cached data that can be regenerated.</summary>
 		public FilePath CacheDir { get; private set; }
@@ -89,16 +93,11 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		internal static UserProfile GetCurrentProfile ()
-		{
-			return GetProfile (CURRENT_PROFILE_VERSION);
-		}
-		
 		internal static UserProfile GetProfile (string profileVersion)
 		{
 			FilePath testProfileRoot = Environment.GetEnvironmentVariable (PROFILE_ENV_VAR);
 			if (!testProfileRoot.IsNullOrEmpty)
-				return UserProfile.ForTest (CURRENT_PROFILE_VERSION, testProfileRoot);;
+				return UserProfile.ForTest (profileVersion, testProfileRoot);
 			
 			if (Platform.IsWindows)
 				return UserProfile.ForWindows (profileVersion);
@@ -113,7 +112,7 @@ namespace MonoDevelop.Core
 		/// </summary>
 		internal static UserProfile ForTest (string version, FilePath profileLocation)
 		{
-			string appId = APP_ID + "-" + version;
+			string appId = BrandingService.ApplicationName + "-" + version;
 			return new UserProfile () {
 				CacheDir = profileLocation.Combine (appId, "Cache"),
 				UserDataRoot = profileLocation.Combine (appId, "UserData"),
@@ -127,7 +126,7 @@ namespace MonoDevelop.Core
 		
 		internal static UserProfile ForWindows (string version)
 		{
-			string appId = APP_ID + "-" + version;
+			string appId = BrandingService.ApplicationName + "-" + version;
 			FilePath local = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
 			FilePath roaming = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
 			//FilePath localLow = GetKnownFolderPath (new Guid ("A520A1A4-1780-4FF6-BD18-167343C5AF16"));
@@ -148,7 +147,7 @@ namespace MonoDevelop.Core
 		
 		internal static UserProfile ForMac (string version)
 		{
-			string appId = APP_ID + "-" + version;
+			string appId = BrandingService.ApplicationName + "-" + version;
 			FilePath home = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 			FilePath library = home.Combine ("Library");
 			
@@ -182,7 +181,7 @@ namespace MonoDevelop.Core
 			if (xdgCacheHome.IsNullOrEmpty)
 				xdgCacheHome = home.Combine (".cache");
 			
-			string appId = APP_ID + "-" + version;
+			string appId = BrandingService.ApplicationName + "-" + version;
 			FilePath data = xdgDataHome.Combine (appId);
 			FilePath config = xdgConfigHome.Combine (appId);
 			FilePath cache = xdgCacheHome.Combine (appId);
@@ -201,7 +200,7 @@ namespace MonoDevelop.Core
 		internal static UserProfile ForMD24 ()
 		{
 			FilePath appdata = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-			var mdConfig = appdata.Combine ("MonoDevelop");
+			var mdConfig = appdata.Combine (BrandingService.ApplicationName); 
 			return new UserProfile () {
 				UserDataRoot = mdConfig,
 				ConfigDir = mdConfig,

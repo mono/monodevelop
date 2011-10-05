@@ -68,6 +68,13 @@ namespace ICSharpCode.Decompiler.Ast
 			this.AssemblyAttributes = assemblyAttributes.AsReadOnly();
 		}
 		
+		public IList<IAttribute> ModuleAttributes
+		{
+			get {return null;}
+		}
+		public void UpdateProjectContent (IParsedFile oldFile, IParsedFile newFile)
+		{}
+		
 		ITypeDefinition GetClass(TypeDefinition cecilType)
 		{
 			lock (dict) {

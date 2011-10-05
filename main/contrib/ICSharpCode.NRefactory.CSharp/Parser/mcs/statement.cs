@@ -1,10 +1,10 @@
 //
 // statement.cs: Statement representation for the IL tree.
 //
-// Author:
+// Authors:
 //   Miguel de Icaza (miguel@ximian.com)
 //   Martin Baulig (martin@ximian.com)
-//   Marek Safar (marek.safar@seznam.cz)
+//   Marek Safar (marek.safar@gmail.com)
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc.
 // Copyright 2003, 2004 Novell, Inc.
@@ -1652,8 +1652,9 @@ namespace Mono.CSharp {
 		#region Properties
 
 		public bool AddressTaken {
-			get { return (flags & Flags.AddressTaken) != 0; }
-			set { flags |= Flags.AddressTaken; }
+			get {
+				return (flags & Flags.AddressTaken) != 0;
+			}
 		}
 
 		public Block Block {
@@ -1874,6 +1875,11 @@ namespace Mono.CSharp {
 			flags |= Flags.Used;
 		}
 
+		public void SetHasAddressTaken ()
+		{
+			flags |= (Flags.AddressTaken | Flags.Used);
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("LocalInfo ({0},{1},{2},{3})", name, type, VariableInfo, Location);
@@ -1906,7 +1912,8 @@ namespace Mono.CSharp {
 			HasCapturedThis = 1 << 7,
 			IsExpressionTree = 1 << 8,
 			CompilerGenerated = 1 << 9,
-			IsAsync = 1 << 10
+			IsAsync = 1 << 10,
+			Resolved = 1 << 11
 		}
 
 		public Block Parent;
@@ -2098,6 +2105,9 @@ namespace Mono.CSharp {
 
 		public override bool Resolve (BlockContext ec)
 		{
+			if ((flags & Flags.Resolved) != 0)
+				return true;
+
 			Block prev_block = ec.CurrentBlock;
 			bool ok = true;
 
@@ -2182,6 +2192,7 @@ namespace Mono.CSharp {
 			if (this == ParametersBlock.TopBlock && !ParametersBlock.TopBlock.IsThisAssigned (ec) && !flow_unreachable)
 				ok = false;
 
+			flags |= Flags.Resolved;
 			return ok;
 		}
 
@@ -2631,7 +2642,7 @@ namespace Mono.CSharp {
 		// <summary>
 		//   Check whether all `out' parameters have been assigned.
 		// </summary>
-		public void CheckOutParameters (FlowBranching.UsageVector vector, Location loc)
+		public void CheckOutParameters (FlowBranching.UsageVector vector)
 		{
 			if (vector.IsUnreachable)
 				return;
@@ -2647,8 +2658,10 @@ namespace Mono.CSharp {
 				if (vector.IsAssigned (var, false))
 					continue;
 
-				TopBlock.Report.Error (177, loc, "The out parameter `{0}' must be assigned to before control leaves the current method",
-					var.Name);
+				var p = parameter_info[i].Parameter;
+				TopBlock.Report.Error (177, p.Location,
+					"The out parameter `{0}' must be assigned to before control leaves the current method",
+					p.Name);
 			}
 		}
 
@@ -3114,15 +3127,14 @@ namespace Mono.CSharp {
 		//   analysis code to ensure that it's been fully initialized before control
 		//   leaves the constructor.
 		// </summary>
-		public LocalVariable AddThisVariable (BlockContext bc, TypeContainer ds, Location l)
+		public void AddThisVariable (BlockContext bc)
 		{
-			if (this_variable == null) {
-				this_variable = new LocalVariable (this, "this", LocalVariable.Flags.IsThis | LocalVariable.Flags.Used, l);
-				this_variable.Type = ds.CurrentType;
-				this_variable.PrepareForFlowAnalysis (bc);
-			}
+			if (this_variable != null)
+				throw new InternalErrorException (StartLocation.ToString ());
 
-			return this_variable;
+			this_variable = new LocalVariable (this, "this", LocalVariable.Flags.IsThis | LocalVariable.Flags.Used, StartLocation);
+			this_variable.Type = bc.CurrentType;
+			this_variable.PrepareForFlowAnalysis (bc);
 		}
 
 		public bool IsThisAssigned (BlockContext ec)
@@ -3363,6 +3375,32 @@ namespace Mono.CSharp {
 			}
 		}
 
+		sealed class LabelMarker : Statement
+		{
+			readonly Switch s;
+			readonly List<SwitchLabel> labels;
+
+			public LabelMarker (Switch s, List<SwitchLabel> labels)
+			{
+				this.s = s;
+				this.labels = labels;
+			}
+
+			protected override void CloneTo (CloneContext clonectx, Statement target)
+			{
+			}
+
+			protected override void DoEmit (EmitContext ec)
+			{
+				foreach (var l in labels) {
+					if (l.IsDefault)
+						ec.MarkLabel (s.DefaultLabel);
+					else
+						ec.MarkLabel (l.GetILLabel (ec));
+				}
+			}
+		}
+
 		public List<SwitchSection> Sections;
 		public Expression Expr;
 
@@ -3389,6 +3427,8 @@ namespace Mono.CSharp {
 		SwitchSection default_section;
 		SwitchLabel null_section;
 
+		Statement simple_stmt;
+		VariableReference value;
 		ExpressionStatement string_dictionary;
 		FieldExpr switch_cache_field;
 		static int unique_counter;
@@ -3806,6 +3846,13 @@ namespace Mono.CSharp {
 
 				if (constant_section == null)
 					constant_section = default_section;
+			} else {
+				//
+				// Store switch expression for comparission purposes
+				//
+				value = new_expr as VariableReference;
+				if (value == null)
+					value = TemporaryVariableReference.Create (SwitchType, ec.CurrentBlock, loc);
 			}
 
 			bool first = true;
@@ -3832,8 +3879,7 @@ namespace Mono.CSharp {
 			}
 
 			if (default_section == null)
-				ec.CurrentBranching.CreateSibling (
-					null, FlowBranching.SiblingType.SwitchSection);
+				ec.CurrentBranching.CreateSibling (null, FlowBranching.SiblingType.SwitchSection);
 
 			ec.EndFlowBranching ();
 			ec.Switch = old_switch;
@@ -3841,9 +3887,15 @@ namespace Mono.CSharp {
 			if (!ok)
 				return false;
 
-			if (SwitchType.BuiltinType == BuiltinTypeSpec.Type.String && !is_constant) {
-				// TODO: Optimize single case, and single+default case
-				ResolveStringSwitchMap (ec);
+			if (!is_constant) {
+				if (SwitchType.BuiltinType == BuiltinTypeSpec.Type.String) {
+					if (string_labels.Count < 7)
+						ResolveSimpleSwitch (ec);
+					else
+						ResolveStringSwitchMap (ec);
+				} else if (labels.Count < 3 && !IsNullable) {
+					ResolveSimpleSwitch (ec);
+				}
 			}
 
 			return true;
@@ -3860,6 +3912,45 @@ namespace Mono.CSharp {
 			return sl;
 		}
 
+		//
+		// Prepares switch using simple if/else comparison for small label count (4 + optional default)
+		//
+		void ResolveSimpleSwitch (BlockContext bc)
+		{
+			simple_stmt = default_section != null ? default_section.Block : null;
+
+			for (int i = Sections.Count - 1; i >= 0; --i) {
+				var s = Sections[i];
+
+				if (s == default_section) {
+					s.Block.AddScopeStatement (new LabelMarker (this, s.Labels));
+					continue;
+				}
+
+				s.Block.AddScopeStatement (new LabelMarker (this, s.Labels));
+
+				Expression cond = null;
+				for (int ci = 0; ci < s.Labels.Count; ++ci) {
+					var e = new Binary (Binary.Operator.Equality, value, s.Labels[ci].Converted, loc);
+
+					if (ci > 0) {
+						cond = new Binary (Binary.Operator.LogicalOr, cond, e, loc);
+					} else {
+						cond = e;
+					}
+				}
+
+				simple_stmt = new If (cond, s.Block, simple_stmt, loc);
+			}
+
+			// It's null for empty switch
+			if (simple_stmt != null)
+				simple_stmt.Resolve (bc);
+		}
+
+		//
+		// Converts string switch into string hashtable
+		//
 		void ResolveStringSwitchMap (ResolveContext ec)
 		{
 			FullNamedExpression string_dictionary_type;
@@ -3924,7 +4015,7 @@ namespace Mono.CSharp {
 			string_dictionary = new SimpleAssign (switch_cache_field, initializer.Resolve (ec));
 		}
 
-		void DoEmitStringSwitch (LocalTemporary value, EmitContext ec)
+		void DoEmitStringSwitch (EmitContext ec)
 		{
 			Label l_initialized = ec.DefineLabel ();
 
@@ -3978,7 +4069,7 @@ namespace Mono.CSharp {
 			EmitTableSwitch (ec, string_switch_variable);
 			string_switch_variable.Release (ec);
 		}
-		
+
 		protected override void DoEmit (EmitContext ec)
 		{
 			//
@@ -3990,21 +4081,13 @@ namespace Mono.CSharp {
 			default_target = ec.DefineLabel ();
 			null_target = ec.DefineLabel ();
 
-			// Store variable for comparission purposes
-			// TODO: Don't duplicate non-captured VariableReference
-			LocalTemporary value;
 			if (IsNullable) {
-				value = new LocalTemporary (SwitchType);
 				unwrap.EmitCheck (ec);
 				ec.Emit (OpCodes.Brfalse, null_target);
-				new_expr.Emit (ec);
-				value.Store (ec);
-			} else if (!is_constant) {
-				value = new LocalTemporary (SwitchType);
-				new_expr.Emit (ec);
-				value.Store (ec);
-			} else
-				value = null;
+				value.EmitAssign (ec, new_expr, false, false);
+			} else if (new_expr != value && !is_constant) {
+				value.EmitAssign (ec, new_expr, false, false);
+			}
 
 			//
 			// Setup the codegen context
@@ -4020,13 +4103,12 @@ namespace Mono.CSharp {
 				if (constant_section != null)
 					constant_section.Block.Emit (ec);
 			} else if (string_dictionary != null) {
-				DoEmitStringSwitch (value, ec);
+				DoEmitStringSwitch (ec);
+			} else if (simple_stmt != null) {
+				simple_stmt.Emit (ec);
 			} else {
 				EmitTableSwitch (ec, value);
 			}
-
-			if (value != null)
-				value.Release (ec);
 
 			// Restore context state. 
 			ec.MarkLabel (ec.LoopEnd);
@@ -5395,8 +5477,8 @@ namespace Mono.CSharp {
 	/// <summary>
 	///   Implementation of the foreach C# statement
 	/// </summary>
-	public class Foreach : Statement {
-
+	public class Foreach : Statement
+	{
 		sealed class ArrayForeach : Statement
 		{
 			readonly Foreach for_each;
@@ -5417,7 +5499,6 @@ namespace Mono.CSharp {
 				for_each = @foreach;
 				statement = for_each.statement;
 				loc = @foreach.loc;
-				variable = new LocalVariableReference (for_each.variable, loc);
 
 				counter = new StatementExpression[rank];
 				variables = new TemporaryVariableReference[rank];
@@ -5438,7 +5519,7 @@ namespace Mono.CSharp {
 
 			public override bool Resolve (BlockContext ec)
 			{
-				Block variables_block = variable.local_info.Block;
+				Block variables_block = for_each.variable.Block;
 				copy = TemporaryVariableReference.Create (for_each.expr.Type, variables_block, loc);
 				copy.Resolve (ec);
 
@@ -5488,7 +5569,8 @@ namespace Mono.CSharp {
 				ec.StartFlowBranching (FlowBranching.BranchingType.Loop, loc);
 				ec.CurrentBranching.CreateSibling ();
 
-				variable.local_info.Type = conv.Type;
+				for_each.variable.Type = conv.Type;
+				variable = new LocalVariableReference (for_each.variable, loc);
 				variable.Resolve (ec);
 
 				ec.StartFlowBranching (FlowBranching.BranchingType.Embedded, loc);

@@ -133,4 +133,41 @@ namespace MonoDevelop.Platform
 			return new MonoDevelop.Platform.WindowsRecentFiles ();
 		}
 	}
+	
+	static class GdkWin32
+	{
+		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll")]
+		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
+		
+		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll")]
+		static extern IntPtr gdk_win32_hdc_get (IntPtr drawable, IntPtr gc, int usage);
+
+		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll")]
+		static extern void gdk_win32_hdc_release (IntPtr drawable, IntPtr gc, int usage);
+		
+		public static IntPtr HgdiobjGet (Gdk.Drawable drawable)
+		{
+			return gdk_win32_drawable_get_handle (drawable.Handle);
+		}
+		
+		public static IntPtr HdcGet (Gdk.Drawable drawable, Gdk.GC gc, Gdk.GCValuesMask usage)
+		{
+			return gdk_win32_hdc_get (drawable.Handle, gc.Handle, (int) usage);
+		}
+		
+		public static void HdcRelease (Gdk.Drawable drawable, Gdk.GC gc, Gdk.GCValuesMask usage)
+		{
+			gdk_win32_hdc_release (drawable.Handle, gc.Handle, (int) usage);
+		}
+	}
+	
+	class GtkWin32Proxy : IWin32Window
+	{
+		public GtkWin32Proxy (Gtk.Window gtkWindow)
+		{
+			Handle = GdkWin32.HgdiobjGet (gtkWindow.RootWindow);
+		}
+		
+		public IntPtr Handle { get; private set; }
+	}
 }

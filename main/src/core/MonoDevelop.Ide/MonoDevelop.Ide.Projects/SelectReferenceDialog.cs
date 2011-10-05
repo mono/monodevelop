@@ -52,8 +52,8 @@ namespace MonoDevelop.Ide.Projects
 	{
 		ListStore refTreeStore;
 		
-		GacReferencePanel gacRefPanel;
-		GacReferencePanel allRefPanel;
+		PackageReferencePanel packageRefPanel;
+		PackageReferencePanel allRefPanel;
 		ProjectReferencePanel projectRefPanel;
 		AssemblyReferencePanel assemblyRefPanel;
 		DotNetProject configureProject;
@@ -115,8 +115,8 @@ namespace MonoDevelop.Ide.Projects
 					return AddAssemplyReference (refInfo);
 				case ReferenceType.Project:
 					return AddProjectReference (refInfo);
-				case ReferenceType.Gac:
-					return AddGacReference (refInfo);
+				case ReferenceType.Package:
+					return AddPackageReference (refInfo);
 				default:
 					return TreeIter.Zero;
 			}
@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Projects
 			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetPixbuf ("md-project", IconSize.Dnd));
 		}
 
-		TreeIter AddGacReference (ProjectReference refInfo)
+		TreeIter AddPackageReference (ProjectReference refInfo)
 		{
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference));
 			int i = refInfo.Reference.IndexOf (',');
@@ -176,11 +176,11 @@ namespace MonoDevelop.Ide.Projects
 //			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Location"), new CellRendererText (), "text", LocationColumn);
 			
 			projectRefPanel = new ProjectReferencePanel (this);
-			gacRefPanel = new GacReferencePanel (this, false);
-			allRefPanel = new GacReferencePanel (this, true);
+			packageRefPanel = new PackageReferencePanel (this, false);
+			allRefPanel = new PackageReferencePanel (this, true);
 			assemblyRefPanel = new AssemblyReferencePanel (this);
 			panels.Add (allRefPanel);
-			panels.Add (gacRefPanel);
+			panels.Add (packageRefPanel);
 			panels.Add (projectRefPanel);
 			panels.Add (assemblyRefPanel);
 			
@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.Projects
 			tab.PackStart (new Label (GettextCatalog.GetString ("_Packages")), true, true, 0);
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
-			mainBook.AppendPage (gacRefPanel, tab);
+			mainBook.AppendPage (packageRefPanel, tab);
 			
 			tab = new HBox (false, 3);
 //			tab.PackStart (new Image (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Project, IconSize.Menu)), false, false, 0);
@@ -321,7 +321,7 @@ namespace MonoDevelop.Ide.Projects
 		string GetTypeText (ProjectReference pref)
 		{
 			switch (pref.ReferenceType) {
-				case ReferenceType.Gac: return GettextCatalog.GetString ("Package");
+				case ReferenceType.Package: return GettextCatalog.GetString ("Package");
 				case ReferenceType.Assembly: return GettextCatalog.GetString ("Assembly");
 				case ReferenceType.Project: return GettextCatalog.GetString ("Project");
 				default: return "";

@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
 using System.IO;
 using NGit;
 using NGit.Api;
@@ -71,6 +72,14 @@ namespace NGit.Api
 
 		private CredentialsProvider credentialsProvider;
 
+		private int timeout;
+
+		private bool cloneAllBranches;
+
+		private bool noCheckout;
+
+		private ICollection<string> branchesToClone;
+
 		/// <summary>
 		/// Executes the
 		/// <code>Clone</code>
@@ -90,7 +99,10 @@ namespace NGit.Api
 				URIish u = new URIish(uri);
 				Repository repository = Init(u);
 				FetchResult result = Fetch(repository, u);
-				Checkout(repository, result);
+				if (!noCheckout)
+				{
+					Checkout(repository, result);
+				}
 				return new Git(repository);
 			}
 			catch (IOException ioe)
@@ -128,28 +140,54 @@ namespace NGit.Api
 			// create the remote config and save it
 			RemoteConfig config = new RemoteConfig(repo.GetConfig(), remote);
 			config.AddURI(u);
-			string dst = Constants.R_REMOTES + config.Name;
+			string dst = bare ? Constants.R_HEADS : Constants.R_REMOTES + config.Name;
 			RefSpec refSpec = new RefSpec();
 			refSpec = refSpec.SetForceUpdate(true);
 			refSpec = refSpec.SetSourceDestination(Constants.R_HEADS + "*", dst + "/*");
 			//$NON-NLS-1$ //$NON-NLS-2$
 			config.AddFetchRefSpec(refSpec);
 			config.Update(repo.GetConfig());
-			repo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branch, ConfigConstants
-				.CONFIG_KEY_REMOTE, remote);
-			repo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branch, ConfigConstants
-				.CONFIG_KEY_MERGE, branch);
 			repo.GetConfig().Save();
 			// run the fetch command
 			FetchCommand command = new FetchCommand(repo);
 			command.SetRemote(remote);
 			command.SetProgressMonitor(monitor);
 			command.SetTagOpt(TagOpt.FETCH_TAGS);
+			command.SetTimeout(timeout);
 			if (credentialsProvider != null)
 			{
 				command.SetCredentialsProvider(credentialsProvider);
 			}
+			IList<RefSpec> specs = CalculateRefSpecs(dst);
+			command.SetRefSpecs(specs);
 			return command.Call();
+		}
+
+		private IList<RefSpec> CalculateRefSpecs(string dst)
+		{
+			RefSpec wcrs = new RefSpec();
+			wcrs = wcrs.SetForceUpdate(true);
+			wcrs = wcrs.SetSourceDestination(Constants.R_HEADS + "*", dst + "/*");
+			//$NON-NLS-1$ //$NON-NLS-2$
+			IList<RefSpec> specs = new AList<RefSpec>();
+			if (cloneAllBranches)
+			{
+				specs.AddItem(wcrs);
+			}
+			else
+			{
+				if (branchesToClone != null && branchesToClone.Count > 0)
+				{
+					foreach (string selectedRef in branchesToClone)
+					{
+						if (wcrs.MatchSource(selectedRef))
+						{
+							specs.AddItem(wcrs.ExpandFromSource(selectedRef));
+						}
+					}
+				}
+			}
+			return specs;
 		}
 
 		/// <exception cref="NGit.Api.Errors.JGitInternalException"></exception>
@@ -158,20 +196,29 @@ namespace NGit.Api
 		/// <exception cref="System.IO.IOException"></exception>
 		private void Checkout(Repository repo, FetchResult result)
 		{
-			if (branch.StartsWith(Constants.R_HEADS))
+			Ref head = result.GetAdvertisedRef(branch);
+			if (branch.Equals(Constants.HEAD))
 			{
-				RefUpdate head = repo.UpdateRef(Constants.HEAD);
-				head.DisableRefLog();
-				head.Link(branch);
+				Ref foundBranch = FindBranchToCheckout(result);
+				if (foundBranch != null)
+				{
+					head = foundBranch;
+				}
 			}
-			Ref head_1 = result.GetAdvertisedRef(branch);
-			if (head_1 == null || head_1.GetObjectId() == null)
+			if (head == null || head.GetObjectId() == null)
 			{
 				return;
 			}
 			// throw exception?
-			RevCommit commit = ParseCommit(repo, head_1);
-			bool detached = !head_1.GetName().StartsWith(Constants.R_HEADS);
+			if (head.GetName().StartsWith(Constants.R_HEADS))
+			{
+				RefUpdate newHead = repo.UpdateRef(Constants.HEAD);
+				newHead.DisableRefLog();
+				newHead.Link(head.GetName());
+				AddMergeConfig(repo, head);
+			}
+			RevCommit commit = ParseCommit(repo, head);
+			bool detached = !head.GetName().StartsWith(Constants.R_HEADS);
 			RefUpdate u = repo.UpdateRef(Constants.HEAD, detached);
 			u.SetNewObjectId(commit.Id);
 			u.ForceUpdate();
@@ -181,6 +228,41 @@ namespace NGit.Api
 				DirCacheCheckout co = new DirCacheCheckout(repo, dc, commit.Tree);
 				co.Checkout();
 			}
+		}
+
+		private Ref FindBranchToCheckout(FetchResult result)
+		{
+			Ref foundBranch = null;
+			Ref idHEAD = result.GetAdvertisedRef(Constants.HEAD);
+			foreach (Ref r in result.GetAdvertisedRefs())
+			{
+				string n = r.GetName();
+				if (!n.StartsWith(Constants.R_HEADS))
+				{
+					continue;
+				}
+				if (idHEAD == null)
+				{
+					continue;
+				}
+				if (r.GetObjectId().Equals(idHEAD.GetObjectId()))
+				{
+					foundBranch = r;
+					break;
+				}
+			}
+			return foundBranch;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private void AddMergeConfig(Repository repo, Ref head)
+		{
+			string branchName = Repository.ShortenRefName(head.GetName());
+			repo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants
+				.CONFIG_KEY_REMOTE, remote);
+			repo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants
+				.CONFIG_KEY_MERGE, head.GetName());
+			repo.GetConfig().Save();
 		}
 
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
@@ -279,6 +361,61 @@ namespace NGit.Api
 			)
 		{
 			this.credentialsProvider = credentialsProvider;
+			return this;
+		}
+
+		/// <param name="timeout">the timeout used for the fetch step</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual CloneCommand SetTimeout(int timeout)
+		{
+			this.timeout = timeout;
+			return this;
+		}
+
+		/// <param name="cloneAllBranches">
+		/// true when all branches have to be fetched (indicates wildcard
+		/// in created fetch refspec), false otherwise.
+		/// </param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual CloneCommand SetCloneAllBranches(bool cloneAllBranches)
+		{
+			this.cloneAllBranches = cloneAllBranches;
+			return this;
+		}
+
+		/// <param name="branchesToClone">
+		/// collection of branches to clone. Ignored when allSelected is
+		/// true.
+		/// </param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual CloneCommand SetBranchesToClone(ICollection<string> branchesToClone
+			)
+		{
+			this.branchesToClone = branchesToClone;
+			return this;
+		}
+
+		/// <param name="noCheckout">
+		/// if set to <code>true</code> no branch will be checked out
+		/// after the clone. This enhances performance of the clone
+		/// command when there is no need for a checked out branch.
+		/// </param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual CloneCommand SetNoCheckout(bool noCheckout)
+		{
+			this.noCheckout = noCheckout;
 			return this;
 		}
 	}
