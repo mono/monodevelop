@@ -46,8 +46,6 @@ namespace Mono.TextEditor.Theatrics
 		{
 			if (!IsComposited)
 				throw new InvalidOperationException ("Only works with composited screen. Check Widget.IsComposited.");
-			if (editor == null)
-				throw new ArgumentNullException ("Editor");
 			DoubleBuffered = true;
 			Decorated = false;
 			BorderWidth = 0;
