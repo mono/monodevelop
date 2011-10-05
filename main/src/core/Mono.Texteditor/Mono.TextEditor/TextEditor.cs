@@ -513,6 +513,12 @@ namespace Mono.TextEditor
 					OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 				}
 			}
+			
+			//the IME can commit while there's still a pre-edit string
+			//since we cached the pre-edit offset when it started, need to update it
+			if (preeditOffset > -1) {
+				preeditOffset = Caret.Offset;
+			}
 		}
 		
 		protected override bool OnFocusInEvent (EventFocus evnt)
