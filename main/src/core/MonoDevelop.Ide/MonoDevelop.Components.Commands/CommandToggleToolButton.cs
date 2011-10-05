@@ -37,6 +37,7 @@ namespace MonoDevelop.Components.Commands
 		object commandId;
 		bool updating;
 		object initialTarget;
+		string lastDesc;
 		
 		public CommandToggleToolButton (object commandId, CommandManager commandManager): base ("")
 		{
@@ -77,15 +78,35 @@ namespace MonoDevelop.Components.Commands
 		void Update (CommandInfo cmdInfo)
 		{
 			updating = true;
-			Label = cmdInfo.Text;
+			if (Active != cmdInfo.Checked)
+				Active = cmdInfo.Checked;
+			updating = false;
+			
+			//same as CommandToolButton
+			//only update each if changed, else we grab focus from tooltips during the command scane
+			if (lastDesc != cmdInfo.Description) {
+				string toolTip;
+				if (string.IsNullOrEmpty (cmdInfo.AccelKey)) {
+					toolTip = cmdInfo.Description;
+				} else {
+					toolTip = cmdInfo.Description + " (" + KeyBindingManager.BindingToDisplayLabel (cmdInfo.AccelKey, false) + ")";
+				}
+				TooltipText = toolTip;
+				lastDesc = cmdInfo.Description;
+			}
+			
+			if (Label != cmdInfo.Text)
+				Label = cmdInfo.Text;
 			if (cmdInfo.Icon != stockId) {
 				stockId = cmdInfo.Icon;
 				this.IconWidget = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}
-			Sensitive = cmdInfo.Enabled;
-			Visible = cmdInfo.Visible;
-			Active = cmdInfo.Checked;
-			updating = false;
+			if (cmdInfo.Enabled != Sensitive)
+				Sensitive = cmdInfo.Enabled;
+			if (cmdInfo.Visible != Visible)
+				Visible = cmdInfo.Visible;
+			if (cmdInfo.Icon.IsNull)
+				IsImportant = true;
 		}
 	}
 }
