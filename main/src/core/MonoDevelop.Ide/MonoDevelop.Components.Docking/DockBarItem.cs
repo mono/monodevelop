@@ -58,15 +58,8 @@ namespace MonoDevelop.Components.Docking
 			UpdateTab ();
 			lastFrameSize = bar.Frame.Allocation.Size;
 			bar.Frame.SizeAllocated += HandleBarFrameSizeAllocated;
-			bar.Frame.ButtonPressEvent += HandleBarFrameButtonPressEvent;
 		}
 		
-		[GLib.ConnectBeforeAttribute]
-		void HandleBarFrameButtonPressEvent (object o, ButtonPressEventArgs args)
-		{
-			AutoHide (true);
-		}
-
 		void HandleBarFrameSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			if (!lastFrameSize.Equals (args.Allocation.Size)) {
@@ -80,7 +73,6 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.OnDestroyed ();
 			bar.Frame.SizeAllocated -= HandleBarFrameSizeAllocated;
-			bar.Frame.ButtonPressEvent -= HandleBarFrameButtonPressEvent;
 		}
 		
 		
