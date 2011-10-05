@@ -124,8 +124,7 @@ namespace MonoDevelop.Projects.Dom
 				StringBuilder result = new StringBuilder ();
 				result.Append ("P:");
 				if (this.IsIndexer) {
-					if (DeclaringType != null)
-						result.Append (DeclaringType.FullName);
+					result.Append (DeclaringType.FullName);
 					result.Append (".Item");
 					DomMethod.AppendHelpParameterList (result, this.Parameters);
 				} else {
