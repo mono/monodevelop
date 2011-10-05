@@ -196,7 +196,7 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			string fileName = data.Document.FileName;
 			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
+			if (doc == null || doc.Editor == null)
 				return null;
 			
 			IParser parser = ProjectDomService.GetParser (fileName);

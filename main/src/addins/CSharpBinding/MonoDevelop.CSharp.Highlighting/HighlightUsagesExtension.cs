@@ -136,7 +136,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return false;
 				
 				string expression = textEditorData.Document.GetTextBetween (start, end);
-				ResolveResult resolveResult = textEditorResolver.GetLanguageItem (caretOffset, expression);
+				var resolveResult = textEditorResolver.GetLanguageItem (caretOffset, expression);
 				if (resolveResult == null)
 					return false;
 				if (resolveResult is AggregatedResolveResult) {
