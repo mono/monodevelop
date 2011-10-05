@@ -4,8 +4,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe \
-	$(top_builddir)/contrib/ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -14,6 +13,7 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
+	-r:../../../contrib/ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
