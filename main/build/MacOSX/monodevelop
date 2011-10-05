@@ -3,7 +3,7 @@
 # Author: Marc Christensen (mchristensen@novell.com)
 #         Michael Hutchinson (mhutchinson@novell.com)
 
-MONODEVELOP_MAJOR_VERSION=2.7
+MONODEVELOP_MAJOR_VERSION=2.8
 
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH"
