@@ -302,7 +302,7 @@ namespace Mono.TextEditor
 		public static bool CancelPreEditMode (TextEditorData data)
 		{
 			var editor = data.Parent;
-			if (editor != null && editor.preeditOffset >= 0) {
+			if (editor != null && !string.IsNullOrEmpty (editor.preeditString)) {
 				editor.ResetIMContext ();
 				return true;
 			}
