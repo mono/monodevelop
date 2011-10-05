@@ -2430,7 +2430,7 @@ namespace Mono.TextEditor
 			}
 			string lineText = textBuilder.ToString ();
 			char[] lineChars = lineText.ToCharArray ();
-			bool containsPreedit = lineOffset <= textEditor.preeditOffset && textEditor.preeditOffset <= lineOffset + line.EditableLength;
+			bool containsPreedit = textEditor.preeditString != null;
 			uint preeditLength = 0;
 
 			if (containsPreedit) {
