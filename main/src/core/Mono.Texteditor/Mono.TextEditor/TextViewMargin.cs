@@ -1128,13 +1128,7 @@ namespace Mono.TextEditor
 				if (containsPreedit) {
 					var si = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
 					var ei = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset + preeditLength), ref curIndex, ref byteIndex);
-					atts.AddUnderlineAttribute (Pango.Underline.Single, si, ei);
-					
-					var parser = Document.SyntaxMode.CreateSpanParser (Document, Document.SyntaxMode, line, line.StartSpan);
-					
-					parser.ParseSpans (line.Offset, textEditor.preeditOffset);
-					var preEditColor = parser.CurSpan != null ? ColorStyle.GetChunkStyle (parser.CurSpan.Color).Color : ColorStyle.Default.Color;
-					atts.AddForegroundAttribute (preEditColor, si, ei);
+					atts.Splice (textEditor.preeditAttrs, (int)si, (int)(ei - si));
 				}
 				wrapper.LineChars = lineChars;
 				wrapper.Layout.SetText (lineText);

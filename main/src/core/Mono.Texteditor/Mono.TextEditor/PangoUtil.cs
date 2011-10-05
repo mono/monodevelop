@@ -151,6 +151,14 @@ namespace Mono.TextEditor
 		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern void pango_layout_set_attributes (IntPtr layout, IntPtr attrList);
 		
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
+		static extern void pango_attr_list_splice (IntPtr attr_list, IntPtr other, Int32 pos, Int32 len);
+		
+		public void Splice (Pango.AttrList attrs, int pos, int len)
+		{
+			pango_attr_list_splice (list, attrs.Handle, pos, len);
+		}
+		
 		public void AssignTo (Pango.Layout layout)
 		{
 			pango_layout_set_attributes (layout.Handle, list);
