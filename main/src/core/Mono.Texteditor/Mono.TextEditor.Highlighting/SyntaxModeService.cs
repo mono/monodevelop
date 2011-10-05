@@ -321,7 +321,11 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void WaitUpdate (Document doc)
 		{
-			foreach (UpdateWorker worker in updateQueue.ToArray ()) {
+			UpdateWorker[] arr;
+			lock (updateQueue) {
+				arr = updateQueue.ToArray ();
+			}
+			foreach (UpdateWorker worker in arr) {
 				try {
 					if (worker != null && worker.Doc == doc)
 						worker.ManualResetEvent.WaitOne ();
