@@ -110,6 +110,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsOnTheFlyFormatting)
 				throw new InvalidOperationException ("On the fly formatting not supported");
+			if (startOffset >= endOffset)
+				return;
 			adv.OnTheFlyFormat (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain,
 				data, startOffset, endOffset);
 		}
