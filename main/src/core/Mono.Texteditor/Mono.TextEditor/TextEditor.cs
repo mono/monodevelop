@@ -378,7 +378,8 @@ namespace Mono.TextEditor
 			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos);
 			if (!string.IsNullOrEmpty (preeditString)) {
 				//FIXME: respect UTF16 surrogates in cursor pos
-				preeditCursorPos = Math.Max (0, Math.Min (preeditString.Length, preeditCursorPos));
+				//argh, mcs explodes if you use (System.)Math in a Mono namespace
+				preeditCursorPos = System.Math.Max (0, System.Math.Min (preeditString.Length, preeditCursorPos));
 				if (preeditOffset < 0) {
 					preeditOffset = Caret.Offset;
 					preeditLine = Caret.Line;
