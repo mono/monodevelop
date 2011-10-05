@@ -647,7 +647,7 @@ namespace MonoDevelop.Ide
 		
 		public WorkspaceItem AddWorkspaceItem (Workspace parentWorkspace, string itemFileName)
 		{
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				WorkspaceItem it = Services.ProjectService.ReadWorkspaceItem (monitor, itemFileName);
 				if (it != null) {
 					parentWorkspace.Items.Add (it);
@@ -700,7 +700,7 @@ namespace MonoDevelop.Ide
 				AddingEntryToCombine (this, args);
 			if (args.Cancel)
 				return null;
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				return folder.AddItem (monitor, args.FileName, true);
 			}
 		}
