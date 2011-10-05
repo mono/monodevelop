@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ObservableAstVisitor.cs
 //  
 // Author:
@@ -673,12 +673,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public event Action<YieldReturnStatement, T> YieldReturnStatementVisited;
 
-		S IAstVisitor<T, S>.VisitYieldReturnStatement (YieldReturnStatement YieldReturnStatement, T data)
+		S IAstVisitor<T, S>.VisitYieldReturnStatement (YieldReturnStatement yieldStatement, T data)
 		{
 			var handler = YieldReturnStatementVisited;
 			if (handler != null)
-				handler (YieldReturnStatement, data);
-			return VisitChildren (YieldReturnStatement, data);
+				handler (yieldStatement, data);
+			return VisitChildren (yieldStatement, data);
 		}
 		
 		public event Action<AnonymousMethodExpression, T> AnonymousMethodExpressionVisited;

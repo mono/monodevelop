@@ -28,12 +28,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-<<<<<<< HEAD
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
-=======
-using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp.Resolver;
->>>>>>> master
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -133,20 +128,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 	}
 	
-<<<<<<< HEAD
 	public static class RefactoringExtensions
-=======
-	public static class ExtensionMethods
->>>>>>> master
 	{
 		#region ConvertTypes
 		public static ICSharpCode.NRefactory.CSharp.AstType ConvertToAstType (this IType type)
 		{
-<<<<<<< HEAD
 			var builder = new TypeSystemAstBuilder (MinimalResolveContext.Instance);
-=======
-			var builder = new TypeSystemAstBuilder ();
->>>>>>> master
 			return builder.ConvertType (type);
 		}
 		#endregion

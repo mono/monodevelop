@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
-		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
+		static readonly ResolveResult errorResult = ErrorResolveResult.UnknownError;
 		static readonly ResolveResult transparentIdentifierResolveResult = new ResolveResult(SharedTypes.UnboundTypeArgument);
 		readonly ResolveResult voidResult;
 		
@@ -313,7 +313,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void ResolveAndProcessConversion(Expression expr, IType targetType)
 		{
-			if (targetType.Kind == TypeKind.Unknown) {
+			if (targetType.Kind == TypeKind.Unknown || targetType.Kind == TypeKind.Void) {
 				// no need to resolve the expression right now
 				Scan(expr);
 			} else {
@@ -604,7 +604,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitVariableInitializer(VariableInitializer variableInitializer, object data)
 		{
-			if (resolverEnabled) {
+			ArrayInitializerExpression aie = variableInitializer.Initializer as ArrayInitializerExpression;
+			if (resolverEnabled || aie != null) {
 				ResolveResult result = errorResult;
 				if (variableInitializer.Parent is FieldDeclaration || variableInitializer.Parent is EventDeclaration) {
 					if (resolver.CurrentMember != null) {
@@ -620,7 +621,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				}
-				ArrayInitializerExpression aie = variableInitializer.Initializer as ArrayInitializerExpression;
 				ArrayType arrayType = result.Type as ArrayType;
 				if (aie != null && arrayType != null) {
 					StoreState(aie, resolver.Clone());
@@ -1619,7 +1619,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return HandleExplicitlyTypedLambda(
 				anonymousMethodExpression.Parameters, anonymousMethodExpression.Body,
 				isAnonymousMethod: true,
-				hasParameterList: anonymousMethodExpression.HasParameterList);
+				hasParameterList: anonymousMethodExpression.HasParameterList,
+				isAsync: anonymousMethodExpression.IsAsync);
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
@@ -1634,7 +1635,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (isExplicitlyTyped || !isImplicitlyTyped) {
 				return HandleExplicitlyTypedLambda(
 					lambdaExpression.Parameters, lambdaExpression.Body,
-					isAnonymousMethod: false, hasParameterList: true);
+					isAnonymousMethod: false, hasParameterList: true, isAsync: lambdaExpression.IsAsync);
 			} else {
 				return new ImplicitlyTypedLambda(lambdaExpression, this);
 			}
@@ -1643,7 +1644,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Explicitly typed
 		ExplicitlyTypedLambda HandleExplicitlyTypedLambda(
 			AstNodeCollection<ParameterDeclaration> parameterDeclarations,
-			AstNode body, bool isAnonymousMethod, bool hasParameterList)
+			AstNode body, bool isAnonymousMethod, bool hasParameterList, bool isAsync)
 		{
 			List<IParameter> parameters = new List<IParameter>();
 			resolver.PushLambdaBlock();
@@ -1659,7 +1660,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Scan(pd);
 			}
 			
-			var lambda = new ExplicitlyTypedLambda(parameters, isAnonymousMethod, resolver.Clone(), this, body);
+			var lambda = new ExplicitlyTypedLambda(parameters, isAnonymousMethod, isAsync, resolver.Clone(), this, body);
 			
 			// Don't scan the lambda body here - we'll do that later when analyzing the ExplicitlyTypedLambda.
 			
@@ -1676,6 +1677,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			readonly IList<IParameter> parameters;
 			readonly bool isAnonymousMethod;
+			readonly bool isAsync;
 			
 			CSharpResolver storedContext;
 			ResolveVisitor visitor;
@@ -1702,10 +1704,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return body; }
 			}
 			
-			public ExplicitlyTypedLambda(IList<IParameter> parameters, bool isAnonymousMethod, CSharpResolver storedContext, ResolveVisitor visitor, AstNode body)
+			public ExplicitlyTypedLambda(IList<IParameter> parameters, bool isAnonymousMethod, bool isAsync, CSharpResolver storedContext, ResolveVisitor visitor, AstNode body)
 			{
 				this.parameters = parameters;
 				this.isAnonymousMethod = isAnonymousMethod;
+				this.isAsync = isAsync;
 				this.storedContext = storedContext;
 				this.visitor = visitor;
 				this.body = body;
@@ -1734,7 +1737,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						delegate {
 							var oldNavigator = visitor.navigator;
 							visitor.navigator = new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Resolve, oldNavigator);
-							visitor.AnalyzeLambda(body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
+							visitor.AnalyzeLambda(body, isAsync, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
 							visitor.navigator = oldNavigator;
 						});
 					Log.Unindent();
@@ -1750,7 +1753,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				Log.WriteLine("Testing validity of {0} for return-type {1}...", this, returnType);
 				Log.Indent();
-				bool valid = Analyze() && IsValidLambda(isValidAsVoidMethod, returnValues, returnType, conversions);
+				bool valid = Analyze() && IsValidLambda(isValidAsVoidMethod, isAsync, returnValues, returnType, conversions);
 				Log.Unindent();
 				Log.WriteLine("{0} is {1} for return-type {2}", this, valid ? "valid" : "invalid", returnType);
 				if (valid) {
@@ -1768,6 +1771,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override bool IsImplicitlyTyped {
 				get { return false; }
+			}
+			
+			public override bool IsAsync {
+				get { return isAsync; }
 			}
 			
 			public override bool IsAnonymousMethod {
@@ -1800,6 +1807,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				visitor.undecidedLambdas.Remove(this);
 				Analyze();
 				Log.WriteLine("Applying return type {0} to explicitly-typed lambda {1}", returnType, this.LambdaExpression);
+				if (isAsync)
+					returnType = parentVisitor.UnpackTask(returnType);
 				for (int i = 0; i < returnExpressions.Count; i++) {
 					visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
 				}
@@ -1976,6 +1985,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return true; }
 			}
 			
+			public override bool IsAsync {
+				get { return lambda != null && lambda.IsAsync; }
+			}
+			
 			public override string ToString()
 			{
 				return "[ImplicitlyTypedLambda " + this.LambdaExpression + "]";
@@ -2030,7 +2043,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				visitor.AnalyzeLambda(lambda.Body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
+				visitor.AnalyzeLambda(lambda.Body, lambda.IsAsync, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
 				visitor.resolver.PopBlock();
 				Log.Unindent();
 				Log.WriteLine("Finished analyzing " + ToString());
@@ -2048,7 +2061,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public Conversion IsValid(IType returnType, Conversions conversions)
 			{
-				if (success && IsValidLambda(isValidAsVoidMethod, returnValues, returnType, conversions)) {
+				if (success && IsValidLambda(isValidAsVoidMethod, lambda.IsAsync, returnValues, returnType, conversions)) {
 					return Conversion.AnonymousFunctionConversion(new AnonymousFunctionConversionData(returnType, this));
 				} else {
 					return Conversion.None;
@@ -2069,6 +2082,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				lambda.winningHypothesis = this;
 				
+				Log.WriteLine("Applying return type {0} to implicitly-typed lambda {1}", returnType, lambda.LambdaExpression);
+				if (lambda.IsAsync)
+					returnType = parentVisitor.UnpackTask(returnType);
 				for (int i = 0; i < returnExpressions.Count; i++) {
 					visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
 				}
@@ -2159,7 +2175,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region AnalyzeLambda
-		void AnalyzeLambda(AstNode body, out bool success, out bool isValidAsVoidMethod, out IType inferredReturnType, out IList<Expression> returnExpressions, out IList<ResolveResult> returnValues)
+		IType GetTaskType(IType resultType)
+		{
+			if (resultType.Kind == TypeKind.Unknown)
+				return SharedTypes.UnknownType;
+			if (resultType.Kind == TypeKind.Void)
+				return resolver.Context.GetTypeDefinition("System.Threading.Tasks", "Task", 0, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
+			
+			ITypeDefinition def = resolver.Context.GetTypeDefinition("System.Threading.Tasks", "Task", 1, StringComparer.Ordinal);
+			if (def != null)
+				return new ParameterizedType(def, new[] { resultType });
+			else
+				return SharedTypes.UnknownType;
+		}
+		
+		void AnalyzeLambda(AstNode body, bool isAsync, out bool success, out bool isValidAsVoidMethod, out IType inferredReturnType, out IList<Expression> returnExpressions, out IList<ResolveResult> returnValues)
 		{
 			Expression expr = body as Expression;
 			if (expr != null) {
@@ -2190,6 +2220,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// so we can ignore the 'tiSuccess' value
 				}
 			}
+			if (isAsync)
+				inferredReturnType = GetTaskType(inferredReturnType);
 			Log.WriteLine("Lambda return type was inferred to: " + inferredReturnType);
 			// TODO: check for compiler errors within the lambda body
 			
@@ -2216,19 +2248,60 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				|| expr is AssignmentExpression;
 		}
 		
-		static bool IsValidLambda(bool isValidAsVoidMethod, IList<ResolveResult> returnValues, IType returnType, Conversions conversions)
+		static bool IsValidLambda(bool isValidAsVoidMethod, bool isAsync, IList<ResolveResult> returnValues, IType returnType, Conversions conversions)
 		{
 			if (returnType.Kind == TypeKind.Void) {
+				// Lambdas that are valid statement lambdas or expression lambdas with a statement-expression
+				// can be converted to delegates with void return type.
+				// This holds for both async and regular lambdas.
+				return isValidAsVoidMethod;
+			} else if (isAsync && IsTask(returnType) && returnType.TypeParameterCount == 0) {
+				// Additionally, async lambdas with the above property can be converted to non-generic Task.
 				return isValidAsVoidMethod;
 			} else {
 				if (returnValues.Count == 0)
 					return false;
+				if (isAsync) {
+					// async lambdas must return Task<T>
+					if (!(IsTask(returnType) && returnType.TypeParameterCount == 1))
+						return false;
+					// unpack Task<T> for testing the implicit conversions
+					returnType = ((ParameterizedType)returnType).GetTypeArgument(0);
+				}
 				foreach (ResolveResult returnRR in returnValues) {
 					if (!conversions.ImplicitConversion(returnRR, returnType))
 						return false;
 				}
 				return true;
 			}
+		}
+		
+		/// <summary>
+		/// Gets the T in Task&lt;T&gt;.
+		/// Returns void for non-generic Task.
+		/// </summary>
+		IType UnpackTask(IType type)
+		{
+			if (!IsTask(type))
+				return type;
+			if (type.TypeParameterCount == 0)
+				return KnownTypeReference.Void.Resolve(resolver.Context);
+			else
+				return ((ParameterizedType)type).GetTypeArgument(0);
+		}
+		
+		/// <summary>
+		/// Gets whether the specified type is Task or Task&lt;T&gt;.
+		/// </summary>
+		static bool IsTask(IType type)
+		{
+			if (type.Kind == TypeKind.Class && type.Name == "Task" && type.Namespace == "System.Threading.Tasks") {
+				if (type.TypeParameterCount == 0)
+					return true;
+				if (type.TypeParameterCount == 1)
+					return type is ParameterizedType;
+			}
+			return false;
 		}
 		
 		sealed class AnalyzeLambdaVisitor : DepthFirstAstVisitor<object, object>
@@ -2459,14 +2532,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			if (resolverEnabled && !resolver.IsWithinLambdaExpression && resolver.CurrentMember != null) {
-				ResolveAndProcessConversion(returnStatement.Expression, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+				IType type = resolver.CurrentMember.ReturnType.Resolve(resolver.Context);
+				if (IsTask(type)) {
+					var methodDecl = returnStatement.Ancestors.OfType<AttributedNode>().FirstOrDefault();
+					if (methodDecl != null && (methodDecl.Modifiers & Modifiers.Async) == Modifiers.Async)
+						type = UnpackTask(type);
+				}
+				ResolveAndProcessConversion(returnStatement.Expression, type);
 			} else {
 				Scan(returnStatement.Expression);
 			}
 			return voidResult;
 		}
 		
-		ResolveResult IAstVisitor<object, ResolveResult>.VisitYieldStatement(YieldStatement yieldStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitYieldReturnStatement(YieldReturnStatement yieldStatement, object data)
 		{
 			if (resolverEnabled && resolver.CurrentMember != null) {
 				IType returnType = resolver.CurrentMember.ReturnType.Resolve(resolver.Context);
@@ -2828,6 +2907,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				} else {
 					return Conversion.None;
 				}
+			}
+			
+			public override bool IsAsync {
+				get { return false; }
 			}
 			
 			public override bool IsImplicitlyTyped {

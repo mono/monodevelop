@@ -100,8 +100,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Gets the methods that were found.
+		/// Gets the methods that were found, grouped by their declaring type.
 		/// This list does not include extension methods.
+		/// Base types come first in the list.
 		/// </summary>
 		public IEnumerable<MethodListWithDeclaringType> MethodsGroupedByDeclaringType {
 			get { return methodLists; }

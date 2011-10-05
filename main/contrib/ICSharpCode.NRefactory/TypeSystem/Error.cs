@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 ﻿// 
-=======
-// 
->>>>>>> master
 // Error.cs
 //  
 // Author:
@@ -29,10 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-<<<<<<< HEAD
-=======
-using ICSharpCode.NRefactory.CSharp;
->>>>>>> master
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -49,7 +41,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Descibes an error during parsing.
 	/// </summary>
-<<<<<<< HEAD
 	[Serializable]
 	public class Error
 	{
@@ -61,32 +52,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// The type of the error.
 		/// </summary>
 		public ErrorType ErrorType { get { return errorType; } }
-=======
-	public class Error
-	{
-		/// <summary>
-		/// The type of the error.
-		/// </summary>
-		public ErrorType ErrorType { get; private set; }
->>>>>>> master
 		
 		/// <summary>
 		/// The error description.
 		/// </summary>
-<<<<<<< HEAD
 		public string Message { get { return message; } }
-=======
-		public string Message { get; private set; }
->>>>>>> master
 		
 		/// <summary>
 		/// The region of the error.
 		/// </summary>
-<<<<<<< HEAD
 		public DomRegion Region { get { return region; } }
-=======
-		public DomRegion Region { get; private set; }
->>>>>>> master
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
@@ -102,15 +77,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </param>
 		public Error (ErrorType errorType, string message, DomRegion region)
 		{
-<<<<<<< HEAD
 			this.errorType = errorType;
 			this.message = message;
 			this.region = region;
-=======
-			this.ErrorType = errorType;
-			this.Message = message;
-			this.Region = region;
->>>>>>> master
 		}
 		
 		/// <summary>
@@ -125,19 +94,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name='location'>
 		/// The location of the error.
 		/// </param>
-<<<<<<< HEAD
 		public Error (ErrorType errorType, string message, TextLocation location)
 		{
 			this.errorType = errorType;
 			this.message = message;
 			this.region = new DomRegion (location, location);
-=======
-		public Error (ErrorType errorType, string message, AstLocation location)
-		{
-			this.ErrorType = errorType;
-			this.Message = message;
-			this.Region = new DomRegion (location, location);
->>>>>>> master
 		}
 		
 		/// <summary>
@@ -155,11 +116,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name='col'>
 		/// The column of the error.
 		/// </param>
-<<<<<<< HEAD
 		public Error (ErrorType errorType, string message, int line, int col) : this (errorType, message, new TextLocation (line, col))
-=======
-		public Error (ErrorType errorType, string message, int line, int col) : this (errorType, message, new AstLocation (line, col))
->>>>>>> master
 		{
 		}
 		
@@ -174,15 +131,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </param>
 		public Error (ErrorType errorType, string message)
 		{
-<<<<<<< HEAD
 			this.errorType = errorType;
 			this.message = message;
 			this.region = DomRegion.Empty;
-=======
-			this.ErrorType = errorType;
-			this.Message = message;
-			this.Region = DomRegion.Empty;
->>>>>>> master
 		}
 	}
 }

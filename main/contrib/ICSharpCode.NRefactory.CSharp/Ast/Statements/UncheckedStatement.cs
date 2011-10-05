@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChild (body, Roles.Body);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitUncheckedStatement (this, data);
 		}

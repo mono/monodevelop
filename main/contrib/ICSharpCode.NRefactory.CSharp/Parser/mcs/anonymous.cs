@@ -1157,9 +1157,6 @@ namespace Mono.CSharp {
 					}
 				} else {
 					if (is_async) {
-<<<<<<< HEAD
-						AsyncInitializer.Create (ec, body.Block, body.Parameters, ec.CurrentMemberDefinition.Parent, body.ReturnType, loc);
-=======
 						var rt = body.ReturnType;
 						if (rt.Kind != MemberKind.Void &&
 							rt != ec.Module.PredefinedTypes.Task.TypeSpec &&
@@ -1169,7 +1166,6 @@ namespace Mono.CSharp {
 						}
 
 						AsyncInitializer.Create (ec, body.Block, body.Parameters, ec.CurrentMemberDefinition.Parent, rt, loc);
->>>>>>> master
 					}
 
 					am = body.Compatible (ec);

@@ -74,22 +74,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (positionalArguments != null) {
 				while (i < positionalArguments.Count) {
 					IConstantValue cv = positionalArguments[i];
-<<<<<<< HEAD
 					arguments[i] = cv.Resolve(context);
-=======
-					arguments[i] = new ConstantResolveResult(cv.GetValueType(context), cv.GetValue(context));
->>>>>>> master
 					i++;
 				}
 			}
 			if (namedCtorArguments != null) {
 				foreach (var pair in namedCtorArguments) {
 					argumentNames[i] = pair.Key;
-<<<<<<< HEAD
 					arguments[i] = pair.Value.Resolve(context);
-=======
-					arguments[i] = new ConstantResolveResult(pair.Value.GetValueType(context), pair.Value.GetValue(context));
->>>>>>> master
 					i++;
 				}
 			}

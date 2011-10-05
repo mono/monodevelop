@@ -170,7 +170,6 @@ namespace ICSharpCode.NRefactory.Documentation
 				AppendTypeName(b, resolvedType);
 				return;
 			}
-<<<<<<< HEAD
 			KnownTypeReference knownType = type as KnownTypeReference;
 			if (knownType != null) {
 				if (!string.IsNullOrEmpty(knownType.Namespace)) {
@@ -180,8 +179,6 @@ namespace ICSharpCode.NRefactory.Documentation
 				b.Append(knownType.Name);
 				return;
 			}
-=======
->>>>>>> master
 			GetClassTypeReference gctr = type as GetClassTypeReference;
 			if (gctr != null) {
 				if (!string.IsNullOrEmpty(gctr.Namespace)) {

@@ -3112,21 +3112,12 @@ namespace Mono.CSharp {
 
 			var ns_container = candidates.HasUninspectedMembers ? candidates.Container : candidates.Container.Parent;
 			if (ns_container == null)
-<<<<<<< HEAD
 				return null;
 
 			candidates = ns_container.LookupExtensionMethod (ExtensionExpression.Type, Name, arity);
 			if (candidates == null)
 				return null;
 
-=======
-				return null;
-
-			candidates = ns_container.LookupExtensionMethod (ExtensionExpression.Type, Name, arity);
-			if (candidates == null)
-				return null;
-
->>>>>>> master
 			return candidates.Methods.Cast<MemberSpec> ().ToList ();
 		}
 
@@ -6249,13 +6240,10 @@ namespace Mono.CSharp {
 
 		public override VariableInfo VariableInfo {
 			get { return null; }
-<<<<<<< HEAD
-=======
 		}
 
 		public override void VerifyAssigned (ResolveContext rc)
 		{
->>>>>>> master
 		}
 	}
 

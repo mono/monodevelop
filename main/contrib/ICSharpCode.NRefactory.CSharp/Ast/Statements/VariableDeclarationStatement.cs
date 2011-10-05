@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Variables.FirstOrDefault (vi => vi.Name == name);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitVariableDeclarationStatement (this, data);
 		}

@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitSwitchStatement (this, data);
 		}
@@ -98,7 +98,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				get { return NodeType.Pattern; }
 			}
 			
-			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return visitor.VisitPatternPlaceholder(this, child, data);
 			}
@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (Roles.EmbeddedStatement); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitSwitchSection (this, data);
 		}
@@ -168,7 +168,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Expression = expression;
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitCaseLabel (this, data);
 		}

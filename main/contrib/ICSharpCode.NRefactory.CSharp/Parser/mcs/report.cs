@@ -107,12 +107,9 @@ namespace Mono.CSharp {
 			case LanguageVersion.V_4:
 				version = "4.0";
 				break;
-<<<<<<< HEAD
-=======
 			case LanguageVersion.V_5:
 				version = "5.0";
 				break;
->>>>>>> master
 			default:
 				throw new InternalErrorException ("Invalid feature version", compiler.Settings.Version);
 			}

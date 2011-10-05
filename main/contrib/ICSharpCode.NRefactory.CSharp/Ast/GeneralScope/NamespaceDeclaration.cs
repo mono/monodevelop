@@ -1,4 +1,4 @@
-// 
+﻿// 
 // NamespaceDeclaration.cs
 //  
 // Author:
@@ -54,11 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return builder.ToString ();
 			}
 			set {
-<<<<<<< HEAD
 				GetChildrenByRole(Roles.Identifier).ReplaceWith(value.Split('.').Select(ident => Identifier.Create (ident, TextLocation.Empty)));
-=======
-				GetChildrenByRole(Roles.Identifier).ReplaceWith(value.Split('.').Select(ident => Identifier.Create (ident, AstLocation.Empty)));
->>>>>>> master
 			}
 		}
 		
@@ -113,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChild (child, MemberRole);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitNamespaceDeclaration (this, data);
 		}

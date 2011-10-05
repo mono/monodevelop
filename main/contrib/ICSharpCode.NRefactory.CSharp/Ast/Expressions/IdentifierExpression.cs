@@ -52,11 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-<<<<<<< HEAD
 				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, TextLocation.Empty));
-=======
-				SetChildByRole(Roles.Identifier, CSharp.Identifier.Create (value, AstLocation.Empty));
->>>>>>> master
 			}
 		}
 		
@@ -64,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitIdentifierExpression (this, data);
 		}

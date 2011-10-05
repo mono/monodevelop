@@ -27,6 +27,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public class ErrorResolveResult : ResolveResult
 	{
+		/// <summary>
+		/// Gets an ErrorResolveResult instance with Type = SharedTypes.UnknownType.
+		/// </summary>
+		public static readonly ErrorResolveResult UnknownError = new ErrorResolveResult(SharedTypes.UnknownType);
+		
 		public ErrorResolveResult(IType type) : base(type)
 		{
 		}

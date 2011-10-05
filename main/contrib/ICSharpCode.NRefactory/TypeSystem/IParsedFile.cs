@@ -18,10 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-<<<<<<< HEAD
-=======
-using ICSharpCode.NRefactory.CSharp;
->>>>>>> master
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -41,15 +37,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		string FileName { get; }
 		
 		/// <summary>
-<<<<<<< HEAD
 		/// Gets the time when the file was last written.
 		/// </summary>
 		DateTime LastWriteTime { get; }
-=======
-		/// Gets the time of object creation.
-		/// </summary>
-		DateTime ParseTime { get; }
->>>>>>> master
 		
 		/// <summary>
 		/// Gets all top-level type definitions.
@@ -70,31 +60,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the top-level type defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
-<<<<<<< HEAD
 		ITypeDefinition GetTopLevelTypeDefinition(TextLocation location);
-=======
-		ITypeDefinition GetTopLevelTypeDefinition(AstLocation location);
->>>>>>> master
 		
 		/// <summary>
 		/// Gets the type (potentially a nested type) defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
-<<<<<<< HEAD
 		ITypeDefinition GetInnermostTypeDefinition(TextLocation location);
-=======
-		ITypeDefinition GetTypeDefinition(AstLocation location);
->>>>>>> master
 		
 		/// <summary>
 		/// Gets the member defined at the specified location.
 		/// Returns null if no member is defined at that location.
 		/// </summary>
-<<<<<<< HEAD
 		IMember GetMember(TextLocation location);
-=======
-		IMember GetMember(AstLocation location);
->>>>>>> master
 		
 		/// <summary>
 		/// Gets the parser errors.

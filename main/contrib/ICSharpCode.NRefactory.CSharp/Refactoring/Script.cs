@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Script.cs
 //  
 // Author:
@@ -157,7 +157,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			stringWriter.NewLine = Context.EolMarker;
 			if (startWithNewLine)
 				formatter.NewLine ();
-			var visitor = new OutputVisitor (formatter, Context.FormattingOptions);
+			var visitor = new CSharpOutputVisitor (formatter, Context.FormattingOptions);
 			visitor.OutputStarted += (sender, e) => {
 				result.NodeSegments [e.AstNode] = new NodeOutput.Segment (stringWriter.GetStringBuilder ().Length);
 			};

@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				get { return NodeType.Pattern; }
 			}
 			
-			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return visitor.VisitPatternPlaceholder(this, child, data);
 			}
@@ -85,8 +85,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public string AttributeTarget {
-			get;
-			set;
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, CSharp.Identifier.Create (value, TextLocation.Empty));
+			}
+		}
+		
+		public Identifier AttributeTargetToken {
+			get {
+				return GetChildByRole (Roles.Identifier);
+			}
+			set {
+				SetChildByRole (Roles.Identifier, value);
+			}
 		}
 		
 		public AstNodeCollection<Attribute> Attributes {
@@ -97,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.RBracket); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitAttributeSection (this, data);
 		}

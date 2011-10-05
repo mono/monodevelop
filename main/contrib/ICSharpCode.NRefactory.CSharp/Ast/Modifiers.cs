@@ -30,7 +30,6 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	// For compatibility with old nrefactory - same flags.
 	[Flags]
 	public enum Modifiers
 	{
@@ -56,20 +55,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		Unsafe    = 0x8000,
 		Async     = 0x10000,
 		
-		//Overloads  = 0x10000,
-		//WithEvents = 0x20000,
-		//Default    = 0x40000,
-		//Fixed      = 0x80000,
-		
-		//ProtectedOrInternal  = Internal | Protected,
-		//ProtectedAndInternal = 0x100000, (not supported in C#)
-		//SpecialName          = 0x200000,
-		//Final                = 0x400000,
-		//Literal              = 0x800000,
 		VisibilityMask = Private | Internal | Protected | Public,
 		
 		/// <summary>
 		/// Special value used to match any modifiers during pattern matching.
 		/// </summary>
 		Any = unchecked((int)0x80000000)
-	}}
+	}
+}

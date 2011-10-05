@@ -21,12 +21,8 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-<<<<<<< HEAD
 	[Serializable]
 	public sealed class ByReferenceType : TypeWithElementType, ISupportsInterning
-=======
-	public sealed class ByReferenceType : TypeWithElementType
->>>>>>> master
 	{
 		public ByReferenceType(IType elementType) : base(elementType)
 		{

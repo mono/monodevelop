@@ -120,7 +120,7 @@ namespace Mono.CSharp
 		}
 	}
 
-	class AwaitStatement : YieldReturnStatement<AsyncInitializer>
+	class AwaitStatement : YieldStatement<AsyncInitializer>
 	{
 		sealed class AwaitableMemberAccess : MemberAccess
 		{
@@ -137,21 +137,6 @@ namespace Mono.CSharp
 			protected override void Error_OperatorCannotBeApplied (ResolveContext rc, TypeSpec type)
 			{
 				rc.Report.Error (4001, loc, "Cannot await `{0}' expression", type.GetSignatureForError ());
-			}
-		}
-
-		sealed class GetResultInvocation : Invocation
-		{
-			public GetResultInvocation (MethodGroupExpr mge, Arguments arguments)
-				: base (null, arguments)
-			{
-				mg = mge;
-				type = mg.BestCandidateReturnType;
-			}
-
-			public override Expression EmitToField (EmitContext ec)
-			{
-				return this;
 			}
 		}
 
@@ -239,19 +224,11 @@ namespace Mono.CSharp
 			fe_awaiter.EmitAssign (ec, expr, false, false);
 
 			Label skip_continuation = ec.DefineLabel ();
-<<<<<<< HEAD
 
 			Expression completed_expr;
 			if (IsDynamic) {
 				var rc = new ResolveContext (ec.MemberContext);
 
-=======
-
-			Expression completed_expr;
-			if (IsDynamic) {
-				var rc = new ResolveContext (ec.MemberContext);
-
->>>>>>> master
 				Arguments dargs = new Arguments (1);
 				dargs.Add (new Argument (fe_awaiter));
 				completed_expr = new DynamicMemberBinder ("IsCompleted", dargs, loc).Resolve (rc);
@@ -361,14 +338,10 @@ namespace Mono.CSharp
 			bc.Report.SetPrinter (old);
 
 			if (errors_printer.ErrorsCount > 0 || !MemberAccess.IsValidDotExpression (ama.Type)) {
-<<<<<<< HEAD
-				Error_WrongGetAwaiter (bc, expr.Location, expr.Type);
-=======
 				bc.Report.Error (1986, expr.Location,
 					"The `await' operand type `{0}' must have suitable GetAwaiter method",
 					expr.Type.GetSignatureForError ());
 
->>>>>>> master
 				return false;
 			}
 
@@ -558,41 +531,6 @@ namespace Mono.CSharp
 
 	class AsyncTaskStorey : StateMachine
 	{
-		sealed class ParametersLoadStatement : Statement
-		{
-			readonly FieldSpec[] fields;
-			readonly TypeSpec[] parametersTypes;
-			readonly int thisParameterIndex;
-
-			public ParametersLoadStatement (FieldSpec[] fields, TypeSpec[] parametersTypes, int thisParameterIndex)
-			{
-				this.fields = fields;
-				this.parametersTypes = parametersTypes;
-				this.thisParameterIndex = thisParameterIndex;
-			}
-
-			protected override void CloneTo (CloneContext clonectx, Statement target)
-			{
-				throw new NotImplementedException ();
-			}
-
-			protected override void DoEmit (EmitContext ec)
-			{
-				for (int i = 0; i < fields.Length; ++i) {
-					var field = fields[i];
-					if (field == null)
-						continue;
-
-					ec.EmitArgumentLoad (thisParameterIndex);
-					ec.EmitArgumentLoad (i);
-					if (parametersTypes[i] is ReferenceContainer)
-						ec.EmitLoadFromPtr (field.MemberType);
-
-					ec.Emit (OpCodes.Stfld, field);
-				}
-			}
-		}
-
 		int awaiters;
 		Field builder, continuation;
 		readonly TypeSpec return_type;
@@ -683,28 +621,12 @@ namespace Mono.CSharp
 				bf = pred_members.AsyncTaskMethodBuilderCreate;
 				sr = pred_members.AsyncTaskMethodBuilderSetResult;
 				se = pred_members.AsyncTaskMethodBuilderSetException;
-<<<<<<< HEAD
-				task = pred_members.AsyncTaskMethodBuilderTask.Resolve (Location);
-=======
 				task = pred_members.AsyncTaskMethodBuilderTask.Get ();
->>>>>>> master
 			} else {
 				builder_type = Module.PredefinedTypes.AsyncTaskMethodBuilderGeneric;
 				bf = pred_members.AsyncTaskMethodBuilderGenericCreate;
 				sr = pred_members.AsyncTaskMethodBuilderGenericSetResult;
 				se = pred_members.AsyncTaskMethodBuilderGenericSetException;
-<<<<<<< HEAD
-				task = pred_members.AsyncTaskMethodBuilderGenericTask.Resolve (Location);
-				has_task_return_type = true;
-			}
-
-			set_result = sr.Resolve (Location);
-			set_exception = se.Resolve (Location);
-			var builder_factory = bf.Resolve (Location);
-			var bt = builder_type.Resolve ();
-			if (bt == null || set_result == null || builder_factory == null || set_exception == null)
-				return false;
-=======
 				task = pred_members.AsyncTaskMethodBuilderGenericTask.Get ();
 				has_task_return_type = true;
 			}
@@ -719,7 +641,6 @@ namespace Mono.CSharp
 			}
 
 			var bt = builder_type.TypeSpec;
->>>>>>> master
 
 			//
 			// Inflate generic Task types

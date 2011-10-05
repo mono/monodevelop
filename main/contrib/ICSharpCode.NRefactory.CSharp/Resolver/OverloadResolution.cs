@@ -138,11 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeArguments != null && typeArguments.Length > 0)
 				this.explicitlyGivenTypeArguments = typeArguments;
 			
-<<<<<<< HEAD
 			this.conversions = conversions ?? Conversions.Get(context);
-=======
-			this.conversions = new Conversions(context);
->>>>>>> master
 			this.AllowExpandingParams = true;
 		}
 		#endregion
@@ -239,6 +235,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// This method implements the logic that causes applicable methods in derived types to hide
 		/// all methods in base types.
 		/// </summary>
+		/// <param name="methodLists">The methods, grouped by declaring type. Base types must come first in the list.</param>
 		public void AddMethodLists(IList<MethodListWithDeclaringType> methodLists)
 		{
 			if (methodLists == null)
@@ -765,7 +762,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return bestCandidate.Member;
 			}
 		}
-<<<<<<< HEAD
 		
 		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult)
 		{
@@ -785,7 +781,5 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				isDelegateInvocation: false,
 				argumentToParameterMap: this.GetArgumentToParameterMap());
 		}
-=======
->>>>>>> master
 	}
 }

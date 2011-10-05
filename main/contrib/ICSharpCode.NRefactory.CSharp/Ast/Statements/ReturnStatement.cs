@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChild (returnExpression, Roles.Expression);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitReturnStatement (this, data);
 		}

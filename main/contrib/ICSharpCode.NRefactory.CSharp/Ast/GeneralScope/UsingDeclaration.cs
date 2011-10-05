@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChild (import, ImportRole);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitUsingDeclaration (this, data);
 		}

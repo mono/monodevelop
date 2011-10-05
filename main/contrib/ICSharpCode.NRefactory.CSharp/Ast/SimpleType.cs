@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FullTypeName.cs
 //
 // Author:
@@ -57,22 +57,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public SimpleType (string identifier, params AstType[] typeArguments) : this (identifier, (IEnumerable<AstType>)typeArguments)
 		{
-<<<<<<< HEAD
-=======
-			SetChildByRole (Roles.Identifier, CSharp.Identifier.Create (identifier, location));
-		}
-		
-		public SimpleType (string identifier, IEnumerable<AstType> typeArguments)
-		{
-			this.Identifier = identifier;
-			foreach (var arg in typeArguments) {
-				AddChild (arg, Roles.TypeArgument);
-			}
-		}
-		
-		public SimpleType (string identifier, params AstType[] typeArguments) : this (identifier, (IEnumerable<AstType>)typeArguments)
-		{
->>>>>>> master
 		}
 		
 		public string Identifier {
@@ -80,11 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-<<<<<<< HEAD
 				SetChildByRole (Roles.Identifier, CSharp.Identifier.Create (value, TextLocation.Empty));
-=======
-				SetChildByRole (Roles.Identifier, CSharp.Identifier.Create (value, AstLocation.Empty));
->>>>>>> master
 			}
 		}
 		
@@ -101,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitSimpleType (this, data);
 		}

@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// Gets if the member is virtual. Is true only if the "virtual" modifier was used, but non-virtual
-		/// members can be overridden, too; if they are already overriding a method.
+		/// members can be overridden, too; if they are abstract or overriding a method.
 		/// </summary>
 		bool IsVirtual {
 			get;
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// Gets if the member can be overridden. Returns true when the member is "virtual" or "override" but not "sealed".
+		/// Gets if the member can be overridden. Returns true when the member is "abstract", "virtual" or "override" but not "sealed".
 		/// </summary>
 		bool IsOverridable {
 			get;

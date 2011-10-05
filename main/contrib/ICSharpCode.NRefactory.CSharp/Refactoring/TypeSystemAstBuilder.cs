@@ -100,6 +100,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// Controls whether to show default values of optional parameters, and the values of constant fields.
 		/// </summary>
 		public bool ShowConstantValues { get; set; }
+		
+		/// <summary>
+		/// Controls whether to use fully-qualified type names or short type names.
+		/// </summary>
+		public bool AlwaysUseShortTypeNames { get; set; }
 		#endregion
 		
 		#region Convert Type
@@ -231,6 +236,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 					return shortResult;
 				}
+			}
+			
+			if (AlwaysUseShortTypeNames) {
+				var shortResult = new SimpleType(typeDef.Name);
+				AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+				return shortResult;
 			}
 			
 			MemberType result = new MemberType();
@@ -462,8 +473,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			decl.ClassType = classType;
 			decl.Name = typeDefinition.Name;
 			
+			int outerTypeParameterCount = (typeDefinition.DeclaringTypeDefinition == null) ? 0 : typeDefinition.DeclaringTypeDefinition.TypeParameterCount;
+			
 			if (this.ShowTypeParameters) {
-				foreach (ITypeParameter tp in typeDefinition.TypeParameters) {
+				foreach (ITypeParameter tp in typeDefinition.TypeParameters.Skip(outerTypeParameterCount)) {
 					decl.TypeParameters.Add(ConvertTypeParameter(tp));
 				}
 			}

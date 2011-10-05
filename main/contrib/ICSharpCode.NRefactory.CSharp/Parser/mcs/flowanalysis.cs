@@ -769,8 +769,6 @@ namespace Mono.CSharp
 				}
 			}
 
-<<<<<<< HEAD
-=======
 			return true;
 		}
 
@@ -820,66 +818,6 @@ namespace Mono.CSharp
 		public override bool AddResumePoint (ResumableStatement stmt, out int pc)
 		{
 			pc = async_init.AddResumePoint (stmt);
->>>>>>> master
-			return true;
-		}
-
-		public override bool AddBreakOrigin (UsageVector vector, Location loc)
-		{
-			Parent.AddBreakOrigin (vector, loc);
-<<<<<<< HEAD
-			tc.SomeCodeFollows ();
-=======
->>>>>>> master
-			return true;
-		}
-
-		public override bool AddContinueOrigin (UsageVector vector, Location loc)
-		{
-			Parent.AddContinueOrigin (vector, loc);
-<<<<<<< HEAD
-			tc.SomeCodeFollows ();
-=======
->>>>>>> master
-			return true;
-		}
-
-		public override bool AddReturnOrigin (UsageVector vector, ExitStatement exit_stmt)
-		{
-			Parent.AddReturnOrigin (vector, exit_stmt);
-<<<<<<< HEAD
-			tc.SomeCodeFollows ();
-=======
->>>>>>> master
-			return true;
-		}
-
-		public override bool AddGotoOrigin (UsageVector vector, Goto goto_stmt)
-		{
-			Parent.AddGotoOrigin (vector, goto_stmt);
-			return true;
-		}
-	}
-
-<<<<<<< HEAD
-	public  class FlowBranchingAsync : FlowBranchingBlock
-	{
-		readonly AsyncInitializer async_init;
-
-		public FlowBranchingAsync (FlowBranching parent, AsyncInitializer async_init)
-			: base (parent, BranchingType.Block, SiblingType.Try, null, async_init.Location)
-		{
-			this.async_init = async_init;
-		}
-/*
-		public override bool CheckRethrow (Location loc)
-		{
-			return CurrentUsageVector.Next != null || Parent.CheckRethrow (loc);
-		}
-*/
-		public override bool AddResumePoint (ResumableStatement stmt, out int pc)
-		{
-			pc = async_init.AddResumePoint (stmt);
 			return true;
 		}
 
@@ -908,8 +846,6 @@ namespace Mono.CSharp
 		}
 	}
 
-=======
->>>>>>> master
 	public class FlowBranchingTryFinally : FlowBranching
 	{
 		ExceptionStatement stmt;

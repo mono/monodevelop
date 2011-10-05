@@ -2240,11 +2240,7 @@ namespace Mono.CSharp
 				if (position_stack.Count == 0)
 					sbag.PushCommentChar (c);
 				var pc = peek_char ();
-<<<<<<< HEAD
-				if (pc == '\n' || pc == -1 && position_stack.Count == 0) 
-=======
 				if ((pc == '\n' || pc == -1) && position_stack.Count == 0) 
->>>>>>> master
 					sbag.EndComment (line, col + 1);
 			} while (c != -1 && c != '\n');
 		}
@@ -3219,16 +3215,6 @@ namespace Mono.CSharp
 						}
 						
 						d = peek_char ();
-<<<<<<< HEAD
-						
-						while ((d = get_char ()) != -1 && (d != '\n') && d != '\r') {
-							if (position_stack.Count == 0)
-								sbag.PushCommentChar (d);
-						}
-						if (position_stack.Count == 0)
-							sbag.EndComment (line, col + 1);
-						
-=======
 						int endLine = line, endCol = col;
 						while ((d = get_char ()) != -1 && (d != '\n') && d != '\r') {
 							if (position_stack.Count == 0)
@@ -3239,7 +3225,6 @@ namespace Mono.CSharp
 						if (position_stack.Count == 0)
 							sbag.EndComment (endLine, endCol + 1);
 												
->>>>>>> master
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
 						comments_seen = false;
@@ -3461,11 +3446,7 @@ namespace Mono.CSharp
 				return Token.LITERAL;
 			}
 
-<<<<<<< HEAD
-			if (c == '\r') {
-=======
 			if (c == '\n') {
->>>>>>> master
 				Report.Error (1010, start_location, "Newline in constant");
 				return Token.ERROR;
 			}

@@ -78,19 +78,15 @@ namespace ICSharpCode.NRefactory
 		void RemoveAnnotations(Type type);
 	}
 	
-<<<<<<< HEAD
 	[Serializable]
-=======
->>>>>>> master
 	public abstract class AbstractAnnotatable : IAnnotatable
 	{
 		// Annotations: points either null (no annotations), to the single annotation,
 		// or to an AnnotationList.
 		// Once it is pointed at an AnnotationList, it will never change (this allows thread-safety support by locking the list)
-<<<<<<< HEAD
+		
+		[CLSCompliant(false)]
 		[NonSerialized]
-=======
->>>>>>> master
 		protected object annotations;
 		
 		sealed class AnnotationList : List<object>, ICloneable

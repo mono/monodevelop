@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class TypeParameterDeclaration : AstNode
 	{
 		public static readonly Role<AttributeSection> AttributeRole = AttributedNode.AttributeRole;
-		public static readonly Role<CSharpTokenNode> VarianceRole = new Role<CSharpTokenNode>("Variance");
+		public static readonly Role<CSharpTokenNode> VarianceRole = new Role<CSharpTokenNode>("Variance", CSharpTokenNode.Null);
 		
 		public override NodeType NodeType {
 			get { return NodeType.Unknown; }
@@ -50,11 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-<<<<<<< HEAD
 				SetChildByRole(Roles.Identifier, Identifier.Create (value, TextLocation.Empty));
-=======
-				SetChildByRole(Roles.Identifier, Identifier.Create (value, AstLocation.Empty));
->>>>>>> master
 			}
 		}
 		
@@ -67,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitTypeParameterDeclaration(this, data);
 		}

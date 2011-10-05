@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AstFormattingVisitor.cs
 //  
 // Author:
@@ -91,19 +91,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 
-		void FormatAttributedNode (AstNode node)
-		{
-			if (node == null)
-				return;
-			AstNode child = node.FirstChild;
-			while (child != null && child is AttributeSection) {
-				FixIndentationForceNewLine (child.StartLocation);
-				child = child.NextSibling;
-			}
-			if (child != null)
-				FixIndentationForceNewLine (child.StartLocation);
-		}
-
 		public void EnsureBlankLinesAfter (AstNode node, int blankLines)
 		{
 			if (!CorrectBlankLines)
@@ -186,7 +173,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
-			FixIndentationForceNewLine (typeDeclaration.StartLocation);
+			FormatAttributedNode (typeDeclaration);
 			BraceStyle braceStyle;
 			bool indentBody = false;
 			switch (typeDeclaration.ClassType) {
@@ -287,7 +274,7 @@ namespace ICSharpCode.NRefactory.CSharp
 //		{
 //			if (n == null)
 //				return;
-//			TextLocation location = n.EndLocation;
+//			AstLocation location = n.EndLocation;
 //			int offset = data.LocationToOffset (location.Line, location.Column);
 //			int i = offset;
 //			while (i < data.Length && IsSpacing (data.GetCharAt (i))) {
@@ -315,7 +302,7 @@ namespace ICSharpCode.NRefactory.CSharp
 //		{
 //			if (n == null || n.IsNull)
 //				return 0;
-//			TextLocation location = n.StartLocation;
+//			AstLocation location = n.StartLocation;
 //			
 //			int offset = data.LocationToOffset (location.Line, location.Column);
 //			int i = offset - 1;
@@ -458,6 +445,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			FormatCommas (indexerDeclaration, policy.SpaceBeforeIndexerDeclarationParameterComma, policy.SpaceAfterIndexerDeclarationParameterComma);
 
+			
 			FormatAttributedNode (indexerDeclaration);
 			EnforceBraceStyle (policy.PropertyBraceStyle, indexerDeclaration.LBraceToken, indexerDeclaration.RBraceToken);
 			if (policy.IndentPropertyBody)
@@ -591,7 +579,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
 		{
-			FixIndentation (delegateDeclaration.StartLocation);
+			FormatAttributedNode (delegateDeclaration);
 			
 			ForceSpacesBefore (delegateDeclaration.LParToken, policy.SpaceBeforeDelegateDeclarationParentheses);
 			if (delegateDeclaration.Parameters.Any ()) {
@@ -616,7 +604,20 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return nextSibling != null && nextSibling.NodeType == NodeType.Member;
 		}
-
+		
+		void FormatAttributedNode (AstNode node)
+		{
+			if (node == null)
+				return;
+			AstNode child = node.FirstChild;
+			while (child != null && child is AttributeSection) {
+				FixIndentationForceNewLine (child.StartLocation);
+				child = child.NextSibling;
+			}
+			if (child != null)
+				FixIndentationForceNewLine (child.StartLocation);
+		}
+		
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
 			FormatAttributedNode (methodDeclaration);
@@ -704,6 +705,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
 		{
 			FormatAttributedNode (destructorDeclaration);
+			
 			CSharpTokenNode lParen = destructorDeclaration.LParToken;
 			int offset = this.document.GetOffset (lParen.StartLocation);
 			ForceSpaceBefore (offset, policy.SpaceBeforeConstructorDeclarationParentheses);
@@ -920,13 +922,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			int lbraceOffset = document.GetOffset (lbrace.StartLocation);
 			
 //			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.StartLocation.Line);
-<<<<<<< HEAD
 			int rbraceOffset = document.GetOffset (rbrace.StartLocation);
-=======
-			int rbraceOffset = data.LocationToOffset (rbrace.StartLocation.Line, rbrace.StartLocation.Column);
-			if (lbraceOffset <= 0 || rbraceOffset <= 0)
-				return;
->>>>>>> master
 			int whitespaceStart = SearchWhitespaceStart (lbraceOffset);
 			int whitespaceEnd = SearchWhitespaceLineStart (rbraceOffset);
 			string startIndent = "";
@@ -1282,9 +1278,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 
-		public override object VisitYieldReturnStatement (YieldReturnStatement YieldReturnStatement, object data)
+		public override object VisitYieldReturnStatement (YieldReturnStatement yieldStatement, object data)
 		{
-			FixStatementIndentation (YieldReturnStatement.StartLocation);
+			FixStatementIndentation (yieldStatement.StartLocation);
 			return null;
 		}
 

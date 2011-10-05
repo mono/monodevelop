@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GotoStatement.cs
 //
 // Author:
@@ -52,11 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (string.IsNullOrEmpty(value))
 					SetChildByRole(Roles.Identifier, null);
 				else
-<<<<<<< HEAD
 					SetChildByRole(Roles.Identifier, Identifier.Create (value, TextLocation.Empty));
-=======
-					SetChildByRole(Roles.Identifier, Identifier.Create (value, AstLocation.Empty));
->>>>>>> master
 			}
 		}
 		
@@ -64,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitGotoStatement (this, data);
 		}
@@ -103,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitGotoCaseStatement (this, data);
 		}
@@ -134,7 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitGotoDefaultStatement (this, data);
 		}

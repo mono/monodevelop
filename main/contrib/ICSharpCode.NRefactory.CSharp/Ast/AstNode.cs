@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return default (S);
 			}
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				get { return NodeType.Pattern; }
 			}
 			
-			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return visitor.VisitPatternPlaceholder (this, child, data);
 			}
@@ -441,12 +441,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			return copy;
 		}
 		
-		public abstract S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data);
+		public abstract S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T));
 		
 		#region Pattern Matching
-		protected static bool MatchString (string name1, string name2)
+		protected static bool MatchString (string pattern, string text)
 		{
-			return string.IsNullOrEmpty (name1) || name1 == name2;
+			return PatternMatching.Pattern.MatchString(pattern, text);
 		}
 		
 		protected internal abstract bool DoMatch (AstNode other, PatternMatching.Match match);
@@ -506,17 +506,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstNode GetNodeAt (int line, int column, Predicate<AstNode> pred = null)
 		{
-<<<<<<< HEAD
 			return GetNodeAt (new TextLocation (line, column), pred);
 		}
 		
 		public AstNode GetNodeAt (TextLocation location, Predicate<AstNode> pred = null)
-=======
-			return GetNodeAt (new AstLocation (line, column), pred);
-		}
-		
-		public AstNode GetNodeAt (AstLocation location, Predicate<AstNode> pred = null)
->>>>>>> master
 		{
 			AstNode result = null;
 			AstNode node = this;
@@ -569,62 +562,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return result;
 		}
 		
-		public AstNode GetResolveableNodeAt (int line, int column)
-		{
-			return GetResolveableNodeAt (new AstLocation (line, column));
-		}
-		
-		/// <summary>
-		/// Gets a node that can be resolved at location.
-		/// </summary>
-		public AstNode GetResolveableNodeAt (AstLocation location)
-		{
-			return GetNodeAt (location, delegate (AstNode n) {
-				
-				if (n is TypeDeclaration) {
-					var decl = (TypeDeclaration)n;
-					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
-				}
-				
-				if (n is DelegateDeclaration) {
-					var decl = (DelegateDeclaration)n;
-					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
-				}
-				
-				if (n is MemberDeclaration) {
-					var decl = (MemberDeclaration)n;
-					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
-				}
-				
-				if (n is ConstructorDeclaration) {
-					var decl = (ConstructorDeclaration)n;
-					return decl.IdentifierToken.StartLocation <= location && location <= decl.IdentifierToken.EndLocation;
-				}
-				
-				if (n is DestructorDeclaration) {
-					var decl = (DestructorDeclaration)n;
-					return decl.IdentifierToken.StartLocation <= location && location <= decl.IdentifierToken.EndLocation;
-				}
-				
-				if (n is VariableInitializer) {
-					var decl = (VariableInitializer)n;
-					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
-				}
-				
-				if (n is ParameterDeclaration) {
-					var decl = (ParameterDeclaration)n;
-					return decl.NameToken.StartLocation <= location && location <= decl.NameToken.EndLocation;
-				}
-				
-				if (n is MemberReferenceExpression) {
-					var decl = (MemberReferenceExpression)n;
-					return decl.MemberNameToken.StartLocation <= location && location <= decl.MemberNameToken.EndLocation;
-				}
-				
-				return n is IdentifierExpression || n is AstType;
-			});
-		}
-		
 		public IEnumerable<AstNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)
 		{
 			return GetNodesBetween (new TextLocation (startLine, startColumn), new TextLocation (endLine, endColumn));
@@ -673,25 +610,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		internal string DebugToString()
 		{
-<<<<<<< HEAD
-=======
-			return this.StartLocation <= location && location < this.EndLocation;
-		}
-		
-		public override void AddAnnotation (object annotation)
-		{
-			if (this.IsNull)
-				throw new InvalidOperationException ("Cannot add annotations to the null node");
-			base.AddAnnotation (annotation);
-		}
-		
-		internal string DebugToString()
-		{
->>>>>>> master
 			if (IsNull)
 				return "Null";
 			StringWriter w = new StringWriter();
-			AcceptVisitor(new OutputVisitor(w, new CSharpFormattingOptions()), null);
+			AcceptVisitor(new CSharpOutputVisitor(w, new CSharpFormattingOptions()), null);
 			string text = w.ToString().TrimEnd().Replace("\t", "").Replace(w.NewLine, " ");
 			if (text.Length > 100)
 				return text.Substring(0, 97) + "...";

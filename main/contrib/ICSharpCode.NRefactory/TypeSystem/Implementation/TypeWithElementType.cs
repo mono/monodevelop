@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	[Serializable]
 	public abstract class TypeWithElementType : AbstractType
 	{
+		[CLSCompliant(false)]
 		protected IType elementType;
 		
 		protected TypeWithElementType(IType elementType)

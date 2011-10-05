@@ -155,13 +155,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return type.GetHashCode() ^ (attributes != null ? attributes.GetHashCode() : 0) ^ (defaultValue != null ? defaultValue.GetHashCode() : 0);
+			return type.GetHashCode() ^ name.GetHashCode()
+				^ (attributes != null ? attributes.GetHashCode() : 0)
+				^ (defaultValue != null ? defaultValue.GetHashCode() : 0);
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			DefaultParameter p = other as DefaultParameter;
-			return p != null && type == p.type && attributes == p.attributes
+			return p != null && type == p.type && attributes == p.attributes && name == p.name
 				&& defaultValue == p.defaultValue && region == p.region && flags == p.flags;
 		}
 		

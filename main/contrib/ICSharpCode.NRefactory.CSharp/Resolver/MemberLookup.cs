@@ -174,6 +174,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region LookupType
 		public ResolveResult LookupType(IType declaringType, string name, IList<IType> typeArguments, bool parameterizeResultType = true)
 		{
+			if (declaringType == null)
+				throw new ArgumentNullException("declaringType");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (typeArguments == null)
+				throw new ArgumentNullException("typeArguments");
+			
 			int typeArgumentCount = typeArguments.Count;
 			Predicate<ITypeDefinition> filter = delegate (ITypeDefinition d) {
 				return InnerTypeParameterCount(d) == typeArgumentCount && d.Name == name && IsAccessible(d, true);
@@ -226,6 +233,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult Lookup(ResolveResult targetResolveResult, string name, IList<IType> typeArguments, bool isInvocation)
 		{
+			if (targetResolveResult == null)
+				throw new ArgumentNullException("targetResolveResult");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (typeArguments == null)
+				throw new ArgumentNullException("typeArguments");
+			
 			bool targetIsTypeParameter = targetResolveResult.Type.Kind == TypeKind.TypeParameter;
 			
 			bool allowProtectedAccess = IsProtectedAccessAllowed(targetResolveResult.Type);
@@ -291,6 +305,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public IList<MethodListWithDeclaringType> LookupIndexers(IType targetType)
 		{
+			if (targetType == null)
+				throw new ArgumentNullException("targetType");
+			
 			bool allowProtectedAccess = IsProtectedAccessAllowed(targetType);
 			Predicate<IProperty> filter = delegate(IProperty property) {
 				return property.IsIndexer && IsAccessible(property, allowProtectedAccess);

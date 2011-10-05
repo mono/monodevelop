@@ -84,11 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (resolvedType == null)
 				return null;
 			delegateType = resolvedType;
-<<<<<<< HEAD
 			if (delegateType.Kind != TypeKind.Delegate) 
-=======
-			if (!delegateType.IsDelegate ()) 
->>>>>>> master
 				return null;
 			
 			return anonymousMethodExpression;

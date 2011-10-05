@@ -67,17 +67,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-<<<<<<< HEAD
 		public virtual ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
 		{
 			foreach (ITypeResolveContext context in children) {
 				ITypeDefinition d = context.GetKnownTypeDefinition(typeCode);
-=======
-		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
-		{
-			foreach (ITypeResolveContext context in children) {
-				ITypeDefinition d = context.GetTypeDefinition(nameSpace, name, typeParameterCount, nameComparer);
->>>>>>> master
 				if (d != null)
 					return d;
 			}
@@ -85,7 +78,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-<<<<<<< HEAD
 		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			foreach (ITypeResolveContext context in children) {
@@ -99,10 +91,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <inheritdoc/>
 		public IEnumerable<ITypeDefinition> GetTypes()
 		{
-=======
-		public IEnumerable<ITypeDefinition> GetTypes()
-		{
->>>>>>> master
 			return children.SelectMany(c => c.GetTypes());
 		}
 		
@@ -140,12 +128,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					if (sync[i] == null)
 						throw new InvalidOperationException(children[i] + ".Synchronize() returned null");
 				}
-<<<<<<< HEAD
 				var knownTypeDefinitions = new ITypeDefinition[ReflectionHelper.ByTypeCodeArraySize];
 				var r = new CompositeSynchronizedTypeResolveContext(sync, knownTypeDefinitions, new CacheManager(), true);
-=======
-				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, new CacheManager(), true);
->>>>>>> master
 				success = true;
 				return r;
 			} finally {
@@ -171,11 +155,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			readonly bool isTopLevel;
 			readonly ITypeDefinition[] knownTypeDefinitions;
 			
-<<<<<<< HEAD
 			public CompositeSynchronizedTypeResolveContext(ITypeResolveContext[] children, ITypeDefinition[] knownTypeDefinitions, CacheManager cacheManager, bool isTopLevel)
-=======
-			public CompositeSynchronizedTypeResolveContext(ITypeResolveContext[] children, CacheManager cacheManager, bool isTopLevel)
->>>>>>> master
 				: base(children)
 			{
 				Debug.Assert(cacheManager != null);
@@ -215,11 +195,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			{
 				// re-use the same cache manager for nested synchronized contexts
 				if (isTopLevel)
-<<<<<<< HEAD
 					return new CompositeSynchronizedTypeResolveContext(children, knownTypeDefinitions, cacheManager, false);
-=======
-					return new CompositeSynchronizedTypeResolveContext(children, cacheManager, false);
->>>>>>> master
 				else
 					return this;
 			}

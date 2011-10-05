@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		int typeParameterCount;
 		// [NonSerialized] volatile CachedResult v_cachedResult;
 		
-		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount = 0)
+		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount)
 		{
 			if (nameSpace == null)
 				throw new ArgumentNullException("nameSpace");
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.typeParameterCount = typeParameterCount;
 		}
 		
-		public GetClassTypeReference(string fullTypeName, int typeParameterCount = 0)
+		public GetClassTypeReference(string fullTypeName, int typeParameterCount)
 		{
 			if (fullTypeName == null)
 				throw new ArgumentNullException("fullTypeName");
@@ -87,19 +87,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 //					return cachedType;
 //			}
 			
-<<<<<<< HEAD
 			IType type = context.GetTypeDefinition(nameSpace, name, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
 //			if (cache != null)
 //				cache.SetShared(this, type);
 			return type;
-=======
-		}
-		
-		IType DoResolve(ITypeResolveContext context)
-		{
-			 */
-			return context.GetTypeDefinition(nameSpace, name, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
->>>>>>> master
 		}
 		
 		public override string ToString()

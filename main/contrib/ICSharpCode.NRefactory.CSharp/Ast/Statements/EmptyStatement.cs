@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override TextLocation EndLocation {
 			get {
-				return new TextLocation (Location.Line, Location.Column);
+				return new TextLocation (Location.Line, Location.Column + 1);
 			}
 		}
 		
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitEmptyStatement (this, data);
 		}

@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (VariableRole); }
 		}
 
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitFixedFieldDeclaration (this, data);
 		}

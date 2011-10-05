@@ -51,6 +51,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public abstract bool IsImplicitlyTyped { get; }
 		
 		/// <summary>
+		/// Gets whether the lambda is async.
+		/// </summary>
+		public abstract bool IsAsync { get; }
+		
+		/// <summary>
 		/// Gets the return type inferred when the parameter types are inferred to be <paramref name="parameterTypes"/>
 		/// </summary>
 		public abstract IType GetInferredReturnType(IType[] parameterTypes);

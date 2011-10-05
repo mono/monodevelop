@@ -29,14 +29,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve (ITypeResolveContext context, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
+		public static ResolveResult Resolve(ITypeResolveContext context, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
-			AstNode node = cu.GetNodeAt (location);
-			if (node == null) {
-				Console.WriteLine ("no node found.");
+			AstNode node = cu.GetNodeAt(location);
+			if (node == null)
 				return null;
-			}
 			AstNode resolvableNode;
 			if (node is AstType) {
 				resolvableNode = node;
@@ -67,20 +65,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			IResolveVisitorNavigator navigator;
 			if (parentInvocation != null)
-				navigator = new NodeListResolveVisitorNavigator (new[] { resolvableNode, parentInvocation });
+				navigator = new NodeListResolveVisitorNavigator(new[] { resolvableNode, parentInvocation });
 			else
-				navigator = new NodeListResolveVisitorNavigator (new[] { resolvableNode });
+				navigator = new NodeListResolveVisitorNavigator(new[] { resolvableNode });
 			
 			using (var ctx = context.Synchronize()) {
-				CSharpResolver resolver = new CSharpResolver (ctx, cancellationToken);
-				ResolveVisitor v = new ResolveVisitor (resolver, parsedFile, navigator);
-				v.Scan (cu);
+				CSharpResolver resolver = new CSharpResolver(ctx, cancellationToken);
+				ResolveVisitor v = new ResolveVisitor(resolver, parsedFile, navigator);
+				v.Scan(cu);
 				
 				// Prefer the RR from the token itself, if it was assigned a ResolveResult
 				// (this can happen with the identifiers in various nodes such as catch clauses or foreach statements)
-				ResolveResult rr = v.GetResolveResult (node) ?? v.GetResolveResult (resolvableNode);
+				ResolveResult rr = v.GetResolveResult(node) ?? v.GetResolveResult(resolvableNode);
 				if (rr is MethodGroupResolveResult && parentInvocation != null)
-					return v.GetResolveResult (parentInvocation);
+					return v.GetResolveResult(parentInvocation);
 				else
 					return rr;
 			}

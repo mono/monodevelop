@@ -99,23 +99,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				case FlagValueTypeConstraint:
 					return false;
 			}
-			// protect against cyclic dependencies between type parameters
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					foreach (ITypeReference constraintRef in this.Constraints) {
-						IType constraint = constraintRef.Resolve(context);
-						ITypeDefinition constraintDef = constraint.GetDefinition();
-						// While interfaces are reference types, an interface constraint does not
-						// force the type parameter to be a reference type; so we need to explicitly look for classes here.
-						if (constraintDef != null && constraintDef.Kind == TypeKind.Class)
-							return true;
-						if (constraint is ITypeParameter) {
-							bool? isReferenceType = constraint.IsReferenceType(context);
-							if (isReferenceType.HasValue)
-								return isReferenceType.Value;
-						}
+			
+			// A type parameter is known to be a reference type if it has the reference type constraint
+			// or its effective base class is not object or System.ValueType.
+			IType baseClass = GetEffectiveBaseClass(context);
+			if (baseClass.Kind == TypeKind.Class) {
+				if (baseClass.Namespace == "System" && baseClass.TypeParameterCount == 0) {
+					switch (baseClass.Name) {
+						case "Object":
+						case "ValueType":
+						case "Enum":
+							return null;
 					}
 				}
+				return true;
 			}
 			return null;
 		}
@@ -268,22 +265,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
-<<<<<<< HEAD
-=======
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
 				return EmptyList<IMethod>.Instance;
 			else
-				return GetMembersHelper.GetMethods(this, context, FilterNonStatic(filter), options);
-		}
-		
-		public IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
->>>>>>> master
-		{
-			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
-				return EmptyList<IMethod>.Instance;
-			else
-<<<<<<< HEAD
 				return GetMembersHelper.GetMethods(this, context, FilterNonStatic(filter), options);
 		}
 		
@@ -306,22 +291,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
-=======
-				return GetMembersHelper.GetMethods(this, typeArguments, context, FilterNonStatic(filter), options);
-		}
-		
-		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
-		{
-			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
-				return EmptyList<IProperty>.Instance;
-			else
-				return GetMembersHelper.GetProperties(this, context, FilterNonStatic(filter), options);
-		}
-		
-		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
-		{
-			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers)
->>>>>>> master
 				return EmptyList<IField>.Instance;
 			else
 				return GetMembersHelper.GetFields(this, context, FilterNonStatic(filter), options);
@@ -359,6 +328,58 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		IEnumerable<IType> IType.GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter, GetMemberOptions options)
 		{
 			return EmptyList<IType>.Instance;
+		}
+		
+		public IType GetEffectiveBaseClass(ITypeResolveContext context)
+		{
+			// protect against cyclic type parameters
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (!busyLock.Success)
+					return SharedTypes.UnknownType;
+				
+				if (HasValueTypeConstraint)
+					return context.GetTypeDefinition("System", "ValueType", 0, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
+				
+				List<IType> classTypeConstraints = new List<IType>();
+				foreach (ITypeReference constraintRef in this.Constraints) {
+					IType constraint = constraintRef.Resolve(context);
+					if (constraint.Kind == TypeKind.Class) {
+						classTypeConstraints.Add(constraint);
+					} else if (constraint.Kind == TypeKind.TypeParameter) {
+						IType baseClass = ((ITypeParameter)constraint).GetEffectiveBaseClass(context);
+						if (baseClass.Kind == TypeKind.Class)
+							classTypeConstraints.Add(baseClass);
+					}
+				}
+				if (classTypeConstraints.Count == 0)
+					return KnownTypeReference.Object.Resolve(context);
+				// Find the derived-most type in the resulting set:
+				IType result = classTypeConstraints[0];
+				for (int i = 1; i < classTypeConstraints.Count; i++) {
+					if (classTypeConstraints[i].GetDefinition().IsDerivedFrom(result.GetDefinition(), context))
+						result = classTypeConstraints[i];
+				}
+				return result;
+			}
+		}
+		
+		public IEnumerable<IType> GetEffectiveInterfaceSet(ITypeResolveContext context)
+		{
+			List<IType> result = new List<IType>();
+			// protect against cyclic type parameters
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					foreach (ITypeReference constraintRef in this.Constraints) {
+						IType constraint = constraintRef.Resolve(context);
+						if (constraint.Kind == TypeKind.Interface) {
+							result.Add(constraint);
+						} else if (constraint.Kind == TypeKind.TypeParameter) {
+							result.AddRange(((ITypeParameter)constraint).GetEffectiveInterfaceSet(context));
+						}
+					}
+				}
+			}
+			return result.Distinct();
 		}
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
@@ -410,6 +431,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return o != null
 				&& this.attributes == o.attributes
 				&& this.constraints == o.constraints
+				&& this.name == o.name
 				&& this.flags == o.flags
 				&& this.ownerType == o.ownerType
 				&& this.index == o.index

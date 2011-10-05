@@ -44,6 +44,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		Accessibility accessibility;
 		EntityType entityType;
 		
+		[CLSCompliant(false)]
 		protected BitVector16 flags;
 		const ushort FlagSealed    = 0x0001;
 		const ushort FlagAbstract  = 0x0002;
@@ -145,7 +146,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public bool IsOverridable {
 			get {
-				return (IsVirtual || IsOverride) && !IsSealed;
+				return (IsAbstract || IsVirtual || IsOverride) && !IsSealed;
 			}
 		}
 		

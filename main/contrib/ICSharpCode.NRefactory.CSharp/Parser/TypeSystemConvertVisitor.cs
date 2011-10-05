@@ -80,21 +80,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
-<<<<<<< HEAD
 		public CSharpParsedFile Convert(AstNode node)
-=======
-		public ParsedFile Convert(AstNode node)
->>>>>>> master
 		{
 			node.AcceptVisitor(this, null);
 			return parsedFile;
 		}
 		
-<<<<<<< HEAD
 		public CSharpParsedFile ParsedFile {
-=======
-		public ParsedFile ParsedFile {
->>>>>>> master
 			get { return parsedFile; }
 		}
 		
@@ -138,13 +130,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
-<<<<<<< HEAD
 			if (u != null) {
 				if (interningProvider != null)
 					u = interningProvider.Intern(u);
-=======
-			if (u != null)
->>>>>>> master
 				usingScope.Usings.Add(u);
 			}
 			return null;
@@ -153,13 +141,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
 			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
-<<<<<<< HEAD
 			if (u != null) {
 				if (interningProvider != null)
 					u = interningProvider.Intern(u);
-=======
-			if (u != null)
->>>>>>> master
 				usingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(usingDeclaration.Alias, u));
 			}
 			return null;
@@ -188,12 +172,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			DefaultTypeDefinition newType;
 			if (currentTypeDefinition != null) {
 				newType = new DefaultTypeDefinition(currentTypeDefinition, name);
-<<<<<<< HEAD
 				foreach (var typeParameter in currentTypeDefinition.TypeParameters)
 					newType.TypeParameters.Add(typeParameter);
-=======
-				newType.TypeParameters.AddRange(currentTypeDefinition.TypeParameters);
->>>>>>> master
 				currentTypeDefinition.NestedTypes.Add(newType);
 			} else {
 				newType = new DefaultTypeDefinition(parsedFile, usingScope.NamespaceName, name);
@@ -1086,11 +1066,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override ConstantExpression VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 			{
 				if (isAttributeArgument) {
-<<<<<<< HEAD
 					return new PrimitiveConstantExpression(KnownTypeReference.Type, ConvertType(typeOfExpression.Type));
-=======
-					return new PrimitiveConstantExpression(KnownTypeReference.Type, convertVisitor.ConvertType(typeOfExpression.Type));
->>>>>>> master
 				} else {
 					return null;
 				}
@@ -1105,11 +1081,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (arrayCreateExpression.Type.IsNull) {
 						type = null;
 					} else {
-<<<<<<< HEAD
 						type = ConvertType(arrayCreateExpression.Type);
-=======
-						type = convertVisitor.ConvertType(arrayCreateExpression.Type);
->>>>>>> master
 						foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
 							type = ArrayTypeReference.Create(type, spec.Dimensions);
 						}

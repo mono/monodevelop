@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitWhileStatement (this, data);
 		}

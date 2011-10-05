@@ -48,12 +48,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Right = right;
 		}
 		
-		public AssignmentExpression(string left, Expression right)
-		{
-			this.Left = new IdentifierExpression(left);
-			this.Right = right;
-		}
-		
 		public AssignmentExpression(Expression left, AssignmentOperatorType op, Expression right)
 		{
 			this.Left = left;
@@ -80,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole(RightRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitAssignmentExpression (this, data);
 		}

@@ -28,6 +28,17 @@ namespace ICSharpCode.NRefactory.PatternMatching
 	/// </summary>
 	public abstract class Pattern : INode
 	{
+		/// <summary>
+		/// Gets the string that matches any string.
+		/// </summary>
+		public static readonly string AnyString = string.Empty;
+		// TODO: use something other than string.Empty so that 'no value' and 'any value' can be distinguished
+		
+		public static bool MatchString(string pattern, string text)
+		{
+			return string.IsNullOrEmpty(pattern) || pattern == text;
+		}
+		
 		internal struct PossibleMatch
 		{
 			public readonly INode NextOther; // next node after the last matched node

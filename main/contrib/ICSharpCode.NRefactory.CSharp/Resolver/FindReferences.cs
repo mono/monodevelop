@@ -783,5 +783,56 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		#endregion
+		
+		#region Find Local Variable References
+		/// <summary>
+		/// Finds all references of a given variable.
+		/// </summary>
+		/// <param name="variable">The variable for which to look.</param>
+		/// <param name="parsedFile">The type system representation of the file being searched.</param>
+		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
+		/// <param name="context">The type resolve context to use for resolving the file.</param>
+		/// <param name="callback">Callback used to report the references that were found.</param>
+		public void FindLocalReferences(IVariable variable, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
+		                                ITypeResolveContext context, FoundReferenceCallback callback)
+		{
+			if (variable == null)
+				throw new ArgumentNullException("variable");
+			FindReferencesInFile(new FindLocalReferencesNavigator(variable), parsedFile, compilationUnit, context, callback);
+		}
+		
+		class FindLocalReferencesNavigator : SearchScope
+		{
+			IVariable variable;
+			
+			public FindLocalReferencesNavigator(IVariable variable)
+			{
+				this.variable = variable;
+			}
+			
+			internal override bool CanMatch(AstNode node)
+			{
+				var expr = node as IdentifierExpression;
+				if (expr != null)
+					return expr.TypeArguments.Count == 0 && variable.Name == expr.Identifier;
+				var vi = node as VariableInitializer;
+				if (vi != null)
+					return vi.Name == variable.Name;
+				var pd = node as ParameterDeclaration;
+				if (pd != null)
+					return pd.Name == variable.Name;
+				var id = node as Identifier;
+				if (id != null)
+					return id.Name == variable.Name;
+				return false;
+			}
+			
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				var lrr = rr as LocalResolveResult;
+				return lrr != null && lrr.Variable.Name == variable.Name && lrr.Variable.Region == variable.Region;
+			}
+		}
+		#endregion
 	}
 }

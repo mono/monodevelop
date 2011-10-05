@@ -74,7 +74,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-<<<<<<< HEAD
 		public TextLocation Begin {
 			get {
 				return new TextLocation (beginLine, beginColumn);
@@ -84,17 +83,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public TextLocation End {
 			get {
 				return new TextLocation (endLine, endColumn);
-=======
-		public AstLocation Begin {
-			get {
-				return new AstLocation (beginLine, beginColumn);
-			}
-		}
-		
-		public AstLocation End {
-			get {
-				return new AstLocation (endLine, endColumn);
->>>>>>> master
 			}
 		}
 		
@@ -124,19 +112,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.endColumn = -1;
 		}
 		
-<<<<<<< HEAD
 		public DomRegion (TextLocation begin, TextLocation end) : this (null, begin, end)
 		{
 		}
 		
 		public DomRegion (string fileName, TextLocation begin, TextLocation end)
-=======
-		public DomRegion (AstLocation begin, AstLocation end) : this (null, begin, end)
-		{
-		}
-		
-		public DomRegion (string fileName, AstLocation begin, AstLocation end)
->>>>>>> master
 		{
 			this.fileName = fileName;
 			this.beginLine = begin.Line;
@@ -145,19 +125,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.endColumn = end.Column;
 		}
 		
-<<<<<<< HEAD
 		public DomRegion (TextLocation begin) : this (null, begin)
 		{
 		}
 		
 		public DomRegion (string fileName, TextLocation begin)
-=======
-		public DomRegion (AstLocation begin) : this (null, begin)
-		{
-		}
-		
-		public DomRegion (string fileName, AstLocation begin)
->>>>>>> master
 		{
 			this.fileName = fileName;
 			this.beginLine = begin.Line;

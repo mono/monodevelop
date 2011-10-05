@@ -26,11 +26,8 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
-<<<<<<< HEAD
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-=======
->>>>>>> master
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

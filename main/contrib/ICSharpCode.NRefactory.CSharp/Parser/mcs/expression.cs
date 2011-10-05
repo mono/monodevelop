@@ -4918,14 +4918,11 @@ namespace Mono.CSharp
 			variable_info.SetAssigned (rc);
 		}
 
-<<<<<<< HEAD
-=======
 		public override void SetHasAddressTaken ()
 		{
 			local_info.SetHasAddressTaken ();
 		}
 
->>>>>>> master
 		void DoResolveBase (ResolveContext ec)
 		{
 			//
@@ -5203,8 +5200,6 @@ namespace Mono.CSharp
 			SetAssigned (ec);
 			return base.DoResolveLValue (ec, right_side);
 		}
-<<<<<<< HEAD
-=======
 
 		public override void VerifyAssigned (ResolveContext rc)
 		{
@@ -5216,7 +5211,6 @@ namespace Mono.CSharp
 				rc.Report.Error (269, loc, "Use of unassigned out parameter `{0}'", Name);
 			}
 		}
->>>>>>> master
 	}
 	
 	/// <summary>

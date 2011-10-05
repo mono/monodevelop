@@ -120,18 +120,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-<<<<<<< HEAD
 			IEnumerable<IMember> members = GetMethods(context, filter, options);
 			return members
 				.Concat(GetProperties(context, filter, options))
 				.Concat(GetFields(context, filter, options))
 				.Concat(GetEvents(context, filter, options));
-=======
-			return GetMethods(context, filter, options).SafeCast<IMethod, IMember>()
-				.Concat(GetProperties(context, filter, options).SafeCast<IProperty, IMember>())
-				.Concat(GetFields(context, filter, options).SafeCast<IField, IMember>())
-				.Concat(GetEvents(context, filter, options).SafeCast<IEvent, IMember>());
->>>>>>> master
 		}
 		
 		public override bool Equals(object obj)
