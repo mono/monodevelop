@@ -352,7 +352,11 @@ namespace MonoDevelop.CSharp
 			bool isEnum = field.DeclaringType != null && field.DeclaringType.ClassType == ClassType.Enum;
 			
 			if (settings.IncludeReturnType && !settings.ReturnTypesLast) {
-				result.Append (GetString (field.ReturnType, settings));
+				if (field.DeclaringType != null && field.DeclaringType.ClassType == ClassType.Enum) {
+					result.Append (field.DeclaringType.Name);
+				} else {
+					result.Append (GetString (field.ReturnType, settings));
+				}
 				result.Append (settings.Markup (" "));
 			}
 			
@@ -364,7 +368,11 @@ namespace MonoDevelop.CSharp
 
 			if (settings.IncludeReturnType && settings.ReturnTypesLast) {
 				result.Append (settings.Markup (" : "));
-				result.Append (GetString (field.ReturnType, settings));
+				if (field.DeclaringType != null && field.DeclaringType.ClassType == ClassType.Enum) {
+					result.Append (field.DeclaringType.Name);
+				} else {
+					result.Append (GetString (field.ReturnType, settings));
+				}
 			}
 			
 			return result.ToString ();
