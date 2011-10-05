@@ -625,7 +625,7 @@ namespace Mono.TextEditor
 			caretX = x;
 			caretY = y;
 			
-			if (x != nonPreeditCaretX && y == nonPreeditCaretY)
+			if (x == nonPreeditCaretX && y == nonPreeditCaretY)
 				return;
 			
 			nonPreeditCaretX = x;
