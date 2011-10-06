@@ -90,6 +90,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			Solution sol = new Solution ();
 			FileFormat[] fs = IdeApp.Services.ProjectService.FileFormats.GetFileFormatsForObject (sol);
 			foreach (FileFormat f in fs) {
+				if (!f.CanDefault)
+					continue;
 				comboFileFormats.AppendText (f.Name);
 				formats.Add (f.Id);
 				if (f.Id == defaultFormat)

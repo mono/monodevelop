@@ -259,7 +259,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			Task task = e.Tasks.FirstOrDefault ();
 			var doc = Document;
-			if (task == null || doc == null || task.FileName != doc.FileName)
+			if (task == null || doc == null || task.FileName != doc.FileName || this.TextEditor == null)
 				return;
 			LineSegment lineSegment = doc.GetLine (task.Line);
 			if (lineSegment == null)
@@ -308,6 +308,8 @@ namespace MonoDevelop.SourceEditor
 			if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.Never)
 				return;
 			widget.Document.BeginAtomicUndo ();
+			if (messageBubbleCache != null)
+				messageBubbleCache.Dispose ();
 			messageBubbleCache = new MessageBubbleCache (widget.TextEditor);
 			
 			foreach (Task task in tasks) {

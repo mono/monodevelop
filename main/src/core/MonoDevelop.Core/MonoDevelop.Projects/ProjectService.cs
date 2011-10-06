@@ -575,7 +575,7 @@ namespace MonoDevelop.Projects
 		{
 			FileFormatNode node = (FileFormatNode) args.ExtensionNode;
 			if (args.Change == ExtensionChange.Add)
-				formatManager.RegisterFileFormat ((IFileFormat) args.ExtensionObject, node.Id, node.Name);
+				formatManager.RegisterFileFormat ((IFileFormat) args.ExtensionObject, node.Id, node.Name, node.CanDefault);
 			else
 				formatManager.UnregisterFileFormat ((IFileFormat) args.ExtensionObject);
 		}

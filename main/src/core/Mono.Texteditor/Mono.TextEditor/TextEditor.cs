@@ -386,6 +386,14 @@ namespace Mono.TextEditor
 		internal int preeditOffset, preeditLine, preeditCursorPos;
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
+
+		internal bool ContainsPreedit (int line, int length)
+		{
+			if (string.IsNullOrEmpty (preeditString))
+				return false;
+			
+			return line <= preeditOffset && preeditOffset <= line + length;
+		}
 		
 		void PreeditStringChanged (object sender, EventArgs e)
 		{

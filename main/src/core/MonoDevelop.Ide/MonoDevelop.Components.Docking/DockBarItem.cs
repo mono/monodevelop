@@ -59,7 +59,7 @@ namespace MonoDevelop.Components.Docking
 			lastFrameSize = bar.Frame.Allocation.Size;
 			bar.Frame.SizeAllocated += HandleBarFrameSizeAllocated;
 		}
-
+		
 		void HandleBarFrameSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			if (!lastFrameSize.Equals (args.Allocation.Size)) {

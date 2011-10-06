@@ -35,12 +35,21 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string name;
 		
+		[NodeAttribute]
+		bool canDefault;
+		
 		public string Name {
 			get {
 				return name;
 			}
 			set {
 				name = value;
+			}
+		}
+		
+		public bool CanDefault {
+			get {
+				return canDefault;
 			}
 		}
 	}

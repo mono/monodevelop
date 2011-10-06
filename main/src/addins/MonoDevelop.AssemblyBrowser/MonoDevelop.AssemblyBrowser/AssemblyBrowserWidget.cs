@@ -948,6 +948,8 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Open (string url)
 		{
 			ITreeNavigator nav = SearchMember (url);
+			if (definitions == null) // we've been disposed
+				return;
 			if (nav == null) {
 				foreach (var definition in definitions.ToArray ()) {
 					foreach (var assemblyNameReference in definition.Value.Annotation<AssemblyDefinition> ().MainModule.AssemblyReferences) {

@@ -45,6 +45,8 @@ namespace MonoDevelop.Ide
 		static Dictionary<Gdk.Pixbuf, string> namedIcons = new Dictionary<Gdk.Pixbuf, string> ();
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();
 		
+		static Gtk.Requisition[] iconSizes = new Gtk.Requisition[7];
+		
 		static ImageService ()
 		{
 			iconFactory.AddDefault ();
@@ -62,6 +64,14 @@ namespace MonoDevelop.Ide
 					break;
 				}
 			});
+			
+			for (int i = 0; i < iconSizes.Length; i++) {
+				int w, h;
+				if (!Gtk.Icon.SizeLookup ((Gtk.IconSize)i, out w, out h))
+					w = h = -1;
+				iconSizes[i].Width = w;
+				iconSizes[i].Height = h;
+			}
 		}
 		
 		static void LoadStockIcon (StockIconCodon iconCodon, bool forceWildcard)
@@ -209,17 +219,29 @@ namespace MonoDevelop.Ide
 
 			List<StockIconCodon> stockIcon;
 			if (iconStock.TryGetValue (stockId, out stockIcon)) {
+				//determine whether there's a wildcarded image
 				bool hasWildcard = false;
 				foreach (var i in stockIcon) {
 					if (i.IconSize == Gtk.IconSize.Invalid)
 						hasWildcard = true;
 				}
-				//if (!hasWildcard) {
-				//	LoggingService.LogWarning ("Stock icon '{0}' registered without wildcarded version.", stockId);
-				//}
+				//load all the images
 				foreach (var i in stockIcon) {
-					LoadStockIcon (i, !hasWildcard);
-					hasWildcard = true;
+					LoadStockIcon (i, false);
+				}
+				//if there's no wildcard, find the "biggest" version and make it a wildcard
+				if (!hasWildcard) {
+					int biggest = 0, biggestSize = iconSizes[(int)stockIcon[0].IconSize].Width;
+					for (int i = 1; i < stockIcon.Count; i++) {
+						int w = iconSizes[(int)stockIcon[i].IconSize].Width;
+						if (w > biggestSize) {
+							biggest = i;
+							biggestSize = w;
+						}
+					}
+					//	LoggingService.LogWarning ("Stock icon '{0}' registered without wildcarded version.", stockId);
+					LoadStockIcon (stockIcon[biggest], true);
+					
 				}
 				iconStock.Remove (stockId);
 			}

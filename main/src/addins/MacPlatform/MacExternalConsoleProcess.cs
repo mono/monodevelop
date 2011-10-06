@@ -89,8 +89,12 @@ bash pause on exit trick
 			var sb = new StringBuilder ("clear; ");
 			if (!string.IsNullOrEmpty (workingDirectory))
 				sb.AppendFormat ("cd \"{0}\"; ", Escape (workingDirectory));
-			foreach (string env in environmentVariables.Keys)
-				sb.AppendFormat ("{0}=\"{1}\" ", env, Escape (environmentVariables[env]));
+			foreach (string env in environmentVariables.Keys) {
+				string val = environmentVariables[env];
+				if (!string.IsNullOrEmpty (val))
+					val = Escape (val);
+				sb.AppendFormat ("{0}=\"{1}\" ", env, val);
+			}
 			sb.AppendFormat ("{0} {1}", Escape (command), arguments);
 			if (pauseWhenFinished)
 				sb.Append ("; echo; read -p 'Press any key to continue...' -n1");

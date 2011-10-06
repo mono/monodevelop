@@ -707,6 +707,8 @@ namespace MonoDevelop.SourceEditor
 
 		public void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextMarkerHoverResult result)
 		{
+			if (this.LineSegment == null)
+				return;
 			bool isOver = MouseIsOverMarker (editor, args);
 			if (isOver != oldIsOver)
 				editor.Document.CommitLineUpdate (this.LineSegment);
