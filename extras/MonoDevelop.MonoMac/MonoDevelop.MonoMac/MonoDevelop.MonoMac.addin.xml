@@ -88,11 +88,6 @@
 		<ProjectBinding id = "MonoMac" class = "MonoDevelop.MonoMac.MonoMacProjectBinding" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.MonoMac.MonoMacProject" />
-		<DataType class = "MonoDevelop.MonoMac.MonoMacProjectConfiguration" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.MonoMac.MonoMacBuildExtension" insertafter="MidStep" />
 	</Extension>
