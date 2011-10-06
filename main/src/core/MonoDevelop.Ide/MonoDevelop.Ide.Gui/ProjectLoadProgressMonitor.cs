@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Migration.HasValue)
 				return Migration.Value;
-			
+
 			var buttonBackupAndMigrate = new AlertButton (GettextCatalog.GetString ("Back up and migrate"));
 			var buttonMigrate = new AlertButton (GettextCatalog.GetString ("Migrate"));
 			var buttonIgnore = new AlertButton (GettextCatalog.GetString ("Ignore"));
@@ -58,13 +58,15 @@ namespace MonoDevelop.Ide.Gui
 					"If you choose to back up the project before migration, a copy of the project " +
 					"file will be saved in a 'backup' directory in the project directory."),
 				buttonIgnore, buttonMigrate, buttonBackupAndMigrate);
-			if (response == buttonIgnore)
-				Migration = MigrationType.Ignore;
+
+			// If we get an unexpected response, the default should be to *not* migrate
+			if (response == buttonBackupAndMigrate)
+				Migration = MigrationType.BackupAndMigrate;
 			else if (response == buttonMigrate)
 				Migration = MigrationType.Migrate;
-			else
-				Migration = MigrationType.BackupAndMigrate;
-			
+			else 
+				Migration = MigrationType.Ignore;
+
 			return Migration.Value;
 		}
 	}
