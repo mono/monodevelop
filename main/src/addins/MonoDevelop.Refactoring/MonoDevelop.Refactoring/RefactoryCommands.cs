@@ -267,9 +267,11 @@ namespace MonoDevelop.Refactoring
 					CommandInfoSet declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Go to declaration");
 					CompoundType ct = (CompoundType)item;
-					foreach (IType part in ct.Parts) {
+					foreach (IType part in DomType.GetSortedParts (ct)) {
 						Refactorer partRefactorer = new Refactorer (ctx, pinfo, eclass, part, null);
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.CompilationUnit.FileName), part.Location.Line), new RefactoryOperation (partRefactorer.GoToDeclaration));
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"),
+							FormatFileName (part.CompilationUnit.FileName), part.Location.Line),
+							new RefactoryOperation (partRefactorer.GoToDeclaration));
 					}
 					ainfo.Add (declSet);
 				} else {
@@ -827,30 +829,7 @@ namespace MonoDevelop.Refactoring
 		
 		public void GoToDeclaration ()
 		{
-			if (item is CompoundType) {
-				CompoundType compoundType = (CompoundType)item;
-				monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-				using (monitor) {
-					foreach (IType part in compoundType.Parts) {
-						FileProvider provider = new FileProvider (part.CompilationUnit.FileName);
-						Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-						System.IO.TextReader textReader = provider.Open ();
-						doc.Text = textReader.ReadToEnd ();
-						textReader.Close ();
-						int position = doc.LocationToOffset (part.Location.Line, part.Location.Column);
-						while (position + part.Name.Length < doc.Length) {
-							if (doc.GetTextAt (position, part.Name.Length) == part.Name)
-								break;
-							position++;
-						}
-						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length));
-					}
-					
-				}
-				
-				return;
-			}
-			IdeApp.ProjectOperations.JumpToDeclaration (item);
+			IdeApp.ProjectOperations.JumpToDeclaration (item, true);
 		}
 		
 		public void FindReferences ()
