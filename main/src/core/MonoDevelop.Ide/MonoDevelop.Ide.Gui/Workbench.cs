@@ -714,8 +714,8 @@ namespace MonoDevelop.Ide.Gui
 							doc.Select ();
 							doc.RunWhenLoaded (delegate {
 								IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
-								if (openFileInfo.Line != -1 && ipos != null) {
-									ipos.SetCaretTo (openFileInfo.Line, openFileInfo.Column != -1 ? openFileInfo.Column : 0, openFileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+								if (openFileInfo.Line > 0 && ipos != null) {
+									ipos.SetCaretTo (openFileInfo.Line, Math.Max (1, openFileInfo.Column), openFileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 								}
 							});
 						}
@@ -1078,7 +1078,7 @@ namespace MonoDevelop.Ide.Gui
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
 			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();
-			if (fileInfo.Line != -1 && ipos != null) {
+			if (fileInfo.Line > 0 && ipos != null) {
 				newContent.Control.Realized += HandleNewContentControlRealized;
 			}
 			fileInfo.NewContent = newContent;
