@@ -506,14 +506,14 @@ namespace MonoDevelop.CSharp.ContextAction
 			throw new NotImplementedException ();
 		}
 		
-		public override AstType CreateShortType (ICSharpCode.NRefactory.TypeSystem.IType fullType)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public override ResolveResult Resolve (AstNode expression)
-		{
-			throw new NotImplementedException ();
-		}
+//		public override AstType CreateShortType (ICSharpCode.NRefactory.TypeSystem.IType fullType)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		public override ResolveResult Resolve (AstNode expression)
+//		{
+//			throw new NotImplementedException ();
+//		}
 	}
 }

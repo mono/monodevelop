@@ -90,7 +90,7 @@ namespace MonoDevelop.Refactoring
 			ResolveResult resolveResult;
 			var item = CurrentRefactoryOperationsHandler.GetItem (ctx, doc, out resolveResult);
 			
-			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
+/*			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			string itemName = null;
 			if (item is IMember)
 				itemName = ((IMember)item).FullName;
@@ -100,7 +100,7 @@ namespace MonoDevelop.Refactoring
 			}
 			ITypeDefinition eclass = null;
 			if (item is ITypeDefinition) {
-				if (((ITypeDefinition)item).ClassType == ClassType.Interface)
+				if (((ITypeDefinition)item).Kind == TypeKind.Interface)
 					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
 					eclass = (IType)item;
 				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
@@ -108,7 +108,7 @@ namespace MonoDevelop.Refactoring
 					eitem = null;
 				}
 			}
-			
+			*/
 //			
 //			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 //			string itemName = null;

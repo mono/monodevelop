@@ -141,7 +141,7 @@ namespace ICSharpCode.Decompiler.Ast
 			formattingPolicy.SpaceBeforeMethodDeclarationParentheses = false;
 			formattingPolicy.SpaceBeforeConstructorDeclarationParentheses = false;
 			formattingPolicy.SpaceBeforeDelegateDeclarationParentheses = false;
-			astCompileUnit.AcceptVisitor(new OutputVisitor(outputFormatter, formattingPolicy), null);
+			astCompileUnit.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy), null);
 		}
 		
 		public void GenerateCode(ITextOutput output, CSharpFormattingOptions formattingPolicy)
@@ -151,7 +151,7 @@ namespace ICSharpCode.Decompiler.Ast
 			
 			astCompileUnit.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true }, null);
 			var outputFormatter = new TextOutputFormatter(output);
-			astCompileUnit.AcceptVisitor(new OutputVisitor(outputFormatter, formattingPolicy), null);
+			astCompileUnit.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy), null);
 		}
 		
 		public void AddAssembly(AssemblyDefinition assemblyDefinition, bool onlyAssemblyLevel = false)

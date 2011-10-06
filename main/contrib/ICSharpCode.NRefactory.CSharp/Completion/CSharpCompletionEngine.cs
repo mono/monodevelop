@@ -25,27 +25,27 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Completion;
+//using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
-	public class CSharpCompletionEngine
-	{
-		IDocument document;
-		ICompletionDataFactory factory;
-		
-		public CSharpCompletionEngine (IDocument document, ICompletionDataFactory factory)
-		{
-			this.document = document;
-			this.factory = factory;
-		}
-		
-		public IEnumerable<ICompletionData> GetCompletionData (int offset)
-		{
-			// BIG TODO !!!!
-			yield break;
-		}
-	}
+//	public class CSharpCompletionEngine
+//	{
+//		IDocument document;
+//		ICompletionDataFactory factory;
+//		
+//		public CSharpCompletionEngine (IDocument document, ICompletionDataFactory factory)
+//		{
+//			this.document = document;
+//			this.factory = factory;
+//		}
+//		
+//		public IEnumerable<ICompletionData> GetCompletionData (int offset)
+//		{
+//			// BIG TODO !!!!
+//			yield break;
+//		}
+//	}
 }
 

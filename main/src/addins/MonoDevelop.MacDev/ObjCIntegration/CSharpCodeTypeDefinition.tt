@@ -7,7 +7,7 @@ using System;
 
 using <#= WrapperNamespace #>.Foundation;
 <#
-foreach (var ns in Type.GetNamespaces ())
+foreach (var ns in Type.GetNamespaces (Ctx))
 	WriteLine ("using {0};", ns);
 #>
 

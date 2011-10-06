@@ -35,6 +35,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.MacDev.ObjCIntegration;
 using System.Threading.Tasks;
 using MonoDevelop.MacDev.XcodeIntegration;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.MacDev.XcodeSyncing
 {
@@ -88,6 +90,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			Dictionary<string, List<NSObjectTypeInfo>> designerFiles = new Dictionary<string, List<NSObjectTypeInfo>> ();
 			string defaultNamespace;
+			var ctx = TypeSystemService.GetContext (Project);
 			
 			// First, we need to name any new user-defined types.
 			foreach (var job in TypeSyncJobs) {
@@ -95,14 +98,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					continue;
 				
 				defaultNamespace = Project.GetDefaultNamespace (job.RelativePath);
-				job.Type.CliName = defaultNamespace + "." + provider.CreateValidIdentifier (job.Type.ObjCName);
-				ProjectInfo.InsertUpdatedType (job.Type);
+				job.Type.CliName = new GetClassTypeReference (defaultNamespace, provider.CreateValidIdentifier (job.Type.ObjCName));
+				ProjectInfo.InsertUpdatedType (ctx, job.Type);
 			}
 			
 			// Next we can resolve base-types, outlet types, and action parameter types for each of our user-defined types.
 			foreach (var job in TypeSyncJobs) {
 				defaultNamespace = Project.GetDefaultNamespace (job.RelativePath);
-				ProjectInfo.ResolveObjcToCli (monitor, job.Type, provider, defaultNamespace);
+				ProjectInfo.ResolveObjcToCli (monitor, ctx, job.Type, provider, defaultNamespace);
 			}
 			
 			AggregateTypeUpdates (provider, designerFiles, out newTypes, out newFiles);

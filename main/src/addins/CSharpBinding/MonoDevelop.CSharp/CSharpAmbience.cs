@@ -454,12 +454,6 @@ namespace MonoDevelop.CSharp
 				result.Append (settings.Markup (" "));
 			}
 			
-			
-			if (settings.IncludeReturnType && !settings.ReturnTypesLast && !method.IsConstructor && !method.IsFinalizer) {
-				result.Append (GetString (method.ReturnType, settings));
-				result.Append (settings.Markup (" "));
-			}
-			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
 				result.Append (GetTypeReferenceString (method.DeclaringType, new OutputSettings (OutputFlags.UseFullName) { Context = settings.Context}));
 				result.Append (settings.Markup ("."));

@@ -37,7 +37,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 {
 	public class NSObjectTypeInfo
 	{
-		public NSObjectTypeInfo (string objcName, ITypeDefinition cliName, string baseObjCName, ITypeReference baseCliName, bool isModel, bool isUserType, bool isRegisteredInDesigner)
+		public NSObjectTypeInfo (string objcName, ITypeReference cliName, string baseObjCName, ITypeReference baseCliName, bool isModel, bool isUserType, bool isRegisteredInDesigner)
 		{
 			IsRegisteredInDesigner = isRegisteredInDesigner;
 			BaseObjCType = baseObjCName;
@@ -53,7 +53,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 		
 		public string ObjCName { get; private set; }
-		public ITypeDefinition CliName { get; private set; }
+		public ITypeReference CliName { get; internal set; }
 		public bool IsModel { get; internal set; }
 		
 		public string BaseObjCType { get; internal set; }
@@ -95,16 +95,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				namespaces.Add (ns);
 		}
 		
-		public HashSet<string> GetNamespaces ()
+		public HashSet<string> GetNamespaces (ITypeResolveContext ctx)
 		{
 			HashSet<string> namespaces = new HashSet<string> ();
-			string ignore = null;
+			string ignore = CliName.Resolve (ctx).Namespace;
 			int dot;
 			
-			if ((dot = CliName.LastIndexOf ('.')) != -1)
-				ignore = CliName.Substring (0, dot);
-			
-			AddNamespaceForCliType (namespaces, ignore, BaseCliType);
+			AddNamespaceForCliType (namespaces, ignore, BaseCliType.Resolve (ctx).FullName);
 			
 			foreach (var outlet in Outlets)
 				AddNamespaceForCliType (namespaces, ignore, outlet.CliType);
@@ -285,7 +282,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 		}
 		
-		public void GenerateCodeTypeDeclaration (CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
+		public void GenerateCodeTypeDeclaration (ITypeResolveContext ctx, CodeDomProvider provider, CodeGeneratorOptions generatorOptions,
 			string wrapperName, out CodeTypeDeclaration ctd, out string ns)
 		{
 			var registerAtt = new CodeTypeReference (wrapperName + ".Foundation.RegisterAttribute");
@@ -297,8 +294,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (Outlets.Any (o => o.IsDesigner) || Actions.Any (a => a.IsDesigner))
 				AddWarningDisablePragmas (ctd, provider);
 			
-			ns = CliName.Namespace;
-			ctd.Name = CliName.Name;
+			ns = CliName.Resolve (ctx).Namespace;
+			ctd.Name = CliName.Resolve (ctx).Name;
 			
 			if (IsRegisteredInDesigner)
 				AddAttribute (ctd.CustomAttributes, registerAtt, ObjCName);

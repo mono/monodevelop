@@ -3,9 +3,9 @@ ASSEMBLY = $(top_builddir)/build/bin/ICSharpCode.Decompiler.dll
   
 
 REFS =  \
+	-r:../../build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	-r:../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:../../build/bin/Mono.Cecil.dll \
-	-r:../ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll \
 	-r:System \
 	-r:System.Core \
 	-r:System.Xml \
@@ -13,6 +13,7 @@ REFS =  \
 	
 
 FILES =  \
+	Ast/Annotations.cs \
 	Ast/Annotations.cs \
 	Ast/AstBuilder.cs \
 	Ast/AstMethodBodyBuilder.cs \

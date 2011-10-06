@@ -367,18 +367,18 @@ namespace MonoDevelop.AssemblyBrowser
 					if (!nav.MoveToParent ())
 						return null;
 					try {
-						if (nav.DataItem is TypeDefinition && nav.Options["PublicApiOnly"]) {
-							nav.Options["PublicApiOnly"] = false;
+						if (nav.DataItem is TypeDefinition && nav.Options ["PublicApiOnly"]) {
+							nav.Options ["PublicApiOnly"] = false;
 							nav.MoveToFirstChild ();
 							result = SearchMember (nav, helpUrl);
 							if (result != null)
 								return result;
 							nav.MoveToParent ();
 						}
+					} catch (Exception) {
 					}
-				} while (nav.MoveNext());
-			} catch (Exception) {
-			}
+				}
+			} while (nav.MoveNext());
 			return null;
 		}
 		

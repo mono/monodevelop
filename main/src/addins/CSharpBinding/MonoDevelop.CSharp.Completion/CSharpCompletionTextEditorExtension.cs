@@ -387,7 +387,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		static void Print (AstNode node)
 		{
-			var v = new OutputVisitor (Console.Out, new CSharpFormattingOptions ());
+			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
 			node.AcceptVisitor (v, null);
 		}
 		
@@ -2112,7 +2112,7 @@ namespace MonoDevelop.CSharp.Completion
 			var builder = new TypeSystemAstBuilder (state);
 			var shortType = builder.ConvertType (type);
 			using (var w = new System.IO.StringWriter ()) {
-				var visitor = new OutputVisitor (w, FormattingPolicy.CreateOptions ());
+				var visitor = new CSharpOutputVisitor (w, FormattingPolicy.CreateOptions ());
 				shortType.AcceptVisitor (visitor, null);
 				return w.ToString ();
 			}

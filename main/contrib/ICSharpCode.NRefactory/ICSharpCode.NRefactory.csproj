@@ -51,6 +51,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <WarningLevel>4</WarningLevel>
     <OutputPath>..\..\build\bin</OutputPath>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -101,7 +102,6 @@
     <Compile Include="PatternMatching\Repeat.cs" />
     <Compile Include="PatternMatching\Pattern.cs" />
     <Compile Include="Documentation\XmlDocumentationProvider.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Role.cs" />
     <Compile Include="Semantics\AmbiguousResolveResult.cs" />
     <Compile Include="Semantics\ArrayAccessResolveResult.cs" />
@@ -125,7 +125,6 @@
     <Compile Include="TypeSystem\EntityType.cs" />
     <Compile Include="TypeSystem\ExtensionMethods.cs" />
     <Compile Include="TypeSystem\IAccessor.cs" />
-    <Compile Include="TypeSystem\IAmbience.cs" />
     <Compile Include="TypeSystem\IAttribute.cs" />
     <Compile Include="TypeSystem\IConstantValue.cs" />
     <Compile Include="TypeSystem\IDocumentationProvider.cs" />
@@ -154,7 +153,6 @@
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\CompositeTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\GetMembersHelper.cs" />
-    <Compile Include="TypeSystem\Implementation\MinimalResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ProxyTypeResolveContext.cs" />
@@ -210,19 +208,15 @@
     <Compile Include="Utils\TreeTraversal.cs" />
     <Compile Include="TypeSystem\Error.cs" />
     <Compile Include="TypeSystem\IAnnotatable.cs" />
-    <Compile Include="Completion\ICompletionData.cs" />
+    <Compile Include="TypeSystem\IAmbience.cs" />
     <Compile Include="Completion\DisplayFlags.cs" />
+    <Compile Include="Completion\ICompletionData.cs" />
     <Compile Include="Completion\ICompletionDataFactory.cs" />
     <Compile Include="Completion\IEntityCompletionData.cs" />
+    <Compile Include="TypeSystem\Implementation\MinimalResolveContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

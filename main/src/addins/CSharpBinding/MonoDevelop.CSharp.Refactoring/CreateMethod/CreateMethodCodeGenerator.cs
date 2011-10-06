@@ -167,11 +167,10 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 					}
 					return options.Document.TypeResolveContext.GetTypeDefinition (typeof(object));
 				}
-				
-				if (node.Parent is ReturnStatement && options.ResolveResult != null && options.ResolveResult.CallingMember != null) {
-					return options.ResolveResult.CallingMember.ReturnType;
-				}
-				
+				var callingMember = options.Document.ParsedDocument.GetMember (options.Location);
+					
+				if (node.Parent is ReturnStatement && callingMember != null)
+					return callingMember.ReturnType.Resolve (options.Document.TypeResolveContext);
 				node = node.Parent;
 			}
 			return KnownTypeReference.Void.Resolve (options.Document.TypeResolveContext);

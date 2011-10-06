@@ -107,7 +107,7 @@ namespace MonoDevelop.Refactoring
 //				formatter.Indentation = indentLevel;
 				stringWriter.NewLine = Document.Editor.EolMarker;
 				
-				var visitor = new OutputVisitor (formatter, new CSharpFormattingOptions ());
+				var visitor = new CSharpOutputVisitor (formatter, new CSharpFormattingOptions ());
 				node.AcceptVisitor (visitor, null);
 				return stringWriter.ToString ();
 			}

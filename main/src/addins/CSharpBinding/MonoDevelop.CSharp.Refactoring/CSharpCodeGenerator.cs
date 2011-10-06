@@ -180,7 +180,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			using (var stringWriter = new System.IO.StringWriter ()) {
 				var formatter = new TextWriterOutputFormatter (stringWriter);
 				stringWriter.NewLine = EolMarker;
-				var visitor = new OutputVisitor (formatter, project.GetFormattingOptions ());
+				var visitor = new CSharpOutputVisitor (formatter, project.GetFormattingOptions ());
 				shortType.AcceptVisitor (visitor, null);
 				result.Append (stringWriter.ToString ());
 			}
@@ -697,7 +697,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				var formatter = new TextWriterOutputFormatter (stringWriter);
 				stringWriter.NewLine = doc.Editor.EolMarker;
 				
-				var visitor = new OutputVisitor (formatter, doc.GetFormattingOptions ());
+				var visitor = new CSharpOutputVisitor (formatter, doc.GetFormattingOptions ());
 				node.AcceptVisitor (visitor, null);
 				return stringWriter.ToString ();
 			}

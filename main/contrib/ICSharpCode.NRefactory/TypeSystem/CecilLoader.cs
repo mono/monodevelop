@@ -529,11 +529,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				DefaultAttribute dllImport = new DefaultAttribute(dllImportAttributeTypeRef, new[] { KnownTypeReference.String });
 				dllImport.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, info.Module.Name));
 				
-				if (info.IsBestFitDisabled)
+/*				if (info.IsBestFitDisabled)
 					dllImport.AddNamedArgument("BestFitMapping", falseValue);
 				if (info.IsBestFitEnabled)
 					dllImport.AddNamedArgument("BestFitMapping", trueValue);
-				
+			*/
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
 					case PInvokeAttributes.CallConvCdecl:
@@ -847,7 +847,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						}
 						targetCollection.Add(a);
 					}
-				} catch (ResolutionException) {
+				} catch (Exception) {
 					// occurs when Cecil can't decode an argument
 				}
 			}

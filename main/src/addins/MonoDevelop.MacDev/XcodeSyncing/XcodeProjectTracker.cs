@@ -35,6 +35,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.MacDev.ObjCIntegration;
 using System.Threading.Tasks;
 using MonoDevelop.MacDev.XcodeIntegration;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.MacDev.XcodeSyncing
 {
@@ -481,6 +483,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			bool addedTypes = false;
+			var ctx = TypeSystemService.GetContext (dnp);
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating custom classes defined in UI definition files"), 0);
 			
@@ -503,13 +506,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					string path = Path.Combine (dir, type.ObjCName + "." + provider.FileExtension);
 					string ns = dnp.GetDefaultNamespace (path);
 					
-					type.CliName = ns + "." + provider.CreateValidIdentifier (type.ObjCName);
+					type.CliName = new GetClassTypeReference (ns, provider.CreateValidIdentifier (type.ObjCName));
 					
 					if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 						CodebehindTemplateBase cs = new CSharpCodeTypeDefinition () {
 							WrapperNamespace = infoService.WrapperRoot,
 							Provider = provider,
 							Type = type,
+							Ctx = ctx
 						};
 						
 						writer.WriteFile (path, cs.TransformText ());
@@ -521,11 +525,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 							WrapperNamespace = infoService.WrapperRoot,
 							Provider = provider,
 							Types = types,
+							Ctx = ctx
 						};
 						
 						writer.WriteFile (designerPath, cs.TransformText ());
-						
-						context.ProjectInfo.InsertUpdatedType (type);
+						context.ProjectInfo.InsertUpdatedType (ctx, type);
 					} else {
 						// FIXME: implement support for non-C# languages
 					}
@@ -565,6 +569,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			
+			var ctx = TypeSystemService.GetContext (dnp);
 			monitor.BeginTask (GettextCatalog.GetString ("Detecting changes made in Xcode"), 0);
 			Dictionary<string, NSObjectTypeInfo> newTypes;
 			Dictionary<string, ProjectFile> newFiles;
@@ -590,6 +595,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 							WrapperNamespace = infoService.WrapperRoot,
 							Provider = provider,
 							Type = nt.Value,
+							Ctx = ctx
 						};
 						
 						string baseDir = Path.GetDirectoryName (nt.Key);
@@ -617,6 +623,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 						Types = df.Value,
 						WrapperNamespace = infoService.WrapperRoot,
 						Provider = provider,
+						Ctx = ctx
 					};
 					writer.WriteFile (df.Key, cs.TransformText ());
 				} else {
@@ -655,11 +662,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			var ccu = new System.CodeDom.CodeCompileUnit ();
 			var namespaces = new Dictionary<string, System.CodeDom.CodeNamespace> ();
+			var ctx = TypeSystemService.GetContext (dnp);
 			foreach (var t in types) {
 				System.CodeDom.CodeTypeDeclaration type;
 				string nsName;
 				System.CodeDom.CodeNamespace ns;
-				t.GenerateCodeTypeDeclaration (provider, options, infoService.WrapperRoot, out type, out nsName);
+				t.GenerateCodeTypeDeclaration (ctx, provider, options, infoService.WrapperRoot, out type, out nsName);
 				if (!namespaces.TryGetValue (nsName, out ns)) {
 					namespaces[nsName] = ns = new System.CodeDom.CodeNamespace (nsName);
 					ccu.Namespaces.Add (ns);

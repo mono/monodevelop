@@ -825,8 +825,7 @@ namespace ICSharpCode.Decompiler.Ast
 		sealed class InitializedObjectExpression : IdentifierExpression
 		{
 			public InitializedObjectExpression() : base("__initialized_object__") {}
-			
-			protected override bool DoMatch(AstNode other, Match match)
+			public bool DoMatch (INode other, Match match)
 			{
 				return other is InitializedObjectExpression;
 			}

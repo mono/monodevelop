@@ -154,14 +154,14 @@ namespace MonoDevelop.TypeSystem
 			return result.ToString ();
 		}
 
-		static bool CompareParameters (System.Collections.ObjectModel.ReadOnlyCollection<MonoDevelop.Projects.Dom.IParameter> parameters1, System.Collections.ObjectModel.ReadOnlyCollection<MonoDevelop.Projects.Dom.IParameter> parameters2)
+		static bool CompareParameters (IList<IParameter> parameters1, IList<IParameter> parameters2)
 		{
 			if (parameters1.Count != parameters2.Count)
 				return false;
 			for (int i = 0; i < parameters1.Count; i++) {
 				var p1 = parameters1 [i];
 				var p2 = parameters2 [i];
-				if (p1.ReturnType.ToInvariantString () != p2.ReturnType.ToInvariantString ())
+				if (!p1.Type.Equals (p2.Type))
 					return false;
 			}
 			return true;
@@ -244,7 +244,7 @@ namespace MonoDevelop.TypeSystem
 					if (member is IMethod && pair.Key is IMethod) {
 						var method = (IMethod)member;
 						var othermethod = (IMethod)pair.Key;
-						isExplicit = member.ReturnType.ToInvariantString () != pair.Key.ReturnType.ToInvariantString () && CompareParameters (member.Parameters, pair.Key.Parameters);
+						isExplicit = !member.ReturnType.Equals (pair.Key.ReturnType) && CompareParameters (method.Parameters, ((IMethod)pair.Key).Parameters);
 					} else {
 						isExplicit = true;
 					}
