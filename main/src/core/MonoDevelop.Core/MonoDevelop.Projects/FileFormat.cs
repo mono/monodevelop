@@ -50,6 +50,8 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public bool CanDefault { get; private set; }
+		
 		public string GetValidFileName (object obj, string fileName)
 		{
 			return format.GetValidFormatName (obj, fileName);
@@ -87,10 +89,16 @@ namespace MonoDevelop.Projects
 		}
 		
 		internal FileFormat (IFileFormat format, string id, string name)
+			: this (format, id, name, false)
+		{
+		}
+		
+		internal FileFormat (IFileFormat format, string id, string name, bool canDefault)
 		{
 			this.id = id;
 			this.name = name ?? id;
 			this.format = format;
+			this.CanDefault = canDefault;
 		}
 	}
 }
