@@ -972,6 +972,46 @@ namespace MonoDevelop.Projects.Dom
 			int typeParamsB = other is InstantiatedType ? ((InstantiatedType)other).UninstantiatedType.TypeParameters.Count : other.TypeParameters.Count;
 			return typeParamsA == typeParamsB && a.FullName == b.FullName;
 		}
+		
+		static readonly string designerFileNameExt = ".designer.";
+		static readonly string designerFileNameGtkGui = System.IO.Path.DirectorySeparatorChar + "gtk-gui"
+				+ System.IO.Path.DirectorySeparatorChar;
+			
+		public static bool IsDesignerType (IType type)
+		{
+			return IsDesignerFile (type.CompilationUnit.FileName.ToString ());
+		}
+		
+		static bool IsDesignerFile (string filename)
+		{
+			//designer files
+			int designerIdx = filename.LastIndexOf (designerFileNameExt, StringComparison.OrdinalIgnoreCase);
+			if (designerIdx > -1 && filename.IndexOf ('.', designerIdx) < 0)
+				return true;
+			
+			//stetic files
+			if (filename.Contains (designerFileNameGtkGui))
+				return true;
+			
+			return false;
+		}
+		
+		public static IEnumerable<IType> GetSortedParts (IType type)
+		{
+			var list = type.Parts.ToList ();
+			list.Sort ((x,y) => x.CompilationUnit.FileName.CompareTo (y.CompilationUnit.FileName));
+			//don't need to do IsDesignerPart in the comparer, just do a two-pass return
+			for (int i = 0; i < list.Count; i++) {
+				if (!IsDesignerType (list[i])) {
+					yield return list[i];
+					list[i] = null;
+				}
+			}
+			foreach (var part in list) {
+				if (part != null)
+					yield return part;
+			}
+		}
 	}
 	
 	internal sealed class Stock 
