@@ -216,7 +216,10 @@ namespace MonoDevelop.AspNet.Gui
 			var docLoc = Document.Editor.Document.OffsetToLocation (start);
 			loc.EndLine = loc.BeginLine = docLoc.Line;
 			loc.EndColumn = loc.BeginColumn = docLoc.Column;
-			
+			if (documentBuilder == null){
+				localDocumentInfo = null;
+				return;
+			}
 			localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, Editor, sourceText, textAfterCaret, true);
 			
 			var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
