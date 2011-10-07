@@ -216,15 +216,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		string cachedFullName = null;
 		public string FullName {
 			get {
-				if (declaringTypeDefinition != null) {
-					return declaringTypeDefinition.FullName + "." + this.name;
-				} else if (string.IsNullOrEmpty(ns)) {
+				if (cachedFullName != null)
+					return cachedFullName;
+				if (declaringTypeDefinition != null) 
+					return cachedFullName = declaringTypeDefinition.FullName + "." + this.name;
+				if (string.IsNullOrEmpty(ns))
 					return this.name;
-				} else {
-					return this.ns + "." + this.name;
-				}
+				return cachedFullName = this.ns + "." + this.name;
 			}
 		}
 		
