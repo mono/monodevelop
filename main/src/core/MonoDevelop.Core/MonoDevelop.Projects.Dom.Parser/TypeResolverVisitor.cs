@@ -95,7 +95,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			visitAttribute = false;
 			return result;
 		}
-
 		
 		public override INode Visit (IReturnType type, IType contextType)
 		{
@@ -104,7 +103,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					if (u.IsFromNamespace || u.Aliases.Count == 0 && contextType != null && u.Region.Contains (contextType.Location))
 						continue;
 					foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-						if (alias.Key == type.FullName) 
+						if (alias.Key == type.DecoratedFullName && alias.Value != type) 
 							return Visit (alias.Value, contextType);
 					}
 				}
@@ -114,6 +113,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				IMethod method = null;
 				if (currentMethod.IsOverride) {
 					foreach (IType curType2 in db.GetInheritanceTree (contextType)) {
+						
 						foreach (IMethod curMethod in curType2.SearchMember (currentMethod.Name, true)) {
 							if (!curMethod.IsOverride && curMethod.Parameters.Count == currentMethod.Parameters.Count && curMethod.TypeParameters.Count == currentMethod.TypeParameters.Count) {
 								method = curMethod;
