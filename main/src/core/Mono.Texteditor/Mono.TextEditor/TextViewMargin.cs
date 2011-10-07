@@ -859,7 +859,7 @@ namespace Mono.TextEditor
 
 			Chunk chunk = mode.GetChunks (doc, style, line, offset, length);
 			descriptor = new ChunkDescriptor (line, offset, length, chunk);
-			chunkDict.Add (line, descriptor);
+			chunkDict[line] = descriptor;
 			return chunk;
 		}
 
