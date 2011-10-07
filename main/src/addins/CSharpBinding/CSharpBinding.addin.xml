@@ -39,27 +39,9 @@
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "CSharp"
-		            insertbefore="AllFiles"
-		            _label = "CSharp Files"
-			    extensions = "*.cs"/>
-		<FileFilter id = "Assemblies"
-		            insertbefore="AllFiles"
-		            _label = "Assemblies"
-		            extensions = "*.exe,*.dll"/>
-			    
-		<FileFilter id = "Html"
-		            insertbefore="AllFiles"
-		            _label = "Web Files"
-		            extensions = "*.htm,*.html,*.aspx,*.ascx,*.asp"/>
-			    
-		<FileFilter id = "Xml"
-		            insertbefore="AllFiles"
-		            _label = "Xml Files"
-		            extensions = "*.xml"/>
-		<FileFilter id = "Resources"
-		            insertbefore="AllFiles"
-		            _label = "Resource Files"
-		            extensions = "*.resources,*.resx"/>
+		            insertbefore = "Assemblies"
+		            _label = "C# Files"
+		            extensions = "*.cs"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">

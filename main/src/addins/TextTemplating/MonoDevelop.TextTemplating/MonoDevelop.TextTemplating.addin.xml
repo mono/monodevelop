@@ -30,7 +30,6 @@
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "T4Templates"
-		            insertbefore = "AllFiles"
 		           _label = "T4 Templates"
 		           extensions = "*.tt" />
 	</Extension>

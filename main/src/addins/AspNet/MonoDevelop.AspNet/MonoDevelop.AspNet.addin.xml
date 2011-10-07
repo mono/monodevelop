@@ -103,9 +103,12 @@
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "AspNetWebFiles"
-		            insertbefore = "AllFiles"
+		            insertafter = "Xml"
 		           _label = "ASP.NET Files"
 		           extensions = "*.aspx,*.ashx,*.asmx,*.ascx,*.master,*.asax" />
+		<FileFilter id = "Html"
+		            _label = "HTML Files"
+		            extensions = "*.htm,*.html"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">

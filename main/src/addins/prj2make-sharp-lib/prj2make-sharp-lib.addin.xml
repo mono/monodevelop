@@ -19,14 +19,5 @@
 		<FileFormat id="VS2003ProjectFileFormat"
 		            class="MonoDevelop.Prj2Make.VS2003ProjectFileFormat"/>
 	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
-		<FileFilter id = "SlnCombine"
-		            _label = "Visual Studio Solution"
-		            extensions = "*.sln"/>
-		<FileFilter id = "MSBuildProject"
-		            _label = "Visual Studio Project"
-		            extensions = "*.csproj,*.vbproj"/>
-	</Extension>
 </Addin>
 
