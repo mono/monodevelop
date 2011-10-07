@@ -318,8 +318,10 @@ namespace MonoDevelop.Refactoring
 					if (m.IsConstructor && m.Parameters.Count == paramCount)
 						baseConstructor = m;
 				}
-				Refactorer refactorer2 = new Refactorer (ctx, pinfo, baseConstructor.DeclaringType, baseConstructor, null);
-				ainfo.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer2.GoToBase));
+				if (baseConstructor != null) {
+					Refactorer refactorer2 = new Refactorer (ctx, pinfo, baseConstructor.DeclaringType, baseConstructor, null);
+					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer2.GoToBase));
+				}
 			}
 			
 			if (item is IType) {
