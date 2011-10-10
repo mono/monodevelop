@@ -188,7 +188,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			td.Region = MakeRegion(typeDeclaration);
 			td.BodyRegion = MakeBraceRegion(typeDeclaration);
 			td.AddDefaultConstructorIfRequired = true;
-			
 			ApplyModifiers(td, typeDeclaration.Modifiers);
 			switch (typeDeclaration.ClassType) {
 				case ClassType.Enum:

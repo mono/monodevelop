@@ -85,6 +85,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					compound = new CompoundTypeDefinition(mainPart.ProjectContent, mainPart.Namespace, mainPart.Name);
 			}
 			compound.parts = parts;
+			compound.Kind = mainPart.Kind;
 			compound.Region = mainPart.Region;
 			compound.BodyRegion = mainPart.BodyRegion;
 			compound.TypeParameters.AddRange(mainPart.TypeParameters);

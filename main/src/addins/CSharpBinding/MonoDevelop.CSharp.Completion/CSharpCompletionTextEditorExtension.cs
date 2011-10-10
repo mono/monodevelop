@@ -423,7 +423,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
 		{
-			CSharpParser parser = new CSharpParser ();
+			var parser = new CSharpParser ();
 			string text = Document.Editor.GetTextAt (0, Document.Editor.Caret.Offset) + "a; } } } }";
 			var stream = new System.IO.StringReader (text);
 			var completionUnit = parser.Parse (stream, 0);
@@ -818,11 +818,10 @@ namespace MonoDevelop.CSharp.Completion
 					var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
 					identifierStart.Item3.AcceptVisitor (visitor, null);
 					csResolver = visitor.GetResolverStateBefore (n);
-					
 					// add attribute properties.
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 						var resolved = visitor.Resolve (n.Parent);
-						if (!resolved.IsError)  {
+						if (resolved != null && resolved.Type != null) {
 							foreach (var property in resolved.Type.GetProperties (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (property);
 							}
@@ -926,7 +925,7 @@ namespace MonoDevelop.CSharp.Completion
 //				
 //					return CreateCtrlSpaceCompletionData (completionContext, result);
 //				}
-				break;
+//				break;
 			}
 			return null;
 		}
@@ -938,7 +937,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (result != ".") {
 				result = null;
 			} else {
-				List<string > names = new List<string> ();
+				var names = new List<string> ();
 				while (result == ".") {
 					result = GetPreviousToken (ref tokenIndex, false);
 					if (result == "this") {
@@ -1510,8 +1509,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		CompletionDataList GetOverrideCompletionData (CodeCompletionContext completionCtx, ITypeDefinition type, string modifiers)
 		{
-			CompletionDataWrapper wrapper = new CompletionDataWrapper (this);
-			Dictionary<string, bool> alreadyInserted = new Dictionary<string, bool> ();
+			var wrapper = new CompletionDataWrapper (this);
+			var alreadyInserted = new Dictionary<string, bool> ();
 			bool addedVirtuals = false;
 			
 			int declarationBegin = completionCtx.TriggerOffset;
@@ -1835,7 +1834,7 @@ namespace MonoDevelop.CSharp.Completion
 				
 				public override int CompareTo (CompletionCategory other)
 				{
-					TypeCompletionCategory compareCategory = other as TypeCompletionCategory;
+					var compareCategory = other as TypeCompletionCategory;
 					if (compareCategory == null)
 						return 1;
 					
@@ -2076,12 +2075,12 @@ namespace MonoDevelop.CSharp.Completion
 				if (method.Parameters.Count <= parameter)
 					continue;
 				var resolvedType = method.Parameters [parameter].Type.Resolve (ctx);
-				if (resolvedType.IsEnum ()) {
+				if (resolvedType.Kind == TypeKind.Enum) {
 					if (addedEnums.Contains (resolvedType.ReflectionName))
 						continue;
 					addedEnums.Add (resolvedType.ReflectionName);
 					AddEnumMembers (result, resolvedType, state);
-				} else if (resolvedType.IsDelegate ()) {
+				} else if (resolvedType.Kind == TypeKind.Delegate) {
 //					if (addedDelegates.Contains (resolvedType.DecoratedFullName))
 //						continue;
 //					addedDelegates.Add (resolvedType.DecoratedFullName);
@@ -2120,7 +2119,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		void AddEnumMembers (CompletionDataWrapper completionList, IType resolvedType, CSharpResolver state)
 		{
-			if (!resolvedType.IsEnum ())
+			if (resolvedType.Kind != TypeKind.Enum)
 				return;
 			string typeString = GetShortType (resolvedType, state);
 			if (typeString.Contains ("."))
@@ -2153,6 +2152,13 @@ namespace MonoDevelop.CSharp.Completion
 					return new ConstructorParameterDataProvider (this, createType.Item1.Type);
 				}
 				
+				if (invoke.Item2 is ICSharpCode.NRefactory.CSharp.Attribute) {
+					var attribute = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+					if (attribute == null || attribute.Item1 == null)
+						return null;
+					return new ConstructorParameterDataProvider (this, attribute.Item1.Type);
+				}
+				
 				var invocationExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
 				
 				if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError)
@@ -2161,23 +2167,13 @@ namespace MonoDevelop.CSharp.Completion
 				if (resolveResult is MethodGroupResolveResult)
 					return new MethodParameterDataProvider (this, resolveResult as MethodGroupResolveResult);
 				if (resolveResult is MemberResolveResult) {
-					if (resolveResult.Type.IsDelegate ())
+					if (resolveResult.Type.Kind == TypeKind.Delegate)
 						return new DelegateDataProvider (this, resolveResult.Type);
 					var mr = resolveResult as MemberResolveResult;
 					if (mr.Member is IMethod)
 						return new MethodParameterDataProvider (this, (IMethod)mr.Member);
 				}
 				
-//				if (result.ExpressionContext == ExpressionContext.Attribute) {
-//					IReturnType returnType = resolveResult.ResolvedType;
-//					
-//					IType type = resolver.SearchType (result.Expression.Trim () + "Attribute");
-//					if (type == null) 
-//						type = resolver.SearchType (returnType);
-//					if (type != null && returnType != null && returnType.GenericArguments != null)
-//						type = dom.CreateInstantiatedGenericType (type, returnType.GenericArguments);
-//					return new NRefactoryParameterDataProvider (textEditorData, resolver, type);
-//				}
 //				
 //				if (result.ExpressionContext == ExpressionContext.BaseConstructorCall) {
 //					if (resolveResult is ThisResolveResult)
@@ -2212,7 +2208,7 @@ namespace MonoDevelop.CSharp.Completion
 		List<string> GetUsedNamespaces ()
 		{
 			var scope = CSharpParsedFile.GetUsingScope (new TextLocation (document.Editor.Caret.Line, document.Editor.Caret.Column));
-			List<string> result = new List<string> ();
+			var result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);
 				foreach (var u in scope.Usings) {
