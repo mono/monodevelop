@@ -1421,8 +1421,9 @@ namespace MonoDevelop.CSharp.Completion
 				if (expressionOrVariableDeclaration != null && expressionOrVariableDeclaration.Item2 is VariableDeclarationStatement) {
 					var varDecl = (VariableDeclarationStatement)expressionOrVariableDeclaration.Item2;
 					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, varDecl.Type, expressionOrVariableDeclaration.Item3);
-					if (resolved != null)
+					if (resolved != null) {
 						hintType = resolved.Item1.Type;
+					}
 				}
 				return CreateTypeCompletionData (hintType);
 //					IType callingType = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column));
@@ -1935,7 +1936,16 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return result.Result;
 		}
-		
+
+		public ITypeDefinition GetTypeFromContext (ITypeDefinition type)
+		{
+			if (type == null || type.DeclaringType != null)
+				return type;
+			var result = ctx.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameterCount, StringComparer.Ordinal);
+//			Console.WriteLine ("result:"+  result);
+			return result;
+		}
+ 		
 		ICompletionDataList CreateCompletionData (TextLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
 		{
 			if (resolveResult == null /*|| resolveResult.IsError*/)
@@ -1953,8 +1963,9 @@ namespace MonoDevelop.CSharp.Completion
 				
 				return namespaceContents.Result;
 			}
-			var type = resolveResult.Type.Resolve (ctx);
-			var typeDef = type.GetDefinition ();
+			
+			IType type = GetTypeFromContext (resolveResult.Type.GetDefinition ()) ?? resolveResult.Type;
+			var typeDef = resolveResult.Type.GetDefinition ();
 			var lookup = new MemberLookup (ctx, currentType, document.GetProjectContext ());
 			var result = new CompletionDataWrapper (this);
 			bool isProtectedAllowed = false;
@@ -1969,7 +1980,7 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				isProtectedAllowed = currentType != null && typeDef != null ? currentType.GetAllBaseTypeDefinitions (ctx).Any (bt => bt.Equals (typeDef)) : false;
 			}
-			if (resolveResult is TypeResolveResult && type.IsEnum ()) {
+			if (resolveResult is TypeResolveResult && type.Kind == TypeKind.Enum) {
 				foreach (var field in type.GetFields (ctx)) {
 					result.AddMember (field);
 				}
@@ -1985,7 +1996,7 @@ namespace MonoDevelop.CSharp.Completion
 				includeStaticMembers  = mrr.Member.Name == mrr.Type.Name;
 			}
 			
-//			Console.WriteLine ("type:" + type);
+//			Console.WriteLine ("type:" + type +"/"+type.GetType ());
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
 //			Console.WriteLine (currentMember.IsStatic);
