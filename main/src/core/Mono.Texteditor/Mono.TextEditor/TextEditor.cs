@@ -2417,12 +2417,20 @@ namespace Mono.TextEditor
 			w += 10;
 			
 			int x = xloc + ox + (int)textViewMargin.XOffset - (int) ((double)w * xalign);
-			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (ox + xloc, oy + yloc));
+			int rightMonitor = Screen.GetMonitorAtPoint (ox + xloc + w, oy + yloc);
+			int leftMonitor = Screen.GetMonitorAtPoint (ox + xloc, oy + yloc);
+			Gdk.Rectangle rightGeometry = Screen.GetUsableMonitorGeometry (rightMonitor);
+			Gdk.Rectangle leftGeometry;
 			
-			if (x + w >= geometry.Right)
-				x = geometry.Right - w;
-			if (x < geometry.Left)
-				x = geometry.Left;
+			if (leftMonitor != rightMonitor)
+				leftGeometry = Screen.GetUsableMonitorGeometry (leftMonitor);
+			else
+				leftGeometry = rightGeometry;
+			
+			if (x + w > rightGeometry.Right)
+				x = rightGeometry.Right - w;
+			if (x < leftGeometry.Left)
+				x = leftGeometry.Left;
 			
 			tipWindow.Move (x, yloc + oy + 10);
 			tipWindow.ShowAll ();
