@@ -43,6 +43,7 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/bin/ICSharpCode.Decompiler.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \

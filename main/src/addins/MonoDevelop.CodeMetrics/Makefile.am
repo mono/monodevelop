@@ -4,6 +4,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CodeMetrics.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -13,7 +14,6 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:../../../contrib/ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

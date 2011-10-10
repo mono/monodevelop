@@ -48,11 +48,11 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
+	-r:../../../build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	-r:../../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:../../../build/bin/Mono.TextEditor.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:../../../build/bin/MonoDevelop.Ide.dll \
-	-r:../../../contrib/ICSharpCode.NRefactory/bin/Debug/ICSharpCode.NRefactory.CSharp.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

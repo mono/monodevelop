@@ -156,7 +156,8 @@ namespace MonoDevelop.AssemblyBrowser
 				
 				astBuilder.RunTransformations (o => false);
 				var output = new ColoredCSharpFormatter (data.Document);
-				astBuilder.GenerateCode (output, codePolicy.CreateOptions ());
+				ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions options = codePolicy.CreateOptions ();
+				astBuilder.GenerateCode (output, options);
 				output.SetDocumentData ();
 				return output.ReferencedSegments;
 			} catch (Exception e) {
