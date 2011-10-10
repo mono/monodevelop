@@ -1,10 +1,10 @@
 // 
-// MergeView.cs
+// IVersionControlViewHandler.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Alan McGovern <alan@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright 2011, Xamarin Inc. 
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,65 +23,38 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.VersionControl.Views
-{
-	public interface IMergeView : IAttachableViewContent
+using System;
+using MonoDevelop.Core;
+using MonoDevelop.VersionControl.Views;
+using MonoDevelop.Ide.Gui;
+
+namespace MonoDevelop.VersionControl {
+	
+	public interface IVersionControlViewHandler<T>
+		where T : IAttachableViewContent
 	{
+		bool CanHandle (VersionControlItem item);
+		T CreateView (VersionControlItem item, IViewContent primaryView);
 	}
 	
-	class MergeView : BaseView, IMergeView
+	public interface IDiffViewHandler : IVersionControlViewHandler<IDiffView>
 	{
-		MergeWidget widget;
-
-		public override Gtk.Widget Control { 
-			get {
-				return widget;
-			}
-		}
-
-		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"))
-		{
-			widget = new MergeWidget ();
-			widget.Load (info);
-		}
-
-		public void Selected ()
-		{
-			widget.UpdateLocalText ();
-			widget.info.Start ();
-		}
 		
-		public void Deselected ()
-		{
-		}
-
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
-
-	/*	MergeWidget mergeWidget;
+	}
+	
+	public interface IBlameViewHandler : IVersionControlViewHandler<IBlameView>
+	{
 		
-		public override Gtk.Widget Control {
-			get {
-				return mergeWidget;
-			}
-		}
+	}
+	
+	public interface ILogViewHandler : IVersionControlViewHandler<ILogView>
+	{
 		
-		
-		public override void Load (string fileName)
-		{
-			
-			
-		}*/
+	}
+	
+	public interface IMergeViewHandler : IVersionControlViewHandler<IMergeView>
+	{
 		
 	}
 }

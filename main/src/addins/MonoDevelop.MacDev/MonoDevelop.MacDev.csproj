@@ -140,6 +140,7 @@
     <Compile Include="ObjCIntegration\CSharpCodeTypeDefinition.cs">
       <DependentUpon>CSharpCodeTypeDefinition.tt</DependentUpon>
     </Compile>
+    <Compile Include="MonoDevelop.MacDev.PlistEditor\PlistDiffHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
@@ -216,6 +217,10 @@
     <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
       <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
       <Name>Mono.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
+      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
+      <Name>MonoDevelop.VersionControl</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>

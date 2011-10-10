@@ -32,97 +32,16 @@ using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
+using Mono.Addins;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public class VersionControlDocumentInfo
+	public interface IDiffView : IAttachableViewContent
 	{
-		bool alreadyStarted = false;
-		
-		public Document Document {
-			get;
-			set;
-		}
-
-		public VersionControlItem Item {
-			get;
-			set;
-		}
-
-		public Revision[] History {
-			get;
-			set;
-		}
-		
-		public VersionInfo VersionInfo {
-			get;
-			set;
-		}
-		
-		public Repository Repository {
-			get;
-			set;
-		}
-		
-		public bool Started {
-			get { return alreadyStarted; }
-		}
-
-		public VersionControlDocumentInfo (Document document, VersionControlItem item, Repository repository)
-		{
-			this.Document = document;
-			this.Item = item;
-			this.Repository = repository;
-		}
-
-		public void Start ()
-		{
-			if (alreadyStarted)
-				return;
-			alreadyStarted = true;
-			ThreadPool.QueueUserWorkItem (delegate {
-				lock (updateLock) {
-					try {
-						History      = Item.Repository.GetHistory (Item.Path, null);
-						VersionInfo  = Item.Repository.GetVersionInfo (Item.Path, false);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error retrieving history", ex);
-					}
-					
-					DispatchService.GuiDispatch (delegate {
-						OnUpdated (EventArgs.Empty);
-					});
-					isUpdated = true;
-				}
-			});
-		}
-		
-		object updateLock = new object ();
-		bool isUpdated = false;
-		
-		public void RunAfterUpdate (Action act) 
-		{
-			if (isUpdated) {
-				act ();
-				return;
-			}
-			while (!isUpdated)
-				Thread.Sleep (10);
-			act ();
-		}
-		
-		protected virtual void OnUpdated (EventArgs e)
-		{
-			EventHandler handler = this.Updated;
-			if (handler != null)
-				handler (this, e);
-		}
-
-		public event EventHandler Updated;
-
 	}
 	
-	class DiffView : BaseView, IAttachableViewContent, IUndoHandler, IClipboardHandler
+	public class DiffView : BaseView, IDiffView, IUndoHandler, IClipboardHandler
 	{
 		DiffWidget widget;
 
@@ -150,39 +69,7 @@ namespace MonoDevelop.VersionControl.Views
 				return ComparisonWidget.Diff;
 			}
 		}
-		
-		public static void AttachViewContents (Document document, VersionControlItem item)
-		{
-			IWorkbenchWindow window = document.Window;
-			if (window.SubViewContents.Any (sub => sub is DiffView))
-				return;
-			
-			VersionControlDocumentInfo info = new VersionControlDocumentInfo (document, item, item.Repository);
-			
-			DiffView comparisonView = new DiffView (info);
-			window.AttachViewContent (comparisonView);
-//			window.AttachViewContent (new PatchView (comparisonView, info));
-			window.AttachViewContent (new BlameView (info));
-			window.AttachViewContent (new LogView (info));
-			
-			if (info.VersionInfo != null && info.VersionInfo.Status == VersionStatus.Conflicted)
-				window.AttachViewContent (new MergeView (info));
-		}
 
-		public static void Show (VersionControlItemList items)
-		{
-			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-				DiffView.AttachViewContents (document, item);
-				document.Window.SwitchView (document.Window.FindView (typeof(DiffView)));
-			}
-		}
-		
-		public static bool CanShow (VersionControlItemList items)
-		{
-			return items.Any (i => i.VersionInfo.HasLocalChanges);
-		}
-		
 		VersionControlDocumentInfo info;
 		public DiffView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Changes"))
 		{
@@ -193,24 +80,12 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.info = info;
 			widget = new DiffWidget (info);
-			
-			ComparisonWidget.OriginalEditor.Document.MimeType = ComparisonWidget.DiffEditor.Document.MimeType = info.Document.Editor.Document.MimeType;
-			ComparisonWidget.OriginalEditor.Options.FontName = ComparisonWidget.DiffEditor.Options.FontName = info.Document.Editor.Options.FontName;
-			ComparisonWidget.OriginalEditor.Options.ColorScheme = ComparisonWidget.DiffEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
-			ComparisonWidget.OriginalEditor.Options.ShowFoldMargin = ComparisonWidget.DiffEditor.Options.ShowFoldMargin = false;
-			ComparisonWidget.OriginalEditor.Options.ShowIconMargin = ComparisonWidget.DiffEditor.Options.ShowIconMargin = false;
-			
 			ComparisonWidget.SetRevision (ComparisonWidget.DiffEditor, baseRev);
 			ComparisonWidget.SetRevision (ComparisonWidget.OriginalEditor, toRev);
 			
 			widget.ShowAll ();
 		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-		}
-
 		#region IAttachableViewContent implementation
 
 		public int GetLineInCenter (Mono.TextEditor.TextEditor editor)
@@ -223,8 +98,13 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
-			ComparisonWidget.OriginalEditor.Document.IgnoreFoldings = true;
-			ComparisonWidget.OriginalEditor.Caret.Location = info.Document.Editor.Caret.Location;
+			var buffer = info.Document.GetContent<ITextBuffer> ();
+			if (buffer != null) {
+				int line, col;
+				buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out col);
+				ComparisonWidget.OriginalEditor.SetCaretTo (line, col);
+			}
+			
 			if (ComparisonWidget.Allocation.Height == 1 && ComparisonWidget.Allocation.Width == 1) {
 				ComparisonWidget.SizeAllocated += HandleComparisonWidgetSizeAllocated;
 			} else {
@@ -235,20 +115,24 @@ namespace MonoDevelop.VersionControl.Views
 		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
 			ComparisonWidget.SizeAllocated -= HandleComparisonWidgetSizeAllocated;
-			int line = GetLineInCenter (info.Document.Editor.Parent);
-			ComparisonWidget.OriginalEditor.CenterTo (line, 1);
-			ComparisonWidget.OriginalEditor.GrabFocus ();
+			var sourceEditorView = info.Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			if (sourceEditorView != null) {
+				int line = GetLineInCenter (sourceEditorView.TextEditor);
+				ComparisonWidget.OriginalEditor.CenterTo (line, 1);
+				ComparisonWidget.OriginalEditor.GrabFocus ();
+			}
 		}
 		
 		public void Deselected ()
 		{
-			info.Document.Editor.Caret.Location = ComparisonWidget.OriginalEditor.Caret.Location;
-			
-			int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
-			if (Math.Abs (GetLineInCenter (info.Document.Editor.Parent) - line) > 2)
-				info.Document.Editor.CenterTo (line, 1);
-
-			ComparisonWidget.OriginalEditor.Document.IgnoreFoldings = false;
+			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
+			if (sourceEditor != null) {
+				sourceEditor.TextEditor.Caret.Location = ComparisonWidget.OriginalEditor.Caret.Location;
+				
+				int line = GetLineInCenter (ComparisonWidget.OriginalEditor);
+				if (Math.Abs (GetLineInCenter (sourceEditor.TextEditor) - line) > 2)
+					sourceEditor.TextEditor.CenterTo (line, 1);
+			}
 		}
 
 		public void BeforeSave ()

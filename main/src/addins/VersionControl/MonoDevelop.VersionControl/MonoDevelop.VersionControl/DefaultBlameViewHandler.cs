@@ -1,10 +1,10 @@
 // 
-// MergeView.cs
+// DefaultBlameViewHandler.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Alan McGovern <alan@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright 2011, Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,66 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.VersionControl.Views;
 
-namespace MonoDevelop.VersionControl.Views
+namespace MonoDevelop.VersionControl
 {
-	public interface IMergeView : IAttachableViewContent
+	public class DefaultBlameViewHandler : IBlameViewHandler
 	{
-	}
-	
-	class MergeView : BaseView, IMergeView
-	{
-		MergeWidget widget;
-
-		public override Gtk.Widget Control { 
-			get {
-				return widget;
-			}
-		}
-
-		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"))
+		public bool CanHandle (VersionControlItem item)
 		{
-			widget = new MergeWidget ();
-			widget.Load (info);
-		}
-
-		public void Selected ()
-		{
-			widget.UpdateLocalText ();
-			widget.info.Start ();
+			return DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (item.Path));
 		}
 		
-		public void Deselected ()
+		public IBlameView CreateView (VersionControlItem item, IViewContent primaryView)
 		{
+			return new BlameView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
 		}
-
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
-
-	/*	MergeWidget mergeWidget;
-		
-		public override Gtk.Widget Control {
-			get {
-				return mergeWidget;
-			}
-		}
-		
-		
-		public override void Load (string fileName)
-		{
-			
-			
-		}*/
-		
 	}
 }
-

@@ -95,7 +95,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 		}
 		
-		public int FindView (Type viewType)
+		public int FindView<T> ()
 		{
 			return -1;
 		}

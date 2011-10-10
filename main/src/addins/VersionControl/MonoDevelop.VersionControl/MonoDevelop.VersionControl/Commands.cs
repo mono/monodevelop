@@ -214,9 +214,8 @@ namespace MonoDevelop.VersionControl
 	{
 		protected override void Run ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			DiffView.AttachViewContents (doc, GetItem ());
-			doc.Window.SwitchView (doc.Window.FindView (typeof (DiffView)));
+			var window = IdeApp.Workbench.ActiveDocument.Window;
+			window.SwitchView (window.FindView<IDiffView> ());
 		}
 	}
 	
@@ -224,9 +223,8 @@ namespace MonoDevelop.VersionControl
 	{
 		protected override void Run ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			DiffView.AttachViewContents (doc, GetItem ());
-			doc.Window.SwitchView (doc.Window.FindView (typeof (BlameView)));
+			var window = IdeApp.Workbench.ActiveDocument.Window;
+			window.SwitchView (window.FindView<IBlameView> ());
 		}
 	}
 	
@@ -234,9 +232,8 @@ namespace MonoDevelop.VersionControl
 	{
 		protected override void Run ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			DiffView.AttachViewContents (doc, GetItem ());
-			doc.Window.SwitchView (doc.Window.FindView (typeof (LogView)));
+			var window = IdeApp.Workbench.ActiveDocument.Window;
+			window.SwitchView (window.FindView<ILogView> ());
 		}
 	}
 }

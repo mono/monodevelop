@@ -54,6 +54,42 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffViewHandler" name = "Diff view handler">
+		<Description>Handler used to create the a diff view which can display the current file.</Description>
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IDiffViewHandler" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/VersionControl/DiffViewHandler">
+		<Handler class = "MonoDevelop.VersionControl.DefaultDiffViewHandler" />
+	</Extension>
+	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameViewHandler" name = "Blame view handler">
+		<Description>Handler used to create the a blame view which can display the current file.</Description>
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IBlameViewHandler" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/VersionControl/BlameViewHandler">
+		<Handler class = "MonoDevelop.VersionControl.DefaultBlameViewHandler" />
+	</Extension>
+	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/LogViewHandler" name = "Log view handler">
+		<Description>Handler used to create the a log view which can display the current file.</Description>
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.ILogViewHandler" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/VersionControl/LogViewHandler">
+		<Handler class = "MonoDevelop.VersionControl.DefaultLogViewHandler" />
+	</Extension>
+	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/MergeViewHandler" name = "Merge view handler">
+		<Description>Handler used to create the a merge view which can display the current file.</Description>
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IMergeViewHandler" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/VersionControl/MergeViewHandler">
+		<Handler class = "MonoDevelop.VersionControl.DefaultMergeViewHandler" />
+	</Extension>
+	
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffView/ContextMenu" name = "Diff view context menu">
 		<Description>Context menu for the diff view.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />

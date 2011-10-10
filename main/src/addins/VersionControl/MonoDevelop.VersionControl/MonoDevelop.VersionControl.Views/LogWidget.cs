@@ -119,7 +119,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.Build ();
 			this.info = info;
 			if (info.Document != null)
-				this.preselectFile = info.Document.FileName;
+				this.preselectFile = info.Item.Path;
 			
 			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
 			revertButton.IsImportant = true;

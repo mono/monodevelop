@@ -32,7 +32,11 @@ using Mono.TextEditor;
 using System.Linq;
 namespace MonoDevelop.VersionControl.Views
 {
-	internal class BlameView : BaseView, IAttachableViewContent, IUndoHandler, IClipboardHandler
+	public interface IBlameView : IAttachableViewContent
+	{	
+	}
+	
+	internal class BlameView : BaseView, IBlameView, IUndoHandler, IClipboardHandler
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
@@ -45,43 +49,29 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public static bool Show (VersionControlItemList items, bool test)
-		{
-			if (!test) {
-				Show (items);
-				return true;
-			}
-			else
-				return items.All (i => i.VersionInfo.CanAnnotate);
-		}
-		
-		public static void Show (VersionControlItemList items)
-		{
-			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-				DiffView.AttachViewContents (document, item);
-				document.Window.SwitchView (document.Window.FindView (typeof(BlameView)));
-			}
-		}
-		
 		public BlameView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Blame"))
 		{
 			this.info = info;
-			
 		}
 		
 		#region IAttachableViewContent implementation
 		public void Selected ()
 		{
 			info.Start ();
-			widget.Editor.Caret.Location = info.Document.Editor.Caret.Location;
-			widget.Editor.VAdjustment.Value = info.Document.Editor.VAdjustment.Value;
+			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
+			if (sourceEditor != null) {
+				widget.Editor.Caret.Location = sourceEditor.TextEditor.Caret.Location;
+				widget.Editor.VAdjustment.Value = sourceEditor.TextEditor.VAdjustment.Value;
+			}
 		}
 
 		public void Deselected ()
 		{
-			info.Document.Editor.Caret.Location = widget.Editor.Caret.Location;
-			info.Document.Editor.VAdjustment.Value = widget.Editor.VAdjustment.Value;
+			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
+			if (sourceEditor != null) {
+				sourceEditor.TextEditor.Caret.Location = widget.Editor.Caret.Location;
+				sourceEditor.TextEditor.VAdjustment.Value = widget.Editor.VAdjustment.Value;
+			}
 		}
 
 		public void BeforeSave ()

@@ -31,9 +31,11 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/MergeWidget.cs \
 	MonoDevelop.VersionControl.Views/StatusView.cs \
 	MonoDevelop.VersionControl.Views/SubviewAttachmentHandler.cs \
+	MonoDevelop.VersionControl.Views/VersionControlDocumentInfo.cs \
 	MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \
 	MonoDevelop.VersionControl/AnnotateCommand.cs \
 	MonoDevelop.VersionControl/BaseView.cs \
+	MonoDevelop.VersionControl/BlameCommand.cs \
 	MonoDevelop.VersionControl/ChangeLogWriter.cs \
 	MonoDevelop.VersionControl/ChangeSet.cs \
 	MonoDevelop.VersionControl/CheckoutCommand.cs \
@@ -44,9 +46,17 @@ FILES =  \
 	MonoDevelop.VersionControl/CommitMessageFormat.cs \
 	MonoDevelop.VersionControl/CommitMessageStyle.cs \
 	MonoDevelop.VersionControl/CreatePatchCommand.cs \
+	MonoDevelop.VersionControl/DefaultBlameViewHandler.cs \
+	MonoDevelop.VersionControl/DefaultDiffViewHandler.cs \
+	MonoDevelop.VersionControl/DefaultLogViewHandler.cs \
+	MonoDevelop.VersionControl/DefaultMergeViewHandler.cs \
+	MonoDevelop.VersionControl/DiffCommand.cs \
 	MonoDevelop.VersionControl/FileUpdateEventHandler.cs \
 	MonoDevelop.VersionControl/IRepositoryEditor.cs \
+	MonoDevelop.VersionControl/IVersionControlViewHandler.cs \
 	MonoDevelop.VersionControl/LockCommand.cs \
+	MonoDevelop.VersionControl/LogCommand.cs \
+	MonoDevelop.VersionControl/MergeCommand.cs \
 	MonoDevelop.VersionControl/PublishCommand.cs \
 	MonoDevelop.VersionControl/Repository.cs \
 	MonoDevelop.VersionControl/RevertCommand.cs \
