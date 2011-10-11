@@ -179,7 +179,7 @@ namespace Mono.MHex.Data
 			if (!isInUndo) 
 				EndAtomicUndo ();
 			if (Length == 0)
-				Insert (0, new byte[] {0})
+				Insert (0, new byte[] {0});
 		}
 		
 		public void UpdateLine (long line)
