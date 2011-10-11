@@ -79,6 +79,7 @@ namespace MonoDevelop.CSharp
 			#region IListDataProvider implementation
 			public void Reset ()
 			{
+				stringCache.Clear ();
 				memberList.Clear ();
 				if (tag is IParsedFile) {
 					var types = new Stack<ITypeDefinition> (((IParsedFile)tag).TopLevelTypeDefinitions);
@@ -92,14 +93,23 @@ namespace MonoDevelop.CSharp
 					memberList.AddRange (((ITypeDefinition)tag).NestedTypes);
 					memberList.AddRange (((ITypeDefinition)tag).Members);
 				}
-				memberList.Sort ((x, y) => String.Compare (GetString (amb, x), GetString (amb, y), StringComparison.OrdinalIgnoreCase));
+				memberList.Sort ((x, y) => String.Compare (x.Name, y.Name, StringComparison.OrdinalIgnoreCase));
 			}
 			
+			Dictionary<IEntity, string> stringCache = new Dictionary<IEntity, string> ();
 			string GetString (Ambience amb, IEntity x)
 			{
-				if (tag is IParsedFile)
-					return amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
-				return amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
+				string result;
+				if (stringCache.TryGetValue(x, out result))
+					return result;
+				if (tag is IParsedFile) {
+					result = amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
+				} else {
+					result = amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
+				}
+				
+				stringCache[x] = result;
+				return result;
 			}
 			
 			public string GetMarkup (int n)

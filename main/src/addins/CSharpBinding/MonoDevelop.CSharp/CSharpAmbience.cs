@@ -349,6 +349,8 @@ namespace MonoDevelop.CSharp
 			if (reference == null)
 				return "null";
 			var type = reference.Resolve (settings.Context);
+			if (type == SharedTypes.UnknownType)
+				return reference.ToString ();
 			var sb = new StringBuilder ();
 			if (type is ITypeDefinition && ((ITypeDefinition)type).IsSynthetic&& ((ITypeDefinition)type).Name == "$Anonymous$") {
 				sb.Append ("new {");
