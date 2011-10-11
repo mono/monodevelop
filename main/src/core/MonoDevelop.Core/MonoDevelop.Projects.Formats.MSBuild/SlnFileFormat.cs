@@ -41,6 +41,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Reflection;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -762,6 +763,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					handler.ReadSlnData (it);
 					
 				} catch (Exception e) {
+					// If we get a TargetInvocationException from using Activator.CreateInstance we
+					// need to unwrap the real exception
+					while (e is TargetInvocationException)
+						e = ((TargetInvocationException) e).InnerException;
+					
 					if (e is UnknownSolutionItemTypeException) {
 						var name = ((UnknownSolutionItemTypeException)e).TypeName;
 						LoggingService.LogWarning (!string.IsNullOrEmpty (name)?
@@ -770,6 +776,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						monitor.ReportWarning (!string.IsNullOrEmpty (name)?
 							  GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", projectPath, name)
 							: GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", projectPath));
+					} else if (e is UserException) {
+						var ex = (UserException) e;
+						LoggingService.LogError ("{0}: {1}", ex.Message, ex.Details);
+						monitor.ReportError (string.Format ("{0}{1}{1}{2}", ex.Message, Environment.NewLine, ex.Details), null);
 					} else {
 						LoggingService.LogError (string.Format ("Error while trying to load the project {0}", projectPath), e);
 						monitor.ReportWarning (GettextCatalog.GetString (
