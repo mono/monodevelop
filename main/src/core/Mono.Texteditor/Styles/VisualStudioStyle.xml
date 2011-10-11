@@ -52,7 +52,7 @@
 	<Style name="marker.ruler" color="aluminium3"/>
 	<Style name="marker.whitespace" color="#2b91af"/>
 	<Style name="marker.invalidline" color="#cc0000"/>
-	<Style name="marker.bracket" color="aluminium4" bgColor="aluminium1"/>
+	<Style name="marker.bracket" color="aluminium2" bgColor="aluminium1"/>
 	
 	<Style name="marker.bookmark.color1" color="black"/>
 	<Style name="marker.bookmark.color2" color="#bfd2f9"/>
