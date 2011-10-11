@@ -180,7 +180,6 @@ namespace MonoDevelop.CSharp.Highlighting
 		List<MemberReference> GetReferences (ResolveResult resolveResult)
 		{
 			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
-			
 			if (resolveResult is MemberResolveResult) {
 				finder.SetSearchedMembers (new [] { ((MemberResolveResult)resolveResult).Member });
 			} else if (resolveResult is TypeResolveResult) {

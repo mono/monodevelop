@@ -100,9 +100,11 @@ namespace MonoDevelop.CSharp.Refactoring
 				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
 			}
 			
+			if (node is InvocationExpression)
+				node = ((InvocationExpression)node).Target;
+			
 			if (node is MemberReferenceExpression)
 				node = ((MemberReferenceExpression)node).MemberNameToken;
-			
 			if (node is MemberDeclaration && (searchedMembers.First () is IMember)) 
 				node = ((MemberDeclaration)node).NameToken;
 			
@@ -147,13 +149,19 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (string.IsNullOrEmpty (memberName))
 				return Enumerable.Empty<MemberReference> ();
 			var editor = doc.Editor;
-			var positions = new List<int> (editor.Document.SearchForward (memberName, 0));
-			if (positions.Count <= 0)
-				return Enumerable.Empty<MemberReference> ();
 			var unit = doc.ParsedDocument.Annotation<CompilationUnit> ();
 			var file = doc.ParsedDocument.Annotation<CSharpParsedFile> ();
+			var ctx  = doc.TypeResolveContext;
+			var result = new List<MemberReference> ();
 			
-			return InternalFindReferences (doc.TypeResolveContext, editor, positions, unit, file);
+			foreach (var obj in searchedMembers) {
+				if (obj is IVariable) {
+					refFinder.FindLocalReferences ((IVariable)obj, file, unit, ctx, (astNode, r) => result.Add (GetReference (r, astNode, editor.FileName, editor)));
+				} else {
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, ctx, (astNode, r) => result.Add (GetReference (r, astNode, editor.FileName, editor)));
+				}
+			}
+			return result;
 		}
 		
 		public override IEnumerable<MemberReference> FindReferences ()
@@ -165,7 +173,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			ITypeResolveContext ctx = null;
 			foreach (var file in files) {
 				var editor = TextFileProvider.Instance.GetTextEditorData (file.Item2);
-				
 				var unit = new CSharpParser ().Parse (editor);
 				if (unit == null)
 					continue;
