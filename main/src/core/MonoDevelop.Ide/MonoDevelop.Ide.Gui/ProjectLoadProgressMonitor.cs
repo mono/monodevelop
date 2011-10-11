@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui
 			var buttonMigrate = new AlertButton (GettextCatalog.GetString ("Migrate"));
 			var buttonIgnore = new AlertButton (GettextCatalog.GetString ("Ignore"));
 			var response = MessageService.AskQuestion (
-				GettextCatalog.GetString ("Migrate MonoMac Project?"),
+				GettextCatalog.GetString ("Migrate Project?"),
 				GettextCatalog.GetString (
 					"One or more projects must be migrated to a new format. " +
 					"After migration, it will not be able to be opened in " +
