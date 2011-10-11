@@ -67,11 +67,11 @@ namespace MonoDevelop.HexEditor
 		
 		public override void Save (string fileName)
 		{
-			File.WriteAllBytes (fileName, hexEditor.HexEditorData.Buffer.Bytes);
+			File.WriteAllBytes (fileName, hexEditor.HexEditorData.Bytes);
 			ContentName = fileName;
 			this.IsDirty = false;
 		}
-
+		
 		public override void Load (string fileName)
 		{
 			using (Stream stream = File.OpenRead (fileName)) { 

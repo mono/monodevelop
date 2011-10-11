@@ -75,6 +75,12 @@ namespace Mono.MHex.Data
 			}
 		}
 		
+		public byte[] Bytes {
+			get {
+				return GetBytes (0, (int)Length);
+			}
+		}
+		
 		public byte[] GetBytes (long offset, int count)
 		{
 			if (count == 0)
