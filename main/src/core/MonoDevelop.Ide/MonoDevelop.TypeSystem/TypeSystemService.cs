@@ -217,17 +217,24 @@ namespace MonoDevelop.TypeSystem
 			return null;
 		}
 		
+		static string GetName (string baseName, int i)
+		{
+			if (i == 0)
+				return baseName;
+			return baseName + "-" + i;
+		}
+		
 		static string CreateCacheDirectory (string fileName)
 		{
 			try {
 				string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
 				string name = Path.GetFileNameWithoutExtension (fileName);
 				string baseName = Path.Combine (derivedDataPath, name);
-				int i = 1;
-				while (File.Exists (baseName + "-" + i))
+				int i = 0;
+				while (Directory.Exists (GetName (baseName, i)))
 					i++;
 				
-				string cacheDir = baseName + "-" + i;
+				string cacheDir = GetName (baseName, i);
 				
 				Directory.CreateDirectory (cacheDir);
 				
@@ -242,7 +249,7 @@ namespace MonoDevelop.TypeSystem
 		static T DeserializeObject<T> (string path) where T : class
 		{
 			try {
-				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
+				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					using (var reader = new BinaryReaderWith7BitEncodedInts (fs)) {
 						var s = new FastSerializer();
 						return (T)s.Deserialize (reader);
@@ -598,7 +605,7 @@ namespace MonoDevelop.TypeSystem
 		static AssemblyDefinition ReadAssembly (string fileName)
 		{
 			ReaderParameters parameters = new ReaderParameters ();
-			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
+//			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
 				return AssemblyDefinition.ReadAssembly (stream, parameters);
 			}
@@ -626,7 +633,9 @@ namespace MonoDevelop.TypeSystem
 			string cache = GetCacheDirectory (fileName);
 			if (cache != null) {
 				TouchCache (cache);
-				return DeserializeObject <ITypeResolveContext> (Path.Combine (cache, "completion.cache"));
+				var deserialized = DeserializeObject <IProjectContent> (Path.Combine (cache, "completion.cache"));
+				if (deserialized != null)
+					return deserialized;
 			}
 			
 			var asm = ReadAssembly (fileName);
@@ -643,14 +652,17 @@ namespace MonoDevelop.TypeSystem
 				}
 			}
 //			loader.InterningProvider = new SimpleInterningProvider ();
-			
-			var result = loader.LoadAssembly (asm);
-			cache = CreateCacheDirectory (fileName);
-			if (cache != null) {
-				SerializeObject (Path.Combine (cache, "completion.cache"), result);
+			try {
+				var result = loader.LoadAssembly (asm);
+				cache = CreateCacheDirectory (fileName);
+				if (cache != null)
+					SerializeObject (Path.Combine (cache, "completion.cache"), result);
+				
+				return result;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error loading assembly " + fileName, ex);
+				return null;
 			}
-			
-			return result;
 		}
 		
 		public static ITypeResolveContext LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
