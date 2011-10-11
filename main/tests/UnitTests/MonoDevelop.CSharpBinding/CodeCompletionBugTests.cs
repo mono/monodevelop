@@ -3305,20 +3305,20 @@ public class Test
 {
 	public class TestFoo
 	{
-		T Return ()
+		public T Return ()
 		{
 			
 		}
 	}
 	
-	public TestFoo Bar;
+	public TestFoo Bar = new TestFoo ();
 }
 
 public class Test
 {
 	public void SomeMethod ()
 	{
-		Foo<Test> foo;
+		Foo<Test> foo = new Foo<Test> ();
 		var f = foo.Bar;
 		$f.Return ().$
 	}
