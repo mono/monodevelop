@@ -35,7 +35,7 @@
             // checkOverride
             // 
             this.checkOverride.AutoSize = true;
-            this.checkOverride.Location = new System.Drawing.Point(10, 13);
+            this.checkOverride.Location = new System.Drawing.Point(5, 13);
             this.checkOverride.Name = "checkOverride";
             this.checkOverride.Size = new System.Drawing.Size(158, 17);
             this.checkOverride.TabIndex = 0;
@@ -48,7 +48,7 @@
             this.comboActions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboActions.Enabled = false;
             this.comboActions.FormattingEnabled = true;
-            this.comboActions.Location = new System.Drawing.Point(174, 11);
+            this.comboActions.Location = new System.Drawing.Point(170, 11);
             this.comboActions.Name = "comboActions";
             this.comboActions.Size = new System.Drawing.Size(192, 21);
             this.comboActions.TabIndex = 1;
