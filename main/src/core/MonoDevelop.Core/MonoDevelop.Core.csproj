@@ -20,6 +20,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -30,6 +31,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -38,9 +40,7 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <Private>False</Private>
     </Reference>

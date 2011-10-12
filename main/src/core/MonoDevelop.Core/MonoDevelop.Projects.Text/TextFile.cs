@@ -199,12 +199,24 @@ namespace MonoDevelop.Projects.Text
 			public IntPtr Msg;
 		}
 
+		static unsafe int strlen (IntPtr str)
+		{
+			byte *s = (byte *) str;
+			int n = 0;
+			
+			while (*s != 0) {
+				s++; n++;
+			}
+			
+			return n;
+		}
+
 		public static string Utf8PtrToString (IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			int len = (int) strlen (ptr);
+			int len = strlen (ptr);
 			byte[] bytes = new byte [len];
 			Marshal.Copy (ptr, bytes, 0, len);
 			return System.Text.Encoding.UTF8.GetString (bytes);
@@ -247,9 +259,6 @@ namespace MonoDevelop.Projects.Text
 		
 		[DllImport("libglib-2.0-0.dll")]
 		static extern void g_error_free (IntPtr err);
-		
-		[DllImport("libc")]
-		static extern uint strlen (IntPtr str);
 		
 		#endregion
 		

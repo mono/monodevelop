@@ -487,7 +487,7 @@ REFS =  \
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
-	$(CSC) $(CSC_FLAGS) -warnaserror -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources) \
+	$(CSC) $(CSC_FLAGS) -warnaserror -unsafe -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources) \
 	&& cp $(srcdir)/$(CONFIG) $(top_builddir)/build/bin
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
