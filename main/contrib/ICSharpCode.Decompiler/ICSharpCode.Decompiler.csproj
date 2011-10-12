@@ -119,7 +119,6 @@
     <Compile Include="ReferenceResolvingException.cs" />
     <Compile Include="TextOutputWriter.cs" />
     <None Include="Properties\AssemblyInfo.template.cs" />
-    <Compile Include="Ast\Annotations.cs" />
     <Compile Include="Tests\CallOverloadedMethod.cs" />
     <Compile Include="Ast\Transforms\DecimalConstantTransform.cs" />
   </ItemGroup>
