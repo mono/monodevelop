@@ -309,6 +309,11 @@
     <Compile Include="Resolver\TypeInference.cs" />
     <Compile Include="Resolver\UsingScope.cs" />
     <Compile Include="Completion\CSharpCompletionEngine.cs" />
+    <Compile Include="Completion\CompletionDataWrapper.cs" />
+    <Compile Include="Completion\CSharpParameterCompletionEngine.cs" />
+    <Compile Include="Completion\IParameterCompletionDataFactory.cs" />
+    <Compile Include="Completion\CSharpCompletionEngineBase.cs" />
+    <Compile Include="Completion\ICompletionDataFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

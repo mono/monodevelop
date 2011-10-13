@@ -38,6 +38,7 @@ using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Parser;
 using System.IO;
+using ICSharpCode.NRefactory.Completion;
 
 
 

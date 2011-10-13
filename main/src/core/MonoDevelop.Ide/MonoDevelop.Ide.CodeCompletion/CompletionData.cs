@@ -30,10 +30,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public class CompletionData
+	public class CompletionData : ICompletionData
 	{
 		protected CompletionData () {}
 		
@@ -41,20 +42,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string DisplayText { get; set; }
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
+
 		public virtual string DisplayDescription { get; set; }
 		public virtual CompletionCategory CompletionCategory { get; set; }
 		public virtual DisplayFlags DisplayFlags { get; set; }
 		
-		public virtual bool IsOverloaded { 
+		public virtual bool HasOverloads { 
 			get {
 				return false;
 			}
 		}
 		
-		public virtual IEnumerable<CompletionData> OverloadedData {
+		public virtual IEnumerable<ICompletionData> OverloadedData {
 			get {
 				throw new System.InvalidOperationException ();
 			}
+		}
+		
+		public virtual void AddOverload (ICompletionData data)
+		{
+			throw new System.InvalidOperationException ();
 		}
 		
 		public CompletionData (string text) : this (text, null, null) {}

@@ -1,10 +1,10 @@
 // 
-// CompletionData.cs
+// VariableCompletionData.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,29 +23,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeCompletion;
+using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
-namespace MonoDevelop.Ide.CodeCompletion
+namespace MonoDevelop.CSharp.Completion
 {
-	public abstract class CompletionCategory : IComparable<CompletionCategory>
+	public class VariableCompletionData : CompletionData, IVariableCompletionData
 	{
-		public string DisplayText { get; set; }
-		public IconId Icon { get; set; }
-		
-		public CompletionCategory ()
-		{
+		public IVariable Variable {
+			get;
+			private set;
 		}
 		
-		public CompletionCategory (string displayText, IconId icon)
+		public VariableCompletionData (IVariable variable) : base (variable.Name, variable.GetStockIcon ())
 		{
-			this.DisplayText = displayText;
-			this.Icon = icon;
+			this.Variable = variable;
 		}
-		
-		public abstract int CompareTo (CompletionCategory other);
 	}
 }
+

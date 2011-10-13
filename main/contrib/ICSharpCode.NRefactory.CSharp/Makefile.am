@@ -124,7 +124,12 @@ FILES =  \
 	Ast/TypeMembers/ParameterDeclaration.cs \
 	Ast/TypeMembers/PropertyDeclaration.cs \
 	Ast/TypeMembers/VariableInitializer.cs \
+	Completion/CompletionDataWrapper.cs \
 	Completion/CSharpCompletionEngine.cs \
+	Completion/CSharpCompletionEngineBase.cs \
+	Completion/CSharpParameterCompletionEngine.cs \
+	Completion/ICompletionDataFactory.cs \
+	Completion/IParameterCompletionDataFactory.cs \
 	Formatter/AstFormattingVisitor.cs \
 	Formatter/CSharpFormattingOptions.cs \
 	Formatter/Indent.cs \

@@ -211,9 +211,11 @@
     <Compile Include="TypeSystem\IAmbience.cs" />
     <Compile Include="Completion\DisplayFlags.cs" />
     <Compile Include="Completion\ICompletionData.cs" />
-    <Compile Include="Completion\ICompletionDataFactory.cs" />
     <Compile Include="Completion\IEntityCompletionData.cs" />
     <Compile Include="TypeSystem\Implementation\MinimalResolveContext.cs" />
+    <Compile Include="Completion\CompletionCategory.cs" />
+    <Compile Include="Completion\IVariableCompletionData.cs" />
+    <Compile Include="Completion\IParameterDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />

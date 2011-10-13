@@ -361,7 +361,7 @@ class Test
 }");
 			Assert.IsNotNull (provider, "provider not found.");
 			for (int i = 0; i < provider.Count; i++) {
-				CompletionData varname = provider [i];
+				var varname = provider [i];
 				Console.WriteLine (varname.CompletionText);
 			}
 			Assert.AreEqual (6, provider.Count);
@@ -1397,7 +1397,7 @@ class Test
 		[Test()]
 		public void TestBug474199B ()
 		{
-			IParameterDataProvider provider = ParameterCompletionTests.CreateProvider (
+			var provider = ParameterCompletionTests.CreateProvider (
 @"
 public class InnerTest
 {

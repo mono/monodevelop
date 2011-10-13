@@ -1,5 +1,5 @@
 // 
-// ICompletionData.cs
+// IVariableCompletionData.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,31 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Completion
 {
-	public interface ICompletionData
+	public interface IVariableCompletionData : ICompletionData
 	{
-		CompletionCategory CompletionCategory { get; set; }
-		
-		string DisplayText { get; set; }
-		string Description { get; set; }
-		
-		string CompletionText { get; set; }
-		
-		DisplayFlags DisplayFlags { get; set; }
-		
-		bool HasOverloads { 
+		IVariable Variable {
 			get;
 		}
-		
-		IEnumerable<ICompletionData> OverloadedData {
-			get;
-		}
-		
-		void AddOverload (ICompletionData data);
 	}
 }
+

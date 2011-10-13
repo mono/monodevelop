@@ -583,7 +583,7 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
 			CompletionWindowManager.HideWindow ();
-			ParameterInformationWindowManager.HideWindow (view);
+			ParameterInformationWindowManager.HideWindow (null, view);
 			return base.OnFocusOutEvent (evnt); 
 		}
 		
@@ -743,7 +743,7 @@ namespace MonoDevelop.SourceEditor
 			base.HAdjustmentValueChanged ();
 			if (!isInKeyStroke) {
 				CompletionWindowManager.HideWindow ();
-				ParameterInformationWindowManager.HideWindow (view);
+				ParameterInformationWindowManager.HideWindow (null, view);
 			}
 		}
 		
@@ -751,7 +751,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			base.VAdjustmentValueChanged ();
 			CompletionWindowManager.HideWindow ();
-			ParameterInformationWindowManager.HideWindow (view);
+			ParameterInformationWindowManager.HideWindow (null, view);
 		}
 		
 		

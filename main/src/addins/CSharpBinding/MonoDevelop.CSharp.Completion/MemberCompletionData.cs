@@ -39,10 +39,11 @@ using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class MemberCompletionData : MonoDevelop.Ide.CodeCompletion.MemberCompletionData
+	public class MemberCompletionData : CompletionData, IEntityCompletionData
 	{
 		CSharpCompletionTextEditorExtension editorCompletion;
 		OutputFlags flags;
@@ -82,7 +83,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					displayText = ambience.GetString (editorCompletion.ctx, Member as IEntity, flags | OutputFlags.HideGenericParameterNames);
+					displayText = ambience.GetString (editorCompletion.ctx, Entity, flags | OutputFlags.HideGenericParameterNames);
 				}
 				return displayText; 
 			}
@@ -90,7 +91,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override IconId Icon {
 			get {
-				return (Member as IEntity).GetStockIcon ();
+				return Entity.GetStockIcon ();
 			}
 		}
 		
@@ -105,13 +106,14 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public bool IsDelegateExpected { get; set; }
 		
-		public MemberCompletionData (CSharpCompletionTextEditorExtension  editorCompletion, IMember member, OutputFlags flags)
+		public MemberCompletionData (CSharpCompletionTextEditorExtension  editorCompletion, IEntity entity, OutputFlags flags)
 		{
+			
 			this.editorCompletion = editorCompletion;
 			this.flags = flags;
-			SetMember (member);
+			SetMember (entity);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
-			var m = Member as IMember;
+			var m = Entity as IMember;
 			if (m != null && m.IsObsolete ())
 				DisplayFlags |= DisplayFlags.Obsolete;
 		}
@@ -153,7 +155,7 @@ namespace MonoDevelop.CSharp.Completion
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 			
-			if (keyChar == '(' && !IsDelegateExpected && Member is IMethod  && !HasNonMethodMembersWithSameName ((IMember)Member)) {
+			if (keyChar == '(' && !IsDelegateExpected && Entity is IMethod  && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
 				int pos;
 				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
 					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
@@ -180,7 +182,7 @@ namespace MonoDevelop.CSharp.Completion
 					return;
 				}
 				
-				var method = (IMethod)Member;
+				var method = (IMethod)Entity;
 				var line = Editor.GetLine (Editor.Caret.Line);
 				string textToEnd = Editor.GetTextBetween (window.CodeCompletionContext.TriggerOffset + partialWord.Length, line.Offset + line.EditableLength);
 				if (Policy.BeforeMethodCallParentheses)
@@ -239,7 +241,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		void SetMember (IEntity member)
 		{
-			this.Member = member;
+			this.Entity = member;
 			if (member is IParameter) {
 				this.completionString = ((IParameter)member).Name;
 			} else {
@@ -257,12 +259,12 @@ namespace MonoDevelop.CSharp.Completion
 			var sb = new StringBuilder ();
 				
 			descriptionCreated = true;
-			if (Member is IMethod && ((IMethod)Member).IsExtensionMethod)
+			if (Entity is IMethod && ((IMethod)Entity).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			sb.Append (ambience.GetString (editorCompletion.ctx, Member as IEntity, 
+			sb.Append (ambience.GetString (editorCompletion.ctx, Entity, 
 				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
 
-			var m = (IMember)Member;
+			var m = (IMember)Entity;
 			if (m.IsObsolete ()) {
 				sb.AppendLine ();
 				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
@@ -270,13 +272,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			var returnType = m.ReturnType.Resolve (editorCompletion.ctx);
-			if (returnType.IsDelegate ()) {
+			if (returnType.Kind == TypeKind.Delegate) {
 				sb.AppendLine ();
 				sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
 				sb.Append (ambience.GetString (editorCompletion.ctx, returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
 			}
 			
-			string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Member) + "</summary>", new AmbienceService.DocumentationFormatOptions {
+			string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Entity) + "</summary>", new AmbienceService.DocumentationFormatOptions {
 				Ambience = ambience
 			});
 			
@@ -290,7 +292,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region IOverloadedCompletionData implementation 
 	
-		class OverloadSorter : IComparer<CompletionData>
+		class OverloadSorter : IComparer<ICompletionData>
 		{
 			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
 			ITypeResolveContext ctx;
@@ -300,10 +302,10 @@ namespace MonoDevelop.CSharp.Completion
 				this.ctx = ctx;
 			}
 			
-			public int Compare (CompletionData x, CompletionData y)
+			public int Compare (ICompletionData x, ICompletionData y)
 			{
-				var mx = ((MemberCompletionData)x).Member as IMember;
-				var my = ((MemberCompletionData)y).Member as IMember;
+				var mx = ((MemberCompletionData)x).Entity as IMember;
+				var my = ((MemberCompletionData)y).Entity as IMember;
 				int result;
 				
 				if (mx is ITypeDefinition && my is ITypeDefinition) {
@@ -329,20 +331,25 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public override IEnumerable<CompletionData> OverloadedData {
+		public override IEnumerable<ICompletionData> OverloadedData {
 			get {
 				if (overloads == null)
 					return new CompletionData[] { this };
 				
-				List<CompletionData> sorted = new List<CompletionData> (overloads.Values);
+				var sorted = new List<ICompletionData> (overloads.Values);
 				sorted.Add (this);
 				sorted.Sort (new OverloadSorter (editorCompletion.ctx));
 				return sorted;
 			}
 		}
 		
-		public override bool IsOverloaded {
+		public override bool HasOverloads {
 			get { return overloads != null && overloads.Count > 0; }
+		}
+		
+		public override void AddOverload (ICSharpCode.NRefactory.Completion.ICompletionData data)
+		{
+			AddOverload ((MemberCompletionData) data);
 		}
 		
 		public void AddOverload (MemberCompletionData overload)
@@ -350,35 +357,35 @@ namespace MonoDevelop.CSharp.Completion
 			if (overloads == null)
 				overloads = new Dictionary<string, CompletionData> ();
 			
-			if (overload.Member is IMember && Member is IMember) {
+			if (overload.Entity is IMember && Entity is IMember) {
 				// filter virtual & overriden members that came from base classes
 				// note that the overload tree is traversed top down.
-				var member = Member as IMember;
-				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType != null && ((IMember)overload.Member).DeclaringType != null && member.DeclaringType.ReflectionName != ((IMember)overload.Member).DeclaringType.ReflectionName) {
+				var member = Entity as IMember;
+				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType != null && ((IMember)overload.Entity).DeclaringType != null && member.DeclaringType.ReflectionName != ((IMember)overload.Entity).DeclaringType.ReflectionName) {
 					string str1 = ambience.GetString (editorCompletion.ctx, member as IMember, flags);
-					string str2 = ambience.GetString (editorCompletion.ctx, overload.Member as IMember, flags);
+					string str2 = ambience.GetString (editorCompletion.ctx, overload.Entity as IMember, flags);
 					if (str1 == str2) {
-						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Member)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Member)))
-							SetMember (overload.Member as IMember);
+						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Entity)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Entity)))
+							SetMember (overload.Entity as IMember);
 						return;
 					}
 				}
 				
-				string MemberId = (overload.Member as IMember).GetHelpUrl ();
-				if (Member is IMethod && overload.Member is IMethod) {
-					string signature1 = ambience.GetString (editorCompletion.ctx, Member as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
-					string signature2 = ambience.GetString (editorCompletion.ctx, overload.Member as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+				string MemberId = (overload.Entity as IMember).GetHelpUrl ();
+				if (Entity is IMethod && overload.Entity is IMethod) {
+					string signature1 = ambience.GetString (editorCompletion.ctx, Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+					string signature2 = ambience.GetString (editorCompletion.ctx, overload.Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
 					if (signature1 == signature2)
 						return;
 				}
 				
-				if (MemberId != (this.Member as IMember).GetHelpUrl () && !overloads.ContainsKey (MemberId)) {
+				if (MemberId != (this.Entity as IMember).GetHelpUrl () && !overloads.ContainsKey (MemberId)) {
 //					if (((IMethod)overload.Member).IsPartial)
 //						return;
 					overloads[MemberId] = overload;
 					
 					//if any of the overloads is obsolete, we should not mark the item obsolete
-					if (!(overload.Member as IMember).IsObsolete ())
+					if (!(overload.Entity as IMember).IsObsolete ())
 						DisplayFlags &= ~DisplayFlags.Obsolete;
 /*					
 					//make sure that if there are generic overloads, we show a generic signature
@@ -404,5 +411,14 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		#endregion
+
+		#region IEntityCompletionData implementation
+		public IEntity Entity {
+			get;
+			set;
+		}
+		#endregion
+
+
 	}
 }

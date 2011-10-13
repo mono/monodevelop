@@ -34,6 +34,8 @@ using Mono.TextEditor.PopupWindow;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -173,37 +175,35 @@ namespace MonoDevelop.Ide.CodeTemplates
 					list = ext.CodeCompletionCommand (CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
 				
 				foreach (object o in list) {
-					MonoDevelop.Ide.CodeCompletion.MemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.MemberCompletionData;
+					var data = o as IEntityCompletionData;
 					if (data == null)
 						continue;
 					
-					if (data.Member is IMember) {
-						IMember m = data.Member as IMember;
+					if (data.Entity is IMember) {
+						var m = data.Entity as IMember;
 						if (!GetElementType (m.ReturnType.Resolve (ctx)).Equals (SharedTypes.UnknownType))
-							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
+							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
 				
 				foreach (object o in list) {
-					MonoDevelop.Ide.CodeCompletion.MemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.MemberCompletionData;
+					var data = o as IEntityCompletionData;
 					if (data == null)
 						continue;
-					if (data.Member is IParameter) {
-						IParameter m = data.Member as IParameter;
+					if (data.Entity is IParameter) {
+						var m = data.Entity as IParameter;
 						if (!GetElementType (m.Type.Resolve (ctx)).Equals (SharedTypes.UnknownType))
-							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
+							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
 				
 				foreach (object o in list) {
-					MonoDevelop.Ide.CodeCompletion.MemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.MemberCompletionData;
+					var data = o as IVariableCompletionData;
 					if (data == null)
 						continue;
-					if (data.Member is IVariable) {
-						var m = data.Member as IVariable;
-						if (!GetElementType (m.Type.Resolve (ctx)).Equals (SharedTypes.UnknownType))
-							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
-					}
+					var m = data.Variable;
+					if (!GetElementType (m.Type.Resolve (ctx)).Equals (SharedTypes.UnknownType))
+						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 				}
 			}
 			return new CodeTemplateListDataProvider (result);

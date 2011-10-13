@@ -40,6 +40,7 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -59,57 +60,6 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		#region IParameterDataProvider implementation
-		
-		public int GetCurrentParameterIndex (ICompletionWidget widget, CodeCompletionContext ctx)
-		{
-			return GetCurrentParameterIndex (widget, ctx.TriggerOffset, 0);
-		}
-		
-		internal static int GetCurrentParameterIndex (ICompletionWidget widget, int offset, int memberStart)
-		{
-			int cursor = widget.CurrentCodeCompletionContext.TriggerOffset;
-			int i = offset;
-			
-			if (i > cursor)
-				return -1;
-			if (i == cursor) 
-				return 1; // parameters are 1 based
-			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			CSharpIndentEngine engine = new CSharpIndentEngine (MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types));
-			int index = memberStart + 1;
-			int parentheses = 0;
-			int bracket = 0;
-			do {
-				char c = widget.GetChar (i - 1);
-				engine.Push (c);
-				switch (c) {
-				case '{':
-					if (!engine.IsInsideOrdinaryCommentOrString)
-						bracket++;
-					break;
-				case '}':
-					if (!engine.IsInsideOrdinaryCommentOrString)
-						bracket--;
-					break;
-				case '(':
-					if (!engine.IsInsideOrdinaryCommentOrString)
-						parentheses++;
-					break;
-				case ')':
-					if (!engine.IsInsideOrdinaryCommentOrString)
-						parentheses--;
-					break;
-				case ',':
-					if (!engine.IsInsideOrdinaryCommentOrString && parentheses == 1 && bracket == 0)
-						index++;
-					break;
-				}
-				i++;
-			} while (i <= cursor && parentheses >= 0);
-			
-			return parentheses != 1 || bracket > 0 ? -1 : index;
-		}
-		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;

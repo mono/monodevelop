@@ -239,6 +239,7 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -30,6 +30,7 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -80,7 +81,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 		}
 		
-		public static bool ShowWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext, System.Action closedDelegate)
+		// ext may be null, but then parameter completion don't work
+		public static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext, System.Action closedDelegate)
 		{
 			try {
 				if (wnd == null) {
@@ -105,7 +107,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return false;
 				}
 			} finally {
-				ParameterInformationWindowManager.UpdateWindow (completionWidget);
+				ParameterInformationWindowManager.UpdateWindow (ext, completionWidget);
 			}
 		}
 
@@ -123,7 +125,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (wnd != null) {
 				wnd.Destroy ();
-				ParameterInformationWindowManager.UpdateWindow (wnd.CompletionWidget);
+				ParameterInformationWindowManager.UpdateWindow (null, wnd.CompletionWidget);
 				wnd = null;
 			}
 			OnWindowClosed (EventArgs.Empty);

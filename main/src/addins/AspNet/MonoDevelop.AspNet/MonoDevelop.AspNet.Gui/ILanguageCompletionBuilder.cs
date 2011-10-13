@@ -43,6 +43,7 @@ using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.AspNet.Gui
 {

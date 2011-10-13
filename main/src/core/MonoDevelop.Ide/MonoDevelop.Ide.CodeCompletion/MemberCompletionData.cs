@@ -29,11 +29,11 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public class MemberCompletionData : CompletionData
+/*	public class MemberCompletionData : CompletionData
 	{
 		public object Member {
 			get;
 			set;
 		}
-	}
+	}*/
 }

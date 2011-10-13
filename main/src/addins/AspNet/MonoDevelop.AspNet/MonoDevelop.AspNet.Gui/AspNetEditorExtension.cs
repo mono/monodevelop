@@ -51,6 +51,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.AspNet.Gui
 {

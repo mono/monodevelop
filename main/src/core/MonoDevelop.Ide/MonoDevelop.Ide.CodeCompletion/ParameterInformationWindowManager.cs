@@ -31,6 +31,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
+using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -45,7 +47,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		// Called when a key is pressed in the editor.
 		// Returns false if the key press has to continue normal processing.
-		public static bool ProcessKeyEvent (ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
+		public static bool ProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			if (methods.Count == 0)
 				return false;
@@ -59,7 +61,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					cmd.CurrentOverload ++;
 				else
 					cmd.CurrentOverload = 0;
-				UpdateWindow (widget);
+				UpdateWindow (ext, widget);
 				return true;
 			}
 			else if (key == Gdk.Key.Up) {
@@ -69,17 +71,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 					cmd.CurrentOverload --;
 				else
 					cmd.CurrentOverload = cmd.MethodProvider.OverloadCount - 1;
-				UpdateWindow (widget);
+				UpdateWindow (ext, widget);
 				return true;
 			}
 			else if (key == Gdk.Key.Escape) {
-				HideWindow (widget);
+				HideWindow (ext, widget);
 				return true;
 			}
 			return false;
 		}
 		
-		public static void PostProcessKeyEvent (ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
+		public static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			// Called after the key has been processed by the editor
 		
@@ -91,7 +93,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				// information window for that method.
 				
 				MethodData md = methods [n];
-				int pos = md.MethodProvider.GetCurrentParameterIndex (widget, md.CompletionContext);
+				int pos = ext.GetCurrentParameterIndex (md.CompletionContext);
 				if (pos == -1) {
 					methods.RemoveAt (n);
 					n--;
@@ -99,13 +101,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			// If the user enters more parameters than the current overload has,
 			// look for another overload with more parameters.
-			UpdateOverload (widget);
+			UpdateOverload (ext, widget);
 			
 			// Refresh.
-			UpdateWindow (widget);
+			UpdateWindow (ext, widget);
 		}
 		
-		public static void ShowWindow (ICompletionWidget widget, CodeCompletionContext ctx, IParameterDataProvider provider)
+		public static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, IParameterDataProvider provider)
 		{
 			if (provider.OverloadCount == 0)
 				return;
@@ -119,13 +121,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			md.CurrentOverload = 0;
 			md.CompletionContext = ctx;
 			methods.Add (md);
-			UpdateWindow (widget);
+			UpdateWindow (ext, widget);
 		}
 		
-		public static void HideWindow (ICompletionWidget widget)
+		public static void HideWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
 			methods.Clear ();
-			UpdateWindow (widget);
+			UpdateWindow (ext, widget);
 		}
 		
 		public static int GetCurrentOverload ()
@@ -142,7 +144,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return methods [methods.Count - 1].MethodProvider;
 		}
 		
-		static void UpdateOverload (ICompletionWidget widget)
+		static void UpdateOverload (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
 			if (methods.Count == 0)
 				return;
@@ -151,7 +153,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// look for another overload with more parameters.
 			
 			MethodData md = methods [methods.Count - 1];
-			int cparam = md.MethodProvider.GetCurrentParameterIndex (widget, md.CompletionContext);
+			int cparam = ext.GetCurrentParameterIndex (md.CompletionContext);
 			
 			if (cparam > md.MethodProvider.GetParameterCount (md.CurrentOverload)) {
 				// Look for an overload which has more parameters
@@ -171,7 +173,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static int X { get; private set; }
 		public static int Y { get; private set; }
 		public static bool wasAbove = false;
-		internal static void UpdateWindow (ICompletionWidget widget)
+		internal static void UpdateWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
 			// Updates the parameter information window from the information
 			// of the current method overload
@@ -189,7 +191,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var ctx = widget.CurrentCodeCompletionContext;
 			MethodData md = methods[methods.Count - 1];
-			int cparam = md.MethodProvider.GetCurrentParameterIndex (widget, md.CompletionContext);
+			int cparam = ext != null ? ext.GetCurrentParameterIndex (md.CompletionContext) : 0;
 			Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1);
 			X = md.CompletionContext.TriggerXCoord;
 			if (CompletionWindowManager.IsVisible) {

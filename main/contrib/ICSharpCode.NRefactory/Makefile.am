@@ -12,10 +12,12 @@ REFS =  \
 SIGNING_KEY=$(srcdir)/ICSharpCode.NRefactory.snk
 
 FILES =  \
+	Completion/CompletionCategory.cs \
 	Completion/DisplayFlags.cs \
 	Completion/ICompletionData.cs \
-	Completion/ICompletionDataFactory.cs \
 	Completion/IEntityCompletionData.cs \
+	Completion/IParameterDataProvider.cs \
+	Completion/IVariableCompletionData.cs \
 	Documentation/IDStringProvider.cs \
 	Documentation/XmlDocumentationProvider.cs \
 	Editor/IDocument.cs \

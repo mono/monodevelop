@@ -921,7 +921,7 @@ namespace MonoDevelop.Debugger
 					if (currentCompletionData != null) {
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
 						CodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
-						CompletionWindowManager.ShowWindow (c, dataList, this, ctx, OnCompletionWindowClosed);
+						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx, OnCompletionWindowClosed);
 					} else
 						currentCompletionData = null;
 				}
@@ -1337,7 +1337,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class DebugCompletionDataList: List<MonoDevelop.Ide.CodeCompletion.CompletionData>, ICompletionDataList
+	class DebugCompletionDataList: List<ICSharpCode.NRefactory.Completion.ICompletionData>, ICompletionDataList
 	{
 		public bool IsSorted { get; set; }
 		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)

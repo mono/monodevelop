@@ -43,6 +43,8 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.CSharp
 {
@@ -52,8 +54,8 @@ namespace MonoDevelop.CSharp
 		{
 			if (data is CompletionData) {
 				((CompletionData)data).CompletionText = text;
-			} else if (data is MonoDevelop.Ide.CodeCompletion.MemberCompletionData) {
-				((MonoDevelop.Ide.CodeCompletion.MemberCompletionData)data).CompletionText = text;
+			} else if (data is IEntityCompletionData) {
+				((IEntityCompletionData)data).CompletionText = text;
 			} else {
 				System.Console.WriteLine("Unknown completion data:" + data);
 			}

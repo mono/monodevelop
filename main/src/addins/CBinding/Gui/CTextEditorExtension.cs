@@ -47,6 +47,7 @@ using CBinding.Parser;
 using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Completion;
 
 namespace CBinding
 {

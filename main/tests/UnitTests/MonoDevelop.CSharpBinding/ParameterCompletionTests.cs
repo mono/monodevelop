@@ -37,6 +37,7 @@ using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {

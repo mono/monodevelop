@@ -31,6 +31,7 @@ using System.Text;
 using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Components;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

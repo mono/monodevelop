@@ -1,5 +1,5 @@
 // 
-// ICompletionData.cs
+// CompletionCategory.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,31 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Completion
 {
-	public interface ICompletionData
+	public abstract class CompletionCategory : IComparable<CompletionCategory>
 	{
-		CompletionCategory CompletionCategory { get; set; }
+		public string DisplayText { get; set; }
 		
-		string DisplayText { get; set; }
-		string Description { get; set; }
+		public string Icon { get; set; }
 		
-		string CompletionText { get; set; }
-		
-		DisplayFlags DisplayFlags { get; set; }
-		
-		bool HasOverloads { 
-			get;
+		public CompletionCategory ()
+		{
 		}
 		
-		IEnumerable<ICompletionData> OverloadedData {
-			get;
+		public CompletionCategory (string displayText, string icon)
+		{
+			this.DisplayText = displayText;
+			this.Icon = icon;
 		}
 		
-		void AddOverload (ICompletionData data);
+		public abstract int CompareTo (CompletionCategory other);
 	}
 }
+
