@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
 		{
-			if (string.IsNullOrEmpty(replacePattern))
+			if (replacePattern == null)
 				return GettextCatalog.GetString("Looking for '{0}' in current document", pattern);
 			return GettextCatalog.GetString("Replacing '{0}' in current document", pattern);
 		}
@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
 		{
-			if (string.IsNullOrEmpty(replacePattern))
+			if (replacePattern == null)
 				return GettextCatalog.GetString("Looking for '{0}' in current selection", pattern);
 			return GettextCatalog.GetString("Replacing '{0}' in current selection", pattern);
 		}
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
 		{
-			if (string.IsNullOrEmpty (replacePattern))
+			if (replacePattern == null)
 				return GettextCatalog.GetString ("Looking for '{0}' in all projects", pattern);
 			return GettextCatalog.GetString ("Replacing '{0}' in all projects", pattern);
 		}
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
 		{
-			if (string.IsNullOrEmpty (replacePattern))
+			if (replacePattern == null)
 				return GettextCatalog.GetString ("Looking for '{0}' in project '{1}'", pattern, project.Name);
 			return GettextCatalog.GetString ("Replacing '{0}' in project '{1}'", pattern, project.Name);
 		}
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
 		{
-			if (string.IsNullOrEmpty (replacePattern))
+			if (replacePattern == null)
 				return GettextCatalog.GetString ("Looking for '{0}' in all open documents", pattern);
 			return GettextCatalog.GetString ("Replacing '{0}' in all open documents", pattern);
 		}
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
 		{
-			if (string.IsNullOrEmpty (replacePattern))
+			if (replacePattern == null)
 				return GettextCatalog.GetString ("Looking for '{0}' in directory '{1}'", pattern, path);
 			return GettextCatalog.GetString ("Replacing '{0}' in directory '{1}'", pattern, path);
 		}

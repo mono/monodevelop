@@ -91,7 +91,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						yield break;
 					SearchedFilesCount++;
 					try {
-						provider.BeginReplace ();
+						if (replacePattern != null)
+							provider.BeginReplace ();
 					} catch (System.IO.FileNotFoundException) {
 						MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
 						continue;
@@ -102,7 +103,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						FoundMatchesCount++;
 						yield return result;
 					}
-					provider.EndReplace ();
+					if (replacePattern != null)
+						provider.EndReplace ();
 					if (SearchedFilesCount % step == 0)
 						monitor.Step (1); 
 				}

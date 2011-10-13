@@ -499,7 +499,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		static FindReplace find;
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
-			SearchReplace (comboboxentryReplace.Entry.Text);
+			SearchReplace (comboboxentryReplace.Entry.Text ?? "");
 		}
 
 		void HandleSearchClicked (object sender, EventArgs e)
