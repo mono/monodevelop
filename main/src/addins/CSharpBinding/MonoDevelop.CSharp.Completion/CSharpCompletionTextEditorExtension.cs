@@ -146,6 +146,8 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			//	var timer = Counters.ResolveTime.BeginTiming ();
 			try {
+				if (char.IsLetterOrDigit (completionChar))
+					triggerWordLength = 1;
 				return InternalHandleCodeCompletion (completionContext, completionChar, false, ref triggerWordLength);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
@@ -179,10 +181,7 @@ namespace MonoDevelop.CSharp.Completion
 			engine.ProjectContent = Document.GetProjectContext ();
 			engine.EolMarker = textEditorData.EolMarker;
 			engine.IndentString = textEditorData.Options.IndentationString;
-			
-			foreach (var data in engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace)) {
-				list.Add (data);
-			}
+			list.AddRange (engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace));
 			list.AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch;
 			list.AutoSelect = engine.AutoSelect;
 			list.DefaultCompletionString = engine.DefaultCompletionString;
@@ -430,12 +429,14 @@ namespace MonoDevelop.CSharp.Completion
 		#region ICompletionDataFactory implementation
 		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity)
 		{
-			return new MemberCompletionData (this, entity as IMember, OutputFlags.ClassBrowserEntries);
+			return new MemberCompletionData (this, entity as IMember, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
+				HideExtensionParameter = true
+			};
 		}
 
 		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
 		{
-			return new CompletionData (text, entity.GetStockIcon ());
+			return new CompletionData (text, entity.GetStockIcon (), null, null);
 		}
 
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
@@ -450,7 +451,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (string name)
 		{
-			return new CompletionData (name, "md-namespace");
+			return new CompletionData (name, Stock.Namespace);
 		}
 
 		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)

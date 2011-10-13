@@ -108,7 +108,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public MemberCompletionData (CSharpCompletionTextEditorExtension  editorCompletion, IEntity entity, OutputFlags flags)
 		{
-			
 			this.editorCompletion = editorCompletion;
 			this.flags = flags;
 			SetMember (entity);
@@ -239,16 +238,16 @@ namespace MonoDevelop.CSharp.Completion
 				editorCompletion.RunParameterCompletionCommand ();
 		}
 		
-		void SetMember (IEntity member)
+		void SetMember (IEntity entity)
 		{
-			this.Entity = member;
-			if (member is IParameter) {
-				this.completionString = ((IParameter)member).Name;
+			this.Entity = entity;
+			if (entity is IParameter) {
+				this.completionString = ((IParameter)entity).Name;
 			} else {
-				this.completionString = ambience.GetString (editorCompletion.ctx, member, OutputFlags.None);
+				this.completionString = ambience.GetString (editorCompletion.ctx, entity, OutputFlags.None);
 			}
 			descriptionCreated = false;
-			displayText = null;
+			displayText = entity.Name;
 		}
 		
 		void CheckDescription ()

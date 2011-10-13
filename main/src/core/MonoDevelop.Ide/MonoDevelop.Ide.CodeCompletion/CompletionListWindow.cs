@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideFooter ();
 			}
 			//initialWordLength = 0;
-			this.completionDataList = list;
+			this.CompletionDataList = list;
 			this.CompleteWithSpaceOrPunctuation = MonoDevelop.Core.PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
 			
 			this.CodeCompletionContext = completionContext;
@@ -597,7 +597,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		string IListDataProvider.GetDescription (int n)
 		{
-			return completionDataList[n].Description;
+			return ((CompletionData)completionDataList[n]).DisplayDescription;
 		}
 		
 		bool IListDataProvider.HasMarkup (int n)

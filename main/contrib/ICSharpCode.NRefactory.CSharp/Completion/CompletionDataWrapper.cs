@@ -78,7 +78,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			int idx = name.IndexOf (".");
 			if (idx >= 0)
 				name = name.Substring (0, idx);
-				
 			if (string.IsNullOrEmpty (name) || usedNamespaces.Contains (name))
 				return;
 			usedNamespaces.Add (name);
@@ -129,12 +128,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 			if (existingData != null) {
 				var a = member as IEntity;
-				foreach (IEntityCompletionData md in existingData) {
-					var b = md.Entity;
+				foreach (var d in existingData) {
+					if (!(d is IEntityCompletionData))
+						continue;
+					var b = ((IEntityCompletionData)d).Entity;
 					if (a == null || b == null || a.EntityType == b.EntityType) {
-						md.AddOverload (newData);
-						newData = null;
-						break;
+						d.AddOverload (newData);
+						return d;
 					} 
 				}
 				if (newData != null) {
