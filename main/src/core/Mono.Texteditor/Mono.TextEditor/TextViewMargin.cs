@@ -1256,10 +1256,11 @@ namespace Mono.TextEditor
 			var color = ColorStyle.LineMarker;
 			cr.Color = new Cairo.Color (color.R, color.G, color.B, 0.5);
 			cr.Fill ();
-			cr.MoveTo (xPos, y + cr.LineWidth);
-			cr.LineTo (xPos + width, y + cr.LineWidth);
-			cr.MoveTo (xPos, y + LineHeight - cr.LineWidth);
-			cr.LineTo (xPos + width, y + LineHeight - cr.LineWidth);
+			double halfLine = (cr.LineWidth / 2.0);
+			cr.MoveTo (xPos, y + halfLine);
+			cr.LineTo (xPos + width, y + halfLine);
+			cr.MoveTo (xPos, y + LineHeight - halfLine);
+			cr.LineTo (xPos + width, y + LineHeight - halfLine);
 			cr.Color = color;
 			cr.Stroke ();
 		}
