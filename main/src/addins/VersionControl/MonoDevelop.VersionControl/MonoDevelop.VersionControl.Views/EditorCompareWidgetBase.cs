@@ -1040,10 +1040,11 @@ namespace MonoDevelop.VersionControl.Views
 			
 			void DrawBar (Cairo.Context cr, double y, double h)
 			{
-				const int barWidth = 8;
+				int barPadding = 3;
+				int barWidth = Allocation.Width - barPadding - barPadding;
 				
 				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, 
-					0.5 + (Allocation.Width - barWidth) / 2,
+					barPadding,
 					y,
 					barWidth,
 					h,
