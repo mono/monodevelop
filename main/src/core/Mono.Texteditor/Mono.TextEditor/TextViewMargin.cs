@@ -611,30 +611,21 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
-		//this includes the pre-edit caret offset
 		internal double caretX;
 		internal double caretY;
 		Gdk.GC caretGc;
 		
-		//this doesn't include the pre-edit caret offset
-		internal double nonPreeditCaretX;
-		internal double nonPreeditCaretY;
-		
 		void SetVisibleCaretPosition (double x, double y)
 		{
+			if (x == caretX && y == caretY)
+				return;
+			
 			caretX = x;
 			caretY = y;
 			
-			if (x == nonPreeditCaretX && y == nonPreeditCaretY)
-				return;
-			
-			nonPreeditCaretX = x;
-			nonPreeditCaretY = y;
-			
 			textEditor.ResetIMContext ();
 			
-			textEditor.IMContext.CursorLocation = new Rectangle ((int)nonPreeditCaretX, (int)nonPreeditCaretY,
-				0, (int)(LineHeight - 1));
+			textEditor.IMContext.CursorLocation = new Rectangle ((int)caretX, (int)caretY, 0, (int)(LineHeight - 1));
 		}
 
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
@@ -1380,7 +1371,6 @@ namespace Mono.TextEditor
 			if (lineNumber == Caret.Line) {
 				int caretOffset = Caret.Offset;
 				if (offset <= caretOffset && caretOffset <= offset + length) {
-					Pango.Rectangle strong_pos, weak_pos;
 					int index = caretOffset- offset;
 
 					if (Caret.Column > line.EditableLength + 1) {
@@ -1412,27 +1402,21 @@ namespace Mono.TextEditor
 							DecorateLineFg (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
 						wrapper.Dispose ();
 						pangoPosition += vx;
-					} else if (index >= 0 && index < length) {
-						curIndex = byteIndex = 0;
-						layout.Layout.GetCursorPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex), out strong_pos, out weak_pos);
-						SetVisibleCaretPosition (xPos + (strong_pos.X / Pango.Scale.PangoScale), y);
-					} else if (index == length) {
+					} else if (index == length && textEditor.preeditString == null) {
 						SetVisibleCaretPosition ((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale, y);
-					}
-					
-					// replace the caret position with the preedit caret position
-					// we had to calculate the "real" caret position so SetVisibleCaretPosition could pass to the IME
-					if (offset <= textEditor.preeditOffset && textEditor.preeditOffset < offset + length) {
-						index += textEditor.preeditCursorPos;
-						if (index >= 0 && index < length) {
+					} else if (index >= 0 && index <= length) {
+						Pango.Rectangle strong_pos, weak_pos;
+						curIndex = byteIndex = 0;
+						int utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex);
+						if (textEditor.preeditString != null && textEditor.preeditCursorCharIndex > 0) {
 							curIndex = byteIndex = 0;
-							layout.Layout.GetCursorPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex), out strong_pos, out weak_pos);
-							caretX = xPos + (strong_pos.X / Pango.Scale.PangoScale);
-							caretY = y;
-						} else if (index == length) {
-							caretX = (pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale;
-							caretY = y;
+							int preeditUtf8ByteIndex = (int)TranslateToUTF8Index (textEditor.preeditString.ToCharArray (),
+								(uint) textEditor.preeditCursorCharIndex,
+								ref curIndex, ref byteIndex);
+							utf8ByteIndex += preeditUtf8ByteIndex;
 						}
+						layout.Layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
+						SetVisibleCaretPosition (xPos + (strong_pos.X / Pango.Scale.PangoScale), y);
 					}
 				}
 			}

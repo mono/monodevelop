@@ -369,7 +369,7 @@ namespace Mono.TextEditor
 			window.ShowAll ();
 		}
 		
-		internal int preeditOffset, preeditLine, preeditCursorPos;
+		internal int preeditOffset, preeditLine, preeditCursorCharIndex;
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
 
@@ -383,11 +383,8 @@ namespace Mono.TextEditor
 		
 		void PreeditStringChanged (object sender, EventArgs e)
 		{
-			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos);
+			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);
 			if (!string.IsNullOrEmpty (preeditString)) {
-				//FIXME: respect UTF16 surrogates in cursor pos
-				//argh, mcs explodes if you use (System.)Math in a Mono namespace
-				preeditCursorPos = System.Math.Max (0, System.Math.Min (preeditString.Length, preeditCursorPos));
 				if (preeditOffset < 0) {
 					preeditOffset = Caret.Offset;
 					preeditLine = Caret.Line;
@@ -396,6 +393,7 @@ namespace Mono.TextEditor
 				preeditOffset = -1;
 				preeditString = null;
 				preeditAttrs = null;
+				preeditCursorCharIndex = 0;
 			}
 			this.textViewMargin.ForceInvalidateLine (preeditLine);
 			this.textEditorData.Document.CommitLineUpdate (preeditLine);
