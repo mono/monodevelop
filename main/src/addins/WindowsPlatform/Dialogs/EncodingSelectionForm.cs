@@ -88,6 +88,8 @@ namespace MonoDevelop.Platform
 			SetStockImage (removeButton, Gtk.Stock.GoBack);
 			SetStockImage (upButton, Gtk.Stock.GoUp);
 			SetStockImage (downButton, Gtk.Stock.GoDown);
+
+			Icon = WinFormsRoot.MonoDevelopIcon;
 		}
 
 		void SetStockImage (Button b, string stockId)

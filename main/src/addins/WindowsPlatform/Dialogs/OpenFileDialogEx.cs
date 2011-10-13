@@ -153,6 +153,9 @@ namespace CustomControls.Controls
         public DialogResult ShowDialog(IWin32Window owner)
         {
             form = new DummyForm(this);
+            if (owner is Form)
+                form.Icon = ((Form)owner).Icon; // Inherit the app/window icon
+
             form.Show(owner);
             Win32.SetWindowPos(form.Handle, IntPtr.Zero, 0, 0, 0, 0, UFLAGSHIDE);
             form.WatchForActivate = true;
