@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 
@@ -60,5 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		ICompletionData CreateEventCreationCompletionData (string varName, IType delegateType, IEvent evt, string parameterDefinition, IMember currentMember, ITypeDefinition currentType);
 
 		ICompletionData CreateNewOverrideCompletionData (int declarationBegin, ITypeDefinition type, IMember m);
+		
+		IEnumerable<ICompletionData> CreateCodeTemplateCompletionData ();
 	}
 }

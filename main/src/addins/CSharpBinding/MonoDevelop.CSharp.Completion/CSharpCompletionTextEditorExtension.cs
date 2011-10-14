@@ -436,7 +436,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
 		{
-			return new CompletionData (text, entity.GetStockIcon (), null, null);
+			return new CompletionData (text, entity.GetStockIcon (), null, text);
 		}
 
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
@@ -474,6 +474,14 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new NewOverrideCompletionData (this, declarationBegin, type, m);
 		}
+		
+		IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
+		{
+			var result = new CompletionDataList ();
+			CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
+			return result;
+		}
+		
 		#endregion
 
 		#region IParameterCompletionDataFactory implementation

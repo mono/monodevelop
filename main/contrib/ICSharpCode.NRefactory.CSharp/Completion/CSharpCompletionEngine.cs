@@ -177,7 +177,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					int offset2 = document.GetOffset (parent.Type.EndLocation);
 					
 					string name = document.GetText (offset1, offset2 - offset1);
-					Console.WriteLine ("name: >" + name + "<");
 					var names = new List<string> ();
 					int lastNameStart = 0;
 					for (int i = 1; i < name.Length; i++) {
@@ -204,11 +203,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					
 					AutoSelect = false;
 					AutoCompleteEmptyMatch = false;
-					Console.WriteLine (proposeNameList.Result.Count);
 					return proposeNameList.Result;
 				}
 			
-							
 //				int tokenIndex = offset;
 //				string token = GetPreviousToken (ref tokenIndex, false);
 //				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
@@ -532,8 +529,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			AddKeywords (wrapper, primitiveTypesKeywords);
-// TODO: Templates !!!
-//			CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", wrapper.Result);
+			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 		}
 
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, Predicate<ITypeDefinition> typePred = null, Predicate<IMember> memberPred = null)
@@ -1449,14 +1445,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
 		{
 			var parser = new CSharpParser ();
-			string text = this.document.GetText (0, offset) + "a; } } } }"; 
-			
-			var stream = new System.IO.StringReader (text);
+			string text = this.document.GetText (0, this.offset); 
+			var sb = new StringBuilder (text);
+			sb.Append ("a;");
+			AppendMissingClosingBrackets (sb, text, false);
+			var stream = new System.IO.StringReader (sb.ToString ());
 			var completionUnit = parser.Parse (stream, 0);
 			stream.Close ();
-			
-			var expr = completionUnit.GetNodeAt (location, n => n is Expression || n is VariableDeclarationStatement);
-			
+			var loc = document.GetLocation (offset);
+			var expr = completionUnit.GetNodeAt (loc, n => n is Expression || n is VariableDeclarationStatement);
 			if (expr == null)
 				return null;
 			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);

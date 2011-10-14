@@ -14,7 +14,6 @@ REFS =  \
 
 FILES =  \
 	Ast/Annotations.cs \
-	Ast/Annotations.cs \
 	Ast/AstBuilder.cs \
 	Ast/AstMethodBodyBuilder.cs \
 	Ast/CecilTypeResolveContext.cs \
