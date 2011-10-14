@@ -117,6 +117,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.BeginLine, region.BeginColumn), memberName.Length);
 		}
+
+		bool IsNodeValid (object searchedMember, AstNode node)
+		{
+			if (searchedMember is IField && node is FieldDeclaration)
+				return false;
+			return true;
+		}
 		
 		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc)
 		{
@@ -130,9 +137,15 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			foreach (var obj in searchedMembers) {
 				if (obj is IEntity) {
-					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, ctx, (astNode, r) => result.Add (GetReference (r, astNode, editor.FileName, editor)));
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, ctx, (astNode, r) => {
+						if (IsNodeValid (obj, astNode))
+							result.Add (GetReference (r, astNode, editor.FileName, editor)); 
+					});
 				} else if (obj is IVariable) {
-					refFinder.FindLocalReferences ((IVariable)obj, file, unit, ctx, (astNode, r) => result.Add (GetReference (r, astNode, editor.FileName, editor)));
+					refFinder.FindLocalReferences ((IVariable)obj, file, unit, ctx, (astNode, r) => { 
+						if (IsNodeValid (obj, astNode)) 
+							result.Add (GetReference (r, astNode, editor.FileName, editor));
+					});
 				}
 			}
 			return result;

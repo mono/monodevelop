@@ -357,7 +357,7 @@ namespace MonoDevelop.TypeSystem
 			throw new NotImplementedException ();
 //			if (cls.PropertyCount == 0)
 //			IProperty lastProperty = cls.Properties.Last ();
-				return GetNewFieldPosition (points, cls);
+//				return GetNewFieldPosition (points, cls);
 //			return points.FirstOrDefault (p => p.Location.Convert () > lastProperty.Location);
 		}
 		
@@ -371,13 +371,57 @@ namespace MonoDevelop.TypeSystem
 		}
 		#endregion
 		
-		public static void AddAttribute (ITypeResolveContext ctx, IType cls, string par1, params object[] par2)
+		public static void AddAttribute (ITypeResolveContext ctx, ITypeDefinition cls, string name, params object[] parameters)
 		{
-			//TODO
+			bool isOpen;
+			string fileName = cls.Region.FileName;
+			var buffer = TextFileProvider.Instance.GetTextEditorData (fileName, out isOpen);
+			
+			var attr = new CodeAttributeDeclaration (name);
+			foreach (var parameter in parameters) {
+				attr.Arguments.Add (new CodeAttributeArgument (new CodePrimitiveExpression (parameter)));
+			}
+			
+			var type = new CodeTypeDeclaration ("temp");
+			type.CustomAttributes.Add (attr);
+			
+			var provider = ((DotNetProject)cls.GetSourceProject ()).LanguageBinding.GetCodeDomProvider ();
+			var sw = new StringWriter ();
+			provider.GenerateCodeFromType (type, sw, new CodeGeneratorOptions ());
+			string code = sw.ToString ();
+			int start = code.IndexOf ('[');
+			int end = code.LastIndexOf (']');
+			code = code.Substring (start, end - start + 1) + Environment.NewLine;
+
+			int pos = buffer.LocationToOffset (cls.Region.BeginLine, cls.Region.BeginColumn);
+
+			code = buffer.GetLineIndent (cls.Region.BeginLine) + code;
+			buffer.Insert (pos, code);
+			if (!isOpen) {
+				File.WriteAllText (fileName, buffer.Text);
+				buffer.Dispose ();
+			}
+			
 		}
 		
-		public static ITypeDefinition AddType (DotNetProject par1, string folder, string namspace, CodeTypeDeclaration type)
+		public static ITypeDefinition AddType (DotNetProject project, string folder, string namspace, CodeTypeDeclaration type)
 		{
+			
+			var unit = new CodeCompileUnit ();
+			var ns = new CodeNamespace (namspace);
+			ns.Types.Add (type);
+			unit.Namespaces.Add (ns);
+			
+			string fileName = project.LanguageBinding.GetFileName (Path.Combine (folder, type.Name));
+			using (var sw = new StreamWriter (fileName)) {
+				var provider = project.LanguageBinding.GetCodeDomProvider ();
+				var options = new CodeGeneratorOptions ();
+				options.IndentString = "\t";
+				options.BracingStyle = "C";
+		
+				provider.GenerateCodeFromCompileUnit (unit, sw, options);
+			}
+			return TypeSystemService.ParseFile (project, fileName).TopLevelTypeDefinitions.FirstOrDefault ();
 		}
 		
 	}
