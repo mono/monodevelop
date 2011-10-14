@@ -185,7 +185,16 @@ namespace Mono.Debugging.Soft
 			var a = VirtualMachineManager.BeginListen (dbgEP, conEP, callback, out assignedDebugPort, out assignedConsolePort);
 			ConnectionStarting (a, dsi, true, 0);
 		}
+		
+		/// <summary>Starts the debugger with a custom transport</summary>
+		protected void StartWithCustomTransport (SoftDebuggerStartInfo dsi, Connection transport, StreamReader standardOutput, StreamReader standardError)
+		{
+			RegisterUserAssemblies (dsi.UserAssemblyNames);
 
+			var vm = VirtualMachineManager.Connect (transport, standardOutput, standardError);
+			ConnectionStarted (vm);
+		}
+		
 		protected virtual bool ShouldRetryConnection (Exception ex, int attemptNumber)
 		{
 			var sx = ex as SocketException;
