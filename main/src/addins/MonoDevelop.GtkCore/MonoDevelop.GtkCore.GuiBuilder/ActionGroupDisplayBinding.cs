@@ -36,6 +36,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -122,66 +124,49 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return gproject.GetSourceCodeFile (group);
 		}
 		
-		static IType CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
+		static ITypeDefinition CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
 		{
-			//TODO:Type system conversion.
-			return null;
+			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-//			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
-//			
-//			CodeRefactorer gen = new CodeRefactorer (project.ParentSolution);
-//			
-//			CodeTypeDeclaration type = new CodeTypeDeclaration ();
-//			type.Name = name;
-//			type.IsClass = true;
-//			type.BaseTypes.Add (new CodeTypeReference ("Gtk.ActionGroup"));
-//			
-//			// Generate the constructor. It contains the call that builds the widget.
-//			
-//			CodeConstructor ctor = new CodeConstructor ();
-//			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-//			ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (fullName));
-//			
-//			CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
-//				new CodeMethodReferenceExpression (
-//					new CodeTypeReferenceExpression ("Stetic.Gui"),
-//					"Build"
-//				),
-//				new CodeThisReferenceExpression (),
-//				new CodeTypeOfExpression (fullName)
-//			);
-//			ctor.Statements.Add (call);
-//			type.Members.Add (ctor);
-//			
-//			// Add signal handlers
-//			
-//			foreach (Stetic.ActionComponent action in group.GetActions ()) {
-//				foreach (Stetic.Signal signal in action.GetSignals ()) {
-//					CodeMemberMethod met = new CodeMemberMethod ();
-//					met.Name = signal.Handler;
-//					met.Attributes = MemberAttributes.Family;
-//					met.ReturnType = new CodeTypeReference (signal.SignalDescriptor.HandlerReturnTypeName);
-//					
-//					foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-//						met.Parameters.Add (new CodeParameterDeclarationExpression (pinfo.TypeName, pinfo.Name));
-//						
-//					type.Members.Add (met);
-//				}
-//			}
-//			
-//			// Create the class
-//			
-//			IType cls = null;
-//			cls = gen.CreateClass (project, ((DotNetProject)project).LanguageName, folder, namspace, type);
-//			if (cls == null)
-//				throw new UserException ("Could not create class " + fullName);
-//			
-//			project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
-//			IdeApp.ProjectOperations.Save (project);
-//			
-//			// Make sure the database is up-to-date
-//			ProjectDomService.Parse (project, cls.CompilationUnit.FileName);
-//			return cls;
+			var type = new CodeTypeDeclaration ();
+			type.Name = name;
+			type.IsClass = true;
+			type.BaseTypes.Add (new CodeTypeReference ("Gtk.ActionGroup"));
+			
+			// Generate the constructor. It contains the call that builds the widget.
+			
+			var ctor = new CodeConstructor ();
+			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+			ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (fullName));
+			
+			var call = new CodeMethodInvokeExpression (
+				new CodeMethodReferenceExpression (
+					new CodeTypeReferenceExpression ("Stetic.Gui"),
+					"Build"
+				),
+				new CodeThisReferenceExpression (),
+				new CodeTypeOfExpression (fullName)
+			);
+			ctor.Statements.Add (call);
+			type.Members.Add (ctor);
+			
+			// Add signal handlers
+			foreach (Stetic.ActionComponent action in group.GetActions ()) {
+				foreach (Stetic.Signal signal in action.GetSignals ()) {
+					CodeMemberMethod met = new CodeMemberMethod ();
+					met.Name = signal.Handler;
+					met.Attributes = MemberAttributes.Family;
+					met.ReturnType = new CodeTypeReference (signal.SignalDescriptor.HandlerReturnTypeName);
+					
+					foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
+						met.Parameters.Add (new CodeParameterDeclarationExpression (pinfo.TypeName, pinfo.Name));
+						
+					type.Members.Add (met);
+				}
+			}
+			
+			// Create the class
+			return CodeGenerationService.AddType ((DotNetProject)project, folder, namspace, type);
 		}
 		
 		internal static bool IsValidClass (ITypeResolveContext ctx, IType cls)

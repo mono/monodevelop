@@ -210,12 +210,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get {
 				IEnumerable<IMember> members = this.Fields;
 				return members
-					.Concat(this.Properties)
-					.Concat(this.Methods)
-					.Concat(this.Events);
+					.Concat (this.Properties)
+					.Concat (this.Methods)
+					.Concat (this.Events);
 			}
 		}
 		
+		[NonSerialized]
 		string cachedFullName = null;
 		public string FullName {
 			get {

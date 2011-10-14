@@ -68,13 +68,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public static IEnumerable<MemberReference> FindReferences (object member, IProgressMonitor monitor = null)
 		{
-			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, monitor);
+			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, RefactoryScope.Unknown, monitor);
+		}
+
+		public static IEnumerable<MemberReference> FindReferences (object member, RefactoryScope scope, IProgressMonitor monitor = null)
+		{
+			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, scope, monitor);
 		}
 		
 		
-		static IEnumerable<Tuple<IProjectContent, FilePath>> GetFileNames (Solution solution, IProjectContent dom, IParsedFile unit, object member, IProgressMonitor monitor)
+		static IEnumerable<Tuple<IProjectContent, FilePath>> GetFileNames (Solution solution, IProjectContent dom, IParsedFile unit, object member, RefactoryScope scope, IProgressMonitor monitor)
 		{
-			var scope = GetScope (member);
+			if (scope == RefactoryScope.Unknown)
+				scope = GetScope (member);
 			switch (scope) {
 			case RefactoryScope.File:
 			case RefactoryScope.DeclaringType:
@@ -136,7 +142,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return projects;
 		}
 		
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
 		{
 			if (member == null)
 				yield break;
@@ -160,7 +166,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			// prepare references finder
 			var preparedFinders = new Dictionary<string, Tuple<ReferenceFinder, List<Tuple<IProjectContent, FilePath>>>> ();
-			foreach (var info in GetFileNames (solution, dom, unit, member, monitor)) {
+			foreach (var info in GetFileNames (solution, dom, unit, member, scope, monitor)) {
 				if (monitor != null && monitor.IsCancelRequested)
 					yield break;
 				
@@ -231,7 +237,7 @@ namespace MonoDevelop.Ide.FindInFiles
 //			}
 //		}
 		
-		public enum RefactoryScope{ File, DeclaringType, Solution, Project}
+		public enum RefactoryScope{ Unknown, File, DeclaringType, Solution, Project}
 		static RefactoryScope GetScope (object o)
 		{
 			IEntity node = o as IEntity;

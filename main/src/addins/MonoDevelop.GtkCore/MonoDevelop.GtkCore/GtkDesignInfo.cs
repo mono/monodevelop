@@ -37,6 +37,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.NodeBuilders;
 using MonoDevelop.Ide;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.GtkCore
 {
@@ -200,13 +201,10 @@ namespace MonoDevelop.GtkCore
 
 		public static bool SupportsRefactoring (DotNetProject project)
 		{
-			//TODO:Type system conversion.
-			return false;
-/*			if (project == null || project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
+			if (project == null || project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
 				return false;
-			var ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
-			var cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
-			return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); */
+			var testFileName = project.LanguageBinding.GetFileName ("test");
+			return CodeGenerator.HasGenerator (DesktopService.GetMimeTypeForUri (testFileName));
 		}
 		
 		static bool IsGtkReference (ProjectReference pref)
@@ -320,8 +318,7 @@ namespace MonoDevelop.GtkCore
 				return;
 
 			ObjectsDocument doc = new ObjectsDocument (ObjectsFile);
-			// TODO:Type system conversion.
-//			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject, IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution));
+			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject);
 		}
 
 		public static void DisableProject (Project project)

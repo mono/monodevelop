@@ -37,7 +37,6 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -118,31 +117,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.BeginLine, region.BeginColumn), memberName.Length);
 		}
-
-		IEnumerable<MemberReference> InternalFindReferences (ITypeResolveContext ctx, Mono.TextEditor.TextEditorData editor, List<int> positions, ICSharpCode.NRefactory.CSharp.CompilationUnit unit, CSharpParsedFile file)
-		{
-/*			var resolveResult = new List<ResolveResult> ();
-			foreach (var pos in positions) {
-				var loc = editor.OffsetToLocation (pos);
-				var rr = ResolveAtLocation.Resolve (ctx, file, unit, new TextLocation (loc.Line, loc.Column));
-				if (rr != null)
-					resolveResult.Add (rr);
-			}
-			
-			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
-			var visitor = new ResolveVisitor (csResolver, file, new NodeListResolveVisitorNavigator (resolveResult));
-			try {
-				unit.AcceptVisitor (visitor, null);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error in resolver during find references.", e);
-			}
-			foreach (var node in resolveResult) {
-				var validReference = GetReference (node, node, editor.FileName, editor);
-				if (validReference != null)
-					yield return validReference;
-			}*/
-			yield break;
-		}
 		
 		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc)
 		{
@@ -151,14 +125,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			var editor = doc.Editor;
 			var unit = doc.ParsedDocument.Annotation<CompilationUnit> ();
 			var file = doc.ParsedDocument.Annotation<CSharpParsedFile> ();
-			var ctx  = doc.TypeResolveContext;
+			var ctx = doc.TypeResolveContext;
 			var result = new List<MemberReference> ();
 			
 			foreach (var obj in searchedMembers) {
-				if (obj is IVariable) {
-					refFinder.FindLocalReferences ((IVariable)obj, file, unit, ctx, (astNode, r) => result.Add (GetReference (r, astNode, editor.FileName, editor)));
-				} else {
+				if (obj is IEntity) {
 					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, ctx, (astNode, r) => result.Add (GetReference (r, astNode, editor.FileName, editor)));
+				} else if (obj is IVariable) {
+					refFinder.FindLocalReferences ((IVariable)obj, file, unit, ctx, (astNode, r) => result.Add (GetReference (r, astNode, editor.FileName, editor)));
 				}
 			}
 			return result;
@@ -171,8 +145,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			List<MemberReference> refs = new List<MemberReference> ();
 			Project prj = null;
 			ITypeResolveContext ctx = null;
+			foreach (var opendoc in openDocuments) {
+				refs.AddRange (FindInDocument (opendoc.Item3));
+			}
 			foreach (var file in files) {
 				var editor = TextFileProvider.Instance.GetTextEditorData (file.Item2);
+				
 				var unit = new CSharpParser ().Parse (editor);
 				if (unit == null)
 					continue;
@@ -185,48 +163,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				var curCtx = ctx ?? file.Item1;
 				unit.AcceptVisitor (visitor, null);
-				
 				refFinder.FindReferencesInFile (scopes, visitor.ParsedFile, unit, curCtx, (astNode, result) => refs.Add (GetReference (result, astNode, file.Item2, editor)));
-				
 			}
 			
 			return refs;
-			/*
-			if (string.IsNullOrEmpty (memberName))
-				yield break;
-			foreach (var opendoc in openDocuments) {
-				foreach (var reference in FindInDocument (opendoc.Item3))
-					yield return reference;
-			}
-			Project prj = null;
-			ITypeResolveContext ctx = null;
-			foreach (var file in files) {
-				string text = File.ReadAllText (file.Item2);
-				
-				var positions = new List<int> ();
-				int idx = 0;
-				while ((idx = text.IndexOf (memberName, idx)) >= 0) {
-					positions.Add (idx);
-					idx += memberName.Length;
-				}
-				if (positions.Count == 0)
-					continue;
-				var editor = TextFileProvider.Instance.GetTextEditorData (file.Item2);
-				var unit = new CSharpParser ().Parse (editor);
-				if (unit == null)
-					continue;
-				
-				var visitor = new TypeSystemConvertVisitor (file.Item1, file.Item2);
-				var curPrj = file.Item1.Annotation<Project> ();
-				if (prj != curPrj) {
-					prj = curPrj;
-					ctx = prj != null ? TypeSystemService.GetContext (prj) : null;
-				}
-				var curCtx = ctx ?? file.Item1;
-				unit.AcceptVisitor (visitor, null);
-				foreach (var reference in InternalFindReferences (curCtx, editor, positions, unit, visitor.ParsedFile))
-					yield return reference;
-			}*/
 		}
 	}
 }

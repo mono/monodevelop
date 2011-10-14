@@ -41,17 +41,22 @@ namespace MonoDevelop.GtkCore
 
 	public class WidgetParser
 	{
-
 		ITypeResolveContext ctx;
 
+		public ITypeResolveContext Ctx {
+			get {
+				return ctx;
+			}
+		}
+		
 		public WidgetParser (ITypeResolveContext ctx)
 		{
 			this.ctx = ctx;
 		}
 		
-		public Dictionary<string, IType> GetToolboxItems ()
+		public Dictionary<string, ITypeDefinition> GetToolboxItems ()
 		{
-			Dictionary<string, IType> tb_items = new Dictionary<string, IType> ();
+			Dictionary<string, ITypeDefinition> tb_items = new Dictionary<string, ITypeDefinition> ();
 
 			var wt = ctx.GetTypeDefinition ("Gtk", "Widget", 0, StringComparer.Ordinal);
 			if (wt != null) {

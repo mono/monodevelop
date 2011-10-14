@@ -45,7 +45,7 @@ namespace MonoDevelop.Refactoring
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					foreach (var mref in ReferenceFinder.FindReferences (solution, entity, monitor)) {
+					foreach (var mref in ReferenceFinder.FindReferences (solution, entity, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
 						monitor.ReportResult (mref);
 					}
 				} catch (Exception ex) {

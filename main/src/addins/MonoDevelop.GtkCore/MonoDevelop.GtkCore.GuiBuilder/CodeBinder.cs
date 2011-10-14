@@ -26,9 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
@@ -39,6 +39,8 @@ using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.FindInFiles;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -138,73 +140,64 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public void UpdateField (Stetic.Component obj, string oldName)
 		{
-			// TODO:Type system conversion.
-//			if (targetObject == null)
-//				return;
-//				
-//			CodeRefactorer cr = GetCodeGenerator ();
-//			
-//			IType cls;
-//			
-//			if (obj == targetObject)
-//				return;	// The root widget name can only be changed internally.
-//			else
-//				cls = GetClass (false);
-//			
-//			string newName = GetObjectName (obj);
-//			if (newName.Length == 0)
-//				return;
-//			
-//			if (cls != null) {
-//				IField f = ClassUtils.FindWidgetField (cls, oldName);
-//				if (f != null) {
-//					cr.RenameMember (new NullProgressMonitor (), cls, f, newName, RefactoryScope.File);
-//				}
-//			}
+			if (targetObject == null)
+				return;
+				
+			if (obj == targetObject)
+				return;	// The root widget name can only be changed internally.
+			
+			ITypeDefinition cls = GetClass (false);
+			
+			string newName = GetObjectName (obj);
+			if (newName.Length == 0)
+				return;
+			
+			if (cls != null) {
+				var f = ClassUtils.FindWidgetField (cls.GetProjectContent (), cls, oldName);
+				if (f != null) {
+					MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (TypeSystemService.GetContext (project), f, newName);
+				}
+			}
 		}
 		
 		/// Adds a signal handler to the class
 		public void BindSignal (Stetic.Signal signal)
 		{
-			//TODO:Type system conversion.
+			if (targetObject == null)
+				return;
+
+			var cls = GetClass ();
+			if (cls == null)
+				return;
 			
-//			if (targetObject == null)
-//				return;
-//
-//			var cls = GetClass ();
-//			if (cls == null)
-//				return;
-//			
-//			if (FindSignalHandler (cls, signal) != null)
-//				return;
-//
-//			var met = new DomMethod () {
-//				Name = signal.Handler,
-//				Modifiers = Modifiers.Protected,
-//				ReturnType = new DomReturnType (signal.SignalDescriptor.HandlerReturnTypeName)
-//			};
-//			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-//				met.Add (new DomParameter () { Name = pinfo.Name, ReturnType = new DomReturnType (pinfo.TypeName) });
-//			
-//			CodeGenerationService.AddNewMember (cls, met);
+			if (FindSignalHandler (cls, signal) != null)
+				return;
+			
+			var met = new DefaultMethod (cls, signal.Handler) {
+				Accessibility = Accessibility.Protected,
+				ReturnType = new GetClassTypeReference (signal.SignalDescriptor.HandlerReturnTypeName)
+			};
+			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
+				met.Parameters.Add (new DefaultParameter (new GetClassTypeReference (pinfo.TypeName), pinfo.Name));
+			CodeGenerationService.AddNewMember (TypeSystemService.GetContext (project), cls, met);
 		}
 		
 		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
 		{
-			//TODO:Type system conversion.
-//			if (targetObject == null)
-//				return;
-//
-//			if (oldSignal.Handler == newSignal.Handler)
-//				return;
-//
-//			IType cls = GetClass ();
-//			if (cls == null) return;
-//
-//			IMethod met = FindSignalHandler (cls, oldSignal);
-//			if (met == null) return;
-//			CodeRefactorer gen = GetCodeGenerator ();
-//			gen.RenameMember (new NullProgressMonitor (), cls, met, newSignal.Handler, RefactoryScope.File);
+			if (targetObject == null)
+				return;
+
+			if (oldSignal.Handler == newSignal.Handler)
+				return;
+
+			var cls = GetClass ();
+			if (cls == null)
+				return;
+
+			IMethod met = FindSignalHandler (cls, oldSignal);
+			if (met == null)
+				return;
+			MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (TypeSystemService.GetContext (project), met, newSignal.Handler);
 		}
 
 		/// Adds a field to the class
@@ -221,22 +214,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			Document doc = IdeApp.Workbench.OpenDocument (cls.Region.FileName, true);
 			
-			//TODO:Type system conversion.
-//			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
-//			if (editor != null) {
-//				CodeGenerationService.AddNewMember (cls, GetFieldCode (obj, name));
-//			}
+			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
+			if (editor != null) {
+				CodeGenerationService.AddNewMember (TypeSystemService.GetContext (project), cls, GetFieldCode (cls, obj, name));
+			}
 		}
 		
-		//TODO:Type system conversion.
-//		IField GetFieldCode (Stetic.Component obj, string name)
-//		{
-//			return new DomField () {
-//				Name = name,
-//				ReturnType = new DomReturnType (obj.Type.ClassName),
-//				Modifiers = Modifiers.Protected
-//			};
-//		}
+		DefaultField GetFieldCode (ITypeDefinition cls, Stetic.Component obj, string name)
+		{
+			return new DefaultField (cls, name) {
+				ReturnType = new GetClassTypeReference (obj.Type.ClassName),
+				Accessibility = Accessibility.Protected
+		};
+	}
 		
 		IField FindField (ITypeDefinition cls, string name)
 		{

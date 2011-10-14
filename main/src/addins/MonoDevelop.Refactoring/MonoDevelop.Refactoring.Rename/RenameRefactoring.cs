@@ -37,6 +37,8 @@ using MonoDevelop.Ide.ProgressMonitoring;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Core.ProgressMonitoring;
+
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -67,6 +69,27 @@ namespace MonoDevelop.Refactoring.Rename
 				return cls != null && cls.ProjectContent is SimpleProjectContent;
 			}
 			return false;
+		}
+
+		public static void Rename (ITypeResolveContext ctx, IEntity entity, string newName)
+		{
+			using (var monitor = new NullProgressMonitor ()) {
+				var col = ReferenceFinder.FindReferences (entity, monitor);
+				
+				List<Change> result = new List<Change> ();
+				foreach (var memberRef in col) {
+					var change = new TextReplaceChange ();
+					change.FileName = memberRef.FileName;
+					change.Offset = memberRef.Offset;
+					change.RemovedChars = memberRef.Length;
+					change.InsertedText = newName;
+					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.Entity.Name, newName);
+					result.Add (change);
+				}
+				if (result.Count > 0) {
+					RefactoringService.AcceptChanges (monitor, ctx, result);
+				}
+			}
 		}
 		
 		public override string GetMenuDescription (RefactoringOptions options)

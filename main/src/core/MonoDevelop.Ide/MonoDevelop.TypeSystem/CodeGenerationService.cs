@@ -370,6 +370,16 @@ namespace MonoDevelop.TypeSystem
 //			return points.FirstOrDefault (p => p.Location.Convert () > lastEvent.Location);
 		}
 		#endregion
+		
+		public static void AddAttribute (ITypeResolveContext ctx, IType cls, string par1, params object[] par2)
+		{
+			//TODO
+		}
+		
+		public static ITypeDefinition AddType (DotNetProject par1, string folder, string namspace, CodeTypeDeclaration type)
+		{
+		}
+		
 	}
 	
 	public static class HelperMethods
