@@ -195,6 +195,23 @@ namespace Mono.Debugging.Soft
 			ConnectionStarted (vm);
 		}
 		
+		protected delegate Connection GetTransportDelegate (out StreamReader standardOutput, out StreamReader standardError);
+		
+		protected void StartWithCustomTransport (SoftDebuggerStartInfo dsi, GetTransportDelegate getTransport)
+		{
+			RegisterUserAssemblies (dsi.UserAssemblyNames);
+			
+			var callback = HandleConnectionCallbackErrors (delegate (IAsyncResult ar) {
+				Connection transport;
+				StreamReader standardOutput, standardError;
+				transport = getTransport (out standardOutput, out standardError);
+				if (!exited)
+					ConnectionStarted (VirtualMachineManager.Connect (transport, standardOutput, standardError));
+			});
+			ThreadPool.QueueUserWorkItem ((v) => callback (null));
+			ConnectionStarting (null, dsi, false, 0);
+		}
+		
 		protected virtual bool ShouldRetryConnection (Exception ex, int attemptNumber)
 		{
 			var sx = ex as SocketException;

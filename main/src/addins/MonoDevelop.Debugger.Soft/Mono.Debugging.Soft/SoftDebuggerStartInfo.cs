@@ -179,5 +179,12 @@ namespace Mono.Debugging.Soft
 		/// </summary>
 		public Mono.Debugger.Soft.LaunchOptions.TargetProcessLauncher ExternalConsoleLauncher { get; set; }
 	}
+	
+	/// <summary>
+	/// Options for the debugger when starting with custom transport
+	/// </summary>
+	public class SoftDebuggerCustomArgs : SoftDebuggerStartArgs
+	{
+	}
 }
 
