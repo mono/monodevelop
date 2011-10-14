@@ -342,9 +342,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return HandleKeywordCompletion (tokenIndex, token);
 			// Automatic completion
 			default:
-				if (IsInsideComment () || IsInsideString () ||
-					!(char.IsLetter (completionChar) || completionChar == '_'))
+				if (IsInsideComment () || IsInsideString ())
 					return null;
+				if (!(char.IsLetter (completionChar) || completionChar == '_'))
+					return controlSpace ? DefaultControlSpaceItems () : null;
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
@@ -484,6 +485,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //				break;
 			}
 			return null;
+		}
+		
+		IEnumerable<ICompletionData> DefaultControlSpaceItems ()
+		{
+			var wrapper = new CompletionDataWrapper (this);
+			
+			var node = Unit.GetNodeAt (location);
+			var rr = ResolveExpression (CSharpParsedFile, node, Unit);
+			AddContextCompletion (wrapper, rr != null ? rr.Item2 : GetState (), node);
+			
+			return wrapper.Result;
 		}
 		
 		void AddContextCompletion (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
