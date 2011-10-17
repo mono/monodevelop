@@ -57,7 +57,9 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		[NonSerialized]
 		List<Comment> comments = new List<Comment> ();
+		
 		public IList<Comment> Comments {
 			get {
 				return comments;
@@ -98,9 +100,15 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		[NonSerialized]
+		ParsedDocumentFlags flags;
 		public ParsedDocumentFlags Flags {
-			get;
-			set;
+			get {
+				return flags;
+			}
+			set {
+				flags = value;
+			}
 		}
 		
 		public ParsedDocument ()
@@ -156,7 +164,9 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		[NonSerialized]
 		List<Error> errors = new List<Error> ();
+		
 		public virtual IList<Error> Errors {
 			get {
 				return errors;
@@ -200,7 +210,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			errors.Add (error);
 		}
-
+		
 		public void Add (Comment comment)
 		{
 			comments.Add (comment);

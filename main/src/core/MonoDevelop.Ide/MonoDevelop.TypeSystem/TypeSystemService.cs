@@ -540,6 +540,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			string lookupPath;
 			Dictionary<string, AssemblyDefinition> cache = new Dictionary<string, AssemblyDefinition> ();
+			DefaultAssemblyResolver defaultResolver = new DefaultAssemblyResolver ();
 			
 			public SimpleAssemblyResolver (string lookupPath)
 			{
@@ -582,22 +583,22 @@ namespace MonoDevelop.TypeSystem
 			#region IAssemblyResolver implementation
 			public AssemblyDefinition Resolve (AssemblyNameReference name)
 			{
-				return InternalResolve (name.FullName) ?? GlobalAssemblyResolver.Instance.Resolve (name);
+				return InternalResolve (name.FullName) ?? defaultResolver.Resolve (name);
 			}
 
 			public AssemblyDefinition Resolve (AssemblyNameReference name, ReaderParameters parameters)
 			{
-				return InternalResolve (name.FullName) ?? GlobalAssemblyResolver.Instance.Resolve (name, parameters);
+				return InternalResolve (name.FullName) ?? defaultResolver.Resolve (name, parameters);
 			}
 
 			public AssemblyDefinition Resolve (string fullName)
 			{
-				return InternalResolve (fullName) ?? GlobalAssemblyResolver.Instance.Resolve (fullName);
+				return InternalResolve (fullName) ?? defaultResolver.Resolve (fullName);
 			}
 
 			public AssemblyDefinition Resolve (string fullName, ReaderParameters parameters)
 			{
-				return InternalResolve (fullName) ?? GlobalAssemblyResolver.Instance.Resolve (fullName, parameters);
+				return InternalResolve (fullName) ?? defaultResolver.Resolve (fullName, parameters);
 			}
 			#endregion
 		}
@@ -605,7 +606,7 @@ namespace MonoDevelop.TypeSystem
 		static AssemblyDefinition ReadAssembly (string fileName)
 		{
 			ReaderParameters parameters = new ReaderParameters ();
-//			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
+			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
 				return AssemblyDefinition.ReadAssembly (stream, parameters);
 			}
