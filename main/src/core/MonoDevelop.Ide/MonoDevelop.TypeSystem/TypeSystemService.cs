@@ -606,7 +606,7 @@ namespace MonoDevelop.TypeSystem
 		static AssemblyDefinition ReadAssembly (string fileName)
 		{
 			ReaderParameters parameters = new ReaderParameters ();
-			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
+			parameters.AssemblyResolver = new DefaultAssemblyResolver (); // new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
 				return AssemblyDefinition.ReadAssembly (stream, parameters);
 			}

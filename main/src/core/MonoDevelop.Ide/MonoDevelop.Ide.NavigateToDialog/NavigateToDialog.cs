@@ -312,7 +312,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				if (!FullSearch)
 					return null;
 				matchString = FileSearchResult.GetRelProjectPath (file);
-				if (MatchName (FileSearchResult.GetRelProjectPath (file), out rank)) 
+				if (MatchName (matchString, out rank)) 
 					return new FileSearchResult (pattern, matchString, rank, file, false);
 				
 				return null;
