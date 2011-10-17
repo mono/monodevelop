@@ -459,6 +459,17 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+			
+			if (vAdjustment != null) {
+				vAdjustment.Destroy ();
+				hAdjustment.Destroy ();
+				foreach (var adj in attachedVAdjustments)
+					adj.Destroy ();
+				foreach (var adj in attachedHAdjustments)
+					adj.Destroy ();
+				vAdjustment = null;
+			}
+			
 			children.ForEach (child => child.Child.Destroy ());
 		}
 
