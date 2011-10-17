@@ -120,7 +120,7 @@ namespace MonoDevelop.GtkCore
 				if (tb_items.ContainsKey (clsname))
 					continue;
 
-				IType cls = parser.GetClass (clsname);
+				var cls = parser.GetClass (clsname);
 				if (cls == null)
 					continue;
 				CodeGenerationService.AddAttribute (parser.Ctx, cls, "System.ComponentModel.ToolboxItem", true);

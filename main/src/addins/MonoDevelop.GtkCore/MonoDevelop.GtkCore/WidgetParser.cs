@@ -135,7 +135,7 @@ namespace MonoDevelop.GtkCore
 			return "";
 		}
 		
-		public IType GetClass (string classname)
+		public ITypeDefinition GetClass (string classname)
 		{
 			string name, ns;
 			int idx =classname.LastIndexOf ('.');
