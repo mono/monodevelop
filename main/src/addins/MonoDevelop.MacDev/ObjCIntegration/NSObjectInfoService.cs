@@ -137,9 +137,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				throw new Exception ("Could not get NSObject from type database");
 			
 			//FIXME: only emit this for the wrapper NS
-			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition (), null, null, false, false, false);
+			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition ().FullName, null, null, false, false, false);
 			
-			foreach (var type in nso.GetAllBaseTypeDefinitions (dom)) {
+			foreach (var type in nso.GetDefinition ().GetSubTypeDefinitions (dom)) {
 				var info = ConvertType (dom, type);
 				if (info != null)
 					yield return info;
@@ -176,7 +176,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			if (string.IsNullOrEmpty (objcName))
 				return null;
-			var info = new NSObjectTypeInfo (objcName, type, null, type.BaseTypes.First (), isModel, type.GetSourceProject () != null, registeredInDesigner);
+			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseTypes.First ().Resolve (dom).FullName, isModel, type.GetSourceProject () != null, registeredInDesigner);
 			info.IsUserType = type.GetProjectContent () != null;
 			info.IsRegisteredInDesigner = registeredInDesigner;
 			

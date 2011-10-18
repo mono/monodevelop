@@ -60,7 +60,7 @@ void AddParameters (IBAction action)
             #line hidden
             
             #line 13 "/Users/mike/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture( Types.First().CliName.Resolve (Ctx).Namespace ));
+            this.Write(this.ToStringHelper.ToStringWithCulture( GetNs (Types.First().CliName) ));
             
             #line default
             #line hidden
@@ -75,7 +75,7 @@ void AddParameters (IBAction action)
 
 bool firstClass = true;
 foreach (var nso in Types) {
-	string name = nso.CliName.Resolve (Ctx).Name;
+	string name = GetName (nso.CliName);
 	BlankLine (ref firstClass);
 	if (nso.IsRegisteredInDesigner) {
 

@@ -98,7 +98,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			foreach (var type in infoService.GetRegisteredObjects (dom)) {
 				objcTypes.Add (type.ObjCName, type);
-				cliTypes.Add (type.CliName.Resolve (dom).FullName, type);
+				cliTypes.Add (type.CliName, type);
 			}
 			
 			foreach (var type in cliTypes.Values)
@@ -125,10 +125,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return objcTypes.ContainsKey (objcName);
 		}
 		
-		internal void InsertUpdatedType (ITypeResolveContext ctx, NSObjectTypeInfo type)
+		internal void InsertUpdatedType (NSObjectTypeInfo type)
 		{
 			objcTypes[type.ObjCName] = type;
-			cliTypes[type.CliName.Resolve (ctx).FullName] = type;
+			cliTypes[type.CliName] = type;
 		}
 		
 		bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
@@ -183,7 +183,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			NSObjectTypeInfo resolved;
 			
 			if (type.BaseObjCType == null && type.BaseCliType != null) {
-				var baseCliType = type.BaseCliType.Resolve (dom);
+				var baseCliType = new GetClassTypeReference (type.BaseCliType).Resolve (dom);
 				if (TryResolveCliToObjc (baseCliType.FullName, out resolved)) {
 					if (resolved.IsModel)
 						type.BaseIsModel = true;
@@ -252,7 +252,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		/// <param name='defaultNamespace'>
 		/// The default namespace used when forcing type resolution.
 		/// </param>
-		public void ResolveObjcToCli (IProgressMonitor monitor, ITypeResolveContext ctx, NSObjectTypeInfo type, CodeDomProvider provider, string defaultNamespace)
+		public void ResolveObjcToCli (IProgressMonitor monitor, NSObjectTypeInfo type, CodeDomProvider provider, string defaultNamespace)
 		{
 			NSObjectTypeInfo resolved;
 			
@@ -261,7 +261,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				if (TryResolveObjcToCli (type.BaseObjCType, out resolved)) {
 					type.BaseCliType = resolved.CliName;
 				} else  {
-					type.BaseCliType = new GetClassTypeReference (defaultNamespace, provider.CreateValidIdentifier (type.BaseObjCType));
+					type.BaseCliType = new GetClassTypeReference (defaultNamespace, provider.CreateValidIdentifier (type.BaseObjCType)).Resolve (dom).FullName;
 					monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on type {1}",
 						type.BaseObjCType, type.ObjCName));
 				}
@@ -273,7 +273,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					continue;
 				
 				if (TryResolveObjcToCli (outlet.ObjCType, out resolved)) {
-					outlet.CliType = resolved.CliName.Resolve (ctx).FullName;
+					outlet.CliType = resolved.CliName;
 				} else {
 					outlet.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (outlet.ObjCType);
 					monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on outlet {1} on type {2}",
@@ -288,7 +288,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						continue;
 					
 					if (TryResolveObjcToCli (param.ObjCType, out resolved)) {
-						param.CliType = resolved.CliName.Resolve (ctx).FullName;
+						param.CliType = resolved.CliName;
 					} else {
 						param.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (param.ObjCType);
 						monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on action parameter {1} for action {2} on type {3}",

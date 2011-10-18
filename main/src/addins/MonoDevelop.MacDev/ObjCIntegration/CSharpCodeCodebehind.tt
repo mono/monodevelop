@@ -10,12 +10,12 @@
 //
 using <#= WrapperNamespace #>.Foundation;
 
-namespace <#= Types.First().CliName.Resolve (Ctx).Namespace #>
+namespace <#= GetNs (Types.First().CliName) #>
 {
 <#
 bool firstClass = true;
 foreach (var nso in Types) {
-	string name = nso.CliName.Resolve (Ctx).Name;
+	string name = GetName (nso.CliName);
 	BlankLine (ref firstClass);
 	if (nso.IsRegisteredInDesigner) {
 #>

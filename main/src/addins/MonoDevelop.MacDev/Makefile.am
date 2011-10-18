@@ -5,8 +5,8 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.MacDev.dll
 DEPS =  \
 	../../../build/AddIns/MacPlatform.dll \
 	../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	../../../build/bin/ICSharpCode.NRefactory.dll \
 	../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
+	../../../build/bin/ICSharpCode.NRefactory.dll \
 	../../../build/bin/Mono.TextEditor.dll \
 	../../../build/bin/MonoDevelop.Core.dll \
 	../../../build/bin/MonoDevelop.Ide.dll
