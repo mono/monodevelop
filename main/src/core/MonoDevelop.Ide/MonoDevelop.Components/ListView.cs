@@ -450,18 +450,23 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
-			GrabFocus ();
-			int row = GetRowByPosition ((int) e.Y);
-			if ((e.State & ModifierType.ControlMask) == ModifierType.ControlMask)
-				ToggleRowSelection (row);
-			else
-				this.SelectedRow = row;
-			buttonPressed = true;
-			if (e.Type == EventType.TwoButtonPress) {
-				if (ItemActivated != null)
-					ItemActivated (this, EventArgs.Empty);
+			try {
+				GrabFocus ();
+				int row = GetRowByPosition ((int) e.Y);
+				if ((e.State & ModifierType.ControlMask) == ModifierType.ControlMask)
+					ToggleRowSelection (row);
+				else
+					this.SelectedRow = row;
+				buttonPressed = true;
+				if (e.Type == EventType.TwoButtonPress) {
+					if (ItemActivated != null)
+						ItemActivated (this, EventArgs.Empty);
+				}
+				return base.OnButtonPressEvent (e);
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+				return false;
 			}
-			return base.OnButtonPressEvent (e);
 		}
 		
 		protected override bool OnButtonReleaseEvent (EventButton e)

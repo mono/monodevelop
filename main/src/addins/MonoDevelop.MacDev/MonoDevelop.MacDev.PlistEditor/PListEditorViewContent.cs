@@ -29,11 +29,15 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using MonoMac.Foundation;	
+using MonoMac.Foundation;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Text;
+using System.Text;
+using System.IO;	
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
-	public class PListEditorViewContent : AbstractViewContent
+	public class PListEditorViewContent : AbstractViewContent, ITextFile
 	{
 		PObjectContainer pobject;
 		IPListDisplayWidget widget;
@@ -64,8 +68,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 					}
 					pobject = arr;
 				}
+				
+				Buffer = null;
 				widget.SetPListContainer (pobject);
-				pobject.Changed += (sender, e) => IsDirty = true;
+				pobject.Changed += (sender, e) => {
+					Buffer = null;
+					IsDirty = true;
+				};
 			}
 			this.IsDirty = false;
 		}
@@ -79,6 +88,79 @@ namespace MonoDevelop.MacDev.PlistEditor
 			} catch (Exception e) {
 				MessageService.ShowException (e, GettextCatalog.GetString ("Error while writing plist"));
 			}
+		}
+		
+		string Buffer {
+			get; set;
+		}
+
+		string ITextFile.Text {
+			get { EnsureBuffer (); return Buffer; }
+		}
+
+		char ITextFile.GetCharAt (int position)
+		{
+			EnsureBuffer ();
+			return Buffer [position];
+		}
+		
+		string ITextFile.GetText (int startPosition, int endPosition)
+		{
+			EnsureBuffer ();
+			return Buffer.Substring (startPosition, endPosition - startPosition + 1);
+		}
+
+		int ITextFile.GetPositionFromLineColumn (int line, int column)
+		{
+			EnsureBuffer ();
+			int lin = 1;
+			int col = 1;
+			for (int i = 0; i < Buffer.Length && lin <= line; i++) {
+				if (line == lin && column == col)
+					return i;
+				if (Buffer[i] == '\r') {
+					if (i + 1 < Buffer.Length && Buffer[i + 1] == '\n')
+						i++;
+					lin++; col = 1;
+				} else if (Buffer[i] == '\n') {
+					lin++; col = 1;
+				} else
+					col++;
+			}
+			return -1;
+		}
+
+		void ITextFile.GetLineColumnFromPosition (int position, out int line, out int column)
+		{
+			EnsureBuffer ();
+			int lin = 1;
+			int col = 1;
+			for (int i = 0; i < position; i++) {
+				if (Buffer[i] == '\r') {
+					if (i + 1 < position && Buffer[i + 1] == '\n')
+						i++;
+					lin++; col = 1;
+				} else if (Buffer[i] == '\n') {
+					lin++; col = 1;
+				} else
+					col++;
+			}
+			line = lin;
+			column = col;
+		}
+		
+		FilePath ITextFile.Name {
+			get { return ContentName; }
+		}
+
+		int ITextFile.Length {
+			get { EnsureBuffer (); return Buffer.Length; }
+		}
+		
+		void EnsureBuffer ()
+		{
+			if (Buffer == null)
+				Buffer = pobject.ToXml () ?? "";
 		}
 	}
 }

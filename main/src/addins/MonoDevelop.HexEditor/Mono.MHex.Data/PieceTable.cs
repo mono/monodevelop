@@ -272,7 +272,7 @@ namespace Mono.MHex.Data
 				
 				return;
 			}
-			long endSegmentLength = offset + length - endNode.value.CalcOffset (endNode);
+			long endSegmentLength = endNode != null ? offset + length - endNode.value.CalcOffset (endNode) : 0;
 			RedBlackTree<TreeNode>.RedBlackTreeIterator iter = new RedBlackTree<TreeNode>.RedBlackTreeIterator (startNode);
 			RedBlackTree<TreeNode>.RedBlackTreeNode node;
 			do {

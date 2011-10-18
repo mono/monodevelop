@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 		
-		public int FindView (Type viewType)
+		public int FindView<T> ()
 		{
 			return -1;
 		}

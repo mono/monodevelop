@@ -36,8 +36,10 @@ namespace Stetic.Wrapper
 	/// </summary>
 	static class NotifyWorkaround
 	{
-		[CDeclCallback]
+		[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
 		delegate void NotifyDelegate (IntPtr handle, IntPtr pspec, IntPtr gch);
+		
+		static NotifyDelegate delegateInstance = new NotifyDelegate (NotifyCallback);
 
 		static void NotifyCallback (IntPtr handle, IntPtr pspec, IntPtr gch)
 		{
@@ -59,7 +61,7 @@ namespace Stetic.Wrapper
 		
 		static void ConnectNotification (GLib.Object w, string signal, NotifyHandler handler)
 		{
-			var sig = GLib.Signal.Lookup (w, signal, new NotifyDelegate (NotifyCallback));
+			var sig = GLib.Signal.Lookup (w, signal, delegateInstance);
 			sig.AddDelegate (handler);
 		}
 		
@@ -75,7 +77,7 @@ namespace Stetic.Wrapper
 		
 		static void DisconnectNotification (GLib.Object w, string signal, NotifyHandler handler)
 		{
-			var sig = GLib.Signal.Lookup (w, signal, new NotifyDelegate (NotifyCallback));
+			var sig = GLib.Signal.Lookup (w, signal, delegateInstance);
 			sig.RemoveDelegate (handler);
 		}
 		

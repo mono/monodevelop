@@ -58,6 +58,7 @@ namespace CustomControls.Controls
         private AddonWindowLocation mStartLocation  = AddonWindowLocation.Right;
         private FolderViewMode      mDefaultViewMode= FolderViewMode.Default;
 		private FileDialog			fileDialog;
+        private DummyForm           form;
         #endregion
 
         #region Constructors
@@ -97,6 +98,26 @@ namespace CustomControls.Controls
             get {return mDefaultViewMode;}
             set {mDefaultViewMode = value;}
         }
+
+        protected Rectangle FileNameLabelRect
+        {
+            get {
+                if (form == null || form.NativeDialog == null)
+                    return Rectangle.Empty;
+
+                return form.NativeDialog.FileNameLabelRect;
+            }
+        }
+
+        protected Rectangle FileNameComboRect
+        {
+            get {
+                if (form == null || form.NativeDialog == null)
+                    return Rectangle.Empty;
+
+                return form.NativeDialog.FileNameComboRect;
+            }
+        }
         #endregion
 
         #region Virtuals
@@ -117,6 +138,10 @@ namespace CustomControls.Controls
             if (ClosingDialog != null)
                 ClosingDialog(this, new EventArgs());
         }
+
+        protected virtual void OnShow(EventArgs args)
+        {
+        }
         #endregion
 
         #region Methods
@@ -127,7 +152,10 @@ namespace CustomControls.Controls
 
         public DialogResult ShowDialog(IWin32Window owner)
         {
-            DummyForm form = new DummyForm(this);
+            form = new DummyForm(this);
+            if (owner is Form)
+                form.Icon = ((Form)owner).Icon; // Inherit the app/window icon
+
             form.Show(owner);
             Win32.SetWindowPos(form.Handle, IntPtr.Zero, 0, 0, 0, 0, UFLAGSHIDE);
             form.WatchForActivate = true;
@@ -200,6 +228,7 @@ namespace CustomControls.Controls
             private WINDOWINFO          mChkReadOnlyInfo;
             private bool                mIsClosing          = false;
             private bool                mInitializated      = false;
+            private WINDOWINFO          mOpenDialogWindowInfo;
             private RECT                mOpenDialogWindowRect = new RECT();
             private RECT                mOpenDialogClientRect = new RECT();
             #endregion
@@ -233,6 +262,20 @@ namespace CustomControls.Controls
                 get {return mIsClosing;}
                 set {mIsClosing = value;}
             }
+
+            public Rectangle FileNameLabelRect
+            {
+                get {
+                    return RectToDialogClient(mLabelFileNameInfo.rcWindow);
+                }
+            }
+
+            public Rectangle FileNameComboRect
+            {
+                get {
+                    return RectToDialogClient(mComboFileNameInfo.rcWindow);
+                }
+            }
             #endregion
 
             #region Methods
@@ -249,6 +292,20 @@ namespace CustomControls.Controls
             #endregion
 
             #region Private Methods
+            private Rectangle RectToDialogClient(RECT rect)
+            {
+                uint locX = mOpenDialogWindowRect.left + mOpenDialogWindowInfo.cxWindowBorders;
+                uint locY = mOpenDialogWindowRect.top + mOpenDialogWindowInfo.cyWindowBorders;
+
+                rect.left -= locX;
+                rect.right -= locX;
+                rect.bottom -= locY;
+                rect.top -= locY;
+
+                return new Rectangle ((int)rect.left, (int)rect.top,
+                    (int)(rect.right - rect.left), (int)(rect.bottom - rect.top));
+            }
+
             private void PopulateWindowsHandlers()
             {
                 Win32.EnumChildWindows(mOpenDialogHandle, new Win32.EnumWindowsCallBack(OpenFileDialogEnumWindowCallBack), 0);
@@ -337,7 +394,8 @@ namespace CustomControls.Controls
 
                 // Lets get information about the current open dialog
                 Win32.GetClientRect(mOpenDialogHandle, ref mOpenDialogClientRect);
-                Win32.GetWindowRect(mOpenDialogHandle, ref mOpenDialogWindowRect);
+                Win32.GetWindowInfo(mOpenDialogHandle, out mOpenDialogWindowInfo);
+                mOpenDialogWindowRect = mOpenDialogWindowInfo.rcWindow;
 
                 // Lets borrow the Handles from the open dialog control
                 PopulateWindowsHandlers();
@@ -385,6 +443,8 @@ namespace CustomControls.Controls
                     case (int) Msg.WM_SHOWWINDOW:
                         mInitializated = true;
                         InitControls();
+
+                        mSourceControl.OnShow(EventArgs.Empty);
                         break;
                     case (int) Msg.WM_WINDOWPOSCHANGING:
                         if (!mIsClosing)
@@ -544,6 +604,11 @@ namespace CustomControls.Controls
             {
                 get {return mWatchForActivate;}
                 set {mWatchForActivate = value;}
+            }
+
+            public OpenDialogNative NativeDialog
+            {
+                get {return mNativeDialog;}
             }
             #endregion
 

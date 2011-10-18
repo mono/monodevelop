@@ -265,8 +265,8 @@ namespace MonoDevelop.VersionControl.Views
 					
 					if (block.Type != BlockType.Info && p.HasValue && p.Value.X >= cell_area.X && p.Value.X <= cell_area.Right && p.Value.Y >= block.YStart && p.Value.Y <= block.YEnd) {
 						int row = (p.Value.Y - block.YStart) / lineHeight;
-						double yrow = block.YStart + lineHeight * row + 0.5;
-						double xrow = cell_area.X + LeftPaddingBlock + 0.5;
+						double yrow = block.YStart + lineHeight * row;
+						double xrow = cell_area.X + LeftPaddingBlock;
 						int wrow = cell_area.Width - 1 - LeftPaddingBlock;
 						if (block.Type == BlockType.Added)
 							ctx.Color = baseAddColor.AddLight (0.1).ToCairoColor ();
@@ -414,12 +414,11 @@ namespace MonoDevelop.VersionControl.Views
 			if (!IsChangeBlock (block.Type))
 				return;
 			
-			x += 0.5;
 			Gdk.Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
-			double y = block.YStart + 0.5;
+			double y = block.YStart;
 			int height = block.YEnd - block.YStart;
 			
-			double markerx = x + LeftPaddingBlock - 0.5;
+			double markerx = x + LeftPaddingBlock;
 			double rd = RoundedSectionRadius;
 			if (block.SectionStart) {
 				ctx.Arc (x + rd, y + rd, rd, 180 * (Math.PI / 180), 270 * (Math.PI / 180));

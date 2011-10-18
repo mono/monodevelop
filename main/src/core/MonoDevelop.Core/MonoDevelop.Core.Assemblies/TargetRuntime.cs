@@ -52,6 +52,7 @@ namespace MonoDevelop.Core.Assemblies
 		object initEventLock = new object ();
 		bool initialized;
 		bool initializing;
+		bool backgroundInitialize;
 		
 		Dictionary<TargetFrameworkMoniker,TargetFrameworkBackend> frameworkBackends
 			= new Dictionary<TargetFrameworkMoniker, TargetFrameworkBackend> ();
@@ -86,18 +87,23 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal void StartInitialization ()
 		{
-			initializing = true;
-			
 			// Store the main sync context, since we'll need later on for subscribing
 			// add-in extension points (Mono.Addins isn't currently thread safe)
 			mainContext = SynchronizationContext.Current;
 			
-			// Initialize the service in a background thread.
-			Thread t = new Thread (new ThreadStart (BackgroundInitialize)) {
-				Name = "Assembly service initialization",
-				IsBackground = true,
-			};
-			t.Start ();
+			// If there is no custom threading context, we can't use background initialization since
+			// we have no main thread into which to dispatch
+			backgroundInitialize = mainContext != null && mainContext.GetType () != typeof (SynchronizationContext);
+			
+			if (backgroundInitialize) {
+				// Initialize the service in a background thread.
+				initializing = true;
+				Thread t = new Thread (new ThreadStart (BackgroundInitialize)) {
+					Name = "Assembly service initialization",
+					IsBackground = true,
+				};
+				t.Start ();
+			}
 		}
 		
 		/// <summary>
@@ -382,9 +388,15 @@ namespace MonoDevelop.Core.Assemblies
 		internal void EnsureInitialized ()
 		{
 			lock (initLock) {
-				// If we are here, that's because 1) the runtime has been initialized, or 2) the runtime is being initialized by *this* thread
-				if (!initialized && !initializing)
-					throw new InvalidOperationException ("Runtime intialization not started");
+				if (!initialized && !initializing) {
+					if (!backgroundInitialize) {
+						initializing = true;
+						BackgroundInitialize ();
+					}
+					else
+						// If we are here, that's because 1) the runtime has been initialized, or 2) the runtime is being initialized by *this* thread
+						throw new InvalidOperationException ("Runtime intialization not started");
+				}
 			}
 		}
 		

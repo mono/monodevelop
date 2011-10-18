@@ -110,6 +110,9 @@ namespace MonoDevelop.Platform
 			// FileDialog.FileName expects anything but a directory name.
 			if (!Directory.Exists (data.InitialFileName))
 				dialog.FileName = data.InitialFileName;
+
+			// Use the classic dialogs, as the new ones (WPF based) can't handle child controls.
+			dialog.AutoUpgradeEnabled = false;
 			
 			OpenFileDialog openDialog = dialog as OpenFileDialog;
 			if (openDialog != null)

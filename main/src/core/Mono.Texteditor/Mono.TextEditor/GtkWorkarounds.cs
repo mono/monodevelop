@@ -122,10 +122,24 @@ namespace Mono.TextEditor
 			//
 			// We need to swap the Y offset with the menu height because our callers expect the Y offset
 			// to be from the top of the screen, not from the bottom of the screen.
-			float menubar = (frame.Height - visible.Height) - visible.Y;
-			visible.Y = menubar;
+			float x, y, width, height;
 			
-			return new Gdk.Rectangle ((int) visible.X, (int) visible.Y, (int) visible.Width, (int) visible.Height);
+			if (visible.Height < frame.Height) {
+				float dockHeight = visible.Y;
+				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
+				
+				height = frame.Height - menubarHeight - dockHeight;
+				y = menubarHeight;
+			} else {
+				height = frame.Height;
+				y = frame.Y;
+			}
+			
+			// Takes care of the possibility of the Dock being positioned on the left or right edge of the screen.
+			width = System.Math.Min (visible.Width, frame.Width);
+			x = System.Math.Max (visible.X, frame.X);
+			
+			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
 		
 		static void MacRequestAttention (bool critical)

@@ -383,7 +383,7 @@ namespace Mono.TextEditor
 			window.ShowAll ();
 		}
 		
-		internal int preeditOffset, preeditLine, preeditCursorPos;
+		internal int preeditOffset, preeditLine, preeditCursorCharIndex;
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
 
@@ -397,11 +397,8 @@ namespace Mono.TextEditor
 		
 		void PreeditStringChanged (object sender, EventArgs e)
 		{
-			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos);
+			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);
 			if (!string.IsNullOrEmpty (preeditString)) {
-				//FIXME: respect UTF16 surrogates in cursor pos
-				//argh, mcs explodes if you use (System.)Math in a Mono namespace
-				preeditCursorPos = System.Math.Max (0, System.Math.Min (preeditString.Length, preeditCursorPos));
 				if (preeditOffset < 0) {
 					preeditOffset = Caret.Offset;
 					preeditLine = Caret.Line;
@@ -410,6 +407,7 @@ namespace Mono.TextEditor
 				preeditOffset = -1;
 				preeditString = null;
 				preeditAttrs = null;
+				preeditCursorCharIndex = 0;
 			}
 			this.textViewMargin.ForceInvalidateLine (preeditLine);
 			this.textEditorData.Document.CommitLineUpdate (preeditLine);
@@ -2431,12 +2429,20 @@ namespace Mono.TextEditor
 			w += 10;
 			
 			int x = xloc + ox + (int)textViewMargin.XOffset - (int) ((double)w * xalign);
-			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (ox + xloc, oy + yloc));
+			int rightMonitor = Screen.GetMonitorAtPoint (ox + xloc + w, oy + yloc);
+			int leftMonitor = Screen.GetMonitorAtPoint (ox + xloc, oy + yloc);
+			Gdk.Rectangle rightGeometry = Screen.GetUsableMonitorGeometry (rightMonitor);
+			Gdk.Rectangle leftGeometry;
 			
-			if (x + w >= geometry.Right)
-				x = geometry.Right - w;
-			if (x < geometry.Left)
-				x = geometry.Left;
+			if (leftMonitor != rightMonitor)
+				leftGeometry = Screen.GetUsableMonitorGeometry (leftMonitor);
+			else
+				leftGeometry = rightGeometry;
+			
+			if (x + w > rightGeometry.Right)
+				x = rightGeometry.Right - w;
+			if (x < leftGeometry.Left)
+				x = leftGeometry.Left;
 			
 			tipWindow.Move (x, yloc + oy + 10);
 			tipWindow.ShowAll ();

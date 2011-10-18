@@ -283,24 +283,25 @@
        inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"
-       style="font-size:38.43881226px;font-style:normal;font-weight:normal;fill:url(#linearGradient6215);fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       style="font-size:34px;font-style:normal;font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold;font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
        x="3.8116512"
        y="-67.38591"
        id="text5419"
        inkscape:export-filename="/home/lluis/nowork/mdgit/main/build/MacOSX/dmg-bg.png"
        inkscape:export-xdpi="128.64999"
-       inkscape:export-ydpi="128.64999"><tspan
+       inkscape:export-ydpi="128.64999"
+       sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan5421"
          x="3.8116512"
          y="-67.38591"
-         style="font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1">2.8</tspan></text>
+         style="font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1;-inkscape-font-specification:Bitstream Vera Sans Bold;font-family:Bitstream Vera Sans;font-style:normal;font-stretch:normal;font-variant:normal;font-size:34px;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%">2.8.1</tspan></text>
     <rect
        style="fill:#9f0000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.49700001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5520-2-0"
        width="56.373768"
        height="17.284218"
-       x="8.501112"
+       x="-65.498886"
        y="-61.988968"
        ry="2.140903"
        inkscape:export-filename="/home/lluis/nowork/mdgit/main/build/MacOSX/dmg-bg.png"
@@ -309,7 +310,7 @@
     <text
        xml:space="preserve"
        style="font-size:13px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Heavy'"
-       x="13.675294"
+       x="-60.324707"
        y="-48.048279"
        id="text5522-9-5"
        sodipodi:linespacing="125%"
@@ -318,7 +319,7 @@
        inkscape:export-ydpi="128.64999"><tspan
          sodipodi:role="line"
          id="tspan5524-3-9"
-         x="13.675294"
+         x="-60.324707"
          y="-48.048279"
          style="font-size:13px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Heavy'">Beta 3</tspan></text>
     <path

@@ -75,6 +75,12 @@ namespace Mono.MHex.Data
 			}
 		}
 		
+		public byte[] Bytes {
+			get {
+				return GetBytes (0, (int)Length);
+			}
+		}
+		
 		public byte[] GetBytes (long offset, int count)
 		{
 			if (count == 0)
@@ -172,6 +178,8 @@ namespace Mono.MHex.Data
 			OnReplaced (new ReplaceEventArgs (offset, count, null));
 			if (!isInUndo) 
 				EndAtomicUndo ();
+			if (Length == 0)
+				Insert (0, new byte[] {0});
 		}
 		
 		public void UpdateLine (long line)

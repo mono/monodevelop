@@ -38,6 +38,8 @@ using System.ComponentModel;
 using MonoDevelop.Core;
 using System.Globalization;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -267,33 +269,15 @@ namespace MonoDevelop.VersionControl.Views
 		public void SetVersionControlInfo (VersionControlDocumentInfo info)
 		{
 			this.info = info;
-			
-			if (info.Document != null) {
-				foreach (var editor in editors) {
-					editor.Document.MimeType = info.Document.Editor.Document.MimeType;
-					editor.Options.FontName = info.Document.Editor.Options.FontName;
-					editor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
-					editor.Options.ShowSpaces = info.Document.Editor.Options.ShowSpaces;
-					editor.Options.ShowTabs = info.Document.Editor.Options.ShowTabs;
-					editor.Options.ShowEolMarkers = info.Document.Editor.Options.ShowEolMarkers;
-					editor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
-					editor.Options.TabSize = info.Document.Editor.Options.TabSize;
-					editor.Options.ShowFoldMargin = false;
-					editor.Options.ShowIconMargin = false;
-				}
-			} else {
-				var options = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance;
-				foreach (var editor in editors) {
-					editor.Options.FontName = options.FontName;
-					editor.Options.ColorScheme = options.ColorScheme;
-					editor.Options.ShowSpaces = options.ShowSpaces;
-					editor.Options.ShowTabs = options.ShowTabs;
-					editor.Options.ShowEolMarkers = options.ShowEolMarkers;
-					editor.Options.ShowInvalidLines = options.ShowInvalidLines;
-					editor.Options.TabSize = options.TabSize;
-					editor.Options.ShowFoldMargin = false;
-					editor.Options.ShowIconMargin = false;
-				}
+
+			var mimeType = DesktopService.GetMimeTypeForUri (info.Item.Path);
+			foreach (var editor in editors) {
+				editor.Document.IgnoreFoldings = true;
+				editor.Document.MimeType = mimeType;
+				editor.Document.ReadOnly = true;
+
+				editor.Options.ShowFoldMargin = false;
+				editor.Options.ShowIconMargin = false;
 			}
 		}
 		
@@ -475,6 +459,17 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+			
+			if (vAdjustment != null) {
+				vAdjustment.Destroy ();
+				hAdjustment.Destroy ();
+				foreach (var adj in attachedVAdjustments)
+					adj.Destroy ();
+				foreach (var adj in attachedHAdjustments)
+					adj.Destroy ();
+				vAdjustment = null;
+			}
+			
 			children.ForEach (child => child.Child.Destroy ());
 		}
 
@@ -620,9 +615,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public void UpdateLocalText ()
 		{
+			var text = info.Document.GetContent<ITextFile> ();
 			foreach (var data in dict.Values) {
 				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Document.Text = info.Document.Editor.Document.Text;
+				data.Document.Text = text.Text;
 				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 			}
 			CreateDiff ();
@@ -633,8 +629,12 @@ namespace MonoDevelop.VersionControl.Views
 			if (info == null)
 				throw new InvalidOperationException ("Version control info must be set before attaching the merge view to an editor.");
 			dict[data.Document] = data;
-			data.Document.Text = info.Document.Editor.Document.Text;
-			data.Document.ReadOnly = false;
+			
+			var editor = info.Document.GetContent <ITextFile> ();
+			if (editor != null)
+				data.Document.Text = editor.Text;
+			data.Document.ReadOnly = info.Document.GetContent<IEditableTextFile> () == null;
+			
 			CreateDiff ();
 			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 		}
@@ -643,7 +643,9 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var data = dict[(Document)sender];
 			localUpdate.Remove (data);
-			info.Document.Editor.Replace (e.Offset, e.Count, e.Value);
+			var editor = info.Document.GetContent<IEditableTextFile> ();
+			editor.DeleteText (e.Offset, e.Count);
+			editor.InsertText (e.Offset, e.Value);
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}
@@ -651,7 +653,6 @@ namespace MonoDevelop.VersionControl.Views
 		public void RemoveLocal (TextEditorData data)
 		{
 			localUpdate.Remove (data);
-			data.Document.ReadOnly = true;
 			data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
 		}
 
@@ -1050,10 +1051,11 @@ namespace MonoDevelop.VersionControl.Views
 			
 			void DrawBar (Cairo.Context cr, double y, double h)
 			{
-				const int barWidth = 8;
+				int barPadding = 3;
+				int barWidth = Allocation.Width - barPadding - barPadding;
 				
 				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, 
-					0.5 + (Allocation.Width - barWidth) / 2,
+					barPadding,
 					y,
 					barWidth,
 					h,

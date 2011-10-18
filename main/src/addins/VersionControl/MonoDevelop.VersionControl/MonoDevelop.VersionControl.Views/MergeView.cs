@@ -30,7 +30,11 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	class MergeView : BaseView, IAttachableViewContent
+	public interface IMergeView : IAttachableViewContent
+	{
+	}
+	
+	class MergeView : BaseView, IMergeView
 	{
 		MergeWidget widget;
 
@@ -40,15 +44,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public static void Show (VersionControlItemList items)
-		{
-			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-				DiffView.AttachViewContents (document, item);
-				document.Window.SwitchView (document.Window.FindView (typeof (MergeView)));
-			}
-		}
-		
 		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"))
 		{
 			widget = new MergeWidget ();

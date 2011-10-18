@@ -32,6 +32,20 @@ namespace MonoDevelop.Platform
             comboActions.SelectedIndex = 0;
         }
 
+        // Need the dialog to be visible to access its controls coordinates.
+        protected override void OnShow (EventArgs args)
+        {
+            base.OnShow (args);
+            HorizontalLayout ();
+        }
+
+        void HorizontalLayout ()
+        {
+            var xOffset = FileNameLabelRect.X;
+            checkOverride.Left += xOffset;
+            comboActions.Left += xOffset;
+        }
+
         private void checkOverride_CheckedChanged(object sender, EventArgs e)
         {
             comboActions.Enabled = checkOverride.Checked;

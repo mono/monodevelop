@@ -223,7 +223,39 @@ namespace MonoDevelop.Ide
 			}
 			return false;
 		}
-
+		
+		public void JumpToDeclaration (INamedElement visitable, bool askIfMultipleLocations)
+		{
+			if (askIfMultipleLocations) {
+				var type = visitable as ITypeDefinition;
+				if (type != null && type.HasParts) {
+					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+						foreach (IType part in DomType.GetSortedParts (type))
+							monitor.ReportResult (GetJumpTypePartSearchResult (part));
+					}
+					return;
+				}
+			}
+			
+			JumpToDeclaration (visitable);
+		}
+		
+		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (IType part)
+		{
+			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.CompilationUnit.FileName);
+			var doc = new Mono.TextEditor.Document ();
+			using (System.IO.TextReader textReader = provider.Open ()) {
+				doc.Text = textReader.ReadToEnd ();
+			}
+			int position = doc.LocationToOffset (part.Location.Line, part.Location.Column);
+			while (position + part.Name.Length < doc.Length) {
+				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
+					break;
+				position++;
+			}
+			return new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length);
+		}
+		
 		public void JumpToDeclaration (INamedElement element)
 		{
 			IEntity entity = element as IEntity;
@@ -1879,6 +1911,7 @@ namespace MonoDevelop.Ide
 			
 			#endregion
 		}
+
 		
 		public IEditableTextFile GetEditableTextFile (FilePath filePath)
 		{

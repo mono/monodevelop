@@ -327,7 +327,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!force && previousHeight != h && previousWidth != w)
 				return;
 			
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (X, Y));
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (X + w, Y));
 			
 			previousHeight = h;
 			previousWidth = w;

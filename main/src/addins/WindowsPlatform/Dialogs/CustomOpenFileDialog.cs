@@ -46,11 +46,10 @@ namespace MonoDevelop.Platform
 		EncodingBox encodingBox;
 		ComboBox viewerBox;
 		CheckBox closeSolutionBox;
+		int labelsWidth;
 		
 		const string EncodingText = "Encoding:";
 		const string ViewerText = "Open with:";
-		
-		const int DialogWidth = 460; // predefined/desired width
 		
 		public CustomOpenFileDialog (FileDialog dialog, OpenFileDialogData data)
 			: base (dialog)
@@ -59,63 +58,63 @@ namespace MonoDevelop.Platform
 			
 			StartLocation = AddonWindowLocation.Bottom;
 		}
-		
+
+
+		// We are required to compute the needed height to contain our controls
+		// *before* the dialog is shown, thus we do it here as well as the vertical layout.
+		// The X coords for our controls are set as soon as we get access to the native
+		// dialog's controls, which happens to be when the OnShown event is fired.
 		void Initialize (OpenFileDialogData data)
 		{
 			SuspendLayout ();
+
+			int padding = 6;
+			int y = padding;
 			
-			Point location = new Point (10, 5); // start location for controls.
-			int padding = 5;
-			int height = padding * 2; // initial/minimum height.
-			
-			int labelWidth = GetMaxLabelWidth (data.ShowEncodingSelector, data.ShowViewerSelector);
+			labelsWidth = GetMaxLabelWidth (data.ShowEncodingSelector, data.ShowViewerSelector);
 			
 			if (data.ShowEncodingSelector) {
 				encodingLabel = new Label () {
 					Text = GettextCatalog.GetString (EncodingText),
-					Location = location,
+					Top = y,
 					AutoSize = true
 				};
 				
 				encodingBox = new EncodingBox (data.Action != Gtk.FileChooserAction.Save) {
-					Location = new Point (labelWidth + 20, location.Y),
-					Width = DialogWidth - (labelWidth + 20 + padding),
+					Top = y,
 					SelectedEncodingId = data.Encoding,
 				};
 				
 				Controls.AddRange (new Control [] { encodingLabel, encodingBox });
-								
-				location.Y = encodingLabel.Bottom + padding;
-				height += encodingBox.Height + padding;
+
+				y += Math.Max (encodingLabel.Height, encodingBox.Height) + padding;
 			}
 			
 			if (data.ShowViewerSelector && FileDialog is OpenFileDialog) {
 				viewerLabel = new Label () {
 					Text = GettextCatalog.GetString (ViewerText),
-					Location = location,
+					Top = y,
 					AutoSize = true
 				};
 				
 				viewerBox = new ComboBox () {
-					Location = new Point (labelWidth + 20, location.Y),
-					Width = DialogWidth - (labelWidth + 20 + padding),
+					Top = y,
 					DropDownStyle = ComboBoxStyle.DropDownList,
 					Enabled = false
 				};
 				
-				location.Y = viewerBox.Bottom + padding;
-				height += viewerBox.Height + padding;
+				y += Math.Max (viewerLabel.Height, viewerBox.Height) + padding;
 				
 				if (IdeApp.Workspace.IsOpen) {
 					closeSolutionBox = new CheckBox () {
 						Text = GettextCatalog.GetString ("Close current workspace"),
-						Location = location,
+						Top = y,
 						AutoSize = true,
 						Checked = true,
 						Enabled = false
 					};
 					
-					height += closeSolutionBox.Height + padding;
+					y += closeSolutionBox.Height + padding;
 				}
 				
 				if (encodingBox != null) {
@@ -132,7 +131,7 @@ namespace MonoDevelop.Platform
 			
 			AutoScaleDimensions = new SizeF (6F, 13F);
 			AutoScaleMode = AutoScaleMode.Font;
-			Size = new Size (DialogWidth, height);
+			ClientSize = new Size (ClientSize.Width, y);
 			
 			ResumeLayout ();
 		}
@@ -178,6 +177,12 @@ namespace MonoDevelop.Platform
 			if (encodingBox != null)
 				encodingBox.Enabled = !slnViewerSelected;
 		}
+
+		protected override void OnShow (EventArgs args)
+		{
+			base.OnShow (args);
+			HorizontalLayout ();
+		}
 		
 		// Sort of ported from the MacSupport addin
 		static void FillViewers (List<FileViewer> currentViewers, ComboBox viewerBox, string fileName)
@@ -205,6 +210,41 @@ namespace MonoDevelop.Platform
 			
 			viewerBox.Enabled = currentViewers.Count > 1;
 			viewerBox.SelectedIndex = 0;
+		}
+
+		// Align our label/comobox/checkbox objects with respect to the native dialog ones.
+		void HorizontalLayout ()
+		{
+			var labelRect = FileNameLabelRect; // Native dialog's label for filename
+			int labelsX = labelRect.X;
+
+			var comboRect = FileNameComboRect; // Native dialog's combobox for filename
+			int boxesX = comboRect.X;
+			int boxesWidth = comboRect.Width;
+
+			int hPadding = 5;
+
+			if (labelsWidth + hPadding > labelRect.Width) { // Adjust our comboBox objects if needed
+				boxesX = labelsX + (labelsWidth + hPadding);
+				boxesWidth = comboRect.Right - boxesX;
+			}
+
+			if (encodingLabel != null) {
+				encodingLabel.Left = labelsX;
+
+				encodingBox.Left = boxesX;
+				encodingBox.Width = boxesWidth;
+			}
+
+			if (viewerLabel != null) {
+				viewerLabel.Left = labelsX;
+
+				viewerBox.Left = boxesX;
+				viewerBox.Width = boxesWidth;
+			}
+
+			if (closeSolutionBox != null)
+				closeSolutionBox.Left = boxesX;
 		}
 		
 		int GetMaxLabelWidth (bool showEncoding, bool showViewer)

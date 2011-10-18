@@ -7,7 +7,7 @@
        description = "The MonoDevelop IDE application."
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "2.8"
+       version     = "2.8.1"
        compatVersion = "2.7">
 	
 	<Runtime>
@@ -15,7 +15,7 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.8"/>
+		<Addin id="Core" version="2.8.1"/>
 	</Dependencies>
 
 	<!-- Extension ponts -->
@@ -193,14 +193,6 @@
 		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
 	</Extension>
 	
-
-	
-	<!--<Extension path = "/MonoDevelop/Ide/FileFilters">
-		<FileFilter id = "AllFiles"
-		            _label = "All Files"
-		            extensions = "*.*"/>
-	</Extension>-->
-	
 	<Extension path = "/MonoDevelop/Ide/TaskList/View">
 		<TaskListView _label = "Comments" class = "MonoDevelop.Ide.Tasks.CommentTasksView" />
 		<TaskListView _label = "User Tasks" class = "MonoDevelop.Ide.Tasks.UserTasksView" />
@@ -213,16 +205,31 @@
 		<Layout id="Solution" _name="Solution" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter id = "Assemblies"
+		            _label = "Assemblies"
+		            extensions = "*.exe,*.dll"/>
+		<FileFilter id = "Xml"
+		            _label = "XML Files"
+		            extensions = "*.xml"/>
+		<FileFilter id = "Resources"
+		            _label = ".NET Resource Files"
+		            extensions = "*.resources,*.resx"/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
+		<FileFilter id = "SlnCombine"
+		            _label = "Solution Files"
+		            extensions = "*.sln"/>
+		<FileFilter id = "MSBuildProject"
+		            _label = "Project Files"
+		            extensions = "*.*proj"/>
 		<FileFilter id = "Combine"
-		            _label = "MonoDevelop Solution Files"
+		            _label = "MD 1.0 Solution Files"
 		            extensions = "*.mds"/>
 		<FileFilter id = "Project"
-		            _label = "MonoDevelop Project Files"
+		            _label = "MD 1.0 Project Files"
 		            extensions = "*.mdp"/>
-		<!--<FileFilter id = "AllFiles"
-		            _label = "All Files"
-		            extensions = "*.*"/>-->
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

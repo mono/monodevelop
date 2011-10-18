@@ -291,6 +291,13 @@ namespace MonoDevelop.Refactoring
 				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
 					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
 				}
+<<<<<<< HEAD
+=======
+				if (baseConstructor != null) {
+					Refactorer refactorer2 = new Refactorer (ctx, pinfo, baseConstructor.DeclaringType, baseConstructor, null);
+					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer2.GoToBase));
+				}
+>>>>>>> master
 			}
 			
 			RefactoringOptions options = new RefactoringOptions () {
@@ -953,6 +960,7 @@ namespace MonoDevelop.Refactoring
 		}*/
 	}
 	
+<<<<<<< HEAD
 //	public class Refactorer
 //	{
 //		IList<DomRegion> references;
@@ -1063,4 +1071,178 @@ namespace MonoDevelop.Refactoring
 //		}
 //		
 //	}
+=======
+	public class Refactorer
+	{
+		MemberReferenceCollection references;
+		ISearchProgressMonitor monitor;
+		ICompilationUnit pinfo;
+		ProjectDom ctx;
+		INode item;
+		IType klass;
+		IReturnType hintReturnType;
+		
+		public Refactorer (ProjectDom ctx, ICompilationUnit pinfo, IType klass, INode item, IReturnType hintReturnType)
+		{
+			this.pinfo = pinfo;
+			this.klass = klass;
+			this.item = item;
+			this.ctx = ctx;
+			this.hintReturnType = hintReturnType;
+		}
+		
+		public void GoToDeclaration ()
+		{
+			IdeApp.ProjectOperations.JumpToDeclaration (item, true);
+		}
+		
+		public void FindReferences ()
+		{
+			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+			ThreadPool.QueueUserWorkItem (FindReferencesThread);
+		}
+		
+		void FindReferencesThread (object state)
+		{
+			try {
+				foreach (MemberReference mref in ReferenceFinder.FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, item, monitor)) {
+					monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
+				}
+			} catch (Exception ex) {
+				if (monitor != null)
+					monitor.ReportError ("Error finding references", ex);
+				else
+					LoggingService.LogError ("Error finding references", ex);
+			} finally {
+				if (monitor != null)
+					monitor.Dispose ();
+			}
+		}
+		
+		public void GoToBase ()
+		{
+			IType cls = item as IType;
+			if (cls != null && cls.BaseTypes != null) {
+				foreach (IReturnType bc in cls.BaseTypes) {
+					IType bcls = ctx.GetType (bc);
+					if (bcls != null && bcls.ClassType != ClassType.Interface && !bcls.Location.IsEmpty) {
+						IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, bcls.Location.Line, bcls.Location.Column);
+						return;
+					}
+				}
+				return;
+			}
+			IMethod method = item as IMethod;
+			if (method != null) {
+				foreach (IReturnType bc in method.DeclaringType.BaseTypes) {
+					IType bcls = ctx.GetType (bc);
+					if (bcls != null && bcls.ClassType != ClassType.Interface && !bcls.Location.IsEmpty) {
+						IMethod baseMethod = null;
+						foreach (IMethod m in bcls.Methods) {
+							if (m.Name == method.Name && m.Parameters.Count == m.Parameters.Count) {
+								baseMethod = m;
+								break;
+							}
+						}
+						if (baseMethod != null)
+							IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, baseMethod.Location.Line, baseMethod.Location.Column);
+						return;
+					}
+				}
+				return;
+			}
+		}
+		
+		public void FindDerivedClasses ()
+		{
+			ThreadPool.QueueUserWorkItem (FindDerivedThread);
+		}
+		
+		void FindDerivedThread (object state)
+		{
+			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+			using (monitor) {
+				IType cls = (IType) item;
+				if (cls == null) return;
+				
+				CodeRefactorer cr = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+				foreach (IType sub in cr.FindDerivedClasses (cls)) {
+					if (!sub.Location.IsEmpty) {
+						IEditableTextFile textFile = cr.TextFileProvider.GetEditableTextFile (sub.CompilationUnit.FileName);
+						if (textFile == null) 
+							textFile = new TextFile (sub.CompilationUnit.FileName);
+						int position = textFile.GetPositionFromLineColumn (sub.Location.Line, sub.Location.Column);
+						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (sub.CompilationUnit.FileName, sub.SourceProject as Project), position, 0));
+					}
+				}
+			}
+		}
+		
+		void ImplementInterface (bool explicitly)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var editor = doc.Editor.Parent;
+			IType interfaceType = item as IType;
+			IType declaringType = klass;
+			
+			var mode = new Mono.TextEditor.InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (doc, declaringType));
+			var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
+			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
+			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement Interface -- Targeting</b>");
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare interface implementation</b> at target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
+			mode.HelpWindow = helpWindow;
+			mode.CurIndex = mode.InsertionPoints.Count - 1;
+			mode.StartMode ();
+			mode.Exited += delegate(object s, Mono.TextEditor.InsertionCursorEventArgs args) {
+				if (args.Success) {
+					var generator = doc.CreateCodeGenerator ();
+					args.InsertionPoint.Insert (doc.Editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, explicitly));
+				}
+			};
+		}
+		
+		public void ImplementImplicitInterface ()
+		{
+			ImplementInterface (false);
+		}
+		
+		public void ImplementExplicitInterface ()
+		{
+			ImplementInterface (true);
+		}
+		
+		public void ImplementAbstractMembers ()
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			IType interfaceType = item as IType;
+			MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers.Implement (doc, interfaceType);
+		}
+		
+		public void EncapsulateField ()
+		{
+			EncapsulateFieldDialog dialog;
+			if (item is IField) {
+				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument, ctx, (IField) item);
+			} else {
+				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument, ctx, (IType) item);
+			}
+			MessageService.ShowCustomDialog (dialog);
+		}
+		
+		public void OverrideOrImplementMembers ()
+		{
+			MessageService.ShowCustomDialog (new OverridesImplementsDialog (IdeApp.Workbench.ActiveDocument, (IType)item));
+		}
+		
+		public void Rename ()
+		{
+		//	RenameItemDialog dialog = new RenameItemDialog (ctx, item);
+		//	dialog.Show ();
+		}
+	}
+>>>>>>> master
 }

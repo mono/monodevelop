@@ -7,7 +7,7 @@
        description = "A MonoDevelop addin for using version control systems like Subversion"
        category    = "Version Control"
        flags = "Hidden"
-       version   = "2.8">
+       version   = "2.8.1">
  
 	<Runtime>
 		<Import file="comment.png" />
@@ -24,9 +24,9 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="2.8"/>
-	    <Addin id="Ide" version="2.8"/>
-	    <Addin id="SourceEditor2" version="2.8"/>
+	    <Addin id="Core" version="2.8.1"/>
+	    <Addin id="Ide" version="2.8.1"/>
+	    <Addin id="SourceEditor2" version="2.8.1"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/VersionControlSystems" name = "Version control systems">
@@ -53,6 +53,42 @@
 		<Description>Context menu for the blame view.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffViewHandler" name = "Diff view handler">
+		<Description>Handler used to create the a diff view which can display the current file.</Description>
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IDiffViewHandler" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/VersionControl/DiffViewHandler">
+		<Handler class = "MonoDevelop.VersionControl.DefaultDiffViewHandler" />
+	</Extension>
+	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameViewHandler" name = "Blame view handler">
+		<Description>Handler used to create the a blame view which can display the current file.</Description>
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IBlameViewHandler" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/VersionControl/BlameViewHandler">
+		<Handler class = "MonoDevelop.VersionControl.DefaultBlameViewHandler" />
+	</Extension>
+	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/LogViewHandler" name = "Log view handler">
+		<Description>Handler used to create the a log view which can display the current file.</Description>
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.ILogViewHandler" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/VersionControl/LogViewHandler">
+		<Handler class = "MonoDevelop.VersionControl.DefaultLogViewHandler" />
+	</Extension>
+	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/MergeViewHandler" name = "Merge view handler">
+		<Description>Handler used to create the a merge view which can display the current file.</Description>
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IMergeViewHandler" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/VersionControl/MergeViewHandler">
+		<Handler class = "MonoDevelop.VersionControl.DefaultMergeViewHandler" />
+	</Extension>
 	
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffView/ContextMenu" name = "Diff view context menu">
 		<Description>Context menu for the diff view.</Description>

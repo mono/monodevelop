@@ -53,6 +53,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public MergeWidget ()
 		{
+			MainEditor.Document.TextReplaced += UpdateConflictsOnTextReplace;
 		}
 
 		protected override void UndoChange (TextEditor fromEditor, TextEditor toEditor, Hunk hunk)
@@ -88,10 +89,13 @@ namespace MonoDevelop.VersionControl.Views
 			MainEditor.Document.Text = System.IO.File.ReadAllText (fileName);
 
 			this.CreateDiff ();
-			MainEditor.Document.TextReplaced += delegate {
-				this.UpdateDiff ();
-			};
 			Show ();
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			MainEditor.Document.TextReplaced -= UpdateConflictsOnTextReplace;
 		}
 		
 		public string GetResultText ()
@@ -222,7 +226,6 @@ namespace MonoDevelop.VersionControl.Views
 			editors[2].Insert (editors[2].Document.Length, lastPart);
 
 			UpdateDiff ();
-			MainEditor.Document.TextReplaced += UpdateConflictsOnTextReplace;
 		}
 
 		IEnumerable<ISegment> GetAllConflictingSegments ()
@@ -238,6 +241,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		void UpdateConflictsOnTextReplace (object sender, ReplaceEventArgs e)
 		{
+			this.UpdateDiff ();
 			Document.UpdateSegments (GetAllConflictingSegments (), e);
 		}
 	}

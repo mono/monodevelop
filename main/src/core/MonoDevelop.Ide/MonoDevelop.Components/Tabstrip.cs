@@ -346,9 +346,7 @@ namespace MonoDevelop.Components
 			int topPadding = 2;
 			
 			if (Active || HoverPosition.X >= 0) {
-				cr.NewPath ();
-				cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5 + topPadding, rectangle.Width - 1, rectangle.Height - topPadding);
-				cr.ClosePath ();
+				cr.Rectangle (rectangle.X + 1, rectangle.Y + 1 + topPadding, rectangle.Width - 1, rectangle.Height - topPadding);
 				if (Active) {
 					cr.Color = (HslColor)parent.Style.Background (StateType.Prelight);
 				} else if (HoverPosition.X >= 0) {
@@ -363,10 +361,10 @@ namespace MonoDevelop.Components
 					gradient.AddColorStop (1, color);
 					cr.Pattern = gradient;
 				}
-				if (!Active) {
-					cr.Fill ();
-				} else {
-					cr.FillPreserve ();
+				cr.Fill ();
+				
+				if (Active) {
+					cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5 + topPadding, rectangle.Width - 1, rectangle.Height - topPadding);
 					cr.Color = (HslColor)parent.Style.Dark (StateType.Normal);
 					cr.LineWidth = 1;
 					cr.Stroke ();

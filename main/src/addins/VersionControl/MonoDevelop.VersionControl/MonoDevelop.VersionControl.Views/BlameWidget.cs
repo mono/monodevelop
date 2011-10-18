@@ -85,7 +85,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public Ide.Gui.Document Document {
 			get {
-				return info.Document;
+				return info.Document.WorkbenchWindow.Document;
 			}
 		}
 		public VersionControlItem VersionControlItem {
@@ -101,6 +101,7 @@ namespace MonoDevelop.VersionControl.Views
 		public BlameWidget (VersionControlDocumentInfo info)
 		{
 			this.info = info;
+			var sourceEditor = info.Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
@@ -114,7 +115,7 @@ namespace MonoDevelop.VersionControl.Views
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
 			
-			editor = new TextEditor (info.Document.Editor.Document, info.Document.Editor.Options);
+			editor = new TextEditor (sourceEditor.TextEditor.Document, sourceEditor.TextEditor.Options);
 			AddChild (editor);
 			editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
@@ -502,10 +503,10 @@ namespace MonoDevelop.VersionControl.Views
 				if (highlightAnnotation == null)
 					return;
 				int i = 1;
-				foreach (var content in widget.info.Document.Window.SubViewContents) {
+				foreach (var content in widget.info.Document.WorkbenchWindow.SubViewContents) {
 					DiffView diffView = content as DiffView;
 					if (diffView != null) {
-						widget.info.Document.Window.SwitchView (i);
+						widget.info.Document.WorkbenchWindow.SwitchView (i);
 						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == highlightAnnotation.Revision);
 						if (rev == null)
 							return;
@@ -523,10 +524,10 @@ namespace MonoDevelop.VersionControl.Views
 				if (highlightAnnotation == null)
 					return;
 				int i = 1;
-				foreach (var content in widget.info.Document.Window.SubViewContents) {
+				foreach (var content in widget.info.Document.WorkbenchWindow.SubViewContents) {
 					LogView logView = content as LogView;
 					if (logView != null) {
-						widget.info.Document.Window.SwitchView (i);
+						widget.info.Document.WorkbenchWindow.SwitchView (i);
 						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == highlightAnnotation.Revision);
 						if (rev == null)
 							return;

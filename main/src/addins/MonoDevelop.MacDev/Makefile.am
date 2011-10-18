@@ -6,6 +6,7 @@ DEPS =  \
 	../../../build/AddIns/MacPlatform.dll \
 	../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	../../../build/bin/ICSharpCode.NRefactory.dll \
+	../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
 	../../../build/bin/Mono.TextEditor.dll \
 	../../../build/bin/MonoDevelop.Core.dll \
 	../../../build/bin/MonoDevelop.Ide.dll
@@ -54,6 +55,7 @@ FILES =  \
 	MonoDevelop.MacDev.PlistEditor/IPListDisplayWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/IPlistEditingHandler.cs \
 	MonoDevelop.MacDev.PlistEditor/MacExpander.cs \
+	MonoDevelop.MacDev.PlistEditor/PlistDiffHandler.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorDisplayBinding.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorViewContent.cs \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \

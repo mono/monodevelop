@@ -121,7 +121,7 @@ namespace MonoDevelop.Components
 //					LimitWidth (fittedWidth);
 //				}
 				
-				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
+				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x + allocation.Width, y));
 				if (nudgeHorizontal) {
 					if (allocation.Width <= geometry.Width && x + allocation.Width >= geometry.Width - edgeGap)
 						x = geometry.Left + (geometry.Width - allocation.Height - edgeGap);

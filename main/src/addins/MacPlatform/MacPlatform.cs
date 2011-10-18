@@ -464,19 +464,30 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			RectangleF visible = monitor.VisibleFrame;
 			RectangleF frame = monitor.Frame;
 			
-			if (visible.Height > frame.Height || visible.Width > frame.Width)
-				return base.GetUsableMonitorGeometry (screen, monitor_id);
-			
 			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
 			// to get the menu height, we just figure out the difference between the visibleFrame height
 			// and the actual frame height, then subtract the Dock height.
 			//
 			// We need to swap the Y offset with the menu height because our callers expect the Y offset
 			// to be from the top of the screen, not from the bottom of the screen.
-			float menubar = (frame.Height - visible.Height) - visible.Y;
-			visible.Y = menubar;
+			float x, y, width, height;
 			
-			return new Gdk.Rectangle ((int) visible.X, (int) visible.Y, (int) visible.Width, (int) visible.Height);
+			if (visible.Height <= frame.Height) {
+				float dockHeight = visible.Y;
+				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
+				
+				height = frame.Height - menubarHeight - dockHeight;
+				y = menubarHeight;
+			} else {
+				height = frame.Height;
+				y = frame.Y;
+			}
+			
+			// Takes care of the possibility of the Dock being positioned on the left or right edge of the screen.
+			width = Math.Min (visible.Width, frame.Width);
+			x = Math.Max (visible.X, frame.X);
+			
+			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
 		
 		public override void GrabDesktopFocus (Gtk.Window window)

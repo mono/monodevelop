@@ -27,9 +27,19 @@ namespace MonoDevelop.Platform
             this.StartPosition = FormStartPosition.Manual;
             this.Location = new Point(-32000, -32000);
             this.ShowInTaskbar = false;
+            this.Icon = MonoDevelopIcon; // Icon is inherited to FileDialog objects
             Show();
 			Win32.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0, UFLAGSHIDE);
 			watchForActivate = true;
+        }
+
+        public static readonly Icon MonoDevelopIcon = LoadMonoDevelopIcon ();
+
+        static Icon LoadMonoDevelopIcon ()
+        {
+            // IconSize.Dnd seems to be the best match for Form.Icon
+            var pixbuf = MonoDevelop.Ide.ImageService.GetPixbuf ("md-monodevelop", Gtk.IconSize.Dnd);
+            return new Icon (new System.IO.MemoryStream (pixbuf.SaveToBuffer ("ico")));
         }
 		
 		protected override void OnClosing (CancelEventArgs args)

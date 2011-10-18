@@ -33,11 +33,26 @@ using System.Runtime.InteropServices;
 using Gtk;
 using System.Text;
 using MonoDevelop.Ide;
+using System.IO;
+using MonoMac.ObjCRuntime;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	public abstract class PObject
 	{
+		static readonly IntPtr cls_NSPropertyListSerialization = Class.GetHandle ("NSPropertyListSerialization");
+		static readonly IntPtr sel_dataFromPropertyList_format_options_error = Selector.GetHandle ("dataWithPropertyList:format:options:error:");
+				
+		[DllImport (MonoMac.Constants.ObjectiveCLibrary, EntryPoint="objc_msgSend")]
+		static extern IntPtr IntPtr_objc_msgSend_IntPtr_Int_Int_OutIntPtr (
+			IntPtr target,
+			IntPtr selector,
+			IntPtr arg0,
+			int arg1,
+			int arg2,
+			out IntPtr arg3);
+		
+		
 		PObject parent;
 		public PObject Parent {
 			get {
@@ -147,6 +162,30 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		public event EventHandler Changed;
+		
+		public string ToXml ()
+		{
+			using (new NSAutoreleasePool ()) {
+				var errorPtr = IntPtr.Zero;
+				var pobject = Convert ();
+				
+				var nsDataPtr = IntPtr_objc_msgSend_IntPtr_Int_Int_OutIntPtr (
+					cls_NSPropertyListSerialization,
+					sel_dataFromPropertyList_format_options_error,
+					pobject.Handle, (int) NSPropertyListFormat.Xml, 0, out errorPtr);
+				
+				if (errorPtr != IntPtr.Zero) {
+					var error = (NSError) MonoMac.ObjCRuntime.Runtime.GetNSObject (errorPtr);
+					throw new Exception (error.LocalizedDescription);
+				} else if (nsDataPtr == IntPtr.Zero) {
+					throw new Exception ("Could not convert the NSDictionary to xml representation");	
+				} else {
+					var nsData = (NSData) MonoMac.ObjCRuntime.Runtime.GetNSObject (nsDataPtr);
+					return System.Text.Encoding.UTF8.GetString (nsData.ToArray ());
+				}
+			}
+		}
+		
 	}
 	
 	public abstract class PObjectContainer : PObject

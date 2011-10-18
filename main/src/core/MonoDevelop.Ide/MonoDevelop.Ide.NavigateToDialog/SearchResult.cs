@@ -123,10 +123,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string Description {
 			get {
-				//			if (useFullName) 
-				//				return type.GetSourceProject () != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), type.GetSourceProject ().Name ?? "") : String.Format (GettextCatalog.GetString ("from \"{0}\""), (string)type.GetDefinition ().Region.FileName ?? "");
-				//			if (type.GetSourceProject () != null)
-				//				return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), type.GetSourceProject ().Name ?? "", type.Namespace ?? "");
+				if (type.GetSourceProject () != null)
+					return GettextCatalog.GetString ("from Project \"{0} in {1}\"", type.GetSourceProject ().Name ?? "", type.Namespace ?? "");
 				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), File ?? "", type.Namespace ?? "");
 			}
 		}
@@ -172,12 +170,15 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override string Description {
 			get {
 				if (useFileName)
-					return file.Project != null ? String.Format (GettextCatalog.GetString ("from \"{0}\" in Project \"{1}\""), GetRelProjectPath (file), file.Project.Name) : String.Format (GettextCatalog.GetString ("from \"{0}\""), GetRelProjectPath (file));
-				return file.Project != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), file.Project.Name) : "";
+					return file.Project != null
+						? GettextCatalog.GetString ("from \"{0}\" in Project \"{1}\"", GetRelProjectPath (file), file.Project.Name)
+						: GettextCatalog.GetString ("from \"{0}\"", GetRelProjectPath (file));
+				return file.Project != null ? GettextCatalog.GetString ("from Project \"{0}\"", file.Project.Name) : "";
 			}
 		}
 		
-		public FileSearchResult (string match, string matchedString, int rank, ProjectFile file, bool useFileName) : base (match, matchedString, rank)
+		public FileSearchResult (string match, string matchedString, int rank, ProjectFile file, bool useFileName)
+							: base (match, matchedString, rank)
 		{
 			this.file = file;
 			this.useFileName = useFileName;
@@ -199,7 +200,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		protected virtual OutputFlags Flags {
 			get {
-				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | (useFullName  ? OutputFlags.UseFullName : OutputFlags.None);
+				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics
+					| (useFullName  ? OutputFlags.UseFullName : OutputFlags.None);
 			}
 		}
 		
@@ -229,7 +231,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string Description {
 			get {
-				return String.Format (GettextCatalog.GetString ("from Type \"{0}\""), member.DeclaringType.Name);
+				return GettextCatalog.GetString ("from Type \"{0}\"", member.DeclaringType.Name);
 			}
 		}
 		

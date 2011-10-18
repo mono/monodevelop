@@ -6,13 +6,13 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
        category    = "Language bindings"
-       version     = "2.8">
+       version     = "2.8.1">
 	
 	<Dependencies>
-		<Addin id="Core" version="2.8"/>
-		<Addin id="Ide" version="2.8"/>
-		<Addin id="SourceEditor2" version="2.8"/>
-		<Addin id="Refactoring" version="2.8"/>
+		<Addin id="Core" version="2.8.1"/>
+		<Addin id="Ide" version="2.8.1"/>
+		<Addin id="SourceEditor2" version="2.8.1"/>
+		<Addin id="Refactoring" version="2.8.1"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -39,27 +39,9 @@
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "CSharp"
-		            insertbefore="AllFiles"
-		            _label = "CSharp Files"
-			    extensions = "*.cs"/>
-		<FileFilter id = "Assemblies"
-		            insertbefore="AllFiles"
-		            _label = "Assemblies"
-		            extensions = "*.exe,*.dll"/>
-			    
-		<FileFilter id = "Html"
-		            insertbefore="AllFiles"
-		            _label = "Web Files"
-		            extensions = "*.htm,*.html,*.aspx,*.ascx,*.asp"/>
-			    
-		<FileFilter id = "Xml"
-		            insertbefore="AllFiles"
-		            _label = "Xml Files"
-		            extensions = "*.xml"/>
-		<FileFilter id = "Resources"
-		            insertbefore="AllFiles"
-		            _label = "Resource Files"
-		            extensions = "*.resources,*.resx"/>
+		            insertbefore = "Assemblies"
+		            _label = "C# Files"
+		            extensions = "*.cs"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
@@ -334,7 +316,7 @@
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="Autotools" version="2.8"/>
+			<Addin id="Autotools" version="2.8.1"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
@@ -346,7 +328,7 @@
 			<Import assembly="MonoDevelop.CSharpBinding.AspNet.dll"/>
 		</Runtime>
 		<Dependencies>
-			<Addin id="AspNet" version="2.8"/>
+			<Addin id="AspNet" version="2.8.1"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
 			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />

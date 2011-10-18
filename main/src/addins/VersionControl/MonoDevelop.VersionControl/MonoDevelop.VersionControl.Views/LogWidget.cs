@@ -95,19 +95,21 @@ namespace MonoDevelop.VersionControl.Views
 			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 			{
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (window)) {
-					cr.Arc (cell_area.X + cell_area.Width / 2, cell_area.Y + cell_area.Height / 2, 5, 0, 2 * Math.PI);
+					cr.LineWidth = 2.0;
+					double center_x = cell_area.X + Math.Round ((double) (cell_area.Width / 2d));
+					double center_y = cell_area.Y + Math.Round ((double) (cell_area.Height / 2d));
+					cr.Arc (center_x, center_y, 5, 0, 2 * Math.PI);
 					cr.Color = new Cairo.Color (0, 0, 0);
 					cr.Stroke ();
-					double h = (cell_area.Height - 10) / 2;
 					if (!FirstNode) {
-						cr.MoveTo (cell_area.X + cell_area.Width / 2, cell_area.Y - 1);
-						cr.LineTo (cell_area.X + cell_area.Width / 2, cell_area.Y + h);
+						cr.MoveTo (center_x, cell_area.Y - 2);
+						cr.LineTo (center_x, center_y - 5);
 						cr.Stroke ();
 					}
 					
 					if (!LastNode) {
-						cr.MoveTo (cell_area.X + cell_area.Width / 2, cell_area.Y + cell_area.Height + 1);
-						cr.LineTo (cell_area.X + cell_area.Width / 2, cell_area.Y + cell_area.Height - h);
+						cr.MoveTo (center_x, cell_area.Y + cell_area.Height + 2);
+						cr.LineTo (center_x, center_y + 5);
 						cr.Stroke ();
 					}
 				}
@@ -119,7 +121,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.Build ();
 			this.info = info;
 			if (info.Document != null)
-				this.preselectFile = info.Document.FileName;
+				this.preselectFile = info.Item.Path;
 			
 			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
 			revertButton.IsImportant = true;

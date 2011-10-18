@@ -149,6 +149,8 @@ namespace MonoDevelop.Ide.Templates
 				// Ensure that the references are valid inside the project's target framework.
 				foreach (string aref in references) {
 					string res = netProject.AssemblyContext.GetAssemblyFullName (aref, netProject.TargetFramework);
+					if (string.IsNullOrEmpty (res))
+						return false;
 					res = netProject.AssemblyContext.GetAssemblyNameForVersion (res, netProject.TargetFramework);
 					if (string.IsNullOrEmpty (res))
 						return false;
