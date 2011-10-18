@@ -280,7 +280,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 				
 				treeStore.SetValue (selIter, 0, newKey);
-				obj.Replace (CreateNewObject (key.Type));
+				if (key != null)
+					obj.Replace (CreateNewObject (key.Type));
 			};
 			var col = new TreeViewColumn ();
 			col.Resizable = true;
