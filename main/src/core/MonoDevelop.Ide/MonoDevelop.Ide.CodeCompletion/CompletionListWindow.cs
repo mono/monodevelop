@@ -326,12 +326,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!force && previousHeight != h && previousWidth != w)
 				return;
 			
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (X, Y));
+			// Note: we add back the TextOffset here in case X and X+TextOffset are on different monitors.
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (X + TextOffset, Y));
 			
 			previousHeight = h;
 			previousWidth = w;
+			
 			if (X + w > geometry.Right)
 				X = geometry.Right - w;
+			else if (X < geometry.Left)
+				X = geometry.Left;
 			
 			if (Y + h > geometry.Bottom || yPosition == WindowPositonY.Top) {
 				// Put the completion-list window *above* the cursor
