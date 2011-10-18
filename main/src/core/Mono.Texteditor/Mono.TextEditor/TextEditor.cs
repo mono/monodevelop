@@ -2414,8 +2414,10 @@ namespace Mono.TextEditor
 			provider.GetRequiredPosition (this, liw, out w, out xalign);
 			w += 10;
 			
-			int x = xloc + ox + (int)textViewMargin.XOffset - (int) ((double)w * xalign);
-			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (ox + xloc, oy + yloc));
+			int x = xloc + ox + (int) textViewMargin.XOffset;
+			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (x, oy + yloc));
+			
+			x -= (int) ((double) w * xalign);
 			
 			if (x + w >= geometry.Right)
 				x = geometry.Right - w;
