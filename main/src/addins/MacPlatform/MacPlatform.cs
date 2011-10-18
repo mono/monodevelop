@@ -460,9 +460,17 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 		
 		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
 		{
+			Gdk.Rectangle geometry = screen.GetMonitorGeometry (0);
 			NSScreen monitor = NSScreen.Screens[monitor_id];
 			RectangleF visible = monitor.VisibleFrame;
 			RectangleF frame = monitor.Frame;
+			
+			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
+			// coordinates.
+			visible.X += geometry.X;
+			visible.Y += geometry.Y;
+			frame.X += geometry.X;
+			frame.Y += geometry.Y;
 			
 			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
 			// to get the menu height, we just figure out the difference between the visibleFrame height

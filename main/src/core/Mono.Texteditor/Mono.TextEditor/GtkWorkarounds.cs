@@ -103,6 +103,7 @@ namespace Mono.TextEditor
 		{
 			IntPtr array = objc_msgSend_IntPtr (cls_NSScreen, sel_screens);
 			IntPtr iter = objc_msgSend_IntPtr (array, sel_objectEnumerator);
+			Gdk.Rectangle geometry = screen.GetMonitorGeometry (0);
 			RectangleF visible, frame;
 			IntPtr scrn;
 			int i = 0;
@@ -115,6 +116,13 @@ namespace Mono.TextEditor
 			
 			objc_msgSend_RectangleF (out visible, scrn, sel_visibleFrame);
 			objc_msgSend_RectangleF (out frame, scrn, sel_frame);
+			
+			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
+			// coordinates.
+			visible.X += geometry.X;
+			visible.Y += geometry.Y;
+			frame.X += geometry.X;
+			frame.Y += geometry.Y;
 			
 			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
 			// to get the menu height, we just figure out the difference between the visibleFrame height
