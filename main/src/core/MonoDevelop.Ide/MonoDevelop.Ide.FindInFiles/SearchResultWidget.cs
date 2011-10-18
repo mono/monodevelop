@@ -531,14 +531,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			Document doc;
 			if (!documents.TryGetValue (result.FileName, out doc)) {
-				TextReader reader = result.FileProvider.Open ();
-				if (reader == null)
+				var content = result.FileProvider.ReadString ();
+				if (content == null)
 					return null;
-					doc = Document.CreateImmutableDocument (reader.ReadToEnd ());
+				doc = Document.CreateImmutableDocument (content);
 				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
 				
-				reader.Close ();
-				documents [result.FileName] = doc;
+				documents [result.FileName] = doc;	
 			}
 			return doc;
 		}

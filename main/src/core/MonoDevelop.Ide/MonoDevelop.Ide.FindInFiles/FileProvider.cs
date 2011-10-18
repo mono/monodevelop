@@ -74,21 +74,31 @@ namespace MonoDevelop.Ide.FindInFiles
 			SelectionEndPosition = selectionEndPosition;
 		}
 		
-		public virtual TextReader Open ()
+		public virtual string ReadString ()
 		{
 			if (buffer != null)
-				return new StringReader (buffer.ToString ());
-			Document doc = SearchDocument ();
+				return buffer.ToString ();
+			var doc = SearchDocument ();
 			if (doc != null) 
-				return new StringReader (doc.Editor.Text);
+				return doc.Editor.Text;
+			byte[] bytes = null;
+			
 			try {
 				if (!File.Exists (FileName))
 					return null;
-				return new StreamReader (FileName);
+				bytes = File.ReadAllBytes (FileName);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while opening " + FileName, e);
 				return null;
 			}
+			try {
+				return Encoding.UTF8.GetString (bytes);
+			} catch (Exception) {
+				
+			}
+			// fallback to ascii encoding, if UTF8 fails.
+			utf8Failed = true;
+			return Encoding.ASCII.GetString (bytes);
 		}
 		
 		Document SearchDocument ()
@@ -99,15 +109,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		Document document;
 		StringBuilder buffer = null;
 		bool somethingReplaced;
+		bool utf8Failed;
 		
 		public void BeginReplace ()
 		{
 			somethingReplaced = false;
-			TextReader reader = Open ();
+			var reader = ReadString ();
 			if (reader == null)
 				return;
-			buffer = new StringBuilder (reader.ReadToEnd ());
-			reader.Close ();
+			buffer = new StringBuilder (reader);
 			document = SearchDocument ();
 			if (document != null) {
 				Gtk.Application.Invoke (delegate {
@@ -119,6 +129,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void Replace (int offset, int length, string replacement)
 		{
+			if (utf8Failed) {
+				Gtk.Application.Invoke ((sender, e) => MessageService.ShowError (GettextCatalog.GetString ("File {0} is not in UTF8.\nReplace not supported in non UTF8 files.", FileName)));
+				return;
+			}
 			somethingReplaced = true;
 			buffer.Remove (offset, length);
 			buffer.Insert (offset, replacement);

@@ -247,9 +247,7 @@ namespace MonoDevelop.Ide
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.CompilationUnit.FileName);
 			var doc = new Mono.TextEditor.Document ();
-			using (System.IO.TextReader textReader = provider.Open ()) {
-				doc.Text = textReader.ReadToEnd ();
-			}
+			doc.Text = provider.ReadString ();
 			int position = doc.LocationToOffset (part.Location.Line, part.Location.Column);
 			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)

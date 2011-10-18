@@ -118,11 +118,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				return Enumerable.Empty<SearchResult> ();
 			string content;
 			try {
-				TextReader reader = provider.Open ();
-				if (reader == null)
+				content = provider.ReadString ();
+				if (content == null)
 					return Enumerable.Empty<SearchResult> ();
-				content = reader.ReadToEnd ();
-				reader.Close ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while reading file", e);
 				return Enumerable.Empty<SearchResult> ();
