@@ -95,7 +95,7 @@ bash pause on exit trick
 					val = Escape (val);
 				sb.AppendFormat ("{0}=\"{1}\" ", env, val);
 			}
-			sb.AppendFormat ("{0} {1}", Escape (command), arguments);
+			sb.AppendFormat ("\"{0}\" {1}", Escape (command), arguments);
 			if (pauseWhenFinished)
 				sb.Append ("; echo; read -p 'Press any key to continue...' -n1");
 			sb.Append ("; exit");
