@@ -59,7 +59,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return parent;
 			}
 			set {
-				if (parent != null)
+				if (parent != null && value != null)
 					throw new NotSupportedException ("Already parented.");
 				this.parent = value;
 			}
@@ -250,7 +250,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 					order.Add (key);
 				
 				dict[key] = value;
-				value.Parent = this;
 				
 				if (exists)
 					OnRemoved (new PObjectEventArgs (existing));
@@ -262,6 +261,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		protected virtual void OnAdded (PObjectEventArgs e)
 		{
+			e.PObject.Parent = this;
 			var handler = this.Added;
 			if (handler != null)
 				handler (this, e);
@@ -272,7 +272,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			dict.Add (key, value);
 			order.Add (key);
-			value.Parent = this;
 			OnAdded (new PObjectEventArgs (value));
 		}
 		
@@ -280,7 +279,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			dict.Add (key, value);
 			order.Insert (order.IndexOf (keyBefore) + 1, key);
-			value.Parent = this;
 			OnAdded (new PObjectEventArgs (value));
 		}
 		
@@ -320,6 +318,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		protected virtual void OnRemoved (PObjectEventArgs e)
 		{
+			e.PObject.Parent = null;
 			var handler = this.Removed;
 			if (handler != null)
 				handler (this, e);
@@ -340,14 +339,24 @@ namespace MonoDevelop.MacDev.PlistEditor
 
 		public bool ChangeKey (PObject obj, string newKey)
 		{
+			return ChangeKey (obj, newKey, null);
+		}
+		
+		public bool ChangeKey (PObject obj, string newKey, PObject newValue)
+		{
 			var oldkey = GetKey (obj);
 			if (oldkey == null || dict.ContainsKey (newKey))
 				return false;
 			
 			dict.Remove (oldkey);
-			dict.Add (newKey, obj);
+			dict.Add (newKey, newValue ?? obj);
 			order[order.IndexOf (oldkey)] = newKey;
-			OnChanged (EventArgs.Empty);
+			if (newValue != null) {
+				OnRemoved (new PObjectEventArgs (obj));
+				OnAdded (new PObjectEventArgs (newValue));
+			} else {
+				OnChanged (EventArgs.Empty);
+			}
 			return true;
 		}
 
@@ -567,6 +576,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		protected virtual void OnAdded (PObjectEventArgs e)
 		{
+			e.PObject.Parent = this;
 			if (SuppressChangeEvents)
 				return;
 			
@@ -611,7 +621,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 
 		public void Add (PObject obj)
 		{
-			obj.Parent = this;
 			list.Add (obj);
 			OnAdded (new PObjectEventArgs (obj));
 		}
@@ -620,7 +629,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			for (int i = 0; i < Count; i++) {
 				if (list[i] == oldObj) {
-					newObject.Parent = this;
 					list[i] = newObject;
 					OnRemoved (new PObjectEventArgs (oldObj));
 					OnAdded (new PObjectEventArgs (newObject));
@@ -633,6 +641,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		protected virtual void OnRemoved (PObjectEventArgs e)
 		{
+			e.PObject.Parent = null;
 			if (SuppressChangeEvents)
 				return;
 			
