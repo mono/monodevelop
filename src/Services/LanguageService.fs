@@ -365,7 +365,7 @@ open Microsoft.FSharp.Compiler.Reflection
 type internal LanguageService private () =
 
   // Single instance of the language service
-  static let instance = LanguageService()
+  static let instance = Lazy.Create(fun () -> LanguageService())
 
   // Collection of errors reported by last background check
   let mutable errors : seq<Error> = Seq.empty
@@ -593,7 +593,7 @@ type internal LanguageService private () =
   member x.UpdatingErrors = updatingErrors
   
   /// Single instance of the language service
-  static member Service = instance
+  static member Service = instance.Value
     
 // --------------------------------------------------------------------------------------
 
