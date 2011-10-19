@@ -206,7 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// This method now is internal, because it is difficult to use correctly.
 		/// Users of the public API should use Scan()+GetResolveResult() instead.
 		/// </summary>
-		internal ResolveResult Resolve(AstNode node)
+		public ResolveResult Resolve(AstNode node)
 		{
 			if (node == null || node.IsNull)
 				return errorResult;
