@@ -291,13 +291,10 @@ namespace MonoDevelop.Refactoring
 				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
 					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
 				}
-<<<<<<< HEAD
-=======
-				if (baseConstructor != null) {
-					Refactorer refactorer2 = new Refactorer (ctx, pinfo, baseConstructor.DeclaringType, baseConstructor, null);
-					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer2.GoToBase));
-				}
->>>>>>> master
+//				if (baseConstructor != null) {
+//					Refactorer refactorer2 = new Refactorer (ctx, pinfo, baseConstructor.DeclaringType, baseConstructor, null);
+//					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer2.GoToBase));
+//				}
 			}
 			
 			RefactoringOptions options = new RefactoringOptions () {
@@ -960,118 +957,7 @@ namespace MonoDevelop.Refactoring
 		}*/
 	}
 	
-<<<<<<< HEAD
-//	public class Refactorer
-//	{
-//		IList<DomRegion> references;
-//		ISearchProgressMonitor monitor;
-//		IParsedFile pinfo;
-//		ITypeResolveContext ctx;
-//		IEntity item;
-//		IType klass;
-//		ITypeReference hintReturnType;
-//		
-//		public Refactorer (ITypeResolveContext ctx, IParsedFile pinfo, IType klass, INamedElement item, ITypeReference hintReturnType)
-//		{
-//			this.pinfo = pinfo;
-//			this.klass = klass;
-//			this.item = item;
-//			this.ctx = ctx;
-//			this.hintReturnType = hintReturnType;
-//		}
-//		
-//		public void GoToDeclaration ()
-//		{
-//			if (item is CompoundType) {
-//				CompoundType compoundType = (CompoundType)item;
-//				monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-//				using (monitor) {
-//					foreach (IType part in compoundType.Parts) {
-//						FileProvider provider = new FileProvider (part.GetDefinition ().Region.FileName);
-//						Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-//						System.IO.TextReader textReader = provider.Open ();
-//						doc.Text = textReader.ReadToEnd ();
-//						textReader.Close ();
-//						int position = doc.LocationToOffset (part.Location.Line, part.Location.Column);
-//						while (position + part.Name.Length < doc.Length) {
-//							if (doc.GetTextAt (position, part.Name.Length) == part.Name)
-//								break;
-//							position++;
-//						}
-//						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length));
-//					}
-//					
-//				}
-//				
-//				return;
-//			}
-//			IdeApp.ProjectOperations.JumpToDeclaration (item);
-//		}
-//		
-//		
-//		
-//		void ImplementInterface (bool explicitly)
-//		{
-//			var doc = IdeApp.Workbench.ActiveDocument;
-//			var editor = doc.Editor.Parent;
-//			IType interfaceType = item as IType;
-//			IType declaringType = klass;
-//			
-//			var mode = new Mono.TextEditor.InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (doc, declaringType));
-//			var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
-//			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
-//			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement Interface -- Targeting</b>");
-//			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-//			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
-//			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
-//			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare interface implementation</b> at target point.")));
-//			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
-//			mode.HelpWindow = helpWindow;
-//			mode.CurIndex = mode.InsertionPoints.Count - 1;
-//			mode.StartMode ();
-//			mode.Exited += delegate(object s, Mono.TextEditor.InsertionCursorEventArgs args) {
-//				if (args.Success) {
-//					var generator = doc.CreateCodeGenerator ();
-//					args.InsertionPoint.Insert (doc.Editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, explicitly));
-//				}
-//			};
-//		}
-//		
-//		public void ImplementImplicitInterface ()
-//		{
-//			ImplementInterface (false);
-//		}
-//		
-//		public void ImplementExplicitInterface ()
-//		{
-//			ImplementInterface (true);
-//		}
-//		
-//		public void ImplementAbstractMembers ()
-//		{
-//			var doc = IdeApp.Workbench.ActiveDocument;
-//			IType interfaceType = item as IType;
-//			MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers.Implement (doc, interfaceType);
-//		}
-//		
-//		public void EncapsulateField ()
-//		{
-//			EncapsulateFieldDialog dialog;
-//			if (item is IField) {
-//				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument, ctx, (IField) item);
-//			} else {
-//				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument, ctx, (IType) item);
-//			}
-//			MessageService.ShowCustomDialog (dialog);
-//		}
-//		
-//		public void OverrideOrImplementMembers ()
-//		{
-//			MessageService.ShowCustomDialog (new OverridesImplementsDialog (IdeApp.Workbench.ActiveDocument, (IType)item));
-//		}
-//		
-//	}
-=======
+	/*
 	public class Refactorer
 	{
 		MemberReferenceCollection references;
@@ -1244,5 +1130,5 @@ namespace MonoDevelop.Refactoring
 		//	dialog.Show ();
 		}
 	}
->>>>>>> master
+*/
 }

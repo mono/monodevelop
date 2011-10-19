@@ -228,9 +228,9 @@ namespace MonoDevelop.Ide
 		{
 			if (askIfMultipleLocations) {
 				var type = visitable as ITypeDefinition;
-				if (type != null && type.HasParts) {
+				if (type != null && type.GetParts ().Count > 1) {
 					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-						foreach (IType part in DomType.GetSortedParts (type))
+						foreach (var part in type.GetParts ())
 							monitor.ReportResult (GetJumpTypePartSearchResult (part));
 					}
 					return;
@@ -240,12 +240,12 @@ namespace MonoDevelop.Ide
 			JumpToDeclaration (visitable);
 		}
 		
-		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (IType part)
+		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (ITypeDefinition part)
 		{
-			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.CompilationUnit.FileName);
+			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.Region.FileName);
 			var doc = new Mono.TextEditor.Document ();
 			doc.Text = provider.ReadString ();
-			int position = doc.LocationToOffset (part.Location.Line, part.Location.Column);
+			int position = doc.LocationToOffset (part.Region.BeginLine, part.Region.BeginColumn);
 			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
 					break;
