@@ -25,7 +25,7 @@ type FSharpSyntaxMode() as this =
     this.matches <- baseMode.Matches
     this.prevMarker <- baseMode.PrevMarker
     this.SemanticRules <- new ResizeArray<_>(baseMode.SemanticRules)
-    this.table <- baseMode.Table
+    //this.table <- baseMode.Table
     this.properties <- baseMode.Properties
 
   // Do we need this? Or can we create "chunker"?

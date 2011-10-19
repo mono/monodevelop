@@ -1,4 +1,4 @@
-<AddinProject appVersion="2.4">
+<AddinProject appVersion="2.8">
   <Project platforms="Mac Linux">
     <AddinFile>bin/FSharpBinding.dll</AddinFile>
     <BuildFile>FSharp.MonoDevelop.sln</BuildFile>

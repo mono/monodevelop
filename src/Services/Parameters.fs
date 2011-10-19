@@ -42,6 +42,18 @@ type FSharpCompilerParameters() =
   [<field:ItemProperty("CustomCommandLine"); DefaultValue>]
   val mutable private customCommandLine : string
 
+  override x.AddDefineSymbol(symbol) =
+    if x.definedSymbols = "" || x.definedSymbols = null then
+      x.definedSymbols <- symbol
+    else
+      x.definedSymbols <- x.definedSymbols + ";" + symbol
+
+  override x.RemoveDefineSymbol(symbol) =
+    if x.definedSymbols = symbol then
+      x.definedSymbols <- null
+    elif x.definedSymbols <> null then
+      x.definedSymbols <- x.definedSymbols.Replace(";" + symbol, null)
+
   member x.DefinedSymbols 
     with get() = if x.definedSymbols = null then "" else x.definedSymbols
     and set(value) = x.definedSymbols <- value

@@ -5,5 +5,5 @@ repository/*
 *.suo
 *.pidb
 *.userprefs
+*.user
 Makefile
-src/FSharp.MonoDevelop.fsproj
