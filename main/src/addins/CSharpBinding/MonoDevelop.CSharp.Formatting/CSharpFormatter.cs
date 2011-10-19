@@ -29,26 +29,21 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-using ICSharpCode.OldNRefactory;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.PrettyPrinter;
 
 using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
 using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.ContextAction;
+using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
@@ -120,7 +115,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditorData data, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
+			TextEditorData data, IType type, IMember member, ITypeResolveContext dom, IParsedFile unit, TextLocation caretLocation)
 		{
 			//		OnTheFlyFormatter.Format (policyParent, mimeTypeChain, data, dom, caretLocation, true);
 		}
@@ -139,10 +134,10 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var adapter = new TextEditorDataAdapter (data);
 			
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data)) {
-				HadErrors =  parser.HasErrors
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, new FormattingActionFactory (data), data.Options.TabsToSpaces, data.Options.IndentationSize) {
+				HadErrors =  parser.HasErrors, 
+				EolMarker = data.EolMarker
 			};
 			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
@@ -183,9 +178,10 @@ namespace MonoDevelop.CSharp.Formatting
 //					Console.WriteLine (e.Message);
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
-			var adapter = new TextEditorDataAdapter (data);
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data)) {
-				HadErrors = hadErrors
+			
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, new FormattingActionFactory (data), data.Options.TabsToSpaces, data.Options.IndentationSize) {
+				HadErrors = hadErrors,
+				EolMarker = data.EolMarker
 			};
 			
 			compilationUnit.AcceptVisitor (formattingVisitor, null);

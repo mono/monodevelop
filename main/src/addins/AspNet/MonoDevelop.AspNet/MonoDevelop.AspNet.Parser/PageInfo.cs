@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.AspNet.Parser.Dom;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -162,7 +162,7 @@ namespace MonoDevelop.AspNet.Parser
 			
 			void Add (ErrorType type, Node node, string message, params object[] args)
 			{
-				errors.Add (new Error (type, node.Location.BeginLine, node.Location.BeginColumn, string.Format (message, args)));
+				errors.Add (new Error (type, string.Format (message, args), node.Location.BeginLine, node.Location.BeginColumn));
 			}
 			
 			void SetSubtype (WebSubtype type, DirectiveNode node)

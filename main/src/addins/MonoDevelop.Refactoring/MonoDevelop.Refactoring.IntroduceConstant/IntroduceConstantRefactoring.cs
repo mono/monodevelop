@@ -30,8 +30,6 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.IntroduceConstant
@@ -151,17 +149,17 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 					Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset);
 					foreach (Span span in stack) {
 						if (span.Color == "string.single" || span.Color == "string.double") {
-							resolveResult = resolver.Resolve (new ExpressionResult (SearchString (data, span.Color == "string.single" ? '\'' : '"', out start, out end)), DomLocation.Empty);
+							resolveResult = resolver.Resolve (new ExpressionResult (SearchString (data, span.Color == "string.single" ? '\'' : '"', out start, out end)), TextLocation.Empty);
 							end++;
 						}
 					}
 				}
 				if (end == 0) {
-					resolveResult = resolver.Resolve (new ExpressionResult (SearchNumber (data, out start, out end)), DomLocation.Empty);
+					resolveResult = resolver.Resolve (new ExpressionResult (SearchNumber (data, out start, out end)), TextLocation.Empty);
 				}
 			} else {
-				start = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
-				end = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.End.Line, resolveResult.ResolvedExpression.Region.End.Column);
+				start = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.BeginLine, resolveResult.ResolvedExpression.Region.BeginColumn);
+				end = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.EndLine, resolveResult.ResolvedExpression.Region.EndColumn);
 			}
 			if (start == 0 && end == 0)
 				return result;

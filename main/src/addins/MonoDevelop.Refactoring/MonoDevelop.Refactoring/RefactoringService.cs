@@ -27,24 +27,22 @@
 using System;
 using System.Collections.Generic;
 using Mono.Addins;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.CodeGeneration;
-using MonoDevelop.Projects.Dom;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.Inspection;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.CodeGeneration;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Refactoring
 {
 	using MonoDevelop.ContextAction;
-
 	public static class RefactoringService
 	{
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
 		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
 		static List<ContextActionAddinNode> contextActions = new List<ContextActionAddinNode> ();
 		static List<InspectorAddinNode> inspectors = new List<InspectorAddinNode> ();
@@ -68,17 +66,6 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ASTProvider", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					astProviders.Add ((INRefactoryASTProvider)args.ExtensionObject);
-					break;
-				case ExtensionChange.Remove:
-					astProviders.Remove ((INRefactoryASTProvider)args.ExtensionObject);
-					break;
-				}
-			});
-
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeGenerators", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
@@ -90,17 +77,17 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 			
-//			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
-//				switch (args.Change) {
-//				case ExtensionChange.Add:
-//					contextActions.Add ((ContextActionAddinNode)args.ExtensionNode);
-//					break;
-//				case ExtensionChange.Remove:
-//					contextActions.Remove ((ContextActionAddinNode)args.ExtensionNode);
-//					break;
-//				}
-//			});
-//			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					contextActions.Add ((ContextActionAddinNode)args.ExtensionNode);
+					break;
+				case ExtensionChange.Remove:
+					contextActions.Remove ((ContextActionAddinNode)args.ExtensionNode);
+					break;
+				}
+			});
+			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
@@ -147,14 +134,14 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes)
+		public static void AcceptChanges (IProgressMonitor monitor, ITypeResolveContext dom, List<Change> changes)
 		{
 			AcceptChanges (monitor, dom, changes, MonoDevelop.Ide.TextFileProvider.Instance);
 		}
 		
-		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
+		public static void AcceptChanges (IProgressMonitor monitor, ITypeResolveContext dom, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
 		{
-			var rctx = new RefactorerContext (dom, fileProvider, null);
+			var rctx = new RefactoringOptions ();
 			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
 			for (int i = 0; i < changes.Count; i++) {
@@ -182,22 +169,12 @@ namespace MonoDevelop.Refactoring
 			TextReplaceChange.FinishRefactoringOperation ();
 		}
 		
-		public static INRefactoryASTProvider GetASTProvider (string mimeType)
-		{
-			foreach (INRefactoryASTProvider provider in astProviders) {
-				if (provider.CanGenerateASTFrom (mimeType)) {
-					return provider;
-				}
-			}
-			return null;
-		}
-		
 		public static IEnumerable<InspectorAddinNode> GetInspectors (string mimeTye)
 		{
 			return inspectors.Where (i => i.MimeType == mimeTye);
 		}
 		
-		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, DomLocation loc, Action<List<ContextAction>> callback)
+		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<ContextAction>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {

@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IEvent"/>.
 	/// </summary>
+	[Serializable]
 	public class DefaultEvent : AbstractMember, IEvent
 	{
 		IAccessor addAccessor, removeAccessor, invokeAccessor;

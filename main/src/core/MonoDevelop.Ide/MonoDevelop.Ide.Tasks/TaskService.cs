@@ -32,8 +32,6 @@ using System.Xml.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Tasks
@@ -185,6 +183,9 @@ namespace MonoDevelop.Ide.Tasks
 			if (handler != null)
 				handler (null, new TaskEventArgs (task));
 		}
+		
+		public static event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
+	
 	}
 }
 

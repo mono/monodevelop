@@ -20,8 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Xml;
-
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Documentation
@@ -33,7 +33,8 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// This class first creates an in-memory index of the .xml file, and then uses that to read only the requested members.
 	/// This way, we avoid keeping all the documentation in memory.
 	/// </remarks>
-	public class XmlDocumentationProvider : IDocumentationProvider
+	[Serializable]
+	public class XmlDocumentationProvider : IDocumentationProvider, IDeserializationCallback
 	{
 		#region Cache
 		sealed class XmlDocumentationCache
@@ -66,6 +67,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		}
 		#endregion
 		
+		[Serializable]
 		struct IndexEntry : IComparable<IndexEntry>
 		{
 			/// <summary>
@@ -90,7 +92,9 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 		}
 		
-		readonly XmlDocumentationCache cache = new XmlDocumentationCache();
+		[NonSerialized]
+		XmlDocumentationCache cache = new XmlDocumentationCache();
+		
 		readonly string fileName;
 		DateTime lastWriteDate;
 		IndexEntry[] index; // SORTED array of index entries
@@ -265,6 +269,8 @@ namespace ICSharpCode.NRefactory.Documentation
 		#endregion
 		
 		#region Save index / Restore from index
+		// TODO: consider removing this code, we're just using serialization instead
+		
 		// FILE FORMAT FOR BINARY DOCUMENTATION
 		// long  magic = 0x4244636f446c6d58 (identifies file type = 'XmlDocDB')
 		const long magic = 0x4244636f446c6d58;
@@ -388,5 +394,10 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 		}
 		#endregion
+		
+		public virtual void OnDeserialization(object sender)
+		{
+			cache = new XmlDocumentationCache();
+		}
 	}
 }

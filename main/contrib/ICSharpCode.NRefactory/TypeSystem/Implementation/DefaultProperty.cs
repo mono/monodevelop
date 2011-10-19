@@ -24,6 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IProperty"/>.
 	/// </summary>
+	[Serializable]
 	public class DefaultProperty : AbstractMember, IProperty
 	{
 		IAccessor getter, setter;

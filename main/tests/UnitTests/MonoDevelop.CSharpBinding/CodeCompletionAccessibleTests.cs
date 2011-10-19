@@ -33,7 +33,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -365,6 +364,56 @@ class Foo<T>
 		}
 		
 		[Test()]
+		public void TestUnclosedMember ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+
+class C
+{
+	
+	public void Hello ()
+	{
+		$C$
+
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("C"), "class 'C' not found");
+		}
+		
+		
+		[Test()]
+		public void TestUnclosedMember2 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"using System;
+
+namespace ConsoleTest
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+		}
+		
+		public void Hello ()
+		{
+		}
+	}
+	
+	class Foo
+	{
+		void Hello ()
+		{
+			$M$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("MainClass"), "class 'MainClass' not found");
+		}
+		
+		[Test()]
 		public void TestGenericParameterB ()
 		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
@@ -396,7 +445,7 @@ class Foo<T>
 }
 ");
 			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNull (provider.Find ("T"), "generic parameter 'T' found, but shouldn't");
+			Assert.IsNotNull (provider.Find ("T"), "generic parameter 'T' not found");
 			Assert.IsNotNull (provider.Find ("TValue"), "generic parameter 'TValue' not found");
 		}
 		
@@ -468,8 +517,9 @@ namespace FooBar {
 		}
 	}
 }");
-			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn't");
+			// either provider == null, or B not found
+			if (provider != null)
+				Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn't");
 		}
 		
 		
@@ -543,6 +593,10 @@ class TestClass : A
 	{
 	}
 	
+}
+
+class Example
+{
 	void TestMe ()
 	{
 		$A a = new $
@@ -874,6 +928,29 @@ $class Test2 : Test.$
 		}
 		
 		[Test()]
+		public void TestInheritableTypeContextCase2 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+namespace A {
+	class Test
+	{
+		public class Inner {}
+		public static void Foo () {}
+	}
+	
+	class Test2 $: Test.$
+	{
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Inner"), "class 'Inner' not found.");
+			Assert.IsNull (provider.Find ("Foo"), "method 'Foo' found.");
+		}
+		
+		
+		[Test()]
 		public void TestInheritableTypeWhereContext ()
 		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
@@ -986,7 +1063,7 @@ class TestClass
 public class InnerEnumTest
 {
 	public enum TestEnum { A, B, C}
-	void Bar (TestEnum test) {}
+	public void Bar (TestEnum test) {}
 }
 
 class TestClass
@@ -1004,6 +1081,52 @@ class TestClass
 			Assert.IsNotNull (provider.Find ("InnerEnumTest.TestEnum.C"), "enum 'InnerEnumTest.TestEnum.C' not found.");
 		}
 		
+		
+		[Test()]
+		public void TestPrimimitiveTypeCompletionString ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"using System;
 
+class Test
+{
+	public static void Foo () 
+	{
+		Console.WriteLine ($"""".$);
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
+		}
+		
+		
+		[Test()]
+		public void TestUsingContext ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (@"$using System.$");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("IO"), "namespace 'IO' not found.");
+		}
+		
+		[Test()]
+		public void TestNamedArgumentContext1 ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (@"
+using System;
+
+class Test {
+public static void Query(MySqlConnection conn, string database, string table)
+		{
+			conn.Query(string.Format(""SELECT * FROM {0}"", table))
+			.On(row: delegate (Row data) {
+				$Console.$
+			});
+		}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("WriteLine"), "method 'WriteLine' not found.");
+		}
+		
 	}
 }

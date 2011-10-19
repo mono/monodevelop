@@ -25,21 +25,23 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
 using Gtk;
 using Mono.TextEditor;
 using System.Collections.Generic;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.ContextAction
 {
 	public class ContextActionEditorExtension : TextEditorExtension 
 	{
 		ContextActionWidget widget;
+		uint quickFixTimeout;
 		
 		public void RemoveWidget ()
 		{
@@ -57,12 +59,13 @@ namespace MonoDevelop.ContextAction
 		
 		public override void Dispose ()
 		{
+			CancelQuickFixTimer ();
 			document.DocumentParsed -= HandleDocumentDocumentParsed;
 			RemoveWidget ();
 			base.Dispose ();
 		}
 		
-		public void CreateWidget (List<ContextAction> fixes, DomLocation loc)
+		public void CreateWidget (List<ContextAction> fixes, TextLocation loc)
 		{
 			if (!fixes.Any ())
 				return;
@@ -76,18 +79,30 @@ namespace MonoDevelop.ContextAction
 				-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
 			widget.Show ();
 		}
+
+		public void CancelQuickFixTimer ()
+		{
+			if (quickFixTimeout != 0) {
+				GLib.Source.Remove (quickFixTimeout);
+				quickFixTimeout = 0;
+			}
+		}
 		
 		public override void CursorPositionChanged ()
 		{
 			RemoveWidget ();
-			
+			CancelQuickFixTimer ();
 			if (Document.ParsedDocument != null) {
-				DomLocation loc = new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
-				RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<ContextAction> fixes) {
-					Application.Invoke (delegate {
-						RemoveWidget ();
-						CreateWidget (fixes, loc);
+				quickFixTimeout = GLib.Timeout.Add (100, delegate {
+					TextLocation loc = new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+					RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<ContextAction> fixes) {
+						Application.Invoke (delegate {
+							RemoveWidget ();
+							CreateWidget (fixes, loc);
+						});
 					});
+					quickFixTimeout = 0;
+					return false;
 				});
 			}
 			base.CursorPositionChanged ();
@@ -112,7 +127,6 @@ namespace MonoDevelop.ContextAction
 				return;
 			widget.PopupQuickFixMenu ();
 		}
-
 	}
 }
 

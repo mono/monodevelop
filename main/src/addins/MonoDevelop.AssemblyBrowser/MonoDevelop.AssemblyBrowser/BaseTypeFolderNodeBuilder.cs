@@ -32,10 +32,9 @@ using System.Collections.Generic;
 using Mono.Cecil;
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
+using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -61,15 +60,13 @@ namespace MonoDevelop.AssemblyBrowser
 			closedIcon = Context.GetIcon (Stock.ClosedFolder);
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			BaseTypeFolder baseTypeFolder = (BaseTypeFolder)dataObject;
-			if (baseTypeFolder.Type != null && baseTypeFolder.Type.BaseType != null)
-				ctx.AddChild (baseTypeFolder.Type.BaseType);
-			// Todo: show implemented interfaces.
-			/*foreach (IReturnType type in baseTypeFolder.Type.ImplementedInterfaces) {
-				ctx.AddChild (type);
-			}*/
+			var baseTypeFolder = (BaseTypeFolder)dataObject;
+			var ctx = GetContent (builder);
+			foreach (var type in baseTypeFolder.Type.BaseTypes) {
+				builder.AddChild (type.Resolve (ctx));
+			}
 		}
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{

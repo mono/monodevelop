@@ -29,8 +29,6 @@
 using System;
 using System.Text;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using ICSharpCode.Decompiler.Ast;
@@ -38,6 +36,9 @@ using ICSharpCode.Decompiler;
 using System.Threading;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using Mono.Cecil;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -54,17 +55,17 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			IField field = (IField)dataObject;
+			var field = (IField)dataObject;
 			return field.FullName;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IField field = (IField)dataObject;
-			label = Ambience.GetString (field, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.ReturnTypesLast);
+			var field = (IField)dataObject;
+			label = Ambience.GetString (GetContent (treeBuilder), field, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			if (field.IsPrivate || field.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (field.StockIcon, Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (((IEntity)field).GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -83,10 +84,10 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			IField field = (IField)navigator.DataItem;
+			var field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), field, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -96,27 +97,26 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var field = (DomCecilField)navigator.DataItem;
-			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field.FieldDefinition));
+			var field = CecilLoader.GetCecilObject ((IField)navigator.DataItem);
+			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field));
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var field = (DomCecilField)navigator.DataItem;
-			
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), ((DomCecilType)field.DeclaringType).TypeDefinition, b => b.AddField (field.FieldDefinition));
+			var field = CecilLoader.GetCecilObject ((IField)navigator.DataItem);
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			IField field = (IField)navigator.DataItem;
+			var field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), field, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
+			var options = new AmbienceService.DocumentationFormatOptions ();
 			options.MaxLineLength = -1;
 			options.BigHeadings = true;
 			options.Ambience = Ambience;

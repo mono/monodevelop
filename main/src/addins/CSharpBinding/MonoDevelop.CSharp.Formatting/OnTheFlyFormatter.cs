@@ -27,8 +27,6 @@ using Mono.CSharp;
 using Mono.TextEditor;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Refactoring;
 using System;
 using System.Collections.Generic;
@@ -39,85 +37,93 @@ using System.Linq;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.ContextAction;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	public class OnTheFlyFormatter
 	{
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ProjectDom dom)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom)
 		{
-			Format (data, dom, DomLocation.Empty, false);
+			Format (data, dom, TextLocation.Empty, false);
 		}
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ProjectDom dom, DomLocation location, bool runAferCR = false)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, TextLocation location, bool runAferCR = false)
 		{
 			Format (data, dom, location, false, runAferCR);
 		}
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ProjectDom dom, DomLocation location, bool correctBlankLines, bool runAferCR = false)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, TextLocation location, bool correctBlankLines, bool runAferCR = false)
 		{
-			PolicyContainer policyParent = dom != null && dom.Project != null ? dom.Project.Policies  : PolicyService.DefaultPolicies;
+			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			Format (policyParent, mimeTypeChain, data, dom, location, correctBlankLines, runAferCR);
 		}
 
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, ProjectDom dom, DomLocation location, bool correctBlankLines, bool runAferCR/* = false*/)
+		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, TextLocation location, bool correctBlankLines, bool runAferCR/* = false*/)
 		{
-			if (data.ParsedDocument == null || data.ParsedDocument.CompilationUnit == null)
+			if (data.ParsedDocument == null)
 				return;
-			var member = data.ParsedDocument.CompilationUnit.GetMemberAt (location.Line + (runAferCR ? -1 : 0), location.Column);
-			if (member == null || member.Location.IsEmpty || member.BodyRegion.End.IsEmpty)
+			var member = data.ParsedDocument.GetMember (location.Line + (runAferCR ? -1 : 0), location.Column);
+			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
 				return;
+			
+//			var unit = data.ParsedDocument.Annotation<CompilationUnit> ();
+			var pf = data.ParsedDocument.Annotation<CSharpParsedFile> ();
 			
 			StringBuilder sb = new StringBuilder ();
 			int closingBrackets = 0;
-			DomRegion validRegion = DomRegion.Empty;
-			foreach (var u in data.ParsedDocument.CompilationUnit.Usings.Where (us => us.IsFromNamespace)) {
-				// the dom parser breaks A.B.C into 3 namespaces with the same region, this is filtered here
-				if (u.ValidRegion == validRegion || !u.ValidRegion.Contains (location))
-					continue;
-				// indicates a parser error on namespace level.
-				if (u.Namespaces.FirstOrDefault () == "<invalid>")
-					continue;
-				validRegion = u.ValidRegion;
+//			DomRegion validRegion = DomRegion.Empty;
+			var scope = pf.GetUsingScope (new TextLocation (data.Editor.Caret.Line, data.Editor.Caret.Column));
+			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				sb.Append ("namespace Stub {");
 				closingBrackets++;
+				while (scope.Parent != null && scope.Parent.Region == scope.Region)
+					scope = scope.Parent;
+				scope = scope.Parent;
 			}
 			
-			var parent = member.DeclaringType;
+			var parent = member.DeclaringTypeDefinition;
 			while (parent != null) {
 				sb.Append ("class Stub {");
 				closingBrackets++;
-				parent = parent.DeclaringType;
+				parent = parent.DeclaringTypeDefinition;
 			}
+			
 			sb.AppendLine ();
 			int startOffset = sb.Length;
-			int memberStart = data.Editor.LocationToOffset (member.Location.Line, 1);
-			int memberEnd = data.Editor.LocationToOffset (member.BodyRegion.End.Line + (runAferCR ? 1 : 0), member.BodyRegion.End.Column);
+			int memberStart = data.Editor.LocationToOffset (member.Region.BeginLine, 1);
+			int memberEnd = data.Editor.LocationToOffset (member.Region.EndLine + (runAferCR ? 1 : 0), member.Region.EndColumn);
 			if (memberEnd < 0)
 				memberEnd = data.Editor.Length;
 			sb.Append (data.Editor.GetTextBetween (memberStart, memberEnd));
 			int endOffset = sb.Length;
 			sb.AppendLine ();
 			sb.Append (new string ('}', closingBrackets));
-			TextEditorData stubData = new TextEditorData () { Text = sb.ToString () };
+			
+			var stubData = new TextEditorData () { Text = sb.ToString () };
 			stubData.Document.FileName = data.FileName;
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
 			var compilationUnit = parser.Parse (stubData);
 			bool hadErrors = parser.HasErrors;
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var adapter = new TextEditorDataAdapter (stubData);
 			
-			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data.Editor)) {
-				HadErrors = hadErrors
+			// try it out, if the behavior is better when working only with correct code.
+			if (hadErrors)
+				return;
+			
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+			
+			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, new FormattingActionFactory (data.Editor), stubData.Options.TabsToSpaces, stubData.Options.TabSize) {
+				HadErrors = hadErrors,
+				EolMarker = stubData.EolMarker
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
 			
-			int delta = data.Editor.LocationToOffset (member.Location.Line, 1) - startOffset;
-			HashSet<int > lines = new HashSet<int> ();
+			int delta = data.Editor.LocationToOffset (member.Region.BeginLine, 1) - startOffset;
+			HashSet<int> lines = new HashSet<int> ();
 			foreach (TextReplaceAction change in changes) {
 				change.Offset += delta;
 				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
@@ -130,7 +136,6 @@ namespace MonoDevelop.CSharp.Formatting
 			try {
 				data.Editor.Document.BeginAtomicUndo ();
 				MDRefactoringContext.MdScript.RunActions (changes, null);
-				
 				foreach (int line in lines)
 					data.Editor.Document.CommitLineUpdate (line);
 			} finally {

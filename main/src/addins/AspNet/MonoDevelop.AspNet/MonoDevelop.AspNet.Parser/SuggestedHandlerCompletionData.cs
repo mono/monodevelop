@@ -31,8 +31,8 @@ using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.DesignerSupport;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -40,10 +40,10 @@ namespace MonoDevelop.AspNet.Parser
 	{
 		Project project;
 		CodeMemberMethod methodInfo;
-		IType codeBehindClass;
-		IType codeBehindClassPart;
+		ITypeDefinition codeBehindClass;
+		ITypeDefinition codeBehindClassPart;
 		
-		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, IType codeBehindClass, IType codeBehindClassPart)
+		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, ITypeDefinition codeBehindClass, ITypeDefinition codeBehindClassPart)
 		{
 			this.project = project;
 			this.methodInfo = methodInfo;

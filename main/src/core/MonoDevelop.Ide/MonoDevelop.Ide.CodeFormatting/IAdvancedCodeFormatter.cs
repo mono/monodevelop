@@ -27,10 +27,10 @@
 using System;
 using System.Collections.Generic;
 using Mono.TextEditor;
-
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Policies;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -49,17 +49,17 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// A <see cref="System.Object"/> that must be from type Mono.TextEditorData.
 		/// </param>
 		/// <param name="dom">
-		/// A <see cref="ProjectDom"/>
+		/// A <see cref="ITypeResolveContext"/>
 		/// </param>
 		/// <param name="unit">
-		/// A <see cref="ICompilationUnit"/>
+		/// A <see cref="IParsedFile"/>
 		/// </param>
 		/// <param name="caretLocation">
-		/// A <see cref="DomLocation"/> that should be the end location to which the parsing should occur.
+		/// A <see cref="TextLocation"/> that should be the end location to which the parsing should occur.
 		/// </param>
 		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData textEditorData, IType callingType, IMember callingMember, ProjectDom dom,
-			ICompilationUnit unit, DomLocation endLocation);
+			TextEditorData textEditorData, IType callingType, IMember callingMember, ITypeResolveContext dom,
+			IParsedFile unit, TextLocation endLocation);
 		
 		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
 			TextEditorData textEditorData, int startOffset, int endOffset);
@@ -71,8 +71,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 		public virtual bool SupportsCorrectingIndent { get { return false; } }
 		
 		public virtual void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData data, IType callingType, IMember callingMember, ProjectDom dom,
-			ICompilationUnit unit, DomLocation endLocation)
+			TextEditorData data, IType callingType, IMember callingMember, ITypeResolveContext dom,
+			IParsedFile unit, TextLocation endLocation)
 		{
 			throw new NotSupportedException ();
 		}

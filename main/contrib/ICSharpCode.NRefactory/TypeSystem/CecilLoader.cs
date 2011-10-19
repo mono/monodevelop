@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
@@ -84,6 +85,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (createCecilReferences)
 				typeSystemTranslationTable = new Dictionary<object, object> ();
+			
+			// Enable interning by default.
+			this.InterningProvider = new SimpleInterningProvider();
 		}
 		
 		#region Load From AssemblyDefinition
@@ -91,6 +95,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Loads the assembly definition into a project content.
 		/// </summary>
 		/// <returns>IProjectContent that represents the assembly</returns>
+		[CLSCompliant(false)]
 		public IProjectContent LoadAssembly(AssemblyDefinition assemblyDefinition)
 		{
 			if (assemblyDefinition == null)
@@ -151,6 +156,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="typeDefinition">The Cecil TypeDefinition.</param>
 		/// <param name="projectContent">The project content used as parent for the new type.</param>
 		/// <returns>ITypeDefinition representing the Cecil type.</returns>
+		[CLSCompliant(false)]
 		public ITypeDefinition LoadType(TypeDefinition typeDefinition, IProjectContent projectContent)
 		{
 			if (typeDefinition == null)
@@ -164,6 +170,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region IProjectContent implementation
+		[Serializable]
 		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext, IDocumentationProvider
 		{
 			readonly string assemblyName;
@@ -189,6 +196,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public IList<IAttribute> ModuleAttributes {
 				get { return moduleAttributes; }
+			}
+			
+			public string AssemblyName {
+				get { return assemblyName; }
 			}
 			
 			public override string ToString()
@@ -229,6 +240,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return documentationProvider.GetDocumentation(entity);
 				else
 					return null;
+			}
+			
+			IEnumerable<object> IAnnotatable.Annotations {
+				get { return EmptyList<object>.Instance; }
+			}
+			
+			T IAnnotatable.Annotation<T>()
+			{
+				return null;
+			}
+			
+			object IAnnotatable.Annotation(Type type)
+			{
+				return null;
+			}
+			
+			void IAnnotatable.AddAnnotation(object annotation)
+			{
+				throw new NotSupportedException();
+			}
+			
+			void IAnnotatable.RemoveAnnotations<T>()
+			{
+			}
+			
+			void IAnnotatable.RemoveAnnotations(Type type)
+			{
 			}
 		}
 		#endregion
@@ -281,6 +319,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// This is used to support the 'dynamic' type.</param>
 		/// <param name="entity">The entity that owns this type reference.
 		/// Used for generic type references.</param>
+		[CLSCompliant(false)]
 		public ITypeReference ReadTypeReference(
 			TypeReference type,
 			ICustomAttributeProvider typeAttributes = null,
@@ -490,11 +529,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				DefaultAttribute dllImport = new DefaultAttribute(dllImportAttributeTypeRef, new[] { KnownTypeReference.String });
 				dllImport.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, info.Module.Name));
 				
-//				if (info.IsBestFitDisabled)
-//					dllImport.AddNamedArgument("BestFitMapping", falseValue);
-//				if (info.IsBestFitEnabled)
-//					dllImport.AddNamedArgument("BestFitMapping", trueValue);
-				
+/*				if (info.IsBestFitDisabled)
+					dllImport.AddNamedArgument("BestFitMapping", falseValue);
+				if (info.IsBestFitEnabled)
+					dllImport.AddNamedArgument("BestFitMapping", trueValue);
+			*/
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
 					case PInvokeAttributes.CallConvCdecl:
@@ -755,6 +794,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		[CLSCompliant(false)]
 		public IAttribute ReadAttribute(CustomAttribute attribute)
 		{
 			if (attribute == null)
@@ -816,6 +856,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Constant Value
+		[CLSCompliant(false)]
 		public IConstantValue ReadConstantValue(CustomAttributeArgument arg)
 		{
 			object value = arg.Value;
@@ -840,8 +881,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Type Definition
+		[Serializable]
 		sealed class CecilTypeDefinition : DefaultTypeDefinition
 		{
+			[NonSerialized]
 			internal TypeDefinition typeDefinition;
 			
 			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)
@@ -1062,6 +1105,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Method
+		[CLSCompliant(false)]
 		public IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType = EntityType.Method)
 		{
 			DefaultMethod m = new DefaultMethod(parentType, method.Name);
@@ -1168,6 +1212,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Parameter
+		[CLSCompliant(false)]
 		public IParameter ReadParameter(ParameterDefinition parameter, IParameterizedMember parentMember = null)
 		{
 			if (parameter == null)
@@ -1210,6 +1255,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				|| att == FieldAttributes.FamORAssem;
 		}
 		
+		[CLSCompliant(false)]
 		public IField ReadField(FieldDefinition field, ITypeDefinition parentType)
 		{
 			if (field == null)
@@ -1280,6 +1326,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Property
+		[CLSCompliant(false)]
 		public IProperty ReadProperty(PropertyDefinition property, ITypeDefinition parentType, EntityType propertyType = EntityType.Property)
 		{
 			if (property == null)
@@ -1324,6 +1371,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Event
+		[CLSCompliant(false)]
 		public IEvent ReadEvent(EventDefinition ev, ITypeDefinition parentType)
 		{
 			if (ev == null)
@@ -1370,11 +1418,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return result as T;
 		}
 		
+		[CLSCompliant(false)]
 		public AssemblyDefinition GetCecilObject (IProjectContent content)
 		{
 			return InternalGetCecilObject<AssemblyDefinition> (content);
 		}
 		
+		[CLSCompliant(false)]
 		public TypeDefinition GetCecilObject (ITypeDefinition type)
 		{
 			if (type == null)
@@ -1385,21 +1435,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return cecilType.typeDefinition;
 		}
 		
+		[CLSCompliant(false)]
 		public MethodDefinition GetCecilObject (IMethod method)
 		{
 			return InternalGetCecilObject<MethodDefinition> (method);
 		}
 		
+		[CLSCompliant(false)]
 		public FieldDefinition GetCecilObject (IField field)
 		{
 			return InternalGetCecilObject<FieldDefinition> (field);
 		}
 		
+		[CLSCompliant(false)]
 		public EventDefinition GetCecilObject (IEvent evt)
 		{
 			return InternalGetCecilObject<EventDefinition> (evt);
 		}
 		
+		[CLSCompliant(false)]
 		public PropertyDefinition GetCecilObject (IProperty property)
 		{
 			return InternalGetCecilObject<PropertyDefinition> (property);

@@ -28,13 +28,11 @@
 
 using System;
 using System.Collections.Generic;
-
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	
-	
 	public class XmlParsedDocument : ParsedDocument
 	{
 		public XmlParsedDocument (string fileName) : base (fileName)
@@ -51,21 +49,21 @@ namespace MonoDevelop.Xml.StateEngine
 			foreach (XNode node in XDocument.AllDescendentNodes) {
 				if (node is XCData)
 				{
-					if (node.Region.End.Line - node.Region.Start.Line > 2)
+					if (node.Region.EndLine - node.Region.BeginLine > 2)
 						yield return new FoldingRegion ("<![CDATA[ ]]>", node.Region);
 				}
 				else if (node is XComment)
 				{
-					if (node.Region.End.Line - node.Region.Start.Line > 2)
+					if (node.Region.EndLine - node.Region.BeginLine > 2)
 						yield return new FoldingRegion ("<!-- -->", node.Region);
 				}
 				else if (node is XElement)
 				{
 					XElement el = (XElement) node;
-					if (el.IsClosed && el.ClosingTag.Region.End.Line - el.Region.Start.Line > 2) {
+					if (el.IsClosed && el.ClosingTag.Region.EndLine - el.Region.BeginLine > 2) {
 						yield return new FoldingRegion
 							(string.Format ("<{0}...>", el.Name.FullName),
-							 new DomRegion (el.Region.Start, el.ClosingTag.Region.End));
+							 new DomRegion (el.Region.Begin, el.ClosingTag.Region.End));
 					}
 				}
 				else if (node is XDocType)
@@ -74,7 +72,7 @@ namespace MonoDevelop.Xml.StateEngine
 					string id = !String.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
 						: !String.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;
 					
-					if (id != null && dt.Region.End.Line - dt.Region.Start.Line > 2) {
+					if (id != null && dt.Region.EndLine - dt.Region.BeginLine > 2) {
 						if (id.Length > 50)
 							id = id.Substring (0, 47) + "...";
 						

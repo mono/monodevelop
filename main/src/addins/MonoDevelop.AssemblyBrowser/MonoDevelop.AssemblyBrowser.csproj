@@ -57,7 +57,9 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
@@ -91,15 +93,19 @@
       <Name>CSharpBinding</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
       <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
       <Name>ICSharpCode.Decompiler</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -125,7 +131,6 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\ModuleReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolderNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\DomReturnTypeNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\IAssemblyBrowserNodeBuilder.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs" />

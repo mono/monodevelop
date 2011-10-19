@@ -63,11 +63,6 @@
 		<ExtensionNode name="Migration" type="MonoDevelop.Core.AddIns.UserDataMigrationNode" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Ambiences" name = "Language ambiences">
-		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
-		<ExtensionNode name="Class" />
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectBindings" name = "Project bindings">
 		<Description>Project bindings</Description>
 		<ExtensionNode name="ProjectBinding" type="MonoDevelop.Projects.Extensions.ProjectBindingCodon">
@@ -126,10 +121,6 @@
 		<ExtensionNode name="SerializationMap" type="MonoDevelop.Projects.Extensions.SerializationMapNode"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/DomParser" name = "Parsers">
-		<ExtensionNode name="Parser" type="MonoDevelop.Projects.Extensions.ParserNode"/>
-	</ExtensionPoint>
-	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/PolicyTypes" name = "Policy types">
 		<Description>Types for per-project policies language binding. These types must be serializable.</Description>
 		<ExtensionNode name="PolicyType" customAttributeType="MonoDevelop.Projects.Policies.PolicyTypeAttribute" objectType="System.Object"/>
@@ -149,10 +140,6 @@
 		<ExtensionNode name="Source" type="MonoDevelop.Projects.Extensions.MonoDocSourceNode" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/CodeGenerators">
-		<ExtensionNode name="Generator" type="MonoDevelop.Projects.CodeGeneration.MimeTypeExtensionNode"/>
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/DocumentationGenerator">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>

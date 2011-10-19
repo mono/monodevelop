@@ -29,19 +29,17 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.AspNet.Parser.Dom;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	
-	
 	public class AspNetParsedDocument : ParsedDocument
 	{
 		
 		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)
 		{
-			Flags |= ParsedDocumentFlags.NonSerializable;
+//			Flags |= ParsedDocumentFlags.NonSerializable;
 			Info = info;
 			RootNode = rootNode;
 			Type = type;

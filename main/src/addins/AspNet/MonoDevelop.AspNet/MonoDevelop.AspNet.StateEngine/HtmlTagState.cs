@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.StateEngine
 							parent.Name.Name, element.Name.Name), parent.Region);
 					}
 					//parent.Region.End = element.Region.Start;
-					//parent.Region.End.Column = Math.Max (parent.Region.End.Column - 1, 1);
+					//parent.Region.EndColumn = Math.Max (parent.Region.EndColumn - 1, 1);
 					parent.Close (parent);
 					context.Nodes.Push (element);
 					

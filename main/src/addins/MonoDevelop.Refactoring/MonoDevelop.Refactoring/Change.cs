@@ -29,11 +29,10 @@ using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.CodeGeneration;
 using Mono.TextEditor;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring
 {
@@ -48,7 +47,7 @@ namespace MonoDevelop.Refactoring
 		{
 		}
 		
-		public abstract void PerformChange (IProgressMonitor monitor, RefactorerContext rctx);
+		public abstract void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx);
 	}
 	
 	public class TextReplaceChange : Change
@@ -116,35 +115,34 @@ namespace MonoDevelop.Refactoring
 				return GetTextEditorData (FileName);
 			}
 		}
-		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			if (rctx == null)
 				throw new InvalidOperationException ("Refactory context not available.");
 			
 			TextEditorData textEditorData = this.TextEditorData;
+			bool saveEditor = false;
 			if (textEditorData == null) {
-				IEditableTextFile file = rctx.GetFile (FileName);
-				if (file != null) {
-					if (RemovedChars > 0)
-						file.DeleteText (Offset, RemovedChars);
-					if (!string.IsNullOrEmpty (InsertedText))
-						file.InsertText (Offset, InsertedText);
-					rctx.Save ();
-				}
-			} else if (textEditorData != null) {
-				int offset = textEditorData.Caret.Offset;
-				int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
-				if (MoveCaretToReplace) {
-					textEditorData.Caret.Offset = Offset + charsInserted;
-				} else {
-					if (Offset < offset) {
-						int rem = RemovedChars;
-						if (Offset + rem > offset)
-							rem = offset - Offset;
-						textEditorData.Caret.Offset = offset - rem + charsInserted;
-					}
+				textEditorData = TextFileProvider.Instance.GetTextEditorData (FileName);
+				saveEditor = true;
+			}
+		
+			
+			int offset = textEditorData.Caret.Offset;
+			int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
+			if (MoveCaretToReplace) {
+				textEditorData.Caret.Offset = Offset + charsInserted;
+			} else {
+				if (Offset < offset) {
+					int rem = RemovedChars;
+					if (Offset + rem > offset)
+						rem = offset - Offset;
+					textEditorData.Caret.Offset = offset - rem + charsInserted;
 				}
 			}
+			
+			if (saveEditor)
+				System.IO.File.WriteAllText (FileName, textEditorData.Text);
 		}
 		
 		public override string ToString ()
@@ -172,11 +170,11 @@ namespace MonoDevelop.Refactoring
 			this.Description = string.Format (GettextCatalog.GetString ("Create file '{0}'"), Path.GetFileName (fileName));
 		}
 		
-		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			File.WriteAllText (FileName, Content);
-			rctx.ParserContext.Project.AddFile (FileName);
-			IdeApp.ProjectOperations.Save (rctx.ParserContext.Project);
+			rctx.Document.Project.AddFile (FileName);
+			IdeApp.ProjectOperations.Save (rctx.Document.Project);
 		}
 	}
 	
@@ -193,7 +191,7 @@ namespace MonoDevelop.Refactoring
 			this.Description = string.Format (GettextCatalog.GetString ("Open file '{0}'"), Path.GetFileName (fileName));
 		}
 		
-		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			IdeApp.Workbench.OpenDocument (FileName);
 		}
@@ -218,12 +216,12 @@ namespace MonoDevelop.Refactoring
 			this.Description = string.Format (GettextCatalog.GetString ("Rename file '{0}' to '{1}'"), Path.GetFileName (oldName), Path.GetFileName (newName));
 		}
 		
-		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			FileService.RenameFile (OldName, NewName);
-			
-			if (rctx.ParserContext.Project != null)
-				IdeApp.ProjectOperations.Save (rctx.ParserContext.Project);
+			var project = rctx.Document.Project;
+			if (project != null)
+				IdeApp.ProjectOperations.Save (project);
 		}
 	}
 	
@@ -240,11 +238,9 @@ namespace MonoDevelop.Refactoring
 			this.Description = string.Format (GettextCatalog.GetString ("Save project {0}"), project.Name);
 		}
 		
-		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
 		{
-			Console.WriteLine ("SAVE !!!!");
 			IdeApp.ProjectOperations.Save (this.Project);
 		}
-
 	}
 }

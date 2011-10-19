@@ -273,6 +273,7 @@ contrib/Sharpen/Makefile
 contrib/NGit/Makefile
 contrib/NSch/Makefile
 contrib/ICSharpCode.NRefactory/Makefile
+contrib/ICSharpCode.NRefactory.CSharp/Makefile
 contrib/ICSharpCode.Decompiler/Makefile
 src/Makefile
 src/core/Makefile

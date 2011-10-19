@@ -28,6 +28,17 @@ namespace ICSharpCode.NRefactory.PatternMatching
 	/// </summary>
 	public abstract class Pattern : INode
 	{
+		/// <summary>
+		/// Gets the string that matches any string.
+		/// </summary>
+		public static readonly string AnyString = string.Empty;
+		// TODO: use something other than string.Empty so that 'no value' and 'any value' can be distinguished
+		
+		public static bool MatchString(string pattern, string text)
+		{
+			return string.IsNullOrEmpty(pattern) || pattern == text;
+		}
+		
 		internal struct PossibleMatch
 		{
 			public readonly INode NextOther; // next node after the last matched node
@@ -61,18 +72,6 @@ namespace ICSharpCode.NRefactory.PatternMatching
 		public virtual bool DoMatchCollection(Role role, INode pos, Match match, BacktrackingInfo backtrackingInfo)
 		{
 			return DoMatch (pos, match);
-		}
-		
-		public abstract S AcceptVisitor<T, S> (IPatternAstVisitor<T, S> visitor, T data);
-		
-		// Make debugging easier by giving Patterns a ToString() implementation
-		public override string ToString()
-		{
-			// TODO: what if this pattern contains a VB-AST?
-			// either remove ToString() here, or add some magic to figure out the correct output visitor
-			StringWriter w = new StringWriter();
-			AcceptVisitor(new CSharp.OutputVisitor(w, new CSharp.CSharpFormattingOptions()), null);
-			return w.ToString();
 		}
 		
 		public static bool DoMatchCollection(Role role, INode firstPatternChild, INode firstOtherChild, Match match)

@@ -28,10 +28,10 @@
 
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Refactoring;
 using System;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
  
 
 namespace MonoDevelop.AssemblyBrowser
@@ -85,31 +85,23 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		#endregion 
-		
+
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindReferences)]
 		public void FindReferences ()
 		{
-			IMember member = widget.ActiveMember;
+			var member = widget.ActiveMember as IMember;
 			if (member == null)
 				return;
-			ProjectDom dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
-			if (dom == null)
-				return;
-			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
-			refactorer.FindReferences ();
+			FindReferencesHandler.FindRefs (member);
 		}
 		
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses)]
 		public void FindDerivedClasses ()
 		{
-			IMember member = widget.ActiveMember;
-			if (member == null)
+			var type = widget.ActiveMember as ITypeDefinition;
+			if (type == null)
 				return;
-			ProjectDom dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
-			if (dom == null)
-				return;
-			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
-			refactorer.FindDerivedClasses ();
+			FindDerivedClassesHandler.FindDerivedClasses (type);
 		}
 	}
 }

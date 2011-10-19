@@ -26,11 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Refactoring.Rename;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Refactoring.Rename;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
@@ -39,9 +41,9 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		public string NewName { get; private set; }
 		public string OldName { get; private set; }
 		
-		public IBaseMember Item { get; private set; }
+		public IEntity Item { get; private set; }
 		
-		public RenameMemberFix (IBaseMember item, string oldName, string newName)
+		public RenameMemberFix (IEntity item, string oldName, string newName)
 		{
 			this.OldName = oldName;
 			this.NewName = newName;
@@ -61,16 +63,14 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			var refactoring = new RenameRefactoring ();
 			var options = new RefactoringOptions () {
 				Document = doc,
-				Dom = doc.Dom,
+				Dom = doc.TypeResolveContext,
 				SelectedItem = renameFix.Item,
 			};
 			
 			if (renameFix.Item == null) {
-				INode item;
 				ResolveResult resolveResult;
-				var editor = options.Document.GetContent<MonoDevelop.Ide.Gui.Content.ITextBuffer> ();
-				CurrentRefactoryOperationsHandler.GetItem (options.Dom, options.Document, editor, out resolveResult, out item);
-				options.SelectedItem = item;
+				
+				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Dom, options.Document, out resolveResult);
 			}
 			
 			if (!refactoring.IsValid (options))

@@ -31,9 +31,6 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Commands;
 using Document = Mono.TextEditor.Document;
@@ -43,6 +40,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
 using System.ComponentModel;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -201,22 +200,22 @@ namespace MonoDevelop.SourceEditor
 //				scrolledWindow.ShadowType = ShadowType.In;
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
 				PackStart (scrolledWindow, true, true, 0);
-//				if (parent.quickTaskProvider.Count > 0) {
-//					strip.VAdjustment = scrolledWindow.Vadjustment;
-//					scrolledWindow.ReplaceVScrollBar (strip);
-//				} else {
-//					strip.Visible = false;
-//				}
-//				parent.quickTaskProvider.ForEach (p => AddQuickTaskStrip (p));
+				if (parent.quickTaskProvider.Count > 0) {
+					strip.VAdjustment = scrolledWindow.Vadjustment;
+					scrolledWindow.ReplaceVScrollBar (strip);
+				} else {
+					strip.Visible = false;
+				}
+				parent.quickTaskProvider.ForEach (p => AddQuickTaskStrip (p));
 			}
 			
 			public void AddQuickTaskStrip (IQuickTaskProvider p)
 			{
-//				if (!strip.Visible) {
-//					strip.VAdjustment = scrolledWindow.Vadjustment;
-//					scrolledWindow.ReplaceVScrollBar (strip);
-//				}
-//				p.TasksUpdated += (sender, e) => strip.Update (p);
+				if (!strip.Visible) {
+					strip.VAdjustment = scrolledWindow.Vadjustment;
+					scrolledWindow.ReplaceVScrollBar (strip);
+				}
+				p.TasksUpdated += (sender, e) => strip.Update (p);
 			}
 			
 			protected override void OnDestroyed ()
@@ -357,11 +356,12 @@ namespace MonoDevelop.SourceEditor
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
 			Document document = textEditorData.Document;
-			if (document == null || region.Start.Line <= 0 || region.End.Line <= 0 || region.Start.Line > document.LineCount || region.End.Line > document.LineCount)
+			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)
 				return null;
-			int startOffset = document.LocationToOffset (region.Start.Line, region.Start.Column);
-			// end doesn't include the char at that position.
-			int endOffset   = document.LocationToOffset (region.End.Line, region.End.Column) - 1;
+			
+			int startOffset = document.LocationToOffset (region.BeginLine, region.BeginColumn);
+			int endOffset   = document.LocationToOffset (region.EndLine, region.EndColumn );
+			
 			FoldSegment result = new FoldSegment (document, text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
@@ -373,7 +373,7 @@ namespace MonoDevelop.SourceEditor
 		void HandleParseInformationUpdaterWorkerThreadDoWork (object sender, DoWorkEventArgs e)
 		{
 			BackgroundWorker worker = sender as BackgroundWorker;
-			ParsedDocument parsedDocument = (ParsedDocument)e.Argument;
+			var parsedDocument = (ParsedDocument)e.Argument;
 			var doc = Document;
 			if (doc == null || parsedDocument == null)
 				return;
@@ -381,7 +381,7 @@ namespace MonoDevelop.SourceEditor
 			if (!options.ShowFoldMargin)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
-			if (doc.HasFoldSegments && parsedDocument.HasErrors)
+			if (doc.HasFoldSegments && parsedDocument.Errors.Any ())
 				return;
 			try {
 				List<FoldSegment > foldSegments = new List<FoldSegment> ();
@@ -447,7 +447,7 @@ namespace MonoDevelop.SourceEditor
 						marker.IsFolded = folded;
 						continue;
 					}
-					if (marker != null && region.Region.Contains (textEditorData.Caret.Line, textEditorData.Caret.Column))
+					if (marker != null && region.Region.IsInside (textEditorData.Caret.Line, textEditorData.Caret.Column))
 						marker.IsFolded = false;
 					
 				}
@@ -573,7 +573,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UnderLineError (Document doc, Error info)
 		{
-			LineSegment line = doc.GetLine (info.Region.Start.Line);
+			var line = doc.GetLine (info.Region.BeginLine);
 			// If the line is already underlined
 			if (errors.Any (em => em.LineSegment == line))
 				return;
@@ -1336,7 +1336,8 @@ namespace MonoDevelop.SourceEditor
 		#region Help
 		internal void MonodocResolver ()
 		{
-			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
+			DomRegion region;
+			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
 			string url = HelpService.GetMonoDocHelpUrl (res);
 			if (url != null)
 				IdeApp.HelpOperations.ShowHelp (url);
@@ -1344,7 +1345,8 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void MonodocResolverUpdate (CommandInfo cinfo)
 		{
-			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
+			DomRegion region;
+			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
 			if (res == null || !IdeApp.HelpOperations.CanShowHelp (res))
 				cinfo.Bypass = true;
 		}
@@ -1570,12 +1572,12 @@ namespace MonoDevelop.SourceEditor
 			tasks.Clear ();
 			
 			foreach (var cmt in doc.TagComments) {
-				QuickTask newTask = new QuickTask (cmt.Text, cmt.Region.Start, QuickTaskSeverity.Hint);
+				var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, QuickTaskSeverity.Hint);
 				tasks.Add (newTask);
 			}
 			
 			foreach (var error in doc.Errors) {
-				QuickTask newTask = new QuickTask (error.Message, error.Region.Start, error.ErrorType == ErrorType.Error ? QuickTaskSeverity.Error : QuickTaskSeverity.Warning);
+				var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? QuickTaskSeverity.Error : QuickTaskSeverity.Warning);
 				tasks.Add (newTask);
 			}
 			
@@ -1589,7 +1591,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		public Error Info { get; private set; }
 		
-		public ErrorMarker (MonoDevelop.Projects.Dom.Error info, LineSegment line)
+		public ErrorMarker (Error info, LineSegment line)
 		{
 			this.Info = info;
 			this.LineSegment = line; // may be null if no line is assigned to the error.
@@ -1597,9 +1599,9 @@ namespace MonoDevelop.SourceEditor
 			
 			ColorName = info.ErrorType == ErrorType.Warning ? Mono.TextEditor.Highlighting.ColorSheme.WarningUnderlineString : Mono.TextEditor.Highlighting.ColorSheme.ErrorUnderlineString;
 			
-			if (Info.Region.Start.Line == info.Region.End.Line) {
-				this.StartCol = Info.Region.Start.Column;
-				this.EndCol = Info.Region.End.Column;
+			if (Info.Region.BeginLine == info.Region.EndLine) {
+				this.StartCol = Info.Region.BeginColumn;
+				this.EndCol = Info.Region.EndColumn;
 			} else {
 				this.StartCol = this.EndCol = 0;
 			}

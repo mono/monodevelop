@@ -29,8 +29,6 @@
 using System;
 using System.Text;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
@@ -39,6 +37,9 @@ using ICSharpCode.Decompiler;
 using System.Threading;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using Mono.Cecil;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -55,52 +56,53 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			IProperty property = (IProperty)dataObject;
+			var property = (IProperty)dataObject;
 			return property.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IProperty property = (IProperty)dataObject;
-			label = Ambience.GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.ReturnTypesLast);
+			var property = (IProperty)dataObject;
+			label = Ambience.GetString (GetContent (treeBuilder), property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			if (property.IsPrivate || property.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (property.StockIcon, Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (property.GetStockIcon (), Gtk.IconSize.Menu);
 		}
+		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is IMethod)
+			if (otherNode.DataItem is MethodDefinition)
 				return 1;
 			if (otherNode.DataItem is BaseTypeFolder)
 				return 1;
-			if (otherNode.DataItem is IProperty)
-				return ((IProperty)thisNode.DataItem).Name.CompareTo (((IProperty)otherNode.DataItem).Name);
+			if (otherNode.DataItem is PropertyDefinition)
+				return ((PropertyDefinition)thisNode.DataItem).Name.CompareTo (((PropertyDefinition)otherNode.DataItem).Name);
 			return -1;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			DomCecilProperty property = (DomCecilProperty)dataObject;
-			if (property.HasGet && property.GetMethod != null)
-				ctx.AddChild (property.GetMethod);
-			if (property.HasSet && property.SetMethod != null)
-				ctx.AddChild (property.SetMethod);
+			var property = (IProperty)dataObject;
+			if (property.CanGet)
+				ctx.AddChild (property.Getter);
+			if (property.CanSet != null)
+				ctx.AddChild (property.Setter);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			IProperty property = (IProperty)dataObject;
-			return property.HasGet || property.HasSet;
+			var property = (IProperty)dataObject;
+			return property.CanGet != null || property.CanSet != null;
 		}
 		
 		
 		#region IAssemblyBrowserNodeBuilder
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			IProperty property = (IProperty)navigator.DataItem;
+			var property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), property, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -110,13 +112,12 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var property = (DomCecilProperty)navigator.DataItem;
-			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property.PropertyDefinition));
+			var property = CecilLoader.GetCecilObject ((IProperty)navigator.DataItem);
+			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property));
 		}
 		
 		static string GetBody (string text)
 		{
-			
 			int idx = text.IndexOf ('{') + 1;
 			int idx2 = text.LastIndexOf ('}');
 			if (idx2 - idx <= 0)
@@ -129,16 +130,16 @@ namespace MonoDevelop.AssemblyBrowser
 
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var property = (DomCecilProperty)navigator.DataItem;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), ((DomCecilType)property.DeclaringType).TypeDefinition, b => b.AddProperty (property.PropertyDefinition));
+			var property = CecilLoader.GetCecilObject ((IProperty)navigator.DataItem);
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), property.DeclaringType, b => b.AddProperty (property));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			IProperty property = (IProperty)navigator.DataItem;
+			var property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), property, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			

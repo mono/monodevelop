@@ -34,22 +34,17 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Text;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Refactoring;
-using ICSharpCode.OldNRefactory.Visitors;
-using ICSharpCode.OldNRefactory.Parser;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Completion;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.CSharp
 {
@@ -59,8 +54,8 @@ namespace MonoDevelop.CSharp
 		{
 			if (data is CompletionData) {
 				((CompletionData)data).CompletionText = text;
-			} else if (data is MonoDevelop.Ide.CodeCompletion.MemberCompletionData) {
-				((MonoDevelop.Ide.CodeCompletion.MemberCompletionData)data).CompletionText = text;
+			} else if (data is IEntityCompletionData) {
+				((IEntityCompletionData)data).CompletionText = text;
 			} else {
 				System.Console.WriteLine("Unknown completion data:" + data);
 			}
@@ -90,6 +85,22 @@ namespace MonoDevelop.CSharp
 			using (var stream = data.OpenStream ()) {
 				return parser.Parse (stream);
 			}
+		}
+		
+		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
+		{
+			var policyParent = doc.Project != null ? doc.Project.Policies : null;
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			return codePolicy.CreateOptions ();
+		}
+		
+		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Projects.Project project)
+		{
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			var codePolicy = project != null ? project.Policies.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) :
+				MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			return codePolicy.CreateOptions ();
 		}
 	}
 }

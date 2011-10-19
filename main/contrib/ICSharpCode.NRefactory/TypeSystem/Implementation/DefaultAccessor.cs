@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IAccessor"/>.
 	/// </summary>
+	[Serializable]
 	public sealed class DefaultAccessor : AbstractFreezable, IAccessor, ISupportsInterning
 	{
 		static readonly DefaultAccessor[] defaultAccessors = CreateDefaultAccessors();

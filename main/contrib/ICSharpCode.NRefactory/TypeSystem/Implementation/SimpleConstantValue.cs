@@ -17,12 +17,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// A simple constant value that is independent of the resolve context.
 	/// </summary>
+	[Serializable]
 	public sealed class SimpleConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
 		ITypeReference type;
@@ -36,17 +38,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.value = value;
 		}
 		
-		public IType GetValueType(ITypeResolveContext context)
+		public ResolveResult Resolve(ITypeResolveContext context)
 		{
-			return type.Resolve(context);
-		}
-		
-		public object GetValue(ITypeResolveContext context)
-		{
-			if (value is ITypeReference)
-				return ((ITypeReference)value).Resolve(context);
-			else
-				return value;
+			if (value is ITypeReference) {
+				return new TypeOfResolveResult(type.Resolve(context), ((ITypeReference)value).Resolve(context));
+			} else {
+				return new ConstantResolveResult(type.Resolve(context), value);
+			}
 		}
 		
 		public override string ToString()

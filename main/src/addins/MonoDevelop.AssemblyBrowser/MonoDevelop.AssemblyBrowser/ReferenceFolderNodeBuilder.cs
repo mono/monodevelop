@@ -30,7 +30,6 @@ using System;
 using Mono.Cecil;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
 

@@ -29,13 +29,12 @@ using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using Mono.CSharp;
-using MonoDevelop.Refactoring.RefactorImports;
 using MonoDevelop.Refactoring;
 using MonoDevelop.AnalysisCore.Fixes;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 
 namespace MonoDevelop.CSharp.Inspection
@@ -48,17 +47,17 @@ namespace MonoDevelop.CSharp.Inspection
 		}
 		
 		void HandleVisitorUsingDeclarationVisited (UsingDeclaration node, InspectionData data)
-		{
-			if (!data.Graph.UsedUsings.Contains (node.Namespace)) {
-				AddResult (data,
-					new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
-					GettextCatalog.GetString ("Remove unused usings"),
-					delegate {
-						RefactoringOptions options = new RefactoringOptions () { Document = data.Document, Dom = data.Document.Dom};
-						new RemoveUnusedImportsRefactoring ().Run (options);
-					}
-				);
-			}
+		{ // TODO: Type system conversion.
+//			if (!data.Graph.UsedUsings.Contains (node.Namespace)) {
+//				AddResult (data,
+//					new DomRegion (node.StartLocation, node.EndLocation),
+//					GettextCatalog.GetString ("Remove unused usings"),
+//					delegate {
+//						RefactoringOptions options = new RefactoringOptions () { Document = data.Document, Dom = data.Document.Dom};
+//						new RemoveUnusedImportsRefactoring ().Run (options);
+//					}
+//				);
+//			}
 		}
 	}
 }

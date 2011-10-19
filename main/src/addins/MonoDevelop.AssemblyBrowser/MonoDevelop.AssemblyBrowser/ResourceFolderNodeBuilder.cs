@@ -28,7 +28,6 @@
 
 using System;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
 

@@ -28,10 +28,10 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
-using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -49,30 +49,44 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 		
+		ResolveVisitor visitor;
+		
 		public CallGraph ()
 		{
 		}
 		
-		public void Inspect (MonoDevelop.Ide.Gui.Document doc, IResolver resolver, ICSharpCode.NRefactory.CSharp.CompilationUnit unit)
+		public ResolveResult Resolve (AstNode node)
 		{
-//			var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
-//			unit.AcceptVisitor (findTypeReferencesVisitor, null);
-//			this.PossibleTypeReferences = findTypeReferencesVisitor.PossibleTypeReferences;
-//			
-//			foreach (var r in PossibleTypeReferences) {
-//				if (r is PrimitiveType)
-//					continue;
-//				var loc = new DomLocation (r.StartLocation.Line, r.StartLocation.Column);
-//				IType type = doc.Dom.SearchType (doc.CompilationUnit,
-//					doc.CompilationUnit.GetTypeAt (loc), 
-//					loc,
-//					r.ConvertToReturnType ());
-//				
-//				if (type != null)
-//					usedUsings.Add (type.Namespace);
-//			}
+			return visitor.Resolve (node);
 		}
 		
+		public void Inspect (MonoDevelop.Ide.Gui.Document doc, ParsedDocument parsedDocument)
+		{
+			var pf = parsedDocument.Annotation<CSharpParsedFile> ();
+			var unit = parsedDocument.Annotation<CompilationUnit> ();
+			var ctx = doc.TypeResolveContext;
+			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
+			visitor = new ResolveVisitor (csResolver, pf, null);
+			/*unit.AcceptVisitor (visitor, null);
+			
+			
+			var findTypeReferencesVisitor = new MonoDevelop.Refactoring.RefactorImports.FindTypeReferencesVisitor (doc.Editor, resolver);
+			unit.AcceptVisitor (findTypeReferencesVisitor, null);
+			this.PossibleTypeReferences = findTypeReferencesVisitor.PossibleTypeReferences;
+			
+			foreach (var r in PossibleTypeReferences) {
+				if (r is PrimitiveType)
+					continue;
+				var loc = new TextLocation (r.StartLocation.Line, r.StartLocation.Column);
+				IType type = doc.Dom.SearchType (doc.CompilationUnit,
+					doc.GetType (loc), 
+					loc,
+					r.ConvertToReturnType ());
+				
+				if (type != null)
+					usedUsings.Add (type.Namespace);
+			}*/
+		}
 		
 		public class VariableInfo 
 		{

@@ -36,7 +36,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// type parameters in the signatures of the members are replaced with
 	/// the type arguments.
 	/// </remarks>
-	public sealed class ParameterizedType : Immutable, IType
+	[Serializable]
+	public sealed class ParameterizedType : Immutable, IType, ISupportsInterning
 	{
 		readonly ITypeDefinition genericType;
 		readonly IType[] typeArguments;
@@ -139,7 +140,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Same as 'parameterizedType.TypeArguments[index]', but is a bit more efficient.
 		/// </summary>
-		internal IType GetTypeArgument(int index)
+		public IType GetTypeArgument(int index)
 		{
 			return typeArguments[index];
 		}
@@ -321,12 +322,38 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			else
 				return new ParameterizedType(def, ta);
 		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			for (int i = 0; i < typeArguments.Length; i++) {
+				typeArguments[i] = provider.Intern(typeArguments[i]);
+			}
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			ParameterizedType o = other as ParameterizedType;
+			if (o != null && genericType == o.genericType && typeArguments.Length == o.typeArguments.Length) {
+				for (int i = 0; i < typeArguments.Length; i++) {
+					if (typeArguments[i] != o.typeArguments[i])
+						return false;
+				}
+				return true;
+			}
+			return false;
+		}
 	}
-
+	
 	/// <summary>
 	/// ParameterizedTypeReference is a reference to generic class that specifies the type parameters.
 	/// Example: List&lt;string&gt;
 	/// </summary>
+	[Serializable]
 	public sealed class ParameterizedTypeReference : ITypeReference, ISupportsInterning
 	{
 		public static ITypeReference Create(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
@@ -441,7 +468,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return true;
 			}
 			return false;
-			
 		}
 	}
 }

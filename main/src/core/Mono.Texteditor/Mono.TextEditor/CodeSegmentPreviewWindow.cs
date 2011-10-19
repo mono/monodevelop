@@ -58,12 +58,12 @@ namespace Mono.TextEditor
 				return string.IsNullOrEmpty ((layout.Text ?? "").Trim ());
 			}
 		}
-		
-		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
+
+		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, bool removeIndent = true) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight, removeIndent)
 		{
 		}
 		
-		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, int width, int height) : base (Gtk.WindowType.Popup)
+		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, int width, int height, bool removeIndent = true) : base (Gtk.WindowType.Popup)
 		{
 			this.HideCodeSegmentPreviewInformString = hideCodeSegmentPreviewInformString;
 			this.editor = editor;
@@ -78,9 +78,17 @@ namespace Mono.TextEditor
 			layout.Ellipsize = Pango.EllipsizeMode.End;
 			// setting a max size for the segment (40 lines should be enough), 
 			// no need to markup thousands of lines for a preview window
+			SetSegment (segment, removeIndent);
+			CalculateSize (width);
+		}
+		
+		const int maxLines = 40;
+		
+		public void SetSegment (ISegment segment, bool removeIndent)
+		{
 			int startLine = editor.Document.OffsetToLineNumber (segment.Offset);
 			int endLine = editor.Document.OffsetToLineNumber (segment.EndOffset);
-			const int maxLines = 40;
+			
 			bool pushedLineLimit = endLine - startLine > maxLines;
 			if (pushedLineLimit)
 				segment = new Segment (segment.Offset, editor.Document.GetLine (startLine + maxLines).Offset - segment.Offset);
@@ -90,13 +98,15 @@ namespace Mono.TextEditor
 			                                                        editor.ColorStyle,
 			                                                        segment.Offset,
 			                                                        segment.Length,
-			                                                        true) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
-			CalculateSize ();
+			                                                        removeIndent) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
+			QueueDraw ();
 		}
+		
 		public int PreviewInformStringHeight {
 			get; private set;
 		}
-		public void CalculateSize ()
+		
+		public void CalculateSize (int defaultWidth = -1)
 		{
 			int w, h;
 			layout.GetPixelSize (out w, out h);

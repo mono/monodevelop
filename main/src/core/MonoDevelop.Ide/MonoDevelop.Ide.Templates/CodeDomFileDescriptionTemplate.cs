@@ -34,7 +34,6 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.CodeGeneration;
 
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
@@ -71,8 +70,8 @@ namespace MonoDevelop.Ide.Templates
 			if (provider == null)
 				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
 
-			XmlCodeDomReader xcd = new XmlCodeDomReader ();
-			CodeCompileUnit cu = xcd.ReadCompileUnit (domContent);
+			var xcd = new XmlCodeDomReader ();
+			var cu = xcd.ReadCompileUnit (domContent);
 			
 			foreach (CodeNamespace cns in cu.Namespaces)
 				cns.Name = StripImplicitNamespace (project, tags, cns.Name);

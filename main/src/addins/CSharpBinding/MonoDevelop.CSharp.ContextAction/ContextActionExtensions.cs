@@ -26,8 +26,8 @@
 using System;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -35,56 +35,34 @@ namespace MonoDevelop.CSharp.ContextAction
 	{
 		public static int CalcIndentLevel (this MonoDevelop.Ide.Gui.Document doc, string indent)
 		{
-			int col = MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider.GetColumn (indent, 0, doc.Editor.Options.TabSize);
+			int col = GetColumn (indent, 0, doc.Editor.Options.TabSize);
 			return System.Math.Max (0, col / doc.Editor.Options.TabSize);
 		}
 		
-		public static NRefactoryResolver GetResolver (this MonoDevelop.Ide.Gui.Document doc)
+		public static int GetColumn (string wrapper, int i, int tabSize)
 		{
-			return new NRefactoryResolver (doc.Dom, doc.CompilationUnit, doc.Editor, doc.FileName); 
+			int j = i;
+			int col = 0;
+			for (; j < wrapper.Length && (wrapper[j] == ' ' || wrapper[j] == '\t'); j++) {
+				if (wrapper[j] == ' ') {
+					col++;
+				} else {
+					col = GetNextTabstop (col, tabSize);
+				}
+			}
+			return col;
 		}
 		
-		public static ResolveResult Resolve (this AstNode node, MonoDevelop.Ide.Gui.Document doc)
+		static int GetNextTabstop (int currentColumn, int tabSize)
 		{
-			return doc.GetResolver ().Resolve (node.ToString (), new DomLocation (node.StartLocation.Line, node.StartLocation.Column));
-		}
-		public static ResolveResult ResolveExpression (this AstNode node, MonoDevelop.Ide.Gui.Document doc, NRefactoryResolver resolver, DocumentLocation loc)
-		{
-			if (resolver == null)
-				return null;
-			resolver.SetupResolver (new DomLocation (loc.Line, loc.Column));
-			return resolver.ResolveExpression (node.AcceptVisitor (exVisitor, null), new DomLocation (node.StartLocation.Line, node.StartLocation.Column));
-		}
-		static ExpressionVisitor exVisitor = new ExpressionVisitor ();
-		class ExpressionVisitor : DepthFirstAstVisitor<object, ICSharpCode.OldNRefactory.Ast.Expression>
-		{
-			public override ICSharpCode.OldNRefactory.Ast.Expression VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
-			{
-				return new ICSharpCode.OldNRefactory.Ast.IdentifierExpression (identifierExpression.Identifier);
-			}
-			
-			public override ICSharpCode.OldNRefactory.Ast.Expression VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
-			{
-				return new ICSharpCode.OldNRefactory.Ast.MemberReferenceExpression (memberReferenceExpression.Target.AcceptVisitor (this, null), memberReferenceExpression.MemberName);
-			}
-			
-			public override ICSharpCode.OldNRefactory.Ast.Expression VisitThisReferenceExpression (ThisReferenceExpression thisReferenceExpression, object data)
-			{
-				return new ICSharpCode.OldNRefactory.Ast.ThisReferenceExpression ();
-			}
-			
-			public override ICSharpCode.OldNRefactory.Ast.Expression VisitBaseReferenceExpression (BaseReferenceExpression baseReferenceExpression, object data)
-			{
-				return new ICSharpCode.OldNRefactory.Ast.BaseReferenceExpression ();
-			}
-			
-			
+			int result = currentColumn + tabSize;
+			return (result / tabSize) * tabSize;
 		}
 		
 		public static void FormatText (this AstNode node, MonoDevelop.Ide.Gui.Document doc)
 		{
 			doc.UpdateParseDocument ();
-			MonoDevelop.CSharp.Formatting.OnTheFlyFormatter.Format (doc, doc.Dom, new DomLocation (node.StartLocation.Line, node.StartLocation.Column));
+			MonoDevelop.CSharp.Formatting.OnTheFlyFormatter.Format (doc, doc.TypeResolveContext, node.StartLocation);
 		}
 	}
 }

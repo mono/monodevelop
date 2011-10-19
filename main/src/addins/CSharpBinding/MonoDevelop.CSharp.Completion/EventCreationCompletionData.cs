@@ -28,15 +28,13 @@ using System;
 using System.Text;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -44,11 +42,12 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		string parameterList;
 		IMember callingMember;
-		TextEditorData editor;
+		CSharpCompletionTextEditorExtension ext;
 		int initialOffset;
 		public bool AddSemicolon = true;
+		TextEditorData editor;
 		
-		public EventCreationCompletionData (TextEditorData editor, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
+		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
 			if (string.IsNullOrEmpty (varName)) {
 				this.DisplayText   = "Handle" + (evt != null ? evt.Name : "");
@@ -56,15 +55,15 @@ namespace MonoDevelop.CSharp.Completion
 				this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + (evt != null ? evt.Name : "");
 			}
 			
-			if (declaringType != null && declaringType.SearchMember (this.DisplayText, true).Count > 0) {
+			if (declaringType != null && declaringType.GetMembers (ext.ctx).Any (m => m.Name == this.DisplayText)) {
 				for (int i = 1; i < 10000; i++) {
-					if (declaringType.SearchMember (this.DisplayText + i.ToString (), true).Count == 0) {
+					if (!declaringType.GetMembers (ext.ctx).Any (m => m.Name == this.DisplayText + i)) {
 						this.DisplayText = this.DisplayText + i.ToString ();
 						break;
 					}
 				}
 			}
-			this.editor        = editor;
+			this.editor        = ext.textEditorData;
 			this.parameterList = parameterList;
 			this.callingMember = callingMember;
 			this.Icon          = "md-newmethod";
@@ -77,7 +76,7 @@ namespace MonoDevelop.CSharp.Completion
 			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
 			
 			// Search opening bracket of member
-			int pos = callingMember != null ? editor.Document.LocationToOffset (callingMember.BodyRegion.Start.Line, callingMember.BodyRegion.Start.Column) : initialOffset;
+			int pos = callingMember != null ? editor.Document.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
 			while (pos < editor.Document.Length && editor.Document.GetCharAt (pos) != '{') {
 				pos++;
 			}
@@ -88,7 +87,7 @@ namespace MonoDevelop.CSharp.Completion
 			pos = Math.Max (0, Math.Min (pos, editor.Document.Length - 1));
 			
 			// Insert new event handler after closing bracket
-			string indent = editor.Document.GetLine (callingMember.Location.Line).GetIndentation (editor.Document);
+			string indent = editor.Document.GetLine (callingMember.Region.BeginLine).GetIndentation (editor.Document);
 			
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (editor.EolMarker);

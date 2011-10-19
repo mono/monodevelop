@@ -37,46 +37,6 @@ namespace MonoDevelop.Refactoring
 {
 	public class QuickFixHandler : AbstractRefactoringCommandHandler
 	{
-		public static List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
-		{
-			IReturnType returnType = null; 
-			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (DesktopService.GetMimeTypeForUri (options.Document.FileName));
-			
-			if (options.ResolveResult != null && options.ResolveResult.ResolvedExpression != null) {
-				if (astProvider != null) 
-					returnType = astProvider.ParseTypeReference (options.ResolveResult.ResolvedExpression.Expression).ConvertToReturnType ();
-				if (returnType == null)
-					returnType = DomReturnType.GetSharedReturnType (options.ResolveResult.ResolvedExpression.Expression);
-			}
-			
-			List<string> namespaces;
-			if (options.ResolveResult is UnresolvedMemberResolveResult) {
-				namespaces = new List<string> ();
-				UnresolvedMemberResolveResult unresolvedMemberResolveResult = options.ResolveResult as UnresolvedMemberResolveResult;
-				IType type = unresolvedMemberResolveResult.TargetResolveResult != null ? options.Dom.GetType (unresolvedMemberResolveResult.TargetResolveResult.ResolvedType) : null;
-				if (type != null) {
-					List<IType> allExtTypes = DomType.GetAccessibleExtensionTypes (options.Dom, null);
-					foreach (ExtensionMethod method in type.GetExtensionMethods (allExtTypes, unresolvedMemberResolveResult.MemberName)) {
-						string ns = method.OriginalMethod.DeclaringType.Namespace;
-						if (!namespaces.Contains (ns) && !options.Document.CompilationUnit.Usings.Any (u => u.Namespaces.Contains (ns)))
-							namespaces.Add (ns);
-					}
-				}
-				resolveDirect = false;
-			} else {
-				namespaces = new List<string> (options.Dom.ResolvePossibleNamespaces (returnType));
-				resolveDirect = true;
-			}
-			for (int i = 0; i < namespaces.Count; i++) {
-				for (int j = i + 1; j < namespaces.Count; j++) {
-					if (namespaces[j] == namespaces[i]) {
-						namespaces.RemoveAt (j);
-						j--;
-					}
-				}
-			}
-			return namespaces;
-		}
 		
 		protected override void Run (RefactoringOptions options)
 		{

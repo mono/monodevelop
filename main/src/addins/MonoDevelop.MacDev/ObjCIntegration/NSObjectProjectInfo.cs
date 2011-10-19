@@ -30,11 +30,14 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Text;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
@@ -44,10 +47,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		Dictionary<string,NSObjectTypeInfo> cliTypes = new Dictionary<string,NSObjectTypeInfo> ();
 		
 		NSObjectInfoService infoService;
-		ProjectDom dom;
+		ITypeResolveContext dom;
+		DotNetProject project;
 		bool needsUpdating;
 		
-		public NSObjectProjectInfo (ProjectDom dom, NSObjectInfoService infoService)
+		public NSObjectProjectInfo (DotNetProject project, ITypeResolveContext dom, NSObjectInfoService infoService)
 		{
 			this.infoService = infoService;
 			this.dom = dom;
@@ -66,12 +70,22 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			Update ();
 		}
 		
+		static IEnumerable<DotNetProject> GetReferencedProjects (DotNetProject project)
+		{
+			// is there an easier way doing that ?
+			foreach (var r in project.References.Where (rf => rf.ReferenceType == ReferenceType.Project)) {
+				var refProject = project.ParentSolution.GetAllProjects ().First (p => p.Name == r.Reference) as DotNetProject;
+				if (refProject != null)
+					yield return refProject;
+			}
+		}
+		
 		internal void Update ()
 		{
 			if (!needsUpdating)
 				return;
 			
-			foreach (var r in dom.References) {
+			foreach (var r in GetReferencedProjects (project)) {
 				var info = infoService.GetProjectInfo (r);
 				if (info != null)
 					info.Update ();
@@ -79,6 +93,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			objcTypes.Clear ();
 			cliTypes.Clear ();
+			
+			dom = TypeSystemService.GetContext (project);
 			
 			foreach (var type in infoService.GetRegisteredObjects (dom)) {
 				objcTypes.Add (type.ObjCName, type);
@@ -119,7 +135,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			if (cliTypes.TryGetValue (cliType, out resolved))
 				return true;
-			foreach (var r in dom.References) {
+			foreach (var r in GetReferencedProjects (project)) {
 				var rDom = infoService.GetProjectInfo (r);
 				if (rDom != null && rDom.cliTypes.TryGetValue (cliType, out resolved))
 					return true;
@@ -132,8 +148,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			if (objcTypes.TryGetValue (objcType, out resolved))
 				return true;
-			
-			foreach (var r in dom.References) {
+			foreach (var r in GetReferencedProjects (project)) {
 				var rDom = infoService.GetProjectInfo (r);
 				if (rDom != null && rDom.objcTypes.TryGetValue (objcType, out resolved))
 					return true;
@@ -168,7 +183,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			NSObjectTypeInfo resolved;
 			
 			if (type.BaseObjCType == null && type.BaseCliType != null) {
-				if (TryResolveCliToObjc (type.BaseCliType, out resolved)) {
+				var baseCliType = new GetClassTypeReference (type.BaseCliType).Resolve (dom);
+				if (TryResolveCliToObjc (baseCliType.FullName, out resolved)) {
 					if (resolved.IsModel)
 						type.BaseIsModel = true;
 					type.BaseObjCType = resolved.ObjCName;
@@ -176,11 +192,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					if (resolved.IsUserType)
 						type.UserTypeReferences.Add (resolved.ObjCName);
 				} else {
-					// managed classes may have implicitly registered base classes with a name not
-					// expressible in obj-c. In this case, the best we can do is walk down the 
-					// hierarchy until we find a valid base class
-					foreach (var bt in dom.GetInheritanceTree (dom.GetType (type.BaseCliType))) {
-						if (bt.ClassType != ClassType.Class)
+					//managed classes many have implicitly registered base classes with a name not
+					//expressible in obj-c. In this case, the best we can do is walk down the 
+					//hierarchy until we find a valid base class
+					foreach (var bt in baseCliType.GetAllBaseTypeDefinitions (dom)) {
+						if (bt.Kind != TypeKind.Class) 
 							continue;
 						
 						if (TryResolveCliToObjc (bt.FullName, out resolved)) {
@@ -245,7 +261,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				if (TryResolveObjcToCli (type.BaseObjCType, out resolved)) {
 					type.BaseCliType = resolved.CliName;
 				} else  {
-					type.BaseCliType = defaultNamespace + "." + provider.CreateValidIdentifier (type.BaseObjCType);
+					type.BaseCliType = new GetClassTypeReference (defaultNamespace, provider.CreateValidIdentifier (type.BaseObjCType)).Resolve (dom).FullName;
 					monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on type {1}",
 						type.BaseObjCType, type.ObjCName));
 				}

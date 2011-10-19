@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Base class for <see cref="IMember"/> implementations.
 	/// </summary>
+	[Serializable]
 	public abstract class AbstractMember : AbstractFreezable, IMember
 	{
 		// possible optimizations to reduce the memory usage of AbstractMember:
@@ -43,6 +44,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		Accessibility accessibility;
 		EntityType entityType;
 		
+		[CLSCompliant(false)]
 		protected BitVector16 flags;
 		const ushort FlagSealed    = 0x0001;
 		const ushort FlagAbstract  = 0x0002;
@@ -144,7 +146,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public bool IsOverridable {
 			get {
-				return (IsVirtual || IsOverride) && !IsSealed;
+				return (IsAbstract || IsVirtual || IsOverride) && !IsSealed;
 			}
 		}
 		
@@ -268,6 +270,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IProjectContent ProjectContent {
 			get { return declaringTypeDefinition.ProjectContent; }
+		}
+		
+		public IParsedFile ParsedFile {
+			get { return declaringTypeDefinition.ParsedFile; }
 		}
 		
 		public string Name {

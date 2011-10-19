@@ -36,9 +36,6 @@ using Mono.Addins;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 
 namespace CBinding
 {
@@ -52,21 +49,13 @@ namespace CBinding
 		public string BlockCommentStartTag { get { return "/*"; } }
 		public string BlockCommentEndTag { get { return "*/"; } }
 		
-		public bool IsSourceCodeFile (string fileName)
+		public bool IsSourceCodeFile (FilePath fileName)
 		{
-			return fileName.EndsWith (".mm", StringComparison.OrdinalIgnoreCase) || 
-			       fileName.EndsWith (".M", StringComparison.Ordinal);
+			return fileName.ToString ().EndsWith (".mm", StringComparison.OrdinalIgnoreCase) || 
+			       fileName.ToString ().EndsWith (".M", StringComparison.Ordinal);
 		}
 		
-		public IParser Parser {
-			get { return null; }
-		}
-		
-		public IRefactorer Refactorer {
-			get { return null; }
-		}
-		
-		public string GetFileName (string baseName)
+		public FilePath GetFileName (FilePath baseName)
 		{
 			return baseName + ".mm";
 		}

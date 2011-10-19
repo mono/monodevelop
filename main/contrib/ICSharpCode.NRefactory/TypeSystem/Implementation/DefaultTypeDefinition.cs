@@ -25,9 +25,11 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
+	[Serializable]
 	public class DefaultTypeDefinition : AbstractFreezable, ITypeDefinition
 	{
 		readonly IProjectContent projectContent;
+		readonly IParsedFile parsedFile;
 		readonly ITypeDefinition declaringTypeDefinition;
 		
 		volatile ITypeDefinition compoundTypeDefinition;
@@ -78,9 +80,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentException("name");
 			this.projectContent = declaringTypeDefinition.ProjectContent;
+			this.parsedFile = declaringTypeDefinition.ParsedFile;
 			this.declaringTypeDefinition = declaringTypeDefinition;
+			
 			this.name = name;
 			this.ns = declaringTypeDefinition.Namespace;
+			
+			this.compoundTypeDefinition = this;
+		}
+		
+		public DefaultTypeDefinition(IParsedFile parsedFile, string ns, string name)
+		{
+			if (parsedFile == null)
+				throw new ArgumentNullException("parsedFile");
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentException("name");
+			this.parsedFile = parsedFile;
+			this.projectContent = parsedFile.ProjectContent;
+			this.ns = ns ?? string.Empty;
+			this.name = name;
 			
 			this.compoundTypeDefinition = this;
 		}
@@ -190,22 +208,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IMember> Members {
 			get {
-				return this.Fields.SafeCast<IField, IMember>()
-					.Concat(this.Properties.SafeCast<IProperty, IMember>())
-					.Concat(this.Methods.SafeCast<IMethod, IMember>())
-					.Concat(this.Events.SafeCast<IEvent, IMember>());
+				IEnumerable<IMember> members = this.Fields;
+				return members
+					.Concat (this.Properties)
+					.Concat (this.Methods)
+					.Concat (this.Events);
 			}
 		}
 		
+		[NonSerialized]
+		string cachedFullName = null;
 		public string FullName {
 			get {
-				if (declaringTypeDefinition != null) {
-					return declaringTypeDefinition.FullName + "." + this.name;
-				} else if (string.IsNullOrEmpty(ns)) {
+				if (cachedFullName != null)
+					return cachedFullName;
+				if (declaringTypeDefinition != null) 
+					return cachedFullName = declaringTypeDefinition.FullName + "." + this.name;
+				if (string.IsNullOrEmpty(ns))
 					return this.name;
-				} else {
-					return this.ns + "." + this.name;
-				}
+				return cachedFullName = this.ns + "." + this.name;
 			}
 		}
 		
@@ -374,6 +395,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IProjectContent ProjectContent {
 			get { return projectContent; }
+		}
+		
+		public IParsedFile ParsedFile {
+			get { return parsedFile; }
 		}
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
@@ -582,13 +607,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			// Two ITypeDefinitions are considered to be equal if they have the same compound class.
 			ITypeDefinition typeDef = other as ITypeDefinition;
-			return typeDef != null && this.GetDefinition() == typeDef.GetDefinition();
+			return typeDef != null && this.GetDefinition().ReflectionName == typeDef.GetDefinition().ReflectionName;
 		}
 		
 		public override bool Equals(object obj)
 		{
 			ITypeDefinition typeDef = obj as ITypeDefinition;
-			return typeDef != null && this.GetDefinition() == typeDef.GetDefinition();
+			return typeDef != null && this.GetDefinition().ReflectionName == typeDef.GetDefinition().ReflectionName;
 		}
 		
 		public override int GetHashCode()

@@ -24,9 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using Mono.Addins;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Projects.Text
 {
@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects.Text
 			private set;
 		}
 		
-		public abstract string GenerateDocumentation (IMember member, string linePrefix);
+		public abstract string GenerateDocumentation (ITypeResolveContext ctx, IMember member, string linePrefix);
 		
 		static DocGenerator ()
 		{

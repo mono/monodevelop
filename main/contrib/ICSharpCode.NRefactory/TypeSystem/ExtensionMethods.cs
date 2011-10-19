@@ -21,8 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -39,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Note that this method does not return all supertypes - doing so is impossible due to contravariance
 		/// (and undesirable for covariance as the list could become very large).
 		/// 
-		/// The output is ordered so that base types occur in before derived types.
+		/// The output is ordered so that base types occur before derived types.
 		/// </remarks>
 		public static IEnumerable<IType> GetAllBaseTypes(this IType type, ITypeResolveContext context)
 		{
@@ -49,12 +47,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// Gets the non-interface base types.
+		/// Gets all non-interface base types.
 		/// </summary>
 		/// <remarks>
-		/// When <paramref name="type"/> is an interface, this method will also return base interfaces.
+		/// When <paramref name="type"/> is an interface, this method will also return base interfaces (return same output as GetAllBaseTypes()).
 		/// 
-		/// The output is ordered so that base types occur in before derived types.
+		/// The output is ordered so that base types occur before derived types.
 		/// </remarks>
 		public static IEnumerable<IType> GetNonInterfaceBaseTypes(this IType type, ITypeResolveContext context)
 		{
@@ -253,9 +251,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the type (potentially a nested type) defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
-		public static ITypeDefinition GetTypeDefinition (this IParsedFile file, int line, int column)
+		public static ITypeDefinition GetInnermostTypeDefinition (this IParsedFile file, int line, int column)
 		{
-			return file.GetTypeDefinition (new AstLocation (line, column));
+			return file.GetInnermostTypeDefinition (new TextLocation (line, column));
 		}
 		
 		/// <summary>
@@ -264,7 +262,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static IMember GetMember (this IParsedFile file, int line, int column)
 		{
-			return file.GetMember (new AstLocation (line, column));
+			return file.GetMember (new TextLocation (line, column));
 		}
 		#endregion
 		

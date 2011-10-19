@@ -32,22 +32,27 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ClassData
 	{
-		IType cls;
+		ITypeResolveContext ctx;
+		ITypeDefinition cls;
 		Project project;
 		
-		public ClassData (Project p, IType c)
+		public ClassData (ITypeResolveContext ctx, Project p, ITypeDefinition c)
 		{
 			cls = c;
 			project = p;
 		}
 		
-		public IType Class {
+		public ITypeResolveContext Ctx {
+			get { return ctx; }
+		}
+		
+		public ITypeDefinition Class {
 			get { return cls; }
 		}
 		

@@ -33,13 +33,12 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 using MonoDevelop.Projects;
-
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -106,7 +105,7 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
 			
 			settings = ClassOutlineSettings.Load ();
-			comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
+			comparer = new ClassOutlineNodeComparer (document.TypeResolveContext, GetAmbience (), settings, outlineTreeModelSort);
 
 			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
 			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
@@ -188,7 +187,7 @@ namespace MonoDevelop.DesignerSupport
 				try {
 					if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
 						dialog.SaveSettings ();
-						comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
+						comparer = new ClassOutlineNodeComparer (document.TypeResolveContext, GetAmbience (), settings, outlineTreeModelSort);
 						UpdateSorting ();
 					}
 				} finally {
@@ -221,7 +220,7 @@ namespace MonoDevelop.DesignerSupport
 				o = outlineTreeStore.GetValue (iter, 0);
 			}
 				
-			IdeApp.ProjectOperations.JumpToDeclaration (o as INode);
+			IdeApp.ProjectOperations.JumpToDeclaration (o as IEntity);
 			if (focusEditor)
 				IdeApp.Workbench.ActiveDocument.Select ();
 		}
@@ -230,8 +229,8 @@ namespace MonoDevelop.DesignerSupport
 		{
 			var pixRenderer = (CellRendererPixbuf)cell;
 			object o = model.GetValue (iter, 0);
-			if (o is IMember) {
-				pixRenderer.Pixbuf = ImageService.GetPixbuf (((IMember)o).StockIcon, IconSize.Menu);
+			if (o is IEntity) {
+				pixRenderer.Pixbuf = ImageService.GetPixbuf (((IEntity)o).GetStockIcon (), IconSize.Menu);
 			} else if (o is FoldingRegion) {
 				pixRenderer.Pixbuf = ImageService.GetPixbuf ("gtk-add", IconSize.Menu);
 			}
@@ -242,8 +241,8 @@ namespace MonoDevelop.DesignerSupport
 			CellRendererText txtRenderer = (CellRendererText)cell;
 			object o = model.GetValue (iter, 0);
 			Ambience am = GetAmbience ();
-			if (o is IMember) {
-				txtRenderer.Text = am.GetString ((IMember)o, OutputFlags.ClassBrowserEntries);
+			if (o is IEntity) {
+				txtRenderer.Text = am.GetString (Document.TypeResolveContext, (IEntity)o, OutputFlags.ClassBrowserEntries);
 			} else if (o is FoldingRegion) {
 				string name = ((FoldingRegion)o).Name.Trim ();
 				if (string.IsNullOrEmpty (name))
@@ -319,9 +318,9 @@ namespace MonoDevelop.DesignerSupport
 
 		static void BuildTreeChildren (TreeStore store, TreeIter parent, ParsedDocument parsedDocument)
 		{
-			if (parsedDocument.CompilationUnit == null)
+			if (parsedDocument == null)
 				return;
-			foreach (IType cls in parsedDocument.CompilationUnit.Types) {
+			foreach (var cls in parsedDocument.TopLevelTypeDefinitions) {
 				TreeIter childIter;
 				if (!parent.Equals (TreeIter.Zero))
 					childIter = store.AppendValues (parent, cls);
@@ -332,7 +331,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, IType cls)
+		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, ITypeDefinition cls)
 		{
 			List<object> items = new List<object> ();
 			foreach (object o in cls.Members)
@@ -343,14 +342,14 @@ namespace MonoDevelop.DesignerSupport
 			List<FoldingRegion> regions = new List<FoldingRegion> ();
 			foreach (FoldingRegion fr in parsedDocument.UserRegions)
 				//check regions inside class
-				if (cls.BodyRegion.Contains (fr.Region))
+				if (cls.BodyRegion.IsInside (fr.Region.Begin) && cls.BodyRegion.IsInside (fr.Region.End))
 					regions.Add (fr);
-			regions.Sort (delegate(FoldingRegion x, FoldingRegion y) { return x.Region.CompareTo (y.Region); });
-
+			regions.Sort (delegate(FoldingRegion x, FoldingRegion y) { return x.Region.Begin.CompareTo (y.Region.Begin); });
+			 
 			IEnumerator<FoldingRegion> regionEnumerator = regions.GetEnumerator ();
 			if (!regionEnumerator.MoveNext ())
 				regionEnumerator = null;
-
+			
 			FoldingRegion currentRegion = null;
 			TreeIter currentParent = parent;
 			foreach (object item in items) {
@@ -366,7 +365,7 @@ namespace MonoDevelop.DesignerSupport
 
 					//if member is within region, make sure it's the current parent.
 					//If not, move target iter back to class parent
-					if (regionEnumerator != null && regionEnumerator.Current.Region.Contains (itemRegion)) {
+					if (regionEnumerator != null && regionEnumerator.Current.Region.IsInside (itemRegion.Begin)) {
 						if (currentRegion != regionEnumerator.Current) {
 							currentParent = store.AppendValues (parent, regionEnumerator.Current);
 							currentRegion = regionEnumerator.Current;
@@ -375,12 +374,21 @@ namespace MonoDevelop.DesignerSupport
 						currentParent = parent;
 					}
 				}
-
-
+				
 				TreeIter childIter = store.AppendValues (currentParent, item);
-				if (item is IType)
-					AddTreeClassContents (store, childIter, parsedDocument, (IType)item);
+				if (item is ITypeDefinition)
+					AddTreeClassContents (store, childIter, parsedDocument, (ITypeDefinition)item);
+					
+			} 
+		}
+
+		static DomRegion GetRegion (object o)
+		{
+			if (o is IEntity) {
+				var m = (IEntity)o;
+				return m.Region; //m.BodyRegion.IsEmpty ? new DomRegion (m.Location, m.Location) : m.BodyRegion;
 			}
+			throw new InvalidOperationException (o.GetType ().ToString ());
 		}
 
 		static bool OuterEndsAfterInner (DomRegion outer, DomRegion inner)

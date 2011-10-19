@@ -137,6 +137,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		IProjectContent ProjectContent { get; }
 		
+		/// <summary>
+		/// Gets the parsed file in which this entity is defined.
+		/// Returns null if this entity wasn't parsed (loaded with CecilLoader).
+		/// </summary>
+		IParsedFile ParsedFile { get; }
+		
 		//bool IsAccessible(IClass callingClass, bool isAccessThoughReferenceOfCurrentClass);
 	}
 	

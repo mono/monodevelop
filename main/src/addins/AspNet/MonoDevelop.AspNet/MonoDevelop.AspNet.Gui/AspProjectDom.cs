@@ -24,10 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -35,7 +36,7 @@ namespace MonoDevelop.AspNet.Gui
 	/// This wraps a project dom and adds the compilation information from the ASP.NET page to the DOM to lookup members
 	/// on the page.
 	/// </summary>
-	class AspProjectDomWrapper : ProjectDomDecorator
+	class AspProjectDomWrapper : TypeResolveContextDecorator
 	{
 		DocumentInfo info;
 		
@@ -46,61 +47,38 @@ namespace MonoDevelop.AspNet.Gui
 			this.info = info;
 		}
 		
-		IType constructedType = null;
-		IType CheckType (IType type)
+		ITypeDefinition constructedType = null;
+		ITypeDefinition CheckType (ITypeDefinition type)
 		{
 			if (type == null)
 				return null;
-			var cu =info.ParsedDocument.CompilationUnit;
-			var firstType = cu.Types.FirstOrDefault ();
-			if (type.IsPartial && firstType != null && firstType.FullName == type.FullName) {
+			var cu = info.ParsedDocument;
+			var firstType = cu.TopLevelTypeDefinitions.FirstOrDefault ();
+			if (firstType != null && firstType.FullName == type.FullName) {
 				if (constructedType != null)
 					return constructedType;
-				constructedType = CompoundType.Merge (firstType, type);
-				constructedType = CompoundType.Merge (constructedType, info.CodeBesideClass);
-				constructedType.SourceProjectDom = this;
+				constructedType = CompoundTypeDefinition.Create (new [] { firstType, type, info.CodeBesideClass });
+//				constructedType.GetProjectContent () = this;
 				return constructedType;
 			}
 			return type;
 		}
 		
-		public override IType ResolveType (IType type)
+		public override ITypeDefinition GetTypeDefinition (string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
-			if (type == constructedType)
-				return type;
-			return CheckType (base.ResolveType (type));
+			return CheckType (base.GetTypeDefinition (nameSpace, name, typeParameterCount, nameComparer));
 		}
 		
-		public override IType GetType (IReturnType returnType)
+		public override IEnumerable<ITypeDefinition> GetTypes()
 		{
-			return CheckType (base.GetType (returnType));
-		}
-
-		public override IType GetType (string typeName, IList<IReturnType> genericArguments, 
-		                               bool deepSearchReferences, bool caseSensitive)
-		{
-			return CheckType (base.GetType (typeName, genericArguments, deepSearchReferences, caseSensitive));
-		}
-
-		public override IType GetType (string typeName, int genericArgumentsCount, 
-		                               bool deepSearchReferences, bool caseSensitive)
-		{
-			return CheckType (base.GetType (typeName, genericArgumentsCount, deepSearchReferences, caseSensitive));
+			return base.GetTypes ().Select (t => CheckType (t));
 		}
 		
-		public override IEnumerable<IType> GetInheritanceTree (IType type)
+		public override IEnumerable<ITypeDefinition> GetTypes(string nameSpace, StringComparer nameComparer)
 		{
-			foreach (IType t in BaseGetInheritanceTree (type)) {
-				yield return CheckType (t);
-			}
+			return base.GetTypes (nameSpace, nameComparer).Select (t => CheckType (t));
 		}
 		
-		//WORKAROUND for gmcs code generation bug - base not properly accessible from generators.
-		//Should be fixed in Mono 2.8 final.
-		IEnumerable<IType> BaseGetInheritanceTree (IType type)
-		{
-			return base.GetInheritanceTree (type);
-		}
 	}
 }
 

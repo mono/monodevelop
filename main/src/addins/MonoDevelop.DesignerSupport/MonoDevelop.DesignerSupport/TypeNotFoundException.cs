@@ -27,14 +27,11 @@
 //
 
 using System;
-
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.DesignerSupport
 {
-	
-	
 	public class TypeNotFoundException : ErrorInFileException
 	{
 		string className;
@@ -54,6 +51,5 @@ namespace MonoDevelop.DesignerSupport
 		{
 			return GettextCatalog.GetString ("Could not find type '{0}'.", className);
 		}
-
 	}
 }

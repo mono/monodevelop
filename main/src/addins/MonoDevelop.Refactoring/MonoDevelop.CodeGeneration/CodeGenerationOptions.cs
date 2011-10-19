@@ -25,16 +25,15 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
 	public class CodeGenerationOptions
 	{
-		public ProjectDom Dom {
+		public ITypeResolveContext Dom {
 			get;
 			set;
 		}
@@ -44,7 +43,7 @@ namespace MonoDevelop.CodeGeneration
 			set;
 		}
 		
-		public IType EnclosingType {
+		public ITypeDefinition EnclosingType {
 			get;
 			set;
 		}
@@ -59,40 +58,22 @@ namespace MonoDevelop.CodeGeneration
 				return DesktopService.GetMimeTypeForUri (Document.FileName);
 			}
 		}
-		
-		public INRefactoryASTProvider GetASTProvider ()
-		{
-			return RefactoringService.GetASTProvider (MimeType);
-		}
-		
-		public MonoDevelop.Projects.Dom.Parser.IParser GetParser ()
-		{
-			return ProjectDomService.GetParser (Document.FileName);
-		}
-		
-		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (ICSharpCode.NRefactory.CSharp.AstType typeReference)
-		{
-			return Document.CompilationUnit.ShortenTypeName (typeReference.ConvertToReturnType (), Document.Editor.Caret.Line, Document.Editor.Caret.Column).ConvertToTypeReference ();
-		}
-		
-		public IResolver GetResolver ()
-		{
-			MonoDevelop.Projects.Dom.Parser.IParser domParser = GetParser ();
-			if (domParser == null)
-				return null;
-			return domParser.CreateResolver (Dom, Document, Document.FileName);
-		}
-		
+//		
+//		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (ICSharpCode.NRefactory.CSharp.AstType typeReference)
+//		{
+//			return Document.CompilationUnit.ShortenTypeName (typeReference.ConvertToReturnType (), Document.Editor.Caret.Line, Document.Editor.Caret.Column).ConvertToTypeReference ();
+//		}
+//		
 		public static CodeGenerationOptions CreateCodeGenerationOptions (Document document)
 		{
 			var options = new CodeGenerationOptions () {
-				Dom = document.Dom,
+//				Dom = document.Dom,
 				Document = document,
 			};
-			if (document.ParsedDocument != null && document.ParsedDocument.CompilationUnit != null) {
-				options.EnclosingType = document.ParsedDocument.CompilationUnit.GetTypeAt (document.Editor.Caret.Line, document.Editor.Caret.Column);
-				options.EnclosingMember = document.ParsedDocument.CompilationUnit.GetMemberAt (document.Editor.Caret.Line, document.Editor.Caret.Column);
-			}
+//			if (document.ParsedDocument != null && document.ParsedDocument.CompilationUnit != null) {
+//				options.EnclosingType = document.ParsedDocument.GetType (document.Editor.Caret.Line, document.Editor.Caret.Column);
+//				options.EnclosingMember = document.ParsedDocument.CompilationUnit.GetMemberAt (document.Editor.Caret.Line, document.Editor.Caret.Column);
+//			}
 			return options;
 		}
 		

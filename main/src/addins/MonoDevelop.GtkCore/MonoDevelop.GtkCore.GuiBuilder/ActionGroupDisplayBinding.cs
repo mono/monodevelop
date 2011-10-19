@@ -33,11 +33,11 @@ using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -104,8 +104,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Find the classes that could be bound to this design
 			
 			ArrayList list = new ArrayList ();
-			ProjectDom ctx = gproject.GetParserContext ();
-			foreach (IType cls in ctx.Types)
+			var ctx = gproject.GetParserContext ();
+			foreach (var cls in ctx.GetTypes ())
 				if (IsValidClass (ctx, cls))
 					list.Add (cls.FullName);
 		
@@ -124,24 +124,22 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return gproject.GetSourceCodeFile (group);
 		}
 		
-		static IType CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
+		static ITypeDefinition CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (project.ParentSolution);
-			
-			CodeTypeDeclaration type = new CodeTypeDeclaration ();
+			var type = new CodeTypeDeclaration ();
 			type.Name = name;
 			type.IsClass = true;
 			type.BaseTypes.Add (new CodeTypeReference ("Gtk.ActionGroup"));
 			
 			// Generate the constructor. It contains the call that builds the widget.
 			
-			CodeConstructor ctor = new CodeConstructor ();
+			var ctor = new CodeConstructor ();
 			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
 			ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (fullName));
 			
-			CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
+			var call = new CodeMethodInvokeExpression (
 				new CodeMethodReferenceExpression (
 					new CodeTypeReferenceExpression ("Stetic.Gui"),
 					"Build"
@@ -153,7 +151,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			type.Members.Add (ctor);
 			
 			// Add signal handlers
-			
 			foreach (Stetic.ActionComponent action in group.GetActions ()) {
 				foreach (Stetic.Signal signal in action.GetSignals ()) {
 					CodeMemberMethod met = new CodeMemberMethod ();
@@ -169,31 +166,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			// Create the class
-			
-			IType cls = null;
-			cls = gen.CreateClass (project, ((DotNetProject)project).LanguageName, folder, namspace, type);
-			if (cls == null)
-				throw new UserException ("Could not create class " + fullName);
-			
-			project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
-			IdeApp.ProjectOperations.Save (project);
-			
-			// Make sure the database is up-to-date
-			ProjectDomService.Parse (project, cls.CompilationUnit.FileName);
-			return cls;
+			return CodeGenerationService.AddType ((DotNetProject)project, folder, namspace, type);
 		}
 		
-		internal static bool IsValidClass (ProjectDom ctx, IType cls)
+		internal static bool IsValidClass (ITypeResolveContext ctx, IType cls)
 		{
-			if (cls.BaseTypes != null) {
-				foreach (IReturnType bt in cls.BaseTypes) {
-					if (bt.FullName == "Gtk.ActionGroup")
-						return true;
-					
-					IType baseCls = ctx.GetType (bt);
-					if (baseCls != null && IsValidClass (ctx, baseCls))
-						return true;
-				}
+			foreach (var bt in cls.GetBaseTypes (ctx)) {
+				if (bt.ReflectionName == "Gtk.ActionGroup")
+					return true;
+				
+				var baseCls = bt;
+				if (baseCls != null && IsValidClass (ctx, baseCls))
+					return true;
 			}
 			return false;
 		}

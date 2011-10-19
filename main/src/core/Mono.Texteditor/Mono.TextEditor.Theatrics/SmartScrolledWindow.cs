@@ -105,6 +105,14 @@ namespace Mono.TextEditor.Theatrics
 				hAdjustment.Destroy ();
 				hAdjustment = null;
 			}
+			if (vScrollBar != null) {
+				vScrollBar.Destroy ();
+				vScrollBar = null;
+			}
+			if (hScrollBar != null) {
+				hScrollBar.Destroy ();
+				hScrollBar = null;
+			}
 			foreach (var c in children) {
 				c.Child.Destroy ();
 			}
@@ -162,6 +170,14 @@ namespace Mono.TextEditor.Theatrics
 					children.Remove (info);
 					return;
 				}
+			}
+			if (widget == vScrollBar) {
+				vScrollBar = null;
+				return;
+			}
+			if (widget == hScrollBar) {
+				vScrollBar = null;
+				return;
 			}
 			base.OnRemoved (widget);
 		}

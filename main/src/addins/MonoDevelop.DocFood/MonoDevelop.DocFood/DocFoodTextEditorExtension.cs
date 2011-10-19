@@ -27,9 +27,11 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
-using MonoDevelop.Projects.Dom;
 using System.Text;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.DocFood
 {
@@ -43,16 +45,16 @@ namespace MonoDevelop.DocFood
 			textEditorData = Document.Editor;
 		}
 		
-		string GenerateDocumentation (IMember member, string indent)
+		string GenerateDocumentation (ITypeResolveContext ctx, IEntity member, string indent)
 		{
-			string doc = DocumentBufferHandler.GenerateDocumentation (textEditorData, member, indent);
+			string doc = DocumentBufferHandler.GenerateDocumentation (ctx, textEditorData, member, indent);
 			int trimStart = (Math.Min (doc.Length-1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 		
-		string GenerateEmptyDocumentation (IMember member, string indent)
+		string GenerateEmptyDocumentation (ITypeResolveContext ctx, IEntity member, string indent)
 		{
-			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (textEditorData, member, indent);
+			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (ctx, textEditorData, member, indent);
 			int trimStart = (Math.Min (doc.Length-1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
@@ -68,15 +70,15 @@ namespace MonoDevelop.DocFood
 			if (!text.EndsWith ("//"))
 				return base.KeyPress (key, keyChar, modifier);
 			
-			IMember member = GetMemberToDocument ();
+			var member = GetMemberToDocument ();
 			if (member == null)
 				return base.KeyPress (key, keyChar, modifier);
-			
-			string documentation = GenerateDocumentation (member, textEditorData.Document.GetLineIndent (line));
+			var ctx = document.TypeResolveContext;
+			string documentation = GenerateDocumentation (ctx, member, textEditorData.Document.GetLineIndent (line));
 			if (string.IsNullOrEmpty (documentation))
 				return base.KeyPress (key, keyChar, modifier);
 			
-			string documentationEmpty = GenerateEmptyDocumentation (member, textEditorData.Document.GetLineIndent (line));
+			string documentationEmpty = GenerateEmptyDocumentation (ctx, member, textEditorData.Document.GetLineIndent (line));
 			
 			int offset = textEditorData.Caret.Offset;
 			
@@ -110,21 +112,21 @@ namespace MonoDevelop.DocFood
 			return true;
 		}	
 		
-		IMember GetMemberToDocument ()
+		IEntity GetMemberToDocument ()
 		{
-			var parsedDocument = ProjectDomService.Parse (Document.Project, Document.FileName, Document.Editor.Document.Text);
-			IType type = parsedDocument.CompilationUnit.GetTypeAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
+			var parsedDocument = Document.UpdateParseDocument ();
+			var type = parsedDocument.GetInnermostTypeDefinition (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (type == null) {
-				foreach (var t in parsedDocument.CompilationUnit.Types) {
-					if (t.Location.Line > textEditorData.Caret.Line)
+				foreach (var t in parsedDocument.TopLevelTypeDefinitions) {
+					if (t.Region.BeginLine > textEditorData.Caret.Line)
 						return t;
 				}
 				return null;
 			}
 			
 			IMember result = null;
-			foreach (IMember member in type.Members) {
-				if (member.Location > new DomLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Location < result.Location) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Location.Line)) {
+			foreach (var member in type.Members) {
+				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
 					result = member;
 				}
 			}

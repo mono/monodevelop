@@ -39,6 +39,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 using CBinding.Parser;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.Completion;
 
 namespace CBinding
 {

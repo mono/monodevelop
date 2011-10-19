@@ -31,6 +31,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -547,7 +548,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 			for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
 				if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
-					CompletionCategory completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
+					var completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
 					GetCategory (completionCategory).Items.Add (filteredItems.Count);
 					filteredItems.Add (newSelection);
 				}

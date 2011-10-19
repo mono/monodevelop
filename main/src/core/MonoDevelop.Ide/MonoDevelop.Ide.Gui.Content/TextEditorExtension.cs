@@ -29,13 +29,12 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -69,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 		}
 		
-		protected ProjectDom GetParserContext ()
+		protected ITypeResolveContext GetParserContext ()
 		{
 			CheckInitialized ();
 			
@@ -78,9 +77,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			Project project = view.Project;
 			
 			if (project != null)
-				return ProjectDomService.GetProjectDom (project);
-			else
-				return ProjectDomService.GetFileDom (file);
+				return TypeSystemService.GetContext (project);
+			return TypeSystemService.GetContext (file, Document.Editor.Document.MimeType, Document.Editor.Text);
 		}
 		
 		protected Ambience GetAmbience ()
@@ -88,14 +86,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			CheckInitialized ();
 			
 			IViewContent view = document.Window.ViewContent;
-			Project project = view.Project;
-			
-			if (project != null)
-				return project.Ambience;
-			else {
-				string file = view.IsUntitled ? view.UntitledName : view.ContentName;
-				return AmbienceService.GetAmbienceForFile (file);
-			}
+			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
+			return AmbienceService.GetAmbienceForFile (file);
 		}
 		
 		public virtual bool ExtendsEditor (Document doc, IEditableTextBuffer editor)

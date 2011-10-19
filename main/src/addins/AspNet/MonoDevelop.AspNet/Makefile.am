@@ -8,6 +8,7 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -57,6 +58,7 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
 	MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs \
+	MonoDevelop.AspNet.Gui/TypeResolveContextDecorator.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanel.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs \
 	MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs \

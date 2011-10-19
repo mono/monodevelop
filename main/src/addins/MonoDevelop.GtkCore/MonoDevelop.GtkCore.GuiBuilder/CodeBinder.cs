@@ -26,20 +26,22 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System.CodeDom;
-using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.FindInFiles;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -74,10 +76,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			set {
 				this.targetObject = value;
 				if (targetObject != null) {
-					IType cls = gproject.FindClass (GetClassName (targetObject));
+					var cls = gproject.FindClass (GetClassName (targetObject));
 					if (cls != null) {
 						className = cls.FullName;
-						classFile = cls.CompilationUnit.FileName;
+						classFile = cls.Region.FileName;
 					}
 				}
 			}
@@ -89,11 +91,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (targetObject == null)
 				return;
 			
-			ParsedDocument doc = ProjectDomService.Parse (project, fileName);
+			var doc = TypeSystemService.ParseFile (project, fileName);
 			classFile = fileName;
 			
-			if (doc != null && doc.CompilationUnit != null) {
-				IType cls = GetClass ();
+			if (doc != null) {
+				var cls = GetClass ();
 				UpdateBindings (targetObject, cls);
 			
 				if (cls != null)
@@ -101,7 +103,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		void UpdateBindings (Stetic.Component obj, IType cls)
+		void UpdateBindings (Stetic.Component obj, ITypeDefinition cls)
 		{
 			if (targetObject == null)
 				return;
@@ -126,9 +128,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				UpdateBindings (ob, cls);
 		}
 		
-		IMethod FindSignalHandler (IType cls, Stetic.Signal signal)
+		IMethod FindSignalHandler (ITypeDefinition cls, Stetic.Signal signal)
 		{
-			foreach (IMethod met in cls.Methods) {
+			foreach (var met in cls.Methods) {
 				if (met.Name == signal.Handler) {
 					return met;
 				}
@@ -141,23 +143,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (targetObject == null)
 				return;
 				
-			CodeRefactorer cr = GetCodeGenerator ();
-			
-			IType cls;
-			
 			if (obj == targetObject)
 				return;	// The root widget name can only be changed internally.
-			else
-				cls = GetClass (false);
+			
+			ITypeDefinition cls = GetClass (false);
 			
 			string newName = GetObjectName (obj);
 			if (newName.Length == 0)
 				return;
 			
 			if (cls != null) {
-				IField f = ClassUtils.FindWidgetField (cls, oldName);
+				var f = ClassUtils.FindWidgetField (cls.GetProjectContent (), cls, oldName);
 				if (f != null) {
-					cr.RenameMember (new NullProgressMonitor (), cls, f, newName, RefactoryScope.File);
+					MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (TypeSystemService.GetContext (project), f, newName);
 				}
 			}
 		}
@@ -168,22 +166,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (targetObject == null)
 				return;
 
-			IType cls = GetClass ();
+			var cls = GetClass ();
 			if (cls == null)
 				return;
 			
 			if (FindSignalHandler (cls, signal) != null)
 				return;
-
-			var met = new DomMethod () {
-				Name = signal.Handler,
-				Modifiers = Modifiers.Protected,
-				ReturnType = new DomReturnType (signal.SignalDescriptor.HandlerReturnTypeName)
+			
+			var met = new DefaultMethod (cls, signal.Handler) {
+				Accessibility = Accessibility.Protected,
+				ReturnType = new GetClassTypeReference (signal.SignalDescriptor.HandlerReturnTypeName)
 			};
 			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-				met.Add (new DomParameter () { Name = pinfo.Name, ReturnType = new DomReturnType (pinfo.TypeName) });
-			
-			CodeGenerationService.AddNewMember (cls, met);
+				met.Parameters.Add (new DefaultParameter (new GetClassTypeReference (pinfo.TypeName), pinfo.Name));
+			CodeGenerationService.AddNewMember (TypeSystemService.GetContext (project), cls, met);
 		}
 		
 		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
@@ -194,13 +190,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (oldSignal.Handler == newSignal.Handler)
 				return;
 
-			IType cls = GetClass ();
-			if (cls == null) return;
+			var cls = GetClass ();
+			if (cls == null)
+				return;
 
 			IMethod met = FindSignalHandler (cls, oldSignal);
-			if (met == null) return;
-			CodeRefactorer gen = GetCodeGenerator ();
-			gen.RenameMember (new NullProgressMonitor (), cls, met, newSignal.Handler, RefactoryScope.File);
+			if (met == null)
+				return;
+			MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (TypeSystemService.GetContext (project), met, newSignal.Handler);
 		}
 
 		/// Adds a field to the class
@@ -210,29 +207,28 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 
 			string name = GetMemberName (obj);
-			IType cls = GetClass ();
+			var cls = GetClass ();
 			
 			if (FindField (cls, name) != null)
 				return;
 
-			Document doc = IdeApp.Workbench.OpenDocument (cls.CompilationUnit.FileName, true);
+			Document doc = IdeApp.Workbench.OpenDocument (cls.Region.FileName, true);
 			
 			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
 			if (editor != null) {
-				CodeGenerationService.AddNewMember (cls, GetFieldCode (obj, name));
+				CodeGenerationService.AddNewMember (TypeSystemService.GetContext (project), cls, GetFieldCode (cls, obj, name));
 			}
 		}
 		
-		IField GetFieldCode (Stetic.Component obj, string name)
+		DefaultField GetFieldCode (ITypeDefinition cls, Stetic.Component obj, string name)
 		{
-			return new DomField () {
-				Name = name,
-				ReturnType = new DomReturnType (obj.Type.ClassName),
-				Modifiers = Modifiers.Protected
-			};
-		}
+			return new DefaultField (cls, name) {
+				ReturnType = new GetClassTypeReference (obj.Type.ClassName),
+				Accessibility = Accessibility.Protected
+		};
+	}
 		
-		IField FindField (IType cls, string name)
+		IField FindField (ITypeDefinition cls, string name)
 		{
 			foreach (IField field in cls.Fields)
 				if (field.Name == name)
@@ -240,36 +236,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		CodeRefactorer GetCodeGenerator ()
-		{
-			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution);
-			cr.TextFileProvider = textFileProvider;
-			return cr;
-		}
-		
-		public IType GetClass ()
+		public ITypeDefinition GetClass ()
 		{
 			return GetClass (true);
 		}
 		
-		public IType GetClass (bool getUserClass)
+		public ITypeDefinition GetClass (bool getUserClass)
 		{
 			if (targetObject == null)
 				return null;
 
-			IType cls = gproject.FindClass (className, getUserClass);
+			var cls = gproject.FindClass (className, getUserClass);
 			if (cls != null)
 				return cls;
 				
 			// The class name may have changed. Try to guess the new name.
 			
-			ArrayList matches = new ArrayList ();
-			ICompilationUnit unit = null;
-			ProjectDom ctx = gproject.GetParserContext ();
-			ParsedDocument doc = ProjectDomService.Parse (project, classFile);
-			if (doc != null && doc.CompilationUnit != null) {
-				unit = doc.CompilationUnit;
-				foreach (IType fcls in unit.Types) {
+			var matches = new List<ITypeDefinition> ();
+			ParsedDocument unit = null;
+			var ctx = gproject.GetParserContext ();
+			var doc = TypeSystemService.ParseFile (project, classFile);
+			if (doc != null) {
+				unit = doc;
+				foreach (var fcls in unit.TopLevelTypeDefinitions) {
 					if (IsValidClass (ctx, fcls, targetObject))
 						matches.Add (fcls);
 				}
@@ -277,7 +266,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// If found the class, just return it
 			if (matches.Count == 1) {
-				cls = (IType) matches [0];
+				cls = matches [0];
 				className = cls.FullName;
 				targetObject.Name = className;
 				gproject.Save (true);
@@ -286,8 +275,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// If not found, warn the user.
 			
-			if (unit != null && unit.Types.Count > 0) {
-				using (SelectRenamedClassDialog dialog = new SelectRenamedClassDialog (unit.Types)) {
+			if (unit != null && unit.TopLevelTypeDefinitions.Count > 0) {
+				using (SelectRenamedClassDialog dialog = new SelectRenamedClassDialog (unit.TopLevelTypeDefinitions)) {
 					if (dialog.Run ()) {
 						className = dialog.SelectedClass;
 						if (className == null)
@@ -306,20 +295,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		static bool IsValidClass (ProjectDom ctx, IType cls, Stetic.Component obj)
+		static bool IsValidClass (ITypeResolveContext ctx, IType cls, Stetic.Component obj)
 		{
-			if (cls.BaseTypes != null) {
-				string typeName = obj.Type.ClassName;
+			string typeName = obj.Type.ClassName;
+			
+			foreach (var bt in cls.GetBaseTypes (ctx)) {
+				if (bt.FullName == typeName)
+					return true;
 				
-				foreach (IReturnType bt in cls.BaseTypes) {
-					System.Console.WriteLine("tn:" + typeName + " bt:" + bt.FullName);
-					if (bt.FullName == typeName)
-						return true;
-					
-					IType baseCls = ctx.GetType (bt);
-					if (baseCls != null && IsValidClass (ctx, baseCls, obj))
-						return true;
-				}
+				var baseCls = bt.Resolve (ctx);
+				if (baseCls != null && IsValidClass (ctx, baseCls, obj))
+					return true;
 			}
 			return false;
 		}

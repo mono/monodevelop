@@ -77,7 +77,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public TextOutputLocation Location {
 			get {
-				return new TextOutputLocation () { Line = currentLine, Column = 1};
+				return new TextOutputLocation () { Line = currentLine, Column = 1 };
 			}
 		}
 		

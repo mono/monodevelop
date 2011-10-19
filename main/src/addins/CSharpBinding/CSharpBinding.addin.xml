@@ -77,22 +77,14 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpTextEditorCompletion" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
 		<SerializationMap resource="md1format.xml" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-<!--		<Parser class = "MonoDevelop.CSharp.Parser.NRefactoryParser" fileExtensions=".cs" /> -->
-		<Parser class = "MonoDevelop.CSharp.Parser.McsParser" fileExtensions=".cs" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class id = "C#" class = "MonoDevelop.CSharp.CSharpAmbience" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -110,6 +102,18 @@
 		<Formatter mimeType="text/x-csharp" class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/TypeSystem/Ambiences">
+		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class="MonoDevelop.CSharp.Parser.TypeSystemParser" mimeType = "text/x-csharp" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/TypeSystem/CodeGenerators">
+		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
 		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode"/>
 	</Extension>
@@ -121,11 +125,7 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
 	</Extension>
-
-	<Extension path = "/MonoDevelop/Refactoring/ASTProvider">
-		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
-	</Extension>
-	<!--
+	
 	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
 		<Action mimeType="text/x-csharp"
 			_title = "Create event invocator"
@@ -256,7 +256,7 @@
 			severity = "Suggestion"
 			class = "MonoDevelop.CSharp.Inspection.UseVarKeywordInspector" />
 	</Extension>
-	-->
+	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
 	</Extension>
@@ -285,11 +285,7 @@
 		         macShortcut = "Alt|Shift|Down"
 		         _label = "_Expand selection"/>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/CodeGenerators">
-		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
-	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="CreateMethod" class = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 		<Class id="ExtractMethod" class = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
@@ -309,12 +305,12 @@
 				_label = "_Declare Local" 
 				shortcut = "Control+dead_circumflex"/> 
 	</Extension>
-<!--
+
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Rule _name="C# Code Analysis" input="Document" 
 			func="MonoDevelop.CSharp.Inspection.CodeAnalysis.Check" />
-	</Extension>-->
-	
+	</Extension>
+
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>

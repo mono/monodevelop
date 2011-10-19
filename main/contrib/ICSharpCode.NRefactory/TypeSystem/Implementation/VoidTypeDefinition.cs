@@ -24,6 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Special type definition for 'void'.
 	/// </summary>
+	[Serializable]
 	public class VoidTypeDefinition : DefaultTypeDefinition
 	{
 		public VoidTypeDefinition(IProjectContent projectContent)

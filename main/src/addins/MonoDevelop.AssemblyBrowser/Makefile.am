@@ -19,7 +19,6 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/Error.cs \
 	MonoDevelop.AssemblyBrowser/ErrorNodeBuilder.cs \
@@ -44,6 +43,7 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/bin/ICSharpCode.Decompiler.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \

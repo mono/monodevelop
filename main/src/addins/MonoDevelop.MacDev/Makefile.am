@@ -6,6 +6,7 @@ DEPS =  \
 	../../../build/AddIns/MacPlatform.dll \
 	../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
+	../../../build/bin/ICSharpCode.NRefactory.dll \
 	../../../build/bin/Mono.TextEditor.dll \
 	../../../build/bin/MonoDevelop.Core.dll \
 	../../../build/bin/MonoDevelop.Ide.dll

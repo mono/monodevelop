@@ -33,10 +33,7 @@ using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.CodeTemplates;
@@ -45,6 +42,9 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.SourceEditor.Extension;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -186,10 +186,17 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{
+			ITooltipProvider provider;
+			try {
+				provider = (ITooltipProvider) a.ExtensionObject;
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't create tooltip provider:"+ a.ExtensionNode, e);
+				return;
+			}
 			if (a.Change == ExtensionChange.Add) {
-				TooltipProviders.Add ((ITooltipProvider) a.ExtensionObject);
+				TooltipProviders.Add (provider);
 			} else {
-				TooltipProviders.Remove ((ITooltipProvider) a.ExtensionObject);
+				TooltipProviders.Remove (provider);
 			}
 		}
 
@@ -468,28 +475,49 @@ namespace MonoDevelop.SourceEditor
 			return null;
 		}
 		
-		public ProjectDom ProjectDom {
+		public ITypeResolveContext ITypeResolveContext {
 			get {
-				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
+				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) 
-					return doc.Dom;
+					return doc.TypeResolveContext;
+				return null;
+			}
+		}
+		
+		internal ParsedDocument ParsedDocument {
+			get {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null) 
+					return doc.ParsedDocument;
+				return null;
+			}
+		}
+		
+		public MonoDevelop.Projects.Project Project {
+			get {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null) 
+					return doc.Project;
 				return null;
 			}
 		}
 		
 		int           oldOffset = -1;
 		ResolveResult resolveResult = null;
-		public ResolveResult GetLanguageItem (int offset)
+		public ResolveResult GetLanguageItem (int offset, out DomRegion region)
 		{
-			
 			// we'll cache old results.
-			if (offset == oldOffset)
+			if (offset == oldOffset) {
+				region = DomRegion.Empty;
 				return this.resolveResult;
+			}
+			
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ProjectDom, GetTextEditorData (), offset);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ITypeResolveContext, GetTextEditorData (), offset, out region);
 			} else {
+				region = DomRegion.Empty;
 				this.resolveResult = null;
 			}
 			
@@ -499,15 +527,8 @@ namespace MonoDevelop.SourceEditor
 		public CodeTemplateContext GetTemplateContext ()
 		{
 			if (IsSomethingSelected) {
-				string fileName = view.ContentName ?? view.UntitledName;
-				IParser parser = ProjectDomService.GetParser (fileName);
-				if (parser == null)
-					return CodeTemplateContext.Standard;
-
-				IExpressionFinder expressionFinder = parser.CreateExpressionFinder (ProjectDom);
-				if (expressionFinder == null) 
-					return CodeTemplateContext.Standard;
-				if (expressionFinder.IsExpression (Document.GetTextAt (SelectionRange)))
+				var result = GetLanguageItem (Caret.Offset, Document.GetTextAt (SelectionRange));
+				if (result != null && !result.IsError)
 					return CodeTemplateContext.InExpression;
 			}
 			return CodeTemplateContext.Standard;
@@ -525,7 +546,7 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ProjectDom, GetTextEditorData (), offset, expression);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ITypeResolveContext, GetTextEditorData (), offset, expression);
 			} else {
 				this.resolveResult = null;
 			}
@@ -535,17 +556,9 @@ namespace MonoDevelop.SourceEditor
 
 		public string GetExpression (int offset)
 		{
-			string fileName = View.ContentName;
-			if (fileName == null)
-				fileName = View.UntitledName;
-			
-			IExpressionFinder expressionFinder = ProjectDomService.GetExpressionFinder (fileName);
-			string expression = expressionFinder == null ? GetExpressionBeforeOffset (offset) : expressionFinder.FindFullExpression (GetTextEditorData () , offset).Expression;
-			
-			if (expression == null)
-				return string.Empty;
-			else
-				return expression.Trim ();
+			if (textEditorResolverProvider != null) 
+				return textEditorResolverProvider.GetExpression (this.ITypeResolveContext, GetTextEditorData (), offset);
+			return string.Empty;
 		}
 		
 		string GetExpressionBeforeOffset (int offset)
@@ -570,7 +583,7 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
 			CompletionWindowManager.HideWindow ();
-			ParameterInformationWindowManager.HideWindow (view);
+			ParameterInformationWindowManager.HideWindow (null, view);
 			return base.OnFocusOutEvent (evnt); 
 		}
 		
@@ -650,9 +663,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
-				if (prettyPrinter != null && ProjectDom != null && text != null) {
+				if (prettyPrinter != null && Project != null && text != null) {
 					try {
-						var policies = ProjectDom != null && ProjectDom.Project != null ? ProjectDom.Project.Policies : null;
+						var policies = Project.Policies;
 						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + text.Length);
 						if (!string.IsNullOrEmpty (newText)) {
 							Replace (insertionOffset, text.Length, newText);
@@ -730,7 +743,7 @@ namespace MonoDevelop.SourceEditor
 			base.HAdjustmentValueChanged ();
 			if (!isInKeyStroke) {
 				CompletionWindowManager.HideWindow ();
-				ParameterInformationWindowManager.HideWindow (view);
+				ParameterInformationWindowManager.HideWindow (null, view);
 			}
 		}
 		
@@ -738,7 +751,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			base.VAdjustmentValueChanged ();
 			CompletionWindowManager.HideWindow ();
-			ParameterInformationWindowManager.HideWindow (view);
+			ParameterInformationWindowManager.HideWindow (null, view);
 		}
 		
 		
@@ -995,13 +1008,12 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CompleteStatement)]
 		internal void OnCompleteStatement ()
 		{
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			DomLocation caretLocation = refactorer.CompleteStatement (ProjectDom, Document.FileName, new DomLocation (Caret.Line, Caret.Column));
-			Caret.Line   = caretLocation.Line;
-			Caret.Column = caretLocation.Column;
+			var generator = CodeGenerator.CreateGenerator (GetTextEditorData ());
+			if (generator != null) {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				generator.CompleteStatement (doc);
+			}
 		}
-		
-		
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord)]
 		internal void OnDeletePrevWord ()

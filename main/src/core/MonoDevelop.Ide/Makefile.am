@@ -1,5 +1,8 @@
 
 DEPS =  \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
+	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
@@ -280,16 +283,13 @@ FILES =  \
 	MonoDevelop.Components/WindowTransparencyDecorator.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContext.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContextEventArgs.cs \
-	MonoDevelop.Ide.CodeCompletion/CompletionCategory.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionData.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionDataList.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionMatcher.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionWindowManager.cs \
 	MonoDevelop.Ide.CodeCompletion/DeclarationViewWindow.cs \
-	MonoDevelop.Ide.CodeCompletion/DisplayFlags.cs \
 	MonoDevelop.Ide.CodeCompletion/ICompletionWidget.cs \
-	MonoDevelop.Ide.CodeCompletion/IParameterDataProvider.cs \
 	MonoDevelop.Ide.CodeCompletion/ListWidget.cs \
 	MonoDevelop.Ide.CodeCompletion/ListWindow.cs \
 	MonoDevelop.Ide.CodeCompletion/MemberCompletionData.cs \
@@ -384,6 +384,7 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs \
 	MonoDevelop.Ide.FindInFiles/FindReplace.cs \
 	MonoDevelop.Ide.FindInFiles/ISearchProgressMonitor.cs \
+	MonoDevelop.Ide.FindInFiles/MemberReference.cs \
 	MonoDevelop.Ide.FindInFiles/ReferencesFinder.cs \
 	MonoDevelop.Ide.FindInFiles/Scope.cs \
 	MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs \
@@ -643,6 +644,8 @@ FILES =  \
 	MonoDevelop.Ide.Projects/TemplatePickerWidget.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
+	MonoDevelop.Ide.Tasks/CommentTag.cs \
+	MonoDevelop.Ide.Tasks/CommentTasksChangedEventHandler.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
 	MonoDevelop.Ide.Tasks/ITaskListView.cs \
 	MonoDevelop.Ide.Tasks/Task.cs \
@@ -670,6 +673,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SolutionDescriptor.cs \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
+	MonoDevelop.Ide.Templates/XmlCodeDomReader.cs \
 	MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs \
 	MonoDevelop.Ide.Updater/IUpdateHandler.cs \
 	MonoDevelop.Ide.Updater/UpdateCheckHandler.cs \
@@ -692,7 +696,6 @@ FILES =  \
 	MonoDevelop.Ide.WelcomePage/WelcomePageView.cs \
 	MonoDevelop.Ide.WelcomePage/WelcomePageWidget.cs \
 	MonoDevelop.Ide/AddEntryEventHandler.cs \
-	MonoDevelop.Ide/CodeGenerationService.cs \
 	MonoDevelop.Ide/DesktopService.cs \
 	MonoDevelop.Ide/DispatchService.cs \
 	MonoDevelop.Ide/ExitEventHandler.cs \
@@ -707,7 +710,26 @@ FILES =  \
 	MonoDevelop.Ide/ProjectOperations.cs \
 	MonoDevelop.Ide/RootWorkspace.cs \
 	MonoDevelop.Ide/Services.cs \
-	MonoDevelop.Ide/WebBrowserService.cs
+	MonoDevelop.Ide/WebBrowserService.cs \
+	MonoDevelop.TypeSystem/Ambience.cs \
+	MonoDevelop.TypeSystem/AmbienceService.cs \
+	MonoDevelop.TypeSystem/CodeGenerationService.cs \
+	MonoDevelop.TypeSystem/CodeGenerator.cs \
+	MonoDevelop.TypeSystem/Comment.cs \
+	MonoDevelop.TypeSystem/ConditionalRegion.cs \
+	MonoDevelop.TypeSystem/FoldingRegion.cs \
+	MonoDevelop.TypeSystem/ITypeSystemParser.cs \
+	MonoDevelop.TypeSystem/MarkupUtilities.cs \
+	MonoDevelop.TypeSystem/NetAmbience.cs \
+	MonoDevelop.TypeSystem/OutputFlags.cs \
+	MonoDevelop.TypeSystem/OutputSettings.cs \
+	MonoDevelop.TypeSystem/ParsedDocument.cs \
+	MonoDevelop.TypeSystem/PreProcessorDefine.cs \
+	MonoDevelop.TypeSystem/ProjectContentEventArgs.cs \
+	MonoDevelop.TypeSystem/StockIcons.cs \
+	MonoDevelop.TypeSystem/Tag.cs \
+	MonoDevelop.TypeSystem/TypeSystemParserNode.cs \
+	MonoDevelop.TypeSystem/TypeSystemService.cs
 
 RES =  \
 	branding/AboutImage.png \

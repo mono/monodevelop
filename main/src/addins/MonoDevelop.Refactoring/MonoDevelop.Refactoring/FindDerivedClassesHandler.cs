@@ -28,33 +28,69 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using System.Collections.Generic;
+using System.Threading;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.FindInFiles;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using System.Linq;
+using Mono.TextEditor;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Refactoring
 {
 	public class FindDerivedClassesHandler : CommandHandler
 	{
+		public static void FindDerivedClasses (ITypeDefinition cls)
+		{
+			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution == null)
+				return;
+			var sourceCtx     = cls.GetProjectContent ();
+			var sourceProject = sourceCtx.Annotation<Project> ();
+			var projects = ReferenceFinder.GetAllReferencingProjects (solution, sourceProject);
+			ThreadPool.QueueUserWorkItem (delegate {
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+					var cache = new Dictionary<string, TextEditorData> ();
+					foreach (var p in projects) {
+						if (p.Item2 == null) // may happen for cecil contexts
+							continue;
+						ITypeResolveContext combinedContent = sourceProject != p.Item2 ?  (ITypeResolveContext)new CompositeTypeResolveContext (new ITypeResolveContext[] { sourceCtx, p.Item2 }) : sourceCtx;
+						foreach (var type in p.Item2.GetAllTypes ()) {
+							if (!type.IsDerivedFrom (cls, combinedContent)) 
+								continue;
+							TextEditorData textFile;
+							if (!cache.TryGetValue (type.Region.FileName, out textFile)) {
+								cache[type.Region.FileName] = textFile = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName);
+							}
+							int position = textFile.LocationToOffset (type.Region.BeginLine, type.Region.BeginColumn);
+							monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (type.Region.FileName, p.Item1), position, 0));
+						}
+					}
+					foreach (var tf in cache.Values) {
+						if (tf.Parent == null)
+							tf.Dispose ();
+					}
+				}
+			});
+		}
+		
 		protected override void Run (object data)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
-			if (editor == null)
-				return;
-			int line, column;
-			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ProjectDom ctx = doc.Dom;
-			
+			var ctx = doc.TypeResolveContext;
 			ResolveResult resolveResult;
-			INode item;
-			CurrentRefactoryOperationsHandler.GetItem (ctx, doc, editor, out resolveResult, out item);
+			var item = CurrentRefactoryOperationsHandler.GetItem (ctx, doc, out resolveResult);
 			
-			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
+/*			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			string itemName = null;
 			if (item is IMember)
 				itemName = ((IMember)item).FullName;
@@ -62,9 +98,9 @@ namespace MonoDevelop.Refactoring
 				item = eitem;
 				eitem = null;
 			}
-			IType eclass = null;
-			if (item is IType) {
-				if (((IType)item).ClassType == ClassType.Interface)
+			ITypeDefinition eclass = null;
+			if (item is ITypeDefinition) {
+				if (((ITypeDefinition)item).Kind == TypeKind.Interface)
 					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
 					eclass = (IType)item;
 				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
@@ -72,8 +108,28 @@ namespace MonoDevelop.Refactoring
 					eitem = null;
 				}
 			}
-			Refactorer refactorer = new Refactorer (ctx, doc.CompilationUnit, eclass, item, null);
-			refactorer.FindDerivedClasses ();
+			*/
+//			
+//			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
+//			string itemName = null;
+//			if (item is IMember)
+//				itemName = ((IMember)item).Name;
+//			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+//				item = eitem;
+//				eitem = null;
+//			}
+//			IType eclass = null;
+//			if (item is IType) {
+//				if (((IType)item).ClassType == ClassType.Interface)
+//					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
+//					eclass = (IType)item;
+//				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
+//					item = eitem;
+//					eitem = null;
+//				}
+//			}
+//			Refactorer refactorer = new Refactorer (ctx, doc.CompilationUnit, eclass, item, null);
+//			refactorer.FindDerivedClasses ();
 		}
 	}
 }

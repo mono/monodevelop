@@ -31,7 +31,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			IntegrateTemporaryVariableRefactoring integrateTemporaryVariableRefactoring = new IntegrateTemporaryVariableRefactoring ();
+			var integrateTemporaryVariableRefactoring = new IntegrateTemporaryVariableRefactoring ();
 			if (integrateTemporaryVariableRefactoring.IsValid (options))
 				integrateTemporaryVariableRefactoring.Run (options);
 		}

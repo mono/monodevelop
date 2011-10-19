@@ -30,9 +30,9 @@ using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
 
 
 namespace MonoDevelop.Refactoring
@@ -48,7 +48,7 @@ namespace MonoDevelop.Refactoring
 
 		List<Change> changes;
 
-		public RefactoringPreviewDialog (ProjectDom ctx, List<Change> changes)
+		public RefactoringPreviewDialog (ITypeResolveContext ctx, List<Change> changes)
 		{
 			this.Build ();
 			this.changes = changes;

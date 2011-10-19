@@ -70,10 +70,5 @@ namespace ICSharpCode.NRefactory.PatternMatching
 			else
 				return this.MaxCount >= 1 && childNode.DoMatch(other, match);
 		}
-		
-		public override S AcceptVisitor<T, S>(IPatternAstVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitRepeat(this, data);
-		}
 	}
 }

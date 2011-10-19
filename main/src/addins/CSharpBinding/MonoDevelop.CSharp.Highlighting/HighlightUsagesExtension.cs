@@ -26,21 +26,24 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.CSharp.Refactoring;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom.Parser;
 using Gdk;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Projects.Text;
 using System.Linq;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.SourceEditor;
+using ICSharpCode.NRefactory.Semantics;
+
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	public class HighlightUsagesExtension : TextEditorExtension
+	public class HighlightUsagesExtension : TextEditorExtension, IQuickTaskProvider
 	{
-		ProjectDom dom;
+		ITypeResolveContext dom;
 		
 		TextEditorData textEditorData;
 		ITextEditorResolver textEditorResolver;
@@ -49,7 +52,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			base.Initialize ();
 			
-			dom = Document.Dom;
+			dom = Document.TypeResolveContext;
 			
 			textEditorResolver = base.Document.GetContent<ITextEditorResolver> ();
 			textEditorData = base.Document.Editor;
@@ -113,43 +116,16 @@ namespace MonoDevelop.CSharp.Highlighting
 		bool DelayedTooltipShow ()
 		{
 			try {
-				int caretOffset = textEditorData.Caret.Offset;
-				int start = Math.Min (caretOffset, textEditorData.Document.Length - 1);
-				while (start > 0) {
-					char ch = textEditorData.Document.GetCharAt (start);
-					if (!char.IsLetterOrDigit (ch) && ch != '_' && ch != '.') {
-						start++;
-						break;
+				ResolveResult resolveResult = textEditorResolver.GetLanguageItem (textEditorData.Caret.Offset);
+				if (resolveResult == null || resolveResult.IsError) {
+					if (quickTasks.Count > 0) {
+						quickTasks.Clear ();
+						OnTasksUpdated (EventArgs.Empty);
 					}
-					start--;
-				}
-				
-				int end = Math.Max (caretOffset, 0);
-				while (end < textEditorData.Document.Length) {
-					char ch = textEditorData.Document.GetCharAt (end);
-					if (!char.IsLetterOrDigit (ch) && ch != '_')
-						break;
-					end++;
-				}
-				
-				if (start < 0 || start >= end) 
 					return false;
-				
-				string expression = textEditorData.Document.GetTextBetween (start, end);
-				ResolveResult resolveResult = textEditorResolver.GetLanguageItem (caretOffset, expression);
-				if (resolveResult == null)
-					return false;
-				if (resolveResult is AggregatedResolveResult) {
-					foreach (var curResult in ((AggregatedResolveResult)resolveResult).ResolveResults) {
-						var references = GetReferences (curResult);
-						if (references.Any (r => r.Position <= caretOffset && caretOffset <= r.Position  + r.Name.Length )) {
-							ShowReferences (references);
-							break;
-						}
-					}
-				} else {
-					ShowReferences (GetReferences (resolveResult));
 				}
+				
+				ShowReferences (GetReferences (resolveResult));
 			} catch (Exception e) {
 				LoggingService.LogError ("Unhandled Exception in HighlightingUsagesExtension", e);
 			} finally {
@@ -158,62 +134,74 @@ namespace MonoDevelop.CSharp.Highlighting
 			return false;
 		}
 		
-		void ShowReferences (List<MonoDevelop.Projects.CodeGeneration.MemberReference> references)
+		void ShowReferences (IEnumerable<MemberReference> references)
 		{
 			RemoveMarkers (false);
-			HashSet<int> lineNumbers = new HashSet<int> ();
+			var lineNumbers = new HashSet<int> ();
+			quickTasks.Clear ();
 			if (references != null) {
 				bool alphaBlend = false;
 				foreach (var r in references) {
-					UsageMarker marker = GetMarker (r.Line);
-					int offset = textEditorData.Document.LocationToOffset (r.Line, r.Column);
-					if (!alphaBlend && textEditorData.Parent.TextViewMargin.SearchResults.Any (sr => sr.Contains (offset) || sr.Contains (offset + r.Name.Length) ||
-					                                                        offset < sr.Offset && sr.EndOffset < offset + r.Name.Length)) {
+					var marker = GetMarker (r.Region.BeginLine);
+					
+					quickTasks.Add (new QuickTask (null, r.Region.Begin, QuickTaskSeverity.Usage));
+					
+					int offset = r.Offset;
+					int endOffset = offset + r.Length;
+					if (!alphaBlend && textEditorData.Parent.TextViewMargin.SearchResults.Any (sr => sr.Contains (offset) || sr.Contains (endOffset) ||
+					                                                        offset < sr.Offset && sr.EndOffset < endOffset)) {
 						textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
 					}
-					marker.Usages.Add (new Mono.TextEditor.Segment (offset, r.Name.Length));
-					lineNumbers.Add (r.Line);
+					marker.Usages.Add (new Mono.TextEditor.Segment (offset, endOffset - offset));
+					lineNumbers.Add (r.Region.BeginLine);
 				}
 			}
 			foreach (int line in lineNumbers)
 				textEditorData.Document.CommitLineUpdate (line);
+			OnTasksUpdated (EventArgs.Empty);
 		}
 		
-		List<MonoDevelop.Projects.CodeGeneration.MemberReference> GetReferences (ResolveResult resolveResult)
-		{
-			INode member = null;
-			
-			if (resolveResult is MemberResolveResult) {
-				member = ((MemberResolveResult)resolveResult).ResolvedMember;
-				if (member == null)
-					member = dom.GetType (resolveResult.ResolvedType);
+		List<QuickTask> quickTasks = new List<QuickTask> ();
+		public IEnumerable<QuickTask> QuickTasks {
+			get {
+				return quickTasks;
 			}
-			if (resolveResult is ParameterResolveResult)
-				member = ((ParameterResolveResult)resolveResult).Parameter;
-			if (resolveResult is LocalVariableResolveResult)
-				member = ((LocalVariableResolveResult)resolveResult).LocalVariable;
-			if (member != null) {
-				try {
-					ICompilationUnit compUnit = Document.CompilationUnit;
-					if (compUnit == null)
-						return null;
-					NRefactoryResolver resolver = new NRefactoryResolver (dom, compUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, Document.Editor, Document.FileName);
-					if (member is LocalVariable)
-						resolver.CallingMember = ((LocalVariable)member).DeclaringMember;
-					FindMemberAstVisitor visitor = new FindMemberAstVisitor (textEditorData.Document, member);
-					visitor.IncludeXmlDocumentation = true;
-/*					ICSharpCode.OldNRefactory.Ast.CompilationUnit unit = compUnit.Tag as ICSharpCode.OldNRefactory.Ast.CompilationUnit;
-					if (unit == null)
-						return null;*/
-					visitor.RunVisitor (resolver);
-					return visitor.FoundReferences;
-				} catch (Exception e) {
-					LoggingService.LogError ("Error in highlight usages extension.", e);
-				}
+		}
+		
+		public event EventHandler TasksUpdated;
+		
+		protected virtual void OnTasksUpdated (EventArgs e)
+		{
+			EventHandler handler = this.TasksUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		List<MemberReference> GetReferences (ResolveResult resolveResult)
+		{
+			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
+			if (resolveResult is MemberResolveResult) {
+				finder.SetSearchedMembers (new [] { ((MemberResolveResult)resolveResult).Member });
+			} else if (resolveResult is TypeResolveResult) {
+				finder.SetSearchedMembers (new [] { resolveResult.Type });
+			} else if (resolveResult is MethodGroupResolveResult) { 
+				finder.SetSearchedMembers (((MethodGroupResolveResult)resolveResult).Methods);
+			} else if (resolveResult is NamespaceResolveResult) { 
+				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)resolveResult).NamespaceName });
+			} else if (resolveResult is LocalResolveResult) { 
+				finder.SetSearchedMembers (new [] { ((LocalResolveResult)resolveResult).Variable });
+			} else {
+				return null;
+			}
+			
+			try {
+				return new List<MemberReference> (finder.FindInDocument (Document));
+			} catch (Exception e) {
+				LoggingService.LogError ("Error in highlight usages extension.", e);
 			}
 			return null;
 		}
-		
+
 		Dictionary<int, UsageMarker> markers = new Dictionary<int, UsageMarker> ();
 		
 		public Dictionary<int, UsageMarker> Markers {

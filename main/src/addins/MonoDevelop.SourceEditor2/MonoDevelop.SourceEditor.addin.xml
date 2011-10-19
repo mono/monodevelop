@@ -33,7 +33,12 @@
 		<Description>Context menu for the navigation bar.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
-
+	
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar" name = "Scroll bar context menu">
+		<Description>Context menu for the navigation bar.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor" name = "Editor context menu">
 		<Description>Context menu for the editor's icon margin.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
@@ -125,6 +130,23 @@
 				_label = ""
 				type="array"/>
 				
+		<Command id = "MonoDevelop.SourceEditor.ScrollbarCommand.Top"
+				_label = "_Top"/>
+		<Command id = "MonoDevelop.SourceEditor.ScrollbarCommand.Bottom"
+				_label = "_Bottom"/>
+		<Command id = "MonoDevelop.SourceEditor.ScrollbarCommand.PgUp"
+				_label = "_Page Up"/>
+		<Command id = "MonoDevelop.SourceEditor.ScrollbarCommand.PgDown"
+				_label = "P_age Down"/>
+		<Command id = "MonoDevelop.SourceEditor.ScrollbarCommand.ShowScrollBar"
+				_label = "Show _Scroll Bar Mode"
+				type="radio"/>
+		<Command id = "MonoDevelop.SourceEditor.ScrollbarCommand.ShowMap"
+				_label = "Show _Map Mode"
+				type="radio"/>
+		<Command id = "MonoDevelop.SourceEditor.ScrollbarCommand.ShowFull"
+				_label = "Show _Full Mode"
+				type="radio"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
@@ -148,6 +170,18 @@
 		<SeparatorItem id = "Separator3" />
 		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar">
+		<CommandItem id = "MonoDevelop.SourceEditor.ScrollbarCommand.Top" />
+		<CommandItem id = "MonoDevelop.SourceEditor.ScrollbarCommand.Bottom" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.SourceEditor.ScrollbarCommand.PgUp" />
+		<CommandItem id = "MonoDevelop.SourceEditor.ScrollbarCommand.PgDown" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.SourceEditor.ScrollbarCommand.ShowScrollBar" />
+		<CommandItem id = "MonoDevelop.SourceEditor.ScrollbarCommand.ShowMap" />
+		<CommandItem id = "MonoDevelop.SourceEditor.ScrollbarCommand.ShowFull" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/NavigationBar">

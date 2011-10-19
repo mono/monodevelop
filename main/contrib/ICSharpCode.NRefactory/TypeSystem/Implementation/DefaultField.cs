@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IField"/>.
 	/// </summary>
+	[Serializable]
 	public class DefaultField : AbstractMember, IField
 	{
 		IConstantValue constantValue;

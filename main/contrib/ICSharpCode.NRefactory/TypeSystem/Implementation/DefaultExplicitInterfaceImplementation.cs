@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation for IExplicitInterfaceImplementation.
 	/// </summary>
+	[Serializable]
 	public sealed class DefaultExplicitInterfaceImplementation : Immutable, IExplicitInterfaceImplementation, ISupportsInterning
 	{
 		public ITypeReference InterfaceType { get; private set; }

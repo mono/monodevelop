@@ -32,8 +32,6 @@ using System.Linq;
 using Mono.Cecil;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide;
@@ -42,13 +40,15 @@ using ICSharpCode.Decompiler;
 using System.Threading;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class DomTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IType); }
+			get { return typeof(ITypeDefinition); }
 		}
 		
 		public override string ContextMenuAddinPath {
@@ -94,41 +94,47 @@ namespace MonoDevelop.AssemblyBrowser
 			DomTypeNodeBuilder.settings.EmitKeywordCallback = delegate (string text) {
 				return MarkupKeyword (text);
 			};
-			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
-				if (domVisitable is IType) {
-					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
-				} else {
-					outString = "<span style=\"text\">" + outString + "</span>";
-				}
-			};
-			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (INode domVisitable, ref string outString) {
-				if (domVisitable is IReturnType) {
-					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IReturnType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
-				}
-			};
+//			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (IEntity domVisitable, ref string outString) {
+//				if (domVisitable is IType) {
+//					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
+//				} else {
+//					outString = "<span style=\"text\">" + outString + "</span>";
+//				}
+//			};
+//			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IEntity domVisitable, ref string outString) {
+//				if (domVisitable is IReturnType) {
+//					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IReturnType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
+//				}
+//			};
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			IType type = (IType)dataObject;
+			var type = (ITypeDefinition)dataObject;
 			return type.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IType type = (IType)dataObject;
-			label = Ambience.GetString (type, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
-			if (type.IsPrivate || type.IsInternal)
+			var type = (ITypeDefinition)dataObject;
+			label = Ambience.GetString (GetContent (treeBuilder), (IType)type, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			if (type.GetDefinition ().IsPrivate || type.GetDefinition ().IsPrivate)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (type.StockIcon, Gtk.IconSize.Menu);
+			
+			icon = ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			IType type = (IType)dataObject;
-			ctx.AddChild (new BaseTypeFolder (type));
-			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			ctx.AddChildren (type.Members.Where (member => !(member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) && !(publicOnly && !(member.IsPublic || member.IsProtected))));
+			var type = (ITypeDefinition)dataObject;
+			var list = new System.Collections.ArrayList ();
+			list.Add (new BaseTypeFolder (type));
+			bool publicOnly = builder.Options ["PublicApiOnly"];
+			foreach (var t in type.NestedTypes.Where (m => !m.GetDefinition ().IsSynthetic && !(publicOnly && m.GetDefinition ().IsPublic)))
+				list.Add (t);
+			foreach (var m in type.Members.Where (m => !m.IsSynthetic && !(publicOnly && !(m.IsPublic || m.IsInternal))))
+				list.Add (m);
+			builder.AddChildren (list);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -139,7 +145,7 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintAssembly (StringBuilder result, ITreeNavigator navigator)
 		{
-			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)navigator.GetParentDataItem (typeof (AssemblyDefinition), false);
+			var assemblyDefinition = (AssemblyDefinition)navigator.GetParentDataItem (typeof (AssemblyDefinition), false);
 			if (assemblyDefinition == null)
 				return;
 			
@@ -151,14 +157,13 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public string GetDescription (ITreeNavigator navigator)
 		{
-			IType type = (IType)navigator.DataItem;
+			var type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
+//			result.Append (Ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
-			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"),
-			                              type.FullName));
+			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"), type.FullName));
 			result.AppendLine ();
 			PrintAssembly (result, navigator);
 			return result.ToString ();
@@ -166,22 +171,22 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var type = (DomCecilType)navigator.DataItem;
-			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type.TypeDefinition));
+			var type =  CecilLoader.GetCecilObject ((ITypeDefinition)navigator.DataItem);
+			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type));
 		}
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var type = (DomCecilType)navigator.DataItem;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type.TypeDefinition, b => b.AddType (type.TypeDefinition));
+			var type =  CecilLoader.GetCecilObject ((ITypeDefinition)navigator.DataItem);
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, b => b.AddType (type));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			IType type = (IType)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
+			var type = (ITypeDefinition)navigator.DataItem;
+			var result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), (IType) type, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			

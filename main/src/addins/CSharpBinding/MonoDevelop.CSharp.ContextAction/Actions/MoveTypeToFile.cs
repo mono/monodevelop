@@ -26,7 +26,6 @@
 using System;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using Mono.TextEditor;

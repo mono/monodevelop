@@ -33,7 +33,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -219,7 +218,7 @@ class Test
 {
 	void Test ()
 	{
-		foreach (Test t in notExist)
+		foreach (Test t in new string[] {""hello""})
 			$t.$;
 	}
 }");

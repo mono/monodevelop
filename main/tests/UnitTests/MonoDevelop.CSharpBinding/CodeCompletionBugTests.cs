@@ -33,10 +33,11 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -153,35 +154,39 @@ namespace MonoDevelop.CSharpBinding.Tests
 			string file = GetTempFile (".cs");
 			project.AddFile (file);
 			
-			ProjectDomService.Load (project);
-			ProjectDom dom = ProjectDomService.GetProjectDom (project);
-			dom.ForceUpdate (true);
-			ProjectDomService.Parse (project, file, delegate { return parsedText; });
-			ProjectDomService.Parse (project, file, delegate { return parsedText; });
+			TypeSystemService.Load (project);
+			var dom = TypeSystemService.GetContext (project);
+			TypeSystemService.ForceUpdate (dom);
+			var content = TypeSystemService.GetProjectContext (project);
+			var parsedDocument = TypeSystemService.ParseFile (content, file, "text/x-csharp", parsedText);
+			((SimpleProjectContent)content).UpdateProjectContent (null, parsedDocument);
 			
 			sev.Project = project;
 			sev.ContentName = file;
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
 			tww.ViewContent = sev;
-			Document doc = new Document (tww);
-			doc.ParsedDocument = new McsParser ().Parse (null, sev.ContentName, parsedText);
+			TestDocument doc = new TestDocument (tww);
+			doc.HiddenParsedDocument = parsedDocument;
+			doc.HiddenProjectContent = content;
+			doc.HiddenContext        = dom;
 			foreach (var e in doc.ParsedDocument.Errors)
 				Console.WriteLine (e);
-			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
+			var textEditorCompletion = new CSharpCompletionTextEditorExtension (doc);
 			int triggerWordLength = 1;
-			CodeCompletionContext ctx = new CodeCompletionContext ();
+			CodeCompletionContext completionContext = new CodeCompletionContext ();
 			textEditorCompletion.CompletionWidget = new TestCompletionWidget (doc.Editor) {
-				CurrentCodeCompletionContext = ctx
+				CurrentCodeCompletionContext = completionContext
 			};
-			ctx.TriggerOffset = sev.CursorPosition;
+			completionContext.TriggerOffset = sev.CursorPosition;
 			int line, column;
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
-			ctx.TriggerLine = line;
-			ctx.TriggerLineOffset = column - 1;
+			completionContext.TriggerLine = line;
+			completionContext.TriggerLineOffset = column - 1;
+			TypeSystemService.Unload (project);
 			if (isCtrlSpace)
-				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
-			return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
+				return textEditorCompletion.CodeCompletionCommand (completionContext) as CompletionDataList;
+			return textEditorCompletion.HandleCodeCompletion (completionContext, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 		}
 		
 		public static void CheckObjectMembers (CompletionDataList provider)
@@ -286,6 +291,22 @@ namespace ThisOne {
 ");
 			Assert.IsNull (provider);
 		}
+		
+		[Test()]
+		public void TestBug318834CaseB ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"class T
+{
+        static void Main ()
+        {
+                $decimal foo = 0.0.$
+        }
+}
+
+");
+			Assert.IsNotNull (provider);
+		}
 
 		/// <summary>
 		/// Bug 321306 - Code completion doesn't recognize child namespaces
@@ -339,6 +360,10 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
+			for (int i = 0; i < provider.Count; i++) {
+				var varname = provider [i];
+				Console.WriteLine (varname.CompletionText);
+			}
 			Assert.AreEqual (6, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("AField"), "field 'AField' not found.");
@@ -456,8 +481,8 @@ class Test
 
 $namespace A.$
 ");
-			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (0, provider.Count);
+			if (provider != null)
+				Assert.AreEqual (0, provider.Count);
 		}
 
 		/// <summary>
@@ -565,6 +590,7 @@ class C : BaseClass
 	}
 }
 ");
+			// protected members should not be displayed in this case.
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.AreEqual (4, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
@@ -609,7 +635,6 @@ class C : BaseClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (2, provider.Count);
 			Assert.IsNotNull (provider.Find ("a"), "enum member 'a' not found.");
 			Assert.IsNotNull (provider.Find ("b"), "enum member 'b' not found.");
 		}
@@ -736,16 +761,6 @@ class Test{
 		{
 			CompletionDataList provider = CreateProvider (
 @"
-namespace System {
-	public class Array 
-	{
-		public int Length {
-			get {}
-			set {}
-		}
-		public int MyField;
-	}
-}
 public class Test
 {
 	public void AMethod ()
@@ -756,7 +771,6 @@ public class Test
 }");
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Length"), "property 'Length' not found.");
-			Assert.IsNotNull (provider.Find ("MyField"), "field 'MyField' not found.");
 		}
 		
 		/// <summary>
@@ -894,7 +908,12 @@ namespace MyNamespace
 		public void TestBug436705 ()
 		{
 			CompletionDataList provider = CreateProvider (
-@"
+@"namespace System.Drawing {
+	public class Point
+	{
+	}
+}
+
 public class Point
 {
 }
@@ -1072,8 +1091,8 @@ class A
 	}
 }
 ");
-			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsTrue (provider.Count == 0, "variable 'st' found, but shouldn't.");
+			if (provider != null)
+				Assert.IsTrue (provider.Count == 0, "variable 'st' found, but shouldn't.");
 		}
 		
 		/// <summary>
@@ -1378,7 +1397,7 @@ class Test
 		[Test()]
 		public void TestBug474199B ()
 		{
-			IParameterDataProvider provider = ParameterCompletionTests.CreateProvider (
+			var provider = ParameterCompletionTests.CreateProvider (
 @"
 public class InnerTest
 {
@@ -1812,8 +1831,8 @@ class Test
 	}
 }
 ");
-			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNull (provider.Find ("TestMethod"), "method 'TestMethod' found, but shouldn't.");
+			if (provider != null)
+				Assert.IsNull (provider.Find ("TestMethod"), "method 'TestMethod' found, but shouldn't.");
 		}
 		
 		/// <summary>
@@ -2008,9 +2027,9 @@ namespace TestMe
 		{
 				CompletionDataList provider = CreateProvider (
 @"
-class A<T>
+public class A<T>
 {
-	class B
+	public class B
 	{
 		public T field;
 	}
@@ -3087,8 +3106,12 @@ class Foo
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("args"), "parameter 'args' not found.");
 			Assert.IsNull (provider.Find ("arg"), "variable 'arg' found.");
-			
-			provider = CreateCtrlSpaceProvider (
+		}
+		
+		[Test()]
+		public void TestBug674514B ()
+		{
+			var provider = CreateCtrlSpaceProvider (
 @"using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -3282,20 +3305,20 @@ public class Test
 {
 	public class TestFoo
 	{
-		T Return ()
+		public T Return ()
 		{
 			
 		}
 	}
 	
-	public TestFoo Bar;
+	public TestFoo Bar = new TestFoo ();
 }
 
 public class Test
 {
 	public void SomeMethod ()
 	{
-		Foo<Test> foo;
+		Foo<Test> foo = new Foo<Test> ();
 		var f = foo.Bar;
 		$f.Return ().$
 	}

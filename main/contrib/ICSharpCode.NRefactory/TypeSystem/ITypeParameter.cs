@@ -76,6 +76,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the region where the type parameter is defined.
 		/// </summary>
 		DomRegion Region { get; }
+		
+		/// <summary>
+		/// Gets the effective base class of this type parameter.
+		/// </summary>
+		IType GetEffectiveBaseClass(ITypeResolveContext context);
+		
+		/// <summary>
+		/// Gets the effective interface set of this type parameter.
+		/// </summary>
+		IEnumerable<IType> GetEffectiveInterfaceSet(ITypeResolveContext context);
 	}
 	
 	/// <summary>
@@ -164,6 +174,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		DomRegion ITypeParameter.Region {
 			get { return DomRegion.Empty; }
+		}
+		
+		IType ITypeParameter.GetEffectiveBaseClass(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IType>() != null);
+		}
+		
+		IEnumerable<IType> ITypeParameter.GetEffectiveInterfaceSet(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IType>>() != null);
 		}
 	}
 	#endif

@@ -34,7 +34,6 @@ using System.IO;
 using System.Xml;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Moonlight
 {

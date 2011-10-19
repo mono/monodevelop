@@ -32,39 +32,35 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ASTProvider" name = "ASTProviders">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
-	<!--
+	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ContextActions" name = "ContextAction">
 		<ExtensionNode name="Action" type ="MonoDevelop.ContextAction.ContextActionAddinNode"/>
 	</ExtensionPoint>
-	-->
+
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/Inspectors" name = "Inspector">
 		<ExtensionNode name="Inspector" type ="MonoDevelop.Inspection.InspectorAddinNode"/>
 	</ExtensionPoint>
 	<!-- Extensions -->
-	
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
+	<!--
 		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename.RenameRefactoring" />
-		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
 		<Class id="IntroduceConstant" class = "MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantRefactoring" />
 		<Class id="CreateClass" class = "MonoDevelop.Refactoring.CreateClass.CreateClassCodeGenerator" />
 		<Class id="CreateStruct" class = "MonoDevelop.Refactoring.CreateClass.CreateStructCodeGenerator" />
+	-->
+		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
 		<Class id="ImplementImplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementImplicit" />
 		<Class id="ImplementExplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementExplicit" />
-		<Class id="ImplementExplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers" />
+		<Class id="ImplementAbstract" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
 		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.NullCheckGenerator" />
 	</Extension>
-	
 	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
@@ -88,9 +84,8 @@
 		<Description>Fix handlers. Classes must implement IAnalysisFixHandler.</Description>
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
-	
+
 	<!-- Text editor integration -->
-	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />
 	</Extension>
@@ -98,7 +93,6 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
-	
 	
 	<!-- RefactoryCommands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -181,6 +175,7 @@
 	
 	
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+-
 		<CommandItem id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 		             insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 	</Extension>

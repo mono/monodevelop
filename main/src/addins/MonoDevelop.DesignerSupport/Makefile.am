@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.DesignerSupport.dll
 
 DEPS =  \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \

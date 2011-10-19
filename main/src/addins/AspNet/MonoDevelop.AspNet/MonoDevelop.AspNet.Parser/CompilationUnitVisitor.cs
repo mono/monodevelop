@@ -29,8 +29,9 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.AspNet.Parser.Dom;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {

@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core.Text;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

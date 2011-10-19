@@ -39,10 +39,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using System.Linq;
 using Mono.TextEditor;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -69,7 +70,7 @@ namespace MonoDevelop.AssemblyBrowser
 		Mono.TextEditor.TextEditor inspectEditor = new Mono.TextEditor.TextEditor ();
 		public AssemblyBrowserWidget ()
 		{
-			this.Build();
+			this.Build ();
 			TreeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
 				new AssemblyNodeBuilder (this),
@@ -85,7 +86,6 @@ namespace MonoDevelop.AssemblyBrowser
 				new DomEventNodeBuilder (this),
 				new DomPropertyNodeBuilder (this),
 				new BaseTypeFolderNodeBuilder (this),
-				new DomReturnTypeNodeBuilder (this),
 				new ReferenceNodeBuilder (this),
 				}, new TreePadOption [] {
 				new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), true)
@@ -123,31 +123,33 @@ namespace MonoDevelop.AssemblyBrowser
 				var referencedSegment = ReferencedSegments != null ? ReferencedSegments.FirstOrDefault (seg => seg.Contains (offset)) : null;
 				if (referencedSegment == null)
 					return null;
-				if (referencedSegment.Reference is TypeDefinition)
-					return new DomCecilType ((TypeDefinition)referencedSegment.Reference).HelpUrl;
-				
-				if (referencedSegment.Reference is MethodDefinition)
-					return new DomCecilMethod ((MethodDefinition)referencedSegment.Reference).HelpUrl;
-				
-				if (referencedSegment.Reference is PropertyDefinition)
-					return new DomCecilProperty ((PropertyDefinition)referencedSegment.Reference).HelpUrl;
-				
-				if (referencedSegment.Reference is FieldDefinition)
-					return new DomCecilField ((FieldDefinition)referencedSegment.Reference).HelpUrl;
-				
-				if (referencedSegment.Reference is EventDefinition)
-					return new DomCecilEvent ((EventDefinition)referencedSegment.Reference).HelpUrl;
-				
-				if (referencedSegment.Reference is FieldDefinition)
-					return new DomCecilField ((FieldDefinition)referencedSegment.Reference).HelpUrl;
-				
-				if (referencedSegment.Reference is TypeReference) {
-					var returnType = DomCecilMethod.GetReturnType ((TypeReference)referencedSegment.Reference);
-					if (returnType.GenericArguments.Count == 0)
-						return "T:" + returnType.FullName;
-					return "T:" + returnType.FullName + "`" + returnType.GenericArguments.Count;
-				}
-				return referencedSegment.Reference.ToString ();
+				return null;
+// TODO: Type system conversion.
+//				if (referencedSegment.Reference is TypeDefinition)
+//					return new DomCecilType ((TypeDefinition)referencedSegment.Reference).HelpUrl;
+//				
+//				if (referencedSegment.Reference is MethodDefinition)
+//					return new DomCecilMethod ((MethodDefinition)referencedSegment.Reference).HelpUrl;
+//				
+//				if (referencedSegment.Reference is PropertyDefinition)
+//					return new DomCecilProperty ((PropertyDefinition)referencedSegment.Reference).HelpUrl;
+//				
+//				if (referencedSegment.Reference is FieldDefinition)
+//					return new DomCecilField ((FieldDefinition)referencedSegment.Reference).HelpUrl;
+//				
+//				if (referencedSegment.Reference is EventDefinition)
+//					return new DomCecilEvent ((EventDefinition)referencedSegment.Reference).HelpUrl;
+//				
+//				if (referencedSegment.Reference is FieldDefinition)
+//					return new DomCecilField ((FieldDefinition)referencedSegment.Reference).HelpUrl;
+//				
+//				if (referencedSegment.Reference is TypeReference) {
+//					var returnType = DomCecilMethod.GetReturnType ((TypeReference)referencedSegment.Reference);
+//					if (returnType.GenericArguments.Count == 0)
+//						return "T:" + returnType.FullName;
+//					return "T:" + returnType.FullName + "`" + returnType.GenericArguments.Count;
+//				}
+//				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
 			
@@ -255,8 +257,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Gtk.TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-				MonoDevelop.Projects.Dom.IMember member = (MonoDevelop.Projects.Dom.IMember)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
-				ITreeNavigator nav = SearchMember (member);
+				var member = (IEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+				var nav = SearchMember (member);
 				if (nav != null) {
 					nav.ExpandToNode ();
 					nav.Selected = true;
@@ -293,8 +295,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
 				AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
-				foreach (DomCecilCompilationUnit cu in definitions) {
-					assemblyBrowserView.Load (cu.FileName);
+				foreach (var cu in definitions) {
+					assemblyBrowserView.Load (cu.Key);
 				}
 				IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
 				((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
@@ -303,7 +305,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		public MonoDevelop.Projects.Dom.IMember ActiveMember  {
+		public IEntity ActiveMember  {
 			get;
 			set;
 		}
@@ -320,9 +322,9 @@ namespace MonoDevelop.AssemblyBrowser
 				((Mono.TextEditor.TextEditorOptions)this.inspectEditor.Options).ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 		}
 		
-		ITreeNavigator SearchMember (IMember member)
+		ITreeNavigator SearchMember (IEntity member)
 		{
-			return SearchMember (member.HelpUrl);
+			return SearchMember (member.GetHelpUrl ());
 		}
 			
 		ITreeNavigator SearchMember (string helpUrl)
@@ -332,8 +334,8 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		static bool IsMatch (ITreeNavigator nav, string helpUrl)
 		{
-			IMember member = nav.DataItem as IMember;
-			return member != null && member.HelpUrl == helpUrl;
+			var member = nav.DataItem as IEntity;
+			return member != null && member.GetHelpUrl () == helpUrl;
 		}
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl)
@@ -352,35 +354,31 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl)
 		{
-			try {
-				do {
-					if (IsMatch (nav, helpUrl))
-						return nav;
-					if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
-						DispatchService.RunPendingEvents ();
-						nav.MoveToFirstChild ();
-						ITreeNavigator result = SearchMember (nav, helpUrl);
-						if (result != null)
-							return result;
-						
-						if (!nav.MoveToParent ())
-							return null;
-						try {
-							if (nav.DataItem is DomCecilType && nav.Options["PublicApiOnly"]) {
-								nav.Options["PublicApiOnly"] = false;
-								nav.MoveToFirstChild ();
-								result = SearchMember (nav, helpUrl);
-								if (result != null)
-									return result;
-								nav.MoveToParent ();
-							}
-						} catch (Exception) {
-							return null;
+			do {
+				if (IsMatch (nav, helpUrl))
+					return nav;
+				if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
+					DispatchService.RunPendingEvents ();
+					nav.MoveToFirstChild ();
+					ITreeNavigator result = SearchMember (nav, helpUrl);
+					if (result != null)
+						return result;
+					
+					if (!nav.MoveToParent ())
+						return null;
+					try {
+						if (nav.DataItem is TypeDefinition && nav.Options ["PublicApiOnly"]) {
+							nav.Options ["PublicApiOnly"] = false;
+							nav.MoveToFirstChild ();
+							result = SearchMember (nav, helpUrl);
+							if (result != null)
+								return result;
+							nav.MoveToParent ();
 						}
+					} catch (Exception) {
 					}
-				} while (nav.MoveNext());
-			} catch (Exception) {
-			}
+				}
+			} while (nav.MoveNext());
 			return null;
 		}
 		
@@ -488,21 +486,20 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			BackgroundWorker worker = sender as BackgroundWorker;
 			try {
-				
 				string pattern = e.Argument.ToString ().ToUpper ();
 				int types = 0, curType = 0;
-				foreach (DomCecilCompilationUnit unit in this.definitions) {
-					types += unit.Types.Count;
+				foreach (var unit in this.definitions) {
+						types += unit.Value.GetTypes ().Count ();
 				}
-				List<IMember> members = new List<IMember> ();
+				var members = new List<IMember> ();
 				switch (searchMode) {
 				case SearchMode.Member:
-					foreach (DomCecilCompilationUnit unit in this.definitions) {
-						foreach (IType type in unit.Types) {
+					foreach (var unit in this.definitions) {
+						foreach (var type in unit.Value.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
-							foreach (IMember member in type.Members) {
+							foreach (var member in type.GetMembers (unit.Value)) {
 								if (worker.CancellationPending)
 									return;
 								if (member.Name.ToUpper ().Contains (pattern)) {
@@ -513,13 +510,13 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+						foreach (var member in members) {
 							if (worker.CancellationPending)
 								return;
-							memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+							memberListStore.AppendValues (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu),
 							                              member.Name,
 							                              member.DeclaringType.FullName,
-							                              ((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
+							                              "", //((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
 							                              member);
 						}
 					});
@@ -528,85 +525,78 @@ namespace MonoDevelop.AssemblyBrowser
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 					});
-					foreach (DomCecilCompilationUnit unit in this.definitions) {
-						foreach (IType type in unit.Types) {
+					foreach (var unit in this.definitions) {
+						foreach (var type in unit.Value.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
-							foreach (IMethod method in type.Methods) {
+							foreach (var method in type.Methods) {
 								if (worker.CancellationPending)
 									return;
-								DomCecilMethod domMethod = method as DomCecilMethod;
-								if (domMethod == null)
-									continue;
-//								if (DomMethodNodeBuilder.Disassemble (rd => rd.DisassembleMethod (domMethod.MethodDefinition)).ToUpper ().Contains (pattern)) {
+//								if (DomMethodNodeBuilder.Disassemble (rd => rd.DisassembleMethod (method)).ToUpper ().Contains (pattern)) {
 //									members.Add (method);
 //								}
 							}
-
 						}
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+						foreach (var member in members) {
 							if (worker.CancellationPending)
 								return;
-							memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+							memberListStore.AppendValues ("", //iImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
 							                              member.Name,
 							                              member.DeclaringType.FullName,
-							                              ((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
+							                              "", //((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
 							                              member);
 						}
 					});
 					break;
 				case SearchMode.Decompiler:
-					foreach (DomCecilCompilationUnit unit in this.definitions) {
-						foreach (IType type in unit.Types) {
+					foreach (var unit in this.definitions) {
+						foreach (var type in unit.Value.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
-							foreach (IMethod method in type.Methods) {
+							foreach (var method in type.Methods) {
 								if (worker.CancellationPending)
 									return;
-								DomCecilMethod domMethod = method as DomCecilMethod;
-								if (domMethod == null)
-									continue;
 /*								if (DomMethodNodeBuilder.Decompile (domMethod, false).ToUpper ().Contains (pattern)) {
-									members.Add (method);
-								}*/
+									members.Add (method);*/
 							}
 						}
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+						foreach (var member in members) {
 							if (worker.CancellationPending)
 								return;
-							memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+							memberListStore.AppendValues ("", //ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
 							                              member.Name,
 							                              member.DeclaringType.FullName,
-							                              ((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
+							                              "", //((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
 							                              member);
 						}
 					});
 					break;
 				case SearchMode.Type:
-					foreach (DomCecilCompilationUnit unit in this.definitions) {
-						foreach (IType type in unit.Types) {
+					var typeList = new List<IType> ();
+					foreach (var unit in this.definitions) {
+						foreach (var type in unit.Value.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
-								members.Add (type);
+								typeList.Add (type);
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						foreach (IType type in members) {
+						foreach (var type in typeList) {
 							if (worker.CancellationPending)
 								return;
-							typeListStore.AppendValues (ImageService.GetPixbuf (type.StockIcon, Gtk.IconSize.Menu),
+							typeListStore.AppendValues (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu),
 							                            type.Name,
-							                            type.Namespace,
-							                            ((DomCecilCompilationUnit)type.CompilationUnit).AssemblyDefinition.Name.FullName,
+							                            type.FullName.Substring (0, type.FullName.Length - type.Name.Length),
+							                           "", // ((DomCecilCompilationUnit)type.CompilationUnit).AssemblyDefinition.Name.FullName,
 							                            type);
 						}
 					});
@@ -961,8 +951,8 @@ namespace MonoDevelop.AssemblyBrowser
 			if (definitions == null) // we've been disposed
 				return;
 			if (nav == null) {
-				foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
-					foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
+				foreach (var definition in definitions.ToArray ()) {
+					foreach (var assemblyNameReference in definition.Value.Annotation<AssemblyDefinition> ().MainModule.AssemblyReferences) {
 						string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
 						if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
 							AddReference (assemblyFile);
@@ -980,17 +970,17 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public void SelectAssembly (string fileName)
 		{
-			DomCecilCompilationUnit cu = null;
-			foreach (DomCecilCompilationUnit unit in definitions) {
-				if (unit.FileName == fileName)
-					cu = unit;
+			AssemblyDefinition cu = null;
+			foreach (var unit in definitions) {
+				if (unit.Key == fileName)
+					cu = unit.Value.Annotation<AssemblyDefinition> ();
 			}
 			if (cu == null)
 				return;
 			
 			ITreeNavigator nav = TreeView.GetRootNode ();
 			do {
-				if (nav.DataItem == cu.AssemblyDefinition) {
+				if (nav.DataItem == cu) {
 					nav.ExpandToNode ();
 					nav.Selected = true;
 					return;
@@ -1068,25 +1058,41 @@ namespace MonoDevelop.AssemblyBrowser
 			base.OnDestroyed ();
 		}
 		
-		List<DomCecilCompilationUnit> definitions = new List<DomCecilCompilationUnit> ();
-		public AssemblyDefinition AddReference (string fileName)
+		static AssemblyDefinition ReadAssembly (string fileName)
 		{
-			foreach (DomCecilCompilationUnit unit in definitions) {
-				if (unit.FileName == fileName) 
-					return unit.AssemblyDefinition;
+			ReaderParameters parameters = new ReaderParameters ();
+//			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
+			using (var stream = new System.IO.MemoryStream (System.IO.File.ReadAllBytes (fileName))) {
+				return AssemblyDefinition.ReadAssembly (stream, parameters);
 			}
-			DomCecilCompilationUnit newUnit = DomCecilCompilationUnit.Load (fileName, true, false);
-			definitions.Add (newUnit);
+		}
 		
+		CecilLoader loader = new CecilLoader (true);
+		internal CecilLoader CecilLoader {
+			get {
+				return loader;
+			}
+		} 
+		
+		Dictionary<string, IProjectContent> definitions = new Dictionary<string, IProjectContent> ();
+		public IProjectContent AddReference (string fileName)
+		{
+			IProjectContent result;
+			if (definitions.TryGetValue (fileName, out result))
+				return result;
+			var assembly = ReadAssembly (fileName);
+			definitions [fileName] = result = loader.LoadAssembly (assembly);
+			result.AddAnnotation (assembly);
 			ITreeBuilder builder;
 			if (definitions.Count == 1) {
-				builder = TreeView.LoadTree (newUnit);
+				builder = TreeView.LoadTree (Tuple.Create (assembly, result));
 			} else {
-				builder = TreeView.AddChild (newUnit);
+				builder = TreeView.AddChild (Tuple.Create (assembly, result));
 			}
 			builder.MoveToFirstChild ();
 			builder.Expanded = true;
-			return newUnit.AssemblyDefinition;
+			return result;
+
 		}
 		
 		[CommandHandler (SearchCommands.Find)]
@@ -1108,7 +1114,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (currentItem != null)
 					navigationBackwardHistory.Push (currentItem);
 				currentItem = TreeView.GetSelectedNode ();
-				ActiveMember = currentItem.DataItem as IMember;
+				ActiveMember = currentItem.DataItem as IEntity;
 				navigationForwardHistory.Clear ();
 			}
 			UpdateNavigationActions ();
@@ -1150,3 +1156,4 @@ namespace MonoDevelop.AssemblyBrowser
 		#endregion
 	}
 }
+

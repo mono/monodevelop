@@ -18,7 +18,6 @@
 
 using System;
 using System.Globalization;
-using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -75,15 +74,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public AstLocation Begin {
+		public TextLocation Begin {
 			get {
-				return new AstLocation (beginLine, beginColumn);
+				return new TextLocation (beginLine, beginColumn);
 			}
 		}
 		
-		public AstLocation End {
+		public TextLocation End {
 			get {
-				return new AstLocation (endLine, endColumn);
+				return new TextLocation (endLine, endColumn);
 			}
 		}
 		
@@ -113,11 +112,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.endColumn = -1;
 		}
 		
-		public DomRegion (AstLocation begin, AstLocation end) : this (null, begin, end)
+		public DomRegion (TextLocation begin, TextLocation end) : this (null, begin, end)
 		{
 		}
 		
-		public DomRegion (string fileName, AstLocation begin, AstLocation end)
+		public DomRegion (string fileName, TextLocation begin, TextLocation end)
 		{
 			this.fileName = fileName;
 			this.beginLine = begin.Line;
@@ -126,11 +125,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.endColumn = end.Column;
 		}
 		
-		public DomRegion (AstLocation begin) : this (null, begin)
+		public DomRegion (TextLocation begin) : this (null, begin)
 		{
 		}
 		
-		public DomRegion (string fileName, AstLocation begin)
+		public DomRegion (string fileName, TextLocation begin)
 		{
 			this.fileName = fileName;
 			this.beginLine = begin.Line;
@@ -153,7 +152,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				(line != EndLine   || column <= EndColumn);
 		}
 		
-		public bool IsInside(AstLocation location)
+		public bool IsInside(TextLocation location)
 		{
 			return IsInside(location.Line, location.Column);
 		}

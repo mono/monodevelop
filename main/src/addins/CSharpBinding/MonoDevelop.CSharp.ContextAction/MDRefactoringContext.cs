@@ -36,6 +36,10 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using System.Linq;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -62,38 +66,15 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 		}
 		
-		SimpleProjectContent content;
 		public override ITypeResolveContext TypeResolveContext {
 			get {
-				return new SimpleProjectContent ();
-/*				if (content == null) {
-					content = new SimpleProjectContent ();
-					var newTypes = new List<ITypeDefinition> ();
-					
-					foreach (var file in Document.Project.Files) {
-						if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
-							continue;
-						var visitor = new TypeSystemConvertVisitor (content, file.FilePath);
-						CSharpParser parser = new CSharpParser ();
-						using (var stream = System.IO.File.OpenRead (file.FilePath)) {
-							var unit = parser.Parse (stream);
-							unit.AcceptVisitor (visitor, null);
-						}
-						Console.WriteLine (file.FilePath + ": add:" + visitor.ParsedFile.TopLevelTypeDefinitions.Count);
-						content.UpdateProjectContent (null, visitor.ParsedFile.TopLevelTypeDefinitions, null, null);
-					}
-				}
-				return content;*/
+				return Document.TypeResolveContext;
 			}
 		}
 		
 		public override CSharpFormattingOptions FormattingOptions {
 			get {
-				var dom = Document.Dom;
-				var policyParent = dom != null && dom.Project != null ? dom.Project.Policies : null;
-				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-				var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-				return codePolicy.CreateOptions ();
+				return Document.GetFormattingOptions ();
 			}
 		}
 		
@@ -133,15 +114,15 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 		}
 
-		public override int GetOffset (AstLocation location)
+		public override int GetOffset (TextLocation location)
 		{
 			return Document.Editor.LocationToOffset (location.Line, location.Column);
 		}
 		
-		public override AstLocation GetLocation (int offset)
+		public override TextLocation GetLocation (int offset)
 		{
 			var loc = Document.Editor.OffsetToLocation (offset);
-			return new AstLocation (loc.Line, loc.Column);
+			return new TextLocation (loc.Line, loc.Column);
 		}
 
 		public override string GetText (int offset, int length)
@@ -243,7 +224,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void Perform (Script script)
 			{
 				ctx.Document.UpdateParseDocument ();
-				ctx.Unit = ctx.Document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+				ctx.Unit = ctx.Document.ParsedDocument.Annotation<CompilationUnit> ();
 			
 				var node = Callback (ctx);
 				if (node != null)
@@ -346,7 +327,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
 			{
 				var editor = ctx.Document.Editor;
-				var mode = new InsertionCursorEditMode (editor.Parent, MonoDevelop.Ide.CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.CompilationUnit.GetTypeAt (ctx.Location.Line, ctx.Location.Column)));
+				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedDocument.GetInnermostTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
 				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
@@ -395,98 +376,60 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			return new MdScript (this);
 		}
+		CSharpParsedFile CSharpParsedFile { get; set; }
 		
-		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, MonoDevelop.Projects.Dom.DomLocation loc)
+		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			this.Document = document;
-			this.Location = new AstLocation (loc.Line, loc.Column);
-			this.Unit = document.ParsedDocument.LanguageAST as ICSharpCode.NRefactory.CSharp.CompilationUnit;
+			this.Location = new TextLocation (loc.Line, loc.Column);
+			this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
+			this.CSharpParsedFile = document.ParsedDocument.Annotation<CSharpParsedFile> ();
 		}
 		
-	/*	public override AstType CreateShortType (AstType fullType)
+		public override AstType CreateShortType (IType fullType)
 		{
-			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, fullType.ConvertToReturnType ());
+			Console.WriteLine (Environment.StackTrace);
+			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
+			csResolver.CurrentMember = CSharpParsedFile.GetMember (Location);
+			csResolver.CurrentTypeDefinition = CSharpParsedFile.GetInnermostTypeDefinition (Location);
+			csResolver.CurrentUsingScope = CSharpParsedFile.GetUsingScope (Location);
+			TypeSystemAstBuilder builder = new TypeSystemAstBuilder (csResolver);
+			return builder.ConvertType (fullType);
 		}
 		
-		public override AstType CreateShortType (string fullTypeName)
-		{
-			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, fullTypeName);
-		}
-		*/
-		
-		NRefactoryResolver resolver;
-		public NRefactoryResolver Resolver {
-			get {
-				if (resolver == null)
-					resolver = new NRefactoryResolver (Document.Dom, Document.CompilationUnit, Document.Editor, Document.FileName); 
-				return resolver;
-			}
-		}
-	/*	
+		/*
 		Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> resolveCache = new Dictionary<AstNode, MonoDevelop.Projects.Dom.ResolveResult> ();
 		MonoDevelop.Projects.Dom.ResolveResult Resolve (AstNode node)
 		{
 			MonoDevelop.Projects.Dom.ResolveResult result;
 			if (!resolveCache.TryGetValue (node, out result))
-				resolveCache [node] = result = Resolver.Resolve (node.ToString (), new  MonoDevelop.Projects.Dom.DomLocation (Location.Line, Location.Column));
+				resolveCache [node] = result = Resolver.Resolve (node.ToString (), new  MonoDevelop.Projects.Dom.TextLocation (Location.Line, Location.Column));
 			return result;
-		}
+		}*/
 		
-		public override AstType ResolveType (AstNode node)
-		{
-			var resolveResult = Resolve (node);
-			if (resolveResult == null || resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.FullName))
-				return null;
-			return MonoDevelop.ContextAction.ContextAction.ShortenTypeName (Document, resolveResult.ResolvedType);
-		}
-		
-		*/
-		ParsedFile ParsedFile {
+		ParsedDocument ParsedDocument {
 			get {
-				var visitor = new TypeSystemConvertVisitor ((IProjectContent) TypeResolveContext, Document.FileName);
-				Unit.AcceptVisitor (visitor, null);
-				return visitor.ParsedFile;
+				return Document.ParsedDocument;
 			}
 		}
 		
-	/*	public override IEnumerable<ICSharpCode.NRefactory.TypeSystem.IMember> ResolveMember (Expression expression)
+		public override ResolveResult Resolve (AstNode node)
 		{
-			var pf = ParsedFile;
+			var pf = ParsedDocument.Annotation<CSharpParsedFile> ();
 			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
-			var navigator = new NodeListResolveVisitorNavigator (new[] { expression });
+			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
 			
 			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, pf, navigator);
-		
-			visitor.VisitCompilationUnit (Unit, null);
-			var resolveResult = visitor.Resolve (expression);
-			if (resolveResult == null)
-				yield break;
-			if (resolveResult is MemberResolveResult) {
-				yield return ((MemberResolveResult)resolveResult).Member;
-			} else if (resolveResult is MethodGroupResolveResult) {
-				var mgg = (MethodGroupResolveResult)resolveResult;
-				foreach (var m in mgg.Methods)
-					yield return m;
-			}
-		}*/	
+			Unit.AcceptVisitor (visitor, null);
+			return visitor.Resolve (node);
+		}
 		
 		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, MemberDeclaration replaceWidth)
 		{
 			// TODO
 		}
-		
-//		public override ICSharpCode.NRefactory.TypeSystem.ITypeDefinition GetDefinition (AstType resolvedType)
-//		{
-//			var rr = Resolve (resolvedType);
-//			if (rr == null)
-//				return null;
-//			var type = Document.Dom.GetType (rr.ResolvedType);
-//			if (type == null)
-//				return null;
-//			return TypeResolveContext.GetClass (type.Namespace, type.Name, type.TypeParameters.Count, StringComparer.InvariantCulture);
-//		}
 		
 		/*
 		public bool IsValid {
@@ -563,14 +506,14 @@ namespace MonoDevelop.CSharp.ContextAction
 			throw new NotImplementedException ();
 		}
 		
-		public override AstType CreateShortType (ICSharpCode.NRefactory.TypeSystem.IType fullType)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public override ResolveResult Resolve (AstNode expression)
-		{
-			throw new NotImplementedException ();
-		}
+//		public override AstType CreateShortType (ICSharpCode.NRefactory.TypeSystem.IType fullType)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		public override ResolveResult Resolve (AstNode expression)
+//		{
+//			throw new NotImplementedException ();
+//		}
 	}
 }

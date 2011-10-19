@@ -26,10 +26,12 @@
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Refactoring
 {
@@ -50,17 +52,16 @@ namespace MonoDevelop.Refactoring
 			if (editor == null)
 				return;
 			
-			ProjectDom dom = doc.Dom;
+			var dom = doc.TypeResolveContext;
 			
 			ResolveResult result;
-			INode item;
-			CurrentRefactoryOperationsHandler.GetItem (dom, doc, editor, out result, out item);
+			var item = CurrentRefactoryOperationsHandler.GetItem (dom, doc, out result);
 			
 			RefactoringOptions options = new RefactoringOptions () {
 				Document = doc,
 				Dom = dom,
 				ResolveResult = result,
-				SelectedItem = item is InstantiatedType ? ((InstantiatedType)item).UninstantiatedType : item
+				SelectedItem = item
 			};
 			Run (options);
 		}

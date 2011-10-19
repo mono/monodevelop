@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents the intersection of several types.
 	/// </summary>
+	[Serializable]
 	public class IntersectionType : AbstractType
 	{
 		readonly ReadOnlyCollection<IType> types;

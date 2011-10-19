@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Linq;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		const int declarationWindowMargin = 3;
 		
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
-		CompletionData currentData;
+		ICompletionData currentData;
 		Widget parsingMessage;
 		System.Action closedDelegate;
 		int initialWordLength;
@@ -216,7 +217,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideFooter ();
 			}
 			//initialWordLength = 0;
-			this.completionDataList = list;
+			this.CompletionDataList = list;
 			this.CompleteWithSpaceOrPunctuation = MonoDevelop.Core.PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
 			
 			this.CodeCompletionContext = completionContext;
@@ -279,9 +280,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		class DataItemComparer : IComparer<CompletionData>
+		class DataItemComparer : IComparer<ICompletionData>
 		{
-			public int Compare (CompletionData a, CompletionData b)
+			public int Compare (ICompletionData a, ICompletionData b)
 			{
 				return ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
 					? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
@@ -349,7 +350,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			curYPos = Y;
 			Move (X, Y);
 			UpdateDeclarationView ();
-			ParameterInformationWindowManager.UpdateWindow (CompletionWidget);
+			ParameterInformationWindowManager.UpdateWindow (null, CompletionWidget);
 		}
 		
 		//smaller lists get size reallocated after FillList, so we have to reposition them
@@ -370,13 +371,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (SelectionIndex == -1 || completionDataList == null)
 				return false;
-			CompletionData item = completionDataList [SelectionIndex];
+			var item = completionDataList [SelectionIndex];
 			if (item == null)
 				return false;
 			// first close the completion list, then insert the text.
 			// this is required because that's the logical event chain, otherwise things could be messed up
 			CloseCompletionList ();
-			item.InsertCompletionText (this, ref ka, closeChar, keyChar, modifier);
+			((CompletionData)item).InsertCompletionText (this, ref ka, closeChar, keyChar, modifier);
 			AddWordToHistory (PartialWord, item.CompletionText);
 			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
 			return true;
@@ -431,13 +432,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideDeclarationView ();
 				return;
 			}
-			CompletionData data = completionDataList[List.SelectionIndex];
+			var data = completionDataList[List.SelectionIndex];
 			
-			IList<CompletionData> overloads;
-			if (data.IsOverloaded) {
-				overloads = new List<CompletionData> (data.OverloadedData);
+			IList<ICompletionData> overloads;
+			if (data.HasOverloads) {
+				overloads = new List<ICompletionData> (data.OverloadedData);
 			} else {
-				overloads = new CompletionData[] { data };
+				overloads = new ICompletionData[] { data };
 			}
 			
 			if (data != currentData) {
@@ -446,14 +447,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.Clear ();
 				declarationviewwindow.Realize ();
 				
-				foreach (CompletionData overload in overloads) {
+				foreach (var overload in overloads) {
 					bool hasMarkup = (overload.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
 					declarationviewwindow.AddOverload (hasMarkup ? overload.Description : GLib.Markup.EscapeText (overload.Description));
 				}
 				
-				declarationviewwindow.Multiple = data.IsOverloaded;
+				declarationviewwindow.Multiple = data.HasOverloads;
 				currentData = data;
-				if (data.IsOverloaded) {
+				if (data.HasOverloads) {
 					for (int i = 0; i < overloads.Count; i++) {
 						if ((overloads[i].DisplayFlags & DisplayFlags.Obsolete) != DisplayFlags.Obsolete) {
 							declarationviewwindow.CurrentOverload = i;
@@ -600,7 +601,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		string IListDataProvider.GetDescription (int n)
 		{
-			return completionDataList[n].DisplayDescription;
+			return ((CompletionData)completionDataList[n]).DisplayDescription;
 		}
 		
 		bool IListDataProvider.HasMarkup (int n)
@@ -611,8 +612,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		//NOTE: we only ever return markup for items marked as obsolete
 		string IListDataProvider.GetMarkup (int n)
 		{
-			CompletionData completionData = completionDataList[n];
-			if (!completionData.IsOverloaded && (completionData.DisplayFlags & DisplayFlags.Obsolete) == DisplayFlags.Obsolete || 
+			var completionData = completionDataList[n];
+			if (!completionData.HasOverloads && (completionData.DisplayFlags & DisplayFlags.Obsolete) == DisplayFlags.Obsolete || 
 			    completionData.OverloadedData.All (data => (data.DisplayFlags & DisplayFlags.Obsolete) == DisplayFlags.Obsolete))
 				return "<s>" + GLib.Markup.EscapeText (completionDataList[n].DisplayText) + "</s>";
 			return GLib.Markup.EscapeText (completionDataList[n].DisplayText);
@@ -625,7 +626,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		Gdk.Pixbuf IListDataProvider.GetIcon (int n)
 		{
-			string iconName = completionDataList[n].Icon;
+			string iconName = ((CompletionData)completionDataList[n]).Icon;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
 			return ImageService.GetPixbuf (iconName, Gtk.IconSize.Menu);

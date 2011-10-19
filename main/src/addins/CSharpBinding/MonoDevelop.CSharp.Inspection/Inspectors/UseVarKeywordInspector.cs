@@ -30,9 +30,9 @@ using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 			
 			data.Add (new Result (
-					new DomRegion (node.Type.StartLocation.Line, node.Type.StartLocation.Column, node.Type.EndLocation.Line, node.Type.EndLocation.Column),
+					new DomRegion (node.Type.StartLocation, node.Type.EndLocation),
 					GettextCatalog.GetString ("Use implicitly typed local variable decaration"),
 					severity,
 					ResultCertainty.High, 

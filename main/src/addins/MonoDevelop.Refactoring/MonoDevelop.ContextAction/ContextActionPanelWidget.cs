@@ -26,10 +26,10 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Core;
 using System.Linq;
 using System.Text;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.ContextAction
 {

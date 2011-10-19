@@ -26,8 +26,6 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using System.Threading;
 using System.Collections.Generic;
 using System.IO;
@@ -218,7 +216,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			tasks.Clear ();
 			foreach (var result in GetResults ()) {
-				var newTask = new QuickTask (result.Message, result.Region.Start, result.Level);
+				var newTask = new QuickTask (result.Message, result.Region.Begin, result.Level);
 				tasks.Add (newTask);
 			}
 			

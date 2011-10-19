@@ -35,7 +35,7 @@ using System.ComponentModel;
 
 namespace Mono.TextEditor
 {
-	public class Document : AbstractAnnotatable, IBuffer
+	public class Document : AbstractAnnotatable, IBuffer, ICSharpCode.NRefactory.Editor.IDocument
 	{
 		IBuffer      buffer;
 		internal ILineSplitter splitter;
@@ -264,7 +264,6 @@ namespace Mono.TextEditor
 		{
 			return GetTextBetween (LocationToOffset (startLine, startColumn), LocationToOffset (endLine, endColumn));
 		}
-		
 		
 		public string GetTextAt (int offset, int count)
 		{
@@ -1639,6 +1638,187 @@ namespace Mono.TextEditor
 				return;
 			}
 			loadedActions.Add (action);
+		}
+		#endregion
+
+		#region IDocument implementation
+		event EventHandler<ICSharpCode.NRefactory.Editor.TextChangeEventArgs> ICSharpCode.NRefactory.Editor.IDocument.TextChanging {
+			add {
+				// TODO
+			}
+			remove {
+				// TODO
+			}
+		}
+
+		event EventHandler<ICSharpCode.NRefactory.Editor.TextChangeEventArgs> ICSharpCode.NRefactory.Editor.IDocument.TextChanged {
+			add {
+				// TODO
+			}
+			remove {
+				// TODO
+			}
+		}
+
+		event EventHandler ICSharpCode.NRefactory.Editor.IDocument.ChangeCompleted {
+			add {
+				// TODO
+			}
+			remove {
+				// TODO
+			}
+		}
+
+		ICSharpCode.NRefactory.Editor.IDocumentLine ICSharpCode.NRefactory.Editor.IDocument.GetLineByNumber (int lineNumber)
+		{
+			return GetLine (lineNumber);
+		}
+
+		ICSharpCode.NRefactory.Editor.IDocumentLine ICSharpCode.NRefactory.Editor.IDocument.GetLineByOffset (int offset)
+		{
+			return GetLineByOffset (offset);
+		}
+
+		int ICSharpCode.NRefactory.Editor.IDocument.GetOffset (int line, int column)
+		{
+			return LocationToOffset (line, column);
+		}
+
+		public int GetOffset (ICSharpCode.NRefactory.TextLocation location)
+		{
+			return LocationToOffset (location.Line, location.Column);
+		}
+
+		ICSharpCode.NRefactory.TextLocation ICSharpCode.NRefactory.Editor.IDocument.GetLocation (int offset)
+		{
+			return OffsetToLocation (offset);
+		}
+
+		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text)
+		{
+			((IBuffer)this).Insert (offset, text);
+		}
+
+		public void Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType defaultAnchorMovementType)
+		{
+			((IBuffer)this).Insert (offset, text);
+		}
+
+		void ICSharpCode.NRefactory.Editor.IDocument.Remove (int offset, int length)
+		{
+			((IBuffer)this).Remove (offset, length);
+		}
+
+		void ICSharpCode.NRefactory.Editor.IDocument.Replace (int offset, int length, string newText)
+		{
+			((IBuffer)this).Replace (offset, length, newText);
+		}
+
+		void ICSharpCode.NRefactory.Editor.IDocument.StartUndoableAction ()
+		{
+			BeginAtomicUndo ();
+		}
+
+		void ICSharpCode.NRefactory.Editor.IDocument.EndUndoableAction ()
+		{
+			EndAtomicUndo ();
+		}
+
+		IDisposable ICSharpCode.NRefactory.Editor.IDocument.OpenUndoGroup ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		ICSharpCode.NRefactory.Editor.ITextAnchor ICSharpCode.NRefactory.Editor.IDocument.CreateAnchor (int offset)
+		{
+			throw new NotImplementedException ();
+		}
+
+		string ICSharpCode.NRefactory.Editor.IDocument.Text {
+			get {
+				return Text;
+			}
+			set {
+				Text = value;
+			}
+		}
+
+		int ICSharpCode.NRefactory.Editor.IDocument.LineCount {
+			get {
+				return LineCount;
+			}
+		}
+		#endregion
+
+		#region IServiceProvider implementation
+		object IServiceProvider.GetService (Type serviceType)
+		{
+			throw new NotImplementedException ();
+		}
+		#endregion
+
+		#region ITextSource implementation
+		ICSharpCode.NRefactory.Editor.ITextSource ICSharpCode.NRefactory.Editor.ITextSource.CreateSnapshot ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public ICSharpCode.NRefactory.Editor.ITextSource CreateSnapshot (int offset, int length)
+		{
+			throw new NotImplementedException ();
+		}
+
+		System.IO.TextReader ICSharpCode.NRefactory.Editor.ITextSource.CreateReader ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public System.IO.TextReader CreateReader (int offset, int length)
+		{
+			throw new NotImplementedException ();
+		}
+
+		string ICSharpCode.NRefactory.Editor.ITextSource.GetText (int offset, int length)
+		{
+			return GetTextAt (offset, length);
+		}
+
+		public string GetText (ICSharpCode.NRefactory.Editor.ISegment segment)
+		{
+			return GetTextAt (segment.Offset, segment.Length);
+		}
+
+		int ICSharpCode.NRefactory.Editor.ITextSource.IndexOfAny (char[] anyOf, int startIndex, int count)
+		{
+			throw new NotImplementedException ();
+		}
+
+		int ICSharpCode.NRefactory.Editor.ITextSource.IndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			throw new NotImplementedException ();
+		}
+
+		int ICSharpCode.NRefactory.Editor.ITextSource.LastIndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			throw new NotImplementedException ();
+		}
+
+		ICSharpCode.NRefactory.Editor.ITextSourceVersion ICSharpCode.NRefactory.Editor.ITextSource.Version {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		int ICSharpCode.NRefactory.Editor.ITextSource.TextLength {
+			get {
+				return Length;
+			}
+		}
+
+		string ICSharpCode.NRefactory.Editor.ITextSource.Text {
+			get {
+				return Text;
+			}
 		}
 		#endregion
 	}

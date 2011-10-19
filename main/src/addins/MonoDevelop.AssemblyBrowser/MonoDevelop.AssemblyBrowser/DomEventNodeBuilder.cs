@@ -29,8 +29,6 @@
 using System;
 using System.Text;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using ICSharpCode.Decompiler.Ast;
@@ -38,6 +36,9 @@ using ICSharpCode.Decompiler;
 using System.Threading;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using Mono.Cecil;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -53,17 +54,17 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			IEvent evt = (IEvent)dataObject;
+			var evt = (IEvent)dataObject;
 			return evt.FullName;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IEvent evt = (IEvent)dataObject;
-			label = Ambience.GetString (evt, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.ReturnTypesLast);
+			var evt = (IEvent)dataObject;
+			label = Ambience.GetString (GetContent (treeBuilder), evt, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			if (evt.IsPrivate || evt.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (evt.StockIcon, Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (evt.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -75,13 +76,13 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			IEvent evt = (IEvent)dataObject;
-			if (evt.AddMethod != null)
-				ctx.AddChild (evt.AddMethod);
-			if (evt.RemoveMethod != null)
-				ctx.AddChild (evt.RemoveMethod);
-			if (evt.RaiseMethod != null)
-				ctx.AddChild (evt.RaiseMethod);
+			var evt = (IEvent)dataObject;
+			if (evt.CanAdd)
+				ctx.AddChild (evt.AddAccessor);
+			if (evt.CanRemove)
+				ctx.AddChild (evt.RemoveAccessor);
+			if (evt.CanInvoke)
+				ctx.AddChild (evt.InvokeAccessor);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -92,10 +93,10 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			IEvent evt = (IEvent)navigator.DataItem;
+			var evt = (IEvent)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
+//			result.Append (Ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -105,26 +106,26 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var evt = (DomCecilEvent)navigator.DataItem;
-			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleEvent (evt.EventDefinition));
+			var evt = CecilLoader.GetCecilObject ((IEvent)navigator.DataItem);
+			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleEvent (evt));
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var evt = (DomCecilEvent)navigator.DataItem;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), ((DomCecilType)evt.DeclaringType).TypeDefinition, b => b.AddEvent (evt.EventDefinition));
+			var evt = CecilLoader.GetCecilObject ((IEvent)navigator.DataItem);
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), evt.DeclaringType, b => b.AddEvent (evt));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			IEvent evt = (IEvent)navigator.DataItem;
+			var evt = (IEvent)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (GetContent (navigator), evt, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
+			var options = new AmbienceService.DocumentationFormatOptions ();
 			options.MaxLineLength = -1;
 			options.BigHeadings = true;
 			options.Ambience = Ambience;

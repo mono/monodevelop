@@ -20,8 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
-
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -34,11 +34,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Compared with <see cref="TypeStorage"/>, this class adds support for the IProjectContent interface,
 	/// for partial classes, and for multi-threading.
 	/// </remarks>
-	public class SimpleProjectContent : AbstractAnnotatable, IProjectContent
+	[Serializable]
+	public class SimpleProjectContent : AbstractAnnotatable, IProjectContent, ISerializable, IDeserializationCallback
 	{
 		readonly TypeStorage types = new TypeStorage();
-		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
+		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 		readonly Dictionary<string, IParsedFile> fileDict = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
+		
+		#region Constructor
+		/// <summary>
+		/// Creates a new SimpleProjectContent instance.
+		/// </summary>
+		public SimpleProjectContent()
+		{
+		}
+		#endregion
+		
+		public virtual string AssemblyName {
+			get { return string.Empty; }
+		}
 		
 		#region AssemblyAttributes
 		readonly List<IAttribute> assemblyAttributes = new List<IAttribute>(); // mutable assembly attribute storage
@@ -115,8 +129,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (compoundTypeDef != null) {
 				// Remove one part from a compound class
 				var newParts = new List<ITypeDefinition>(compoundTypeDef.GetParts());
-				if (newParts.Remove(typeDefinition)) {
-					((DefaultTypeDefinition)typeDefinition).SetCompoundTypeDefinition(typeDefinition);
+				// We cannot use newParts.Remove() because we need to use reference equality
+				for (int i = 0; i < newParts.Count; i++) {
+					if (newParts[i] == typeDefinition) {
+						newParts.RemoveAt(i);
+						((DefaultTypeDefinition)typeDefinition).SetCompoundTypeDefinition(typeDefinition);
+						break;
+					}
 				}
 				types.UpdateType(CompoundTypeDefinition.Create(newParts));
 			} else {
@@ -167,6 +186,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#endregion
 		
 		#region IProjectContent implementation
+		public ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				return types.GetKnownTypeDefinition(typeCode);
+			} finally {
+				readerWriterLock.ExitReadLock();
+			}
+		}
+		
 		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			readerWriterLock.EnterReadLock();
@@ -281,6 +310,47 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			{
 				// nested Synchronize() calls don't need any locking
 				return new ReadWriteSynchronizedTypeResolveContext(target, null);
+			}
+		}
+		#endregion
+		
+		#region Serialization
+		SerializationInfo serializationInfo;
+		
+		protected SimpleProjectContent(SerializationInfo info, StreamingContext context)
+		{
+			this.serializationInfo = info;
+			assemblyAttributes.AddRange((IAttribute[])info.GetValue("AssemblyAttributes", typeof(IAttribute[])));
+			readOnlyAssemblyAttributes = assemblyAttributes.ToArray();
+			moduleAttributes.AddRange((IAttribute[])info.GetValue("ModuleAttributes", typeof(IAttribute[])));
+			readOnlyModuleAttributes = moduleAttributes.ToArray();
+		}
+		
+		public virtual void OnDeserialization(object sender)
+		{
+			// We need to do this in OnDeserialization because at the time the deserialization
+			// constructor runs, type.FullName/file.FileName may not be deserialized yet.
+			if (serializationInfo != null) {
+				foreach (var typeDef in (ITypeDefinition[])serializationInfo.GetValue("Types", typeof(ITypeDefinition[]))) {
+					types.UpdateType(typeDef);
+				}
+				foreach (IParsedFile file in (IParsedFile[])serializationInfo.GetValue("Files", typeof(IParsedFile[]))) {
+					fileDict.Add(file.FileName, file);
+				}
+				serializationInfo = null;
+			}
+		}
+		
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				info.AddValue("Types", types.GetTypes().ToArray());
+				info.AddValue("AssemblyAttributes", readOnlyAssemblyAttributes);
+				info.AddValue("ModuleAttributes", readOnlyModuleAttributes);
+				info.AddValue("Files", fileDict.Values.ToArray());
+			} finally {
+				readerWriterLock.ExitReadLock();
 			}
 		}
 		#endregion

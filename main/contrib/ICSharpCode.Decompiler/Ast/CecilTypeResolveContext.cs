@@ -36,6 +36,24 @@ namespace ICSharpCode.Decompiler.Ast
 		Dictionary<TypeDefinition, WeakReference> dict = new Dictionary<TypeDefinition, WeakReference>();
 		int countUntilNextCleanup = 4;
 		
+		public IList<IAttribute> ModuleAttributes {
+			get {
+				return null;
+			}
+		}
+		public string AssemblyName {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+		public ITypeDefinition GetKnownTypeDefinition (TypeCode typeCode)
+		{
+			throw new NotImplementedException ();
+		}
+		public void UpdateProjectContent (IParsedFile oldFile, IParsedFile newFile)
+		{
+			
+		}
 		public CecilTypeResolveContext(ModuleDefinition module)
 		{
 			this.loader = new CecilLoader();
@@ -49,13 +67,6 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 			this.AssemblyAttributes = assemblyAttributes.AsReadOnly();
 		}
-		
-		public IList<IAttribute> ModuleAttributes
-		{
-			get {return null;}
-		}
-		public void UpdateProjectContent (IParsedFile oldFile, IParsedFile newFile)
-		{}
 		
 		ITypeDefinition GetClass(TypeDefinition cecilType)
 		{

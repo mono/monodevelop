@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Base class for immutable objects. Provides implementation for IFreezable that reports the
 	/// object as always-frozen.
 	/// </summary>
+	[Serializable]
 	public abstract class Immutable : IFreezable
 	{
 		bool IFreezable.IsFrozen {
@@ -38,6 +39,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 	}
 	
+	[Serializable]
 	public abstract class AbstractFreezable : IFreezable
 	{
 		bool isFrozen;

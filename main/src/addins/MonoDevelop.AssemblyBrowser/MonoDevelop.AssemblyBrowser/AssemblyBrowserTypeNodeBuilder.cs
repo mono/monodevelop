@@ -24,8 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
+using ICSharpCode.NRefactory.TypeSystem;
+using System;
+using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -36,15 +38,26 @@ namespace MonoDevelop.AssemblyBrowser
 			private set; 
 		}
 		
-		protected Ambience Ambience {
+		protected MonoDevelop.TypeSystem.Ambience Ambience {
 			get {
 				return Widget.Ambience; 
+			}
+		}
+		
+		internal CecilLoader CecilLoader {
+			get {
+				return Widget.CecilLoader;
 			}
 		}
 		
 		public AssemblyBrowserTypeNodeBuilder (AssemblyBrowserWidget assemblyBrowserWidget)
 		{
 			this.Widget = assemblyBrowserWidget;
+		}
+		
+		protected IProjectContent GetContent (ITreeNavigator treeBuilder)
+		{
+			return ((Tuple<AssemblyDefinition, IProjectContent>)treeBuilder.GetParentDataItem (typeof(Tuple<AssemblyDefinition, IProjectContent>), true)).Item2;
 		}
 	}
 }

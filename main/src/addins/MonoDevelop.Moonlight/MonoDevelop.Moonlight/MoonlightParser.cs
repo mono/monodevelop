@@ -33,17 +33,17 @@ using System.Linq;
 using System.Xml;
 
 using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.Moonlight
 {
-	public class MoonlightParser : AbstractParser
+	public class MoonlightParser : AbstractTypeSystemParser
 	{
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
+		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
-			TextReader tr = new StringReader (fileContent);
 			try {
 				Parser xmlParser = new Parser (new XmlFreeState (), true);
 				xmlParser.Parse (tr);
@@ -53,29 +53,25 @@ namespace MonoDevelop.Moonlight
 				if (doc.XDocument != null && doc.XDocument.RootElement != null) {
 					if (!doc.XDocument.RootElement.IsEnded)
 						doc.XDocument.RootElement.End (xmlParser.Location);
-					GenerateCU (doc);
+					GenerateCU (projectContent, doc);
 				}
 			}
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xaml document", ex);
 			}
-			finally {
-				if (tr != null)
-					tr.Dispose ();
-			}
 			return doc;
 		}
 		
-		static void GenerateCU (XmlParsedDocument doc)
+		static void GenerateCU (IProjectContent projectContent, XmlParsedDocument doc)
 		{
 			if (doc.XDocument == null || doc.XDocument.RootElement == null) {
-				doc.Add (new Error (ErrorType.Error, 1, 1, "No root node found."));
+				doc.Add (new Error (ErrorType.Error, "No root node found.", 1, 1));
 				return;
 			}
 
 			XAttribute rootClass = doc.XDocument.RootElement.Attributes [new XName ("x", "Class")];
 			if (rootClass == null) {
-				doc.Add (new Error (ErrorType.Error, 1, 1, "Root node does not contain an x:Class attribute."));
+				doc.Add (new Error (ErrorType.Error, "Root node does not contain an x:Class attribute.", 1, 1));
 				return;
 			}
 
@@ -83,42 +79,47 @@ namespace MonoDevelop.Moonlight
 			
 			string rootNamespace, rootType, rootAssembly;
 			XamlG.ParseXmlns (rootClass.Value, out rootType, out rootNamespace, out rootAssembly);
-			
-			CompilationUnit cu = new CompilationUnit (doc.FileName);
-			doc.CompilationUnit = cu;
+
+			var cu = new DefaultParsedDocument (doc.FileName);
 
 			DomRegion rootRegion = doc.XDocument.RootElement.Region;
 			if (doc.XDocument.RootElement.IsClosed)
-				rootRegion.End = doc.XDocument.RootElement.ClosingTag.Region.End;
+				rootRegion = new DomRegion (doc.XDocument.RootElement.Region.FileName, doc.XDocument.RootElement.Region.Begin, doc.XDocument.RootElement.ClosingTag.Region.End); 
 			
-			DomType declType = new DomType (cu, ClassType.Class, Modifiers.Partial | Modifiers.Public, rootType,
-			                                doc.XDocument.RootElement.Region.Start, rootNamespace, rootRegion);
-			cu.Add (declType);
+			var declType = new DefaultTypeDefinition (projectContent, rootNamespace, rootType) {
+				Kind = TypeKind.Class,
+				Accessibility = Accessibility.Public,
+				Region = rootRegion
+			};
+			cu.TopLevelTypeDefinitions.Add (declType);
 			
-			DomMethod initcomp = new DomMethod ();
-			initcomp.Name = "InitializeComponent";
-			initcomp.Modifiers = Modifiers.Public;
-			initcomp.ReturnType = DomReturnType.Void;
-			declType.Add (initcomp);
+			var initcomp = new DefaultMethod (declType, "InitializeComponent") {
+				ReturnType = KnownTypeReference.Void,
+				Accessibility = Accessibility.Public
+			};
+			declType.Methods.Add (initcomp);
 			
-			DomField _contentLoaded = new DomField ("_contentLoaded");
-			_contentLoaded.ReturnType = new DomReturnType ("System.Boolean");
+			var _contentLoaded = new DefaultField (declType, "_contentLoaded") {
+				ReturnType = KnownTypeReference.Boolean
+			};
+// was missing in the original code: correct ? 
+//			declType.Fields.Add (_contentLoaded);
 
 			if (isApplication)
 				return;
 			
-			cu.Add (new DomUsing (DomRegion.Empty, "System"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Documents"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Input"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media.Animation"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Shapes"));
-			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls.Primitives"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Documents"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Input"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media.Animation"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Shapes"));
+//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls.Primitives"));
 			
-//			Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
-//			namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";
+	//		Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
+	//		namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";
 			
 			XName nameAtt = new XName ("x", "Name");
 			
@@ -127,9 +128,9 @@ namespace MonoDevelop.Moonlight
 				if (name != null && name.IsComplete) {
 					string type = ResolveType (el);
 					if (type == null || type.Length == 0)
-						doc.Add (new Error (ErrorType.Error, el.Region.Start, "Could not find namespace for '" + el.Name.FullName + "'."));
+						cu.Add (new Error (ErrorType.Error, "Could not find namespace for '" + el.Name.FullName + "'.", el.Region.Begin));
 					else
-						declType.Add (new DomField (name.Value, Modifiers.Internal, el.Region.Start, new DomReturnType (type)));
+						declType.Fields.Add (new DefaultField (declType, name.Value) { Accessibility = Accessibility.Internal, Region = el.Region, ReturnType = new GetClassTypeReference (type, 0) });
 				}
 			}
 		}

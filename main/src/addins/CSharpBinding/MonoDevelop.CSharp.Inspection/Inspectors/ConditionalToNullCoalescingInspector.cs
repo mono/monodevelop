@@ -29,7 +29,7 @@ using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Inspection
 					if (match.IsMatch (node) && IsCandidate (node)) {
 						
 						AddResult (data,
-							new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
+							new DomRegion (node.StartLocation, node.EndLocation),
 							GettextCatalog.GetString ("Convert to '??' expression"),
 							delegate {
 								var expressions = GetExpressions (node);

@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation for IParameter.
 	/// </summary>
+	[Serializable]
 	public sealed class DefaultParameter : AbstractFreezable, IParameter, ISupportsInterning
 	{
 		string name = string.Empty;
@@ -104,14 +105,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public object GetDefaultValue(ITypeResolveContext context)
-		{
-			if (defaultValue == null)
-				throw new InvalidOperationException();
-			else
-				return defaultValue.GetValue(context);
-		}
-		
 		public DomRegion Region {
 			get { return region; }
 			set {
@@ -162,13 +155,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return type.GetHashCode() ^ (attributes != null ? attributes.GetHashCode() : 0) ^ (defaultValue != null ? defaultValue.GetHashCode() : 0);
+			return type.GetHashCode() ^ name.GetHashCode()
+				^ (attributes != null ? attributes.GetHashCode() : 0)
+				^ (defaultValue != null ? defaultValue.GetHashCode() : 0);
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			DefaultParameter p = other as DefaultParameter;
-			return p != null && type == p.type && attributes == p.attributes
+			return p != null && type == p.type && attributes == p.attributes && name == p.name
 				&& defaultValue == p.defaultValue && region == p.region && flags == p.flags;
 		}
 		

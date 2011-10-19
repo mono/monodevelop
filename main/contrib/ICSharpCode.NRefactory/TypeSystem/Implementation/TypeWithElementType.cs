@@ -20,9 +20,11 @@ using System;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
+	[Serializable]
 	public abstract class TypeWithElementType : AbstractType
 	{
-		protected readonly IType elementType;
+		[CLSCompliant(false)]
+		protected IType elementType;
 		
 		protected TypeWithElementType(IType elementType)
 		{

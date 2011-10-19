@@ -29,13 +29,12 @@ using System;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
 using Gtk;
-using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using System.Text;
-using MonoDevelop.Projects.CodeGeneration;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -83,15 +82,15 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IBaseMember> GetValidMembers ()
+			protected override IEnumerable<IEntity> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
 				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSpecialName)
+					if (field.IsSynthetic)
 						continue;
-					List<IMember> list = Options.EnclosingType.SearchMember (CreatePropertyName (field), true);
-					if (list == null || list.Count == 0)
+					var list = Options.EnclosingType.Fields.Where (f => f.Name == CreatePropertyName (field));;
+					if (!list.Any ())
 						yield return field;
 				}
 			}
@@ -101,12 +100,13 @@ namespace MonoDevelop.CodeGeneration
 				return char.ToUpper (member.Name[0]) + member.Name.Substring (1);
 			}
 			
-			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers)
 			{
+				yield return "todo";
 				
-				CodeGenerator generator = Options.Document.CreateCodeGenerator ();
-				foreach (IField field in includedMembers)
-					yield return generator.CreateFieldEncapsulation (Options.EnclosingType, field, CreatePropertyName (field), MonoDevelop.Projects.Dom.Modifiers.Public, ReadOnly);
+//				CodeGenerator generator = Options.Document.CreateCodeGenerator ();
+//				foreach (IField field in includedMembers)
+//					yield return generator.CreateFieldEncapsulation (Options.EnclosingType, field, CreatePropertyName (field), MonoDevelop.Projects.Dom.Modifiers.Public, ReadOnly);
 			}
 		}
 	}
