@@ -48,6 +48,7 @@ FILES =  \
 	Semantics/LocalResolveResult.cs \
 	Semantics/MemberResolveResult.cs \
 	Semantics/NamespaceResolveResult.cs \
+	Semantics/OperatorResolveResult.cs \
 	Semantics/ResolveResult.cs \
 	Semantics/TypeOfResolveResult.cs \
 	Semantics/TypeResolveResult.cs \

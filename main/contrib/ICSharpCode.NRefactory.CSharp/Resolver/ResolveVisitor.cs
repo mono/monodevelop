@@ -202,8 +202,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// to the correct state.
 		/// Otherwise, use <c>resolver.Scan(compilationUnit); var result = resolver.GetResolveResult(node);</c>
 		/// instead.
+		/// --
+		/// This method now is internal, because it is difficult to use correctly.
+		/// Users of the public API should use Scan()+GetResolveResult() instead.
 		/// </summary>
-		public ResolveResult Resolve(AstNode node)
+		internal ResolveResult Resolve(AstNode node)
 		{
 			if (node == null || node.IsNull)
 				return errorResult;
@@ -296,7 +299,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					Log.WriteLine("  Data not found.");
 				}
 			}
-			if (expr != null && conversion != Conversion.IdentityConversion)
+			if (expr != null && !expr.IsNull && conversion != Conversion.IdentityConversion)
 				navigator.ProcessConversion(expr, rr, conversion, targetType);
 		}
 		
@@ -576,7 +579,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult VisitFieldOrEventDeclaration(AttributedNode fieldOrEventDeclaration)
 		{
 			int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count;
-			ResolveResult result = null;
 			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
 					if (resolver.CurrentTypeDefinition != null) {
@@ -588,18 +590,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						resolver.CurrentMember = members.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));
 					}
 					
-					if (resolverEnabled && initializerCount == 1) {
-						result = Resolve(node);
-					} else {
-						Scan(node);
-					}
+					Scan(node);
 					
 					resolver.CurrentMember = null;
 				} else {
 					Scan(node);
 				}
 			}
-			return result;
+			return voidResult;
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitVariableInitializer(VariableInitializer variableInitializer, object data)
@@ -1033,8 +1031,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult left = Resolve(assignmentExpression.Left);
-				ResolveAndProcessConversion(assignmentExpression.Right, left.Type);
-				return new ResolveResult(left.Type);
+				ResolveResult right = Resolve(assignmentExpression.Right);
+				ProcessConversion(assignmentExpression.Right, right, left.Type);
+				var op = AssignmentExpression.GetLinqNodeType(assignmentExpression.Operator, resolver.CheckForOverflow);
+				return new OperatorResolveResult(left.Type, op, left, right);
 			} else {
 				ScanChildren(assignmentExpression);
 				return null;
@@ -1059,10 +1059,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult leftResult = Resolve(left);
 				ResolveResult rightResult = Resolve(right);
 				ResolveResult rr = resolver.ResolveBinaryOperator(binaryOperatorExpression.Operator, leftResult, rightResult);
-				BinaryOperatorResolveResult borr = rr as BinaryOperatorResolveResult;
-				if (borr != null) {
-					ProcessConversionResult(left, borr.Left as ConversionResolveResult);
-					ProcessConversionResult(right, borr.Right as ConversionResolveResult);
+				OperatorResolveResult orr = rr as OperatorResolveResult;
+				if (orr != null && orr.Operands.Count == 2) {
+					ProcessConversionResult(left, orr.Operands[0] as ConversionResolveResult);
+					ProcessConversionResult(right, orr.Operands[1] as ConversionResolveResult);
 				} else {
 					InvocationResolveResult irr = rr as InvocationResolveResult;
 					if (irr != null && irr.Arguments.Count == 2) {
@@ -1099,11 +1099,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Expression falseExpr = conditionalExpression.FalseExpression;
 				
 				ResolveResult rr = resolver.ResolveConditional(Resolve(condition), Resolve(trueExpr), Resolve(falseExpr));
-				ConditionalOperatorResolveResult corr = rr as ConditionalOperatorResolveResult;
-				if (corr != null) {
-					ProcessConversionResult(condition, corr.Condition as ConversionResolveResult);
-					ProcessConversionResult(trueExpr, corr.True as ConversionResolveResult);
-					ProcessConversionResult(falseExpr, corr.False as ConversionResolveResult);
+				OperatorResolveResult corr = rr as OperatorResolveResult;
+				if (corr != null && corr.Operands.Count == 3) {
+					ProcessConversionResult(condition, corr.Operands[0] as ConversionResolveResult);
+					ProcessConversionResult(trueExpr, corr.Operands[1] as ConversionResolveResult);
+					ProcessConversionResult(falseExpr, corr.Operands[2] as ConversionResolveResult);
 				}
 				return rr;
 			} else {
@@ -1368,9 +1368,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Expression expr = unaryOperatorExpression.Expression;
 				ResolveResult input = Resolve(expr);
 				ResolveResult rr = resolver.ResolveUnaryOperator(unaryOperatorExpression.Operator, input);
-				UnaryOperatorResolveResult uorr = rr as UnaryOperatorResolveResult;
-				if (uorr != null) {
-					ProcessConversionResult(expr, uorr.Input as ConversionResolveResult);
+				OperatorResolveResult uorr = rr as OperatorResolveResult;
+				if (uorr != null && uorr.Operands.Count == 1) {
+					ProcessConversionResult(expr, uorr.Operands[0] as ConversionResolveResult);
 				} else {
 					InvocationResolveResult irr = rr as InvocationResolveResult;
 					if (irr != null && irr.Arguments.Count == 1) {
@@ -1700,8 +1700,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return body.Parent; }
 			}
 			
-			internal override AstNode Body {
+			internal override AstNode BodyExpression {
 				get { return body; }
+			}
+			
+			public override ResolveResult Body {
+				get {
+					if (body is Expression) {
+						Analyze();
+						if (returnValues.Count == 1)
+							return returnValues[0];
+					}
+					return visitor.voidResult;
+				}
 			}
 			
 			public ExplicitlyTypedLambda(IList<IParameter> parameters, bool isAnonymousMethod, bool isAsync, CSharpResolver storedContext, ResolveVisitor visitor, AstNode body)
@@ -1833,6 +1844,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			readonly List<IParameter> parameters = new List<IParameter>();
 			
 			internal LambdaTypeHypothesis winningHypothesis;
+			internal ResolveResult bodyResult;
 			internal readonly ResolveVisitor parentVisitor;
 			
 			internal override bool IsUndecided {
@@ -1848,7 +1860,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			internal override AstNode Body {
+			internal override AstNode BodyExpression {
 				get {
 					if (selectClause != null)
 						return selectClause.Expression;
@@ -1857,11 +1869,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
+			public override ResolveResult Body {
+				get { return bodyResult; }
+			}
+			
 			private ImplicitlyTypedLambda(ResolveVisitor parentVisitor)
 			{
 				this.parentVisitor = parentVisitor;
 				this.storedContext = parentVisitor.resolver.Clone();
 				this.parsedFile = parentVisitor.parsedFile;
+				this.bodyResult = parentVisitor.voidResult;
 			}
 			
 			public ImplicitlyTypedLambda(LambdaExpression lambda, ResolveVisitor parentVisitor)
@@ -2043,7 +2060,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				visitor.AnalyzeLambda(lambda.Body, lambda.IsAsync, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
+				visitor.AnalyzeLambda(lambda.BodyExpression, lambda.IsAsync, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
 				visitor.resolver.PopBlock();
 				Log.Unindent();
 				Log.WriteLine("Finished analyzing " + ToString());
@@ -2081,6 +2098,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					throw new InvalidOperationException("Trying to merge conflicting hypotheses");
 				
 				lambda.winningHypothesis = this;
+				if (lambda.BodyExpression is Expression && returnValues.Count == 1) {
+					lambda.bodyResult = returnValues[0];
+				}
 				
 				Log.WriteLine("Applying return type {0} to implicitly-typed lambda {1}", returnType, lambda.LambdaExpression);
 				if (lambda.IsAsync)
@@ -2111,7 +2131,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					b.Append(lambda.Parameters[i].Name);
 				}
 				b.Append(") => ");
-				b.Append(lambda.Body.ToString());
+				b.Append(lambda.BodyExpression.ToString());
 				b.Append(']');
 				return b.ToString();
 			}
@@ -2123,7 +2143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			internal abstract bool IsUndecided { get; }
 			internal abstract AstNode LambdaExpression { get; }
-			internal abstract AstNode Body { get; }
+			internal abstract AstNode BodyExpression { get; }
 			
 			internal abstract void EnforceMerge(ResolveVisitor parentVisitor);
 		}
@@ -2393,6 +2413,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					type = MakeVarTypeReference(foreachStatement.InExpression, true);
 				}
 			} else {
+				Scan(foreachStatement.InExpression);
 				type = ResolveType(foreachStatement.VariableType);
 			}
 			IVariable v = resolver.AddVariable(type, MakeRegion(foreachStatement.VariableNameToken), foreachStatement.VariableName);
@@ -2452,15 +2473,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						result = new LocalResolveResult(v, type.Resolve(resolver.Context));
 						StoreResult(vi, result);
 					}
-					return result;
-				} else {
-					return null;
 				}
 			} else {
 				ITypeReference type = MakeTypeReference(variableDeclarationStatement.Type);
 
-				int initializerCount = variableDeclarationStatement.Variables.Count;
-				ResolveResult result = null;
 				for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == VariableDeclarationStatement.Roles.Variable) {
 						VariableInitializer vi = (VariableInitializer)node;
@@ -2470,18 +2486,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							cv = TypeSystemConvertVisitor.ConvertConstantValue(type, vi.Initializer, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.CurrentUsingScope);
 						}
 						resolver.AddVariable(type, MakeRegion(vi), vi.Name, cv);
-						
-						if (resolverEnabled && initializerCount == 1) {
-							result = Resolve(node);
-						} else {
-							Scan(node);
-						}
-					} else {
-						Scan(node);
 					}
+					Scan(node);
 				}
-				return result;
 			}
+			return voidResult;
 		}
 		#endregion
 		
@@ -2923,6 +2932,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override bool HasParameterList {
 				get { return true; }
+			}
+			
+			public override ResolveResult Body {
+				get { return bodyExpression; }
 			}
 			
 			public override IType GetInferredReturnType(IType[] parameterTypes)

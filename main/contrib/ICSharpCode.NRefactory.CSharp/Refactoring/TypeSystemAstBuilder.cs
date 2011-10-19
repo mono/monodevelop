@@ -238,8 +238,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 			
-			if (AlwaysUseShortTypeNames ||
-				(typeDef.DeclaringTypeDefinition != null && typeDef.DeclaringTypeDefinition.Equals (resolver.CurrentTypeDefinition))) {
+			if (AlwaysUseShortTypeNames) {
 				var shortResult = new SimpleType(typeDef.Name);
 				AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 				return shortResult;

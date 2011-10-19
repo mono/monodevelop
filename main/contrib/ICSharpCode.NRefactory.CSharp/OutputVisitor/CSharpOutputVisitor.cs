@@ -2418,7 +2418,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else if (childNode is OptionalNode) {
 				VisitOptionalNode((OptionalNode)childNode, data);
 			} else {
-				throw new InvalidOperationException ("Unknown node type in pattern");
+				WritePrimitiveValue(childNode);
 			}
 		}
 		#endregion

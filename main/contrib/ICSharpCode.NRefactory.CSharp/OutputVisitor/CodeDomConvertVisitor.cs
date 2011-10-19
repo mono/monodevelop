@@ -297,8 +297,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					break;
 				case BinaryOperatorType.Equality:
 				case BinaryOperatorType.InEquality:
-					BinaryOperatorResolveResult rr = Resolve(binaryOperatorExpression) as BinaryOperatorResolveResult;
-					if (rr != null && rr.Left.Type.IsReferenceType(context) == true) {
+					OperatorResolveResult rr = Resolve(binaryOperatorExpression) as OperatorResolveResult;
+					if (rr != null && rr.GetChildResults().Any(cr => cr.Type.IsReferenceType(context) == true)) {
 						if (binaryOperatorExpression.Operator == BinaryOperatorType.Equality)
 							op = CodeBinaryOperatorType.IdentityEquality;
 						else

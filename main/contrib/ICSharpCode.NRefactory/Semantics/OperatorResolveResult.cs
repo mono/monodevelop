@@ -18,53 +18,42 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.Utils
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// This class is used to prevent stack overflows by representing a 'busy' flag
-	/// that prevents reentrance when another call is running.
-	/// However, using a simple 'bool busy' is not thread-safe, so we use a
-	/// thread-static BusyManager.
+	/// Represents a unary/binary/ternary operator invocation.
 	/// </summary>
-	public static class BusyManager
+	public class OperatorResolveResult : ResolveResult
 	{
-		public struct BusyLock : IDisposable
+		readonly ExpressionType operatorType;
+		readonly ResolveResult[] operands;
+		
+		public OperatorResolveResult(IType resultType, ExpressionType expressionType, params ResolveResult[] operands)
+			: base(resultType)
 		{
-			public static readonly BusyLock Failed = new BusyLock(null);
-			
-			readonly List<object> objectList;
-			
-			public BusyLock(List<object> objectList)
-			{
-				this.objectList = objectList;
-			}
-			
-			public bool Success {
-				get { return objectList != null; }
-			}
-			
-			public void Dispose()
-			{
-				if (objectList != null) {
-					objectList.RemoveAt(objectList.Count - 1);
-				}
-			}
+			if (operands == null)
+				throw new ArgumentNullException("arguments");
+			this.operatorType = expressionType;
+			this.operands = operands;
 		}
 		
-		[ThreadStatic] static List<object> _activeObjects;
+		/// <summary>
+		/// Gets the operator type.
+		/// </summary>
+		public ExpressionType OperatorType {
+			get { return operatorType; }
+		}
 		
-		public static BusyLock Enter(object obj)
+		public IList<ResolveResult> Operands {
+			get { return operands; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
 		{
-			List<object> activeObjects = _activeObjects;
-			if (activeObjects == null)
-				activeObjects = _activeObjects = new List<object>();
-			for (int i = 0; i < activeObjects.Count; i++) {
-				if (activeObjects[i] == obj)
-					return BusyLock.Failed;
-			}
-			activeObjects.Add(obj);
-			return new BusyLock(activeObjects);
+			return operands;
 		}
 	}
 }

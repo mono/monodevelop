@@ -597,7 +597,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			cancellationToken.ThrowIfCancellationRequested();
 			
 			if (SharedTypes.Dynamic.Equals(expression.Type))
-				return new UnaryOperatorResolveResult(SharedTypes.Dynamic, op, expression);
+				return UnaryOperatorResolveResult(SharedTypes.Dynamic, op, expression);
 			
 			// C# 4.0 spec: §7.3.3 Unary operator overload resolution
 			string overloadableOperatorName = GetOverloadableOperatorName(op);
@@ -606,11 +606,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					case UnaryOperatorType.Dereference:
 						PointerType p = expression.Type as PointerType;
 						if (p != null)
-							return new UnaryOperatorResolveResult(p.ElementType, op, expression);
+							return UnaryOperatorResolveResult(p.ElementType, op, expression);
 						else
 							return ErrorResult;
 					case UnaryOperatorType.AddressOf:
-						return new UnaryOperatorResolveResult(new PointerType(expression.Type), op, expression);
+						return UnaryOperatorResolveResult(new PointerType(expression.Type), op, expression);
 					case UnaryOperatorType.Await:
 						ResolveResult getAwaiterMethodGroup = ResolveMemberAccess(expression, "GetAwaiter", EmptyList<IType>.Instance, true);
 						ResolveResult getAwaiterInvocation = ResolveInvocation(getAwaiterMethodGroup, new ResolveResult[0]);
@@ -618,9 +618,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (getResultMethodGroup != null) {
 							var or = getResultMethodGroup.PerformOverloadResolution(context, new ResolveResult[0], allowExtensionMethods: false, conversions: conversions);
 							IType awaitResultType = or.GetBestCandidateWithSubstitutedTypeArguments().ReturnType.Resolve(context);
-							return new UnaryOperatorResolveResult(awaitResultType, UnaryOperatorType.Await, expression);
+							return UnaryOperatorResolveResult(awaitResultType, UnaryOperatorType.Await, expression);
 						} else {
-							return new UnaryOperatorResolveResult(SharedTypes.UnknownType, UnaryOperatorType.Await, expression);
+							return UnaryOperatorResolveResult(SharedTypes.UnknownType, UnaryOperatorType.Await, expression);
 						}
 					default:
 						throw new ArgumentException("Invalid value for UnaryOperatorType", "op");
@@ -650,7 +650,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// C# 4.0 spec: §7.7.5 Prefix increment and decrement operators
 					TypeCode code = ReflectionHelper.GetTypeCode(type);
 					if ((code >= TypeCode.SByte && code <= TypeCode.Decimal) || type.Kind == TypeKind.Enum || type.Kind == TypeKind.Pointer)
-						return new UnaryOperatorResolveResult(expression.Type, op, expression);
+						return UnaryOperatorResolveResult(expression.Type, op, expression);
 					else
 						return new ErrorResolveResult(expression.Type);
 				case UnaryOperatorType.Plus:
@@ -670,7 +670,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
 							return CheckErrorAndResolveCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
 						} else {
-							return new UnaryOperatorResolveResult(expression.Type, op, expression);
+							return UnaryOperatorResolveResult(expression.Type, op, expression);
 						}
 					} else {
 						methodGroup = bitwiseComplementOperators;
@@ -702,8 +702,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new ConstantResolveResult(resultType, val);
 			} else {
 				expression = Convert(expression, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
-				return new UnaryOperatorResolveResult(resultType, op, expression);
+				return UnaryOperatorResolveResult(resultType, op, expression);
 			}
+		}
+		
+		OperatorResolveResult UnaryOperatorResolveResult(IType resultType, UnaryOperatorType op, ResolveResult expression)
+		{
+			return new OperatorResolveResult(resultType, UnaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow), expression);
 		}
 		#endregion
 		
@@ -863,7 +868,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (SharedTypes.Dynamic.Equals(lhs.Type) || SharedTypes.Dynamic.Equals(rhs.Type)) {
 				lhs = Convert(lhs, SharedTypes.Dynamic);
 				rhs = Convert(rhs, SharedTypes.Dynamic);
-				return new BinaryOperatorResolveResult(SharedTypes.Dynamic, lhs, op, rhs);
+				return BinaryOperatorResolveResult(SharedTypes.Dynamic, lhs, op, rhs);
 			}
 			
 			// C# 4.0 spec: §7.3.4 Binary operator overload resolution
@@ -954,9 +959,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 						
 						if (lhsType.Kind == TypeKind.Delegate && TryConvert(ref rhs, lhsType)) {
-							return new BinaryOperatorResolveResult(lhsType, lhs, op, rhs);
+							return BinaryOperatorResolveResult(lhsType, lhs, op, rhs);
 						} else if (rhsType.Kind == TypeKind.Delegate && TryConvert(ref lhs, rhsType)) {
-							return new BinaryOperatorResolveResult(rhsType, lhs, op, rhs);
+							return BinaryOperatorResolveResult(rhsType, lhs, op, rhs);
 						}
 						
 						if (lhsType is PointerType) {
@@ -1000,16 +1005,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 						
 						if (lhsType.Kind == TypeKind.Delegate && TryConvert(ref rhs, lhsType)) {
-							return new BinaryOperatorResolveResult(lhsType, lhs, op, rhs);
+							return BinaryOperatorResolveResult(lhsType, lhs, op, rhs);
 						} else if (rhsType.Kind == TypeKind.Delegate && TryConvert(ref lhs, rhsType)) {
-							return new BinaryOperatorResolveResult(rhsType, lhs, op, rhs);
+							return BinaryOperatorResolveResult(rhsType, lhs, op, rhs);
 						}
 						
 						if (lhsType is PointerType) {
 							if (rhsType is PointerType) {
 								IType int64 = KnownTypeReference.Int64.Resolve(context);
 								if (lhsType.Equals(rhsType)) {
-									return new BinaryOperatorResolveResult(int64, lhs, op, rhs);
+									return BinaryOperatorResolveResult(int64, lhs, op, rhs);
 								} else {
 									return new ErrorResolveResult(int64);
 								}
@@ -1046,7 +1051,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, rhsType, isNullable, lhs, rhs);
 						} else if (lhsType is PointerType && rhsType is PointerType) {
-							return new BinaryOperatorResolveResult(KnownTypeReference.Boolean.Resolve(context), lhs, op, rhs);
+							return BinaryOperatorResolveResult(KnownTypeReference.Boolean.Resolve(context), lhs, op, rhs);
 						}
 						switch (op) {
 							case BinaryOperatorType.Equality:
@@ -1132,8 +1137,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				lhs = Convert(lhs, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
 				rhs = Convert(rhs, m.Parameters[1].Type, builtinOperatorOR.ArgumentConversions[1]);
-				return new BinaryOperatorResolveResult(resultType, lhs, op, rhs);
+				return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 			}
+		}
+		
+		ResolveResult BinaryOperatorResolveResult(IType resultType, ResolveResult lhs, BinaryOperatorType op, ResolveResult rhs)
+		{
+			return new OperatorResolveResult(resultType, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow), lhs, rhs);
 		}
 		#endregion
 		
@@ -1156,7 +1166,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return ResolveBinaryOperator(op, lhs, rhs);
 			}
 			IType resultType = KnownTypeReference.Boolean.Resolve(context);
-			return new BinaryOperatorResolveResult(resultType, lhs, op, rhs);
+			return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 		}
 		
 		/// <summary>
@@ -1177,7 +1187,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return CheckErrorAndResolveCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
 			}
 			IType resultType = MakeNullable(elementType, isNullable);
-			return new BinaryOperatorResolveResult(resultType, lhs, BinaryOperatorType.Subtract, rhs);
+			return BinaryOperatorResolveResult(resultType, lhs, BinaryOperatorType.Subtract, rhs);
 		}
 		
 		/// <summary>
@@ -1203,7 +1213,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return CheckErrorAndResolveCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
 			}
 			IType resultType = MakeNullable(enumType, isNullable);
-			return new BinaryOperatorResolveResult(resultType, lhs, op, rhs);
+			return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 		}
 		
 		IType MakeNullable(IType type, bool isNullable)
@@ -1765,14 +1775,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (NullableType.IsNullable(lhs.Type)) {
 				IType a0 = NullableType.GetUnderlyingType(lhs.Type);
 				if (TryConvert(ref rhs, a0)) {
-					return new BinaryOperatorResolveResult(a0, lhs, BinaryOperatorType.NullCoalescing, rhs);
+					return BinaryOperatorResolveResult(a0, lhs, BinaryOperatorType.NullCoalescing, rhs);
 				}
 			}
 			if (TryConvert(ref rhs, lhs.Type)) {
-				return new BinaryOperatorResolveResult(lhs.Type, lhs, BinaryOperatorType.NullCoalescing, rhs);
+				return BinaryOperatorResolveResult(lhs.Type, lhs, BinaryOperatorType.NullCoalescing, rhs);
 			}
 			if (TryConvert(ref lhs, rhs.Type)) {
-				return new BinaryOperatorResolveResult(rhs.Type, lhs, BinaryOperatorType.NullCoalescing, rhs);
+				return BinaryOperatorResolveResult(rhs.Type, lhs, BinaryOperatorType.NullCoalescing, rhs);
 			} else {
 				return new ErrorResolveResult(lhs.Type);
 			}
@@ -2712,7 +2722,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					else if (val == false)
 						return falseExpression;
 				}
-				return new ConditionalOperatorResolveResult(resultType, condition, trueExpression, falseExpression);
+				return new OperatorResolveResult(resultType, System.Linq.Expressions.ExpressionType.Conditional,
+				                                 condition, trueExpression, falseExpression);
 			} else {
 				return new ErrorResolveResult(resultType);
 			}

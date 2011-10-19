@@ -210,23 +210,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get {
 				IEnumerable<IMember> members = this.Fields;
 				return members
-					.Concat (this.Properties)
-					.Concat (this.Methods)
-					.Concat (this.Events);
+					.Concat(this.Properties)
+					.Concat(this.Methods)
+					.Concat(this.Events);
 			}
 		}
 		
 		[NonSerialized]
-		string cachedFullName = null;
+		volatile string cachedFullName;
+		
 		public string FullName {
 			get {
-				if (cachedFullName != null)
-					return cachedFullName;
-				if (declaringTypeDefinition != null) 
-					return cachedFullName = declaringTypeDefinition.FullName + "." + this.name;
-				if (string.IsNullOrEmpty(ns))
-					return this.name;
-				return cachedFullName = this.ns + "." + this.name;
+				string fullName = this.cachedFullName;
+				if (fullName == null) {
+					// Initialize the cache on demand. Because this might happen after the type definition gets frozen,
+					// the initialization must be thread-safe.
+					if (declaringTypeDefinition != null) {
+						fullName = declaringTypeDefinition.FullName + "." + this.name;
+					} else if (string.IsNullOrEmpty(ns)) {
+						fullName = this.name;
+					} else {
+						fullName = this.ns + "." + this.name;
+					}
+					this.cachedFullName = fullName;
+				}
+				return fullName;
 			}
 		}
 		

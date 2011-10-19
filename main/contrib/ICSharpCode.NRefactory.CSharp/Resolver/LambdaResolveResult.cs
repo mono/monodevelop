@@ -73,5 +73,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// otherwise returns <see cref="Conversion.None"/>.
 		/// </returns>
 		public abstract Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions);
+		
+		/// <summary>
+		/// Gets the resolve result for the lambda body.
+		/// Returns a resolve result for 'void' for statement lambdas.
+		/// </summary>
+		public abstract ResolveResult Body { get; }
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			return new [] { this.Body };
+		}
 	}
 }

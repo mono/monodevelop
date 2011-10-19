@@ -91,7 +91,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (int i = 0; i < typeArgs.Length; i++) {
 				typeArgs[i] = typeArguments[i].Resolve(context);
 			}
-			ResolveResult rr = r.ResolveMemberType(targetRR, identifier, typeArgs);
+			ResolveResult rr;
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					rr = r.ResolveMemberType(targetRR, identifier, typeArgs);
+				} else {
+					// This can happen for "class Test : $Test.Base$ { public class Base {} }":
+					return ErrorResolveResult.UnknownError; // don't cache this error
+				}
+			}
 			if (cacheManager != null)
 				cacheManager.SetShared(this, rr);
 			return rr;

@@ -360,7 +360,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (searchTerm == null && node is PrimitiveType)
 					return true;
 				
-				return node is TypeDeclaration;
+				return node is TypeDeclaration || node is DelegateDeclaration;
 			}
 			
 			internal override bool IsMatch(ResolveResult rr)
@@ -418,7 +418,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool CanMatch(AstNode node)
 			{
-				return node is FieldDeclaration || node is VariableInitializer || base.CanMatch(node);
+				if (node is VariableInitializer) {
+					return node.Parent is FieldDeclaration;
+				}
+				return base.CanMatch(node);
 			}
 		}
 		
@@ -454,7 +457,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool CanMatch(AstNode node)
 			{
-				return node is EventDeclaration || base.CanMatch(node);
+				if (node is VariableInitializer) {
+					return node.Parent is EventDeclaration;
+				}
+				return node is CustomEventDeclaration || base.CanMatch(node);
 			}
 		}
 		#endregion
@@ -481,6 +487,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return new FindMethodReferences(method, typeof(QueryOrdering));
 				case "GroupBy":
 					return new FindMethodReferences(method, typeof(QueryGroupClause));
+				case "Invoke":
+					if (method.DeclaringTypeDefinition != null && method.DeclaringTypeDefinition.Kind == TypeKind.Delegate)
+						return new FindMethodReferences(method, typeof(InvocationExpression));
+					else
+						return new FindMethodReferences(method);
 				default:
 					return new FindMethodReferences(method);
 			}
@@ -501,6 +512,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool CanMatch(AstNode node)
 			{
+				if (specialNodeType != null && node.GetType() == specialNodeType)
+					return true;
+				
 				InvocationExpression ie = node as InvocationExpression;
 				if (ie != null) {
 					Expression target = ResolveVisitor.UnpackParenthesizedExpression(ie.Target);
@@ -517,12 +531,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (pre != null)
 						return pre.MemberName == method.Name;
 				}
-				if (node is MethodDeclaration)
-					return true;
-				if (specialNodeType != null)
-					return specialNodeType.IsInstanceOfType(node);
-				else
-					return false;
+				return node is MethodDeclaration;
 			}
 			
 			internal override bool IsMatch(ResolveResult rr)

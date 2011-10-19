@@ -68,7 +68,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			SetOffset (offset);
 			if (offset > 0) {
 				char lastChar = document.GetCharAt (offset - 1);
-				return MagicKeyCompletion (lastChar, controlSpace) ?? Enumerable.Empty<ICompletionData> ();
+				var result = MagicKeyCompletion (lastChar, controlSpace) ?? Enumerable.Empty<ICompletionData> ();
+				if (controlSpace && char.IsWhiteSpace (lastChar)) {
+					offset -= 2;
+					while (offset >= 0 && char.IsWhiteSpace (document.GetCharAt (offset)))
+						offset--;
+					if (offset > 0) {
+						var nonWsResult = MagicKeyCompletion (document.GetCharAt (offset), controlSpace);
+						if (nonWsResult != null)
+							result = result.Concat (nonWsResult);
+					}
+				}
+				
+				return result;
 			}
 			return Enumerable.Empty<ICompletionData> ();
 		}

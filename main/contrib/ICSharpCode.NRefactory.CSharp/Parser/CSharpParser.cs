@@ -190,7 +190,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						return new PrimitiveType ("new", Convert (sce.Location));
 					}
 				}
-				System.Console.WriteLine ("Error while converting :" + typeName +" at " + typeName.Location + " - unknown type name");
+				System.Console.WriteLine ("Error while converting :" + typeName + " - unknown type name");
 				System.Console.WriteLine (Environment.StackTrace);
 				return new SimpleType ("unknown");
 			}
