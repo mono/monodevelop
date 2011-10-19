@@ -139,6 +139,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 						Gtk.TreeIter parentIter;
 						if (widget.treeStore.IterParent (out parentIter, iter))
 							parent = (PObject)widget.treeStore.GetValue (parentIter, 1);
+						else
+							parent = widget.nsDictionary;
 					}
 					
 					if (parent is PArray) {
