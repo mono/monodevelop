@@ -9,6 +9,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler
+open Mono.Addins
 
 type FSharpLanguageBinding() =
   static let LanguageName = "F#"
@@ -29,7 +30,7 @@ type FSharpLanguageBinding() =
       // Trigger full parse using the current configuration
       let config = IdeApp.Workspace.ActiveConfiguration
       Debug.tracef "Parsing" "Triggering full parse from OnIdle"
-      LanguageService.Service.TriggerParse(doc.FileName, doc.TextEditor.Text, doc.Dom, config, full=true)
+      LanguageService.Service.TriggerParse(doc.FileName, doc.Editor.Text, doc.Dom, config, full=true)
     true
 
   // Create or remove Idle timer 
@@ -80,5 +81,8 @@ type FSharpLanguageBinding() =
       
     member x.GetSupportedClrVersions() =
       [| ClrVersion.Net_2_0; ClrVersion.Net_4_0 |]
+
+    member x.GetImplicitAssemblyReferences() =
+      Seq.singleton (AddinManager.CurrentAddin.GetFilePath("FSharp.Core.dll"))
 
     member x.ProjectStockIcon = "md-fs-project"

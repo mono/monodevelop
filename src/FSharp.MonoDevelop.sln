@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FSharp.MonoDevelop", "FSharp.MonoDevelop.fsproj", "{4c10f8f9-3816-4647-ba6e-85f5de39883a}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSharp.MonoDevelop.Gui", "Gui\FSharp.MonoDevelop.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"

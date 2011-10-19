@@ -74,7 +74,7 @@ module Reflection =
 
   /// Wrapper type for the 'FSharp.Compiler.dll' assembly - expose types we use
   type FSharpCompiler private () =      
-    static let asm = Assembly.Load("FSharp.Compiler, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809")
+    static let asm = Assembly.Load("FSharp.Compiler, Version=4.0.0.0")
     static member InteractiveChecker = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.InteractiveChecker")
     static member IsResultObsolete = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.IsResultObsolete")
     static member CheckOptions = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.CheckOptions")
@@ -84,7 +84,7 @@ module Reflection =
     
   /// Wrapper type for the 'FSharp.Compiler.Server.Shared.dll' assembly - expose types we use
   type FSharpCompilerServerShared private () =      
-    static let asm = Assembly.Load("FSharp.Compiler.Server.Shared, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809")
+    static let asm = Assembly.Load("FSharp.Compiler.Server.Shared, Version=4.0.0.0")
     static member InteractiveServer = asm.GetType("Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer")
 
 // --------------------------------------------------------------------------------------

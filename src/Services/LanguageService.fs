@@ -164,21 +164,21 @@ type internal TypedParseResult(info:TypeCheckInfo) =
   /// Get declarations at the current location in the specified document
   /// (used to implement dot-completion in 'FSharpTextEditorCompletion.fs')
   member x.GetDeclarations(doc:Document) = 
-    let lineStr = doc.TextEditor.GetLineText(doc.TextEditor.CursorLine)
+    let lineStr = doc.Editor.GetLineText(doc.Editor.Caret.Line)
     
     // Get the long identifier before the current location
     // 'residue' is the part after the last dot and 'longName' is before
     // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
-    let lookBack = Parsing.createBackStringReader lineStr (doc.TextEditor.CursorColumn - 2)
+    let lookBack = Parsing.createBackStringReader lineStr (doc.Editor.Caret.Column - 2)
     let residue, longName = 
       lookBack 
       |> Parsing.getFirst Parsing.parseBackIdentWithResidue
     
     Debug.tracef "Result" "GetDeclarations: column: %d, ident: %A\n    Line: %s" 
-      (doc.TextEditor.CursorLine - 1) (longName, residue) lineStr
+      (doc.Editor.Caret.Line - 1) (longName, residue) lineStr
     let res = 
       info.GetDeclarations
-        ( (doc.TextEditor.CursorLine - 1, doc.TextEditor.CursorColumn - 1), 
+        ( (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), 
           lineStr, (longName, residue), 0) // 0 is tokenTag, which is ignored in this case
 
     Debug.tracef "Result" "GetDeclarations: returning %d items" res.Items.Length
@@ -412,7 +412,7 @@ type internal LanguageService private () =
     Debug.tracef "Errors" "Trigger update after completion"
     let doc = IdeApp.Workbench.ActiveDocument
     if doc.FileName.FullPath = file.FullPath then
-      ProjectDomService.Parse(file.ToString(), "text/x-fsharp", fun () -> doc.TextEditor.Text) |> ignore
+      ProjectDomService.Parse(file.ToString(), fun () -> doc.Editor.Text) |> ignore
     updatingErrors <- false
 
   // ------------------------------------------------------------------------------------

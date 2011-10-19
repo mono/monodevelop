@@ -10,7 +10,7 @@ type FSharpParsedDocument(fileName) =
   inherit ParsedDocument(fileName)
   
 type FSharpParser() =
-  inherit AbstractParser("F#", "text/x-fsharp")
+  inherit AbstractParser()
   
   override x.CanParse(fileName) =
     Common.supportedExtension(IO.Path.GetExtension(fileName))
