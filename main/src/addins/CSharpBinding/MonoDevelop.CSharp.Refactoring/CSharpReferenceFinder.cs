@@ -4,6 +4,7 @@
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,6 +38,8 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using Mono.TextEditor;
+
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -158,25 +161,41 @@ namespace MonoDevelop.CSharp.Refactoring
 			List<MemberReference> refs = new List<MemberReference> ();
 			Project prj = null;
 			ITypeResolveContext ctx = null;
+			IProjectContent pctx = null;
 			foreach (var opendoc in openDocuments) {
 				refs.AddRange (FindInDocument (opendoc.Item3));
 			}
 			foreach (var file in files) {
-				var editor = TextFileProvider.Instance.GetTextEditorData (file.Item2);
-				
-				var unit = new CSharpParser ().Parse (editor);
-				if (unit == null)
+				string text = File.ReadAllText (file.Item2);
+				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0)
 					continue;
 				
-				var visitor = new TypeSystemConvertVisitor (file.Item1, file.Item2);
-				var curPrj = file.Item1.Annotation<Project> ();
-				if (prj != curPrj) {
-					prj = curPrj;
-					ctx = prj != null ? TypeSystemService.GetContext (prj) : null;
+				using (var editor = new TextEditorData ()) {
+					editor.Text = text;
+					var unit = new CSharpParser ().Parse (editor);
+					if (unit == null)
+						continue;
+					var curPrj = file.Item1.Annotation<Project> ();
+					if (prj != curPrj) {
+						prj = curPrj;
+						ctx = prj != null ? TypeSystemService.GetContext (prj) : null;
+						pctx = prj != null ? TypeSystemService.GetProjectContext (prj) : null;
+					}
+					var storedFile = pctx != null ? pctx.GetFile(file.Item2) : null;
+					var parsedFile = storedFile as CSharpParsedFile;
+					
+					if (parsedFile == null && storedFile is ParsedDocumentDecorator)
+						parsedFile = ((ParsedDocumentDecorator)storedFile).ParsedFile as CSharpParsedFile;
+					
+					if (parsedFile == null) {
+						var visitor = new TypeSystemConvertVisitor (file.Item1, file.Item2);
+						unit.AcceptVisitor (visitor, null);
+						parsedFile = visitor.ParsedFile;
+					}
+					
+					var curCtx = ctx ?? file.Item1;
+					refFinder.FindReferencesInFile (scopes, parsedFile, unit, curCtx, (astNode, result) => refs.Add (GetReference (result, astNode, file.Item2, editor)));
 				}
-				var curCtx = ctx ?? file.Item1;
-				unit.AcceptVisitor (visitor, null);
-				refFinder.FindReferencesInFile (scopes, visitor.ParsedFile, unit, curCtx, (astNode, result) => refs.Add (GetReference (result, astNode, file.Item2, editor)));
 			}
 			
 			return refs;
