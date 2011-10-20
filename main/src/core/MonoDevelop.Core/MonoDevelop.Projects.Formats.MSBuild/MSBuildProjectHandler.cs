@@ -387,7 +387,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					File.Copy (file, Path.Combine (backupDir, Path.GetFileName (file)));
 			}
 			
-			if (!st.MigrationHandler.Migrate (p, fileName, language))
+			if (!st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language))
 				throw new Exception ("Could not migrate the project");
 		}
 		

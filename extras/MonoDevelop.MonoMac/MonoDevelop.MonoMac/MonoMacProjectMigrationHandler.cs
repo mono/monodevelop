@@ -47,7 +47,7 @@ namespace MonoDevelop.MonoMac
 			return new string[] { filename };
 		}
 		
-		public bool Migrate (MSBuildProject project, string fileName, string language)
+		public bool Migrate (IProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language)
 		{
 			// Migrate 'Page' build action to 'InterfaceDefinition' (see Bug 147 - XIB files need Build Action other than Page)
 			// NOTE: Work around mono bug by calling ToList() before iterating: http://bugzilla.xamarin.com/show_bug.cgi?id=520
