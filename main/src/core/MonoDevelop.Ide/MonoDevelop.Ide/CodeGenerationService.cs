@@ -91,7 +91,8 @@ namespace MonoDevelop.Ide
 
 			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.CompilationUnit.GetTypeAt (type.Location));
 			var generatedCode = generator.CreateMemberImplementation (type, newMember, implementExplicit);
-			suitableInsertionPoint.Insert (data, generatedCode.Code);
+			var code = generatedCode.Code;
+			if (!String.IsNullOrEmpty(code)) suitableInsertionPoint.Insert (data, code);
 			if (!isOpen) {
 				try {
 					File.WriteAllText (type.CompilationUnit.FileName, data.Text);
