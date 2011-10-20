@@ -10,7 +10,8 @@ REFS =  \
 	-r:System.Core \
 	-r:System.Xml \
 	-r:System.Xml.Linq
-	
+
+SIGNING_KEY=$(srcdir)/../ICSharpCode.NRefactory/ICSharpCode.NRefactory.snk
 
 FILES =  \
 	Ast/Annotations.cs \
@@ -83,7 +84,7 @@ FILES =  \
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources)
-	$(CSC) $(CSC_FLAGS) -define:NET35 -debug -out:$@ -target:library $(REFS) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -keyfile:"$(SIGNING_KEY)" -define:NET35 -debug -out:$@ -target:library $(REFS) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
