@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 using Mono.Cecil.Metadata;
 
 namespace Mono.Debugger.Soft
@@ -100,6 +101,11 @@ namespace Mono.Debugger.Soft
 
 	class ThreadInfo {
 		public bool is_thread_pool;
+	}
+
+	struct ObjectRefInfo {
+		public long type_id;
+		public long domain_id;
 	}
 
 	enum ValueTypeId {
@@ -322,6 +328,11 @@ namespace Mono.Debugger.Soft
 
 		internal const int HEADER_LENGTH = 11;
 
+		static readonly bool EnableConnectionLogging = !String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONO_SDB_LOG"));
+		static int ConnectionId;
+		readonly StreamWriter LoggingStream = EnableConnectionLogging ? 
+			new StreamWriter (string.Format ("/tmp/sdb_conn_log_{0}", ConnectionId++), false) : null;
+
 		/*
 		 * Th version of the wire-protocol implemented by the library. The library
 		 * and the debuggee can communicate if they implement the same major version.
@@ -330,7 +341,7 @@ namespace Mono.Debugger.Soft
 		 * with newer runtimes, and vice versa.
 		 */
 		internal const int MAJOR_VERSION = 2;
-		internal const int MINOR_VERSION = 3;
+		internal const int MINOR_VERSION = 6;
 
 		enum WPSuspendPolicy {
 			NONE = 0,
@@ -467,7 +478,12 @@ namespace Mono.Debugger.Soft
 			/* FIXME: Merge into GET_SOURCE_FILES when the major protocol version is increased */
 			GET_SOURCE_FILES_2 = 13,
 			/* FIXME: Merge into GET_VALUES when the major protocol version is increased */
-			GET_VALUES_2 = 14
+			GET_VALUES_2 = 14,
+			CMD_TYPE_GET_METHODS_BY_NAME_FLAGS = 15,
+		}
+
+		enum BindingFlagsExtensions {
+			BINDING_FLAGS_IGNORE_CASE = 0x70000000,
 		}
 
 		enum CmdStackFrame {
@@ -492,7 +508,8 @@ namespace Mono.Debugger.Soft
 			IS_COLLECTED = 3,
 			GET_ADDRESS = 4,
 			GET_DOMAIN = 5,
-			SET_VALUES = 6
+			SET_VALUES = 6,
+			GET_INFO = 7,
 		}
 
 		class Header {
@@ -822,6 +839,9 @@ namespace Mono.Debugger.Soft
 			}
 
 			public PacketWriter WriteString (string s) {
+				if (s == null)
+					return WriteInt (-1);
+
 				encode_int (data, s.Length, ref offset);
 				byte[] b = Encoding.UTF8.GetBytes (s);
 				MakeRoom (b.Length);
@@ -1210,36 +1230,118 @@ namespace Mono.Debugger.Soft
 			get; set;
 		}
 
+		static String CommandString (CommandSet command_set, int command)
+		{
+			string cmd;
+			switch (command_set) {
+			case CommandSet.VM:
+				cmd = ((CmdVM)command).ToString ();
+				break;
+			case CommandSet.OBJECT_REF:
+				cmd = ((CmdObjectRef)command).ToString ();
+				break;
+			case CommandSet.STRING_REF:
+				cmd = ((CmdStringRef)command).ToString ();
+				break;
+			case CommandSet.THREAD:
+				cmd = ((CmdThread)command).ToString ();
+				break;
+			case CommandSet.ARRAY_REF:
+				cmd = ((CmdArrayRef)command).ToString ();
+				break;
+			case CommandSet.EVENT_REQUEST:
+				cmd = ((CmdEventRequest)command).ToString ();
+				break;
+			case CommandSet.STACK_FRAME:
+				cmd = ((CmdStackFrame)command).ToString ();
+				break;
+			case CommandSet.APPDOMAIN:
+				cmd = ((CmdAppDomain)command).ToString ();
+				break;
+			case CommandSet.ASSEMBLY:
+				cmd = ((CmdAssembly)command).ToString ();
+				break;
+			case CommandSet.METHOD:
+				cmd = ((CmdMethod)command).ToString ();
+				break;
+			case CommandSet.TYPE:
+				cmd = ((CmdType)command).ToString ();
+				break;
+			case CommandSet.MODULE:
+				cmd = ((CmdModule)command).ToString ();
+				break;
+			case CommandSet.EVENT:
+				cmd = ((CmdEvent)command).ToString ();
+				break;
+			default:
+				cmd = command.ToString ();
+				break;
+			}
+			return string.Format ("[{0} {1}]", command_set, cmd);
+		}
+
+		long total_protocol_ticks;
+
+		void LogPacket (int packet_id, byte[] encoded_packet, byte[] reply_packet, CommandSet command_set, int command, Stopwatch watch) {
+			watch.Stop ();
+			total_protocol_ticks += watch.ElapsedTicks;
+			var ts = TimeSpan.FromTicks (total_protocol_ticks);
+			string msg = string.Format ("Packet: {0} sent: {1} received: {2} ms: {3} total ms: {4} {5}",
+			   packet_id, encoded_packet.Length, reply_packet.Length, watch.ElapsedMilliseconds,
+			   (ts.Seconds * 1000) + ts.Milliseconds,
+			   CommandString (command_set, command));
+
+			LoggingStream.WriteLine (msg);
+			LoggingStream.Flush ();
+		}
+
 		/* Send a request and call cb when a result is received */
 		int Send (CommandSet command_set, int command, PacketWriter packet, Action<PacketReader> cb) {
 			int id = IdGenerator;
 
+			Stopwatch watch = null;
+			if (EnableConnectionLogging)
+				watch = Stopwatch.StartNew ();
+
+			byte[] encoded_packet;
+			if (packet == null)
+				encoded_packet = EncodePacket (id, (int)command_set, command, null, 0);
+			else
+				encoded_packet = EncodePacket (id, (int)command_set, command, packet.Data, packet.Offset);
+
 			lock (reply_packets_monitor) {
 				reply_cbs [id] = delegate (int packet_id, byte[] p) {
+					if (EnableConnectionLogging)
+						LogPacket (packet_id, encoded_packet, p, command_set, command, watch);
 					/* Run the callback on a tp thread to avoid blocking the receive thread */
 					PacketReader r = new PacketReader (p);
 					cb.BeginInvoke (r, null, null);
 				};
 			}
-						
-			if (packet == null)
-				WritePacket (EncodePacket (id, (int)command_set, command, null, 0));
-			else
-				WritePacket (EncodePacket (id, (int)command_set, command, packet.Data, packet.Offset));
+
+			WritePacket (encoded_packet);
 
 			return id;
 		}
 
 		PacketReader SendReceive (CommandSet command_set, int command, PacketWriter packet) {
 			int id = IdGenerator;
+			Stopwatch watch = null;
 
 			if (disconnected)
 				throw new VMDisconnectedException ();
 
+			if (EnableConnectionLogging)
+				watch = Stopwatch.StartNew ();
+
+			byte[] encoded_packet;
+
 			if (packet == null)
-				WritePacket (EncodePacket (id, (int)command_set, command, null, 0));
+				encoded_packet = EncodePacket (id, (int)command_set, command, null, 0);
 			else
-				WritePacket (EncodePacket (id, (int)command_set, command, packet.Data, packet.Offset));
+				encoded_packet = EncodePacket (id, (int)command_set, command, packet.Data, packet.Offset);
+
+			WritePacket (encoded_packet);
 
 			int packetId = id;
 
@@ -1250,6 +1352,9 @@ namespace Mono.Debugger.Soft
 						byte[] reply = reply_packets [packetId];
 						reply_packets.Remove (packetId);
 						PacketReader r = new PacketReader (reply);
+
+						if (EnableConnectionLogging)
+							LogPacket (packetId, encoded_packet, reply, command_set, command, watch);
 						if (r.ErrorCode != 0) {
 							if (ErrorHandler != null)
 								ErrorHandler (this, new ErrorHandlerEventArgs () { ErrorCode = (ErrorCode)r.ErrorCode });
@@ -1772,7 +1877,16 @@ namespace Mono.Debugger.Soft
 			PacketReader r = SendReceive (CommandSet.TYPE, (int)CmdType.GET_PROPERTY_CATTRS, new PacketWriter ().WriteId (id).WriteId (field_id).WriteId (attr_type_id));
 			return ReadCattrs (r);
 		}
-			
+
+		public long[] Type_GetMethodsByNameFlags (long id, string name, int flags, bool ignoreCase) {
+			flags |= ignoreCase ? (int)BindingFlagsExtensions.BINDING_FLAGS_IGNORE_CASE : 0;
+			PacketReader r = SendReceive (CommandSet.TYPE, (int)CmdType.CMD_TYPE_GET_METHODS_BY_NAME_FLAGS, new PacketWriter ().WriteId (id).WriteString (name).WriteInt (flags));
+			int len = r.ReadInt ();
+			long[] res = new long [len];
+			for (int i = 0; i < len; ++i)
+				res [i] = r.ReadId ();
+			return res;
+		}
 		/*
 		 * EVENTS
 		 */
@@ -1927,6 +2041,15 @@ namespace Mono.Debugger.Soft
 		internal long Object_GetAddress (long id) {
 			return SendReceive (CommandSet.OBJECT_REF, (int)CmdObjectRef.GET_ADDRESS, new PacketWriter ().WriteId (id)).ReadLong ();
 		}			
+
+		internal ObjectRefInfo Object_GetInfo (long id) {
+			ObjectRefInfo res = new ObjectRefInfo ();
+			PacketReader r = SendReceive (CommandSet.OBJECT_REF, (int)CmdObjectRef.GET_INFO, new PacketWriter ().WriteId (id));
+
+			res.type_id = r.ReadId ();
+			res.domain_id = r.ReadId ();
+			return res;
+		}
 
 	}
 	

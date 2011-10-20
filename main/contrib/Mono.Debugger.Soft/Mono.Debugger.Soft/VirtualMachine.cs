@@ -428,22 +428,29 @@ namespace Mono.Debugger.Soft
 					 * Obtain the domain/type of the object to determine the type of
 					 * object we need to create.
 					 */
-					if (domain_id == 0)
-						domain_id = conn.Object_GetDomain (id);
+					if (domain_id == 0 || type_id == 0) {
+						if (conn.Version.AtLeast (2, 5)) {
+							var info = conn.Object_GetInfo (id);
+							domain_id = info.domain_id;
+							type_id = info.type_id;
+						} else {
+							if (domain_id == 0)
+								domain_id = conn.Object_GetDomain (id);
+							if (type_id == 0)
+								type_id = conn.Object_GetType (id);
+						}
+					}
 					AppDomainMirror d = GetDomain (domain_id);
-
-					if (type_id == 0)
-						type_id = conn.Object_GetType (id);
 					TypeMirror t = GetType (type_id);
 
 					if (t.Assembly == d.Corlib && t.Namespace == "System.Threading" && t.Name == "Thread")
-						obj = new ThreadMirror (this, id);
+						obj = new ThreadMirror (this, id, t, d);
 					else if (t.Assembly == d.Corlib && t.Namespace == "System" && t.Name == "String")
-						obj = new StringMirror (this, id);
+						obj = new StringMirror (this, id, t, d);
 					else if (typeof (T) == typeof (ArrayMirror))
-						obj = new ArrayMirror (this, id);
+						obj = new ArrayMirror (this, id, t, d);
 					else
-						obj = new ObjectMirror (this, id);
+						obj = new ObjectMirror (this, id, t, d);
 					objects [id] = obj;
 				}
 				return (T)obj;
