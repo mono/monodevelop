@@ -289,7 +289,7 @@ namespace ThisOne {
 }
 
 ");
-			Assert.IsNull (provider);
+			Assert.IsTrue (provider == null || provider.Count == 0);
 		}
 		
 		[Test()]
@@ -654,6 +654,7 @@ class C : BaseClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsTrue (provider.Count > 0, "provider should not be empty.");
 			Assert.IsNotNull (provider.Find ("value"), "Should contain 'value'");
 		}
 		
@@ -1648,14 +1649,9 @@ class CastByExample
 			CompletionDataList provider = CreateProvider (
 @"
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
-static class Linq
-{
-	public static IEnumerable<T> Select<S, T> (this IEnumerable<S> collection, Func<S, T> func)
-	{
-	}
-}
 
 class Program 
 {
@@ -3174,6 +3170,8 @@ class Foo
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
 @"using System;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Test
 {
@@ -3215,7 +3213,60 @@ namespace Test
 		}
 	}
 }");
-			Assert.IsNotNull (provider.Find ("Foo2"), "method 'Foo2' not found.");
+			Assert.IsNotNull (provider.Find ("Foo1"), "method 'Foo1' not found.");
+		}
+		/// <summary>
+		/// Bug 676311 - auto completion too few proposals in fluent API (Moq)
+		/// </summary>
+		[Test()]
+		public void TestBug676311B ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+using System.Linq;
+using System.Linq.Expressions;
+
+namespace Test
+{
+	public interface IFoo<T>
+	{
+		void Foo1 ();
+	}
+
+	public interface IFoo<T, S>
+	{
+		void Foo2 ();
+	}
+	
+	public class Test<T>
+	{
+		public IFoo<T> TestMe (Expression<Action<T>> act)
+		{
+			return null;
+		}
+		
+		public IFoo<T, S> TestMe<S> (Expression<Func<S, T>> func)
+		{
+			return null;
+		}
+		
+		public string TestMethod (string str)
+		{
+			return str;
+		}
+	}
+	
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			var t = new Test<string> ();
+			var s = t.TestMe<string> (x => t.TestMethod (x));
+			$s.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider.Find ("Foo1"), "method 'Foo1' not found.");
 		}
 		
 		/// <summary>
