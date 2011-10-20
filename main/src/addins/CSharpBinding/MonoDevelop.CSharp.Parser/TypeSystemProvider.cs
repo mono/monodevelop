@@ -201,9 +201,9 @@ namespace MonoDevelop.CSharp.Parser
 			if (par == null)
 				return compilerArguments.ToArray ();
 				
-			if (!string.IsNullOrEmpty (par.DefineSymbols)) {
-				compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t')));
-			}
+			if (!string.IsNullOrEmpty (par.DefineSymbols))
+				compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s))));
+			
 			if (par.UnsafeCode)
 				compilerArguments.Add ("-unsafe");
 			if (par.TreatWarningsAsErrors)
