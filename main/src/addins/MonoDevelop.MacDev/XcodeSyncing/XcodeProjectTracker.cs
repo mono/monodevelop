@@ -190,11 +190,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return pf.BuildAction == BuildAction.InterfaceDefinition;
 		}
 		
-		static bool IsContent (ProjectFile pf)
-		{
-			return pf.BuildAction == BuildAction.Content;
-		}
-		
 		bool IncludeInSyncedProject (ProjectFile pf)
 		{
 			return pf.BuildAction == BuildAction.Content
