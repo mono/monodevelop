@@ -296,7 +296,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
 				AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
 				foreach (var cu in definitions) {
-					assemblyBrowserView.Load (cu.Key);
+					assemblyBrowserView.Load (cu.Item1);
 				}
 				IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
 				((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
@@ -489,17 +489,17 @@ namespace MonoDevelop.AssemblyBrowser
 				string pattern = e.Argument.ToString ().ToUpper ();
 				int types = 0, curType = 0;
 				foreach (var unit in this.definitions) {
-						types += unit.Value.GetTypes ().Count ();
+						types += unit.Item2.GetTypes ().Count ();
 				}
 				var members = new List<IMember> ();
 				switch (searchMode) {
 				case SearchMode.Member:
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.Value.GetTypes ()) {
+						foreach (var type in unit.Item2.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
-							foreach (var member in type.GetMembers (unit.Value)) {
+							foreach (var member in type.GetMembers (unit.Item2)) {
 								if (worker.CancellationPending)
 									return;
 								if (member.Name.ToUpper ().Contains (pattern)) {
@@ -526,7 +526,7 @@ namespace MonoDevelop.AssemblyBrowser
 						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 					});
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.Value.GetTypes ()) {
+						foreach (var type in unit.Item2.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
@@ -554,7 +554,7 @@ namespace MonoDevelop.AssemblyBrowser
 					break;
 				case SearchMode.Decompiler:
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.Value.GetTypes ()) {
+						foreach (var type in unit.Item2.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
@@ -582,7 +582,7 @@ namespace MonoDevelop.AssemblyBrowser
 				case SearchMode.Type:
 					var typeList = new List<IType> ();
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.Value.GetTypes ()) {
+						foreach (var type in unit.Item2.GetTypes ()) {
 							if (worker.CancellationPending)
 								return;
 							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
@@ -952,7 +952,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			if (nav == null) {
 				foreach (var definition in definitions.ToArray ()) {
-					foreach (var assemblyNameReference in definition.Value.Annotation<AssemblyDefinition> ().MainModule.AssemblyReferences) {
+					foreach (var assemblyNameReference in definition.Item3.MainModule.AssemblyReferences) {
 						string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
 						if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
 							AddReference (assemblyFile);
@@ -972,8 +972,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			AssemblyDefinition cu = null;
 			foreach (var unit in definitions) {
-				if (unit.Key == fileName)
-					cu = unit.Value.Annotation<AssemblyDefinition> ();
+				if (unit.Item1 == fileName)
+					cu = unit.Item3;
 			}
 			if (cu == null)
 				return;
@@ -1074,15 +1074,15 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		} 
 		
-		Dictionary<string, IProjectContent> definitions = new Dictionary<string, IProjectContent> ();
+		List<Tuple<string, IProjectContent, AssemblyDefinition>> definitions = new List<Tuple<string, IProjectContent, AssemblyDefinition>> ();
 		public IProjectContent AddReference (string fileName)
 		{
 			IProjectContent result;
-			if (definitions.TryGetValue (fileName, out result))
-				return result;
+			if (definitions.Any (d => d.Item1 == fileName))
+				return definitions.First (d => d.Item1 == fileName).Item2;
 			var assembly = ReadAssembly (fileName);
-			definitions [fileName] = result = loader.LoadAssembly (assembly);
-			result.AddAnnotation (assembly);
+			result = loader.LoadAssembly (assembly);
+			definitions.Add (Tuple.Create (fileName, result, assembly));
 			ITreeBuilder builder;
 			if (definitions.Count == 1) {
 				builder = TreeView.LoadTree (Tuple.Create (assembly, result));
