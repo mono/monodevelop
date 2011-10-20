@@ -76,6 +76,8 @@ namespace Mono.Debugging.Soft
 		List<AssemblyMirror> assemblyFilters;
 		
 		bool loggedSymlinkedRuntimesBug = false;
+
+		Dictionary<Tuple<TypeMirror,string>, MethodMirror[]> overloadResolveCache;
 		
 		public SoftDebuggerAdaptor Adaptor {
 			get { return adaptor; }
@@ -88,6 +90,7 @@ namespace Mono.Debugging.Soft
 			Adaptor.BusyStateChanged += delegate(object sender, BusyStateEventArgs e) {
 				SetBusyState (e);
 			};
+			overloadResolveCache = new Dictionary<Tuple<TypeMirror,string>, MethodMirror[]> ();
 		}
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
@@ -323,6 +326,12 @@ namespace Mono.Debugging.Soft
 		
 		protected bool Exited {
 			get { return exited; }
+		}
+
+		public Dictionary<Tuple<TypeMirror, string>, MethodMirror[]> OverloadResolveCache {
+			get {
+				return overloadResolveCache;
+			}
 		}
 		
 		void HideConnectionDialog ()

@@ -892,13 +892,32 @@ namespace Mono.Debugging.Soft
 			MethodMirror method = OverloadResolve (ctx, methodName, type, types, target != null, target == null, true);
 			return ctx.RuntimeInvoke (method, target ?? targetType, values);
 		}
-		
+
 		public static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string methodName, TypeMirror type, TypeMirror[] argtypes, bool allowInstance, bool allowStatic, bool throwIfNotFound)
 		{
 			List<MethodMirror> candidates = new List<MethodMirror> ();
 			TypeMirror currentType = type;
 			while (currentType != null) {
-				foreach (MethodMirror met in currentType.GetMethods ()) {
+				//
+				// Use a simple cached stored in SoftDebuggerSession, since
+				// GetMethodsByNameFlags might not do any caching.
+				//
+				var cache = ctx.Session.OverloadResolveCache;
+				MethodMirror[] methods = null;
+				if (ctx.CaseSensitive) {
+					lock (cache) {
+						cache.TryGetValue (Tuple.Create (currentType, methodName), out methods);
+					}
+				}
+				if (methods == null)
+					methods = currentType.GetMethodsByNameFlags (methodName, BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static, !ctx.CaseSensitive);
+				if (ctx.CaseSensitive) {
+					lock (cache) {
+						cache [Tuple.Create (currentType, methodName)] = methods;
+					}
+				}
+				
+				foreach (MethodMirror met in methods) {
 					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						ParameterInfoMirror[] pars = met.GetParameters ();
 						if (pars.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
