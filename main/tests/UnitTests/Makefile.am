@@ -61,14 +61,8 @@ FILES =  \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
 	Mono.TextEditor.Tests/VirtualSpacesTests.cs \
 	Mono.TextEditor.Tests/ViTests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs \
 	MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
-	MonoDevelop.CSharpBinding/ParameterCompletionTests.cs \
 	MonoDevelop.CSharpBinding/ProjectDomTests.cs \
 	MonoDevelop.CSharpBinding/TestDocument.cs \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \

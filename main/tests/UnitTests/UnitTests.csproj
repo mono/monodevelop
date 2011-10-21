@@ -200,16 +200,10 @@
     <Compile Include="Mono.TextEditor.Tests\SegmentTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\RedBlackTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\HeightTreeTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionBugTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\ParameterCompletionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TopLevelTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\MemberTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionOperatorTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionCSharp3Tests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionAccessibleTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionCSharpTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestDocument.cs" />
