@@ -25,7 +25,7 @@ type InteractiveSession() =
          RedirectStandardInput = true) 
     try
       Debug.tracef "Interactive" "Starting file=%s, Args=%A" Common.fsiPath args
-      Process.Start(startInfo)
+      Runtime.SystemAssemblyService.CurrentRuntime.ExecuteAssembly(startInfo, null)
     with e ->
       Debug.tracee "Interactive" e
       reraise()

@@ -5,8 +5,8 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../../monodevelop-2.4/monodevelop/main/build/bin/Mono.TextEditor.dll" />
-    <widget-library name="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral" />
+    <widget-library name="../../../../../monodevelop-2.8/monodevelop/main/build/bin/Mono.TextEditor.dll" />
+    <widget-library name="MonoDevelop.Ide, Version=2.8.0.0, Culture=neutral" />
     <widget-library name="../../bin/FSharpBinding.Gui.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="FSharp.MonoDevelop.Gui.FSharpCompilerOptionsWidget" design-size="300 300">
