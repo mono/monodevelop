@@ -386,11 +386,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						nodes.Add (n.Parent);
 					var navigator = new NodeListResolveVisitorNavigator (nodes);
 					var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
-					identifierStart.Item3.AcceptVisitor (visitor, null);
+					visitor.Scan (identifierStart.Item3);
 					csResolver = visitor.GetResolverStateBefore (n);
 					// add attribute properties.
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
-						var resolved = visitor.Resolve (n.Parent);
+						var resolved = visitor.GetResolveResult (n.Parent);
 						if (resolved != null && resolved.Type != null) {
 							foreach (var property in resolved.Type.GetProperties (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (property);
@@ -1399,7 +1399,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
 			Expression expr;
 			if (mref != null) {
-				expr = mref.Target;
+				expr = mref.Target.Clone ();
+				mref.Parent.ReplaceWith (expr);
 			} else {
 				var tref = baseUnit.GetNodeAt<TypeReferenceExpression> (location); 
 				var memberType = tref != null ? tref.Type as MemberType : null;
@@ -1416,12 +1417,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, this.CSharpParsedFile.FileName);
 			Unit.AcceptVisitor (tsvisitor, null);
 			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
-		}
-		
-		static void Print (AstNode node)
-		{
-			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
-			node.AcceptVisitor (v, null);
 		}
 		
 		Tuple<CSharpParsedFile, Expression, CompilationUnit> GetExpressionAtCursor ()

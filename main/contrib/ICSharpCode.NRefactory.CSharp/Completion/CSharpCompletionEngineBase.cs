@@ -339,11 +339,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { resolveNode });
 			var visitor = new ResolveVisitor (csResolver, file, navigator);
-			unit.AcceptVisitor (visitor, null);
-			var result = visitor.Resolve (resolveNode);
+			visitor.Scan (unit);
+//			Print (unit);
 			var state = visitor.GetResolverStateBefore (resolveNode);
+			var result = visitor.GetResolveResult (resolveNode);
 			return Tuple.Create (result, state);
 		}
+		static void Print (AstNode node)
+		{
+			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
+			node.AcceptVisitor (v, null);
+		}
+		
 		#endregion
 	}
 }
