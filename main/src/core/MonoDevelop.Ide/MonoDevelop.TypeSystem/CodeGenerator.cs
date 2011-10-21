@@ -182,7 +182,7 @@ namespace MonoDevelop.TypeSystem
 					continue;
 				bool needsExplicitly = explicitly;
 				
-				alreadyImplemented = implementingType.GetAllBaseTypes (dom).Any (x => x.GetDefinition ().Kind != TypeKind.Interface && x.GetEvents (dom).Any (y => y.Name == ev.Name));
+				alreadyImplemented = implementingType.GetAllBaseTypes (dom).Any (x => x.Kind != TypeKind.Interface && x.GetEvents (dom).Any (y => y.Name == ev.Name));
 				
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember, bool> (ev, needsExplicitly));
@@ -217,7 +217,7 @@ namespace MonoDevelop.TypeSystem
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (IType t in implementingType.GetBaseTypes (dom)) {
-					if (t.GetDefinition ().Kind == TypeKind.Interface)
+					if (t.Kind == TypeKind.Interface)
 						continue;
 					foreach (IProperty cprop in t.GetProperties (dom)) {
 						if (cprop.Name == prop.Name) {

@@ -253,6 +253,29 @@ namespace MonoDevelop.Refactoring
 			ResolveResult resolveResult;
 			object item = GetItem (ctx, doc, out resolveResult);
 			bool added = false;
+			
+			var options = new RefactoringOptions () {
+				Document = doc,
+				Dom = ctx,
+				ResolveResult = resolveResult,
+				SelectedItem = item
+			};
+			
+			var ciset = new CommandInfoSet ();
+			ciset.Text = GettextCatalog.GetString ("Refactor");
+			foreach (var refactoring in RefactoringService.Refactorings) {
+				if (refactoring.IsValid (options)) {
+					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
+					info.AccelKey = refactoring.AccelKey;
+					ciset.CommandInfos.Add (info, new System.Action (new RefactoringOperationWrapper (refactoring, options).Operation));
+				}
+			}
+			
+			if (ciset.CommandInfos.Count > 0) {
+				ainfo.Add (ciset, null);
+				added = true;
+			}
+			
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item as INamedElement)) {
 				var type = item as ICSharpCode.NRefactory.TypeSystem.IType;
 				if (type != null && type.GetDefinition ().GetParts ().Count > 1) {
@@ -297,27 +320,6 @@ namespace MonoDevelop.Refactoring
 //				}
 			}
 			
-			RefactoringOptions options = new RefactoringOptions () {
-				Document = doc,
-				Dom = ctx,
-				ResolveResult = resolveResult,
-				SelectedItem = item
-			};
-			
-			var ciset = new CommandInfoSet ();
-			ciset.Text = GettextCatalog.GetString ("Refactor");
-			foreach (var refactoring in RefactoringService.Refactorings) {
-				if (refactoring.IsValid (options)) {
-					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-					info.AccelKey = refactoring.AccelKey;
-					ciset.CommandInfos.Add (info, new System.Action (new RefactoringOperationWrapper (refactoring, options).Operation));
-				}
-			}
-			
-			if (ciset.CommandInfos.Count > 0) {
-				ainfo.Add (ciset, null);
-				added = true;
-			}
 			
 			
 			var resolveMenu = new CommandInfoSet ();

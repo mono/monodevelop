@@ -471,7 +471,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 				}
 			}
-			if (!isFromInterface && member.IsVirtual || member.IsAbstract)
+			if (!isFromInterface && (member.IsVirtual || member.IsAbstract))
 				result.Append ("override ");
 		}
 		

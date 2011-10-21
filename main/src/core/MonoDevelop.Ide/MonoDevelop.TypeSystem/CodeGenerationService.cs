@@ -108,7 +108,10 @@ namespace MonoDevelop.TypeSystem
 		public static int CalculateBodyIndentLevel (ITypeDefinition declaringType)
 		{
 			int indentLevel = 1;
-			
+			while (declaringType.DeclaringType != null) {
+				indentLevel++;
+				declaringType = declaringType.DeclaringTypeDefinition;
+			}
 			var pf = declaringType.ProjectContent.GetFile (declaringType.Region.FileName);
 			if (pf is ParsedDocumentDecorator)
 				pf = ((ParsedDocumentDecorator)pf).ParsedFile;
