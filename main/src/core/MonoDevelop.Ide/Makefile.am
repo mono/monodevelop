@@ -246,6 +246,7 @@ FILES =  \
 	MonoDevelop.Components/DropDownBox.cs \
 	MonoDevelop.Components/DropDownBoxListWindow.cs \
 	MonoDevelop.Components/FileEntry.cs \
+	MonoDevelop.Components/FileFilterSet.cs \
 	MonoDevelop.Components/FileSelector.cs \
 	MonoDevelop.Components/FixedWidthWrapLabel.cs \
 	MonoDevelop.Components/FolderDialog.cs \
