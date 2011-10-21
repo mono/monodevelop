@@ -217,6 +217,7 @@
     <Compile Include="Completion\IVariableCompletionData.cs" />
     <Compile Include="Completion\IParameterDataProvider.cs" />
     <Compile Include="Semantics\OperatorResolveResult.cs" />
+    <Compile Include="Semantics\UnknownTypeResolveResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />

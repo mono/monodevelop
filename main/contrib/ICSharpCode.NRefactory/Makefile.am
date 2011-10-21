@@ -53,6 +53,7 @@ FILES =  \
 	Semantics/TypeOfResolveResult.cs \
 	Semantics/TypeResolveResult.cs \
 	Semantics/UnknownMemberResolveResult.cs \
+	Semantics/UnknownTypeResolveResult.cs \
 	TextLocation.cs \
 	TypeSystem/Accessibility.cs \
 	TypeSystem/ArrayType.cs \

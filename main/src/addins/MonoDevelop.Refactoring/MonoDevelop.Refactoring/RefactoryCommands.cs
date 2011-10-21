@@ -89,7 +89,6 @@ namespace MonoDevelop.Refactoring
 		public static object GetItem (ITypeResolveContext ctx, MonoDevelop.Ide.Gui.Document doc, out ResolveResult resolveResult)
 		{
 			resolveResult = GetResolveResult (doc);
-			Console.WriteLine (resolveResult);
 			if (resolveResult is LocalResolveResult) 
 				return ((LocalResolveResult)resolveResult).Variable;
 			if (resolveResult is MemberResolveResult)
@@ -333,6 +332,14 @@ namespace MonoDevelop.Refactoring
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				foreach (var typeDefinition in ctx.GetTypes ()) {
 					if (typeDefinition.Name == uiResult.Identifier) {
+						possibleNamespaces.Add (typeDefinition.Namespace);
+					}
+				}
+			} else if (resolveResult is UnknownTypeResolveResult) {
+				usedNamespaces = options.GetUsedNamespaces ();
+				var uiResult = resolveResult as UnknownTypeResolveResult;
+				foreach (var typeDefinition in ctx.GetTypes ()) {
+					if (typeDefinition.Name == uiResult.Identifier && typeDefinition.TypeParameterCount == uiResult.TypeParameterCount) {
 						possibleNamespaces.Add (typeDefinition.Namespace);
 					}
 				}

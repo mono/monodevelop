@@ -2062,7 +2062,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				else
 					return new UnknownIdentifierResolveResult(identifier);
 			} else {
-				return ErrorResult;
+				return new UnknownTypeResolveResult(identifier, typeArguments.Count);
 			}
 		}
 		

@@ -383,7 +383,7 @@ namespace MonoDevelop.CSharp
 			var def = type;
 			AppendModifiers (result, settings, def);
 			if (settings.IncludeKeywords)
-				result.Append (classTypes [def.Kind]);
+				result.Append (GetString (def.Kind));
 			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
 				result.Append (settings.Markup (" "));
 			
