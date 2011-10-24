@@ -36,6 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class CSharpParser
 	{
+		
 		class ConversionVisitor : StructuralVisitor
 		{
 			CompilationUnit unit = new CompilationUnit ();
@@ -3433,6 +3434,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public bool GenerateTypeSystemMode {
 			get;
 			set;
+		}
+		
+		public CompilationUnit Parse (string program)
+		{
+			return Parse (new StringReader (program));
 		}
 		
 		public CompilationUnit Parse (Stream stream, int line = 0)

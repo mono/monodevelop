@@ -615,13 +615,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			// Two ITypeDefinitions are considered to be equal if they have the same compound class.
 			ITypeDefinition typeDef = other as ITypeDefinition;
-			return typeDef != null && this.GetDefinition().ReflectionName == typeDef.GetDefinition().ReflectionName;
+			return typeDef != null && this.ProjectContent == typeDef.ProjectContent && this.GetDefinition().ReflectionName == typeDef.GetDefinition().ReflectionName;
 		}
 		
 		public override bool Equals(object obj)
 		{
 			ITypeDefinition typeDef = obj as ITypeDefinition;
-			return typeDef != null && this.GetDefinition().ReflectionName == typeDef.GetDefinition().ReflectionName;
+			return typeDef != null && this.ProjectContent == typeDef.ProjectContent && this.GetDefinition().ReflectionName == typeDef.GetDefinition().ReflectionName;
 		}
 		
 		public override int GetHashCode()

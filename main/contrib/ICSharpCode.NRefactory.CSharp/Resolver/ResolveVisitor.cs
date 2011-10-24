@@ -168,7 +168,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (resolverBeforeDict.Count == 0) {
 						// If we're just starting to resolve and haven't any context cached yet,
 						// make sure to cache the root node.
-						StoreState(node, resolver.Clone());
+						StoreCurrentState(node);
 					}
 					break;
 				case ResolveVisitorNavigationMode.Scan:
@@ -184,7 +184,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					
 					bool oldResolverEnabled = resolverEnabled;
 					resolverEnabled = false;
-					StoreState(node, resolver.Clone());
+					StoreCurrentState(node);
 					node.AcceptVisitor(this, null);
 					resolverEnabled = oldResolverEnabled;
 					break;
@@ -206,7 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// This method now is internal, because it is difficult to use correctly.
 		/// Users of the public API should use Scan()+GetResolveResult() instead.
 		/// </summary>
-		public ResolveResult Resolve(AstNode node)
+		internal ResolveResult Resolve(AstNode node)
 		{
 			if (node == null || node.IsNull)
 				return errorResult;
@@ -215,7 +215,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult result;
 			if (!resolveResultCache.TryGetValue(node, out result)) {
 				resolver.cancellationToken.ThrowIfCancellationRequested();
-				StoreState(node, resolver.Clone());
+				StoreCurrentState(node);
 				result = node.AcceptVisitor(this, null) ?? errorResult;
 				Log.WriteLine("Resolved '{0}' to {1}", node, result);
 				StoreResult(node, result);
@@ -229,12 +229,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return Resolve(type).Type;
 		}
 		
-		void StoreState(AstNode node, CSharpResolver resolverState)
+		void StoreCurrentState(AstNode node)
 		{
-			Debug.Assert(resolverState != null);
 			// It's possible that we re-visit an expression that we scanned over earlier,
 			// so we might have to overwrite an existing state.
-			resolverBeforeDict[node] = resolverState;
+			resolverBeforeDict[node] = resolver.Clone();
 		}
 		
 		void StoreResult(AstNode node, ResolveResult result)
@@ -242,6 +241,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.Assert(result != null);
 			if (node.IsNull)
 				return;
+			// The state should be stored before the result is.
+			Debug.Assert(resolverBeforeDict.ContainsKey(node));
+			// Don't store results twice.
 			Debug.Assert(!resolveResultCache.ContainsKey(node));
 			resolveResultCache.Add(node, result);
 			if (navigator != null)
@@ -621,7 +623,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				ArrayType arrayType = result.Type as ArrayType;
 				if (aie != null && arrayType != null) {
-					StoreState(aie, resolver.Clone());
+					StoreCurrentState(aie);
 					List<Expression> initializerElements = new List<Expression>();
 					UnpackArrayInitializer(initializerElements, aie, arrayType.Dimensions, true);
 					ResolveResult[] initializerElementResults = new ResolveResult[initializerElements.Count];
@@ -966,6 +968,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				initializerElements = null;
 				initializerElementResults = null;
 			} else {
+				StoreCurrentState(arrayCreateExpression.Initializer);
+				
 				initializerElements = new List<Expression>();
 				UnpackArrayInitializer(initializerElements, arrayCreateExpression.Initializer, dimensions, true);
 				initializerElementResults = new ResolveResult[initializerElements.Count];
@@ -996,8 +1000,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (var node in initializer.Elements) {
 					ArrayInitializerExpression aie = node as ArrayInitializerExpression;
 					if (aie != null) {
-						if (resolveNestedInitializesToVoid)
+						if (resolveNestedInitializesToVoid) {
+							StoreCurrentState(aie);
 							StoreResult(aie, voidResult);
+						}
 						UnpackArrayInitializer(elementList, aie, dimensions - 1, resolveNestedInitializesToVoid);
 					} else {
 						elementList.Add(node);
@@ -1239,6 +1245,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		void HandleObjectInitializer(IType type, ArrayInitializerExpression initializer)
 		{
+			StoreCurrentState(initializer);
 			resolver.PushInitializerType(type);
 			foreach (Expression element in initializer.Elements) {
 				ArrayInitializerExpression aie = element as ArrayInitializerExpression;
@@ -1247,7 +1254,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						// Don't resolve the add call again if we already did so
 						continue;
 					}
-					StoreState(aie, resolver.Clone());
+					StoreCurrentState(aie);
 					// constructor argument list in collection initializer
 					ResolveResult[] addArguments = new ResolveResult[aie.Elements.Count];
 					int i = 0;
@@ -1505,7 +1512,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			    && !resolveResultCache.ContainsKey(identifierExpression))
 			{
 				// Special handling for §7.6.4.1 Identicial simple names and type names
-				StoreState(identifierExpression, resolver.Clone());
+				StoreCurrentState(identifierExpression);
 				ResolveResult target = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
 				TypeResolveResult trr;
 				if (IsVariableReferenceWithSameType(target, identifierExpression.Identifier, out trr)) {
@@ -1563,6 +1570,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			    && !resolveResultCache.ContainsKey(identifierExpression))
 			{
 				// Special handling for §7.6.4.1 Identicial simple names and type names
+				
+				StoreCurrentState(identifierExpression);
+				StoreCurrentState(mre);
+				
 				ResolveResult idRR = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
 				ResolveResult target = ResolveMemberReferenceOnGivenTarget(idRR, mre);
 				Log.WriteLine("Member reference '{0}' on potentially-ambiguous simple-name was resolved to {1}", mre, target);
@@ -2111,11 +2122,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				visitor.MergeUndecidedLambdas();
 				Log.WriteLine("Merging " + ToString());
+				foreach (var pair in visitor.resolverBeforeDict) {
+					parentVisitor.resolverBeforeDict[pair.Key] = pair.Value;
+				}
 				foreach (var pair in visitor.resolveResultCache) {
 					parentVisitor.StoreResult(pair.Key, pair.Value);
-				}
-				foreach (var pair in visitor.resolverBeforeDict) {
-					parentVisitor.StoreState(pair.Key, pair.Value);
 				}
 				parentVisitor.undecidedLambdas.Remove(lambda);
 			}
@@ -2416,6 +2427,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Scan(foreachStatement.InExpression);
 				type = ResolveType(foreachStatement.VariableType);
 			}
+			StoreCurrentState(foreachStatement.VariableNameToken);
 			IVariable v = resolver.AddVariable(type, MakeRegion(foreachStatement.VariableNameToken), foreachStatement.VariableName);
 			StoreResult(foreachStatement.VariableNameToken, new LocalResolveResult(v, v.Type.Resolve(resolver.Context)));
 			Scan(foreachStatement.EmbeddedStatement);
@@ -2437,6 +2449,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!string.IsNullOrEmpty(catchClause.VariableName)) {
 				ITypeReference variableType = MakeTypeReference(catchClause.Type);
 				DomRegion region = MakeRegion(catchClause.VariableNameToken);
+				StoreCurrentState(catchClause.VariableNameToken);
 				IVariable v = resolver.AddVariable(variableType, region, catchClause.VariableName);
 				StoreResult(catchClause.VariableNameToken, new LocalResolveResult(v, v.Type.Resolve(resolver.Context)));
 			}
@@ -2457,6 +2470,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					|| navigator.Scan(vi) == ResolveVisitorNavigationMode.Resolve;
 				ITypeReference type;
 				if (needResolve) {
+					StoreCurrentState(variableDeclarationStatement.Type);
 					type = Resolve(vi.Initializer).Type;
 					if (!resolveResultCache.ContainsKey(variableDeclarationStatement.Type)) {
 						StoreResult(variableDeclarationStatement.Type, new TypeResolveResult(type.Resolve(resolver.Context)));
@@ -2466,7 +2480,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					type = MakeVarTypeReference(vi.Initializer, false);
 				}
 				IVariable v = resolver.AddVariable(type, MakeRegion(vi), vi.Name);
-				StoreState(vi, resolver.Clone());
+				StoreCurrentState(vi);
 				if (needResolve) {
 					ResolveResult result;
 					if (!resolveResultCache.TryGetValue(vi, out result)) {
@@ -2834,6 +2848,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult target;
 			if (memberType.IsDoubleColon && memberType.Target is SimpleType) {
 				SimpleType t = (SimpleType)memberType.Target;
+				StoreCurrentState(t);
 				target = resolver.ResolveAlias(t.Identifier);
 				StoreResult(t, target);
 			} else {
@@ -2984,6 +2999,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
+			StoreCurrentState(queryFromClause.IdentifierToken);
 			DomRegion region = MakeRegion(queryFromClause.IdentifierToken);
 			IVariable v = resolver.AddVariable(variableType, region, queryFromClause.Identifier);
 			StoreResult(queryFromClause.IdentifierToken, new LocalResolveResult(v, variableType));
@@ -3014,6 +3030,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult rr = Resolve(queryContinuationClause.PrecedingQuery);
 			IType variableType = GetTypeForQueryVariable(rr.Type);
 			DomRegion region = MakeRegion(queryContinuationClause.IdentifierToken);
+			StoreCurrentState(queryContinuationClause.IdentifierToken);
 			IVariable v = resolver.AddVariable(variableType, region, queryContinuationClause.Identifier);
 			StoreResult(queryContinuationClause.IdentifierToken, new LocalResolveResult(v, variableType));
 			return rr;
@@ -3023,6 +3040,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ResolveResult expr = Resolve(queryLetClause.Expression);
 			DomRegion region = MakeRegion(queryLetClause.IdentifierToken);
+			StoreCurrentState(queryLetClause.IdentifierToken);
 			IVariable v = resolver.AddVariable(expr.Type, region, queryLetClause.Identifier);
 			StoreResult(queryLetClause.IdentifierToken, new LocalResolveResult(v, expr.Type));
 			if (resolverEnabled && currentQueryResult != null) {
@@ -3066,6 +3084,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResetContext(resolverOutsideQuery, delegate {
 			             	equalsResult = Resolve(queryJoinClause.EqualsExpression);
 			             });
+			StoreCurrentState(queryJoinClause.JoinIdentifierToken);
 			StoreResult(queryJoinClause.JoinIdentifierToken, new LocalResolveResult(v, variableType));
 			
 			if (queryJoinClause.IsGroupJoin) {
@@ -3144,10 +3163,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				implicitlyTypedLambda.EnforceMerge(this);
-				if (implicitlyTypedLambda.winningHypothesis.parameterTypes.Length == 2)
+				if (implicitlyTypedLambda.winningHypothesis.parameterTypes.Length == 2) {
+					StoreCurrentState(queryJoinClause.IntoIdentifierToken);
 					groupVariable = implicitlyTypedLambda.winningHypothesis.lambdaParameters[1];
-				else
+				} else {
 					groupVariable = null;
+				}
 			} else {
 				Debug.Assert(groupJoinLambda is QueryExpressionLambda);
 				
@@ -3172,6 +3193,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				else
 					groupParameterType = SharedTypes.UnknownType;
 				
+				StoreCurrentState(queryJoinClause.IntoIdentifierToken);
 				groupVariable = resolver.AddVariable(groupParameterType, intoIdentifierRegion, queryJoinClause.IntoIdentifier);
 			}
 			

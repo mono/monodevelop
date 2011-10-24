@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			// (e.g. C implements I1 and I2, and both interfaces derive from Object)
 			if (!this.Contains(type)) {
 				foreach (IType baseType in type.GetBaseTypes(context)) {
-					if (SkipImplementedInterfaces && def != null && def.Kind != TypeKind.Interface) {
+					if (SkipImplementedInterfaces && def != null && def.Kind != TypeKind.Interface && def.Kind != TypeKind.TypeParameter) {
 						if (baseType.Kind == TypeKind.Interface) {
 							// skip the interface
 							continue;

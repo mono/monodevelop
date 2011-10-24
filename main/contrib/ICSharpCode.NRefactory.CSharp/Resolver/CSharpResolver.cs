@@ -2008,9 +2008,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			bool parameterizeResultType = k > 0;
-			if (parameterizeResultType && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument))
-				parameterizeResultType = false;
+			bool parameterizeResultType = !(typeArguments.Count != 0 && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument));
 			
 			ResolveResult r = null;
 			if (currentTypeDefinition != null) {
@@ -2152,7 +2150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							def = context.GetTypeDefinition(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
 							if (def != null) {
 								if (firstResult == null) {
-									if (parameterizeResultType)
+									if (parameterizeResultType && k > 0)
 										firstResult = new ParameterizedType(def, typeArguments);
 									else
 										firstResult = def;
@@ -2238,9 +2236,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			
-			bool parameterizeResultType = typeArguments.Count > 0;
-			if (parameterizeResultType && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument))
-				parameterizeResultType = false;
+			bool parameterizeResultType = !(typeArguments.Count != 0 && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument));
 			
 			NamespaceResolveResult nrr = target as NamespaceResolveResult;
 			if (nrr != null) {
@@ -2260,7 +2256,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			ITypeDefinition def = context.GetTypeDefinition(nrr.NamespaceName, identifier, typeArguments.Count, StringComparer.Ordinal);
 			if (def != null) {
-				if (parameterizeResultType)
+				if (parameterizeResultType && typeArguments.Count > 0)
 					return new TypeResolveResult(new ParameterizedType(def, typeArguments));
 				else
 					return new TypeResolveResult(def);

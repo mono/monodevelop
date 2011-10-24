@@ -345,7 +345,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var result = visitor.GetResolveResult (resolveNode);
 			return Tuple.Create (result, state);
 		}
-		static void Print (AstNode node)
+		
+		protected static void Print (AstNode node)
 		{
 			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
 			node.AcceptVisitor (v, null);
