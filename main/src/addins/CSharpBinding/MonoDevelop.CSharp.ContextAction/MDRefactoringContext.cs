@@ -422,8 +422,8 @@ namespace MonoDevelop.CSharp.ContextAction
 			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
 			
 			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, pf, navigator);
-			Unit.AcceptVisitor (visitor, null);
-			return visitor.Resolve (node);
+			visitor.Scan (Unit);
+			return visitor.GetResolveResult (node);
 		}
 		
 		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, MemberDeclaration replaceWidth)

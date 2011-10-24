@@ -325,8 +325,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						
 						navi.Reset ();
 						navi.AddNode (st);
-						unit.AcceptVisitor (visitor, null);
-						var result = visitor.Resolve (st);
+						visitor.Scan (unit);
+						var result = visitor.GetResolveResult (st);
 						
 						if (result is TypeResolveResult && st.IdentifierToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
 							endOffset = doc.LocationToOffset (st.IdentifierToken.EndLocation.Line, st.IdentifierToken.EndLocation.Column);
@@ -339,8 +339,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						
 						navi.Reset ();
 						navi.AddNode (mt);
-						unit.AcceptVisitor (visitor, null);
-						var result = visitor.Resolve (mt);
+						visitor.Scan (unit);
+						var result = visitor.GetResolveResult (mt);
 						
 						if (result is TypeResolveResult && mt.MemberNameToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
 							endOffset = doc.LocationToOffset (mt.MemberNameToken.EndLocation.Line, mt.MemberNameToken.EndLocation.Column);
@@ -364,8 +364,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (id != null) {
 						navi.Reset ();
 						navi.AddNode (id);
-						unit.AcceptVisitor (visitor, null);
-						var result = visitor.Resolve (id);
+						visitor.Scan (unit);
+						var result = visitor.GetResolveResult (id);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
 							if (member is IField) {
@@ -388,8 +388,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						
 						navi.Reset ();
 						navi.AddNode (memberReferenceExpression);
-						unit.AcceptVisitor (visitor, null);
-						var result = visitor.Resolve (memberReferenceExpression);
+						visitor.Scan (unit);
+						var result = visitor.GetResolveResult (memberReferenceExpression);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
 							if (member is IField) {

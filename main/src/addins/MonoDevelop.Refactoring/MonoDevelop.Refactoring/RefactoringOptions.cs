@@ -179,8 +179,8 @@ namespace MonoDevelop.Refactoring
 			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
 			
 			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, pf, navigator);
-			unit.AcceptVisitor (visitor, null);
-			return visitor.Resolve (node);
+			visitor.Scan (unit);
+			return visitor.GetResolveResult (node);
 		}
 		
 		public AstType CreateShortType (IType fullType)

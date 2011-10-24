@@ -157,7 +157,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override IEnumerable<MemberReference> FindReferences ()
 		{
 			var entity = searchedMembers.First () as IEntity;
-			var scopes = refFinder.GetSearchScopes (entity);
+			var scopes = entity != null ? refFinder.GetSearchScopes (entity) : null;
 			List<MemberReference> refs = new List<MemberReference> ();
 			Project prj = null;
 			ITypeResolveContext ctx = null;
