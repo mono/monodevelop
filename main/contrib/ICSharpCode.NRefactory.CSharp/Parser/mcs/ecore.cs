@@ -742,6 +742,12 @@ namespace Mono.CSharp {
 			throw new NotImplementedException ();
 		}
 
+		public virtual void Error_OperatorCannotBeApplied (ResolveContext rc, Location loc, string oper, TypeSpec t)
+		{
+			rc.Report.Error (23, loc, "The `{0}' operator cannot be applied to operand of type `{1}'",
+				oper, t.GetSignatureForError ());
+		}
+
 		protected void Error_PointerInsideExpressionTree (ResolveContext ec)
 		{
 			ec.Report.Error (1944, loc, "An expression tree cannot contain an unsafe pointer operation");
@@ -2991,11 +2997,12 @@ namespace Mono.CSharp {
 				if (InstanceExpression is IMemoryLocation) {
 					((IMemoryLocation) InstanceExpression).AddressOf (ec, AddressOp.Load);
 				} else {
+					// Cannot release the temporary variable when its address
+					// is required to be on stack for any parent
 					LocalTemporary t = new LocalTemporary (instance_type);
 					InstanceExpression.Emit (ec);
 					t.Store (ec);
 					t.AddressOf (ec, AddressOp.Store);
-					t.Release (ec);
 				}
 			} else {
 				InstanceExpression.Emit (ec);
@@ -5092,7 +5099,7 @@ namespace Mono.CSharp {
 
 		public override string GetSignatureForError ()
 		{
-			return TypeManager.GetFullNameSignature (spec);
+			return spec.GetSignatureForError ();
 		}
 
 		public bool IsMarshalByRefAccess (ResolveContext rc)

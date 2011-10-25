@@ -85,6 +85,11 @@ namespace Mono.CSharp
 				return Create (null, row, column);
 			}
 
+			public static LocatedToken Create (string value, Location loc)
+			{
+				return Create (value, loc.Row, loc.Column);
+			}
+			
 			public static LocatedToken Create (string value, int row, int column)
 			{
 				//
@@ -206,8 +211,6 @@ namespace Mono.CSharp
 		public bool parsing_attribute_section;
 
 		public bool parsing_modifiers;
-
-		public bool async_block;
 
 		//
 		// The special characters to inject on streams to run the unit parser
@@ -830,7 +833,7 @@ namespace Mono.CSharp
 				break;
 
 			case Token.AWAIT:
-				if (!async_block)
+				if (parsing_block == 0)
 					res = -1;
 
 				break;
@@ -2878,7 +2881,7 @@ namespace Mono.CSharp
 			if (id_builder [0] >= '_' && !quoted) {
 				int keyword = GetKeyword (id_builder, pos);
 				if (keyword != -1) {
-					val = LocatedToken.Create (null, ref_line, column);
+					val = LocatedToken.Create (keyword == Token.AWAIT ? "await" : null, ref_line, column);
 					return keyword;
 				}
 			}

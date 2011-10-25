@@ -1785,6 +1785,16 @@ namespace Mono.CSharp {
 					BaseType = inflator.Inflate (open_type.BaseType);
 				}
 			} else if ((state & StateFlags.PendingBaseTypeInflate) != 0) {
+				//
+				// It can happen when resolving base type without being defined
+				// which is not allowed to happen and will always lead to an error
+				//
+				// class B { class N {} }
+				// class A<T> : A<B.N> {}
+				//
+				if (open_type.BaseType == null)
+					return;
+
 				BaseType = inflator.Inflate (open_type.BaseType);
 				state &= ~StateFlags.PendingBaseTypeInflate;
 			}
@@ -2690,7 +2700,7 @@ namespace Mono.CSharp {
 				// Align params arguments
 				TypeSpec t_i = methodParameters [i >= methodParameters.Length ? methodParameters.Length - 1: i];
 				
-				if (!TypeManager.IsDelegateType (t_i)) {
+				if (!t_i.IsDelegate) {
 					if (!t_i.IsExpressionTreeType)
 						continue;
 
@@ -2920,7 +2930,7 @@ namespace Mono.CSharp {
 			for (int i = 0; i < methodParameters.Length; ++i) {
 				TypeSpec t = methodParameters[i];
 
-				if (!TypeManager.IsDelegateType (t)) {
+				if (!t.IsDelegate) {
 					if (!t.IsExpressionTreeType)
 						continue;
 
@@ -3127,6 +3137,13 @@ namespace Mono.CSharp {
 				return gt.GetDefinition ().MakeGenericType (context, inflated_targs);
 			}
 
+			var ac = parameter as ArrayContainer;
+			if (ac != null) {
+				var inflated = InflateGenericArgument (context, ac.Element);
+				if (inflated != ac.Element)
+					return ArrayContainer.MakeType (context.Module, inflated);
+			}
+
 			return parameter;
 		}
 		
@@ -3143,7 +3160,7 @@ namespace Mono.CSharp {
 				if (IsFixed (returnType))
 				    return false;
 			} else if (TypeManager.IsGenericType (returnType)) {
-				if (TypeManager.IsDelegateType (returnType)) {
+				if (returnType.IsDelegate) {
 					invoke = Delegate.GetInvokeMethod (returnType);
 					return IsReturnTypeNonDependent (ec, invoke, invoke.ReturnType);
 				}
@@ -3347,7 +3364,7 @@ namespace Mono.CSharp {
 			// then a lower-bound inference is made from U for Tb.
 			//
 			if (e is MethodGroupExpr) {
-				if (!TypeManager.IsDelegateType (t)) {
+				if (!t.IsDelegate) {
 					if (!t.IsExpressionTreeType)
 						return 0;
 

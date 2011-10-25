@@ -218,6 +218,10 @@
     <Compile Include="Completion\IParameterDataProvider.cs" />
     <Compile Include="Semantics\OperatorResolveResult.cs" />
     <Compile Include="Semantics\UnknownTypeResolveResult.cs" />
+    <Compile Include="TypeSystem\InheritanceHelper.cs" />
+    <Compile Include="TypeSystem\Implementation\AbstractTypeParameter.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultTypeParameterConstraints.cs" />
+    <Compile Include="TypeSystem\Implementation\TypeParameterWithInheritedConstraints.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />

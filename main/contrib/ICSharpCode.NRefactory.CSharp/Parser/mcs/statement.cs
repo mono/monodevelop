@@ -3613,7 +3613,7 @@ namespace Mono.CSharp {
 		{
 			Label lbl_default = default_target;
 
-			if (labels.Count > 0) {
+			if (labels != null && labels.Count > 0) {
 				List<LabelsRange> ranges;
 				if (string_labels != null) {
 					// We have done all hard work for string already
@@ -3645,7 +3645,7 @@ namespace Mono.CSharp {
 					ranges.Sort ();
 				}
 
-				TypeSpec compare_type = TypeManager.IsEnumType (SwitchType) ? EnumSpec.GetUnderlyingType (SwitchType) : SwitchType;
+				TypeSpec compare_type = SwitchType.IsEnum ? EnumSpec.GetUnderlyingType (SwitchType) : SwitchType;
 
 				for (int range_index = ranges.Count - 1; range_index >= 0; --range_index) {
 					LabelsRange kb = ranges[range_index];

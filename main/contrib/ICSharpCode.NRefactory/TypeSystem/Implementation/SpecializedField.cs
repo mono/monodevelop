@@ -31,12 +31,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			: base(declaringType, fieldDefinition)
 		{
 			this.fieldDefinition = fieldDefinition;
+			Initialize(GetSubstitution(declaringType), null);
 		}
 		
 		internal SpecializedField(IType declaringType, IField fieldDefinition, TypeVisitor substitution, ITypeResolveContext context)
-			: base(declaringType, fieldDefinition, substitution, context)
+			: base(declaringType, fieldDefinition)
 		{
 			this.fieldDefinition = fieldDefinition;
+			Initialize(substitution, context);
 		}
 		
 		public bool IsReadOnly {

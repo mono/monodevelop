@@ -29,14 +29,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	{
 		readonly IType declaringType;
 		readonly IMember memberDefinition;
-		readonly ITypeReference returnType;
+		ITypeReference returnType;
 		
 		protected SpecializedMember(IType declaringType, IMember memberDefinition)
-			: this(declaringType, memberDefinition, GetSubstitution(declaringType), null)
-		{
-		}
-		
-		internal SpecializedMember(IType declaringType, IMember memberDefinition, TypeVisitor substitution, ITypeResolveContext context)
 		{
 			if (declaringType == null)
 				throw new ArgumentNullException("declaringType");
@@ -45,6 +40,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			this.declaringType = declaringType;
 			this.memberDefinition = memberDefinition;
+		}
+		
+		protected virtual void Initialize(TypeVisitor substitution, ITypeResolveContext context)
+		{
 			this.returnType = Substitute(memberDefinition.ReturnType, substitution, context);
 		}
 		
@@ -233,17 +232,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	
 	public abstract class SpecializedParameterizedMember : SpecializedMember, IParameterizedMember
 	{
-		readonly IList<IParameter> parameters;
+		IList<IParameter> parameters;
 		
 		protected SpecializedParameterizedMember(IType declaringType, IParameterizedMember memberDefinition)
-			: this(declaringType, memberDefinition, GetSubstitution(declaringType), null)
+			: base(declaringType, memberDefinition)
 		{
 		}
 		
-		internal SpecializedParameterizedMember(IType declaringType, IParameterizedMember memberDefinition, TypeVisitor substitution, ITypeResolveContext context)
-			: base(declaringType, memberDefinition, substitution, context)
+		protected override void Initialize(TypeVisitor substitution, ITypeResolveContext context)
 		{
-			var paramDefs = memberDefinition.Parameters;
+			base.Initialize(substitution, context);
+			
+			var paramDefs = ((IParameterizedMember)this.MemberDefinition).Parameters;
 			if (paramDefs.Count == 0) {
 				this.parameters = EmptyList<IParameter>.Instance;
 			} else {

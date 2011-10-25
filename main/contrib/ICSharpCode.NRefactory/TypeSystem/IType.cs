@@ -121,8 +121,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// The filter is tested on the original type definitions (before parameterization).</param>
 		/// <remarks>
 		/// <para>
-		/// If the nested type is generic (and has more type parameters than the outer class),
-		/// this method will return a parameterized type,
+		/// If the nested type is generic, this method will return a parameterized type,
 		/// where the additional type parameters are set to <see cref="SharedType.UnboundTypeArgument"/>.
 		/// </para>
 		/// <para>

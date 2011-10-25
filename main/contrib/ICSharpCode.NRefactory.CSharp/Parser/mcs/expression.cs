@@ -324,7 +324,7 @@ namespace Mono.CSharp
 			//
 			// E operator ~(E x);
 			//
-			if (Oper == Operator.OnesComplement && TypeManager.IsEnumType (expr_type))
+			if (Oper == Operator.OnesComplement && expr_type.IsEnum)
 				return ResolveEnumOperator (ec, expr, predefined);
 
 			return ResolveUserType (ec, expr, predefined);
@@ -563,12 +563,6 @@ namespace Mono.CSharp
 		public override void EmitSideEffect (EmitContext ec)
 		{
 			Expr.EmitSideEffect (ec);
-		}
-
-		public static void Error_OperatorCannotBeApplied (ResolveContext ec, Location loc, string oper, TypeSpec t)
-		{
-			ec.Report.Error (23, loc, "The `{0}' operator cannot be applied to operand of type `{1}'",
-				oper, TypeManager.CSharpName (t));
 		}
 
 		//
@@ -1201,7 +1195,7 @@ namespace Mono.CSharp
 					source = operation;
 
 				if (source == null) {
-					Unary.Error_OperatorCannotBeApplied (ec, loc, Operator.GetName (user_op), type);
+					expr.Error_OperatorCannotBeApplied (ec, loc, Operator.GetName (user_op), type);
 					return null;
 				}
 
@@ -2319,7 +2313,7 @@ namespace Mono.CSharp
 
 		public static void Error_OperatorCannotBeApplied (ResolveContext ec, Expression left, Expression right, string oper, Location loc)
 		{
-			if (left.Type == InternalType.FakeInternalType || right.Type == InternalType.FakeInternalType)
+			if (left.Type == InternalType.ErrorType || right.Type == InternalType.ErrorType)
 				return;
 
 			string l, r;
@@ -2652,7 +2646,7 @@ namespace Mono.CSharp
 			case Operator.LessThanOrEqual:
 			case Operator.GreaterThan:
 			case Operator.GreaterThanOrEqual:
-				if (TypeManager.IsEnumType (left.Type))
+				if (left.Type.IsEnum)
 					return left;
 				
 				if (left.IsZeroInteger)
@@ -2669,7 +2663,7 @@ namespace Mono.CSharp
 			case Operator.Modulus:
 			case Operator.LeftShift:
 			case Operator.RightShift:
-				if (TypeManager.IsEnumType (right.Type) || TypeManager.IsEnumType (left.Type))
+				if (right.Type.IsEnum || left.Type.IsEnum)
 					break;
 				return left;
 			}
@@ -2926,7 +2920,7 @@ namespace Mono.CSharp
 			Constant rc = right as Constant;
 
 			// The conversion rules are ignored in enum context but why
-			if (!ec.HasSet (ResolveContext.Options.EnumScope) && lc != null && rc != null && (TypeManager.IsEnumType (left.Type) || TypeManager.IsEnumType (right.Type))) {
+			if (!ec.HasSet (ResolveContext.Options.EnumScope) && lc != null && rc != null && (left.Type.IsEnum || right.Type.IsEnum)) {
 				lc = EnumLiftUp (ec, lc, rc, loc);
 				if (lc != null)
 					rc = EnumLiftUp (ec, rc, lc, loc);
@@ -5309,7 +5303,7 @@ namespace Mono.CSharp
 			Expression invoke = null;
 
 			if (mg == null) {
-				if (expr_type != null && TypeManager.IsDelegateType (expr_type)) {
+				if (expr_type != null && expr_type.IsDelegate) {
 					invoke = new DelegateInvocation (member_expr, arguments, loc);
 					invoke = invoke.Resolve (ec);
 					if (invoke == null || !dynamic_arg)
@@ -5649,7 +5643,7 @@ namespace Mono.CSharp
 					return ReducedExpression.Create (c, this);
 			}
 
-			if (TypeManager.IsDelegateType (type)) {
+			if (type.IsDelegate) {
 				return (new NewDelegate (type, arguments, loc)).Resolve (ec);
 			}
 
@@ -6365,7 +6359,7 @@ namespace Mono.CSharp
 			int count = array_data.Count;
 
 			TypeSpec element_type = array_element_type;
-			if (TypeManager.IsEnumType (element_type))
+			if (element_type.IsEnum)
 				element_type = EnumSpec.GetUnderlyingType (element_type);
 
 			factor = BuiltinTypeSpec.GetSize (element_type);
@@ -7629,7 +7623,7 @@ namespace Mono.CSharp
 			if (type_queried == null)
 				return null;
 
-			if (TypeManager.IsEnumType (type_queried))
+			if (type_queried.IsEnum)
 				type_queried = EnumSpec.GetUnderlyingType (type_queried);
 
 			int size_of = BuiltinTypeSpec.GetSize (type_queried);
@@ -7858,7 +7852,7 @@ namespace Mono.CSharp
 			if (type == InternalType.NullLiteral && rc.IsRuntimeBinder)
 				rc.Report.Error (Report.RuntimeErrorId, loc, "Cannot perform member binding on `null' value");
 			else
-				Unary.Error_OperatorCannotBeApplied (rc, loc, ".", type);
+				expr.Error_OperatorCannotBeApplied (rc, loc, ".", type);
 		}
 
 		public static bool IsValidDotExpression (TypeSpec type)
@@ -9168,7 +9162,7 @@ namespace Mono.CSharp
 		public static readonly ErrorExpression Instance = new ErrorExpression ();
 
 		private ErrorExpression ()
-			: base (InternalType.FakeInternalType)
+			: base (InternalType.ErrorType)
 		{
 		}
 
@@ -9183,6 +9177,10 @@ namespace Mono.CSharp
 		}
 
 		public override void Error_ValueCannotBeConverted (ResolveContext ec, Location loc, TypeSpec target, bool expl)
+		{
+		}
+
+		public override void Error_OperatorCannotBeApplied (ResolveContext rc, Location loc, string oper, TypeSpec t)
 		{
 		}
 	}

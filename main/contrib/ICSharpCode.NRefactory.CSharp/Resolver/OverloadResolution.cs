@@ -409,15 +409,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 									ConstraintsValid = false;
 									break;
 							}
-							if (tp.HasReferenceTypeConstraint) {
+							ITypeParameterConstraints constraints = tp.GetConstraints(context);
+							if (constraints.HasReferenceTypeConstraint) {
 								if (typeArg.IsReferenceType(context) != true)
 									ConstraintsValid = false;
 							}
-							if (tp.HasValueTypeConstraint) {
+							if (constraints.HasValueTypeConstraint) {
 								if (!NullableType.IsNonNullableValueType(typeArg, context))
 									ConstraintsValid = false;
 							}
-							if (tp.HasDefaultConstructorConstraint) {
+							if (constraints.HasDefaultConstructorConstraint) {
 								ITypeDefinition def = typeArg.GetDefinition();
 								if (def != null && def.IsAbstract)
 									ConstraintsValid = false;
@@ -427,8 +428,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 									GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions
 								).Any();
 							}
-							foreach (IType constraintType in tp.Constraints) {
-								IType c = newParameterizedType.SubstituteInType(constraintType);
+							foreach (IType constraintType in constraints) {
+								IType c = constraintType.AcceptVisitor(newParameterizedType.GetSubstitution());
 								ConstraintsValid &= conversions.IsConstraintConvertible(typeArg, c);
 							}
 						}

@@ -156,15 +156,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// Substitutes the class type parameters in the <paramref name="type"/> with the
-		/// type arguments of this parameterized type.
-		/// </summary>
-		public IType SubstituteInType(IType type)
-		{
-			return type.AcceptVisitor(new TypeParameterSubstitution(typeArguments, null));
-		}
-		
-		/// <summary>
 		/// Gets a type visitor that performs the substitution of class type parameters with the type arguments
 		/// of this parameterized type.
 		/// </summary>

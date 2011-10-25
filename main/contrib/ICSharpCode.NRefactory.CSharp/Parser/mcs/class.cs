@@ -3,12 +3,13 @@
 //
 // Authors: Miguel de Icaza (miguel@gnu.org)
 //          Martin Baulig (martin@ximian.com)
-//          Marek Safar (marek.safar@seznam.cz)
+//          Marek Safar (marek.safar@gmail.com)
 //
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004-2008 Novell, Inc
+// Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
 //
 
 using System;
@@ -1241,7 +1242,7 @@ namespace Mono.CSharp
 					if (iface_type == null)
 						continue;
 					
-					if (!spec.AddInterface (iface_type))
+					if (!spec.AddInterfaceDefined (iface_type))
 						continue;
 
 					TypeBuilder.AddInterfaceImplementation (iface_type.GetMetaInfo ());
@@ -1257,7 +1258,7 @@ namespace Mono.CSharp
 						var base_ifaces = new List<TypeSpec> (iface_type.Interfaces);
 						for (int i = 0; i < base_ifaces.Count; ++i) {
 							var ii_iface_type = base_ifaces[i];
-							if (spec.AddInterface (ii_iface_type)) {
+							if (spec.AddInterfaceDefined (ii_iface_type)) {
 								TypeBuilder.AddInterfaceImplementation (ii_iface_type.GetMetaInfo ());
 
 								if (ii_iface_type.Interfaces != null)
@@ -3143,13 +3144,13 @@ namespace Mono.CSharp
 					if (OptAttributes == null || !OptAttributes.Contains (Module.PredefinedAttributes.Obsolete)) {
 						Report.SymbolRelatedToPreviousError (base_member);
 						Report.Warning (672, 1, Location, "Member `{0}' overrides obsolete member `{1}'. Add the Obsolete attribute to `{0}'",
-							GetSignatureForError (), TypeManager.GetFullNameSignature (base_member));
+							GetSignatureForError (), base_member.GetSignatureForError ());
 					}
 				} else {
 					if (OptAttributes != null && OptAttributes.Contains (Module.PredefinedAttributes.Obsolete)) {
 						Report.SymbolRelatedToPreviousError (base_member);
 						Report.Warning (809, 1, Location, "Obsolete member `{0}' overrides non-obsolete member `{1}'",
-							GetSignatureForError (), TypeManager.GetFullNameSignature (base_member));
+							GetSignatureForError (), base_member.GetSignatureForError ());
 					}
 				}
 

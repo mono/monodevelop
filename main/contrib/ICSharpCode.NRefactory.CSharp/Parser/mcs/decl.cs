@@ -27,7 +27,6 @@ using IKVM.Reflection.Emit;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
-//using Mono.Collections.Generic;
 #endif
 
 namespace Mono.CSharp {

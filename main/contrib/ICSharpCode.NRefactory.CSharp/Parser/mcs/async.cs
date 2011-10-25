@@ -582,7 +582,7 @@ namespace Mono.CSharp
 
 		public Field AddAwaiter (TypeSpec type, Location loc)
 		{
-			return AddCompilerGeneratedField ("$awaiter" + awaiters++.ToString ("X"), new TypeExpression (type, loc), true);
+			return AddCapturedVariable ("$awaiter" + awaiters++.ToString ("X"), type);
 		}
 
 		public Field AddCapturedLocalVariable (TypeSpec type)
@@ -660,7 +660,6 @@ namespace Mono.CSharp
 			}
 
 			builder = AddCompilerGeneratedField ("$builder", new TypeExpression (bt, Location));
-			builder.ModFlags |= Modifiers.READONLY;
 
 			if (!base.DoDefineMembers ())
 				return false;

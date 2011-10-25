@@ -175,16 +175,6 @@ namespace MonoDevelop.CSharp.Completion
 			return null;
 		}
 
-		public bool IsInLinqContext (ExpressionResult result)
-		{
-			if (result.Contexts == null)
-				return false;
-			var ctx = (ExpressionContext.LinqContext)result.Contexts.FirstOrDefault (c => c is ExpressionContext.LinqContext);
-			if (ctx == null)
-				return false;
-			int offset = this.textEditorData.Document.LocationToOffset (ctx.Line, ctx.Column);
-			return !GetTextWithoutCommentsAndStrings (this.textEditorData.Document, offset, textEditorData.Caret.Offset).Any (p => p.Key == ';');
-		}
 		
 		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Mono.TextEditor.Document doc, int start, int end) 
 		{

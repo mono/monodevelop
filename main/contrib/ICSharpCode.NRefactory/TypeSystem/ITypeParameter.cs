@@ -48,26 +48,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IAttribute> Attributes { get; }
 		
 		/// <summary>
-		/// Gets the constraints of this type parameter.
-		/// </summary>
-		IList<ITypeReference> Constraints { get; }
-		
-		/// <summary>
-		/// Gets if the type parameter has the 'new()' constraint.
-		/// </summary>
-		bool HasDefaultConstructorConstraint { get; }
-		
-		/// <summary>
-		/// Gets if the type parameter has the 'class' constraint.
-		/// </summary>
-		bool HasReferenceTypeConstraint { get; }
-		
-		/// <summary>
-		/// Gets if the type parameter has the 'struct' constraint.
-		/// </summary>
-		bool HasValueTypeConstraint { get; }
-		
-		/// <summary>
 		/// Gets the variance of this type parameter.
 		/// </summary>
 		VarianceModifier Variance { get; }
@@ -86,6 +66,37 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the effective interface set of this type parameter.
 		/// </summary>
 		IEnumerable<IType> GetEffectiveInterfaceSet(ITypeResolveContext context);
+		
+		/// <summary>
+		/// Gets the constraints of this type parameter.
+		/// </summary>
+		ITypeParameterConstraints GetConstraints(ITypeResolveContext context);
+	}
+	
+	/// <summary>
+	/// Represents the constraints on a type parameter.
+	/// </summary>
+	public interface ITypeParameterConstraints : IList<IType>
+	{
+		/// <summary>
+		/// Gets if the type parameter has the 'new()' constraint.
+		/// </summary>
+		bool HasDefaultConstructorConstraint { get; }
+		
+		/// <summary>
+		/// Gets if the type parameter has the 'class' constraint.
+		/// </summary>
+		bool HasReferenceTypeConstraint { get; }
+		
+		/// <summary>
+		/// Gets if the type parameter has the 'struct' constraint.
+		/// </summary>
+		bool HasValueTypeConstraint { get; }
+		
+		/// <summary>
+		/// Applies a substitution to the constraints.
+		/// </summary>
+		ITypeParameterConstraints ApplySubstitution(TypeVisitor substitution);
 	}
 	
 	/// <summary>

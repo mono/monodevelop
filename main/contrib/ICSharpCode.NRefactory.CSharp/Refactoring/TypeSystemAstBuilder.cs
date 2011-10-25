@@ -608,7 +608,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				decl.Parameters.Add(ConvertParameter(p));
 			}
 			
-			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints) {
+			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints && !method.IsOverride) {
 				foreach (ITypeParameter tp in method.TypeParameters) {
 					var constraint = ConvertTypeParameterConstraint(tp);
 					if (constraint != null)
@@ -709,20 +709,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		Constraint ConvertTypeParameterConstraint(ITypeParameter tp)
 		{
-			if (tp.Constraints.Count == 0 && !tp.HasDefaultConstructorConstraint && !tp.HasReferenceTypeConstraint && !tp.HasValueTypeConstraint) {
+			ITypeParameterConstraints constraints = tp.GetConstraints(context);
+			if (constraints.Count == 0 && !constraints.HasDefaultConstructorConstraint && !constraints.HasReferenceTypeConstraint && !constraints.HasValueTypeConstraint) {
 				return null;
 			}
 			Constraint c = new Constraint();
 			c.TypeParameter = tp.Name;
-			if (tp.HasReferenceTypeConstraint) {
+			if (constraints.HasReferenceTypeConstraint) {
 				c.BaseTypes.Add(new PrimitiveType("class"));
-			} else if (tp.HasValueTypeConstraint) {
+			} else if (constraints.HasValueTypeConstraint) {
 				c.BaseTypes.Add(new PrimitiveType("struct"));
 			}
-			foreach (ITypeReference tr in tp.Constraints) {
-				c.BaseTypes.Add(ConvertTypeReference(tr));
+			foreach (IType t in constraints) {
+				c.BaseTypes.Add(ConvertType(t));
 			}
-			if (tp.HasDefaultConstructorConstraint) {
+			if (constraints.HasDefaultConstructorConstraint) {
 				c.BaseTypes.Add(new PrimitiveType("new"));
 			}
 			return c;

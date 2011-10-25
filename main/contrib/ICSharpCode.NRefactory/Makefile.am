@@ -80,6 +80,7 @@ FILES =  \
 	TypeSystem/Implementation/AbstractFreezable.cs \
 	TypeSystem/Implementation/AbstractMember.cs \
 	TypeSystem/Implementation/AbstractType.cs \
+	TypeSystem/Implementation/AbstractTypeParameter.cs \
 	TypeSystem/Implementation/BaseTypeCollector.cs \
 	TypeSystem/Implementation/CompositeTypeResolveContext.cs \
 	TypeSystem/Implementation/CompoundTypeDefinition.cs \
@@ -93,6 +94,7 @@ FILES =  \
 	TypeSystem/Implementation/DefaultProperty.cs \
 	TypeSystem/Implementation/DefaultTypeDefinition.cs \
 	TypeSystem/Implementation/DefaultTypeParameter.cs \
+	TypeSystem/Implementation/DefaultTypeParameterConstraints.cs \
 	TypeSystem/Implementation/GetClassTypeReference.cs \
 	TypeSystem/Implementation/GetMembersHelper.cs \
 	TypeSystem/Implementation/MinimalResolveContext.cs \
@@ -108,10 +110,12 @@ FILES =  \
 	TypeSystem/Implementation/SpecializedProperty.cs \
 	TypeSystem/Implementation/SubstitutionTypeReference.cs \
 	TypeSystem/Implementation/TypeParameterSubstitution.cs \
+	TypeSystem/Implementation/TypeParameterWithInheritedConstraints.cs \
 	TypeSystem/Implementation/TypeStorage.cs \
 	TypeSystem/Implementation/TypeWithElementType.cs \
 	TypeSystem/Implementation/VoidTypeDefinition.cs \
 	TypeSystem/INamedElement.cs \
+	TypeSystem/InheritanceHelper.cs \
 	TypeSystem/IntersectionType.cs \
 	TypeSystem/IParameter.cs \
 	TypeSystem/IParameterizedMember.cs \

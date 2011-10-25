@@ -398,8 +398,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			m.Region = MakeRegion(methodDeclaration);
 			m.BodyRegion = MakeRegion(methodDeclaration.Body);
 			
-			
-			ConvertTypeParameters(m.TypeParameters, methodDeclaration.TypeParameters, methodDeclaration.Constraints, EntityType.Method);
+			if (InheritsConstraints(methodDeclaration) && methodDeclaration.Constraints.Count == 0) {
+				int index = 0;
+				foreach (TypeParameterDeclaration tpDecl in methodDeclaration.TypeParameters) {
+					var tp = new TypeParameterWithInheritedConstraints(m, index++, tpDecl.Name);
+					tp.Region = MakeRegion(tpDecl);
+					ConvertAttributes(tp.Attributes, tpDecl.Attributes);
+					tp.Variance = tpDecl.Variance;
+					m.TypeParameters.Add(tp);
+				}
+			} else {
+				ConvertTypeParameters(m.TypeParameters, methodDeclaration.TypeParameters, methodDeclaration.Constraints, EntityType.Method);
+			}
 			m.ReturnType = ConvertType(methodDeclaration.ReturnType);
 			ConvertAttributes(m.Attributes, methodDeclaration.Attributes.Where(s => s.AttributeTarget != "return"));
 			ConvertAttributes(m.ReturnTypeAttributes, methodDeclaration.Attributes.Where(s => s.AttributeTarget == "return"));
@@ -421,6 +431,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			return m;
 		}
 		
+		bool InheritsConstraints(MethodDeclaration methodDeclaration)
+		{
+			// overrides and explicit interface implementations inherit constraints
+			if ((methodDeclaration.Modifiers & Modifiers.Override) == Modifiers.Override)
+				return true;
+			return !methodDeclaration.PrivateImplementationType.IsNull;
+		}
+		
 		void ConvertTypeParameters(IList<ITypeParameter> output, AstNodeCollection<TypeParameterDeclaration> typeParameters, AstNodeCollection<Constraint> constraints, EntityType ownerType)
 		{
 			// output might be non-empty when type parameters were copied from an outer class
@@ -428,6 +446,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			List<DefaultTypeParameter> list = new List<DefaultTypeParameter>();
 			foreach (TypeParameterDeclaration tpDecl in typeParameters) {
 				DefaultTypeParameter tp = new DefaultTypeParameter(ownerType, index++, tpDecl.Name);
+				tp.Region = MakeRegion(tpDecl);
 				ConvertAttributes(tp.Attributes, tpDecl.Attributes);
 				tp.Variance = tpDecl.Variance;
 				list.Add(tp);

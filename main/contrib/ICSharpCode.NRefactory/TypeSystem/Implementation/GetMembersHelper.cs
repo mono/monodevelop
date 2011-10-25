@@ -66,12 +66,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (!(filter == null || filter(nestedType)))
 					continue;
 				
-				if ((options & GetMemberOptions.ReturnMemberDefinitions) == GetMemberOptions.ReturnMemberDefinitions) {
-					yield return nestedType;
-				} else if (totalTypeParameterCount == 0 || (pt == null && totalTypeParameterCount == outerTypeParameterCount)) {
-					// The nested type has no new type parameters, and there are no type arguments
-					// to copy from the outer type
-					// -> we can directly return the nested type definition
+				if (totalTypeParameterCount == 0 || (options & GetMemberOptions.ReturnMemberDefinitions) == GetMemberOptions.ReturnMemberDefinitions) {
 					yield return nestedType;
 				} else {
 					// We need to parameterize the nested type

@@ -831,22 +831,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return EntityType.Method; }
 			}
 			
-			IList<ITypeReference> ITypeParameter.Constraints {
-				get { return EmptyList<ITypeReference>.Instance; }
-			}
-			
-			bool ITypeParameter.HasDefaultConstructorConstraint {
-				get { return false; }
-			}
-			
-			bool ITypeParameter.HasReferenceTypeConstraint {
-				get { return false; }
-			}
-			
-			bool ITypeParameter.HasValueTypeConstraint {
-				get { return false; }
-			}
-			
 			VarianceModifier ITypeParameter.Variance {
 				get { return VarianceModifier.Invariant; }
 			}
@@ -865,6 +849,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override TypeKind Kind {
 				get { return TypeKind.TypeParameter; }
+			}
+			
+			ITypeParameterConstraints ITypeParameter.GetConstraints(ITypeResolveContext context)
+			{
+				return DefaultTypeParameterConstraints.Empty;
 			}
 			
 			IType ITypeParameter.GetEffectiveBaseClass(ITypeResolveContext context)
