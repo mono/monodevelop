@@ -847,8 +847,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\LoadSavePanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AddInsOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\DefaultMonitorPad.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads\FileList.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads\FileListItem.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\MonodocTreePad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SolutionFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\FolderNodeBuilder.cs" />

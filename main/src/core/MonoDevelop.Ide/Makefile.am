@@ -524,8 +524,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
-	MonoDevelop.Ide.Gui.Pads/FileList.cs \
-	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
 	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
 	MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
