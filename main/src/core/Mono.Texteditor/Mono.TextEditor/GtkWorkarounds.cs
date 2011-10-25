@@ -191,5 +191,22 @@ namespace Mono.TextEditor
 		{
 			glibObjectSetProp.Invoke (obj, new object[] { name, value });
 		}
+		
+		public static bool ButtonEventTriggersContextMenu (Gdk.EventButton evt)
+		{
+			if (evt.Type == Gdk.EventType.ButtonPress) {
+				if (evt.Button == 3 &&
+						(evt.State & (Gdk.ModifierType.Button1Mask | Gdk.ModifierType.Button2Mask)) == 0)
+					return true;
+				
+				if (Platform.IsMac) {
+					if (evt.Button == 1 &&
+						(evt.State & Gdk.ModifierType.ControlMask) != 0 &&
+						(evt.State & (Gdk.ModifierType.Button2Mask | Gdk.ModifierType.Button3Mask)) == 0)
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 }
