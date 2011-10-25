@@ -92,6 +92,7 @@
     <Compile Include="Mono.Debugger.Soft\ThreadMirror.cs" />
     <Compile Include="Mono.Debugger.Soft\ThreadStartEvent.cs" />
     <Compile Include="Mono.Debugger.Soft\TypeLoadEvent.cs" />
+    <Compile Include="Mono.Debugger.Soft\TypeLoadEventRequest.cs" />
     <Compile Include="Mono.Debugger.Soft\TypeMirror.cs" />
     <Compile Include="Mono.Debugger.Soft\UserBreakEvent.cs" />
     <Compile Include="Mono.Debugger.Soft\UserLogEvent.cs" />
