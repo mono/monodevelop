@@ -47,6 +47,7 @@ namespace Mono.Debugging.Soft
 		VirtualMachine vm;
 		Thread eventHandler;
 		Dictionary<string, List<TypeMirror>> source_to_type = new Dictionary<string, List<TypeMirror>> (PathComparer);
+		Dictionary<TypeMirror, string[]> type_to_source = new Dictionary<TypeMirror, string[]> ();
 		bool useFullPaths = true;
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
 		Dictionary<EventRequest,BreakInfo> breakpoints = new Dictionary<EventRequest,BreakInfo> ();
@@ -62,6 +63,7 @@ namespace Mono.Debugging.Soft
 		string remoteProcessName;
 		Dictionary<long,long> localThreadIds = new Dictionary<long, long> ();
 		IConnectionDialog connectionDialog;
+		TypeLoadEventRequest typeLoadReq, typeLoadTypeNameReq;
 		
 		Dictionary<long,ObjectMirror> activeExceptionsByThread = new Dictionary<long, ObjectMirror> ();
 		
@@ -368,13 +370,19 @@ namespace Mono.Debugging.Soft
 			
 			HideConnectionDialog ();
 			
-			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath,
+			vm.EnableEvents (EventType.AssemblyLoad, EventType.ThreadStart, EventType.ThreadDeath,
 				EventType.AssemblyUnload, EventType.UserBreak, EventType.UserLog);
 			try {
 				unhandledExceptionRequest = vm.CreateExceptionRequest (null, false, true);
 				unhandledExceptionRequest.Enable ();
 			} catch (NotSupportedException) {
 				//Mono < 2.6.3 doesn't support catching unhandled exceptions
+			}
+
+			if (vm.Version.AtLeast (2, 9)) {
+				/* Created later */
+			} else {
+				vm.EnableEvents (EventType.TypeLoad);
 			}
 			
 			started = true;
@@ -653,12 +661,13 @@ namespace Mono.Debugging.Soft
 		{
 			if (exited)
 				return null;
-			
+
 			var bi = new BreakInfo ();
 			
 			if (ev is Breakpoint) {
 				var bp = (Breakpoint) ev;
 				bool inisideLoadedRange;
+				bi.FileName = bp.FileName;
 				bi.Location = FindLocation (bp.FileName, bp.Line, out inisideLoadedRange);
 				if (bi.Location != null) {
 					InsertBreakpoint (bp, bi);
@@ -674,14 +683,51 @@ namespace Mono.Debugging.Soft
 			} else if (ev is Catchpoint) {
 				var cp = (Catchpoint) ev;
 				TypeMirror type;
+
+				if (!types.TryGetValue (cp.ExceptionName, out type)) {
+					//
+					// Same as in FindLocation (), fetch types matching the type name
+					if (vm.Version.AtLeast (2, 9)) {
+						foreach (TypeMirror t in vm.GetTypes (cp.ExceptionName, false))
+							ProcessType (t);
+					}
+				}
 				if (types.TryGetValue (cp.ExceptionName, out type)) {
 					InsertCatchpoint (cp, bi, type);
 					bi.SetStatus (BreakEventStatus.Bound, null);
 				} else {
+					bi.ExceptionName = cp.ExceptionName;
 					pending_bes.Add (bi);
 					bi.SetStatus (BreakEventStatus.NotBound, null);
 				}
 			}
+
+			/*
+			 * TypeLoad events lead to too much wire traffic + suspend/resume work, so
+			 * filter them using the file names used by pending breakpoints.
+			 */
+			if (vm.Version.AtLeast (2, 9)) {
+				var sourceFileList = pending_bes.Where (b => b.FileName != null).Select (b => b.FileName).ToArray ();
+				if (sourceFileList.Length > 0) {
+					if (typeLoadReq == null) {
+						typeLoadReq = vm.CreateTypeLoadRequest ();
+					}
+					typeLoadReq.Enabled = false;
+					typeLoadReq.SourceFileFilter = sourceFileList;
+					typeLoadReq.Enabled = true;
+				}
+				var typeNameList = pending_bes.Where (b => b.ExceptionName != null).Select (b => b.ExceptionName).ToArray ();
+				if (typeNameList.Length > 0) {
+					// Use a separate request since the filters are ANDed together
+					if (typeLoadTypeNameReq == null) {
+						typeLoadTypeNameReq = vm.CreateTypeLoadRequest ();
+					}
+					typeLoadTypeNameReq.Enabled = false;
+					typeLoadTypeNameReq.TypeNameFilter = typeNameList;
+					typeLoadTypeNameReq.Enabled = true;
+				}
+			}
+
 			return bi;
 		}
 
@@ -737,6 +783,17 @@ namespace Mono.Debugging.Soft
 				return null;
 
 			string filename = PathToFileName (file);
+
+			//
+			// Fetch types matching the source file from the debuggee, and add them
+			// to the source file->type mapping tables.
+			// This is needed because we don't receive type load events for all types,
+			// just the ones which match a source file with an existing breakpoint.
+			//
+			if (vm.Version.AtLeast (2, 9)) {
+				foreach (TypeMirror t in vm.GetTypesForSourceFile (filename, false))
+					ProcessType (t);
+			}
 	
 			Location target_loc = null;
 	
@@ -1009,6 +1066,8 @@ namespace Mono.Debugging.Soft
 				
 				string typeName = t.FullName;
 				
+				Console.WriteLine (typeName);
+
 				if (types.ContainsKey (typeName)) {
 					if (typeName != "System.Exception" && typeName != "<Module>")
 						LoggingService.LogError ("Type '" + typeName + "' loaded more than once", null);
@@ -1221,15 +1280,13 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
-		void ResolveBreakpoints (TypeMirror t)
-		{
+		void ProcessType (TypeMirror t) {
 			string typeName = t.FullName;
+
+			if (types.ContainsKey (typeName))
+				return;
 			types [typeName] = t;
-			
-			/* Handle pending breakpoints */
-			
-			var resolved = new List<BreakInfo> ();
-			
+
 			//get the source file paths
 			//full paths, from GetSourceFiles (true), are only supported by sdb protocol 2.2 and later
 			string[] sourceFiles;
@@ -1250,7 +1307,7 @@ namespace Mono.Debugging.Soft
 			
 			for (int n=0; n<sourceFiles.Length; n++)
 				sourceFiles[n] = NormalizePath (sourceFiles[n]);
-			
+
 			foreach (string s in sourceFiles) {
 				List<TypeMirror> typesList;
 				
@@ -1261,7 +1318,22 @@ namespace Mono.Debugging.Soft
 					typesList.Add (t);
 					source_to_type[s] = typesList;
 				}
-				
+			}
+
+			type_to_source [t] = sourceFiles;
+		}
+
+		void ResolveBreakpoints (TypeMirror t)
+		{
+			ProcessType (t);
+
+			string typeName = t.FullName;
+
+			/* Handle pending breakpoints */
+			
+			var resolved = new List<BreakInfo> ();
+			
+			foreach (string s in type_to_source [t]) {
 				foreach (var bi in pending_bes.Where (b => b.BreakEvent is Breakpoint)) {
 					var bp = (Breakpoint) bi.BreakEvent;
 					if (PathComparer.Compare (PathToFileName (bp.FileName), s) == 0) {
@@ -1634,6 +1706,8 @@ namespace Mono.Debugging.Soft
 		public Location Location;
 		public EventRequest Req;
 		public string LastConditionValue;
+		public string FileName;
+		public string ExceptionName;
 	}
 	
 	class DisconnectedException: DebuggerException
