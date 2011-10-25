@@ -71,7 +71,6 @@
     <Compile Include="Dialogs\SelectEncodingPopUpButton.cs" />
     <Compile Include="Dialogs\Layout.cs" />
     <Compile Include="Dialogs\MacAlertDialogHandler.cs" />
-    <Compile Include="MacInterop\Carbon.cs" />
     <Compile Include="MacInterop\CoreFoundation.cs" />
     <Compile Include="MacInterop\HIToolbox.cs" />
     <Compile Include="MacInterop\ApplicationEvents.cs" />
@@ -86,6 +85,8 @@
     <Compile Include="MacIntegrationCommands.cs" />
     <Compile Include="MacExternalConsoleProcess.cs" />
     <Compile Include="MacMainMenu.cs" />
+    <Compile Include="MacInterop\Carbon.cs" />
+    <Compile Include="MacInterop\AppleEvents\Native.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -115,5 +116,6 @@
   <ItemGroup>
     <Folder Include="Dialogs\" />
     <Folder Include="MacInterop\" />
+    <Folder Include="MacInterop\AppleEvents\" />
   </ItemGroup>
 </Project>
