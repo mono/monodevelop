@@ -283,7 +283,7 @@ namespace MonoDevelop.CSharp.Completion
 					sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 					DisplayFlags |= DisplayFlags.Obsolete;
 				}
-				var returnType = m.SourceProjectDom.GetType (m.ReturnType);
+				var returnType = m.SourceProjectDom != null ? m.SourceProjectDom.GetType (m.ReturnType) : null;
 				if (returnType != null && returnType.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 					sb.AppendLine ();
 					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
