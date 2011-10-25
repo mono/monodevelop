@@ -429,7 +429,15 @@ namespace Mono.TextEditor
 			markerLayout.SetText (" ");
 			int w, h;
 			markerLayout.GetSize (out w, out h);
+			
 			this.charWidth = w / Pango.Scale.PangoScale;
+			if (textEditor.preeditString != null && textEditor.preeditAttrs != null) {
+				using (var preeditLayout = PangoUtil.CreateLayout (textEditor)) {
+					preeditLayout.SetText (textEditor.preeditString);
+					preeditLayout.Attributes = textEditor.preeditAttrs;
+					preeditLayout.GetSize (out w, out h);
+				}
+			}
 			this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
 			
 			markerLayout.FontDescription.Weight = Pango.Weight.Normal;

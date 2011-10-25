@@ -389,6 +389,15 @@ namespace Mono.TextEditor
 					preeditOffset = Caret.Offset;
 					preeditLine = Caret.Line;
 				}
+				using (var preeditLayout = PangoUtil.CreateLayout (textEditor)) {
+					preeditLayout.SetText (textEditor.preeditString);
+					preeditLayout.Attributes = textEditor.preeditAttrs;
+					int w, h;
+					preeditLayout.GetSize (out w, out h);
+					if (LineHeight != System.Math.Ceiling (h / Pango.Scale.PangoScale))
+						OptionsChanged ();
+				}
+				
 			} else {
 				preeditOffset = -1;
 				preeditString = null;
