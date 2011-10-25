@@ -909,8 +909,12 @@ namespace Mono.Debugging.Soft
 						cache.TryGetValue (Tuple.Create (currentType, methodName), out methods);
 					}
 				}
-				if (methods == null)
-					methods = currentType.GetMethodsByNameFlags (methodName, BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static, !ctx.CaseSensitive);
+				if (methods == null) {
+					if (currentType.VirtualMachine.Version.AtLeast (2, 7))
+						methods = currentType.GetMethodsByNameFlags (methodName, BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static, !ctx.CaseSensitive);
+					else
+						methods = currentType.GetMethods ();
+				}
 				if (ctx.CaseSensitive) {
 					lock (cache) {
 						cache [Tuple.Create (currentType, methodName)] = methods;
