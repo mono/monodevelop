@@ -142,11 +142,24 @@ namespace MonoDevelop.Components.Commands
 			return CreateMenu (cset);
 		}
 		
+		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, string addinPath)
+		{
+			ShowContextMenu (parent, evt, CreateCommandEntrySet (addinPath));
+		}
+		
+		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt,
+			ExtensionContext ctx, string addinPath)
+		{
+			ShowContextMenu (parent, evt, CreateCommandEntrySet (ctx, addinPath));
+		}
+		
+		[Obsolete("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
 		public void ShowContextMenu (string addinPath)
 		{
 			ShowContextMenu (CreateCommandEntrySet (addinPath));
 		}
 		
+		[Obsolete("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
 		public void ShowContextMenu (ExtensionContext ctx, string addinPath)
 		{
 			ShowContextMenu (CreateCommandEntrySet (ctx, addinPath));
@@ -434,6 +447,13 @@ namespace MonoDevelop.Components.Commands
 			return CreateMenu (entrySet, new CommandMenu (this));
 		}
 		
+		public Gtk.Menu CreateMenu (CommandEntrySet entrySet, object initialTarget)
+		{
+			var menu = (CommandMenu) CreateMenu (entrySet, new CommandMenu (this));
+			menu.InitialCommandTarget = initialTarget;
+			return menu;
+		}
+		
 		public void InsertOptions (Gtk.Menu menu, CommandEntrySet entrySet, int index)
 		{
 			CommandTargetRoute route = new CommandTargetRoute ();
@@ -452,28 +472,63 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
+			object initialCommandTarget = null)
+		{
+			var menu = CreateMenu (entrySet);
+			if (menu != null)
+				ShowContextMenu (parent, evt, menu, initialCommandTarget);
+		}
+		
+		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu,
+			object initialCommandTarget = null)
+		{
+			if (menu is CommandMenu) {
+				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
+			}
+			
+			if (parent != null) {
+				menu.AttachToWidget (parent, null);
+			}
+			
+			if (evt == null) {
+				menu.Popup (null, null, null, 0, Gtk.Global.CurrentEventTime);
+			} else {
+				menu.Popup (null, null, null, evt.Button, evt.Time);
+			}
+		}
+		
+		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
+		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget, Gdk.EventButton evt)
+		{
+			if (menu is CommandMenu) {
+				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget;
+			}
+			ShowContextMenu (menu, evt);
+		}
+		
+		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
 		public void ShowContextMenu (CommandEntrySet entrySet)
 		{
 			ShowContextMenu (entrySet, null);
 		}
 		
+		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
 		public void ShowContextMenu (CommandEntrySet entrySet, object initialTarget)
 		{
-			CommandMenu menu = (CommandMenu) CreateMenu (entrySet);
-			ShowContextMenu (menu, initialTarget);
+			ShowContextMenu (CreateMenu (entrySet, initialTarget));
 		}
 		
+		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
 		public void ShowContextMenu (Gtk.Menu menu)
 		{
-			menu.Popup (null, null, null, 0, Gtk.Global.CurrentEventTime);
+			ShowContextMenu (menu, null, (Gdk.EventButton) null);
 		}
 		
+		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
 		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget)
 		{
-			if (menu is CommandMenu) {
-				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget;
-			}
-			ShowContextMenu (menu);
+			ShowContextMenu (menu, initialCommandTarget, null);
 		}
 		
 		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet)
