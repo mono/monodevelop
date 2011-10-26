@@ -90,6 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		protected bool IsInsideString (int offset)
 		{
+			
 			var loc = document.GetLocation (offset);
 			var expr = Unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
 			return expr != null && expr.Value is string;
@@ -99,7 +100,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		#region Basic parsing/resolving functions
 		protected void AppendMissingClosingBrackets (StringBuilder wrapper, string memberText, bool appendSemicolon)
 		{
-			var bracketStack = new Stack<char> ();
+			var bracketStack = new Stack<Tuple<char, int>> ();
 			
 			bool isInString = false, isInChar = false;
 			bool isInLineComment = false, isInBlockComment = false;
@@ -111,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				case '[':
 				case '{':
 					if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
-						bracketStack.Push (ch);
+						bracketStack.Push (Tuple.Create (ch, pos));
 					break;
 				case ')':
 				case ']':
@@ -152,7 +153,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			char lastBracket = '\0';
 			while (bracketStack.Count > 0) {
-				switch (bracketStack.Pop ()) {
+				var t = bracketStack.Pop ();
+				switch (t.Item1) {
 				case '(':
 					wrapper.Append (')');
 					didAppendSemicolon = false;
@@ -169,12 +171,28 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					lastBracket = '>';
 					break;
 				case '{':
+					int o = t.Item2 - 1;
 					if (!didAppendSemicolon) {
 						didAppendSemicolon = true;
 						wrapper.Append (';');
 					}
 						
-					wrapper.Append ('}');
+					bool didAppendCatch = false;
+					while (o >= "try".Length) {
+						char ch = memberText[o];
+						Console.WriteLine (ch);
+						
+						if (!char.IsWhiteSpace (ch)) {
+							if (ch == 'y' && memberText[o - 1] == 'r' && memberText[o - 2] == 't') {
+								wrapper.Append ("} catch {}");
+								didAppendCatch = true;
+							}
+							break;
+						}
+						o--;
+					}
+					if (!didAppendCatch)
+						wrapper.Append ('}');
 					break;
 				}
 			}
