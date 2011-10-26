@@ -305,11 +305,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (")");
 			
 			var typeParameters = method.TypeParameters;
-			if (typeParameters.Any (p => p.Constraints.Any () /*|| (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0*/)) {
+			if (typeParameters.Any (p => p.GetConstraints (options.Ctx).Any () /*|| (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0*/)) {
 				result.Append (" where ");
 				int typeParameterCount = 0;
 				foreach (var p in typeParameters) {
-					if (!p.Constraints.Any () /*&& (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) == 0*/)
+					if (!p.GetConstraints (options.Ctx).Any () /*&& (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) == 0*/)
 						continue;
 					if (typeParameterCount != 0)
 						result.Append (", ");
@@ -323,7 +323,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //						result.Append ("new ()");
 //						constraintCount++;
 //					}
-					foreach (var c in p.Constraints) {
+					foreach (var c in p.GetConstraints (options.Ctx)) {
 						if (constraintCount != 0)
 							result.Append (", ");
 						constraintCount++;
