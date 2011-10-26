@@ -50,6 +50,7 @@ namespace Mono.TextEditor
 		{
 			this.syntax = syntax;
 		}
+		
 		bool inUpdate = false;
 		public override void Analyze (Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset)
 		{
@@ -60,12 +61,12 @@ namespace Mono.TextEditor
 				string text = doc.GetTextAt (startOffset, endOffset - startOffset);
 				int startColumn = startOffset - line.Offset;
 				var markers = new List <UrlMarker> (line.Markers.Where (m => m is UrlMarker).Cast<UrlMarker> ());
-				markers.ForEach (m => doc.RemoveMarker (m));
+				markers.ForEach (m => doc.RemoveMarker (m, false));
 				foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {
-					doc.AddMarker (line, new UrlMarker (doc, line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+					doc.AddMarker (line, new UrlMarker (doc, line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length), false);
 				}
 				foreach (System.Text.RegularExpressions.Match m in mailRegex.Matches (text)) {
-					doc.AddMarker (line, new UrlMarker (doc, line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+					doc.AddMarker (line, new UrlMarker (doc, line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length), false);
 				}
 			} finally {
 				inUpdate = false;
