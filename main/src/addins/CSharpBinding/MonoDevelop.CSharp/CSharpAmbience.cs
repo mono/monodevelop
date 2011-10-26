@@ -575,9 +575,7 @@ namespace MonoDevelop.CSharp
 			if (property == null)
 				return "";
 			var result = new StringBuilder ();
-			
 			AppendModifiers (result, settings, property);
-			
 			if (!settings.CompletionListFomat && settings.IncludeReturnType) {
 				result.Append (GetTypeReferenceString (property.ReturnType, settings));
 				result.Append (settings.Markup (" "));

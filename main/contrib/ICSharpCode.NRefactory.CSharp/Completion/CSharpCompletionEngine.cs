@@ -1217,7 +1217,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (type == null || type.DeclaringType != null)
 				return type;
-			var result = ctx.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameterCount, StringComparer.Ordinal);
+			var result = ctx.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameterCount, StringComparer.Ordinal) ?? type;
+			if (result.GetParts ().Count == 1)
+				return type;
 //			Console.WriteLine ("result:"+  result);
 			return result;
 		}
@@ -1342,9 +1344,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine ("type:" + type +"/"+type.GetType ());
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
-//			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
+//			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic.ToString () : "currentMember == null");
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
-				foreach (var member in type.GetMembers (ctx)) {
+				foreach (var member in type.Resolve (ctx).GetMembers (ctx)) {
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
 	//					Console.WriteLine ("skip access: " + member.FullName);
 						continue;
@@ -1360,7 +1362,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	//					Console.WriteLine ("skip non static member: " + member.FullName);
 						continue;
 					}
-	//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
+//					Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic + "---- returns:" + member.ReturnType.Resolve (ctx).FullName);
 					result.AddMember (member);
 				}
 			}

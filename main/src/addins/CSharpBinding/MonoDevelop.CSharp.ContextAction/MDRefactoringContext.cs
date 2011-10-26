@@ -390,7 +390,6 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public override AstType CreateShortType (IType fullType)
 		{
-			Console.WriteLine (Environment.StackTrace);
 			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
 			csResolver.CurrentMember = CSharpParsedFile.GetMember (Location);
 			csResolver.CurrentTypeDefinition = CSharpParsedFile.GetInnermostTypeDefinition (Location);

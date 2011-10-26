@@ -283,7 +283,6 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			result.Add (replace);
 			int delta = insert.InsertedText.Length - insert.RemovedChars;
 			offsets.Add (replace.Offset + delta);
-			Console.WriteLine (replace.Offset);
 			delta += varName.Length - replace.RemovedChars;
 			varCount++;
 			selectionStart = insert.Offset;

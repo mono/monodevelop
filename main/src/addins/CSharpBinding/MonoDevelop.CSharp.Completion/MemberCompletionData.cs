@@ -256,12 +256,12 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			
 			var sb = new StringBuilder ();
-				
+
 			descriptionCreated = true;
 			if (Entity is IMethod && ((IMethod)Entity).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
 			sb.Append (ambience.GetString (editorCompletion.ctx, Entity, 
-				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
+				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeReturnType | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
 
 			var m = (IMember)Entity;
 			if (m.IsObsolete ()) {
