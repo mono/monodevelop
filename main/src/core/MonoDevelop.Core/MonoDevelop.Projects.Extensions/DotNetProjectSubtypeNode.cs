@@ -30,6 +30,7 @@ using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Projects.Formats.MSBuild;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Extensions
 {
@@ -177,7 +178,7 @@ namespace MonoDevelop.Projects.Extensions
 	public interface IDotNetSubtypeMigrationHandler
 	{
 		IEnumerable<string> FilesToBackup (string filename);
-		bool Migrate (MSBuildProject project, string fileName, string language);
+		bool Migrate (IProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language);
 	}
 	
 	public enum MigrationType {

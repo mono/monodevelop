@@ -628,12 +628,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				var loc = node == unit.FirstChild ? node.StartLocation : node.EndLocation;
 				offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
 			}
-			doc.Editor.Document.BeginAtomicUndo ();
-			int caretOffset = doc.Editor.Caret.Offset;
-			int inserted = doc.Editor.Insert (offset, text.ToString ());
-			if (offset < caretOffset)
-				doc.Editor.Caret.Offset = caretOffset + inserted;
-			doc.Editor.Document.EndAtomicUndo ();
+			using (var undo = doc.Editor.OpenUndoGroup ()) {
+				int caretOffset = doc.Editor.Caret.Offset;
+				int inserted = doc.Editor.Insert (offset, text.ToString ());
+				if (offset < caretOffset)
+					doc.Editor.Caret.Offset = caretOffset + inserted;
+			}
 			doc.Editor.Document.CommitUpdateAll ();
 		}
 		
@@ -675,12 +675,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
 			
-			doc.Editor.Document.BeginAtomicUndo ();
-			int caretOffset = doc.Editor.Caret.Offset;
-			int inserted = doc.Editor.Insert (offset, text.ToString ());
-			if (offset < caretOffset)
-				doc.Editor.Caret.Offset = caretOffset + inserted;
-			doc.Editor.Document.EndAtomicUndo ();
+			using (var undo = doc.Editor.OpenUndoGroup ()) {
+				int caretOffset = doc.Editor.Caret.Offset;
+				int inserted = doc.Editor.Insert (offset, text.ToString ());
+				if (offset < caretOffset)
+					doc.Editor.Caret.Offset = caretOffset + inserted;
+			}
 		}
 		
 		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)

@@ -46,14 +46,20 @@ namespace MonoDevelop.Components.Extensions
 	/// </summary>
 	public class SelectFileDialogData: PlatformDialogData
 	{
-		List<SelectFileDialogFilter> filters = new List<SelectFileDialogFilter> ();
+		public SelectFileDialogData () {
+			FilterSet = new FileFilterSet ();
+		}
+		internal FileFilterSet FilterSet { get; set; } 
 		public Gtk.FileChooserAction Action { get; set; }
-		public IList<SelectFileDialogFilter> Filters { get { return filters; } }
+		public IList<SelectFileDialogFilter> Filters { get { return FilterSet.Filters; } }
 		public FilePath CurrentFolder { get; set; }
 		public bool SelectMultiple { get; set; }
 		public FilePath[] SelectedFiles { get; set; }
 		public string InitialFileName { get; set; }
-		public SelectFileDialogFilter DefaultFilter { get; set; }  
+		public SelectFileDialogFilter DefaultFilter {
+			get { return FilterSet.DefaultFilter; }
+			set { FilterSet.DefaultFilter = value; }
+		}
 	}	
 			
 	/// <summary>
@@ -159,28 +165,30 @@ namespace MonoDevelop.Components.Extensions
 		}
 		
 		#region File filter utilities
+		
+		internal void SetFilters (FileFilterSet filters)
+		{
+			data.FilterSet = filters;
+		}
 				
 		public SelectFileDialogFilter AddFilter (string label, params string[] patterns)
 		{
-			return AddFilter (new SelectFileDialogFilter (label, patterns));
+			return data.FilterSet.AddFilter (label, patterns);
 		}
 		
 		public SelectFileDialogFilter AddFilter (SelectFileDialogFilter filter)
 		{
-			if (useDefaultFilters)
-				throw new InvalidOperationException ("Cannot mix default filters and custom filters");
-			data.Filters.Add (filter);
-			return filter;
+			return data.FilterSet.AddFilter (filter);
 		}
 		
 		public SelectFileDialogFilter AddAllFilesFilter ()
 		{
-			return AddFilter (SelectFileDialogFilter.AllFiles);
+			return data.FilterSet.AddAllFilesFilter ();
 		}
 		
 		public bool HasFilters {
 			get {
-				return data.Filters != null && data.Filters.Count > 0;
+				return data.FilterSet.HasFilters;
 			}
 		}
 		
@@ -189,64 +197,13 @@ namespace MonoDevelop.Components.Extensions
 		/// </summary>
 		public void AddDefaultFileFilters ()
 		{
-			if (HasFilters)
-				throw new InvalidOperationException ("Cannot mix default filters and custom filters");
-			if (useDefaultFilters)
-				throw new InvalidOperationException ("Already called");
-			
-			useDefaultFilters = true;
-			
-			foreach (var f in GetDefaultFilters ())
-				data.Filters.Add (f);
-			data.Filters.Add (SelectFileDialogFilter.AllFiles);
-			
-			LoadDefaultFilter ();
-		}
-		
-		bool useDefaultFilters;
-		
-		///<summary>Loads last default filter from MD prefs</summary>
-		void LoadDefaultFilter ()
-		{
-			// Load last used filter pattern
-			var lastPattern = PropertyService.Get ("Monodevelop.FileSelector.LastPattern", "*");
-			foreach (var filter in Filters) {
-				if (filter.Patterns != null && filter.Patterns.Contains (lastPattern)) {
-					DefaultFilter = filter;
-					break;
-				}
-			}
+			data.FilterSet.AddDefaultFileFilters ();
 		}
 		
 		///<summary>Saves last default filter to MD prefs, if necessary</summary>
 		protected void SaveDefaultFilter ()
 		{
-			if (!useDefaultFilters)
-				return;
-			
-			// Save active filter
-			//it may be null if e.g. SetSelectedFile was used
-			if (DefaultFilter != null && DefaultFilter.Patterns != null && DefaultFilter.Patterns.Count > 0)
-				PropertyService.Set ("Monodevelop.FileSelector.LastPattern", DefaultFilter.Patterns[0]);
-		}
-		
-		static IEnumerable<SelectFileDialogFilter> GetDefaultFilters ()
-		{
-			foreach (var f in ParseFilters (AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFileFilters")))
-				yield return f;
-			foreach (var f in ParseFilters (AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/FileFilters")))
-				yield return f;
-		}
-		
-		static IEnumerable<SelectFileDialogFilter> ParseFilters (System.Collections.IEnumerable filterStrings)
-		{
-			if (filterStrings == null)
-				yield break;
-			foreach (string filterStr in filterStrings) {
-				var parts = filterStr.Split ('|');
-				var f = new SelectFileDialogFilter (parts[0], parts[1].Split (';'));
-				yield return f;
-			}
+			data.FilterSet.SaveDefaultFilter ();
 		}
 
 		void SetGtkFileFilters (FileSelector fdiag)
@@ -339,7 +296,7 @@ namespace MonoDevelop.Components.Extensions
 			
 			bool success = base.Run ();
 			
-			if (success && useDefaultFilters)
+			if (success)
 				SaveDefaultFilter ();
 			
 			return success;

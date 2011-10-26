@@ -94,18 +94,31 @@ namespace MonoDevelop.HexEditor
 			hexEditor.HexEditorData.Redo ();
 		}
 		
-		
-		void IUndoHandler.BeginAtomicUndo ()
+		class UndoGroup : IDisposable
 		{
-			hexEditor.HexEditorData.BeginAtomicUndo ();
-		}
+			HexEditorData data;
+			
+			public UndoGroup (HexEditorData data)
+			{
+				if (data == null)
+					throw new ArgumentNullException ("data");
+				this.data = data;
+				data.BeginAtomicUndo ();
+			}
+			
+			public void Dispose ()
+			{
+				if (data != null) {
+					data.EndAtomicUndo ();
+					data = null;
+				}
+			}
+		}	
 		
-		
-		void IUndoHandler.EndAtomicUndo ()
+		IDisposable IUndoHandler.OpenUndoGroup ()
 		{
-			hexEditor.HexEditorData.EndAtomicUndo ();
+			return new UndoGroup (hexEditor.HexEditorData);
 		}
-		
 		
 		bool IUndoHandler.EnableUndo {
 			get {

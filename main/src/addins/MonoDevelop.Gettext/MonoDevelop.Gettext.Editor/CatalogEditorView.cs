@@ -89,14 +89,9 @@ namespace MonoDevelop.Gettext.Editor
 			poEditorWidget.Redo ();
 		}
 		
-		void IUndoHandler.BeginAtomicUndo ()
+		IDisposable IUndoHandler.OpenUndoGroup ()
 		{
-			poEditorWidget.BeginAtomicUndo ();
-		}
-		
-		void IUndoHandler.EndAtomicUndo ()
-		{
-			poEditorWidget.EndAtomicUndo ();
+			return poEditorWidget.OpenUndoGroup ();
 		}
 		
 		bool IUndoHandler.EnableUndo {

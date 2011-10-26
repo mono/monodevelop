@@ -186,11 +186,13 @@ namespace MonoDevelop.MacIntegration
 				}
 				
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
-				return true;
+			} catch (Exception ex) {
+				MessageService.ShowException (ex);
 			} finally {
 				if (panel != null)
 					panel.Dispose ();
 			}
+			return true;
 		}
 		
 		static void FillViewers (List<FileViewer> currentViewers, NSPopUpButton button, FilePath[] filenames)

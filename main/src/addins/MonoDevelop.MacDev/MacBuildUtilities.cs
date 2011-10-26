@@ -189,7 +189,12 @@ namespace MonoDevelop.MacDev
 		
 		public bool NeedsBuilding ()
 		{
-			return !File.Exists (Output) || File.GetLastWriteTime (Input) > File.GetLastWriteTime (Output);
+			var output = new FileInfo (Output);
+			if (!output.Exists)
+				return true;
+			
+			var input = new FileInfo (Input);
+			return input.LastWriteTimeUtc > output.LastWriteTimeUtc;
 		}
 		
 		public void EnsureOutputDirectory ()

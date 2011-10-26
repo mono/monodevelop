@@ -85,13 +85,16 @@ namespace MonoDevelop.Refactoring
 		}
 		
 		static List<TextEditorData> textEditorDatas = new List<TextEditorData> ();
+		static List<IDisposable> undoGroups = new List<IDisposable> ();
+		
 		public static void FinishRefactoringOperation ()
 		{
 			foreach (TextEditorData data in textEditorDatas) {
-				data.Document.EndAtomicUndo ();
 				data.Document.CommitUpdateAll ();
 			}
 			textEditorDatas.Clear ();
+			undoGroups.ForEach (grp => grp.Dispose ());
+			undoGroups.Clear ();
 		}
 		
 		internal static TextEditorData GetTextEditorData (string fileName)
@@ -103,7 +106,7 @@ namespace MonoDevelop.Refactoring
 					TextEditorData result = doc.Editor;
 					if (result != null) {
 						textEditorDatas.Add (result);
-						result.Document.BeginAtomicUndo ();
+						undoGroups.Add (result.OpenUndoGroup ());
 						return result;
 					}
 				}

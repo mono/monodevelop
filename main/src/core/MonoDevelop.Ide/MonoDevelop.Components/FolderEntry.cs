@@ -50,7 +50,7 @@ namespace MonoDevelop.Components {
 			SelectFolderDialog fd = new SelectFolderDialog (name);
 			if (start_in != null)
 				fd.InitialFileName = start_in;
-			
+			fd.SetFilters (filterSet);
 			fd.TransientFor = GetTransientFor ();
 			
 			if (fd.Run ())

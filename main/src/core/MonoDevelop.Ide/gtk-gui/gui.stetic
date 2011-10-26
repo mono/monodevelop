@@ -2317,7 +2317,6 @@ Diagnostic</property>
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Every hour</property>
-                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -3979,7 +3978,7 @@ Large</property>
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -11567,6 +11566,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.ExportProjectPolicyDialog" design-size="528 254">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Export Policies</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -11794,6 +11794,8 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.ApplyPolicyDialog" design-size="479 258">
     <property name="MemberName" />
+    <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Apply Policies</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>

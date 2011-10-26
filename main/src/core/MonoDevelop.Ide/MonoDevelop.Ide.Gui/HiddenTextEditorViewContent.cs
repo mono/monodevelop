@@ -175,11 +175,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 		
-		public void BeginAtomicUndo ()
+		class DisposeStub : IDisposable
 		{
+			public void Dispose ()
+			{
+			}
 		}
-		public void EndAtomicUndo ()
+		
+		public IDisposable OpenUndoGroup ()
 		{
+			return new DisposeStub ();
 		}
 		
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()

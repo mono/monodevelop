@@ -36,6 +36,8 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -69,6 +71,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		public List<string> SupportedFormats {
+			get; private set;
+		}
+		
 		/// <summary>
 		/// Project virtual path of the selected file.
 		/// </summary>
@@ -99,44 +105,40 @@ namespace MonoDevelop.MacDev.PlistEditor
 			ShowAll ();
 			
 			Gtk.Drag.DestSet (this, DestDefaults.Drop, targetEntryTypes, DragAction.Link);
+			SupportedFormats = new List<string> { "png" };
 		}
-		
-		public bool CheckImageSize (Pixbuf pb)
-		{
-			return CheckImageSize (pb.Width, pb.Height);
-		}
-		
-		public bool CheckImageSize (int width, int height)
-		{
-			if (AcceptedSize.Width > 0) {
-				if (width != AcceptedSize.Width || height != AcceptedSize.Height) {
-					MessageService.ShowError (GettextCatalog.GetString ("Wrong picture size"),
-						GettextCatalog.GetString (
-							"Only pictures with size {0}x{1} are accepted. Picture was {2}x{3}.",
-							AcceptedSize.Width, AcceptedSize.Height, width, height));
-					return false;
-				}
-			}
-			return true;
-		}
-		
+
 		public bool CheckImage (FilePath path)
 		{
-			Pixbuf pb;
+			int width, height;
+			string errorTitle = null;
+			string errorMessage = null;
 			
-			try {
-				pb = new Pixbuf (path);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error loading pixbuf for image chooser,", e);
-				MessageService.ShowError (
-					GettextCatalog.GetString ("Cannot load image"),
-					GettextCatalog.GetString ("The selected file could not be loaded as an image.")
-				);
+			using (var type = Pixbuf.GetFileInfo (path, out width, out height)) {
+				if (type == null) {
+					errorTitle = GettextCatalog.GetString ("Invalid file selected");
+					errorMessage = GettextCatalog.GetString ("Selected file was not a valid image.");
+				} else if (type.IsDisabled) {
+					errorTitle = GettextCatalog.GetString ("Unsupported image selected");
+					errorMessage = GettextCatalog.GetString ("Support for loading images of type '{0}' has not been enabled.", type.Name);	
+				} else if (AcceptedSize != Size.Empty && AcceptedSize != new Size (width, height)) {
+					errorTitle = GettextCatalog.GetString ("Incorrect image dimensions");
+					errorMessage = GettextCatalog.GetString (
+							"Only images with size {0}x{1} are allowed. Picture was {2}x{3}.",
+							AcceptedSize.Width, AcceptedSize.Height, width, height);
+						
+				} else if (!SupportedFormats.Contains (type.Name)) {
+					var formats = string.Join (", ", SupportedFormats.Select (f => "'" + f + "'"));
+					errorTitle = GettextCatalog.GetString ("Invalid image selected");
+					errorMessage = GettextCatalog.GetString ("An image of type '{0}' has been selected but you must select an image of type '{1}'.", formats);
+				} else {
+					return true;
+				}
+				
+				LoggingService.LogError ("{0}: {1}", errorTitle, errorMessage);
+				MessageService.ShowError (errorTitle, errorMessage);
 				return false;
 			}
-			
-			using (pb)
-				return CheckImageSize (pb);
 		}
 		
 		protected override void OnClicked ()
@@ -144,7 +146,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			base.OnClicked ();
 			if (project == null)
 				return;
-			var dialog = new ProjectFileSelectorDialog (project, null, "*.png");
+			
+			var formats = string.Join ("|", SupportedFormats.Select (f => "*." + f));
+			var dialog = new ProjectFileSelectorDialog (project, "All Images", formats);
+
 			try {
 				if (AcceptedSize.IsEmpty)
 					dialog.Title = GettextCatalog.GetString ("Select icon...");

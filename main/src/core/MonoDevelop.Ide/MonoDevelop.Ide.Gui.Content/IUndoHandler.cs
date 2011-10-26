@@ -41,7 +41,6 @@ namespace MonoDevelop.Ide.Gui.Content
 		void Undo ();
 		void Redo ();
 		
-		void BeginAtomicUndo ();
-		void EndAtomicUndo ();
+		IDisposable OpenUndoGroup ();
 	}
 }

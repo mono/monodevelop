@@ -154,7 +154,6 @@ namespace MonoDevelop.CSharp.Completion
 				if (result.ExpressionContext == ExpressionContext.Attribute)
 					return CreateCtrlSpaceCompletionData (completionContext, result);
 				return null;*/
-
 //			case '\n':
 //			case '\r': {
 //				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)

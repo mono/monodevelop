@@ -41,6 +41,7 @@ namespace MonoDevelop.Components {
 		Entry text;
 		Button browse;
 		bool loading;
+		protected FileFilterSet filterSet = new FileFilterSet ();
 		
 		public event EventHandler PathChanged;
 		
@@ -90,6 +91,10 @@ namespace MonoDevelop.Components {
 				text.Text = value;
 				loading = false;
 			}
+		}
+		
+		public FileFilterSet FileFilters {
+			get { return filterSet; }
 		}
 		
 		void OnButtonClicked (object o, EventArgs args)

@@ -207,8 +207,16 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						name = posArgs[0].ConstantValue as string;
 					if (string.IsNullOrEmpty (name))
 						name = prop.Name;
+					
+					// HACK: Work around bug #1586 in the least obtrusive way possible. Strip out any outlet
+					// with the name 'view' on subclasses of MonoTouch.UIKit.UIViewController to avoid 
+					// conflicts with the view property mapped there
+					if (name == "view")
+						if (type.GetAllBaseTypeDefinitions (dom).Any (p => p.FullName == "MonoTouch.UIKit.UIViewController"))
+							continue;
+					
 					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.Resolve (dom).FullName);
-					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.DeclaringTypeDefinition.Region.FileName))
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.DeclaringType.CompilationUnit.FileName))
 						ol.IsDesigner = true;
 					info.Outlets.Add (ol);
 					break;

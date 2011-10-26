@@ -403,6 +403,15 @@ namespace Mono.TextEditor
 					preeditOffset = Caret.Offset;
 					preeditLine = Caret.Line;
 				}
+				using (var preeditLayout = PangoUtil.CreateLayout (this)) {
+					preeditLayout.SetText (preeditString);
+					preeditLayout.Attributes = preeditAttrs;
+					int w, h;
+					preeditLayout.GetSize (out w, out h);
+					if (LineHeight != System.Math.Ceiling (h / Pango.Scale.PangoScale))
+						OptionsChanged (this, EventArgs.Empty);
+				}
+				
 			} else {
 				preeditOffset = -1;
 				preeditString = null;
@@ -1869,6 +1878,11 @@ namespace Mono.TextEditor
 		public int OffsetToLineNumber (int offset)
 		{
 			return Document.OffsetToLineNumber (offset);
+		}
+		
+		public IDisposable OpenUndoGroup()
+		{
+			return Document.OpenUndoGroup ();
 		}
 		#endregion
 		
