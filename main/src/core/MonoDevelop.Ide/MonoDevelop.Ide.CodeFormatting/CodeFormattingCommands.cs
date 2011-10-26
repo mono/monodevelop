@@ -59,15 +59,15 @@ namespace MonoDevelop.Ide.CodeFormatting
 			var formatter = CodeFormatterService.GetFormatter (mt);
 			if (formatter == null)
 				return;
-			doc.Editor.Document.BeginAtomicUndo ();
-			var loc = doc.Editor.Caret.Location;
-			var text = formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.Editor.Text);
-			if (text != null) {
-				doc.Editor.Replace (0, doc.Editor.Length, text);
-				doc.Editor.Caret.Location = loc;
-				doc.Editor.Caret.CheckCaretPosition ();
+			using (var undo = doc.Editor.OpenUndoGroup ()) {
+				var loc = doc.Editor.Caret.Location;
+				var text = formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.Editor.Text);
+				if (text != null) {
+					doc.Editor.Replace (0, doc.Editor.Length, text);
+					doc.Editor.Caret.Location = loc;
+					doc.Editor.Caret.CheckCaretPosition ();
+				}
 			}
-			doc.Editor.Document.EndAtomicUndo ();
 		}
 	}
 	
@@ -97,18 +97,18 @@ namespace MonoDevelop.Ide.CodeFormatting
 				return;
 			var selection = doc.Editor.SelectionRange;
 			
-			doc.Editor.Document.BeginAtomicUndo ();
-			if (formatter.SupportsOnTheFlyFormatting) {
-				formatter.OnTheFlyFormat (doc.Project != null ? doc.Project.Policies : null, doc.Editor, selection.Offset, selection.EndOffset);
-			} else {
-				var pol = doc.Project != null ? doc.Project.Policies : null;
-				string text = formatter.FormatText (pol, doc.Editor.Text, selection.Offset, selection.EndOffset);
-				if (text != null) {
-					doc.Editor.Replace (selection.Offset, selection.Length, text);
-					doc.Editor.SetSelection (selection.Offset, selection.Offset + text.Length - 1);
+			using (var undo = doc.Editor.OpenUndoGroup ()) {
+				if (formatter.SupportsOnTheFlyFormatting) {
+					formatter.OnTheFlyFormat (doc.Project != null ? doc.Project.Policies : null, doc.Editor, selection.Offset, selection.EndOffset);
+				} else {
+					var pol = doc.Project != null ? doc.Project.Policies : null;
+					string text = formatter.FormatText (pol, doc.Editor.Text, selection.Offset, selection.EndOffset);
+					if (text != null) {
+						doc.Editor.Replace (selection.Offset, selection.Length, text);
+						doc.Editor.SetSelection (selection.Offset, selection.Offset + text.Length - 1);
+					}
 				}
 			}
-			doc.Editor.Document.EndAtomicUndo ();
 		}
 	}
 }

@@ -148,11 +148,8 @@ namespace MonoDevelop.CSharp.Formatting
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-			try {
-				data.Document.BeginAtomicUndo ();
+			using (var undo = data.OpenUndoGroup ()) {
 				MDRefactoringContext.MdScript.RunActions (changes, null);
-			} finally {
-				data.Document.EndAtomicUndo ();
 			}
 		}
 

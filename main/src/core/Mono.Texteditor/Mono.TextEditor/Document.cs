@@ -826,7 +826,33 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void BeginAtomicUndo ()
+		class UndoGroup : IDisposable
+		{
+			Document doc;
+			
+			public UndoGroup (Document doc)
+			{
+				if (doc == null)
+					throw new ArgumentNullException ("doc");
+				this.doc = doc;
+				doc.BeginAtomicUndo ();
+			}
+			
+			public void Dispose ()
+			{
+				if (doc != null) {
+					doc.EndAtomicUndo ();
+					doc = null;
+				}
+			}
+		}
+		
+		public IDisposable OpenUndoGroup()
+		{
+			return new UndoGroup (this);
+		}
+		
+		internal void BeginAtomicUndo ()
 		{
 			if (atomicUndoLevel == 0) {
 				if (this.syntaxMode != null && !SuppressHighlightUpdate)
@@ -840,7 +866,7 @@ namespace Mono.TextEditor
 			atomicUndoLevel++;
 		}
 		
-		public void EndAtomicUndo ()
+		internal void EndAtomicUndo ()
 		{
 			if (atomicUndoLevel <= 0)
 				throw new InvalidOperationException ("There is no atomic undo operation running.");

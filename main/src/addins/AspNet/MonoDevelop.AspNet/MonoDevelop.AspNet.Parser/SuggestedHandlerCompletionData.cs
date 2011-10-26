@@ -78,10 +78,10 @@ namespace MonoDevelop.AspNet.Parser
 			//insert the method name
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = window.CompletionWidget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
 			if (buf != null) {
-				buf.BeginAtomicUndo ();
-				buf.DeleteText (window.CodeCompletionContext.TriggerOffset, buf.CursorPosition - window.CodeCompletionContext.TriggerOffset);
-				buf.InsertText (buf.CursorPosition, methodInfo.Name);
-				buf.EndAtomicUndo ();
+				using (var undo = buf.OpenUndoGroup ()) {
+					buf.DeleteText (window.CodeCompletionContext.TriggerOffset, buf.CursorPosition - window.CodeCompletionContext.TriggerOffset);
+					buf.InsertText (buf.CursorPosition, methodInfo.Name);
+				}
 			}
 			
 			//generate the codebehind method

@@ -72,21 +72,20 @@ namespace MonoDevelop.Html
 		{
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = window.CompletionWidget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
 			if (buf != null) {
-				buf.BeginAtomicUndo ();
-				
-				int deleteStartOffset = window.CodeCompletionContext.TriggerOffset;
-				if (text.StartsWith (docTypeStart)) {
-					int start = window.CodeCompletionContext.TriggerOffset - docTypeStart.Length;
-					if (start >= 0) {
-						string readback = buf.GetText (start, window.CodeCompletionContext.TriggerOffset);
-						if (string.Compare (readback, docTypeStart, StringComparison.OrdinalIgnoreCase) == 0)
-							deleteStartOffset -= docTypeStart.Length;
+				using (var undo = buf.OpenUndoGroup ()) {
+					int deleteStartOffset = window.CodeCompletionContext.TriggerOffset;
+					if (text.StartsWith (docTypeStart)) {
+						int start = window.CodeCompletionContext.TriggerOffset - docTypeStart.Length;
+						if (start >= 0) {
+							string readback = buf.GetText (start, window.CodeCompletionContext.TriggerOffset);
+							if (string.Compare (readback, docTypeStart, StringComparison.OrdinalIgnoreCase) == 0)
+								deleteStartOffset -= docTypeStart.Length;
+						}
 					}
+					
+					buf.DeleteText (deleteStartOffset, buf.CursorPosition - deleteStartOffset);
+					buf.InsertText (buf.CursorPosition, text);
 				}
-				
-				buf.DeleteText (deleteStartOffset, buf.CursorPosition - deleteStartOffset);
-				buf.InsertText (buf.CursorPosition, text);
-				buf.EndAtomicUndo ();
 			}
 		}
 	}

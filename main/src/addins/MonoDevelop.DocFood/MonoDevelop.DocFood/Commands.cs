@@ -94,9 +94,9 @@ namespace MonoDevelop.DocFood
 				}
 			}
 			docs.Sort ((a, b) => b.Key.CompareTo (a.Key));
-			data.Document.BeginAtomicUndo ();
-			docs.ForEach (doc => data.Insert (doc.Key, doc.Value));
-			data.Document.EndAtomicUndo ();
+			using (var undo = data.OpenUndoGroup ()) {
+				docs.ForEach (doc => data.Insert (doc.Key, doc.Value));
+			}
 		}
 		
 		static bool NeedsDocumentation (TextEditorData data, IMember member)

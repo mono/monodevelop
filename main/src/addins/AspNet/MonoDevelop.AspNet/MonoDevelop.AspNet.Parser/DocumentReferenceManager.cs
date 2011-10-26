@@ -369,14 +369,14 @@ namespace MonoDevelop.AspNet.Parser
 			if (pos < 0)
 				return;
 			
-			editor.Document.BeginAtomicUndo ();
-			var oldCaret = editor.Caret.Offset;
-			
-			var inserted = editor.Insert (pos, editor.EolMarker + directive.ToString ());
-			if (preserveCaretPosition) {
-				editor.Caret.Offset = (pos < oldCaret)? oldCaret + inserted : oldCaret;
+			using (var undo = editor.OpenUndoGroup ()) {
+				var oldCaret = editor.Caret.Offset;
+				
+				var inserted = editor.Insert (pos, editor.EolMarker + directive.ToString ());
+				if (preserveCaretPosition) {
+					editor.Caret.Offset = (pos < oldCaret)? oldCaret + inserted : oldCaret;
+				}
 			}
-			editor.Document.EndAtomicUndo ();
 		}
 		
 		DirectiveNode GetRegisterInsertionPointNode ()

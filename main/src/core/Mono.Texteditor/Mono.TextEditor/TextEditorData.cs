@@ -1064,6 +1064,11 @@ namespace Mono.TextEditor
 		{
 			return Document.OffsetToLineNumber (offset);
 		}
+		
+		public IDisposable OpenUndoGroup()
+		{
+			return Document.OpenUndoGroup ();
+		}
 		#endregion
 		
 		#region Parent functions

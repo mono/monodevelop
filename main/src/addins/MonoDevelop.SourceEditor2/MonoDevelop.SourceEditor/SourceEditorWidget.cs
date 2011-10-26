@@ -1380,34 +1380,33 @@ namespace MonoDevelop.SourceEditor
 			string blockStart = blockStarts[0];
 			string blockEnd = blockEnds[0];
 
-			Document.BeginAtomicUndo ();
-			LineSegment startLine;
-			LineSegment endLine;
-
-			if (TextEditor.IsSomethingSelected) {
-				startLine = Document.GetLineByOffset (textEditor.SelectionRange.Offset);
-				endLine = Document.GetLineByOffset (textEditor.SelectionRange.EndOffset);
-			} else {
-				startLine = endLine = Document.GetLine (textEditor.Caret.Line);
-			}
-			string startLineText = Document.GetTextAt (startLine.Offset, startLine.EditableLength);
-			string endLineText = Document.GetTextAt (endLine.Offset, endLine.EditableLength);
-			if (startLineText.StartsWith (blockStart) && endLineText.EndsWith (blockEnd)) {
-				textEditor.Remove (endLine.Offset + endLine.EditableLength - blockEnd.Length, blockEnd.Length);
-				textEditor.Remove (startLine.Offset, blockStart.Length);
+			using (var undo = Document.OpenUndoGroup ()) {
+				LineSegment startLine;
+				LineSegment endLine;
+	
 				if (TextEditor.IsSomethingSelected) {
-					TextEditor.SelectionAnchor -= blockEnd.Length;
+					startLine = Document.GetLineByOffset (textEditor.SelectionRange.Offset);
+					endLine = Document.GetLineByOffset (textEditor.SelectionRange.EndOffset);
+				} else {
+					startLine = endLine = Document.GetLine (textEditor.Caret.Line);
 				}
-			} else {
-				textEditor.Insert (endLine.Offset + endLine.EditableLength, blockEnd);
-				textEditor.Insert (startLine.Offset, blockStart);
-				if (TextEditor.IsSomethingSelected) {
-					TextEditor.SelectionAnchor += blockEnd.Length;
+				string startLineText = Document.GetTextAt (startLine.Offset, startLine.EditableLength);
+				string endLineText = Document.GetTextAt (endLine.Offset, endLine.EditableLength);
+				if (startLineText.StartsWith (blockStart) && endLineText.EndsWith (blockEnd)) {
+					textEditor.Remove (endLine.Offset + endLine.EditableLength - blockEnd.Length, blockEnd.Length);
+					textEditor.Remove (startLine.Offset, blockStart.Length);
+					if (TextEditor.IsSomethingSelected) {
+						TextEditor.SelectionAnchor -= blockEnd.Length;
+					}
+				} else {
+					textEditor.Insert (endLine.Offset + endLine.EditableLength, blockEnd);
+					textEditor.Insert (startLine.Offset, blockStart);
+					if (TextEditor.IsSomethingSelected) {
+						TextEditor.SelectionAnchor += blockEnd.Length;
+					}
+					
 				}
-				
 			}
-			
-			Document.EndAtomicUndo ();
 		}
 		
 		public void ToggleCodeComment ()
@@ -1470,32 +1469,32 @@ namespace MonoDevelop.SourceEditor
 			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
 			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
 			
-			Document.BeginAtomicUndo ();
-			foreach (LineSegment line in TextEditor.SelectedLines) {
-				TextEditor.Insert (line.Offset, commentTag);
-			}
-			if (TextEditor.IsSomethingSelected) {
-				if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
-					if (anchorColumn != 0) 
-						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor + commentTag.Length));
-				} else {
-					if (anchorColumn != 0) {
-						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + commentTag.Length));
+			using (var undo = Document.OpenUndoGroup ()) {
+				foreach (LineSegment line in TextEditor.SelectedLines) {
+					TextEditor.Insert (line.Offset, commentTag);
+				}
+				if (TextEditor.IsSomethingSelected) {
+					if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
+						if (anchorColumn != 0) 
+							TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor + commentTag.Length));
 					} else {
-//						TextEditor.SelectionAnchor = anchorLine.Offset;
+						if (anchorColumn != 0) {
+							TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + commentTag.Length));
+						} else {
+	//						TextEditor.SelectionAnchor = anchorLine.Offset;
+						}
 					}
 				}
+				
+				if (TextEditor.Caret.Column != 0) {
+					TextEditor.Caret.PreserveSelection = true;
+					TextEditor.Caret.Column += commentTag.Length;
+					TextEditor.Caret.PreserveSelection = false;
+				}
+				
+				if (TextEditor.IsSomethingSelected) 
+					TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 			}
-			
-			if (TextEditor.Caret.Column != 0) {
-				TextEditor.Caret.PreserveSelection = true;
-				TextEditor.Caret.Column += commentTag.Length;
-				TextEditor.Caret.PreserveSelection = false;
-			}
-			
-			if (TextEditor.IsSomethingSelected) 
-				TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
-			Document.EndAtomicUndo ();
 			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
 		
@@ -1508,40 +1507,39 @@ namespace MonoDevelop.SourceEditor
 			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
 			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
 			
-			Document.BeginAtomicUndo ();
-			int first = -1;
-			int last  = 0;
-			foreach (LineSegment line in TextEditor.SelectedLines) {
-				string text = Document.GetTextAt (line);
-				string trimmedText = text.TrimStart ();
-				int length = 0;
-				if (trimmedText.StartsWith (commentTag)) {
-					TextEditor.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
-					length = commentTag.Length;
+			using (var undo = Document.OpenUndoGroup ()) {
+				int first = -1;
+				int last  = 0;
+				foreach (LineSegment line in TextEditor.SelectedLines) {
+					string text = Document.GetTextAt (line);
+					string trimmedText = text.TrimStart ();
+					int length = 0;
+					if (trimmedText.StartsWith (commentTag)) {
+						TextEditor.Remove (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
+						length = commentTag.Length;
+					}
+					last = length;
+					if (first < 0)
+						first = last;
 				}
-				last = length;
-				if (first < 0)
-					first = last;
-			}
-			
-			if (TextEditor.IsSomethingSelected) {
-				if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
-					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor - first));
-				} else {
-					TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
+				
+				if (TextEditor.IsSomethingSelected) {
+					if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
+						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor - first));
+					} else {
+						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
+					}
 				}
+				
+				if (TextEditor.Caret.Column != DocumentLocation.MinColumn) {
+					TextEditor.Caret.PreserveSelection = true;
+					TextEditor.Caret.Column = System.Math.Max (DocumentLocation.MinColumn, TextEditor.Caret.Column - last);
+					TextEditor.Caret.PreserveSelection = false;
+				}
+				
+				if (TextEditor.IsSomethingSelected) 
+					TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 			}
-			
-			if (TextEditor.Caret.Column != DocumentLocation.MinColumn) {
-				TextEditor.Caret.PreserveSelection = true;
-				TextEditor.Caret.Column = System.Math.Max (DocumentLocation.MinColumn, TextEditor.Caret.Column - last);
-				TextEditor.Caret.PreserveSelection = false;
-			}
-			
-			if (TextEditor.IsSomethingSelected) 
-				TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
-		
-			Document.EndAtomicUndo ();
 			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
 		

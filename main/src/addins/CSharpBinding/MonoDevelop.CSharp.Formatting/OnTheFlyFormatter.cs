@@ -127,14 +127,12 @@ namespace MonoDevelop.CSharp.Formatting
 				var lastOffset = data.Editor.Caret.Offset;
 				changes.RemoveAll (c => ((TextReplaceAction)c).Offset > lastOffset);
 			}
-			try {
-				data.Editor.Document.BeginAtomicUndo ();
+			
+			using (var undo = data.Editor.OpenUndoGroup ()) {
 				MDRefactoringContext.MdScript.RunActions (changes, null);
 				
 				foreach (int line in lines)
 					data.Editor.Document.CommitLineUpdate (line);
-			} finally {
-				data.Editor.Document.EndAtomicUndo ();
 			}
 			stubData.Dispose ();
 		}

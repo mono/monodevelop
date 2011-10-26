@@ -416,8 +416,6 @@ namespace MonoDevelop.CSharp.Completion
 							string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine);
 							AppendSummary (generatedComment, indent, out newCursorOffset);
 						}
-						textEditorData.Document.EndAtomicUndo ();
-						textEditorData.Document.BeginAtomicUndo ();
 						textEditorData.Insert (cursor, generatedComment.ToString ());
 						textEditorData.Caret.Offset = cursor + newCursorOffset;
 						return null;

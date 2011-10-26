@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		StringBuilder buffer = null;
 		bool somethingReplaced;
 		bool utf8Failed;
-		
+		IDisposable undoGroup;
 		public void BeginReplace ()
 		{
 			somethingReplaced = false;
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			document = SearchDocument ();
 			if (document != null) {
 				Gtk.Application.Invoke (delegate {
-					document.Editor.Document.BeginAtomicUndo ();
+					undoGroup = document.Editor.OpenUndoGroup ();
 				});
 				return;
 			}
@@ -147,7 +147,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndReplace ()
 		{
 			if (document != null) {
-				Gtk.Application.Invoke (delegate { document.Editor.Document.EndAtomicUndo (); document.Editor.Document.CommitUpdateAll (); });
+				Gtk.Application.Invoke (delegate { 
+					if (undoGroup != null) {
+						undoGroup.Dispose ();
+						undoGroup = null;
+					}
+					document.Editor.Document.CommitUpdateAll (); });
 				return;
 			}
 			if (buffer != null && somethingReplaced) {

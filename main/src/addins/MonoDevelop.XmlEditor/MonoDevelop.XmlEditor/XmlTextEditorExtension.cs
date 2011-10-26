@@ -700,14 +700,14 @@ namespace MonoDevelop.XmlEditor
 		internal void FormatDocument ()
 		{
 			var formatter = CodeFormatterService.GetFormatter (TextXmlMimeType);
-			Editor.Document.BeginAtomicUndo ();
-			var loc = Editor.Caret.Location;
-			var text = formatter.FormatText (Document.Project != null ? Document.Project.Policies : null, Editor.Text);
-			if (text != null) {
-				Editor.Replace (0, Editor.Length, text);
-				Editor.Caret.Location = loc;
+			using (var undo = Editor.OpenUndoGroup ()) {
+				var loc = Editor.Caret.Location;
+				var text = formatter.FormatText (Document.Project != null ? Document.Project.Policies : null, Editor.Text);
+				if (text != null) {
+					Editor.Replace (0, Editor.Length, text);
+					Editor.Caret.Location = loc;
+				}
 			}
-			Editor.Document.EndAtomicUndo ();
 		}
 		
 		string GetFileContent (string fileName)

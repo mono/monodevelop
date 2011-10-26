@@ -1267,12 +1267,16 @@ namespace MonoDevelop.Gettext
 			undoStack.Push (change);
 		}
 		
-		public void BeginAtomicUndo ()
+		class DisposeStub : IDisposable
 		{
+			public void Dispose ()
+			{
+			}
 		}
 		
-		public void EndAtomicUndo ()
+		public IDisposable OpenUndoGroup ()
 		{
+			return new DisposeStub ();
 		}
 		
 		public bool EnableUndo {

@@ -180,11 +180,16 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 		}
 		
-		public void BeginAtomicUndo ()
+		class DisposeStub : IDisposable
 		{
+			public void Dispose ()
+			{
+			}
 		}
-		public void EndAtomicUndo ()
+		
+		public IDisposable OpenUndoGroup ()
 		{
+			return new DisposeStub ();
 		}
 		
 		public TextEditorData GetTextEditorData ()

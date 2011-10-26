@@ -244,21 +244,21 @@ namespace MonoDevelop.Ide.Gui
 					buffer.CursorPosition = pos + 1;
 					return;
 				}
-				buffer.BeginAtomicUndo ();
-				buffer.DeleteText (pos, 1);
-				buffer.InsertText (pos, upper);
-				buffer.CursorPosition = pos + 1;
-				buffer.EndAtomicUndo ();
+				using (var undo = buffer.OpenUndoGroup ()) {
+					buffer.DeleteText (pos, 1);
+					buffer.InsertText (pos, upper);
+					buffer.CursorPosition = pos + 1;
+				}
 			} else {
 				string newText = selectedText.ToUpper ();
 				if (newText == selectedText)
 					return;
 				int startPos = buffer.SelectionStartPosition;
-				buffer.BeginAtomicUndo ();
-				buffer.DeleteText (startPos, selectedText.Length);
-				buffer.InsertText (startPos, newText);
-				buffer.Select (startPos, startPos + newText.Length);
-				buffer.EndAtomicUndo ();
+				using (var undo = buffer.OpenUndoGroup ()) {
+					buffer.DeleteText (startPos, selectedText.Length);
+					buffer.InsertText (startPos, newText);
+					buffer.Select (startPos, startPos + newText.Length);
+				}
 			}
 		}
 		
@@ -285,21 +285,21 @@ namespace MonoDevelop.Ide.Gui
 					buffer.CursorPosition = pos + 1;
 					return;
 				};
-				buffer.BeginAtomicUndo ();
-				buffer.DeleteText (pos, 1);
-				buffer.InsertText (pos, lower);
-				buffer.CursorPosition = pos + 1;
-				buffer.EndAtomicUndo ();
+				using (var undo = buffer.OpenUndoGroup ()) {
+					buffer.DeleteText (pos, 1);
+					buffer.InsertText (pos, lower);
+					buffer.CursorPosition = pos + 1;
+				}
 			} else {
 				string newText = selectedText.ToLower ();
 				if (newText == selectedText)
 					return;
 				int startPos = buffer.SelectionStartPosition;
-				buffer.BeginAtomicUndo ();
-				buffer.DeleteText (startPos, selectedText.Length);
-				buffer.InsertText (startPos, newText);
-				buffer.Select (startPos, startPos + newText.Length);
-				buffer.EndAtomicUndo ();
+				using (var undo = buffer.OpenUndoGroup ()) {
+					buffer.DeleteText (startPos, selectedText.Length);
+					buffer.InsertText (startPos, newText);
+					buffer.Select (startPos, startPos + newText.Length);
+				}
 			}
 		}
 		
@@ -471,14 +471,13 @@ namespace MonoDevelop.Ide.Gui
 				}
 				--pos;
 			}
-			
-			data.Document.BeginAtomicUndo ();
-			foreach (var info in removeList) {
-				((Mono.TextEditor.IBuffer)data.Document).Remove (info.Position, info.Length);
-				data.Document.CommitLineUpdate (data.Document.OffsetToLineNumber (info.Position));
+			using (var undo = data.OpenUndoGroup ()) {
+				foreach (var info in removeList) {
+					((Mono.TextEditor.IBuffer)data.Document).Remove (info.Position, info.Length);
+					data.Document.CommitLineUpdate (data.Document.OffsetToLineNumber (info.Position));
+				}
+				data.Caret.Offset = Math.Min (data.Caret.Offset, data.Document.Length - 1);
 			}
-			data.Caret.Offset = Math.Min (data.Caret.Offset, data.Document.Length - 1);
-			data.Document.EndAtomicUndo ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.RemoveTrailingWhiteSpaces)]
