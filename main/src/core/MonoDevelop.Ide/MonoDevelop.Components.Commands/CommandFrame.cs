@@ -62,7 +62,7 @@ namespace MonoDevelop.Components.Commands
 		
 		protected override void OnPanelClick (Gdk.EventButton e, Placement placement)
 		{
-			if (e.Button == 3) {
+			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (e)) {
 				CommandEntrySet opset = new CommandEntrySet ();
 				opset.AddItem (CommandSystemCommands.ToolbarList);
 				Gtk.Menu menu = manager.CreateMenu (opset);

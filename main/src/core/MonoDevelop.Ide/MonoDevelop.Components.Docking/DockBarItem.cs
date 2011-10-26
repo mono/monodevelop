@@ -383,14 +383,14 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1) {
+			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+				it.ShowDockPopupMenu (evnt.Time);
+			} else if (evnt.Button == 1) {
 				if (evnt.Type == Gdk.EventType.TwoButtonPress)
 					it.Status = DockItemStatus.Dockable;
 				else
 					AutoShow ();
 			}
-			else if (evnt.Button == 3)
-				it.ShowDockPopupMenu (evnt.Time);
 			return base.OnButtonPressEvent (evnt);
 		}
 	}
