@@ -514,13 +514,21 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			var adj = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
+			double pageSizePx;
+			Adjustment adj;
+			if (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down)  {
+				pageSizePx = Allocation.Height;
+				adj = vAdjustment;
+			} else  {
+				pageSizePx = Allocation.Width;
+				adj = hAdjustment;
+			}
 
 			if (adj.PageSize >= (adj.Upper - adj.Lower))
 				return base.OnScrollEvent (evnt);
 			
-			double pageDelta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
-			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, pageDelta, false);
+			double deltaPx = GtkWorkarounds.GetScrollWheelDelta (evnt, pageSizePx, false);
+			double newValue = adj.Value + adj.PageSize * (deltaPx / pageSizePx);
 			newValue = System.Math.Max (System.Math.Min (1.0 - adj.PageSize, newValue), 0.0);
 			adj.Value = newValue;
 			return true;

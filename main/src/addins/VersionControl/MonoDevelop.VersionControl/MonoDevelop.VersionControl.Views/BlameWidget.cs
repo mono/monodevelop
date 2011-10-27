@@ -280,8 +280,7 @@ namespace MonoDevelop.VersionControl.Views
 				return base.OnScrollEvent (evnt);
 			
 			var adj = scrollWidget.Adjustment;
-			double pageDelta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
-			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, pageDelta, scrollWidget.Inverted);
+			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, adj.PageSize, scrollWidget.Inverted);
 			newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
 			adj.Value = newValue;
 			return true;

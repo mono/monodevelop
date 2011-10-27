@@ -203,9 +203,8 @@ namespace Mono.TextEditor.Theatrics
 			if (!scrollWidget.Visible)
 				return base.OnScrollEvent (evnt);
 			
-			double pageDelta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
 			bool isInverted = scrollWidget is Scrollbar ?  ((Scrollbar)scrollWidget).Inverted : false;
-			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, pageDelta, isInverted);
+			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, adj.PageSize, isInverted);
 			newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
 			adj.Value = newValue;
 			return true;
