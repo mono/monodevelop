@@ -339,10 +339,24 @@ namespace Mono.TextEditor.PopupWindow
 
 		void OnScrolled (object o, ScrollEventArgs args)
 		{
-			if (args.Event.Direction == Gdk.ScrollDirection.Up)
-				scrollbar.Value --;
-			else if (args.Event.Direction == Gdk.ScrollDirection.Down)
-				scrollbar.Value ++;
+			if (!scrollbar.Visible)
+				return;
+			
+			var adj = scrollbar.Adjustment;
+			double pageSizePx = Allocation.Height;
+			var pxDelta = Mono.TextEditor.GtkWorkarounds.GetScrollWheelDelta (args.Event, pageSizePx, false);
+			var valueDelta = adj.PageSize * (pxDelta / pageSizePx);
+			
+			//This widget is a special case because it's always aligned to items as it scrolls.
+			//Although this means we can't use the pixel deltas for true smooth scrolling, we 
+			//can still make use of the effective scrolling velocity by rounding to the nearest item.
+			var itemDelta = System.Math.Round (valueDelta);
+			//Even if the delta is less than one item and it rounded to zero, still need to response to the user.
+			if (itemDelta == 0.0)
+				itemDelta = valueDelta > 0? 1.0 : -1.0;
+			
+			adj.Value = System.Math.Min (adj.Upper, System.Math.Max (adj.Value + itemDelta, adj.Lower));
+			args.RetVal = true;
 		}
 		
 		void OnSelectionChanged (object o, EventArgs args)
