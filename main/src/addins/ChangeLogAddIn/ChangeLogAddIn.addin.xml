@@ -6,16 +6,16 @@
         url         = "http://monodevelop.com"
         description = "Add-in for working with ChangeLog files"
         category    = "Version Control"
-        version     = "2.8.1">
+        version     = "2.8.2">
  
         <Runtime>
 		<Import assembly="ChangeLogAddIn.dll" />
 		</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.8.1"/>
-		<Addin id="Ide" version="2.8.1"/>
-		<Addin id="VersionControl" version="2.8.1"/>
+		<Addin id="Core" version="2.8.2"/>
+		<Addin id="Ide" version="2.8.2"/>
+		<Addin id="VersionControl" version="2.8.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
