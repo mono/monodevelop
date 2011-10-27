@@ -139,19 +139,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					if (assembly.IsDynamic)
 						continue;
 					var assemblyName = assembly.GetName ();
-					sb.AppendLine (ForceLength (assemblyName.Name, nameLength) + ForceLength (assemblyName.Version.ToString (), versionLength) + System.IO.Path.GetFullPath (assembly.Location));
+					sb.AppendLine (assemblyName.Name.PadRight (nameLength) + assemblyName.Version.ToString ().PadRight (versionLength) + System.IO.Path.GetFullPath (assembly.Location));
 				} catch {
 				}
 			}
 			
 			return sb.ToString ();
-		}
-		
-		static string ForceLength (string str, int length)
-		{
-			if (str.Length < length)
-				return str + new string (' ', length - str.Length);
-			return str;
 		}
 		
 		static bool IsMono ()
