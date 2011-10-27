@@ -194,27 +194,21 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 		
-		static double GetWheelDelta (Adjustment adj, ScrollDirection direction, bool inverted = false)
-		{
-			double delta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
-			if (direction == ScrollDirection.Up || direction == ScrollDirection.Left)
-				delta = -delta;
-			if (inverted)
-				delta = -delta;
-			return delta;
-		}
-		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			var scrollWidget = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vScrollBar : hScrollBar;
-			var adj = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
+			var direction = evnt.Direction;
+			var scrollWidget = (direction == ScrollDirection.Up || direction == ScrollDirection.Down) ? vScrollBar : hScrollBar;
+			var adj = (direction == ScrollDirection.Up || direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
 			
-			if (scrollWidget.Visible) {
-				double newValue = adj.Value + GetWheelDelta (adj, evnt.Direction, scrollWidget is Scrollbar ?  ((Scrollbar)scrollWidget).Inverted : false);
-				newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
-				adj.Value = newValue;
-			}
-			return base.OnScrollEvent (evnt);
+			if (!scrollWidget.Visible)
+				return base.OnScrollEvent (evnt);
+			
+			double pageDelta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
+			bool isInverted = scrollWidget is Scrollbar ?  ((Scrollbar)scrollWidget).Inverted : false;
+			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, pageDelta, isInverted);
+			newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
+			adj.Value = newValue;
+			return true;
 		}
 		
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)

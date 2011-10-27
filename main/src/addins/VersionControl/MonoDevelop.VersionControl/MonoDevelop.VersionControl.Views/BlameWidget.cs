@@ -271,13 +271,20 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			Scrollbar scrollWidget = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? (Scrollbar)vScrollBar : hScrollBar;
-			if (scrollWidget.Visible) {
-				double newValue = scrollWidget.Adjustment.Value + GetWheelDelta (scrollWidget, evnt.Direction);
-				newValue = System.Math.Max (System.Math.Min (scrollWidget.Adjustment.Upper  - scrollWidget.Adjustment.PageSize, newValue), scrollWidget.Adjustment.Lower);
-				scrollWidget.Adjustment.Value = newValue;
-			}
-			return base.OnScrollEvent (evnt);
+			var direction = evnt.Direction;
+			Scrollbar scrollWidget = (direction == ScrollDirection.Up || direction == ScrollDirection.Down)
+				? (Scrollbar)vScrollBar
+				: hScrollBar;
+			
+			if (!scrollWidget.Visible)
+				return base.OnScrollEvent (evnt);
+			
+			var adj = scrollWidget.Adjustment;
+			double pageDelta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
+			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, pageDelta, scrollWidget.Inverted);
+			newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
+			adj.Value = newValue;
+			return true;
 		}
 		
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)

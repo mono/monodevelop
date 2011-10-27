@@ -387,8 +387,6 @@ namespace MonoDevelop.VersionControl.Views
 				attachedVAdjustments.Select (adj => adj.PageIncrement / (adj.Upper - adj.Lower)).Min (),
 				attachedVAdjustments.Select (adj => adj.PageSize / (adj.Upper - adj.Lower)).Min ());
 			
-			
-			
 			hAdjustment.SetBounds (0, 1.0,
 				attachedHAdjustments.Select (adj => adj.StepIncrement / (adj.Upper - adj.Lower)).Min (),
 				attachedHAdjustments.Select (adj => adj.PageIncrement / (adj.Upper - adj.Lower)).Min (),
@@ -514,24 +512,18 @@ namespace MonoDevelop.VersionControl.Views
 			base.OnSizeAllocated (allocation);
 		}
 
-		static double GetWheelDelta (Adjustment adjustment, ScrollDirection direction)
-		{
-			double delta = adjustment.StepIncrement * 4;
-			if (direction == ScrollDirection.Up || direction == ScrollDirection.Left)
-				delta = -delta;
-			return delta;
-		}
-
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			var adjustment = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
+			var adj = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
 
-			if (adjustment.PageSize < adjustment.Upper) {
-				double newValue = adjustment.Value + GetWheelDelta (adjustment, evnt.Direction);
-				newValue = System.Math.Max (System.Math.Min (adjustment.Upper  - adjustment.PageSize, newValue), adjustment.Lower);
-				adjustment.Value = newValue;
-			}
-			return base.OnScrollEvent (evnt);
+			if (adj.PageSize >= (adj.Upper - adj.Lower))
+				return base.OnScrollEvent (evnt);
+			
+			double pageDelta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
+			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, pageDelta, false);
+			newValue = System.Math.Max (System.Math.Min (1.0 - adj.PageSize, newValue), 0.0);
+			adj.Value = newValue;
+			return true;
 		}
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)

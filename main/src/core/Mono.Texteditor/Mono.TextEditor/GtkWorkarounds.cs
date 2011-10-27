@@ -208,5 +208,16 @@ namespace Mono.TextEditor
 			}
 			return false;
 		}
+		
+		public static double GetScrollWheelDelta (Gdk.EventScroll evnt, double pageDelta, bool inverted = false)
+		{
+			double delta = pageDelta;
+			var direction = evnt.Direction;
+			if (direction == Gdk.ScrollDirection.Up || direction == Gdk.ScrollDirection.Left)
+				delta = -delta;
+			if (inverted)
+				delta = -delta;
+			return delta;
+		}
 	}
 }
