@@ -211,15 +211,7 @@ namespace MonoDevelop.Ide.Gui
 
 			DeleteEvent += new Gtk.DeleteEventHandler (OnClosing);
 			
-			if (Gtk.IconTheme.Default.HasIcon ("monodevelop")) 
-				Gtk.Window.DefaultIconName = "monodevelop";
-			else
-				this.IconList = new Gdk.Pixbuf[] {
-					ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Menu),
-					ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Button),
-					ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Dnd),
-					ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Dialog)
-				};
+			SetAppIcons ();
 
 			//this.WindowPosition = Gtk.WindowPosition.None;
 
@@ -227,6 +219,37 @@ namespace MonoDevelop.Ide.Gui
 			DragDataReceived += new Gtk.DragDataReceivedHandler (onDragDataRec);
 			
 			IdeApp.CommandService.SetRootWindow (this);
+		}
+		
+		void SetAppIcons ()
+		{
+			//first try to get the icon from the GTK icon theme
+			var appIconName = BrandingService.GetString ("ApplicationIconId")
+				?? BrandingService.ApplicationName.ToLower ();
+			if (Gtk.IconTheme.Default.HasIcon (appIconName)) {
+				Gtk.Window.DefaultIconName = appIconName;
+				return;
+			}
+			
+			//branded icons
+			var iconsEl = BrandingService.GetElement ("ApplicationIcons");
+			if (iconsEl != null) {
+				try {
+					this.IconList = iconsEl.Elements ("Icon")
+						.Select (el => new Gdk.Pixbuf (BrandingService.GetFile ((string)el))).ToArray ();
+					return;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not load app icons", ex);
+				}
+			}
+			
+			//built-ins
+			this.IconList = new Gdk.Pixbuf[] {
+				ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Menu),
+				ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Button),
+				ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Dnd),
+				ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Dialog)
+			};
 		}
 
 		void onDragDataRec (object o, Gtk.DragDataReceivedArgs args)
