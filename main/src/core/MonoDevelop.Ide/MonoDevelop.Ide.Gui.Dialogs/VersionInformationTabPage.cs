@@ -39,14 +39,6 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	//FIXME: rename ISystemInformationProvider, move to core, return structured JSON info
-	public interface IAboutInformation
-	{
-		string Description {
-			get;
-		}
-	}
-	
 	internal class VersionInformationTabPage: VBox
 	{
 		//FIXME: move this somewhere it can be accessed by the error reporting code
@@ -61,7 +53,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			sb.AppendLine (mdversion);
 			
 			sb.AppendFormat ("Installation UUID: {0}", PropertyService.Get<string> ("MonoDevelop.Core.InstallUuid", Guid.NewGuid ().ToString ()));
-			sb.AppendLine ();
 			sb.AppendLine ();
 			
 			var biFile = ((FilePath)typeof(VersionInformationTabPage).Assembly.Location).ParentDirectory.Combine ("buildinfo");
@@ -114,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			sb.Append ("\tGTK " + GetGtkVersion ());
 			sb.AppendLine (" (GTK# " + typeof(VBox).Assembly.GetName ().Version + ")");
 			
-			foreach (IAboutInformation info in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/AboutInformation", false)) {
+			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
 				try {
 					sb.AppendLine (info.Description);
 				} catch (Exception ex) {
