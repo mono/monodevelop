@@ -216,7 +216,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							continue;
 					
 					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.Resolve (dom).FullName);
-					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.DeclaringType.CompilationUnit.FileName))
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.DeclaringTypeDefinition.Region.FileName))
 						ol.IsDesigner = true;
 					info.Outlets.Add (ol);
 					break;
