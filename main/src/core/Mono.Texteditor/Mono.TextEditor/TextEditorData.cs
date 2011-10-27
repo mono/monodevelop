@@ -275,10 +275,34 @@ namespace Mono.TextEditor
 			if (String.IsNullOrEmpty (text))
 				return;
 			using (var undo = OpenUndoGroup ()) {
-				EnsureCaretIsNotVirtual ();
-				int offset = Caret.Offset;
-				int length = Insert (offset, text);
-				Caret.Offset = offset + length;
+				if (IsSomethingSelected && MainSelection.SelectionMode == SelectionMode.Block) {
+					var visualInsertLocation = LogicalToVisualLocation (MainSelection.Anchor);
+					for (int lineNumber = MainSelection.MinLine; lineNumber <= MainSelection.MaxLine; lineNumber++) {
+						var lineSegment = GetLine (lineNumber);
+						int insertOffset = lineSegment.GetLogicalColumn (this, visualInsertLocation.Column) - 1;
+						string textToInsert;
+						if (lineSegment.EditableLength < insertOffset) {
+							int visualLastColumn = lineSegment.GetVisualColumn (this, lineSegment.EditableLength + 1);
+							int charsToInsert = visualInsertLocation.Column - visualLastColumn;
+							int spaceCount = charsToInsert % Options.TabSize;
+							textToInsert = new string ('\t', (charsToInsert - spaceCount) / Options.TabSize) + new string (' ', spaceCount) + text;
+							insertOffset = lineSegment.EditableLength;
+						} else {
+							textToInsert = text;
+						}
+						Insert (lineSegment.Offset + insertOffset, textToInsert);
+					}
+					Caret.PreserveSelection = true;
+					Caret.Column += text.Length;
+					MainSelection.Lead = new DocumentLocation (MainSelection.Lead.Line, Caret.Column);
+					MainSelection.Anchor = new DocumentLocation (MainSelection.Anchor.Line, Caret.Column);
+					Document.CommitMultipleLineUpdate (MainSelection.MinLine, MainSelection.MaxLine);
+				} else {
+					EnsureCaretIsNotVirtual ();
+					int offset = Caret.Offset;
+					int length = Insert (offset, text);
+					Caret.Offset = offset + length;
+				}
 			}
 		}
 

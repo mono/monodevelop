@@ -62,7 +62,21 @@ namespace Mono.TextEditor.Tests
 			
 			Assert.AreEqual ("\n\n\n\t\t\n\n", data.Document.Text);
 		}
-
+	
+		
+		/// <summary>
+		/// Bug 1700 - Tab in multi-line edit changes messes up the selection
+		/// </summary>
+		[Test()]
+		public void TestBug1700 ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Document.Text = "123\n123\n123";
+			data.MainSelection = new Selection (1, 2, 3, 2, SelectionMode.Block);
+			MiscActions.InsertTab (data);
+			
+			Assert.AreEqual ("1\t23\n1\t23\n1\t23", data.Document.Text);
+		}
 	}
 }
 

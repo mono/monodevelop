@@ -213,14 +213,11 @@ namespace Mono.TextEditor
 		{
 			if (!data.CanEditSelection)
 				return;
-			if (data.IsMultiLineSelection) {
+			if (data.IsMultiLineSelection && data.MainSelection.SelectionMode != SelectionMode.Block) {
 				IndentSelection (data);
 				return;
 			}
 			using (var undo = data.OpenUndoGroup ()) {
-				if (data.IsSomethingSelected) {
-					data.DeleteSelectedText ();
-				}
 				string indentationString = "\t";
 				bool convertTabToSpaces = data.Options.TabsToSpaces;
 				
@@ -232,14 +229,20 @@ namespace Mono.TextEditor
 						}
 					}
 				}
-				
+					
 				if (convertTabToSpaces) {
 					DocumentLocation visualLocation = data.LogicalToVisualLocation (data.Caret.Location);
 					int tabWidth = TextViewMargin.GetNextTabstop (data, visualLocation.Column) - visualLocation.Column;
 					indentationString = new string (' ', tabWidth);
 				}
-				int length = data.Insert (data.Caret.Offset, indentationString);
-				data.Caret.Column += length;
+				if (data.IsMultiLineSelection && data.MainSelection.SelectionMode == SelectionMode.Block) {
+					data.InsertAtCaret (indentationString);
+				} else {
+					if (data.IsSomethingSelected)
+						data.DeleteSelectedText ();
+					int length = data.Insert (data.Caret.Offset, indentationString);
+					data.Caret.Column += length;
+				}
 			}
 		}
 		
