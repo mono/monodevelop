@@ -51,6 +51,8 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while reading welcome page contents.", ex);
+			}
+			if (Content == null) {
 				using (var stream = typeof (WelcomePageBranding).Assembly.GetManifestResourceStream ("WelcomePageContent.xml")) {
 					Content = XDocument.Load (stream);
 				}
@@ -72,13 +74,13 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		public static Gdk.Pixbuf GetLogoImage ()
 		{
-			using (var stream = BrandingService.GetStream ("WelcomePage_Logo.png"))
+			using (var stream = BrandingService.GetStream ("WelcomePage_Logo.png", true))
 				return new Gdk.Pixbuf (stream);
 		}
 		
 		public static Gdk.Pixbuf GetTopBorderImage ()
 		{
-			using (var stream = BrandingService.GetStream ("WelcomePage_TopBorderRepeat.png"))
+			using (var stream = BrandingService.GetStream ("WelcomePage_TopBorderRepeat.png", true))
 				return new Gdk.Pixbuf (stream);
 		}
 	}
