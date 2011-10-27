@@ -79,17 +79,17 @@ namespace Mono.TextEditor
 		public void Insert (TextEditorData editor, string text)
 		{
 			int offset = editor.Document.LocationToOffset (Location);
-			editor.Document.BeginAtomicUndo ();
-			text = editor.FormatString (Location, text);
-			
-			LineSegment line = editor.Document.GetLineByOffset (offset);
-			int insertionOffset = line.Offset + Location.Column - 1;
-			offset = insertionOffset;
-			InsertNewLine (editor, LineBefore, ref offset);
-			
-			offset += editor.Insert (offset, text);
-			InsertNewLine (editor, LineAfter, ref offset);
-			editor.Document.EndAtomicUndo ();
+			using (var undo = editor.OpenUndoGroup ()) {
+				text = editor.FormatString (Location, text);
+				
+				LineSegment line = editor.Document.GetLineByOffset (offset);
+				int insertionOffset = line.Offset + Location.Column - 1;
+				offset = insertionOffset;
+				InsertNewLine (editor, LineBefore, ref offset);
+				
+				offset += editor.Insert (offset, text);
+				InsertNewLine (editor, LineAfter, ref offset);
+			}
 		}
 	}
 	
