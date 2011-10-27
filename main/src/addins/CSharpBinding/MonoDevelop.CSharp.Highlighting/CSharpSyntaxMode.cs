@@ -198,13 +198,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 		
-		protected class CSharpChunkParser : ChunkParser
+		protected class CSharpChunkParser : ChunkParser, IResolveVisitorNavigator
 		{
 			HashSet<string> tags = new HashSet<string> ();
 			MonoDevelop.Ide.Gui.Document document;
 			CompilationUnit unit;
 			ResolveVisitor visitor;
-			SemanticResolveVisitorNavigator navi;
 			static HashSet<string> contextualKeywords = new HashSet<string> ();
 			
 			static CSharpChunkParser ()
@@ -222,7 +221,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				contextualKeywords.Add ("global");
 				contextualKeywords.Add ("partial");
 			}
-			
+			/*
 			sealed class SemanticResolveVisitorNavigator : IResolveVisitorNavigator
 			{
 				readonly Dictionary<AstNode, ResolveVisitorNavigationMode> dict = new Dictionary<AstNode, ResolveVisitorNavigationMode> ();
@@ -247,19 +246,16 @@ namespace MonoDevelop.CSharp.Highlighting
 				
 				public ResolveVisitorNavigationMode Scan (AstNode node)
 				{
-					ResolveVisitorNavigationMode mode;
-					if (dict.TryGetValue (node, out mode)) {
-						return mode;
-					} else {
-						return ResolveVisitorNavigationMode.Skip;
-					}
+					if (node is Expression || node is AstType)
+						return ResolveVisitorNavigationMode.Resolve;
+					return ResolveVisitorNavigationMode.Scan;
 				}
 				
 				public void Reset ()
 				{
 					dict.Clear ();
 				}
-			}
+			}*/
 			
 			public CSharpChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, ColorSheme style, SyntaxMode mode, LineSegment line) : base (spanParser, doc, style, mode, line)
 			{
@@ -273,17 +269,40 @@ namespace MonoDevelop.CSharp.Highlighting
 					
 					if ((visitor = document.ParsedDocument.Annotation <ResolveVisitor> ()) == null) {
 						var resolver = new CSharpResolver (document.TypeResolveContext, System.Threading.CancellationToken.None);
-						navi    = new SemanticResolveVisitorNavigator ();
-						visitor = new ResolveVisitor (resolver, document.ParsedDocument.Annotation <CSharpParsedFile> (), navi);
-						document.ParsedDocument.AddAnnotation (navi);
+						visitor = new ResolveVisitor (resolver, document.ParsedDocument.Annotation <CSharpParsedFile> (), this);
+						visitor.Scan (unit);
 						document.ParsedDocument.AddAnnotation (visitor);
 					} else {
 						visitor = document.ParsedDocument.Annotation<ResolveVisitor> ();
-						navi = document.ParsedDocument.Annotation<SemanticResolveVisitorNavigator> ();
 					}
 				}
 			}
 			
+			#region IResolveVisitorNavigator implementation
+			ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
+			{
+/*				if (node.StartLocation.Line <= lineNumber && node.EndLocation.Line >= lineNumber) {*/
+					if (node is SimpleType || node is MemberType
+					    || node is IdentifierExpression || node is MemberReferenceExpression
+					    || node is InvocationExpression)
+					{
+						return ResolveVisitorNavigationMode.Resolve;
+					} else {
+						return ResolveVisitorNavigationMode.Scan;
+					}
+/*				} else {
+					return ResolveVisitorNavigationMode.Skip;
+				}*/
+			}
+			
+			void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
+			{
+			}
+			
+			void IResolveVisitorNavigator.ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+			{
+			}
+			#endregion
 			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
 			{
 				if (unit == null || visitor == null)
@@ -323,9 +342,6 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (node is SimpleType) {
 						var st = (SimpleType)node;
 						
-						navi.Reset ();
-						navi.AddNode (st);
-						visitor.Scan (unit);
 						var result = visitor.GetResolveResult (st);
 						
 						if (result is TypeResolveResult && st.IdentifierToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
@@ -337,9 +353,6 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (node is ICSharpCode.NRefactory.CSharp.MemberType) {
 						var mt = (ICSharpCode.NRefactory.CSharp.MemberType)node;
 						
-						navi.Reset ();
-						navi.AddNode (mt);
-						visitor.Scan (unit);
 						var result = visitor.GetResolveResult (mt);
 						
 						if (result is TypeResolveResult && mt.MemberNameToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
@@ -362,9 +375,6 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					var id = node as IdentifierExpression;
 					if (id != null) {
-						navi.Reset ();
-						navi.AddNode (id);
-						visitor.Scan (unit);
 						var result = visitor.GetResolveResult (id);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
@@ -386,9 +396,6 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (!memberReferenceExpression.MemberNameToken.Contains (loc.Line, loc.Column)) 
 							return null;
 						
-						navi.Reset ();
-						navi.AddNode (memberReferenceExpression);
-						visitor.Scan (unit);
 						var result = visitor.GetResolveResult (memberReferenceExpression);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
