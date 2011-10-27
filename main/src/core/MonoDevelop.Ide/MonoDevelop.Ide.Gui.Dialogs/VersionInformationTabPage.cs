@@ -60,6 +60,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			sb.Append ("MonoDevelop ");
 			sb.AppendLine (mdversion);
 			
+			sb.AppendFormat ("Installation UUID: {0}", PropertyService.Get<string> ("MonoDevelop.Core.InstallUuid", Guid.NewGuid ().ToString ()));
+			sb.AppendLine ();
+			sb.AppendLine ();
+			
 			var biFile = ((FilePath)typeof(VersionInformationTabPage).Assembly.Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
 				sb.AppendLine ("Build information:");
