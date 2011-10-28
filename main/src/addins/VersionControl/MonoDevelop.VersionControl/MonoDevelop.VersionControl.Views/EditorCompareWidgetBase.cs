@@ -1026,7 +1026,12 @@ namespace MonoDevelop.VersionControl.Views
 					
 					FillGradient (cr, 0.5 + curY, Allocation.Height - curY);
 					
-					DrawBar (cr, Allocation.Height * adj.Value / adj.Upper + cr.LineWidth + 0.5, Allocation.Height * (adj.PageSize / adj.Upper));
+					int barPadding = 3;
+					var allocH = Allocation.Height;
+					var adjUpper = adj.Upper;
+					var barY = allocH * adj.Value / adjUpper + barPadding;
+					var barH = allocH * (adj.PageSize / adjUpper) - barPadding - barPadding;
+					DrawBar (cr, barY, barH);
 					
 					cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
 					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
