@@ -1588,7 +1588,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					cur = u.Statement;
 					usingResult.AddChild (new CSharpTokenNode (Convert (blockStatement.EndLocation), 1), UsingStatement.Roles.RPar);
-					usingResult.AddChild ((Statement)cur.Accept (this), UsingStatement.Roles.EmbeddedStatement);
+					if (cur != null)
+						usingResult.AddChild ((Statement)cur.Accept (this), UsingStatement.Roles.EmbeddedStatement);
 				}
 				return usingResult;
 			}

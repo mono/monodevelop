@@ -172,6 +172,8 @@ namespace MonoDevelop.CSharp.Completion
 			} else if (textEditorData.CurrentMode is Mono.TextEditor.TextLinkEditMode) {
 				return null;
 			}
+			if (Unit == null || CSharpParsedFile == null)
+				return null;
 			var list = new CompletionDataList ();
 			var engine = new CSharpCompletionEngine (textEditorData.Document, this);
 			engine.ctx = ctx;
@@ -312,6 +314,8 @@ namespace MonoDevelop.CSharp.Completion
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (!TextEditorProperties.EnableCodeCompletion)
+				return null;
+			if (Unit == null || CSharpParsedFile == null)
 				return null;
 			var engine = new CSharpParameterCompletionEngine (textEditorData.Document, this);
 			engine.ctx = ctx;
