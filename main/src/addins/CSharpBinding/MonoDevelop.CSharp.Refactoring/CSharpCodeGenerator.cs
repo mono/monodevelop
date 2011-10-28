@@ -34,6 +34,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory;
+using Mono.TextEditor;
+
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -41,21 +43,15 @@ namespace MonoDevelop.CSharp.Refactoring
 	{
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		
-		MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy;
+		Lazy<CSharpFormattingPolicy> policy = new Lazy<CSharpFormattingPolicy> (() => {
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+		});
 		
 		public MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
 			get {
-				return this.policy;
+				return this.policy.Value;
 			}
-			set {
-				policy = value;
-			}
-		}
-		 
-		public CSharpCodeGenerator ()
-		{
-			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 		}
 		
 		class CodeGenerationOptions
@@ -229,24 +225,24 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			result.Append (evt.Name);
 			if (options.ExplicitDeclaration) {
-				AppendBraceStart (result, policy.EventBraceStyle);
+				AppendBraceStart (result, Policy.EventBraceStyle);
 				AppendIndent (result);
 				result.Append ("add");
-				AppendBraceStart (result, policy.EventAddBraceStyle);
+				AppendBraceStart (result, Policy.EventAddBraceStyle);
 				AppendIndent (result);
 				result.Append ("// TODO");
 				AppendLine (result);
-				AppendBraceEnd (result, policy.EventAddBraceStyle);
+				AppendBraceEnd (result, Policy.EventAddBraceStyle);
 				
 				AppendIndent (result);
 				result.Append ("remove");
-				AppendBraceStart (result, policy.EventRemoveBraceStyle);
+				AppendBraceStart (result, Policy.EventRemoveBraceStyle);
 				AppendIndent (result);
 				result.Append ("// TODO");
 				AppendLine (result);
 				
-				AppendBraceEnd (result, policy.EventRemoveBraceStyle);
-				AppendBraceEnd (result, policy.EventBraceStyle);
+				AppendBraceEnd (result, Policy.EventRemoveBraceStyle);
+				AppendBraceEnd (result, Policy.EventBraceStyle);
 			} else {
 				result.Append (";");
 			}
@@ -260,7 +256,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			bodyStartOffset = result.Length;
 			result.Append ("throw new ");
 			AppendReturnType (result, options.ImplementingType, options.Ctx.GetTypeDefinition (typeof (System.NotImplementedException)));
-			if (policy.BeforeMethodCallParentheses)
+			if (Policy.BeforeMethodCallParentheses)
 				result.Append (" ");
 			result.Append ("();");
 			bodyEndOffset = result.Length;
@@ -298,7 +294,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				result.Append (">");
 			}
-			if (policy.BeforeMethodDeclarationParentheses)
+			if (Policy.BeforeMethodDeclarationParentheses)
 				result.Append (" ");
 			result.Append ("(");
 			AppendParameterList (result, options.ImplementingType, method.Parameters);
@@ -344,12 +340,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (options.ImplementingType.Kind == TypeKind.Interface) {
 				result.Append (";");
 			} else {
-				AppendBraceStart (result, policy.MethodBraceStyle);
+				AppendBraceStart (result, Policy.MethodBraceStyle);
 				if (method.Name == "ToString" && (method.Parameters == null || method.Parameters.Count == 0) && method.ReturnType != null/* && method.ReturnType.FullName == "System.String"*/) {
 					AppendIndent (result);
 					bodyStartOffset = result.Length;
 					result.Append ("return string.Format");
-					if (policy.BeforeMethodDeclarationParentheses)
+					if (Policy.BeforeMethodDeclarationParentheses)
 						result.Append (" ");
 					result.Append ("(\"[");
 					result.Append (options.ImplementingType.Name);
@@ -387,7 +383,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("return ");
 					result.Append ("base.");
 					result.Append (method.Name);
-					if (policy.BeforeMethodCallParentheses)
+					if (Policy.BeforeMethodCallParentheses)
 						result.Append (" ");
 					result.Append ("(");
 					for (int i = 0; i < method.Parameters.Count; i++) {
@@ -405,7 +401,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					bodyEndOffset = result.Length;
 					AppendLine (result);
 				}
-				AppendBraceEnd (result, policy.MethodBraceStyle);
+				AppendBraceEnd (result, Policy.MethodBraceStyle);
 			}
 			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
 		}
@@ -493,7 +489,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				result.Append (property.Name);
 			}
-			AppendBraceStart (result, policy.PropertyBraceStyle);
+			AppendBraceStart (result, Policy.PropertyBraceStyle);
 			if (property.CanGet) {
 				int bodyStartOffset, bodyEndOffset;
 				AppendIndent (result);
@@ -501,7 +497,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (options.ImplementingType.Kind == TypeKind.Interface) {
 					result.AppendLine (";");
 				} else {
-					AppendBraceStart (result, policy.PropertyGetBraceStyle);
+					AppendBraceStart (result, Policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (options.Ctx, property)) {
 						AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
 					} else if (property.IsAbstract || property.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
@@ -515,7 +511,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						bodyEndOffset = result.Length;
 						AppendLine (result);
 					}
-					AppendBraceEnd (result, policy.PropertyGetBraceStyle);
+					AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
 					AppendLine (result);
 					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
 				}
@@ -528,7 +524,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (options.ImplementingType.Kind == TypeKind.Interface) {
 					result.AppendLine (";");
 				} else {
-					AppendBraceStart (result, policy.PropertyGetBraceStyle);
+					AppendBraceStart (result, Policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (options.Ctx, property)) {
 						AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
 					} else if (property.IsAbstract || property.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
@@ -542,12 +538,12 @@ namespace MonoDevelop.CSharp.Refactoring
 						bodyEndOffset = result.Length;
 						AppendLine (result);
 					}
-					AppendBraceEnd (result, policy.PropertyGetBraceStyle);
+					AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
 					AppendLine (result);
 					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
 				}
 			}
-			AppendBraceEnd (result, policy.PropertyBraceStyle);
+			AppendBraceEnd (result, Policy.PropertyBraceStyle);
 			return new CodeGeneratorMemberResult (result.ToString (), regions);
 		}
 		
@@ -574,33 +570,43 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendReturnType (result, implementingType, field.ReturnType);
 			result.Append (" ");
 			result.Append (propertyName);
-			AppendBraceStart (result, policy.PropertyBraceStyle);
+			AppendBraceStart (result, Policy.PropertyBraceStyle);
 			AppendIndent (result);
 			
 			result.Append ("get");
-			AppendBraceStart (result, policy.PropertyGetBraceStyle);
+			AppendBraceStart (result, Policy.PropertyGetBraceStyle);
 			AppendIndent (result);
 			result.Append ("return this.");
 			result.Append (field.Name);
 			result.Append (";");
 			AppendLine (result);
-			AppendBraceEnd (result, policy.PropertyGetBraceStyle);
+			AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
 			AppendLine (result);
 
 			if (!readOnly) {
 				AppendIndent (result);
 				result.Append ("set");
-				AppendBraceStart (result, policy.PropertyGetBraceStyle);
+				AppendBraceStart (result, Policy.PropertyGetBraceStyle);
 				AppendIndent (result);
 				result.Append (field.Name);
 				result.Append (" = value;");
 				AppendLine (result);
-				AppendBraceEnd (result, policy.PropertyGetBraceStyle);
+				AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
 				AppendLine (result);
 			}
 			
-			AppendBraceEnd (result, policy.PropertyBraceStyle);
+			AppendBraceEnd (result, Policy.PropertyBraceStyle);
 			return result.ToString ();
+		}
+		
+		int CountBlankLines (MonoDevelop.Ide.Gui.Document doc, int startLine)
+		{
+			int result = 0;
+			LineSegment line;
+			while ((line = doc.Editor.GetLine (startLine + result)) != null && doc.Editor.GetLineIndent (line).Length == line.EditableLength) {
+				result++;
+			}
+			return result;
 		}
 		
 		public override void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
@@ -610,24 +616,39 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (unit == null)
 				return;
 			
+			var policy = doc.Project != null ? doc.Project.Policies.Get <CSharpFormattingPolicy> () : null;
+			if (policy == null)
+				policy = this.Policy;
+			
 			var node = unit.FirstChild;
 			while (node.NextSibling is ICSharpCode.NRefactory.CSharp.Comment || node.NextSibling is UsingDeclaration || node.NextSibling is UsingAliasDeclaration) {
 				node = node.NextSibling;
 			}
 			
 			var text = new StringBuilder ();
-			if (node != null && node != unit.FirstChild)
-				text.Append (doc.Editor.EolMarker);
+			int lines = 0;
+			if (node != null && node != unit.FirstChild) {
+				lines = policy.BlankLinesBeforeUsings + 1;
+				while (lines-- > 0) {
+					text.Append (doc.Editor.EolMarker);
+				}
+			}
 			text.Append ("using ");
 			text.Append (nsName);
 			text.Append (";");
-			text.Append (doc.Editor.EolMarker);
 			
 			int offset = 0;
 			if (node != null) {
 				var loc = node == unit.FirstChild ? node.StartLocation : node.EndLocation;
 				offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
 			}
+			
+			lines = policy.BlankLinesAfterUsings;
+			lines -= CountBlankLines (doc, doc.Editor.OffsetToLineNumber (offset) + 1);
+			while (lines-- > 0) {
+				text.Append (doc.Editor.EolMarker);
+			}
+			
 			using (var undo = doc.Editor.OpenUndoGroup ()) {
 				int caretOffset = doc.Editor.Caret.Offset;
 				int inserted = doc.Editor.Insert (offset, text.ToString ());
