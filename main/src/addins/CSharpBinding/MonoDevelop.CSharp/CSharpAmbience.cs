@@ -304,7 +304,6 @@ namespace MonoDevelop.CSharp
 			var typeWithElementType = type as TypeWithElementType;
 			if (typeWithElementType != null) {
 				AppendType (sb, typeWithElementType.ElementType, settings);
-				sb.Append (typeWithElementType.NameSuffix);
 				return;
 			}
 			
@@ -631,7 +630,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (parameter == null)
 				return "";
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 			if (settings.IncludeParameterName) {
 				if (settings.IncludeModifiers) {
 					if (parameter.IsOut) {
