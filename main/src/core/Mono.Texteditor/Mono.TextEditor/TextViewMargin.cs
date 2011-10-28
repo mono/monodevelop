@@ -1334,7 +1334,7 @@ namespace Mono.TextEditor
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
-				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX + 0.5, LineHeight), this.SelectionColor.CairoBackgroundColor, true);
+				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX, LineHeight), this.SelectionColor.CairoBackgroundColor, true);
 			}
 
 			// highlight search results
