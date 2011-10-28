@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public static void Format (MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, TextLocation location, bool runAferCR = false)
 		{
 			Format (data, dom, location, false, runAferCR);
-		}
+		} 
 
 		public static void Format (MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, TextLocation location, bool correctBlankLines, bool runAferCR = false)
 		{
@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			var parent = member.DeclaringTypeDefinition;
 			while (parent != null) {
-				sb.Append ("class Stub {");
+				sb.Append ("class " + parent.Name +" {");
 				closingBrackets++;
 				parent = parent.DeclaringTypeDefinition;
 			}
@@ -106,10 +106,12 @@ namespace MonoDevelop.CSharp.Formatting
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
 			var compilationUnit = parser.Parse (stubData);
 			bool hadErrors = parser.HasErrors;
-			
 			// try it out, if the behavior is better when working only with correct code.
-			if (hadErrors)
+			if (hadErrors) {
+/*				Console.WriteLine (sb);
+				parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));*/
 				return;
+			}
 			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			
@@ -134,11 +136,20 @@ namespace MonoDevelop.CSharp.Formatting
 				changes.RemoveAll (c => ((TextReplaceAction)c).Offset > lastOffset);
 			}
 			
+			var caretEndOffset = data.Editor.Caret.Offset;
+			int caretDelta = 0;
+			foreach (TextReplaceAction act in changes) {
+				if (act.Offset < caretEndOffset)
+					caretDelta += -act.RemovedChars + (act.InsertedText != null ? act.InsertedText.Length : 0);
+			}
+			caretEndOffset += caretDelta;
+			
 			using (var undo = data.Editor.OpenUndoGroup ()) {
 				MDRefactoringContext.MdScript.RunActions (changes, null);
 				foreach (int line in lines)
 					data.Editor.Document.CommitLineUpdate (line);
 			}
+			data.Editor.Caret.Offset = caretEndOffset;
 			stubData.Dispose ();
 		}
 	}

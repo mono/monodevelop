@@ -180,8 +180,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					bool didAppendCatch = false;
 					while (o >= "try".Length) {
 						char ch = memberText[o];
-						Console.WriteLine (ch);
-						
 						if (!char.IsWhiteSpace (ch)) {
 							if (ch == 'y' && memberText[o - 1] == 'r' && memberText[o - 2] == 't') {
 								wrapper.Append ("} catch {}");

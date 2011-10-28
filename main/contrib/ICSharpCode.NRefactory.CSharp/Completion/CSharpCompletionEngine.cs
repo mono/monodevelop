@@ -422,7 +422,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var navigator = new NodeListResolveVisitorNavigator (nodes);
 					var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
 					visitor.Scan (identifierStart.Item3);
-					csResolver = visitor.GetResolverStateBefore (n);
+					try {
+						csResolver = visitor.GetResolverStateBefore (n);
+					} catch (Exception) {
+						csResolver = GetState ();
+					}
 					// add attribute properties.
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 						var resolved = visitor.GetResolveResult (n.Parent);
@@ -556,7 +560,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddTypeParameter (p);
 				}
 			}
-			
 			Predicate<ITypeDefinition> typePred = null;
 			if (node is Attribute) {
 				var attribute = ctx.GetTypeDefinition ("System", "Attribute", 0, StringComparer.Ordinal);
@@ -574,10 +577,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AddKeywords (wrapper, globalLevelKeywords);
 			}
 			
+			if (IsInSwitchContext(node)) {
+				wrapper.AddCustom ("case"); 
+				wrapper.AddCustom ("default"); 
+			}
+			
 			AddKeywords (wrapper, primitiveTypesKeywords);
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 		}
-
+		
+		static bool IsInSwitchContext(AstNode node)
+		{
+			var n = node;
+			while (n != null && !(n is MemberDeclaration)) {
+				Console.WriteLine (n.GetType ());
+				if (n is SwitchStatement)
+					return true;
+				if (n is BlockStatement)
+					return false;
+				n = n.Parent;
+			}
+			return false;
+		}
+		
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Predicate<ITypeDefinition> typePred = null, Predicate<IMember> memberPred = null)
 		{
 			var currentType = state.CurrentTypeDefinition ?? this.currentType;
@@ -1344,9 +1366,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine ("type:" + type +"/"+type.GetType ());
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
-//			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic.ToString () : "currentMember == null");
+//			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
-				foreach (var member in type.Resolve (ctx).GetMembers (ctx)) {
+				foreach (var member in type.GetMembers (ctx)) {
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
 	//					Console.WriteLine ("skip access: " + member.FullName);
 						continue;
@@ -1362,7 +1384,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	//					Console.WriteLine ("skip non static member: " + member.FullName);
 						continue;
 					}
-//					Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic + "---- returns:" + member.ReturnType.Resolve (ctx).FullName);
+	//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}
 			}
@@ -1531,6 +1553,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 				
 			var baseUnit = ParseStub ("");
+			var tmpUnit = baseUnit;
 			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1); 
 			if (expr == null)
 				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
@@ -1543,6 +1566,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				baseUnit = ParseStub ("a = b};", false);
 				expr = baseUnit.GetNodeAt<ArrayInitializerExpression> (location.Line, location.Column - 1); 
+			}
+			
+			// try statement
+			if (expr == null) {
+				expr = tmpUnit.GetNodeAt<Statement> (location.Line, location.Column - 1); 
 			}
 			
 			if (expr == null)
@@ -1740,7 +1768,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var navigator = new NodeListResolveVisitorNavigator (new[] { node });
 				var visitor = new ResolveVisitor (state, CSharpParsedFile, navigator);
 				Unit.AcceptVisitor (visitor, null);
-				state = visitor.GetResolverStateBefore (node) ?? state;
+				try {
+					var newState = visitor.GetResolverStateBefore (node);
+					if (newState != null)
+						state = newState;
+				} catch (Exception) {
+				}
 			}
 			
 			return state;
