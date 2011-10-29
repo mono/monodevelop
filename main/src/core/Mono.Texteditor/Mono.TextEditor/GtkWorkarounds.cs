@@ -209,15 +209,46 @@ namespace Mono.TextEditor
 			return false;
 		}
 		
-		public static double GetScrollWheelDelta (Gdk.EventScroll evnt, double pageSizePixels, bool inverted = false)
+		public static void GetPageScrollPixelDeltas (this Gdk.EventScroll evt, double pageSizeX, double pageSizeY,
+			out double deltaX, out double deltaY)
 		{
-			double delta = System.Math.Pow (pageSizePixels, 2.0 / 3.0);
-			var direction = evnt.Direction;
-			if (direction == Gdk.ScrollDirection.Up || direction == Gdk.ScrollDirection.Left)
-				delta = -delta;
-			if (inverted)
-				delta = -delta;
-			return delta;
+			if (!GetEventScrollDeltas (evt, out deltaX, out deltaY)) {
+				var direction = evt.Direction;
+				deltaX = deltaY = 0;
+				if (pageSizeY != 0 && (direction == Gdk.ScrollDirection.Down || direction == Gdk.ScrollDirection.Up)) {
+					deltaY = System.Math.Pow (pageSizeY, 2.0 / 3.0);
+					deltaX = 0.0;
+					if (direction == Gdk.ScrollDirection.Up)
+						deltaY = -deltaY;
+				} else if (pageSizeX != 0) {
+					deltaX = System.Math.Pow (pageSizeX, 2.0 / 3.0);
+					deltaY = 0.0;
+					if (direction == Gdk.ScrollDirection.Left)
+						deltaX = -deltaX;
+				}
+			}
+		}
+		
+		public static void AddValueClamped (this Gtk.Adjustment adj, double value)
+		{
+			adj.Value = System.Math.Max (adj.Lower, System.Math.Min (adj.Value + value, adj.Upper - adj.PageSize));
+		}
+		
+		[DllImport (PangoUtil.LIBGTK)]
+		extern static bool gdk_event_get_scroll_deltas (IntPtr eventScroll, out double deltaX, out double deltaY);
+		static bool scrollDeltasNotSupported;
+		
+		public static bool GetEventScrollDeltas (Gdk.EventScroll evt, out double deltaX, out double deltaY)
+		{
+			if (!scrollDeltasNotSupported) {
+				try {
+					return gdk_event_get_scroll_deltas (evt.Handle, out deltaX, out deltaY);
+				} catch (EntryPointNotFoundException) {
+					scrollDeltasNotSupported = true;
+				}
+			}
+			deltaX = deltaY = 0;
+			return false;
 		}
 	}
 }

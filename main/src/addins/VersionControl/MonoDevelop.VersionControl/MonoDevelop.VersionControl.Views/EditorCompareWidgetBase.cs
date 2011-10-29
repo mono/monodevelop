@@ -514,24 +514,17 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			double pageSizePx;
-			Adjustment adj;
-			if (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down)  {
-				pageSizePx = Allocation.Height;
-				adj = vAdjustment;
-			} else  {
-				pageSizePx = Allocation.Width;
-				adj = hAdjustment;
-			}
-
-			if (adj.PageSize >= (adj.Upper - adj.Lower))
-				return base.OnScrollEvent (evnt);
+			var alloc = Allocation;
+			double dx, dy;
+			evnt.GetPageScrollPixelDeltas (alloc.Width, alloc.Height, out dx, out dy);
 			
-			double deltaPx = GtkWorkarounds.GetScrollWheelDelta (evnt, pageSizePx, false);
-			double newValue = adj.Value + adj.PageSize * (deltaPx / pageSizePx);
-			newValue = System.Math.Max (System.Math.Min (1.0 - adj.PageSize, newValue), 0.0);
-			adj.Value = newValue;
-			return true;
+			if (dx != 0.0 && hAdjustment.PageSize < (hAdjustment.Upper - hAdjustment.Lower))
+				hAdjustment.AddValueClamped (dx / (alloc.Width / hAdjustment.PageSize));
+			
+			if (dy != 0.0 && vAdjustment.PageSize < (vAdjustment.Upper - vAdjustment.Lower))
+				vAdjustment.AddValueClamped (dy / (alloc.Height / vAdjustment.PageSize));
+			
+			return (dx != 0.0 || dy != 0.0) || base.OnScrollEvent (evnt);
 		}
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)

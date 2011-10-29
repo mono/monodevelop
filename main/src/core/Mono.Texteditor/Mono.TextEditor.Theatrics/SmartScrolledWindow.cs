@@ -194,20 +194,24 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 		
+		static double Clamp (double min, double val, double max)
+		{
+			return System.Math.Max (min, System.Math.Min (val, max));
+		}
+		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			var direction = evnt.Direction;
-			var scrollWidget = (direction == ScrollDirection.Up || direction == ScrollDirection.Down) ? vScrollBar : hScrollBar;
-			var adj = (direction == ScrollDirection.Up || direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
+			var alloc = Allocation;
+			double dx, dy;
+			evnt.GetPageScrollPixelDeltas (alloc.Width, alloc.Height, out dx, out dy);
 			
-			if (!scrollWidget.Visible)
-				return base.OnScrollEvent (evnt);
+			if (dx != 0.0 && hScrollBar.Visible)
+				hAdjustment.AddValueClamped (dx);
 			
-			bool isInverted = scrollWidget is Scrollbar ?  ((Scrollbar)scrollWidget).Inverted : false;
-			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, adj.PageSize, isInverted);
-			newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
-			adj.Value = newValue;
-			return true;
+			if (dy != 0.0 && vScrollBar.Visible)
+				vAdjustment.AddValueClamped (dy);
+			
+			return (dx != 0.0 || dy != 0.0) || base.OnScrollEvent (evnt);
 		}
 		
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)

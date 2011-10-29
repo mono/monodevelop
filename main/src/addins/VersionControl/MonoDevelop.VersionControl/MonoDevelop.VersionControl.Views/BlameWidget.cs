@@ -259,31 +259,19 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		static double GetWheelDelta (Scrollbar scrollbar, ScrollDirection direction)
-		{
-			double delta = System.Math.Pow (scrollbar.Adjustment.PageSize, 2.0 / 3.0);
-			if (direction == ScrollDirection.Up || direction == ScrollDirection.Left)
-				delta = -delta;
-			if (scrollbar.Inverted)
-				delta = -delta;
-			return delta;
-		}
-		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			var direction = evnt.Direction;
-			Scrollbar scrollWidget = (direction == ScrollDirection.Up || direction == ScrollDirection.Down)
-				? (Scrollbar)vScrollBar
-				: hScrollBar;
+			var alloc = Allocation;
+			double dx, dy;
+			evnt.GetPageScrollPixelDeltas (alloc.Width, alloc.Height, out dx, out dy);
 			
-			if (!scrollWidget.Visible)
-				return base.OnScrollEvent (evnt);
+			if (dx != 0.0 && hScrollBar.Visible)
+				hAdjustment.AddValueClamped (dx);
 			
-			var adj = scrollWidget.Adjustment;
-			double newValue = adj.Value + GtkWorkarounds.GetScrollWheelDelta (evnt, adj.PageSize, scrollWidget.Inverted);
-			newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
-			adj.Value = newValue;
-			return true;
+			if (dy != 0.0 && vScrollBar.Visible)
+				vAdjustment.AddValueClamped (dy);
+			
+			return (dx != 0.0 || dy != 0.0) || base.OnScrollEvent (evnt);
 		}
 		
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
