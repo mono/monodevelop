@@ -511,10 +511,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			base.OnSizeAllocated (allocation);
 		}
-
+		
+		// FIXME: if the editors have different adjustment ranges, the pixel deltas
+		// don't really feel quite right since they're applied after scaling via the
+		// linked adjustment
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			var alloc = Allocation;
+			//using the size of an editor for the calculations means pixel deltas apply better
+			var alloc = editors[0].Allocation;
+			
 			double dx, dy;
 			evnt.GetPageScrollPixelDeltas (alloc.Width, alloc.Height, out dx, out dy);
 			
