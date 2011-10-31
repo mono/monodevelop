@@ -192,7 +192,7 @@ namespace Mono.TextEditor
 			glibObjectSetProp.Invoke (obj, new object[] { name, value });
 		}
 		
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll")]
+		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
 		
 		enum DwmWindowAttribute

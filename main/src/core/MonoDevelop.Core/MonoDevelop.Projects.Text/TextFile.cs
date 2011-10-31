@@ -249,15 +249,15 @@ namespace MonoDevelop.Projects.Text
 			}
 		}
 		
-		[DllImport("libglib-2.0-0.dll")]
+		[DllImport("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		//note: textLength is signed, read/written are not
 		static extern IntPtr g_convert(byte[] text, IntPtr textLength, string toCodeset, string fromCodeset, 
 		                               ref IntPtr read, ref IntPtr written, ref IntPtr err);
 		
-		[DllImport("libglib-2.0-0.dll")]
+		[DllImport("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_free (IntPtr ptr);
 		
-		[DllImport("libglib-2.0-0.dll")]
+		[DllImport("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_error_free (IntPtr err);
 		
 		#endregion
