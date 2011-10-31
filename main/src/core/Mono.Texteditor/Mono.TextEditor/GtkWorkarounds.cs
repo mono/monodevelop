@@ -244,13 +244,13 @@ namespace Mono.TextEditor
 				bool enabled;
 				if (DwmIsCompositionEnabled (out enabled) == 0 && enabled) {
 					var hwnd = gdk_win32_drawable_get_handle (clientWindow.Toplevel.Handle);
-					Win32Rect dwmRect, windowRect;
-					if (DwmGetWindowAttribute (hwnd, DwmWindowAttribute.ExtendedFrameBounds,
-						out dwmRect, win32RectMarshalSize) == 0
-						&& GetWindowRect (hwnd, out windowRect))
-					{
-						cursor.X = cursor.X - windowRect.Left + dwmRect.Left;
-						cursor.Y = cursor.Y - windowRect.Top + dwmRect.Top;
+					Win32Rect rect;
+					// this module gets the WINVER=6 version of GetWindowRect, which returns the correct value
+					if (GetWindowRect (hwnd, out rect)) {
+						int x, y;
+						clientWindow.Toplevel.GetPosition (out x, out y);
+						cursor.X = cursor.X - x + rect.Left;
+						cursor.Y = cursor.Y - y + rect.Top - cursor.Height;
 					}
 				}
 			}
