@@ -372,7 +372,8 @@ namespace Mono.TextEditor
 		internal int preeditOffset, preeditLine, preeditCursorCharIndex;
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
-
+		internal bool preeditHeightChange;
+		
 		internal bool ContainsPreedit (int line, int length)
 		{
 			if (string.IsNullOrEmpty (preeditString))
@@ -394,15 +395,24 @@ namespace Mono.TextEditor
 					preeditLayout.Attributes = preeditAttrs;
 					int w, h;
 					preeditLayout.GetSize (out w, out h);
-					if (LineHeight != System.Math.Ceiling (h / Pango.Scale.PangoScale))
-						OptionsChanged (this, EventArgs.Empty);
+					var calcHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
+					if (LineHeight != calcHeight) {
+						int line = OffsetToLineNumber (preeditOffset);
+						textEditorData.heightTree.SetLineHeight (preeditLine, calcHeight);
+						preeditHeightChange = true;
+						QueueDraw ();
+					}
 				}
-				
 			} else {
 				preeditOffset = -1;
 				preeditString = null;
 				preeditAttrs = null;
 				preeditCursorCharIndex = 0;
+				if (preeditHeightChange) {
+					preeditHeightChange = false;
+					textEditorData.heightTree.Rebuild ();
+					QueueDraw ();
+				}
 			}
 			this.textViewMargin.ForceInvalidateLine (preeditLine);
 			this.textEditorData.Document.CommitLineUpdate (preeditLine);

@@ -2076,7 +2076,7 @@ namespace Mono.TextEditor
 		{
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
-			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset + 1, LineHeight);
+			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset + 1, _lineHeight);
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;
 
@@ -2550,7 +2550,7 @@ namespace Mono.TextEditor
 		
 		public double GetLineHeight (LineSegment line)
 		{
-			if (line == null || line.MarkerCount == 0)
+			if (line == null)
 				return LineHeight;
 			foreach (var marker in line.Markers) {
 				IExtendingTextMarker extendingTextMarker = marker as IExtendingTextMarker;
@@ -2558,7 +2558,9 @@ namespace Mono.TextEditor
 					continue;
 				return extendingTextMarker.GetLineHeight (textEditor);
 			}
-			return LineHeight;
+			int lineNumber = textEditor.OffsetToLineNumber (line.Offset); 
+			var node = textEditor.GetTextEditorData ().heightTree.GetNodeByLine (lineNumber);
+			return node.height / node.count;
 		}
 		
 		public double GetLineHeight (int logicalLineNumber)
