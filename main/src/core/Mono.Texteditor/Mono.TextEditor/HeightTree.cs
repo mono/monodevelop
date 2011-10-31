@@ -24,11 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using Mono.TextEditor.Utils;
 using System.Collections.Generic;
 using System.Diagnostics;
-
-
 
 namespace Mono.TextEditor
 {
@@ -100,13 +99,13 @@ namespace Mono.TextEditor
 				count = editor.LineCount
 			};
 			
-			foreach (LineSegment extendedTextMarkerLine in editor.Document.LinesWithExtendingTextMarkers) {
+			foreach (var extendedTextMarkerLine in editor.Document.LinesWithExtendingTextMarkers) {
 				int lineNumber = editor.OffsetToLineNumber (extendedTextMarkerLine.Offset);
 				double height = editor.GetLineHeight (extendedTextMarkerLine);
 				SetLineHeight (lineNumber, height);
 			}
 			
-			foreach (var segment in editor.Document.FoldedSegments) {
+			foreach (var segment in editor.Document.FoldedSegments.ToArray ()) {
 				int start = editor.OffsetToLineNumber (segment.Offset);
 				int end = editor.OffsetToLineNumber (segment.EndOffset);
 				segment.Marker = Fold (start, end - start);
@@ -559,4 +558,3 @@ namespace Mono.TextEditor
 
 	}
 }
-
