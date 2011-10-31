@@ -372,7 +372,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				var contextList = new CompletionDataWrapper (this);
-				if (identifierStart == null) {
+				if (identifierStart == null && (char.IsLetter (completionChar) || completionChar == '_')) {
 					var unit = ParseStub ("get; }", false);
 					var node = unit.GetNodeAt (location, cn => !(cn is CSharpTokenNode));
 					if (node is Accessor)
