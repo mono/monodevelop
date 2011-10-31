@@ -372,27 +372,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				var contextList = new CompletionDataWrapper (this);
-				if (identifierStart == null && (char.IsLetter (completionChar) || completionChar == '_')) {
-					var unit = ParseStub ("get; }", false);
-					var node = unit.GetNodeAt (location, cn => !(cn is CSharpTokenNode));
-					if (node is Accessor)
-						node = node.Parent;
-					if (node is PropertyDeclaration) {
-						contextList.AddCustom ("get");
-						contextList.AddCustom ("set");
-						AddKeywords (contextList, accessorModifierKeywords);
-					} else if (node is CustomEventDeclaration) {
-						contextList.AddCustom ("add");
-						contextList.AddCustom ("remove");
-					} else {
-						AddContextCompletion (contextList, GetState (), null);
-					}
-					
-					return contextList.Result;
-				}
 				
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression)))
-					return controlSpace ? DefaultControlSpaceItems () : null;
+					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
@@ -408,6 +390,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (!char.IsLetterOrDigit (last) && last != '_')
 						return null;
 				}
+				
+				if (identifierStart == null)
+					return HandleAccessorContext () ?? DefaultControlSpaceItems ();
+				
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
 				if (n is ArrayInitializerExpression) {
@@ -427,7 +413,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					return null;
 				}
-				
 				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
 					csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 					var nodes = new List<AstNode> ();
@@ -544,6 +529,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return false;
 		}
 		
+		IEnumerable<ICompletionData> HandleAccessorContext ()
+		{
+			var unit = ParseStub ("get; }", false);
+			var node = unit.GetNodeAt (location, cn => !(cn is CSharpTokenNode));
+			if (node is Accessor)
+				node = node.Parent;
+			var contextList = new CompletionDataWrapper (this);
+			if (node is PropertyDeclaration) {
+				contextList.AddCustom ("get");
+				contextList.AddCustom ("set");
+				AddKeywords (contextList, accessorModifierKeywords);
+			} else if (node is CustomEventDeclaration) {
+				contextList.AddCustom ("add");
+				contextList.AddCustom ("remove");
+			} else {
+				return null;
+			}
+			
+			return contextList.Result;
+		}
+		
 		IEnumerable<ICompletionData> DefaultControlSpaceItems ()
 		{
 			var wrapper = new CompletionDataWrapper (this);
@@ -562,8 +568,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = Unit.GetNodeAt (location);
 				rr = ResolveExpression (CSharpParsedFile, node, Unit);
 			}
-				
-			AddContextCompletion (wrapper, rr != null ? rr.Item2 : GetState (), node);
+			AddContextCompletion (wrapper, rr != null && (node is Expression) ? rr.Item2 : GetState (), node);
 			
 			return wrapper.Result;
 		}
