@@ -633,7 +633,10 @@ namespace Mono.TextEditor
 			
 			textEditor.ResetIMContext ();
 			
-			textEditor.IMContext.CursorLocation = new Rectangle ((int)caretX, (int)caretY, 0, (int)(LineHeight - 1));
+			GtkWorkarounds.SetImCursorLocation (
+				textEditor.IMContext,
+				textEditor.GdkWindow,
+				new Rectangle ((int)caretX, (int)caretY, 0, (int)(LineHeight - 1)));
 		}
 
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
