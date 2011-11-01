@@ -56,7 +56,7 @@ namespace MonoDevelop.TypeSystem
 		public abstract string GetString (string nameSpace, OutputSettings settings);
 		
 		protected abstract string GetTypeReferenceString (ITypeReference reference, OutputSettings settings);
-		protected abstract string GetTypeString (ITypeDefinition type, OutputSettings settings);
+		protected abstract string GetTypeString (IType type, OutputSettings settings);
 		protected abstract string GetMethodString (IMethod method, OutputSettings settings);
 		protected abstract string GetConstructorString (IMethod constructor, OutputSettings settings);
 		protected abstract string GetDestructorString (IMethod destructor, OutputSettings settings);
@@ -141,10 +141,9 @@ namespace MonoDevelop.TypeSystem
 			return result;
 		}
 		
-		
 		public string GetString (IType type, OutputSettings settings)
 		{
-			var result = GetTypeString (type.GetDefinition (), settings);
+			var result = GetTypeString (type, settings);
 			return settings.PostProcess (type, result);
 		}
 	

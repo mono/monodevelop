@@ -192,6 +192,11 @@ namespace MonoDevelop.CSharp.Completion
 		
 		#region IParameterDataProvider implementation
 		
+		protected virtual string GetPrefix (IMethod method)
+		{
+			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
+			return ambience.GetString (ext.ctx, method.ReturnType, flags) + " ";
+		}
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
@@ -201,11 +206,11 @@ namespace MonoDevelop.CSharp.Completion
 			
 			var m = methods [overload];
 			
-			string name =  m.Name; //(this.delegateName ?? (methods [overload].IsConstructor ? ambience.GetString (methods [overload].DeclaringType, flags) : methods [overload].Name));
+			string name =  m.EntityType == EntityType.Constructor || m.EntityType == EntityType.Destructor ? m.DeclaringType.Name : m.Name;
 			var parameters = new StringBuilder ();
 			int curLen = 0;
-			string prefix = !m.IsConstructor ? ambience.GetString (ext.ctx, m.ReturnType, flags) + " " : "";
-
+			string prefix = GetPrefix (m);
+			
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
 					parameters.Append (", ");

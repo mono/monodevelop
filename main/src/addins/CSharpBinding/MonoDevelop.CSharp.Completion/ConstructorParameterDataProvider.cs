@@ -25,18 +25,26 @@
 // THE SOFTWARE.
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class ConstructorParameterDataProvider : MethodParameterDataProvider
 	{
+		IType type;
+		
 		public ConstructorParameterDataProvider (CSharpCompletionTextEditorExtension ext, IType type) : base (ext)
 		{
+			this.type = type;
 			foreach (var method in type.GetConstructors (ext.ctx, m => m.IsPublic)) {
 				methods.Add (method);
 			}
-
-			
+		}
+		
+		protected override string GetPrefix (IMethod method)
+		{
+			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
+			return ambience.GetString (ext.ctx, type, flags) + ".";
 		}
 	}
 }

@@ -370,10 +370,49 @@ namespace MonoDevelop.CSharp
 			return sb.ToString ();
 		}
 
-		protected override string GetTypeString (ITypeDefinition type, OutputSettings settings)
+		protected override string GetTypeString (IType t, OutputSettings settings)
 		{
+			ITypeDefinition type = t.GetDefinition ();
 			if (type == null)
 				return "";
+			
+			if (type.Namespace == "System" && type.TypeParameterCount == 0) {
+				switch (type.Name) {
+				case "Object":
+					return "object";
+				case "Boolean":
+					return "bool";
+				case "Char":
+					return "char";
+				case "SByte":
+					return "sbyte";
+				case "Byte":
+					return "byte";
+				case "Int16":
+					return "short";
+				case "UInt16":
+					return "ushort";
+				case "Int32":
+					return "int";
+				case "UInt32":
+					return "uint";
+				case "Int64":
+					return "long";
+				case "UInt64":
+					return "ulong";
+				case "Single":
+					return "float";
+				case "Double":
+					return "double";
+				case "Decimal":
+					return "decimal";
+				case "String":
+					return "string";
+				case "Void":
+					return "void";
+				}
+			}
+				
 			// output anonymous type
 			if (type.IsSynthetic && type.Name == "$Anonymous$")
 				return GetTypeReferenceString (type, settings);
@@ -411,13 +450,18 @@ namespace MonoDevelop.CSharp
 					if (i > 0)
 						result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
 					if (!settings.HideGenericParameterNames) {
-						result.Append (NetToCSharpTypeName (type.TypeParameters [i].FullName));
+						if (t is ParameterizedType) {
+							result.Append (GetString (((ParameterizedType)t).TypeArguments [i], settings));
+							
+						} else {
+							result.Append (NetToCSharpTypeName (type.TypeParameters [i].FullName));
+						}
 					}
 				}
 				result.Append (settings.Markup (">"));
 			}
 			
-			if (type.IsDelegate () && settings.ReformatDelegates) {
+			if (t.Kind == TypeKind.Delegate && settings.ReformatDelegates) {
 //				var policy = GetPolicy (settings);
 //				if (policy.BeforeMethodCallParentheses)
 //					result.Append (settings.Markup (" "));
@@ -497,7 +541,7 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetMethodString (IMethod method, OutputSettings settings)
 		{
-			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.Name))), true);
+			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.EntityType == EntityType.Constructor || method.EntityType == EntityType.Destructor ? method.DeclaringType.Name : method.Name))), true);
 		}
 
 		protected override string GetConstructorString (IMethod method, OutputSettings settings)

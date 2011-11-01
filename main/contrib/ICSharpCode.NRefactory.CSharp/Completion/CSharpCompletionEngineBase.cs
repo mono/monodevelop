@@ -275,7 +275,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			baseUnit = ParseStub (afterBracket ? "" : "x");
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
-			var mref = baseUnit.GetNodeAt (location, n => n is InvocationExpression || n is ObjectCreateExpression); 
+			var mref = baseUnit.GetNodeAt (location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
 			AstNode expr;
 			if (mref is InvocationExpression) {
 				expr = ((InvocationExpression)mref).Target;
@@ -285,13 +285,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
+		/*	var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
 			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);
-			Unit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
+			baseUnit.AcceptVisitor (tsvisitor, null);*/
+			return Tuple.Create (CSharpParsedFile, (AstNode)expr, baseUnit);
 
 			/*
 			

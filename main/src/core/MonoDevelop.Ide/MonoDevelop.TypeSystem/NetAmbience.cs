@@ -61,8 +61,9 @@ namespace MonoDevelop.TypeSystem
 			return reference.ToString ();
 		}
 		
-		protected override string GetTypeString (ITypeDefinition type, OutputSettings settings)
+		protected override string GetTypeString (IType t, OutputSettings settings)
 		{
+			ITypeDefinition type = t.GetDefinition ();
 			var result = new StringBuilder ();
 			if (settings.IncludeModifiers)
 				AppendModifiers (result, settings, type);
