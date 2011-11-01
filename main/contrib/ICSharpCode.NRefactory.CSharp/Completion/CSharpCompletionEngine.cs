@@ -84,6 +84,65 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return Enumerable.Empty<ICompletionData> ();
 		}
+
+		IEnumerable<string> GenerateNameProposals (AstType type)
+		{
+			if (type is PrimitiveType) {
+				var pt = (PrimitiveType)type;
+				Console.WriteLine (pt.Keyword);
+				switch (pt.Keyword) {
+				case "object":
+					yield return "o";
+					yield return "obj";
+					break;
+				case "bool":
+					yield return "b";
+					yield return "pred";
+					break;
+				case "double":
+				case "float":
+				case "decimal":
+					yield return "d";
+					yield return "f";
+					yield return "m";
+					break;
+				default:
+					yield return "i";
+					yield return "j";
+					yield return "k";
+					break;
+				}
+				yield break;
+			}
+			
+			var names = new List<string> ();
+			int offset1 = document.GetOffset (type.StartLocation);
+			int offset2 = document.GetOffset (type.EndLocation);
+			
+			string name = document.GetText (offset1, offset2 - offset1);
+			int lastNameStart = 0;
+			for (int i = 1; i < name.Length; i++) {
+				if (Char.IsUpper (name [i])) {
+					names.Add (name.Substring (lastNameStart, i - lastNameStart));
+					lastNameStart = i;
+				}
+			}
+			
+			names.Add (name.Substring (lastNameStart, name.Length - lastNameStart));
+			
+			var possibleName = new StringBuilder ();
+			for (int i = 0; i < names.Count; i++) {
+				possibleName.Length = 0;
+				for (int j = i; j < names.Count; j++) {
+					if (string.IsNullOrEmpty (names [j]))
+						continue;
+					if (j == i) 
+						names [j] = Char.ToLower (names [j] [0]) + names [j].Substring (1);
+					possibleName.Append (names [j]);
+				}
+				yield return possibleName.ToString ();
+			}
+		}
 		
 		IEnumerable<ICompletionData> MagicKeyCompletion (char completionChar, bool controlSpace)
 		{
@@ -189,30 +248,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var isAsExpression = GetExpressionAt (offset);
 				if (controlSpace && isAsExpression != null && isAsExpression.Item2 is VariableDeclarationStatement && token != "new") {
 					var parent = isAsExpression.Item2 as VariableDeclarationStatement;
-					int offset1 = document.GetOffset (parent.Type.StartLocation);
-					int offset2 = document.GetOffset (parent.Type.EndLocation);
-					
-					string name = document.GetText (offset1, offset2 - offset1);
-					var names = new List<string> ();
-					int lastNameStart = 0;
-					for (int i = 1; i < name.Length; i++) {
-						if (Char.IsUpper (name [i])) {
-							names.Add (name.Substring (lastNameStart, i - lastNameStart));
-							lastNameStart = i;
-						}
-					}
-					names.Add (name.Substring (lastNameStart, name.Length - lastNameStart));
 					var proposeNameList = new CompletionDataWrapper (this);
-					var possibleName = new StringBuilder ();
-					for (int i = 0; i < names.Count; i++) {
-						possibleName.Length = 0;
-						for (int j = i; j < names.Count; j++) {
-							if (string.IsNullOrEmpty (names [j]))
-								continue;
-							if (j == i) 
-								names [j] = Char.ToLower (names [j] [0]) + names [j].Substring (1);
-							possibleName.Append (names [j]);
-						}
+					
+					foreach (var possibleName in GenerateNameProposals (parent.Type)) {
 						if (possibleName.Length > 0)
 							proposeNameList.Result.Add (factory.CreateLiteralCompletionData (possibleName.ToString ()));
 					}
