@@ -587,7 +587,7 @@ namespace MonoDevelop.TypeSystem
 		}
 		#endregion
 		
-		static Dictionary<string, ITypeResolveContext> assemblyContents = new Dictionary<string, ITypeResolveContext> ();
+		static Dictionary<string, AssemblyContext> assemblyContents = new Dictionary<string, AssemblyContext> ();
 		
 		class SimpleAssemblyResolver : IAssemblyResolver
 		{
@@ -682,12 +682,63 @@ namespace MonoDevelop.TypeSystem
 			return false;
 		}
 		
-		public static ITypeResolveContext LoadAssemblyContext (string fileName)
+		[Serializable]
+		class AssemblyContext : ITypeResolveContext
+		{
+			public string FileName;
+			public DateTime LastWriteTime;
+			public IProjectContent Ctx;
+
+			#region ITypeResolveContext implementation
+			ITypeDefinition ITypeResolveContext.GetKnownTypeDefinition (TypeCode typeCode)
+			{
+				return Ctx.GetKnownTypeDefinition (typeCode);
+			}
+
+			ITypeDefinition ITypeResolveContext.GetTypeDefinition (string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+			{
+				return Ctx.GetTypeDefinition (nameSpace, name, typeParameterCount, nameComparer);
+			}
+
+			IEnumerable<ITypeDefinition> ITypeResolveContext.GetTypes ()
+			{
+				return Ctx.GetTypes ();
+			}
+
+			public IEnumerable<ITypeDefinition> GetTypes (string nameSpace, StringComparer nameComparer)
+			{
+				return Ctx.GetTypes (nameSpace, nameComparer);
+			}
+
+			IEnumerable<string> ITypeResolveContext.GetNamespaces ()
+			{
+				return Ctx.GetNamespaces ();
+			}
+
+			string ITypeResolveContext.GetNamespace (string nameSpace, StringComparer nameComparer)
+			{
+				return Ctx.GetNamespace (nameSpace, nameComparer);
+			}
+
+			ISynchronizedTypeResolveContext ITypeResolveContext.Synchronize ()
+			{
+				return Ctx.Synchronize ();
+			}
+
+			CacheManager ITypeResolveContext.CacheManager {
+				get {
+					return Ctx.CacheManager;
+				}
+			}
+			#endregion
+		}
+		
+		static AssemblyContext LoadAssemblyContext (string fileName)
 		{
 			string cache = GetCacheDirectory (fileName);
 			if (cache != null) {
 				TouchCache (cache);
-				var deserialized = DeserializeObject <IProjectContent> (Path.Combine (cache, "completion.cache"));
+				var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "completion.cache"));
 				if (deserialized != null)
 					return deserialized;
 			}
@@ -707,11 +758,13 @@ namespace MonoDevelop.TypeSystem
 			}
 //			loader.InterningProvider = new SimpleInterningProvider ();
 			try {
-				var result = loader.LoadAssembly (asm);
+				var result = new AssemblyContext ();
+				result.FileName = fileName;
+				result.LastWriteTime = File.GetLastWriteTime (fileName);
+				result.Ctx = loader.LoadAssembly (asm);
 				cache = CreateCacheDirectory (fileName);
 				if (cache != null)
 					SerializeObject (Path.Combine (cache, "completion.cache"), result);
-				
 				return result;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error loading assembly " + fileName, ex);
@@ -767,14 +820,14 @@ namespace MonoDevelop.TypeSystem
 					contexts.Add (content);
 			}
 				
-			ITypeResolveContext ctx;
+			AssemblyContext ctx;
 			if (project is DotNetProject) {
 				var netProject = (DotNetProject)project;
 				
 				// Add mscorlib reference
 				var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
 				if (!assemblyContents.TryGetValue (corLibRef.Location, out ctx))
-					assemblyContents [corLibRef.Location] = ctx = LoadAssemblyContext (corLibRef.Location);
+					ctx = assemblyContents [corLibRef.Location] = LoadAssemblyContext (corLibRef.Location);
 				if (ctx != null)
 					contexts.Add (ctx);
 				
@@ -1038,6 +1091,21 @@ namespace MonoDevelop.TypeSystem
 				return;
 			QueueParseJob (content, project, modifiedFiles);
 		}
+
+		static void CheckModifiedFile (AssemblyContext context)
+		{
+			try {
+				var writeTime = File.GetLastWriteTime (context.FileName);
+				if (writeTime != context.LastWriteTime) {
+					string cache = GetCacheDirectory (context.FileName);
+					context.Ctx = new CecilLoader ().LoadAssembly (ReadAssembly (context.FileName));
+					if (cache != null)
+						SerializeObject (Path.Combine (cache, "completion.cache"), context);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while updating assembly " + context.FileName, e);
+			}
+		}
 		
 		static void CheckModifiedFiles ()
 		{
@@ -1050,6 +1118,17 @@ namespace MonoDevelop.TypeSystem
 			while (list.Count > 0) {
 				var readydb = list.Dequeue ();
 				CheckModifiedFiles (readydb.Key, readydb.Value);
+			}
+			
+			Queue<KeyValuePair<string, AssemblyContext>> assemblyList;
+			
+			lock (rwLock) {
+				assemblyList = new Queue<KeyValuePair<string, AssemblyContext>> (assemblyContents);
+			}
+			
+			while (assemblyList.Count > 0) {
+				var readydb = assemblyList.Dequeue ();
+				CheckModifiedFile (readydb.Value);
 			}
 		}
 		
