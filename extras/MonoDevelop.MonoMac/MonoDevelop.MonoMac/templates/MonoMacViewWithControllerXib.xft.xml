@@ -92,9 +92,9 @@ namespace ${Namespace}
 		#endregion
 		
 		//strongly typed view accessor
-		public new ${Name}Controller View {
+		public new ${Name} View {
 			get {
-				return (${Name}Controller) base.View;
+				return (${Name}) base.View;
 			}
 		}
 	}
