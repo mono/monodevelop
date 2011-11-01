@@ -240,6 +240,7 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\IndexerParameterDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -247,7 +248,6 @@
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
     <None Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

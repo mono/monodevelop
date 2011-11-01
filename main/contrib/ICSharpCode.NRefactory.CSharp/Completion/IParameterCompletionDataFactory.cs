@@ -39,6 +39,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IParameterDataProvider CreateMethodDataProvider (IMethod method);
 
 		IParameterDataProvider CreateDelegateDataProvider (IType type);
+
+		IParameterDataProvider CreateIndexerParameterDataProvider (IType type, AstNode resolvedNode);
 	}
 	
 }

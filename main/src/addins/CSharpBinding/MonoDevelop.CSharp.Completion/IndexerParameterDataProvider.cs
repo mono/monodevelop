@@ -39,35 +39,32 @@ using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class NRefactoryIndexerParameterDataProvider : IParameterDataProvider
+	public class IndexerParameterDataProvider : IParameterDataProvider
 	{
-//		IType type;
-		string resolvedExpression;
+		AstNode resolvedExpression;
 		static CSharpAmbience ambience = new CSharpAmbience ();
+		CSharpCompletionTextEditorExtension ext;
 		List<IProperty> indexers;
 		
-		public NRefactoryIndexerParameterDataProvider (TextEditorData editor, IType type, string resolvedExpression)
+		public IndexerParameterDataProvider (CSharpCompletionTextEditorExtension ext, IType type, AstNode resolvedExpression)
 		{
-//			this.editor = editor;
-//			this.type = type;
+			this.ext = ext;
+		
 			this.resolvedExpression = resolvedExpression;
-			indexers = new List<IProperty> (type.Properties.Where (p => p.IsIndexer && !p.Name.Contains ('.')));
+			indexers = new List<IProperty> (type.GetProperties (ext.ctx, p => p.IsIndexer));
 		}
 
 		#region IParameterDataProvider implementation
-		public int GetCurrentParameterIndex (ICompletionWidget widget, CodeCompletionContext ctx)
-		{
-			return NRefactoryParameterDataProvider.GetCurrentParameterIndex (widget, ctx.TriggerOffset, 0);
-		}
-		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			StringBuilder result = new StringBuilder ();
 //			int curLen = 0;
-			result.Append (ambience.GetString (indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
+			result.Append (ambience.GetString (ext.ctx, indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
 			result.Append (' ');
 			result.Append ("<b>");
 			result.Append (resolvedExpression);
@@ -81,12 +78,12 @@ namespace MonoDevelop.CSharp.Completion
 				parameterCount++;
 			}
 			result.Append (']');
-			IParameter curParameter = currentParameter >= 0 && currentParameter < indexers[overload].Parameters.Count ? indexers[overload].Parameters[currentParameter] : null;
+			var curParameter = currentParameter >= 0 && currentParameter < indexers[overload].Parameters.Count ? indexers[overload].Parameters[currentParameter] : null;
 			if (curParameter != null) {
 				string docText = AmbienceService.GetDocumentation (indexers[overload]);
 				if (!string.IsNullOrEmpty (docText)) {
-					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
-					Match match = paramRegex.Match (docText);
+					var paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
+					var match = paramRegex.Match (docText);
 					if (match.Success) {
 						result.AppendLine ();
 						string text = match.Groups[1].Value;
@@ -99,24 +96,29 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
-			return result.ToString ();
-		}
-		
+			return result.ToString ();		}
+
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			return ambience.GetString (indexers[overload].Parameters[paramIndex], OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName  | OutputFlags.IncludeReturnType | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+			var indexer = indexers[overload];
+			
+			if (paramIndex < 0 || paramIndex >= indexer.Parameters.Count)
+				return "";
+			
+			return ambience.GetString (ext.ctx, indexer, indexer.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.IncludeParameterName | OutputFlags.HighlightName);
 		}
-		
+
 		public int GetParameterCount (int overload)
 		{
-			if (overload < 0 || overload >= OverloadCount)
-				return 0;
-			return indexers[overload].Parameters.Count;
+			if (overload >= OverloadCount)
+				return -1;
+			var indexer = indexers[overload];
+			return indexer != null && indexer.Parameters != null ? indexer.Parameters.Count : 0;
 		}
-		
+
 		public int OverloadCount {
 			get {
-				return indexers.Count;
+				return indexers != null ? indexers.Count : 0;
 			}
 		}
 		#endregion

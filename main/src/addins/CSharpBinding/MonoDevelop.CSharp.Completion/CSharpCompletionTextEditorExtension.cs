@@ -473,7 +473,6 @@ namespace MonoDevelop.CSharp.Completion
 			return new EventCreationCompletionData (this, varName, delegateType, evt, parameterDefinition, currentMember, currentType);
 		}
 		
-
 		ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData (int declarationBegin, ITypeDefinition type, IMember m)
 		{
 			return new NewOverrideCompletionData (this, declarationBegin, type, m);
@@ -508,6 +507,12 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new DelegateDataProvider (this, type);
 		}
+		
+		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (IType type, AstNode resolvedNode)
+		{
+			return new IndexerParameterDataProvider (this, type, resolvedNode);
+		}
+
 		#endregion
 	}
 }

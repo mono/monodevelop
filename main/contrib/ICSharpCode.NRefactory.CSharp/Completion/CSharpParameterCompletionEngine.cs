@@ -42,20 +42,45 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.document = document;
 			this.factory = factory;
 		}
+
+		public Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetIndexerBeforeCursor ()
+		{
+			CompilationUnit baseUnit;
+			if (currentMember == null && currentType == null) 
+				return null;
+			baseUnit = ParseStub ("x] = a[1");
+			
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			var mref = baseUnit.GetNodeAt (location, n => n is IndexerExpression); 
+			Print (baseUnit);
+			AstNode expr;
+			if (mref is IndexerExpression) {
+				expr = ((IndexerExpression)mref).Target;
+			} else {
+				return null;
+			}
+			
+			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			member2.Remove ();
+			member.ReplaceWith (member2);
+			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);
+			Unit.AcceptVisitor (tsvisitor, null);
+			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
+		}
 		
 		public IParameterDataProvider GetParameterDataProvider (int offset)
 		{
 			if (offset <= 0)
 				return null;
 			SetOffset (offset);
-			
 			char completionChar = document.GetCharAt (offset - 1);
 			if (completionChar != '(' && completionChar != '<' && completionChar != '[')
 				return null;
 			if (IsInsideComment () || IsInsideString ())
 				return null;
 			
-			var invoke = GetInvocationBeforeCursor (true);
+			var invoke = GetInvocationBeforeCursor (true) ?? GetIndexerBeforeCursor ();
 			if (invoke == null)
 				return null;
 			
@@ -106,16 +131,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //				if (string.IsNullOrEmpty (result.Expression))
 //					return null;
 //				return new NRefactoryTemplateParameterDataProvider (textEditorData, resolver, GetUsedNamespaces (), result, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-//			case '[': {
-//				ResolveResult resolveResult = resolver.Resolve (result, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-//				if (resolveResult != null && !resolveResult.StaticResolve) {
-//					IType type = dom.GetType (resolveResult.ResolvedType);
-//					if (type != null)
-//						return new NRefactoryIndexerParameterDataProvider (textEditorData, type, result.Expression);
-//				}
-//				return null;
-//			}
 				
+			case '[':
+				var indexerExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError)
+					return null;
+				
+				return factory.CreateIndexerParameterDataProvider (indexerExpression.Item1.Type, invoke.Item2);
 			}
 			return null;
 		}
