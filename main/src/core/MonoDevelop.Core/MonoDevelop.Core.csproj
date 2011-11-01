@@ -508,6 +508,11 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\IProjectLoadProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\WrappedProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProjectLoadProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core\SystemInformation.cs" />
+    <Compile Include="MonoDevelop.Core\MacSystemInformation.cs" />
+    <Compile Include="MonoDevelop.Core\WindowsSystemInformation.cs" />
+    <Compile Include="MonoDevelop.Core\LinuxSystemInformation.cs" />
+    <Compile Include="MonoDevelop.Core\UnixSystemInformation.cs" />
     <Compile Include="MonoDevelop.Core\ISystemInformationProvider.cs" />
   </ItemGroup>
   <ItemGroup>

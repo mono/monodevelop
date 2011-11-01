@@ -157,6 +157,10 @@
 		       description = "Graphical add-in setup utility"
 		       class = "MonoDevelop.Ide.Gui.Dialogs.SetupApp"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/SystemInformation">
+		<Class class = "MonoDevelop.Ide.IdeVersionInfo" />
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "DefaultDisplayBinding"

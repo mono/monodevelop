@@ -165,7 +165,9 @@ FILES =  \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/ISystemInformationProvider.cs \
+	MonoDevelop.Core/LinuxSystemInformation.cs \
 	MonoDevelop.Core/LoggingService.cs \
+	MonoDevelop.Core/MacSystemInformation.cs \
 	MonoDevelop.Core/Platform.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyBag.cs \
@@ -173,9 +175,12 @@ FILES =  \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
 	MonoDevelop.Core/StringParserService.cs \
+	MonoDevelop.Core/SystemInformation.cs \
+	MonoDevelop.Core/UnixSystemInformation.cs \
 	MonoDevelop.Core/UserDataMigrationService.cs \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/UserProfile.cs \
+	MonoDevelop.Core/WindowsSystemInformation.cs \
 	MonoDevelop.Core/XmlReadHelper.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs \

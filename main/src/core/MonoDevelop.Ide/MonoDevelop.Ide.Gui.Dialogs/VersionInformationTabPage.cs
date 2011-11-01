@@ -49,107 +49,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	
 	internal class VersionInformationTabPage: VBox
 	{
-		//FIXME: move this somewhere it can be accessed by the error reporting code
-		static string GetVersionInformation ()
-		{
-			var sb = new StringBuilder ();
-			
-			string mdversion = BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel
-				? BuildVariables.PackageVersionLabel
-				: string.Format ("{0} ({1})", BuildVariables.PackageVersionLabel, BuildVariables.PackageVersion);
-			sb.Append ("MonoDevelop ");
-			sb.AppendLine (mdversion);
-			
-			sb.AppendFormat ("Installation UUID: {0}", PropertyService.Get<string> ("MonoDevelop.Core.InstallUuid", Guid.NewGuid ().ToString ()));
-			sb.AppendLine ();
-			
-			var biFile = ((FilePath)typeof(VersionInformationTabPage).Assembly.Location).ParentDirectory.Combine ("buildinfo");
-			if (File.Exists (biFile)) {
-				sb.AppendLine ("Build information:");
-				foreach (var line in File.ReadAllLines (biFile)) {
-					if (!string.IsNullOrWhiteSpace (line)) {
-						sb.Append ("\t");
-						sb.AppendLine (line.Trim ());
-					}
-				}
-			}
-			
-			sb.AppendLine ("Operating System:");
-			if (Platform.IsMac) {
-				sb.AppendFormat ("\tMac OS X {0}.{1}.{2}", Gestalt ("sys1"), Gestalt ("sys2"), Gestalt ("sys3"));
-			} else if (Platform.IsWindows) {
-				sb.Append ("\tWindows ");
-				sb.Append (Environment.OSVersion.Version.ToString ());
-				if (IntPtr.Size == 8 || Environment.GetEnvironmentVariable ("PROCESSOR_ARCHITEW6432") != null)
-					sb.Append (" (64-bit)");
-			} else {
-				sb.Append ("\tLinux ");
-			}
-			sb.AppendLine ();
-			
-			if (!Platform.IsWindows) {
-				var psi = new System.Diagnostics.ProcessStartInfo ("uname", "-a") {
-					RedirectStandardOutput = true,
-					UseShellExecute = false,
-				};
-				var process = System.Diagnostics.Process.Start (psi);
-				process.WaitForExit (500);
-				if (process.HasExited && process.ExitCode == 0)
-					sb.Append ("\t");
-					sb.AppendLine (process.StandardOutput.ReadLine ());
-			}
-			
-			sb.AppendLine ("Runtime:");
-			if (IsMono ()) {
-				sb.Append ("\tMono " + GetMonoVersionNumber ());
-			} else {
-				sb.Append ("\tMicrosoft .NET " + Environment.Version);
-			}
-			
-			if (IntPtr.Size == 8)
-				sb.Append (" (64-bit)");
-			sb.AppendLine ();
-				
-			sb.Append ("\tGTK " + GetGtkVersion ());
-			sb.AppendLine (" (GTK# " + typeof(VBox).Assembly.GetName ().Version + ")");
-			
-			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
-				try {
-					sb.AppendLine (info.Description);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error getting about information: ", ex);
-				}
-			}
-			
-			sb.AppendLine ("Loaded assemblies:");
-			
-			int nameLength = 0;
-			int versionLength = 0;
-			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
-				try {
-					if (assembly.IsDynamic)
-						continue;
-					var assemblyName = assembly.GetName ();
-					nameLength = Math.Max (nameLength, assemblyName.Name.Length);
-					versionLength = Math.Max (versionLength, assemblyName.Version.ToString ().Length);
-				} catch {
-				}
-			}
-			nameLength++;
-			versionLength++;
-			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
-				try {
-					if (assembly.IsDynamic)
-						continue;
-					var assemblyName = assembly.GetName ();
-					sb.AppendLine (assemblyName.Name.PadRight (nameLength) + assemblyName.Version.ToString ().PadRight (versionLength) + System.IO.Path.GetFullPath (assembly.Location));
-				} catch {
-				}
-			}
-			
-			return sb.ToString ();
-		}
-		
 		static bool IsMono ()
 		{
 			return Type.GetType ("Mono.Runtime") != null;
@@ -189,27 +88,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return "unknown";
 			return v1 +"." + v2 + "."+ v3;
 		}
-		
-		[System.Runtime.InteropServices.DllImport ("/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon")]
-		static extern int Gestalt (int selector, out int result);
-		
-		//TODO: there are other gestalt selectors that return info we might want to display
-		//mac API for obtaining info about the system
-		static int Gestalt (string selector)
-		{
-			System.Diagnostics.Debug.Assert (selector != null && selector.Length == 4);
-			int cc = selector[3] | (selector[2] << 8) | (selector[1] << 16) | (selector[0] << 24);
-			int result;
-			int ret = Gestalt (cc, out result);
-			if (ret != 0)
-				throw new Exception (string.Format ("Error reading gestalt for selector '{0}': {1}", selector, ret));
-			return result;
-		}
-		
+
 		public VersionInformationTabPage ()
 		{
 			var buf = new TextBuffer (null);
-			buf.Text = GetVersionInformation ();
+			buf.Text = SystemInformation.Instance.ToString ();
 			
 			var sw = new ScrolledWindow () {
 				BorderWidth = 6,
