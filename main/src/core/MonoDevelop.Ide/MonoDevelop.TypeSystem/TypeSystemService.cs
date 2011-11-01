@@ -398,11 +398,59 @@ namespace MonoDevelop.TypeSystem
 						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
 						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
 					}
+					project.FileChangedInProject   += OnFileChanged;
+					project.FileAddedToProject     += OnFileAdded;
+					project.FileRemovedFromProject += OnFileRemoved;
+					project.FileRenamedInProject   += OnFileRenamed;
+					project.Modified               += OnProjectModified;
+					
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
 				}
 			}
 		}
+		#region Project modification handlers
+		static void OnFileChanged (object sender, ProjectFileEventArgs args)
+		{
+			var project = (Project)sender;
+			foreach (ProjectFileEventInfo fargs in args) {
+				QueueParseJob (projectContents [project], project, new [] { fargs.ProjectFile });
+			}
+		}
+		
+		static void OnFileAdded (object sender, ProjectFileEventArgs args)
+		{
+			var project = (Project)sender;
+			foreach (ProjectFileEventInfo fargs in args) {
+				QueueParseJob (projectContents [project], project, new [] { fargs.ProjectFile });
+			}
+		}
+
+		static void OnFileRemoved (object sender, ProjectFileEventArgs args)
+		{
+			var project = (Project)sender;
+			foreach (ProjectFileEventInfo fargs in args) {
+				projectContents [project].UpdateProjectContent (projectContents [project].GetFile (fargs.ProjectFile.Name), null);
+			}
+		}
+
+		static void OnFileRenamed (object sender, ProjectFileRenamedEventArgs args)
+		{
+			var project = (Project)sender;
+			foreach (ProjectFileRenamedEventInfo fargs in args) {
+				projectContents [project].UpdateProjectContent (projectContents [project].GetFile (fargs.OldName), null);
+				QueueParseJob (projectContents [project], project, new [] { fargs.ProjectFile });
+			}
+		}
+		
+		static void OnProjectModified (object sender, SolutionItemModifiedEventArgs args)
+		{
+			if (!args.Any (x => x is SolutionItemModifiedEventInfo && ((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework"))
+				return;
+			var project = (Project)sender;
+			cachedProjectContents.Remove (project);
+		}
+		#endregion
 		
 		public static event EventHandler<ProjectContentEventArgs> ProjectContentLoaded;
 		static void OnProjectContentLoaded (ProjectContentEventArgs e)
@@ -441,6 +489,11 @@ namespace MonoDevelop.TypeSystem
 					((DotNetProject)project).ReferenceAddedToProject -= OnProjectReferenceAdded;
 					((DotNetProject)project).ReferenceRemovedFromProject -= OnProjectReferenceRemoved;
 				}
+				project.FileChangedInProject   -= OnFileChanged;
+				project.FileAddedToProject     -= OnFileAdded;
+				project.FileRemovedFromProject -= OnFileRemoved;
+				project.FileRenamedInProject   -= OnFileRenamed;
+				project.Modified               -= OnProjectModified;
 				
 				projectContents.Remove (project);
 				referenceCounter.Remove (project);
@@ -974,6 +1027,13 @@ namespace MonoDevelop.TypeSystem
 					modifiedFiles = new List<ProjectFile> ();
 				modifiedFiles.Add (file);
 			}
+			
+			// check if file needs to be removed from project content 
+			foreach (var file in content.Files) {
+				if (project.GetProjectFile (file.FileName) == null)
+					content.UpdateProjectContent (file, null);
+			}
+			
 			if (modifiedFiles == null)
 				return;
 			QueueParseJob (content, project, modifiedFiles);
