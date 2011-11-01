@@ -413,8 +413,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var contextList = new CompletionDataWrapper (this);
 				
 				var identifierStart = GetExpressionAtCursor ();
-				if (!(char.IsLetter (completionChar) || completionChar == '_') && (identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression)))
+				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
+				}
+				
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
@@ -431,7 +433,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					}
 				}
-				
 				if (identifierStart == null)
 					return HandleAccessorContext () ?? DefaultControlSpaceItems ();
 				
@@ -1596,8 +1597,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			baseUnit = ParseStub ("a()");
 			
+			// Hack for handle object initializer continuation expressions
+			if (baseUnit.GetNodeAt (location) is AttributedNode) {
+				baseUnit = ParseStub ("a()};");
+			}
+			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
+			
 			if (mref == null){
 				var invoke = baseUnit.GetNodeAt<InvocationExpression> (location); 
 				if (invoke != null)
