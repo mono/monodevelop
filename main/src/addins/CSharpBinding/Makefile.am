@@ -50,6 +50,7 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/MethodParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs \
 	MonoDevelop.CSharp.Completion/VariableCompletionData.cs \
+	MonoDevelop.CSharp.Completion/IndexerParameterDataProvider.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionWrappers.cs \
