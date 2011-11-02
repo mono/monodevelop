@@ -7751,7 +7751,7 @@ void case_768()
 		ExpressionStatement s = yyVals[0+yyTop] as ExpressionStatement;
 		if (s == null) {
 			Expression.Error_InvalidExpressionStatement (report, GetLocation (yyVals[0+yyTop]));
-			yyVal = new StatementExpression (new InvalidExpressionStatement (yyVals[0+yyTop] as Expression));
+			yyVal = new InvalidExpressionStatement (yyVals[0+yyTop] as Expression);
 		} else {
 			yyVal = new StatementExpression (s);
 		}

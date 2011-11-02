@@ -295,7 +295,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
-			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				var parser = new CSharpParser ();
 				return parser.Parse (stream, wrapInClass ? memberLocation.Line - 2 : 0);

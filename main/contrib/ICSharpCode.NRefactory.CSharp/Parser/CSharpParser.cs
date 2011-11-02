@@ -1463,8 +1463,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (statementExpression.Expression == null)
 					return result;
 				object expr = statementExpression.Expression.Accept (this);
-				if (expr != null)
+				if (expr != null) {
 					result.AddChild ((Expression)expr, ExpressionStatement.Roles.Expression);
+				}
 				var location = LocationsBag.GetLocations (statementExpression);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ExpressionStatement.Roles.Semicolon);

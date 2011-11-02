@@ -6288,7 +6288,7 @@ namespace Mono.CSharp {
 		}
 	}
 	
-	public class InvalidExpressionStatement : ExpressionStatement
+	public class InvalidExpressionStatement : Statement
 	{
 		public Expression Expression {
 			get;
@@ -6300,22 +6300,22 @@ namespace Mono.CSharp {
 			this.Expression = expr;
 		}
 		
-		public override void EmitStatement (EmitContext ec)
-		{
-			// nothing
-		}
-		
 		public override void Emit (EmitContext ec)
 		{
 			// nothing
 		}
 		
-		public override Mono.CSharp.Expression CreateExpressionTree (ResolveContext ec)
+		protected override void DoEmit (EmitContext ec)
 		{
-			return null;
+			// nothing
 		}
 		
-		protected override Mono.CSharp.Expression DoResolve (ResolveContext rc)
+		protected override void CloneTo (CloneContext clonectx, Statement target)
+		{
+			// nothing
+		}
+		
+		public override Mono.CSharp.Expression CreateExpressionTree (ResolveContext ec)
 		{
 			return null;
 		}

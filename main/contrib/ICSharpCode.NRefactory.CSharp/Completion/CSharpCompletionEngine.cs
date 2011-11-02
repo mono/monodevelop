@@ -1662,7 +1662,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 			var baseUnit = ParseStub ("");
 			var tmpUnit = baseUnit;
-			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1); 
+			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1);
 			if (expr == null)
 				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
 			
