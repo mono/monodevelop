@@ -237,8 +237,11 @@ namespace MonoDevelop.DocFood
 						break;
 					case "modifier":
 						if (member is IMember) {
-							var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
-							result |=  ((IMember)member).Accessibility == mod;
+							try {
+								var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
+								result |=  ((IMember)member).Accessibility == mod;
+							} catch (Exception) {
+							}
 						}
 						break;
 					case "paramCount":
