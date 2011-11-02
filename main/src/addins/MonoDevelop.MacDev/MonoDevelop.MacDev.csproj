@@ -59,6 +59,7 @@
     <Folder Include="XcodeSyncing\" />
     <Folder Include="XcodeIntegration\" />
     <Folder Include="MonoDevelop.MacDev.PlistEditor\" />
+    <Folder Include="BindingProject\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -141,6 +142,8 @@
       <DependentUpon>CSharpCodeTypeDefinition.tt</DependentUpon>
     </Compile>
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PlistDiffHandler.cs" />
+    <Compile Include="BindingProject\ObjcBindingProject.cs" />
+    <Compile Include="BindingProject\ObjcBindingProjectConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
