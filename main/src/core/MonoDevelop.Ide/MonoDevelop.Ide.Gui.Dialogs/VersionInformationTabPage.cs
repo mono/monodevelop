@@ -39,7 +39,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	//FIXME: rename ISystemInformationProvider, move to core, return structured JSON info
+	[ObsoleteAttribute ("Use ISystemInformationProvider")]
 	public interface IAboutInformation
 	{
 		string Description {
@@ -59,6 +59,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				: string.Format ("{0} ({1})", BuildVariables.PackageVersionLabel, BuildVariables.PackageVersion);
 			sb.Append ("MonoDevelop ");
 			sb.AppendLine (mdversion);
+			
+			sb.AppendFormat ("Installation UUID: {0}", PropertyService.Get<string> ("MonoDevelop.Core.InstallUuid", Guid.NewGuid ().ToString ()));
+			sb.AppendLine ();
 			
 			var biFile = ((FilePath)typeof(VersionInformationTabPage).Assembly.Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
@@ -110,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			sb.Append ("\tGTK " + GetGtkVersion ());
 			sb.AppendLine (" (GTK# " + typeof(VBox).Assembly.GetName ().Version + ")");
 			
-			foreach (IAboutInformation info in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/AboutInformation", false)) {
+			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
 				try {
 					sb.AppendLine (info.Description);
 				} catch (Exception ex) {
@@ -139,19 +142,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					if (assembly.IsDynamic)
 						continue;
 					var assemblyName = assembly.GetName ();
-					sb.AppendLine (ForceLength (assemblyName.Name, nameLength) + ForceLength (assemblyName.Version.ToString (), versionLength) + System.IO.Path.GetFullPath (assembly.Location));
+					sb.AppendLine (assemblyName.Name.PadRight (nameLength) + assemblyName.Version.ToString ().PadRight (versionLength) + System.IO.Path.GetFullPath (assembly.Location));
 				} catch {
 				}
 			}
 			
 			return sb.ToString ();
-		}
-		
-		static string ForceLength (string str, int length)
-		{
-			if (str.Length < length)
-				return str + new string (' ', length - str.Length);
-			return str;
 		}
 		
 		static bool IsMono ()

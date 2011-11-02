@@ -191,5 +191,70 @@ namespace Mono.TextEditor
 		{
 			glibObjectSetProp.Invoke (obj, new object[] { name, value });
 		}
+		
+		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
+		
+		enum DwmWindowAttribute
+		{
+			NcRenderingEnabled = 1,
+			NcRenderingPolicy,
+			TransitionsForceDisabled,
+			AllowNcPaint,
+			CaptionButtonBounds,
+			NonClientRtlLayout,
+			ForceIconicRepresentation,
+			Flip3DPolicy,
+			ExtendedFrameBounds,
+			HasIconicBitmap,
+			DisallowPeek,
+			ExcludedFromPeek,
+			Last,
+		}
+		
+		struct Win32Rect
+		{
+			public int Left, Top, Right, Bottom;
+			
+			public Win32Rect (int left, int top, int right, int bottom)
+			{
+				this.Left = left;
+				this.Top = top;
+				this.Right = right;
+				this.Bottom = bottom;
+			}
+		}
+		
+		static int win32RectMarshalSize = Marshal.SizeOf (typeof (Win32Rect));
+		
+		[DllImport ("dwmapi.dll")]
+		static extern int DwmGetWindowAttribute (IntPtr hwnd, DwmWindowAttribute attribute, out Win32Rect value, int valueSize);
+		
+		[DllImport ("dwmapi.dll")]
+		static extern int DwmIsCompositionEnabled (out bool enabled);
+		
+		[DllImport ("User32.dll")]
+		static extern bool GetWindowRect (IntPtr hwnd, out Win32Rect rect);
+		
+		public static void SetImCursorLocation (Gtk.IMContext ctx, Gdk.Window clientWindow, Gdk.Rectangle cursor)
+		{
+			// work around GTK+ Bug 663096 - Windows IME position is wrong when Aero glass is enabled
+			// https://bugzilla.gnome.org/show_bug.cgi?id=663096
+			if (Platform.IsWindows && System.Environment.OSVersion.Version.Major >= 6) {
+				bool enabled;
+				if (DwmIsCompositionEnabled (out enabled) == 0 && enabled) {
+					var hwnd = gdk_win32_drawable_get_handle (clientWindow.Toplevel.Handle);
+					Win32Rect rect;
+					// this module gets the WINVER=6 version of GetWindowRect, which returns the correct value
+					if (GetWindowRect (hwnd, out rect)) {
+						int x, y;
+						clientWindow.Toplevel.GetPosition (out x, out y);
+						cursor.X = cursor.X - x + rect.Left;
+						cursor.Y = cursor.Y - y + rect.Top - cursor.Height;
+					}
+				}
+			}
+			ctx.CursorLocation = cursor;
+		}
 	}
 }

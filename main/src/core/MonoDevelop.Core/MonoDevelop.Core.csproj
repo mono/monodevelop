@@ -390,6 +390,7 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\IProjectLoadProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\WrappedProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ConsoleProjectLoadProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core\ISystemInformationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

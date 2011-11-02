@@ -146,6 +146,63 @@ namespace MonoDevelop.CSharp.Completion
 				
 				
 				switch (completionChar) {
+<<<<<<< HEAD
+=======
+				case ':':
+				case '.':
+					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+						return null;
+					result = FindExpression (dom, completionContext);
+					if (result == null || result.Expression == null)
+						return null;
+					int idx = result.Expression.LastIndexOf ('.');
+					if (idx > 0)
+						result.Expression = result.Expression.Substring (0, idx);
+					// don't parse expressions that end with more than 1 dot - see #646820
+					if (result.Expression.EndsWith ("."))
+						return null;
+					NRefactoryResolver resolver = CreateResolver ();
+					ResolveResult resolveResult = resolver.Resolve (result, location);
+					if (resolver.ResolvedExpression is ICSharpCode.OldNRefactory.Ast.PrimitiveExpression) {
+						ICSharpCode.OldNRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.OldNRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
+						if (!tryToForceCompletion && !(pex.Value is string || pex.Value is char || pex.Value is bool))
+							return null;
+					} 
+					return CreateCompletionData (location, resolveResult, result, resolver);
+				case '#':
+					if (stateTracker.Engine.IsInsidePreprocessorDirective) 
+						return GetDirectiveCompletionData ();
+					return null;
+				case '>':
+					cursor = textEditorData.IsSomethingSelected ? textEditorData.SelectionRange.Offset : textEditorData.Caret.Offset;
+				
+					if (stateTracker.Engine.IsInsideDocLineComment) {
+						string lineText = textEditorData.GetLineText (completionContext.TriggerLine);
+						int startIndex = Math.Min (completionContext.TriggerLineOffset - 1, lineText.Length - 1);
+					
+						while (startIndex >= 0 && lineText [startIndex] != '<') {
+							--startIndex;
+							if (lineText [startIndex] == '/') { // already closed.
+								startIndex = -1;
+								break;
+							}
+						}
+					
+						if (startIndex >= 0) {
+							int endIndex = startIndex;
+							while (endIndex <= completionContext.TriggerLineOffset && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText [endIndex])) {
+								endIndex++;
+							}
+							string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 2) : null;
+							if (!String.IsNullOrEmpty (tag) && commentTags.IndexOf (tag) >= 0) {
+								textEditorData.Insert (cursor, "</" + tag + ">");
+								textEditorData.Caret.Offset = cursor; 
+								return null;
+							}
+						}
+					}
+					return null;
+>>>>>>> master
 /* Disabled because it gives problems when declaring arrays - for example string [] should not pop up code completion.
  			case '[':
 				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
@@ -288,7 +345,7 @@ namespace MonoDevelop.CSharp.Completion
 						continue;
 					if (expressionResult.ExpressionContext == ExpressionContext.NamespaceNameExcepted && !(obj is Namespace))
 						continue;
-					if (showOnlyTypes && !(obj is IType))
+					if (showOnlyTypes && !(obj is IType) && !(obj is Namespace))
 						continue;
 					CompletionData data = col.Add (obj);
 					if (data != null && expressionResult.ExpressionContext == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {

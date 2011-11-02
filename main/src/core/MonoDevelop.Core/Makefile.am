@@ -165,6 +165,7 @@ FILES =  \
 	MonoDevelop.Core/IconId.cs \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
+	MonoDevelop.Core/ISystemInformationProvider.cs \
 	MonoDevelop.Core/LoggingService.cs \
 	MonoDevelop.Core/Platform.cs \
 	MonoDevelop.Core/Properties.cs \

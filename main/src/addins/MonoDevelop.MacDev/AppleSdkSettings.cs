@@ -141,7 +141,7 @@ namespace MonoDevelop.MacDev
 		public static event Action Changed;
 	}
 	
-	class AppleSdkAboutInformation : MonoDevelop.Ide.Gui.Dialogs.IAboutInformation
+	class AppleSdkAboutInformation : ISystemInformationProvider
 	{
 		public string Description {
 			get {

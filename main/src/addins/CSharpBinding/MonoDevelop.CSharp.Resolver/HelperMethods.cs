@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp
 			using (var stream = new  StreamReader (data.OpenStream ())) {
 				var result = parser.ParseStatements (stream);
 				if (!parser.HasErrors)
-					return result.First ();
+					return result.FirstOrDefault ();
 			}
 			parser.ErrorPrinter.Reset ();
 			using (var stream = data.OpenStream ()) {

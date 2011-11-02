@@ -103,6 +103,8 @@ namespace MonoDevelop.SourceEditor
 				cr.Stroke ();
 				int errorCounterWidth = 0;
 				
+				marker.EnsureLayoutCreated (base.Editor);
+				
 				if (marker.Errors.Count > 1) {
 					double rY = y + Editor.LineHeight / 6;
 					int ew, eh;
@@ -127,7 +129,6 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				cr.Color = new Cairo.Color (0, 0, 0);
-				marker.EnsureLayoutCreated (base.Editor);
 				
 				int layoutWidth, layoutHeight;
 				marker.Layouts [0].Layout.GetPixelSize (out layoutWidth, out layoutHeight);

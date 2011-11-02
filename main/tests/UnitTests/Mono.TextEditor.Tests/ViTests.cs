@@ -136,6 +136,7 @@ qrstu",
    ccc ccc", mode.Text);
 		}
 		
+		[Ignore("FixMe")]
 		[Test]
 		public void LineDeletePaste ()
 		{

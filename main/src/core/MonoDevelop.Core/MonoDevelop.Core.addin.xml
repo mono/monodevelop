@@ -6,7 +6,7 @@
        description = "Provides the core services of the MonoDevelop platform"
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "2.8.1"
+       version     = "2.8.2"
        compatVersion = "2.7">
        
 	<ConditionType id="PackageInstalled" type="MonoDevelop.Core.AddIns.PackageInstalledCondition" />
@@ -46,6 +46,10 @@
 	<ExtensionPoint path = "/MonoDevelop/Core/Runtimes">
 		<Description>Runtime factories.</Description>
 		<ExtensionNode name="Class" objectType="MonoDevelop.Core.AddIns.ITargetRuntimeFactory"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/SystemInformation" name = "Adddional system information">
+		<ExtensionNode name = "Class" objectType = "MonoDevelop.Core.ISystemInformationProvider" />
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/Frameworks">

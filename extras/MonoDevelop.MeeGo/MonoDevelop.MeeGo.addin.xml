@@ -6,19 +6,19 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing and deploying MeeGo applications using Mono."
        category    = "Mobile Development"
-       version     = "2.8.1">
+       version     = "2.8.2">
 	
 	<Runtime>
 		<Import file = "Templates/MeeGoGtkProject.xpt.xml"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.8.1"/>
-		<Addin id="Ide" version="2.8.1"/>
-		<Addin id="Debugger" version="2.8.1"/>
-		<Addin id="Debugger.Soft" version="2.8.1"/>
-		<Addin id="GtkCore" version="2.8.1"/>
-		<Addin id="CSharpBinding" version="2.8.1"/>
+		<Addin id="Core" version="2.8.2"/>
+		<Addin id="Ide" version="2.8.2"/>
+		<Addin id="Debugger" version="2.8.2"/>
+		<Addin id="Debugger.Soft" version="2.8.2"/>
+		<Addin id="GtkCore" version="2.8.2"/>
+		<Addin id="CSharpBinding" version="2.8.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

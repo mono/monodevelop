@@ -386,7 +386,8 @@ namespace Mono.TextEditor
 		internal int preeditOffset, preeditLine, preeditCursorCharIndex;
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
-
+		internal bool preeditHeightChange;
+		
 		internal bool ContainsPreedit (int line, int length)
 		{
 			if (string.IsNullOrEmpty (preeditString))
@@ -408,15 +409,24 @@ namespace Mono.TextEditor
 					preeditLayout.Attributes = preeditAttrs;
 					int w, h;
 					preeditLayout.GetSize (out w, out h);
-					if (LineHeight != System.Math.Ceiling (h / Pango.Scale.PangoScale))
-						OptionsChanged (this, EventArgs.Empty);
+					var calcHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
+					if (LineHeight != calcHeight) {
+						int line = OffsetToLineNumber (preeditOffset);
+						textEditorData.heightTree.SetLineHeight (preeditLine, calcHeight);
+						preeditHeightChange = true;
+						QueueDraw ();
+					}
 				}
-				
 			} else {
 				preeditOffset = -1;
 				preeditString = null;
 				preeditAttrs = null;
 				preeditCursorCharIndex = 0;
+				if (preeditHeightChange) {
+					preeditHeightChange = false;
+					textEditorData.heightTree.Rebuild ();
+					QueueDraw ();
+				}
 			}
 			this.textViewMargin.ForceInvalidateLine (preeditLine);
 			this.textEditorData.Document.CommitLineUpdate (preeditLine);
@@ -1037,39 +1047,39 @@ namespace Mono.TextEditor
 				
 		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
 		{
-			textEditorData.Document.BeginAtomicUndo ();
-			int dragOffset = Document.LocationToOffset (dragCaretPos);
-			if (context.Action == DragAction.Move) {
-				if (CanEdit (Caret.Line) && selection != null) {
-					ISegment selectionRange = selection.GetSelectionRange (textEditorData);
-					if (selectionRange.Offset < dragOffset)
-						dragOffset -= selectionRange.Length;
-					Caret.PreserveSelection = true;
-					textEditorData.DeleteSelection (selection);
-					Caret.PreserveSelection = false;
-
-					selection = null;
-				}
-			}
-			if (selection_data.Length > 0 && selection_data.Format == 8) {
-				Caret.Offset = dragOffset;
-				if (CanEdit (dragCaretPos.Line)) {
-					int offset = Caret.Offset;
-					if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset) {
-						var start = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length);
-						var end = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length);
-						selection = new Selection (start, end);
+			using (var undo = OpenUndoGroup ()) {
+				int dragOffset = Document.LocationToOffset (dragCaretPos);
+				if (context.Action == DragAction.Move) {
+					if (CanEdit (Caret.Line) && selection != null) {
+						ISegment selectionRange = selection.GetSelectionRange (textEditorData);
+						if (selectionRange.Offset < dragOffset)
+							dragOffset -= selectionRange.Length;
+						Caret.PreserveSelection = true;
+						textEditorData.DeleteSelection (selection);
+						Caret.PreserveSelection = false;
+	
+						selection = null;
 					}
-					textEditorData.Insert (offset, selection_data.Text);
-					Caret.Offset = offset + selection_data.Text.Length;
-					MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
-					textEditorData.PasteText (offset, selection_data.Text);
 				}
-				dragOver = false;
-				context = null;
+				if (selection_data.Length > 0 && selection_data.Format == 8) {
+					Caret.Offset = dragOffset;
+					if (CanEdit (dragCaretPos.Line)) {
+						int offset = Caret.Offset;
+						if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset) {
+							var start = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length);
+							var end = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length);
+							selection = new Selection (start, end);
+						}
+						textEditorData.Insert (offset, selection_data.Text);
+						Caret.Offset = offset + selection_data.Text.Length;
+						MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
+						textEditorData.PasteText (offset, selection_data.Text);
+					}
+					dragOver = false;
+					context = null;
+				}
+				mouseButtonPressed = 0;
 			}
-			mouseButtonPressed = 0;
-			textEditorData.Document.EndAtomicUndo ();
 			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
 		
