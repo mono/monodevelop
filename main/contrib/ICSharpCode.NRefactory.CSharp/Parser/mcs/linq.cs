@@ -352,6 +352,12 @@ namespace Mono.CSharp.Linq
 			}
 		}
 
+		public bool IsParameter {
+			get {
+				return false;
+			}
+		}
+
 		public Location Location { get; private set; }
 
 		public string Name { get; private set; }

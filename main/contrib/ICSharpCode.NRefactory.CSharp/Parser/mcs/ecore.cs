@@ -529,12 +529,12 @@ namespace Mono.CSharp {
 
 			//
 			// Store the result to temporary field when we
-			// cannot load this directly
+			// cannot load `this' directly
 			//
 			var field = ec.GetTemporaryField (type);
 			if (needs_temporary) {
 				//
-				// Create temporary local (we cannot load this before Emit)
+				// Create temporary local (we cannot load `this' before Emit)
 				//
 				var temp = ec.GetTemporaryLocal (type);
 				ec.Emit (OpCodes.Stloc, temp);
@@ -841,7 +841,7 @@ namespace Mono.CSharp {
 			      name, was, expected);
 		}
 
-		public void Error_UnexpectedKind (ResolveContext ec, ResolveFlags flags, Location loc)
+		public virtual void Error_UnexpectedKind (ResolveContext ec, ResolveFlags flags, Location loc)
 		{
 			string [] valid = new string [4];
 			int count = 0;
@@ -3692,7 +3692,7 @@ namespace Mono.CSharp {
 				//
 				if (p.IsGenericTask || q.IsGenericTask) {
 					var async_am = a.Expr as AnonymousMethodExpression;
-					if (async_am != null && async_am.IsAsync) {
+					if (async_am != null && async_am.Block.IsAsync) {
 
 						if (p.IsGenericTask != q.IsGenericTask) {
 							return 0;
@@ -5358,10 +5358,7 @@ namespace Mono.CSharp {
 		
 		public void Emit (EmitContext ec, bool leave_copy)
 		{
-			bool is_volatile = false;
-
-			if ((spec.Modifiers & Modifiers.VOLATILE) != 0)
-				is_volatile = true;
+			bool is_volatile = (spec.Modifiers & Modifiers.VOLATILE) != 0;
 
 			spec.MemberDefinition.SetIsUsed ();
 			
@@ -6288,6 +6285,44 @@ namespace Mono.CSharp {
 				base.Error_TypeOrNamespaceNotFound (ec);
 			else
 				ec.Module.Compiler.Report.Error (825, loc, "The contextual keyword `var' may only appear within a local variable declaration");
+		}
+	}
+	
+	public class InvalidExpressionStatement : ExpressionStatement
+	{
+		public Expression Expression {
+			get;
+			private set;
+		}
+		
+		public InvalidExpressionStatement (Expression expr)
+		{
+			this.Expression = expr;
+		}
+		
+		public override void EmitStatement (EmitContext ec)
+		{
+			// nothing
+		}
+		
+		public override void Emit (EmitContext ec)
+		{
+			// nothing
+		}
+		
+		public override Mono.CSharp.Expression CreateExpressionTree (ResolveContext ec)
+		{
+			return null;
+		}
+		
+		protected override Mono.CSharp.Expression DoResolve (ResolveContext rc)
+		{
+			return null;
+		}
+		
+		public override object Accept (Mono.CSharp.StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 }	
