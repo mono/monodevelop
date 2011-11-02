@@ -77,6 +77,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var scope = pf.GetUsingScope (new TextLocation (data.Editor.Caret.Line, data.Editor.Caret.Column));
 			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				sb.Append ("namespace Stub {");
+				sb.Append (data.Editor.EolMarker);
 				closingBrackets++;
 				while (scope.Parent != null && scope.Parent.Region == scope.Region)
 					scope = scope.Parent;
@@ -86,19 +87,21 @@ namespace MonoDevelop.CSharp.Formatting
 			var parent = member.DeclaringTypeDefinition;
 			while (parent != null) {
 				sb.Append ("class " + parent.Name +" {");
+				sb.Append (data.Editor.EolMarker);
 				closingBrackets++;
 				parent = parent.DeclaringTypeDefinition;
 			}
-			
-			sb.AppendLine ();
-			int startOffset = sb.Length;
+
 			int memberStart = data.Editor.LocationToOffset (member.Region.BeginLine, 1);
 			int memberEnd = data.Editor.LocationToOffset (member.Region.EndLine + (runAferCR ? 1 : 0), member.Region.EndColumn);
 			if (memberEnd < 0)
 				memberEnd = data.Editor.Length;
+			
+			int startOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (memberStart, memberEnd));
+			
 			int endOffset = sb.Length;
-			sb.AppendLine ();
+			sb.Append (data.Editor.EolMarker);
 			sb.Append (new string ('}', closingBrackets));
 			
 			var stubData = new TextEditorData () { Text = sb.ToString () };
@@ -124,7 +127,8 @@ namespace MonoDevelop.CSharp.Formatting
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
 			
-			int delta = data.Editor.LocationToOffset (member.Region.BeginLine, 1) - startOffset;
+			int delta = memberStart - startOffset;
+			
 			HashSet<int> lines = new HashSet<int> ();
 			foreach (TextReplaceAction change in changes) {
 				change.Offset += delta;
