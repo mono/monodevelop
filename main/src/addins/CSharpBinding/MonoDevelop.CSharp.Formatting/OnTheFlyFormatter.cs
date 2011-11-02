@@ -81,25 +81,29 @@ namespace MonoDevelop.CSharp.Formatting
 					continue;
 				validRegion = u.ValidRegion;
 				sb.Append ("namespace Stub {");
+				sb.Append (data.Editor.EolMarker);
 				closingBrackets++;
 			}
 			
 			var parent = member.DeclaringType;
 			while (parent != null) {
 				sb.Append ("class Stub {");
+				sb.Append (data.Editor.EolMarker);
 				closingBrackets++;
 				parent = parent.DeclaringType;
 			}
-			sb.AppendLine ();
-			int startOffset = sb.Length;
 			int memberStart = data.Editor.LocationToOffset (member.Location.Line, 1);
 			int memberEnd = data.Editor.LocationToOffset (member.BodyRegion.End.Line + (runAferCR ? 1 : 0), member.BodyRegion.End.Column);
 			if (memberEnd < 0)
 				memberEnd = data.Editor.Length;
+			
+			int startOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (memberStart, memberEnd));
+			
 			int endOffset = sb.Length;
-			sb.AppendLine ();
+			sb.Append (data.Editor.EolMarker);
 			sb.Append (new string ('}', closingBrackets));
+			
 			TextEditorData stubData = new TextEditorData () { Text = sb.ToString () };
 			stubData.Document.FileName = data.FileName;
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
@@ -116,8 +120,8 @@ namespace MonoDevelop.CSharp.Formatting
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
 			
-			int delta = data.Editor.LocationToOffset (member.Location.Line, 1) - startOffset;
-			HashSet<int > lines = new HashSet<int> ();
+			int delta = memberStart - startOffset;
+			HashSet<int> lines = new HashSet<int> ();
 			foreach (TextReplaceAction change in changes) {
 				change.Offset += delta;
 				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
