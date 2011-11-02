@@ -53,6 +53,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		const ushort FlagVirtual   = 0x0010;
 		const ushort FlagOverride  = 0x0020;
 		const ushort FlagStatic    = 0x0040;
+		const ushort FlagPartial   = 0x0080;
+		
 		// Flags of form 0xY000 are reserved for use in derived classes (DefaultMethod etc.)
 		
 		protected override void FreezeInternal()
@@ -143,6 +145,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				flags[FlagOverride] = value;
 			}
 		}
+		
+		public bool IsPartial {
+			get { return flags[FlagPartial]; }
+			set {
+				CheckBeforeMutation();
+				flags[FlagPartial] = value;
+			}
+		}
+		
 		
 		public bool IsOverridable {
 			get {

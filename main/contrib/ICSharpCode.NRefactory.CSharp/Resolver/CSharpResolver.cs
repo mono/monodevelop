@@ -483,6 +483,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return false; }
 			}
 			
+			bool IMember.IsPartial {
+				get { return false; }
+			}
+			
 			EntityType IEntity.EntityType {
 				get { return EntityType.Operator; }
 			}

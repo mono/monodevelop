@@ -898,36 +898,35 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!IsLineEmptyUpToEol ())
 					return null;
 				var overrideCls = CSharpParsedFile.GetInnermostTypeDefinition (location);
-								
 				if (overrideCls != null && (overrideCls.Kind == TypeKind.Class || overrideCls.Kind == TypeKind.Struct)) {
 					string modifiers = document.GetText (firstMod, wordStart - firstMod);
 					return GetOverrideCompletionData (overrideCls, modifiers);
 				}
 				return null;
-//				case "partial":
-//					// Look for modifiers, in order to find the beginning of the declaration
-//					firstMod = wordStart;
-//					i = wordStart;
-//					for (int n = 0; n < 3; n++) {
-//						string mod = GetPreviousToken (ref i, true);
-//						if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
-//							firstMod = i;
-//						} else if (mod == "static") {
-//							// static methods are not overridable
-//							return null;
-//						} else
-//							break;
-//					}
-//					if (!IsLineEmptyUpToEol ())
-//						return null;
-//					
-//					overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-//					if (overrideCls != null && (overrideCls.ClassType == ClassType.Class || overrideCls.ClassType == ClassType.Struct)) {
-//						string modifiers = document.GetTextBetween (firstMod, wordStart);
-//						return GetPartialCompletionData (completionContext, overrideCls, modifiers);
-//					}
-//					return null;
-//					
+			case "partial":
+				// Look for modifiers, in order to find the beginning of the declaration
+				firstMod = wordStart;
+				i = wordStart;
+				for (int n = 0; n < 3; n++) {
+					string mod = GetPreviousToken (ref i, true);
+					if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
+						firstMod = i;
+					} else if (mod == "static") {
+						// static methods are not overridable
+						return null;
+					} else
+						break;
+				}
+				if (!IsLineEmptyUpToEol ())
+					return null;
+				
+				overrideCls = CSharpParsedFile.GetInnermostTypeDefinition (location);
+				if (overrideCls != null && (overrideCls.Kind == TypeKind.Class || overrideCls.Kind == TypeKind.Struct)) {
+					string modifiers = document.GetText (firstMod, wordStart - firstMod);
+					return GetPartialCompletionData (overrideCls, modifiers);
+				}
+				return null;
+				
 			case "public":
 			case "protected":
 			case "private":
@@ -1124,6 +1123,79 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AddVirtuals (alreadyInserted, wrapper, type, modifiers, ctx.GetTypeDefinition (typeof(object)), declarationBegin);
 			return wrapper.Result;
 		}
+		
+		IEnumerable<ICompletionData> GetPartialCompletionData (ITypeDefinition type, string modifiers)
+		{
+			var wrapper = new CompletionDataWrapper (this);
+			var partialType = GetTypeFromContext (type);
+			if (partialType != null) {
+				int declarationBegin = offset;
+				int j = declarationBegin;
+				for (int i = 0; i < 3; i++) {
+					switch (GetPreviousToken (ref j, true)) {
+					case "public":
+					case "protected":
+					case "private":
+					case "internal":
+					case "sealed":
+					case "override":
+						declarationBegin = j;
+						break;
+					case "static":
+						return null; // don't add override completion for static members
+					}
+				}
+				
+				var methods = new List<IMethod> ();
+				// gather all partial methods without implementation
+				foreach (var part in partialType.GetParts ()) 
+					foreach (var method in part.Methods) {
+						if (method.IsPartial && method.BodyRegion.IsEmpty) {
+							methods.Add (method);
+						}
+					}
+
+				// now filter all methods that are implemented in the compound class
+				foreach (var part in partialType.GetParts ()) {
+					if (part == type)
+						continue;
+					for (int i = 0; i < methods.Count; i++) {
+						var curMethod = methods[i];
+						var method = GetImplementation (partialType, curMethod);
+						if (method != null && !method.BodyRegion.IsEmpty) {
+							methods.RemoveAt (i);
+							i--;
+							continue;
+						}
+					}
+				}
+
+				foreach (var method in methods) {
+					wrapper.Add (factory.CreateNewOverrideCompletionData (declarationBegin, type, method));
+				}
+				
+			}
+			return wrapper.Result;
+		}
+		
+		IMethod GetImplementation (ITypeDefinition type, IMethod method)
+		{
+			foreach (var cur in type.Methods) {
+				if (cur.Name == method.Name && cur.Parameters.Count == method.Parameters.Count && !cur.BodyRegion.IsEmpty) {
+					bool equal = true;
+					for (int i = 0; i < cur.Parameters.Count; i++) {
+						if (!cur.Parameters[i].Type.Resolve (ctx).Equals (method.Parameters[i].Type.Resolve (ctx))) {
+							equal = false;
+							break;
+						}
+					}
+					if (equal)
+						return cur;
+				}
+			}
+			return null;
+		}
+		
 		
 		static string GetNameWithParamCount (IMember member)
 		{
@@ -1662,7 +1734,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 			var baseUnit = ParseStub ("");
 			var tmpUnit = baseUnit;
-			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1);
+			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1); 
 			if (expr == null)
 				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
 			

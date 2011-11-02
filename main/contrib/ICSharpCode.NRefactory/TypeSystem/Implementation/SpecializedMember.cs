@@ -166,6 +166,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition.IsProtectedAndInternal; }
 		}
 		
+		public bool IsPartial {
+			get { return memberDefinition.IsPartial; }
+		}
+		
 		public IProjectContent ProjectContent {
 			get { return memberDefinition.ProjectContent; }
 		}

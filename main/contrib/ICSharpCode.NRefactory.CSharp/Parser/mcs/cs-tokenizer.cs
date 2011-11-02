@@ -3239,16 +3239,16 @@ namespace Mono.CSharp
 						bool docAppend = false;
 						if (doc_processing && peek_char () == '*') {
 							int ch = get_char ();
-							if (position_stack.Count == 0)
-								sbag.PushCommentChar (ch);
 							// But when it is /**/, just do nothing.
 							if (peek_char () == '/') {
 								ch = get_char ();
 								if (position_stack.Count == 0) {
-									sbag.PushCommentChar (ch);
 									sbag.EndComment (line, col + 1);
 								}
 								continue;
+							} else {
+								if (position_stack.Count == 0)
+									sbag.PushCommentChar (ch);
 							}
 							if (doc_state == XmlCommentState.Allowed)
 								docAppend = true;
@@ -3264,16 +3264,15 @@ namespace Mono.CSharp
 						}
 
 						while ((d = get_char ()) != -1){
-							if (position_stack.Count == 0)
-								sbag.PushCommentChar (d);
 							if (d == '*' && peek_char () == '/'){
-								if (position_stack.Count == 0)
-									sbag.PushCommentChar ('/');
 								get_char ();
 								if (position_stack.Count == 0)
 									sbag.EndComment (line, col + 1);
 								comments_seen = true;
 								break;
+							} else {
+								if (position_stack.Count == 0)
+									sbag.PushCommentChar (d);
 							}
 							if (docAppend)
 								xml_comment_buffer.Append ((char) d);

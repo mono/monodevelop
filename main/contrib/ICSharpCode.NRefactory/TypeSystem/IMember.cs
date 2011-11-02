@@ -73,6 +73,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool IsOverridable {
 			get;
 		}
+		
+		/// <summary>
+		/// Gets if the member is partial. Returns true when the member is "partial".
+		/// </summary>
+		bool IsPartial {
+			get;
+		}
 	}
 	
 	#if WITH_CONTRACTS
