@@ -26,6 +26,8 @@ FILES =  \
 	AppleSdkSettings.cs \
 	AppleSdkSettingsPanel.cs \
 	AssemblyInfo.cs \
+	BindingProject/ObjcBindingProject.cs \
+	BindingProject/ObjcBindingProjectConfiguration.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.cs \
 	MacBuildUtilities.cs \
