@@ -34,7 +34,17 @@ namespace MonoDevelop.Core
 {
 	public abstract class SystemInformation
 	{
-		public static SystemInformation Instance {
+		static SystemInformation Instance {
+			get; set;
+		}
+		
+		public static string InstallationUuid {
+			get {
+				return PropertyService.Get<string> ("MonoDevelop.Core.InstallUuid", Guid.NewGuid ().ToString ());
+			}
+		}
+		
+		public static string SessionUuid {
 			get; private set;
 		}
 		
@@ -46,6 +56,8 @@ namespace MonoDevelop.Core
 				Instance = new WindowsSystemInformation ();
 			else
 				Instance = new LinuxSystemInformation ();
+			
+			SessionUuid = Guid.NewGuid ().ToString ();
 		}
 		
 		protected abstract void AppendOperatingSystem (StringBuilder sb);

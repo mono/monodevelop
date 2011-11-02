@@ -71,12 +71,6 @@ namespace MonoDevelop.Ide
 			return v1 +"." + v2 + "."+ v3;
 		}
 		
-		public string InstallationUuid {
-			get {
-				return PropertyService.Get<string> ("MonoDevelop.Core.InstallUuid", Guid.NewGuid ().ToString ());
-			}
-		}
-		
 		string ISystemInformationProvider.Description {
 			get {
 				var sb = new System.Text.StringBuilder ();
@@ -84,7 +78,7 @@ namespace MonoDevelop.Ide
 				sb.AppendLine (MonoDevelopVersion);
 				
 				sb.Append ("Installation UUID: ");
-				sb.AppendLine (InstallationUuid);
+				sb.AppendLine (SystemInformation.InstallationUuid);
 							
 				sb.AppendLine ("Runtime:");
 				if (IsMono ()) {
