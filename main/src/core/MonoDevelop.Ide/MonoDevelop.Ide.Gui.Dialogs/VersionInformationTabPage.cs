@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public VersionInformationTabPage ()
 		{
 			var buf = new TextBuffer (null);
-			buf.Text = SystemInformation.Instance.ToString ();
+			buf.Text = SystemInformation.ToText ();
 			
 			var sw = new ScrolledWindow () {
 				BorderWidth = 6,

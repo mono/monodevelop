@@ -106,6 +106,11 @@ namespace MonoDevelop.Core
 			
 			return sb.ToString ();
 		}
+	
+		public static string ToText ()
+		{
+			return Instance.ToString ();
+		}
 	}
 }
 
