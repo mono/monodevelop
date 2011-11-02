@@ -48,38 +48,19 @@ namespace MonoDevelop.Core
 				Instance = new LinuxSystemInformation ();
 		}
 		
-		static bool IsMono ()
-		{
-			return Type.GetType ("Mono.Runtime") != null;
-		}
-		
-		public string InstallationUuid {
-			get {
-				return PropertyService.Get<string> ("MonoDevelop.Core.InstallUuid", Guid.NewGuid ().ToString ());
-			}
-		}
-
-		static string GetMonoVersionNumber ()
-		{
-			var t = Type.GetType ("Mono.Runtime"); 
-			if (t == null)
-				return "unknown";
-			var mi = t.GetMethod ("GetDisplayName", BindingFlags.NonPublic | BindingFlags.Static);
-			if (mi == null) {
-				LoggingService.LogError ("No Mono.Runtime.GetDiplayName method found.");
-				return "error";
-			}
-			return (string)mi.Invoke (null, null); 
-		}
-		
 		protected abstract void AppendOperatingSystem (StringBuilder sb);
 		
 		public override string ToString ()
 		{
 			var sb = new StringBuilder ();
 			
-			sb.Append ("Installation UUID: ");
-			sb.AppendLine (InstallationUuid);
+			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
+				try {
+					sb.AppendLine (info.Description);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error getting about information: ", ex);
+				}
+			}
 			
 			var biFile = ((FilePath)Assembly.GetCallingAssembly ().Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
@@ -97,29 +78,10 @@ namespace MonoDevelop.Core
 			sb.AppendLine ("Operating System:");
 			AppendOperatingSystem (sb);
 			
-			sb.AppendLine ("Runtime:");
-			if (IsMono ()) {
-				sb.Append ("\tMono " + GetMonoVersionNumber ());
-			} else {
-				sb.Append ("\tMicrosoft .NET " + Environment.Version);
-			}
-			
-			if (IntPtr.Size == 8)
-				sb.Append (" (64-bit)");
-			sb.AppendLine ();
-			
-			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
-				try {
-					sb.AppendLine (info.Description);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error getting about information: ", ex);
-				}
-			}
-			
-			sb.AppendLine ("Loaded assemblies:");
-			
 			int nameLength = 0;
 			int versionLength = 0;
+			sb.AppendLine ("Loaded assemblies:");
+
 			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
 				try {
 					if (assembly.IsDynamic)

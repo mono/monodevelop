@@ -25,11 +25,30 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using System.Reflection;
 
 namespace MonoDevelop.Ide
 {
 	public class IdeVersionInfo : ISystemInformationProvider
 	{
+		static bool IsMono ()
+		{
+			return Type.GetType ("Mono.Runtime") != null;
+		}
+
+		static string GetMonoVersionNumber ()
+		{
+			var t = Type.GetType ("Mono.Runtime"); 
+			if (t == null)
+				return "unknown";
+			var mi = t.GetMethod ("GetDisplayName", BindingFlags.NonPublic | BindingFlags.Static);
+			if (mi == null) {
+				LoggingService.LogError ("No Mono.Runtime.GetDiplayName method found.");
+				return "error";
+			}
+			return (string)mi.Invoke (null, null); 
+		}
+		
 		static string GetGtkVersion ()
 		{
 			uint v1 = 2, v2 = 0, v3 = 0;
@@ -52,17 +71,36 @@ namespace MonoDevelop.Ide
 			return v1 +"." + v2 + "."+ v3;
 		}
 		
+		public string InstallationUuid {
+			get {
+				return PropertyService.Get<string> ("MonoDevelop.Core.InstallUuid", Guid.NewGuid ().ToString ());
+			}
+		}
 		
 		string ISystemInformationProvider.Description {
 			get {
 				var sb = new System.Text.StringBuilder ();
 				sb.Append ("MonoDevelop ");
 				sb.AppendLine (MonoDevelopVersion);
-				sb.Append ("GTK ");
+				
+				sb.Append ("Installation UUID: ");
+				sb.AppendLine (InstallationUuid);
+							
+				sb.AppendLine ("Runtime:");
+				if (IsMono ()) {
+					sb.Append ("\tMono " + GetMonoVersionNumber ());
+				} else {
+					sb.Append ("\tMicrosoft .NET " + Environment.Version);
+				}
+			
+				if (IntPtr.Size == 8)
+					sb.Append (" (64-bit)");
+				sb.AppendLine ();
+				sb.Append ("\tGTK ");
 				sb.AppendLine (GetGtkVersion ());
-				sb.Append ("GTK# (");
+				sb.Append ("\tGTK# (");
 				sb.Append (typeof(Gtk.VBox).Assembly.GetName ().Version);
-				sb.AppendLine (")");
+				sb.Append (")");
 				return sb.ToString (); 
 			}
 		}
