@@ -419,7 +419,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
-				const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
+				const string allowedChars = ";,[]{}+-*/%^?:&|~!<>=";
 				if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
 					return null;
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
@@ -453,7 +453,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								continue;
 							contextList.AddMember (property);
 						}
-						foreach (var field in initalizerResult.Item1.Type.GetFields (ctx)){      
+						foreach (var field in initalizerResult.Item1.Type.GetFields (ctx)){       
 							if (!field.IsPublic)
 								continue;
 							contextList.AddMember (field);
