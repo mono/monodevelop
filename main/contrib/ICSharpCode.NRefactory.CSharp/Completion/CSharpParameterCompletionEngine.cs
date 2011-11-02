@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			char completionChar = document.GetCharAt (offset - 1);
 			if (completionChar != '(' && completionChar != '<' && completionChar != '[')
 				return null;
-			if (IsInsideComment () || IsInsideString ())
+			if (IsInsideCommentOrString ())
 				return null;
 			
 			var invoke = GetInvocationBeforeCursor (true) ?? GetIndexerBeforeCursor ();

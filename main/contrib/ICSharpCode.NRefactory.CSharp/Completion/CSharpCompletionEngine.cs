@@ -150,7 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			// Magic key completion
 			case ':':
 			case '.':
-				if (IsInsideComment () || IsInsideString ())
+				if (IsInsideCommentOrString ())
 					return Enumerable.Empty<ICompletionData> ();
 				var expr = GetExpressionBeforeCursor ();
 				if (expr == null)
@@ -172,7 +172,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				return CreateCompletionData (location, resolveResult.Item1, expr.Item2, resolveResult.Item2);
 			case '#':
-				if (IsInsideComment () || IsInsideString ())
+				if (IsInsideCommentOrString ())
 					return null;
 				return GetDirectiveCompletionData ();
 			
@@ -210,7 +210,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			// Parameter completion
 			case '(':
-				if (IsInsideComment () || IsInsideString ())
+				if (IsInsideCommentOrString ())
 					return null;
 				var invoke = GetInvocationBeforeCursor (true);
 				if (invoke == null)
@@ -237,7 +237,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 			// Completion on space:
 			case ' ':
-				if (IsInsideComment () || IsInsideString ())
+				if (IsInsideCommentOrString ())
 					return null;
 				
 				int tokenIndex = offset;
@@ -395,7 +395,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return keywordCompletion;
 			// Automatic completion
 			default:
-				if (IsInsideComment () || IsInsideString ())
+				if (IsInsideCommentOrString ())
 					return null;
 				if (IsInLinqContext (offset)) {
 					tokenIndex = offset;
@@ -741,7 +741,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> HandleKeywordCompletion (int wordStart, string word)
 		{
-			if (IsInsideComment () || IsInsideString ())
+			if (IsInsideCommentOrString ())
 				return null;
 			switch (word) {
 			case "using":

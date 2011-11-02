@@ -57,6 +57,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		protected void SetOffset (int offset)
 		{
+			Reset ();
+			
 			this.offset = offset;
 			this.location = document.GetLocation (offset);
 			
@@ -65,9 +67,74 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		
 		#region Context helper methods
-		protected bool IsInsideComment ()
+		protected bool IsInsideCommentOrString ()
 		{
-			return IsInsideComment (offset);
+			var text = GetMemberTextToCaret ();
+			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
+			
+			for (int i = 0; i < text.Item1.Length - 1; i++) {
+				char ch = text.Item1[i];
+				char nextCh = text.Item1[i + 1];
+				
+				switch (ch) {
+				case '/':
+					if (inString || inChar || inVerbatimString)
+						break;
+					if (nextCh == '/') {
+						i++;
+						inSingleComment = true;
+					}
+					if (nextCh == '*')
+						inMultiLineComment = true;
+					break;
+				case '*':
+					if (inString || inChar || inVerbatimString || inSingleComment)
+						break;
+					if (nextCh == '/') {
+						i++;
+						inMultiLineComment = false;
+					}
+					break;
+				case '@':
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					if (nextCh == '"') {
+						i++;
+						inVerbatimString = true;
+					}
+					break;
+				case '\n':
+				case '\r':
+					inSingleComment = false;
+					inString = false;
+					inChar = false;
+					break;
+				case '\\':
+					if (inString || inChar)
+						i++;
+					break;
+				case '"':
+					if (inSingleComment || inMultiLineComment || inChar)
+						break;
+					if (inVerbatimString) {
+						if (nextCh == '"') {
+							i++;
+							break;
+						}
+						inVerbatimString = false;
+						break;
+					}
+					inString = !inString;
+					break;
+				case '\'':
+					if (inSingleComment || inMultiLineComment || inString || inVerbatimString)
+						break;
+					inChar = !inChar;
+					break;
+				}
+			}
+			
+			return inSingleComment || inString || inVerbatimString || inChar || inMultiLineComment;
 		}
 		
 		protected bool IsInsideComment (int offset)
@@ -81,11 +148,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var loc = document.GetLocation (offset);
 			var cmt = Unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Comment> (loc.Line, loc.Column - 1);
 			return cmt != null && cmt.CommentType == CommentType.Documentation;
-		}
-		
-		protected bool IsInsideString ()
-		{
-			return IsInsideString (offset);
 		}
 		
 		protected bool IsInsideString (int offset)
@@ -240,6 +302,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		
+		string cachedText = null;
+		
+		protected virtual void Reset ()
+		{
+			cachedText = null;
+		}
+		
 		protected Tuple<string, bool> GetMemberTextToCaret ()
 		{
 			int startOffset;
@@ -250,9 +319,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				startOffset = 0;
 			}
-			return Tuple.Create (document.GetText (startOffset, offset - startOffset), startOffset != 0);
+			if (cachedText == null)
+				cachedText = document.GetText (startOffset, offset - startOffset);
+			
+			return Tuple.Create (cachedText, startOffset != 0);
 		}
-
+		
 		protected Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetInvocationBeforeCursor (bool afterBracket)
 		{
 			CompilationUnit baseUnit;
