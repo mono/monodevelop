@@ -280,11 +280,16 @@ namespace Mono.TextEditor
 					var screen = parent.Screen;
 					Gdk.Rectangle geometry = GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (x, y));
 					
+					if (x + request.Width > geometry.Right) {
+						x -= request.Width;
+					}
+					if (y + request.Height > geometry.Bottom) {
+						y -= request.Height;
+					}
 					y = System.Math.Max (geometry.Top, System.Math.Min (y, geometry.Bottom - request.Height));
 					x = System.Math.Max (geometry.Left, System.Math.Min (x, geometry.Right - request.Width));
 					
-					//TODO: more complicated PushIn logic using caret.Height
-					pushIn = true;
+					pushIn = false;
 				};
 			}
 			
