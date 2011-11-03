@@ -487,15 +487,7 @@ namespace MonoDevelop.Components.Commands
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 			
-			if (parent != null) {
-				menu.AttachToWidget (parent, null);
-			}
-			
-			if (evt == null) {
-				menu.Popup (null, null, null, 0, Gtk.Global.CurrentEventTime);
-			} else {
-				menu.Popup (null, null, null, evt.Button, evt.Time);
-			}
+			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 		
 		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
