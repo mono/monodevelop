@@ -920,7 +920,7 @@ namespace Mono.TextEditor
 				double startPos;
 				Margin margin = GetMarginAtX (e.X, out startPos);
 				if (margin != null) 
-					margin.MousePressed (new MarginMouseEventArgs (this, e.Button, e.X - startPos, e.Y, e.Type, e.State));
+					margin.MousePressed (new MarginMouseEventArgs (this, e, e.Button, e.X - startPos, e.Y, e.State));
 			}
 			return base.OnButtonPressEvent (e);
 		}
@@ -964,7 +964,7 @@ namespace Mono.TextEditor
 			double startPos;
 			Margin margin = GetMarginAtX (e.X, out startPos);
 			if (margin != null)
-				margin.MouseReleased (new MarginMouseEventArgs (this, e.Button, e.X - startPos, e.Y, EventType.ButtonRelease, e.State));
+				margin.MouseReleased (new MarginMouseEventArgs (this, e, e.Button, e.X - startPos, e.Y, e.State));
 			ResetMouseState ();
 			return base.OnButtonReleaseEvent (e);
 		}
@@ -1157,7 +1157,8 @@ namespace Mono.TextEditor
 				oldMargin.MouseLeft ();
 			
 			if (margin != null) 
-				margin.MouseHover (new MarginMouseEventArgs (this, mouseButtonPressed, x - startPos, y, EventType.MotionNotify, state));
+				margin.MouseHover (new MarginMouseEventArgs (this, EventType.MotionNotify,
+					mouseButtonPressed, x - startPos, y, state));
 			oldMargin = margin;
 		}
 
