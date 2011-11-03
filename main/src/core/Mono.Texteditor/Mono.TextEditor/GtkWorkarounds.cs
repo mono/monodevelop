@@ -192,7 +192,7 @@ namespace Mono.TextEditor
 			glibObjectSetProp.Invoke (obj, new object[] { name, value });
 		}
 		
-		public static bool ButtonEventTriggersContextMenu (Gdk.EventButton evt)
+		public static bool ButtonEventTriggersContextMenu (this Gdk.EventButton evt)
 		{
 			if (evt.Type == Gdk.EventType.ButtonPress) {
 				if (evt.Button == 3 &&
@@ -249,6 +249,60 @@ namespace Mono.TextEditor
 			}
 			deltaX = deltaY = 0;
 			return false;
+		}
+		
+		/// <summary>Shows a context menu.</summary>
+		/// <param name='menu'>The menu.</param>
+		/// <param name='parent'>The parent widget.</param>
+		/// <param name='evt'>The mouse event. May be null if triggered by keyboard.</param>
+		/// <param name='caret'>The caret/selection position within the parent, if the EventButton is null.</param>
+		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret)
+		{
+			Gtk.MenuPositionFunc posFunc = null;
+			
+			if (parent != null) {
+				menu.AttachToWidget (parent, null);
+				posFunc = delegate (Gtk.Menu m, out int x, out int y, out bool pushIn) {
+					Gdk.Window window = evt != null? evt.Window : parent.GdkWindow;
+					window.GetOrigin (out x, out y);
+					var alloc = parent.Allocation;
+					if (evt != null) {
+						x += (int) evt.X;
+						y += (int) evt.Y;
+					} else if (caret.X >= alloc.X && caret.Y >= alloc.Y) {
+						x += caret.X;
+						y += caret.Y + caret.Height;
+					} else {
+						x += alloc.X;
+						y += alloc.Y;
+					}
+					Gtk.Requisition request = m.SizeRequest ();
+					var screen = parent.Screen;
+					Gdk.Rectangle geometry = GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (x, y));
+					
+					y = System.Math.Max (geometry.Top, System.Math.Min (y, geometry.Bottom - request.Height));
+					x = System.Math.Max (geometry.Left, System.Math.Min (x, geometry.Right - request.Width));
+					
+					//TODO: more complicated PushIn logic using caret.Height
+					pushIn = true;
+				};
+			}
+			
+			if (evt == null) {
+				menu.Popup (null, null, posFunc, 0, Gtk.Global.CurrentEventTime);
+			} else {
+				menu.Popup (null, null, posFunc, evt.Button, evt.Time);
+			}
+		}
+		
+		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt)
+		{
+			ShowContextMenu (menu, parent, evt, Gdk.Rectangle.Zero);
+		}
+		
+		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.Rectangle caret)
+		{
+			ShowContextMenu (menu, parent, null, caret);
 		}
 	}
 }
