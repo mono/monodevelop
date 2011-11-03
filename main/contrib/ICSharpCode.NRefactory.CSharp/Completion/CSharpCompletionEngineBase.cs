@@ -63,7 +63,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.location = document.GetLocation (offset);
 			
 			this.currentType = CSharpParsedFile.GetInnermostTypeDefinition (location);
-			this.currentMember = CSharpParsedFile.GetMember (location);	
+			this.currentMember = null;
+			if (this.currentType != null) {
+				foreach (var member in currentType.Members) {
+					if (member.Region.Begin < location && (currentMember == null || currentMember.Region.Begin < member.Region.Begin))
+						currentMember = member;
+				}
+			}
+			
+			var stack = GetBracketStack (GetMemberTextToCaret ().Item1);
+			if (stack.Count == 0)
+				currentMember = null;
 		}
 		
 		#region Context helper methods
@@ -160,7 +170,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		#endregion
 		
 		#region Basic parsing/resolving functions
-		protected void AppendMissingClosingBrackets (StringBuilder wrapper, string memberText, bool appendSemicolon)
+		Stack<Tuple<char, int>> GetBracketStack (string memberText)
 		{
 			var bracketStack = new Stack<Tuple<char, int>> ();
 			
@@ -211,6 +221,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					break;
 				}
 			}
+			return bracketStack;
+		}
+		
+		protected void AppendMissingClosingBrackets (StringBuilder wrapper, string memberText, bool appendSemicolon)
+		{
+			var bracketStack = GetBracketStack (memberText);
 			bool didAppendSemicolon = !appendSemicolon;
 			
 			char lastBracket = '\0';

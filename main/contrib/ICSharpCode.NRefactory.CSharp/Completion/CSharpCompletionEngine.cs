@@ -1974,8 +1974,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var state = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			
-			state.CurrentMember = CSharpParsedFile.GetMember (location);
-			state.CurrentTypeDefinition = CSharpParsedFile.GetInnermostTypeDefinition (location);
+			state.CurrentMember = currentMember;
+			state.CurrentTypeDefinition = currentType;
 			state.CurrentUsingScope = CSharpParsedFile.GetUsingScope (location);
 			if (state.CurrentMember != null) {
 				var node = Unit.GetNodeAt (location);
