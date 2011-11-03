@@ -703,13 +703,13 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				while (spanStack.Count > 0 && (spanStack.Peek () is IfBlockSpan || spanStack.Peek () is ElseIfBlockSpan || spanStack.Peek () is ElseBlockSpan)) {
 					var poppedSpan = spanStack.Pop ();
-					Console.WriteLine ("pop" + poppedSpan +"/" + spanStack.Count);
 					if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 						ruleStack.Pop ();
 					if (poppedSpan is IfBlockSpan)
 						break;
 				}
 			}
+			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
 			{
 				if (cur is IfBlockSpan || cur is ElseIfBlockSpan || cur is ElseBlockSpan) {
@@ -721,11 +721,10 @@ namespace MonoDevelop.CSharp.Highlighting
 						// if we're in a complex span stack pop it up to the if block
 						if (spanStack.Count > 0) {
 							var prev = spanStack.Peek ();
-							if ((cur is ElseIfBlockSpan || cur is ElseBlockSpan) && (spanStack.Peek () is ElseIfBlockSpan || spanStack.Peek () is ElseBlockSpan)) {
+							
+							if ((cur is ElseIfBlockSpan || cur is ElseBlockSpan) && (prev is ElseIfBlockSpan || prev is IfBlockSpan))
 								PopCurrentIfBlock ();
-							}
 						}
-						
 					}
 					return end;
 				}
