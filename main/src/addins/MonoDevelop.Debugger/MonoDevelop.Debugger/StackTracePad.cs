@@ -41,8 +41,7 @@ namespace MonoDevelop.Debugger
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 			tree.Selection.Mode = SelectionMode.Multiple;
-			tree.ButtonPressEvent += HandleTreeButtonPressEvent;;
-			tree.PopupMenu += HandleTreePopupMenu;
+			tree.DoPopupMenu = ShowPopup;
 
 			TreeViewColumn col = new TreeViewColumn ();
 			CellRenderer crp = new CellRendererIcon ();
@@ -201,22 +200,9 @@ namespace MonoDevelop.Debugger
 			UpdateDisplay ();
 		}
 
-		[GLib.ConnectBefore]
-		void HandleTreeButtonPressEvent (object o, ButtonPressEventArgs args)
+		void ShowPopup (Gdk.EventButton evt)
 		{
-			if (args.Event.Button == 3)
-				ShowPopup ();
-		}
-
-		[GLib.ConnectBefore]
-		void HandleTreePopupMenu (object o, PopupMenuArgs args)
-		{
-			ShowPopup ();
-		}
-
-		internal void ShowPopup ()
-		{
-			IdeApp.CommandService.ShowContextMenu (menuSet, tree);
+			IdeApp.CommandService.ShowContextMenu (tree, evt, menuSet, tree);
 		}
 		
 		[CommandHandler ("StackTracePad.ActivateFrame")]

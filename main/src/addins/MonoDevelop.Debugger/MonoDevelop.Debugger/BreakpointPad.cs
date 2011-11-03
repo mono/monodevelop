@@ -46,7 +46,7 @@ namespace MonoDevelop.Debugger
 	{
 		BreakpointStore bps;
 		
-		BreakpointsTreeView tree;
+		PadTreeView tree;
 		Gtk.TreeStore store;
 		Widget control;
 		ScrolledWindow sw;
@@ -102,10 +102,11 @@ namespace MonoDevelop.Debugger
 			
 			store = new TreeStore (typeof(string), typeof (bool), typeof(string), typeof(object), typeof(string), typeof(string), typeof(string), typeof(string));
 
-			tree = new BreakpointsTreeView (this);
+			tree = new PadTreeView ();
 			tree.Model = store;
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
+			tree.DoPopupMenu = ShowPopup;
 			
 			treeState = new TreeViewState (tree, (int) Columns.Breakpoint);
 							
@@ -154,8 +155,6 @@ namespace MonoDevelop.Debugger
 			bps = DebuggingService.Breakpoints;
 			
 			UpdateDisplay ();
-			
-			tree.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 
 			breakpointUpdatedHandler = DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointUpdated));
 			
@@ -186,15 +185,10 @@ namespace MonoDevelop.Debugger
 			DebuggingService.ResumedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.StoppedEvent -= OnDebuggerStatusCheck;
 		}
-		
-		private void OnPopupMenu (object o, PopupMenuArgs args)
-		{
-			ShowPopup ();
-		}
 
-		internal void ShowPopup ()
+		void ShowPopup (Gdk.EventButton evt)
 		{
-			IdeApp.CommandService.ShowContextMenu (menuSet, tree);
+			IdeApp.CommandService.ShowContextMenu (tree, evt, menuSet, tree);
 		}
 		
 		[CommandHandler (LocalCommands.Properties)]
@@ -348,24 +342,5 @@ namespace MonoDevelop.Debugger
 		{
 			OnDeleted ();
 		}
-	}
-	
-	class BreakpointsTreeView: MonoDevelop.Ide.Gui.Components.PadTreeView
-	{
-		BreakpointPad pad;
-		
-		public BreakpointsTreeView (BreakpointPad pad)
-		{
-			this.pad = pad;
-		}
-		
-		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
-		{
-			bool ret = base.OnButtonPressEvent (evnt);
-			if (evnt.Button == 3)
-				pad.ShowPopup ();
-			return ret;
-		}
-
 	}
 }

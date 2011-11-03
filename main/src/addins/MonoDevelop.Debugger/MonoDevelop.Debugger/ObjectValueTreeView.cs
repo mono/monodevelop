@@ -972,6 +972,11 @@ namespace MonoDevelop.Debugger
 			TreeViewColumn col;
 			CellRenderer cr;
 			
+			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+				ShowPopup (evnt);
+				return true;
+			}
+			
 			if (evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
 				TreeIter it;
 				store.GetIter (out it, path);
@@ -1001,9 +1006,6 @@ namespace MonoDevelop.Debugger
 				}
 			}
 			
-			if (evnt.Button == 3)
-				ShowPopup ();
-			
 			return res;
 		}
 		
@@ -1013,16 +1015,15 @@ namespace MonoDevelop.Debugger
 			return base.OnButtonReleaseEvent (evnt);
 		}
 		
-		
 		protected override bool OnPopupMenu ()
 		{
-			ShowPopup ();
+			ShowPopup (null);
 			return true;
 		}
 		
-		void ShowPopup ()
+		void ShowPopup (Gdk.EventButton evt)
 		{
-			IdeApp.CommandService.ShowContextMenu (menuSet, this);
+			IdeApp.CommandService.ShowContextMenu (this, evt, menuSet, this);
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
