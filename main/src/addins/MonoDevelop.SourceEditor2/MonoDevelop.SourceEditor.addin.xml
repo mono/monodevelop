@@ -110,12 +110,7 @@
 				_description = "Activates code focus on caret move"
 				shortcut = "Ctrl|Shift|k"
 				macShortcut = "Meta|Shift|k" />
-				
-		<Command id = "MonoDevelop.SourceEditor.NavigationBarCommands.ToggleNavPanelViews"
-				defaultHandler = "MonoDevelop.SourceEditor.ToggleNavPanelViewsHandler"
-				_label = ""
-				type="array"/>
-				
+		
 		<Command id = "MonoDevelop.SourceEditor.MessageBubbleCommands.HideIssues"
 				defaultHandler = "MonoDevelop.SourceEditor.HideIssuesHandler"
 				_label = "_Hide Issues"/>
@@ -149,11 +144,6 @@
 		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/NavigationBar">
-		<CommandItem id = "MonoDevelop.SourceEditor.NavigationBarCommands.ToggleNavPanelViews" />
-	</Extension>
-	
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
