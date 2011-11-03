@@ -28,6 +28,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 using MonoDevelop.Core.Logging;
 
@@ -69,6 +71,82 @@ namespace MonoDevelop.Core
 				} catch (Exception e) {
 					LogError (e.ToString ());
 				}
+			}
+		}
+		
+		public static void Initialize (bool redirectOutput)
+		{
+			PurgeOldLogs ();
+			
+			if (Platform.IsWindows || redirectOutput)
+				RedirectOutputToLogFile ();
+		}
+		
+		static void PurgeOldLogs ()
+		{
+			// Delete all logs older than 30 days
+			var files = Directory.EnumerateFiles (UserProfile.Current.LogDir)
+				.Select (f => new FileInfo (f))
+				.Where (f => f.CreationTimeUtc < DateTime.UtcNow.Subtract (TimeSpan.FromDays (30)));
+
+			foreach (var v in files)
+				v.Delete ();
+		}
+		
+		static void RedirectOutputToLogFile ()
+		{
+			FilePath logDir = UserProfile.Current.LogDir;
+			if (!Directory.Exists (logDir))
+				Directory.CreateDirectory (logDir);
+			
+			//TODO: log rotation
+			string file = logDir.Combine (string.Format ("MonoDevelop.{0}.{1}.log", SystemInformation.InstallationUuid, SystemInformation.SessionUuid));
+			try {
+				if (Platform.IsWindows) {
+					//TODO: redirect the file descriptors on Windows, just plugging in a textwriter won't get everything
+					RedirectOutputToFileWindows (file);
+				} else {
+					RedirectOutputToFileUnix (file);
+				}
+			} catch {
+			}
+		}
+
+		static void RedirectOutputToFileWindows (string file)
+		{
+			var logFile = new StreamWriter (file);
+			logFile.AutoFlush = true;
+			Console.SetOut (logFile);
+			Console.SetError (logFile);
+		}
+		
+		static void RedirectOutputToFileUnix (string file)
+		{
+			const int STDOUT_FILENO = 1;
+			const int STDERR_FILENO = 2;
+			
+			Mono.Unix.Native.OpenFlags flags = Mono.Unix.Native.OpenFlags.O_WRONLY
+				| Mono.Unix.Native.OpenFlags.O_CREAT | Mono.Unix.Native.OpenFlags.O_TRUNC;
+			var mode = Mono.Unix.Native.FilePermissions.S_IFREG
+				| Mono.Unix.Native.FilePermissions.S_IRUSR | Mono.Unix.Native.FilePermissions.S_IWUSR
+				| Mono.Unix.Native.FilePermissions.S_IRGRP | Mono.Unix.Native.FilePermissions.S_IWGRP;
+			
+			int fd = Mono.Unix.Native.Syscall.open (file, flags, mode);
+			if (fd < 0)
+				//error
+				return;
+			try {
+				int res = Mono.Unix.Native.Syscall.dup2 (fd, STDOUT_FILENO);
+				if (res < 0)
+					//error
+					return;
+				
+				res = Mono.Unix.Native.Syscall.dup2 (fd, STDERR_FILENO);
+				if (res < 0)
+					//error
+					return;
+			} finally {
+				Mono.Unix.Native.Syscall.close (fd);
 			}
 		}
 		
