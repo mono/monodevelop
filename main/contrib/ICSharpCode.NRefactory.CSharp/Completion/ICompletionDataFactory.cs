@@ -63,5 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		ICompletionData CreateNewOverrideCompletionData (int declarationBegin, ITypeDefinition type, IMember m);
 		
 		IEnumerable<ICompletionData> CreateCodeTemplateCompletionData ();
+		
+		IEnumerable<ICompletionData> CreatePreProcessorDefinesCompletionData ();
 	}
 }

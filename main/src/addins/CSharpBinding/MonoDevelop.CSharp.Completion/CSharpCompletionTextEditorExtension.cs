@@ -485,6 +485,19 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
+		IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData ()
+		{
+			var project = document.Project;
+			if (project == null)
+				yield break;
+			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+			var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
+			if (par == null)
+				yield break;
+			foreach (var define in par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s)))
+				yield return new CompletionData (define, "md-keyword");
+				
+		}
 		#endregion
 
 		#region IParameterCompletionDataFactory implementation
@@ -512,7 +525,6 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new IndexerParameterDataProvider (this, type, resolvedNode);
 		}
-
 		#endregion
 	}
 }

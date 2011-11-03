@@ -44,14 +44,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		protected IDocument document;
 		protected int offset;
 		protected TextLocation location;
-		
 		protected ITypeDefinition currentType;
 		protected IMember currentMember;
 		
 		#region Input properties
 		public ITypeResolveContext ctx { get; set; }
+
 		public CompilationUnit Unit { get; set; }
+
 		public CSharpParsedFile CSharpParsedFile { get; set; }
+
 		public IProjectContent ProjectContent { get; set; }
 		#endregion
 		
@@ -70,7 +72,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						currentMember = member;
 				}
 			}
-			
 			var stack = GetBracketStack (GetMemberTextToCaret ().Item1);
 			if (stack.Count == 0)
 				currentMember = null;
@@ -83,8 +84,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
 			
 			for (int i = 0; i < text.Item1.Length - 1; i++) {
-				char ch = text.Item1[i];
-				char nextCh = text.Item1[i + 1];
+				char ch = text.Item1 [i];
+				char nextCh = text.Item1 [i + 1];
 				
 				switch (ch) {
 				case '/':
@@ -257,9 +258,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						
 					bool didAppendCatch = false;
 					while (o >= "try".Length) {
-						char ch = memberText[o];
+						char ch = memberText [o];
 						if (!char.IsWhiteSpace (ch)) {
-							if (ch == 'y' && memberText[o - 1] == 'r' && memberText[o - 2] == 't') {
+							if (ch == 'y' && memberText [o - 1] == 'r' && memberText [o - 2] == 't') {
 								wrapper.Append ("} catch {}");
 								didAppendCatch = true;
 							}
@@ -373,7 +374,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			
-		/*	var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
+			/*	var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);

@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			SetOffset (offset);
 			char completionChar = document.GetCharAt (offset - 1);
-			if (completionChar != '(' && completionChar != '<' && completionChar != '[')
+			if (completionChar != '(' && completionChar != '<' && completionChar != '[' && completionChar != ',')
 				return null;
 			if (IsInsideCommentOrString ())
 				return null;
@@ -126,7 +126,37 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //					return new NRefactoryParameterDataProvider (textEditorData, result.Expression, resolvedType);
 //				}
 				break;
+			case ',':
+				if (invoke.Item2 is ObjectCreateExpression) {
+					var createType = ResolveExpression (invoke.Item1, ((ObjectCreateExpression)invoke.Item2).Type, invoke.Item3);
+					return factory.CreateConstructorProvider (createType.Item1.Type);
+				}
 				
+				if (invoke.Item2 is ICSharpCode.NRefactory.CSharp.Attribute) {
+					var attribute = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+					if (attribute == null || attribute.Item1 == null)
+						return null;
+					return factory.CreateConstructorProvider (attribute.Item1.Type);
+				}
+				
+				invocationExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				
+				if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError)
+					return null;
+				
+				resolveResult = invocationExpression.Item1;
+				if (resolveResult is MethodGroupResolveResult)
+					return factory.CreateMethodDataProvider (resolveResult as MethodGroupResolveResult);
+				if (resolveResult is MemberResolveResult) {
+					if (resolveResult.Type.Kind == TypeKind.Delegate)
+						return factory.CreateDelegateDataProvider (resolveResult.Type);
+					var mr = resolveResult as MemberResolveResult;
+					if (mr.Member is IMethod)
+						return factory.CreateMethodDataProvider ((IMethod)mr.Member);
+				}
+				if (resolveResult != null)
+					return factory.CreateIndexerParameterDataProvider (resolveResult.Type, invoke.Item2);
+				break;
 //			case '<':
 //				if (string.IsNullOrEmpty (result.Expression))
 //					return null;
