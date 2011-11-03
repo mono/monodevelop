@@ -305,6 +305,15 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		static void RemoveCache (string cacheDir)
+		{
+			try {
+				Directory.Delete (cacheDir, true);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while removing cache " + cacheDir, e);
+			}
+		}
+		
 		static void TouchCache (string cacheDir)
 		{
 			try {
@@ -323,6 +332,8 @@ namespace MonoDevelop.TypeSystem
 			}
 			TouchCache (cacheDir);
 			solutionCache = DeserializeObject<Dictionary<string, SimpleProjectContent>> (Path.Combine (cacheDir, "completion.cache")) ?? new Dictionary<string, SimpleProjectContent> ();
+			if (solutionCache == null)
+ 				RemoveCache (cacheDir);
 			CleanupCache ();
 		}
 		
@@ -742,8 +753,11 @@ namespace MonoDevelop.TypeSystem
 			if (cache != null) {
 				TouchCache (cache);
 				var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "completion.cache"));
-				if (deserialized != null)
+				if (deserialized != null) {
 					return deserialized;
+				} else {
+					RemoveCache (cache);
+				}
 			}
 			
 			var asm = ReadAssembly (fileName);
@@ -842,7 +856,7 @@ namespace MonoDevelop.TypeSystem
 					} else {
 						fileName = Path.GetFullPath (file);
 					}
-					string refId = "Assembly:" + netProject.TargetRuntime.Id + ":" + fileName;
+					string refId = fileName;
 
 					if (!assemblyContents.TryGetValue (refId, out ctx)) {
 						try {
