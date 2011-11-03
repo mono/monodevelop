@@ -910,6 +910,20 @@ namespace Mono.TextEditor
 			pressPositionX = e.X;
 			pressPositionY = e.Y;
 			base.IsFocus = true;
+			
+			//main context menu
+			if (DoPopupMenu != null && e.ButtonEventTriggersContextMenu ()) {
+				double tmOffset = e.X - textViewMargin.XOffset;
+				if (tmOffset >= 0) {
+					DocumentLocation loc = PointToLocation (tmOffset, e.Y);
+					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
+						Caret.Location = loc;
+					DoPopupMenu (e);
+					this.ResetMouseState ();
+					return true;
+				}
+			}
+			
 			if (lastTime != e.Time) {// filter double clicks
 				if (e.Type == EventType.TwoButtonPress) {
 				    lastTime = e.Time;
@@ -924,11 +938,17 @@ namespace Mono.TextEditor
 			}
 			return base.OnButtonPressEvent (e);
 		}
-	/*	protected override bool OnWidgetEvent (Event evnt)
+		
+		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
+		
+		protected override bool OnPopupMenu ()
 		{
-			Console.WriteLine (evnt.Type);
-			return base.OnWidgetEvent (evnt);
-		}*/
+			if (DoPopupMenu != null) {
+				DoPopupMenu (null);
+				return true;
+			}
+			return base.OnPopupMenu ();
+		}
 		
 		public Margin LockedMargin {
 			get;
