@@ -78,8 +78,6 @@ namespace MonoDevelop.Ide.Gui
 		bool fullscreen;
 		Rectangle normalBounds = new Rectangle(0, 0, 640, 480);
 		
-		internal static GType gtype;
-		
 		Gtk.Container rootWidget;
 		DockToolbarFrame toolbarFrame;
 		DockFrame dock;

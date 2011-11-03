@@ -144,7 +144,6 @@ namespace MonoDevelop.Ide.Gui
 			public int InfoCount = 0;
 			public int DebugCount = 0;
 			
-			bool errorNotificationEnabled;
 			public LogMessage LastError = null;
 			
 			public void Log (LogLevel level, string message)
