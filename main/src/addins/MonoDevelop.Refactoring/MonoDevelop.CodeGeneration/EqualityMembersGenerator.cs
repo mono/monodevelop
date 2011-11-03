@@ -135,7 +135,9 @@ namespace MonoDevelop.CodeGeneration
 
 				methodDeclaration.Body.Statements.Add (new ReturnStatement (binOp));
 				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
-
+				yield return GenerateEqualsOperator (astProvider, indent, includedMembers, false);
+				yield return GenerateEqualsOperator (astProvider, indent, includedMembers, true);
+				
 				methodDeclaration = new MethodDeclaration ();
 				methodDeclaration.Name = "GetHashCode";
 
@@ -164,6 +166,32 @@ namespace MonoDevelop.CodeGeneration
 				methodDeclaration.Body.Statements.Add (new UncheckedStatement (uncheckedBlock));
 				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 			}
+			
+			private string GenerateEqualsOperator (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers, bool negate)
+			{
+				var leftId = new IdentifierExpression ("left");
+				var rightId = new IdentifierExpression ("right");
+				
+				var enclosingType = new DomReturnType (Options.EnclosingType).ConvertToTypeReference ();
+				var leftParam = new ParameterDeclaration (enclosingType, leftId.Identifier);
+				var rightParam = new ParameterDeclaration (enclosingType.Clone (), rightId.Identifier);
+				
+				var methodDeclaration = new MethodDeclaration ();
+				methodDeclaration.Name = negate ? "operator !=" : "operator ==";
+				
+				methodDeclaration.ReturnType = DomReturnType.Bool.ConvertToTypeReference ();
+				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Static;
+				methodDeclaration.Parameters.Add (leftParam);
+				methodDeclaration.Parameters.Add (rightParam);
+				methodDeclaration.Body = new BlockStatement ();
+				
+				Expression expr = new InvocationExpression (new IdentifierExpression ("Equals"), leftId, rightId);
+				if (negate)
+					expr = new UnaryOperatorExpression (UnaryOperatorType.Not, expr);
+				methodDeclaration.Body.Statements.Add (new ReturnStatement (expr));
+				return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
+			}
+
 		}
 	}
 }
