@@ -105,7 +105,7 @@ MD_LAUNCH=$(MD_LAUNCH_SETUP) UBUNTU_MENUPROXY=0 exec -a "monodevelop" $(RUNTIME)
 run: runmd
 
 runmd: $(PROGRAM)
-	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe --redirect-output
 
 run-debug: $(PROGRAM)
 	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH) --debug=casts $(MD_BIN_PATH)/MonoDevelop.exe
