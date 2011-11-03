@@ -135,26 +135,11 @@ namespace MonoDevelop.VersionControl.Views
 			editor.Document.FoldTreeUpdated += delegate {
 				QueueDraw ();
 			};
-			editor.ButtonPressEvent += OnPopupMenu;
+			editor.DoPopupMenu = ShowPopup;
 			Show ();
 		}
 		
-		void OnPopupMenu (object sender, Gtk.ButtonPressEventArgs args)
-		{
-			if (args.Event.Button == 3) {
-				int textEditorXOffset = (int)args.Event.X - (int)editor.TextViewMargin.XOffset;
-				if (textEditorXOffset < 0)
-					return;
-				this.menuPopupLocation = new Cairo.Point ((int)args.Event.X, (int)args.Event.Y);
-				DocumentLocation loc = editor.PointToLocation (textEditorXOffset, (int)args.Event.Y);
-				if (!editor.IsSomethingSelected || !editor.SelectionRange.Contains (editor.Document.LocationToOffset (loc)))
-					editor.Caret.Location = loc;
-				
-				this.ShowPopup ();
-			}
-		}
-		
-		void ShowPopup ()
+		void ShowPopup (EventButton evt)
 		{
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/VersionControl/BlameView/ContextMenu");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
@@ -162,21 +147,12 @@ namespace MonoDevelop.VersionControl.Views
 				this.QueueDraw ();
 			};
 			
-			menu.Popup (null, null, new Gtk.MenuPositionFunc (PositionPopupMenu), 0, Gtk.Global.CurrentEventTime);
-		}
-		
-		Cairo.Point menuPopupLocation;
-		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn)
-		{
-			this.GdkWindow.GetOrigin (out x, out y);
-			x += this.menuPopupLocation.X;
-			y += this.menuPopupLocation.Y;
-			Requisition request = menu.SizeRequest ();
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-			
-			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom - request.Height));
-			x = Math.Max (geometry.Left, Math.Min (x, geometry.Right - request.Width));
-			pushIn = true;
+			if (evt != null) {
+				GtkWorkarounds.ShowContextMenu (menu, this, evt);
+			} else {
+				var pt = editor.LocationToPoint (editor.Caret.Location);
+				GtkWorkarounds.ShowContextMenu (menu, editor, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)editor.LineHeight));
+			}
 		}
 		
 		void HandleAdjustmentChanged (object sender, EventArgs e)
@@ -461,13 +437,14 @@ namespace MonoDevelop.VersionControl.Views
 			uint grabTime;
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
-				if (evnt.Button == 3) {
+				if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (BlameCommands.ShowDiff);
 					opset.AddItem (BlameCommands.ShowLog);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (BlameCommands.CopyRevision);
-					IdeApp.CommandService.ShowContextMenu (opset, this);
+					IdeApp.CommandService.ShowContextMenu (this, evnt, opset, this);
+					return true;
 				} else {
 					if (evnt.X < leftSpacer) {
 						grabTime = evnt.Time;
