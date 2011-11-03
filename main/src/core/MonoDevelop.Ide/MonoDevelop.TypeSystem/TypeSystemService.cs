@@ -333,7 +333,10 @@ namespace MonoDevelop.TypeSystem
 			
 			var cache = new Dictionary<string, SimpleProjectContent> ();
 			foreach (var pair in projectContents) {
-				cache.Add (pair.Key.FileName.ToString (), pair.Value);
+				var key = pair.Key.FileName.ToString ();
+				if (string.IsNullOrEmpty (key))
+					continue;
+				cache[key] = pair.Value;
 			}
 			
 			string fileName = Path.GetTempFileName ();
