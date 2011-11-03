@@ -66,7 +66,8 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		DocumentationPanel documentationPanel = new DocumentationPanel ();
-		Mono.TextEditor.TextEditor inspectEditor = new Mono.TextEditor.TextEditor ();
+		Mono.TextEditor.TextEditor inspectEditor;
+		
 		public AssemblyBrowserWidget ()
 		{
 			this.Build();
@@ -92,7 +93,6 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
-			inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
 			TreeView.ShadowType = ShadowType.In;
 			treeViewPlaceholder.Add (TreeView);
 			treeViewPlaceholder.ShowAll ();
@@ -102,19 +102,18 @@ namespace MonoDevelop.AssemblyBrowser
 			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
 			this.documentationLabel.Wrap = true;
 			
-			Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
-			options.FontName = PropertyService.Get<string> ("FontName");
-			options.ShowFoldMargin = false;
-			options.ShowIconMargin = false;
-			options.ShowInvalidLines = false;
-			options.ShowLineNumberMargin = false;
-			options.ShowSpaces = false;
-			options.ShowTabs = false;
-			options.HighlightCaretLine = true;
-			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
-			this.inspectEditor.Options = options;
+			var options = new MonoDevelop.Ide.Gui.CommonTextEditorOptions () {
+				ShowFoldMargin = false,
+				ShowIconMargin = false,
+				ShowInvalidLines = false,
+				ShowLineNumberMargin = false,
+				ShowSpaces = false,
+				ShowTabs = false,
+				HighlightCaretLine = true,
+			};
+			inspectEditor = new Mono.TextEditor.TextEditor (new Mono.TextEditor.Document (), options);
+			inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
 			
-			PropertyService.PropertyChanged += HandlePropertyChanged;
 			this.inspectEditor.Document.ReadOnly = true;
 //			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
 			this.inspectEditor.TextViewMargin.GetLink = delegate(Mono.TextEditor.MarginMouseEventArgs arg) {
@@ -312,12 +311,6 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			base.OnRealized ();
 			TreeView.GrabFocus ();
-		}
-
-		void HandlePropertyChanged(object sender, MonoDevelop.Core.PropertyChangedEventArgs e)
-		{
-			if (e.Key == "ColorScheme")
-				((Mono.TextEditor.TextEditorOptions)this.inspectEditor.Options).ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 		}
 		
 		ITreeNavigator SearchMember (IMember member)
@@ -1064,7 +1057,6 @@ namespace MonoDevelop.AssemblyBrowser
 //			this.searchEntry.Changed -= SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated -= SearchTreeviewhandleRowActivated;
 			hpaned1.ExposeEvent -= HPaneExpose;
-			PropertyService.PropertyChanged -= HandlePropertyChanged;
 			base.OnDestroyed ();
 		}
 		
