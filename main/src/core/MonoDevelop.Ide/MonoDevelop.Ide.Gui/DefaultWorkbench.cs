@@ -830,16 +830,7 @@ namespace MonoDevelop.Ide.Gui
 					ToggleFullViewMode ();
 			};
 			
-			this.tabControl.PopupMenu += delegate {
-				ShowPopup ();
-			};
-			this.tabControl.ButtonReleaseEvent += delegate (object sender, Gtk.ButtonReleaseEventArgs e) {
-				int tab = tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot);
-				if (tab < 0)
-					return;
-				if (e.Event.Button == 3)
-					ShowPopup ();
-			};
+			this.tabControl.DoPopupMenu = ShowPopup;
 			
 			tabControl.TabsReordered += new TabsReorderedHandler (OnTabsReordered);
 
@@ -962,11 +953,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void ShowPopup ()
+		void ShowPopup (int tabIndex, Gdk.EventButton evt)
 		{
-			Gtk.Menu contextMenu = IdeApp.CommandService.CreateMenu ("/MonoDevelop/Ide/ContextMenu/DocumentTab");
-			if (contextMenu != null)
-				contextMenu.Popup ();
+			this.tabControl.Page = tabIndex;
+			IdeApp.CommandService.ShowContextMenu (this.tabControl, evt, "/MonoDevelop/Ide/ContextMenu/DocumentTab");
 		}
 		
 		void OnTabsReordered (Widget widget, int oldPlacement, int newPlacement)
@@ -1407,6 +1397,28 @@ namespace MonoDevelop.Ide.Gui
 				rect.Height -= CurrentPageWidget.Allocation.Height;
 			yield return rect;
 		}
+		
+		public Action<int,Gdk.EventButton> DoPopupMenu { get; set; }
+		
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			if (DoPopupMenu != null && Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+				int tab = FindTabAtPosition (evnt.XRoot, evnt.YRoot);
+				if (tab >= 0) {
+					DoPopupMenu (tab, evnt);
+					return true;
+				}
+			}
+			return base.OnButtonPressEvent (evnt);
+		}
+		
+		protected override bool OnPopupMenu ()
+		{
+			if (DoPopupMenu != null) {
+				DoPopupMenu (this.Page, null);
+				return true;
+			}
+			return base.OnPopupMenu ();
+		}
 	}
 }
-
