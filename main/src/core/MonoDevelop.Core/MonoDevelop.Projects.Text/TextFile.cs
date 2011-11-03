@@ -128,10 +128,13 @@ namespace MonoDevelop.Projects.Text
 			
 			if (encoding != null) {
 				string s = ConvertFromEncoding (content, encoding);
+				if (s == null) {
+					Read (fileName, null);
+					return;
+				}	
 				text = new StringBuilder (s);
 				sourceEncoding = encoding;
-			}
-			else {
+			} else {
 				string enc = (from bom in bomTable where content.StartsWith (bom.Bytes) select bom.Enc).FirstOrDefault ();
 				if (!string.IsNullOrEmpty (enc)) {
 					// remove the BOM (see bug Bug 538827 – Pango crash when opening a specific file)
@@ -190,7 +193,12 @@ namespace MonoDevelop.Projects.Text
 
 		static string ConvertFromEncoding (byte[] content, string fromEncoding)
 		{
-			return Encoding.UTF8.GetString (ConvertToBytes (content, "UTF-8", fromEncoding));
+			try {
+				return Encoding.UTF8.GetString (ConvertToBytes (content, "UTF-8", fromEncoding));
+			} catch (Exception e) {
+				LoggingService.LogWarning ("Fail to use encoding " + fromEncoding, e);
+				return null;
+			}
 		}
 
 		struct GError {
@@ -226,7 +234,6 @@ namespace MonoDevelop.Projects.Text
 		{
 			if (content.LongLength > int.MaxValue)
 				throw new Exception ("Content too large.");
-			
 			IntPtr nr = IntPtr.Zero, nw = IntPtr.Zero;
 			IntPtr clPtr = new IntPtr (content.Length);
 			IntPtr errptr = IntPtr.Zero;
