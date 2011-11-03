@@ -278,7 +278,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			filestore.SetSortColumnId (3, Gtk.SortType.Ascending);
 			
-			filelist.ShowContextMenu += OnPopupMenu;
+			filelist.DoPopupMenu = DoPopupMenu;
 			
 			StartUpdate();
 		}
@@ -662,7 +662,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void OnPopupMenu (object o, EventArgs args)
+		void DoPopupMenu (Gdk.EventButton evnt)
 		{
 			object commandChain = this;
 			CommandEntrySet opset = new CommandEntrySet ();
@@ -684,7 +684,7 @@ namespace MonoDevelop.VersionControl.Views
 				} else
 					opset.AddSeparator ();
 			}
-			IdeApp.CommandService.ShowContextMenu (opset, commandChain);
+			IdeApp.CommandService.ShowContextMenu (filelist, evnt, opset, commandChain);
 		}
 		
 		public VersionControlItemList GetSelectedItems ()
@@ -1030,39 +1030,44 @@ namespace MonoDevelop.VersionControl.Views
 
 	class FileTreeView: TreeView
 	{
-		protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
+		const Gdk.ModifierType selectionModifiers = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask;
+		
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			bool keepPos = false;
 			double vpos = 0;
 			
-			TreePath path, cpath;
+			bool handled = false;
+			
+			TreePath path;
 			GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path);
-			
-			TreeViewColumn col;
-			GetCursor (out cpath, out col);
-			
 			if (path != null && path.Depth == 2) {
 				vpos = Vadjustment.Value;
 				keepPos = true;
 				if (Selection.PathIsSelected (path) && Selection.GetSelectedRows ().Length == 1 && evnt.Button == 1) {
 					if (evnt.Type == Gdk.EventType.TwoButtonPress && DiffLineActivated != null)
 						DiffLineActivated (this, EventArgs.Empty);
-					return true;
+					handled = true;
 				}
 			}
 			
-			bool res = true;
-			bool withModifider = (evnt.State & Gdk.ModifierType.ShiftMask) != 0 || (evnt.State & Gdk.ModifierType.ControlMask) != 0;
-			if (!IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y) || (Selection.GetSelectedRows ().Length <= 1) || withModifider || evnt.Button != 3)
-				res = base.OnButtonPressEvent (evnt);
+			handled = handled || (
+				IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y)
+				&& this.Selection.GetSelectedRows ().Length > 1
+				&& (evnt.State & selectionModifiers) == 0);
 			
-			if (evnt.Button == 3) {
-				if (ShowContextMenu != null)
-					ShowContextMenu (this, EventArgs.Empty);
+			if (!handled)
+				handled = base.OnButtonPressEvent (evnt);
+			
+			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+				if (DoPopupMenu != null)
+					DoPopupMenu (evnt);
+				handled = true;
 			}
+			
 			if (keepPos)
 				Vadjustment.Value = vpos;
-			return res;
+			return handled;
 		}
 		
 		bool IsClickedNodeSelected (int x, int y)
@@ -1076,8 +1081,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override bool OnPopupMenu()
 		{
-			if (ShowContextMenu != null)
-				ShowContextMenu (this, EventArgs.Empty);
+			if (DoPopupMenu != null)
+				DoPopupMenu (null);
 			return true;
 		}
 		
@@ -1116,7 +1121,7 @@ namespace MonoDevelop.VersionControl.Views
 			return base.OnScrollEvent (evnt);
 		}
 
-		public event EventHandler ShowContextMenu;
+		public Action<Gdk.EventButton> DoPopupMenu;
 		public event EventHandler DiffLineActivated;
 	}
 }
