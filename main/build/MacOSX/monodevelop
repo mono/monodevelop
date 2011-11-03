@@ -47,7 +47,7 @@ if [ -d "$DIR/lib/moonlight" ]; then
         export MOONLIGHT_SDK_PATH="$DIR/lib/moonlight"
 fi
 
-_MD_LOG_FILE="${MD_LOG_FILE:-$HOME/Library/Logs/MonoDevelop-$MONODEVELOP_MAJOR_VERSION/MonoDevelop.log}"
+#_MD_LOG_FILE="${MD_LOG_FILE:-$HOME/Library/Logs/MonoDevelop-$MONODEVELOP_MAJOR_VERSION/MonoDevelop.log}"
 
 # NOTE: remove this for stable releases
 if [ -z "$MD_NO_DEBUG" ]; then
@@ -56,10 +56,10 @@ else
 	_MONO_OPTIONS=$MONO_OPTIONS
 fi
 
-if [ -z "$MD_DONT_REDIRECT_OUTPUT" ]; then
-	mkdir -p "`dirname \"$_MD_LOG_FILE\"`"
-	exec "$DIR/bin/monodevelop" $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 1> "$_MD_LOG_FILE"
-else
+#if [ -z "$MD_DONT_REDIRECT_OUTPUT" ]; then
+#	mkdir -p "`dirname \"$_MD_LOG_FILE\"`"
+#	exec "$DIR/bin/monodevelop" $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 1> "$_MD_LOG_FILE"
+#else
 	exec "$DIR/bin/monodevelop" $_MONO_OPTIONS "$EXE_PATH" $*
-fi
+#fi
 
