@@ -310,7 +310,7 @@ namespace MonoDevelop.Ide
 		
 		void LaunchCrashMonitoringService ()
 		{
-			string enabledKey = "MonoDevelop.CrashMonitoring.Enabled";
+			string enabledKey = "MonoDevelop.LogAgent.ReportCrashes";
 			
 			if (Platform.IsMac) {
 				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
@@ -322,8 +322,8 @@ namespace MonoDevelop.Ide
 				var fileInfo = new FileInfo (Path.Combine (logPath, "crashlogs.xml"));
 				if (!PropertyService.HasValue (enabledKey) && fileInfo.Exists && fileInfo.Length > 0) {
 					var result = MessageService.AskQuestion ("A crash has been detected",
-						"MonoDevelop has crashed recently. Details of this crash along with your configured " +
-						"email address can be uploaded to Xamarin to help diagnose the issue. This information " +
+						"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
+						"information can be uploaded to Xamarin to help diagnose the issue. This information " +
 						"will be used to help diagnose the crash and notify you of potential workarounds " +
 						"or fixes. Do you wish to upload this information?",
 						AlertButton.Yes, AlertButton.No);
