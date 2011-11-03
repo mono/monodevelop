@@ -3,6 +3,8 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Subversion.dll
 
 DEPS =  \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
