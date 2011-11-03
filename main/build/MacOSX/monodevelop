@@ -60,6 +60,6 @@ fi
 #	mkdir -p "`dirname \"$_MD_LOG_FILE\"`"
 #	exec "$DIR/bin/monodevelop" $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 1> "$_MD_LOG_FILE"
 #else
-	exec "$DIR/bin/monodevelop" $_MONO_OPTIONS "$EXE_PATH" $*
+	exec "$DIR/bin/monodevelop" $_MONO_OPTIONS "$EXE_PATH" --redirect-output $*
 #fi
 
