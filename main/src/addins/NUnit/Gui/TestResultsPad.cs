@@ -59,7 +59,7 @@ namespace MonoDevelop.NUnit
 		Label resultLabel = new Label ();
 		
 		ProgressBar progressBar = new ProgressBar ();
-		TreeView failuresTreeView;
+		MonoDevelop.Ide.Gui.Components.PadTreeView failuresTreeView;
 		TreeStore failuresStore;
 		TextView outputView;
 		TextTag bold;
@@ -109,7 +109,7 @@ namespace MonoDevelop.NUnit
 			panel.FocusChain = new Gtk.Widget [] { book };
 			
 			// Failures tree
-			failuresTreeView = new TreeView ();
+			failuresTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
 			failuresTreeView.HeadersVisible = false;
 			failuresStore = new TreeStore (typeof(Pixbuf), typeof (string), typeof(object), typeof(string));
 			var pr = new CellRendererPixbuf ();
@@ -138,9 +138,12 @@ namespace MonoDevelop.NUnit
 			book.Pack2 (sw, true, true);
 			outputViewScrolled = sw;
 			
-			failuresTreeView.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler (OnPopupMenu);
 			failuresTreeView.RowActivated += OnRowActivated;
 			failuresTreeView.Selection.Changed += OnRowSelected;
+			failuresTreeView.DoPopupMenu = delegate (EventButton evt) {
+				IdeApp.CommandService.ShowContextMenu (failuresTreeView, evt,
+					"/MonoDevelop/NUnit/ContextMenu/TestResultsPad");
+			};
 			
 			Control.ShowAll ();
 			
@@ -407,13 +410,6 @@ namespace MonoDevelop.NUnit
 			if (rootTest == null)
 				return;
 			NUnitService.Instance.RunTest (rootTest, null);
-		}
-		
-		void OnPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)
-		{
-			if (args.Event.Button == 3) {
-				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/NUnit/ContextMenu/TestResultsPad");
-			}
 		}
 
 		void OnRowActivated (object s, EventArgs a)

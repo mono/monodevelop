@@ -146,7 +146,7 @@ namespace MonoDevelop.NUnit
 			VBox boxPaned1 = new VBox ();
 			
 			chart = new TestChart ();
-			chart.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler (OnChartPopupMenu);
+			chart.ButtonPressEvent += OnChartButtonPress;
 			chart.SelectionChanged += new EventHandler (OnChartDateChanged);
 			chart.HeightRequest = 50;
 			
@@ -712,10 +712,11 @@ namespace MonoDevelop.NUnit
 				chart.GoLast ();
 		}
 		
-		void OnChartPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)
+		void OnChartButtonPress (object o, Gtk.ButtonPressEventArgs args)
 		{
-			if (args.Event.Button == 3) {
+			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (args.Event)) {
 				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/NUnit/ContextMenu/TestChart");
+				args.RetVal = true;
 			}
 		}
 		
