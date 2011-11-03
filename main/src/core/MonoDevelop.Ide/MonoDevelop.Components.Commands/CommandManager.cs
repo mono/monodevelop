@@ -504,7 +504,7 @@ namespace MonoDevelop.Components.Commands
 			if (menu is CommandMenu) {
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget;
 			}
-			ShowContextMenu (menu, evt);
+			ShowContextMenu (null, evt, menu, initialCommandTarget);
 		}
 		
 		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
