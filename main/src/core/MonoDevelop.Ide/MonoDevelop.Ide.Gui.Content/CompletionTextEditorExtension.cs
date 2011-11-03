@@ -115,8 +115,9 @@ namespace MonoDevelop.Ide.Gui.Content
 					return res;
 				}
 			}*/
-
-			if (!enableCodeCompletion)
+			
+			// don't complete on block selection
+			if (!enableCodeCompletion || Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
 				return res;
 			
 			// Handle code completion
@@ -158,6 +159,8 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		protected void ShowCompletion (ICompletionDataList completionList, int triggerWordLength, char keyChar)
 		{
+			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+				return;
 			if (CompletionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				if (triggerWordLength > 0 && triggerWordLength < Editor.Caret.Offset) {
@@ -202,6 +205,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual void RunCompletionCommand ()
 		{
+			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+				return;
+			
 			if (CompletionWindowManager.IsVisible) {
 				CompletionWindowManager.Wnd.ToggleCategoryMode ();
 				return;
@@ -255,6 +261,8 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowParameterCompletionWindow)]
 		public virtual void RunParameterCompletionCommand ()
 		{
+			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+				return;
 			IParameterDataProvider cp = null;
 			int cpos;
 			if (!GetParameterCompletionCommandOffset (out cpos))
