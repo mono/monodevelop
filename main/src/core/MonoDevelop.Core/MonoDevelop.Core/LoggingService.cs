@@ -85,6 +85,9 @@ namespace MonoDevelop.Core
 		static void PurgeOldLogs ()
 		{
 			// Delete all logs older than 30 days
+			if (!Directory.Exists (UserProfile.Current.LogDir))
+				return;
+
 			var files = Directory.EnumerateFiles (UserProfile.Current.LogDir)
 				.Select (f => new FileInfo (f))
 				.Where (f => f.CreationTimeUtc < DateTime.UtcNow.Subtract (TimeSpan.FromDays (30)));
