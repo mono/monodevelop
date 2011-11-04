@@ -1024,8 +1024,6 @@
                       <widget class="Gtk.TreeView" id="tree">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <signal name="PopupMenu" handler="OnTreePopupMenu" />
-                        <signal name="ButtonReleaseEvent" handler="OnTreeButtonReleaseEvent" />
                       </widget>
                     </child>
                   </widget>

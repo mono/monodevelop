@@ -176,8 +176,6 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonAdd.Clicked += new global::System.EventHandler (this.OnButtonAddClicked);
 			this.addNodeButton.Pressed += new global::System.EventHandler (this.OnAddNodeButtonPressed);
 			this.buttonRemove.Clicked += new global::System.EventHandler (this.OnButtonRemoveClicked);
-			this.tree.PopupMenu += new global::Gtk.PopupMenuHandler (this.OnTreePopupMenu);
-			this.tree.ButtonReleaseEvent += new global::Gtk.ButtonReleaseEventHandler (this.OnTreeButtonReleaseEvent);
 		}
 	}
 }
