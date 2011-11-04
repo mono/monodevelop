@@ -26,7 +26,7 @@
 
 using System;
 
-namespace MonoDevelop.CrashReporting
+namespace MonoDevelop.Core.LogReporting
 {
 	[Serializable]
 	public class CrashReport

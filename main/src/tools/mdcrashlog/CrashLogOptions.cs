@@ -30,14 +30,6 @@ namespace MonoDevelop.CrashLog
 {
 	public static class CrashLogOptions
 	{
-		public static string Email {
-			get; private set;
-		}
-		
-		public static bool LogOnly {
-			get; private set;
-		}
-		
 		public static string LogPath {
 			get; private set;
 		}
@@ -46,37 +38,33 @@ namespace MonoDevelop.CrashLog
 			get; private set;
 		}
 		
+		public static string SessionUuid {
+			get; private set;
+		}
+		
 		public static bool TryParse (string[] args, out string error)
 		{
 			error = null;
-			int pid = -1;
+			Pid = -1;
 			
 			for (int i = 0; i < args.Length; i ++) {
-				if (args [i] == "-p") {
-					if (!int.TryParse (args [++ i], out pid)) {
-						pid = -1;
-					}
-					Pid = pid;
+				if (args [i] == "-pid") {
+					Pid = int.Parse (args [++ i]);
 				}
-				
-				if (args [i] == "-l") {
+				if (args [i] == "-log") {
 					LogPath = args [++ i];
 				}
-				
-				if (args [i] == "-email") {
-					Email = args [++ i];
+				if (args[i] == "-session") {
+					SessionUuid = args [++ i];
 				}
-				
-				if (args [i] == "-logonly")
-					LogOnly = true;
 			}
 			
 			if (Pid == -1) {
 				error = "The pid of the MonoDevelop process being monitored must be supplied";
 			} else if (string.IsNullOrEmpty (LogPath)) {
 				error = "The path to write log files to must be supplied";
-			} else if (string.IsNullOrEmpty (Email)) {
-				error = "The users email must be supplied";
+			} else if (string.IsNullOrEmpty (SessionUuid)) {
+				error = "The session uuid must be supplied";
 			}
 			
 			

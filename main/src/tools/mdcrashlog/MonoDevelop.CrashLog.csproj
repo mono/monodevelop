@@ -37,13 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.Monitoring\ICrashMonitor.cs" />
-    <Compile Include="MonoDevelop.Monitoring\CrashEventArgs.cs" />
-    <Compile Include="MonoDevelop.Monitoring\CrashMonitor.cs" />
-    <Compile Include="MonoDevelop.Monitoring\MacCrashMonitor.cs" />
     <Compile Include="MonoDevelop.SessionLogging\ISessionLogger.cs" />
-    <Compile Include="MonoDevelop.CrashReporting\CrashReporter.cs" />
-    <Compile Include="MonoDevelop.CrashReporting\CrashReport.cs" />
     <Compile Include="CrashLogOptions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

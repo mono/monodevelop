@@ -28,6 +28,7 @@ using System;
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Core.LogReporting;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -47,10 +48,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	}
 	
 	public class LogAgentPanelWidget : Gtk.Bin 
-	{
-		const string ReportCrashProperty = "MonoDevelop.LogAgent.ReportCrashes";
-		const string ReportUsageProperty = "MonoDevelop.LogAgent.ReportUsage";
-		
+	{	
 		bool? reportCrash;
 		bool? reportUsage;
 		
@@ -61,14 +59,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public LogAgentPanelWidget ()
 		{
 			global::Stetic.BinContainer.Attach (this);
-			chkCrash = new CheckButton (GettextCatalog.GetString ("Automatically submit crash diagnostic information")) {
-				Active = PropertyService.Get<bool> (ReportCrashProperty)
-			};
+			var value = LogReportingService.ReportCrashes;
+			chkCrash = new CheckButton (GettextCatalog.GetString ("Automatically submit crash diagnostic information"));
+			if (value.HasValue)
+				chkUsage.Active = value.Value;
+			else
+				chkUsage.Inconsistent = true;
 			chkCrash.Toggled += (sender, e) => reportCrash = chkCrash.Active;
 			
-			chkUsage = new CheckButton (GettextCatalog.GetString ("Automatically submit usage information")) {
-				Active = PropertyService.Get<bool> (ReportUsageProperty)
-			};
+			value = LogReportingService.ReportUsage;
+			chkUsage = new CheckButton (GettextCatalog.GetString ("Automatically submit usage information"));
+			if (value.HasValue)
+				chkUsage.Active = value.Value;
+			else
+				chkUsage.Inconsistent = true;
 			chkUsage.Toggled += (sender, e) => reportUsage = chkUsage.Active;
 			
 			container = new Gtk.VBox ();
@@ -82,9 +86,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void Store ()
 		{
 			if (reportCrash.HasValue)
-				PropertyService.Set (ReportCrashProperty, reportCrash.Value);
+				LogReportingService.ReportCrashes = reportCrash.Value;
 			if (reportUsage.HasValue)
-				PropertyService.Set (ReportUsageProperty, reportUsage.Value);
+				LogReportingService.ReportUsage = reportUsage.Value;
 		}
 	}
 }

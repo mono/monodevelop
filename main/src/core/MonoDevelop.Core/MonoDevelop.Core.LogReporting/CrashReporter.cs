@@ -31,9 +31,8 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Net;
 using System.Web;
-using MonoDevelop.CrashLog;
 
-namespace MonoDevelop.CrashReporting
+namespace MonoDevelop.Core.LogReporting
 {
 	public class CrashReporter
 	{
@@ -75,7 +74,7 @@ namespace MonoDevelop.CrashReporting
 		{
 			try {
 				// If log only mode is enabled, don't try to process the cache
-				if (CrashLogOptions.LogOnly)
+				if (!LogReportingService.ReportCrashes.GetValueOrDefault ())
 					return;
 				
 				var reports = ReadCachedReports ();
@@ -144,7 +143,7 @@ namespace MonoDevelop.CrashReporting
 		bool TryUploadReport (CrashReport report)
 		{
 			try {
-				if (CrashLogOptions.LogOnly) {
+				if (!LogReportingService.ReportCrashes.GetValueOrDefault ()) {
 					Logger.WriteLine ("CrashReporter is in log only mode. All crashes will be cached");
 					return false;
 				}

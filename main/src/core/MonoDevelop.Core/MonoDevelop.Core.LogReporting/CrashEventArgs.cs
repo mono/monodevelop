@@ -1,5 +1,5 @@
 // 
-// Main.cs
+// CrashEventArgs.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
@@ -25,29 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-using MonoDevelop;
-using System.IO;
 
-namespace MacCrashLogger
+namespace MonoDevelop.Core.LogReporting
 {
-	class MainClass
+	public class CrashEventArgs : EventArgs
 	{
-		static int Main (string [] args)
+		public string CrashLogPath {
+			get; private set;
+		}
+		
+		public CrashEventArgs (string crashLogPath)
 		{
-//			string error;
-//			if (!MonoDevelop.CrashLog.CrashLogOptions.TryParse (args, out error)) {
-//				Console.Error.WriteLine (error);
-//				return 1;
-//			}
-//			
-//			NSApplication.Init ();
-//			NSApplication.Main (args);
-//			return 0;
-			return 0;
+			CrashLogPath = crashLogPath;
 		}
 	}
 }

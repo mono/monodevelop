@@ -11,12 +11,6 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	CrashLogOptions.cs \
-	MonoDevelop.CrashReporting/CrashReport.cs \
-	MonoDevelop.CrashReporting/CrashReporter.cs \
-	MonoDevelop.Monitoring/CrashEventArgs.cs \
-	MonoDevelop.Monitoring/CrashMonitor.cs \
-	MonoDevelop.Monitoring/ICrashMonitor.cs \
-	MonoDevelop.Monitoring/MacCrashMonitor.cs \
 	MonoDevelop.SessionLogging/ISessionLogger.cs
 
 DEPS =  \
