@@ -457,16 +457,28 @@ namespace MonoDevelop.Ide
 		void SetupExceptionManager ()
 		{
 			GLib.ExceptionManager.UnhandledException += delegate (GLib.UnhandledExceptionArgs args) {
-				var ex = (Exception)args.ExceptionObject;
-				LoggingService.LogError ("Unhandled Exception", ex);
-				MessageService.ShowException (ex, "Unhandled Exception");
+				HandleException ((Exception)args.ExceptionObject, args.IsTerminating);
 			};
 			AppDomain.CurrentDomain.UnhandledException += delegate (object sender, UnhandledExceptionEventArgs args) {
-				//FIXME: try to save all open files, since we can't prevent the runtime from terminating
-				var ex = (Exception)args.ExceptionObject;
-				LoggingService.LogFatalError ("Unhandled Exception", ex);
-				MessageService.ShowException (ex, "Unhandled Exception. MonoDevelop will now close.");
+				HandleException ((Exception)args.ExceptionObject, args.IsTerminating);
 			};
+		}
+		
+		void HandleException (Exception ex, bool willShutdown)
+		{
+			var report = LogReportingService.ReportCrashes;
+			
+			string message = GettextCatalog.GetString ("An unhandled exception has occurred.");
+			if (report.HasValue && report.Value) {
+				message += GettextCatalog.GetString (" Details of this crash have been automatically submitted for analysis.");
+				LogReportingService.ReportUnhandledException (ex);
+			} else {
+				message += GettextCatalog.GetString (" Details of thie crash have not been submitted as error reporting has been disabled.");
+			}
+			
+			if (willShutdown)
+				message += GettextCatalog.GetString (" MonoDevelop will now close.");
+			MessageService.ShowException (ex, message);
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>

@@ -91,8 +91,6 @@ FILES =  \
 	MonoDevelop.Core.Logging/RemoteLogger.cs \
 	MonoDevelop.Core.LogReporting/CrashEventArgs.cs \
 	MonoDevelop.Core.LogReporting/CrashMonitor.cs \
-	MonoDevelop.Core.LogReporting/CrashReport.cs \
-	MonoDevelop.Core.LogReporting/CrashReporter.cs \
 	MonoDevelop.Core.LogReporting/ICrashMonitor.cs \
 	MonoDevelop.Core.LogReporting/LogReportingService.cs \
 	MonoDevelop.Core.LogReporting/MacCrashMonitor.cs \
