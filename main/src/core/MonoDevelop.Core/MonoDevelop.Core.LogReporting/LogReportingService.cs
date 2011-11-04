@@ -24,14 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
+using System.Threading;
+using System.Net;
+using System.Web;
 
 namespace MonoDevelop.Core.LogReporting
 {
 	public static class LogReportingService
 	{
+		public static readonly FilePath CrashLogDirectory = UserProfile.Current.LogDir.Combine ("LogAgent");
+		
 		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
 		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
-		public static readonly FilePath CrashLogDirectory = UserProfile.Current.LogDir.Combine ("LogAgent");
+		
+		static int CrashId;
+		static int Processing;
 		
 		public static bool? ReportCrashes {
 			get { return PropertyService.Get<bool?> (ReportCrashesKey); }
@@ -41,6 +49,84 @@ namespace MonoDevelop.Core.LogReporting
 		public static bool? ReportUsage {
 			get { return PropertyService.Get<bool?> (ReportUsageKey); }
 			set { PropertyService.Set (ReportUsageKey, value); }
+		}
+		
+		public static void ReportUnhandledException (Exception ex)
+		{
+			// If crash reporting has been explicitly disabled, disregard this
+			if (ReportCrashes.HasValue && !ReportCrashes.Value)
+				return;
+
+			var data = System.Text.Encoding.UTF8.GetBytes (ex.ToString ());
+			var filename = string.Format ("{0}.{1}.crashlog", SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
+			if (!TryUploadReport (filename, data)) {
+				if (!Directory.Exists (CrashLogDirectory))
+					Directory.CreateDirectory (CrashLogDirectory);
+
+				File.WriteAllBytes (CrashLogDirectory.Combine (filename), data);
+			}
+		}
+		
+		public static void ProcessCache ()
+		{
+			int origValue = -1;
+			try {
+				// Ensure only 1 thread at a time attempts to upload cached reports
+				origValue = Interlocked.CompareExchange (ref Processing, 1, 0);
+				if (origValue != 0)
+					return;
+				
+				// Uploading is not enabled, so bail out
+				if (!ReportCrashes.GetValueOrDefault ())
+					return;
+				
+				// Definitely no crash reports if this doesn't exist
+				if (!Directory.Exists (CrashLogDirectory))
+					return;
+				
+				foreach (var file in Directory.GetFiles (CrashLogDirectory)) {
+					if (TryUploadReport (file, File.ReadAllBytes (file)))
+						File.Delete (file);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception processing cached crashes", ex);
+			} finally {
+				if (origValue == 0)
+					Interlocked.CompareExchange (ref Processing, 0, 1);
+			}
+		}
+
+		static bool TryUploadReport (string filename, byte[] data)
+		{
+			try {
+				var server = Environment.GetEnvironmentVariable ("MONODEVELOP_CRASHREPORT_SERVER");
+				if (string.IsNullOrEmpty (server))
+					server = "software.xamarin.com";
+
+				var url = string.Format ("http://{0}/Service/IssueLogging?filename={1}", server, HttpUtility.UrlEncode (filename));
+				var request = WebRequest.Create (url);
+				request.Method = "POST";
+				request.ContentLength = data.Length;
+				using (var requestStream = request.GetRequestStream ())
+					requestStream.Write (data, 0, data.Length);
+				
+				LoggingService.LogDebug ("CrashReport sent to server, awaiting response...");
+
+				// Ensure the server has correctly processed everything.
+				using (var response = request.GetResponse ()) {
+					var responseText = new StreamReader (response.GetResponseStream ()).ReadToEnd (); 
+					if (responseText != "OK") {
+						LoggingService.LogError ("Server responded with error: {0}", responseText);
+						return false;
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to upload report to the server", ex);
+				return false;
+			}
+
+			LoggingService.LogDebug ("Successfully uploaded crash report");
+			return true;
 		}
 	}
 }

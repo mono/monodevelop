@@ -59,6 +59,9 @@ namespace MonoDevelop.Ide
 
 				LogReportingService.ReportCrashes = result == AlertButton.Yes;
 			}
+			
+			// Process cached crash reports if there are any and uploading is enabled
+			LogReportingService.ProcessCache ();
 		}
 	}
 }
