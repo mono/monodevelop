@@ -103,7 +103,7 @@ namespace MonoDevelop.Core
 				Directory.CreateDirectory (logDir);
 			
 			//TODO: log rotation
-			string file = logDir.Combine (string.Format ("MonoDevelop.{0}.{1}.log", SystemInformation.InstallationUuid, SystemInformation.SessionUuid));
+			string file = logDir.Combine (string.Format ("MonoDevelop.{0}.log", SystemInformation.SessionUuid));
 			try {
 				if (Platform.IsWindows) {
 					//TODO: redirect the file descriptors on Windows, just plugging in a textwriter won't get everything
