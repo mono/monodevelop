@@ -754,7 +754,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
-				if (evnt.Button == 1 && !selectedHunk.IsEmpty)
+				if (!evnt.TriggersContextMenu () && evnt.Button == 1 && !selectedHunk.IsEmpty)
 					widget.UndoChange (fromEditor, toEditor, selectedHunk);
 				return base.OnButtonPressEvent (evnt);
 			}

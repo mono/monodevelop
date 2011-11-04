@@ -1038,17 +1038,20 @@ namespace MonoDevelop.VersionControl.Views
 			bool keepPos = false;
 			double vpos = 0;
 			
+			bool ctxMenu = evnt.TriggersContextMenu ();
 			bool handled = false;
 			
-			TreePath path;
-			GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path);
-			if (path != null && path.Depth == 2) {
-				vpos = Vadjustment.Value;
-				keepPos = true;
-				if (Selection.PathIsSelected (path) && Selection.GetSelectedRows ().Length == 1 && evnt.Button == 1) {
-					if (evnt.Type == Gdk.EventType.TwoButtonPress && DiffLineActivated != null)
-						DiffLineActivated (this, EventArgs.Empty);
-					handled = true;
+			if (!ctxMenu) {
+				TreePath path;
+				GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path);
+				if (path != null && path.Depth == 2) {
+					vpos = Vadjustment.Value;
+					keepPos = true;
+					if (Selection.PathIsSelected (path) && Selection.GetSelectedRows ().Length == 1 && evnt.Button == 1) {
+						if (evnt.Type == Gdk.EventType.TwoButtonPress && DiffLineActivated != null)
+							DiffLineActivated (this, EventArgs.Empty);
+						handled = true;
+					}
 				}
 			}
 			
@@ -1060,7 +1063,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!handled)
 				handled = base.OnButtonPressEvent (evnt);
 			
-			if (evnt.TriggersContextMenu ()) {
+			if (ctxMenu) {
 				if (DoPopupMenu != null)
 					DoPopupMenu (evnt);
 				handled = true;

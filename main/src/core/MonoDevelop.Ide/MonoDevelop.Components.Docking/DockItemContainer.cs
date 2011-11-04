@@ -212,7 +212,7 @@ namespace MonoDevelop.Components.Docking
 		
 		void HeaderButtonRelease (object ob, Gtk.ButtonReleaseEventArgs args)
 		{
-			if (args.Event.Button == 1) {
+			if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
 				frame.DockInPlaceholder (item);
 				frame.HidePlaceholder ();
 				if (header.GdkWindow != null)

@@ -32,6 +32,7 @@ using Mono.Addins.Gui;
 using MonoDevelop.Ide.ProgressMonitoring;
 using Mono.Addins;
 using MonoDevelop.Core.Setup;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Updater
 {
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Updater
 		
 		void OnUpdateClicked (object s, ButtonPressEventArgs args)
 		{
-			if (args.Event.Button == 1) {
+			if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
 				HideAlert ();
 				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 			}

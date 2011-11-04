@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Chart
 {
@@ -836,7 +837,7 @@ namespace MonoDevelop.Components.Chart
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton ev)
 		{
-			if (ev.Button == 1) {
+			if (!ev.TriggersContextMenu () && ev.Button == 1) {
 				foreach (ChartCursor cursor in cursors) {
 					int cx, cy;
 					GetPoint (cursor.Value, cursor.Value, out cx, out cy);

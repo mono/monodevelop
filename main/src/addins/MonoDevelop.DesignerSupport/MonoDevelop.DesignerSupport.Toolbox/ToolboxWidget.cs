@@ -32,6 +32,7 @@ using System.Collections.ObjectModel;
 using Gtk;
 using Pango;
 using Gdk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -422,7 +423,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.GrabFocus ();
 			HideTooltipWindow ();
 			if (this.mouseOverItem is Category) {
-				if (e.Button == 1) {
+				if (!e.TriggersContextMenu () && e.Button == 1) {
 					Category mouseOverCateogry = (Category)this.mouseOverItem;
 					mouseOverCateogry.IsExpanded = !mouseOverCateogry.IsExpanded;
 				}

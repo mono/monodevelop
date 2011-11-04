@@ -26,6 +26,7 @@
 
 using System;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -105,7 +106,7 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1 && Clickable && !ClickOnRelease) {
+			if (!ClickOnRelease && Clickable && evnt.Button == 1 && !evnt.TriggersContextMenu ()) {
 				OnClicked ();
 				return true;
 			}
@@ -114,7 +115,7 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1 && Clickable && ClickOnRelease) {
+			if (ClickOnRelease && evnt.Button == 1 && !evnt.TriggersContextMenu ()) {
 				OnClicked ();
 				return true;
 			}
