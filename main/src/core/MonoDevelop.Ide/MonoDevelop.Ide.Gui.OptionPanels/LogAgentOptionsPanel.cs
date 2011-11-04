@@ -59,20 +59,17 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public LogAgentPanelWidget ()
 		{
 			global::Stetic.BinContainer.Attach (this);
+			
 			var value = LogReportingService.ReportCrashes;
 			chkCrash = new CheckButton (GettextCatalog.GetString ("Automatically submit crash diagnostic information"));
 			if (value.HasValue)
 				chkCrash.Active = value.Value;
-			else
-				chkCrash.Inconsistent = true;
 			chkCrash.Toggled += (sender, e) => reportCrash = chkCrash.Active;
 			
 			value = LogReportingService.ReportUsage;
 			chkUsage = new CheckButton (GettextCatalog.GetString ("Automatically submit usage information"));
 			if (value.HasValue)
 				chkUsage.Active = value.Value;
-			else
-				chkUsage.Inconsistent = true;
 			chkUsage.Toggled += (sender, e) => reportUsage = chkUsage.Active;
 			
 			container = new Gtk.VBox ();
