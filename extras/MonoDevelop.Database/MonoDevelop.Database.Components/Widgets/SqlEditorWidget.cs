@@ -61,10 +61,8 @@ namespace MonoDevelop.Database.Components
 			//	sourceView.ShowLineNumbers = true;
 			
 			sourceView.Document.TextReplaced += BufferChanged;
-			sourceView.TextViewMargin.ButtonPressed += delegate (object s, MarginMouseEventArgs args) {
-				if (args.Button == 3) {
-					IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/Database/ContextMenu/SqlEditor");
-				}
+			sourceView.DoPopupMenu = delegate (Gdk.EventButton e) {
+				IdeApp.CommandService.ShowContextMenu (sourceView, e, "/MonoDevelop/Database/ContextMenu/SqlEditor");
 			};
 
 			scrolledwindow.Add (sourceView);
