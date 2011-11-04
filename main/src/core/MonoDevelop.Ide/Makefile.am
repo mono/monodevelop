@@ -706,6 +706,7 @@ FILES =  \
 	MonoDevelop.Ide/Ide.cs \
 	MonoDevelop.Ide/IdePreferences.cs \
 	MonoDevelop.Ide/IdeStartup.cs \
+	MonoDevelop.Ide/IdeVersionInfo.cs \
 	MonoDevelop.Ide/ImageService.cs \
 	MonoDevelop.Ide/MessageService.cs \
 	MonoDevelop.Ide/ProjectOperations.cs \

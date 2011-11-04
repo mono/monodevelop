@@ -1,22 +1,21 @@
-// VersionInformationTabPage.cs
-//
+// 
+// IdeVersionInfo.cs
+//  
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
-//   Mike Krüger <mkrueger@xamarin.com>
-//
-// Copyright (c) 2009 RemObjects Software
-// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
-//
+//       Alan McGovern <alan@xamarin.com>
+// 
+// Copyright (c) 2011 Alan McGovern
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,36 +23,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using Gtk;
 using MonoDevelop.Core;
 using System.Reflection;
-using System.Text;
-using System.IO;
-using MonoDevelop.Ide.Fonts;
-using Mono.Addins;
 
-
-namespace MonoDevelop.Ide.Gui.Dialogs
+namespace MonoDevelop.Ide
 {
-	[ObsoleteAttribute ("Use ISystemInformationProvider")]
-	public interface IAboutInformation
-	{
-		string Description {
-			get;
-		}
-	}
-	
-	internal class VersionInformationTabPage: VBox
+	public class IdeVersionInfo : ISystemInformationProvider
 	{
 		static bool IsMono ()
 		{
 			return Type.GetType ("Mono.Runtime") != null;
 		}
-		
+
 		static string GetMonoVersionNumber ()
 		{
 			var t = Type.GetType ("Mono.Runtime"); 
@@ -88,26 +70,41 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return "unknown";
 			return v1 +"." + v2 + "."+ v3;
 		}
-
-		public VersionInformationTabPage ()
-		{
-			var buf = new TextBuffer (null);
-			buf.Text = SystemInformation.ToText ();
-			
-			var sw = new ScrolledWindow () {
-				BorderWidth = 6,
-				ShadowType = ShadowType.EtchedIn,
-				Child = new TextView (buf) {
-					Editable = false,
-					LeftMargin = 4,
-					RightMargin = 4,
-					PixelsAboveLines = 4,
-					PixelsBelowLines = 4
+		
+		string ISystemInformationProvider.Description {
+			get {
+				var sb = new System.Text.StringBuilder ();
+				sb.Append ("MonoDevelop ");
+				sb.AppendLine (MonoDevelopVersion);
+				
+				sb.Append ("Installation UUID: ");
+				sb.AppendLine (SystemInformation.InstallationUuid);
+							
+				sb.AppendLine ("Runtime:");
+				if (IsMono ()) {
+					sb.Append ("\tMono " + GetMonoVersionNumber ());
+				} else {
+					sb.Append ("\tMicrosoft .NET " + Environment.Version);
 				}
-			};
 			
-			sw.Child.ModifyFont (Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont));
-			PackStart (sw, true, true, 0);
+				if (IntPtr.Size == 8)
+					sb.Append (" (64-bit)");
+				sb.AppendLine ();
+				sb.Append ("\tGTK ");
+				sb.AppendLine (GetGtkVersion ());
+				sb.Append ("\tGTK# (");
+				sb.Append (typeof(Gtk.VBox).Assembly.GetName ().Version);
+				sb.Append (")");
+				return sb.ToString (); 
+			}
+		}
+		
+		public string MonoDevelopVersion {
+			get { return BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel
+					? BuildVariables.PackageVersionLabel
+					: string.Format ("{0} ({1})", BuildVariables.PackageVersionLabel, BuildVariables.PackageVersion);
+			}
 		}
 	}
 }
+

@@ -53,11 +53,13 @@ namespace MonoDevelop.Components.Docking
 		Gtk.PositionType position;
 		bool disposed;
 		bool insideGrip;
+		DockItem item;
 		
 		const int gripSize = 8;
 		
 		public AutoHideBox (DockFrame frame, DockItem item, Gtk.PositionType pos, int size)
 		{
+			this.item = item;
 			this.position = pos;
 			this.frame = frame;
 			this.targetSize = size;

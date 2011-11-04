@@ -125,7 +125,7 @@
 		<DisplayBinding class = "MonoDevelop.MacDev.PlistEditor.PListEditorDisplayBinding" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/AboutInformation">
+	<Extension path = "/MonoDevelop/Core/SystemInformation">
 		<Class class = "MonoDevelop.MacDev.AppleSdkAboutInformation" />
 	</Extension>
 </Addin>
