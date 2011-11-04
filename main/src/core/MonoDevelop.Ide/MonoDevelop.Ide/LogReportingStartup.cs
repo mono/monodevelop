@@ -26,6 +26,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -36,22 +37,16 @@ namespace MonoDevelop.Ide
 {
 	public class LogReportingStartup : CommandHandler
 	{
+		ICrashMonitor Monitor = new CrashMonitor ();
 		protected override void Run ()
 		{
-			LoggingService.LogError ("AAAAGH!!!");
-			string logAgentEnabled = Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_AGENT_ENABLED");
-			if (!string.Equals (logAgentEnabled, "true", StringComparison.OrdinalIgnoreCase))
-				return;
-			
 			if (Platform.IsMac) {
 				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
 				var pid = Process.GetCurrentProcess ().Id;
-				var logPath = UserProfile.Current.LogDir.Combine ("LogAgent");
-				var email = FeedbackService.ReporterEMail;
-				var logOnly = "";
+				var logPath = LogReportingService.CrashLogDirectory;
 				
-				var fileInfo = new FileInfo (Path.Combine (logPath, "crashlogs.xml"));
-				if (!LogReportingService.ReportCrashes.HasValue && fileInfo.Exists && fileInfo.Length > 0) {
+				var info = new DirectoryInfo (logPath);
+				if (!LogReportingService.ReportCrashes.HasValue && info.Exists && info.EnumerateFiles ().Any ()) {
 					var result = MessageService.AskQuestion ("A crash has been detected",
 						"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
 						"information can be uploaded to Xamarin to help diagnose the issue. This information " +

@@ -31,6 +31,7 @@ namespace MonoDevelop.Core.LogReporting
 	{
 		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
 		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
+		public static readonly FilePath CrashLogDirectory = UserProfile.Current.LogDir.Combine ("LogAgent");
 		
 		public static bool? ReportCrashes {
 			get { return PropertyService.Get<bool?> (ReportCrashesKey); }
