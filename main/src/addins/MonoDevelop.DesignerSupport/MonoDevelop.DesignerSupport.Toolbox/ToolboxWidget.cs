@@ -418,6 +418,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return base.OnScrollEvent (evnt);
 		}
 		
+		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
+		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
 			this.GrabFocus ();
@@ -433,9 +435,25 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				this.SelectedItem = mouseOverItem;
 				this.QueueDraw ();
 			}
-			if (e.Type == EventType.TwoButtonPress && this.SelectedItem != null) 
+			if (e.TriggersContextMenu ()) {
+				if (DoPopupMenu != null) {
+					DoPopupMenu (null);
+					return true;
+				}
+			} else if (e.Type == EventType.TwoButtonPress && this.SelectedItem != null) { 
 				this.OnActivateSelectedItem (EventArgs.Empty);
+				return true;
+			}
 			return base.OnButtonPressEvent (e);
+		}
+		
+		protected override bool OnPopupMenu ()
+		{
+			if (DoPopupMenu != null) {
+				DoPopupMenu (null);
+				return true;
+			}
+			return base.OnPopupMenu ();
 		}
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
