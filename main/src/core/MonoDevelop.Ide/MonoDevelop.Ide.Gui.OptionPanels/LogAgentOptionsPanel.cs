@@ -62,9 +62,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			var value = LogReportingService.ReportCrashes;
 			chkCrash = new CheckButton (GettextCatalog.GetString ("Automatically submit crash diagnostic information"));
 			if (value.HasValue)
-				chkUsage.Active = value.Value;
+				chkCrash.Active = value.Value;
 			else
-				chkUsage.Inconsistent = true;
+				chkCrash.Inconsistent = true;
 			chkCrash.Toggled += (sender, e) => reportCrash = chkCrash.Active;
 			
 			value = LogReportingService.ReportUsage;
