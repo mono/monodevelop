@@ -37,29 +37,27 @@ namespace MonoDevelop.Ide
 {
 	public class LogReportingStartup : CommandHandler
 	{
-		ICrashMonitor Monitor = new CrashMonitor ();
 		protected override void Run ()
 		{
+			var pid = Process.GetCurrentProcess ().Id;
+			var directory = new DirectoryInfo (LogReportingService.CrashLogDirectory);
+			
 			if (Platform.IsMac) {
 				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
-				var pid = Process.GetCurrentProcess ().Id;
-				var logPath = LogReportingService.CrashLogDirectory;
-				
-				var info = new DirectoryInfo (logPath);
-				if (!LogReportingService.ReportCrashes.HasValue && info.Exists && info.EnumerateFiles ().Any ()) {
-					var result = MessageService.AskQuestion ("A crash has been detected",
-						"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
-						"information can be uploaded to Xamarin to help diagnose the issue. This information " +
-						"will be used to help diagnose the crash and notify you of potential workarounds " +
-						"or fixes. Do you wish to upload this information?",
-						AlertButton.Yes, AlertButton.No);
-					LogReportingService.ReportCrashes = result == AlertButton.Yes;
-				}
-
-				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -pid {1} -log {2} -session {3}", crashmonitor, pid, logPath, SystemInformation.SessionUuid)) {
+				Process.Start (new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -pid {1} -log {2} -session {3}", crashmonitor, pid, directory.FullName, SystemInformation.SessionUuid)) {
 					UseShellExecute = false,
-				};
-				Process.Start (psi);
+				});
+			}
+
+			if (!LogReportingService.ReportCrashes.HasValue && directory.Exists && directory.EnumerateFiles ().Any ()) {
+				var result = MessageService.AskQuestion ("A crash has been detected",
+					"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
+					"information can be uploaded to Xamarin to help diagnose the issue. This information " +
+					"will be used to help diagnose the crash and notify you of potential workarounds " +
+					"or fixes. Do you wish to upload this information?",
+					AlertButton.Yes, AlertButton.No);
+
+				LogReportingService.ReportCrashes = result == AlertButton.Yes;
 			}
 		}
 	}
