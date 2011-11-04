@@ -29,6 +29,7 @@ FILES =  \
 	editor/FlagsSelectorDialog.cs \
 	editor/FloatRange.cs \
 	editor/GroupPicker.cs \
+	editor/GtkWorkarounds.cs \
 	editor/IconList.cs \
 	editor/IconSelectorItem.cs \
 	editor/IconSelectorMenu.cs \

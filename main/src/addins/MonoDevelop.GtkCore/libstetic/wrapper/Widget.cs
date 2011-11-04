@@ -333,15 +333,19 @@ namespace Stetic.Wrapper {
 			Widget wrapper = FindWrapper (Wrapped, x, y);
 			if (wrapper == null)
 				return false;
-
+			
+			bool handled = false;
 			if (wrapper.Wrapped != proj.Selection) {
 				wrapper.Select ();
-				return true;
-			} else if (evb.Button == 3) {
+				handled = true;
+			}
+			
+			if (Stetic.Editor.GtkWorkarounds.TriggersContextMenu (evb)) {
 				proj.PopupContextMenu (wrapper);
 				return true;
-			} else
-				return false;
+			}
+			
+			return handled;
 		}
 
 		Widget FindWrapper (Gtk.Widget top, int x, int y)

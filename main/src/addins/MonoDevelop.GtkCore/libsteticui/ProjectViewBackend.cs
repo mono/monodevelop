@@ -304,7 +304,7 @@ namespace Stetic {
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evt)
 		{
-			if (evt.Button == 3 && evt.Type == Gdk.EventType.ButtonPress)
+			if (Stetic.Editor.GtkWorkarounds.TriggersContextMenu (evt))
 				return OnPopupMenu ();
 			return base.OnButtonPressEvent (evt);
 		}
