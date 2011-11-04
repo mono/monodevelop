@@ -146,7 +146,7 @@ namespace MonoDevelop.VersionControl.Views
 			for (int i = 0; i < editors.Length; i++) {
 				var editor = editors[i];
 				Add (editor);
-				editor.ButtonPressEvent += OnPopupMenu;
+				editor.DoPopupMenu += (e) => ShowPopup (editor, e);
 				editor.Caret.PositionChanged += CaretPositionChanged;
 				editor.FocusInEvent += EditorFocusIn;
 				editor.SetScrollAdjustments (attachedHAdjustments[i], attachedVAdjustments[i]);
@@ -205,25 +205,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.MainEditor.EditorOptionsChanged += HandleMainEditorhandleEditorOptionsChanged;
 		}
 		
-		#region context menu
-		void OnPopupMenu (object sender, Gtk.ButtonPressEventArgs args)
-		{
-			var editor = (TextEditor)sender;
-			if (args.Event.Button == 3) {
-				int textEditorXOffset = (int)args.Event.X - (int)editor.TextViewMargin.XOffset;
-				if (textEditorXOffset < 0)
-					return;
-				popupEditor = editor;
-				this.menuPopupLocation = new Cairo.Point ((int)args.Event.X, (int)args.Event.Y);
-				DocumentLocation loc = editor.PointToLocation (textEditorXOffset, (int)args.Event.Y);
-				if (!editor.IsSomethingSelected || !editor.SelectionRange.Contains (editor.Document.LocationToOffset (loc)))
-					editor.Caret.Location = loc;
-				
-				this.ShowPopup ();
-			}
-		}
-		
-		void ShowPopup ()
+		void ShowPopup (TextEditor editor, EventButton evt)
 		{
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/VersionControl/DiffView/ContextMenu");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
@@ -231,24 +213,13 @@ namespace MonoDevelop.VersionControl.Views
 				this.QueueDraw ();
 			};
 			
-			menu.Popup (null, null, new Gtk.MenuPositionFunc (PositionPopupMenu), 0, Gtk.Global.CurrentEventTime);
+			if (evt != null) {
+				GtkWorkarounds.ShowContextMenu (menu, this, evt);
+			} else {
+				var pt = editor.LocationToPoint (editor.Caret.Location);
+				GtkWorkarounds.ShowContextMenu (menu, editor, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)editor.LineHeight));
+			}
 		}
-		
-		TextEditor popupEditor;
-		Cairo.Point menuPopupLocation;
-		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn)
-		{
-			popupEditor.GdkWindow.GetOrigin (out x, out y);
-			x += this.menuPopupLocation.X;
-			y += this.menuPopupLocation.Y;
-			Requisition request = menu.SizeRequest ();
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-			
-			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom - request.Height));
-			x = Math.Max (geometry.Left, Math.Min (x, geometry.Right - request.Width));
-			pushIn = true;
-		}
-		#endregion
 		
 		void HandleMainEditorhandleEditorOptionsChanged (object sender, EventArgs e)
 		{
@@ -754,8 +725,10 @@ namespace MonoDevelop.VersionControl.Views
 
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
-				if (!evnt.TriggersContextMenu () && evnt.Button == 1 && !selectedHunk.IsEmpty)
+				if (!evnt.TriggersContextMenu () && evnt.Button == 1 && !selectedHunk.IsEmpty) {
 					widget.UndoChange (fromEditor, toEditor, selectedHunk);
+					return true;
+				}
 				return base.OnButtonPressEvent (evnt);
 			}
 
