@@ -192,7 +192,7 @@ namespace Mono.TextEditor
 			glibObjectSetProp.Invoke (obj, new object[] { name, value });
 		}
 		
-		public static bool ButtonEventTriggersContextMenu (this Gdk.EventButton evt)
+		public static bool TriggersContextMenu (this Gdk.EventButton evt)
 		{
 			if (evt.Type == Gdk.EventType.ButtonPress) {
 				if (evt.Button == 3 &&

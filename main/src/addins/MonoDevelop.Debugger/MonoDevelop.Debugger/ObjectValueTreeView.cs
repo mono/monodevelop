@@ -37,6 +37,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using Mono.TextEditor;
 
 
 namespace MonoDevelop.Debugger
@@ -129,7 +130,7 @@ namespace MonoDevelop.Debugger
 			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf), typeof(bool));
 			Model = store;
 			RulesHint = true;
-			Selection.Mode = SelectionMode.Multiple;
+			Selection.Mode = Gtk.SelectionMode.Multiple;
 			ResetColumnSizes ();
 			
 			Pango.FontDescription newFont = this.Style.FontDescription.Copy ();
@@ -972,7 +973,7 @@ namespace MonoDevelop.Debugger
 			TreeViewColumn col;
 			CellRenderer cr;
 			
-			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+			if (evnt.TriggersContextMenu ()) {
 				ShowPopup (evnt);
 				return true;
 			}

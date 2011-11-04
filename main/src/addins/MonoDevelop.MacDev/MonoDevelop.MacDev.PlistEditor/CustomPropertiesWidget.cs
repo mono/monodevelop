@@ -31,6 +31,7 @@ using MonoMac.Foundation;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -109,7 +110,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 			{
 				var ret = base.OnButtonPressEvent (evnt);
-				if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+				if (evnt.TriggersContextMenu ()) {
 					ShowPopup (evnt);
 					return true;
 				}

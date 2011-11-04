@@ -26,6 +26,7 @@
 
 using System;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -70,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			var res = base.OnButtonPressEvent (evnt);
-			if (DoPopupMenu != null && Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+			if (DoPopupMenu != null && evnt.TriggersContextMenu ()) {
 				DoPopupMenu (evnt);
 				return true;
 			}

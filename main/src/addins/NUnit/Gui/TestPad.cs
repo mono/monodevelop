@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Execution;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using Mono.TextEditor;
 
 namespace MonoDevelop.NUnit
 {
@@ -714,7 +715,7 @@ namespace MonoDevelop.NUnit
 		
 		void OnChartButtonPress (object o, Gtk.ButtonPressEventArgs args)
 		{
-			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (args.Event)) {
+			if (args.Event.TriggersContextMenu ()) {
 				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/NUnit/ContextMenu/TestChart");
 				args.RetVal = true;
 			}

@@ -31,6 +31,7 @@
 using System;
 using Gtk;
 using Mono.Unix;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -198,7 +199,7 @@ namespace MonoDevelop.Components.Docking
 		
 		void HeaderButtonPress (object ob, Gtk.ButtonPressEventArgs args)
 		{
-			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (args.Event)) {
+			if (args.Event.TriggersContextMenu ()) {
 				item.ShowDockPopupMenu (args.Event.Time);
 			} else if (args.Event.Button == 1) {
 				frame.ShowPlaceholder ();

@@ -44,6 +44,7 @@ using MonoDevelop.Components.DockToolbars;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -1400,7 +1401,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (DoPopupMenu != null && Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+			if (DoPopupMenu != null && evnt.TriggersContextMenu ()) {
 				int tab = FindTabAtPosition (evnt.XRoot, evnt.YRoot);
 				if (tab >= 0) {
 					DoPopupMenu (tab, evnt);

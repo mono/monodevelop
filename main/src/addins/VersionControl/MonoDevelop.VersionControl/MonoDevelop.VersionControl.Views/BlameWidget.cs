@@ -437,7 +437,7 @@ namespace MonoDevelop.VersionControl.Views
 			uint grabTime;
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
-				if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+				if (evnt.TriggersContextMenu ()) {
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (BlameCommands.ShowDiff);
 					opset.AddItem (BlameCommands.ShowLog);

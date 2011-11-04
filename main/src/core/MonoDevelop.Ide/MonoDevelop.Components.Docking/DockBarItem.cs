@@ -31,6 +31,7 @@
 
 using System;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -383,7 +384,7 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+			if (evnt.TriggersContextMenu ()) {
 				it.ShowDockPopupMenu (evnt.Time);
 			} else if (evnt.Button == 1) {
 				if (evnt.Type == Gdk.EventType.TwoButtonPress)

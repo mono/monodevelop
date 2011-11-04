@@ -912,7 +912,7 @@ namespace Mono.TextEditor
 			base.IsFocus = true;
 			
 			//main context menu
-			if (DoPopupMenu != null && e.ButtonEventTriggersContextMenu ()) {
+			if (DoPopupMenu != null && e.TriggersContextMenu ()) {
 				double tmOffset = e.X - textViewMargin.XOffset;
 				if (tmOffset >= 0) {
 					DocumentLocation loc = PointToLocation (tmOffset, e.Y);

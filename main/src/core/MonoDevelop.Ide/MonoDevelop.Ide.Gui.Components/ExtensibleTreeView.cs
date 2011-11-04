@@ -48,6 +48,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -2061,7 +2062,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (!res)
 					res = base.OnButtonPressEvent (evnt);
 				
-				if (DoPopupMenu != null && Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+				if (DoPopupMenu != null && evnt.TriggersContextMenu ()) {
 					DoPopupMenu (evnt);
 					return true;
 				}
@@ -2074,7 +2075,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (base.OnButtonReleaseEvent (evnt))
 					return true;
 				
-				if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+				if (evnt.TriggersContextMenu ()) {
 					return false;
 				}
 				

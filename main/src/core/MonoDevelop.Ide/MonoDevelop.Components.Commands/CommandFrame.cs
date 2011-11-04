@@ -29,6 +29,7 @@
 using System;
 using Mono.Addins;
 using MonoDevelop.Components.DockToolbars;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -62,7 +63,7 @@ namespace MonoDevelop.Components.Commands
 		
 		protected override void OnPanelClick (Gdk.EventButton e, Placement placement)
 		{
-			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (e)) {
+			if (e.TriggersContextMenu ()) {
 				CommandEntrySet opset = new CommandEntrySet ();
 				opset.AddItem (CommandSystemCommands.ToolbarList);
 				Gtk.Menu menu = manager.CreateMenu (opset);

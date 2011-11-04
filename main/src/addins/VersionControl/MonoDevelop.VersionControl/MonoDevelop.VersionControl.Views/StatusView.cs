@@ -13,6 +13,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using Mono.TextEditor;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -172,7 +173,7 @@ namespace MonoDevelop.VersionControl.Views
 			scroller = new ScrolledWindow();
 			scroller.ShadowType = Gtk.ShadowType.In;
 			filelist = new FileTreeView();
-			filelist.Selection.Mode = SelectionMode.Multiple;
+			filelist.Selection.Mode = Gtk.SelectionMode.Multiple;
 			
 			scroller.Add(filelist);
 			scroller.HscrollbarPolicy = PolicyType.Automatic;
@@ -1059,7 +1060,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!handled)
 				handled = base.OnButtonPressEvent (evnt);
 			
-			if (Mono.TextEditor.GtkWorkarounds.ButtonEventTriggersContextMenu (evnt)) {
+			if (evnt.TriggersContextMenu ()) {
 				if (DoPopupMenu != null)
 					DoPopupMenu (evnt);
 				handled = true;

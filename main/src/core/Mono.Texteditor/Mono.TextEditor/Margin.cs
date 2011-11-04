@@ -147,10 +147,10 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public bool ButtonTriggersContextMenu ()
+		public bool TriggersContextMenu ()
 		{
 			var evt = RawEvent as Gdk.EventButton;
-			return evt != null && evt.ButtonEventTriggersContextMenu ();
+			return evt != null && evt.TriggersContextMenu ();
 		}
 		
 		int lineNumber = -2; // -2 means that line number has not yet been calculated
