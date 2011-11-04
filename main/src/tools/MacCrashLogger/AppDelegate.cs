@@ -31,68 +31,66 @@ using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 
 using MonoDevelop;
-using MonoDevelop.Monitoring;
-using MonoDevelop.CrashReporting;
-using MonoDevelop.CrashLog;
+using MonoDevelop.Core.LogReporting;
 
 namespace MacCrashLogger
 {
 	public partial class AppDelegate : NSApplicationDelegate
 	{
-		ICrashMonitor Monitor {
-			get; set;
-		}
-		
-		bool ProcessingCrashLog {
-			get; set;
-		}
-		
-		CrashReporter Reporter {
-			get; set;
-		}
-		
-		bool ShouldExit {
-			get; set;
-		}
-		
-		public AppDelegate ()
-		{
-			Reporter = new CrashReporter (CrashLogOptions.LogPath, CrashLogOptions.Email);
-			
-			Monitor = CrashMonitor.Create (CrashLogOptions.Pid);
-			Monitor.ApplicationExited += HandleMonitorApplicationExited;
-			Monitor.CrashDetected += HandleMonitorCrashDetected;
-		}
-		
-		public override void FinishedLaunching (NSObject notification)
-		{
-			Monitor.Start ();
-			Reporter.ProcessCache ();
-		}
-		
-		void HandleMonitorCrashDetected (object sender, CrashEventArgs e)
-		{
-			InvokeOnMainThread (() => {
-				try {
-					ProcessingCrashLog = true;
-					Reporter.UploadOrCache (e.CrashLogPath);
-					
-					if (ShouldExit)
-						NSApplication.SharedApplication.Terminate (this);
-				} finally {
-					ProcessingCrashLog = false;
-				}
-			});
-		}
-
-		void HandleMonitorApplicationExited (object sender, EventArgs e)
-		{
-			InvokeOnMainThread (() => {
-				ShouldExit = true;
-				if (!ProcessingCrashLog) {
-					NSApplication.SharedApplication.Terminate (null);
-				}
-			});
-		}
+//		ICrashMonitor Monitor {
+//			get; set;
+//		}
+//		
+//		bool ProcessingCrashLog {
+//			get; set;
+//		}
+//		
+//		CrashReporter Reporter {
+//			get; set;
+//		}
+//		
+//		bool ShouldExit {
+//			get; set;
+//		}
+//		
+//		public AppDelegate ()
+//		{
+//			Reporter = new CrashReporter (CrashLogOptions.LogPath, CrashLogOptions.Email);
+//			
+//			Monitor = CrashMonitor.Create (CrashLogOptions.Pid);
+//			Monitor.ApplicationExited += HandleMonitorApplicationExited;
+//			Monitor.CrashDetected += HandleMonitorCrashDetected;
+//		}
+//		
+//		public override void FinishedLaunching (NSObject notification)
+//		{
+//			Monitor.Start ();
+//			Reporter.ProcessCache ();
+//		}
+//		
+//		void HandleMonitorCrashDetected (object sender, CrashEventArgs e)
+//		{
+//			InvokeOnMainThread (() => {
+//				try {
+//					ProcessingCrashLog = true;
+//					Reporter.UploadOrCache (e.CrashLogPath);
+//					
+//					if (ShouldExit)
+//						NSApplication.SharedApplication.Terminate (this);
+//				} finally {
+//					ProcessingCrashLog = false;
+//				}
+//			});
+//		}
+//
+//		void HandleMonitorApplicationExited (object sender, EventArgs e)
+//		{
+//			InvokeOnMainThread (() => {
+//				ShouldExit = true;
+//				if (!ProcessingCrashLog) {
+//					NSApplication.SharedApplication.Terminate (null);
+//				}
+//			});
+//		}
 	}
 }

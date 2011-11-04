@@ -1,10 +1,10 @@
 // 
-// ICrashMonitor.cs
+// LogReportingService.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
 // 
-// Copyright 2011, Xamarin Inc.
+// Copyright (c) 2011 Alan McGovern
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 
-namespace MonoDevelop.Monitoring
+namespace MonoDevelop.Core.LogReporting
 {
-	public  interface ICrashMonitor
+	public static class LogReportingService
 	{
-		event EventHandler ApplicationExited;
-		event EventHandler<CrashEventArgs> CrashDetected;
+		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
+		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
 		
-		void Start ();
-		void Stop ();
+		public static bool? ReportCrashes {
+			get { return PropertyService.Get<bool?> (ReportCrashesKey); }
+			set { PropertyService.Set (ReportCrashesKey, value); }
+		}
+			
+		public static bool? ReportUsage {
+			get { return PropertyService.Get<bool?> (ReportUsageKey); }
+			set { PropertyService.Set (ReportUsageKey, value); }
+		}
 	}
 }
+

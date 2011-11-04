@@ -18,7 +18,7 @@ REFS =  \
 	/r:System.Xml \
 	/r:System.Xml.Linq
 
-DEPS = ../../../build/bin/MonoDevelop.CrashLog.dll
+DEPS = ../../../build/bin/MonoDevelop.Core.dll
 
 BUNDLE_INFOPLIST = $(APP_BUNDLE)/Contents/Info.plist
 BUNDLE_MAINNIB = $(APP_BUNDLE_RESOURCES)/MainMenu.nib

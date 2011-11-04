@@ -51,6 +51,7 @@ using MonoDevelop.Core.Instrumentation;
 using System.Diagnostics;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using MonoDevelop.Core.LogReporting;
 
 namespace MonoDevelop.Ide
 {
@@ -310,8 +311,6 @@ namespace MonoDevelop.Ide
 		
 		void LaunchCrashMonitoringService ()
 		{
-			string enabledKey = "MonoDevelop.LogAgent.ReportCrashes";
-			
 			if (Platform.IsMac) {
 				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
 				var pid = Process.GetCurrentProcess ().Id;
@@ -320,24 +319,17 @@ namespace MonoDevelop.Ide
 				var logOnly = "";
 				
 				var fileInfo = new FileInfo (Path.Combine (logPath, "crashlogs.xml"));
-				if (!PropertyService.HasValue (enabledKey) && fileInfo.Exists && fileInfo.Length > 0) {
+				if (!LogReportingService.ReportCrashes.HasValue && fileInfo.Exists && fileInfo.Length > 0) {
 					var result = MessageService.AskQuestion ("A crash has been detected",
 						"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
 						"information can be uploaded to Xamarin to help diagnose the issue. This information " +
 						"will be used to help diagnose the crash and notify you of potential workarounds " +
 						"or fixes. Do you wish to upload this information?",
 						AlertButton.Yes, AlertButton.No);
-					PropertyService.Set (enabledKey, result == AlertButton.Yes);
+					LogReportingService.ReportCrashes = result == AlertButton.Yes;
 				}
-				
-				if (string.IsNullOrEmpty (email))
-					email = AuthorInformation.Default.Email;
-				if (string.IsNullOrEmpty (email))
-					email = "unknown@email.com";
-				if (!PropertyService.Get<bool> (enabledKey))
-					logOnly = "-logonly";
 
-				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2} -email {3} {4}", crashmonitor, pid, logPath, email, logOnly)) {
+				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -pid {1} -log {2} -session {3}", crashmonitor, pid, logPath, SystemInformation.SessionUuid)) {
 					UseShellExecute = false,
 				};
 				Process.Start (psi);
