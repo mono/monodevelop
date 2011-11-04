@@ -66,8 +66,13 @@ namespace MonoDevelop.ContextAction
 			document.Editor.Parent.EditorOptionsChanged -= HandleDocumentEditorParentEditorOptionsChanged;
 			base.OnDestroyed ();
 		}
-
+		
 		public void PopupQuickFixMenu ()
+		{
+			PopupQuickFixMenu (null);
+		}
+		
+		void PopupQuickFixMenu (Gdk.EventButton evt)
 		{
 			Gtk.Menu menu = new Gtk.Menu ();
 			
@@ -92,29 +97,19 @@ namespace MonoDevelop.ContextAction
 				menu.Add (menuItem);
 			}
 			menu.ShowAll ();
-			int dx, dy;
-			this.ParentWindow.GetOrigin (out dx, out dy);
-			dx += ((TextEditorContainer.EditorContainerChild)(this.document.Editor.Parent.Parent as TextEditorContainer) [this]).X;
-			dy += ((TextEditorContainer.EditorContainerChild)(this.document.Editor.Parent.Parent as TextEditorContainer) [this]).Y - (int)document.Editor.VAdjustment.Value;
-					
-			menu.Popup (null, null, delegate (Gtk.Menu menu2, out int x, out int y, out bool pushIn) {
-				x = dx; 
-				y = dy + Allocation.Height; 
-				pushIn = false;
-				menuPushed = true;
-				QueueDraw ();
-			}, 0, Gtk.Global.CurrentEventTime);
 			menu.SelectFirst (true);
+			menuPushed = true;
 			menu.Destroyed += delegate {
 				menuPushed = false;
 				QueueDraw ();
 			};
+			GtkWorkarounds.ShowContextMenu (menu, this, evt, Allocation);
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1)
-				PopupQuickFixMenu ();
+			if (!evnt.TriggersContextMenu () && evnt.Button == 1)
+				PopupQuickFixMenu (evnt);
 			return base.OnButtonPressEvent (evnt);
 		}
 		
