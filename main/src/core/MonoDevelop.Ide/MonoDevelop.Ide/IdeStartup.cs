@@ -269,10 +269,6 @@ namespace MonoDevelop.Ide
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			
-			string logAgentEnabled = Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_AGENT_ENABLED");
-			if (string.Equals (logAgentEnabled, "true", StringComparison.OrdinalIgnoreCase))
-				LaunchCrashMonitoringService ();
-			
 			IdeApp.Run ();
 			
 			// unloading services
@@ -309,36 +305,6 @@ namespace MonoDevelop.Ide
 				errorsList.Add (new AddinError (args.AddinId, args.Message, args.Exception, false));
 		}
 		
-		void LaunchCrashMonitoringService ()
-		{
-			if (Platform.IsMac) {
-				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
-				var pid = Process.GetCurrentProcess ().Id;
-				var logPath = UserProfile.Current.LogDir.Combine ("LogAgent");
-				var email = FeedbackService.ReporterEMail;
-				var logOnly = "";
-				
-				var fileInfo = new FileInfo (Path.Combine (logPath, "crashlogs.xml"));
-				if (!LogReportingService.ReportCrashes.HasValue && fileInfo.Exists && fileInfo.Length > 0) {
-					var result = MessageService.AskQuestion ("A crash has been detected",
-						"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
-						"information can be uploaded to Xamarin to help diagnose the issue. This information " +
-						"will be used to help diagnose the crash and notify you of potential workarounds " +
-						"or fixes. Do you wish to upload this information?",
-						AlertButton.Yes, AlertButton.No);
-					LogReportingService.ReportCrashes = result == AlertButton.Yes;
-				}
-
-				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -pid {1} -log {2} -session {3}", crashmonitor, pid, logPath, SystemInformation.SessionUuid)) {
-					UseShellExecute = false,
-				};
-				Process.Start (psi);
-			}
-			//else {
-			//	LoggingService.LogError ("Could not launch crash reporter process. MonoDevelop will not be able to automatically report any crash information.");
-			//}
-		}
-
 		void ListenCallback (IAsyncResult state)
 		{
 			Socket sock = (Socket)state.AsyncState;
