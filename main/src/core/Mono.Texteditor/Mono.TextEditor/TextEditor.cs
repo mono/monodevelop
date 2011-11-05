@@ -859,7 +859,7 @@ namespace Mono.TextEditor
 			ModifierType mod;
 			Gdk.Key key;
 			uint keyVal;
-			Platform.MapRawKeys (evt, out key, out mod, out keyVal);
+			GtkWorkarounds.MapRawKeys (evt, out key, out mod, out keyVal);
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
@@ -870,6 +870,9 @@ namespace Mono.TextEditor
 				textViewMargin.OpenCodeSegmentEditor ();
 				return true;
 			}
+			
+			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+				mod = Gdk.ModifierType.None;
 			
 			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
 			

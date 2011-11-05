@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -83,6 +84,10 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
+			
+			keymap.KeysChanged += delegate {
+				groupZeroMappings.Clear ();
+			};
 		}
 
 		static void InitMac ()
@@ -308,6 +313,105 @@ namespace Mono.TextEditor
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.Rectangle caret)
 		{
 			ShowContextMenu (menu, parent, null, caret);
+		}
+		
+		static Gdk.Keymap keymap = Gdk.Keymap.Default;
+		
+		public static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod, out uint keyval)
+		{
+			const Gdk.ModifierType ctrlShift = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask;
+			const Gdk.ModifierType ctrlAlt = Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask;
+			
+			mod = evt.State;
+			key = evt.Key;
+			keyval = evt.KeyValue;
+			
+			int effectiveGroup, level;
+			Gdk.ModifierType consumedModifiers;
+			Gdk.ModifierType modifier = evt.State;
+			byte grp = evt.Group;
+			// Workaround for bug "Bug 688247 - Ctrl+Alt key not work on windows7 with bootcamp on a Mac Book Pro"
+			// Ctrl+Alt should behave like right alt key - unfortunately TranslateKeyboardState doesn't handle it. 
+			if (Platform.IsWindows && (modifier & ~Gdk.ModifierType.LockMask) == (ctrlAlt)) {
+				modifier = Gdk.ModifierType.Mod2Mask;
+				grp = 1;
+			}
+			
+			keymap.TranslateKeyboardState (evt.HardwareKeycode, modifier, grp, out keyval, out effectiveGroup,
+			                               out level, out consumedModifiers);
+			key = (Gdk.Key)keyval;
+			mod = modifier & ~consumedModifiers;
+			
+			if (Platform.IsX11) {
+				//this is a workaround for a common X mapping issue
+				//where the alt key is mapped to the meta key when the shift modifier is active
+				if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
+					key = Gdk.Key.Alt_L;
+			}
+			
+			//HACK: the MAC GTK+ port currently does some horrible, un-GTK-ish key mappings
+			// so we work around them by playing some tricks to remap and decompose modifiers.
+			// We also decompose keys to the root physical key so that the Mac command 
+			// combinations appear as expected, e.g. shift-{ is treated as shift-[.
+			if (Platform.IsMac && !Platform.IsX11) {
+				// Mac GTK+ maps the command key to the Mod1 modifier, which usually means alt/
+				// We map this instead to meta, because the Mac GTK+ has mapped the cmd key
+				// to the meta key (yay inconsistency!). IMO super would have been saner.
+				if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
+					mod ^= Gdk.ModifierType.Mod1Mask;
+					mod |= Gdk.ModifierType.MetaMask;
+				}
+				
+				// If Mod5 is active it *might* mean that opt/alt is active,
+				// so we can unset this and map it back to the normal modifier.
+				if ((mod & Gdk.ModifierType.Mod5Mask) != 0) {
+					mod ^= Gdk.ModifierType.Mod5Mask;
+					mod |= Gdk.ModifierType.Mod1Mask;
+				}
+				
+				// When opt modifier is active, we need to decompose this to make the command appear correct for Mac.
+				// In addition, we can only inspect whether the opt/alt key is pressed by examining
+				// the key's "group", because the Mac GTK+ treats opt as a group modifier and does
+				// not expose it as an actual GDK modifier.
+				if (evt.Group == (byte) 1) {
+					mod |= Gdk.ModifierType.Mod1Mask;
+					key = GetGroupZeroKey (key, evt);
+				}
+				
+				// Fix for allow ctrl+shift+a/ctrl+shift+e keys on mac (select to line begin/end actions)
+				if ((key == Gdk.Key.A || key == Gdk.Key.E) && (evt.State & ctrlShift) == (ctrlShift))
+					mod = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask;
+			}
+			
+			//fix shift-tab weirdness. There isn't a nice name for untab, so make it shift-tab
+			if (key == Gdk.Key.ISO_Left_Tab) {
+				key = Gdk.Key.Tab;
+				mod |= Gdk.ModifierType.ShiftMask;
+			}
+		}
+		
+		static Dictionary<Gdk.Key,Gdk.Key> groupZeroMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
+		
+		static Gdk.Key GetGroupZeroKey (Gdk.Key mappedKey, Gdk.EventKey evt)
+		{
+			Gdk.Key ret;
+			if (groupZeroMappings.TryGetValue (mappedKey, out ret))
+				return ret;
+			
+			//LookupKey isn't implemented on Mac, so we have to use this workaround
+			uint[] keyvals;
+			Gdk.KeymapKey [] keys;
+			keymap.GetEntriesForKeycode (evt.HardwareKeycode, out keys, out keyvals);
+			
+			//find the key that has the same level (so we preserve shift) but with group 0
+			for (uint i = 0; i < keyvals.Length; i++)
+				if (keyvals[i] == (uint)mappedKey)
+					for (uint j = 0; j < keys.Length; j++)
+						if (keys[j].Group == 0 && keys[j].Level == keys[i].Level)
+							return groupZeroMappings[mappedKey] = ret = (Gdk.Key)keyvals[j];
+			
+			//failed, but avoid looking it up again
+			return groupZeroMappings[mappedKey] = mappedKey;
 		}
 	}
 }

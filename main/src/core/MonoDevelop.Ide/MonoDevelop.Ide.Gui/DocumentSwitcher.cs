@@ -262,7 +262,8 @@ namespace MonoDevelop.Ide
 		{
 			Gdk.Key key;
 			Gdk.ModifierType mod;
-			KeyBindingManager.MapRawKeys (evnt, out key, out mod);
+			uint keyval;
+			Mono.TextEditor.GtkWorkarounds.MapRawKeys (evnt, out key, out mod, out keyval);
 			
 			switch (key) {
 			case Gdk.Key.Left:
