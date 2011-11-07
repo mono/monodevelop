@@ -156,13 +156,17 @@ namespace MonoDevelop.Projects.Text
 				HadBOM = false;
 				
 				foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
-					string s = ConvertFromEncoding (content, co.Id);
-					if (s != null) {
-						sourceEncoding = co.Id;
-						text = new StringBuilder (s);
-						return;
+					try {
+						string s = ConvertFromEncoding (content, co.Id);
+						if (s != null) {
+							sourceEncoding = co.Id;
+							text = new StringBuilder (s);
+							return;
+						}
+					} catch (InvalidEncodingException ex) {
+						LoggingService.LogDebug (string.Format ("Skipping encoding {0}", co), ex);
 					}
-				}
+				} 
 				
 /*				if (string.IsNullOrEmpty (enc))
 					enc = "UTF-8";
