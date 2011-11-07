@@ -2260,9 +2260,23 @@ namespace ICSharpCode.NRefactory.CSharp
 				// "1.0 / /*comment*/a", then we need to insert a space in front of the comment.
 				formatter.Space ();
 			}
-			formatter.StartNode(comment);
+			formatter.StartNode( comment);
 			formatter.WriteComment (comment.CommentType, comment.Content);
-			formatter.EndNode(comment);
+			formatter.EndNode( comment);
+			lastWritten = LastWritten.Whitespace;
+			return null;
+		}
+		
+		public object VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective, object data)
+		{
+			if (lastWritten == LastWritten.Division) {
+				// When there's a comment starting after a division operator
+				// "1.0 / /*comment*/a", then we need to insert a space in front of the comment.
+				formatter.Space ();
+			}
+			formatter.StartNode (preProcessorDirective);
+			formatter.WriteIdentifier ("#" + preProcessorDirective.Type.ToString ().ToLower ());
+			formatter.EndNode (preProcessorDirective);
 			lastWritten = LastWritten.Whitespace;
 			return null;
 		}

@@ -266,7 +266,8 @@ FILES =  \
 	Resolver/SimpleNameLookupMode.cs \
 	Resolver/SimpleTypeOrNamespaceReference.cs \
 	Resolver/TypeInference.cs \
-	Resolver/UsingScope.cs
+	Resolver/UsingScope.cs \
+	Ast/GeneralScope/PreProcessorDirective.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 

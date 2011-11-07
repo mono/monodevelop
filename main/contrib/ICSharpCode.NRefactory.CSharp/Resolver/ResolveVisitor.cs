@@ -3369,11 +3369,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return null;
 		}
 		
-		ResolveResult IAstVisitor<object, ResolveResult>.VisitComment(Comment comment, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitComment (Comment comment, object data)
 		{
 			return null;
 		}
 		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective, object data)
+		{
+			return null;
+		}
+
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitCSharpTokenNode(CSharpTokenNode cSharpTokenNode, object data)
 		{
 			return null;

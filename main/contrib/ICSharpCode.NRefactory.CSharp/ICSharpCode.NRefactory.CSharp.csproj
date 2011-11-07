@@ -314,6 +314,7 @@
     <Compile Include="Completion\IParameterCompletionDataFactory.cs" />
     <Compile Include="Completion\CSharpCompletionEngineBase.cs" />
     <Compile Include="Completion\ICompletionDataFactory.cs" />
+    <Compile Include="Ast\GeneralScope\PreProcessorDirective.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

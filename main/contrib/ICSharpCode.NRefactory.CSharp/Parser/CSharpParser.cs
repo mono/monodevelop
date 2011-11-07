@@ -3261,11 +3261,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		static void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)
 		{
 			var leaf = GetOuterLeft (conversionVisitor.Unit);
-			
 			for (int i = 0; i < top.SpecialsBag.Specials.Count; i++) {
 				var special = top.SpecialsBag.Specials [i];
-				Comment newLeaf = null;
-				
+				AstNode newLeaf = null;
 				var comment = special as SpecialsBag.Comment;
 				if (comment != null) {
 					if (conversionVisitor.convertTypeSystemMode && (comment.CommentType != SpecialsBag.CommentType.Documentation))
@@ -3278,37 +3276,14 @@ namespace ICSharpCode.NRefactory.CSharp
 							Content = comment.Content
 					};
 				} else {
-					// TODO: Proper handling of pre processor directives (atm got treated as comments Ast wise)
 					var directive = special as SpecialsBag.PreProcessorDirective;
 					if (directive != null) {
-						newLeaf = new Comment (CommentType.SingleLine, new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol + 1));
-						
-						if (!directive.Take) {
-							SpecialsBag.PreProcessorDirective endif = null;
-							int endifLevel = 0;
-							for (int j = i + 1; j < top.SpecialsBag.Specials.Count; j++) {
-								var s = top.SpecialsBag.Specials [j] as SpecialsBag.PreProcessorDirective;
-								if (s == null)
-									continue;
-								if (s.Cmd == Tokenizer.PreprocessorDirective.If) {
-									endifLevel++;
-									continue;
-								}
-								if (s.Cmd == Tokenizer.PreprocessorDirective.Endif || endifLevel == 0 && s.Cmd == Tokenizer.PreprocessorDirective.Else) {
-									if (endifLevel == 0) {
-										endif = s;
-										i = j;
-										break;
-									}
-									endifLevel--;
-								}
-							}
-							if (endif != null)
-								newLeaf = new Comment (CommentType.SingleLine, new TextLocation (directive.Line, directive.Col), new TextLocation (endif.EndLine, endif.EndCol));
-						}
+						newLeaf = new PreProcessorDirective ((ICSharpCode.NRefactory.CSharp.PreProcessorDirectiveType)((int)directive.Cmd & 0xF), new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol)) {
+							Argument = directive.Arg,
+							Take = directive.Take
+						};
 					}
 				}
-				
 				if (newLeaf == null)
 					continue;
 				
@@ -3321,7 +3296,11 @@ namespace ICSharpCode.NRefactory.CSharp
 							leaf = node;
 							node = node.Parent;
 						}
-						node.InsertChildBefore (leaf, newLeaf, AstNode.Roles.Comment);
+						if (newLeaf is Comment) {
+							node.InsertChildBefore (leaf, (Comment)newLeaf, AstNode.Roles.Comment);
+						} else {
+							node.InsertChildBefore (leaf, (PreProcessorDirective)newLeaf, AstNode.Roles.PreProcessorDirective);
+						}
 						leaf = newLeaf;
 						break;
 					}
@@ -3329,7 +3308,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					// insert comment at the end
 					if (nextLeaf == null) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
-						node.AddChild (newLeaf, AstNode.Roles.Comment);
+						if (newLeaf is Comment) {
+							node.AddChild ((Comment)newLeaf, AstNode.Roles.Comment);
+						} else {
+							node.AddChild ((PreProcessorDirective)newLeaf, AstNode.Roles.PreProcessorDirective);
+						}
 						leaf = newLeaf;
 						break;
 					}
@@ -3337,7 +3320,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					// comment is between 2 nodes
 					if (leaf.EndLocation <= newLeaf.StartLocation && newLeaf.StartLocation <= nextLeaf.StartLocation) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
-						node.InsertChildAfter (leaf, newLeaf, AstNode.Roles.Comment);
+						if (newLeaf is Comment) {
+							node.InsertChildAfter (leaf, (Comment)newLeaf, AstNode.Roles.Comment);
+						} else {
+							node.InsertChildAfter (leaf, (PreProcessorDirective)newLeaf, AstNode.Roles.PreProcessorDirective);
+						}
 						leaf = newLeaf;
 						break;
 					}
