@@ -96,7 +96,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	class TypeSearchResult : MemberSearchResult
 	{
 		public override string File {
-			get { return ((IType)member).CompilationUnit.FileName; }
+			get {
+				var cu = ((IType)member).CompilationUnit;
+				return cu != null ? cu.FileName : null;
+			}
 		}
 		
 		public override string Description {
