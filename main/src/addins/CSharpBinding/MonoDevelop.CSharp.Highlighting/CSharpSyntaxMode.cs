@@ -494,7 +494,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return;
 				}
 				int textOffset = i - StartOffset;
-				if (CurText.IsAt (textOffset, "#else")) {
+				if (CurText.IsAt (textOffset, "#else") && IsFirstNonWsChar (textOffset)) {
 					if (!spanStack.Any (s => s is IfBlockSpan || s is ElseIfBlockSpan)) {
 						base.ScanSpan (ref i);
 						return;
@@ -529,7 +529,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					FoundSpanBegin (preprocessorSpan, i, 0);
 					return;
 				}
-				if (CurText.IsAt (textOffset, "#if")) {
+				if (CurText.IsAt (textOffset, "#if") && IsFirstNonWsChar (textOffset)) {
 					int length = CurText.Length - textOffset;
 					string parameter = CurText.Substring (textOffset + 3, length - 3);
 					var lexer = new ICSharpCode.OldNRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
@@ -564,7 +564,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					i += length - 1;
 					return;
 				}
-				if (CurText.IsAt (textOffset, "#elif") && spanStack.Any (span => span is IfBlockSpan)) {
+				if (CurText.IsAt (textOffset, "#elif") && spanStack.Any (span => span is IfBlockSpan) && IsFirstNonWsChar (textOffset)) {
 					LineSegment line = doc.GetLineByOffset (i);
 					int length = line.Offset + line.EditableLength - i;
 					string parameter = doc.GetTextAt (i + 5, length - 5);
@@ -603,7 +603,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					//i += length - 1;
 					return;
 				}
-				if (CurRule.Name == "<root>" &&  CurText[textOffset] == '#') {
+				if (CurRule.Name == "<root>" &&  CurText[textOffset] == '#' && IsFirstNonWsChar (textOffset)) {
 					var preprocessorSpan = CreatePreprocessorSpan ();
 					FoundSpanBegin (preprocessorSpan, i, 1);
 				}
