@@ -662,7 +662,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void HandleTextPaste (int insertionOffset, string text)
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+			if (PropertyService.Get ("OnTheFlyFormatting", true)) {
 				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
 				if (prettyPrinter != null && Project != null && text != null) {
 					try {
@@ -685,7 +685,7 @@ namespace MonoDevelop.SourceEditor
 				var result = template.InsertTemplateContents (document);
 				var tle = new TextLinkEditMode (this, result.InsertPosition, result.TextLinks);
 				
-				if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+				if (PropertyService.Get ("OnTheFlyFormatting", true)) {
 					var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
 					if (prettyPrinter != null) {
 						int endOffset = result.InsertPosition + result.Code.Length;

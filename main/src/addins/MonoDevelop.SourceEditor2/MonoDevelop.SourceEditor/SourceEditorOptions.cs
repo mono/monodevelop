@@ -212,7 +212,7 @@ namespace MonoDevelop.SourceEditor
 		void LoadAllPrefs ()
 		{
 			this.tabIsReindent = PropertyService.Get ("TabIsReindent", false);
-			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", false);
+			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", true);
 			//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
 			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
 			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
@@ -235,7 +235,7 @@ namespace MonoDevelop.SourceEditor
 			this.defaultRegionsFolding = PropertyService.Get ("DefaultRegionsFolding", false);
 			this.defaultCommentFolding = PropertyService.Get ("DefaultCommentFolding", true);
 			this.useViModes = PropertyService.Get ("UseViModes", false);
-			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", false);
+			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", true);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);

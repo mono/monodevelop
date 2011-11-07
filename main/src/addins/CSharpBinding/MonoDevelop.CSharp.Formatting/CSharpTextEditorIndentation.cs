@@ -110,7 +110,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void RunFormatterAt (int offset)
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null && Document != null) {
+			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && Document != null) {
 				//	textEditorData.Document.TextReplaced -= TextCut;
 				var dom = Document.TypeResolveContext;
 				var loc = textEditorData.Document.OffsetToLocation (offset);
@@ -507,7 +507,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void RunFormatter ()
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
+			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
 				textEditorData.Paste -= TextEditorDataPaste;
 				//		textEditorData.Document.TextReplaced -= TextCut;
 				

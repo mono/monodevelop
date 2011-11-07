@@ -263,7 +263,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				foreach (var tag in CommentTag.SpecialCommentTags) {
 					tags.Add (tag.Tag);
 				}
-				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
+				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
 					unit = document.ParsedDocument.Annotation<CompilationUnit> ();
 					
 					if ((visitor = document.ParsedDocument.Annotation <ResolveVisitor> ()) == null) {
@@ -418,7 +418,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			protected override void AddRealChunk (Chunk chunk)
 			{
 				var parsedDocument = document != null ? document.ParsedDocument : null;
-				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
+				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
 					int endLoc = -1;
 					string semanticStyle = null;
 					try {
