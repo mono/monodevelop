@@ -169,7 +169,11 @@ autom4te.cache/
 /extras/ValaBinding/Makefile
 /extras/ValaBinding/configure
 /extras/ValaBinding/missing
+/extras/ValaBinding/monodevelop-vala.spec
 
 #other extras generated stuff
 /extras/JavaBinding/monodevelop-java.pc
+/extras/JavaBinding/monodevelop-java.spec
+/extras/MonoDevelop.Debugger.Gdb/monodevelop-debugger-gdb.spec
 /extras/PyBinding/PyBinding/*.pc
+/extras/PyBinding/monodevelop-python.spec

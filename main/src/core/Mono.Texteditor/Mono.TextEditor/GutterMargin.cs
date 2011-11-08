@@ -70,6 +70,8 @@ namespace Mono.TextEditor
 				int height;
 				layout.GetPixelSize (out this.width, out height);
 				this.width += 4;
+				if (!editor.Options.ShowFoldMargin)
+					this.width += 2;
 			}
 		}
 		
@@ -198,7 +200,7 @@ namespace Mono.TextEditor
 					layout.Alignment = Pango.Alignment.Right;
 					layout.SetText (line.ToString ());
 					cr.Save ();
-					cr.Translate (x + (int)Width, y);
+					cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y);
 					cr.Color = editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC;
 					cr.ShowLayout (layout);
 					cr.Restore ();

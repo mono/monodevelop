@@ -192,8 +192,9 @@ namespace MonoDevelop.MacDev
 			var output = new FileInfo (Output);
 			if (!output.Exists)
 				return true;
+			
 			var input = new FileInfo (Input);
-			return input.Length != output.Length || input.LastWriteTimeUtc > output.LastWriteTimeUtc;
+			return input.LastWriteTimeUtc > output.LastWriteTimeUtc;
 		}
 		
 		public void EnsureOutputDirectory ()

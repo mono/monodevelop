@@ -208,26 +208,14 @@ namespace MonoDevelop.Prj2Make
 		// Utility function to determine the sln file version
 		string GetSlnFileVersion(string strInSlnFile)
 		{
-			string strVersion = null;
-			string strInput = null;
-			Match match;
-			StreamReader reader = new StreamReader(strInSlnFile);
-			strInput = reader.ReadLine();
-
-			match = SlnMaker.SlnVersionRegex.Match(strInput);
-			if (!match.Success) {
-				match = SlnMaker.SlnVersionRegex.Match (reader.ReadLine ());
+			using (var stream = File.OpenText (strInSlnFile)) {
+				// ReadLine returns null at EOF which makes the regex throw an ArgNull exception
+				var match = SlnMaker.SlnVersionRegex.Match (stream.ReadLine () ?? "");
+				if (!match.Success)
+					match = SlnMaker.SlnVersionRegex.Match (stream.ReadLine () ?? "");
+				
+				return match.Success ? match.Groups[1].Value : null;
 			}
-
-			if (match.Success)
-			{
-				strVersion = match.Groups[1].Value;
-			}
-			
-			// Close the stream
-			reader.Close();
-
-			return strVersion;
 		}
 		
 		public bool SupportsMixedFormats {

@@ -33,7 +33,7 @@ using System.Text;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public partial class ApplyPolicyDialog : Gtk.Dialog
+	partial class ApplyPolicyDialog : Gtk.Dialog
 	{
 		IPolicyProvider policyProvider;
 		
@@ -47,6 +47,8 @@ namespace MonoDevelop.Ide.Projects
 					combPolicies.AppendText (pset.Name);
 			
 			fileEntry.DefaultPath = ExportProjectPolicyDialog.DefaultFileDialogPolicyDir;
+			fileEntry.FileFilters.AddFilter (GettextCatalog.GetString ("MonoDevelop policy files"), "*.mdpolicy");
+			fileEntry.FileFilters.AddAllFilesFilter ();
 			combPolicies.Active = 0;
 			OnRadioCustomToggled (null, null);
 			UpdateContentLabels ();

@@ -525,8 +525,18 @@ namespace Mono.Debugger.Soft
 			return GetSourceFiles (false);
 		}
 
+		string[] source_files;
+		string[] source_files_full_path;
 		public string[] GetSourceFiles (bool return_full_paths) {
-			return vm.conn.Type_GetSourceFiles (id, return_full_paths);
+			string[] res = return_full_paths ? source_files_full_path : source_files;
+			if (res == null) {
+				res = vm.conn.Type_GetSourceFiles (id, return_full_paths);
+				if (return_full_paths)
+					source_files_full_path = res;
+				else
+					source_files = res;
+			}
+			return res;
 		}
 
 		public C.TypeDefinition Metadata {
@@ -620,6 +630,9 @@ namespace Mono.Debugger.Soft
 		}
 
 		CustomAttributeDataMirror[] GetCAttrs (TypeMirror type, bool inherit) {
+			if (cattrs == null && Metadata != null && !Metadata.HasCustomAttributes)
+				cattrs = new CustomAttributeDataMirror [0];
+
 			// FIXME: Handle inherit
 			if (cattrs == null) {
 				CattrInfo[] info = vm.conn.Type_GetCustomAttributes (id, 0, false);
@@ -630,6 +643,25 @@ namespace Mono.Debugger.Soft
 				if (type == null || attr.Constructor.DeclaringType == type)
 					res.Add (attr);
 			return res.ToArray ();
+		}
+
+		public MethodMirror[] GetMethodsByNameFlags (string name, BindingFlags flags, bool ignoreCase) {
+			if (vm.conn.Version.AtLeast (2, 6)) {
+				long[] ids = vm.conn.Type_GetMethodsByNameFlags (id, name, (int)flags, ignoreCase);
+				MethodMirror[] m = new MethodMirror [ids.Length];
+				for (int i = 0; i < ids.Length; ++i)
+					m [i] = vm.GetMethod (ids [i]);
+				return m;
+			} else {
+				if (flags != (BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.NonPublic))
+					throw new NotImplementedException ();
+				var res = new List<MethodMirror> ();
+				foreach (MethodMirror m in GetMethods ()) {
+					if ((!ignoreCase && m.Name == name) || (ignoreCase && m.Name.Equals (name, StringComparison.CurrentCultureIgnoreCase)))
+						res.Add (m);
+				}
+				return res.ToArray ();
+			}
 		}
 
 		public Value InvokeMethod (ThreadMirror thread, MethodMirror method, IList<Value> arguments) {

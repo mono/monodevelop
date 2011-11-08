@@ -257,20 +257,20 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleTaskServiceJumpedToTask (object sender, TaskEventArgs e)
 		{
-			Task task = e.Tasks.FirstOrDefault ();
+			var task = e.Tasks != null ? e.Tasks.FirstOrDefault () : null;
 			var doc = Document;
 			if (task == null || doc == null || task.FileName != doc.FileName || this.TextEditor == null)
 				return;
-			LineSegment lineSegment = doc.GetLine (task.Line);
+			var lineSegment = doc.GetLine (task.Line);
 			if (lineSegment == null)
 				return;
-			MessageBubbleTextMarker marker = (MessageBubbleTextMarker)lineSegment.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
+			var marker = (MessageBubbleTextMarker)lineSegment.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
 			if (marker == null)
 				return;
 			
 			marker.SetPrimaryError (task.Description);
 			
-			if (TextEditor.IsComposited) {
+			if (TextEditor != null && TextEditor.IsComposited) {
 				if (messageBubbleHighlightPopupWindow != null)
 					messageBubbleHighlightPopupWindow.Destroy ();
 				messageBubbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
@@ -307,31 +307,31 @@ namespace MonoDevelop.SourceEditor
 			DisposeErrorMarkers (); // disposes messageBubbleCache as well.
 			if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.Never)
 				return;
-			widget.Document.BeginAtomicUndo ();
-			if (messageBubbleCache != null)
-				messageBubbleCache.Dispose ();
-			messageBubbleCache = new MessageBubbleCache (widget.TextEditor);
-			
-			foreach (Task task in tasks) {
-				if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
-					if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
-						continue;
-					LineSegment lineSegment = widget.Document.GetLine (task.Line);
-					if (lineSegment == null)
-						continue;
-					var marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == lineSegment);
-					if (marker != null) {
-						marker.AddError (task.Severity == TaskSeverity.Error, task.Description);
-						continue;
+			using (var undo = Document.OpenUndoGroup ()) {
+				if (messageBubbleCache != null)
+					messageBubbleCache.Dispose ();
+				messageBubbleCache = new MessageBubbleCache (widget.TextEditor);
+				
+				foreach (Task task in tasks) {
+					if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
+						if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
+							continue;
+						LineSegment lineSegment = widget.Document.GetLine (task.Line);
+						if (lineSegment == null)
+							continue;
+						var marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == lineSegment);
+						if (marker != null) {
+							marker.AddError (task.Severity == TaskSeverity.Error, task.Description);
+							continue;
+						}
+						MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
+						currentErrorMarkers.Add (errorTextMarker);
+						
+						errorTextMarker.IsVisible =  !IdeApp.Preferences.DefaultHideMessageBubbles;
+						widget.Document.AddMarker (lineSegment, errorTextMarker, false);
 					}
-					MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
-					currentErrorMarkers.Add (errorTextMarker);
-					
-					errorTextMarker.IsVisible =  !IdeApp.Preferences.DefaultHideMessageBubbles;
-					widget.Document.AddMarker (lineSegment, errorTextMarker, false);
 				}
 			}
-			widget.Document.EndAtomicUndo ();
 			widget.TextEditor.QueueDraw ();
 		}
 		
@@ -386,10 +386,10 @@ namespace MonoDevelop.SourceEditor
 			if (PropertyService.Get ("AutoFormatDocumentOnSave", false)) {
 				var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
-					TextEditor.Document.BeginAtomicUndo ();
-					var policies = Project != null ? Project.Policies : null;
-					formatter.OnTheFlyFormat (policies, TextEditor.GetTextEditorData (), 0, Document.Length);
-					TextEditor.Document.EndAtomicUndo ();
+					using (var undo = TextEditor.OpenUndoGroup ()) {
+						var policies = Project != null ? Project.Policies : null;
+						formatter.OnTheFlyFormat (policies, TextEditor.GetTextEditorData (), 0, Document.Length);
+					}
 				}
 			}
 
@@ -1131,15 +1131,12 @@ namespace MonoDevelop.SourceEditor
 			this.Document.Redo ();
 		}
 		
-		public void BeginAtomicUndo ()
+		
+		public IDisposable OpenUndoGroup ()
 		{
-			this.Document.BeginAtomicUndo ();
+			return Document.OpenUndoGroup ();
 		}
-		public void EndAtomicUndo ()
-		{
-			this.Document.EndAtomicUndo ();
-		}
-			
+		
 		public string SelectedText { 
 			get {
 				return TextEditor.IsSomethingSelected ? Document.GetTextAt (TextEditor.SelectionRange) : "";
@@ -1490,26 +1487,26 @@ namespace MonoDevelop.SourceEditor
 			
 			triggerOffset += data.EnsureCaretIsNotVirtual ();
 			if (blockMode) {
-				data.Document.BeginAtomicUndo ();
+				using (var undo = data.OpenUndoGroup ()) {
 
-				int minLine = data.MainSelection.MinLine;
-				int maxLine = data.MainSelection.MaxLine;
-				int column = triggerOffset - data.Document.GetLineByOffset (triggerOffset).Offset;
-				for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
-					LineSegment lineSegment = data.Document.GetLine (lineNumber);
-					if (lineSegment == null)
-						continue;
-					int offset = lineSegment.Offset + column;
-					data.Replace (offset, length, complete_word);
+					int minLine = data.MainSelection.MinLine;
+					int maxLine = data.MainSelection.MaxLine;
+					int column = triggerOffset - data.Document.GetLineByOffset (triggerOffset).Offset;
+					for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
+						LineSegment lineSegment = data.Document.GetLine (lineNumber);
+						if (lineSegment == null)
+							continue;
+						int offset = lineSegment.Offset + column;
+						data.Replace (offset, length, complete_word);
+					}
+					data.Caret.Offset = triggerOffset + idx;
+					int minColumn = System.Math.Min (data.MainSelection.Anchor.Column, data.MainSelection.Lead.Column);
+					data.MainSelection.Anchor = new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn);
+					data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, TextEditor.Caret.Column);
+					
+					data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
+					data.Caret.PreserveSelection = false;
 				}
-				data.Caret.Offset = triggerOffset + idx;
-				int minColumn = System.Math.Min (data.MainSelection.Anchor.Column, data.MainSelection.Lead.Column);
-				data.MainSelection.Anchor = new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn);
-				data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, TextEditor.Caret.Column);
-				
-				data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
-				data.Caret.PreserveSelection = false;
-				data.Document.EndAtomicUndo ();
 			} else {
 				data.Replace (triggerOffset, length, complete_word);
 				data.Caret.Offset = triggerOffset + idx;
@@ -1909,12 +1906,12 @@ namespace MonoDevelop.SourceEditor
 			var policies = Project != null ? Project.Policies : null;
 			var editorData = TextEditor.GetTextEditorData ();
 			if (TextEditor.IsSomethingSelected) {
-				TextEditor.Document.BeginAtomicUndo ();
-				int max = TextEditor.MainSelection.MaxLine;
-				for (int i = TextEditor.MainSelection.MinLine; i <= max; i++) {
-					formatter.CorrectIndenting (policies, editorData, i);
+				using (var undo = TextEditor.OpenUndoGroup ()) {
+					int max = TextEditor.MainSelection.MaxLine;
+					for (int i = TextEditor.MainSelection.MinLine; i <= max; i++) {
+						formatter.CorrectIndenting (policies, editorData, i);
+					}
 				}
-				TextEditor.Document.EndAtomicUndo ();
 			} else {
 				formatter.CorrectIndenting (policies, editorData, TextEditor.Caret.Line);
 			}
@@ -1923,15 +1920,19 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (TextEditorCommands.MoveBlockUp)]
 		protected void OnMoveBlockUp ()
 		{
-			TextEditor.RunAction (MiscActions.MoveBlockUp);
-			CorrectIndenting ();
+			using (var undo = TextEditor.OpenUndoGroup ()) {
+				TextEditor.RunAction (MiscActions.MoveBlockUp);
+				CorrectIndenting ();
+			}
 		}
 		
 		[CommandHandler (TextEditorCommands.MoveBlockDown)]
 		protected void OnMoveBlockDown ()
 		{
-			TextEditor.RunAction (MiscActions.MoveBlockDown);
-			CorrectIndenting ();
+			using (var undo = TextEditor.OpenUndoGroup ()) {
+				TextEditor.RunAction (MiscActions.MoveBlockDown);
+				CorrectIndenting ();
+			}
 		}
 		
 		[CommandUpdateHandler (TextEditorCommands.ToggleBlockSelectionMode)]

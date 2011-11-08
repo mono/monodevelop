@@ -70,7 +70,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public AssemblyBrowserWidget ()
 		{
-			this.Build();
+			this.Build( );
 			TreeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
 				new AssemblyNodeBuilder (this),
@@ -149,7 +149,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
-			
+			this.scrolledwindowEditor.Child = this.inspectEditor;
 //			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
 			
 //			this.vpaned1.ExposeEvent += VPaneExpose;
@@ -158,7 +158,7 @@ namespace MonoDevelop.AssemblyBrowser
 				// Hack for the switch page select all bug.
 //				this.inspectLabel.Selectable = false;
 			};*/
-			this.notebook1.GetNthPage (0).Hide ();
+
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("Summary"));
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("IL"));
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
@@ -193,7 +193,7 @@ namespace MonoDevelop.AssemblyBrowser
 			comboboxVisibilty.Active = 0;
 			comboboxVisibilty.Changed += delegate {
 				PublicApiOnly = comboboxVisibilty.Active == 0;
-				this.TreeView.GetRootNode ().Options["PublicApiOnly"] = PublicApiOnly;
+				this.TreeView.GetRootNode ().Options[ "PublicApiOnly"] = PublicApiOnly;
 				FillInspectLabel ();
 			};
 			/*
@@ -201,7 +201,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchInCombobox.Changed += SearchInComboboxhandleChanged;
 			*/
 			this.notebook1.SetTabLabel (this.documentationScrolledWindow, new Label (GettextCatalog.GetString ("Documentation")));
-			this.notebook1.SetTabLabel (this.vboxInspect, new Label (GettextCatalog.GetString ("Inspect")));
+			this.notebook1.SetTabLabel (this.notebookInspection, new Label (GettextCatalog.GetString ("Inspect")));
 			this.notebook1.SetTabLabel (this.searchWidget, new Label (GettextCatalog.GetString ("Search")));
 			//this.searchWidget.Visible = false;
 				
@@ -225,7 +225,9 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchentry1.ShowAll ();
 			this.buttonBack.Clicked += this.OnNavigateBackwardActionActivated;
 			this.buttonForeward.Clicked += this.OnNavigateForwardActionActivated;
-			
+			this.notebook1.ShowTabs = false;
+			this.notebookInspection.ShowTabs = false;
+			this.ShowAll ();
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
@@ -267,7 +269,7 @@ namespace MonoDevelop.AssemblyBrowser
 //						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 				}
 				if (searchMode == SearchMode.Decompiler) {
-					this.notebook1.Page = 1;
+					this.notebook1.Page = 0;
 //						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 //						this.inspectLabel.Selectable = true;
 //						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
@@ -282,7 +284,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		void LanguageComboboxhandleChanged (object sender, EventArgs e)
 		{
-			this.notebook1.Page = 1;
+			this.notebook1.Page = 0;
 			PropertyService.Set ("AssemblyBrowser.InspectLanguage", this.languageCombobox.Active);
 			SetInspectWidget ();
 			FillInspectLabel ();
@@ -443,11 +445,11 @@ namespace MonoDevelop.AssemblyBrowser
 				searchBackgoundWorker.CancelAsync ();
 			
 			if (string.IsNullOrEmpty (query)) {
-				notebook1.Page = 1;
+				notebook1.Page = 0;
 				return;
 			}
 			
-			this.notebook1.Page = 2;
+			this.notebook1.Page = 1;
 			
 			switch (searchMode) {
 			case SearchMode.Member:
@@ -817,19 +819,11 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		void SetInspectWidget ()
 		{
-			if (this.scrolledwindow3.Child != null)
-				this.scrolledwindow3.Remove (this.scrolledwindow3.Child);
 			if (this.languageCombobox.Active <= 0) {
-				documentationPanel.Markup = "No Documentation Available";
-				if (documentationPanel.Parent != null) {
-					this.scrolledwindow3.Child = documentationPanel.Parent;
-				} else {
-					this.scrolledwindow3.AddWithViewport (documentationPanel);
-				}
+				notebookInspection.Page = 0;
 			} else {
-				this.scrolledwindow3.Child = inspectEditor;
+				notebookInspection.Page = 1;
 			}
-			this.scrolledwindow3.ShowAll ();
 		}
 		
 		List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
@@ -892,7 +886,7 @@ namespace MonoDevelop.AssemblyBrowser
 				this.inspectEditor.Document.Text = "Invalid combobox value: " + this.languageCombobox.Active;
 				break;
 			}
-			this.scrolledwindow3.QueueDraw ();
+			this.inspectEditor.QueueDraw ();
 		}
 			
 		void CreateOutput ()
@@ -1085,7 +1079,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public void ShowSearchWidget ()
 		{
 			//this.searchWidget.Visible = true;
-			this.notebook1.Page = 2;
+			this.notebook1.Page = 1;
 //			this.searchEntry.GrabFocus ();
 		}
 	

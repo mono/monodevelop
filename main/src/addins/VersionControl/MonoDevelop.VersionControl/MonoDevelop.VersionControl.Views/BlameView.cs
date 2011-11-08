@@ -93,15 +93,10 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.widget.Editor.Document.Redo ();
 		}
-
-		void IUndoHandler.BeginAtomicUndo ()
+		
+		IDisposable IUndoHandler.OpenUndoGroup ()
 		{
-			this.widget.Editor.Document.BeginAtomicUndo ();
-		}
-
-		void IUndoHandler.EndAtomicUndo ()
-		{
-			this.widget.Editor.Document.EndAtomicUndo ();
+			return this.widget.Editor.OpenUndoGroup ();
 		}
 
 		bool IUndoHandler.EnableUndo {

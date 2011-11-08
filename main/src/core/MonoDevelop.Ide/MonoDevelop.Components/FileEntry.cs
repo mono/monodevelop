@@ -50,8 +50,8 @@ namespace MonoDevelop.Components {
 			if (start_in != null)
 				fd.InitialFileName = start_in;
 			
+			fd.SetFilters (filterSet);
 			fd.TransientFor = GetTransientFor ();
-			
 			if (fd.Run ())
 				return fd.SelectedFile;
 			else

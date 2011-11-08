@@ -1024,45 +1024,45 @@ namespace Mono.TextEditor.Vi
 		private void PasteAfter (bool linemode)
 		{
 			TextEditorData data = Data;
-			this.Document.BeginAtomicUndo();
-			
-			Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
-				(delegate (Gtk.Clipboard cb, string contents) {
-				if (contents == null)
-					return;
-				if (contents.EndsWith ("\r") || contents.EndsWith ("\n")) {
-					// Line mode paste
-					if (data.IsSomethingSelected) {
-						// Replace selection
-						RunAction (ClipboardActions.Cut);
-						data.InsertAtCaret (data.EolMarker);
-						int offset = data.Caret.Offset;
-						data.InsertAtCaret (contents);
-						if (linemode) {
-							// Existing selection was also in line mode
-							data.Caret.Offset = offset;
+			using (var undo = Document.OpenUndoGroup ()) {
+				
+				Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
+					(delegate (Gtk.Clipboard cb, string contents) {
+					if (contents == null)
+						return;
+					if (contents.EndsWith ("\r") || contents.EndsWith ("\n")) {
+						// Line mode paste
+						if (data.IsSomethingSelected) {
+							// Replace selection
+							RunAction (ClipboardActions.Cut);
+							data.InsertAtCaret (data.EolMarker);
+							int offset = data.Caret.Offset;
+							data.InsertAtCaret (contents);
+							if (linemode) {
+								// Existing selection was also in line mode
+								data.Caret.Offset = offset;
+								RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
+							}
+							RunAction (CaretMoveActions.LineStart);
+						} else {
+							// Paste on new line
+							RunAction (ViActions.NewLineBelow);
+							RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineStart));
+							data.InsertAtCaret (contents);
 							RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
+							RunAction (CaretMoveActions.LineStart);
 						}
-						RunAction (CaretMoveActions.LineStart);
 					} else {
-						// Paste on new line
-						RunAction (ViActions.NewLineBelow);
-						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineStart));
+						// Inline paste
+						if (data.IsSomethingSelected) 
+							RunAction (ClipboardActions.Cut);
+						else RunAction (CaretMoveActions.Right);
 						data.InsertAtCaret (contents);
-						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
-						RunAction (CaretMoveActions.LineStart);
+						RunAction (ViActions.Left);
 					}
-				} else {
-					// Inline paste
-					if (data.IsSomethingSelected) 
-						RunAction (ClipboardActions.Cut);
-					else RunAction (CaretMoveActions.Right);
-					data.InsertAtCaret (contents);
-					RunAction (ViActions.Left);
-				}
-				Reset (string.Empty);
-			});
-			this.Document.EndAtomicUndo();
+					Reset (string.Empty);
+				});
+			}
 		}
 
 		/// <summary>
@@ -1073,43 +1073,43 @@ namespace Mono.TextEditor.Vi
 		{
 			TextEditorData data = Data;
 			
-			this.Document.BeginAtomicUndo();
-			Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
-				(delegate (Gtk.Clipboard cb, string contents) {
-				if (contents == null)
-					return;
-				if (contents.EndsWith ("\r") || contents.EndsWith ("\n")) {
-					// Line mode paste
-					if (data.IsSomethingSelected) {
-						// Replace selection
-						RunAction (ClipboardActions.Cut);
-						data.InsertAtCaret (data.EolMarker);
-						int offset = data.Caret.Offset;
-						data.InsertAtCaret (contents);
-						if (linemode) {
-							// Existing selection was also in line mode
-							data.Caret.Offset = offset;
+			using (var undo = Document.OpenUndoGroup ()) {
+				Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
+					(delegate (Gtk.Clipboard cb, string contents) {
+					if (contents == null)
+						return;
+					if (contents.EndsWith ("\r") || contents.EndsWith ("\n")) {
+						// Line mode paste
+						if (data.IsSomethingSelected) {
+							// Replace selection
+							RunAction (ClipboardActions.Cut);
+							data.InsertAtCaret (data.EolMarker);
+							int offset = data.Caret.Offset;
+							data.InsertAtCaret (contents);
+							if (linemode) {
+								// Existing selection was also in line mode
+								data.Caret.Offset = offset;
+								RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
+							}
+							RunAction (CaretMoveActions.LineStart);
+						} else {
+							// Paste on new line
+							RunAction (ViActions.NewLineAbove);
+							RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineStart));
+							data.InsertAtCaret (contents);
 							RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
+							RunAction (CaretMoveActions.LineStart);
 						}
-						RunAction (CaretMoveActions.LineStart);
 					} else {
-						// Paste on new line
-						RunAction (ViActions.NewLineAbove);
-						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.LineStart));
+						// Inline paste
+						if (data.IsSomethingSelected) 
+							RunAction (ClipboardActions.Cut);
 						data.InsertAtCaret (contents);
-						RunAction (DeleteActions.FromMoveAction (CaretMoveActions.Left));
-						RunAction (CaretMoveActions.LineStart);
+						RunAction (ViActions.Left);
 					}
-				} else {
-					// Inline paste
-					if (data.IsSomethingSelected) 
-						RunAction (ClipboardActions.Cut);
-					data.InsertAtCaret (contents);
-					RunAction (ViActions.Left);
-				}
-				Reset (string.Empty);
-			});
-			this.Document.EndAtomicUndo();
+					Reset (string.Empty);
+				});
+			}
 		}
 
 		enum State {

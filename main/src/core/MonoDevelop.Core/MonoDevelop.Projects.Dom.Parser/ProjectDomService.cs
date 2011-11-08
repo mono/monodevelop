@@ -416,6 +416,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			string uri = "Project:" + project.FileName;
 			if (UnrefDom (uri)) {
+				project.Modified -= HandleModified;				
 				if (project is DotNetProject) {
 					((DotNetProject)project).ReferenceAddedToProject -= OnProjectReferenceAdded;
 					((DotNetProject)project).ReferenceRemovedFromProject -= OnProjectReferenceRemoved;
@@ -442,7 +443,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				try {
 					ProjectDom db = ParserDatabase.LoadProjectDom (project);
 					RegisterDom (db, uri);
-					
+					project.Modified += HandleModified;
 					if (project is DotNetProject) {
 						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
 						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
@@ -452,6 +453,32 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 		}
+
+		static void HandleModified (object sender, SolutionItemModifiedEventArgs e)
+		{
+			var fn = e.FirstOrDefault (x => x is SolutionItemModifiedEventInfo && ((SolutionItemModifiedEventInfo)x).Hint == "FileName");
+			if (fn == null)
+				return;
+			var project = fn.SolutionItem as Project;
+			if (project == null)
+				return;
+			lock (databases) {
+				try {
+					foreach (var pair in databases) {
+						if (pair.Value.Project == project) {
+							databases.Remove (pair.Key);
+							string uri = "Project:" + project.FileName;
+							pair.Value.Uri = uri;
+							databases[uri] = pair.Value;
+							return;
+						}
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Parser database error: can't rename file name of " + project.Name + " to " + project.FileName, ex);
+				}
+			}
+		}
+
 
 		public static void RegisterDom (ProjectDom dom, string uri)
 		{

@@ -156,14 +156,9 @@ namespace MonoDevelop.VersionControl.Views
 			this.ComparisonWidget.OriginalEditor.Document.Redo ();
 		}
 
-		void IUndoHandler.BeginAtomicUndo ()
+		IDisposable IUndoHandler.OpenUndoGroup ()
 		{
-			this.ComparisonWidget.OriginalEditor.Document.BeginAtomicUndo ();
-		}
-
-		void IUndoHandler.EndAtomicUndo ()
-		{
-			this.ComparisonWidget.OriginalEditor.Document.EndAtomicUndo ();
+			return this.ComparisonWidget.OriginalEditor.OpenUndoGroup ();
 		}
 
 		bool IUndoHandler.EnableUndo {

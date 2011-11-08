@@ -1470,6 +1470,8 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageLinksList.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProjectLoadProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\CommonTextEditorOptions.cs" />
+    <Compile Include="MonoDevelop.Components\FileFilterSet.cs" />
+    <Compile Include="MonoDevelop.Ide\IdeVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

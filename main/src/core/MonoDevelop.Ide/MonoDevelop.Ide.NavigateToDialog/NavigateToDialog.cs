@@ -234,8 +234,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			locations.Clear ();
 			if (list.SelectedRows.Count != 0) {
 				foreach (int sel in list.SelectedRows) {
-					SearchResult res = lastResult.results [sel];
-					OpenLocation loc = new OpenLocation (res.File, res.Row, res.Column);
+					var res = lastResult.results [sel];
+					if (res.File == null)
+						continue;
+					var loc = new OpenLocation (res.File, res.Row, res.Column);
 					if (loc.Line == -1) {
 						int i = matchEntry.Query.LastIndexOf (':');
 						if (i != -1) {

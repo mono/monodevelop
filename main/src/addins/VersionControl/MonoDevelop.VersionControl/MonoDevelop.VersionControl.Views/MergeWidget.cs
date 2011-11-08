@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		protected override TextEditor MainEditor {
 			get {
-				return editors[1];
+				return editors != null && editors.Length >= 2 ? editors[1] : null;
 			}
 		}
 
@@ -96,7 +96,8 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			MainEditor.Document.TextReplaced -= UpdateConflictsOnTextReplace;
+			if (MainEditor != null && MainEditor.Document != null)
+				MainEditor.Document.TextReplaced -= UpdateConflictsOnTextReplace;
 		}
 		
 		public string GetResultText ()

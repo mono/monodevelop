@@ -274,12 +274,36 @@ namespace Mono.TextEditor
 		{
 			if (String.IsNullOrEmpty (text))
 				return;
-			Document.BeginAtomicUndo ();
-			EnsureCaretIsNotVirtual ();
-			int offset = Caret.Offset;
-			int length = Insert (offset, text);
-			Caret.Offset = offset + length;
-			Document.EndAtomicUndo ();
+			using (var undo = OpenUndoGroup ()) {
+				if (IsSomethingSelected && MainSelection.SelectionMode == SelectionMode.Block) {
+					var visualInsertLocation = LogicalToVisualLocation (MainSelection.Anchor);
+					for (int lineNumber = MainSelection.MinLine; lineNumber <= MainSelection.MaxLine; lineNumber++) {
+						var lineSegment = GetLine (lineNumber);
+						int insertOffset = lineSegment.GetLogicalColumn (this, visualInsertLocation.Column) - 1;
+						string textToInsert;
+						if (lineSegment.EditableLength < insertOffset) {
+							int visualLastColumn = lineSegment.GetVisualColumn (this, lineSegment.EditableLength + 1);
+							int charsToInsert = visualInsertLocation.Column - visualLastColumn;
+							int spaceCount = charsToInsert % Options.TabSize;
+							textToInsert = new string ('\t', (charsToInsert - spaceCount) / Options.TabSize) + new string (' ', spaceCount) + text;
+							insertOffset = lineSegment.EditableLength;
+						} else {
+							textToInsert = text;
+						}
+						Insert (lineSegment.Offset + insertOffset, textToInsert);
+					}
+					Caret.PreserveSelection = true;
+					Caret.Column += text.Length;
+					MainSelection.Lead = new DocumentLocation (MainSelection.Lead.Line, Caret.Column);
+					MainSelection.Anchor = new DocumentLocation (MainSelection.Anchor.Line, Caret.Column);
+					Document.CommitMultipleLineUpdate (MainSelection.MinLine, MainSelection.MaxLine);
+				} else {
+					EnsureCaretIsNotVirtual ();
+					int offset = Caret.Offset;
+					int length = Insert (offset, text);
+					Caret.Offset = offset + length;
+				}
+			}
 		}
 
 		void DetachDocument ()
@@ -358,14 +382,14 @@ namespace Mono.TextEditor
 			return this.Options.WordFindStrategy.FindCurrentWordStart (this.Document, offset);
 		}
 		
-		public delegate void PasteCallback (int insertionOffset, string text);
+		public delegate void PasteCallback (int insertionOffset, string text, int insertedChars);
 		
 		public event PasteCallback Paste;
 		
-		public void PasteText (int insertionOffset, string text)
+		public void PasteText (int insertionOffset, string text, int insertedChars)
 		{
 			if (Paste != null)
-				Paste (insertionOffset, text);
+				Paste (insertionOffset, text, insertedChars);
 		}
 		
 		#region undo/redo handling
@@ -703,16 +727,16 @@ namespace Mono.TextEditor
 		{
 			if (!IsSomethingSelected)
 				return;
-			document.BeginAtomicUndo ();
 			bool needUpdate = false;
-			foreach (Selection selection in Selections) {
-				ISegment segment = selection.GetSelectionRange (this);
-				needUpdate |= Document.OffsetToLineNumber (segment.Offset) != Document.OffsetToLineNumber (segment.EndOffset);
-				DeleteSelection (selection);
+			using (var undo = OpenUndoGroup ()) {
+				foreach (Selection selection in Selections) {
+					ISegment segment = selection.GetSelectionRange (this);
+					needUpdate |= Document.OffsetToLineNumber (segment.Offset) != Document.OffsetToLineNumber (segment.EndOffset);
+					DeleteSelection (selection);
+				}
+				if (clearSelection)
+					ClearSelection ();
 			}
-			if (clearSelection)
-				ClearSelection ();
-			document.EndAtomicUndo ();
 			if (needUpdate)
 				Document.CommitDocumentUpdate ();
 		}
@@ -842,20 +866,20 @@ namespace Mono.TextEditor
 		public int SearchReplaceAll (string withPattern)
 		{
 			int result = 0;
-			Document.BeginAtomicUndo ();
-			int offset = 0;
-			SearchResult searchResult; 
-			while (true) {
-				searchResult = SearchForward (offset);
-				if (searchResult == null || searchResult.SearchWrapped)
-					break;
-				searchEngine.Replace (searchResult, withPattern);
-				offset = searchResult.Offset + withPattern.Length;
-				result++;
+			using (var undo = OpenUndoGroup ()) {
+				int offset = 0;
+				SearchResult searchResult; 
+				while (true) {
+					searchResult = SearchForward (offset);
+					if (searchResult == null || searchResult.SearchWrapped)
+						break;
+					searchEngine.Replace (searchResult, withPattern);
+					offset = searchResult.Offset + withPattern.Length;
+					result++;
+				}
+				if (result > 0)
+					ClearSelection ();
 			}
-			if (result > 0)
-				ClearSelection ();
-			Document.EndAtomicUndo ();
 			return result;
 		}
 		#endregion
@@ -1063,6 +1087,11 @@ namespace Mono.TextEditor
 		public int OffsetToLineNumber (int offset)
 		{
 			return Document.OffsetToLineNumber (offset);
+		}
+		
+		public IDisposable OpenUndoGroup()
+		{
+			return Document.OpenUndoGroup ();
 		}
 		#endregion
 		

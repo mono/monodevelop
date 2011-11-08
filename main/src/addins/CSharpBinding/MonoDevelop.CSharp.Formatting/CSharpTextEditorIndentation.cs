@@ -94,7 +94,6 @@ namespace MonoDevelop.CSharp.Formatting
 			if (textEditorData != null) {
 				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (textEditorData, new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData));
 				textEditorData.Caret.AllowCaretBehindLineEnd = true;
-				textEditorData.Paste += TextEditorDataPaste;
 			}
 
 			InitTracker ();
@@ -120,14 +119,7 @@ namespace MonoDevelop.CSharp.Formatting
 				//	textEditorData.Document.TextReplaced += TextCut;
 			}
 		}
-
-		void TextEditorDataPaste (int insertionOffset, string text)
-		{
-			//			if (string.IsNullOrEmpty (text) || text.Length < 2)
-			//				return;
-			//			RunFormatterAt (insertionOffset);
-		}
-
+		
 		class IndentVirtualSpaceManager : Mono.TextEditor.TextEditorData.IVirtualSpaceManager
 		{
 			Mono.TextEditor.TextEditorData data;
@@ -211,14 +203,12 @@ namespace MonoDevelop.CSharp.Formatting
 
 				int guessedOffset = GuessSemicolonInsertionOffset (textEditorData, curLine);
 				if (guessedOffset != textEditorData.Caret.Offset) {
-					if (textEditorData.Document.IsInAtomicUndo) {
-						textEditorData.Document.EndAtomicUndo ();
-						textEditorData.Document.BeginAtomicUndo ();
+					using (var undo = textEditorData.OpenUndoGroup ()) {
+						textEditorData.Remove (textEditorData.Caret.Offset - 1, 1);
+						textEditorData.Caret.Offset = guessedOffset;
+						lastInsertedSemicolon = textEditorData.Caret.Offset + 1;
+						retval = base.KeyPress (key, keyChar, modifier);
 					}
-					textEditorData.Remove (textEditorData.Caret.Offset - 1, 1);
-					textEditorData.Caret.Offset = guessedOffset;
-					lastInsertedSemicolon = textEditorData.Caret.Offset + 1;
-					retval = base.KeyPress (key, keyChar, modifier);
 				}
 				return retval;
 			}
@@ -516,7 +506,6 @@ namespace MonoDevelop.CSharp.Formatting
 		void RunFormatter ()
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
-				textEditorData.Paste -= TextEditorDataPaste;
 				//		textEditorData.Document.TextReplaced -= TextCut;
 				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 				if (dom == null)
@@ -527,7 +516,6 @@ namespace MonoDevelop.CSharp.Formatting
 				OnTheFlyFormatter.Format (Document, dom, location, lastCharInserted == '\n');
 
 				//		textEditorData.Document.TextReplaced += TextCut;
-				textEditorData.Paste += TextEditorDataPaste;
 			}
 		}
 

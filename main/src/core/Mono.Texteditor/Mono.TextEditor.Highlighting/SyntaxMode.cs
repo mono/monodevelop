@@ -344,6 +344,18 @@ namespace Mono.TextEditor.Highlighting
 			
 			public StringBuilder wordBuilder = new StringBuilder ();
 			
+			protected bool IsFirstNonWsChar (int textOffset)
+			{
+				while (textOffset > 0) {
+					char ch = CurText [textOffset - 1];
+					if (ch != '\n' && ch != '\r' && !char.IsWhiteSpace (ch))
+						return false;
+					textOffset--;
+				}
+				return true;
+			}
+		
+						
 			protected virtual void ScanSpan (ref int i)
 			{
 				int textOffset = i - StartOffset;

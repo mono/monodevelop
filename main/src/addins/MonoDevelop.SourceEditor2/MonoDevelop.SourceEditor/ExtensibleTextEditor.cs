@@ -353,6 +353,7 @@ namespace MonoDevelop.SourceEditor
 					skipChar = null;
 			}
 			char insertionChar = '\0';
+			IDisposable undoGroup = null;
 			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0) {
 				if (!inStringOrComment) {
 					char closingBrace = closingBrackets [braceIndex];
@@ -369,7 +370,7 @@ namespace MonoDevelop.SourceEditor
 
 					if (count >= 0) {
 						startedAtomicOperation = true;
-						Document.BeginAtomicUndo ();
+						undoGroup = Document.OpenUndoGroup ();
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						
 						int offset = Caret.Offset;
@@ -382,7 +383,7 @@ namespace MonoDevelop.SourceEditor
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
 					if (!inString && !inComment && !inChar && ch == '"' && charBefore != '\\') {
 						startedAtomicOperation = true;
-						Document.BeginAtomicUndo ();
+						undoGroup = Document.OpenUndoGroup ();
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						insertionChar = '"';
 						int offset = Caret.Offset;
@@ -409,8 +410,8 @@ namespace MonoDevelop.SourceEditor
 						HitReturn ();
 				}
 			}
-			if (startedAtomicOperation)
-				Document.EndAtomicUndo ();
+			if (undoGroup != null)
+				undoGroup.Dispose ();
 			return templateInserted || result;
 		}
 		
@@ -615,17 +616,17 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 		
-		void HandleTextPaste (int insertionOffset, string text)
+		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
 				if (prettyPrinter != null && ProjectDom != null && text != null) {
 					try {
 						var policies = ProjectDom != null && ProjectDom.Project != null ? ProjectDom.Project.Policies : null;
-						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + text.Length);
+						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + insertedChars);
 						if (!string.IsNullOrEmpty (newText)) {
-							Replace (insertionOffset, text.Length, newText);
-							Caret.Offset = insertionOffset + newText.Length;
+							int replaceResult = Replace (insertionOffset, insertedChars, newText);
+							Caret.Offset = insertionOffset + replaceResult;
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error formatting pasted text", e);
@@ -636,39 +637,39 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
-			Document.BeginAtomicUndo ();
-			var result = template.InsertTemplateContents (document);
-			var tle = new TextLinkEditMode (this, result.InsertPosition, result.TextLinks);
-			
-			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
-				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
-				if (prettyPrinter != null) {
-					int endOffset = result.InsertPosition + result.Code.Length;
-					string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
-					var policies = document.Project != null ? document.Project.Policies : null;
-					string text = prettyPrinter.FormatText (policies, Document.Text, result.InsertPosition, endOffset);
-					
-					if (text != null)
-						Replace (result.InsertPosition, result.Code.Length, text);
-					else
-						//if formatting failed, just use the unformatted text
-						text = oldText;
-					
-					Caret.Offset = result.InsertPosition + TranslateOffset (oldText, text, Caret.Offset - result.InsertPosition);
-					foreach (TextLink textLink in tle.Links) {
-						foreach (ISegment segment in textLink.Links) {
-							segment.Offset = TranslateOffset (oldText, text, segment.Offset);
+			using (var undo = Document.OpenUndoGroup ()) {
+				var result = template.InsertTemplateContents (document);
+				var tle = new TextLinkEditMode (this, result.InsertPosition, result.TextLinks);
+				
+				if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+					var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
+					if (prettyPrinter != null) {
+						int endOffset = result.InsertPosition + result.Code.Length;
+						string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
+						var policies = document.Project != null ? document.Project.Policies : null;
+						string text = prettyPrinter.FormatText (policies, Document.Text, result.InsertPosition, endOffset);
+						
+						if (text != null)
+							Replace (result.InsertPosition, result.Code.Length, text);
+						else
+							//if formatting failed, just use the unformatted text
+							text = oldText;
+						
+						Caret.Offset = result.InsertPosition + TranslateOffset (oldText, text, Caret.Offset - result.InsertPosition);
+						foreach (TextLink textLink in tle.Links) {
+							foreach (ISegment segment in textLink.Links) {
+								segment.Offset = TranslateOffset (oldText, text, segment.Offset);
+							}
 						}
 					}
 				}
+				
+				if (tle.ShouldStartTextLinkMode) {
+					tle.OldMode = CurrentMode;
+					tle.StartMode ();
+					CurrentMode = tle;
+				}
 			}
-			
-			if (tle.ShouldStartTextLinkMode) {
-				tle.OldMode = CurrentMode;
-				tle.StartMode ();
-				CurrentMode = tle;
-			}
-			Document.EndAtomicUndo ();
 		}
 		
 		static int TranslateOffset (string baseInput, string formattedInput, int offset)
@@ -1035,11 +1036,8 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine)]
 		internal void JoinLines ()
 		{
-			try {
-				Document.BeginAtomicUndo ();
+			using (var undo = Document.OpenUndoGroup ()) {
 				RunAction (Mono.TextEditor.Vi.ViActions.Join);
-			} finally {
-				Document.EndAtomicUndo ();
 			}
 		}
 		

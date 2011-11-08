@@ -639,7 +639,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr result_rev = IntPtr.Zero;
 			IntPtr localpool = newpool (pool);
 			try {
-				url = NormalizePath (url, localpool);
+				// Using Uri here because the normalization method doesn't remove the redundant port number when using https
+				url = NormalizePath (new Uri(url).ToString(), localpool);
 				string npath = NormalizePath (path, localpool);
 				CheckError (svn.client_checkout (result_rev, url, npath, ref rev, (recurse ? 1 :0), ctx, localpool));
 			} finally {

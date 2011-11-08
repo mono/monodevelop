@@ -497,8 +497,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 							data = new byte[len];
 							int nr = 0;
-							while (nr < len)
-								nr += dataFileStream.Read (data, nr, len - nr);
+							while (nr < len) {
+								var read = dataFileStream.Read (data, nr, len - nr);
+								if (read <= 0)
+									throw new InvalidOperationException (len + " bytes could not be read from pidb file : " +  dataFile);
+								nr += read;
+							}
 						}
 						else {
 							buffer.Position = 0;

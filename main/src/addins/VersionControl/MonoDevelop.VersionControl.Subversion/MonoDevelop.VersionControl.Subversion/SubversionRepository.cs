@@ -230,6 +230,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			foreach (FilePath path in paths) {
 				if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
+					if (rootPath == null)
+						throw new UserException (GettextCatalog.GetString ("Project publishing failed. There is a stale .svn folder in the path '{0}'", path.ParentDirectory));
 					VersionInfo srcInfo = GetVersionInfo (path, false);
 					if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
 						// It is a file that was deleted. It can be restored now since it's going

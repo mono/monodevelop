@@ -245,6 +245,7 @@ FILES =  \
 	MonoDevelop.Components/DropDownBox.cs \
 	MonoDevelop.Components/DropDownBoxListWindow.cs \
 	MonoDevelop.Components/FileEntry.cs \
+	MonoDevelop.Components/FileFilterSet.cs \
 	MonoDevelop.Components/FileSelector.cs \
 	MonoDevelop.Components/FixedWidthWrapLabel.cs \
 	MonoDevelop.Components/FolderDialog.cs \
@@ -699,6 +700,7 @@ FILES =  \
 	MonoDevelop.Ide/Ide.cs \
 	MonoDevelop.Ide/IdePreferences.cs \
 	MonoDevelop.Ide/IdeStartup.cs \
+	MonoDevelop.Ide/IdeVersionInfo.cs \
 	MonoDevelop.Ide/ImageService.cs \
 	MonoDevelop.Ide/MessageService.cs \
 	MonoDevelop.Ide/ProjectOperations.cs \

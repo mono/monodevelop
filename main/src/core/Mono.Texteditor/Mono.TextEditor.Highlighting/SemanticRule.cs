@@ -51,20 +51,25 @@ namespace Mono.TextEditor
 			this.syntax = syntax;
 		}
 		
+		bool inUpdate = false;
 		public override void Analyze (Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset)
 		{
-			if (endOffset <= startOffset || startOffset >= doc.Length)
+			if (endOffset <= startOffset || startOffset >= doc.Length || inUpdate)
 				return;
-			
-			string text = doc.GetTextAt (startOffset, endOffset - startOffset);
-			int startColumn = startOffset - line.Offset;
-			var markers = new List <UrlMarker> (line.Markers.Where (m => m is UrlMarker).Cast<UrlMarker> ());
-			markers.ForEach (m => doc.RemoveMarker (m));
-			foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {
-				line.AddMarker (new UrlMarker (doc, line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
-			}
-			foreach (System.Text.RegularExpressions.Match m in mailRegex.Matches (text)) {
-				line.AddMarker (new UrlMarker (doc, line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+			inUpdate = true;
+			try {
+				string text = doc.GetTextAt (startOffset, endOffset - startOffset);
+				int startColumn = startOffset - line.Offset;
+				var markers = new List <UrlMarker> (line.Markers.Where (m => m is UrlMarker).Cast<UrlMarker> ());
+				markers.ForEach (m => doc.RemoveMarker (m, false));
+				foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {
+					doc.AddMarker (line, new UrlMarker (doc, line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length), false);
+				}
+				foreach (System.Text.RegularExpressions.Match m in mailRegex.Matches (text)) {
+					doc.AddMarker (line, new UrlMarker (doc, line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length), false);
+				}
+			} finally {
+				inUpdate = false;
 			}
 		}
 		

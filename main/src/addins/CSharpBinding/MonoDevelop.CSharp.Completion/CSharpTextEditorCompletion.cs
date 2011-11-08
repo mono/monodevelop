@@ -244,8 +244,7 @@ namespace MonoDevelop.CSharp.Completion
 						ICSharpCode.OldNRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.OldNRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
 						if (!tryToForceCompletion && !(pex.Value is string || pex.Value is char || pex.Value is bool))
 							return null;
-					}
-					
+					} 
 					return CreateCompletionData (location, resolveResult, result, resolver);
 				case '#':
 					if (stateTracker.Engine.IsInsidePreprocessorDirective) 
@@ -416,8 +415,6 @@ namespace MonoDevelop.CSharp.Completion
 							string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine);
 							AppendSummary (generatedComment, indent, out newCursorOffset);
 						}
-						textEditorData.Document.EndAtomicUndo ();
-						textEditorData.Document.BeginAtomicUndo ();
 						textEditorData.Insert (cursor, generatedComment.ToString ());
 						textEditorData.Caret.Offset = cursor + newCursorOffset;
 						return null;
@@ -1688,7 +1685,7 @@ namespace MonoDevelop.CSharp.Completion
 						continue;
 					if (expressionResult.ExpressionContext == ExpressionContext.NamespaceNameExcepted && !(obj is Namespace))
 						continue;
-					if (showOnlyTypes && !(obj is IType))
+					if (showOnlyTypes && !(obj is IType) && !(obj is Namespace))
 						continue;
 					CompletionData data = col.Add (obj);
 					if (data != null && expressionResult.ExpressionContext == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {

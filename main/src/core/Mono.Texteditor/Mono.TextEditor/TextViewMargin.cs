@@ -429,7 +429,15 @@ namespace Mono.TextEditor
 			markerLayout.SetText (" ");
 			int w, h;
 			markerLayout.GetSize (out w, out h);
+			
 			this.charWidth = w / Pango.Scale.PangoScale;
+			if (textEditor.preeditString != null && textEditor.preeditAttrs != null) {
+				using (var preeditLayout = PangoUtil.CreateLayout (textEditor)) {
+					preeditLayout.SetText (textEditor.preeditString);
+					preeditLayout.Attributes = textEditor.preeditAttrs;
+					preeditLayout.GetSize (out w, out h);
+				}
+			}
 			this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
 			
 			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
@@ -625,7 +633,10 @@ namespace Mono.TextEditor
 			
 			textEditor.ResetIMContext ();
 			
-			textEditor.IMContext.CursorLocation = new Rectangle ((int)caretX, (int)caretY, 0, (int)(LineHeight - 1));
+			GtkWorkarounds.SetImCursorLocation (
+				textEditor.IMContext,
+				textEditor.GdkWindow,
+				new Rectangle ((int)caretX, (int)caretY, 0, (int)(LineHeight - 1)));
 		}
 
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
@@ -1326,7 +1337,7 @@ namespace Mono.TextEditor
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
-				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX + 0.5, LineHeight), this.SelectionColor.CairoBackgroundColor, true);
+				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX, LineHeight), this.SelectionColor.CairoBackgroundColor, true);
 			}
 
 			// highlight search results
@@ -2069,7 +2080,7 @@ namespace Mono.TextEditor
 		{
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
-			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset + 1, LineHeight);
+			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset + 1, _lineHeight);
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;
 
@@ -2543,7 +2554,7 @@ namespace Mono.TextEditor
 		
 		public double GetLineHeight (LineSegment line)
 		{
-			if (line == null || line.MarkerCount == 0)
+			if (line == null)
 				return LineHeight;
 			foreach (var marker in line.Markers) {
 				IExtendingTextMarker extendingTextMarker = marker as IExtendingTextMarker;
@@ -2551,7 +2562,9 @@ namespace Mono.TextEditor
 					continue;
 				return extendingTextMarker.GetLineHeight (textEditor);
 			}
-			return LineHeight;
+			int lineNumber = textEditor.OffsetToLineNumber (line.Offset); 
+			var node = textEditor.GetTextEditorData ().heightTree.GetNodeByLine (lineNumber);
+			return node.height / node.count;
 		}
 		
 		public double GetLineHeight (int logicalLineNumber)
