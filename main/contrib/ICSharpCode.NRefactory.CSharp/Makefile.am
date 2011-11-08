@@ -38,6 +38,7 @@ FILES =  \
 	Ast/Expressions/DefaultValueExpression.cs \
 	Ast/Expressions/DirectionExpression.cs \
 	Ast/Expressions/EmptyExpression.cs \
+	Ast/Expressions/ErrorExpression.cs \
 	Ast/Expressions/Expression.cs \
 	Ast/Expressions/IdentifierExpression.cs \
 	Ast/Expressions/IndexerExpression.cs \
