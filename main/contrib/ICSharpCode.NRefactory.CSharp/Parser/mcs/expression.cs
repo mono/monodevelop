@@ -9157,13 +9157,28 @@ namespace Mono.CSharp
 		}
 	}
 
-	class ErrorExpression : EmptyExpression
+	public class ErrorExpression : EmptyExpression
 	{
 		public static readonly ErrorExpression Instance = new ErrorExpression ();
-
+		public readonly int ErrorCode;
+		public readonly string Error;
+		
 		private ErrorExpression ()
 			: base (InternalType.ErrorType)
 		{
+		}
+		
+		ErrorExpression (int errorCode, Location location, string error)
+			: base (InternalType.ErrorType)
+		{
+			this.ErrorCode = errorCode;
+			base.loc = location;
+			this.Error = error;
+		}
+		
+		public static ErrorExpression Create (int errorCode, Location location, string error)
+		{
+			return new ErrorExpression (errorCode, location, error);
 		}
 
 		public override Expression CreateExpressionTree (ResolveContext ec)
@@ -9186,6 +9201,11 @@ namespace Mono.CSharp
 
 		public override void Error_OperatorCannotBeApplied (ResolveContext rc, Location loc, string oper, TypeSpec t)
 		{
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 

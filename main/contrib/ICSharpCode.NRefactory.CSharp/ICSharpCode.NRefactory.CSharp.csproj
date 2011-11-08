@@ -315,6 +315,7 @@
     <Compile Include="Completion\CSharpCompletionEngineBase.cs" />
     <Compile Include="Completion\ICompletionDataFactory.cs" />
     <Compile Include="Ast\GeneralScope\PreProcessorDirective.cs" />
+    <Compile Include="Ast\Expressions\ErrorExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -6288,14 +6288,14 @@ namespace Mono.CSharp {
 		}
 	}
 	
-	public class InvalidExpressionStatement : Statement
+	public class InvalidStatementExpression : Statement
 	{
 		public Expression Expression {
 			get;
 			private set;
 		}
 		
-		public InvalidExpressionStatement (Expression expr)
+		public InvalidStatementExpression (Expression expr)
 		{
 			this.Expression = expr;
 		}

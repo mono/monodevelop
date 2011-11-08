@@ -484,7 +484,7 @@ namespace Mono.CSharp {
 		bool infinite, empty;
 		
 		public For (Statement init_statement,
-			    BooleanExpression test,
+			    Expression test,
 			    Statement increment,
 			    Statement statement,
 			    Location l)

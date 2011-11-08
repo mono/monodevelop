@@ -415,6 +415,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var contextList = new CompletionDataWrapper (this);
 				
 				var identifierStart = GetExpressionAtCursor ();
+				if (identifierStart != null && identifierStart.Item2 is VariableInitializer && location <= ((VariableInitializer)identifierStart.Item2).NameToken.EndLocation) {
+					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
+				}
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
 				}
@@ -1738,8 +1741,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 				
 			var baseUnit = ParseStub ("");
+			
 			var tmpUnit = baseUnit;
-			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1); 
+			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1);
 			if (expr == null)
 				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
 			
@@ -1762,12 +1766,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			if (expr == null) {
 				var forStmt = tmpUnit.GetNodeAt<ForStatement> (location.Line, location.Column - 3); 
-				expr = forStmt;
-				if (forStmt != null && forStmt.EmbeddedStatement.IsNull) {
-					var id = new IdentifierExpression ("stub");
-					forStmt.EmbeddedStatement = new BlockStatement () { Statements = { new ExpressionStatement (id) }};
-					expr = id;
+				if (forStmt != null && forStmt.Condition is ErrorExpression) {
+					expr = forStmt;
+					if (forStmt.EmbeddedStatement.IsNull) {
+						var id = new IdentifierExpression ("stub");
+						forStmt.EmbeddedStatement = new BlockStatement () { Statements = { new ExpressionStatement (id) }};
+						expr = id;
+					}
+					baseUnit = tmpUnit;
 				}
+			}
+			
+			
+			if (expr == null) {
+				expr = tmpUnit.GetNodeAt<VariableInitializer> (location.Line, location.Column - 1);
 				baseUnit = tmpUnit;
 			}
 			
