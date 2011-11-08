@@ -166,9 +166,6 @@ namespace Mono.TextEditor
 				int lineNumber = OffsetToLineNumber (e.Line.Offset);
 				textEditorData.heightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
 			}
-			
-			TextViewMargin.RemoveCachedLine (e.Line);
-			Document.CommitLineUpdate (e.Line);
 		}
 		
 		void HAdjustmentValueChanged (object sender, EventArgs args)
