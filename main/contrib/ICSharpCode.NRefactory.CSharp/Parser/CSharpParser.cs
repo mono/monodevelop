@@ -2954,11 +2954,13 @@ namespace ICSharpCode.NRefactory.CSharp
 						result.AddChild (new CSharpTokenNode (Convert (location [l++]), "=>".Length), LambdaExpression.ArrowRole);
 					}
 				}
-				if (lambdaExpression.Block.IsCompilerGenerated) {
-					ContextualReturn generatedReturn = (ContextualReturn)lambdaExpression.Block.Statements [0];
-					result.AddChild ((AstNode)generatedReturn.Expr.Accept (this), LambdaExpression.BodyRole);
-				} else {
-					result.AddChild ((AstNode)lambdaExpression.Block.Accept (this), LambdaExpression.BodyRole);
+				if (lambdaExpression.Block != null) {
+					if (lambdaExpression.Block.IsCompilerGenerated) {
+						ContextualReturn generatedReturn = (ContextualReturn)lambdaExpression.Block.Statements [0];
+						result.AddChild ((AstNode)generatedReturn.Expr.Accept (this), LambdaExpression.BodyRole);
+					} else {
+						result.AddChild ((AstNode)lambdaExpression.Block.Accept (this), LambdaExpression.BodyRole);
+					}
 				}
 				
 				return result;
@@ -2976,7 +2978,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (new CSharpTokenNode (Convert (arrayInitializer.Location), "{".Length), ArrayInitializerExpression.Roles.LBrace);
 				var commaLocations = LocationsBag.GetLocations (arrayInitializer.Elements);
 				for (int i = 0; i < arrayInitializer.Count; i++) {
-					result.AddChild ((Expression)arrayInitializer[i].Accept (this), ArrayInitializerExpression.Roles.Expression);
+					var init = arrayInitializer[i];
+					if (init == null)
+						continue;
+					result.AddChild ((Expression)init.Accept (this), ArrayInitializerExpression.Roles.Expression);
 					if (commaLocations != null && i < commaLocations.Count)
 						result.AddChild (new CSharpTokenNode (Convert (commaLocations[i]), ",".Length), ArrayInitializerExpression.Roles.Comma);
 				}
