@@ -660,17 +660,17 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 		
-		void HandleTextPaste (int insertionOffset, string text)
+		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", true)) {
 				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
 				if (prettyPrinter != null && Project != null && text != null) {
 					try {
 						var policies = Project.Policies;
-						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + text.Length);
+						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + insertedChars);
 						if (!string.IsNullOrEmpty (newText)) {
-							Replace (insertionOffset, text.Length, newText);
-							Caret.Offset = insertionOffset + newText.Length;
+							int replaceResult = Replace (insertionOffset, insertedChars, newText);
+							Caret.Offset = insertionOffset + replaceResult;
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error formatting pasted text", e);

@@ -157,15 +157,13 @@ namespace MonoDevelop.CSharp.Formatting
 			if (textPolicy != null) {
 				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
 				data.Options.TabSize = textPolicy.TabWidth;
-				data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			}
-			data.Options.OverrideDocumentEolMarker = true;
 			data.Text = input;
 
-//			System.Console.WriteLine ("-----");
-//			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
-//			System.Console.WriteLine ("-----");
-
+			// System.Console.WriteLine ("-----");
+			// System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
+			// System.Console.WriteLine ("-----");
+			
 			var parser = new CSharpParser ();
 			var compilationUnit = parser.Parse (data);
 			bool hadErrors = parser.HasErrors;
@@ -175,20 +173,19 @@ namespace MonoDevelop.CSharp.Formatting
 //					Console.WriteLine (e.Message);
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
-			
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, new FormattingActionFactory (data), data.Options.TabsToSpaces, data.Options.IndentationSize) {
+			var factory = new FormattingActionFactory (data);
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, factory, data.Options.TabsToSpaces, data.Options.IndentationSize) {
 				HadErrors = hadErrors,
 				EolMarker = data.EolMarker
 			};
 			
 			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
-			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-			
+			var endPositionChange = factory.CreateTextReplaceAction (endOffset, 0, null);
+			changes.Add (endPositionChange);
 			MDRefactoringContext.MdScript.RunActions (changes, null);
 			
 			// check if the formatter has produced errors
@@ -196,21 +193,13 @@ namespace MonoDevelop.CSharp.Formatting
 			parser.Parse (data);
 			if (parser.HasErrors) {
 				LoggingService.LogError ("C# formatter produced source code errors. See console for output.");
-				Console.WriteLine (data.Text);
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
-				
-			int end = endOffset;
-			foreach (TextReplaceAction c in changes) {
-				end -= c.RemovedChars;
-				if (c.InsertedText != null)
-					end += c.InsertedText.Length;
-			}
 			
-		/*			System.Console.WriteLine ("-----");
+/*			System.Console.WriteLine ("-----");
 			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
-			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
+			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, endPositionChange.Offset));
 			data.Dispose ();
 			return result;
 		}
