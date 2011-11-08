@@ -172,7 +172,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (string.IsNullOrEmpty (objcName))
 				return null;
 			
-			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseType.FullName, isModel,
+			var info = new NSObjectTypeInfo (objcName, type.DecoratedFullName, null, type.BaseType.DecoratedFullName, isModel,
 				type.SourceProject != null, registeredInDesigner);
 			
 			if (info.IsUserType) {

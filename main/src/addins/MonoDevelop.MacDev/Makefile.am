@@ -26,6 +26,8 @@ FILES =  \
 	AppleSdkSettings.cs \
 	AppleSdkSettingsPanel.cs \
 	AssemblyInfo.cs \
+	BindingProject/ObjcBindingProject.cs \
+	BindingProject/ObjcBindingProjectConfiguration.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \
