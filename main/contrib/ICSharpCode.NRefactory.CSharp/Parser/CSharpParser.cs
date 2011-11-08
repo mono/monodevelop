@@ -815,7 +815,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public void AddAttributeSection (AstNode parent, Attributable a)
 			{
-				if (a.OptAttributes == null)
+				if (a == null || a.OptAttributes == null)
 					return;
 				AddAttributeSection (parent, a.OptAttributes);
 			}
@@ -2278,6 +2278,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				for (int i = 0; i < parameters.Count; i++) {
 					var p = (Parameter)parameters.FixedParameters [i];
+					if (p == null)
+						continue;
 					var location = LocationsBag.GetLocations (p);
 					ParameterDeclaration parameterDeclarationExpression = new ParameterDeclaration ();
 					AddAttributeSection (parameterDeclarationExpression, p);

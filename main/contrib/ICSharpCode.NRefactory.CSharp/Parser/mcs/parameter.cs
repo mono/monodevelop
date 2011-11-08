@@ -955,7 +955,10 @@ namespace Mono.CSharp {
 			int count = parameters.Length;
 
 			for (int i = 0; i < count; i++){
-				has_params |= (parameters [i].ModFlags & Parameter.Modifier.PARAMS) != 0;
+				var p = parameters [i];
+				if (p == null)
+					continue;
+				has_params |= (p.ModFlags & Parameter.Modifier.PARAMS) != 0;
 			}
 		}
 
