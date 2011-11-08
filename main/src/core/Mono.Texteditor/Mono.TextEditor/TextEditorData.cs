@@ -382,14 +382,14 @@ namespace Mono.TextEditor
 			return this.Options.WordFindStrategy.FindCurrentWordStart (this.Document, offset);
 		}
 		
-		public delegate void PasteCallback (int insertionOffset, string text);
+		public delegate void PasteCallback (int insertionOffset, string text, int insertedChars);
 		
 		public event PasteCallback Paste;
 		
-		public void PasteText (int insertionOffset, string text)
+		public void PasteText (int insertionOffset, string text, int insertedChars)
 		{
 			if (Paste != null)
-				Paste (insertionOffset, text);
+				Paste (insertionOffset, text, insertedChars);
 		}
 		
 		#region undo/redo handling

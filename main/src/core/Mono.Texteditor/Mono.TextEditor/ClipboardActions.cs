@@ -441,11 +441,11 @@ namespace Mono.TextEditor
 									int spaceCount = charsToInsert % data.Options.TabSize;
 									string textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
 									insertOffset = lineSegment.EditableLength;
-									data.Insert (lineSegment.Offset + insertOffset, textToInsert);
-									data.PasteText (lineSegment.Offset + insertOffset, textToInsert);
+									int insertedChars = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
+									data.PasteText (lineSegment.Offset + insertOffset, textToInsert, insertedChars);
 								} else {
 									textLength = data.Insert (lineSegment.Offset + insertOffset, text);
-									data.PasteText (lineSegment.Offset + insertOffset, text);
+									data.PasteText (lineSegment.Offset + insertOffset, text, textLength);
 								}
 							}
 							
@@ -481,7 +481,7 @@ namespace Mono.TextEditor
 									data.SelectionRange = new Segment (offset, selection.Length);
 								}
 							}
-							data.PasteText (insertionOffset, text);
+							data.PasteText (insertionOffset, text, textLength);
 						}
 					}
 				});
