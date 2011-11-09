@@ -49,8 +49,27 @@ namespace MonoDevelop.Ide.Templates
 					throw new InvalidOperationException ("Template's Src attribute is empty");
 				contentSrcFile = contentSrcFile.ToAbsolute (baseDirectory);
 			} else {
-				content = filenode.InnerText;
+				// Taking InnerText doesn't work, because there because there can be child 
+				// AssemblyReference nodes, and we don't want their values too. To fix this, look 
+				// for a single child CData node (which is the common pattern) and use only that.
+				var node = GetSingleCDataChild (filenode) ?? filenode;
+				content = node.InnerText;
 			}
+		}
+		
+		static XmlNode GetSingleCDataChild (XmlElement el)
+		{
+			var child = el.FirstChild;
+			XmlNode singleCData = null;
+			while (child != null) {
+				if (child.NodeType == XmlNodeType.CDATA) {
+					if (singleCData != null)
+						return null;
+					singleCData = child;
+				}
+				child = child.NextSibling;
+			}
+			return singleCData;
 		}
 		
 		public override string CreateContent (string language)
