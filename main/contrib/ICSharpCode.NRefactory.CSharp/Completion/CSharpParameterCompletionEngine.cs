@@ -226,6 +226,100 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return false;
 		}*/
+		
+		public int GetCurrentParameterIndex (int triggerOffset)
+		{
+			SetOffset (triggerOffset);
+			var text = GetMemberTextToCaret ();
+			var parameter = new Stack<int> ();
+			
+			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
+			
+			for (int i = 0; i < text.Item1.Length; i++) {
+				char ch = text.Item1 [i];
+				char nextCh = i + 1 < text.Item1.Length ? text.Item1 [i + 1] : '\0';
+				
+				switch (ch) {
+				case '(':
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					parameter.Push (0);
+					break;
+				case ')':
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					if (parameter.Count > 0)
+						parameter.Pop ();
+					break;
+				case ',':
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					if (parameter.Count > 0)
+						parameter.Push (parameter.Pop () + 1);
+					break;
+				case '/':
+					if (inString || inChar || inVerbatimString)
+						break;
+					if (nextCh == '/') {
+						i++;
+						inSingleComment = true;
+					}
+					if (nextCh == '*')
+						inMultiLineComment = true;
+					break;
+				case '*':
+					if (inString || inChar || inVerbatimString || inSingleComment)
+						break;
+					if (nextCh == '/') {
+						i++;
+						inMultiLineComment = false;
+					}
+					break;
+				case '@':
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					if (nextCh == '"') {
+						i++;
+						inVerbatimString = true;
+					}
+					break;
+				case '\n':
+				case '\r':
+					inSingleComment = false;
+					inString = false;
+					inChar = false;
+					break;
+				case '\\':
+					if (inString || inChar)
+						i++;
+					break;
+				case '"':
+					if (inSingleComment || inMultiLineComment || inChar)
+						break;
+					if (inVerbatimString) {
+						if (nextCh == '"') {
+							i++;
+							break;
+						}
+						inVerbatimString = false;
+						break;
+					}
+					inString = !inString;
+					break;
+				case '\'':
+					if (inSingleComment || inMultiLineComment || inString || inVerbatimString)
+						break;
+					inChar = !inChar;
+					break;
+				}
+			}
+			if (parameter.Count == 0)
+				return -1;
+			if (text.Item1.EndsWith ("(")) 
+				return 1;
+			return parameter.Pop () + 1;
+		}
+		
 	}
 }
 

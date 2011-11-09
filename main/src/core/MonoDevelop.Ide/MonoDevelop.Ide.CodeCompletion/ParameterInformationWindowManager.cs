@@ -121,6 +121,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			md.CurrentOverload = 0;
 			md.CompletionContext = ctx;
 			methods.Add (md);
+			UpdateOverload (ext, widget);
 			UpdateWindow (ext, widget);
 		}
 		

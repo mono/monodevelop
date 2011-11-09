@@ -380,22 +380,26 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}*/
 
-		public override int GetCurrentParameterIndex (CodeCompletionContext ctx)
+		public override int GetCurrentParameterIndex (CodeCompletionContext completionCtx)
 		{
-			return GetCurrentParameterIndex (CompletionWidget, ctx.TriggerOffset, 0);
+			var engine = new CSharpParameterCompletionEngine (textEditorData.Document, this);
+			engine.ctx = ctx;
+			engine.Unit = Unit;
+			engine.CSharpParsedFile = CSharpParsedFile;
+			engine.ProjectContent = Document.GetProjectContext ();
+			return engine.GetCurrentParameterIndex (document.Editor.Caret.Offset);
 		}
-		
-		internal static int GetCurrentParameterIndex (ICompletionWidget widget, int offset, int memberStart)
+		/*
+		internal int GetCurrentParameterIndex (ICompletionWidget widget, int offset, int memberStart)
 		{
 			int cursor = widget.CurrentCodeCompletionContext.TriggerOffset;
 			int i = offset;
-			
 			if (i > cursor)
 				return -1;
 			if (i == cursor) 
 				return 1; // parameters are 1 based
-			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			CSharpIndentEngine engine = new CSharpIndentEngine (MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types));
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			var engine = new CSharpIndentEngine (MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types));
 			int index = memberStart + 1;
 			int parentheses = 0;
 			int bracket = 0;
@@ -428,8 +432,8 @@ namespace MonoDevelop.CSharp.Completion
 			} while (i <= cursor && parentheses >= 0);
 			
 			return parentheses != 1 || bracket > 0 ? -1 : index;
-		}
-
+		}*/
+		
 		#region ICompletionDataFactory implementation
 		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity)
 		{
