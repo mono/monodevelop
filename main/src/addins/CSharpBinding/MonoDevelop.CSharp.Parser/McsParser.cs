@@ -79,9 +79,14 @@ namespace MonoDevelop.CSharp.Parser
 		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
+			var result = new ParsedDocument (fileName);
+			var unit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
+			result.CompilationUnit = unit;
+				
+			if (string.IsNullOrEmpty (content))
+				return result;
+			
 			lock (CompilerCallableEntryPoint.parseLock) {
-				if (string.IsNullOrEmpty (content))
-					return null;
 				var tagComments = ProjectDomService.SpecialCommentTags.GetNames ();
 				List<string > compilerArguments = new List<string> ();
 				if (dom != null && dom.Project != null && MonoDevelop.Ide.IdeApp.Workspace != null) {
@@ -104,9 +109,6 @@ namespace MonoDevelop.CSharp.Parser
 					}
 				}
 				
-				var unit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
-				var result = new ParsedDocument (fileName);
-				result.CompilationUnit = unit;
 				
 				CompilerCompilationUnit top;
 				ErrorReportPrinter errorReportPrinter = new ErrorReportPrinter ();
