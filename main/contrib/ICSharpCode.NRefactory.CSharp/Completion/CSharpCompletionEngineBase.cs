@@ -33,6 +33,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
@@ -444,11 +445,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { resolveNode });
+			if (ProjectContent is SimpleProjectContent)
+				((SimpleProjectContent)ProjectContent).UpdateProjectContent (CSharpParsedFile, file);
 			var visitor = new ResolveVisitor (csResolver, file, navigator);
+			
 			visitor.Scan (unit);
 //			Print (unit);
 			var state = visitor.GetResolverStateBefore (resolveNode);
 			var result = visitor.GetResolveResult (resolveNode);
+			if (ProjectContent is SimpleProjectContent)
+				((SimpleProjectContent)ProjectContent).UpdateProjectContent (file, CSharpParsedFile);
 			return Tuple.Create (result, state);
 		}
 		
