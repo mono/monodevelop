@@ -176,9 +176,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			if (string.IsNullOrEmpty (objcName))
 				return null;
-			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseTypes.First ().Resolve (dom).FullName, isModel, type.GetSourceProject () != null, registeredInDesigner);
-			info.IsUserType = type.GetProjectContent () != null;
-			info.IsRegisteredInDesigner = registeredInDesigner;
+			
+			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseTypes.First ().Resolve (dom).FullName, isModel,
+					type.GetSourceProject () != null, registeredInDesigner);
 			
 			if (info.IsUserType) {
 				UpdateTypeMembers (dom, info, type);

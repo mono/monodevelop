@@ -80,6 +80,20 @@ namespace Mono.TextEditor.Tests
 		}
 		
 		[Test()]
+		public void TestUpdateOnTextReplace ()
+		{
+			var collection = new SegmentTree<TreeSegment> ();
+			
+			collection.Add (new TreeSegment (0, 89));
+			collection.Add (new TreeSegment (92, 51));
+			collection.Add (new TreeSegment (42, 77));
+			collection.Add (new TreeSegment (36, 128));
+			collection.UpdateOnTextReplace (this, new ReplaceEventArgs (0, 355, null));
+			
+			Assert.AreEqual (0, collection.Count);
+		}
+		
+		[Test()]
 		public void TestSimpleRemove ()
 		{
 			var collection = new SegmentTree<TreeSegment> ();

@@ -97,6 +97,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			dom = TypeSystemService.GetContext (project);
 			
 			foreach (var type in infoService.GetRegisteredObjects (dom)) {
+				if (objcTypes.ContainsKey (type.ObjCName)) {
+					var other = objcTypes[type.ObjCName];
+					throw new ArgumentException (string.Format ("Multiple types ({0} and {1}) registered with the same Objective-C name: {2}", type.CliName, other.CliName, type.ObjCName));
+				}
+				
 				objcTypes.Add (type.ObjCName, type);
 				cliTypes.Add (type.CliName, type);
 			}

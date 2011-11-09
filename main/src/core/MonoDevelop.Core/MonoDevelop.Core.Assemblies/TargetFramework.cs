@@ -162,8 +162,14 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal TargetFrameworkBackend CreateBackendForRuntime (TargetRuntime runtime)
 		{
-			if (FrameworkNode == null || FrameworkNode.ChildNodes == null)
+			if (FrameworkNode == null)
 				return null;
+			
+			lock (FrameworkNode) {
+				if (FrameworkNode.ChildNodes == null)
+					return null;
+			}
+			
 			foreach (TypeExtensionNode node in FrameworkNode.ChildNodes) {
 				TargetFrameworkBackend backend = (TargetFrameworkBackend) node.CreateInstance (typeof (TargetFrameworkBackend));
 				if (backend.SupportsRuntime (runtime))
