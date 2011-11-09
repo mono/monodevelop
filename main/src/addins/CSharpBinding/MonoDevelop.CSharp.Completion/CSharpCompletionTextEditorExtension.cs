@@ -187,7 +187,7 @@ namespace MonoDevelop.CSharp.Completion
 			list.AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch;
 			list.AutoSelect = engine.AutoSelect;
 			list.DefaultCompletionString = engine.DefaultCompletionString;
-			return list;
+			return list.Count > 0 ? list : null;
 		}
 		
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
