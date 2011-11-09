@@ -322,7 +322,7 @@ namespace MonoDevelop.CSharp.Completion
 			engine.Unit = Unit;
 			engine.CSharpParsedFile = CSharpParsedFile;
 			engine.ProjectContent = Document.GetProjectContext ();
-			return engine.GetParameterDataProvider (completionContext.TriggerOffset);
+			return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar);
 		}
 		
 		List<string> GetUsedNamespaces ()

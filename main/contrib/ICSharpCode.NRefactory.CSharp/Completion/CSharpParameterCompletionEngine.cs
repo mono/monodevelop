@@ -69,14 +69,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
 		}
 		
-		public IParameterDataProvider GetParameterDataProvider (int offset)
+		public IParameterDataProvider GetParameterDataProvider (int offset, char completionChar)
 		{
 			if (offset <= 0)
 				return null;
-			SetOffset (offset);
-			char completionChar = document.GetCharAt (offset - 1);
 			if (completionChar != '(' && completionChar != '<' && completionChar != '[' && completionChar != ',')
 				return null;
+			
+			SetOffset (offset);
 			if (IsInsideCommentOrString ())
 				return null;
 			
