@@ -53,6 +53,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public NSObjectProjectInfo (DotNetProject project, ITypeResolveContext dom, NSObjectInfoService infoService)
 		{
+			this.project = project;
 			this.infoService = infoService;
 			this.dom = dom;
 			needsUpdating = true;
