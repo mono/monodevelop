@@ -462,7 +462,9 @@ namespace MonoDevelop.TypeSystem
 			if (!args.Any (x => x is SolutionItemModifiedEventInfo && ((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework"))
 				return;
 			var project = (Project)sender;
-			cachedProjectContents.Remove (project);
+			lock (cachedProjectContents) {
+				cachedProjectContents.Remove (project);
+			}
 		}
 		#endregion
 		
@@ -549,7 +551,9 @@ namespace MonoDevelop.TypeSystem
 		
 		static void OnProjectReferenceAdded (object sender, ProjectReferenceEventArgs args)
 		{
-			cachedProjectContents.Remove (args.Project);
+			lock (cachedProjectContents) {
+				cachedProjectContents.Remove (args.Project);
+			}
 //			ITypeResolveContext db = GetProjectDom (args.Project);
 //			if (db != null) 
 //				db.OnProjectReferenceAdded (args.ProjectReference);
@@ -557,7 +561,9 @@ namespace MonoDevelop.TypeSystem
 		
 		static void OnProjectReferenceRemoved (object sender, ProjectReferenceEventArgs args)
 		{
-			cachedProjectContents.Remove (args.Project);
+			lock (cachedProjectContents) {
+				cachedProjectContents.Remove (args.Project);
+			}
 //			ITypeResolveContext db = GetProjectDom (args.Project);
 //			if (db != null) 
 //				db.OnProjectReferenceRemoved (args.ProjectReference);
@@ -820,58 +826,60 @@ namespace MonoDevelop.TypeSystem
 
 		public static ITypeResolveContext GetContext (Project project)
 		{
-			ITypeResolveContext result;
-			if (cachedProjectContents.TryGetValue (project, out result))
-				return result;
-			
-			List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
-			
-			SimpleProjectContent content;
-			if (projectContents.TryGetValue (project, out content))
-				contexts.Add (content);
-			foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
-				var referencedProject = pr as Project;
-				if (referencedProject == null)
-					continue;
-				if (projectContents.TryGetValue (referencedProject, out content))
+			lock (cachedProjectContents) {
+				ITypeResolveContext result;
+				if (cachedProjectContents.TryGetValue (project, out result))
+					return result;
+				
+				List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
+				
+				SimpleProjectContent content;
+				if (projectContents.TryGetValue (project, out content))
 					contexts.Add (content);
-			}
-				
-			AssemblyContext ctx;
-			if (project is DotNetProject) {
-				var netProject = (DotNetProject)project;
-				
-				// Add mscorlib reference
-				var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
-				if (!assemblyContents.TryGetValue (corLibRef.Location, out ctx))
-					ctx = assemblyContents [corLibRef.Location] = LoadAssemblyContext (corLibRef.Location);
-				if (ctx != null)
-					contexts.Add (ctx);
-				
-				// Get the assembly references throught the project, since it may have custom references
-				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-					string fileName;
-					if (!Path.IsPathRooted (file)) {
-						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-					} else {
-						fileName = Path.GetFullPath (file);
-					}
-					string refId = fileName;
-
-					if (!assemblyContents.TryGetValue (refId, out ctx)) {
-						try {
-							assemblyContents [refId] = ctx = LoadAssemblyContext (fileName);
-						} catch (Exception) {
-						}
-					}
+				foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
+					var referencedProject = pr as Project;
+					if (referencedProject == null)
+						continue;
+					if (projectContents.TryGetValue (referencedProject, out content))
+						contexts.Add (content);
+				}
 					
+				AssemblyContext ctx;
+				if (project is DotNetProject) {
+					var netProject = (DotNetProject)project;
+					
+					// Add mscorlib reference
+					var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
+					if (!assemblyContents.TryGetValue (corLibRef.Location, out ctx))
+						ctx = assemblyContents [corLibRef.Location] = LoadAssemblyContext (corLibRef.Location);
 					if (ctx != null)
 						contexts.Add (ctx);
+					
+					// Get the assembly references throught the project, since it may have custom references
+					foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+						string fileName;
+						if (!Path.IsPathRooted (file)) {
+							fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
+						} else {
+							fileName = Path.GetFullPath (file);
+						}
+						string refId = fileName;
+	
+						if (!assemblyContents.TryGetValue (refId, out ctx)) {
+							try {
+								assemblyContents [refId] = ctx = LoadAssemblyContext (fileName);
+							} catch (Exception) {
+							}
+						}
+						
+						if (ctx != null)
+							contexts.Add (ctx);
+					}
 				}
+				result = new CompositeTypeResolveContext (contexts);
+				cachedProjectContents[project] = result;
+				return result;
 			}
-			result = new CompositeTypeResolveContext (contexts);
-			cachedProjectContents[project] = result;
-			return result;
 		}
 		
 		public static void ForceUpdate (ITypeResolveContext context)
