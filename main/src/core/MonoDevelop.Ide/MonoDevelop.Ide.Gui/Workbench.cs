@@ -1078,16 +1078,9 @@ namespace MonoDevelop.Ide.Gui
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
 			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();
-			if (fileInfo.Line > 0 && ipos != null) {
-				newContent.Control.Realized += HandleNewContentControlRealized;
-			}
+			if (fileInfo.Line > 0 && ipos != null)
+				JumpToLine ();
 			fileInfo.NewContent = newContent;
-		}
-
-		void HandleNewContentControlRealized (object sender, EventArgs e)
-		{
-			JumpToLine ();
-			newContent.Control.Realized -= HandleNewContentControlRealized;
 		}
 		
 		public bool JumpToLine ()
