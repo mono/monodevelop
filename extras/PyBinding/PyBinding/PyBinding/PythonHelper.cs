@@ -109,6 +109,13 @@ namespace PyBinding
 			// next preferred type.
 			
 			try {
+				return new Python27Runtime () {
+					Path = Which ("python2.7")
+				};
+			}
+			catch {}
+			
+			try {
 				return new Python26Runtime () {
 					Path = Which ("python2.6")
 				};
@@ -129,8 +136,10 @@ namespace PyBinding
 		
 		public static string FindPreferredPython ()
 		{
+			try { return Which ("python2.7"); } catch {}
 			try { return Which ("python2.6"); } catch {}
 			try { return Which ("python2.5"); } catch {}
+			try { return Which ("python2"); } catch {}
 			try { return Which ("python"); } catch {}
 			
 			throw new FileNotFoundException ("Could not locate python executable");
