@@ -96,7 +96,7 @@ valabindinglib_DATA = $(ASSEMBLY) $(ASSEMBLY_CONFIG)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(RES)
+EXTRA_DIST = $(FILES) $(RES) $(ASSEMBLY_CONFIG)
 
 # include $(top_srcdir)/Makefile.include
 
