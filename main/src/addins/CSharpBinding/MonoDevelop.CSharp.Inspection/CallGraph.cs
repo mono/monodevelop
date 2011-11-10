@@ -67,6 +67,7 @@ namespace MonoDevelop.CSharp.Inspection
 			var ctx = doc.TypeResolveContext;
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			visitor = new ResolveVisitor (csResolver, pf, null);
+			visitor.Scan (unit);
 			/*unit.AcceptVisitor (visitor, null);
 			
 			
