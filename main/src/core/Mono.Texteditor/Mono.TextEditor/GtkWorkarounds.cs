@@ -334,6 +334,11 @@ namespace Mono.TextEditor
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		static Dictionary<long,MappedKeys> mappedKeys = new Dictionary<long,MappedKeys> ();
 		
+		/// <summary>Map raw GTK key input to work around platform bugs and decompose accelerator keys</summary>
+		/// <param name='evt'>The raw key event</param>
+		/// <param name='key'>The composed key</param>
+		/// <param name='mod'>The composed modifiers</param>
+		/// <param name='accels'>All the key/modifier decompositions that can be used as accelerators</param>
 		public static void MapKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType state,
 			out KeyboardShortcut[] accels)
 		{
@@ -461,6 +466,11 @@ namespace Mono.TextEditor
 			list.Add (item);
 		}
 		
+		/// <summary>Map raw GTK key input to work around platform bugs and decompose accelerator keys</summary>
+		/// <param name='evt'>The raw key event</param>
+		/// <param name='key'>The decomposed accelerator key</param>
+		/// <param name='mod'>The decomposed accelerator modifiers</param>
+		/// <param name='keyval'>The fully mapped keyval</param>
 		[Obsolete ("Use MapKeys")]
 		public static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod, out uint keyval)
 		{
