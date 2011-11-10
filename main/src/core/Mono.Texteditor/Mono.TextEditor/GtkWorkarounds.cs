@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 		
 		static System.Reflection.MethodInfo glibObjectGetProp, glibObjectSetProp;
 		
-		public static int GtkMinorVersion = 12;
+		public static int GtkMinorVersion = 12, GtkMicroVersion = 0;
 		static bool oldMacKeyHacks = false;
 		
 		static GtkWorkarounds ()
@@ -86,6 +86,13 @@ namespace Mono.TextEditor
 				}
 			}
 			
+			for (int i = 1; i < 20; i++) {
+				if (Gtk.Global.CheckVersion (2, (uint)GtkMinorVersion, (uint)i) == null) {
+					GtkMicroVersion = i;
+				} else {
+					break;
+				}
+			}
 			
 			//TODO: opt into the fixes on GTK+ >= 2.24.8
 			oldMacKeyHacks = true;
