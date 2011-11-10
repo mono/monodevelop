@@ -1806,21 +1806,21 @@ namespace Mono.TextEditor
 				Caret.AllowCaretBehindLineEnd = true;
 			}
 
-			DocumentLocation loc = PointToLocation (args.X, args.Y);
-			if (loc.IsEmpty)
+			var loc = PointToLocation (args.X, args.Y);
+			if (loc.Line < DocumentLocation.MinLine || loc.Column < DocumentLocation.MinColumn)
 				return;
-			LineSegment line = Document.GetLine (loc.Line);
-			LineSegment oldHoveredLine = HoveredLine;
+			var line = Document.GetLine (loc.Line);
+			var oldHoveredLine = HoveredLine;
 			HoveredLine = line;
 			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
 
-			TextMarkerHoverResult hoverResult = new TextMarkerHoverResult ();
+			var hoverResult = new TextMarkerHoverResult ();
 			oldMarkers.ForEach (m => m.MouseHover (this.textEditor, args, hoverResult));
 
 			if (line != null) {
 				newMarkers.Clear ();
 				newMarkers.AddRange (line.Markers.Where (m => m is IActionTextMarker).Cast <IActionTextMarker> ());
-				IActionTextMarker extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextMarker;
+				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextMarker;
 				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
 					newMarkers.Add (extraMarker);
 				foreach (var marker in newMarkers.Where (m => !oldMarkers.Contains (m))) {
