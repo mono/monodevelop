@@ -164,7 +164,8 @@ TESTFILES =  \
 	Parser/SharpDevelopTree/Method.cs \
 	Parser/SharpDevelopTree/ReturnType.cs \
 	Parser/TypeVisitor.cs \
-	Project/CSharpCompilerParameters.cs
+	Project/CSharpCompilerParameters.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/RedundantThisInspector.cs
 
 TESTDLLS = \
 	$(NUNIT_LIBS)

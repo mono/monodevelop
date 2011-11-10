@@ -240,6 +240,11 @@
 			severity = "Warning"
 			class = "MonoDevelop.CSharp.Inspection.UnusedUsingInspector" />
 		<Inspector mimeType="text/x-csharp"
+			_title = "Remove redundant 'this.'"
+			_description = "Removes 'this.' references that are not required."
+			severity = "Warning"
+			class = "MonoDevelop.CSharp.Inspection.RedundantThisInspector" />
+		<Inspector mimeType="text/x-csharp"
 			_title = "Show NotImplementedException"
 			_description = "Shows NotImplementedException throws in the quick task bar."
 			severity = "Suggestion"

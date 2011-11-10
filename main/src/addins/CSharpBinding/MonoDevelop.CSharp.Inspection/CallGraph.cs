@@ -46,8 +46,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public CSharpResolver CSharpResolver;
 		public VisitNamespaceNodesNavigator Navigator;
-		
-		ResolveVisitor visitor;
+		public ResolveVisitor Visitor;
 		
 		public CallGraph ()
 		{
@@ -55,7 +54,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public ResolveResult Resolve (AstNode node)
 		{
-			return visitor.GetResolveResult (node);
+			return Visitor.GetResolveResult (node);
 		}
 		
 		public void Inspect (MonoDevelop.Ide.Gui.Document doc, ParsedDocument parsedDocument)
@@ -65,8 +64,8 @@ namespace MonoDevelop.CSharp.Inspection
 			var ctx = doc.TypeResolveContext;
 			CSharpResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			Navigator = new VisitNamespaceNodesNavigator ();
-			visitor = new ResolveVisitor (CSharpResolver, pf, Navigator);
-			visitor.Scan (unit);
+			Visitor = new ResolveVisitor (CSharpResolver, pf, Navigator);
+			Visitor.Scan (unit);
 			
 			/*unit.AcceptVisitor (visitor, null);
 			
