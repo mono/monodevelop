@@ -72,9 +72,9 @@ namespace Mono.TextEditor
 		public Selection (DocumentLocation anchor, DocumentLocation lead, SelectionMode selectionMode = SelectionMode.Normal)
 		{
 			if (anchor.Line < DocumentLocation.MinLine || anchor.Column < DocumentLocation.MinColumn)
-				throw new ArgumentException ("anchor");
+				throw new ArgumentOutOfRangeException ("anchor", anchor + " is out of range.");
 			if (lead.Line < DocumentLocation.MinLine || lead.Column < DocumentLocation.MinColumn)
-				throw new ArgumentException ("lead");
+				throw new ArgumentOutOfRangeException ("lead", lead + " is out of range.");
 			this.Anchor        = anchor;
 			this.Lead          = lead;
 			this.SelectionMode = selectionMode;
