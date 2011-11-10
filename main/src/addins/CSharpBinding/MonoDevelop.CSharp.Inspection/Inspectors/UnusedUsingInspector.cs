@@ -35,6 +35,8 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.AnalysisCore.Fixes;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.CSharp.Refactoring.RefactorImports;
+using System.Linq;
 
 
 namespace MonoDevelop.CSharp.Inspection
@@ -47,17 +49,17 @@ namespace MonoDevelop.CSharp.Inspection
 		}
 		
 		void HandleVisitorUsingDeclarationVisited (UsingDeclaration node, InspectionData data)
-		{ // TODO: Type system conversion.
-//			if (!data.Graph.UsedUsings.Contains (node.Namespace)) {
-//				AddResult (data,
-//					new DomRegion (node.StartLocation, node.EndLocation),
-//					GettextCatalog.GetString ("Remove unused usings"),
-//					delegate {
-//						RefactoringOptions options = new RefactoringOptions () { Document = data.Document, Dom = data.Document.Dom};
-//						new RemoveUnusedImportsRefactoring ().Run (options);
-//					}
-//				);
-//			}
+		{
+			if (!data.Graph.Navigator.GetsUsed (data.Document.TypeResolveContext, data.Graph.CSharpResolver, node.StartLocation, node.Namespace)) {
+				AddResult (data,
+					new DomRegion (node.StartLocation, node.EndLocation),
+					GettextCatalog.GetString ("Remove unused usings"),
+					delegate {
+						var options = new RefactoringOptions () { Document = data.Document, Dom = data.Document.TypeResolveContext};
+						new RemoveUnusedImportsRefactoring ().Run (options);
+					}
+				);
+			}
 		}
 	}
 }

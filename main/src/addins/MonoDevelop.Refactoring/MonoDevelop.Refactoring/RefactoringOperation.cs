@@ -56,7 +56,7 @@ namespace MonoDevelop.Refactoring
 		
 		public virtual bool IsValid (RefactoringOptions options)
 		{
-			return false;
+			return true;
 		}
 		
 		public virtual List<Change> PerformChanges (RefactoringOptions options, object properties)

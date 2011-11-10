@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.Dom;
 using Mono.TextEditor;
 using System.Linq;
 
@@ -35,7 +34,7 @@ namespace MonoDevelop.Refactoring
 {
 	public static class HelperMethods
 	{
-		static Dictionary<string, string> TypeTable = new Dictionary<string, string> ();
+		/*static Dictionary<string, string> TypeTable = new Dictionary<string, string> ();
 		static HelperMethods ()
 		{
 			TypeTable[DomReturnType.Void.FullName] = "void";
@@ -92,21 +91,7 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			
-			/*
-			List<TypeReference> genericTypes = new List<TypeReference> ();
-			foreach (MonoDevelop.Projects.Dom.IReturnType genericType in returnType.GenericArguments) {
-				genericTypes.Add (ConvertToTypeReference (genericType));
-			}
-			TypeReference result = new AstType (returnType.FullName, genericTypes);
-			result.IsKeyword = true;
-			result.PointerNestingLevel = returnType.PointerNestingLevel;
-			if (returnType.ArrayDimensions > 0) {
-				int[] rankSpecfier = new int[returnType.ArrayDimensions];
-				for (int i = 0; i < returnType.ArrayDimensions; i++) {
-					rankSpecfier[i] = returnType.GetDimension (i);
-				}
-				result.RankSpecifier = rankSpecfier;
-			}*/
+		
 			return result;
 		}
 		
@@ -156,5 +141,6 @@ namespace MonoDevelop.Refactoring
 			
 			return result;
 		}
+		*/
 	}
 }

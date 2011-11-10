@@ -2100,6 +2100,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			return null;
 		}
+		public HashSet<object> usedScopes = new HashSet<object> ();
 		
 		ResolveResult LookInCurrentUsingScope(string identifier, IList<IType> typeArguments, bool isInUsingDeclaration, bool parameterizeResultType)
 		{
@@ -2111,6 +2112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (k == 0) {
 					string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
 					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null) {
+						usedScopes.Add (n);
 						if (n.HasAlias(identifier))
 							return new AmbiguousTypeResolveResult(SharedTypes.UnknownType);
 						return new NamespaceResolveResult(fullName);
@@ -2119,6 +2121,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// then look for a type
 				ITypeDefinition def = context.GetTypeDefinition(n.NamespaceName, identifier, k, StringComparer.Ordinal);
 				if (def != null) {
+					usedScopes.Add (n);
 					IType result = def;
 					if (parameterizeResultType) {
 						result = new ParameterizedType(def, typeArguments);
@@ -2131,12 +2134,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// then look for aliases:
 				if (k == 0) {
 					if (n.ExternAliases.Contains(identifier)) {
+						usedScopes.Add (n.ExternAliases);
 						return ResolveExternAlias(identifier);
 					}
 					if (!(isInUsingDeclaration && n == currentUsingScope)) {
 						foreach (var pair in n.UsingAliases) {
 							if (pair.Key == identifier) {
 								NamespaceResolveResult ns = pair.Value.ResolveNamespace(context);
+								usedScopes.Add (pair.Value);
 								if (ns != null)
 									return ns;
 								else
@@ -2153,6 +2158,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (ns != null) {
 							def = context.GetTypeDefinition(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
 							if (def != null) {
+								usedScopes.Add (u);
+								
 								if (firstResult == null) {
 									if (parameterizeResultType && k > 0)
 										firstResult = new ParameterizedType(def, typeArguments);
@@ -2182,10 +2189,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			for (UsingScope n = this.CurrentUsingScope; n != null; n = n.Parent) {
 				if (n.ExternAliases.Contains(identifier)) {
+					usedScopes.Add (n.ExternAliases);
 					return ResolveExternAlias(identifier);
 				}
 				foreach (var pair in n.UsingAliases) {
 					if (pair.Key == identifier) {
+						usedScopes.Add (pair.Value);
 						return pair.Value.ResolveNamespace(context) ?? ErrorResult;
 					}
 				}

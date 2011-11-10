@@ -77,6 +77,7 @@
     <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
@@ -241,6 +242,11 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\IndexerParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\VisitNamespaceNodesNavigator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\RemoveUnusedImportsRefactoring.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\RefactorImportsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\SortImportsRefactoring.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -293,5 +299,6 @@
     <Folder Include="MonoDevelop.CSharp.Inspection\" />
     <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring\RefactorImports\" />
   </ItemGroup>
 </Project>

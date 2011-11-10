@@ -32,6 +32,8 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -42,12 +44,8 @@ namespace MonoDevelop.CSharp.Inspection
 			private set;
 		}
 		
-		HashSet<string> usedUsings = new HashSet<string> ();
-		public HashSet<string> UsedUsings {
-			get {
-				return usedUsings;
-			}
-		}
+		public CSharpResolver CSharpResolver;
+		public VisitNamespaceNodesNavigator Navigator;
 		
 		ResolveVisitor visitor;
 		
@@ -65,9 +63,11 @@ namespace MonoDevelop.CSharp.Inspection
 			var pf = parsedDocument.Annotation<CSharpParsedFile> ();
 			var unit = parsedDocument.Annotation<CompilationUnit> ();
 			var ctx = doc.TypeResolveContext;
-			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
-			visitor = new ResolveVisitor (csResolver, pf, null);
+			CSharpResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
+			Navigator = new VisitNamespaceNodesNavigator ();
+			visitor = new ResolveVisitor (CSharpResolver, pf, Navigator);
 			visitor.Scan (unit);
+			
 			/*unit.AcceptVisitor (visitor, null);
 			
 			

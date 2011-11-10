@@ -261,6 +261,22 @@
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveUnusedImports"
+					defaultHandler = "MonoDevelop.CSharp.Refactoring.RefactorImports.RemoveUnusedImportsHandler"
+					icon = "md-remove-namespace"
+					_label = "_Remove unused usings"/>
+		
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.SortImports"
+					defaultHandler = "MonoDevelop.CSharp.Refactoring.RefactorImports.SortImportsHandler"
+					icon = "md-sort-namespace"
+					_label = "_Sort usings"/>
+					
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports"
+					defaultHandler = "MonoDevelop.CSharp.Refactoring.RefactorImports.RemoveSortImportsHandler"
+					_label = "R_emove and Sort usings"/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToPrevUsageHandler"

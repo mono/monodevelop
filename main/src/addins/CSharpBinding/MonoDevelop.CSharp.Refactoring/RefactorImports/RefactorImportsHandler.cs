@@ -35,22 +35,18 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.Refactoring.RefactorImports
+namespace MonoDevelop.CSharp.Refactoring.RefactorImports
 {
 	public class RemoveUnusedImportsHandler: AbstractRefactoringCommandHandler
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			RemoveUnusedImportsRefactoring removeUnusedImportsRefactoring = new RemoveUnusedImportsRefactoring ();
+			var removeUnusedImportsRefactoring = new RemoveUnusedImportsRefactoring ();
 			if (removeUnusedImportsRefactoring.IsValid (options))
 				removeUnusedImportsRefactoring.Run (options);
 		}
@@ -60,7 +56,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			SortImportsRefactoring sortImportsRefactoring = new SortImportsRefactoring ();
+			var sortImportsRefactoring = new SortImportsRefactoring ();
 			if (sortImportsRefactoring.IsValid (options))
 				sortImportsRefactoring.Run (options);
 		}
@@ -70,8 +66,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			RemoveUnusedImportsRefactoring removeUnusedImportsRefactoring = new RemoveUnusedImportsRefactoring ();
-			SortImportsRefactoring sortImportsRefactoring = new SortImportsRefactoring ();
+			var removeUnusedImportsRefactoring = new RemoveUnusedImportsRefactoring ();
+			var sortImportsRefactoring = new SortImportsRefactoring ();
 			if (removeUnusedImportsRefactoring.IsValid (options) && sortImportsRefactoring.IsValid (options)) {
 				sortImportsRefactoring.Run (options);
 				removeUnusedImportsRefactoring.Run (options);

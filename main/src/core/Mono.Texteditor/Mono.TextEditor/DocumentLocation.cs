@@ -91,6 +91,11 @@ namespace Mono.TextEditor
 			return new TextLocation (location.Line, location.Column);
 		}
 		
+		public static implicit operator DocumentLocation(TextLocation location)
+		{
+			return new DocumentLocation (location.Line, location.Column);
+		}
+		
 		public override int GetHashCode()
 		{
 			return unchecked (Column.GetHashCode () * Line.GetHashCode ());

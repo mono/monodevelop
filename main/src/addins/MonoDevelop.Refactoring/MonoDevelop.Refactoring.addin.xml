@@ -124,20 +124,6 @@
 				_label = "S_how Code Generation Window" 
 				shortcut = "Alt|Insert" />
 		
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveUnusedImports"
-					defaultHandler = "MonoDevelop.Refactoring.RefactorImports.RemoveUnusedImportsHandler"
-					icon = "md-remove-namespace"
-					_label = "_Remove unused usings"/>
-		
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.SortImports"
-					defaultHandler = "MonoDevelop.Refactoring.RefactorImports.SortImportsHandler"
-					icon = "md-sort-namespace"
-					_label = "_Sort usings"/>
-					
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports"
-					defaultHandler = "MonoDevelop.Refactoring.RefactorImports.RemoveSortImportsHandler"
-					_label = "R_emove and Sort usings"/>
-		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntroduceConstant"
 					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.IntroduceConstantHandler"
 					_label = "_Introduce Constant..."/>

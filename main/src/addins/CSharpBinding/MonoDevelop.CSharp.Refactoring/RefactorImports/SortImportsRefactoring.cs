@@ -29,8 +29,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using System.Text;
+using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.Refactoring.RefactorImports
+namespace MonoDevelop.CSharp.Refactoring.RefactorImports
 {
 	public class SortImportsRefactoring : RefactoringOperation
 	{
@@ -38,12 +39,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		{
 			Name = "Sort imports";
 		}
-		
-		public override bool IsValid (RefactoringOptions options)
-		{
-			return true;
-		}
-		
+		/*
 		static int UsingComparer (IUsing left, IUsing right)
 		{
 			if (left.Aliases.Any () && right.Aliases.Any ())
@@ -60,12 +56,12 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			if (!leftIsSystem && rightIsSystem)
 				return 1;
 			return left.Namespaces.First ().CompareTo (right.Namespaces.First ());
-		}
+		}*/
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			List<Change> result = new List<Change> ();
-			IParsedFile compilationUnit = options.ParseDocument ().CompilationUnit;
+			/*IParsedFile compilationUnit = options.ParseDocument ().CompilationUnit;
 			Mono.TextEditor.TextEditorData textEditorData = options.GetTextEditorData ();
 			int minOffset = int.MaxValue;
 			foreach (IUsing u in compilationUnit.Usings) {
@@ -104,7 +100,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 				Offset = minOffset,
 				InsertedText = output.ToString ()
 			};
-			result.Add (insertSortedUsings);
+			result.Add (insertSortedUsings);*/
 			return result;
 		}
 	}
