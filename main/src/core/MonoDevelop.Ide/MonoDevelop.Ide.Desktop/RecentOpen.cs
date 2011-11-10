@@ -63,12 +63,22 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public override IList<RecentFile> GetProjects ()
 		{
-			return Get (projGroup);
+			try {
+				return Get (projGroup);
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't get recent projects list.", e);
+				return new List <RecentFile> ();
+			}
 		}
 		
 		public override IList<RecentFile> GetFiles ()
 		{
-			return Get (fileGroup);
+			try {
+				return Get (fileGroup);
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't get recent files list.", e);
+				return new List <RecentFile> ();
+			}
 		}
 		
 		IList<RecentFile> Get (string grp)
@@ -79,22 +89,38 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public override void ClearProjects ()
 		{
-			recentFiles.ClearGroup (projGroup);
+			try {
+				recentFiles.ClearGroup (projGroup);
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't clear recent projects list.", e);
+			}
 		}
 		
 		public override void ClearFiles ()
 		{
-			recentFiles.ClearGroup (fileGroup);
+			try {
+				recentFiles.ClearGroup (fileGroup);
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't get recent files list.", e);
+			}
 		}
 		
 		public override void AddFile (string fileName, string displayName)
 		{
-			Add (fileGroup, fileName, displayName);
+			try {
+				Add (fileGroup, fileName, displayName);
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't add to recent files list.", e);
+			}
 		}
 		
 		public override void AddProject (string fileName, string displayName)
 		{
-			Add (projGroup, fileName, displayName);
+			try {
+				Add (projGroup, fileName, displayName);
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't add to recent project list.", e);
+			}
 		}
 		
 		void Add (string grp, string fileName, string displayName)
@@ -107,12 +133,20 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public override void NotifyFileRemoved (string fileName)
 		{
-			recentFiles.RemoveItem (RecentFileStorage.ToUri (fileName));
+			try {
+				recentFiles.RemoveItem (RecentFileStorage.ToUri (fileName));
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't remove from recent files list.", e);
+			}
 		}
 		
 		public override void NotifyFileRenamed (string oldName, string newName)
 		{
-			recentFiles.RenameItem (RecentFileStorage.ToUri (oldName), RecentFileStorage.ToUri (newName));
+			try {
+				recentFiles.RenameItem (RecentFileStorage.ToUri (oldName), RecentFileStorage.ToUri (newName));
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't rename file in recent files list.", e);
+			}
 		}
 		
 		public void Dispose ()
