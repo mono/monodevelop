@@ -28,6 +28,7 @@ using System.IO;
 using System.Threading;
 using System.Net;
 using System.Web;
+using System.IO.Compression;
 
 namespace MonoDevelop.Core.LogReporting
 {
@@ -101,22 +102,24 @@ namespace MonoDevelop.Core.LogReporting
 			try {
 				var server = Environment.GetEnvironmentVariable ("MONODEVELOP_CRASHREPORT_SERVER");
 				if (string.IsNullOrEmpty (server))
-					server = "software.xamarin.com";
+					server = "monodevlog.xamarin.com:35162";
 
-				var url = string.Format ("http://{0}/Service/IssueLogging?filename={1}", server, HttpUtility.UrlEncode (filename));
-				var request = WebRequest.Create (url);
+				var request = (HttpWebRequest) WebRequest.Create (string.Format ("http://{0}/logagentreport/", server));
+				request.Headers.Add ("LogAgentVersion", "1");
+				request.Headers.Add ("LogAgent_Filename", Path.GetFileName (filename));
+				request.Headers.Add ("Content-Encoding", "gzip");
 				request.Method = "POST";
+				
 				request.ContentLength = data.Length;
-				using (var requestStream = request.GetRequestStream ())
+				using (var requestStream = new GZipStream (request.GetRequestStream (), CompressionMode.Compress))
 					requestStream.Write (data, 0, data.Length);
 				
 				LoggingService.LogDebug ("CrashReport sent to server, awaiting response...");
 
 				// Ensure the server has correctly processed everything.
-				using (var response = request.GetResponse ()) {
-					var responseText = new StreamReader (response.GetResponseStream ()).ReadToEnd (); 
-					if (responseText != "OK") {
-						LoggingService.LogError ("Server responded with error: {0}", responseText);
+				using (var response = (HttpWebResponse) request.GetResponse ()) {
+					if (response.StatusCode != HttpStatusCode.OK) {
+						LoggingService.LogError ("Server responded with status code {1} and error: {0}", response.StatusDescription, response.StatusCode);
 						return false;
 					}
 				}
