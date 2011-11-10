@@ -67,6 +67,7 @@ namespace Mono.TextEditor
 		static System.Reflection.MethodInfo glibObjectGetProp, glibObjectSetProp;
 		
 		public static int GtkMinorVersion = 12;
+		static bool oldMacKeyHacks = false;
 		
 		static GtkWorkarounds ()
 		{
@@ -85,8 +86,12 @@ namespace Mono.TextEditor
 				}
 			}
 			
+			
+			//TODO: opt into the fixes on GTK+ >= 2.24.8
+			oldMacKeyHacks = true;
+			
 			keymap.KeysChanged += delegate {
-				groupZeroMappings.Clear ();
+				mappedKeys.Clear ();
 			};
 		}
 
@@ -315,103 +320,158 @@ namespace Mono.TextEditor
 			ShowContextMenu (menu, parent, null, caret);
 		}
 		
-		static Gdk.Keymap keymap = Gdk.Keymap.Default;
-		
-		public static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod, out uint keyval)
+		struct MappedKeys
 		{
-			const Gdk.ModifierType ctrlShift = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask;
-			const Gdk.ModifierType ctrlAlt = Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask;
-			
-			mod = evt.State;
-			key = evt.Key;
-			keyval = evt.KeyValue;
-			
-			int effectiveGroup, level;
-			Gdk.ModifierType consumedModifiers;
-			Gdk.ModifierType modifier = evt.State;
-			byte grp = evt.Group;
-			// Workaround for bug "Bug 688247 - Ctrl+Alt key not work on windows7 with bootcamp on a Mac Book Pro"
-			// Ctrl+Alt should behave like right alt key - unfortunately TranslateKeyboardState doesn't handle it. 
-			if (Platform.IsWindows && (modifier & ~Gdk.ModifierType.LockMask) == (ctrlAlt)) {
-				modifier = Gdk.ModifierType.Mod2Mask;
-				grp = 1;
-			}
-			
-			keymap.TranslateKeyboardState (evt.HardwareKeycode, modifier, grp, out keyval, out effectiveGroup,
-			                               out level, out consumedModifiers);
-			key = (Gdk.Key)keyval;
-			mod = modifier & ~consumedModifiers;
-			
-			if (Platform.IsX11) {
-				//this is a workaround for a common X mapping issue
-				//where the alt key is mapped to the meta key when the shift modifier is active
-				if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
-					key = Gdk.Key.Alt_L;
-			}
-			
-			//HACK: the MAC GTK+ port currently does some horrible, un-GTK-ish key mappings
-			// so we work around them by playing some tricks to remap and decompose modifiers.
-			// We also decompose keys to the root physical key so that the Mac command 
-			// combinations appear as expected, e.g. shift-{ is treated as shift-[.
-			if (Platform.IsMac && !Platform.IsX11) {
-				// Mac GTK+ maps the command key to the Mod1 modifier, which usually means alt/
-				// We map this instead to meta, because the Mac GTK+ has mapped the cmd key
-				// to the meta key (yay inconsistency!). IMO super would have been saner.
-				if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
-					mod ^= Gdk.ModifierType.Mod1Mask;
-					mod |= Gdk.ModifierType.MetaMask;
-				}
-				
-				// If Mod5 is active it *might* mean that opt/alt is active,
-				// so we can unset this and map it back to the normal modifier.
-				if ((mod & Gdk.ModifierType.Mod5Mask) != 0) {
-					mod ^= Gdk.ModifierType.Mod5Mask;
-					mod |= Gdk.ModifierType.Mod1Mask;
-				}
-				
-				// When opt modifier is active, we need to decompose this to make the command appear correct for Mac.
-				// In addition, we can only inspect whether the opt/alt key is pressed by examining
-				// the key's "group", because the Mac GTK+ treats opt as a group modifier and does
-				// not expose it as an actual GDK modifier.
-				if (evt.Group == (byte) 1) {
-					mod |= Gdk.ModifierType.Mod1Mask;
-					key = GetGroupZeroKey (key, evt);
-				}
-				
-				// Fix for allow ctrl+shift+a/ctrl+shift+e keys on mac (select to line begin/end actions)
-				if ((key == Gdk.Key.A || key == Gdk.Key.E) && (evt.State & ctrlShift) == (ctrlShift))
-					mod = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask;
-			}
-			
-			//fix shift-tab weirdness. There isn't a nice name for untab, so make it shift-tab
-			if (key == Gdk.Key.ISO_Left_Tab) {
-				key = Gdk.Key.Tab;
-				mod |= Gdk.ModifierType.ShiftMask;
-			}
+			public Gdk.Key Key;
+			public Gdk.ModifierType State;
+			public KeyboardShortcut[] Accels;
 		}
 		
-		static Dictionary<Gdk.Key,Gdk.Key> groupZeroMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
+		//introduced in GTK 2.20
+		[DllImport (PangoUtil.LIBGDK)]
+		extern static bool gdk_keymap_add_virtual_modifiers (IntPtr keymap, ref Gdk.ModifierType state);
 		
-		static Gdk.Key GetGroupZeroKey (Gdk.Key mappedKey, Gdk.EventKey evt)
+		static Gdk.Keymap keymap = Gdk.Keymap.Default;
+		static Dictionary<long,MappedKeys> mappedKeys = new Dictionary<long,MappedKeys> ();
+		
+		public static void MapKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType state,
+			out KeyboardShortcut[] accels)
 		{
-			Gdk.Key ret;
-			if (groupZeroMappings.TryGetValue (mappedKey, out ret))
-				return ret;
+			//this uniquely identifies the raw key
+			long id = (((long)evt.State)) | (((long)evt.HardwareKeycode) << 32) | ((long)evt.Group << 48);
 			
-			//LookupKey isn't implemented on Mac, so we have to use this workaround
-			uint[] keyvals;
-			Gdk.KeymapKey [] keys;
-			keymap.GetEntriesForKeycode (evt.HardwareKeycode, out keys, out keyvals);
+			MappedKeys mapped;
+			if (!mappedKeys.TryGetValue (id, out mapped)) {
+				mappedKeys[id] = mapped = MapKeys (evt);
+			}
+			accels = mapped.Accels;
+			key = mapped.Key;
+			state = mapped.State;
+		}
+		
+		static MappedKeys MapKeys (Gdk.EventKey evt)
+		{
+			MappedKeys mapped;
+			ushort keycode = evt.HardwareKeycode;
+			Gdk.ModifierType modifier = evt.State;
+			byte grp = evt.Group;
 			
-			//find the key that has the same level (so we preserve shift) but with group 0
-			for (uint i = 0; i < keyvals.Length; i++)
-				if (keyvals[i] == (uint)mappedKey)
-					for (uint j = 0; j < keys.Length; j++)
-						if (keys[j].Group == 0 && keys[j].Level == keys[i].Level)
-							return groupZeroMappings[mappedKey] = ret = (Gdk.Key)keyvals[j];
+			if (GtkMinorVersion >= 20) {
+				gdk_keymap_add_virtual_modifiers (keymap.Handle, ref modifier);
+			}
 			
-			//failed, but avoid looking it up again
-			return groupZeroMappings[mappedKey] = mappedKey;
+			// Workaround for bug "Bug 688247 - Ctrl+Alt key not work on windows7 with bootcamp on a Mac Book Pro"
+			// Ctrl+Alt should behave like right alt key - unfortunately TranslateKeyboardState doesn't handle it. 
+			if (Platform.IsWindows) {
+				const Gdk.ModifierType ctrlAlt = Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask;
+				if ((modifier & ctrlAlt) == ctrlAlt) {
+					modifier = (modifier & ~ctrlAlt) | Gdk.ModifierType.Mod2Mask;
+					grp = 1;
+				}
+			}
+			
+			//full key mapping
+			uint keyval;
+			int effectiveGroup, level;
+			Gdk.ModifierType consumedModifiers;
+			keymap.TranslateKeyboardState (keycode, modifier, grp, out keyval, out effectiveGroup,
+				out level, out consumedModifiers);
+			mapped.Key = (Gdk.Key)keyval;
+			mapped.State = FixMacModifiers (evt.State & ~consumedModifiers, grp);
+			
+			//decompose the key into accel combinations
+			var accelList = new List<KeyboardShortcut> ();
+			
+			const Gdk.ModifierType accelMods = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask
+				| Gdk.ModifierType.ControlMask | Gdk.ModifierType.SuperMask |Gdk.ModifierType.MetaMask;
+			
+			//all accels ignore the lock key
+			modifier &= ~Gdk.ModifierType.LockMask;
+			
+			//fully decomposed
+			keymap.TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.None, 0,
+				out keyval, out effectiveGroup, out level, out consumedModifiers);
+			accelList.Add (new KeyboardShortcut ((Gdk.Key)keyval, FixMacModifiers (modifier, grp) & accelMods));
+			
+			//with shift composed
+			if ((modifier & Gdk.ModifierType.ShiftMask) != 0) {
+				keymap.TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.ShiftMask, 0,
+					out keyval, out effectiveGroup, out level, out consumedModifiers);
+				var m = FixMacModifiers ((modifier & ~consumedModifiers), grp) & accelMods;
+				AddIfNotDuplicate (accelList, new KeyboardShortcut ((Gdk.Key)keyval, m));
+			}
+			
+			//with group 1 composed
+			if (grp == 1) {
+				keymap.TranslateKeyboardState (evt.HardwareKeycode, modifier & ~Gdk.ModifierType.ShiftMask, 1,
+					out keyval, out effectiveGroup, out level, out consumedModifiers);
+				//somehow GTK on mac manages to consume a shift that we don't even pass to it
+				if (oldMacKeyHacks) {
+					consumedModifiers &= ~Gdk.ModifierType.ShiftMask;
+				}
+				var m = FixMacModifiers ((modifier & ~consumedModifiers), 0) & accelMods;
+				AddIfNotDuplicate (accelList, new KeyboardShortcut ((Gdk.Key)keyval, m));
+			}
+			
+			//with group 1 and shift composed
+			if (grp == 1 && (modifier & Gdk.ModifierType.ShiftMask) != 0) {
+				keymap.TranslateKeyboardState (evt.HardwareKeycode, modifier, 1,
+					out keyval, out effectiveGroup, out level, out consumedModifiers);
+				var m = FixMacModifiers ((modifier & ~consumedModifiers), 0) & accelMods;
+				AddIfNotDuplicate (accelList, new KeyboardShortcut ((Gdk.Key)keyval, m));
+			}
+			
+			//and also allow the fully mapped key as an accel
+			AddIfNotDuplicate (accelList, new KeyboardShortcut (mapped.Key, mapped.State & accelMods));
+			
+			mapped.Accels = accelList.ToArray ();
+			return mapped;
+		}
+		
+		static Gdk.ModifierType FixMacModifiers (Gdk.ModifierType mod, byte grp)
+		{
+			if (!oldMacKeyHacks)
+				return mod;
+			
+			// Mac GTK+ maps the command key to the Mod1 modifier, which usually means alt/
+			// We map this instead to meta, because the Mac GTK+ has mapped the cmd key
+			// to the meta key (yay inconsistency!). IMO super would have been saner.
+			if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
+				mod ^= Gdk.ModifierType.Mod1Mask;
+				mod |= Gdk.ModifierType.MetaMask;
+			}
+			
+			// When opt modifier is active, we need to decompose this to make the command appear correct for Mac.
+			// In addition, we can only inspect whether the opt/alt key is pressed by examining
+			// the key's "group", because the Mac GTK+ treats opt as a group modifier and does
+			// not expose it as an actual GDK modifier.
+			if (grp == (byte) 1) {
+				mod |= Gdk.ModifierType.Mod1Mask;
+			}
+			
+			return mod;
+		}
+		
+		static void AddIfNotDuplicate<T> (List<T> list, T item) where T : IEquatable<T>
+		{
+			for (int i = 0; i < list.Count; i++) {
+				if (list[i].Equals (item))
+					return;
+			}
+			list.Add (item);
+		}
+		
+		[Obsolete ("Use MapKeys")]
+		public static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod, out uint keyval)
+		{
+			Gdk.Key mappedKey;
+			Gdk.ModifierType mappedMod;
+			KeyboardShortcut[] accels;
+			MapKeys (evt, out mappedKey, out mappedMod, out accels);
+			
+			keyval = (uint) mappedKey;
+			key = accels[0].Key;
+			mod = accels[0].Modifier;
 		}
 
 		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -477,6 +537,42 @@ namespace Mono.TextEditor
 				}
 			}
 			ctx.CursorLocation = cursor;
+		}
+	}
+	
+	public struct KeyboardShortcut : IEquatable<KeyboardShortcut>
+	{
+		Gdk.Key key;
+		Gdk.ModifierType mod;
+		
+		public KeyboardShortcut (Gdk.Key key, Gdk.ModifierType mod)
+		{
+			this.key = key;
+			this.mod = mod;
+		}
+		
+		public Gdk.Key Key {
+			get { return key; }
+		}
+		
+		public Gdk.ModifierType Modifier {
+			get { return mod; }
+		}
+		
+		public override bool Equals (object obj)
+		{
+			return obj is KeyboardShortcut && this.Equals ((KeyboardShortcut)obj);
+		}
+		
+		public override int GetHashCode ()
+		{
+			//FIXME: we're only using a few bits of mod and mostly the lower bits of key - distribute it better
+			return (int)key ^ (int)mod;
+		}
+		
+		public bool Equals (KeyboardShortcut other)
+		{
+			return other.key == key && other.mod == mod;
 		}
 	}
 }
