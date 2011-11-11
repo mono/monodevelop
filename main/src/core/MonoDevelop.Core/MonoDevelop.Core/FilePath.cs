@@ -162,6 +162,12 @@ namespace MonoDevelop.Core
 			return true;
 		}
 		
+		public void MakeWritable ()
+		{
+			if (File.Exists (this))
+				File.SetAttributes (this, File.GetAttributes (this) & (~FileAttributes.ReadOnly));
+		}
+		
 		/// <summary>
 		/// Builds a path by combining all provided path sections
 		/// </summary>

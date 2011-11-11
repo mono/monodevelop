@@ -58,11 +58,11 @@ namespace MonoDevelop.CSharp
 			CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters)configuration.CompilationParameters ?? new CSharpCompilerParameters ();
 			CSharpProjectParameters projectParameters = (CSharpProjectParameters)configuration.ProjectParameters ?? new CSharpProjectParameters ();
 			
-			string outputName       = configuration.CompiledOutputName;
+			FilePath outputName       = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
 			
 			if (File.Exists (outputName)) {
-				bool isWriteable = false;
+				bool isWriteable = outputName.MakeWritable ();
 				int count = 0;
 				do {
 					try {
