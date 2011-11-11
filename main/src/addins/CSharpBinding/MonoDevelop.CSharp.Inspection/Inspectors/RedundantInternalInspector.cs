@@ -1,10 +1,10 @@
 // 
-// HelperMethods.cs
+// RedundantInternalInspector.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc.
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,36 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Refactoring;
+using MonoDevelop.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.CSharp.Refactoring
+namespace MonoDevelop.CSharp.Inspection
 {
-	public static class HelperMethods
+	public class RedundantInternalInspector : CSharpInspector
 	{
-		public static TextReplaceChange GetRemoveNodeChange (this TextEditorData editor, AstNode n)
+		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
 		{
-			var change = new TextReplaceChange ();
-			change.FileName = editor.FileName;
-			change.Offset = editor.LocationToOffset (n.StartLocation);
-			change.RemovedChars = editor.LocationToOffset (n.EndLocation) - change.Offset;
-			
-			// remove EOL, when line is empty
-			var line = editor.GetLineByOffset (change.Offset);
-			if (line != null && line.EditableLength == change.RemovedChars)
-				change.RemovedChars += line.DelimiterLength;
-			return change;
+			visitor.TypeDeclarationVisited += HandleTypeDeclarationVisited;
 		}
 		
-		public static void RemoveNode (this TextEditorData editor, AstNode n)
+		void HandleTypeDeclarationVisited (TypeDeclaration type, InspectionData data)
 		{
-			var change = editor.GetRemoveNodeChange (n);
-			editor.Remove (change.Offset, change.RemovedChars);
+			if (type.Parent is TypeDeclaration)
+				return;
+			foreach (var token in type.ModifierTokens) {
+				if (token.Modifier == Modifiers.Internal) {
+					AddResult (data,
+						new DomRegion (token.StartLocation, token.EndLocation),
+						GettextCatalog.GetString ("Remove redundant 'internal' modifier"),
+						delegate {
+							int offset = data.Document.Editor.LocationToOffset (token.StartLocation);
+							int end = data.Document.Editor.LocationToOffset (token.GetNextNode ().StartLocation);
+							data.Document.Editor.Remove (offset, end - offset);
+						}
+					);
+				}
+			}
 		}
 	}
 }

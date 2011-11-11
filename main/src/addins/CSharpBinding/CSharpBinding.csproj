@@ -248,6 +248,8 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\SortImportsRefactoring.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantThisInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantInternalInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantPrivateInspector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

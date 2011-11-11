@@ -76,6 +76,8 @@ FILES =  \
 	MonoDevelop.CSharp.Inspection/CSharpInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/ConditionalToNullCoalescingInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/NotImplementedExceptionInspector.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/RedundantInternalInspector.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/RedundantPrivateInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/RedundantThisInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/StringIsNullOrEmptyInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/UnusedUsingInspector.cs \

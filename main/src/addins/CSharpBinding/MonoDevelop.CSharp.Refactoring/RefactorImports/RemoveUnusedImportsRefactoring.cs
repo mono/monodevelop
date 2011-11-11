@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Refactoring.RefactorImports
 			var visitor = new ObservableAstVisitor<object, object> ();
 			visitor.UsingDeclarationVisited += delegate(UsingDeclaration u, object arg) {
 				if (!nav.GetsUsed (options.Dom, resolver, u.StartLocation, u.Namespace))
-					result.Add (options.Document.Editor.RemoveNode (u));
+					result.Add (options.Document.Editor.GetRemoveNodeChange (u));
 			};
 			unit.AcceptVisitor (visitor);
 			return result;

@@ -260,6 +260,18 @@
 			_description = "Use implicitly typed local variable decaration"
 			severity = "Suggestion"
 			class = "MonoDevelop.CSharp.Inspection.UseVarKeywordInspector" />
+			
+		<Inspector mimeType="text/x-csharp"
+			_title = "Remove redundint 'internal' modifier."
+			_description = "Removes 'internal' modifiers that are not required."
+			severity = "Warning"
+			class = "MonoDevelop.CSharp.Inspection.RedundantInternalInspector" />
+		
+		<Inspector mimeType="text/x-csharp"
+			_title = "Remove redundint 'private' modifier."
+			_description = "Removes 'private' modifiers that are not required."
+			severity = "Warning"
+			class = "MonoDevelop.CSharp.Inspection.RedundantPrivateInspector" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
