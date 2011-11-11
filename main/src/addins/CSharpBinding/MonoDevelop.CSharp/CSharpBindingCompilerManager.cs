@@ -62,7 +62,8 @@ namespace MonoDevelop.CSharp
 			string responseFileName = Path.GetTempFileName();
 			
 			if (File.Exists (outputName)) {
-				bool isWriteable = outputName.MakeWritable ();
+			    outputName.MakeWritable();
+				bool isWriteable = false;
 				int count = 0;
 				do {
 					try {
