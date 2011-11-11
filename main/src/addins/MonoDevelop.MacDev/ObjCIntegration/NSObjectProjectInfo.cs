@@ -48,12 +48,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		NSObjectInfoService infoService;
 		ITypeResolveContext dom;
-		DotNetProject project;
 		bool needsUpdating;
 		
-		public NSObjectProjectInfo (DotNetProject project, ITypeResolveContext dom, NSObjectInfoService infoService)
+		public NSObjectProjectInfo (ITypeResolveContext dom, NSObjectInfoService infoService)
 		{
-			this.project = project;
 			this.infoService = infoService;
 			this.dom = dom;
 			needsUpdating = true;
@@ -86,7 +84,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (!needsUpdating)
 				return;
 			
-			foreach (var r in GetReferencedProjects (project)) {
+			foreach (var r in References) {
 				var info = infoService.GetProjectInfo (r);
 				if (info != null)
 					info.Update ();
@@ -95,7 +93,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			objcTypes.Clear ();
 			cliTypes.Clear ();
 			
-			dom = TypeSystemService.GetContext (project);
 			
 			foreach (var type in infoService.GetRegisteredObjects (dom)) {
 				if (objcTypes.ContainsKey (type.ObjCName)) {
@@ -137,11 +134,20 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			cliTypes[type.CliName] = type;
 		}
 		
+		IEnumerable<ITypeResolveContext> References {
+			get {
+				var compCtx = dom as ICSharpCode.NRefactory.TypeSystem.Implementation.CompositeTypeResolveContext;
+				if (compCtx == null)
+					return Enumerable.Empty<ITypeResolveContext> ();
+				return compCtx.Children.Take (1);
+			}
+		}
+		
 		bool TryResolveCliToObjc (string cliType, out NSObjectTypeInfo resolved)
 		{
 			if (cliTypes.TryGetValue (cliType, out resolved))
 				return true;
-			foreach (var r in GetReferencedProjects (project)) {
+			foreach (var r in References) {
 				var rDom = infoService.GetProjectInfo (r);
 				if (rDom != null && rDom.cliTypes.TryGetValue (cliType, out resolved))
 					return true;
@@ -154,7 +160,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			if (objcTypes.TryGetValue (objcType, out resolved))
 				return true;
-			foreach (var r in GetReferencedProjects (project)) {
+			foreach (var r in References) {
 				var rDom = infoService.GetProjectInfo (r);
 				if (rDom != null && rDom.objcTypes.TryGetValue (objcType, out resolved))
 					return true;

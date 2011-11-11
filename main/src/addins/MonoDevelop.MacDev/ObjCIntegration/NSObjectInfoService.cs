@@ -53,7 +53,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		readonly ITypeReference nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType,
 			iboutletAttType, ibactionAttType;
 		
-		static Dictionary<DotNetProject,NSObjectProjectInfo> infos = new Dictionary<DotNetProject, NSObjectProjectInfo> ();
+		static Dictionary<ITypeResolveContext,NSObjectProjectInfo> infos = new Dictionary<ITypeResolveContext, NSObjectProjectInfo> ();
 		
 		static NSObjectInfoService ()
 		{
@@ -84,26 +84,26 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			TypeSystemService.ForceUpdate (dom);
 			project.ReferenceAddedToProject += HandleDomReferencesUpdated;
 			project.ReferenceRemovedFromProject += HandleDomReferencesUpdated;
-			return GetProjectInfo (project, dom);
+			return GetProjectInfo (dom);
 		}
 		
-		NSObjectProjectInfo GetProjectInfo (DotNetProject project, ITypeResolveContext dom)
+		public NSObjectProjectInfo GetProjectInfo (ITypeResolveContext dom)
 		{
 			NSObjectProjectInfo info;
 			
 			lock (infos) {
-				if (infos.TryGetValue (project, out info))
+				if (infos.TryGetValue (dom, out info))
 					return info;
 				
 				//only include DOMs that can resolve NSObject
 				var nso = nsobjectType.Resolve (dom);
 				if (nso == null || nso == SharedTypes.UnknownType) {
-					infos[project] = null;
+					infos[dom] = null;
 					return null;
 				}
 				
-				info = new NSObjectProjectInfo (project, dom, this);
-				infos[project] = info;
+				info = new NSObjectProjectInfo (dom, this);
+				infos[dom] = info;
 			}
 			return info;
 		}
@@ -111,9 +111,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		static void HandleDomReferencesUpdated (object sender, ProjectReferenceEventArgs e)
 		{
 			var project = (DotNetProject)sender;
+			var dom = TypeSystemService.GetContext (project);
 			NSObjectProjectInfo info;
 			lock (infos) {
-				if (!infos.TryGetValue (project, out info))
+				if (!infos.TryGetValue (dom, out info))
 					return;
 			}
 			info.SetNeedsUpdating ();
@@ -122,17 +123,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		static void HandleDomUnloaded (object sender, ProjectEventArgs e)
 		{
 			var project = (DotNetProject)e.Project;
+			var dom = TypeSystemService.GetContext (project);
 			lock (infos) {
 				project.ReferenceAddedToProject -= HandleDomReferencesUpdated;
 				project.ReferenceRemovedFromProject -= HandleDomReferencesUpdated;
-				infos.Remove (project);
+				infos.Remove (dom);
 			}
 		}
 		
 		internal IEnumerable<NSObjectTypeInfo> GetRegisteredObjects (ITypeResolveContext dom)
 		{
 			var nso = nsobjectType.Resolve (dom);
-			
 			if (nso == null || nso == SharedTypes.UnknownType)
 				throw new Exception ("Could not get NSObject from type database");
 			
@@ -173,7 +174,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					}
 				}
 			}
-			
 			if (string.IsNullOrEmpty (objcName))
 				return null;
 			
