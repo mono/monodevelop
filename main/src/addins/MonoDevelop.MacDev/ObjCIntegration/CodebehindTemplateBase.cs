@@ -26,7 +26,6 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
@@ -85,12 +84,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public System.CodeDom.Compiler.CodeDomProvider Provider { get; set; }
 		public List<NSObjectTypeInfo> Types { get; set; }
 		public NSObjectTypeInfo Type { get; set; }
-		public ITypeResolveContext Ctx { get; set; }
-		
-		protected string GetNs (ITypeReference typeRef)
-		{
-			return typeRef.Resolve (Ctx).Namespace;
-		}
 		
 		protected string GetNs (string fullname)
 		{
@@ -99,11 +92,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				return fullname.Substring (0, dotIdx);
 			}
 			return null;
-		}
-		
-		protected string GetName (ITypeReference typeRef)
-		{
-			return typeRef.Resolve (Ctx).Name;
 		}
 		
 		protected string GetName (string fullname)
