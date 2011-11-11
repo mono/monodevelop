@@ -62,11 +62,11 @@ namespace MonoDevelop.CSharp
 			string responseFileName = Path.GetTempFileName();
 			
 			if (File.Exists (outputName)) {
-			    outputName.MakeWritable();
 				bool isWriteable = false;
 				int count = 0;
 				do {
 					try {
+						outputName.MakeWritable ();
 						using (var stream = File.OpenWrite (outputName)) {
 							isWriteable = true;
 						}

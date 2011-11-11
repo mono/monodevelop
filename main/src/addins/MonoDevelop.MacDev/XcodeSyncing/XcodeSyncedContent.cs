@@ -57,18 +57,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public override void SyncOut (XcodeSyncContext context)
 		{
-			FilePath target = context.ProjectDir.Combine (targetRelative);
+			var target = context.ProjectDir.Combine (targetRelative);
 			var dir = target.ParentDirectory;
 			if (!Directory.Exists (dir))
 				Directory.CreateDirectory (dir);
 			if (File.Exists (target))
 				File.Delete (target);
-			try {
-				var result = Mono.Unix.Native.Syscall.link (source, target);
-				Mono.Unix.UnixMarshal.ThrowExceptionForLastErrorIf (result);
-			} catch {
-				File.Copy (source, target);
-			}
+			File.Copy (source, target);
 			context.UpdateSyncTime (targetRelative);
 		}
 		
