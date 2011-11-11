@@ -46,11 +46,11 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/CSharpCompletionTextEditorExtension.cs \
 	MonoDevelop.CSharp.Completion/DelegateDataProvider.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
+	MonoDevelop.CSharp.Completion/IndexerParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MethodParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs \
 	MonoDevelop.CSharp.Completion/VariableCompletionData.cs \
-	MonoDevelop.CSharp.Completion/IndexerParameterDataProvider.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionWrappers.cs \
@@ -76,6 +76,7 @@ FILES =  \
 	MonoDevelop.CSharp.Inspection/CSharpInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/ConditionalToNullCoalescingInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/NotImplementedExceptionInspector.cs \
+	MonoDevelop.CSharp.Inspection/Inspectors/RedundantThisInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/StringIsNullOrEmptyInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/UnusedUsingInspector.cs \
 	MonoDevelop.CSharp.Inspection/Inspectors/UseVarKeywordInspector.cs \
@@ -101,11 +102,11 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodHandler.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/VariableLookupVisitor.cs \
-	MonoDevelop.CSharp.Refactoring/VisitNamespaceNodesNavigator.cs \
-	MonoDevelop.CSharp.Refactoring/RefactorImports/RemoveUnusedImportsRefactoring.cs \
-	MonoDevelop.CSharp.Refactoring/RefactorImports/RefactorImportsHandler.cs \
-	MonoDevelop.CSharp.Refactoring/RefactorImports/SortImportsRefactoring.cs \
 	MonoDevelop.CSharp.Refactoring/HelperMethods.cs \
+	MonoDevelop.CSharp.Refactoring/RefactorImports/RefactorImportsHandler.cs \
+	MonoDevelop.CSharp.Refactoring/RefactorImports/RemoveUnusedImportsRefactoring.cs \
+	MonoDevelop.CSharp.Refactoring/RefactorImports/SortImportsRefactoring.cs \
+	MonoDevelop.CSharp.Refactoring/VisitNamespaceNodesNavigator.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
 	MonoDevelop.CSharp/CSharpAmbience.cs \
