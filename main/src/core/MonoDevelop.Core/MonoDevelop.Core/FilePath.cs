@@ -151,6 +151,17 @@ namespace MonoDevelop.Core
 			return new FilePath (path);
 		}
 		
+		public bool Delete ()
+		{
+			if (!File.Exists (this))
+				return false;
+			
+			var info = new FileInfo (this);
+			info.Attributes &= ~FileAttributes.ReadOnly;
+			info.Delete ();
+			return true;
+		}
+		
 		/// <summary>
 		/// Builds a path by combining all provided path sections
 		/// </summary>
