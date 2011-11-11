@@ -189,8 +189,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			NSObjectTypeInfo resolved;
 			
 			if (type.BaseObjCType == null && type.BaseCliType != null) {
-				var baseCliType = new GetClassTypeReference (type.BaseCliType).Resolve (dom);
-				if (TryResolveCliToObjc (baseCliType.FullName, out resolved)) {
+				if (TryResolveCliToObjc (type.BaseCliType, out resolved)) {
 					if (resolved.IsModel)
 						type.BaseIsModel = true;
 					type.BaseObjCType = resolved.ObjCName;
@@ -201,6 +200,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					//managed classes many have implicitly registered base classes with a name not
 					//expressible in obj-c. In this case, the best we can do is walk down the 
 					//hierarchy until we find a valid base class
+					var baseCliType = new GetClassTypeReference (type.BaseCliType).Resolve (dom);
 					foreach (var bt in baseCliType.GetAllBaseTypeDefinitions (dom)) {
 						if (bt.Kind != TypeKind.Class) 
 							continue;

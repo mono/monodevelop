@@ -97,7 +97,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				
 				//only include DOMs that can resolve NSObject
 				var nso = nsobjectType.Resolve (dom);
-				if (nso == null) {
+				if (nso == null || nso == SharedTypes.UnknownType) {
 					infos[project] = null;
 					return null;
 				}
@@ -133,7 +133,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			var nso = nsobjectType.Resolve (dom);
 			
-			if (nso == null)
+			if (nso == null || nso == SharedTypes.UnknownType)
 				throw new Exception ("Could not get NSObject from type database");
 			
 			//FIXME: only emit this for the wrapper NS
