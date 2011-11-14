@@ -98,21 +98,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					return factory.CreateConstructorProvider (attribute.Item1.Type);
 				}
-				
 				var invocationExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
-				
 				if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError)
 					return null;
 				resolveResult = invocationExpression.Item1;
 				if (resolveResult is MethodGroupResolveResult)
 					return factory.CreateMethodDataProvider (resolveResult as MethodGroupResolveResult);
 				if (resolveResult is MemberResolveResult) {
-					if (resolveResult.Type.Kind == TypeKind.Delegate)
-						return factory.CreateDelegateDataProvider (resolveResult.Type);
 					var mr = resolveResult as MemberResolveResult;
 					if (mr.Member is IMethod)
 						return factory.CreateMethodDataProvider ((IMethod)mr.Member);
 				}
+				
+				if (resolveResult.Type.Kind == TypeKind.Delegate)
+					return factory.CreateDelegateDataProvider (resolveResult.Type);
 				
 //				
 //				if (result.ExpressionContext == ExpressionContext.BaseConstructorCall) {
@@ -188,44 +187,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return result;
 		}
-		/*
-		public override bool GetParameterCompletionCommandOffset (out int cpos)
-		{
-			// Start calculating the parameter offset from the beginning of the
-			// current member, instead of the beginning of the file. 
-			cpos = textEditorData.Caret.Offset - 1;
-			var parsedDocument = Document.ParsedDocument;
-			if (parsedDocument == null)
-				return false;
-			IMember mem = currentMember;
-			if (mem == null || (mem is IType))
-				return false;
-			int startPos = textEditorData.LocationToOffset (mem.Region.BeginLine, mem.Region.BeginColumn);
-			int parenDepth = 0;
-			int chevronDepth = 0;
-			while (cpos > startPos) {
-				char c = textEditorData.GetCharAt (cpos);
-				if (c == ')')
-					parenDepth++;
-				if (c == '>')
-					chevronDepth++;
-				if (parenDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
-					int p = MethodParameterDataProvider.GetCurrentParameterIndex (CompletionWidget, cpos + 1, startPos);
-					if (p != -1) {
-						cpos++;
-						return true;
-					} else {
-						return false;
-					}
-				}
-				if (c == '(')
-					parenDepth--;
-				if (c == '<')
-					chevronDepth--;
-				cpos--;
-			}
-			return false;
-		}*/
 		
 		public int GetCurrentParameterIndex (int triggerOffset)
 		{
@@ -320,6 +281,44 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return parameter.Pop () + 1;
 		}
 		
+		/*
+		public override bool GetParameterCompletionCommandOffset (out int cpos)
+		{
+			// Start calculating the parameter offset from the beginning of the
+			// current member, instead of the beginning of the file. 
+			cpos = textEditorData.Caret.Offset - 1;
+			var parsedDocument = Document.ParsedDocument;
+			if (parsedDocument == null)
+				return false;
+			IMember mem = currentMember;
+			if (mem == null || (mem is IType))
+				return false;
+			int startPos = textEditorData.LocationToOffset (mem.Region.BeginLine, mem.Region.BeginColumn);
+			int parenDepth = 0;
+			int chevronDepth = 0;
+			while (cpos > startPos) {
+				char c = textEditorData.GetCharAt (cpos);
+				if (c == ')')
+					parenDepth++;
+				if (c == '>')
+					chevronDepth++;
+				if (parenDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
+					int p = MethodParameterDataProvider.GetCurrentParameterIndex (CompletionWidget, cpos + 1, startPos);
+					if (p != -1) {
+						cpos++;
+						return true;
+					} else {
+						return false;
+					}
+				}
+				if (c == '(')
+					parenDepth--;
+				if (c == '<')
+					chevronDepth--;
+				cpos--;
+			}
+			return false;
+		}*/
 	}
 }
 

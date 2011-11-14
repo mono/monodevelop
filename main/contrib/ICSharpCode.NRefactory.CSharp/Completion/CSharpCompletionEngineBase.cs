@@ -293,7 +293,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			bool wrapInClass = mt.Item2;
 			
 			var wrapper = new StringBuilder ();
+			
 			if (wrapInClass) {
+/*				foreach (var child in Unit.Children) {
+					if (child is UsingDeclaration) {
+						var offset = document.GetOffset (child.StartLocation);
+						wrapper.Append (document.GetText (offset, document.GetOffset (child.EndLocation) - offset));
+					}
+				}*/
 				wrapper.Append ("class Stub {");
 				wrapper.AppendLine ();
 			}
@@ -313,7 +320,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
-			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				var parser = new CSharpParser ();
 				return parser.Parse (stream, wrapInClass ? memberLocation.Line - 2 : 0);
@@ -336,6 +342,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				startOffset = document.GetOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
 			} else {
 				startOffset = 0;
+			}
+			while (startOffset > 0) {
+				char ch = document.GetCharAt (startOffset - 1);
+				if (ch != ' ' && ch != '\t')
+					break;
+				--startOffset;
 			}
 			if (cachedText == null)
 				cachedText = document.GetText (startOffset, offset - startOffset);
@@ -374,7 +386,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				return null;
 			}
-			
+//			Print (baseUnit);
 			/*	var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
@@ -450,7 +462,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var visitor = new ResolveVisitor (csResolver, file, navigator);
 			
 			visitor.Scan (unit);
-//			Print (unit);
 			var state = visitor.GetResolverStateBefore (resolveNode);
 			var result = visitor.GetResolveResult (resolveNode);
 			if (ProjectContent is SimpleProjectContent)

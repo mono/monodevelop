@@ -91,7 +91,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (type is PrimitiveType) {
 				var pt = (PrimitiveType)type;
-				Console.WriteLine (pt.Keyword);
 				switch (pt.Keyword) {
 				case "object":
 					yield return "o";
@@ -413,7 +412,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				var contextList = new CompletionDataWrapper (this);
-				
 				var identifierStart = GetExpressionAtCursor ();
 				if (identifierStart != null && identifierStart.Item2 is VariableInitializer && location <= ((VariableInitializer)identifierStart.Item2).NameToken.EndLocation) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
@@ -421,8 +419,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
 				}
-				
-				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
+				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : ';';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[](){}+-*/%^?:&|~!<>=";
 				if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
@@ -435,7 +432,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (identifierStart == null && !string.IsNullOrEmpty (token) && !(IsInsideComment (tokenIndex) || IsInsideString (tokenIndex))) {
 					char last = token [token.Length - 1];
 					if (char.IsLetterOrDigit (last) || last == '_' || token == ">") {
-						return null;
+						return controlSpace ? DefaultControlSpaceItems () : null;
 					}
 				}
 				if (identifierStart == null)
@@ -607,7 +604,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IEnumerable<ICompletionData> DefaultControlSpaceItems ()
 		{
 			var wrapper = new CompletionDataWrapper (this);
-			while (offset > 0 && char.IsWhiteSpace (document.GetCharAt (offset))) {
+			while (offset > 1 && char.IsWhiteSpace (document.GetCharAt (offset))) {
 				offset--;
 			}
 			location = document.GetLocation (offset);
@@ -630,10 +627,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddContextCompletion (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
-			if (state == null) 
-				return;
-			foreach (var variable in state.LocalVariables) {
-				wrapper.AddVariable (variable);
+			if (state != null) {
+				foreach (var variable in state.LocalVariables) {
+					wrapper.AddVariable (variable);
+				}
 			}
 			
 			if (currentMember is IParameterizedMember) {
