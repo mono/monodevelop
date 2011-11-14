@@ -323,7 +323,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (!treeview1.Selection.GetSelected (out iter))
 					return;
 				
-				PObject obj;
+				PObject obj = null;
 				if (treeStore.IterParent (out iter, iter))
 					obj = (PObject) treeStore.GetValue (iter, 1);
 				obj = obj ?? nsDictionary;
