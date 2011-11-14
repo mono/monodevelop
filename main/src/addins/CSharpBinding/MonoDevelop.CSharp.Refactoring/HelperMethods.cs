@@ -51,6 +51,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			var change = editor.GetRemoveNodeChange (n);
 			editor.Remove (change.Offset, change.RemovedChars);
 		}
+		public static void Replace (this TextEditorData editor, AstNode n, AstNode replaceWith)
+		{
+			var change = editor.GetRemoveNodeChange (n);
+			editor.Replace (change.Offset, change.RemovedChars, replaceWith.ToString ());
+		}
 	}
 }
 

@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -94,7 +95,7 @@ namespace MonoDevelop.CSharp.Inspection
 								var expressions = GetExpressions (node);
 										
 								Expression expr = new BinaryOperatorExpression (expressions.Item1.Clone (), BinaryOperatorType.NullCoalescing, expressions.Item2.Clone ());
-//								node.Replace (data.Document, expr);
+								data.Document.Editor.Replace (node, expr);
 							}
 						);
 					}
