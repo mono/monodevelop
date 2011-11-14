@@ -45,7 +45,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		readonly ITypeResolveContext[] children;
-		
+
+		public ITypeResolveContext[] Children {
+			get {
+				return children;
+			}
+		}		
 		/// <summary>
 		/// Creates a new <see cref="CompositeTypeResolveContext"/>
 		/// </summary>
