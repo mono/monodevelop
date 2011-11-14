@@ -69,6 +69,7 @@ FILES =  \
 	Ast/GeneralScope/DelegateDeclaration.cs \
 	Ast/GeneralScope/ExternAliasDeclaration.cs \
 	Ast/GeneralScope/NamespaceDeclaration.cs \
+	Ast/GeneralScope/PreProcessorDirective.cs \
 	Ast/GeneralScope/TypeDeclaration.cs \
 	Ast/GeneralScope/TypeParameterDeclaration.cs \
 	Ast/GeneralScope/UsingAliasDeclaration.cs \
@@ -267,8 +268,7 @@ FILES =  \
 	Resolver/SimpleNameLookupMode.cs \
 	Resolver/SimpleTypeOrNamespaceReference.cs \
 	Resolver/TypeInference.cs \
-	Resolver/UsingScope.cs \
-	Ast/GeneralScope/PreProcessorDirective.cs
+	Resolver/UsingScope.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 

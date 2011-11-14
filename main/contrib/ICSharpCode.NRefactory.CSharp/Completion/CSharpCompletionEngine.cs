@@ -574,7 +574,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		bool IsInLinqContext (int offset)
 		{
 			string token;
-			while (null != (token = GetPreviousToken (ref offset, true))) {
+			while (null != (token = GetPreviousToken (ref offset, true)) && !IsInsideComment (offset) && !IsInsideString (offset)) {
 				if (token == "from")
 					return true;
 				if (token == ";")
