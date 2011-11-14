@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.Inspection
 				var state = data.GetResolverStateBefore (mr);
 				var wholeResult = data.GetResolveResult (mr);
 				var result = data.GetResolveResult (mr.Target);
-				if (!(result is NamespaceResolveResult) || wholeResult == null)
+				if (!(result is NamespaceResolveResult) || !(wholeResult is TypeResolveResult))
 					return;
 				
 				var lookupName = state.LookupSimpleNameOrTypeName (mr.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
