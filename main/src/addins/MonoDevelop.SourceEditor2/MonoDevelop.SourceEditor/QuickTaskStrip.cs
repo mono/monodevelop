@@ -441,8 +441,12 @@ namespace MonoDevelop.SourceEditor
 		double LineToY (int logicalLine)
 		{
 			var h = Allocation.Height - IndicatorHeight;
-			return h * (TextEditor.GetTextEditorData ().LogicalToVisualLine (logicalLine) - 0.5) / (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
+			var p = TextEditor.LocationToPoint (logicalLine, 1).Y;
+			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height - IndicatorHeight);
+			
+			return h * p / q;
 		}
+		
 		int YToLine (double y)
 		{
 			var line = 0.5 + y / (Allocation.Height - IndicatorHeight) * (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
