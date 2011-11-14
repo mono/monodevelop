@@ -101,10 +101,10 @@ namespace MonoDevelop.CSharp.Inspection
 				return Enumerable.Empty<Result> ();
 				
 			var cg = new CallGraph ();
-			cg.Inspect (input, input.ParsedDocument);
+//			cg.Inspect (input, input.ParsedDocument);
 			var data = new InspectionData () { Graph = cg, Document = input };
 			
-			unit.AcceptVisitor (visitor, data);
+//			unit.AcceptVisitor (visitor, data);
 			return data.Results;
 		}
 	}
