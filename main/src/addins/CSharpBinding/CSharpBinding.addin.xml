@@ -262,16 +262,22 @@
 			class = "MonoDevelop.CSharp.Inspection.UseVarKeywordInspector" />
 			
 		<Inspector mimeType="text/x-csharp"
-			_title = "Remove redundint 'internal' modifier."
+			_title = "Remove redunaint 'internal' modifier."
 			_description = "Removes 'internal' modifiers that are not required."
 			severity = "Warning"
 			class = "MonoDevelop.CSharp.Inspection.RedundantInternalInspector" />
 		
 		<Inspector mimeType="text/x-csharp"
-			_title = "Remove redundint 'private' modifier."
+			_title = "Remove redundant 'private' modifier."
 			_description = "Removes 'private' modifiers that are not required."
 			severity = "Warning"
 			class = "MonoDevelop.CSharp.Inspection.RedundantPrivateInspector" />
+		
+		<Inspector mimeType="text/x-csharp"
+			_title = "Remove redundant 'namespace' usages."
+			_description = "Removes namespace usages."
+			severity = "Warning"
+			class = "MonoDevelop.CSharp.Inspection.RedundantNamespaceUsageInspector" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

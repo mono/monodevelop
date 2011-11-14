@@ -39,6 +39,8 @@ using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Inspection;
 using Mono.Addins;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -56,6 +58,16 @@ namespace MonoDevelop.CSharp.Inspection
 		public void Add (Result result)
 		{
 			results.Add (result);
+		}
+
+		public CSharpResolver GetResolverStateBefore (AstNode node)
+		{
+			return Graph.Visitor.GetResolverStateBefore (node);
+		}
+		
+		public ResolveResult GetResolveResult (AstNode node)
+		{
+			return Graph.Visitor.GetResolveResult (node);
 		}
 	}
 	
