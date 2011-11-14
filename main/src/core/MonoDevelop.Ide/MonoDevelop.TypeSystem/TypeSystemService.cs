@@ -1124,8 +1124,11 @@ namespace MonoDevelop.TypeSystem
 				if (writeTime != context.LastWriteTime) {
 					string cache = GetCacheDirectory (context.FileName);
 					context.Ctx = new CecilLoader ().LoadAssembly (ReadAssembly (context.FileName));
-					if (cache != null)
+					context.LastWriteTime = writeTime;
+					if (cache != null) {
 						SerializeObject (Path.Combine (cache, "completion.cache"), context);
+						
+					}
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while updating assembly " + context.FileName, e);
