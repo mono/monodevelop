@@ -229,6 +229,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Toolbar">
 		<ItemSet id = "Debugger" _label = "Debugger">
+			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Debug" />
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOver" />
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepInto" />
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOut" />	

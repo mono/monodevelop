@@ -124,6 +124,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				var editDialog = new EditTemplateDialog (template, false);
 				if (MessageService.ShowCustomDialog (editDialog, this.Toplevel as Gtk.Window) == (int)ResponseType.Ok)
 					templatesToSave.Add (template);
+				HandleChanged (this, EventArgs.Empty);
 			}
 		}
 		

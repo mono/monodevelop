@@ -138,7 +138,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (DebuggingService.IsPaused) {
+			if (DebuggingService.IsPaused || DebuggingService.IsDebugging) {
 				info.Enabled = true;
 				info.Text = GettextCatalog.GetString ("_Continue");
 				info.Description = GettextCatalog.GetString ("Continue the execution of the application");

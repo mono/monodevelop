@@ -200,9 +200,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 				cr.Translate (imgAlloc.X, imgAlloc.Y);
 				
 				using (var layout = new Pango.Layout (PangoContext)) {
-					layout.SetText (GettextCatalog.GetString ("No image"));
+					layout.SetText (string.Format ("({0}x{1})", displaySize.Width, displaySize.Height));
 				
-					layout.Width = (int)((imgAlloc.Width - 20) * Pango.Scale.PangoScale);
+					layout.Width = (int)((imgAlloc.Width - 16) * Pango.Scale.PangoScale);
 					layout.Wrap = Pango.WrapMode.WordChar;
 					layout.Alignment = Pango.Alignment.Center;
 					int pw, ph;

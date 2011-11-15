@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			SelectionEndPosition = selectionEndPosition;
 		}
 		
-		public virtual string ReadString ()
+		public string ReadString ()
 		{
 			if (buffer != null)
 				return buffer.ToString ();
@@ -111,13 +111,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		bool somethingReplaced;
 		bool utf8Failed;
 		IDisposable undoGroup;
-		public void BeginReplace ()
+		public void BeginReplace (string content)
 		{
 			somethingReplaced = false;
-			var reader = ReadString ();
-			if (reader == null)
-				return;
-			buffer = new StringBuilder (reader);
+			buffer = new StringBuilder (content);
 			document = SearchDocument ();
 			if (document != null) {
 				Gtk.Application.Invoke (delegate {

@@ -84,7 +84,7 @@ namespace Mono.TextEditor
 			}
 			int delta = (e.Value != null ? e.Value.Length : 0) - e.Count;
 			foreach (var segment in new List<T> (GetSegmentsOverlapping (e.Offset, e.Count))) {
-				if (segment.Offset <= e.Offset) {
+				if (segment.Offset < e.Offset) {
 					if (segment.EndOffset >= e.Offset + e.Count) {
 						segment.Length += delta;
 					} else {
@@ -95,14 +95,12 @@ namespace Mono.TextEditor
 				}
 				int remainingLength = segment.EndOffset - (e.Offset + e.Count);
 				Remove (segment);
-				
 				if (remainingLength > 0) {
 					segment.Offset = e.Offset + e.Count;
 					segment.Length = remainingLength;
 					Add (segment);
 				}
 			}
-
 			var next = SearchFirstSegmentWithStartAfter (e.Offset + 1);
 
 			if (next != null) {
@@ -215,6 +213,11 @@ namespace Mono.TextEditor
 				this.start = start;
 				this.end = end;
 			}
+			
+			public override string ToString ()
+			{
+				return string.Format ("[Interval: start={0},end={1}]", start, end);
+			}
 		}
 		
 		public IEnumerable<T> GetSegmentsOverlapping (int offset, int length)
@@ -245,7 +248,7 @@ namespace Mono.TextEditor
 				if (nodeEnd < 0) 
 					continue;
 				
-				if (nodeStart <= node.Length) 
+				if (nodeStart <= node.Length)
 					yield return (T)node;
 			
 				if (node.right != null) 

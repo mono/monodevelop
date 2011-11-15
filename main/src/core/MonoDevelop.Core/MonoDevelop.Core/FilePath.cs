@@ -151,6 +151,41 @@ namespace MonoDevelop.Core
 			return new FilePath (path);
 		}
 		
+		public void Delete ()
+		{
+			MakeWritable ();
+			if (Directory.Exists (this))
+				Directory.Delete (this, true);
+			else if (File.Exists (this))
+				File.Delete (this);
+		}
+		
+		public void MakeWritable ()
+		{
+			if (Directory.Exists (this)) {
+				try {
+					var info = new DirectoryInfo (this);
+					info.Attributes &= ~FileAttributes.ReadOnly;
+				} catch {
+					
+				}
+
+				foreach (var sub in Directory.GetFileSystemEntries (this)) {
+					((FilePath) sub).MakeWritable ();
+				}
+			} else if (File.Exists (this)) {
+				try {
+					// Try/catch is to work around a mono bug where dangling symlinks
+					// blow up when you call SetFileAttributes. Just ignore this case
+					// until mono 2.10.7/8 is released which fixes it.
+					var info = new FileInfo (this);
+					info.Attributes &= ~FileAttributes.ReadOnly;
+				} catch {
+				
+				}
+			}
+		}
+		
 		/// <summary>
 		/// Builds a path by combining all provided path sections
 		/// </summary>
