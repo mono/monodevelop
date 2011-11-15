@@ -41,6 +41,7 @@ using MonoDevelop.Inspection;
 using Mono.Addins;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -99,13 +100,24 @@ namespace MonoDevelop.CSharp.Inspection
 			var unit = input.ParsedDocument.Annotation<CompilationUnit> ();
 			if (unit == null)
 				return Enumerable.Empty<Result> ();
-				
-			var cg = new CallGraph ();
-//			cg.Inspect (input, input.ParsedDocument);
-			var data = new InspectionData () { Graph = cg, Document = input };
+			var oldSrc = input.Annotation<CancellationTokenSource> ();
+			if (oldSrc != null) {
+				Console.WriteLine ("cancel !!!");
+				oldSrc.Cancel ();
+			}
 			
-//			unit.AcceptVisitor (visitor, data);
-			return data.Results;
+			var cts = new CancellationTokenSource(); 
+			var token = cts.Token;
+			input.AddAnnotation (cts);
+			try {
+				var cg = new CallGraph (token);
+				cg.Inspect (input, input.ParsedDocument);
+				var data = new InspectionData () { Graph = cg, Document = input };
+				unit.AcceptVisitor (visitor, data);
+				return data.Results;
+			} catch (OperationCanceledException) {
+				return Enumerable.Empty<Result>();
+			}
 		}
 	}
 }

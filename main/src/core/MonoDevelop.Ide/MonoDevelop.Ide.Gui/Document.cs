@@ -52,7 +52,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class Document
+	public class Document : ICSharpCode.NRefactory.AbstractAnnotatable
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
