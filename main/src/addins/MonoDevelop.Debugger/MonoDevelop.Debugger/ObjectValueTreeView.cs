@@ -973,8 +973,9 @@ namespace MonoDevelop.Debugger
 			TreeViewColumn col;
 			CellRenderer cr;
 			
+			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (evnt.TriggersContextMenu ()) {
-				ShowPopup (evnt);
+			//	ShowPopup (evnt);
 				return true;
 			}
 			
@@ -1013,7 +1014,14 @@ namespace MonoDevelop.Debugger
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
 			allowStoreColumnSizes = false;
-			return base.OnButtonReleaseEvent (evnt);
+			var res = base.OnButtonReleaseEvent (evnt);
+			
+			//HACK: show context menu in release event instead of show event to work around gtk bug
+			if (evnt.IsContextMenuButton ()) {
+				ShowPopup (evnt);
+				return true;
+			}
+			return res;
 		}
 		
 		protected override bool OnPopupMenu ()

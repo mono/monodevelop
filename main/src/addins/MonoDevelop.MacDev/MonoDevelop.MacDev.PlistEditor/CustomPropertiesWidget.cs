@@ -94,31 +94,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return new PString ("<error>");
 		}
 		
-		class PopupTreeView : Gtk.TreeView
+		class PopupTreeView : MonoDevelop.Components.ContextMenuTreeView
 		{
 			CustomPropertiesWidget widget;
 			
 			public PopupTreeView (CustomPropertiesWidget widget)
 			{
 				this.widget = widget;
+				this.DoPopupMenu += ShowPopup;
 			}
-			
-			protected override bool OnPopupMenu ()
-			{
-				ShowPopup (null);
-				return true;
-			}
-			
-			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
-			{
-				var ret = base.OnButtonPressEvent (evnt);
-				if (evnt.TriggersContextMenu ()) {
-					ShowPopup (evnt);
-					return true;
-				}
-				return ret;
-			}
-
 			void ShowPopup (Gdk.EventButton evnt)
 			{
 				Gtk.TreeIter iter;

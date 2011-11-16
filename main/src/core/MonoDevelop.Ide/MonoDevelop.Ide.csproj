@@ -1472,6 +1472,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\CommonTextEditorOptions.cs" />
     <Compile Include="MonoDevelop.Components\FileFilterSet.cs" />
     <Compile Include="MonoDevelop.Ide\IdeVersionInfo.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuTreeView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

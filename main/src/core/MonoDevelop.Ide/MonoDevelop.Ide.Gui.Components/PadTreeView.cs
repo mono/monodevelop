@@ -30,7 +30,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public class PadTreeView : TreeView
+	public class PadTreeView : MonoDevelop.Components.ContextMenuTreeView
 	{
 		PadFontChanger changer;
 		CellRendererText textRenderer = new CellRendererText ();
@@ -64,27 +64,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				changer = null;
 			}
 			base.Dispose ();
-		}
-		
-		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
-		
-		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
-		{
-			var res = base.OnButtonPressEvent (evnt);
-			if (DoPopupMenu != null && evnt.TriggersContextMenu ()) {
-				DoPopupMenu (evnt);
-				return true;
-			}
-			return res;
-		}
-		
-		protected override bool OnPopupMenu ()
-		{
-			if (DoPopupMenu != null) {
-				DoPopupMenu (null);
-				return true;
-			}
-			return base.OnPopupMenu ();
 		}
 	}
 }

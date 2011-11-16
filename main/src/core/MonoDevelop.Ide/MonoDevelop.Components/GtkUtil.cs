@@ -376,6 +376,7 @@ namespace MonoDevelop.Components
 		public Gdk.ScrollDirection direction;
 		public IntPtr device; 
 		public double x_root; 
-		public double y_root; 
+		public double y_root;
+		//FIXME: scroll deltas
 	} 
 }

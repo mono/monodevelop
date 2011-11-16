@@ -100,10 +100,10 @@ namespace MonoDevelop.Gettext
 			//FIXME: avoid unnecessary creation of old treeview
 			scrolledwindow1.Remove (treeviewEntries);
 			treeviewEntries.Destroy ();
-			treeviewEntries = new ContextMenuTreeView ();
+			treeviewEntries = new MonoDevelop.Components.ContextMenuTreeView ();
 			treeviewEntries.ShowAll ();
 			scrolledwindow1.Add (treeviewEntries);
-			((ContextMenuTreeView)treeviewEntries).DoPopupMenu = ShowPopup;
+			((MonoDevelop.Components.ContextMenuTreeView)treeviewEntries).DoPopupMenu = ShowPopup;
 			
 			this.headersEditor = new CatalogHeadersWidget ();
 			this.notebookPages.AppendPage (headersEditor, new Gtk.Label ());
@@ -1291,31 +1291,5 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		#endregion
-		
-		class ContextMenuTreeView : Gtk.TreeView
-		{
-			public Action<Gdk.EventButton> DoPopupMenu { get; set; }
-			
-			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
-			{
-				bool res = base.OnButtonPressEvent (evnt);
-				
-				if (DoPopupMenu != null && evnt.TriggersContextMenu ()) {
-					DoPopupMenu (evnt);
-					return true;
-				}
-				
-				return res;
-			}
-			
-			protected override bool OnPopupMenu ()
-			{
-				if (DoPopupMenu != null) {
-					DoPopupMenu (null);
-					return true;
-				}
-				return base.OnPopupMenu ();
-			}
-		}
 	}
 }

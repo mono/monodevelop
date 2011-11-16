@@ -241,6 +241,7 @@ FILES =  \
 	MonoDevelop.Components/CellRendererComboBox.cs \
 	MonoDevelop.Components/CompactScrolledWindow.cs \
 	MonoDevelop.Components/ConsoleView.cs \
+	MonoDevelop.Components/ContextMenuTreeView.cs \
 	MonoDevelop.Components/DataGrid.cs \
 	MonoDevelop.Components/DropDownBox.cs \
 	MonoDevelop.Components/DropDownBoxListWindow.cs \
