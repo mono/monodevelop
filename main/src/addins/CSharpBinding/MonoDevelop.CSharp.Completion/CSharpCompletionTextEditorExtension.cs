@@ -52,7 +52,11 @@ namespace MonoDevelop.CSharp.Completion
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, ICompletionDataFactory, IParameterCompletionDataFactory
 	{
 		internal Mono.TextEditor.TextEditorData textEditorData;
-		internal ITypeResolveContext ctx;
+		internal ITypeResolveContext ctx {
+			get {
+				return document.TypeResolveContext;
+			}
+		}
 		
 		CompilationUnit unit;
 		static readonly CompilationUnit emptyUnit = new CompilationUnit ();
@@ -107,7 +111,6 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			ctx = Document.TypeResolveContext;
 			textEditorData = Document.Editor;
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument != null) {

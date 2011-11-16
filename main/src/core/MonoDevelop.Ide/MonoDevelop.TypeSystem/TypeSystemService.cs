@@ -399,7 +399,7 @@ namespace MonoDevelop.TypeSystem
 				try {
 					SimpleProjectContent context = null;
 					if (solutionCache.ContainsKey (project.FileName))
-						context = solutionCache[project.FileName];
+						context = solutionCache [project.FileName];
 					if (context == null) {
 						context = new SimpleProjectContent ();
 						QueueParseJob (context, project);
@@ -408,16 +408,13 @@ namespace MonoDevelop.TypeSystem
 					projectContents [project] = context;
 					referenceCounter [project] = 1;
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, context));
-					if (project is DotNetProject) {
-						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
-						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
-					}
-					project.FileChangedInProject   += OnFileChanged;
-					project.FileAddedToProject     += OnFileAdded;
+					project.FileChangedInProject += OnFileChanged;
+					project.FileAddedToProject += OnFileAdded;
 					project.FileRemovedFromProject += OnFileRemoved;
-					project.FileRenamedInProject   += OnFileRenamed;
-					project.Modified               += OnProjectModified;
-					
+					project.FileRenamedInProject += OnFileRenamed;
+					project.Modified += OnProjectModified;
+					((DotNetProject)project).ReferenceAddedToProject += (sender, e) => Console.WriteLine ("added reference!!!!");
+					((DotNetProject)project).ReferenceRemovedFromProject += (sender, e) => Console.WriteLine ("added reference!!!!");
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
 				}
@@ -459,12 +456,14 @@ namespace MonoDevelop.TypeSystem
 		
 		static void OnProjectModified (object sender, SolutionItemModifiedEventArgs args)
 		{
-			if (!args.Any (x => x is SolutionItemModifiedEventInfo && ((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework"))
+			if (!args.Any (x => x is SolutionItemModifiedEventInfo && (((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework" || ((SolutionItemModifiedEventInfo)x).Hint == "References")))
 				return;
-			var project = (Project)sender;
+			cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
+			
+/*			var project = (Project)sender;
 			lock (cachedProjectContents) {
 				cachedProjectContents.Remove (project);
-			}
+			}*/
 		}
 		#endregion
 		
@@ -501,10 +500,6 @@ namespace MonoDevelop.TypeSystem
 				return;
 			
 			if (--referenceCounter [project] <= 0) {
-				if (project is DotNetProject) {
-					((DotNetProject)project).ReferenceAddedToProject -= OnProjectReferenceAdded;
-					((DotNetProject)project).ReferenceRemovedFromProject -= OnProjectReferenceRemoved;
-				}
 				project.FileChangedInProject   -= OnFileChanged;
 				project.FileAddedToProject     -= OnFileAdded;
 				project.FileRemovedFromProject -= OnFileRemoved;
@@ -547,26 +542,6 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (args.SolutionItem is Project)
 				Unload ((Project)args.SolutionItem);
-		}
-		
-		static void OnProjectReferenceAdded (object sender, ProjectReferenceEventArgs args)
-		{
-			lock (cachedProjectContents) {
-				cachedProjectContents.Remove (args.Project);
-			}
-//			ITypeResolveContext db = GetProjectDom (args.Project);
-//			if (db != null) 
-//				db.OnProjectReferenceAdded (args.ProjectReference);
-		}
-		
-		static void OnProjectReferenceRemoved (object sender, ProjectReferenceEventArgs args)
-		{
-			lock (cachedProjectContents) {
-				cachedProjectContents.Remove (args.Project);
-			}
-//			ITypeResolveContext db = GetProjectDom (args.Project);
-//			if (db != null) 
-//				db.OnProjectReferenceRemoved (args.ProjectReference);
 		}
 		#endregion
 
@@ -830,7 +805,6 @@ namespace MonoDevelop.TypeSystem
 				ITypeResolveContext result;
 				if (cachedProjectContents.TryGetValue (project, out result))
 					return result;
-				
 				List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
 				
 				SimpleProjectContent content;
@@ -877,7 +851,7 @@ namespace MonoDevelop.TypeSystem
 					}
 				}
 				result = new CompositeTypeResolveContext (contexts);
-				cachedProjectContents[project] = result;
+				cachedProjectContents [project] = result;
 				return result;
 			}
 		}
