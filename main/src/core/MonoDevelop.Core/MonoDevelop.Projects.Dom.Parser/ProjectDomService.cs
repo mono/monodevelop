@@ -416,11 +416,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			string uri = "Project:" + project.FileName;
 			if (UnrefDom (uri)) {
-				project.Modified -= HandleModified;				
-				if (project is DotNetProject) {
-					((DotNetProject)project).ReferenceAddedToProject -= OnProjectReferenceAdded;
-					((DotNetProject)project).ReferenceRemovedFromProject -= OnProjectReferenceRemoved;
-				}
+				project.Modified -= HandleModified;
 			}
 		}
 
@@ -444,10 +440,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					ProjectDom db = ParserDatabase.LoadProjectDom (project);
 					RegisterDom (db, uri);
 					project.Modified += HandleModified;
-					if (project is DotNetProject) {
-						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
-						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
-					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
 				}
@@ -469,7 +461,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 							databases.Remove (pair.Key);
 							string uri = "Project:" + project.FileName;
 							pair.Value.Uri = uri;
-							databases[uri] = pair.Value;
+							databases [uri] = pair.Value;
 							return;
 						}
 					}
@@ -640,22 +632,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (args.SolutionItem is Project)
 				Unload ((Project) args.SolutionItem);
-		}
-		
-		static void OnProjectReferenceAdded (object sender, ProjectReferenceEventArgs args)
-		{
-			ProjectDom db = GetProjectDom (args.Project);
-			if (db != null) {
-				db.OnProjectReferenceAdded (args.ProjectReference);
-			}
-		}
-		
-		static void OnProjectReferenceRemoved (object sender, ProjectReferenceEventArgs args)
-		{
-			ProjectDom db = GetProjectDom (args.Project);
-			if (db != null) {
-				db.OnProjectReferenceRemoved (args.ProjectReference);
-			}
 		}
 		
 		internal static int PendingJobCount {

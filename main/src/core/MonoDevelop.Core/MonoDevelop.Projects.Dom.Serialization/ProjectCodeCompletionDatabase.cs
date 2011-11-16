@@ -130,10 +130,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void OnProjectModified (object s, SolutionItemModifiedEventArgs args)
 		{
-			if (!args.Any (x => x is SolutionItemModifiedEventInfo && ((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework"))
-				return;
-			if (UpdateFromProject ())
-				SourceProjectDom.UpdateReferences ();
+			foreach (var a in args.OfType<SolutionItemModifiedEventInfo> ()) {
+				if (a.Hint == "TargetFramework") {
+					if (UpdateFromProject ()) {
+						SourceProjectDom.UpdateReferences ();
+						return;
+					}
+				}
+				if (a.Hint == "References") {
+					UpdateFromProject ();
+					SourceProjectDom.UpdateReferences ();
+					return;
+				}
+			}
 		}
 
 		internal static string GetReferenceUri (DotNetProject netProject, string file)
