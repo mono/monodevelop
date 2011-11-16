@@ -125,7 +125,7 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
 	</Extension>
-	
+	<!--
 	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
 		<Action mimeType="text/x-csharp"
 			_title = "Create event invocator"
@@ -279,6 +279,7 @@
 			severity = "Warning"
 			class = "MonoDevelop.CSharp.Inspection.RedundantNamespaceUsageInspector" />
 	</Extension>
+	-->
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
@@ -344,11 +345,11 @@
 				_label = "_Declare Local" 
 				shortcut = "Control+dead_circumflex"/> 
 	</Extension>
-
+<!--
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Rule _name="C# Code Analysis" input="Document" 
 			func="MonoDevelop.CSharp.Inspection.CodeAnalysis.Check" />
-	</Extension>
+	</Extension> -->
 
 	<Module>
 	    <Runtime>

@@ -922,8 +922,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public QuickTaskStrip ()
 		{
-			ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Map);
-			PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
+			ScrollBarMode = ScrollBarMode.Normal; //PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Map);
+//			PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
 			Events |= EventMask.ButtonPressMask;
 		}
 		
@@ -992,10 +992,10 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-			if (evnt.Button == 3) {
+		/*	if (evnt.Button == 3) {
 				var cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar");
 				IdeApp.CommandService.ShowContextMenu (cset, this);
-			}
+			}*/
 			return base.OnButtonPressEvent (evnt);
 		}
 		
