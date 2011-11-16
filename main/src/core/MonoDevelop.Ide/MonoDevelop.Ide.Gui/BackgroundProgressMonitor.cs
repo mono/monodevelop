@@ -26,16 +26,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
-using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using Gtk;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class BackgroundProgressMonitor: SimpleProgressMonitor
+	class BackgroundProgressMonitor: SimpleProgressMonitor
 	{
 		string title;
 		StatusBarIcon icon;
@@ -55,17 +53,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override void OnProgressChanged ()
 		{
-			if (icon != null) {
-				string tip;
-				if (Tracker.UnknownWork)
-					tip = string.Format ("{0}\n{1}", title, Tracker.CurrentTask);
-				else
-					tip = string.Format ("{0} ({1}%)\n{2}", title, (int)(Tracker.GlobalWork * 100), Tracker.CurrentTask);
+			if (icon == null)
+				return;
+			string tip;
+			if (Tracker.UnknownWork)
+				tip = string.Format ("{0}\n{1}", title, Tracker.CurrentTask);
+			else
+				tip = string.Format ("{0} ({1}%)\n{2}", title, (int)(Tracker.GlobalWork * 100), Tracker.CurrentTask);
 				
-				Application.Invoke (delegate {
+			Application.Invoke (delegate {
+				if (icon != null)
 					icon.ToolTip = tip;
-				});
-			}
+			});
 		}
 		
 		public override void Dispose()

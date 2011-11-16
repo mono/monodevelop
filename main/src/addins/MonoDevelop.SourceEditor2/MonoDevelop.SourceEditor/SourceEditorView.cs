@@ -547,7 +547,7 @@ namespace MonoDevelop.SourceEditor
 		internal void LoadSettings ()
 		{
 			Settings settings;
-			if (string.IsNullOrEmpty (ContentName) || !settingStore.TryGetValue (ContentName, out settings))
+			if (widget == null || string.IsNullOrEmpty (ContentName) || !settingStore.TryGetValue (ContentName, out settings))
 				return;
 			
 			widget.TextEditor.Caret.Offset = settings.CaretOffset;
@@ -1661,7 +1661,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static SourceEditorView ()
 		{
-			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press 'shift+space' for focus");
+			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press 'F2' for focus");
 			ClipboardActions.CopyOperation.Copy += delegate (string text) {
 				if (String.IsNullOrEmpty (text))
 					return;
@@ -2074,6 +2074,11 @@ namespace MonoDevelop.SourceEditor
 			Mono.TextEditor.MiscActions.RemoveIndentSelection (widget.TextEditor.GetTextEditorData ());
 		}
 		
+		[CommandHandler (EditCommands.InsertGuid)]
+		public void InsertGuid ()
+		{
+			TextEditor.InsertAtCaret (Guid.NewGuid ().ToString ());
+		}
 		#endregion
 	}
 } 

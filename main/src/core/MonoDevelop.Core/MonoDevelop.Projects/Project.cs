@@ -444,8 +444,8 @@ namespace MonoDevelop.Projects
 			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 
 			foreach (FileCopySet.Item item in GetSupportFileList (configuration)) {
-				string dest = Path.GetFullPath (Path.Combine (config.OutputDirectory, item.Target));
-				string src = Path.GetFullPath (item.Src);
+				FilePath dest = Path.GetFullPath (Path.Combine (config.OutputDirectory, item.Target));
+				FilePath src = Path.GetFullPath (item.Src);
 
 				try {
 					if (dest == src)
@@ -458,6 +458,7 @@ namespace MonoDevelop.Projects
 						FileService.CreateDirectory (Path.GetDirectoryName (dest));
 
 					if (File.Exists (src)) {
+						dest.Delete ();
 						FileService.CopyFile (src, dest);
 						
 						// Copied files can't be read-only, so they can be removed when rebuilding the project

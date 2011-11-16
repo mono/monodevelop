@@ -456,6 +456,8 @@ namespace MonoDevelop.SourceEditor
 				if (reloadSettings) {
 					reloadSettings = false;
 					Application.Invoke (delegate {
+						if (isDisposed)
+							return;
 						view.LoadSettings ();
 						mainsw.QueueDraw ();
 					});
