@@ -138,7 +138,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				throw new Exception ("Could not get NSObject from type database");
 			
 			//FIXME: only emit this for the wrapper NS
-			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition ().FullName, null, null, false, false, false);
+//			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition ().FullName, null, null, false, false, false);
 			
 			foreach (var type in nso.GetDefinition ().GetSubTypeDefinitions (dom)) {
 				var info = ConvertType (dom, type);
@@ -163,7 +163,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						
 						//type registered with an explicit type name are up to the user to provide a valid name
 						var posArgs = att.GetPositionalArguments (dom);
-						if (posArgs.Count == 1)
+						if (posArgs.Count == 1 || posArgs.Count == 2)
 							objcName = posArgs[0].ConstantValue as string;
 						//non-nested types in the root namespace have names accessible from obj-c
 						else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
