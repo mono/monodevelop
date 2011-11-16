@@ -174,8 +174,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (sort);
 			view.RulesHint = true;
-			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
-			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
+			view.DoPopupMenu = (evnt) => IdeApp.CommandService.ShowContextMenu (view, evnt, CreateMenu ());
 			AddColumns ();
 			LoadColumnsVisibility ();
 			view.Columns[VisibleColumns.Type].SortColumnId = VisibleColumns.Type;
@@ -212,8 +211,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			};
 			
 			outputView.Hide ();
-			
-			CreateMenu ();
 
 			// Load existing tasks
 			foreach (Task t in TaskService.Errors) {
@@ -283,128 +280,116 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 		}
 
-		void CreateMenu ()
+		Gtk.Menu CreateMenu ()
 		{
-			if (menu == null)
-			{
-				ActionGroup group = new ActionGroup ("Popup");
+			if (menu != null)
+				return menu;
+			
+			var group = new ActionGroup ("Popup");
 
-				Gtk.Action help = new Gtk.Action ("help", GettextCatalog.GetString ("Show Error Reference"),
-				                          GettextCatalog.GetString ("Show Error Reference"), Gtk.Stock.Help);
-				help.Activated += new EventHandler (OnShowReference);
-				group.Add (help, "F1");
+			var help = new Gtk.Action ("help", GettextCatalog.GetString ("Show Error Reference"),
+				GettextCatalog.GetString ("Show Error Reference"), Gtk.Stock.Help);
+			help.Activated += OnShowReference;
+			group.Add (help, "F1");
 
-				Gtk.Action copy = new Gtk.Action ("copy", GettextCatalog.GetString ("_Copy"),
-				                          GettextCatalog.GetString ("Copy task"), Gtk.Stock.Copy);
-				copy.Activated += new EventHandler (OnTaskCopied);
-				group.Add (copy, "<Control><Mod2>c");
+			var copy = new Gtk.Action ("copy", GettextCatalog.GetString ("_Copy"),
+				GettextCatalog.GetString ("Copy task"), Gtk.Stock.Copy);
+			copy.Activated += OnTaskCopied;
+			group.Add (copy, "<Control><Mod2>c");
 
-				Gtk.Action jump = new Gtk.Action ("jump", GettextCatalog.GetString ("_Go to"),
-				                          GettextCatalog.GetString ("Go to task"), Gtk.Stock.JumpTo);
-				jump.Activated += new EventHandler (OnTaskJumpto);
-				group.Add (jump);
+			var jump = new Gtk.Action ("jump", GettextCatalog.GetString ("_Go to"),
+				GettextCatalog.GetString ("Go to task"), Gtk.Stock.JumpTo);
+			jump.Activated += OnTaskJumpto;
+			group.Add (jump);
 
-				Gtk.Action columns = new Gtk.Action ("columns", GettextCatalog.GetString ("Columns"));
-				group.Add (columns, null);
+			var columns = new Gtk.Action ("columns", GettextCatalog.GetString ("Columns"));
+			group.Add (columns, null);
 
-				ToggleAction columnType = new ToggleAction ("columnType", GettextCatalog.GetString ("Type"),
-				                                            GettextCatalog.GetString ("Toggle visibility of Type column"), null);
-				columnType.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnType] = VisibleColumns.Type;
-				group.Add (columnType);
+			var columnType = new ToggleAction ("columnType", GettextCatalog.GetString ("Type"),
+				GettextCatalog.GetString ("Toggle visibility of Type column"), null);
+			columnType.Toggled += OnColumnVisibilityChanged;
+			columnsActions[columnType] = VisibleColumns.Type;
+			group.Add (columnType);
 
-				ToggleAction columnValidity = new ToggleAction ("columnValidity", GettextCatalog.GetString ("Validity"),
-				                                                GettextCatalog.GetString ("Toggle visibility of Validity column"), null);
-				columnValidity.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnValidity] = VisibleColumns.Marked;
-				group.Add (columnValidity);
+			var columnValidity = new ToggleAction ("columnValidity", GettextCatalog.GetString ("Validity"),
+				GettextCatalog.GetString ("Toggle visibility of Validity column"), null);
+			columnValidity.Toggled += OnColumnVisibilityChanged;
+			columnsActions[columnValidity] = VisibleColumns.Marked;
+			group.Add (columnValidity);
 
-				ToggleAction columnLine = new ToggleAction ("columnLine", GettextCatalog.GetString ("Line"),
-				                                            GettextCatalog.GetString ("Toggle visibility of Line column"), null);
-				columnLine.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnLine] = VisibleColumns.Line;
-				group.Add (columnLine);
+			var columnLine = new ToggleAction ("columnLine", GettextCatalog.GetString ("Line"),
+				GettextCatalog.GetString ("Toggle visibility of Line column"), null);
+			columnLine.Toggled += OnColumnVisibilityChanged;
+			columnsActions[columnLine] = VisibleColumns.Line;
+			group.Add (columnLine);
 
-				ToggleAction columnDescription = new ToggleAction ("columnDescription", GettextCatalog.GetString ("Description"),
-				                                                   GettextCatalog.GetString ("Toggle visibility of Description column"), null);
-				columnDescription.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnDescription] = VisibleColumns.Description;
-				group.Add (columnDescription);
+			var columnDescription = new ToggleAction ("columnDescription", GettextCatalog.GetString ("Description"),
+				GettextCatalog.GetString ("Toggle visibility of Description column"), null);
+			columnDescription.Toggled += OnColumnVisibilityChanged;
+			columnsActions[columnDescription] = VisibleColumns.Description;
+			group.Add (columnDescription);
 
-				ToggleAction columnFile = new ToggleAction ("columnFile", GettextCatalog.GetString ("File"),
-				                                            GettextCatalog.GetString ("Toggle visibility of File column"), null);
-				columnFile.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnFile] = VisibleColumns.File;
-				group.Add (columnFile);
+			var columnFile = new ToggleAction ("columnFile", GettextCatalog.GetString ("File"),
+				GettextCatalog.GetString ("Toggle visibility of File column"), null);
+			columnFile.Toggled += OnColumnVisibilityChanged;
+			columnsActions[columnFile] = VisibleColumns.File;
+			group.Add (columnFile);
 
-				ToggleAction columnProject = new ToggleAction ("columnProject", GettextCatalog.GetString ("Project"),
-				                                            GettextCatalog.GetString ("Toggle visibility of Project column"), null);
-				columnProject.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnProject] = VisibleColumns.Project;
-				group.Add (columnProject);
+			var columnProject = new ToggleAction ("columnProject", GettextCatalog.GetString ("Project"),
+				GettextCatalog.GetString ("Toggle visibility of Project column"), null);
+			columnProject.Toggled += OnColumnVisibilityChanged;
+			columnsActions[columnProject] = VisibleColumns.Project;
+			group.Add (columnProject);
 
-				ToggleAction columnPath = new ToggleAction ("columnPath", GettextCatalog.GetString ("Path"),
-				                                            GettextCatalog.GetString ("Toggle visibility of Path column"), null);
-				columnPath.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnPath] = VisibleColumns.Path;
-				group.Add (columnPath);
+			var columnPath = new ToggleAction ("columnPath", GettextCatalog.GetString ("Path"),
+				GettextCatalog.GetString ("Toggle visibility of Path column"), null);
+			columnPath.Toggled += OnColumnVisibilityChanged;
+			columnsActions[columnPath] = VisibleColumns.Path;
+			group.Add (columnPath);
 
-				UIManager uiManager = new UIManager ();
-				uiManager.InsertActionGroup (group, 0);
-				
-				string uiStr = "<ui><popup name='popup'>"
-					+ "<menuitem action='help'/>"
-					+ "<menuitem action='copy'/>"
-					+ "<menuitem action='jump'/>"
-					+ "<separator/>"
-					+ "<menu action='columns'>"
-					+ "<menuitem action='columnType' />"
-					+ "<menuitem action='columnValidity' />"
-					+ "<menuitem action='columnLine' />"
-					+ "<menuitem action='columnDescription' />"
-					+ "<menuitem action='columnFile' />"
-					+ "<menuitem action='columnProject' />"
-					+ "<menuitem action='columnPath' />"
-					+ "</menu>"
-					+ "</popup></ui>";
+			var uiManager = new UIManager ();
+			uiManager.InsertActionGroup (group, 0);
+			
+			string uiStr = "<ui><popup name='popup'>"
+				+ "<menuitem action='help'/>"
+				+ "<menuitem action='copy'/>"
+				+ "<menuitem action='jump'/>"
+				+ "<separator/>"
+				+ "<menu action='columns'>"
+				+ "<menuitem action='columnType' />"
+				+ "<menuitem action='columnValidity' />"
+				+ "<menuitem action='columnLine' />"
+				+ "<menuitem action='columnDescription' />"
+				+ "<menuitem action='columnFile' />"
+				+ "<menuitem action='columnProject' />"
+				+ "<menuitem action='columnPath' />"
+				+ "</menu>"
+				+ "</popup></ui>";
 
-				uiManager.AddUiFromString (uiStr);
-				menu = (Menu)uiManager.GetWidget ("/popup");
-				menu.ShowAll ();
+			uiManager.AddUiFromString (uiStr);
+			menu = (Menu)uiManager.GetWidget ("/popup");
+			menu.ShowAll ();
 
-				menu.Shown += delegate (object o, EventArgs args)
-				{
-					columnType.Active = view.Columns[VisibleColumns.Type].Visible;
-					columnValidity.Active = view.Columns[VisibleColumns.Marked].Visible;
-					columnLine.Active = view.Columns[VisibleColumns.Line].Visible;
-					columnDescription.Active = view.Columns[VisibleColumns.Description].Visible;
-					columnFile.Active = view.Columns[VisibleColumns.File].Visible;
-					columnProject.Active = view.Columns[VisibleColumns.Project].Visible;
-					columnPath.Active = view.Columns[VisibleColumns.Path].Visible;
-					help.Sensitive = copy.Sensitive = jump.Sensitive =
-						view.Selection != null &&
-						view.Selection.CountSelectedRows () > 0 &&
-						(columnType.Active ||
+			menu.Shown += delegate {
+				columnType.Active = view.Columns[VisibleColumns.Type].Visible;
+				columnValidity.Active = view.Columns[VisibleColumns.Marked].Visible;
+				columnLine.Active = view.Columns[VisibleColumns.Line].Visible;
+				columnDescription.Active = view.Columns[VisibleColumns.Description].Visible;
+				columnFile.Active = view.Columns[VisibleColumns.File].Visible;
+				columnProject.Active = view.Columns[VisibleColumns.Project].Visible;
+				columnPath.Active = view.Columns[VisibleColumns.Path].Visible;
+				help.Sensitive = copy.Sensitive = jump.Sensitive =
+					view.Selection != null &&
+					view.Selection.CountSelectedRows () > 0 &&
+					(columnType.Active ||
 						columnValidity.Active ||
 						columnLine.Active ||
 						columnDescription.Active ||
 						columnFile.Active ||
 						columnPath.Active);
-				};
-			}
-		}
-
-
-		[GLib.ConnectBefore]
-		void OnButtonPressed (object o, ButtonPressEventArgs args)
-		{
-			if (args.Event.Button == 3)
-				menu.Popup ();
-		}
-
-		void OnPopupMenu (object o, PopupMenuArgs args)
-		{
-			menu.Popup ();
+			};
+			
+			return menu;
 		}
 
 		Task SelectedTask

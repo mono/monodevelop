@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		static string GetIcon (string fileName)
 		{
-			string icon;
+			//string icon;
 			//getting the icon requires probing the file, so handle IO errors
 			try {
 				if (!System.IO.File.Exists (fileName))

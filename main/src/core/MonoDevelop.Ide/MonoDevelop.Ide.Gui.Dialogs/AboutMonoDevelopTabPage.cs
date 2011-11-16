@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			aboutPictureScrollBox = new ScrollBox ();
 
 			PackStart (aboutPictureScrollBox, false, false, 0);
-			using (var stream = BrandingService.GetStream ("AboutImageSep.png"))
+			using (var stream = BrandingService.GetStream ("AboutImageSep.png", true))
 				imageSep = new Pixbuf (stream);
 			PackStart (new Gtk.Image (imageSep), false, false, 0);
 			
@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				this.Realized += new EventHandler (OnRealized);
 				this.ModifyBg (Gtk.StateType.Normal, bgColor);
 				this.ModifyText (Gtk.StateType.Normal, textColor);
-				using (var stream = BrandingService.GetStream ("AboutImage.png"))
+				using (var stream = BrandingService.GetStream ("AboutImage.png", true))
 					image = new Gdk.Pixbuf (stream);
 				monoPowered = new Gdk.Pixbuf (GetType ().Assembly, "mono-powered.png");
 				this.SetSizeRequest (450, image.Height - 1);

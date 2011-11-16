@@ -132,7 +132,9 @@ namespace Stetic.Editor
 		
 		public bool ProcessButtonPress (Gdk.EventButton ev)
 		{
-			if (ev.Button == 1) {
+			if (GtkWorkarounds.TriggersContextMenu (ev)) {
+				parentMenu.ShowContextMenu (this);
+			} else if (ev.Button == 1) {
 				IDesignArea area = GetDesignArea ();
 				if (area == null)
 					return true;
@@ -142,8 +144,6 @@ namespace Stetic.Editor
 					editOnRelease = true;
 					return true;
 				}
-			} else if (ev.Button == 3) {
-				parentMenu.ShowContextMenu (this);
 			}
 			
 			Select ();

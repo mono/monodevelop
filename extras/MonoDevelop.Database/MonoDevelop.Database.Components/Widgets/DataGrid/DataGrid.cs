@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Database.Components
 {
@@ -69,8 +70,9 @@ namespace MonoDevelop.Database.Components
 			this.Build ();
 			
 			//Gtk# 2.10: grid.EnableGridLines = TreeViewGridLines.Both;
-			grid.ButtonPressEvent += new ButtonPressEventHandler (ButtonPressed);
-			grid.Selection.Mode = SelectionMode.Multiple;
+			grid.ButtonPressEvent += ButtonPressed;
+			grid.PopupMenu += (o, args) => DoPopupMenu (null);
+			grid.Selection.Mode = Gtk.SelectionMode.Multiple;
 
 			contentRenderers = new Dictionary<Type, IDataGridContentRenderer> ();
 			
@@ -388,10 +390,15 @@ namespace MonoDevelop.Database.Components
 				return;
 			}
 			
-			if (args.Event.Button == 3) {
-				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/Database/ContextMenu/DataGrid");
+			if (args.Event.TriggersContextMenu ()) {
+				DoPopupMenu (args.Event);
 				args.RetVal = true;
 			}
+		}
+		
+		void DoPopupMenu (Gdk.EventButton evt)
+		{
+			IdeApp.CommandService.ShowContextMenu (grid, evt, "/MonoDevelop/Database/ContextMenu/DataGrid");
 		}
 		
 		private static string ByteConvertFunc (object obj)

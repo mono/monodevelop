@@ -232,7 +232,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			button |= evnt.Button;
 			
-			if (evnt.Button == 1 && hoverTask != null) {
+			if (!evnt.TriggersContextMenu () && evnt.Button == 1 && hoverTask != null) {
 				TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
 				TextEditor.CenterToCaret ();
 				TextEditor.StartCaretPulseAnimation ();

@@ -875,7 +875,7 @@ namespace Mono.TextEditor
 			ModifierType mod;
 			Gdk.Key key;
 			uint keyVal;
-			Platform.MapRawKeys (evt, out key, out mod, out keyVal);
+			GtkWorkarounds.MapRawKeys (evt, out key, out mod, out keyVal);
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
@@ -885,6 +885,9 @@ namespace Mono.TextEditor
 				textViewMargin.OpenCodeSegmentEditor ();
 				return true;
 			}
+			
+			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+				mod = Gdk.ModifierType.None;
 			
 			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
 			
@@ -925,6 +928,20 @@ namespace Mono.TextEditor
 			pressPositionX = e.X;
 			pressPositionY = e.Y;
 			base.IsFocus = true;
+			
+			//main context menu
+			if (DoPopupMenu != null && e.TriggersContextMenu ()) {
+				double tmOffset = e.X - textViewMargin.XOffset;
+				if (tmOffset >= 0) {
+					DocumentLocation loc = PointToLocation (tmOffset, e.Y);
+					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
+						Caret.Location = loc;
+					DoPopupMenu (e);
+					this.ResetMouseState ();
+					return true;
+				}
+			}
+			
 			if (lastTime != e.Time) {// filter double clicks
 				if (e.Type == EventType.TwoButtonPress) {
 				    lastTime = e.Time;
@@ -935,15 +952,21 @@ namespace Mono.TextEditor
 				double startPos;
 				Margin margin = GetMarginAtX (e.X, out startPos);
 				if (margin != null) 
-					margin.MousePressed (new MarginMouseEventArgs (this, e.Button, e.X - startPos, e.Y, e.Type, e.State));
+					margin.MousePressed (new MarginMouseEventArgs (this, e, e.Button, e.X - startPos, e.Y, e.State));
 			}
 			return base.OnButtonPressEvent (e);
 		}
-	/*	protected override bool OnWidgetEvent (Event evnt)
+		
+		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
+		
+		protected override bool OnPopupMenu ()
 		{
-			Console.WriteLine (evnt.Type);
-			return base.OnWidgetEvent (evnt);
-		}*/
+			if (DoPopupMenu != null) {
+				DoPopupMenu (null);
+				return true;
+			}
+			return base.OnPopupMenu ();
+		}
 		
 		public Margin LockedMargin {
 			get;
@@ -979,7 +1002,7 @@ namespace Mono.TextEditor
 			double startPos;
 			Margin margin = GetMarginAtX (e.X, out startPos);
 			if (margin != null)
-				margin.MouseReleased (new MarginMouseEventArgs (this, e.Button, e.X - startPos, e.Y, EventType.ButtonRelease, e.State));
+				margin.MouseReleased (new MarginMouseEventArgs (this, e, e.Button, e.X - startPos, e.Y, e.State));
 			ResetMouseState ();
 			return base.OnButtonReleaseEvent (e);
 		}
@@ -1172,7 +1195,8 @@ namespace Mono.TextEditor
 				oldMargin.MouseLeft ();
 			
 			if (margin != null) 
-				margin.MouseHover (new MarginMouseEventArgs (this, mouseButtonPressed, x - startPos, y, EventType.MotionNotify, state));
+				margin.MouseHover (new MarginMouseEventArgs (this, EventType.MotionNotify,
+					mouseButtonPressed, x - startPos, y, state));
 			oldMargin = margin;
 		}
 

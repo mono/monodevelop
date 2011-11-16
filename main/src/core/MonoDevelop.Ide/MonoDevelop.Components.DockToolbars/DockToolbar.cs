@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.DockToolbars
 {
@@ -244,7 +245,7 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
-			if (parentFrame != null && e.Button == 1) {
+			if (parentFrame != null && e.Button == 1 && !e.TriggersContextMenu ()) {
 				if (Orientation == Orientation.Horizontal && e.X <= 10) {
 					dragging = true;
 					parentFrame.StartDragBar (this, (int)e.X, (int)e.Y, e.Time);

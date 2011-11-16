@@ -211,7 +211,6 @@ namespace MonoDevelop.Ide.WelcomePage
 					IdeApp.Workspace.OpenWorkspaceItem (fileuri.LocalPath, !inWorkspace);
 				} else if (uri.StartsWith ("monodevelop://")) {
 					var cmdId = uri.Substring ("monodevelop://".Length);
-					var cmd = IdeApp.CommandService.GetCommand (cmdId);
 					IdeApp.CommandService.DispatchCommand (cmdId, MonoDevelop.Components.Commands.CommandSource.WelcomePage);
 				} else {
 					DesktopService.ShowUrl (uri);

@@ -38,7 +38,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Execution.MonoExecutionParametersWidget.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs \
-	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Fonts.FontChooserPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.PriorityList.cs \
@@ -525,8 +524,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
-	MonoDevelop.Ide.Gui.Pads/FileList.cs \
-	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
 	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
 	MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \

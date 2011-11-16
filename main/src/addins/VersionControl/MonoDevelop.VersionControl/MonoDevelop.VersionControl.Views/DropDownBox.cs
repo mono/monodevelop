@@ -28,9 +28,11 @@ using System;
 using System.ComponentModel;
 using MonoDevelop.Ide;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.VersionControl.Views
 {
+	//FIXME: re-merge this with MonoDevelop.Components.DropDownBox
 	[Category ("Widgets")]
 	[ToolboxItem (true)]
 	public class DropDownBox : Gtk.Button
@@ -193,8 +195,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
-			if (e.Button == 3) {
-//				StatusBox.ShowNavigationBarContextMenu ();
+			if (e.TriggersContextMenu ()) {
 				return base.OnButtonPressEvent (e);
 			}
 			if (e.Type == Gdk.EventType.ButtonPress) {

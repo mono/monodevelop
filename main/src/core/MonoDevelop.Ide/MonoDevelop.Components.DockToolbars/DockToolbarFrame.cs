@@ -33,6 +33,7 @@ using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.DockToolbars
 {
@@ -369,7 +370,7 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
-			if (e.Button == 3) {
+			if (e.TriggersContextMenu ()) {
 				int sx,sy;
 				this.GdkWindow.GetOrigin (out sx, out sy);
 				int rx = (int)e.XRoot - sx;

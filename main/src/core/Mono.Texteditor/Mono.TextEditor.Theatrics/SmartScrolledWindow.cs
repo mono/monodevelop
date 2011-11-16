@@ -183,38 +183,35 @@ namespace Mono.TextEditor.Theatrics
 					vChildTopHeight += child.Child.Requisition.Height;
 				}
 				int v = vScrollBar is Scrollbar && hScrollBar.Visible ? hScrollBar.Requisition.Height : 0;
-				vScrollBar.SizeAllocate (new Rectangle (right, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight - 1));
+				vScrollBar.SizeAllocate (new Rectangle (right + 1, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight - 1));
 				vAdjustment.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vAdjustment.Value), vAdjustment.Lower);
 			}
 			
 			if (hScrollBar.Visible) {
 				int v = vScrollBar.Visible ? vScrollBar.Requisition.Width : 0;
-				hScrollBar.SizeAllocate (new Rectangle (allocation.X, childRectangle.Bottom, Allocation.Width - v, hheight));
+				hScrollBar.SizeAllocate (new Rectangle (allocation.X, childRectangle.Bottom + 1, Allocation.Width - v, hheight));
 				hScrollBar.Value = System.Math.Max (System.Math.Min (hAdjustment.Upper - hAdjustment.PageSize, hScrollBar.Value), hAdjustment.Lower);
 			}
 		}
 		
-		static double GetWheelDelta (Adjustment adj, ScrollDirection direction, bool inverted = false)
+		static double Clamp (double min, double val, double max)
 		{
-			double delta = System.Math.Pow (adj.PageSize, 2.0 / 3.0);
-			if (direction == ScrollDirection.Up || direction == ScrollDirection.Left)
-				delta = -delta;
-			if (inverted)
-				delta = -delta;
-			return delta;
+			return System.Math.Max (min, System.Math.Min (val, max));
 		}
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			var scrollWidget = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vScrollBar : hScrollBar;
-			var adj = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
+			var alloc = Allocation;
+			double dx, dy;
+			evnt.GetPageScrollPixelDeltas (alloc.Width, alloc.Height, out dx, out dy);
 			
-			if (scrollWidget.Visible) {
-				double newValue = adj.Value + GetWheelDelta (adj, evnt.Direction, scrollWidget is Scrollbar ?  ((Scrollbar)scrollWidget).Inverted : false);
-				newValue = System.Math.Max (System.Math.Min (adj.Upper - adj.PageSize, newValue), adj.Lower);
-				adj.Value = newValue;
-			}
-			return base.OnScrollEvent (evnt);
+			if (dx != 0.0 && hScrollBar.Visible)
+				hAdjustment.AddValueClamped (dx);
+			
+			if (dy != 0.0 && vScrollBar.Visible)
+				vAdjustment.AddValueClamped (dy);
+			
+			return (dx != 0.0 || dy != 0.0) || base.OnScrollEvent (evnt);
 		}
 		
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)

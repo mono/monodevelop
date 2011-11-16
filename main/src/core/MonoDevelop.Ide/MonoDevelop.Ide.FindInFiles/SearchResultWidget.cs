@@ -41,14 +41,14 @@ using MonoDevelop.Ide.Commands;
 using System.IO;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components;
 
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	[System.ComponentModel.ToolboxItem(true)]
-	partial class SearchResultWidget : Bin, ILocationList
+	class SearchResultWidget : HBox, ILocationList
 	{
-
 		ListStore store;
 
 		readonly ToolButton buttonStop;
@@ -59,6 +59,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		const int DidReadColumn      = 1;
 		
 		Mono.TextEditor.Highlighting.ColorSheme highlightStyle;
+		
+		ScrolledWindow scrolledwindowLogView; 
+		PadTreeView treeviewSearchResults;
+		Label labelStatus;
+		TextView textviewLog;
 		
 		public string BasePath {
 			get;
@@ -78,17 +83,43 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public SearchResultWidget ()
 		{
-			Build ();
+			var vbox = new VBox ();
+			var toolbar = new Toolbar () {
+				Orientation = Orientation.Vertical,
+				IconSize = IconSize.Menu,
+				ToolbarStyle = ToolbarStyle.Icons,
+			};
+			this.PackStart (vbox, true, true, 0);
+			this.PackStart (toolbar, false, false, 0);
+			labelStatus = new Label () {
+				Xalign = 0,
+				Justify = Justification.Left,
+			};
+			var hpaned = new HPaned ();
+			vbox.PackStart (hpaned, true, true, 0);
+			vbox.PackStart (labelStatus, false, false, 0);
+			var resultsScroll = new CompactScrolledWindow ();
+			hpaned.Pack1 (resultsScroll, true, true);
+			scrolledwindowLogView = new CompactScrolledWindow ();
+			hpaned.Pack2 (scrolledwindowLogView, true, true);
+			textviewLog = new TextView () {
+				Editable = false,
+			};
+			scrolledwindowLogView.Add (textviewLog);
 			
-			store = new ListStore (typeof (SearchResult), 
-			                       typeof (bool)          // didRead
-			                       );
-			treeviewSearchResults.Model = store;
+			store = new ListStore (typeof (SearchResult),
+				typeof (bool) // didRead
+				);
+			
+			treeviewSearchResults = new PadTreeView () {
+				Model = store,
+				HeadersClickable = true,
+				RulesHint = true,
+			};
 			treeviewSearchResults.Selection.Mode = Gtk.SelectionMode.Multiple;
-			treeviewSearchResults.HeadersClickable = true;
-			treeviewSearchResults.PopupMenu += OnPopupMenu;
-			treeviewSearchResults.ButtonPressEvent += HandleButtonPressEvent;
-			treeviewSearchResults.RulesHint = true;
+			resultsScroll.Add (treeviewSearchResults);
+			
+			this.ShowAll ();
 			
 			var fileNameColumn = new TreeViewColumn {
 				Resizable = false,
@@ -102,9 +133,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNameColumn.PackStart (fileNamePixbufRenderer, false);
 			fileNameColumn.SetCellDataFunc (fileNamePixbufRenderer, FileIconDataFunc);
 			
-			var fileNameRenderer = new CellRendererText ();
-			fileNameColumn.PackStart (fileNameRenderer, true);
-			fileNameColumn.SetCellDataFunc (fileNameRenderer, FileNameDataFunc);
+			fileNameColumn.PackStart (treeviewSearchResults.TextRenderer, true);
+			fileNameColumn.SetCellDataFunc (treeviewSearchResults.TextRenderer, FileNameDataFunc);
 			treeviewSearchResults.AppendColumn (fileNameColumn);
 			
 //			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new CellRendererText (), ResultLineDataFunc);
@@ -112,13 +142,15 @@ namespace MonoDevelop.Ide.FindInFiles
 //			lineColumn.FixedWidth = 50;
 //			
 			
-			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"), new CellRendererText (), ResultTextDataFunc);
+			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"),
+				treeviewSearchResults.TextRenderer, ResultTextDataFunc);
 			textColumn.SortColumnId = 2;
 			textColumn.Resizable = false;
 			textColumn.FixedWidth = 300;
 
 			
-			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"), new CellRendererText (), ResultPathDataFunc);
+			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"),
+				treeviewSearchResults.TextRenderer, ResultPathDataFunc);
 			pathColumn.SortColumnId = 3;
 			pathColumn.Resizable = false;
 			pathColumn.FixedWidth = 500;
@@ -251,26 +283,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			base.OnDestroyed ();
 		}
 
-		[GLib.ConnectBefore]
-		void HandleButtonPressEvent(object sender, ButtonPressEventArgs args)
-		{
-			if (args.Event.Button == 3) {
-				OnPopupMenu (this, null);
-				args.RetVal = treeviewSearchResults.Selection.GetSelectedRows ().Length > 1;
-			}
-		}
-
-
-
 		static Color AdjustColor (Color baseColor, Color color)
 		{
-			double b1 = HslColor.Brightness (color);
-			double b2 = HslColor.Brightness (baseColor);
+			double b1 = Mono.TextEditor.HslColor.Brightness (color);
+			double b2 = Mono.TextEditor.HslColor.Brightness (baseColor);
 			double delta = Math.Abs (b1 - b2);
 			if (delta < 0.1) {
-				HslColor color1 = color;
+				Mono.TextEditor.HslColor color1 = color;
 				color1.L -= 0.5;
-				if (Math.Abs (HslColor.Brightness (color1) - b2) < delta) {
+				if (Math.Abs (Mono.TextEditor.HslColor.Brightness (color1) - b2) < delta) {
 					color1 = color;
 					color1.L += 0.5;
 				}
@@ -315,13 +336,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			return result.ToString ();
 		}
 		
-		void OnPopupMenu (object sender, PopupMenuArgs args)
-		{
-			var contextMenu = new CommandEntrySet ();
-			contextMenu.AddItem (ViewCommands.Open);
-			contextMenu.AddItem (EditCommands.Copy);
-			contextMenu.AddItem (EditCommands.SelectAll);
-			IdeApp.CommandService.ShowContextMenu (contextMenu, this);
+		void DoPopupMenu (Gdk.EventButton evt)
+		{ 
+			IdeApp.CommandService.ShowContextMenu (this.treeviewSearchResults, evt, new CommandEntrySet () {
+				new CommandEntry (ViewCommands.Open),
+				new CommandEntry (EditCommands.Copy),
+				new CommandEntry (EditCommands.SelectAll),
+			}, this);
 		}
 		
 		public void ShowStatus (string text)
@@ -458,11 +479,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (pos1 >= 0 && pos2 >= 0) {
 					markup = tag.StartsWith ("span") ? markup.Insert (pos2, "</span></span><" + tag + ">") : markup.Insert (pos2, "</span>");
 					Color searchColor = Mono.TextEditor.Highlighting.ColorSheme.ToGdkColor (highlightStyle.SearchTextBg);
-					double b1 = HslColor.Brightness (searchColor);
-					double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
+					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
+					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
 					double delta = Math.Abs (b1 - b2);
 					if (delta < 0.1) {
-						HslColor color1 = highlightStyle.SearchTextBg;
+						Mono.TextEditor.HslColor color1 = highlightStyle.SearchTextBg;
 						if (color1.L + 0.5 > 1.0) {
 							color1.L -= 0.5;
 						} else {

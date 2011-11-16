@@ -55,8 +55,6 @@ namespace MonoDevelop.SourceEditor
 		SourceEditorView view;
 		ExtensionContext extensionContext;
 		
-		Cairo.Point menuPopupLocation;
-		
 		public ITextEditorExtension Extension {
 			get;
 			set;
@@ -108,8 +106,7 @@ namespace MonoDevelop.SourceEditor
 			
 			UpdateEditMode ();
 			this.GetTextEditorData ().Paste += HandleTextPaste;
-			
-			this.ButtonPressEvent += OnPopupMenu;
+			this.DoPopupMenu = ShowPopup;
 		}
 		
 		void HandleSkipCharsOnReplace (object sender, ReplaceEventArgs args)
@@ -179,7 +176,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			ExtensionContext = null;
 			view = null;
-			this.ButtonPressEvent -= OnPopupMenu;
 
 			base.OnDestroyed ();
 		}
@@ -190,22 +186,6 @@ namespace MonoDevelop.SourceEditor
 				TooltipProviders.Add ((ITooltipProvider) a.ExtensionObject);
 			} else {
 				TooltipProviders.Remove ((ITooltipProvider) a.ExtensionObject);
-			}
-		}
-
-		void OnPopupMenu (object sender, Gtk.ButtonPressEventArgs args)
-		{
-			if (args.Event.Button == 3) {
-				int textEditorXOffset = (int)args.Event.X - (int)this.TextViewMargin.XOffset;
-				if (textEditorXOffset < 0)
-					return;
-				this.menuPopupLocation = new Cairo.Point ((int)args.Event.X, (int)args.Event.Y);
-				DocumentLocation loc= PointToLocation (textEditorXOffset, (int)args.Event.Y);
-				if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
-					Caret.Location = loc;
-				
-				this.ShowPopup ();
-				base.ResetMouseState ();
 			}
 		}
 		
@@ -223,19 +203,12 @@ namespace MonoDevelop.SourceEditor
 			UpdateEditMode ();
 			base.OptionsChanged (sender, args);
 		}
+		
 		bool isInKeyStroke = false;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			isInKeyStroke = true;
 			try {
-				// Handle keyboard menu popup
-				if (evnt.Key == Gdk.Key.Menu || (evnt.Key == Gdk.Key.F10 && (evnt.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
-					this.menuPopupLocation = LocationToPoint (this.Caret.Location);
-					this.menuPopupLocation.Y += (int)LineHeight;
-					this.ShowPopup ();
-					return true;
-				}
-				
 				// Handle keyboard toolip popup
 	/*			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
 					Gdk.Point p = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
@@ -575,34 +548,30 @@ namespace MonoDevelop.SourceEditor
 			return base.OnFocusOutEvent (evnt); 
 		}
 		
-		void ShowPopup ()
+		void ShowPopup (Gdk.EventButton evt)
 		{
 			HideTooltip ();
-			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ExtensionContext ?? AddinManager.AddinEngine, "/MonoDevelop/SourceEditor2/ContextMenu/Editor");
+			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
+			var ctx = ExtensionContext ?? AddinManager.AddinEngine;
+			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
-			menu.Append (new SeparatorMenuItem ());
+			
 			var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
 			if (imMenu != null) {
+				menu.Append (new SeparatorMenuItem ());
 				menu.Append (imMenu);
 			}
+			
 			menu.Destroyed += delegate {
 				this.QueueDraw ();
 			};
 			
-			menu.Popup (null, null, new Gtk.MenuPositionFunc (PositionPopupMenu), 0, Gtk.Global.CurrentEventTime);
-		}
-		
-		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn)
-		{
-			this.GdkWindow.GetOrigin (out x, out y);
-			x += this.menuPopupLocation.X;
-			y += this.menuPopupLocation.Y;
-			Requisition request = menu.SizeRequest ();
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-			
-			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom - request.Height));
-			x = Math.Max (geometry.Left, Math.Min (x, geometry.Right - request.Width));
-			pushIn = true;
+			if (evt != null) {
+				GtkWorkarounds.ShowContextMenu (menu, this, evt);
+			} else {
+				var pt = LocationToPoint (this.Caret.Location);
+				GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
+			}
 		}
 		
 #region Templates

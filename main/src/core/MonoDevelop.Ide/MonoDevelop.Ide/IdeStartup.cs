@@ -50,6 +50,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using System.Diagnostics;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
@@ -61,26 +62,17 @@ namespace MonoDevelop.Ide
 		internal static string DefaultTheme;
 		static readonly int ipcBasePort = 40000;
 		
-		public int Run (string[] args)
+		int IApplication.Run (string[] args)
+		{
+			var options = MonoDevelopOptions.Parse (args);
+			if (options.Error != null || options.ShowHelp)
+				return options.Error != null? -1 : 0;
+			return Run (options);
+		}
+		
+		int Run (MonoDevelopOptions options)
 		{
 			Counters.Initialization.BeginTiming ();
-			
-			var options = new MonoDevelopOptions ();
-			var optionsSet = new Mono.Options.OptionSet () {
-				{ "nologo", "Do not display splash screen.", s => options.NoLogo = true },
-				{ "ipc-tcp", "Use the Tcp channel for inter-process comunication.", s => options.IpcTcp = true },
-				{ "newwindow", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => options.NewWindow = true },
-				{ "h|?|help", "Show help", s => options.ShowHelp = true },
-				{ "clog", "Log internal counter data", s => options.LogCounters = true },
-				{ "clog-interval=", "Interval between counter logs (in miliseconds)", s => options.LogCountersInterval = int.Parse (s) },
-			};
-			var remainingArgs = optionsSet.Parse (args);
-			if (options.ShowHelp) {
-				Console.WriteLine ("MonoDevelop IDE " + MonoDevelop.Ide.BuildVariables.PackageVersionLabel);
-				Console.WriteLine ("Options:");
-				optionsSet.WriteOptionDescriptions (Console.Out);
-				return 0;
-			}
 			
 			if (options.LogCounters) {
 				string logFile = Path.Combine (Environment.CurrentDirectory, "monodevelop.clog");
@@ -98,6 +90,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			//OSXFIXME
+			var args = options.RemainingArgs.ToArray ();
 			Gtk.Application.Init ("monodevelop", ref args);
 			
 			//default to Windows IME on Windows
@@ -119,7 +112,7 @@ namespace MonoDevelop.Ide
 			
 			AddinManager.AddinLoadError += OnAddinError;
 			
-			var startupInfo = new StartupInfo (remainingArgs);
+			var startupInfo = new StartupInfo (args);
 			
 			// If a combine was specified, force --newwindow.
 			
@@ -288,7 +281,6 @@ namespace MonoDevelop.Ide
 			Runtime.Shutdown ();
 			InstrumentationService.Stop ();
 			
-			System.Environment.Exit (0);
 			return 0;
 		}
 		
@@ -534,15 +526,21 @@ namespace MonoDevelop.Ide
 		
 		public static int Main (string[] args)
 		{
-			bool retry = false;
-
-			EnableFileLogging ();
+			var options = MonoDevelopOptions.Parse (args);
+			if (options.ShowHelp || options.Error != null)
+				return options.Error != null? -1 : 0;
 			
+			if (Platform.IsWindows || options.RedirectOutput)
+				RedirectOutputToLogFile ();
+			
+			int ret = -1;
+			bool retry = false;
 			do {
 				try {
 					Runtime.SetProcessName (BrandingService.ApplicationName);
 					var app = new IdeStartup ();
-					return app.Run (args);
+					ret = app.Run (options);
+					break;
 				} catch (Exception ex) {
 					if (!retry && AddinManager.IsInitialized) {
 						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.");
@@ -559,51 +557,124 @@ namespace MonoDevelop.Ide
 			}
 			while (retry);
 
-			if (logFile != null)
-				logFile.Close ();
+			CloseOutputLogFile ();
 
-			return -1;
+			return ret;
 		}
 
-		static StreamWriter logFile;
-
-		static void EnableFileLogging ( )
+		static void RedirectOutputToLogFile ()
 		{
-			if (Path.DirectorySeparatorChar != '\\')
-				return;
-
-			// On Windows log all output to a log file
-
 			FilePath logDir = UserProfile.Current.LogDir;
 			if (!Directory.Exists (logDir))
 				Directory.CreateDirectory (logDir);
-
-			string file = logDir.Combine ("log.txt");
+			
+			//TODO: log rotation
+			string file = logDir.Combine ("MonoDevelop.log");
 			try {
-				logFile = new StreamWriter (file);
-				logFile.AutoFlush = true;
-
-				var tw = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
-				tw.ChainWriter (logFile);
-				tw.ChainWriter (Console.Out);
-				Console.SetOut (tw);
-
-				tw = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
-				tw.ChainWriter (logFile);
-				tw.ChainWriter (Console.Error);
-				Console.SetError (tw);
+				if (Platform.IsWindows) {
+					//TODO: redirect the file descriptors on Windows, just plugging in a textwriter won't get everything
+					RedirectOutputToFileWindows (file);
+				} else {
+					RedirectOutputToFileUnix (file);
+				}
+			} catch {
 			}
-			catch {
+		}
+
+		static StreamWriter logFile;
+		static int logFd = -1;
+		
+		static void CloseOutputLogFile ()
+		{
+			if (logFile != null) {
+				logFile.Dispose ();
+				logFile = null;
 			}
+			if (logFd > -1) {
+				Mono.Unix.Native.Syscall.close (logFd);
+				logFd = -1;
+			}
+		}
+		
+		static void RedirectOutputToFileWindows (string file)
+		{
+			logFile = new StreamWriter (file);
+			logFile.AutoFlush = true;
+			Console.SetOut (logFile);
+			Console.SetError (logFile);
+		}
+		
+		static void RedirectOutputToFileUnix (string file)
+		{
+			const int STDOUT_FILENO = 1;
+			const int STDERR_FILENO = 2;
+			
+			Mono.Unix.Native.OpenFlags flags = Mono.Unix.Native.OpenFlags.O_WRONLY
+				| Mono.Unix.Native.OpenFlags.O_CREAT | Mono.Unix.Native.OpenFlags.O_TRUNC;
+			var mode = Mono.Unix.Native.FilePermissions.S_IFREG
+				| Mono.Unix.Native.FilePermissions.S_IRUSR | Mono.Unix.Native.FilePermissions.S_IWUSR
+				| Mono.Unix.Native.FilePermissions.S_IRGRP | Mono.Unix.Native.FilePermissions.S_IWGRP;
+			
+			int fd = Mono.Unix.Native.Syscall.open (file, flags, mode);
+			if (fd < 0)
+				//error
+				return;
+			
+			int res = Mono.Unix.Native.Syscall.dup2 (fd, STDOUT_FILENO);
+			if (res < 0)
+				//error
+				return;
+			
+			res = Mono.Unix.Native.Syscall.dup2 (fd, STDERR_FILENO);
+			if (res < 0)
+				//error
+				return;
 		}
 	}
 	
-#pragma warning disable 0618
 	public class MonoDevelopOptions
 	{
-		public MonoDevelopOptions ()
+		MonoDevelopOptions ()
 		{
 			IpcTcp = (PlatformID.Unix != Environment.OSVersion.Platform);
+		}
+		
+		Mono.Options.OptionSet GetOptionSet ()
+		{
+			return new Mono.Options.OptionSet () {
+				{ "nologo", "Do not display splash screen.", s => NoLogo = true },
+				{ "ipc-tcp", "Use the Tcp channel for inter-process comunication.", s => IpcTcp = true },
+				{ "newwindow", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => NewWindow = true },
+				{ "h|?|help", "Show help", s => ShowHelp = true },
+				{ "clog", "Log internal counter data", s => LogCounters = true },
+				{ "clog-interval=", "Interval between counter logs (in milliseconds)", (int i) => LogCountersInterval = i },
+				{ "redirect-output", "Whether to redirect stdout/stderr to a log file", s => RedirectOutput = true },
+			};
+		}
+		
+		public static MonoDevelopOptions Parse (string[] args)
+		{
+			var opt = new MonoDevelopOptions ();
+			var optSet = opt.GetOptionSet ();
+			
+			try {
+				opt.RemainingArgs = optSet.Parse (args);
+			} catch (Mono.Options.OptionException ex) {
+				opt.Error = ex.ToString ();
+			}
+			
+			if (opt.Error != null) {
+				Console.WriteLine ("ERROR: {0}", opt.Error);
+				Console.WriteLine ("Pass --help for usage information.");
+			}
+			
+			if (opt.ShowHelp) {
+				Console.WriteLine (BrandingService.ApplicationName + " " + BuildVariables.PackageVersionLabel);
+				Console.WriteLine ("Options:");
+				optSet.WriteOptionDescriptions (Console.Out);
+			}
+			
+			return opt;
 		}
 		
 		public bool NoLogo { get; set; }
@@ -612,9 +683,10 @@ namespace MonoDevelop.Ide
 		public bool ShowHelp { get; set; }
 		public bool LogCounters { get; set; }
 		public int LogCountersInterval { get; set; }
+		public bool RedirectOutput { get; set; }
+		public string Error { get; set; }
+		public IList<string> RemainingArgs { get; set; }
 	}
-	
-#pragma warning restore 0618
 	
 	public class AddinError
 	{

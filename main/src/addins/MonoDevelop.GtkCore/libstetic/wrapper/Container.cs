@@ -818,12 +818,12 @@ namespace Stetic.Wrapper
 				return;
 
 			Placeholder ph = obj as Placeholder;
-
-			if (args.Event.Button == 1) {
-				proj.Selection = ph;
-				args.RetVal = true;
-			} else if (args.Event.Button == 3) {
+			
+			if (GtkWorkarounds.TriggersContextMenu (args.Event)) {
 				proj.PopupContextMenu (ph);
+				args.RetVal = true;
+			} else if (args.Event.Button == 1) {
+				proj.Selection = ph;
 				args.RetVal = true;
 			}
 		}

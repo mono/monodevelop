@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -115,7 +116,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			fontChanger = new MonoDevelop.Ide.Gui.PadFontChanger (toolboxWidget, toolboxWidget.SetCustomFont, toolboxWidget.QueueResize);
 			
-			this.toolboxWidget.ButtonReleaseEvent += OnButtonRelease;
+			this.toolboxWidget.DoPopupMenu = ShowPopup;
 			
 			scrolledWindow = new MonoDevelop.Components.CompactScrolledWindow ();
 			base.PackEnd (scrolledWindow, true, true, 0);
@@ -185,17 +186,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxService.AddUserItems ();
 		}
 		
-		private void OnButtonRelease(object sender, Gtk.ButtonReleaseEventArgs args)
-		{
-			if (args.Event.Button == 3) {
-				ShowPopup ();
-			}
-		}
-		
-		void ShowPopup ()
+		void ShowPopup (Gdk.EventButton evt)
 		{
 			CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/DesignerSupport/ToolboxItemContextMenu");
-			IdeApp.CommandService.ShowContextMenu (eset, this);
+			IdeApp.CommandService.ShowContextMenu (this, evt, eset, this);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]

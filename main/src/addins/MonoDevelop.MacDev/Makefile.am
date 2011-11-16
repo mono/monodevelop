@@ -28,8 +28,6 @@ FILES =  \
 	AssemblyInfo.cs \
 	BindingProject/ObjcBindingProject.cs \
 	BindingProject/ObjcBindingProjectConfiguration.cs \
-	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.MacDev.PlistEditor.CustomPropertiesWidget.cs \
 	MacBuildUtilities.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \
@@ -102,9 +100,7 @@ FILES =  \
 	XcodeSyncing/XcodeSyncedItem.cs \
 	XcodeSyncing/XcodeSyncedType.cs 
 
-RES =  \
-	gtk-gui/gui.stetic \
-	MonoDevelop.MacDev.addin.xml
+RES = MonoDevelop.MacDev.addin.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \
