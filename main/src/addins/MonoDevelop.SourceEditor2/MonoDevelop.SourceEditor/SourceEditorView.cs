@@ -547,7 +547,7 @@ namespace MonoDevelop.SourceEditor
 		internal void LoadSettings ()
 		{
 			Settings settings;
-			if (string.IsNullOrEmpty (ContentName) || !settingStore.TryGetValue (ContentName, out settings))
+			if (widget == null || string.IsNullOrEmpty (ContentName) || !settingStore.TryGetValue (ContentName, out settings))
 				return;
 			
 			widget.TextEditor.Caret.Offset = settings.CaretOffset;
