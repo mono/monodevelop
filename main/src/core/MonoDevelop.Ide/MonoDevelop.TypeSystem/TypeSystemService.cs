@@ -413,8 +413,6 @@ namespace MonoDevelop.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
-					((DotNetProject)project).ReferenceAddedToProject += (sender, e) => Console.WriteLine ("added reference!!!!");
-					((DotNetProject)project).ReferenceRemovedFromProject += (sender, e) => Console.WriteLine ("added reference!!!!");
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
 				}
