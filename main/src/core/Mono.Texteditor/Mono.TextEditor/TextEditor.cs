@@ -881,8 +881,7 @@ namespace Mono.TextEditor
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
 				return true;
 			}
-			
-			if (key == Gdk.Key.space && (mod & (ModifierType.ShiftMask)) == ModifierType.ShiftMask && textViewMargin.IsCodeSegmentPreviewWindowShown) {
+			if (key == Gdk.Key.F2 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
 				textViewMargin.OpenCodeSegmentEditor ();
 				return true;
 			}

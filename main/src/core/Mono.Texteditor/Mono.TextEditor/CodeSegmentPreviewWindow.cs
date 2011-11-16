@@ -53,6 +53,11 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
+		public ISegment Segment {
+			get;
+			private set;
+		}
+		
 		public bool IsEmptyText {
 			get {
 				return string.IsNullOrEmpty ((layout.Text ?? "").Trim ());
@@ -66,6 +71,7 @@ namespace Mono.TextEditor
 		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, int width, int height) : base (Gtk.WindowType.Popup)
 		{
 			this.HideCodeSegmentPreviewInformString = hideCodeSegmentPreviewInformString;
+			this.Segment = segment;
 			this.editor = editor;
 			this.AppPaintable = true;
 			layout = PangoUtil.CreateLayout (this);
