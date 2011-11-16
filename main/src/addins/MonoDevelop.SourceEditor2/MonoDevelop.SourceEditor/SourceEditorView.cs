@@ -2076,6 +2076,11 @@ namespace MonoDevelop.SourceEditor
 			Mono.TextEditor.MiscActions.RemoveIndentSelection (widget.TextEditor.GetTextEditorData ());
 		}
 		
+		[CommandHandler (EditCommands.InsertGuid)]
+		public void InsertGuid ()
+		{
+			TextEditor.InsertAtCaret (Guid.NewGuid ().ToString ());
+		}
 		#endregion
 	}
 } 

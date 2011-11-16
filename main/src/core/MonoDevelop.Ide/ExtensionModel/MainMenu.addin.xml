@@ -209,6 +209,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
 		</Condition>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
 	</ItemSet>
 
 	<ItemSet id = "Window" _label = "_Window">

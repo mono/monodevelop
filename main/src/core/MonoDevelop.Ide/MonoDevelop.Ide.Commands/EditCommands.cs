@@ -69,7 +69,8 @@ namespace MonoDevelop.Ide.Commands
 		/// convenient to fire the Delete command when pressing Delete (for example, while editing the name of
 		/// a file in the solution pad.
 		/// </summary>
-		DeleteKey
+		DeleteKey,
+		InsertGuid
 	}
 	
 	internal class MonodevelopPreferencesHandler: CommandHandler
