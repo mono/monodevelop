@@ -678,6 +678,11 @@ namespace MonoDevelop.SourceEditor
 				double labelWidth = LayoutWidth + border + (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) + errorCounterWidth;
 				if (fitsInSameLine)
 					labelWidth += editor.LineHeight / 2;
+				
+				var layout = editor.TextViewMargin.GetLayout (lineSegment);
+				var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + layout.PangoWidth / Pango.Scale.PangoScale;
+				labelWidth = Math.Min (editor.Allocation.Width - lineTextPx - editor.TextViewMargin.TextStartPosition, labelWidth);
+				
 				return new Gdk.Rectangle ((int)(editor.Allocation.Width - labelWidth), (int)y, (int)labelWidth, (int)height);
 			}
 		}
