@@ -191,10 +191,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (new Gtk.TreeModelSort (filter));
 			view.RulesHint = true;
-			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
-			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
 			view.HeadersClickable = true;
 			view.Selection.Mode = SelectionMode.Multiple;
+			
+			view.DoPopupMenu = (evt) =>
+				IdeApp.CommandService.ShowContextMenu (view, evt, new CommandEntrySet () {
+					new CommandEntry (EditCommands.Copy),
+					new CommandEntry (EditCommands.SelectAll),
+				});
 			
 			AddColumns ();
 			
@@ -245,23 +249,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			col.SortColumnId = (int) Columns.Time;
 			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer, "text", Columns.Description);
 			col.SortColumnId = (int) Columns.Description;
-		}
-
-		[GLib.ConnectBefore]
-		void OnButtonPressed (object o, ButtonPressEventArgs args)
-		{
-			if (args.Event.Button == 3) {
-				OnPopupMenu (null, null);
-				args.RetVal = view.Selection.GetSelectedRows ().Length > 1;
-			}
-		}
-
-		void OnPopupMenu (object o, PopupMenuArgs args)
-		{
-			CommandEntrySet opset = new CommandEntrySet ();
-			opset.AddItem (EditCommands.Copy);
-			opset.AddItem (EditCommands.SelectAll);
-			IdeApp.CommandService.ShowContextMenu (opset, this);
 		}
 
 		[CommandHandler (EditCommands.SelectAll)]

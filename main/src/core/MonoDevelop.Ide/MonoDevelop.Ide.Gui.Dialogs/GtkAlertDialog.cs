@@ -117,6 +117,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			label.Markup = markup.ToString ();
 			label.Selectable = true;
+			label.CanFocus = false;
 			
 			foreach (AlertButton button in message.Buttons) {
 				Button newButton = new Button ();

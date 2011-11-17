@@ -26,11 +26,11 @@
 
 using System;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	
-	public class PadTreeView : TreeView
+	public class PadTreeView : MonoDevelop.Components.ContextMenuTreeView
 	{
 		PadFontChanger changer;
 		CellRendererText textRenderer = new CellRendererText ();

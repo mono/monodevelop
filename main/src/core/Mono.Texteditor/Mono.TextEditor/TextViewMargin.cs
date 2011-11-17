@@ -1531,6 +1531,10 @@ namespace Mono.TextEditor
 		protected internal override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
+			
+			if (args.TriggersContextMenu ())
+				return;
+			
 			inSelectionDrag = false;
 			inDrag = false;
 			Selection selection = textEditor.MainSelection;

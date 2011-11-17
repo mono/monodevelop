@@ -28,6 +28,7 @@
 using Gdk;
 using Gtk;
 using System;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -101,7 +102,7 @@ namespace MonoDevelop.Ide.Gui
 		[GLib.ConnectBefore]
 		void OnButtonPress (object obj, ButtonPressEventArgs args) {
 
-			if (DragInProgress)
+			if (DragInProgress || args.Event.TriggersContextMenu ())
 				return;
 
 			if (args.Event.Button == 1 && args.Event.Type == EventType.ButtonPress && FindTabAtPosition (args.Event.XRoot, args.Event.YRoot) >= 0)

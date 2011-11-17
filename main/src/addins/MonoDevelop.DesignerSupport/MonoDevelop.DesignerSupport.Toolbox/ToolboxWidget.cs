@@ -32,6 +32,7 @@ using System.Collections.ObjectModel;
 using Gtk;
 using Pango;
 using Gdk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -417,12 +418,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return base.OnScrollEvent (evnt);
 		}
 		
+		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
+		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
 			this.GrabFocus ();
 			HideTooltipWindow ();
 			if (this.mouseOverItem is Category) {
-				if (e.Button == 1) {
+				if (!e.TriggersContextMenu () && e.Button == 1) {
 					Category mouseOverCateogry = (Category)this.mouseOverItem;
 					mouseOverCateogry.IsExpanded = !mouseOverCateogry.IsExpanded;
 				}
@@ -432,9 +435,25 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				this.SelectedItem = mouseOverItem;
 				this.QueueDraw ();
 			}
-			if (e.Type == EventType.TwoButtonPress && this.SelectedItem != null) 
+			if (e.TriggersContextMenu ()) {
+				if (DoPopupMenu != null) {
+					DoPopupMenu (null);
+					return true;
+				}
+			} else if (e.Type == EventType.TwoButtonPress && this.SelectedItem != null) { 
 				this.OnActivateSelectedItem (EventArgs.Empty);
+				return true;
+			}
 			return base.OnButtonPressEvent (e);
+		}
+		
+		protected override bool OnPopupMenu ()
+		{
+			if (DoPopupMenu != null) {
+				DoPopupMenu (null);
+				return true;
+			}
+			return base.OnPopupMenu ();
 		}
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)

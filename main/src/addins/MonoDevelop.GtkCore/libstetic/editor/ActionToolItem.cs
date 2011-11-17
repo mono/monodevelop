@@ -320,7 +320,7 @@ namespace Stetic.Editor
 				args.RetVal = true;
 				return;
 			}
-			if (args.Event.Button == 1)
+			if (args.Event.Button == 1 && !GtkWorkarounds.TriggersContextMenu (args.Event))
 				motionDrag = true;
 			args.RetVal = ProcessButtonPress (args.Event);
 		}

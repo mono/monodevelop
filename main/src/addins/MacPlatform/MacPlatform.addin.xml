@@ -50,8 +50,6 @@
 		<Class class="MonoDevelop.MacIntegration.MacSelectFileDialogHandler" />
 		<Class class="MonoDevelop.MacIntegration.MacAddFileDialogHandler" />
 		<Class class="MonoDevelop.MacIntegration.MacOpenFileDialogHandler" />
-		<!--
 		<Class class="MonoDevelop.MacIntegration.MacAlertDialogHandler" />
-		-->
 	</Extension>
 </Addin>

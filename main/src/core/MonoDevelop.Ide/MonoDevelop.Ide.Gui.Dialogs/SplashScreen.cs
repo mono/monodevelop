@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.WindowPosition = WindowPosition.Center;
 			this.TypeHint = Gdk.WindowTypeHint.Splashscreen;
 			try {
-				using (var stream = BrandingService.GetStream ("SplashScreen.png"))
+				using (var stream = BrandingService.GetStream ("SplashScreen.png", true))
 					bitmap = new Gdk.Pixbuf (stream);
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't load splash screen pixbuf 'SplashScreen.png'.", e);

@@ -1,10 +1,10 @@
 // 
-// Platform.cs
+// GtkWorkarounds.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Michael Hutchinson <mhutch@xamarin.com>
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,37 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Gdk;
 
-namespace Mono.TextEditor
+namespace Stetic.Editor
 {
-	static class Platform
+	//from Mono.TextEditor/GtkWorkarounds.cs
+	public static class GtkWorkarounds
+	{
+		public static bool TriggersContextMenu (Gdk.EventButton evt)
+		{
+			return evt.Type == Gdk.EventType.ButtonPress && IsContextMenuButton (evt);
+		}
+		
+		public static bool IsContextMenuButton (Gdk.EventButton evt)
+		{
+			if (evt.Button == 3 &&
+					(evt.State & (Gdk.ModifierType.Button1Mask | Gdk.ModifierType.Button2Mask)) == 0)
+				return true;
+			
+			if (Platform.IsMac) {
+				if (evt.Button == 1 &&
+					(evt.State & Gdk.ModifierType.ControlMask) != 0 &&
+					(evt.State & (Gdk.ModifierType.Button2Mask | Gdk.ModifierType.Button3Mask)) == 0)
+				return true;
+			}
+			
+			return false;
+		}
+	}
+	
+	//from Mono.TextEditor/Platform.cs
+	public static class Platform
 	{
 		static Platform ()
 		{
@@ -39,6 +63,8 @@ namespace Mono.TextEditor
  			IsMac = !IsWindows && IsRunningOnMac();
 			IsX11 = !IsMac && System.Environment.OSVersion.Platform == PlatformID.Unix;
 		}
+		
+		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		
 		public static bool IsMac { get; private set; }
 		public static bool IsX11 { get; private set; }
@@ -61,6 +87,7 @@ namespace Mono.TextEditor
 				if (buf != IntPtr.Zero)
 					Marshal.FreeHGlobal (buf);
 			}
+		
 			return false;
 		}
 		

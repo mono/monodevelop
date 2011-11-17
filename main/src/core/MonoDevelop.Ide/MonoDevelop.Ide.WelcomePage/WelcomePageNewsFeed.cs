@@ -108,7 +108,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		object updateLock = new object ();
 		bool isUpdating;
-		event EventHandler NewsUpdated;
 		
 		void UpdateNewsXmlAsync ()
 		{

@@ -51,12 +51,12 @@ namespace MonoDevelop.SourceEditor
 	
 		protected override Gdk.Rectangle CalculateInitialBounds ()
 		{
-			int spaceX = marker.ErrorTextBounds.Width / 2;
-			
-			return new Gdk.Rectangle (marker.ErrorTextBounds.X - spaceX,
-				(int)(marker.ErrorTextBounds.Y - Editor.LineHeight),
-				marker.ErrorTextBounds.Width + spaceX * 2,
-				(int)(marker.ErrorTextBounds.Height + Editor.LineHeight * 2));
+			var bounds = marker.ErrorTextBounds;
+			int spaceX = bounds.Width / 2;
+			return new Gdk.Rectangle (bounds.X - spaceX,
+				(int)(bounds.Y - Editor.LineHeight),
+				bounds.Width + spaceX * 2,
+				(int)(bounds.Height + Editor.LineHeight * 2));
 		}
 		
 		protected override void OnAnimationCompleted ()
@@ -72,22 +72,23 @@ namespace MonoDevelop.SourceEditor
 				cr.Paint ();
 			}
 			
+			var bounds = marker.ErrorTextBounds;
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Translate (width / 2, height / 2);
 				cr.Scale (1 + scale / 8, 1 + scale / 8);
-				int x = -(marker.ErrorTextBounds.Width) / 2;
-				int y = -marker.ErrorTextBounds.Height / 2;
+				int x = -(bounds.Width) / 2;
+				int y = -bounds.Height / 2;
 				
 				if (marker.FitsInSameLine) {
 					cr.MoveTo (x + Editor.LineHeight / 2, y);
 					cr.LineTo (x, 0);
-					cr.LineTo (x + Editor.LineHeight / 2, marker.ErrorTextBounds.Height / 2);
+					cr.LineTo (x + Editor.LineHeight / 2, bounds.Height / 2);
 				} else {
-					cr.MoveTo (x, -marker.ErrorTextBounds.Height / 2);
-					cr.LineTo (x, marker.ErrorTextBounds.Height / 2);
+					cr.MoveTo (x, -bounds.Height / 2);
+					cr.LineTo (x, bounds.Height / 2);
 				}
-				cr.LineTo (x + marker.ErrorTextBounds.Width, marker.ErrorTextBounds.Height / 2);
-				cr.LineTo (x + marker.ErrorTextBounds.Width, y);
+				cr.LineTo (x + bounds.Width, bounds.Height / 2);
+				cr.LineTo (x + bounds.Width, y);
 				cr.ClosePath ();
 				
 				Mono.TextEditor.HslColor hsl = marker.colorMatrix [0, 0, 0, 0, 0];
@@ -110,7 +111,7 @@ namespace MonoDevelop.SourceEditor
 					int ew, eh;
 					marker.errorCountLayout.GetPixelSize (out ew, out eh);
 					errorCounterWidth = ew + 10;
-					int rX = x + marker.ErrorTextBounds.Width - errorCounterWidth;
+					int rX = x + bounds.Width - errorCounterWidth;
 
 					int rW = errorCounterWidth - 2;
 					double rH = Editor.LineHeight * 3 / 4;
@@ -134,7 +135,7 @@ namespace MonoDevelop.SourceEditor
 				marker.Layouts [0].Layout.GetPixelSize (out layoutWidth, out layoutHeight);
 				double ly;
 				if (marker.CollapseExtendedErrors || marker.Errors.Count == 1) {
-					ly = 1 + y + (marker.ErrorTextBounds.Height - layoutHeight) / 2;
+					ly = 1 + y + (bounds.Height - layoutHeight) / 2;
 					double x2 = x + MessageBubbleTextMarker.border;
 					if (marker.FitsInSameLine)
 						x2 += 1 + Editor.LineHeight / 2;
@@ -148,7 +149,7 @@ namespace MonoDevelop.SourceEditor
 						cr.Save ();
 						double x2;
 						if (i == 0) {
-							x2 = x + marker.ErrorTextBounds.Width - layoutWidth - errorCounterWidth;
+							x2 = x + bounds.Width - layoutWidth - errorCounterWidth;
 						} else {
 							x2 = x + MessageBubbleTextMarker.border;
 						}

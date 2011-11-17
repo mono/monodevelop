@@ -31,18 +31,19 @@ using MonoMac.Foundation;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CustomPropertiesWidget : Gtk.Bin, IPListDisplayWidget
+	public partial class CustomPropertiesWidget : VBox, IPListDisplayWidget
 	{
 		const string AddKeyNode = "Add new entry";
 		
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
 		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (string));
-		PopupTreeView treeview1;
+		PopupTreeView treeview;
 		PListScheme scheme;
 		HashSet<PObject> expandedObjects = new HashSet<PObject> ();
 		bool showDescriptions = true;
@@ -93,30 +94,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return new PString ("<error>");
 		}
 		
-		class PopupTreeView : Gtk.TreeView
+		class PopupTreeView : MonoDevelop.Components.ContextMenuTreeView
 		{
 			CustomPropertiesWidget widget;
 			
 			public PopupTreeView (CustomPropertiesWidget widget)
 			{
 				this.widget = widget;
+				this.DoPopupMenu += ShowPopup;
 			}
-			
-			protected override bool OnPopupMenu ()
-			{
-				ShowPopup ();
-				return base.OnPopupMenu ();
-			}
-			
-			protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
-			{
-				if (evnt.Button == 3) {
-					ShowPopup ();
-				}
-				return base.OnButtonReleaseEvent (evnt);
-			}
-
-			void ShowPopup ()
+			void ShowPopup (Gdk.EventButton evnt)
 			{
 				Gtk.TreeIter iter;
 				bool hasSelection = Selection.GetSelected (out iter);
@@ -179,8 +166,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 					};
 					menu.Append (showDescItem);
 				}
-				IdeApp.CommandService.ShowContextMenu (menu, this);
 				menu.ShowAll ();
+				IdeApp.CommandService.ShowContextMenu (this, evnt, menu, this);
 			}
 
 			
@@ -248,10 +235,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public CustomPropertiesWidget (PListScheme scheme)
 		{
 			this.scheme = scheme = scheme ?? PListScheme.Empty;
-			this.Build ();
-			treeview1 = new PopupTreeView  (this);
-			treeview1.HeadersClickable = true;
-			this.vbox1.PackStart (treeview1, true, true, 0);
+			treeview = new PopupTreeView  (this);
+			treeview.HeadersClickable = true;
+			this.PackStart (treeview, true, true, 0);
 			ShowAll ();
 			
 			var keyRenderer = new CellRendererCombo ();
@@ -297,7 +283,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				renderer.Sensitive = true;
 				renderer.Text = key != null && ShowDescriptions ? GettextCatalog.GetString (key.Description) : id;
 			});
-			treeview1.AppendColumn (col);
+			treeview.AppendColumn (col);
 			
 			var iconSize = IconSize.Menu;
 			col = new TreeViewColumn { MinWidth = 25, Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Autosize };
@@ -305,7 +291,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var removeRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-remove", IconSize.Menu));
 			removeRenderer.Clicked += delegate {
 				TreeIter iter;
-				bool hasSelection = treeview1.Selection.GetSelected (out iter);
+				bool hasSelection = treeview.Selection.GetSelected (out iter);
 				PObject obj = null;
 				if (hasSelection) {
 					obj = (PObject)treeStore.GetValue (iter, 1);
@@ -314,13 +300,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			};
 			col.PackEnd (removeRenderer, false);
 			col.SetCellDataFunc (removeRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
-				removeRenderer.Visible = treeview1.Selection.IterIsSelected (iter) && !AddKeyNode.Equals (treeStore.GetValue (iter, 0));
+				removeRenderer.Visible = treeview.Selection.IterIsSelected (iter) && !AddKeyNode.Equals (treeStore.GetValue (iter, 0));
 			});
 			
 			var addRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-add", IconSize.Menu));
 			addRenderer.Clicked += delegate {
 				Gtk.TreeIter iter = Gtk.TreeIter.Zero;
-				if (!treeview1.Selection.GetSelected (out iter))
+				if (!treeview.Selection.GetSelected (out iter))
 					return;
 				
 				PObject obj = null;
@@ -345,15 +331,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			col.PackEnd (addRenderer, false);
 			col.SetCellDataFunc (addRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
-				addRenderer.Visible = treeview1.Selection.IterIsSelected (iter) && AddKeyNode.Equals (treeStore.GetValue (iter, 0));
+				addRenderer.Visible = treeview.Selection.IterIsSelected (iter) && AddKeyNode.Equals (treeStore.GetValue (iter, 0));
 			});
-			treeview1.AppendColumn (col);
+			treeview.AppendColumn (col);
 			
-			treeview1.RowExpanded += delegate(object o, RowExpandedArgs args) {
+			treeview.RowExpanded += delegate(object o, RowExpandedArgs args) {
 				var obj = (PObject)treeStore.GetValue (args.Iter, 1);
 				expandedObjects.Add (obj);
 			};
-			treeview1.RowCollapsed += delegate(object o, RowCollapsedArgs args) {
+			treeview.RowCollapsed += delegate(object o, RowCollapsedArgs args) {
 				var obj = (PObject)treeStore.GetValue (args.Iter, 1);
 				expandedObjects.Remove (obj);
 			};
@@ -381,7 +367,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					oldObj.Replace (CreateNewObject (args.NewText));
 			};
 			
-			treeview1.AppendColumn (GettextCatalog.GetString ("Type"), comboRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
+			treeview.AppendColumn (GettextCatalog.GetString ("Type"), comboRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				string id = (string)tree_model.GetValue (iter, 0) ?? "";
 				var key   = scheme.GetKey (id);
@@ -453,7 +439,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			};*/
 			
 			
-			treeview1.AppendColumn (GettextCatalog.GetString ("Value"), propRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
+			treeview.AppendColumn (GettextCatalog.GetString ("Value"), propRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				var obj      = (PObject)tree_model.GetValue (iter, 1);
 				if (obj == null) {
@@ -464,8 +450,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				renderer.Editable = !(obj is PArray || obj is PDictionary || obj is PData);
 				obj.RenderValue (this, renderer);
 			});
-			treeview1.EnableGridLines = TreeViewGridLines.Horizontal;
-			treeview1.Model = treeStore;
+			treeview.EnableGridLines = TreeViewGridLines.Horizontal;
+			treeview.Model = treeStore;
 		}
 
 		bool GetIsExpanded (Gtk.TreeIter iter, TreeStore treeStore)
@@ -473,7 +459,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (TreeIter.Zero.Equals (iter))
 				return  false;
 			var path = treeStore.GetPath (iter);
-			return path != null ? treeview1.GetRowExpanded (path) : false;
+			return path != null ? treeview.GetRowExpanded (path) : false;
 		}
 		
 		Dictionary<PObject, Gtk.TreeIter> iterTable = new Dictionary<PObject, Gtk.TreeIter> ();
@@ -498,7 +484,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (item.Value is PDictionary)
 					AddToTree (treeStore, subIter, (PDictionary)item.Value);
 				if (expandedObjects.Contains (item.Value))
-					treeview1.ExpandRow (treeStore.GetPath (subIter), true);
+					treeview.ExpandRow (treeStore.GetPath (subIter), true);
 			}
 			AddCreateNewEntry (iter);
 			
@@ -516,7 +502,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			RemoveChildren (iter);
 			AddToTree (treeStore, iter, dict);
 			if (isExpanded)
-				treeview1.ExpandRow (treeStore.GetPath (iter), false);
+				treeview.ExpandRow (treeStore.GetPath (iter), false);
 		}
 		
 		HashSet<PObject> rebuildArrays = new HashSet<PObject> ();
@@ -536,7 +522,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (item is PDictionary)
 					AddToTree (treeStore, subIter, (PDictionary)item);
 				if (expandedObjects.Contains (item))
-					treeview1.ExpandRow (treeStore.GetPath (subIter), true);
+					treeview.ExpandRow (treeStore.GetPath (subIter), true);
 			}
 
 			AddCreateNewEntry  (iter);
@@ -555,7 +541,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			RemoveChildren (iter);
 			AddToTree (treeStore, iter, arr);
 			if (isExpanded)
-				treeview1.ExpandRow (treeStore.GetPath (iter), false);
+				treeview.ExpandRow (treeStore.GetPath (iter), false);
 		}
 
 		void RemoveChildren (Gtk.TreeIter iter)

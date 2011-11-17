@@ -31,6 +31,7 @@
 using System;
 using Gtk;
 using Mono.Unix;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -198,21 +199,20 @@ namespace MonoDevelop.Components.Docking
 		
 		void HeaderButtonPress (object ob, Gtk.ButtonPressEventArgs args)
 		{
-			if (args.Event.Button == 1) {
+			if (args.Event.TriggersContextMenu ()) {
+				item.ShowDockPopupMenu (args.Event.Time);
+			} else if (args.Event.Button == 1) {
 				frame.ShowPlaceholder ();
 				header.GdkWindow.Cursor = fleurCursor;
 				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
 				frame.Toplevel.KeyReleaseEvent += HeaderKeyRelease;
 				allowPlaceholderDocking = true;
 			}
-			else if (args.Event.Button == 3) {
-				item.ShowDockPopupMenu (args.Event.Time);
-			}
 		}
 		
 		void HeaderButtonRelease (object ob, Gtk.ButtonReleaseEventArgs args)
 		{
-			if (args.Event.Button == 1) {
+			if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
 				frame.DockInPlaceholder (item);
 				frame.HidePlaceholder ();
 				if (header.GdkWindow != null)

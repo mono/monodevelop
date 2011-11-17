@@ -29,6 +29,7 @@ using System.ComponentModel;
 using Gtk;
 
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -207,8 +208,8 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
-			if (e.Button == 3) {
-				return true;
+			if (e.TriggersContextMenu ()) {
+				return base.OnButtonPressEvent (e);
 			}
 			if (e.Type == Gdk.EventType.ButtonPress) {
 				if (window != null) {

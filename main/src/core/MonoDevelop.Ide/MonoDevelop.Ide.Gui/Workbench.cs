@@ -1055,7 +1055,7 @@ namespace MonoDevelop.Ide.Gui
 				} catch (InvalidEncodingException iex) {
 					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
 					return;
-				} catch (OverflowException oex) {
+				} catch (OverflowException) {
 					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
 					return;
 				}

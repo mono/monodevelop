@@ -46,8 +46,6 @@ using System.Threading;
 
 namespace MonoDevelop.Gettext
 {
-	[System.ComponentModel.Category("widget")]
-	[System.ComponentModel.ToolboxItem(true)]
 	public partial class POEditorWidget : Gtk.Bin, IUndoHandler
 	{
 		TranslationProject project;
@@ -96,6 +94,15 @@ namespace MonoDevelop.Gettext
 		{
 			this.project = project;
 			this.Build ();
+			
+			//FIXME: avoid unnecessary creation of old treeview
+			scrolledwindow1.Remove (treeviewEntries);
+			treeviewEntries.Destroy ();
+			treeviewEntries = new MonoDevelop.Components.ContextMenuTreeView ();
+			treeviewEntries.ShowAll ();
+			scrolledwindow1.Add (treeviewEntries);
+			((MonoDevelop.Components.ContextMenuTreeView)treeviewEntries).DoPopupMenu = ShowPopup;
+			
 			this.headersEditor = new CatalogHeadersWidget ();
 			this.notebookPages.AppendPage (headersEditor, new Gtk.Label ());
 			
@@ -219,15 +226,6 @@ namespace MonoDevelop.Gettext
 					this.currentEntry.Comment = string.Join (System.Environment.NewLine, lines);
 				}
 				UpdateProgressBar ();
-			};
-			
-			this.treeviewEntries.PopupMenu += delegate {
-				ShowPopup ();
-			};
-			
-			this.treeviewEntries.ButtonReleaseEvent += delegate(object sender, Gtk.ButtonReleaseEventArgs e) {
-				if (e.Event.Button == 3)
-					ShowPopup ();
 			};
 			
 			searchEntryFilter.Ready = true;
@@ -519,11 +517,11 @@ namespace MonoDevelop.Gettext
 			this.notebookTranslated.AppendPage (window, label);
 		}
 		
-		void ShowPopup ()
+		void ShowPopup (EventButton evt)
 		{
 			Gtk.Menu contextMenu = CreateContextMenu ();
 			if (contextMenu != null)
-				contextMenu.Popup ();
+				GtkWorkarounds.ShowContextMenu (contextMenu, this, evt);
 		}
 		
 		Gtk.Menu CreateContextMenu ()

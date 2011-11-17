@@ -301,10 +301,11 @@ namespace Stetic {
 			else
 				frontend.NotifySelectionChanged (null, null, null);
 		}
-
-		protected override bool OnButtonPressEvent (Gdk.EventButton evt)
+		
+		//HACK: show context menu in release event instead of show event to work around gtk bug
+		protected override bool OnButtonReleaseEvent (Gdk.EventButton evt)
 		{
-			if (evt.Button == 3 && evt.Type == Gdk.EventType.ButtonPress)
+			if (Stetic.Editor.GtkWorkarounds.IsContextMenuButton (evt))
 				return OnPopupMenu ();
 			return base.OnButtonPressEvent (evt);
 		}

@@ -34,6 +34,7 @@ FILES =  \
 	MacExternalConsoleProcess.cs \
 	MacIntegrationCommands.cs \
 	MacInterop/AppleEvent.cs \
+	MacInterop/AppleEvents/Native.cs \
 	MacInterop/AppleScript.cs \
 	MacInterop/ApplicationEvents.cs \
 	MacInterop/Carbon.cs \

@@ -42,6 +42,14 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			this.Build();
 			
+			//FIXME: avoid unnecessary creation of old treeview
+			scrolledwindow6.Remove (tree);
+			tree.Destroy ();
+			tree = new ContextMenuTreeView ();
+			tree.ShowAll ();
+			scrolledwindow6.Add (tree);
+			((ContextMenuTreeView)tree).DoPopupMenu = ShowPopupMenu;
+			
 			pixAddin = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Addin, IconSize.Menu);
 			pixLocalAddin = ImageService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
 			pixExtensionPoint = ImageService.GetPixbuf ("md-extension-point", IconSize.Menu);
@@ -126,7 +134,7 @@ namespace MonoDevelop.AddinAuthoring
 			state.Load ();
 		}
 		
-		void ShowPopupMenu ()
+		void ShowPopupMenu (Gdk.EventButton evt)
 		{
 			TreeIter it;
 			if (!tree.Selection.GetSelected (out it))
@@ -148,7 +156,7 @@ namespace MonoDevelop.AddinAuthoring
 			mi.Activated += delegate { DeleteSelection (); };
 			
 			menu.ShowAll ();
-			menu.Popup ();
+			GtkWorkarounds.ShowContextMenu (menu, tree, evt);
 		}
 		
 		void PopulateNodeTypes (Gtk.Menu menu, TreeIter it)
@@ -419,17 +427,6 @@ namespace MonoDevelop.AddinAuthoring
 				currentEditor = null;
 			}
 		}
-		
-		protected virtual void OnTreePopupMenu(object o, Gtk.PopupMenuArgs args)
-		{
-			ShowPopupMenu ();
-		}
-
-		protected virtual void OnTreeButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
-		{
-			if (args.Event.Button == 3)
-				ShowPopupMenu ();
-		}
 
 		protected virtual void OnButtonRemoveClicked(object sender, System.EventArgs e)
 		{
@@ -455,6 +452,33 @@ namespace MonoDevelop.AddinAuthoring
 			x += addNodeButton.Allocation.X;
 			y += addNodeButton.Allocation.Bottom;
 			pushIn = true;
+		}
+		
+		//FIXME: this should be a re-usable class in MonoDevelop.Ide
+		class ContextMenuTreeView : Gtk.TreeView
+		{
+			public Action<Gdk.EventButton> DoPopupMenu { get; set; }
+			
+			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+			{
+				bool res = base.OnButtonPressEvent (evnt);
+				
+				if (DoPopupMenu != null && Mono.TextEditor.GtkWorkarounds.TriggersContextMenu (evnt)) {
+					DoPopupMenu (evnt);
+					return true;
+				}
+				
+				return res;
+			}
+			
+			protected override bool OnPopupMenu ()
+			{
+				if (DoPopupMenu != null) {
+					DoPopupMenu (null);
+					return true;
+				}
+				return base.OnPopupMenu ();
+			}
 		}
 	}
 }

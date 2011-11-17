@@ -37,6 +37,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using Mono.TextEditor;
 
 
 namespace MonoDevelop.Debugger
@@ -129,7 +130,7 @@ namespace MonoDevelop.Debugger
 			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf), typeof(bool));
 			Model = store;
 			RulesHint = true;
-			Selection.Mode = SelectionMode.Multiple;
+			Selection.Mode = Gtk.SelectionMode.Multiple;
 			ResetColumnSizes ();
 			
 			Pango.FontDescription newFont = this.Style.FontDescription.Copy ();
@@ -972,6 +973,12 @@ namespace MonoDevelop.Debugger
 			TreeViewColumn col;
 			CellRenderer cr;
 			
+			//HACK: show context menu in release event instead of show event to work around gtk bug
+			if (evnt.TriggersContextMenu ()) {
+			//	ShowPopup (evnt);
+				return true;
+			}
+			
 			if (evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
 				TreeIter it;
 				store.GetIter (out it, path);
@@ -1001,28 +1008,31 @@ namespace MonoDevelop.Debugger
 				}
 			}
 			
-			if (evnt.Button == 3)
-				ShowPopup ();
-			
 			return res;
 		}
 		
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
 			allowStoreColumnSizes = false;
-			return base.OnButtonReleaseEvent (evnt);
+			var res = base.OnButtonReleaseEvent (evnt);
+			
+			//HACK: show context menu in release event instead of show event to work around gtk bug
+			if (evnt.IsContextMenuButton ()) {
+				ShowPopup (evnt);
+				return true;
+			}
+			return res;
 		}
-		
 		
 		protected override bool OnPopupMenu ()
 		{
-			ShowPopup ();
+			ShowPopup (null);
 			return true;
 		}
 		
-		void ShowPopup ()
+		void ShowPopup (Gdk.EventButton evt)
 		{
-			IdeApp.CommandService.ShowContextMenu (menuSet, this);
+			IdeApp.CommandService.ShowContextMenu (this, evt, menuSet, this);
 		}
 		
 		[CommandHandler (EditCommands.Delete)]

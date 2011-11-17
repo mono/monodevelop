@@ -150,7 +150,7 @@ namespace Mono.TextEditor
 		{
 			base.MouseHover (args);
 			
-			if (args.Button == 1) {
+			if (!args.TriggersContextMenu () && args.Button == 1) {
 			//	DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
 				
 				int lineNumber = args.LineNumber >= DocumentLocation.MinLine ? args.LineNumber : editor.Document.LineCount;

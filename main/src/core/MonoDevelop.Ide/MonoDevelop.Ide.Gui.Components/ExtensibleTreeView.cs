@@ -48,6 +48,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -64,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
 		Hashtable nodeHash = new Hashtable ();
 		
-		Gtk.TreeView tree = new Gtk.TreeView ();
+		ContextMenuTreeView tree = new ContextMenuTreeView ();
 		Gtk.TreeStore store;
 		internal Gtk.TreeViewColumn complete_column;
 		internal ZoomableCellRendererPixbuf pix_render;
@@ -220,11 +221,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			tree.TestExpandRow += OnTestExpandRow;
 			tree.RowActivated += OnNodeActivated;
-			
-			tree.ButtonReleaseEvent += OnButtonRelease;
-			tree.ButtonPressEvent += OnButtonPress;
-			
-			tree.PopupMenu += OnPopupMenu;
+			tree.DoPopupMenu += ShowPopup;
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
 			compareNode2 = new TreeNodeNavigator (this);
@@ -1743,7 +1740,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				args.RetVal = false;
 		}
 
-		void ShowPopup ()
+		void ShowPopup (Gdk.EventButton evt)
 		{
 			ITreeNavigator tnav = GetSelectedNode ();
 			if (tnav == null)
@@ -1756,7 +1753,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
-					IdeApp.CommandService.ShowContextMenu (opset, this);
+					IdeApp.CommandService.ShowContextMenu (this, evt, opset, this);
 				}
 			} else {
 				ExtensionContext ctx = AddinManager.CreateExtensionContext ();
@@ -1770,7 +1767,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
 				opset.AddItem (ViewCommands.RefreshTree);
 				opset.AddItem (ViewCommands.CollapseAllTreeNodes);
-				IdeApp.CommandService.ShowContextMenu (eset, this);
+				IdeApp.CommandService.ShowContextMenu (this, evt, eset, this);
 			}
 		}
 		
@@ -1828,36 +1825,46 @@ namespace MonoDevelop.Ide.Gui.Components
 		[GLib.ConnectBefore]
 		void OnKeyPress (object o, Gtk.KeyPressEventArgs args)
 		{
-			if (args.Event.Key == Gdk.Key.F10 && (args.Event.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
-				ShowPopup ();
-			if (args.Event.Key == Gdk.Key.Delete || args.Event.Key == Gdk.Key.KP_Delete)
+			if (args.Event.Key == Gdk.Key.Delete || args.Event.Key == Gdk.Key.KP_Delete) {
 				DeleteCurrentItem ();
+				args.RetVal = true;
+				return;
+			}
 			
 			//HACK: to work around "Bug 377810 - Many errors when expanding MonoDevelop treeviews with keyboard"
 			//  The shift-right combo recursively expands all child nodes but the OnTestExpandRow callback
 			//  modifies tree and successive calls get passed an invalid iter. Using the path to regenerate the iter 
 			//  causes a Gtk-Fatal.
 			bool shift = (args.Event.State & Gdk.ModifierType.ShiftMask) != 0;
-			if (args.Event.Key == Gdk.Key.asterisk || args.Event.Key == Gdk.Key.KP_Multiply || (shift && (args.Event.Key == Gdk.Key.Right || args.Event.Key == Gdk.Key.KP_Right || args.Event.Key == Gdk.Key.plus || args.Event.Key == Gdk.Key.KP_Add))) {
+			if (args.Event.Key == Gdk.Key.asterisk || args.Event.Key == Gdk.Key.KP_Multiply
+				|| (shift && (args.Event.Key == Gdk.Key.Right || args.Event.Key == Gdk.Key.KP_Right
+					|| args.Event.Key == Gdk.Key.plus || args.Event.Key == Gdk.Key.KP_Add)))
+			{
 				Gtk.TreeIter iter;
 				foreach (Gtk.TreePath path in tree.Selection.GetSelectedRows ()) {
 					store.GetIter (out iter, path);
 					Expand (iter);
 				}
 				args.RetVal = true;
+				return;
 			}
+			
 			if (args.Event.Key == Gdk.Key.Right || args.Event.Key == Gdk.Key.KP_Right) {
 				ExpandCurrentItem ();
+				args.RetVal = true;
+				return;
 			}
+			
 			if (args.Event.Key == Gdk.Key.Left || args.Event.Key == Gdk.Key.KP_Left) {
 				CollapseCurrentItem ();
+				args.RetVal = true;
+				return;
 			}
 
 			if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter) {
 				ActivateCurrentItem ();
 				args.RetVal = true;
-			} else if (args.Event.Key == Gdk.Key.Menu) {
-				ShowPopup ();
+				return;
 			}
 		}
 
@@ -1869,36 +1876,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				do {
 					Expand (ci);
 				} while (store.IterNext (ref ci));
-			}
-		}
-			
-		void OnPopupMenu (object o, Gtk.PopupMenuArgs args)
-		{
-			if (GetSelectedNode () != null)
-				ShowPopup ();
-		}
-
-		[GLib.ConnectBefore]
-		private void OnButtonPress (object sender, Gtk.ButtonPressEventArgs args)
-		{
-			bool withModifider = (args.Event.State & Gdk.ModifierType.ShiftMask) != 0 || (args.Event.State & Gdk.ModifierType.ControlMask) != 0;
-			if (IsClickedNodeSelected ((int)args.Event.X, (int)args.Event.Y) && MultipleNodesSelected () && !withModifider) {
-				args.RetVal = true;
-			}
-		}
-
-		private void OnButtonRelease (object sender, Gtk.ButtonReleaseEventArgs args)
-		{
-			if (args.Event.Button == 3 && GetSelectedNode() != null) {
-				ShowPopup ();
-			}
-			
-			bool withModifider = (args.Event.State & Gdk.ModifierType.ShiftMask) != 0 || (args.Event.State & Gdk.ModifierType.ControlMask) != 0;
-			if (args.Event.Button == 1 && MultipleNodesSelected () && !withModifider) {
-				tree.Selection.UnselectAll ();
-				Gtk.TreePath path;
-				if (tree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path))
-					tree.Selection.SelectPath (path);
 			}
 		}
 		
@@ -1918,16 +1895,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				return true;
 			}
 			return base.OnScrollEvent (evnt);
-		}
-
-
-		bool IsClickedNodeSelected (int x, int y)
-		{
-			Gtk.TreePath path;
-			if (tree.GetPathAtPos (x, y, out path))
-				return tree.Selection.PathIsSelected (path);
-			else
-				return false;
 		}
 
 		protected virtual void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)

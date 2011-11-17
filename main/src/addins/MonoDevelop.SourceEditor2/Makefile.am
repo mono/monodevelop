@@ -49,7 +49,6 @@ FILES =  \
 	MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs \
 	MonoDevelop.SourceEditor/SourceEditorView.cs \
 	MonoDevelop.SourceEditor/SourceEditorWidget.cs \
-	MonoDevelop.SourceEditor/StatusBox.cs \
 	MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs \
 	MonoDevelop.SourceEditor/SyntaxModeCodon.cs \
 	MonoDevelop.SourceEditor/SyntaxModeService.cs 

@@ -31,6 +31,7 @@
 using System;
 using Gtk;
 using Gdk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -261,7 +262,7 @@ namespace MonoDevelop.Components.Docking
 		
 		void OnSizeButtonPress (object ob, Gtk.ButtonPressEventArgs args)
 		{
-			if (args.Event.Button == 1 && !animating) {
+			if (!animating && args.Event.Button == 1 && !args.Event.TriggersContextMenu ()) {
 				int n;
 				if (horiz) {
 					Toplevel.GetPointer (out resizePos, out n);
