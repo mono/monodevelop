@@ -45,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 			this.SkipTaskbarHint = true;
 			this.Decorated = false;
 			this.BorderWidth = 2;
-			this.TypeHint = WindowTypeHint.Tooltip;
+			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 		}
