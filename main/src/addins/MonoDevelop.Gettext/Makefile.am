@@ -64,7 +64,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	icons/gettext-overlay-16.png \
 	icons/gettext-overlay-32.png \
 	icons/locale_16x16.png \
