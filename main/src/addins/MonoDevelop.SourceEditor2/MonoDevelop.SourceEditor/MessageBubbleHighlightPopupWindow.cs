@@ -129,7 +129,7 @@ namespace MonoDevelop.SourceEditor
 					cr.Fill ();
 				}
 				
-				cr.Color = new Cairo.Color (0, 0, 0);
+				cr.Color = Editor.ColorStyle.GetChunkStyle ("bubble.error").CairoColor;
 				
 				int layoutWidth, layoutHeight;
 				marker.Layouts [0].Layout.GetPixelSize (out layoutWidth, out layoutHeight);
