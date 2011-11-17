@@ -457,6 +457,12 @@ namespace Mono.TextEditor
 				mod |= Gdk.ModifierType.MetaMask;
 			}
 			
+			//some versions of GTK map opt as mod5, which converts to the virtual super modifier
+			if ((mod & (Gdk.ModifierType.Mod5Mask | Gdk.ModifierType.SuperMask)) != 0) {
+				mod ^= (Gdk.ModifierType.Mod5Mask | Gdk.ModifierType.SuperMask);
+				mod |= Gdk.ModifierType.Mod1Mask;
+			}
+			
 			// When opt modifier is active, we need to decompose this to make the command appear correct for Mac.
 			// In addition, we can only inspect whether the opt/alt key is pressed by examining
 			// the key's "group", because the Mac GTK+ treats opt as a group modifier and does
