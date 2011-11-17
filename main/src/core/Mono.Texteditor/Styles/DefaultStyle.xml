@@ -122,8 +122,8 @@
 	</Style>
 	
 	<Style name="bubble">
-		<Style name="warning" color="black" bgColor="#f4eeda"/>
-		<Style name="error" color="black" bgColor="#f5eae7"/>
+		<Style name="warning" color="aluminium5" bgColor="#f4eeda"/>
+		<Style name="error" color="aluminium5" bgColor="#f5eae7"/>
 	</Style>
 
 	<Style name="linenumber" color="aluminium4" bgColor="#FDFDFF">
