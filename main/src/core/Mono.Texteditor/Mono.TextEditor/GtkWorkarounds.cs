@@ -314,11 +314,24 @@ namespace Mono.TextEditor
 				};
 			}
 			
+			uint time;
+			uint button;
+			
 			if (evt == null) {
-				menu.Popup (null, null, posFunc, 0, Gtk.Global.CurrentEventTime);
+				time = Gtk.Global.CurrentEventTime;
+				button = 0;
 			} else {
-				menu.Popup (null, null, posFunc, evt.Button, evt.Time);
+				time = evt.Time;
+				button = evt.Button;
 			}
+			
+			//HACK: work around GTK menu issues on mac when passing button to menu.Popup
+			//some menus appear and immediately hide, and submenus don't activate
+			if (Platform.IsMac) {
+				button = 0;
+			}
+			
+			menu.Popup (null, null, posFunc, button, time);
 		}
 		
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt)

@@ -56,9 +56,8 @@ namespace MonoDevelop.Components
 			if (!res)
 				res = base.OnButtonPressEvent (evnt);
 			
-			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (DoPopupMenu != null && evnt.TriggersContextMenu ()) {
-			//	DoPopupMenu (evnt);
+				DoPopupMenu (evnt);
 				return true;
 			}
 			
@@ -69,9 +68,7 @@ namespace MonoDevelop.Components
 		{
 			bool res = base.OnButtonReleaseEvent (evnt);
 			
-			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (DoPopupMenu != null && evnt.IsContextMenuButton ()) {
-				DoPopupMenu (evnt);
 				return true;
 			}
 			
