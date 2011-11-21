@@ -94,8 +94,14 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			//TODO: opt into the fixes on GTK+ >= 2.24.8
-			oldMacKeyHacks = true;
+			//opt into the fixes on GTK+ >= 2.24.8
+			if (Platform.IsMac) {
+				try {
+					gdk_quartz_set_fix_modifiers (true);
+				} catch (EntryPointNotFoundException) {
+					oldMacKeyHacks = true;
+				}
+			}
 			
 			keymap.KeysChanged += delegate {
 				mappedKeys.Clear ();
@@ -370,6 +376,10 @@ namespace Mono.TextEditor
 		//introduced in GTK 2.20
 		[DllImport (PangoUtil.LIBGDK)]
 		extern static bool gdk_keymap_add_virtual_modifiers (IntPtr keymap, ref Gdk.ModifierType state);
+		
+		//Custom patch in Mono Mac w/GTK+ 2.24.8+
+		[DllImport (PangoUtil.LIBGDK)]
+		extern static bool gdk_quartz_set_fix_modifiers (bool fix);
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		static Dictionary<long,MappedKeys> mappedKeys = new Dictionary<long,MappedKeys> ();
