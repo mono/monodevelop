@@ -12,6 +12,7 @@ using MonoDevelop.Ide.WebBrowser;
 using MonoDevelop.WebReferences;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using MonoDevelop.WebReferences.WS;
 
 namespace MonoDevelop.WebReferences.Dialogs
 {
@@ -401,6 +402,13 @@ namespace MonoDevelop.WebReferences.Dialogs
 				MessageService.ShowError (GettextCatalog.GetString ("Web reference already exists"), GettextCatalog.GetString ("A web service reference with the name '{0}' already exists in the project. Please use a different name.", this.tbxReferenceName.Text));
 				return;
 			}
+			
+			var webref = project.Items.GetAll <WebReferenceUrl> ().FirstOrDefault (r => r.Include == ServiceUrl);
+			if (webref != null) {
+				MessageService.ShowError (GettextCatalog.GetString ("Web reference already exists"), GettextCatalog.GetString ("The web service '{0}' already exists with the name '{1}'", ServiceUrl, webref.RelPath.FileName));
+				return;
+			}
+
 			Respond (Gtk.ResponseType.Ok);
 		}
 		
