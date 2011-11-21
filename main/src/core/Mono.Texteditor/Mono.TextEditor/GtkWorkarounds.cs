@@ -301,11 +301,27 @@ namespace Mono.TextEditor
 					var screen = parent.Screen;
 					Gdk.Rectangle geometry = GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (x, y));
 					
-					if (x + request.Width > geometry.Right) {
-						x -= request.Width;
+					//whether to push or flip menus that would extend offscreen
+					//FIXME: this is the correct behaviour for mac, check other platforms
+					bool flip_left = true;
+					bool flip_up   = false;
+					
+					int x_over = x + request.Width - geometry.Right;
+					if (x_over > 0) {
+						if (flip_left) {
+							x -= request.Width;
+						} else {
+							x -= x_over;
+						}
 					}
-					if (y + request.Height > geometry.Bottom) {
-						y -= request.Height;
+					
+					int y_over = y + request.Height - geometry.Bottom;
+					if (y_over > 0) {
+						if (flip_up) {
+							y -= request.Height;
+						} else {
+							y -= y_over;
+						}
 					}
 					y = System.Math.Max (geometry.Top, System.Math.Min (y, geometry.Bottom - request.Height));
 					x = System.Math.Max (geometry.Left, System.Math.Min (x, geometry.Right - request.Width));
