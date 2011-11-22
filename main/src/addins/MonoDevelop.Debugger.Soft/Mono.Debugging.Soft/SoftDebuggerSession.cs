@@ -71,6 +71,7 @@ namespace Mono.Debugging.Soft
 		Thread errorReader;
 		
 		IAsyncResult connectionHandle;
+		SoftDebuggerStartArgs startArgs;
 		
 		LinkedList<List<Event>> queuedEventSets = new LinkedList<List<Event>> ();
 		
@@ -107,9 +108,56 @@ namespace Mono.Debugging.Soft
 				StartConnecting (dsi);
 			} else if (dsi.StartArgs is SoftDebuggerListenArgs) {
 				StartListening (dsi);
+			} else if (dsi.StartArgs.ConnectionProvider != null) {
+				StartConnection (dsi);
 			} else {
-				throw new Exception (string.Format ("Unknown args: {0}", dsi.StartArgs));
+				throw new ArgumentException ("StartArgs has no ConnectionProvider");
 			}
+		}
+		
+		void StartConnection (SoftDebuggerStartInfo dsi)
+		{
+			this.startArgs = dsi.StartArgs;
+			
+			RegisterUserAssemblies (dsi.UserAssemblyNames);
+			
+			if (!String.IsNullOrEmpty (dsi.LogMessage))
+				LogWriter (false, dsi.LogMessage + "\n");
+			
+			
+			AsyncCallback callback = null;
+			int attemptNumber = 0;
+			int maxAttempts = startArgs.MaxConnectionAttempts;
+			int timeBetweenAttempts = startArgs.TimeBetweenConnectionAttempts;
+			callback = delegate (IAsyncResult ar) {
+				try {
+					string appName;
+					VirtualMachine vm;
+					startArgs.ConnectionProvider.EndConnect (ar, LogWriter, out vm, out appName);
+					this.remoteProcessName = appName;
+					ConnectionStarted (vm);
+					return;
+				} catch (Exception ex) {
+					attemptNumber++;
+					if (!ShouldRetryConnection (ex, attemptNumber)
+						|| !startArgs.ConnectionProvider.ShouldRetryConnection (ex)
+						|| attemptNumber == maxAttempts
+						|| Exited)
+					{
+						OnConnectionError (ex);
+						return;
+					}
+				}
+				try {
+					if (timeBetweenAttempts > 0)
+						System.Threading.Thread.Sleep (timeBetweenAttempts);
+					ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (callback, LogWriter), dsi, false, 0);
+				} catch (Exception ex2) {
+					OnConnectionError (ex2);
+				}
+			};
+			//the "listening" value is never used, pass a dummy value
+			ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (callback, LogWriter), dsi, false, 0);
 		}
 		
 		void StartLaunching (SoftDebuggerStartInfo dsi)
@@ -198,8 +246,7 @@ namespace Mono.Debugging.Soft
 		
 		protected void StartConnecting (SoftDebuggerStartInfo dsi)
 		{
-			var args = (SoftDebuggerConnectArgs) dsi.StartArgs;
-			StartConnecting (dsi, args.MaxConnectionAttempts, args.TimeBetweenConnectionAttempts);
+			StartConnecting (dsi, dsi.StartArgs.MaxConnectionAttempts, dsi.StartArgs.TimeBetweenConnectionAttempts);
 		}
 		
 		/// <summary>Starts the debugger connecting to a remote IP</summary>
@@ -246,8 +293,6 @@ namespace Mono.Debugging.Soft
 			var args = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			
 			remoteProcessName = args.AppName;
-			if (string.IsNullOrEmpty (remoteProcessName))
-				remoteProcessName = "mono";
 			
 			RegisterUserAssemblies (dsi.UserAssemblyNames);
 			
@@ -277,7 +322,7 @@ namespace Mono.Debugging.Soft
 		protected virtual void OnConnectionError (Exception ex)
 		{
 			//if the exception was caused by cancelling the session
-			if (Exited && ex is SocketException)
+			if (Exited)
 				return;
 			
 			if (!HandleException (ex)) {
@@ -312,7 +357,12 @@ namespace Mono.Debugging.Soft
 		{
 			HideConnectionDialog ();
 			if (connectionHandle != null) {
-				VirtualMachineManager.CancelConnection (connectionHandle);
+				if (startArgs != null && startArgs.ConnectionProvider != null) {
+					startArgs.ConnectionProvider.CancelConnect (connectionHandle);
+					startArgs = null;
+				} else {
+					VirtualMachineManager.CancelConnection (connectionHandle);
+				}
 				connectionHandle = null;
 			}
 		}
@@ -596,8 +646,8 @@ namespace Mono.Debugging.Soft
 		protected override ProcessInfo[] OnGetProcesses ()
 		{
 			if (procs == null) {
-				if (remoteProcessName != null) {
-					procs = new ProcessInfo[] { new ProcessInfo (0, remoteProcessName) };
+				if (remoteProcessName != null || vm.TargetProcess == null) {
+					procs = new ProcessInfo[] { new ProcessInfo (0, remoteProcessName ?? "mono") };
 				} else {
 					try {
 						procs = new ProcessInfo[] { new ProcessInfo (vm.TargetProcess.Id, vm.TargetProcess.ProcessName) };

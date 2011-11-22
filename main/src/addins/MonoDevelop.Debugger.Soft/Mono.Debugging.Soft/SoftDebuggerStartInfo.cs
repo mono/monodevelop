@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
 using System.Net;
+using Mono.Debugger.Soft;
 
 namespace Mono.Debugging.Soft
 {
@@ -63,8 +64,33 @@ namespace Mono.Debugging.Soft
 		public SoftDebuggerStartArgs StartArgs { get; set; }
 	}
 	
+	public interface ISoftDebuggerConnectionProvider
+	{
+		IAsyncResult BeginConnect (AsyncCallback callback, OutputWriterDelegate log);
+		void EndConnect (IAsyncResult result, OutputWriterDelegate log, out VirtualMachine vm, out string appName);
+		void CancelConnect (IAsyncResult result);
+		bool ShouldRetryConnection (Exception ex);
+	}
+	
 	public abstract class SoftDebuggerStartArgs
 	{
+		public SoftDebuggerStartArgs ()
+		{
+			MaxConnectionAttempts = 1;
+			TimeBetweenConnectionAttempts = 500;
+		}
+		
+		public abstract ISoftDebuggerConnectionProvider ConnectionProvider { get; }
+		
+		/// <summary>
+		/// Maximum number of connection attempts. Zero or less means infinite attempts. Default is 1.
+		/// </summary>
+		public int MaxConnectionAttempts { get; set; }
+		
+		/// <summary>
+		/// The time between connection attempts, in milliseconds. Default is 500.
+		/// </summary>
+		public int TimeBetweenConnectionAttempts { get; set; }
 	}
 	
 	public abstract class SoftDebuggerRemoteArgs : SoftDebuggerStartArgs
@@ -117,6 +143,8 @@ namespace Mono.Debugging.Soft
 			: base (appName, address, debugPort, outputPort)
 		{
 		}
+		
+		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return null; } }
 	}
 	
 	/// <summary>
@@ -134,20 +162,9 @@ namespace Mono.Debugging.Soft
 				throw new ArgumentException ("Debug port cannot be zero when connecting", "debugPort");
 			if (outputPort == 0)
 				throw new ArgumentException ("Output port cannot be zero when connecting", "outputPort");
-			
-			MaxConnectionAttempts = 1;
-			TimeBetweenConnectionAttempts = 500;
 		}
 		
-		/// <summary>
-		/// Maximum number of connection attempts. Zero or less means infinite attempts.
-		/// </summary>
-		public int MaxConnectionAttempts { get; set; }
-		
-		/// <summary>
-		/// Tthe time between connection attempts, in milliseconds.
-		/// </summary>
-		public int TimeBetweenConnectionAttempts { get; set; }
+		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return null; } }
 	}
 	
 	/// <summary>
@@ -178,6 +195,7 @@ namespace Mono.Debugging.Soft
 		/// Launcher for the external console. May be null if the app does not run on an external console.
 		/// </summary>
 		public Mono.Debugger.Soft.LaunchOptions.TargetProcessLauncher ExternalConsoleLauncher { get; set; }
+		
+		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return null; } }
 	}
 }
-
