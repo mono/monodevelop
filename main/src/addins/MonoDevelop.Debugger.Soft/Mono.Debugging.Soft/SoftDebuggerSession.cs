@@ -100,19 +100,7 @@ namespace Mono.Debugging.Soft
 		{
 			if (exited)
 				throw new InvalidOperationException ("Already exited");
-			
-			var dsi = (SoftDebuggerStartInfo) startInfo;
-			if (dsi.StartArgs is SoftDebuggerLaunchArgs) {
-				StartLaunching (dsi);
-			} else if (dsi.StartArgs is SoftDebuggerConnectArgs) {
-				StartConnecting (dsi);
-			} else if (dsi.StartArgs is SoftDebuggerListenArgs) {
-				StartListening (dsi);
-			} else if (dsi.StartArgs.ConnectionProvider != null) {
-				StartConnection (dsi);
-			} else {
-				throw new ArgumentException ("StartArgs has no ConnectionProvider");
-			}
+			StartConnection ((SoftDebuggerStartInfo)startInfo);
 		}
 		
 		void StartConnection (SoftDebuggerStartInfo dsi)
@@ -139,14 +127,13 @@ namespace Mono.Debugging.Soft
 					return;
 				} catch (Exception ex) {
 					attemptNumber++;
-					if (!ShouldRetryConnection (ex, attemptNumber)
-						|| !startArgs.ConnectionProvider.ShouldRetryConnection (ex)
-						|| attemptNumber == maxAttempts
-						|| Exited)
-					{
+					#pragma warning disable 612
+					if (!ShouldRetryConnection (ex, attemptNumber) || attemptNumber == maxAttempts || Exited) {
 						OnConnectionError (ex);
 						return;
 					}
+					#pragma warning restore 612
+					
 				}
 				try {
 					if (timeBetweenAttempts > 0)
@@ -160,147 +147,59 @@ namespace Mono.Debugging.Soft
 			ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (dsi, callback), dsi, false, 0);
 		}
 		
-		void StartLaunching (SoftDebuggerStartInfo dsi)
-		{
-			var args = (SoftDebuggerLaunchArgs) dsi.StartArgs;
-			var runtime = Path.Combine (Path.Combine (args.MonoRuntimePrefix, "bin"), "mono");
-			RegisterUserAssemblies (dsi.UserAssemblyNames);
-			
-			var psi = new System.Diagnostics.ProcessStartInfo (runtime) {
-				Arguments = string.Format ("\"{0}\" {1}", dsi.Command, dsi.Arguments),
-				WorkingDirectory = dsi.WorkingDirectory,
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-				UseShellExecute = false,
-				CreateNoWindow = true,
-			};
-			
-			LaunchOptions options = null;
-			
-			if (dsi.UseExternalConsole && args.ExternalConsoleLauncher != null) {
-				options = new LaunchOptions ();
-				options.CustomTargetProcessLauncher = args.ExternalConsoleLauncher;
-				psi.RedirectStandardOutput = false;
-				psi.RedirectStandardError = false;
-			}
-
-			var sdbLog = Environment.GetEnvironmentVariable ("MONODEVELOP_SDB_LOG");
-			if (!String.IsNullOrEmpty (sdbLog)) {
-				options = options ?? new LaunchOptions ();
-				options.AgentArgs = string.Format ("loglevel=1,logfile='{0}'", sdbLog);
-			}
-			
-			foreach (var env in args.MonoRuntimeEnvironmentVariables)
-				psi.EnvironmentVariables[env.Key] = env.Value;
-			
-			foreach (var env in dsi.EnvironmentVariables)
-				psi.EnvironmentVariables[env.Key] = env.Value;
-			
-			if (!String.IsNullOrEmpty (dsi.LogMessage))
-				OnDebuggerOutput (false, dsi.LogMessage + "\n");
-			
-			var callback = HandleConnectionCallbackErrors ((IAsyncResult ar) => {
-				ConnectionStarted (VirtualMachineManager.EndLaunch (ar));
-			});
-			ConnectionStarting (VirtualMachineManager.BeginLaunch (psi, callback, options), dsi, true, 0);
-		}
+		#region Obsolete
 		
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
+		[Obsolete]
 		protected void StartListening (SoftDebuggerStartInfo dsi)
 		{
-			int dp, cp;
-			StartListening (dsi, out dp, out cp);
+			StartConnection (dsi);
 		}
 		
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
+		[Obsolete]
 		protected void StartListening (SoftDebuggerStartInfo dsi, out int assignedDebugPort)
 		{
-			int cp;
-			StartListening (dsi, out assignedDebugPort, out cp);
+			StartConnection (dsi);
+			assignedDebugPort = ((SoftDebuggerListenArgs)dsi.StartArgs).DebugPort;
 		}
 		
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
+		[Obsolete]
 		protected void StartListening (SoftDebuggerStartInfo dsi,
 			out int assignedDebugPort, out int assignedConsolePort)
 		{
-		
-			IPEndPoint dbgEP, conEP;
-			InitForRemoteSession (dsi, out dbgEP, out conEP);
-			
-			var callback = HandleConnectionCallbackErrors (delegate (IAsyncResult ar) {
-				ConnectionStarted (VirtualMachineManager.EndListen (ar));
-			});
-			var a = VirtualMachineManager.BeginListen (dbgEP, conEP, callback, out assignedDebugPort, out assignedConsolePort);
-			ConnectionStarting (a, dsi, true, 0);
+			StartConnection (dsi);
+			assignedDebugPort = ((SoftDebuggerListenArgs)dsi.StartArgs).DebugPort;
+			assignedConsolePort = ((SoftDebuggerListenArgs)dsi.StartArgs).OutputPort;
 		}
-
+		
+		[Obsolete]
 		protected virtual bool ShouldRetryConnection (Exception ex, int attemptNumber)
 		{
-			var sx = ex as SocketException;
-			if (sx != null) {
-				if (sx.ErrorCode == 10061) //connection refused
-					return true;
-			}
-			return false;
+			return ShouldRetryConnection (ex);
 		}
 		
+		[Obsolete]
 		protected void StartConnecting (SoftDebuggerStartInfo dsi)
 		{
-			StartConnecting (dsi, dsi.StartArgs.MaxConnectionAttempts, dsi.StartArgs.TimeBetweenConnectionAttempts);
+			StartConnection (dsi);
 		}
 		
 		/// <summary>Starts the debugger connecting to a remote IP</summary>
+		[Obsolete]
 		protected void StartConnecting (SoftDebuggerStartInfo dsi, int maxAttempts, int timeBetweenAttempts)
-		{	
-			if (timeBetweenAttempts < 0 || timeBetweenAttempts > 10000)
-				throw new ArgumentException ("timeBetweenAttempts");
-			
-			IPEndPoint dbgEP, conEP;
-			InitForRemoteSession (dsi, out dbgEP, out conEP);
-			
-			AsyncCallback callback = null;
-			int attemptNumber = 0;
-			callback = delegate (IAsyncResult ar) {
-				try {
-					ConnectionStarted (VirtualMachineManager.EndConnect (ar));
-					return;
-				} catch (Exception ex) {
-					attemptNumber++;
-					if (!ShouldRetryConnection (ex, attemptNumber) || attemptNumber == maxAttempts || Exited) {
-						OnConnectionError (ex);
-						return;
-					}
-				}
-				try {
-					if (timeBetweenAttempts > 0)
-						System.Threading.Thread.Sleep (timeBetweenAttempts);
-					
-					ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi, false, attemptNumber);
-					
-				} catch (Exception ex2) {
-					OnConnectionError (ex2);
-				}
-			};
-			
-			ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi, false, 0);
+		{
+			dsi.StartArgs.MaxConnectionAttempts = maxAttempts;
+			dsi.StartArgs.TimeBetweenConnectionAttempts = timeBetweenAttempts;
+			StartConnection (dsi);
 		}
 		
-		void InitForRemoteSession (SoftDebuggerStartInfo dsi, out IPEndPoint dbgEP, out IPEndPoint conEP)
+		#endregion
+		
+		protected virtual bool ShouldRetryConnection (Exception ex)
 		{
-			if (remoteProcessName != null)
-				throw new InvalidOperationException ("Cannot initialize connection more than once");
-			
-			var args = (SoftDebuggerRemoteArgs) dsi.StartArgs;
-			
-			remoteProcessName = args.AppName;
-			
-			RegisterUserAssemblies (dsi.UserAssemblyNames);
-			
-			dbgEP = new IPEndPoint (args.Address, args.DebugPort);
-			conEP = args.RedirectOutput? new IPEndPoint (args.Address, args.OutputPort) : null;
-			
-			if (!String.IsNullOrEmpty (dsi.LogMessage))
-				LogWriter (false, dsi.LogMessage + "\n");
+			return startArgs.ConnectionProvider.ShouldRetryConnection (ex);
 		}
 		
 		///<summary>Catches errors in async callbacks and hands off to OnConnectionError</summary>

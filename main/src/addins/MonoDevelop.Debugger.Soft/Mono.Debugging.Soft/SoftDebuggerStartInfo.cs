@@ -116,12 +116,12 @@ namespace Mono.Debugging.Soft
 		/// <summary>
 		/// Port for the debugger connection. Zero means random port.
 		/// </summary>
-		public int DebugPort { get; private set; }
+		public int DebugPort { get; protected set; }
 		
 		/// <summary>
 		/// Port for the console connection. Zero means random port, less than zero means that output is not redirected.
 		/// </summary>
-		public int OutputPort { get; private set; }
+		public int OutputPort { get; protected set; }
 		
 		/// <summary>
 		/// Application name that will be shown in the debugger.
@@ -134,7 +134,7 @@ namespace Mono.Debugging.Soft
 	/// <summary>
 	/// Args for the debugger to listen for an incoming connection from a debuggee.
 	/// </summary>
-	public sealed class SoftDebuggerListenArgs : SoftDebuggerRemoteArgs
+	public sealed class SoftDebuggerListenArgs : SoftDebuggerRemoteArgs, ISoftDebuggerConnectionProvider
 	{
 		public SoftDebuggerListenArgs (string appName, IPAddress address, int debugPort)
 			: this (appName, address, debugPort, -1) {}
@@ -144,13 +144,43 @@ namespace Mono.Debugging.Soft
 		{
 		}
 		
-		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return null; } }
+		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return this; } }
+		
+		IAsyncResult ISoftDebuggerConnectionProvider.BeginConnect (DebuggerStartInfo dsi, AsyncCallback callback)
+		{
+			int dbg_port, con_port;
+			IAsyncResult result = VirtualMachineManager.BeginListen (
+				new IPEndPoint (Address, DebugPort),
+				new IPEndPoint (Address, OutputPort),
+				callback,
+				out dbg_port,
+				out con_port);
+			this.DebugPort = dbg_port;
+			this.OutputPort = con_port;
+			return result;
+		}
+
+		void ISoftDebuggerConnectionProvider.EndConnect (IAsyncResult result, out VirtualMachine vm, out string appName)
+		{
+			vm = VirtualMachineManager.EndListen (result);
+			appName = AppName;
+		}
+
+		void ISoftDebuggerConnectionProvider.CancelConnect (IAsyncResult result)
+		{
+			VirtualMachineManager.CancelConnection (result);
+		}
+
+		bool ISoftDebuggerConnectionProvider.ShouldRetryConnection (Exception ex)
+		{
+			return false;
+		}
 	}
 	
 	/// <summary>
 	/// Args for the debugger to connect to target that is listening.
 	/// </summary>
-	public sealed class SoftDebuggerConnectArgs : SoftDebuggerRemoteArgs
+	public sealed class SoftDebuggerConnectArgs : SoftDebuggerRemoteArgs, ISoftDebuggerConnectionProvider
 	{
 		public SoftDebuggerConnectArgs (string appName, IPAddress address, int debugPort)
 			: this (appName, address, debugPort, -1) {}
@@ -164,13 +194,42 @@ namespace Mono.Debugging.Soft
 				throw new ArgumentException ("Output port cannot be zero when connecting", "outputPort");
 		}
 		
-		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return null; } }
+		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return this; } }
+		
+		IAsyncResult ISoftDebuggerConnectionProvider.BeginConnect (DebuggerStartInfo dsi, AsyncCallback callback)
+		{
+			return VirtualMachineManager.BeginConnect (
+				new IPEndPoint (Address, DebugPort),
+				new IPEndPoint (Address, OutputPort),
+				callback);
+		}
+
+		void ISoftDebuggerConnectionProvider.EndConnect (IAsyncResult result, out VirtualMachine vm, out string appName)
+		{
+			vm = VirtualMachineManager.EndConnect (result);
+			appName = AppName;
+		}
+		
+		void ISoftDebuggerConnectionProvider.CancelConnect (IAsyncResult result)
+		{
+			VirtualMachineManager.CancelConnection (result);
+		}
+
+		bool ISoftDebuggerConnectionProvider.ShouldRetryConnection (Exception ex)
+		{
+			var sx = ex as System.Net.Sockets.SocketException;
+			if (sx != null) {
+				if (sx.ErrorCode == 10061) //connection refused
+					return true;
+			}
+			return false;
+		}
 	}
 	
 	/// <summary>
 	/// Options for the debugger to start a process directly.
 	/// </summary>
-	public sealed class SoftDebuggerLaunchArgs : SoftDebuggerStartArgs
+	public sealed class SoftDebuggerLaunchArgs : SoftDebuggerStartArgs, ISoftDebuggerConnectionProvider
 	{
 		public SoftDebuggerLaunchArgs (string monoRuntimePrefix, Dictionary<string,string> monoRuntimeEnvironmentVariables)
 		{
@@ -196,6 +255,59 @@ namespace Mono.Debugging.Soft
 		/// </summary>
 		public Mono.Debugger.Soft.LaunchOptions.TargetProcessLauncher ExternalConsoleLauncher { get; set; }
 		
-		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return null; } }
+		public override ISoftDebuggerConnectionProvider ConnectionProvider { get { return this; } }
+		
+		IAsyncResult ISoftDebuggerConnectionProvider.BeginConnect (DebuggerStartInfo dsi, AsyncCallback callback)
+		{
+			var runtime = Path.Combine (Path.Combine (MonoRuntimePrefix, "bin"), "mono");
+			
+			var psi = new System.Diagnostics.ProcessStartInfo (runtime) {
+				Arguments = string.Format ("\"{0}\" {1}", dsi.Command, dsi.Arguments),
+				WorkingDirectory = dsi.WorkingDirectory,
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				UseShellExecute = false,
+				CreateNoWindow = true,
+			};
+			
+			LaunchOptions options = null;
+			
+			if (dsi.UseExternalConsole && this.ExternalConsoleLauncher != null) {
+				options = new LaunchOptions ();
+				options.CustomTargetProcessLauncher = this.ExternalConsoleLauncher;
+				psi.RedirectStandardOutput = false;
+				psi.RedirectStandardError = false;
+			}
+
+			var sdbLog = Environment.GetEnvironmentVariable ("MONODEVELOP_SDB_LOG");
+			if (!String.IsNullOrEmpty (sdbLog)) {
+				options = options ?? new LaunchOptions ();
+				options.AgentArgs = string.Format ("loglevel=1,logfile='{0}'", sdbLog);
+			}
+			
+			foreach (var env in this.MonoRuntimeEnvironmentVariables)
+				psi.EnvironmentVariables[env.Key] = env.Value;
+			
+			foreach (var env in dsi.EnvironmentVariables)
+				psi.EnvironmentVariables[env.Key] = env.Value;
+			
+			return VirtualMachineManager.BeginLaunch (psi, callback, options);
+		}
+
+		void ISoftDebuggerConnectionProvider.EndConnect (IAsyncResult result, out VirtualMachine vm, out string appName)
+		{
+			vm = VirtualMachineManager.EndLaunch (result);
+			appName = null;
+		}
+
+		void ISoftDebuggerConnectionProvider.CancelConnect (IAsyncResult result)
+		{
+			VirtualMachineManager.CancelConnection (result);
+		}
+
+		bool ISoftDebuggerConnectionProvider.ShouldRetryConnection (Exception ex)
+		{
+			return false;
+		}
 	}
 }
