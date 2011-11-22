@@ -275,12 +275,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
-		public void OpenProject ()
-		{
-			SyncProject ();
-			AppleScript.Run (XCODE_OPEN_PROJECT, AppleSdkSettings.XcodePath, xcproj);
-		}
-		
 		public void OpenFile (string relativeName)
 		{
 			XC4Debug.Log ("Opening file in Xcode: {0}", relativeName);
@@ -351,12 +345,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return success;
 		}
 
-		const string XCODE_OPEN_PROJECT =
-@"tell application ""{0}""
-	activate
-	open ""{1}""
-end tell";
-
 		const string XCODE_OPEN_PROJECT_FILE =
 @"tell application ""{0}""
 	activate
@@ -366,45 +354,51 @@ end tell";
 
 		const string XCODE_SAVE_IN_PATH =
 @"tell application ""{0}""
-	set pp to ""{1}""
-	set ext to {{ "".storyboard"", "".xib"", "".h"", "".m"" }}
-	repeat with d in documents
-		if d is modified then
-			set f to path of d
-			if f starts with pp then
-				repeat with e in ext
-					if f ends with e then
-						save d
-						exit repeat
-					end if
-				end repeat
+	if it is running then
+		set pp to ""{1}""
+		set ext to {{ "".storyboard"", "".xib"", "".h"", "".m"" }}
+		repeat with d in documents
+			if d is modified then
+				set f to path of d
+				if f starts with pp then
+					repeat with e in ext
+						if f ends with e then
+							save d
+							exit repeat
+						end if
+					end repeat
+				end if
 			end if
-		end if
-	end repeat
+		end repeat
+	end if
 end tell";
 		
 		const string XCODE_CLOSE_IN_PATH =
 @"tell application ""{0}""
-	set pp to ""{1}""
-	repeat with d in documents
-		set f to path of d
-		if f starts with pp then
-			close d
-			return true
-		end if
-	end repeat
+	if it is running then
+		set pp to ""{1}""
+		repeat with d in documents
+			set f to path of d
+			if f starts with pp then
+				close d
+				return true
+			end if
+		end repeat
+	end if
 	return false
 end tell";
 		
 		const string XCODE_CHECK_PROJECT_OPEN =
 @"tell application ""{0}""
-	set pp to ""{1}""
-	repeat with p in projects
-		if real path of p is pp then
-			return true
-			exit repeat
-		end if
-	end repeat
+	if it is running then
+		set pp to ""{1}""
+		repeat with p in projects
+			if real path of p is pp then
+				return true
+				exit repeat
+			end if
+		end repeat
+	end if
 	return false
 end tell";
 	}
