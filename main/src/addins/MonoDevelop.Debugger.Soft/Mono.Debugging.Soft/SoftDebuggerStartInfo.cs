@@ -66,8 +66,8 @@ namespace Mono.Debugging.Soft
 	
 	public interface ISoftDebuggerConnectionProvider
 	{
-		IAsyncResult BeginConnect (AsyncCallback callback, OutputWriterDelegate log);
-		void EndConnect (IAsyncResult result, OutputWriterDelegate log, out VirtualMachine vm, out string appName);
+		IAsyncResult BeginConnect (DebuggerStartInfo dsi, AsyncCallback callback);
+		void EndConnect (IAsyncResult result, out VirtualMachine vm, out string appName);
 		void CancelConnect (IAsyncResult result);
 		bool ShouldRetryConnection (Exception ex);
 	}

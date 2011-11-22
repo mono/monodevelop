@@ -133,7 +133,7 @@ namespace Mono.Debugging.Soft
 				try {
 					string appName;
 					VirtualMachine vm;
-					startArgs.ConnectionProvider.EndConnect (ar, LogWriter, out vm, out appName);
+					startArgs.ConnectionProvider.EndConnect (ar, out vm, out appName);
 					this.remoteProcessName = appName;
 					ConnectionStarted (vm);
 					return;
@@ -151,13 +151,13 @@ namespace Mono.Debugging.Soft
 				try {
 					if (timeBetweenAttempts > 0)
 						System.Threading.Thread.Sleep (timeBetweenAttempts);
-					ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (callback, LogWriter), dsi, false, 0);
+					ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (dsi, callback), dsi, false, 0);
 				} catch (Exception ex2) {
 					OnConnectionError (ex2);
 				}
 			};
 			//the "listening" value is never used, pass a dummy value
-			ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (callback, LogWriter), dsi, false, 0);
+			ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (dsi, callback), dsi, false, 0);
 		}
 		
 		void StartLaunching (SoftDebuggerStartInfo dsi)
