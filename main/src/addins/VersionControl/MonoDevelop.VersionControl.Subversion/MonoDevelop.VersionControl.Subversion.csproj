@@ -123,6 +123,5 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="MonoDevelop.VersionControl.Subversion\" />
-    <Folder Include="MonoDevelop.VersionControl.Subversion\" />
   </ItemGroup>
 </Project>

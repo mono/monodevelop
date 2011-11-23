@@ -279,18 +279,7 @@
     <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\" />
     <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
     <Folder Include="MonoDevelop.CSharp.Inspection\NamingInspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
     <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
   </ItemGroup>
