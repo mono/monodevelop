@@ -46,7 +46,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	class XcodeMonitor
 	{
 		FilePath originalProjectDir;
-		int nextHackDir = 0;
+		static int nextHackDir = 0;
 		string name;
 		
 		FilePath xcproj, projectDir;
@@ -124,6 +124,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			if (removedOldProject) {
 				HackRelocateProject ();
+				ctx.ProjectDir = projectDir;
 			}
 			
 			foreach (var item in items) {
@@ -142,6 +143,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				pendingProjectWrite = emptyProject;
 			}
 			
+			OpenProject ();
 			monitor.EndTask ();
 			monitor.ReportSuccess (GettextCatalog.GetString ("Xcode project updated."));
 		}
@@ -335,6 +337,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return success;
 		}
 		
+		public bool OpenProject ()
+		{
+			SyncProject ();
+			var success = AppleScript.Run (XCODE_OPEN_PROJECT, AppleSdkSettings.XcodePath, projectDir) == "true";
+			XC4Debug.Log ("Opening project: {0}", success);
+			return success;
+		}
+		
 		public bool CloseFile (string fileName)
 		{
 			if (!CheckRunning ())
@@ -344,6 +354,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			XC4Debug.Log ("Closing file {0}: {1}", fileName, success);
 			return success;
 		}
+		
+				const string XCODE_OPEN_PROJECT =
+@"tell application ""{0}""
+	activate
+	open ""{1}""
+end tell";
 
 		const string XCODE_OPEN_PROJECT_FILE =
 @"tell application ""{0}""

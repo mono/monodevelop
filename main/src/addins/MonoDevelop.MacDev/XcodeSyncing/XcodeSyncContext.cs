@@ -47,7 +47,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			this.syncTimes = syncTimes;
 		}
 		
-		public FilePath ProjectDir { get; private set; }
+		public FilePath ProjectDir { get; set; }
 		
 		public DateTime GetSyncTime (string relativeFilename)
 		{
