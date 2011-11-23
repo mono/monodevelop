@@ -71,6 +71,11 @@ namespace MonoDevelop.CSharp.Formatting
 				public string indent;
 				public int nSpaces;
 				public int lineNr;
+				
+				public override string ToString ()
+				{
+					return string.Format ("[Node: inside={0}, keyword={1}, indent={2}, nSpaces={3}, lineNr={4}]", inside, keyword, indent, nSpaces, lineNr);
+				}
 			};
 			
 			Node[] stack;
@@ -149,11 +154,11 @@ namespace MonoDevelop.CSharp.Formatting
 							sp--;
 						}
 					}
-//					if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+					if (nSpaces - n <= 0) {
 						indentBuilder.Append ('\t');
-//					} else {
-//						indentBuilder.Append (' ', nSpaces - n);
-//					}
+					} else {
+						indentBuilder.Append (' ', nSpaces - n);
+					}
 				} else if (inside == Inside.MultiLineComment) {
 					if (size > 0) {
 						indentBuilder.Append (stack[sp].indent);
