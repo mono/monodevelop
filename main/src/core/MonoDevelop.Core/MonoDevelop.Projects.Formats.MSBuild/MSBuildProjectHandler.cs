@@ -287,7 +287,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				it.FileName = fileName;
 				it.Name = System.IO.Path.GetFileNameWithoutExtension (fileName);
-			
+				
+				RemoveDuplicateItems (p, fileName);
+				
 				Load (monitor, p);
 				return it;
 				
@@ -396,6 +398,54 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new FileFormat (TargetFormat, TargetFormat.Id, TargetFormat.Name);
 		}
 		
+		void RemoveDuplicateItems (MSBuildProject msproject, string fileName)
+		{
+			timer.Trace ("Checking for duplicate items");
+			
+			var uniqueIncludes = new Dictionary<string,object> ();
+			var toRemove = new List<MSBuildItem> ();
+			foreach (MSBuildItem bi in msproject.GetAllItems ()) {
+				object existing;
+				string key = bi.Name + "<" + bi.Include;
+				if (!uniqueIncludes.TryGetValue (key, out existing)) {
+					uniqueIncludes[key] = bi;
+					continue;
+				}
+				var exBi = existing as MSBuildItem;
+				if (exBi != null) {
+					if (exBi.Condition != bi.Condition || exBi.Element.InnerXml != bi.Element.InnerXml) {
+						uniqueIncludes[key] = new List<MSBuildItem> { exBi, bi };
+					} else {
+						toRemove.Add (bi);
+					}
+					continue;
+				}
+				
+				var exList = (List<MSBuildItem>)existing;
+				bool found = false;
+				foreach (var m in (exList)) {
+					if (m.Condition == bi.Condition && m.Element.InnerXml == bi.Element.InnerXml) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					exList.Add (bi);
+				} else {
+					toRemove.Add (bi);
+				}
+			}
+			if (toRemove.Count == 0)
+				return;
+			
+			timer.Trace ("Removing duplicate items");
+			
+			foreach (var t in toRemove)
+				msproject.RemoveItem (t);
+			fileContent = msproject.Save ();
+			MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, fileContent, "UTF-8");
+		}
+		
 		void Load (IProgressMonitor monitor, MSBuildProject msproject)
 		{
 			timer.Trace ("Initialize serialization");
@@ -418,9 +468,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				ProjectItem it = ReadItem (ser, buildItem);
 				if (it != null) {
 					EntityItem.Items.Add (it);
-					int i = EntityItem.Items.IndexOf (it);
-					if (i != -1 && EntityItem.Items [i] != it && EntityItem.Items [i].Condition == it.Condition)
-						EntityItem.Items.RemoveAt (i); // Remove duplicates
 				}
 			}
 			
