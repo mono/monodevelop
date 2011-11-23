@@ -152,9 +152,6 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.WebReferences.WCF\" />
     <Folder Include="MonoDevelop.WebReferences\" />
-    <Folder Include="MonoDevelop.WebReferences\" />
     <Folder Include="MonoDevelop.WebReferences.WS\" />
-    <Folder Include="MonoDevelop.WebReferences\" />
-    <Folder Include="MonoDevelop.WebReferences.WCF\" />
   </ItemGroup>
 </Project>

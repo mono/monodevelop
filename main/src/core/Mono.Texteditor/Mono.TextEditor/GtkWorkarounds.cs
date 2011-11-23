@@ -94,8 +94,14 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			//TODO: opt into the fixes on GTK+ >= 2.24.8
-			oldMacKeyHacks = true;
+			//opt into the fixes on GTK+ >= 2.24.8
+			if (Platform.IsMac) {
+				try {
+					gdk_quartz_set_fix_modifiers (true);
+				} catch (EntryPointNotFoundException) {
+					oldMacKeyHacks = true;
+				}
+			}
 			
 			keymap.KeysChanged += delegate {
 				mappedKeys.Clear ();
@@ -301,11 +307,27 @@ namespace Mono.TextEditor
 					var screen = parent.Screen;
 					Gdk.Rectangle geometry = GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (x, y));
 					
-					if (x + request.Width > geometry.Right) {
-						x -= request.Width;
+					//whether to push or flip menus that would extend offscreen
+					//FIXME: this is the correct behaviour for mac, check other platforms
+					bool flip_left = true;
+					bool flip_up   = false;
+					
+					int x_over = x + request.Width - geometry.Right;
+					if (x_over > 0) {
+						if (flip_left) {
+							x -= request.Width;
+						} else {
+							x -= x_over;
+						}
 					}
-					if (y + request.Height > geometry.Bottom) {
-						y -= request.Height;
+					
+					int y_over = y + request.Height - geometry.Bottom;
+					if (y_over > 0) {
+						if (flip_up) {
+							y -= request.Height;
+						} else {
+							y -= y_over;
+						}
 					}
 					y = System.Math.Max (geometry.Top, System.Math.Min (y, geometry.Bottom - request.Height));
 					x = System.Math.Max (geometry.Left, System.Math.Min (x, geometry.Right - request.Width));
@@ -314,11 +336,24 @@ namespace Mono.TextEditor
 				};
 			}
 			
+			uint time;
+			uint button;
+			
 			if (evt == null) {
-				menu.Popup (null, null, posFunc, 0, Gtk.Global.CurrentEventTime);
+				time = Gtk.Global.CurrentEventTime;
+				button = 0;
 			} else {
-				menu.Popup (null, null, posFunc, evt.Button, evt.Time);
+				time = evt.Time;
+				button = evt.Button;
 			}
+			
+			//HACK: work around GTK menu issues on mac when passing button to menu.Popup
+			//some menus appear and immediately hide, and submenus don't activate
+			if (Platform.IsMac) {
+				button = 0;
+			}
+			
+			menu.Popup (null, null, posFunc, button, time);
 		}
 		
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt)
@@ -341,6 +376,10 @@ namespace Mono.TextEditor
 		//introduced in GTK 2.20
 		[DllImport (PangoUtil.LIBGDK)]
 		extern static bool gdk_keymap_add_virtual_modifiers (IntPtr keymap, ref Gdk.ModifierType state);
+		
+		//Custom patch in Mono Mac w/GTK+ 2.24.8+
+		[DllImport (PangoUtil.LIBGDK)]
+		extern static bool gdk_quartz_set_fix_modifiers (bool fix);
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		static Dictionary<long,MappedKeys> mappedKeys = new Dictionary<long,MappedKeys> ();

@@ -74,3 +74,12 @@ app-dir:
 
 package-monomac:
 	(cd main; make package-monomac)
+
+reset-versions: reset-all
+check-versions: check-all
+
+reset-%:
+	@./version-checks --reset $*
+
+check-%:
+	@./version-checks --check $*

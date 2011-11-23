@@ -45,7 +45,9 @@ namespace MonoDevelop.SourceEditor
 			this.SkipTaskbarHint = true;
 			this.Decorated = false;
 			this.BorderWidth = 2;
-			this.TypeHint = WindowTypeHint.Tooltip;
+			//HACK: this should be WindowTypeHint.Tooltip, but GTK on mac is buggy and doesn't allow keyboard
+			//input to WindowType.Toplevel windows with WindowTypeHint.Tooltip hint
+			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 		}
