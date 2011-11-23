@@ -436,12 +436,27 @@ namespace MonoDevelop.Projects
 			return MemberwiseClone();
 		}
 		
+		public override bool Equals (object obj)
+		{
+			return Equals (obj as ProjectReference);
+		}
+		
 		public bool Equals (ProjectReference other)
 		{
-			ProjectReference oref = other as ProjectReference;
-			if (oref == null) return false;
-			
-			return StoredReference == oref.StoredReference && referenceType == oref.referenceType && package == oref.package;
+			return other != null
+				&& StoredReference == other.StoredReference
+				&& referenceType == other.referenceType
+				&& package == other.package;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int result = 0;
+			if (StoredReference != null)
+				result ^= StoredReference.GetHashCode ();
+			if (package != null)
+				result ^= package.GetHashCode ();
+			return result;
 		}
 		
 		internal void NotifyStatusChanged ()

@@ -249,7 +249,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					continue;
 				if (finf.ProjectFile.BuildAction == BuildAction.Compile) {
 					updateTypes = true;
-					break;
 				} else if (IncludeInSyncedProject (finf.ProjectFile)) {
 					updateProject = true;
 				}
@@ -259,7 +258,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing to Xcode..."))) {
 					//FIXME: make this async (and safely async)
 					//FIXME: only update the project if obj-c types change
-					updateProject = UpdateTypes (monitor, true);
+					updateProject |= UpdateTypes (monitor, true);
 				}
 			}
 			

@@ -1532,7 +1532,6 @@
     <Folder Include="MonoDevelop.Ide.Projects\" />
     <Folder Include="MonoDevelop.Ide\" />
     <Folder Include="MonoDevelop.Ide.Gui.Dialogs\" />
-    <Folder Include="MonoDevelop.Ide.Projects\" />
     <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
     <Folder Include="MonoDevelop.Ide.NavigateToDialog\" />
     <Folder Include="MonoDevelop.Ide.Navigation\" />
@@ -1540,7 +1539,6 @@
     <Folder Include="MonoDevelop.Ide.Fonts\" />
     <Folder Include="MonoDevelop.Ide.Codons\" />
     <Folder Include="ExtensionModel\" />
-    <Folder Include="icons\" />
     <Folder Include="icons\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\" />
     <Folder Include="branding\" />

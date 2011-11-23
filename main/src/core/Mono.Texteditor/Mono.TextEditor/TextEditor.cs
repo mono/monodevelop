@@ -931,15 +931,8 @@ namespace Mono.TextEditor
 			
 			//main context menu
 			if (DoPopupMenu != null && e.TriggersContextMenu ()) {
-				double tmOffset = e.X - textViewMargin.XOffset;
-				if (tmOffset >= 0) {
-					DocumentLocation loc = PointToLocation (tmOffset, e.Y);
-					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
-						Caret.Location = loc;
-					DoPopupMenu (e);
-					this.ResetMouseState ();
+				if (!workaroundBug2157 && DoClickedPopupMenu (e))
 					return true;
-				}
 			}
 			
 			if (lastTime != e.Time) {// filter double clicks
@@ -955,6 +948,23 @@ namespace Mono.TextEditor
 					margin.MousePressed (new MarginMouseEventArgs (this, e, e.Button, e.X - startPos, e.Y, e.State));
 			}
 			return base.OnButtonPressEvent (e);
+		}
+		
+		//HACK: work around "Bug 2157 - Context menus flaky near left edge of screen" by triggering on ButtonRelease
+		static bool workaroundBug2157 = Platform.IsMac;
+		
+		bool DoClickedPopupMenu (Gdk.EventButton e)
+		{
+			double tmOffset = e.X - textViewMargin.XOffset;
+			if (tmOffset >= 0) {
+				DocumentLocation loc = PointToLocation (tmOffset, e.Y);
+				if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
+					Caret.Location = loc;
+				DoPopupMenu (e);
+				this.ResetMouseState ();
+				return true;
+			}
+			return false;
 		}
 		
 		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
@@ -999,6 +1009,13 @@ namespace Mono.TextEditor
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
 			RemoveScrollWindowTimer ();
+			
+			//main context menu
+			if (DoPopupMenu != null && e.IsContextMenuButton ()) {
+				if (workaroundBug2157 && DoClickedPopupMenu (e))
+					return true;
+			}
+			
 			double startPos;
 			Margin margin = GetMarginAtX (e.X, out startPos);
 			if (margin != null)
