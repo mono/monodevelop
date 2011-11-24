@@ -89,8 +89,12 @@ namespace MonoDevelop.Ide.Gui
 					(tabMinY <= cursorY) && (cursorY <= tabMaxY))
 					return pageNumber;
 
-				if (!direction.HasValue)
-					direction = cursorX > tabMaxX ? 1 : -1;
+				if (!direction.HasValue) {
+					if (TabPos == PositionType.Top || TabPos == PositionType.Bottom)
+						direction = cursorX > tabMaxX ? 1 : -1;
+					else
+						direction = cursorY > tabMaxY ? 1 : -1;
+				}
 
 				pageNumber += direction.Value;
 			}
