@@ -60,7 +60,9 @@ namespace MonoDevelop.Core.LogReporting
 
 			var data = System.Text.Encoding.UTF8.GetBytes (ex.ToString ());
 			var filename = string.Format ("{0}.{1}.crashlog", SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
-			if (!TryUploadReport (filename, data)) {
+			// If crash reporting has not been enabled or disabled yet, just log to disk.
+			// Otherwise log to disk only if uploading fails.
+			if (!ReportCrashes.GetValueOrDefault () || !TryUploadReport (filename, data)) {
 				if (!Directory.Exists (CrashLogDirectory))
 					Directory.CreateDirectory (CrashLogDirectory);
 
