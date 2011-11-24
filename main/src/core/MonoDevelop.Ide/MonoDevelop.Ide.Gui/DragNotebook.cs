@@ -57,17 +57,24 @@ namespace MonoDevelop.Ide.Gui
 
 			int    dragNotebookXRoot;
 			int    dragNotebookYRoot;
-			Widget page              = GetNthPage (0);
-			int    pageNumber        = 0;
+			Widget page;
+			int    pageNumber        = CurrentPage;
 			Widget tab;
 			int    tabMaxX;
 			int    tabMaxY;
 			int    tabMinX;
 			int    tabMinY;
+			int? direction = null;
 
 			ParentWindow.GetOrigin (out dragNotebookXRoot, out dragNotebookYRoot);
-
-			while (page != null) {
+			
+			// We cannot rely on the allocations being zero for tabs which are
+			// offscreen. If we write the logic to walk from page 0 til NPages,
+			// we can end up choosing the wrong page because pages which are
+			// offscreen will match the mouse coordinates. We can work around
+			// this by walking either up or down from the active page and choosing
+			// the first page which is within the mouse x/y coordinates.
+			while ((page = GetNthPage (pageNumber)) != null && pageNumber >= 0 && pageNumber <= NPages) {
 
 				if ((tab = GetTabLabel (page)) == null)
 					return -1;
@@ -82,7 +89,14 @@ namespace MonoDevelop.Ide.Gui
 					(tabMinY <= cursorY) && (cursorY <= tabMaxY))
 					return pageNumber;
 
-				page = GetNthPage (++pageNumber);
+				if (!direction.HasValue) {
+					if (TabPos == PositionType.Top || TabPos == PositionType.Bottom)
+						direction = cursorX > tabMaxX ? 1 : -1;
+					else
+						direction = cursorY > tabMaxY ? 1 : -1;
+				}
+
+				pageNumber += direction.Value;
 			}
 
 			return -1;

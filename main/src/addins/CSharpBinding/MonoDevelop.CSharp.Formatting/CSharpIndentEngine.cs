@@ -882,6 +882,18 @@ namespace MonoDevelop.CSharp.Formatting
 			"pragma",
 			"line"
 		};
+
+		void CheckForParentList ()
+		{
+			var after = stack.PeekInside (0);
+			if ((after & Inside.ParenList) == Inside.ParenList && pc == '(') {
+				var indent = stack.PeekIndent (0);
+				var kw = stack.PeekKeyword (0);
+				var line = stack.PeekLineNr (0);
+				stack.Pop ();
+				stack.Push (after, kw, line, 0);
+			}
+		}
 		
 		// This is the main logic of this class...
 		public void Push (char c)
@@ -971,10 +983,13 @@ namespace MonoDevelop.CSharp.Formatting
 				PushCloseBrace (inside);
 				break;
 			case '\r':
+				CheckForParentList ();
 				PushNewLine (inside);
 				lastChar = c;
 				return;
 			case '\n':
+				CheckForParentList ();
+				
 				if (lastChar == '\r') {
 					cursor++;
 				} else {
@@ -985,8 +1000,8 @@ namespace MonoDevelop.CSharp.Formatting
 			default:
 				break;
 			}
-			
 			after = stack.PeekInside (0);
+			
 			if ((after & Inside.PreProcessor) == Inside.PreProcessor) {
 				for (int i = 0; i < preProcessorIndents.Length; i++) {
 					int len = preProcessorIndents[i].Length - 1;

@@ -35,8 +35,22 @@ namespace MonoDevelop.Core.Execution
 	{
 		System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 		
+		public string ProcessPath {
+			get; private set;
+		}
+		
 		// .NET doesn't allow escaping chars other than " and \ inside " quotes
 		static string escapeDoubleQuoteCharsStr = "\\\"";
+		
+		public ProcessArgumentBuilder ()
+		{
+			
+		}
+		
+		public ProcessArgumentBuilder (string processPath)
+		{
+			ProcessPath = processPath;
+		}
 		
 		/// <summary>
 		/// Adds an argument without escaping or quoting.
