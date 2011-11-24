@@ -42,6 +42,8 @@ namespace MonoDevelop.Core.LogReporting
 		static int CrashId;
 		static int Processing;
 		
+		public static Func<bool> ShouldEnableReporting;
+		
 		public static bool? ReportCrashes {
 			get { return PropertyService.Get<bool?> (ReportCrashesKey); }
 			set { PropertyService.Set (ReportCrashesKey, value); }
@@ -54,12 +56,20 @@ namespace MonoDevelop.Core.LogReporting
 		
 		public static void ReportUnhandledException (Exception ex)
 		{
+			// if the user hasn't opted in/out yet, ask them
+			if (!ReportCrashes.HasValue) {
+				var handler = ShouldEnableReporting;
+				if (handler != null)
+					ReportCrashes = handler ();
+			}
+			
 			// If crash reporting has been explicitly disabled, disregard this
 			if (ReportCrashes.HasValue && !ReportCrashes.Value)
 				return;
 
 			var data = System.Text.Encoding.UTF8.GetBytes (ex.ToString ());
 			var filename = string.Format ("{0}.{1}.crashlog", SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
+			
 			// If crash reporting has not been enabled or disabled yet, just log to disk.
 			// Otherwise log to disk only if uploading fails.
 			if (!ReportCrashes.GetValueOrDefault () || !TryUploadReport (filename, data)) {

@@ -39,17 +39,17 @@ namespace MonoDevelop.Ide
 	{
 		protected override void Run ()
 		{
-			var pid = Process.GetCurrentProcess ().Id;
-			var directory = new DirectoryInfo (LogReportingService.CrashLogDirectory);
+//			var pid = Process.GetCurrentProcess ().Id;
+//			var directory = new DirectoryInfo (LogReportingService.CrashLogDirectory);
+//			
+//			if (Platform.IsMac) {
+//				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
+//				Process.Start (new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -pid {1} -log {2} -session {3}", crashmonitor, pid, directory.FullName, SystemInformation.SessionUuid)) {
+//					UseShellExecute = false,
+//				});
+//			}
 			
-			if (Platform.IsMac) {
-				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
-				Process.Start (new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -pid {1} -log {2} -session {3}", crashmonitor, pid, directory.FullName, SystemInformation.SessionUuid)) {
-					UseShellExecute = false,
-				});
-			}
-
-			if (!LogReportingService.ReportCrashes.HasValue && directory.Exists && directory.EnumerateFiles ().Any ()) {
+			LogReportingService.ShouldEnableReporting = () => {
 				var result = MessageService.AskQuestion ("A crash has been detected",
 					"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
 					"information can be uploaded to Xamarin to help diagnose the issue. This information " +
@@ -57,8 +57,8 @@ namespace MonoDevelop.Ide
 					"or fixes. Do you wish to upload this information?",
 					AlertButton.Yes, AlertButton.No);
 
-				LogReportingService.ReportCrashes = result == AlertButton.Yes;
-			}
+				return result == AlertButton.Yes;
+			};
 			
 			// Process cached crash reports if there are any and uploading is enabled
 			LogReportingService.ProcessCache ();
