@@ -466,12 +466,12 @@ namespace MonoDevelop.Ide
 		
 		void HandleException (Exception ex, bool willShutdown)
 		{
-			var report = LogReportingService.ReportCrashes;
-			
 			string message = GettextCatalog.GetString ("An unhandled exception has occurred.");
+			LogReportingService.ReportUnhandledException (ex);
+			
+			var report = LogReportingService.ReportCrashes;
 			if (report.HasValue && report.Value) {
 				message += GettextCatalog.GetString (" Details of this crash have been automatically submitted for analysis.");
-				LogReportingService.ReportUnhandledException (ex);
 			} else {
 				message += GettextCatalog.GetString (" Details of this crash have not been submitted as error reporting has been disabled.");
 			}
