@@ -112,8 +112,14 @@ namespace MonoDevelop.Core.LogReporting
 				request.Headers.Add ("Content-Encoding", "gzip");
 				request.Method = "POST";
 				
+				// Compress the data and then use the compressed length in ContentLength
+				var compressed = new MemoryStream ();
+				using (var zipper = new GZipStream (compressed, CompressionMode.Compress))
+					zipper.Write (data, 0, data.Length);
+				data = compressed.ToArray ();
+				
 				request.ContentLength = data.Length;
-				using (var requestStream = new GZipStream (request.GetRequestStream (), CompressionMode.Compress))
+				using (var requestStream = request.GetRequestStream ())
 					requestStream.Write (data, 0, data.Length);
 				
 				LoggingService.LogDebug ("CrashReport sent to server, awaiting response...");
