@@ -473,7 +473,7 @@ namespace MonoDevelop.Ide
 				message += GettextCatalog.GetString (" Details of this crash have been automatically submitted for analysis.");
 				LogReportingService.ReportUnhandledException (ex);
 			} else {
-				message += GettextCatalog.GetString (" Details of thie crash have not been submitted as error reporting has been disabled.");
+				message += GettextCatalog.GetString (" Details of this crash have not been submitted as error reporting has been disabled.");
 			}
 			
 			if (willShutdown)
