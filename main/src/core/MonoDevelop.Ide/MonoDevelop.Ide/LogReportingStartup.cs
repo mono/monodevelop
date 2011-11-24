@@ -53,8 +53,7 @@ namespace MonoDevelop.Ide
 				var result = MessageService.AskQuestion ("A crash has been detected",
 					"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
 					"information can be uploaded to Xamarin to help diagnose the issue. This information " +
-					"will be used to help diagnose the crash and notify you of potential workarounds " +
-					"or fixes. Do you wish to upload this information?",
+					"will be used to help diagnose the crash. Do you wish to upload this information?",
 					AlertButton.Yes, AlertButton.No);
 
 				return result == AlertButton.Yes;
