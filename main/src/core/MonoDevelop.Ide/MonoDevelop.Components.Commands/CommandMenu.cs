@@ -71,6 +71,19 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		bool populated;
+		void EnsurePopulated ()
+		{
+			if (populated)
+				return;
+			populated = true;
+			if (commandEntrySet != null) {
+				manager.CreateMenu (commandEntrySet, this);
+				Update ();
+				commandEntrySet = null;
+			}
+		}
+		
 		protected CommandMenu (IntPtr ptr): base (ptr)
 		{
 		}
@@ -81,14 +94,17 @@ namespace MonoDevelop.Components.Commands
 			manager.RegisterUserInteraction ();
 			Update ();
 		}
+		
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			if (commandEntrySet != null) {
-				manager.CreateMenu (commandEntrySet, this);
-				Update ();
-				commandEntrySet = null;
-			}
+			EnsurePopulated ();
+		}
+		
+		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		{
+			EnsurePopulated ();
+			base.OnSizeRequested (ref requisition);
 		}
 
 		internal void Update ()
