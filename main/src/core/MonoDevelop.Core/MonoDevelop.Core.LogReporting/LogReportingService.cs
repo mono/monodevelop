@@ -66,12 +66,24 @@ namespace MonoDevelop.Core.LogReporting
 			// If crash reporting has been explicitly disabled, disregard this
 			if (ReportCrashes.HasValue && !ReportCrashes.Value)
 				return;
-
-			var data = System.Text.Encoding.UTF8.GetBytes (ex.ToString ());
-			var filename = string.Format ("{0}.{1}.crashlog", SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
+			
+			byte[] data;
+			using (var stream = new MemoryStream ()) {
+				using (var writer = System.Xml.XmlWriter.Create (stream)) {
+						writer.WriteStartElement ("CrashLog");
+						writer.WriteAttributeString ("version", "1");
+						
+						writer.WriteElementString ("SystemInformation", SystemInformation.ToText ());
+						writer.WriteElementString ("Exception", ex.ToString ());
+						
+						writer.WriteEndElement ();
+					}
+				data = stream.ToArray ();
+			}
 			
 			// If crash reporting has not been enabled or disabled yet, just log to disk.
 			// Otherwise log to disk only if uploading fails.
+			var filename = string.Format ("{0}.{1}.crashlog", SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
 			if (!ReportCrashes.GetValueOrDefault () || !TryUploadReport (filename, data)) {
 				if (!Directory.Exists (CrashLogDirectory))
 					Directory.CreateDirectory (CrashLogDirectory);
