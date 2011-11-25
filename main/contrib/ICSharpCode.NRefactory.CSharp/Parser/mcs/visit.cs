@@ -646,5 +646,10 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
+		
+		public virtual object Visit (StatementErrorExpression statementErrorExpression)
+		{
+			return null;
+		}
 	}
 }

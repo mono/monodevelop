@@ -8,6 +8,7 @@
 //
 // Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2003-2008 Novell, Inc. 
+// Copyright 2011 Xamarin Inc
 //
 //
 using System;
@@ -955,10 +956,7 @@ namespace Mono.CSharp {
 			int count = parameters.Length;
 
 			for (int i = 0; i < count; i++){
-				var p = parameters [i];
-				if (p == null)
-					continue;
-				has_params |= (p.ModFlags & Parameter.Modifier.PARAMS) != 0;
+				has_params |= (parameters [i].ModFlags & Parameter.Modifier.PARAMS) != 0;
 			}
 		}
 

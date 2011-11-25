@@ -9,6 +9,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004-2008 Novell, Inc
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -781,6 +782,16 @@ namespace Mono.CSharp
 			if (!DefineAccessors ())
 				return false;
 
+			if (AccessorSecond == null) {
+				PropertyMethod pm;
+				if (AccessorFirst is GetMethod)
+					pm = new SetMethod (this, 0, ParametersCompiled.EmptyReadOnlyParameters, null, Location);
+				else
+					pm = new GetMethod (this, 0, null, Location);
+
+				Parent.AddMember (pm);
+			}
+
 			if (!CheckBase ())
 				return false;
 
@@ -876,7 +887,7 @@ namespace Mono.CSharp
 		abstract class EventFieldAccessor : AEventAccessor
 		{
 			protected EventFieldAccessor (EventField method, string prefix)
-				: base (method, prefix, null, Location.Null)
+				: base (method, prefix, null, method.Location)
 			{
 			}
 

@@ -144,7 +144,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				yield return possibleName.ToString ();
 			}
 		}
-		
+
 		IEnumerable<ICompletionData> MagicKeyCompletion (char completionChar, bool controlSpace)
 		{
 			switch (completionChar) {
@@ -410,6 +410,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords (dataList, linqKeywords);
 					return dataList.Result;
 				}
+				Console.WriteLine ("ct:"+currentType);
+				if (currentType != null && currentType.Kind == TypeKind.Enum)
+					return HandleEnumContext ();
 				
 				var contextList = new CompletionDataWrapper (this);
 				var identifierStart = GetExpressionAtCursor ();
@@ -569,7 +572,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return null;
 		}
-
+		
+		IEnumerable<ICompletionData> HandleEnumContext ()
+		{
+			var cu = ParseStub ("aMember", false);
+			if (cu == null)
+				return null;
+			var member = cu.GetNodeAt<EnumMemberDeclaration> (location);
+			if (member != null && member.NameToken.EndLocation < location)
+				return DefaultControlSpaceItems ();
+			return null;
+		}
+		
+		
 		bool IsInLinqContext (int offset)
 		{
 			string token;

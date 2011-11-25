@@ -36,7 +36,6 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class CSharpParser
 	{
-		
 		class ConversionVisitor : StructuralVisitor
 		{
 			CompilationUnit unit = new CompilationUnit ();
@@ -622,11 +621,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnumMemberDeclaration newField = new EnumMemberDeclaration ();
 				AddAttributeSection (newField, em);
 				newField.AddChild (Identifier.Create (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
-				
 				if (em.Initializer != null) {
 					newField.AddChild (new CSharpTokenNode (Convert (em.Initializer.Location), 1), EnumMemberDeclaration.Roles.Assign);
 					newField.AddChild ((Expression)em.Initializer.Accept (this), EnumMemberDeclaration.InitializerRole);
 				}
+				Console.WriteLine (newField.StartLocation +"-" + newField.EndLocation);
 				
 				typeStack.Peek ().AddChild (newField, TypeDeclaration.MemberRole);
 			}
@@ -1430,16 +1429,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), ForStatement.Roles.LPar);
 				
-				AddStatementOrList (result, forStatement.InitStatement, ForStatement.InitializerRole);
+				AddStatementOrList (result, forStatement.Initializer, ForStatement.InitializerRole);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [1]), 1), ForStatement.Roles.Semicolon);
-				if (forStatement.Test != null)
-					result.AddChild ((Expression)forStatement.Test.Accept (this), ForStatement.Roles.Condition);
+				if (forStatement.Condition != null)
+					result.AddChild ((Expression)forStatement.Condition.Accept (this), ForStatement.Roles.Condition);
 				if (location != null && location.Count >= 3)
 					result.AddChild (new CSharpTokenNode (Convert (location [2]), 1), ForStatement.Roles.Semicolon);
 				
-				AddStatementOrList (result, forStatement.Increment, ForStatement.IteratorRole);
+				AddStatementOrList (result, forStatement.Iterator, ForStatement.IteratorRole);
 				
 				if (location != null && location.Count >= 4)
 					result.AddChild (new CSharpTokenNode (Convert (location [3]), 1), ForStatement.Roles.RPar);
@@ -1459,6 +1458,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (statementExpression);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ExpressionStatement.Roles.Semicolon);
+				return result;
+			}
+			
+			public override object Visit (StatementErrorExpression statementErrorExpression)
+			{
+				var result = new ExpressionStatement ();
+				var expr = statementErrorExpression.Expression.Accept (this) as Expression;
+				if (expr != null)
+					result.AddChild ((Expression)expr, ExpressionStatement.Roles.Expression);
 				return result;
 			}
 			
@@ -2667,7 +2675,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					initializer.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Initializers.Location), 1), ArrayCreateExpression.Roles.LBrace);
 					var commaLocations = LocationsBag.GetLocations (arrayCreationExpression.Initializers.Elements);
 					for (int i = 0; i < arrayCreationExpression.Initializers.Count; i++) {
-						initializer.AddChild ((Expression)arrayCreationExpression.Initializers[i].Accept (this), ArrayInitializerExpression.Roles.Expression);
+						var init = arrayCreationExpression.Initializers[i];
+						if (init == null)
+							continue;
+						initializer.AddChild ((Expression)init.Accept (this), ArrayInitializerExpression.Roles.Expression);
 						if (commaLocations != null && i < commaLocations.Count) {
 							initializer.AddChild (new CSharpTokenNode (Convert (commaLocations [i]), 1), IndexerExpression.Roles.Comma);
 						}
@@ -3452,7 +3463,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CompilationUnit Parse (string program)
 		{
-			return Parse (new StringReader (program));
+			try {
+				return Parse (new StringReader (program));
+			} catch (Exception) {
+				Console.WriteLine ("------");
+				Console.WriteLine (program);
+				return null;
+			}
 		}
 		
 		public CompilationUnit Parse (Stream stream, int line = 0)

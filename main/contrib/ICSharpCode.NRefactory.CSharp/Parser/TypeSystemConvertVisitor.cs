@@ -910,7 +910,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				return t;
 			}
-			Debug.WriteLine("Unknown node used as type: " + type);
+			if (!type.IsNull)
+				Debug.WriteLine("Unknown node used as type: " + type);
 			return SharedTypes.UnknownType;
 		}
 		#endregion

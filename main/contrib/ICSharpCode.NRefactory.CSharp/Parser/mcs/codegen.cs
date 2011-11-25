@@ -7,6 +7,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc.
 // Copyright 2004 Novell, Inc.
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -975,7 +976,6 @@ namespace Mono.CSharp
 					instance.Emit (ec);
 					temp.Store (ec);
 					temp.AddressOf (ec, AddressOp.Load);
-					temp.Release (ec);
 				}
 
 				return ReferenceContainer.MakeType (ec.Module, instance_type);

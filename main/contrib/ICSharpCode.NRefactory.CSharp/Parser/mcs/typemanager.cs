@@ -8,7 +8,8 @@
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 //
 // Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
-// Copyright 2003-2008 Novell, Inc.
+// Copyright 2003-2011 Novell, Inc.
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -208,6 +209,7 @@ namespace Mono.CSharp
 		public readonly PredefinedType MethodBase;
 		public readonly PredefinedType MethodInfo;
 		public readonly PredefinedType ConstructorInfo;
+		public readonly PredefinedType MemberBinding;
 
 		//
 		// C# 4.0
@@ -256,6 +258,7 @@ namespace Mono.CSharp
 
 			Expression = new PredefinedType (module, MemberKind.Class, "System.Linq.Expressions", "Expression");
 			ExpressionGeneric = new PredefinedType (module, MemberKind.Class, "System.Linq.Expressions", "Expression", 1);
+			MemberBinding = new PredefinedType (module, MemberKind.Class, "System.Linq.Expressions", "MemberBinding");
 			ParameterExpression = new PredefinedType (module, MemberKind.Class, "System.Linq.Expressions", "ParameterExpression");
 			FieldInfo = new PredefinedType (module, MemberKind.Class, "System.Reflection", "FieldInfo");
 			MethodBase = new PredefinedType (module, MemberKind.Class, "System.Reflection", "MethodBase");
@@ -841,31 +844,6 @@ namespace Mono.CSharp
 	{
 		return mb.GetSignatureForError ();
 	}
-
-	//
-	// Whether a type is unmanaged.  This is used by the unsafe code (25.2)
-	//
-	public static bool IsUnmanagedType (TypeSpec t)
-	{
-		var ds = t.MemberDefinition as DeclSpace;
-		if (ds != null)
-			return ds.IsUnmanagedType ();
-
-		if (t.Kind == MemberKind.Void)
-			return true;
-
-		// Someone did the work of checking if the ElementType of t is unmanaged.  Let's not repeat it.
-		if (t.IsPointer)
-			return IsUnmanagedType (GetElementType (t));
-
-		if (!TypeSpec.IsValueType (t))
-			return false;
-
-		if (t.IsNested && t.DeclaringType.IsGenericOrParentIsGeneric)
-			return false;
-
-		return true;
-	}	
 		
 	public static bool IsFamilyAccessible (TypeSpec type, TypeSpec parent)
 	{
@@ -931,11 +909,11 @@ namespace Mono.CSharp
 	/// </summary>
 	public static bool VerifyUnmanaged (ModuleContainer rc, TypeSpec t, Location loc)
 	{
-		while (t.IsPointer)
-			t = GetElementType (t);
-
-		if (IsUnmanagedType (t))
+		if (t.IsUnmanaged)
 			return true;
+
+		while (t.IsPointer)
+			t = ((ElementTypeSpec) t).Element;
 
 		rc.Compiler.Report.SymbolRelatedToPreviousError (t);
 		rc.Compiler.Report.Error (208, loc,

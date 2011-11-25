@@ -9,6 +9,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004-2008 Novell, Inc
+// Copyright 2011 Xamarin Inc.
 //
 
 using System;
@@ -1102,7 +1103,7 @@ namespace Mono.CSharp {
 					base_tparam.InflateConstraints (inflator, local_tparam);
 
 					//
-					// Check all type argument constraints for possible collision
+					// Check all type argument constraints for possible collision or unification
 					// introduced by inflating inherited constraints in this context
 					//
 					// Conflict example:
@@ -1111,31 +1112,67 @@ namespace Mono.CSharp {
 					// class B : A<int> { override void Foo<U> {} }
 					//
 					var local_tparam_targs = local_tparam.TypeArguments;
-					if (local_tparam_targs != null) {					
+					if (local_tparam_targs != null) {
 						for (int ii = 0; ii < local_tparam_targs.Length; ++ii) {
 							var ta = local_tparam_targs [ii];
 							if (!ta.IsClass && !ta.IsStruct)
 								continue;
 
-							if (Constraints.CheckConflictingInheritedConstraint (local_tparam, ta, this, Location)) {
-								local_tparam.ChangeTypeArgumentToBaseType (ii);
+							TypeSpec[] unique_tparams = null;
+							for (int iii = ii + 1; iii < local_tparam_targs.Length; ++iii) {
+								//
+								// Remove any identical or unified constraint types
+								//
+								var tparam_checked = local_tparam_targs[iii];
+								if (TypeSpecComparer.IsEqual (ta, tparam_checked) || TypeSpec.IsBaseClass (ta, tparam_checked, false)) {
+									unique_tparams = new TypeSpec[local_tparam_targs.Length - 1];
+									Array.Copy (local_tparam_targs, 0, unique_tparams, 0, iii);
+									Array.Copy (local_tparam_targs, iii + 1, unique_tparams, iii, local_tparam_targs.Length - iii - 1);
+								} else if (!TypeSpec.IsBaseClass (tparam_checked, ta, false)) {
+									Constraints.Error_ConflictingConstraints (this, local_tparam, ta, tparam_checked, Location);
+								}
 							}
+
+							if (unique_tparams != null) {
+								local_tparam_targs = unique_tparams;
+								local_tparam.TypeArguments = local_tparam_targs;
+								continue;
+							}
+
+							Constraints.CheckConflictingInheritedConstraint (local_tparam, ta, this, Location);
 						}
 					}
 
 					continue;
 				}
-				
-				if (MethodData != null && MethodData.implementing != null) {
-					var base_tp = MethodData.implementing.Constraints[i];
-					if (!tp.Type.HasSameConstraintsImplementation (base_tp)) {
-						Report.SymbolRelatedToPreviousError (MethodData.implementing);
-						Report.Error (425, Location,
-							"The constraints for type parameter `{0}' of method `{1}' must match the constraints for type parameter `{2}' of interface method `{3}'. Consider using an explicit interface implementation instead",
-							tp.GetSignatureForError (), GetSignatureForError (), base_tp.GetSignatureForError (), MethodData.implementing.GetSignatureForError ());
-					}
+			}
+
+			if (base_tparams == null && MethodData != null && MethodData.implementing != null) {
+				CheckImplementingMethodConstraints (Parent, spec, MethodData.implementing);
+			}
+		}
+
+		public static bool CheckImplementingMethodConstraints (TypeContainer container, MethodSpec method, MethodSpec baseMethod)
+		{
+			var tparams = method.Constraints;
+			var base_tparams = baseMethod.Constraints;
+			for (int i = 0; i < tparams.Length; ++i) {
+				if (!tparams[i].HasSameConstraintsImplementation (base_tparams[i])) {
+					container.Compiler.Report.SymbolRelatedToPreviousError (method);
+					container.Compiler.Report.SymbolRelatedToPreviousError (baseMethod);
+
+					// Using container location because the interface can be implemented
+					// by base class
+					container.Compiler.Report.Error (425, container.Location,
+						"The constraints for type parameter `{0}' of method `{1}' must match the constraints for type parameter `{2}' of interface method `{3}'. Consider using an explicit interface implementation instead",
+						tparams[i].GetSignatureForError (), method.GetSignatureForError (),
+						base_tparams[i].GetSignatureForError (), baseMethod.GetSignatureForError ());
+ 
+					return false;
 				}
 			}
+
+			return true;
 		}
 
 		public override void Accept (StructuralVisitor visitor)
@@ -1209,7 +1246,7 @@ namespace Mono.CSharp {
 					PredefinedAttribute pa = Module.PredefinedAttributes.Extension;
 					if (!pa.IsDefined) {
 						Report.Error (1110, Location,
-							"`{0}': Extension methods cannot be declared without a reference to System.Core.dll assembly. Add the assembly reference or remove `this' modifer from the first parameter",
+							"`{0}': Extension methods require `System.Runtime.CompilerServices.ExtensionAttribute' type to be available. Are you missing an assembly reference?",
 							GetSignatureForError ());
 					}
 
