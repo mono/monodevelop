@@ -60,6 +60,7 @@ namespace PyBinding.Gui
 			m_RuntimeListStore.AppendValues ("Python 2.5", typeof (Python25Runtime));
 			m_RuntimeListStore.AppendValues ("Python 2.6", typeof (Python26Runtime));
 			m_RuntimeListStore.AppendValues ("Python 2.7", typeof (Python27Runtime));
+			m_RuntimeListStore.AppendValues ("IronPython", typeof (IronPythonRuntime));
 		}
 		
 		public string DefaultModule {

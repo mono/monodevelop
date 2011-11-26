@@ -183,6 +183,8 @@
     <Compile Include="PyBinding.Parser\PythonResolver.cs" />
     <Compile Include="PyBinding.Parser\PythonExpressionFinder.cs" />
     <Compile Include="PyBinding.Runtime\Python27Runtime.cs" />
+    <Compile Include="PyBinding.Runtime\IronPythonRuntime.cs" />
+    <Compile Include="PyBinding\IronPythonExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmptyPyProject.xpt.xml">
