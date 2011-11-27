@@ -137,6 +137,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	public class ProjectFileNodeCommandHandler: NodeCommandHandler
 	{
+		public override void OnRenameStarting (ref int selectionStart, ref int selectionLength)
+		{
+			string name = CurrentNode.NodeName;
+			selectionStart = 0;
+			selectionLength = Path.GetFileNameWithoutExtension(name).Length;
+		}
+
 		public override void RenameItem (string newName)
 		{
 			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
