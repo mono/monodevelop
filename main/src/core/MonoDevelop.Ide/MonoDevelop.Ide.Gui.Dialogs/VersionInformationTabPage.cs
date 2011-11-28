@@ -49,50 +49,50 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	
 	internal class VersionInformationTabPage: VBox
 	{
-		static bool IsMono ()
-		{
-			return Type.GetType ("Mono.Runtime") != null;
-		}
+		bool destroyed;
 		
-		static string GetMonoVersionNumber ()
-		{
-			var t = Type.GetType ("Mono.Runtime"); 
-			if (t == null)
-				return "unknown";
-			var mi = t.GetMethod ("GetDisplayName", BindingFlags.NonPublic | BindingFlags.Static);
-			if (mi == null) {
-				LoggingService.LogError ("No Mono.Runtime.GetDiplayName method found.");
-				return "error";
-			}
-			return (string)mi.Invoke (null, null); 
-		}
-		
-		static string GetGtkVersion ()
-		{
-			uint v1 = 2, v2 = 0, v3 = 0;
-			
-			while (v1 < 99 && Gtk.Global.CheckVersion (v1, v2, v3) == null)
-				v1++;
-			v1--;
-			
-			while (v2 < 99 && Gtk.Global.CheckVersion (v1, v2, v3) == null)
-				v2++;
-			v2--;
-			
-			v3 = 0;
-			while (v3 < 99 && Gtk.Global.CheckVersion (v1, v2, v3) == null)
-				v3++;
-			v3--;
-			
-			if (v1 == 99 || v2 == 99 || v3 == 99)
-				return "unknown";
-			return v1 +"." + v2 + "."+ v3;
-		}
-
 		public VersionInformationTabPage ()
 		{
+			SetLabel (GettextCatalog.GetString ("Loading..."));
+			
+			new System.Threading.Thread (() => {
+				try {
+					var text = SystemInformation.ToText ();
+					Gtk.Application.Invoke (delegate {
+						if (destroyed)
+							return;
+						SetText (text);
+					});
+				} catch (Exception ex) {
+					Gtk.Application.Invoke (delegate {
+						if (destroyed)
+							return;
+						SetLabel (GettextCatalog.GetString ("Failed to load version information."));
+					});
+				}
+			}).Start ();
+		}
+		
+		void Clear ()
+		{
+			foreach (var c in this.Children) {
+				this.Remove (c);
+			}
+		}
+		
+		void SetLabel (string text)
+		{
+			Clear ();
+			var label = new Gtk.Label (text);
+			PackStart (label, true, true, 0);
+			ShowAll ();
+		}
+		
+		void SetText (string text)
+		{
+			Clear ();
 			var buf = new TextBuffer (null);
-			buf.Text = SystemInformation.ToText ();
+			buf.Text = text;
 			
 			var sw = new ScrolledWindow () {
 				BorderWidth = 6,
@@ -108,6 +108,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			sw.Child.ModifyFont (Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont));
 			PackStart (sw, true, true, 0);
+			ShowAll ();
+		}
+		
+		public override void Destroy ()
+		{
+			base.Destroy ();
+			destroyed = true;
 		}
 	}
 }
