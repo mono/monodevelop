@@ -227,10 +227,13 @@ namespace Mono.TextEditor
 				return true;
 			
 			if (Platform.IsMac) {
-				if (evt.Button == 1 &&
+				if (!oldMacKeyHacks &&
+					evt.Button == 1 &&
 					(evt.State & Gdk.ModifierType.ControlMask) != 0 &&
 					(evt.State & (Gdk.ModifierType.Button2Mask | Gdk.ModifierType.Button3Mask)) == 0)
-				return true;
+				{
+					return true;
+				}
 			}
 			
 			return false;
