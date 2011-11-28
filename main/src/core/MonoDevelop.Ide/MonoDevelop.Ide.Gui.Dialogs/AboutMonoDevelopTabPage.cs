@@ -89,14 +89,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		internal class ScrollBox : DrawingArea
 		{
 			Pixbuf image;
+			Pixbuf imageBg;
+			int imageHeight, imageWidth;
 			Pixbuf monoPowered;
-			int scroll;
 			Pango.Layout layout;
 			int monoLogoSpacing = 80;
-			int textTop;
-			int scrollPause;
-			int scrollStart;
 			Gdk.GC backGc;
+			
+			int scrollHeightPx, scrollStartPx, scrolledUpPx;
+			long lastFrameTicks;
+			const int fps = 20;
+			const int pixelsPerFrame = 1;
+			const int pauseSeconds = 5;
+			
 			internal uint TimerHandle;
 			string[] authors = new string[] {
 				"Lluis Sanchez Gual",
@@ -204,6 +209,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					var bgColStr = BrandingService.GetString ("AboutBox", "BackgroundColor");
 					if (bgColStr != null)
 						Gdk.Color.Parse (bgColStr, ref bgColor);
+					
+					//branders may provide either fg image or bg image, or both
+					using (var stream = BrandingService.GetStream ("AboutImage.png", false)) {
+						image = (stream != null ? new Gdk.Pixbuf (stream) : null);
+					}
+					using (var streamBg = BrandingService.GetStream ("AboutImageBg.png", false)) {
+						imageBg = (streamBg != null ? new Gdk.Pixbuf (streamBg) : null);
+					}
+					
+					//if branding did not provide any image, use the built-in one
+					if (imageBg == null && image == null) {
+						image = Gdk.Pixbuf.LoadFromResource ("AboutImage.png");
+					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error loading about box branding", ex);
 				}
@@ -215,10 +233,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				this.Realized += new EventHandler (OnRealized);
 				this.ModifyBg (Gtk.StateType.Normal, bgColor);
 				this.ModifyText (Gtk.StateType.Normal, textColor);
-				using (var stream = BrandingService.GetStream ("AboutImage.png", true))
-					image = new Gdk.Pixbuf (stream);
-				monoPowered = new Gdk.Pixbuf (GetType ().Assembly, "mono-powered.png");
-				this.SetSizeRequest (450, image.Height - 1);
+				
+				if (image != null) {
+					imageHeight = image.Height;
+					imageWidth = image.Width;
+				}
+				if (imageBg != null) {
+					imageHeight = Math.Max (imageHeight, imageBg.Height);
+					imageWidth = Math.Max (imageWidth, imageBg.Width);
+				}
+				
+				monoPowered = Gdk.Pixbuf.LoadFromResource ("mono-powered.png");
+				this.SetSizeRequest (imageWidth, imageHeight - 1);
 				
 				TimerHandle = GLib.Timeout.Add (50, new TimeoutHandler (ScrollDown));
 			}
@@ -261,75 +287,74 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			bool ScrollDown ()
 			{
-				if (scrollPause > 0) {
-					if (--scrollPause == 0)
-						++scroll;
-				} else
-					++scroll;
+				long oldTicks = this.lastFrameTicks;
+				long newTicks = DateTime.Now.Ticks;
+				
+				if (scrolledUpPx >= scrollHeightPx) {
+					scrolledUpPx = scrollHeightPx;
+					if ((newTicks - oldTicks) > (pauseSeconds * TimeSpan.TicksPerSecond)) {
+						scrolledUpPx = 0;
+						this.lastFrameTicks = newTicks;
+					} else {
+						return true;
+					}
+				} else if (oldTicks == 0) {
+					this.lastFrameTicks = newTicks;
+				} else {
+					this.lastFrameTicks = newTicks;
+					int ticks = (int)(lastFrameTicks - oldTicks);
+					this.scrolledUpPx += (int)(ticks * pixelsPerFrame * fps / TimeSpan.TicksPerSecond);
+				}
+				
 				int w, h;
-				this.GdkWindow.GetSize (out w, out h);
-				this.QueueDrawArea (0, 0, w, image.Height);
+				this.QueueDrawArea (0, 0, Allocation.Width, imageHeight);
 				return true;
 			}
 			
-			void DrawImage ()
+			void DrawText (Drawable window)
 			{
-				if (image != null) {
-					int w, h;
-					this.GdkWindow.GetSize (out w, out h);
-					this.GdkWindow.DrawPixbuf (backGc, image, 0, 0, (w - image.Width) / 2, 0, -1, -1, RgbDither.Normal, 0, 0);
-				}
-			}
-			
-			void DrawText ()
-			{
-				int width, height;
-				GdkWindow.GetSize (out width, out height);
-				
-				int widthPixel, heightPixel;
-				layout.GetPixelSize (out widthPixel, out heightPixel);
-				
-				GdkWindow.DrawLayout (Style.TextGC (StateType.Normal), 0, textTop - scroll, layout);
-				GdkWindow.DrawPixbuf (backGc, monoPowered, 0, 0, (width / 2) - (monoPowered.Width / 2), textTop - scroll + heightPixel + monoLogoSpacing, -1, -1, RgbDither.Normal, 0, 0);
-				
-				heightPixel = heightPixel - 80 + image.Height;
-				
-				if ((scroll == heightPixel) && (scrollPause == 0))
-					scrollPause = 60;
-				if (scroll > heightPixel + monoLogoSpacing + monoPowered.Height)
-					scroll = scrollStart;
+				var alloc = Allocation;
+				int pos = scrollStartPx - scrolledUpPx;
+				window.DrawLayout (Style.TextGC (StateType.Normal), 0, pos, layout);
+				int logoPos = pos + scrollHeightPx - monoPowered.Height / 2 - imageHeight / 2;
+				window.DrawPixbuf (backGc, monoPowered, 0, 0, (alloc.Width / 2) - (monoPowered.Width / 2),
+					logoPos, -1, -1, RgbDither.Normal, 0, 0);
 			}
 			
 			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 			{
-				int w, h;
-				
-				this.GdkWindow.GetSize (out w, out h);
-				this.DrawText ();
-				this.DrawImage ();
-				//			this.GdkWindow.DrawRectangle (backGc, true, 0, 210, w, 10);
+				var alloc = this.Allocation;
+				if (imageBg != null) {
+					evnt.Window.DrawPixbuf (backGc, imageBg, 0, 0,
+						(alloc.Width - imageBg.Width) / 2, 0,
+						-1, -1, RgbDither.Normal, 0, 0);
+				}
+				DrawText (evnt.Window);
+				if (this.image != null) {
+					evnt.Window.DrawPixbuf (backGc, image, 0, 0,
+						(alloc.Width - image.Width) / 2, 0,
+						-1, -1, RgbDither.Normal, 0, 0);
+				}
 				return false;
 			}
 			
 			protected void OnRealized (object o, EventArgs args)
 			{
-				int x, y;
-				int w, h;
-				GdkWindow.GetOrigin (out x, out y);
-				GdkWindow.GetSize (out w, out h);
-				
-				textTop = y + image.Height - 30;
-				scrollStart = -(image.Height - textTop);
-				scroll = scrollStart;
+				scrollStartPx = imageHeight;
 				
 				layout = new Pango.Layout (this.PangoContext);
 				// FIXME: this seems wrong but works
-				layout.Width = w * (int)Pango.Scale.PangoScale;
+				layout.Width = Allocation.Width * (int)Pango.Scale.PangoScale;
 				layout.Wrap = Pango.WrapMode.Word;
 				layout.Alignment = Pango.Alignment.Center;
 				FontDescription fd = FontDescription.FromString ("Tahoma 10");
 				layout.FontDescription = fd;
 				layout.SetMarkup (CreditText);
+				
+				int widthPx, heightPx;
+				layout.GetPixelSize (out widthPx, out heightPx);
+				
+				this.scrollHeightPx = heightPx + monoLogoSpacing + monoPowered.Height + imageHeight / 2;
 				
 				backGc = new Gdk.GC (GdkWindow);
 				backGc.RgbBgColor = bgColor;
