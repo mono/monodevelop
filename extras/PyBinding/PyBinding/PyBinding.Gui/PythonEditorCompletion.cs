@@ -114,7 +114,7 @@ namespace PyBinding.Gui
 			}
 			
 			// "self."
-			if (document.Module != null && triggerWord.Equals ("self.")) {
+			if (document.Module != null && triggerWord == "self" && completionChar == '.') {
 				var klass = GetClass (document.Module, completionContext.TriggerLine);
 				if (klass == null)
 					return null; // nothing to complete, self not in a class
