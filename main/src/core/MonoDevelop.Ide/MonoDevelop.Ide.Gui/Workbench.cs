@@ -747,27 +747,30 @@ namespace MonoDevelop.Ide.Gui
 						viewBinding = binding as IViewDisplayBinding;
 					}
 				}
-				
-				if (binding != null) {
-					if (viewBinding != null)  {
-						var fw = new LoadFileWrapper (workbench, viewBinding, project, openFileInfo);
-						fw.Invoke (fileName);
-					} else {
-						var extBinding = (IExternalDisplayBinding)binding;
-						var app = extBinding.GetApplication (fileName, null, project);
-						app.Launch (fileName);
+				try {
+					if (binding != null) {
+						if (viewBinding != null)  {
+							var fw = new LoadFileWrapper (workbench, viewBinding, project, openFileInfo);
+							fw.Invoke (fileName);
+						} else {
+							var extBinding = (IExternalDisplayBinding)binding;
+							var app = extBinding.GetApplication (fileName, null, project);
+							app.Launch (fileName);
+						}
+						
+						Counters.OpenDocumentTimer.Trace ("Adding to recent files");
+						DesktopService.RecentFiles.AddFile (fileName, project);
+					} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
+						try {
+							Counters.OpenDocumentTimer.Trace ("Showing in browser");
+							DesktopService.OpenFile (fileName);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error opening file: " + fileName, ex);
+							MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
+						}
 					}
-					
-					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
-					DesktopService.RecentFiles.AddFile (fileName, project);
-				} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
-					try {
-						Counters.OpenDocumentTimer.Trace ("Showing in browser");
-						DesktopService.OpenFile (fileName);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error opening file: " + fileName, ex);
-						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
-					}
+				} catch (Exception ex) {
+					monitor.ReportError ("", ex);
 				}
 			}
 		}
