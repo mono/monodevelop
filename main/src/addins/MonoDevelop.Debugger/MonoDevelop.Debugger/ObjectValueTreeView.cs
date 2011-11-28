@@ -580,8 +580,10 @@ namespace MonoDevelop.Debugger
 		{
 			TreeRowReference row;
 			
-			if (!nodes.TryGetValue (val, out row))
+			if (!nodes.TryGetValue (val, out row)) {
+				it = TreeIter.Zero;
 				return false;
+			}
 			
 			return store.GetIter (out it, row.Path);
 		}
