@@ -756,6 +756,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PData : PValueObject<byte[]>
 	{
+		static readonly byte[] Empty = new byte [0];
+		
 		public override string TypeString {
 			get {
 				return GettextCatalog.GetString ("Data");
@@ -764,10 +766,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public override NSObject Convert ()
 		{
-			return NSData.FromArray (Value);
+			// Work around a bug in NSData.FromArray as it cannot (currently) handle
+			// zero length arrays
+			if (Value.Length == 0)
+				return new NSData ();
+			else
+				return NSData.FromArray (Value);
 		}
 		
-		public PData (byte[] value) : base(value)
+		public PData (byte[] value) : base(value ?? Empty)
 		{
 		}
 		
@@ -779,7 +786,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
-			renderer.Text = string.Format ("byte[{0}]", Value != null ? Value.Length : 0);
+			renderer.Text = string.Format ("byte[{0}]", Value.Length);
 		}
 	}
 	
