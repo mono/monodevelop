@@ -154,7 +154,10 @@ namespace MonoDevelop.Core
 			if (file != null)
 				return File.OpenRead (file);
 			
-			return Assembly.GetCallingAssembly ().GetManifestResourceStream (name);
+			if (lookInCallingAssembly)
+				return Assembly.GetCallingAssembly ().GetManifestResourceStream (name);
+			
+			return null;
 		}
 	}
 }
