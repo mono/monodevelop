@@ -1115,8 +1115,6 @@ namespace Mono.Debugging.Soft
 				var t = ((TypeLoadEvent)e).Type;
 				
 				string typeName = t.FullName;
-				
-				Console.WriteLine (typeName);
 
 				if (types.ContainsKey (typeName)) {
 					if (typeName != "System.Exception" && typeName != "<Module>")
