@@ -17,7 +17,8 @@ REFS =  \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
-	-r:System.Xml
+	-r:System.Xml \
+	-r:../../../build/bin/ICSharpCode.NRefactory.dll
 
 FILES =  \
 	AssemblyInfo.cs \
