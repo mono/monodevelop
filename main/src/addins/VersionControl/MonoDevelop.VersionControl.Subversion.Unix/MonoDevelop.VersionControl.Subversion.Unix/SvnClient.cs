@@ -880,9 +880,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					string npath1 = NormalizePath (path1, localpool);
 					string npath2 = NormalizePath (path2, localpool);
 					CheckError (svn.client_diff (options, npath1, ref revision1, npath2, ref revision2, (recursive ? 1 : 0), 0, 1, outfile, errfile, ctx, localpool));
-					using (StreamReader sr = new StreamReader (fout)) {
-						return sr.ReadToEnd ();
-					}
+					return MonoDevelop.Projects.Text.TextFile.ReadFile (fout).Text;
 				} else {
 					throw new Exception ("Could not get diff information");
 				}
