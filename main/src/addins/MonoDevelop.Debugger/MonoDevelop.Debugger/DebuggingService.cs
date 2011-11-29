@@ -600,7 +600,8 @@ namespace MonoDevelop.Debugger
 					default:
 						break;
 				}
-			} catch {
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error handling debugger target event", ex);
 			}
 		}
 		
