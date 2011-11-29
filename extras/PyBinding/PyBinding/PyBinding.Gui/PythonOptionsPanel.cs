@@ -53,9 +53,12 @@ namespace PyBinding.Gui
 		{
 			PythonConfiguration config = CurrentConfiguration as PythonConfiguration;
 			
+			var runtime = widget.Runtime;
+			runtime.Path = widget.RuntimePath;
+						
+			config.Runtime = runtime;
 			config.Module = widget.DefaultModule;
 			config.Optimize = widget.Optimize;
-			config.Runtime = widget.Runtime;
 			config.PythonOptions = widget.PythonOptions;
 			
 			var paths = new List<string> (widget.PythonPaths);

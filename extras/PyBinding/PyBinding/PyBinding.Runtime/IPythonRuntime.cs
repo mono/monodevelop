@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core.Execution;
 
 using PyBinding.Compiler;
 
@@ -57,6 +58,11 @@ namespace PyBinding.Runtime
 		PythonSite Site {
 			get;
 		}
+		
+		/// <summary>
+		/// Gets the associated execution handler for this specific runtime.
+		/// </summary>
+		IExecutionHandler GetExecutionHandler ();
 		
 		/// <summary>
 		/// Builds a list of arguments to pass to the runtime for running

@@ -88,9 +88,11 @@ FILES =  \
 	PyBinding.Parser/PythonResolver.cs \
 	PyBinding.Runtime/AbstractPythonRuntime.cs \
 	PyBinding.Runtime/IPythonRuntime.cs \
+	PyBinding.Runtime/IronPythonRuntime.cs \
 	PyBinding.Runtime/Python25Runtime.cs \
 	PyBinding.Runtime/Python26Runtime.cs \
 	PyBinding.Runtime/Python27Runtime.cs \
+	PyBinding/IronPythonExecutionHandler.cs \
 	PyBinding/PythonConfiguration.cs \
 	PyBinding/PythonExecutionCommand.cs \
 	PyBinding/PythonExecutionHandler.cs \
