@@ -283,7 +283,7 @@
        inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"
-       style="font-size:34px;font-style:normal;font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold;font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
+       style="font-size:34px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient6215);fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold"
        x="3.8116512"
        y="-67.38591"
        id="text5419"
@@ -295,7 +295,7 @@
          id="tspan5421"
          x="3.8116512"
          y="-67.38591"
-         style="font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1;-inkscape-font-specification:Bitstream Vera Sans Bold;font-family:Bitstream Vera Sans;font-style:normal;font-stretch:normal;font-variant:normal;font-size:34px;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%">2.8.1</tspan></text>
+         style="font-size:34px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient6215);fill-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold">2.8.4</tspan></text>
     <rect
        style="fill:#9f0000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.49700001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5520-2-0"
