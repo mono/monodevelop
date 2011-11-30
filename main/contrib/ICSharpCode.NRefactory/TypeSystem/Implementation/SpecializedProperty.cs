@@ -31,14 +31,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			: base(declaringType, propertyDefinition)
 		{
 			this.propertyDefinition = propertyDefinition;
-			Initialize(GetSubstitution(declaringType), null);
+			Initialize(GetSubstitution(declaringType));
 		}
 		
-		internal SpecializedProperty(IType declaringType, IProperty propertyDefinition, TypeVisitor substitution, ITypeResolveContext context)
+		internal SpecializedProperty(IType declaringType, IProperty propertyDefinition, TypeVisitor substitution)
 			: base(declaringType, propertyDefinition)
 		{
 			this.propertyDefinition = propertyDefinition;
-			Initialize(substitution, context);
+			Initialize(substitution);
 		}
 		
 		public bool CanGet {

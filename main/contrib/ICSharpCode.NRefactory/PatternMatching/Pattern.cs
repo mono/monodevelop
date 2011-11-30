@@ -31,12 +31,11 @@ namespace ICSharpCode.NRefactory.PatternMatching
 		/// <summary>
 		/// Gets the string that matches any string.
 		/// </summary>
-		public static readonly string AnyString = string.Empty;
-		// TODO: use something other than string.Empty so that 'no value' and 'any value' can be distinguished
+		public static readonly string AnyString = "$any$";
 		
 		public static bool MatchString(string pattern, string text)
 		{
-			return string.IsNullOrEmpty(pattern) || pattern == text;
+			return pattern == AnyString || pattern == text;
 		}
 		
 		internal struct PossibleMatch

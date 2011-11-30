@@ -31,14 +31,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			: base(declaringType, eventDefinition)
 		{
 			this.eventDefinition = eventDefinition;
-			Initialize(GetSubstitution(declaringType), null);
+			Initialize(GetSubstitution(declaringType));
 		}
 		
-		internal SpecializedEvent(IType declaringType, IEvent eventDefinition, TypeVisitor substitution, ITypeResolveContext context)
+		internal SpecializedEvent(IType declaringType, IEvent eventDefinition, TypeVisitor substitution)
 			: base(declaringType, eventDefinition)
 		{
 			this.eventDefinition = eventDefinition;
-			Initialize(substitution, context);
+			Initialize(substitution);
 		}
 		
 		public bool CanAdd {

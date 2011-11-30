@@ -36,11 +36,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly IList<ITypeParameter> specializedTypeParameters;
 		
 		public SpecializedMethod(IType declaringType, IMethod methodDefinition, IList<IType> typeArguments = null)
-			: this(declaringType, methodDefinition, typeArguments, GetSubstitution(declaringType, typeArguments), null)
+			: this(declaringType, methodDefinition, typeArguments, GetSubstitution(declaringType, typeArguments))
 		{
 		}
 		
-		internal SpecializedMethod(IType declaringType, IMethod methodDefinition, IList<IType> typeArguments, TypeVisitor substitution, ITypeResolveContext context)
+		internal protected SpecializedMethod(IType declaringType, IMethod methodDefinition, IList<IType> typeArguments, TypeVisitor substitution)
 			: base(declaringType, methodDefinition)
 		{
 			if (declaringType == null)
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				for (int i = 0; i < specializedTypeParameters.Count; i++) {
 					ITypeParameter tp = methodDefinition.TypeParameters[i];
 					if (ConstraintNeedsSpecialization(tp))
-						tp = new SpecializedTypeParameter(tp, substitution);
+						tp = new SpecializedTypeParameter(tp, this, substitution);
 					specializedTypeParameters[i] = tp;
 				}
 			}
@@ -75,16 +75,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 			}
 			
-			Initialize(substitution, null);
+			Initialize(substitution);
 		}
 		
 		static bool ConstraintNeedsSpecialization(ITypeParameter tp)
 		{
-			DefaultTypeParameter dtp = tp as DefaultTypeParameter;
-			if (dtp != null)
-				return dtp.Constraints.Count != 0;
-			else
-				return true; // we can't know if specialization will be required
+			// TODO: can we avoid specialization if a type parameter doesn't have any constraints?
+			return true;
 		}
 		
 		internal static TypeVisitor GetSubstitution(IType declaringType, IList<IType> typeArguments)
@@ -96,6 +93,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return new TypeParameterSubstitution(null, typeArguments);
 			else
 				return null;
+		}
+		
+		public override IMemberReference ToMemberReference()
+		{
+			if (this.TypeParameters.Count == 0)
+				return base.ToMemberReference();
+			// TODO: Implement SpecializedMethod.ToMemberReference()
+			throw new NotImplementedException();
 		}
 		
 		/// <summary>
@@ -187,43 +192,44 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		sealed class SpecializedTypeParameter : AbstractTypeParameter
 		{
 			readonly ITypeParameter baseTp;
-			// The substition may be replaced at the end of SpecializedMethod constructor
+			
+			// not readonly: The substition may be replaced at the end of SpecializedMethod constructor
 			internal TypeVisitor substitution;
 			
-			public SpecializedTypeParameter(ITypeParameter baseTP, TypeVisitor substitution)
-				: base(baseTP.OwnerType, baseTP.Index, baseTP.Name)
+			public SpecializedTypeParameter(ITypeParameter baseTp, IMethod specializedOwner, TypeVisitor substitution)
+				: base(specializedOwner, baseTp.Index, baseTp.Name, baseTp.Variance, baseTp.Attributes, baseTp.Region)
 			{
-				this.baseTp = baseTP;
+				this.baseTp = baseTp;
 				this.substitution = substitution;
-				
-				this.Variance = baseTP.Variance;
-				this.Region = baseTP.Region;
-				this.Attributes.AddRange(baseTP.Attributes);
-				Freeze();
 			}
 			
-			public override bool? IsReferenceType(ITypeResolveContext context)
+			public override int GetHashCode()
 			{
-				bool? result = baseTp.IsReferenceType(context);
-				if (result != null)
-					return result;
-				IType effectiveBaseClass = baseTp.GetEffectiveBaseClass(context);
-				return IsReferenceTypeHelper(effectiveBaseClass);
+				return baseTp.GetHashCode() ^ this.Owner.GetHashCode();
 			}
 			
-			public override IEnumerable<IType> GetEffectiveInterfaceSet(ITypeResolveContext context)
+			public override bool Equals(IType other)
 			{
-				return baseTp.GetEffectiveInterfaceSet(context).Select(i => i.AcceptVisitor(substitution));
+				SpecializedTypeParameter o = other as SpecializedTypeParameter;
+				return o != null && baseTp.Equals(o.baseTp) && this.Owner.Equals(o.Owner);
 			}
 			
-			public override IType GetEffectiveBaseClass(ITypeResolveContext context)
-			{
-				return baseTp.GetEffectiveBaseClass(context).AcceptVisitor(substitution);
+			public override bool HasValueTypeConstraint {
+				get { return baseTp.HasValueTypeConstraint; }
 			}
 			
-			public override ITypeParameterConstraints GetConstraints(ITypeResolveContext context)
-			{
-				return baseTp.GetConstraints(context).ApplySubstitution(substitution);
+			public override bool HasReferenceTypeConstraint {
+				get { return baseTp.HasReferenceTypeConstraint; }
+			}
+			
+			public override bool HasDefaultConstructorConstraint {
+				get { return baseTp.HasDefaultConstructorConstraint; }
+			}
+			
+			public override IEnumerable<IType> DirectBaseTypes {
+				get {
+					return baseTp.DirectBaseTypes.Select(t => t.AcceptVisitor(substitution));
+				}
 			}
 		}
 	}

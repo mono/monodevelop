@@ -54,16 +54,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Show the return type
 		/// </summary>
-		ShowReturnType = 0x100,
+		ShowReturnType = 0x40,
 		/// <summary>
 		/// Use fully qualified names for return type and parameters.
 		/// </summary>
-		UseFullyQualifiedTypeNames = 0x200,
+		UseFullyQualifiedTypeNames = 0x80,
 		/// <summary>
 		/// Show the list of type parameters on method and class declarations.
 		/// Type arguments for parameter/return types are always shown.
 		/// </summary>
-		ShowTypeParameterList = 0x800,
+		ShowTypeParameterList = 0x100,
+		/// <summary>
+		/// For fields, events and methods: adds a semicolon at the end.
+		/// For properties: shows "{ get; }" or similar.
+		/// </summary>
+		ShowBody = 0x200,
 		
 		StandardConversionFlags = ShowParameterNames |
 			ShowAccessibility |
@@ -71,22 +76,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ShowReturnType |
 			ShowModifiers |
 			ShowTypeParameterList |
-			ShowDefinitionKeyWord,
+			ShowDefinitionKeyWord |
+			ShowBody,
 		
 		All = 0xfff,
 	}
 	
 	public interface IAmbience
 	{
-		ConversionFlags ConversionFlags {
-			get;
-			set;
-		}
+		ConversionFlags ConversionFlags { get; set; }
 		
-		string ConvertEntity(IEntity e, ITypeResolveContext context);
+		string ConvertEntity(IEntity e);
 		string ConvertType(IType type);
-		string ConvertType(ITypeReference type, ITypeResolveContext context);
-		string ConvertVariable(IVariable variable, ITypeResolveContext context);
+		string ConvertVariable(IVariable variable);
 		
 		string WrapAttribute(string attribute);
 		string WrapComment(string comment);

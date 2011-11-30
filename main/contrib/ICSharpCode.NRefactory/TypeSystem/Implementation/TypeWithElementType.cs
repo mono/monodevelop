@@ -20,7 +20,6 @@ using System;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
-	[Serializable]
 	public abstract class TypeWithElementType : AbstractType
 	{
 		[CLSCompliant(false)]
