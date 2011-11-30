@@ -3404,7 +3404,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public CompilationUnit Parse (TextReader reader, int line = 0)
+		public CompilationUnit Parse (TextReader reader, string fileName, int lineModifier = 0)
 		{
 			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
 			using (MemoryStream stream = new MemoryStream ()) {
@@ -3415,21 +3415,21 @@ namespace ICSharpCode.NRefactory.CSharp
 					w.Write (buffer, 0, read);
 				w.Flush (); // we can't close the StreamWriter because that would also close the MemoryStream
 				stream.Position = 0;
-				return Parse (stream, line);
+				return Parse (stream, fileName, lineModifier);
 			}
 		}
 
-		public static void AdjustLineLocations (AstNode node, int line)
+		public static void AdjustLineLocations (AstNode node, int lineModifier)
 		{
 			if (node is IRelocatable) {
-				((IRelocatable)node).SetStartLocation (new TextLocation (node.StartLocation.Line + line, node.StartLocation.Column));
+				((IRelocatable)node).SetStartLocation (new TextLocation (node.StartLocation.Line + lineModifier, node.StartLocation.Column));
 			}
 			foreach (var child in node.Children) {
-				AdjustLineLocations (child, line);
+				AdjustLineLocations (child, lineModifier);
 			}
 		}
 		
-		public CompilationUnit Parse (CompilerCompilationUnit top, int line)
+		public CompilationUnit Parse (CompilerCompilationUnit top, string fileName, int lineModifier = 0)
 		{
 			if (top == null)
 				return null;
@@ -3439,10 +3439,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			InsertComments (top, conversionVisitor);
 			if (CompilationUnitCallback != null)
 				CompilationUnitCallback (top);
-			if (line != 0)
-				AdjustLineLocations (conversionVisitor.Unit, line);
+			if (lineModifier != 0)
+				AdjustLineLocations (conversionVisitor.Unit, lineModifier);
 			if (top.LastYYValue is Mono.CSharp.Expression)
 				conversionVisitor.Unit.TopExpression = ((Mono.CSharp.Expression)top.LastYYValue).Accept (conversionVisitor) as AstNode;
+			conversionVisitor.Unit.FileName = fileName;
 			return conversionVisitor.Unit;
 		}
 		
@@ -3461,23 +3462,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public CompilationUnit Parse (string program)
+		public CompilationUnit Parse (string program, string fileName)
 		{
-			try {
-				return Parse (new StringReader (program));
-			} catch (Exception) {
-				Console.WriteLine ("------");
-				Console.WriteLine (program);
-				return null;
-			}
+			return Parse (new StringReader (program), fileName);
 		}
 		
-		public CompilationUnit Parse (Stream stream, int line = 0)
+		public CompilationUnit Parse (Stream stream, string fileName, int lineModifier = 0)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
-				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (CompilerArguments, stream, "parsed.cs", errorReportPrinter);
-				var unit = Parse (top, line);
+				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (CompilerArguments, stream, fileName, errorReportPrinter);
+				var unit = Parse (top, fileName, lineModifier);
 				unit.Errors.AddRange (errorReportPrinter.Errors);
 				return unit;
 			}
@@ -3486,7 +3481,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public IEnumerable<AttributedNode> ParseTypeMembers (TextReader reader, int lineModifier = 0)
 		{
 			string code = "unsafe partial class MyClass { " + Environment.NewLine + reader.ReadToEnd () + "}";
-			var cu = Parse (new StringReader (code), -1 + lineModifier);
+			var cu = Parse (new StringReader (code), "parsed.cs", lineModifier - 1);
 			if (cu == null)
 				return Enumerable.Empty<AttributedNode> ();
 			var td = cu.Children.FirstOrDefault () as TypeDeclaration;

@@ -34,6 +34,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
@@ -45,17 +46,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		protected IDocument document;
 		protected int offset;
 		protected TextLocation location;
-		protected ITypeDefinition currentType;
-		protected IMember currentMember;
+		protected IUnresolvedTypeDefinition currentType;
+		protected IUnresolvedMember currentMember;
 		
 		#region Input properties
-		public ITypeResolveContext ctx { get; set; }
+		public CSharpTypeResolveContext ctx { get; set; }
 
 		public CompilationUnit Unit { get; set; }
 
 		public CSharpParsedFile CSharpParsedFile { get; set; }
 
 		public IProjectContent ProjectContent { get; set; }
+		
+		ICompilation compilation;
+		protected ICompilation Compilation {
+			get {
+				if (compilation == null)
+					compilation = ProjectContent.Resolve (ctx).Compilation;
+				return compilation;
+			}
+		}
+		
 		#endregion
 		
 		protected void SetOffset (int offset)
@@ -322,7 +333,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
-					return parser.Parse (stream, wrapInClass ? memberLocation.Line - 2 : 0);
+					return parser.Parse (stream, "stub.cs" , wrapInClass ? memberLocation.Line - 2 : 0);
 				} catch (Exception){
 					Console.WriteLine ("------");
 					Console.WriteLine (wrapper);
@@ -460,17 +471,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				resolveNode = expr;
 			}
 			
-			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
+//			var newContent = ProjectContent.UpdateProjectContent (CSharpParsedFile, file);
+			
+			var csResolver = new CSharpResolver (ctx);
+			
 			var navigator = new NodeListResolveVisitorNavigator (new[] { resolveNode });
-			if (ProjectContent is SimpleProjectContent)
-				((SimpleProjectContent)ProjectContent).UpdateProjectContent (CSharpParsedFile, file);
-			var visitor = new ResolveVisitor (csResolver, file, navigator);
+			var visitor = new ResolveVisitor (csResolver, CSharpParsedFile, navigator);
 			
 			visitor.Scan (unit);
 			var state = visitor.GetResolverStateBefore (resolveNode);
 			var result = visitor.GetResolveResult (resolveNode);
-			if (ProjectContent is SimpleProjectContent)
-				((SimpleProjectContent)ProjectContent).UpdateProjectContent (file, CSharpParsedFile);
 			return Tuple.Create (result, state);
 		}
 		

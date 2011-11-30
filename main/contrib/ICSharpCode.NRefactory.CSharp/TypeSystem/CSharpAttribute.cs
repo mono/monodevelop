@@ -21,15 +21,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
 	[Serializable]
-	public sealed class CSharpAttribute : Immutable, IAttribute
+	public sealed class CSharpAttribute : IUnresolvedAttribute
 	{
 		ITypeReference attributeType;
 		DomRegion region;
@@ -46,9 +47,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("attributeType");
 			this.attributeType = attributeType;
 			this.region = region;
-			this.positionalArguments = positionalArguments;
-			this.namedCtorArguments = namedCtorArguments;
-			this.namedArguments = namedArguments;
+			this.positionalArguments = positionalArguments ?? EmptyList<IConstantValue>.Instance;
+			this.namedCtorArguments = namedCtorArguments ?? EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
+			this.namedArguments = namedArguments ?? EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
 		}
 		
 		public DomRegion Region {
@@ -59,6 +60,117 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			get { return attributeType; }
 		}
 		
+		public IAttribute CreateResolvedAttribute(ITypeResolveContext context)
+		{
+			return new CSharpResolvedAttribute((CSharpTypeResolveContext)context, this);
+		}
+		
+		sealed class CSharpResolvedAttribute : IAttribute
+		{
+			readonly CSharpTypeResolveContext context;
+			readonly CSharpAttribute unresolved;
+			readonly IType attributeType;
+			
+			IList<KeyValuePair<IMember, ResolveResult>> namedArguments;
+			
+			public CSharpResolvedAttribute(CSharpTypeResolveContext context, CSharpAttribute unresolved)
+			{
+				this.context = context;
+				this.unresolved = unresolved;
+				// Pretty much any access to the attribute checks the type first, so
+				// we don't need to use lazy-loading for that.
+				this.attributeType = unresolved.AttributeType.Resolve(context);
+			}
+			
+			DomRegion IAttribute.Region {
+				get { return unresolved.Region; }
+			}
+			
+			IType IAttribute.AttributeType {
+				get { return attributeType; }
+			}
+			
+			ResolveResult ctorInvocation;
+			
+			InvocationResolveResult GetCtorInvocation()
+			{
+				ResolveResult rr = this.ctorInvocation;
+				if (rr != null) {
+					LazyInit.ReadBarrier();
+					return rr as InvocationResolveResult;
+				} else {
+					CSharpResolver resolver = new CSharpResolver(context);
+					int totalArgumentCount = unresolved.positionalArguments.Count + unresolved.namedCtorArguments.Count;
+					ResolveResult[] arguments = new ResolveResult[totalArgumentCount];
+					string[] argumentNames = new string[totalArgumentCount];
+					int i = 0;
+					while (i < unresolved.positionalArguments.Count) {
+						IConstantValue cv = unresolved.positionalArguments[i];
+						arguments[i] = cv.Resolve(context);
+						i++;
+					}
+					foreach (var pair in unresolved.namedCtorArguments) {
+						argumentNames[i] = pair.Key;
+						arguments[i] = pair.Value.Resolve(context);
+						i++;
+					}
+					rr = resolver.ResolveObjectCreation(attributeType, arguments, argumentNames);
+					return LazyInit.GetOrSet(ref this.ctorInvocation, rr) as InvocationResolveResult;
+				}
+			}
+			
+			IMethod IAttribute.Constructor {
+				get {
+					var invocation = GetCtorInvocation();
+					if (invocation != null)
+						return invocation.Member as IMethod;
+					else
+						return null;
+				}
+			}
+			
+			IList<ResolveResult> positionalArguments;
+			
+			IList<ResolveResult> IAttribute.PositionalArguments {
+				get {
+					var result = this.positionalArguments;
+					if (result != null) {
+						LazyInit.ReadBarrier();
+						return result;
+					} else {
+						var invocation = GetCtorInvocation();
+						if (invocation != null)
+							result = invocation.GetArgumentsForCall();
+						else
+							result = EmptyList<ResolveResult>.Instance;
+						return LazyInit.GetOrSet(ref this.positionalArguments, result);
+					}
+				}
+			}
+			
+			IList<KeyValuePair<IMember, ResolveResult>> IAttribute.NamedArguments {
+				get {
+					var namedArgs = this.namedArguments;
+					if (namedArgs != null) {
+						LazyInit.ReadBarrier();
+						return namedArgs;
+					} else {
+						namedArgs = new List<KeyValuePair<IMember, ResolveResult>>();
+						foreach (var pair in unresolved.namedArguments) {
+							IMember member = attributeType.GetMembers(m => (m.EntityType == EntityType.Field || m.EntityType == EntityType.Property) && m.Name == pair.Key).FirstOrDefault();
+							if (member != null) {
+								ResolveResult val = pair.Value.Resolve(context);
+								namedArgs.Add(new KeyValuePair<IMember, ResolveResult>(member, val));
+							}
+						}
+						return LazyInit.GetOrSet(ref this.namedArguments, namedArgs);
+					}
+				}
+			}
+		}
+	}
+	
+	/*
 		public IMethod ResolveConstructor(ITypeResolveContext context)
 		{
 			CSharpResolver r = new CSharpResolver(context);
@@ -132,7 +244,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (constantValue != null)
 				return constantValue.Resolve(context);
 			else
-				return new ErrorResolveResult(SharedTypes.UnknownType);
+				return new ErrorResolveResult(SpecialType.UnknownType);
 		}
 		
 		public IList<KeyValuePair<string, ResolveResult>> GetNamedArguments(ITypeResolveContext context)
@@ -145,62 +257,5 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 	}
-	
-	/// <summary>
-	/// Type reference used within an attribute.
-	/// Looks up both 'withoutSuffix' and 'withSuffix' and returns the type that exists.
-	/// </summary>
-	[Serializable]
-	public sealed class AttributeTypeReference : ITypeReference, ISupportsInterning
-	{
-		ITypeReference withoutSuffix, withSuffix;
-		
-		public AttributeTypeReference(ITypeReference withoutSuffix, ITypeReference withSuffix)
-		{
-			if (withoutSuffix == null)
-				throw new ArgumentNullException("withoutSuffix");
-			if (withSuffix == null)
-				throw new ArgumentNullException("withSuffix");
-			this.withoutSuffix = withoutSuffix;
-			this.withSuffix = withSuffix;
-		}
-		
-		public IType Resolve(ITypeResolveContext context)
-		{
-			// If both types exist, C# considers that to be an ambiguity, but we are less strict.
-			IType type = withoutSuffix.Resolve(context);
-			var attrType = context.GetTypeDefinition (typeof(System.Attribute));
-			if (attrType == null)
-				return SharedTypes.UnknownType;
-			
-			if (type.GetDefinition() == null || !type.GetDefinition().IsDerivedFrom(attrType, context))
-				type = withSuffix.Resolve(context);
-			
-			return type;
-		}
-		
-		public override string ToString()
-		{
-			return withoutSuffix.ToString() + "[Attribute]";
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			withoutSuffix = provider.Intern(withoutSuffix);
-			withSuffix = provider.Intern(withSuffix);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			unchecked {
-				return withoutSuffix.GetHashCode() + 715613 * withSuffix.GetHashCode();
-			}
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			AttributeTypeReference atr = other as AttributeTypeReference;
-			return atr != null && this.withoutSuffix == atr.withoutSuffix && this.withSuffix == atr.withSuffix;
-		}
-	}
+	 */
 }

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
@@ -64,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
-			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);
+			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
 			Unit.AcceptVisitor (tsvisitor, null);
 			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
 		}
@@ -165,7 +166,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var indexerExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
 				if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError)
 					return null;
-				
 				return factory.CreateIndexerParameterDataProvider (indexerExpression.Item1.Type, invoke.Item2);
 			}
 			return null;
@@ -175,13 +175,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var scope = CSharpParsedFile.GetUsingScope (location);
 			var result = new List<string> ();
+			var resolver = new CSharpResolver (ctx);
 			while (scope != null) {
 				result.Add (scope.NamespaceName);
+				
 				foreach (var u in scope.Usings) {
-					var ns = u.ResolveNamespace (ctx);
+					var ns = u.ResolveNamespace (resolver);
 					if (ns == null)
 						continue;
-					result.Add (ns.NamespaceName);
+					result.Add (ns.FullName);
 				}
 				scope = scope.Parent;
 			}

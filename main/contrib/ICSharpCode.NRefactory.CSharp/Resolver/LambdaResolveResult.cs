@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public abstract class LambdaResolveResult : ResolveResult
 	{
-		protected LambdaResolveResult() : base(SharedTypes.UnknownType)
+		protected LambdaResolveResult() : base(SpecialType.UnknownType)
 		{
 		}
 		

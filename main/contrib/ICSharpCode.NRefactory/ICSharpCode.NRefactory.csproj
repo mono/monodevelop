@@ -241,6 +241,7 @@
     <Compile Include="TypeSystem\Implementation\SimpleTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleCompilation.cs" />
     <Compile Include="TypeSystem\INamespace.cs" />
+    <Compile Include="IAnnotatable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />

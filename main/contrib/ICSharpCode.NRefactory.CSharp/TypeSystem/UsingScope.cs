@@ -18,11 +18,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
 	/// <summary>
 	/// Represents a scope that contains "using" statements.
@@ -31,33 +34,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	[Serializable]
 	public class UsingScope : AbstractFreezable
 	{
-		readonly IProjectContent projectContent;
 		readonly UsingScope parent;
 		DomRegion region;
-		string namespaceName = "";
-		IList<ITypeOrNamespaceReference> usings;
-		IList<KeyValuePair<string, ITypeOrNamespaceReference>> usingAliases;
+		string shortName = "";
+		IList<TypeOrNamespaceReference> usings;
+		IList<KeyValuePair<string, TypeOrNamespaceReference>> usingAliases;
 		IList<string> externAliases;
-		//IList<UsingScope> childScopes;
 		
 		protected override void FreezeInternal()
 		{
-			if (usings == null || usings.Count == 0)
-				usings = EmptyList<ITypeOrNamespaceReference>.Instance;
-			else
-				usings = Array.AsReadOnly(usings.ToArray());
-			
-			if (usingAliases == null || usingAliases.Count == 0)
-				usingAliases = EmptyList<KeyValuePair<string, ITypeOrNamespaceReference>>.Instance;
-			else
-				usingAliases = Array.AsReadOnly(usingAliases.ToArray());
-			
-			externAliases = FreezeList(externAliases);
-			//childScopes = FreezeList(childScopes);
+			usings = FreezableHelper.FreezeList(usings);
+			usingAliases = FreezableHelper.FreezeList(usingAliases);
+			externAliases = FreezableHelper.FreezeList(externAliases);
 			
 			// In current model (no child scopes), it makes sense to freeze the parent as well
 			// to ensure the whole lookup chain is immutable.
-			// But we probably shouldn't do this if we add back childScopes.
 			if (parent != null)
 				parent.Freeze();
 			
@@ -67,67 +58,70 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Creates a new root using scope.
 		/// </summary>
-		public UsingScope(IProjectContent projectContent)
+		public UsingScope()
 		{
-			if (projectContent == null)
-				throw new ArgumentNullException("projectContent");
-			this.projectContent = projectContent;
 		}
 		
 		/// <summary>
 		/// Creates a new nested using scope.
 		/// </summary>
 		/// <param name="parent">The parent using scope.</param>
-		/// <param name="namespaceName">The full namespace name.</param>
-		public UsingScope(UsingScope parent, string namespaceName)
+		/// <param name="shortName">The short namespace name.</param>
+		public UsingScope(UsingScope parent, string shortName)
 		{
 			if (parent == null)
 				throw new ArgumentNullException("parent");
-			if (namespaceName == null)
-				throw new ArgumentNullException("namespaceName");
+			if (shortName == null)
+				throw new ArgumentNullException("shortName");
 			this.parent = parent;
-			this.projectContent = parent.projectContent;
-			this.namespaceName = namespaceName;
+			this.shortName = shortName;
 		}
 		
 		public UsingScope Parent {
 			get { return parent; }
 		}
 		
-		public IProjectContent ProjectContent {
-			get { return projectContent; }
-		}
-		
 		public DomRegion Region {
 			get { return region; }
 			set {
-				CheckBeforeMutation();
+				FreezableHelper.ThrowIfFrozen(this);
 				region = value;
 			}
 		}
 		
-		public string NamespaceName {
-			get { return namespaceName; }
-			set {
-				if (value == null)
-					throw new ArgumentNullException("NamespaceName");
-				CheckBeforeMutation();
-				namespaceName = value;
+		public string ShortNamespaceName {
+			get {
+				return shortName;
 			}
 		}
 		
-		public IList<ITypeOrNamespaceReference> Usings {
+		public string NamespaceName {
+			get {
+				if (parent != null)
+					return NamespaceDeclaration.BuildQualifiedName(parent.NamespaceName, shortName);
+				else
+					return shortName;
+			}
+//			set {
+//				if (value == null)
+//					throw new ArgumentNullException("NamespaceName");
+//				FreezableHelper.ThrowIfFrozen(this);
+//				namespaceName = value;
+//			}
+		}
+		
+		public IList<TypeOrNamespaceReference> Usings {
 			get {
 				if (usings == null)
-					usings = new List<ITypeOrNamespaceReference>();
+					usings = new List<TypeOrNamespaceReference>();
 				return usings;
 			}
 		}
 		
-		public IList<KeyValuePair<string, ITypeOrNamespaceReference>> UsingAliases {
+		public IList<KeyValuePair<string, TypeOrNamespaceReference>> UsingAliases {
 			get {
 				if (usingAliases == null)
-					usingAliases = new List<KeyValuePair<string, ITypeOrNamespaceReference>>();
+					usingAliases = new List<KeyValuePair<string, TypeOrNamespaceReference>>();
 				return usingAliases;
 			}
 		}
@@ -161,6 +155,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			return externAliases != null && externAliases.Contains(identifier);
+		}
+		
+		/// <summary>
+		/// Resolves the namespace represented by this using scope.
+		/// </summary>
+		public ResolvedUsingScope Resolve(ICompilation compilation)
+		{
+			CacheManager cache = compilation.CacheManager;
+			ResolvedUsingScope resolved = (ResolvedUsingScope)cache.GetShared(this);
+			if (resolved == null) {
+				var csContext = new CSharpTypeResolveContext(compilation.MainAssembly, parent != null ? parent.Resolve(compilation) : null);
+				resolved = (ResolvedUsingScope)cache.GetOrAddShared(this, new ResolvedUsingScope(csContext, this));
+			}
+			return resolved;
 		}
 	}
 }

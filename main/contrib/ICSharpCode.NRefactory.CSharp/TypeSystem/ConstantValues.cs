@@ -19,117 +19,85 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.NRefactory.CSharp.Analysis;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 {
 	// Contains representations for constant C# expressions.
 	// We use these instead of storing the full AST to reduce the memory usage.
 	
 	[Serializable]
-	public sealed class CSharpConstantValue : Immutable, IConstantValue, ISupportsInterning
+	public abstract class ConstantExpression : IConstantValue
 	{
-		ConstantExpression expression;
-		UsingScope parentUsingScope;
-		ITypeDefinition parentTypeDefinition;
-		
-		public CSharpConstantValue(ConstantExpression expression, UsingScope parentUsingScope, ITypeDefinition parentTypeDefinition)
-		{
-			if (expression == null)
-				throw new ArgumentNullException("expression");
-			this.expression = expression;
-			this.parentUsingScope = parentUsingScope;
-			this.parentTypeDefinition = parentTypeDefinition;
-		}
-		
-		CSharpResolver CreateResolver(ITypeResolveContext context)
-		{
-			// Because constants are evaluated by the compiler, we need to evaluate them in the resolve context
-			// of the project where they are defined, not in that where the constant value is used.
-			// TODO: how do we get the correct resolve context?
-			return new CSharpResolver(context) {
-				CheckForOverflow = false, // TODO: get project-wide overflow setting
-				CurrentTypeDefinition = parentTypeDefinition,
-				CurrentUsingScope = parentUsingScope
-			};
-		}
+		public abstract ResolveResult Resolve(CSharpResolver resolver);
 		
 		public ResolveResult Resolve(ITypeResolveContext context)
 		{
-			CacheManager cache = context.CacheManager;
-			if (cache != null) {
-				ResolveResult cachedResult = cache.GetShared(this) as ResolveResult;
-				if (cachedResult != null)
-					return cachedResult;
+			var csContext = (CSharpTypeResolveContext)context;
+			if (context.CurrentAssembly != context.Compilation.MainAssembly) {
+				// The constant needs to be resolved in a different compilation.
+				IProjectContent pc = context.CurrentAssembly as IProjectContent;
+				if (pc != null) {
+					ICompilation nestedCompilation = context.Compilation.SolutionSnapshot.GetCompilation(pc);
+					if (nestedCompilation != null) {
+						var nestedContext = MapToNestedCompilation(csContext, nestedCompilation);
+						ResolveResult rr = Resolve(new CSharpResolver(nestedContext));
+						return MapToNewContext(rr, context);
+					}
+				}
 			}
-			CSharpResolver resolver = CreateResolver(context);
-			ResolveResult rr = expression.Resolve(resolver);
-			// Retrieve the equivalent type in the new resolve context.
-			// E.g. if the constant is defined in a .NET 2.0 project, type might be Int32 from mscorlib 2.0.
-			// However, the calling project might be a .NET 4.0 project, so we need to return Int32 from mscorlib 4.0.
-			rr = MapToNewContext(rr, new MapTypeIntoNewContext(context));
-			if (cache != null)
-				cache.SetShared(this, rr);
-			return rr;
+			// Resolve in current context.
+			return Resolve(new CSharpResolver(csContext));
 		}
 		
-		static ResolveResult MapToNewContext(ResolveResult rr, MapTypeIntoNewContext mapping)
+		CSharpTypeResolveContext MapToNestedCompilation(CSharpTypeResolveContext context, ICompilation nestedCompilation)
+		{
+			var nestedContext = new CSharpTypeResolveContext(nestedCompilation.MainAssembly);
+			if (context.CurrentUsingScope != null) {
+				nestedContext = nestedContext.WithUsingScope(context.CurrentUsingScope.UnresolvedUsingScope.Resolve(nestedCompilation));
+			}
+			if (context.CurrentTypeDefinition != null) {
+				nestedContext = nestedContext.WithCurrentTypeDefinition(context.CurrentTypeDefinition.ToTypeReference().Resolve(nestedContext).GetDefinition());
+			}
+			return nestedContext;
+		}
+		
+		static ResolveResult MapToNewContext(ResolveResult rr, ITypeResolveContext newContext)
 		{
 			if (rr is TypeOfResolveResult) {
 				return new TypeOfResolveResult(
-					rr.Type.AcceptVisitor(mapping),
-					((TypeOfResolveResult)rr).ReferencedType.AcceptVisitor(mapping));
+					rr.Type.ToTypeReference().Resolve(newContext),
+					((TypeOfResolveResult)rr).ReferencedType.ToTypeReference().Resolve(newContext));
 			} else if (rr is ArrayCreateResolveResult) {
 				ArrayCreateResolveResult acrr = (ArrayCreateResolveResult)rr;
 				return new ArrayCreateResolveResult(
-					acrr.Type.AcceptVisitor(mapping),
-					MapToNewContext(acrr.SizeArguments, mapping),
-					MapToNewContext(acrr.InitializerElements, mapping));
+					acrr.Type.ToTypeReference().Resolve(newContext),
+					MapToNewContext(acrr.SizeArguments, newContext),
+					MapToNewContext(acrr.InitializerElements, newContext));
 			} else if (rr.IsCompileTimeConstant) {
 				return new ConstantResolveResult(
-					rr.Type.AcceptVisitor(mapping),
+					rr.Type.ToTypeReference().Resolve(newContext),
 					rr.ConstantValue
 				);
 			} else {
-				return new ErrorResolveResult(rr.Type.AcceptVisitor(mapping));
+				return new ErrorResolveResult(rr.Type.ToTypeReference().Resolve(newContext));
 			}
 		}
 		
-		static ResolveResult[] MapToNewContext(ResolveResult[] input, MapTypeIntoNewContext mapping)
+		static ResolveResult[] MapToNewContext(ResolveResult[] input, ITypeResolveContext newContext)
 		{
 			if (input == null)
 				return null;
 			ResolveResult[] output = new ResolveResult[input.Length];
 			for (int i = 0; i < input.Length; i++) {
-				output[i] = MapToNewContext(input[i], mapping);
+				output[i] = MapToNewContext(input[i], newContext);
 			}
 			return output;
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			expression = provider.Intern(expression);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			return expression.GetHashCode()
-				^ (parentUsingScope != null ? parentUsingScope.GetHashCode() : 0)
-				^ (parentTypeDefinition != null ? parentTypeDefinition.GetHashCode() : 0);
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			CSharpConstantValue cv = other as CSharpConstantValue;
-			return cv != null
-				&& expression == cv.expression
-				&& parentUsingScope == cv.parentUsingScope
-				&& parentTypeDefinition == cv.parentTypeDefinition;
 		}
 	}
 	
@@ -137,9 +105,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	/// Used for constants that could not be converted to IConstantValue.
 	/// </summary>
 	[Serializable]
-	public sealed class ErrorConstantValue : Immutable, IConstantValue
+	public sealed class ErrorConstantValue : IConstantValue
 	{
-		ITypeReference type;
+		readonly ITypeReference type;
 		
 		public ErrorConstantValue(ITypeReference type)
 		{
@@ -158,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	/// Increments an integer <see cref="IConstantValue"/> by a fixed amount without changing the type.
 	/// </summary>
 	[Serializable]
-	public sealed class IncrementConstantValue : Immutable, IConstantValue, ISupportsInterning
+	public sealed class IncrementConstantValue : IConstantValue, ISupportsInterning
 	{
 		IConstantValue baseValue;
 		int incrementAmount;
@@ -199,7 +167,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return baseValue.GetHashCode() ^ incrementAmount;
+			unchecked {
+				return baseValue.GetHashCode() * 33 ^ incrementAmount;
+			}
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
@@ -207,12 +177,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			IncrementConstantValue o = other as IncrementConstantValue;
 			return o != null && baseValue == o.baseValue && incrementAmount == o.incrementAmount;
 		}
-	}
-	
-	[Serializable]
-	public abstract class ConstantExpression
-	{
-		public abstract ResolveResult Resolve(CSharpResolver resolver);
 	}
 	
 	/// <summary>
@@ -242,10 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			object val = value;
-			if (val is ITypeReference)
-				val = ((ITypeReference)val).Resolve(resolver.Context);
-			return new ConstantResolveResult(type.Resolve(resolver.Context), val);
+			return new ConstantResolveResult(type.Resolve(resolver.CurrentTypeResolveContext), value);
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -267,6 +228,42 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	}
 	
 	[Serializable]
+	public sealed class TypeOfConstantExpression : ConstantExpression, ISupportsInterning
+	{
+		ITypeReference type;
+		
+		public ITypeReference Type {
+			get { return type; }
+		}
+		
+		public TypeOfConstantExpression(ITypeReference type)
+		{
+			this.type = type;
+		}
+		
+		public override ResolveResult Resolve(CSharpResolver resolver)
+		{
+			return resolver.ResolveTypeOf(type.Resolve(resolver.CurrentTypeResolveContext));
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			type = provider.Intern(type);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return type.GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			TypeOfConstantExpression o = other as TypeOfConstantExpression;
+			return o != null && type == o.type;
+		}
+	}
+	
+	[Serializable]
 	public sealed class ConstantCast : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
@@ -284,7 +281,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			return resolver.ResolveCast(targetType.Resolve(resolver.Context), expression.Resolve(resolver));
+			return resolver.ResolveCast(targetType.Resolve(resolver.CurrentTypeResolveContext), expression.Resolve(resolver));
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -319,23 +316,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			if (identifier == null)
 				throw new ArgumentNullException("identifier");
 			this.identifier = identifier;
-			this.typeArguments = typeArguments;
+			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			return resolver.ResolveSimpleName(identifier, ResolveTypes(resolver, typeArguments));
-		}
-		
-		internal static IList<IType> ResolveTypes(CSharpResolver resolver, IList<ITypeReference> typeArguments)
-		{
-			if (typeArguments == null)
-				return EmptyList<IType>.Instance;
-			IType[] types = new IType[typeArguments.Count];
-			for (int i = 0; i < types.Length; i++) {
-				types[i] = typeArguments[i].Resolve(resolver.Context);
-			}
-			return types;
+			return resolver.ResolveSimpleName(identifier, typeArguments.Resolve(resolver.CurrentTypeResolveContext));
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -347,10 +333,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			unchecked {
-				int hashCode = identifier.GetHashCode();
-				if (typeArguments != null)
-					hashCode ^= typeArguments.GetHashCode();
-				return hashCode;
+				return identifier.GetHashCode() ^ typeArguments.GetHashCode();
 			}
 		}
 		
@@ -378,7 +361,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				throw new ArgumentNullException("memberName");
 			this.targetType = targetType;
 			this.memberName = memberName;
-			this.typeArguments = typeArguments;
+			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 		}
 		
 		public ConstantMemberReference(ConstantExpression targetExpression, string memberName, IList<ITypeReference> typeArguments = null)
@@ -389,17 +372,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				throw new ArgumentNullException("memberName");
 			this.targetExpression = targetExpression;
 			this.memberName = memberName;
-			this.typeArguments = typeArguments;
+			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
 			ResolveResult rr;
 			if (targetType != null)
-				rr = new TypeResolveResult(targetType.Resolve(resolver.Context));
+				rr = new TypeResolveResult(targetType.Resolve(resolver.CurrentTypeResolveContext));
 			else
 				rr = targetExpression.Resolve(resolver);
-			return resolver.ResolveMemberAccess(rr, memberName, ConstantIdentifierReference.ResolveTypes(resolver, typeArguments));
+			return resolver.ResolveMemberAccess(rr, memberName, typeArguments.Resolve(resolver.CurrentTypeResolveContext));
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -419,8 +402,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				else
 					hashCode = targetExpression.GetHashCode();
 				hashCode ^= memberName.GetHashCode();
-				if (typeArguments != null)
-					hashCode ^= typeArguments.GetHashCode();
+				hashCode ^= typeArguments.GetHashCode();
 				return hashCode;
 			}
 		}
@@ -492,7 +474,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			return resolver.ResolveDefaultValue(type.Resolve(resolver.Context));
+			return resolver.ResolveDefaultValue(type.Resolve(resolver.CurrentTypeResolveContext));
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -677,7 +659,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				elements[i] = arrayElements[i].Resolve(resolver);
 			}
 			if (elementType != null) {
-				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.Context), 1, null, elements);
+				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.CurrentTypeResolveContext), 1, null, elements);
 			} else {
 				return resolver.ResolveArrayCreation(null, 1, null, elements);
 			}

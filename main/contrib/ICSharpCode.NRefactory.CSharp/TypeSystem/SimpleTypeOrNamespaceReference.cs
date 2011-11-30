@@ -20,32 +20,29 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
 	/// <summary>
 	/// Represents a simple C# name. (a single non-qualified identifier with an optional list of type arguments)
 	/// </summary>
 	[Serializable]
-	public sealed class SimpleTypeOrNamespaceReference : ITypeOrNamespaceReference, ISupportsInterning
+	public sealed class SimpleTypeOrNamespaceReference : TypeOrNamespaceReference, ISupportsInterning
 	{
-		readonly ITypeDefinition parentTypeDefinition;
-		readonly UsingScope parentUsingScope;
 		string identifier;
 		IList<ITypeReference> typeArguments;
 		readonly SimpleNameLookupMode lookupMode;
 		
-		public SimpleTypeOrNamespaceReference(string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
+		public SimpleTypeOrNamespaceReference(string identifier, IList<ITypeReference> typeArguments, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
 		{
 			if (identifier == null)
 				throw new ArgumentNullException("identifier");
 			this.identifier = identifier;
 			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
-			this.parentTypeDefinition = parentTypeDefinition;
-			this.parentUsingScope = parentUsingScope;
 			this.lookupMode = lookupMode;
 		}
 		
@@ -63,42 +60,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public SimpleTypeOrNamespaceReference AddSuffix(string suffix)
 		{
-			return new SimpleTypeOrNamespaceReference(identifier + suffix, typeArguments, parentTypeDefinition, parentUsingScope, lookupMode);
+			return new SimpleTypeOrNamespaceReference(identifier + suffix, typeArguments, lookupMode);
 		}
 		
-		public ResolveResult DoResolve(ITypeResolveContext context)
+		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			CacheManager cacheManager = context.CacheManager;
-			if (cacheManager != null) {
-				ResolveResult cachedResult = cacheManager.GetShared(this) as ResolveResult;
-				if (cachedResult != null)
-					return cachedResult;
-			}
-			
-			CSharpResolver r = new CSharpResolver(context);
-			r.CurrentTypeDefinition = parentTypeDefinition;
-			r.CurrentUsingScope = parentUsingScope;
-			IType[] typeArgs = new IType[typeArguments.Count];
-			for (int i = 0; i < typeArgs.Length; i++) {
-				typeArgs[i] = typeArguments[i].Resolve(context);
-			}
-			ResolveResult rr = r.LookupSimpleNameOrTypeName(identifier, typeArgs, lookupMode);
-			if (cacheManager != null)
-				cacheManager.SetShared(this, rr);
-			return rr;
-		}
-		
-		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
-		{
-			// TODO: use resolve context for original project, if possible
-			return DoResolve(context) as NamespaceResolveResult;
-		}
-		
-		public IType Resolve(ITypeResolveContext context)
-		{
-			// TODO: use resolve context for original project, if possible; then map the result type into the new context
-			TypeResolveResult rr = DoResolve(context) as TypeResolveResult;
-			return rr != null ? rr.Type : SharedTypes.UnknownType;
+			var typeArgs = typeArguments.Resolve(resolver.CurrentTypeResolveContext);
+			return resolver.LookupSimpleNameOrTypeName(identifier, typeArgs, lookupMode);
 		}
 		
 		public override string ToString()
@@ -119,11 +87,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			int hashCode = 0;
 			unchecked {
-				if (parentTypeDefinition != null)
-					hashCode += 1000000007 * parentTypeDefinition.GetHashCode();
-				if (parentUsingScope != null)
-					hashCode += 1000000009 * parentUsingScope.GetHashCode();
-				
 				hashCode += 1000000021 * identifier.GetHashCode();
 				hashCode += 1000000033 * typeArguments.GetHashCode();
 				hashCode += 1000000087 * (int)lookupMode;
@@ -134,8 +97,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			SimpleTypeOrNamespaceReference o = other as SimpleTypeOrNamespaceReference;
-			return o != null && this.parentTypeDefinition == o.parentTypeDefinition
-				&& this.parentUsingScope == o.parentUsingScope && this.identifier == o.identifier
+			return o != null && this.identifier == o.identifier
 				&& this.typeArguments == o.typeArguments && this.lookupMode == o.lookupMode;
 		}
 	}

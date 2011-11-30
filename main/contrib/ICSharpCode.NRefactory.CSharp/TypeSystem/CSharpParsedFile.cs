@@ -18,11 +18,10 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
 	/// <summary>
 	/// Represents a file that was parsed and converted for the type system.
@@ -32,9 +31,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		readonly string fileName;
 		readonly UsingScope rootUsingScope;
-		IList<ITypeDefinition> topLevelTypeDefinitions = new List<ITypeDefinition>();
-		IList<IAttribute> assemblyAttributes = new List<IAttribute>();
-		IList<IAttribute> moduleAttributes = new List<IAttribute>();
+		IList<IUnresolvedTypeDefinition> topLevelTypeDefinitions = new List<IUnresolvedTypeDefinition>();
+		IList<IUnresolvedAttribute> assemblyAttributes = new List<IUnresolvedAttribute>();
+		IList<IUnresolvedAttribute> moduleAttributes = new List<IUnresolvedAttribute>();
 		IList<UsingScope> usingScopes = new List<UsingScope>();
 		IList<Error> errors = new List<Error> ();
 		
@@ -42,10 +41,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			base.FreezeInternal();
 			rootUsingScope.Freeze();
-			topLevelTypeDefinitions = FreezeList(topLevelTypeDefinitions);
-			assemblyAttributes = FreezeList(assemblyAttributes);
-			moduleAttributes = FreezeList(moduleAttributes);
-			usingScopes = FreezeList(usingScopes);
+			topLevelTypeDefinitions = FreezableHelper.FreezeListAndElements(topLevelTypeDefinitions);
+			assemblyAttributes = FreezableHelper.FreezeListAndElements(assemblyAttributes);
+			moduleAttributes = FreezableHelper.FreezeListAndElements(moduleAttributes);
+			usingScopes = FreezableHelper.FreezeListAndElements(usingScopes);
 		}
 		
 		public CSharpParsedFile(string fileName, UsingScope rootUsingScope)
@@ -67,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public DateTime LastWriteTime {
 			get { return lastWriteTime; }
 			set {
-				CheckBeforeMutation();
+				FreezableHelper.ThrowIfFrozen(this);
 				lastWriteTime = value;
 			}
 		}
@@ -85,19 +84,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return usingScopes; }
 		}
 		
-		public IProjectContent ProjectContent {
-			get { return rootUsingScope.ProjectContent; }
-		}
-		
-		public IList<ITypeDefinition> TopLevelTypeDefinitions {
+		public IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
 			get { return topLevelTypeDefinitions; }
 		}
 		
-		public IList<IAttribute> AssemblyAttributes {
+		public IList<IUnresolvedAttribute> AssemblyAttributes {
 			get { return assemblyAttributes; }
 		}
 		
-		public IList<IAttribute> ModuleAttributes {
+		public IList<IUnresolvedAttribute> ModuleAttributes {
 			get { return moduleAttributes; }
 		}
 		
@@ -110,15 +105,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			return rootUsingScope;
 		}
 		
-		public ITypeDefinition GetTopLevelTypeDefinition(TextLocation location)
+		public IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
 		{
 			return FindEntity(topLevelTypeDefinitions, location);
 		}
 		
-		public ITypeDefinition GetInnermostTypeDefinition(TextLocation location)
+		public IUnresolvedTypeDefinition GetInnermostTypeDefinition(TextLocation location)
 		{
-			ITypeDefinition parent = null;
-			ITypeDefinition type = GetTopLevelTypeDefinition(location);
+			IUnresolvedTypeDefinition parent = null;
+			IUnresolvedTypeDefinition type = GetTopLevelTypeDefinition(location);
 			while (type != null) {
 				parent = type;
 				type = FindEntity(parent.NestedTypes, location);
@@ -126,18 +121,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			return parent;
 		}
 		
-		public IMember GetMember(TextLocation location)
+		public IUnresolvedMember GetMember(TextLocation location)
 		{
-			ITypeDefinition type = GetInnermostTypeDefinition(location);
+			IUnresolvedTypeDefinition type = GetInnermostTypeDefinition(location);
 			if (type == null)
 				return null;
-			return FindEntity(type.Methods, location)
-				?? FindEntity(type.Fields, location)
-				?? FindEntity(type.Properties, location)
-				?? (IMember)FindEntity(type.Events, location);
+			return FindEntity(type.Members, location);
 		}
 		
-		static T FindEntity<T>(IList<T> list, TextLocation location) where T : class, IEntity
+		static T FindEntity<T>(IList<T> list, TextLocation location) where T : class, IUnresolvedEntity
 		{
 			// This could be improved using a binary search
 			foreach (T entity in list) {

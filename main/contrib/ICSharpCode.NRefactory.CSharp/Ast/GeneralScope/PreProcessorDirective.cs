@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PreProcessorDirective.cs
 //  
 // Author:
@@ -64,6 +64,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		/// <summary>
+		/// For an '#if' directive, specifies whether the condition evaluated to true.
+		/// </summary>
 		public bool Take {
 			get;
 			set;
@@ -107,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			PreProcessorDirective o = other as PreProcessorDirective;
-			return o != null && Type == o.Type;
+			return o != null && Type == o.Type && MatchString(Argument, o.Argument);
 		}
 	}
 }

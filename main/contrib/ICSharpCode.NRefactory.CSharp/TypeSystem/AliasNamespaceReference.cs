@@ -17,10 +17,11 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
 	/// <summary>
 	/// Looks up an alias (identifier in front of :: operator).
@@ -30,38 +31,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// by <see cref="MemberTypeOrNamespaceReference"/>.
 	/// </remarks>
 	[Serializable]
-	public class AliasNamespaceReference : ITypeOrNamespaceReference
+	public class AliasNamespaceReference : TypeOrNamespaceReference
 	{
-		readonly UsingScope parentUsingScope;
 		readonly string identifier;
 		
-		public AliasNamespaceReference(string identifier, UsingScope parentUsingScope)
+		public AliasNamespaceReference(string identifier)
 		{
 			if (identifier == null)
 				throw new ArgumentNullException("identifier");
 			this.identifier = identifier;
-			this.parentUsingScope = parentUsingScope;
 		}
 		
 		public string Identifier {
 			get { return identifier; }
 		}
 		
-		public ResolveResult DoResolve(ITypeResolveContext context)
+		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			CSharpResolver r = new CSharpResolver(context);
-			r.CurrentUsingScope = parentUsingScope;
-			return r.ResolveAlias(identifier);
-		}
-		
-		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
-		{
-			return DoResolve(context) as NamespaceResolveResult;
-		}
-		
-		public IType Resolve(ITypeResolveContext context)
-		{
-			return SharedTypes.UnknownType;
+			return resolver.ResolveAlias(identifier);
 		}
 		
 		public override string ToString()

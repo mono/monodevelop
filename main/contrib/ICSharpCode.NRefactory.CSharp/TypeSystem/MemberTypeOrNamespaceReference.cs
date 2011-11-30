@@ -19,26 +19,24 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
 	/// <summary>
 	/// Reference to a qualified type or namespace name.
 	/// </summary>
 	[Serializable]
-	public sealed class MemberTypeOrNamespaceReference : ITypeOrNamespaceReference, ISupportsInterning
+	public sealed class MemberTypeOrNamespaceReference : TypeOrNamespaceReference, ISupportsInterning
 	{
-		ITypeOrNamespaceReference target;
-		readonly ITypeDefinition parentTypeDefinition;
-		readonly UsingScope parentUsingScope;
+		TypeOrNamespaceReference target;
 		string identifier;
 		IList<ITypeReference> typeArguments;
 		
-		public MemberTypeOrNamespaceReference(ITypeOrNamespaceReference target, string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope)
+		public MemberTypeOrNamespaceReference(TypeOrNamespaceReference target, string identifier, IList<ITypeReference> typeArguments)
 		{
 			if (target == null)
 				throw new ArgumentNullException("target");
@@ -47,15 +45,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.target = target;
 			this.identifier = identifier;
 			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
-			this.parentTypeDefinition = parentTypeDefinition;
-			this.parentUsingScope = parentUsingScope;
 		}
 		
 		public string Identifier {
 			get { return identifier; }
 		}
 		
-		public ITypeOrNamespaceReference Target {
+		public TypeOrNamespaceReference Target {
 			get { return target; }
 		}
 		
@@ -69,53 +65,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public MemberTypeOrNamespaceReference AddSuffix(string suffix)
 		{
-			return new MemberTypeOrNamespaceReference(target, identifier + suffix, typeArguments, parentTypeDefinition, parentUsingScope);
+			return new MemberTypeOrNamespaceReference(target, identifier + suffix, typeArguments);
 		}
 		
-		public ResolveResult DoResolve(ITypeResolveContext context)
+		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			CacheManager cacheManager = context.CacheManager;
-			if (cacheManager != null) {
-				ResolveResult cachedResult = cacheManager.GetShared(this) as ResolveResult;;
-				if (cachedResult != null)
-					return cachedResult;
-			}
-			
-			ResolveResult targetRR = target.DoResolve(context);
+			ResolveResult targetRR = target.Resolve(resolver);
 			if (targetRR.IsError)
 				return targetRR;
-			CSharpResolver r = new CSharpResolver(context);
-			r.CurrentTypeDefinition = parentTypeDefinition;
-			r.CurrentUsingScope = parentUsingScope;
-			IType[] typeArgs = new IType[typeArguments.Count];
-			for (int i = 0; i < typeArgs.Length; i++) {
-				typeArgs[i] = typeArguments[i].Resolve(context);
-			}
-			ResolveResult rr;
+			IList<IType> typeArgs = typeArguments.Resolve(resolver.CurrentTypeResolveContext);
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
-					rr = r.ResolveMemberType(targetRR, identifier, typeArgs);
+					return resolver.ResolveMemberType(targetRR, identifier, typeArgs);
 				} else {
 					// This can happen for "class Test : $Test.Base$ { public class Base {} }":
 					return ErrorResolveResult.UnknownError; // don't cache this error
 				}
 			}
-			if (cacheManager != null)
-				cacheManager.SetShared(this, rr);
-			return rr;
-		}
-		
-		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
-		{
-			// TODO: use resolve context for original project, if possible
-			return DoResolve(context) as NamespaceResolveResult;
-		}
-		
-		public IType Resolve(ITypeResolveContext context)
-		{
-			// TODO: use resolve context for original project, if possible; then map the result type into the new context
-			TypeResolveResult rr = DoResolve(context) as TypeResolveResult;
-			return rr != null ? rr.Type : SharedTypes.UnknownType;
 		}
 		
 		public override string ToString()
@@ -138,10 +104,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			int hashCode = 0;
 			unchecked {
 				hashCode += 1000000007 * target.GetHashCode();
-				if (parentTypeDefinition != null)
-					hashCode += 1000000009 * parentTypeDefinition.GetHashCode();
-				if (parentUsingScope != null)
-					hashCode += 1000000021 * parentUsingScope.GetHashCode();
 				hashCode += 1000000033 * identifier.GetHashCode();
 				hashCode += 1000000087 * typeArguments.GetHashCode();
 			}
@@ -151,9 +113,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			MemberTypeOrNamespaceReference o = other as MemberTypeOrNamespaceReference;
-			return o != null && this.target == o.target && this.parentTypeDefinition == o.parentTypeDefinition
-				&& this.parentUsingScope == o.parentUsingScope && this.identifier == o.identifier
-				&& this.typeArguments == o.typeArguments;
+			return o != null && this.target == o.target
+				&& this.identifier == o.identifier && this.typeArguments == o.typeArguments;
 		}
 	}
 }

@@ -17,27 +17,33 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
-	/// <summary>
-	/// Represents a resolve error.
-	/// </summary>
-	public class ErrorResolveResult : ResolveResult
+	[Serializable]
+	public class CSharpUnresolvedTypeDefinition : DefaultUnresolvedTypeDefinition
 	{
-		/// <summary>
-		/// Gets an ErrorResolveResult instance with Type = SharedTypes.UnknownType.
-		/// </summary>
-		public static readonly ErrorResolveResult UnknownError = new ErrorResolveResult(SharedTypes.UnknownType);
+		readonly UsingScope usingScope;
 		
-		public ErrorResolveResult(IType type) : base(type)
+		public CSharpUnresolvedTypeDefinition(UsingScope usingScope, string name)
+			: base(usingScope.NamespaceName, name)
 		{
+			this.usingScope = usingScope;
+			this.AddDefaultConstructorIfRequired = true;
 		}
 		
-		public override bool IsError {
-			get { return true; }
+		public CSharpUnresolvedTypeDefinition(CSharpUnresolvedTypeDefinition declaringTypeDefinition, string name)
+			: base(declaringTypeDefinition, name)
+		{
+			this.usingScope = declaringTypeDefinition.usingScope;
+			this.AddDefaultConstructorIfRequired = true;
+		}
+		
+		public override ITypeResolveContext CreateResolveContext(ITypeResolveContext parentContext)
+		{
+			return new CSharpTypeResolveContext(parentContext.CurrentAssembly, usingScope.Resolve(parentContext.Compilation), parentContext.CurrentTypeDefinition);
 		}
 	}
 }

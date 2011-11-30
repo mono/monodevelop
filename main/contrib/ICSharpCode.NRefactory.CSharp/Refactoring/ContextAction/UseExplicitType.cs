@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				type = context.Resolve (foreachStatement.VariableType).Type;
 			}
 			
-			return !type.Equals (SharedTypes.Null) && !type.Equals (SharedTypes.UnknownType);
+			return !type.Equals (SpecialType.NullType) && !type.Equals (SpecialType.UnknownType);
 		}
 		
 		public void Run (RefactoringContext context)

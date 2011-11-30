@@ -32,11 +32,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 {
 	public interface ICompletionDataFactory
 	{
+		ICompletionData CreateEntityCompletionData (IUnresolvedEntity entity);
+		ICompletionData CreateEntityCompletionData (IUnresolvedEntity entity, string text);
 		ICompletionData CreateEntityCompletionData (IEntity entity);
-
 		ICompletionData CreateEntityCompletionData (IEntity entity, string text);
 		
 		ICompletionData CreateTypeCompletionData (IType type, string shortType);
+		ICompletionData CreateTypeCompletionData (IUnresolvedTypeDefinition type, string shortType);
 		
 		/// <summary>
 		/// Creates a generic completion data.
@@ -56,11 +58,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		ICompletionData CreateVariableCompletionData (IVariable variable);
 
-		ICompletionData CreateVariableCompletionData (ITypeParameter parameter);
+		ICompletionData CreateVariableCompletionData (IUnresolvedTypeParameter parameter);
 		
-		ICompletionData CreateEventCreationCompletionData (string varName, IType delegateType, IEvent evt, string parameterDefinition, IMember currentMember, ITypeDefinition currentType);
+		ICompletionData CreateEventCreationCompletionData (string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType);
 
-		ICompletionData CreateNewOverrideCompletionData (int declarationBegin, ITypeDefinition type, IMember m);
+		ICompletionData CreateNewOverrideCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IMember m);
 		
 		IEnumerable<ICompletionData> CreateCodeTemplateCompletionData ();
 		

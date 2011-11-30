@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
@@ -170,7 +171,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				if (expr.Item2 is AstType)
 					return CreateTypeAndNamespaceCompletionData (location, resolveResult.Item1, expr.Item2, resolveResult.Item2);
-				
 				return CreateCompletionData (location, resolveResult.Item1, expr.Item2, resolveResult.Item2);
 			case '#':
 				if (IsInsideCommentOrString ())
@@ -307,7 +307,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
 					if (resolveResult == null)
 						return null;
-					
 					if (resolveResult.Item1.Type.Kind == TypeKind.Enum) {
 						var wrapper = new CompletionDataWrapper (this);
 						AddContextCompletion (wrapper, resolveResult.Item2, expressionOrVariableDeclaration.Item2);
@@ -358,14 +357,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						var evt = mrr.Member as IEvent;
 						if (evt == null)
 							return null;
-						var delegateType = evt.ReturnType.Resolve (ctx);
-						if (!delegateType.IsDelegate ())
+						var delegateType = evt.ReturnType;
+						if (delegateType.Kind != TypeKind.Delegate)
 							return null;
 						
 						var wrapper = new CompletionDataWrapper (this);
 						if (currentType != null) {
 //							bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
-							foreach (var method in currentType.GetMethods (ctx)) {
+							foreach (var method in currentType.Methods) {
 								if (MatchDelegate (delegateType, method) /*&& method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) &&*/) {
 									wrapper.AddMember (method);
 //									data.SetText (data.CompletionText + ";");
@@ -410,7 +409,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords (dataList, linqKeywords);
 					return dataList.Result;
 				}
-				Console.WriteLine ("ct:"+currentType);
+				
 				if (currentType != null && currentType.Kind == TypeKind.Enum)
 					return HandleEnumContext ();
 				
@@ -455,12 +454,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						
 					if (initalizerResult != null) { 
 						
-						foreach (var property in initalizerResult.Item1.Type.GetProperties (ctx)) {
+						foreach (var property in initalizerResult.Item1.Type.GetProperties ()) {
 							if (!property.IsPublic)
 								continue;
 							contextList.AddMember (property);
 						}
-						foreach (var field in initalizerResult.Item1.Type.GetFields (ctx)) {       
+						foreach (var field in initalizerResult.Item1.Type.GetFields ()) {       
 							if (!field.IsPublic)
 								continue;
 							contextList.AddMember (field);
@@ -470,7 +469,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				}
 				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
-					csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
+					csResolver = new CSharpResolver (ctx);
 					var nodes = new List<AstNode> ();
 					nodes.Add (n);
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
@@ -487,10 +486,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 						var resolved = visitor.GetResolveResult (n.Parent);
 						if (resolved != null && resolved.Type != null) {
-							foreach (var property in resolved.Type.GetProperties (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
+							foreach (var property in resolved.Type.GetProperties (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (property);
 							}
-							foreach (var field in resolved.Type.GetFields (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
+							foreach (var field in resolved.Type.GetFields (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (field);
 							}
 						}
@@ -575,10 +574,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> HandleEnumContext ()
 		{
-			var cu = ParseStub ("aMember", false);
+			var cu = ParseStub ("a", false);
 			if (cu == null)
 				return null;
 			var member = cu.GetNodeAt<EnumMemberDeclaration> (location);
+			Console.WriteLine ("member:" + cu.GetNodeAt (location) +"/" + location);
+			Print (cu);
 			if (member != null && member.NameToken.EndLocation < location)
 				return DefaultControlSpaceItems ();
 			return null;
@@ -649,24 +650,26 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			
-			if (currentMember is IParameterizedMember) {
-				var param = (IParameterizedMember)currentMember;
+			if (ctx.CurrentMember is IParameterizedMember) {
+				var param = (IParameterizedMember)ctx.CurrentMember;
 				foreach (var p in param.Parameters) {
 					wrapper.AddVariable (p);
 				}
 			}
 			
-			if (currentMember is IMethod) {
-				var method = (IMethod)currentMember;
+			if (currentMember is IUnresolvedMethod) {
+				var method = (IUnresolvedMethod)currentMember;
 				foreach (var p in method.TypeParameters) {
 					wrapper.AddTypeParameter (p);
 				}
 			}
 			
-			Predicate<ITypeDefinition> typePred = null;
+			Predicate<IType> typePred = null;
 			if (node is Attribute) {
-				var attribute = ctx.GetTypeDefinition ("System", "Attribute", 0, StringComparer.Ordinal);
-				typePred = t => t.GetAllBaseTypeDefinitions (ctx).Any (bt => bt.Equals (attribute));
+				var attribute = Compilation.FindType (typeof (System.Attribute));
+				typePred = t => {
+					return t.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (attribute));
+				};
 			}
 			AddTypesAndNamespaces (wrapper, state, node, typePred);
 			
@@ -679,6 +682,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				AddKeywords (wrapper, globalLevelKeywords);
 			}
+			var prop = currentMember as IUnresolvedProperty;
+			if (prop != null && prop.Setter.Region.IsInside (location))
+				wrapper.AddCustom ("value"); 
+			if (currentMember is IUnresolvedEvent)
+				wrapper.AddCustom ("value"); 
 			
 			if (IsInSwitchContext (node)) {
 				wrapper.AddCustom ("case"); 
@@ -702,13 +710,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return false;
 		}
 		
-		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Predicate<ITypeDefinition> typePred = null, Predicate<IMember> memberPred = null)
+		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Predicate<IType> typePred = null, Predicate<IMember> memberPred = null)
 		{
-			var currentMember = state.CurrentMember ?? this.currentMember;
+			var currentMember = ctx.CurrentMember;
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
-						if (typePred == null || typePred (nestedType)) {
+						if (typePred == null || typePred (nestedType.Resolve (ctx))) {
 							string name = nestedType.Name;
 							if (node is Attribute && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
 								name = name.Substring (0, name.Length - "Attribute".Length);
@@ -717,7 +725,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				if (currentMember != null) {
-					foreach (var member in currentType.Resolve (ctx).GetMembers (ctx)) {
+					foreach (var member in ctx.CurrentTypeDefinition.GetMembers ()) {
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
 					}
@@ -729,14 +737,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
 				foreach (var pair in n.UsingAliases) {
-					wrapper.AddNamespace ("", pair.Key);
+					wrapper.AddNamespace (pair.Key);
 				}
-				
 				foreach (var u in n.Usings) {
-					var ns = u.ResolveNamespace (ctx);
-					if (ns == null)
-						continue;
-					foreach (var type in ctx.GetTypes (ns.NamespaceName, StringComparer.Ordinal)) {
+					foreach (var type in u.Types) {
 						if (typePred == null || typePred (type)) {
 							string name = type.Name;
 							if (node is Attribute && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
@@ -746,14 +750,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				
-				foreach (var type in ctx.GetTypes (n.NamespaceName, StringComparer.Ordinal)) {
-					if (typePred == null || typePred (type)) {
+				foreach (var type in n.Namespace.Types) {
+					if (typePred == null || typePred (type))
 						wrapper.AddType (type, type.Name);
-					}
 				}
 				
-				foreach (var curNs in ctx.GetNamespaces ().Where (sn => sn.StartsWith (n.NamespaceName) && sn != n.NamespaceName)) {
-					wrapper.AddNamespace (n.NamespaceName, curNs);
+				foreach (var curNs in n.Namespace.ChildNamespaces) {
+					wrapper.AddNamespace (curNs.Name);
 				}
 			}
 		}
@@ -849,7 +852,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				var isAsWrapper = new CompletionDataWrapper (this);
-				AddTypesAndNamespaces (isAsWrapper, GetState (), null, t => isAsType == null || t.IsDerivedFrom (isAsType.GetDefinition (), ctx));
+				AddTypesAndNamespaces (isAsWrapper, GetState (), null, t => isAsType == null || t.GetDefinition ().IsDerivedFrom (isAsType.GetDefinition ()));
 				return isAsWrapper.Result;
 //					{
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();
@@ -1089,19 +1092,23 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var wrapper = new CompletionDataWrapper (this);
 			var state = GetState ();
-			Predicate<ITypeDefinition> pred = null;
+			Predicate<IType> pred = null;
 			if (hintType != null) {
-				if (!hintType.Equals (SharedTypes.UnknownType)) {
-					var lookup = new MemberLookup (ctx, currentType, ProjectContent);
+				
+				if (hintType.Kind != TypeKind.Unknown) {
+					Console.WriteLine ("hint!");
+					var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 					pred = t => {
 						// check if type is in inheritance tree.
-						if (hintType.GetDefinition () != null && !t.IsDerivedFrom (hintType.GetDefinition (), ctx))
+						if (hintType.GetDefinition () != null && !t.GetDefinition ().IsDerivedFrom (hintType.GetDefinition ()))
 							return false;
+						
 						// check for valid constructors
-						if (t.Methods.Count (m => m.IsConstructor) == 0)
+						if (t.GetConstructors ().Count () == 0)
 							return true;
-						bool isProtectedAllowed = currentType != null ? currentType.IsDerivedFrom (t, ctx) : false;
-						return t.Methods.Any (m => m.IsConstructor && lookup.IsAccessible (m, isProtectedAllowed));
+						Console.WriteLine ("check!");
+						bool isProtectedAllowed = currentType != null ? currentType.Resolve (ctx).GetDefinition ().IsDerivedFrom (t.GetDefinition ()) : false;
+						return t.GetConstructors ().Any (m => lookup.IsAccessible (m, isProtectedAllowed));
 					};
 					DefaultCompletionString = GetShortType (hintType, GetState ());
 					wrapper.AddType (hintType, DefaultCompletionString);
@@ -1116,7 +1123,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return wrapper.Result;
 		}
 		
-		IEnumerable<ICompletionData> GetOverrideCompletionData (ITypeDefinition type, string modifiers)
+		IEnumerable<ICompletionData> GetOverrideCompletionData (IUnresolvedTypeDefinition type, string modifiers)
 		{
 			var wrapper = new CompletionDataWrapper (this);
 			var alreadyInserted = new Dictionary<string, bool> ();
@@ -1138,19 +1145,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null; // don't add override completion for static members
 				}
 			}
-			foreach (var baseType in type.GetAllBaseTypeDefinitions (ctx)) {
-				AddVirtuals (alreadyInserted, wrapper, type, modifiers, baseType, declarationBegin);
+			foreach (var baseType in type.Resolve (ctx).GetAllBaseTypeDefinitions ()) {
+				AddVirtuals (alreadyInserted, wrapper, type.Resolve (ctx).GetDefinition (), modifiers, baseType, declarationBegin);
 				addedVirtuals = true;
 			}
 			if (!addedVirtuals)
-				AddVirtuals (alreadyInserted, wrapper, type, modifiers, ctx.GetTypeDefinition (typeof(object)), declarationBegin);
+				AddVirtuals (alreadyInserted, wrapper, type.Resolve (ctx).GetDefinition (), modifiers, Compilation.FindType(typeof(object)).GetDefinition (), declarationBegin);
 			return wrapper.Result;
 		}
 		
-		IEnumerable<ICompletionData> GetPartialCompletionData (ITypeDefinition type, string modifiers)
+		IEnumerable<ICompletionData> GetPartialCompletionData (IUnresolvedTypeDefinition type, string modifiers)
 		{
 			var wrapper = new CompletionDataWrapper (this);
-			var partialType = GetTypeFromContext (type);
+			var partialType = type.Resolve (ctx);
 			if (partialType != null) {
 				int declarationBegin = offset;
 				int j = declarationBegin;
@@ -1171,12 +1178,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var methods = new List<IMethod> ();
 				// gather all partial methods without implementation
-				foreach (var part in partialType.GetParts ()) 
-					foreach (var method in part.Methods) {
-						if (method.IsPartial && method.BodyRegion.IsEmpty) {
-							methods.Add (method);
-						}
+/* TODO:		foreach (var method in partialType.GetMethods ()) {
+					if (method.IsPartial && method.BodyRegion.IsEmpty) {
+						methods.Add (method);
 					}
+				}
 
 				// now filter all methods that are implemented in the compound class
 				foreach (var part in partialType.GetParts ()) {
@@ -1192,7 +1198,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-
+				 */
+				
 				foreach (var method in methods) {
 					wrapper.Add (factory.CreateNewOverrideCompletionData (declarationBegin, type, method));
 				}
@@ -1207,7 +1214,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (cur.Name == method.Name && cur.Parameters.Count == method.Parameters.Count && !cur.BodyRegion.IsEmpty) {
 					bool equal = true;
 					for (int i = 0; i < cur.Parameters.Count; i++) {
-						if (!cur.Parameters [i].Type.Resolve (ctx).Equals (method.Parameters [i].Type.Resolve (ctx))) {
+						if (!cur.Parameters [i].Type.Equals (method.Parameters [i].Type)) {
 							equal = false;
 							break;
 						}
@@ -1238,7 +1245,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (m is IMethod && m.Name == "Finalize")
 					continue;
 				
-				var data = factory.CreateNewOverrideCompletionData (declarationBegin, type, m);
+				var data = factory.CreateNewOverrideCompletionData (declarationBegin, type.Parts.First (), m);
 				string text = GetNameWithParamCount (m);
 				
 				// check if the member is already implemented
@@ -1289,14 +1296,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return result;
 		}
 		
-		bool MatchDelegate (IType delegateType, IMethod method)
+		bool MatchDelegate (IType delegateType, IUnresolvedMethod method)
 		{
 			var delegateMethod = delegateType.GetDelegateInvokeMethod ();
 			if (delegateMethod == null || delegateMethod.Parameters.Count != method.Parameters.Count)
 				return false;
 			
 			for (int i = 0; i < delegateMethod.Parameters.Count; i++) {
-				if (!delegateMethod.Parameters [i].Type.Resolve (ctx).Equals (method.Parameters [i].Type.Resolve (ctx)))
+				if (!delegateMethod.Parameters [i].Type.Equals (method.Parameters [i].Type.Resolve (ctx)))
 					return false;
 			}
 			return true;
@@ -1317,7 +1324,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					sb.Append (", ");
 					sbWithoutTypes.Append (", ");
 				}
-				var parameterType = delegateMethod.Parameters [k].Type.Resolve (ctx);
+				var parameterType = delegateMethod.Parameters [k].Type;
 				sb.Append (GetShortType (parameterType, GetState ()));
 				sb.Append (" ");
 				sb.Append (delegateMethod.Parameters [k].Name);
@@ -1361,11 +1368,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (member.IsInternal || member.IsProtectedAndInternal || member.IsProtectedOrInternal) {
 				var type1 = member is ITypeDefinition ? (ITypeDefinition)member : member.DeclaringTypeDefinition;
 				var type2 = currentMember is ITypeDefinition ? (ITypeDefinition)currentMember : currentMember.DeclaringTypeDefinition;
-				bool result;
+				bool result = true;
 				// easy case, projects are the same
-				if (type1.ProjectContent == type2.ProjectContent) {
-					result = true; 
-				} else if (type1.ProjectContent != null) {
+/*//				if (type1.ProjectContent == type2.ProjectContent) {
+//					result = true; 
+//				} else 
+				if (type1.ProjectContent != null) {
 					// maybe type2 hasn't project dom set (may occur in some cases), check if the file is in the project
 					//TODO !!
 //					result = type1.ProjectContent.Annotation<MonoDevelop.Projects.Project> ().GetProjectFile (type2.Region.FileName) != null;
@@ -1377,7 +1385,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				} else {
 					// should never happen !
 					result = true;
-				}
+				}*/
 				return member.IsProtectedAndInternal ? includeProtected && result : result;
 			}
 			
@@ -1401,18 +1409,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult == null || resolveResult.IsError)
 				return null;
 			var result = new CompletionDataWrapper (this);
-			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
-				foreach (var cl in ctx.GetTypes (nr.NamespaceName, StringComparer.Ordinal)) {
+				foreach (var cl in nr.Namespace.Types) {
 					result.AddType (cl, cl.Name);
 				}
-				foreach (var ns in ctx.GetNamespaces ().Where (n => n.Length > nr.NamespaceName.Length && n.StartsWith (nr.NamespaceName))) {
-					result.AddNamespace (nr.NamespaceName, ns);
+				foreach (var ns in nr.Namespace.ChildNamespaces) {
+					result.AddNamespace (ns.Name);
 				}
 			} else if (resolveResult is TypeResolveResult) {
-				var type = resolveResult.Type.Resolve (ctx);
-				foreach (var nested in type.GetNestedTypes (ctx)) {
+				var type = resolveResult.Type;
+				foreach (var nested in type.GetNestedTypes ()) {
 					result.AddType (nested, nested.Name);
 				}
 			}
@@ -1421,27 +1428,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> CreateTypeList ()
 		{
-			foreach (var cl in ctx.GetTypes ("", StringComparer.Ordinal)) {
+			foreach (var cl in Compilation.RootNamespace.Types) {
 				yield return factory.CreateTypeCompletionData (cl, cl.Name);
 			}
-			foreach (var ns in ctx.GetNamespaces ()) {
-				string name = ns;
-				int idx = name.IndexOf (".");
-				if (idx >= 0)
-					name = name.Substring (0, idx);
-				yield return factory.CreateNamespaceCompletionData (name);
+			
+			foreach (var ns in Compilation.RootNamespace.ChildNamespaces) {
+				yield return factory.CreateNamespaceCompletionData (ns.Name);
 			}
-		}
-		
-		public ITypeDefinition GetTypeFromContext (ITypeDefinition type)
-		{
-			if (type == null || type.DeclaringType != null)
-				return type;
-			var result = ctx.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameterCount, StringComparer.Ordinal) ?? type;
-			if (result.GetParts ().Count == 1)
-				return type;
-//			Console.WriteLine ("result:"+  result);
-			return result;
 		}
 		
 		IEnumerable<ICompletionData> CreateParameterCompletion (MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, int parameter, bool controlSpace)
@@ -1453,7 +1446,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			foreach (var method in resolveResult.Methods) {
 				if (method.Parameters.Count <= parameter)
 					continue;
-				var resolvedType = method.Parameters [parameter].Type.Resolve (ctx);
+				var resolvedType = method.Parameters [parameter].Type;
 				if (resolvedType.Kind == TypeKind.Enum) {
 					if (addedEnums.Contains (resolvedType.ReflectionName))
 						continue;
@@ -1505,7 +1498,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			string typeString = GetShortType (resolvedType, state);
 			if (typeString.Contains ("."))
 				completionList.AddType (resolvedType, typeString);
-			foreach (var field in resolvedType.GetFields (ctx)) {
+			foreach (var field in resolvedType.GetFields ()) {
 				if (field.IsConst || field.IsStatic)
 					completionList.Result.Add (factory.CreateEntityCompletionData (field, typeString + "." + field.Name));
 			}
@@ -1516,40 +1509,42 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (resolveResult == null /*|| resolveResult.IsError*/)
 				return null;
+			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				var namespaceContents = new CompletionDataWrapper (this);
-				foreach (var cl in ctx.GetTypes (nr.NamespaceName, StringComparer.Ordinal)) {
+				
+				foreach (var cl in nr.Namespace.Types) {
 					namespaceContents.AddType (cl, cl.Name);
 				}
-				foreach (var ns in ctx.GetNamespaces ().Where (n => n.Length > nr.NamespaceName.Length && n.StartsWith (nr.NamespaceName))) {
-					namespaceContents.AddNamespace (nr.NamespaceName, ns);
-				}
 				
+				foreach (var ns in nr.Namespace.ChildNamespaces) {
+					namespaceContents.AddNamespace (ns.Name);
+				}
 				return namespaceContents.Result;
 			}
 			
-			IType type = GetTypeFromContext (resolveResult.Type.GetDefinition ()) ?? resolveResult.Type;
+			IType type = resolveResult.Type;
 			var typeDef = resolveResult.Type.GetDefinition ();
-			var lookup = new MemberLookup (ctx, currentType, ProjectContent);
+			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			var result = new CompletionDataWrapper (this);
 			bool isProtectedAllowed = false;
 			bool includeStaticMembers = false;
 			
 			if (resolveResult is LocalResolveResult) {
-				isProtectedAllowed = currentType != null && typeDef != null ? typeDef.GetAllBaseTypeDefinitions (ctx).Any (bt => bt.Equals (currentType)) : false;
+				isProtectedAllowed = currentType != null && typeDef != null ? typeDef.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (currentType)) : false;
 				if (resolvedNode is IdentifierExpression) {
 					var mrr = (LocalResolveResult)resolveResult;
 					includeStaticMembers = mrr.Variable.Name == mrr.Type.Name;
 				}
 			} else {
-				isProtectedAllowed = currentType != null && typeDef != null ? currentType.GetAllBaseTypeDefinitions (ctx).Any (bt => bt.Equals (typeDef)) : false;
+				isProtectedAllowed = currentType != null && typeDef != null ? currentType.Resolve (ctx).GetDefinition ().GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (typeDef)) : false;
 			}
 			if (resolveResult is TypeResolveResult && type.Kind == TypeKind.Enum) {
-				foreach (var field in type.GetFields (ctx)) {
+				foreach (var field in type.GetFields ()) {
 					result.AddMember (field);
 				}
-				foreach (var m in type.GetMethods (ctx)) {
+				foreach (var m in type.GetMethods ()) {
 					if (m.Name == "TryParse")
 						result.AddMember (m);
 				}
@@ -1561,12 +1556,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				includeStaticMembers = mrr.Member.Name == mrr.Type.Name;
 			}
 			
-//			Console.WriteLine ("type:" + type +"/"+type.GetType ());
-//			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
+			Console.WriteLine ("type:" + type +"/"+type.GetType ());
+			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
+			
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
-				foreach (var member in type.GetMembers (ctx)) {
+				foreach (var member in type.GetMembers ()) {
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
 						//					Console.WriteLine ("skip access: " + member.FullName);
 						continue;
@@ -1588,20 +1584,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			if (resolveResult is TypeResolveResult || includeStaticMembers) {
-				foreach (var nested in type.GetNestedTypes (ctx)) {
+				foreach (var nested in type.GetNestedTypes ()) {
 					result.AddType (nested, nested.Name);
 				}
 				
 			} else {
-				var baseTypes = new List<IType> (type.GetAllBaseTypes (ctx));
-				var conv = new Conversions (ctx);
+				var baseTypes = new List<IType> (type.GetAllBaseTypes ());
+				var conv = new Conversions (Compilation);
 				for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
-					AddExtensionMethods (result, conv, baseTypes, n.NamespaceName);
+					AddExtensionMethods (result, conv, baseTypes, n.Namespace.FullName);
 					foreach (var u in n.Usings) {
-						var ns = u.ResolveNamespace (ctx);
-						if (ns == null)
-							continue;
-						AddExtensionMethods (result, conv, baseTypes, ns.NamespaceName);
+						AddExtensionMethods (result, conv, baseTypes, u.FullName);
 					}
 				}
 			}
@@ -1632,9 +1625,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		void AddExtensionMethods (CompletionDataWrapper result, Conversions conv, List<IType> baseTypes, string namespaceName)
 		{
-			foreach (var typeDefinition in ctx.GetTypes (namespaceName, StringComparer.Ordinal).Where (t => t.IsStatic && t.HasExtensionMethods)) {
-				foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod )) {
-					var pt = m.Parameters.First ().Type.Resolve (ctx);
+			if (ctx.CurrentUsingScope == null || ctx.CurrentUsingScope.AllExtensionMethods == null)
+				return;
+			foreach (var meths in ctx.CurrentUsingScope.AllExtensionMethods) {
+				foreach (var m in meths) {
+					var pt = m.Parameters.First ().Type;
 					string reflectionName = pt is ParameterizedType ? ((ParameterizedType)pt).GetDefinition ().ReflectionName : pt.ReflectionName;
 					if (baseTypes.Any (bt => (bt is ParameterizedType ? ((ParameterizedType)bt).GetDefinition ().ReflectionName : bt.ReflectionName) == reflectionName)) {
 						result.AddMember (m);
@@ -1736,7 +1731,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
-			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, this.CSharpParsedFile.FileName);
+			var tsvisitor = new TypeSystemConvertVisitor (this.CSharpParsedFile.FileName);
 			Unit.AcceptVisitor (tsvisitor, null);
 			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
 		}
@@ -1809,11 +1804,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					member.ReplaceWith (member2);
 				}
 			} else {
-				var tsvisitor2 = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);
+				var tsvisitor2 = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
 				Unit.AcceptVisitor (tsvisitor2, null);
 				return Tuple.Create (tsvisitor2.ParsedFile, expr, baseUnit);
 			}
-			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);
+			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
 			Unit.AcceptVisitor (tsvisitor, null);
 			return Tuple.Create (tsvisitor.ParsedFile, expr, Unit);
 		}
@@ -1826,14 +1821,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			sb.Append ("a;");
 			AppendMissingClosingBrackets (sb, text, false);
 			var stream = new System.IO.StringReader (sb.ToString ());
-			var completionUnit = parser.Parse (stream, 0);
+			var completionUnit = parser.Parse (stream, CSharpParsedFile.FileName, 0);
 			stream.Close ();
 			var loc = document.GetLocation (offset);
 			
 			var expr = completionUnit.GetNodeAt (loc, n => n is Expression || n is VariableDeclarationStatement);
 			if (expr == null)
 				return null;
-			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);
+			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
 			completionUnit.AcceptVisitor (tsvisitor, null);
 			
 			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
@@ -1847,14 +1842,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			sb.Append ("a ();");
 			AppendMissingClosingBrackets (sb, text, false);
 			var stream = new System.IO.StringReader (sb.ToString ());
-			var completionUnit = parser.Parse (stream, 0);
+			var completionUnit = parser.Parse (stream, CSharpParsedFile.FileName, 0);
 			stream.Close ();
 			var loc = document.GetLocation (offset);
 			
 			var expr = completionUnit.GetNodeAt (loc, n => n is Expression);
 			if (expr == null)
 				return null;
-			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);
+			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
 			completionUnit.AcceptVisitor (tsvisitor, null);
 			
 			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
@@ -1898,7 +1893,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			// Start calculating the parameter offset from the beginning of the
 			// current member, instead of the beginning of the file. 
 			cpos = offset - 1;
-			IMember mem = currentMember;
+			var mem = currentMember;
 			if (mem == null || (mem is IType))
 				return false;
 			int startPos = document.GetOffset (mem.Region.BeginLine, mem.Region.BeginColumn);
@@ -2001,7 +1996,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		CSharpResolver GetState ()
 		{
-			var state = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
+			return new CSharpResolver (ctx);
+			/*var state = new CSharpResolver (ctx);
 			
 			state.CurrentMember = currentMember;
 			state.CurrentTypeDefinition = currentType;
@@ -2021,7 +2017,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			
-			return state;
+			return state;*/
 		}
 		#endregion
 		
