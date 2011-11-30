@@ -72,10 +72,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, monitor);
 		}
 		
-		
 		static IEnumerable<Tuple<ProjectDom, FilePath>> GetFileNames (Solution solution, ProjectDom dom, ICompilationUnit unit, INode member, IProgressMonitor monitor)
 		{
 			var scope = GetScope (member);
+			int counter = 0;
 			switch (scope) {
 			case RefactoryScope.File:
 			case RefactoryScope.DeclaringType:
@@ -86,8 +86,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (dom == null)
 					yield break;
 				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Search reference in project..."), dom.Project.Files.Count);
-				int counter = 0;
+					monitor.BeginTask (GettextCatalog.GetString ("Finding references in project..."), dom.Project.Files.Count);
 				foreach (var file in dom.Project.Files) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
@@ -102,9 +101,11 @@ namespace MonoDevelop.Ide.FindInFiles
 					monitor.EndTask ();
 				break;
 			case RefactoryScope.Solution:
+				var allProjects = solution.GetAllProjects ();
 				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
-				foreach (var project in solution.GetAllProjects ()) {
+					monitor.BeginTask (GettextCatalog.GetString ("Finding references in solution..."),
+						allProjects.Sum (p => p.Files.Count));
+				foreach (var project in allProjects) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					var currentDom = ProjectDomService.GetProjectDom (project);
@@ -112,9 +113,12 @@ namespace MonoDevelop.Ide.FindInFiles
 						if (monitor != null && monitor.IsCancelRequested)
 							yield break;
 						yield return Tuple.Create (currentDom, file.FilePath);
+						if (monitor != null) {
+							if (counter % 10 == 0)
+								monitor.Step (10);
+							counter++;
+						}
 					}
-					if (monitor != null)
-						monitor.Step (1);
 				}
 				if (monitor != null)
 					monitor.EndTask ();
