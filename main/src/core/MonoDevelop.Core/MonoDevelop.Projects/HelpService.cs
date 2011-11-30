@@ -205,7 +205,7 @@ namespace MonoDevelop.Projects
 						continue;
 					if (p.IsRef || p.IsOut)
 						result.Append ("&");
-					AppendTypeReference (result, p.Type);
+					AppendTypeReference (result, p.Type.ToTypeReference ());
 				}
 			}
 			result.Append (')');
