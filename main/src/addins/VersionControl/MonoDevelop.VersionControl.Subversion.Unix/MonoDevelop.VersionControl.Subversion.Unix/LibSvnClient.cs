@@ -61,6 +61,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		                                      int descend, int get_all, int update, int no_ignore,
 		                                      IntPtr ctx, IntPtr pool);
 		
+		public abstract IntPtr client_root_url_from_path (ref IntPtr url, string path_or_url, IntPtr ctx, IntPtr pool);
+		
 		public abstract IntPtr client_log (IntPtr apr_array_header_t_targets,
 		                                   ref Rev rev_start, ref Rev rev_end,
 		                                   int discover_changed_paths,
@@ -585,6 +587,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 	public class LibSvnClient0 : LibSvnClient {
 		private const string svnclientlib = "libsvn_client-1.so.0";
 		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_root_url_from_path (ref IntPtr url, string path_or_url, IntPtr ctx, IntPtr pool);
+		
+		public override IntPtr client_root_url_from_path (ref IntPtr url, string path_or_url, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_root_url_from_path (ref url, path_or_url, ctx, pool);
+		}
+		
 		public override void config_ensure (string config_dir, IntPtr pool)
 		{
 			svn_config_ensure (config_dir, pool);
@@ -959,6 +968,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 	
 	public class LibSvnClient1 : LibSvnClient {
 		private const string svnclientlib = "libsvn_client-1.so.1";
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_root_url_from_path (ref IntPtr url, string path_or_url, IntPtr ctx, IntPtr pool);
+		
+		public override IntPtr client_root_url_from_path (ref IntPtr url, string path_or_url, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_root_url_from_path (ref url, path_or_url, ctx, pool);
+		}
 		
 		public override void config_ensure (string config_dir, IntPtr pool)
 		{
