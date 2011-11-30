@@ -106,42 +106,40 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				builder.AddChild (((DotNetProject)project).References);
 			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			var dom = TypeSystemService.GetProjectContext (project);
+			var dom = TypeSystemService.GetCompilation (project);
 			var ctx = TypeSystemService.GetContext (project);
 			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
 			HashSet<string> addedNames = new HashSet<string> ();
-			foreach (var ns in dom.GetNamespaces ()) {
+			foreach (var ns in dom.RootNamespace.ChildNamespaces) {
 				if (nestedNamespaces) {
-					int idx = ns.IndexOf ('.');
-					string name = idx >= 0 ? ns.Substring (0, idx) : ns;
-					if (!addedNames.Contains (name)) {
-						builder.AddChild (new ProjectNamespaceData (project, name));
-						addedNames.Add (name);
+					if (!addedNames.Contains (ns.Name)) {
+						builder.AddChild (new ProjectNamespaceData (project, ns));
+						addedNames.Add (ns.Name);
 					}
 				} else {
-					FillNamespaces (builder, project, dom, ns);
+					FillNamespaces (builder, project, ns);
 				}
 			}
-			foreach (var type in dom.GetTypes ("", StringComparer.Ordinal)) {
+			foreach (var type in dom.RootNamespace.Types) {
 				if (!publicOnly || type.IsPublic)
-					builder.AddChild (new ClassData (ctx, project, type));
+					builder.AddChild (new ClassData (project, type));
 			}
 		}
 		
-		public static void FillNamespaces (ITreeBuilder builder, Project project, IProjectContent dom, string ns)
+		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespace ns)
 		{
-			var members = new List<ITypeDefinition> (dom.GetTypes (ns, StringComparer.Ordinal));
+			var members = ns.Types;
 			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			if (members.Count > 0) {
+			if (members.Any ()) {
 				if (builder.Options ["ShowProjects"])
 					builder.AddChild (new ProjectNamespaceData (project, ns));
 				else {
-					if (!builder.HasChild (ns, typeof (NamespaceData)))
+					if (!builder.HasChild (ns.Name, typeof (NamespaceData)))
 						builder.AddChild (new ProjectNamespaceData (null, ns));
 				}
 			}
-			foreach (string nSpace in dom.GetNamespaces ().Where (n => n.StartsWith (ns)  && n != ns)) {
-				FillNamespaces (builder, project, dom, nSpace);
+			foreach (var nSpace in ns.ChildNamespaces) {
+				FillNamespaces (builder, project, nSpace);
 			}
 		}
 		
@@ -225,9 +223,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 			
 			if (cls.Namespace == "") {
-				builder.AddChild (new ClassData (TypeSystemService.GetContext (project), project, cls));
+				builder.AddChild (new ClassData (project, cls));
 			} else {
-				if (builder.Options ["NestedNamespaces"]) {
+// TODO: Type system conversion.
+/*				if (builder.Options ["NestedNamespaces"]) {
 					string[] nsparts = cls.Namespace.Split ('.');
 					string ns = "";
 					foreach (string nsp in nsparts) {
@@ -241,13 +240,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 						} else
 							break;
 					}
-					builder.AddChild (new ClassData (TypeSystemService.GetContext (project), project, cls));
+					builder.AddChild (new ClassData (project, cls));
 				} else {
 					if (builder.MoveToChild (cls.Namespace, typeof(NamespaceData)))
-						builder.AddChild (new ClassData (TypeSystemService.GetContext (project), project, cls));
+						builder.AddChild (new ClassData (project, cls));
 					else
 						builder.AddChild (new ProjectNamespaceData (project, cls.Namespace));
-				}
+				}*/
 			}
 		}		
 	}

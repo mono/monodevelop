@@ -32,6 +32,7 @@ using System.Threading;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 
 namespace MonoDevelop.TypeSystem
@@ -49,12 +50,6 @@ namespace MonoDevelop.TypeSystem
 		DateTime lastWriteTime = DateTime.Now;
 		public DateTime LastWriteTime {
 			get { return lastWriteTime; }
-		}
-		
-		public IList<IAttribute> ModuleAttributes {
-			get {
-				return new IAttribute[0];
-			}
 		}
 		
 		[NonSerialized]
@@ -121,17 +116,17 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		#region IParsedFile implementation
-		public virtual ITypeDefinition GetTopLevelTypeDefinition (TextLocation location)
+		public virtual IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
 		{
 			return null;
 		}
 		
-		public virtual ITypeDefinition GetInnermostTypeDefinition (TextLocation location)
+		public virtual IUnresolvedTypeDefinition GetInnermostTypeDefinition (TextLocation location)
 		{
 			return null;
 		}
 
-		public virtual IMember GetMember (TextLocation location)
+		public virtual IUnresolvedMember GetMember (TextLocation location)
 		{
 			return null;
 		}
@@ -152,17 +147,24 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 
-		public virtual IList<ITypeDefinition> TopLevelTypeDefinitions {
+		public virtual IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
 			get {
-				return new List<ITypeDefinition> ();
+				return new List<IUnresolvedTypeDefinition> ();
 			}
 		}
 
-		public virtual IList<IAttribute> AssemblyAttributes {
+		public virtual IList<IUnresolvedAttribute> AssemblyAttributes {
 			get {
-				return new List<IAttribute> ();
+				return new List<IUnresolvedAttribute> ();
 			}
 		}
+		
+		public virtual IList<IUnresolvedAttribute> ModuleAttributes  {
+			get {
+				return new List<IUnresolvedAttribute> ();
+			}
+		}
+
 		
 		[NonSerialized]
 		List<Error> errors = new List<Error> ();
@@ -276,53 +278,39 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		#region IParsedFile implementation
-		public override ITypeDefinition GetTopLevelTypeDefinition(TextLocation location)
+		public override IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
 		{
-			return FindEntity(types, location);
+			return TopLevelTypeDefinitions.FirstOrDefault (t => t.Region.IsInside (location));
 		}
 		
-		public override ITypeDefinition GetInnermostTypeDefinition(TextLocation location)
+		public override IUnresolvedTypeDefinition GetInnermostTypeDefinition(TextLocation location)
 		{
-			ITypeDefinition parent = null;
-			ITypeDefinition type = GetTopLevelTypeDefinition(location);
+			IUnresolvedTypeDefinition parent = null;
+			var type = GetTopLevelTypeDefinition(location);
 			while (type != null) {
 				parent = type;
-				type = FindEntity(parent.NestedTypes, location);
+				type = parent.NestedTypes.FirstOrDefault (t => t.Region.IsInside (location));
 			}
 			return parent;
 		}
 		
-		public override IMember GetMember(TextLocation location)
+		public override IUnresolvedMember GetMember(TextLocation location)
 		{
-			ITypeDefinition type = GetInnermostTypeDefinition(location);
+			var type = GetInnermostTypeDefinition(location);
 			if (type == null)
 				return null;
-			return FindEntity(type.Methods, location)
-				?? FindEntity(type.Fields, location)
-				?? FindEntity(type.Properties, location)
-				?? (IMember)FindEntity(type.Events, location);
+			return type.Members.FirstOrDefault (e => e.Region.IsInside(location));
 		}
 		
-		static T FindEntity<T>(IList<T> list, TextLocation location) where T : class, IEntity
-		{
-			// This could be improved using a binary search
-			foreach (T entity in list) {
-				if (entity.Region.IsInside(location.Line, location.Column))
-					return entity;
-			}
-			return null;
-		}
-
-		
-		List<ITypeDefinition> types = new List<ITypeDefinition> ();
-		public override IList<ITypeDefinition> TopLevelTypeDefinitions {
+		List<IUnresolvedTypeDefinition> types = new List<IUnresolvedTypeDefinition> ();
+		public override IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
 			get {
 				return types;
 			}
 		}
 		
-		List<IAttribute> attributes = new List<IAttribute> ();
-		public override IList<IAttribute> AssemblyAttributes {
+		List<IUnresolvedAttribute> attributes = new List<IUnresolvedAttribute> ();
+		public override IList<IUnresolvedAttribute> AssemblyAttributes {
 			get {
 				return attributes;
 			}
@@ -350,34 +338,34 @@ namespace MonoDevelop.TypeSystem
 		}
 	
 		#region IParsedFile implementation
-		public override ITypeDefinition GetTopLevelTypeDefinition (TextLocation location)
+		public override IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
 		{
 			return parsedFile.GetTopLevelTypeDefinition (location);
 		}
 		
-		public override ITypeDefinition GetInnermostTypeDefinition (TextLocation location)
+		public override IUnresolvedTypeDefinition GetInnermostTypeDefinition (TextLocation location)
 		{
 			return parsedFile.GetInnermostTypeDefinition (location);
 		}
 
-		public override IMember GetMember (TextLocation location)
+		public override IUnresolvedMember GetMember (TextLocation location)
 		{
 			return parsedFile.GetMember (location);
 		}
-
+		/*
 		public override IProjectContent ProjectContent {
 			get {
 				return parsedFile.ProjectContent;
 			}
-		}
+		}*/
 
-		public override System.Collections.Generic.IList<ITypeDefinition> TopLevelTypeDefinitions {
+		public override System.Collections.Generic.IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
 			get {
 				return parsedFile.TopLevelTypeDefinitions;
 			}
 		}
 
-		public override System.Collections.Generic.IList<IAttribute> AssemblyAttributes {
+		public override System.Collections.Generic.IList<IUnresolvedAttribute> AssemblyAttributes {
 			get {
 				return parsedFile.AssemblyAttributes;
 			}
@@ -414,7 +402,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			return base.GenerateFolds ().Concat (AddFolds ());
 		}
-		
+		/*
 		#region IFreezable implementation
 		public override void Freeze ()
 		{
@@ -426,7 +414,7 @@ namespace MonoDevelop.TypeSystem
 				return parsedFile.IsFrozen;
 			}
 		}
-		#endregion
+		#endregion*/  
 	}
 	
 	static class FoldingUtilities
@@ -444,14 +432,14 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		public static IEnumerable<FoldingRegion> ToFolds (this IEnumerable<ITypeDefinition> types)
+		public static IEnumerable<FoldingRegion> ToFolds (this IEnumerable<IUnresolvedTypeDefinition> types)
 		{
 			foreach (var type in types)
 				foreach (FoldingRegion fold in type.ToFolds ())
 					yield return fold;
 		}
 		
-		public static IEnumerable<FoldingRegion> ToFolds (this ITypeDefinition type)
+		public static IEnumerable<FoldingRegion> ToFolds (this IUnresolvedTypeDefinition type)
 		{
 			if (!IncompleteOrSingleLine (type.BodyRegion))
 				yield return new FoldingRegion (type.BodyRegion, FoldType.Type);
@@ -597,7 +585,7 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		public static IEnumerable<FoldingRegion> FlagIfInsideMembers (this IEnumerable<FoldingRegion> folds,
-			IEnumerable<ITypeDefinition> types, Action<FoldingRegion> flagAction)
+			IEnumerable<IUnresolvedTypeDefinition> types, Action<FoldingRegion> flagAction)
 		{
 			foreach (FoldingRegion fold in folds) {
 				foreach (var type in types) {
@@ -610,7 +598,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static bool IsInsideMember (this DomRegion region, ITypeDefinition cl)
+		static bool IsInsideMember (this DomRegion region, IUnresolvedTypeDefinition cl)
 		{
 			if (region.IsEmpty || cl == null || !cl.BodyRegion.IsInside (region.Begin))
 				return false;

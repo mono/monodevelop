@@ -42,30 +42,28 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public abstract class NamespaceData
 	{
-		protected string namesp;
+		protected INamespace namesp;
 		
 		public string Name {
 			get {
-				int i = namesp.LastIndexOf (".");
-				if (i != -1) return namesp.Substring (i+1);
-				else return namesp;
+				return namesp.Name;
 			}
 		}
 		
 		public string FullName {
-			get { return namesp; }
+			get { return namesp.FullName; }
 		}
 		
-		public NamespaceData (string fullNamespace)
+		public NamespaceData (INamespace namesp)
 		{
-			namesp = fullNamespace;
+			this.namesp = namesp;
 		}
 		
 		public abstract void AddProjectContent (ITreeBuilder builder);
 		
 		public override bool Equals (object ob)
 		{
-			NamespaceData other = ob as NamespaceData;
+			var other = ob as NamespaceData;
 			return (other != null && namesp == other.namesp);
 		}
 		
@@ -76,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override string ToString ()
 		{
-			return base.ToString () + " [" + namesp + "]";
+			return base.ToString () + " [" + namesp.FullName + "]";
 		}
 	}
 	
@@ -88,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return project; }
 		}
 
-		public ProjectNamespaceData (Project project, string fullNamespace) : base (fullNamespace)
+		public ProjectNamespaceData (Project project, INamespace nspace) : base (nspace)
 		{
 			this.project = project;
 		}
@@ -106,19 +104,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		void AddProjectContent (ITreeBuilder builder, Project p)
 		{
-			var dom = TypeSystemService.GetProjectContext (p);
-			var ctx = TypeSystemService.GetContext (p);
-			foreach (var ns in dom.GetNamespaces ().Where (ns => ns.StartsWith (FullName) && ns != FullName)) {
-				string nsName = ns.Substring (FullName.Length + 1);
-				if (!builder.HasChild (nsName, typeof(NamespaceData)))
+			foreach (var ns in namesp.ChildNamespaces) {
+				if (!builder.HasChild (ns.Name, typeof(NamespaceData)))
 					builder.AddChild (new ProjectNamespaceData (project, ns));
 			}
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
-			foreach (var type in dom.GetTypes (FullName, StringComparer.Ordinal)) {
+			foreach (var type in namesp.Types) {
 				if (!publicOnly || type.IsPublic)
-					builder.AddChild (new ClassData (ctx, project, type));
+					builder.AddChild (new ClassData (project, type));
 			}
 			
 		}
@@ -142,11 +137,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		}
 	}
 	
+	/*
 	public class CompilationUnitNamespaceData : NamespaceData
 	{
 		IParsedFile unit;
 		
-		public CompilationUnitNamespaceData (IParsedFile unit, string fullNamespace) : base (fullNamespace)
+		public CompilationUnitNamespaceData (IParsedFile unit, INamespace fullNamespace) : base (fullNamespace)
 		{
 			this.unit = unit;
 		}
@@ -160,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				if (publicOnly && !type.IsPublic)
 					continue;
 				if (type.Namespace == FullName) {
-					builder.AddChild (new ClassData (null, null, type));
+					builder.AddChild (new ClassData (null, type));
 					continue;
 				}
 				if (nestedNs && type.Namespace.StartsWith (FullName)) {
@@ -175,5 +171,5 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				}
 			}
 		}
-	}
+	} */
 }

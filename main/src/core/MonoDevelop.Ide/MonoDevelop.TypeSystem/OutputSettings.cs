@@ -44,11 +44,6 @@ namespace MonoDevelop.TypeSystem
 			set;
 		}
 		
-		public ITypeResolveContext Context {
-			get;
-			set;
-		}
-		
 		public OutputSettings (OutputFlags outputFlags)
 		{
 			this.OutputFlags = outputFlags;

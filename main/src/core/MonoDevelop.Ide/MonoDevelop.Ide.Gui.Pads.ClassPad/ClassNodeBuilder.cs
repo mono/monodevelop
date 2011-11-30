@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ClassData classData = dataObject as ClassData;
-			label = AmbienceService.DefaultAmbience.GetString (classData.Ctx, classData.Class, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			label = AmbienceService.DefaultAmbience.GetString (classData.Class.GetDefinition (), OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
 			icon = Context.GetIcon (classData.Class.GetStockIcon ());
 		}
 		/*
@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 			foreach (var innerClass in classData.Class.NestedTypes)
 				if (innerClass.IsPublic || (innerClass.IsProtected && publicProtectedOnly) || !publicOnly)
-					builder.AddChild (new ClassData (classData.Ctx, classData.Project, innerClass));
+					builder.AddChild (new ClassData (classData.Project, innerClass));
 
 			foreach (var method in classData.Class.Methods)
 				if (method.IsPublic || (method.IsProtected && publicProtectedOnly) || !publicOnly)

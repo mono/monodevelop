@@ -80,7 +80,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			ProjectReference pref = (ProjectReference) dataObject;
+			// TODO: Type system conversion.
+/*			ProjectReference pref = (ProjectReference) dataObject;
 			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
@@ -105,7 +106,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 					namespaces[ns] = true;
 					builder.AddChild (new CompilationUnitNamespaceData (null, ns));
 				}
-			}
+			}*/
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

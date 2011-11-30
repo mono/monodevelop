@@ -35,6 +35,7 @@ using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
+	// TODO: Find all references
 	public abstract class ReferenceFinder
 	{
 		public bool IncludeDocumentation {
@@ -77,9 +78,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 		
 		
-		static IEnumerable<Tuple<IProjectContent, FilePath>> GetFileNames (Solution solution, IProjectContent dom, IParsedFile unit, object member, RefactoryScope scope, IProgressMonitor monitor)
+		static IEnumerable<Tuple<IProjectContent, FilePath>> GetFileNames (Solution solution, IParsedFile unit, object member, RefactoryScope scope, IProgressMonitor monitor)
 		{
-			if (scope == RefactoryScope.Unknown)
+			yield break;
+/*			if (scope == RefactoryScope.Unknown)
 				scope = GetScope (member);
 			switch (scope) {
 			case RefactoryScope.File:
@@ -109,7 +111,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			case RefactoryScope.Solution:
 				if (monitor != null)
 					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
-				var sourceProject = ((IEntity)member).ProjectContent.Annotation<Project> ();
+				var sourceProject = TypeSystemService.GetProject ((IEntity)member);
 				foreach (var tuple in GetAllReferencingProjects (solution, sourceProject)) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
@@ -128,7 +130,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (monitor != null)
 					monitor.EndTask ();
 				break;
-			}
+			}*/
 		}
 		
 		public static List<Tuple<Project, IProjectContent>> GetAllReferencingProjects (Solution solution, Project sourceProject)
@@ -144,21 +146,21 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
 		{
-			if (member == null)
+//			if (member == null)
 				yield break;
-			
-			IProjectContent dom = null;
+			/*
+//			IProjectContent dom = null;
 			IParsedFile unit = null;
 			IEnumerable<object> searchNodes = new [] { member };
 			if (member is IVariable) { 
 				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).Region.FileName);
-				dom = doc.GetProjectContext ();
+//				dom = doc.GetProjectContext ();
 				unit = doc.ParsedDocument;
 			} else if (member is IType) {
-				dom = ((IType)member).GetDefinition ().ProjectContent;
+//				dom = ((IType)member).GetDefinition ().ProjectContent;
 				unit = dom.GetFile (((IType)member).GetDefinition ().Region.FileName);
 			} else if (member is IEntity) {
-				dom = ((IEntity)member).DeclaringTypeDefinition.ProjectContent;
+//				dom = ((IEntity)member).DeclaringTypeDefinition.ProjectContent;
 				unit = dom.GetFile (((IEntity)member).DeclaringTypeDefinition.Region.FileName);
 //				if (member is IMethod)
 //					searchNodes = CollectMembers (dom, (IMethod)member);
@@ -166,7 +168,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			// prepare references finder
 			var preparedFinders = new Dictionary<string, Tuple<ReferenceFinder, List<Tuple<IProjectContent, FilePath>>>> ();
-			foreach (var info in GetFileNames (solution, dom, unit, member, scope, monitor)) {
+			foreach (var info in GetFileNames (solution, unit, member, scope, monitor)) {
 				if (monitor != null && monitor.IsCancelRequested)
 					yield break;
 				
@@ -192,7 +194,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						yield break;
 					yield return foundReference;
 				}
-			}
+			}*/
 		}
 		
 		public abstract void SetSearchedMembers (IEnumerable<object> searchedMembers);

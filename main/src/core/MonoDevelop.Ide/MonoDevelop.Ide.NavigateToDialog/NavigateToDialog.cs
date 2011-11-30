@@ -284,8 +284,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		class WorkerResult 
 		{
 			public List<ProjectFile> filteredFiles = null;
-			public List<Tuple<ITypeResolveContext, ITypeDefinition>> filteredTypes = null;
-			public List<Tuple<ITypeResolveContext, IMember>> filteredMembers  = null;
+			public List<ITypeDefinition> filteredTypes = null;
+			public List<IMember> filteredMembers  = null;
 			
 			public string pattern = null;
 			public bool isGotoFilePattern;
@@ -320,30 +320,30 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				return null;
 			}
 			
-			internal SearchResult CheckType (ITypeResolveContext ctx, ITypeDefinition type)
+			internal SearchResult CheckType (ITypeDefinition type)
 			{
 				int rank;
 				if (MatchName (type.Name, out rank))
-					return new TypeSearchResult (ctx, pattern, type.Name, rank, type, false) { Ambience = ambience };
+					return new TypeSearchResult (pattern, type.Name, rank, type, false) { Ambience = ambience };
 				if (!FullSearch)
 					return null;
 				if (MatchName (type.FullName, out rank))
-					return new TypeSearchResult (ctx, pattern, type.FullName, rank, type, true) { Ambience = ambience };
+					return new TypeSearchResult (pattern, type.FullName, rank, type, true) { Ambience = ambience };
 				return null;
 			}
 			
-			internal SearchResult CheckMember (ITypeResolveContext ctx, IMember member)
+			internal SearchResult CheckMember (IMember member)
 			{
 				int rank;
 				bool useDeclaringTypeName = member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsDestructor);
 				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
 				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (ctx, pattern, memberName, rank, member, false) { Ambience = ambience };
+					return new MemberSearchResult (pattern, memberName, rank, member, false) { Ambience = ambience };
 				if (!FullSearch)
 					return null;
 				memberName = useDeclaringTypeName ? member.DeclaringType.FullName : member.FullName;
 				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (ctx, pattern, memberName, rank, member, true) { Ambience = ambience };
+					return new MemberSearchResult (pattern, memberName, rank, member, true) { Ambience = ambience };
 				return null;
 			}
 			
@@ -363,15 +363,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		IEnumerable<ProjectFile> files;
 		
-		IEnumerable<Tuple<ITypeResolveContext, IMember>> members {
+		IEnumerable<IMember> members {
 			get {
 				getMembersTimer.BeginTiming ();
 				try {
 					lock (members) {
-						foreach (var pair in types) {
-							var type = pair.Item2;
+						foreach (var type in types) {
 							foreach (var m in type.Members) {
-								yield return Tuple.Create (pair.Item1, m);
+								yield return m;
 							}
 						}
 					}
@@ -397,7 +396,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			newResult.IncludeTypes = (NavigateToType & NavigateToType.Types) == NavigateToType.Types;
 			newResult.IncludeMembers = (NavigateToType & NavigateToType.Members) == NavigateToType.Members;
 			var firstType = types.FirstOrDefault ();
-			newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Item2.Region.FileName) : AmbienceService.DefaultAmbience;
+			newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
 			
 			string toMatch = arg.Key;
 			int i = toMatch.IndexOf (':');
@@ -445,14 +444,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			// Search Types
 			if (newResult.IncludeTypes) {
-				newResult.filteredTypes = new List<Tuple<ITypeResolveContext, ITypeDefinition>> ();
+				newResult.filteredTypes = new List<ITypeDefinition> ();
 				lock (types) {
 					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
 					var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 					foreach (var type in allTypes) {
 						if (worker.CancellationPending)
 							yield break;
-						SearchResult curResult = newResult.CheckType (type.Item1, type.Item2);
+						SearchResult curResult = newResult.CheckType (type);
 						if (curResult != null) {
 							newResult.filteredTypes.Add (type);
 							yield return curResult;
@@ -463,14 +462,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			// Search members
 			if (newResult.IncludeMembers) {
-				newResult.filteredMembers = new List<Tuple<ITypeResolveContext, IMember>> ();
+				newResult.filteredMembers = new List<IMember> ();
 				lock (members) {
 					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
 					var allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
 					foreach (var member in allMembers) {
 						if (worker.CancellationPending)
 							yield break;
-						SearchResult curResult = newResult.CheckMember (member.Item1, member.Item2);
+						SearchResult curResult = newResult.CheckMember (member);
 						if (curResult != null) {
 							newResult.filteredMembers.Add (member);
 							yield return curResult;
@@ -525,7 +524,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 		
 		
-		IEnumerable<Tuple<ITypeResolveContext, ITypeDefinition>> types {
+		IEnumerable<ITypeDefinition> types {
 			get {
 				getTypesTimer.BeginTiming ();
 				try {
@@ -536,9 +535,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						if (doc.Project == null && doc.IsFile) {
 							var info = doc.ParsedDocument;
 							if (info != null) {
-								var ctx = doc.TypeResolveContext;
-								foreach (var c in info.TopLevelTypeDefinitions) {
-									yield return Tuple.Create (ctx, c);
+								var ctx = doc.TypeResolveContext.CreateCompilation ();
+								foreach (var type in ctx.GetAllTypeDefinitions ()) {
+									yield return type;
 								}
 							}
 						}
@@ -547,10 +546,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
 					
 					foreach (Project p in projects) {
-						var ctx  = TypeSystemService.GetContext (p);
 						var pctx = TypeSystemService.GetProjectContext (p);
-						foreach (var c in pctx.GetAllTypes ())
-							yield return Tuple.Create (ctx, c);
+						foreach (var type in pctx.CreateCompilation ().GetAllTypeDefinitions ())
+							yield return type;
 					}
 				} finally {
 					getTypesTimer.EndTiming ();

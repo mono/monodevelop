@@ -56,7 +56,7 @@ namespace MonoDevelop.TypeSystem
 			return reflectionName;
 		}
 		
-		protected override string GetTypeReferenceString (ITypeReference reference, OutputSettings settings)
+		protected override string GetTypeReferenceString (IType reference, OutputSettings settings)
 		{
 			return reference.ToString ();
 		}
@@ -86,11 +86,11 @@ namespace MonoDevelop.TypeSystem
 				result.Append (settings.Markup (">"));
 			}
 			
-			if (settings.IncludeBaseTypes && type.BaseTypes.Any ()) {
+			if (settings.IncludeBaseTypes && type.DirectBaseTypes.Any ()) {
 				result.Append (settings.Markup (" : "));
 				bool first = true;
-				foreach (var baseType in type.BaseTypes) {
-					if (baseType.Resolve (settings.Context).Equals (settings.Context.GetTypeDefinition (typeof (object))))
+				foreach (var baseType in type.DirectBaseTypes) {
+					if (baseType.Equals (type.Compilation.FindType (typeof(object))))
 						continue;
 					if (!first)
 						result.Append (settings.Markup (", "));

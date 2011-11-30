@@ -50,12 +50,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 		}
 		
-		protected ITypeResolveContext Ctx (ITreeNavigator nav)
-		{
-			var data = (ClassData)nav.GetParentDataItem (typeof (ClassData), true);
-			return data.Ctx;
-		}
-		
 		public override Type CommandHandlerType {
 			get { return typeof(MemberNodeCommandHandler); }
 		}

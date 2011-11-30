@@ -38,22 +38,23 @@ using ICSharpCode.NRefactory;
 using MonoDevelop.TypeSystem;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.TypeSystem
 {
 	public class CodeGenerationService
 	{
-		public static IMember AddCodeDomMember (ITypeDefinition type, CodeTypeMember newMember)
+		public static IUnresolvedMember AddCodeDomMember (Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
 		{
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (type.GetDefinition ().Region.FileName, out isOpen);
-			var parsedDocument = TypeSystemService.ParseFile (type.GetDefinition ().ProjectContent, data.Document.FileName, data.Document.MimeType, data.Text);
+			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
+			var parsedDocument = TypeSystemService.ParseFile (data.Document.FileName, data.Document.MimeType, data.Text);
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
 			
 			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMember);
 			
-			var dotNetProject = type.GetSourceProject () as DotNetProject;
+			var dotNetProject = project as DotNetProject;
 			if (dotNetProject == null) {
 				LoggingService.LogError ("Only .NET projects are supported.");
 				return null;
@@ -62,7 +63,7 @@ namespace MonoDevelop.TypeSystem
 			var generator = dotNetProject.LanguageBinding.GetCodeDomProvider ();
 			StringWriter sw = new StringWriter ();
 			var options = new CodeGeneratorOptions ();
-			options.IndentString = data.GetLineIndent (type.GetDefinition ().Region.BeginLine) + "\t";
+			options.IndentString = data.GetLineIndent (type.Region.BeginLine) + "\t";
 			if (newMember is CodeMemberMethod)
 				options.BracingStyle = "C";
 			generator.GenerateCodeFromMember (newMember, sw, options);
@@ -70,21 +71,21 @@ namespace MonoDevelop.TypeSystem
 			suitableInsertionPoint.Insert (data, sw.ToString ());
 			if (!isOpen) {
 				try {
-					File.WriteAllText (type.GetDefinition ().Region.FileName, data.Text);
+					File.WriteAllText (type.Region.FileName, data.Text);
 				} catch (Exception e) {
-					LoggingService.LogError (string.Format ("Failed to write file '{0}'.", type.GetDefinition ().Region.FileName), e);
-					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.GetDefinition ().Region.FileName));
+					LoggingService.LogError (string.Format ("Failed to write file '{0}'.", type.Region.FileName), e);
+					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
 				}
 			}
-			var newDocument = TypeSystemService.ParseFile (type.GetProjectContent (), data.FileName, data.MimeType, data.Text);
+			var newDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
 			return newDocument.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
 		}
 		
-		public static void AddNewMember (ITypeResolveContext ctx, ITypeDefinition type, IMember newMember, bool implementExplicit = false)
+		public static void AddNewMember (IUnresolvedTypeDefinition type, IUnresolvedMember newMember, bool implementExplicit = false)
 		{
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (type.GetDefinition ().Region.FileName, out isOpen);
-			var parsedDocument = TypeSystemService.ParseFile (type.GetProjectContent (), data.FileName, data.MimeType, data.Text);
+			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
+			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
 			
@@ -92,30 +93,27 @@ namespace MonoDevelop.TypeSystem
 			
 			var generator = CreateCodeGenerator (data);
 
-			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()));
-			var generatedCode = generator.CreateMemberImplementation (ctx, type, newMember, implementExplicit);
+			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.Region.Begin));
+			var generatedCode = generator.CreateMemberImplementation (type, newMember, implementExplicit);
 			suitableInsertionPoint.Insert (data, generatedCode.Code);
 			if (!isOpen) {
 				try {
-					File.WriteAllText (type.GetDefinition ().Region.FileName, data.Text);
+					File.WriteAllText (type.Region.FileName, data.Text);
 				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.GetDefinition ().Region.FileName), e);
-					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.GetDefinition ().Region.FileName));
+					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName), e);
+					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
 				}
 			}
 		}
 		
-		public static int CalculateBodyIndentLevel (ITypeDefinition declaringType)
+		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
 		{
 			int indentLevel = 1;
-			while (declaringType.DeclaringType != null) {
+			while (declaringType.DeclaringTypeDefinition != null) {
 				indentLevel++;
 				declaringType = declaringType.DeclaringTypeDefinition;
 			}
-			var pf = declaringType.ProjectContent.GetFile (declaringType.Region.FileName);
-			if (pf is ParsedDocumentDecorator)
-				pf = ((ParsedDocumentDecorator)pf).ParsedFile;
-			var file = pf as CSharpParsedFile;
+			var file = declaringType.ParsedFile as CSharpParsedFile;
 			if (file == null)
 				return indentLevel;
 			var scope = file.GetUsingScope (declaringType.Region.Begin);
@@ -129,14 +127,14 @@ namespace MonoDevelop.TypeSystem
 			return indentLevel;
 		}
 		
-		public static void AddNewMembers (ITypeResolveContext ctx, ITypeDefinition type, IEnumerable<IMember> newMembers, string regionName = null, Func<IMember, bool> implementExplicit = null)
+		public static void AddNewMembers (Project project, IUnresolvedTypeDefinition type, IEnumerable<IUnresolvedMember> newMembers, string regionName = null, Func<IUnresolvedMember, bool> implementExplicit = null)
 		{
-			IMember firstNewMember = newMembers.FirstOrDefault ();
+			IUnresolvedMember firstNewMember = newMembers.FirstOrDefault ();
 			if (firstNewMember == null)
 				return;
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (type.GetDefinition ().Region.FileName, out isOpen);
-			var parsedDocument = TypeSystemService.ParseFile (type.GetProjectContent (), data);
+			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
+			var parsedDocument = TypeSystemService.ParseFile (project, data);
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
 			
@@ -144,22 +142,22 @@ namespace MonoDevelop.TypeSystem
 			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, firstNewMember);
 			
 			var generator = CreateCodeGenerator (data);
-			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()));
+			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.Region.Begin));
 			StringBuilder sb = new StringBuilder ();
-			foreach (IMember newMember in newMembers) {
+			foreach (var newMember in newMembers) {
 				if (sb.Length > 0) {
 					sb.AppendLine ();
 					sb.AppendLine ();
 				}
-				sb.Append (generator.CreateMemberImplementation (ctx, type, newMember, implementExplicit != null ? implementExplicit (newMember) : false).Code);
+				sb.Append (generator.CreateMemberImplementation (type, newMember, implementExplicit != null ? implementExplicit (newMember) : false).Code);
 			}
 			suitableInsertionPoint.Insert (data, string.IsNullOrEmpty (regionName) ? sb.ToString () : generator.WrapInRegions (regionName, sb.ToString ()));
 			if (!isOpen) {
 				try {
-					File.WriteAllText (type.GetDefinition ().Region.FileName, data.Text);
+					File.WriteAllText (type.Region.FileName, data.Text);
 				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.GetDefinition ().Region.FileName), e);
-					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.GetDefinition ().Region.FileName));
+					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName), e);
+					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
 				}
 			}
 		}
@@ -169,20 +167,20 @@ namespace MonoDevelop.TypeSystem
 			return CodeGenerator.CreateGenerator (data);
 		}
 		
-		protected static IType GetMainPart (IType t)
+		protected static IUnresolvedTypeDefinition GetMainPart (IType t)
 		{
-			return t.GetDefinition ().GetParts ().First ();
+			return t.GetDefinition ().Parts.First ();
 		}
 		
 		#region Insertion Points
-		public static List<InsertionPoint> GetInsertionPoints (MonoDevelop.Ide.Gui.Document document, ITypeDefinition type)
+		public static List<InsertionPoint> GetInsertionPoints (MonoDevelop.Ide.Gui.Document document, IUnresolvedTypeDefinition type)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			return GetInsertionPoints (document.Editor, document.ParsedDocument, type);
 		}
 		
-		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, ParsedDocument parsedDocument, ITypeDefinition type)
+		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, ParsedDocument parsedDocument, IUnresolvedTypeDefinition type)
 		{
 			if (data == null)
 				throw new ArgumentNullException ("data");
@@ -192,10 +190,10 @@ namespace MonoDevelop.TypeSystem
 				throw new ArgumentNullException ("type");
 			
 			// update type from parsed document, since this is always newer.
-			type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
+			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
 			
 			List<InsertionPoint > result = new List<InsertionPoint> ();
-			int offset = data.LocationToOffset (type.GetDefinition ().Region.BeginLine, type.GetDefinition ().Region.BeginColumn);
+			int offset = data.LocationToOffset (type.Region.Begin);
 			if (offset < 0)
 				return result;
 			while (offset < data.Length && data.GetCharAt (offset) != '{') {
@@ -304,9 +302,9 @@ namespace MonoDevelop.TypeSystem
 			return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.None);
 		}
 		
-		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IType cls, IMember member)
+		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls, IUnresolvedMember member)
 		{
-			var mainPart = GetMainPart (cls);
+			var mainPart = cls;
 			switch (member.EntityType) {
 			case EntityType.Field:
 				return GetNewFieldPosition (points, mainPart);
@@ -323,9 +321,9 @@ namespace MonoDevelop.TypeSystem
 			throw new InvalidOperationException ("Invalid member type: " + member.EntityType);
 		}
 		
-		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IType cls, CodeTypeMember mem)
+		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls, CodeTypeMember mem)
 		{
-			var mainPart = GetMainPart (cls);
+			var mainPart = cls;
 			if (mem is System.CodeDom.CodeMemberEvent)
 				return GetNewEventPosition (points, mainPart);
 			if (mem is System.CodeDom.CodeMemberProperty)
@@ -337,7 +335,7 @@ namespace MonoDevelop.TypeSystem
 			return GetNewFieldPosition (points, mainPart);
 		}
 		
-		static InsertionPoint GetNewFieldPosition (IEnumerable<InsertionPoint> points, IType cls)
+		static InsertionPoint GetNewFieldPosition (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls)
 		{
 			throw new NotImplementedException ();
 //			if (cls.GetDefinition ().Fields.Count  == 0) 
@@ -346,7 +344,7 @@ namespace MonoDevelop.TypeSystem
 //			return points.FirstOrDefault (p => p.Location.Convert () > lastField.Location);
 		}
 		
-		static InsertionPoint GetNewMethodPosition (IEnumerable<InsertionPoint> points, IType cls)
+		static InsertionPoint GetNewMethodPosition (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls)
 		{
 			throw new NotImplementedException ();
 //			if (cls.MethodCount + cls.ConstructorCount == 0) 
@@ -355,7 +353,7 @@ namespace MonoDevelop.TypeSystem
 //			return points.FirstOrDefault (p => p.Location.Convert () > lastMember.Location);
 		}
 		
-		static InsertionPoint GetNewPropertyPosition (IEnumerable<InsertionPoint> points, IType cls)
+		static InsertionPoint GetNewPropertyPosition (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls)
 		{
 			throw new NotImplementedException ();
 //			if (cls.PropertyCount == 0)
@@ -364,7 +362,7 @@ namespace MonoDevelop.TypeSystem
 //			return points.FirstOrDefault (p => p.Location.Convert () > lastProperty.Location);
 		}
 		
-		static InsertionPoint GetNewEventPosition (IEnumerable<InsertionPoint> points, IType cls)
+		static InsertionPoint GetNewEventPosition (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls)
 		{
 			throw new NotImplementedException ();
 //			if (cls.EventCount == 0)
@@ -407,7 +405,7 @@ namespace MonoDevelop.TypeSystem
 			
 		}
 		
-		public static ITypeDefinition AddType (DotNetProject project, string folder, string namspace, CodeTypeDeclaration type)
+		public static IUnresolvedTypeDefinition AddType (DotNetProject project, string folder, string namspace, CodeTypeDeclaration type)
 		{
 			
 			var unit = new CodeCompileUnit ();

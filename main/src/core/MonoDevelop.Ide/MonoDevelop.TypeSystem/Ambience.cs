@@ -55,7 +55,7 @@ namespace MonoDevelop.TypeSystem
 		public abstract string SingleLineComment (string text);
 		public abstract string GetString (string nameSpace, OutputSettings settings);
 		
-		protected abstract string GetTypeReferenceString (ITypeReference reference, OutputSettings settings);
+		protected abstract string GetTypeReferenceString (IType reference, OutputSettings settings);
 		protected abstract string GetTypeString (IType type, OutputSettings settings);
 		protected abstract string GetMethodString (IMethod method, OutputSettings settings);
 		protected abstract string GetConstructorString (IMethod constructor, OutputSettings settings);
@@ -147,36 +147,36 @@ namespace MonoDevelop.TypeSystem
 			return settings.PostProcess (type, result);
 		}
 	
-		public string GetString (ITypeReference reference, OutputSettings settings)
+/*		public string GetString (ITypeReference reference, OutputSettings settings)
 		{
 			var result = GetTypeReferenceString (reference, settings);
 			return settings.PostProcess (reference, result);
-		}
+		}*/
 		
-		public string GetString (ITypeResolveContext ctx, IEntity entity, OutputFlags flags)
+		public string GetString (IEntity entity, OutputFlags flags)
 		{
-			return GetString (entity, new OutputSettings (flags) { Context = ctx });
+			return GetString (entity, new OutputSettings (flags));
 		}
 		
-		public string GetString (ITypeResolveContext ctx, IType type, OutputFlags flags)
+		public string GetString (IType type, OutputFlags flags)
 		{
-			return GetString (type, new OutputSettings (flags) { Context = ctx });
+			return GetString (type, new OutputSettings (flags));
 		}
 		
-		public string GetString (ITypeResolveContext ctx, ITypeDefinition type, OutputFlags flags)
+		public string GetString (ITypeDefinition type, OutputFlags flags)
 		{
-			return GetString ((IEntity)type, new OutputSettings (flags) { Context = ctx });
+			return GetString ((IEntity)type, new OutputSettings (flags));
 		}
 		
 		
-		public string GetString (ITypeResolveContext ctx, IParameterizedMember member, IParameter parameter, OutputFlags flags)
+		public string GetString (IParameterizedMember member, IParameter parameter, OutputFlags flags)
 		{
-			return GetParameterString (member, parameter, new OutputSettings (flags) { Context = ctx });
+			return GetParameterString (member, parameter, new OutputSettings (flags));
 		}
-		
-		public string GetString (ITypeResolveContext ctx, ITypeReference reference, OutputFlags flags)
+		/*
+		public string GetString (ITypeReference reference, OutputFlags flags)
 		{
-			return GetString (reference, new OutputSettings (flags) { Context = ctx });
-		}
+			return GetString (reference, new OutputSettings (flags));
+		}*/
 	}
 }

@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide
 				entity = ((IType)element).GetDefinition ();
 			
 			if (entity != null) {
-				return !entity.Region.IsEmpty || !(entity.ProjectContent is SimpleProjectItem);
+				return !entity.Region.IsEmpty;
 			}
 			return false;
 		}
@@ -228,9 +228,9 @@ namespace MonoDevelop.Ide
 		{
 			if (askIfMultipleLocations) {
 				var type = visitable as ITypeDefinition;
-				if (type != null && type.GetParts ().Count > 1) {
+				if (type != null && type.Parts.Count > 1) {
 					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-						foreach (var part in type.GetParts ())
+						foreach (var part in type.Parts)
 							monitor.ReportResult (GetJumpTypePartSearchResult (part));
 					}
 					return;
@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide
 			JumpToDeclaration (visitable);
 		}
 		
-		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (ITypeDefinition part)
+		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (IUnresolvedTypeDefinition part)
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.Region.FileName);
 			var doc = new Mono.TextEditor.Document ();
@@ -265,9 +265,11 @@ namespace MonoDevelop.Ide
 				return;
 			}
 			string fileName;
-			bool isCecilProjectContent = !(entity.ProjectContent is ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleProjectContent);
+			bool isCecilProjectContent = entity.Region.IsEmpty;
 			if (isCecilProjectContent) {
-				fileName = entity.ProjectContent.Annotation<string> (); // get dll
+				//TODO !!!
+				fileName = "";
+//				fileName = entity.ProjectContent.Annotation<string> (); // get dll
 			} else {
 				fileName = entity.Region.FileName;
 			}

@@ -187,10 +187,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			if (!IdeApp.Workspace.IsOpen)
 				return;
 			foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
-				var dom = TypeSystemService.GetProjectContext (project);
+				var dom = TypeSystemService.GetCompilation (project);
 				if (dom == null)
 					continue;
-				foreach (var type in dom.GetTypes ()) {
+				foreach (var type in dom.MainAssembly.TopLevelTypeDefinitions) {
 					if (ShouldAdd (type)) {
 						lock (searchResults) {
 							searchResults.Add (type);

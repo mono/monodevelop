@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 		}
 		
-		protected ITypeResolveContext GetParserContext ()
+		protected IProjectContent GetParserContext ()
 		{
 			CheckInitialized ();
 			
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			Project project = view.Project;
 			
 			if (project != null)
-				return TypeSystemService.GetContext (project);
+				return TypeSystemService.GetProjectContext (project);
 			return TypeSystemService.GetContext (file, Document.Editor.Document.MimeType, Document.Editor.Text);
 		}
 		

@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -45,7 +46,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			get;
 			set;
 		}
-		public ITypeResolveContext Ctx {
+		
+		public IProjectContent Ctx {
 			get;
 			set;
 		}
@@ -118,7 +120,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
 				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column), var);
-				if (!result.Type.IsReferenceType (CurrentContext.Ctx).Value)
+				if (!result.Type.IsReferenceType.Value)
 					return "Length";
 			}
 			return "Count";
@@ -126,20 +128,20 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		IType GetElementType (IType result)
 		{
-			foreach (IType baseType in result.GetAllBaseTypes(CurrentContext.Ctx)) {
-				ITypeDefinition baseTypeDef = baseType.GetDefinition();
+			foreach (var baseType in result.GetAllBaseTypes ()) {
+				var baseTypeDef = baseType.GetDefinition();
 				if (baseTypeDef != null && baseTypeDef.Name == "IEnumerable") {
 					if (baseTypeDef.Namespace == "System.Collections.Generic" && baseTypeDef.TypeParameterCount == 1) {
-						ParameterizedType pt = baseType as ParameterizedType;
+						var pt = baseType as ParameterizedType;
 						if (pt != null) {
 							return pt.TypeArguments[0];
 						}
 					} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
-						return KnownTypeReference.Object.Resolve(CurrentContext.Ctx);
+						return CurrentContext.Ctx.CreateCompilation ().FindType (KnownTypeCode.Object);
 					}
 				}
 			}
-			return SharedTypes.UnknownType;
+			return new UnknownType ("", "", 0);
 		}
 		
 		
@@ -154,7 +156,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Caret.Offset, var);
 				if (result != null) {
 					var componentType = GetElementType (result.Type);
-					if (componentType != SharedTypes.UnknownType) {
+					if (componentType.Kind != TypeKind.Unknown) {
 						var generator = CodeGenerator.CreateGenerator (CurrentContext.Document.Editor);
 						if (generator != null)
 							return generator.GetShortTypeString (CurrentContext.Document, componentType);
@@ -181,7 +183,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					
 					if (data.Entity is IMember) {
 						var m = data.Entity as IMember;
-						if (!GetElementType (m.ReturnType.Resolve (ctx)).Equals (SharedTypes.UnknownType))
+						if (GetElementType (m.ReturnType).Kind != TypeKind.Unknown)
 							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
@@ -192,7 +194,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						continue;
 					if (data.Entity is IParameter) {
 						var m = data.Entity as IParameter;
-						if (!GetElementType (m.Type.Resolve (ctx)).Equals (SharedTypes.UnknownType))
+						if (GetElementType (m.Type).Kind != TypeKind.Unknown)
 							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
@@ -202,7 +204,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					if (data == null)
 						continue;
 					var m = data.Variable;
-					if (!GetElementType (m.Type.Resolve (ctx)).Equals (SharedTypes.UnknownType))
+					if (GetElementType (m.Type).Kind != TypeKind.Unknown)
 						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 				}
 			}
@@ -231,8 +233,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				name = name.Substring (0, idx);
 			}
 			
-			var type = CurrentContext.Ctx.GetTypeDefinition (ns, name, 0, StringComparer.Ordinal);
-			if (type == null || type.Equals (SharedTypes.UnknownType))
+			var type = CurrentContext.Ctx.CreateCompilation ().FindType (string.IsNullOrEmpty (ns) ? name : ns + "." + name);
+			if (type == null || type.Kind == TypeKind.Unknown)
 				return fullTypeName;
 			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document.Editor);
 			if (generator != null)

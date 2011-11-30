@@ -38,18 +38,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ClassData
 	{
-		ITypeResolveContext ctx;
 		ITypeDefinition cls;
 		Project project;
 		
-		public ClassData (ITypeResolveContext ctx, Project p, ITypeDefinition c)
+		public ClassData (Project p, ITypeDefinition c)
 		{
 			cls = c;
 			project = p;
-		}
-		
-		public ITypeResolveContext Ctx {
-			get { return ctx; }
 		}
 		
 		public ITypeDefinition Class {

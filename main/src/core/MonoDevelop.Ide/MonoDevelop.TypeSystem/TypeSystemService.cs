@@ -48,12 +48,12 @@ namespace MonoDevelop.TypeSystem
 	{
 		public static Project GetProject (this IProjectContent content)
 		{
-			return content.Annotation<Project> ();
+			return TypeSystemService.GetProject (content.AssemblyName);
 		}
 		
 		public static Project GetSourceProject (this ITypeDefinition type)
 		{
-			return type.ProjectContent.GetProject ();
+			return TypeSystemService.GetProject (type.Compilation.MainAssembly.AssemblyName);
 		}
 		
 		public static Project GetSourceProject (this IType type)
@@ -63,7 +63,7 @@ namespace MonoDevelop.TypeSystem
 		
 		public static IProjectContent GetProjectContent (this IType type)
 		{
-			return type.GetDefinition ().ProjectContent;
+			return TypeSystemService.GetProjectContext (type.GetSourceProject ());
 		}
 		
 		public static TextLocation GetLocation (this IType type)
@@ -78,7 +78,7 @@ namespace MonoDevelop.TypeSystem
 		
 		public static bool IsBaseType (this IType type, ITypeResolveContext ctx, IType potentialBase)
 		{
-			return type.GetAllBaseTypes (ctx).Any (t => t.Equals (potentialBase));
+			return type.GetAllBaseTypes ().Any (t => t.Equals (potentialBase));
 		}
 		
 		public static bool IsObsolete (this IEntity member)
@@ -121,20 +121,56 @@ namespace MonoDevelop.TypeSystem
 		
 		public static ParsedDocument ParseFile (Project project, string fileName)
 		{
-			return ParseFile (GetProjectContext (project), fileName, DesktopService.GetMimeTypeForUri (fileName), File.ReadAllText (fileName));
+			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), File.ReadAllText (fileName));
 		}
 		
-		public static ParsedDocument ParseFile (IProjectContent projectContent, string fileName, string mimeType, TextReader content)
+		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
-			if (projectContent == null)
-				throw new ArgumentNullException ("projectContent");
+			ProjectContentWrapper wrapper;
+			projectContents.TryGetValue (project, out wrapper);
+			
 			var parser = GetParser (mimeType);
 			if (parser == null)
 				return null;
 			try {
-				var result = parser.Parse (projectContent, true, fileName, content);
-				if ((result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
-					((SimpleProjectContent)projectContent).UpdateProjectContent (projectContent.GetFile (fileName), result);
+				var result = parser.Parse (true, fileName, content);
+				if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result);
+				return result;
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while parsing :" + e);
+				return new ParsedDocument (fileName) { Flags = ParsedDocumentFlags.NonSerializable };
+			}
+		}
+		
+		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, string content)
+		{
+			using (var reader = new StringReader (content))
+				return ParseFile (project, fileName, mimeType, reader);
+		}
+		
+		public static ParsedDocument ParseFile (Project project, TextEditorData data)
+		{
+			return ParseFile (project, data.FileName, data.MimeType, data.Text);
+		}
+		
+		
+		
+		public static ParsedDocument ParseFile (string fileName, string mimeType, string text, ProjectContentWrapper wrapper = null)
+		{
+			using (var reader = new StringReader (text))
+				return ParseFile (fileName, mimeType, reader, wrapper);
+		}
+		
+		public static ParsedDocument ParseFile (string fileName, string mimeType, TextReader content, ProjectContentWrapper wrapper = null)
+		{
+			var parser = GetParser (mimeType);
+			if (parser == null)
+				return null;
+			try {
+				var result = parser.Parse (true, fileName, content);
+				if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result);
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
@@ -163,17 +199,6 @@ namespace MonoDevelop.TypeSystem
 					ParseOperationFinished (null, EventArgs.Empty);
 			}
 		}
-		public static ParsedDocument ParseFile (IProjectContent projectContent, string fileName, string mimeType, string content)
-		{
-			using (var reader = new StringReader (content))
-				return ParseFile (projectContent, fileName, mimeType, reader);
-		}
-		
-		public static ParsedDocument ParseFile (IProjectContent projectContent, TextEditorData data)
-		{
-			return ParseFile (projectContent, data.FileName, data.MimeType, data.Text);
-		}
-		
 		#region Parser Database Handling
 
 		static string GetWorkspacePath (string dataPath)
@@ -275,7 +300,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static Dictionary<string, SimpleProjectContent> solutionCache = new Dictionary<string, SimpleProjectContent> ();
+		static Dictionary<string, IProjectContent> solutionCache = new Dictionary<string, IProjectContent> ();
 		
 		/// <summary>
 		/// Removes all cache directories which are older than 30 days.
@@ -327,11 +352,11 @@ namespace MonoDevelop.TypeSystem
 		{
 			string cacheDir = GetCacheDirectory (solution.FileName);
 			if (cacheDir == null) {
-				solutionCache = new Dictionary<string, SimpleProjectContent> ();
+				solutionCache = new Dictionary<string, IProjectContent> ();
 				return;
 			}
 			TouchCache (cacheDir);
-			solutionCache = DeserializeObject<Dictionary<string, SimpleProjectContent>> (Path.Combine (cacheDir, "completion.cache")) ?? new Dictionary<string, SimpleProjectContent> ();
+			solutionCache = DeserializeObject<Dictionary<string, IProjectContent>> (Path.Combine (cacheDir, "completion.cache")) ?? new Dictionary<string, IProjectContent> ();
 			if (solutionCache == null)
  				RemoveCache (cacheDir);
 			CleanupCache ();
@@ -342,7 +367,7 @@ namespace MonoDevelop.TypeSystem
 			string cacheDir = GetCacheDirectory (solution.FileName) ?? CreateCacheDirectory (solution.FileName);
 			TouchCache (cacheDir);
 			
-			var cache = new Dictionary<string, SimpleProjectContent> ();
+			var cache = new Dictionary<string, ProjectContentWrapper> ();
 			foreach (var pair in projectContents) {
 				var key = pair.Key.FileName.ToString ();
 				if (string.IsNullOrEmpty (key))
@@ -386,7 +411,35 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static Dictionary<Project, SimpleProjectContent> projectContents = new Dictionary<Project, SimpleProjectContent> ();
+		public class ProjectContentWrapper
+		{
+			IProjectContent content;
+			public IProjectContent Content {
+				get {
+					return content;
+				}
+				set {
+					content = value;
+					compilation = null;
+				}
+			}
+			
+			ICompilation compilation = null;
+			public ICompilation Compilation {
+				get {
+					if (compilation == null)
+						compilation = Content.CreateCompilation ();
+					return compilation;
+				}
+			}
+			
+			public ProjectContentWrapper (IProjectContent content)
+			{
+				this.content = content;
+			}
+		}
+		
+		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 		
 		public static void Load (Project project)
@@ -397,15 +450,16 @@ namespace MonoDevelop.TypeSystem
 				if (projectContents.ContainsKey (project))
 					return;
 				try {
-					SimpleProjectContent context = null;
+					IProjectContent context = null;
 					if (solutionCache.ContainsKey (project.FileName))
 						context = solutionCache [project.FileName];
 					if (context == null) {
-						context = new SimpleProjectContent ();
-						QueueParseJob (context, project);
+						context = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
+						projectContents [project] = new ProjectContentWrapper (context);
+						QueueParseJob (projectContents [project], project);
+					} else {
+						projectContents [project] = new ProjectContentWrapper (context);
 					}
-					context.AddAnnotation (project);
-					projectContents [project] = context;
 					referenceCounter [project] = 1;
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, context));
 					project.FileChangedInProject += OnFileChanged;
@@ -418,6 +472,17 @@ namespace MonoDevelop.TypeSystem
 				}
 			}
 		}
+		
+		public static Project GetProject (IEntity entity)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public static Project GetProject (string assemblyName)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		#region Project modification handlers
 		static void OnFileChanged (object sender, ProjectFileEventArgs args)
 		{
@@ -439,7 +504,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			var project = (Project)sender;
 			foreach (ProjectFileEventInfo fargs in args) {
-				projectContents [project].UpdateProjectContent (projectContents [project].GetFile (fargs.ProjectFile.Name), null);
+				projectContents [project].Content = projectContents [project].Content.UpdateProjectContent (projectContents [project].Content.GetFile (fargs.ProjectFile.Name), null);
 			}
 		}
 
@@ -447,7 +512,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			var project = (Project)sender;
 			foreach (ProjectFileRenamedEventInfo fargs in args) {
-				projectContents [project].UpdateProjectContent (projectContents [project].GetFile (fargs.OldName), null);
+				projectContents [project].Content = projectContents [project].Content.UpdateProjectContent (projectContents [project].Content.GetFile (fargs.OldName), null);
 				QueueParseJob (projectContents [project], project, new [] { fargs.ProjectFile });
 			}
 		}
@@ -676,54 +741,11 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		[Serializable]
-		class AssemblyContext : ITypeResolveContext
+		class AssemblyContext
 		{
 			public string FileName;
 			public DateTime LastWriteTime;
-			public IProjectContent Ctx;
-
-			#region ITypeResolveContext implementation
-			ITypeDefinition ITypeResolveContext.GetKnownTypeDefinition (TypeCode typeCode)
-			{
-				return Ctx.GetKnownTypeDefinition (typeCode);
-			}
-
-			ITypeDefinition ITypeResolveContext.GetTypeDefinition (string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
-			{
-				return Ctx.GetTypeDefinition (nameSpace, name, typeParameterCount, nameComparer);
-			}
-
-			IEnumerable<ITypeDefinition> ITypeResolveContext.GetTypes ()
-			{
-				return Ctx.GetTypes ();
-			}
-
-			public IEnumerable<ITypeDefinition> GetTypes (string nameSpace, StringComparer nameComparer)
-			{
-				return Ctx.GetTypes (nameSpace, nameComparer);
-			}
-
-			IEnumerable<string> ITypeResolveContext.GetNamespaces ()
-			{
-				return Ctx.GetNamespaces ();
-			}
-
-			string ITypeResolveContext.GetNamespace (string nameSpace, StringComparer nameComparer)
-			{
-				return Ctx.GetNamespace (nameSpace, nameComparer);
-			}
-
-			ISynchronizedTypeResolveContext ITypeResolveContext.Synchronize ()
-			{
-				return Ctx.Synchronize ();
-			}
-
-			CacheManager ITypeResolveContext.CacheManager {
-				get {
-					return Ctx.CacheManager;
-				}
-			}
-			#endregion
+			public IUnresolvedAssembly Ctx;
 		}
 		
 		static AssemblyContext LoadAssemblyContext (string fileName)
@@ -768,13 +790,12 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		public static ITypeResolveContext LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
+		public static IUnresolvedAssembly LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
 		{ // TODO: Runtimes
 			var asm = ReadAssembly (fileName);
 			if (asm == null)
 				return null;
 			var result = new CecilLoader ().LoadAssembly (asm);
-			result.AddAnnotation (fileName);
 			return result;
 		}
 		
@@ -782,30 +803,43 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (project == null)
 				return null;
-			SimpleProjectContent content;
+			ProjectContentWrapper content;
 			projectContents.TryGetValue (project, out content);
-			return content;
+			return content.Content;
 		}
 		
-		public static ITypeResolveContext GetContext (FilePath file, string mimeType, string text)
+		public static ICompilation GetCompilation (Project project)
 		{
-			SimpleProjectContent content = new SimpleProjectContent ();
-			var parsedFile = ParseFile (content, file, mimeType, text);
-			content.UpdateProjectContent (null, parsedFile);
-			return content;
+			if (project == null)
+				return null;
+			ProjectContentWrapper content;
+			projectContents.TryGetValue (project, out content);
+			return content.Compilation;
+		}
+		
+		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
+		{
+			using (var reader = new StringReader (text)) {
+				var parsedFile = ParseFile (file, mimeType, reader);
+				
+				var content = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
+				return content.UpdateProjectContent (null, parsedFile);
+			}
 		}
 		
 		static Dictionary<Project, ITypeResolveContext> cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
 
+		
 		public static ITypeResolveContext GetContext (Project project)
 		{
-			lock (cachedProjectContents) {
+			throw new NotImplementedException ();
+/*			lock (cachedProjectContents) {
 				ITypeResolveContext result;
 				if (cachedProjectContents.TryGetValue (project, out result))
 					return result;
 				List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
 				
-				SimpleProjectContent content;
+				ProjectContentWrapper content;
 				if (projectContents.TryGetValue (project, out content))
 					contexts.Add (content);
 				foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
@@ -851,7 +885,7 @@ namespace MonoDevelop.TypeSystem
 				result = new CompositeTypeResolveContext (contexts);
 				cachedProjectContents [project] = result;
 				return result;
-			}
+			}*/
 		}
 		
 		public static void ForceUpdate (ITypeResolveContext context)
@@ -895,7 +929,7 @@ namespace MonoDevelop.TypeSystem
 		static Queue<ParsingJob> parseQueue = new Queue<ParsingJob>();
 		class ParsingJob
 		{
-			public SimpleProjectContent Context;
+			public ProjectContentWrapper Context;
 			public Project Project;
 			public IEnumerable<ProjectFile> FileList;
 //			public Action<string, IProgressMonitor> ParseCallback;
@@ -910,8 +944,8 @@ namespace MonoDevelop.TypeSystem
 					if (parser == null)
 						continue;
 					using (var stream = new System.IO.StreamReader (file.FilePath)) {
-						var parsedFile = parser.Parse (Context, false, file.FilePath, stream);
-						Context.UpdateProjectContent (Context.GetFile (file.FilePath), parsedFile);
+						var parsedFile = parser.Parse (false, file.FilePath, stream);
+						Context.Content = Context.Content.UpdateProjectContent (Context.Content.GetFile (file.FilePath), parsedFile);
 					}
 //					if (ParseCallback != null)
 //						ParseCallback (file.FilePath, monitor);
@@ -953,7 +987,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		public static void QueueParseJob (SimpleProjectContent context, /* Action<string, IProgressMonitor> callback,*/ Project project, IEnumerable<ProjectFile> fileList = null)
+		static void QueueParseJob (ProjectContentWrapper context, /* Action<string, IProgressMonitor> callback,*/ Project project, IEnumerable<ProjectFile> fileList = null)
 		{
 			var job = new ParsingJob () {
 				Context = context,
@@ -1060,7 +1094,7 @@ namespace MonoDevelop.TypeSystem
 			return System.IO.File.GetLastWriteTime (file.FilePath) > parsedFile.LastWriteTime;
 		}
 
-		static void CheckModifiedFiles (Project project, SimpleProjectContent content)
+		static void CheckModifiedFiles (Project project, ProjectContentWrapper content)
 		{
 			List<ProjectFile> modifiedFiles = null;
 			foreach (var file in project.Files) {
@@ -1071,7 +1105,7 @@ namespace MonoDevelop.TypeSystem
 				if (parser == null)
 					continue;
 				
-				if (!IsFileModified (file, content.GetFile (file.FilePath)))
+				if (!IsFileModified (file, content.Content.GetFile (file.FilePath)))
 					continue;
 				if (modifiedFiles == null)
 					modifiedFiles = new List<ProjectFile> ();
@@ -1079,9 +1113,9 @@ namespace MonoDevelop.TypeSystem
 			}
 			
 			// check if file needs to be removed from project content 
-			foreach (var file in content.Files) {
+			foreach (var file in content.Content.Files) {
 				if (project.GetProjectFile (file.FileName) == null)
-					content.UpdateProjectContent (file, null);
+					content.Content = content.Content.UpdateProjectContent (file, null);
 			}
 			
 			if (modifiedFiles == null)
@@ -1109,10 +1143,10 @@ namespace MonoDevelop.TypeSystem
 		
 		static void CheckModifiedFiles ()
 		{
-			Queue<KeyValuePair<Project, SimpleProjectContent>> list;
+			Queue<KeyValuePair<Project, ProjectContentWrapper>> list;
 			
 			lock (rwLock) {
-				list = new Queue<KeyValuePair<Project, SimpleProjectContent>> (projectContents);
+				list = new Queue<KeyValuePair<Project, ProjectContentWrapper>> (projectContents);
 			}
 			
 			while (list.Count > 0) {
