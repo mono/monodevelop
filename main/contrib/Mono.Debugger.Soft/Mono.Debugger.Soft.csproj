@@ -107,7 +107,6 @@
     <Compile Include="Mono.Debugger.Soft\AssemblyLoadEventRequest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Mono.Debugger.Soft\ChangeLog" />
     <None Include="Makefile.am" />
     <None Include="mono-git-revision" />
   </ItemGroup>

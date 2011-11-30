@@ -102,7 +102,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChangeLog" />
     <None Include="Makefile.am" />
     <None Include="icons\window.png" />
     <None Include="icons\dialog.png" />

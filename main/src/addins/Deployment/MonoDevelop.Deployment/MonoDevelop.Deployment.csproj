@@ -78,7 +78,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChangeLog" />
     <None Include="Makefile.am" />
   </ItemGroup>
   <ItemGroup>

@@ -102,7 +102,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="ChangeLog" />
     <None Include="README" />
   </ItemGroup>
   <ItemGroup>

@@ -145,9 +145,6 @@
       <LogicalName>MonoDevelop.AssemblyBrowser.addin.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ChangeLog" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
