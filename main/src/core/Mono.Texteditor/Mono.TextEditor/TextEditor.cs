@@ -2782,7 +2782,6 @@ namespace Mono.TextEditor
 				try {
 					view.Caret.Location = new DocumentLocation (line, column);
 					view.GrabFocus ();
-					view.CenterToCaret ();
 					if (view.TextViewMargin.XOffset == 0)
 						view.HAdjustment.Value = 0;
 					view.SizeAllocated -= Run;
