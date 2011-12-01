@@ -38,16 +38,12 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
 	public class RefactoringOptions
 	{
-		public ITypeResolveContext Dom {
-			get;
-			set;
-		}
-		
 		public Document Document {
 			get;
 			set;
@@ -154,44 +150,37 @@ namespace MonoDevelop.Refactoring
 		public static List<string> GetUsedNamespaces (Document doc, TextLocation loc)
 		{
 			var result = new List<string> ();
-			var pf = doc.ParsedDocument.Annotation<CSharpParsedFile> ();
+			var pf = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
 			if (pf == null)
 				return result;
 			var scope = pf.GetUsingScope (loc);
 			if (scope == null)
 				return result;
 			var ctx = doc.TypeResolveContext;
-			
+			var resolver = pf.GetResolver (doc.Compilation, loc);
 			for (var n = scope; n != null; n = n.Parent) {
 				result.Add (n.NamespaceName);
-				result.AddRange (n.Usings.Select (u => u.ResolveNamespace (ctx))
+				result.AddRange (n.Usings.Select (u => u.ResolveNamespace (resolver))
 					.Where (nr => nr != null)
-					.Select (nr => nr.NamespaceName));
+					.Select (nr => nr.FullName));
 			}
 			return result;
 		}
 		
 		public ResolveResult Resolve (AstNode node)
 		{
-			var pf = Document.ParsedDocument.Annotation<CSharpParsedFile> ();
-			var unit = Document.ParsedDocument.Annotation<CompilationUnit> ();
-			var csResolver = new CSharpResolver (Document.TypeResolveContext, System.Threading.CancellationToken.None);
-			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
+			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
+			var cu = Document.ParsedDocument.Annotation<CompilationUnit> ();
 			
-			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, pf, navigator);
-			visitor.Scan (unit);
-			return visitor.GetResolveResult (node);
+			var resolver = new CSharpAstResolver (Document.Compilation, cu, parsedFile);
+			return resolver.Resolve (node);
 		}
 		
 		public AstType CreateShortType (IType fullType)
 		{
-			var csResolver = new CSharpResolver (Document.TypeResolveContext, System.Threading.CancellationToken.None);
+			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
 			
-			var pf = Document.ParsedDocument.Annotation<CSharpParsedFile> ();
-			
-			csResolver.CurrentMember = pf.GetMember (Location);
-			csResolver.CurrentTypeDefinition = pf.GetInnermostTypeDefinition (Location);
-			csResolver.CurrentUsingScope = pf.GetUsingScope (Location);
+			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);

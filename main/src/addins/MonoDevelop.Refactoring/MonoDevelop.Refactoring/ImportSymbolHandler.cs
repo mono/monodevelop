@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring
 	{
 		Dictionary<string, GenerateNamespaceImport> cache = new Dictionary<string, GenerateNamespaceImport> ();
 		
-		public GenerateNamespaceImport GetResult (ITypeResolveContext dom, IParsedFile unit, IType type, MonoDevelop.Ide.Gui.Document doc)
+		public GenerateNamespaceImport GetResult (IParsedFile unit, IType type, MonoDevelop.Ide.Gui.Document doc)
 		{
 			GenerateNamespaceImport result;
 			if (cache.TryGetValue (type.Namespace, out result))
@@ -80,7 +80,7 @@ namespace MonoDevelop.Refactoring
 			string name = type.Name;
 			
 			foreach (string ns in RefactoringOptions.GetUsedNamespaces (doc, loc)) {
-				if (dom.GetTypeDefinition (ns, name, type.TypeParameterCount, StringComparer.Ordinal) != null) {
+				if (doc.Compilation.MainAssembly.GetTypeDefinition (ns, name, type.TypeParameterCount) != null) {
 					result.GenerateUsing = false;
 					result.InsertNamespace = true;
 					return result;
@@ -96,7 +96,6 @@ namespace MonoDevelop.Refactoring
 		IType type;
 		Ambience ambience;
 		ParsedDocument unit;
-		ITypeResolveContext dom;
 		MonoDevelop.Ide.Gui.Document doc;
 		ImportSymbolCache cache;
 		
@@ -104,11 +103,10 @@ namespace MonoDevelop.Refactoring
 			get { return this.type; }
 		}
 		
-		public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, ImportSymbolCache cache, ITypeResolveContext dom, IType type)
+		public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, ImportSymbolCache cache, IType type)
 		{
 			this.doc = doc;
 			this.cache = cache;
-			this.dom = dom;
 			this.data = doc.Editor;
 			this.ambience = AmbienceService.GetAmbience (doc.Editor.MimeType);
 			this.type = type;
@@ -125,7 +123,7 @@ namespace MonoDevelop.Refactoring
 			initialized = true;
 			if (string.IsNullOrEmpty (type.Namespace)) 
 				return;
-			var result = cache.GetResult (dom, unit, type, doc);
+			var result = cache.GetResult (unit, type, doc);
 			generateUsing = result.GenerateUsing;
 			insertNamespace = result.InsertNamespace;
 		}
@@ -162,7 +160,7 @@ namespace MonoDevelop.Refactoring
 		public override string DisplayText {
 			get {
 				if (displayText == null)
-					displayText = ambience.GetString (dom, type, OutputFlags.IncludeGenerics);
+					displayText = ambience.GetString (type, OutputFlags.IncludeGenerics);
 				return displayText;
 			}
 		}
@@ -212,12 +210,12 @@ namespace MonoDevelop.Refactoring
 			if (ext == null)
 				return;
 		
-			ITypeResolveContext dom = doc.TypeResolveContext;
+			var dom = doc.Compilation;
 			ImportSymbolCache cache = new ImportSymbolCache ();
 			
 			List<ImportSymbolCompletionData> typeList = new List<ImportSymbolCompletionData> ();
-			foreach (var type in dom.GetTypes ()) {
-				typeList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
+			foreach (var type in dom.GetAllTypeDefinitions ()) {
+				typeList.Add (new ImportSymbolCompletionData (doc, cache, type));
 			}
 			
 			typeList.Sort (delegate (ImportSymbolCompletionData left, ImportSymbolCompletionData right) {

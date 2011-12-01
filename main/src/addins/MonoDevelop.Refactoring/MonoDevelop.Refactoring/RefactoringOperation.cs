@@ -68,7 +68,7 @@ namespace MonoDevelop.Refactoring
 		{
 			var changes = PerformChanges (options, null);
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+			RefactoringService.AcceptChanges (monitor, changes);
 		}
 	}
 }

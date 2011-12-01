@@ -29,33 +29,41 @@ using MonoDevelop.CSharp.Refactoring.CreateMethod;
 using NUnit.Framework;
 using System.Collections.Generic;
 using Mono.TextEditor;
-using MonoDevelop.Projects.CodeGeneration;
 using System.Linq;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.AspNet.Parser.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
 	[TestFixture()]
 	public class ImplementInterfaceTests : UnitTests.TestBase
 	{
+		static IProjectContent Mscorlib  = new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
+//		static IProjectContent SystemCore = new CecilLoader().LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
+		
 		void TestCreateInterface (string interfacecode, string outputString)
 		{
-			var dom = new SimpleProjectDom ();
+			var project = new UnknownProject ();
+			project.FileName = "test.csproj";
 			
-			var parser = new McsParser ();
-			var unit = parser.Parse (dom, "Interface.cs", interfacecode);
+			TypeSystem.TypeSystemService.Load (project);
+			var pctx = TypeSystem.TypeSystemService.GetProjectContext (project);
 			
-			DomType stubType = new DomType ("Stub");
-			stubType.SourceProjectDom = dom;
-			stubType.CompilationUnit = new CompilationUnit ("Stub.cs");
-			var iface = unit.CompilationUnit.Types[0];
+			TypeSystem.TypeSystemService.ParseFile (pctx, "program.cs", "text/x-csharp", interfacecode);
+			TypeSystem.TypeSystemService.ParseFile (pctx, "stub.cs", "text/x-csharp", "class Stub {\n}\n");
+			
+			var stubType = pctx.GetFile ("stub.cs").TopLevelTypeDefinitions.First ();
+			var iface = pctx.GetFile ("program.cs").TopLevelTypeDefinitions.First ();
+			
+			var ctx = new CompositeTypeResolveContext (new [] { pctx, Mscorlib/*, SystemCore */});
 			var gen = new CSharpCodeGenerator ();
 			gen.EolMarker = "\n";
-			string generated = gen.CreateInterfaceImplementation (stubType, iface, false);
+			string generated = gen.CreateInterfaceImplementation (ctx, stubType, iface, false);
 			// crop #region
 			generated = generated.Substring (generated.IndexOf ("implementation") + "implementation".Length);
 			generated = generated.Substring (0, generated.LastIndexOf ("#"));
@@ -67,14 +75,16 @@ namespace MonoDevelop.Refactoring
 		/// <summary>
 		/// Bug 663842 - Interface implementation does not include constraints
 		/// </summary>
+		[Ignore()]
 		[Test()]
 		public void TestBug663842 ()
 		{
-			TestCreateInterface (@"interface ITest {
+			TestCreateInterface (@"using System;
+interface ITest {
 	void MyMethod1<T> (T t) where T : new ();
 	void MyMethod2<T> (T t) where T : class;
 	void MyMethod3<T> (T t) where T : struct;
-	void MyMethod4<T> (T t) where T : A, B;
+	void MyMethod4<T> (T t) where T : IDisposable, IServiceProvider;
 }", @"public void MyMethod1<T> (T t) where T : new ()
 	{
 		throw new System.NotImplementedException ();
@@ -90,7 +100,7 @@ namespace MonoDevelop.Refactoring
 		throw new System.NotImplementedException ();
 	}
 
-	public void MyMethod4<T> (T t) where T : A, B
+	public void MyMethod4<T> (T t) where T : System.IDisposable, System.IServiceProvider
 	{
 		throw new System.NotImplementedException ();
 	}");

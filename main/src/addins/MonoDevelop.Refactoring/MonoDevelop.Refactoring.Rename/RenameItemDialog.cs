@@ -156,7 +156,7 @@ namespace MonoDevelop.Refactoring.Rename
 			((Widget)this).Destroy ();
 			List<Change> changes = rename.PerformChanges (options, properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+			RefactoringService.AcceptChanges (monitor, changes);
 		}
 		
 		void OnPreviewClicked (object sender, EventArgs e)
@@ -164,7 +164,7 @@ namespace MonoDevelop.Refactoring.Rename
 			var properties = Properties;
 			((Widget)this).Destroy ();
 			List<Change> changes = rename.PerformChanges (options, properties);
-			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (options.Dom, changes));
+			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
 		}
 	}
 		

@@ -60,13 +60,13 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			if (options.SelectedItem is IVariable || options.SelectedItem is IParameter)
 				return true;
-
-			if (options.SelectedItem is ITypeDefinition)
-				return ((ITypeDefinition)options.SelectedItem).ProjectContent is SimpleProjectContent;
+// TODO: Type system conversion.
+//			if (options.SelectedItem is ITypeDefinition)
+//				return ((ITypeDefinition)options.SelectedItem).ProjectContent is SimpleProjectContent;
 
 			if (options.SelectedItem is IMember) {
 				var cls = ((IMember)options.SelectedItem).DeclaringTypeDefinition;
-				return cls != null && cls.ProjectContent is SimpleProjectContent;
+				return cls != null;
 			}
 			return false;
 		}
@@ -87,7 +87,7 @@ namespace MonoDevelop.Refactoring.Rename
 					result.Add (change);
 				}
 				if (result.Count > 0) {
-					RefactoringService.AcceptChanges (monitor, ctx, result);
+					RefactoringService.AcceptChanges (monitor, result);
 				}
 			}
 		}
@@ -179,14 +179,14 @@ namespace MonoDevelop.Refactoring.Rename
 					var cls = (ITypeDefinition)options.SelectedItem;
 					int currentPart = 1;
 					HashSet<string> alreadyRenamed = new HashSet<string> ();
-					foreach (var part in cls.GetParts ()) {
-						if (part.GetDefinition ().Region.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.GetDefinition ().Region.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
+					foreach (var part in cls.Parts) {
+						if (part.Region.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.Region.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
 							continue;
-						if (alreadyRenamed.Contains (part.GetDefinition ().Region.FileName))
+						if (alreadyRenamed.Contains (part.Region.FileName))
 							continue;
-						alreadyRenamed.Add (part.GetDefinition ().Region.FileName);
+						alreadyRenamed.Add (part.Region.FileName);
 							
-						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.GetDefinition ().Region.FileName);
+						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.Region.FileName);
 						string newFileName;
 						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper ()))
 							continue;
@@ -199,10 +199,10 @@ namespace MonoDevelop.Refactoring.Rename
 						}
 							
 						int t = 0;
-						while (System.IO.File.Exists (GetFullFileName (newFileName, part.GetDefinition ().Region.FileName, t))) {
+						while (System.IO.File.Exists (GetFullFileName (newFileName, part.Region.FileName, t))) {
 							t++;
 						}
-						result.Add (new RenameFileChange (part.GetDefinition ().Region.FileName, GetFullFileName (newFileName, part.GetDefinition ().Region.FileName, t)));
+						result.Add (new RenameFileChange (part.Region.FileName, GetFullFileName (newFileName, part.Region.FileName, t)));
 					}
 				}
 				

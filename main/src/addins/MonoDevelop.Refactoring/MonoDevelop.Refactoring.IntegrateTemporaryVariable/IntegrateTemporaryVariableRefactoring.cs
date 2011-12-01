@@ -103,7 +103,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		{
 			List<Change> changes = PerformChanges (options, null);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+			RefactoringService.AcceptChanges (monitor, changes);
 //			Console.WriteLine ("Changes accepted");
 		}
 		

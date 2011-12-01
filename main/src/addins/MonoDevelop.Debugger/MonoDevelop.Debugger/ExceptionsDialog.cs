@@ -76,16 +76,16 @@ namespace MonoDevelop.Debugger
 
 		void LoadExceptions ()
 		{
-			ITypeResolveContext dom;
+			ICompilation dom;
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
-				dom = TypeSystemService.GetContext (IdeApp.ProjectOperations.CurrentSelectedProject);
+				dom = TypeSystemService.GetCompilation (IdeApp.ProjectOperations.CurrentSelectedProject);
 			else {
 				string asm = typeof(Uri).Assembly.Location;
 				// no nead to unload this assembly context, it's not cached.
 				dom = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, asm);
 			}
 			classes.Add ("System.Exception");
-			foreach (var t in dom.GetTypeDefinition (typeof (System.Exception)).GetSubTypeDefinitions (dom))
+			foreach (var t in dom.FindType (typeof (System.Exception)).GetSubTypeDefinitions ())
 				classes.Add (t.ReflectionName);
 		}
 

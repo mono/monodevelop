@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 			ResolveResult resolveResoult;
-			object item = CurrentRefactoryOperationsHandler.GetItem (doc.TypeResolveContext, doc, out resolveResoult);
+			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
 			var entity = item as IEntity;
 			if (entity == null)
 				return;

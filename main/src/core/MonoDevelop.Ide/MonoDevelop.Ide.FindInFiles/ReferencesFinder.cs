@@ -133,13 +133,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			}*/
 		}
 		
-		public static List<Tuple<Project, IProjectContent>> GetAllReferencingProjects (Solution solution, Project sourceProject)
+		public static List<Project> GetAllReferencingProjects (Solution solution, Project sourceProject)
 		{
-			var projects = new List<Tuple<Project, IProjectContent>> ();
+			var projects = new List<Project> ();
 			projects.Add (Tuple.Create (sourceProject, TypeSystemService.GetProjectContext (sourceProject)));
 			foreach (var project in solution.GetAllProjects ()) {
 				if (project.GetReferencedItems (ConfigurationSelector.Default).Any (prj => prj == sourceProject))
-					projects.Add (Tuple.Create (project, TypeSystemService.GetProjectContext (project)));
+					projects.Add (project);
 			}
 			return projects;
 		}

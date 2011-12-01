@@ -55,7 +55,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 				return false;
 			if (!declaration.BaseTypes.Any (bt => bt.Contains (loc.Line, loc.Column)))
 				return false;
-			interfaceType = options.ResolveResult.Type.Resolve (options.Dom);
+			interfaceType = options.ResolveResult.Type;
 			var def = interfaceType.GetDefinition ();
 			if (def == null)
 				return false;
@@ -98,7 +98,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 					var generator = options.CreateCodeGenerator ();
 					if (generator == null) 
 						return;
-					args.InsertionPoint.Insert (options.GetTextEditorData (), generator.CreateInterfaceImplementation (options.Dom, declaringType, interfaceType, implementExplicit));
+					args.InsertionPoint.Insert (options.GetTextEditorData (), generator.CreateInterfaceImplementation (declaringType, interfaceType, implementExplicit));
 				}
 			};
 		}

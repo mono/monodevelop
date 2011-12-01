@@ -63,14 +63,13 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			var refactoring = new RenameRefactoring ();
 			var options = new RefactoringOptions () {
 				Document = doc,
-				Dom = doc.TypeResolveContext,
 				SelectedItem = renameFix.Item,
 			};
 			
 			if (renameFix.Item == null) {
 				ResolveResult resolveResult;
 				
-				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Dom, options.Document, out resolveResult);
+				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Document, out resolveResult);
 			}
 			
 			if (!refactoring.IsValid (options))
@@ -125,10 +124,10 @@ namespace MonoDevelop.AnalysisCore.Fixes
 				//FIXME: performchanges should probably use a monitor too, as it can be slow
 				var changes = Refactoring.PerformChanges (Options, Properties);
 				if (Preview) {
-					MessageService.ShowCustomDialog (new RefactoringPreviewDialog (Options.Dom, changes));
+					MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
 				} else {
 					var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
-					RefactoringService.AcceptChanges (monitor, Options.Dom, changes);
+					RefactoringService.AcceptChanges (monitor, changes);
 				}
 			}
 		}

@@ -55,6 +55,11 @@ namespace MonoDevelop.TypeSystem
 		[NonSerialized]
 		List<Comment> comments = new List<Comment> ();
 		
+		public virtual IParsedFile ParsedFile {
+			get { return this; }
+			protected set { throw new InvalidOperationException (); }
+		}
+
 		public IList<Comment> Comments {
 			get {
 				return comments;
@@ -323,9 +328,9 @@ namespace MonoDevelop.TypeSystem
 	{
 		IParsedFile parsedFile;
 		
-		public IParsedFile ParsedFile {
+		public override IParsedFile ParsedFile {
 			get { return parsedFile; }
-			set { parsedFile = value; FileName = parsedFile.FileName; }
+			protected set { parsedFile = value; FileName = parsedFile.FileName; }
 		}
 		
 		public ParsedDocumentDecorator (IParsedFile parsedFile) : base (parsedFile.FileName)

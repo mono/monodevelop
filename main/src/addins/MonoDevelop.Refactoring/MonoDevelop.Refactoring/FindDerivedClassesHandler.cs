@@ -52,8 +52,7 @@ namespace MonoDevelop.Refactoring
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (solution == null)
 				return;
-			var sourceCtx     = cls.GetProjectContent ();
-			var sourceProject = sourceCtx.Annotation<Project> ();
+			var sourceProject = TypeSystemService.GetProject (cls);
 			var projects = ReferenceFinder.GetAllReferencingProjects (solution, sourceProject);
 			ThreadPool.QueueUserWorkItem (delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
@@ -61,9 +60,8 @@ namespace MonoDevelop.Refactoring
 					foreach (var p in projects) {
 						if (p.Item2 == null) // may happen for cecil contexts
 							continue;
-						ITypeResolveContext combinedContent = sourceProject != p.Item2 ?  (ITypeResolveContext)new CompositeTypeResolveContext (new ITypeResolveContext[] { sourceCtx, p.Item2 }) : sourceCtx;
-						foreach (var type in p.Item2.GetAllTypes ()) {
-							if (!type.IsDerivedFrom (cls, combinedContent)) 
+						foreach (var type in TypeSystemService.GetCompilation (p.Item1).GetAllTypeDefinitions ()) {
+							if (!type.IsDerivedFrom (cls)) 
 								continue;
 							TextEditorData textFile;
 							if (!cache.TryGetValue (type.Region.FileName, out textFile)) {
@@ -86,9 +84,8 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			var ctx = doc.TypeResolveContext;
 			ResolveResult resolveResult;
-			var item = CurrentRefactoryOperationsHandler.GetItem (ctx, doc, out resolveResult);
+			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResult);
 			
 /*			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			string itemName = null;

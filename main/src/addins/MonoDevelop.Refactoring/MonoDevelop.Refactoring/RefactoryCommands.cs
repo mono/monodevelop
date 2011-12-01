@@ -86,7 +86,7 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 		
-		public static object GetItem (ITypeResolveContext ctx, MonoDevelop.Ide.Gui.Document doc, out ResolveResult resolveResult)
+		public static object GetItem (MonoDevelop.Ide.Gui.Document doc, out ResolveResult resolveResult)
 		{
 			resolveResult = GetResolveResult (doc);
 			if (resolveResult is LocalResolveResult) 
@@ -122,24 +122,19 @@ namespace MonoDevelop.Refactoring
 		
 		class GotoBase 
 		{
-			ITypeResolveContext ctx;
 			IEntity item;
 			
-			public GotoBase (ITypeResolveContext ctx, IEntity item)
+			public GotoBase (IEntity item)
 			{
-				this.ctx  = ctx;
 				this.item = item;
 			}
 			
 			public void Run ()
 			{
 				var cls = item as ITypeDefinition;
-				if (cls != null && cls.BaseTypes != null) {
-					foreach (var bc in cls.BaseTypes) {
-						var bcls = bc.Resolve (ctx);
-						if (bcls == null)
-							continue;
-						var def = bcls.GetDefinition ();
+				if (cls != null && cls.DirectBaseTypes != null) {
+					foreach (var bt in cls.DirectBaseTypes) {
+						var def = bt.GetDefinition ();
 						if (def != null && def.Kind != TypeKind.Interface && !def.Region.IsEmpty) {
 							IdeApp.Workbench.OpenDocument (def.Region.FileName, def.Region.BeginLine, def.Region.BeginColumn);
 							return;
@@ -149,15 +144,10 @@ namespace MonoDevelop.Refactoring
 				
 				var method = item as IMethod;
 				if (method != null) {
-					foreach (var bc in method.DeclaringTypeDefinition.BaseTypes) {
-						var bcls = bc.Resolve (ctx);
-						if (bcls == null)
-							continue;
-						var def = bcls.GetDefinition ();
-						
-						if (def != null && def.Kind != TypeKind.Interface && !def.Region.IsEmpty) {
+					foreach (var def in method.DeclaringTypeDefinition.DirectBaseTypes) {
+						if (def != null && def.Kind != TypeKind.Interface && !def.GetDefinition ().Region.IsEmpty) {
 							IMethod baseMethod = null;
-							foreach (var m in def.Methods) {
+							foreach (var m in def.GetMethods ()) {
 								if (m.Name == method.Name && m.Parameters.Count == m.Parameters.Count) {
 									baseMethod = m;
 									break;
@@ -245,17 +235,15 @@ namespace MonoDevelop.Refactoring
 				return;
 			
 			var parsedDocument = doc.ParsedDocument;
-			var ctx = doc.TypeResolveContext;
-			if (parsedDocument == null || ctx == null)
+			if (parsedDocument == null)
 				return;
 			
 			ResolveResult resolveResult;
-			object item = GetItem (ctx, doc, out resolveResult);
+			object item = GetItem (doc, out resolveResult);
 			bool added = false;
 			
 			var options = new RefactoringOptions () {
 				Document = doc,
-				Dom = ctx,
 				ResolveResult = resolveResult,
 				SelectedItem = item
 			};
@@ -277,11 +265,11 @@ namespace MonoDevelop.Refactoring
 			
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item as INamedElement)) {
 				var type = item as ICSharpCode.NRefactory.TypeSystem.IType;
-				if (type != null && type.GetDefinition ().GetParts ().Count > 1) {
+				if (type != null && type.GetDefinition ().Parts.Count > 1) {
 					var declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Go to declaration");
 					var ct = type.GetDefinition ();
-					foreach (var part in ct.GetParts ())
+					foreach (var part in ct.Parts)
 						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.Region.FileName), part.Region.BeginLine), new System.Action (new JumpTo (part).Run));
 					ainfo.Add (declSet);
 				} else {
@@ -298,15 +286,14 @@ namespace MonoDevelop.Refactoring
 			if (item is IMethod) {
 				IMethod method = item as IMethod;
 				if (method.IsOverride) {
-					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase (ctx, (IMethod)item).Run));
+					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase ((IMethod)item).Run));
 					added = true;
 				}
 			} else if (item is ITypeDefinition) {
 				ITypeDefinition cls = (ITypeDefinition) item;
-				foreach (var rt in cls.BaseTypes) {
-					var bc = rt.Resolve (ctx);
+				foreach (var bc in cls.DirectBaseTypes) {
 					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
-						ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase (ctx, (ITypeDefinition)item).Run));
+						ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
 						break;
 					}
 				}
@@ -330,28 +317,20 @@ namespace MonoDevelop.Refactoring
 			if (resolveResult is UnknownIdentifierResolveResult) {
 				usedNamespaces = options.GetUsedNamespaces ();
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
-				foreach (var typeDefinition in ctx.GetTypes ()) {
+				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
 					if (typeDefinition.Name == uiResult.Identifier) {
-						possibleNamespaces.Add (typeDefinition.Namespace);
-					}
-				}
-			} else if (resolveResult is UnknownTypeResolveResult) {
-				usedNamespaces = options.GetUsedNamespaces ();
-				var uiResult = resolveResult as UnknownTypeResolveResult;
-				foreach (var typeDefinition in ctx.GetTypes ()) {
-					if (typeDefinition.Name == uiResult.Identifier && typeDefinition.TypeParameterCount == uiResult.TypeParameterCount) {
 						possibleNamespaces.Add (typeDefinition.Namespace);
 					}
 				}
 			} else if (resolveResult is UnknownMemberResolveResult) {
 				usedNamespaces = options.GetUsedNamespaces ();
 				var umResult = (UnknownMemberResolveResult)resolveResult;
-				var conv = new Conversions (ctx);
-				var baseTypes = new List<IType> (umResult.TargetType.GetAllBaseTypes (ctx));
+				var conv = new Conversions (options.Document.Compilation);
+				var baseTypes = new List<IType> (umResult.TargetType.GetAllBaseTypes ());
 				
-				foreach (var typeDefinition in ctx.GetTypes ().Where (t => t.HasExtensionMethods && !usedNamespaces.Contains (t.Namespace))) {
+				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ().Where (t => t.HasExtensionMethods && !usedNamespaces.Contains (t.Namespace))) {
 					foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod && m.Name == umResult.MemberName)) {
-						var pType = m.Parameters.First ().Type.Resolve (ctx);
+						var pType = m.Parameters.First ().Type;
 						foreach (var baseType in baseTypes) {
 							if (conv.ImplicitConversion (pType, baseType)) {
 								possibleNamespaces.Add (typeDefinition.Namespace);
@@ -952,7 +931,7 @@ namespace MonoDevelop.Refactoring
 		{
 			if (cls == null)
 				return false;
-			return cls.GetMembers (ctx).Any (m => m.IsAbstract);
+			return cls.GetMembers ().Any (m => m.IsAbstract);
 		}
 		
 	/*	void AddRefactoryMenuForClass (ITypeResolveContext ctx, IParsedFile pinfo, CommandInfoSet ciset, string className)

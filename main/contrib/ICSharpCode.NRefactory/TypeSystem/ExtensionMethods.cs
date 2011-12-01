@@ -262,5 +262,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ProjectedList<ITypeResolveContext, IConstantValue, ResolveResult>(context, constantValues, (c, t) => t.Resolve(c));
 		}
 		#endregion
+		
+		#region GetSubTypeDefinitions
+		public static IEnumerable<ITypeDefinition> GetSubTypeDefinitions (this IType baseType)
+		{
+			var def = baseType.GetDefinition ();
+			if (def == null)
+				return Enumerable.Empty<ITypeDefinition> ();
+			return def.GetSubTypeDefinitions ();
+		}
+		
+		/// <summary>
+		/// Gets all sub type definitions defined in a context.
+		/// </summary>
+		public static IEnumerable<ITypeDefinition> GetSubTypeDefinitions (this ITypeDefinition baseType)
+		{
+			foreach (var contextType in baseType.Compilation.GetAllTypeDefinitions ()) {
+				if (contextType.IsDerivedFrom (baseType))
+					yield return contextType;
+			}
+		}
+		#endregion		
 	}
 }

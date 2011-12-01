@@ -48,7 +48,7 @@ namespace MonoDevelop.Refactoring
 
 		List<Change> changes;
 
-		public RefactoringPreviewDialog (ITypeResolveContext ctx, List<Change> changes)
+		public RefactoringPreviewDialog (List<Change> changes)
 		{
 			this.Build ();
 			this.changes = changes;
@@ -86,7 +86,7 @@ namespace MonoDevelop.Refactoring
 			
 			buttonOk.Clicked += delegate {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-				RefactoringService.AcceptChanges (monitor, ctx, changes);
+				RefactoringService.AcceptChanges (monitor, changes);
 				
 				Destroy ();
 			};

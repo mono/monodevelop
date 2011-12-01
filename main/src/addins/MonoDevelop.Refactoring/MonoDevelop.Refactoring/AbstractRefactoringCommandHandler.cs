@@ -52,14 +52,11 @@ namespace MonoDevelop.Refactoring
 			if (editor == null)
 				return;
 			
-			var dom = doc.TypeResolveContext;
-			
 			ResolveResult result;
-			var item = CurrentRefactoryOperationsHandler.GetItem (dom, doc, out result);
+			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out result);
 			
 			RefactoringOptions options = new RefactoringOptions () {
 				Document = doc,
-				Dom = dom,
 				ResolveResult = result,
 				SelectedItem = item
 			};

@@ -790,13 +790,14 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		public static IUnresolvedAssembly LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
+		public static ICompilation LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
 		{ // TODO: Runtimes
-			var asm = ReadAssembly (fileName);
+/*			var asm = ReadAssembly (fileName);
 			if (asm == null)
 				return null;
 			var result = new CecilLoader ().LoadAssembly (asm);
-			return result;
+			return result;*/
+			return null;
 		}
 		
 		public static IProjectContent GetProjectContext (Project project)

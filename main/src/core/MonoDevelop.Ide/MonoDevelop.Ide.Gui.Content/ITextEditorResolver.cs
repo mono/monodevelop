@@ -45,11 +45,11 @@ namespace MonoDevelop.Ide.Gui.Content
 	
 	public interface ITextEditorResolverProvider
 	{
-		ResolveResult GetLanguageItem (ITypeResolveContext dom, TextEditorData data, int offset, out DomRegion expressionRegion);
-		ResolveResult GetLanguageItem (ITypeResolveContext dom, TextEditorData data, int offset, string expression);
-		string GetExpression (ITypeResolveContext dom, TextEditorData data, int offset);
+		ResolveResult GetLanguageItem (TextEditorData data, int offset, out DomRegion expressionRegion);
+		ResolveResult GetLanguageItem (TextEditorData data, int offset, string expression);
+		string GetExpression (TextEditorData data, int offset);
 		
-		string CreateTooltip (ITypeResolveContext dom, IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
+		string CreateTooltip (IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
 	}
 	
 	public static class TextEditorResolverService

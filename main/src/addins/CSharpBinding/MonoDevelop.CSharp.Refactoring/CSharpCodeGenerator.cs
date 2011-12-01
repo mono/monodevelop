@@ -164,6 +164,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		void AppendReturnType (StringBuilder result, ITypeDefinition implementingType, ITypeReference type)
 		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			if (type == SharedTypes.UnknownType)
+				throw new ArgumentException ("type is unknown", "type");
 			var loc = implementingType.Region.Begin;
 			
 			var pf = implementingType.ProjectContent.GetFile (implementingType.Region.FileName);
@@ -172,13 +176,21 @@ namespace MonoDevelop.CSharp.Refactoring
 			var file = pf as CSharpParsedFile;
 			var project = implementingType.ProjectContent.Annotation<MonoDevelop.Projects.Project> ();
 			var ctx = TypeSystemService.GetContext (project);
-			var shortType = CreateShortType (ctx, file, loc, type.Resolve (ctx));
+			var resolved = type.Resolve (ctx);
+			if (resolved == SharedTypes.UnknownType) {
+				result.Append (type.ToString ());
+				return;
+			}
+			var shortType = CreateShortType (ctx, file, loc, resolved);
 			using (var stringWriter = new System.IO.StringWriter ()) {
 				var formatter = new TextWriterOutputFormatter (stringWriter);
 				stringWriter.NewLine = EolMarker;
 				var visitor = new CSharpOutputVisitor (formatter, project.GetFormattingOptions ());
 				shortType.AcceptVisitor (visitor, null);
-				result.Append (stringWriter.ToString ());
+				var typeString = stringWriter.ToString ();
+				if (typeString.StartsWith ("global::"))
+					typeString = typeString.Substring ("global::".Length);
+				result.Append (typeString);
 			}
 		}
 		
@@ -301,10 +313,15 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (")");
 			
 			var typeParameters = method.TypeParameters;
+			foreach (var p in typeParameters) {
+				Console.WriteLine (p.GetEffectiveBaseClass (options.Ctx));
+			}
 			if (typeParameters.Any (p => p.GetConstraints (options.Ctx).Any () /*|| (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0*/)) {
 				result.Append (" where ");
 				int typeParameterCount = 0;
 				foreach (var p in typeParameters) {
+					var bc = p.GetEffectiveBaseClass (options.Ctx);
+					
 					if (!p.GetConstraints (options.Ctx).Any () /*&& (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) == 0*/)
 						continue;
 					if (typeParameterCount != 0)
@@ -314,12 +331,14 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append (p.Name);
 					result.Append (" : ");
 					int constraintCount = 0;
-			
 //					if ((p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0) {
 //						result.Append ("new ()");
 //						constraintCount++;
 //					}
+					
 					foreach (var c in p.GetConstraints (options.Ctx)) {
+						if (c == SharedTypes.UnknownType)
+							continue;
 						if (constraintCount != 0)
 							result.Append (", ");
 						constraintCount++;
@@ -332,6 +351,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append ("class");
 							continue;
 						}
+						
 						AppendReturnType (result, options.ImplementingType, c);
 					}
 				}
