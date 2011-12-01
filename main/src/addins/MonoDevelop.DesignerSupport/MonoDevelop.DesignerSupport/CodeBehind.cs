@@ -102,29 +102,29 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 		
-		public static IType GetDesignerClass (IType cls)
+		public static IUnresolvedTypeDefinition GetDesignerClass (IType cls)
 		{
-			if (cls.GetDefinition ().GetParts ().Count == 1)
+			if (cls.GetDefinition ().Parts.Count == 1)
 				return null;
 			
 			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
 			
-			foreach (var c in cls.GetDefinition ().GetParts ())
-				if (c.GetDefinition ().Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+			foreach (var c in cls.GetDefinition ().Parts)
+				if (c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;
 		}
 		
-		public static ITypeDefinition GetNonDesignerClass (IType cls)
+		public static IUnresolvedTypeDefinition GetNonDesignerClass (IType cls)
 		{
-			if (cls.GetDefinition ().GetParts ().Count == 1)
+			if (cls.GetDefinition ().Parts.Count == 1)
 				return null;
 			
 			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
 			
-			foreach (var c in cls.GetDefinition ().GetParts ())
-				if (!c.GetDefinition ().Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+			foreach (var c in cls.GetDefinition ().Parts)
+				if (!c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;

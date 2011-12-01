@@ -52,62 +52,63 @@ namespace MonoDevelop.DesignerSupport
 		//TODO: currently case-sensitive, so some languages may not like this
 		const bool ignoreCase = false;
 		
-		public static IMember GetCompatibleMemberInClass (ITypeResolveContext ctx, ITypeDefinition cls, CodeTypeMember member)
+		public static IUnresolvedMember GetCompatibleMemberInClass (ICompilation ctx, ITypeDefinition cls, CodeTypeMember member)
 		{
-			//check for identical property names
-			foreach (var prop in cls.GetProperties (ctx)) {
-				if (string.Compare (prop.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
-					string rt = prop.ReturnType.Resolve (ctx).ReflectionName;
-					EnsureClassExists (ctx, rt, GetValidRegion (prop));
-					CodeMemberProperty memProp = member as CodeMemberProperty;
-					if (memProp == null || !IsTypeCompatible (ctx, rt, memProp.Type.BaseType))
-						throw new MemberExistsException (cls.FullName, MemberType.Property, member, GetValidRegion (prop), cls.Region.FileName);
-					return prop;
-				}
-			}
-				
-			//check for identical method names
-			foreach (var meth in cls.GetMethods (ctx)) {
-				if (string.Compare (meth.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
-					string rt = meth.ReturnType.Resolve (ctx).ReflectionName;
-					EnsureClassExists (ctx, rt, GetValidRegion (meth));
-					CodeMemberMethod memMeth = member as CodeMemberMethod;
-					if (memMeth == null || !IsTypeCompatible (ctx, rt, memMeth.ReturnType.BaseType))
-						throw new MemberExistsException (cls.FullName, MemberType.Method, member, GetValidRegion (meth), cls.Region.FileName);
-					return meth;
-				}
-			}
-			
-			//check for identical event names
-			foreach (var ev in cls.GetEvents (ctx)) {
-				if (string.Compare (ev.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
-					string rt = ev.ReturnType.Resolve (ctx).ReflectionName;
-					EnsureClassExists (ctx, rt, GetValidRegion (ev));
-					CodeMemberEvent memEv = member as CodeMemberEvent;
-					if (memEv == null || !IsTypeCompatible (ctx, rt, memEv.Type.BaseType))
-						throw new MemberExistsException (cls.FullName, MemberType.Event, member, GetValidRegion (ev), cls.Region.FileName);
-					return ev;
-				}
-			}
-				
-			//check for identical field names
-			foreach (var field in cls.GetFields (ctx)) {
-				if (string.Compare (field.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
-					string rt = field.ReturnType.Resolve (ctx).ReflectionName;
-					EnsureClassExists (ctx, rt, GetValidRegion (field));
-					CodeMemberField memField = member as CodeMemberField;
-					if (memField == null || !IsTypeCompatible (ctx, rt, memField.Type.BaseType))
-						throw new MemberExistsException (cls.FullName, MemberType.Field, member, GetValidRegion (field), cls.Region.FileName);
-					return field;
-				}
-			}
-			
-			//walk down into base classes, if any
-			foreach (var baseType in cls.GetBaseTypes (ctx)) {
-				IMember mem = GetCompatibleMemberInClass (ctx, baseType.GetDefinition (), member);
-				if (mem != null)
-					return mem;
-			}
+			// TODO Type system conversion
+//			//check for identical property names
+//			foreach (var prop in cls.Properties) {
+//				if (string.Compare (prop.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
+//					string rt = prop.ReturnType.ReflectionName;
+//					EnsureClassExists (ctx, rt, GetValidRegion (prop));
+//					CodeMemberProperty memProp = member as CodeMemberProperty;
+//					if (memProp == null || !IsTypeCompatible (ctx, rt, memProp.Type.BaseType))
+//						throw new MemberExistsException (cls.FullName, MemberType.Property, member, GetValidRegion (prop), cls.Region.FileName);
+//					return prop;
+//				}
+//			}
+//				
+//			//check for identical method names
+//			foreach (var meth in cls.Methods) {
+//				if (string.Compare (meth.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
+//					string rt = meth.ReturnType.ReflectionName;
+//					EnsureClassExists (ctx, rt, GetValidRegion (meth));
+//					CodeMemberMethod memMeth = member as CodeMemberMethod;
+//					if (memMeth == null || !IsTypeCompatible (ctx, rt, memMeth.ReturnType.BaseType))
+//						throw new MemberExistsException (cls.FullName, MemberType.Method, member, GetValidRegion (meth), cls.Region.FileName);
+//					return meth;
+//				}
+//			}
+//			
+//			//check for identical event names
+//			foreach (var ev in cls.Events) {
+//				if (string.Compare (ev.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
+//					string rt = ev.ReturnType.ReflectionName;
+//					EnsureClassExists (ctx, rt, GetValidRegion (ev));
+//					CodeMemberEvent memEv = member as CodeMemberEvent;
+//					if (memEv == null || !IsTypeCompatible (ctx, rt, memEv.Type.BaseType))
+//						throw new MemberExistsException (cls.FullName, MemberType.Event, member, GetValidRegion (ev), cls.Region.FileName);
+//					return ev;
+//				}
+//			}
+//				
+//			//check for identical field names
+//			foreach (var field in cls.Fields) {
+//				if (string.Compare (field.Name, member.Name, StringComparison.OrdinalIgnoreCase) == 0) {
+//					string rt = field.ReturnType.ReflectionName;
+//					EnsureClassExists (ctx, rt, GetValidRegion (field));
+//					CodeMemberField memField = member as CodeMemberField;
+//					if (memField == null || !IsTypeCompatible (ctx, rt, memField.Type.BaseType))
+//						throw new MemberExistsException (cls.FullName, MemberType.Field, member, GetValidRegion (field), cls.Region.FileName);
+//					return field;
+//				}
+//			}
+//			
+//			//walk down into base classes, if any
+//			foreach (var baseType in cls.GetAllBaseTypeDefinitions ()) {
+//				IMember mem = GetCompatibleMemberInClass (ctx, baseType, member);
+//				if (mem != null)
+//					return mem;
+//			}
 			
 			//return null if no match
 			return null;
@@ -120,7 +121,14 @@ namespace MonoDevelop.DesignerSupport
 			return member.BodyRegion;
 		}
 		
-		static IType EnsureClassExists (ITypeResolveContext ctx, string className, DomRegion location)
+		static DomRegion GetValidRegion (IUnresolvedMember member)
+		{
+			if (member.BodyRegion.IsEmpty || member.DeclaringTypeDefinition.Region.FileName == FilePath.Null)
+				return member.DeclaringTypeDefinition.Region;
+			return member.BodyRegion;
+		}
+		
+		static IType EnsureClassExists (ICompilation ctx, string className, DomRegion location)
 		{
 			string ns;
 			string name;
@@ -132,38 +140,39 @@ namespace MonoDevelop.DesignerSupport
 				ns = className.Substring (0, idx);
 				name = className.Substring (idx + 1);
 			}
-			var cls = ctx.GetTypeDefinition (ns, name, 0, StringComparer.InvariantCulture);
+			var cls = ctx.MainAssembly.GetTypeDefinition (ns, name, 0);
 			if (cls == null)
 				throw new TypeNotFoundException (className, location, null);
 			return cls;
 		}
 		
-		static bool IsTypeCompatible (ITypeResolveContext ctx, string existingType, string checkType)
+		static bool IsTypeCompatible (ICompilation ctx, string existingType, string checkType)
 		{
 			if (existingType == checkType)
 				return true;
 			IType cls = EnsureClassExists (ctx, checkType, DomRegion.Empty);
-			foreach (var baseType in cls.GetBaseTypes (ctx)) {
+			foreach (var baseType in cls.GetAllBaseTypeDefinitions ()) {
 				if (IsTypeCompatible (ctx, existingType, baseType.FullName))
 				    return true;
 			}
 			return false;
 		}
 		
-		public static IMember AddMemberToClass (Project project, ITypeDefinition cls, ITypeDefinition specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+		public static IBaseEntity AddMemberToClass (Project project, ITypeDefinition cls, IUnresolvedTypeDefinition specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
-			foreach (var c in cls.GetParts ())
+			foreach (var c in cls.Parts)
 				if (c == specificPartToAffect)
 					isChildClass = true;
 			if (!isChildClass)
 				throw new ArgumentException ("Class specificPartToAffect is not a part of class cls");
 			
-			ITypeResolveContext dom = TypeSystemService.GetContext (project);
-			IMember existingMember = GetCompatibleMemberInClass (dom, cls, member);
+			var dom = TypeSystemService.GetCompilation (project);
+			var existingMember = GetCompatibleMemberInClass (dom, cls, member);
 			
 			if (existingMember == null)
-				return CodeGenerationService.AddCodeDomMember (specificPartToAffect, member);
+				return CodeGenerationService.AddCodeDomMember (project, specificPartToAffect, member);
+			
 			
 			if (throwIfExists)
 				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.BodyRegion, cls.Region.FileName);
@@ -192,14 +201,14 @@ namespace MonoDevelop.DesignerSupport
 			IType[] pars = new IType[matchMeth.Parameters.Count];
 			List<IType>[] baseTypes = new List<IType>[matchMeth.Parameters.Count];
 			for (int i = 0; i < matchMeth.Parameters.Count; i++) {
-				pars[i] = matchMeth.Parameters[i].Type.Resolve (ctx);
-				baseTypes[i] = new List<IType> (pars[i].GetAllBaseTypes (ctx));
+				pars[i] = matchMeth.Parameters[i].Type;
+				baseTypes[i] = new List<IType> (pars[i].GetAllBaseTypes ());
 			}
 			
-			var matchMethType = matchMeth.ReturnType.Resolve (ctx);
+			var matchMethType = matchMeth.ReturnType;
 			
-			foreach (IMethod method in cls.GetMethods (ctx)) {
-				if (method.IsPrivate || method.Parameters.Count != pars.Length || !method.ReturnType.Resolve (ctx).Equals (matchMethType) 
+			foreach (IMethod method in cls.GetMethods ()) {
+				if (method.IsPrivate || method.Parameters.Count != pars.Length || !method.ReturnType.Equals (matchMethType) 
 				    || method.IsInternal)
 					continue;
 				
@@ -207,7 +216,7 @@ namespace MonoDevelop.DesignerSupport
 				
 				//compare each parameter
 				for (int i = 0; i < pars.Length; i++) {
-					var pt = method.Parameters[i].Type.Resolve (ctx);
+					var pt = method.Parameters[i].Type;
 					bool parCompatible = pars[i].Equals (pt);
 					if (!parCompatible && !baseTypes[i].Any (t => t.Equals (pt))) {
 						allCompatible = false;
@@ -222,7 +231,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public static bool IdentifierExistsInClass (ITypeResolveContext parserContext, ITypeDefinition cls, string identifier)
 		{
-			return cls.GetMembers (parserContext).Any (m => m.Name == identifier);
+			return cls.GetMembers ().Any (m => m.Name == identifier);
 		}
 		
 		public static string GenerateIdentifierUniqueInClass (ITypeResolveContext parserContext, ITypeDefinition cls, string trialIdentifier)
@@ -242,13 +251,13 @@ namespace MonoDevelop.DesignerSupport
 		
 		
 		//opens the code view with the desired method, creating it if it doesn't already exist
-		public static void CreateAndShowMember (Project project, ITypeDefinition cls, ITypeDefinition specificPartToAffect, CodeTypeMember member)
+		public static void CreateAndShowMember (Project project, ITypeDefinition cls, IUnresolvedTypeDefinition specificPartToAffect, CodeTypeMember member)
 		{
 			//only adds the method if it doesn't already exist
-			IMember mem = AddMemberToClass (project, cls, specificPartToAffect, member, false);
+			var mem = AddMemberToClass (project, cls, specificPartToAffect, member, false);
 			
 			//some tests in case code refactorer returns bad values
-			int beginline = specificPartToAffect.GetDefinition ().BodyRegion.BeginLine;
+			int beginline = specificPartToAffect.BodyRegion.BeginLine;
 			if (!mem.BodyRegion.IsEmpty && mem.BodyRegion.BeginLine >= beginline && mem.BodyRegion.BeginLine <= specificPartToAffect.BodyRegion.EndLine)
 				beginline = mem.BodyRegion.BeginLine;
 			
@@ -307,26 +316,26 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (ev.ReturnType == null)
 				return null;
-			IType cls = ev.ReturnType.Resolve (context);
-			if (cls == null)
+			IType cls = ev.ReturnType;
+			if (cls.Kind == TypeKind.Unknown)
 				return null;
-			foreach (var m in cls.GetMethods (context))
+			foreach (var m in cls.GetMethods ())
 				if (m.Name == "Invoke")
 					return m;
 			return null;
 		}
 		
 		//TODO: handle generics
-		public static IMethod CodeDomToMDDomMethod (CodeMemberMethod method)
+		public static IUnresolvedMethod CodeDomToMDDomMethod (CodeMemberMethod method)
 		{
-			var meth = new DefaultMethod (null, method.Name);
-			meth.ReturnType = new GetClassTypeReference (method.ReturnType.BaseType, 0);
+			var meth = new DefaultUnresolvedMethod (null, method.Name);
+			meth.ReturnType = new DefaultUnresolvedTypeDefinition (method.ReturnType.BaseType);
 			
 			CodeDomModifiersToMDDom (meth, method.Attributes);
 			
 			foreach (CodeParameterDeclarationExpression dec in method.Parameters) {
-				var paramType = new GetClassTypeReference (dec.Type.BaseType, 0);
-				var par = new  DefaultParameter (paramType, dec.Name);
+				var paramType = new DefaultUnresolvedTypeDefinition (dec.Type.BaseType);
+				var par = new  DefaultUnresolvedParameter (paramType, dec.Name);
 				if (dec.Direction == FieldDirection.Ref)
 					par.IsRef = true;
 				else if (dec.Direction == FieldDirection.Out)
@@ -343,7 +352,7 @@ namespace MonoDevelop.DesignerSupport
 			return meth != null ? MDDomToCodeDomMethod (context, meth) : null;
 		}
 		
-		static void CodeDomModifiersToMDDom (DefaultMethod method, MemberAttributes modifiers)
+		static void CodeDomModifiersToMDDom (DefaultUnresolvedMethod method, MemberAttributes modifiers)
 		{
 			if ((modifiers & MemberAttributes.FamilyOrAssembly) != 0) {
 				method.Accessibility = Accessibility.ProtectedOrInternal;
@@ -431,7 +440,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			CodeMemberMethod newMethod = new CodeMemberMethod ();
 			newMethod.Name = mi.Name;
-			string returnType = mi.ReturnType.Resolve (ctx).ReflectionName ?? "System.Void";
+			string returnType = mi.ReturnType.ReflectionName ?? "System.Void";
 			newMethod.ReturnType = new System.CodeDom.CodeTypeReference (returnType);
 			newMethod.Attributes = ApplyMDDomModifiersToCodeDom (mi, newMethod.Attributes);
 			

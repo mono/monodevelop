@@ -46,8 +46,6 @@ namespace MonoDevelop.DesignerSupport
 	{
 		const string DEFAULT_REGION_NAME = "region";
 		
-		ITypeResolveContext ctx;
-
 		Ambience ambience;
 		TreeModel model;
 		ClassOutlineSettings settings;
@@ -63,9 +61,8 @@ namespace MonoDevelop.DesignerSupport
 		/// The model containing the nodes to compare.
 		/// </param>
 
-		public ClassOutlineNodeComparer (ITypeResolveContext ctx, Ambience ambience, ClassOutlineSettings settings, TreeModel model)
+		public ClassOutlineNodeComparer (Ambience ambience, ClassOutlineSettings settings, TreeModel model)
 		{
-			this.ctx      = ctx;
 			this.ambience = ambience;
 			this.settings = settings;
 			this.model = model;
@@ -268,7 +265,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (node is IEntity) {
 				// Return the name without type or parameters
-				return ambience.GetString (ctx, (IEntity)node, 0);
+				return ambience.GetString ((IEntity)node, 0);
 			}
 		
 			if (node is FoldingRegion) {

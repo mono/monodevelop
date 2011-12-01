@@ -105,7 +105,7 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
 			
 			settings = ClassOutlineSettings.Load ();
-			comparer = new ClassOutlineNodeComparer (document.TypeResolveContext, GetAmbience (), settings, outlineTreeModelSort);
+			comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
 
 			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
 			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
@@ -187,7 +187,7 @@ namespace MonoDevelop.DesignerSupport
 				try {
 					if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
 						dialog.SaveSettings ();
-						comparer = new ClassOutlineNodeComparer (document.TypeResolveContext, GetAmbience (), settings, outlineTreeModelSort);
+						comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
 						UpdateSorting ();
 					}
 				} finally {
@@ -242,7 +242,7 @@ namespace MonoDevelop.DesignerSupport
 			object o = model.GetValue (iter, 0);
 			Ambience am = GetAmbience ();
 			if (o is IEntity) {
-				txtRenderer.Text = am.GetString (Document.TypeResolveContext, (IEntity)o, OutputFlags.ClassBrowserEntries);
+				txtRenderer.Text = am.GetString ((IEntity)o, OutputFlags.ClassBrowserEntries);
 			} else if (o is FoldingRegion) {
 				string name = ((FoldingRegion)o).Name.Trim ();
 				if (string.IsNullOrEmpty (name))
@@ -331,7 +331,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, ITypeDefinition cls)
+		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, IUnresolvedTypeDefinition cls)
 		{
 			List<object> items = new List<object> ();
 			foreach (object o in cls.Members)
@@ -376,8 +376,8 @@ namespace MonoDevelop.DesignerSupport
 				}
 				
 				TreeIter childIter = store.AppendValues (currentParent, item);
-				if (item is ITypeDefinition)
-					AddTreeClassContents (store, childIter, parsedDocument, (ITypeDefinition)item);
+				if (item is IUnresolvedTypeDefinition)
+					AddTreeClassContents (store, childIter, parsedDocument, (IUnresolvedTypeDefinition)item);
 					
 			} 
 		}
