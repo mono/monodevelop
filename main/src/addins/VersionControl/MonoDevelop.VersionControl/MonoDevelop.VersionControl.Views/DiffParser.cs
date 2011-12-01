@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -51,12 +52,12 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#region AbstractParser overrides
 		
-		ParsedDocument ITypeSystemParser.Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader textReader)
+		ParsedDocument ITypeSystemParser.Parse (bool storeAst, string fileName, TextReader textReader, Project project = null)
 		{
 			var doc = new DefaultParsedDocument (fileName);
 			
-			DefaultTypeDefinition currentFile = null;
-			DefaultProperty currentRegion = null;
+			DefaultUnresolvedTypeDefinition currentFile = null;
+			DefaultUnresolvedProperty currentRegion = null;
 			
 			string eol = Environment.NewLine;
 			string content = textReader.ReadToEnd ();
@@ -80,7 +81,7 @@ namespace MonoDevelop.VersionControl.Views
 						                                          linenum - 1, int.MaxValue);
 					
 					// Create new file region
-					currentFile = new DefaultTypeDefinition (projectContent, string.Empty, string.Empty);
+					currentFile = new DefaultUnresolvedTypeDefinition (string.Empty, string.Empty);
 					currentFile.Region = currentFile.BodyRegion = new DomRegion (lastToken (lineMatch.Groups ["filepath"].Value), linenum, line.Length + 1, linenum, int.MaxValue);
 					doc.TopLevelTypeDefinitions.Add (currentFile);
 				} else {
@@ -92,9 +93,9 @@ namespace MonoDevelop.VersionControl.Views
 							                                          linenum - 1, int.MaxValue);
 						
 						// Create new chunk region
-						currentRegion = new DefaultProperty (currentFile, lineMatch.Groups ["chunk"].Value);
+						currentRegion = new DefaultUnresolvedProperty (currentFile, lineMatch.Groups ["chunk"].Value);
 						currentRegion.Region = currentRegion.BodyRegion = new DomRegion (currentFile.Region.FileName, linenum, line.Length + 1, linenum, int.MaxValue);
-						currentFile.Properties.Add (currentRegion);
+						currentFile.Members.Add (currentRegion);
 					}
 				}
 				++linenum;
