@@ -94,11 +94,11 @@ namespace MonoDevelop.Moonlight.Gui
 				return;
 			classesFilled = true;
 			try {
-				var dom = TypeSystemService.GetContext (project);
-				IType appType = dom.GetTypeDefinition ("System.Windows", "Application", 0, StringComparer.Ordinal);
+				var dom = TypeSystemService.GetCompilation (project);
+				IType appType = dom.FindType ("System.Windows.Application");
 				if (appType == null)
 					return;
-				foreach (IType type in appType.GetAllBaseTypes (dom))
+				foreach (IType type in appType.GetAllBaseTypes ())
 					classListStore.AppendValues (type.FullName);
 			} catch (InvalidOperationException) {
 				// Project not found in parser database

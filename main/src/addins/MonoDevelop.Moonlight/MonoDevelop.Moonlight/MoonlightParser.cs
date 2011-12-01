@@ -36,12 +36,13 @@ using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Moonlight
 {
 	public class MoonlightParser : AbstractTypeSystemParser
 	{
-		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
 			try {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Moonlight
 				if (doc.XDocument != null && doc.XDocument.RootElement != null) {
 					if (!doc.XDocument.RootElement.IsEnded)
 						doc.XDocument.RootElement.End (xmlParser.Location);
-					GenerateCU (projectContent, doc);
+					GenerateCU (doc);
 				}
 			}
 			catch (Exception ex) {
@@ -62,7 +63,7 @@ namespace MonoDevelop.Moonlight
 			return doc;
 		}
 		
-		static void GenerateCU (IProjectContent projectContent, XmlParsedDocument doc)
+		static void GenerateCU (XmlParsedDocument doc)
 		{
 			if (doc.XDocument == null || doc.XDocument.RootElement == null) {
 				doc.Add (new Error (ErrorType.Error, "No root node found.", 1, 1));
@@ -86,20 +87,20 @@ namespace MonoDevelop.Moonlight
 			if (doc.XDocument.RootElement.IsClosed)
 				rootRegion = new DomRegion (doc.XDocument.RootElement.Region.FileName, doc.XDocument.RootElement.Region.Begin, doc.XDocument.RootElement.ClosingTag.Region.End); 
 			
-			var declType = new DefaultTypeDefinition (projectContent, rootNamespace, rootType) {
+			var declType = new DefaultUnresolvedTypeDefinition (rootNamespace, rootType) {
 				Kind = TypeKind.Class,
 				Accessibility = Accessibility.Public,
 				Region = rootRegion
 			};
 			cu.TopLevelTypeDefinitions.Add (declType);
 			
-			var initcomp = new DefaultMethod (declType, "InitializeComponent") {
+			var initcomp = new DefaultUnresolvedMethod (declType, "InitializeComponent") {
 				ReturnType = KnownTypeReference.Void,
 				Accessibility = Accessibility.Public
 			};
-			declType.Methods.Add (initcomp);
+			declType.Members.Add (initcomp);
 			
-			var _contentLoaded = new DefaultField (declType, "_contentLoaded") {
+			var _contentLoaded = new DefaultUnresolvedField (declType, "_contentLoaded") {
 				ReturnType = KnownTypeReference.Boolean
 			};
 // was missing in the original code: correct ? 
@@ -130,7 +131,11 @@ namespace MonoDevelop.Moonlight
 					if (type == null || type.Length == 0)
 						cu.Add (new Error (ErrorType.Error, "Could not find namespace for '" + el.Name.FullName + "'.", el.Region.Begin));
 					else
-						declType.Fields.Add (new DefaultField (declType, name.Value) { Accessibility = Accessibility.Internal, Region = el.Region, ReturnType = new GetClassTypeReference (type, 0) });
+						declType.Members.Add (new DefaultUnresolvedField (declType, name.Value) {
+							Accessibility = Accessibility.Internal,
+							Region = el.Region,
+							ReturnType = new DefaultUnresolvedTypeDefinition (type)
+						});
 				}
 			}
 		}
