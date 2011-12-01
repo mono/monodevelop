@@ -515,7 +515,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 			UpdatePinnedWatches ();
-			this.IsDirty = false;
+			this.IsDirty = !didLoadCleanly;
 			UpdateTasks (null, null);
 			widget.TextEditor.VAdjustment.Changed += HandleTextEditorVAdjustmentChanged;
 			if (didLoadCleanly)
