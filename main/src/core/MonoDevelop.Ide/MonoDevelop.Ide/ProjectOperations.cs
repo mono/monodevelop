@@ -1098,8 +1098,6 @@ namespace MonoDevelop.Ide
 			
 			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Building " + entry.Name);
 			try {
-				tt.Trace ("Pre-build operations");
-				DoBeforeCompileAction ();
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 			
 				tt.Trace ("Start build event");
@@ -1122,12 +1120,17 @@ namespace MonoDevelop.Ide
 		{
 			BuildResult result = null;
 			try {
-				tt.Trace ("Building item");
-				SolutionItem it = entry as SolutionItem;
-				if (it != null)
-					result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
-				else
-					result = entry.RunTarget (monitor, ProjectService.BuildTarget, IdeApp.Workspace.ActiveConfiguration);
+				tt.Trace ("Pre-build operations");
+				result = DoBeforeCompileAction ();
+
+				if (result.ErrorCount == 0) {
+					tt.Trace ("Building item");
+					SolutionItem it = entry as SolutionItem;
+					if (it != null)
+						result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
+					else
+						result = entry.RunTarget (monitor, ProjectService.BuildTarget, IdeApp.Workspace.ActiveConfiguration);
+				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
 			} finally {
@@ -1139,8 +1142,10 @@ namespace MonoDevelop.Ide
 			});
 		}
 
-		void DoBeforeCompileAction ()
+		BuildResult DoBeforeCompileAction ()
 		{
+			var result = new BuildResult ();
+			var couldNotSaveError = "The build has been aborted as the file '{0}' could not be saved";
 			BeforeCompileAction action = IdeApp.Preferences.BeforeBuildSaveAction;
 			
 			switch (action) {
@@ -1155,6 +1160,8 @@ namespace MonoDevelop.Ide
 							                                AlertButton.BuildWithoutSave, AlertButton.Save) == AlertButton.Save) {
 								MarkFileDirty (doc.FileName);
 								doc.Save ();
+								if (doc.IsDirty)
+									result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
 							}
 							else
 								break;
@@ -1163,13 +1170,18 @@ namespace MonoDevelop.Ide
 					break;
 				case BeforeCompileAction.SaveAllFiles:
 					foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents))
-						if (doc.IsDirty && doc.Project != null)
+						if (doc.IsDirty && doc.Project != null) {
 							doc.Save ();
+							if (doc.IsDirty)
+								result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
+						}
 					break;
 				default:
 					System.Diagnostics.Debug.Assert(false);
 					break;
 			}
+			
+			return result;
 		}
 
 		void BeginBuild (IProgressMonitor monitor)
