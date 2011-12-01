@@ -363,6 +363,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!widget.EnsureCorrectEolMarker (fileName, encoding))
 				return;
+			if (widget.HasMessageBar)
+				return;
+			
 			if (!string.IsNullOrEmpty (ContentName))
 				AutoSave.RemoveAutoSaveFile (ContentName);
 

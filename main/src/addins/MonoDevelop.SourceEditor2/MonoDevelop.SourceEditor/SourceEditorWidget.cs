@@ -130,6 +130,10 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
+		public bool HasMessageBar {
+			get { return messageBar != null; }
+		}
+		
 		Gtk.VBox vbox = new Gtk.VBox ();
 		public Gtk.VBox Vbox {
 			get { return this.vbox; }

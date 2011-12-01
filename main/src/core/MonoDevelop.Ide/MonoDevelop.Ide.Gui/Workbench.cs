@@ -613,14 +613,18 @@ namespace MonoDevelop.Ide.Gui
 								window.ViewContent.Save (window.ViewContent.ContentName);
 							else
 								window.ViewContent.Save ();
+							args.Cancel |= window.ViewContent.IsDirty;
+
 						}
 						catch (Exception ex) {
 							args.Cancel = true;
 							MessageService.ShowException (ex, GettextCatalog.GetString ("The document could not be saved."));
 						}
 					}
+					if (args.Cancel)
+						FindDocument (window).Select ();
 				} else {
-					args.Cancel = result != AlertButton.CloseWithoutSave;
+					args.Cancel |= result != AlertButton.CloseWithoutSave;
 					if (!args.Cancel)
 						window.ViewContent.DiscardChanges ();
 				}
