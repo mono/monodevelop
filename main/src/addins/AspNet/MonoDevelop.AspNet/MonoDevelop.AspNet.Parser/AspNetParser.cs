@@ -34,12 +34,13 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.Parser
 {
 	public class AspNetParser : AbstractTypeSystemParser
 	{
-		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
 				var info = new PageInfo ();
 			var rootNode = new RootNode ();

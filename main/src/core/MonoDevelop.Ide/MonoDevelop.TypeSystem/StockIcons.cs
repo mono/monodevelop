@@ -134,6 +134,24 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		public static string GetStockIcon (this IUnresolvedTypeDefinition def)
+		{
+			switch (def.Kind) {
+			case TypeKind.Class:
+				return typeIconTable [0, ModifierToOffset (def.Accessibility)];
+			case TypeKind.Enum:
+				return typeIconTable [1, ModifierToOffset (def.Accessibility)];
+			case TypeKind.Interface:
+				return typeIconTable [2, ModifierToOffset (def.Accessibility)];
+			case TypeKind.Struct:
+				return typeIconTable [3, ModifierToOffset (def.Accessibility)];
+			case TypeKind.Delegate:
+				return typeIconTable [4, ModifierToOffset (def.Accessibility)];
+			default:
+				return typeIconTable [0, ModifierToOffset (def.Accessibility)];
+			}
+		}
+		
 		public static string GetStockIcon (this IField field)
 		{
 			return GetStockIcon ((IEntity)field);
@@ -149,7 +167,7 @@ namespace MonoDevelop.TypeSystem
 			return Field;
 		}
 		
-		public static string GetStockIcon (this ITypeParameter parameter)
+		public static string GetStockIcon (this IUnresolvedTypeParameter parameter)
 		{
 			return Field;
 		}

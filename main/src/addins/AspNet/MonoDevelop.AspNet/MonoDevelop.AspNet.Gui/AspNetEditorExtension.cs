@@ -95,26 +95,26 @@ namespace MonoDevelop.AspNet.Gui
 			
 			if (documentBuilder != null) {
 				var usings = refman.GetUsings ();
-				documentInfo = new DocumentInfo (document.TypeResolveContext, aspDoc, usings, refman.GetDoms ());
+				documentInfo = new DocumentInfo (document.Compilation, aspDoc, usings, refman.GetDoms ());
 				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
 				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
-				var domWrapper = new AspProjectDomWrapper (documentInfo);
+/*				var domWrapper = new AspProjectDomWrapper (documentInfo);
 				if (localDocumentInfo != null)
-					localDocumentInfo.HiddenDocument.HiddenContext = domWrapper;
+					localDocumentInfo.HiddenDocument.HiddenContext = domWrapper;*/
 			}
 		}
 		
-		static ITypeDefinition CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
+		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
 		{
 			var v = new MemberListVisitor (info.AspNetDocument, refman);
 			info.AspNetDocument.RootNode.AcceptVisit (v);
-			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultTypeDefinition (null, info.ClassName);
-			var dom = refman.TypeCtx.TypeResolveContext;
-			var baseType = dom.GetTypeDefinition ("", info.BaseType, 0, StringComparer.Ordinal);
-			foreach (var m in CodeBehind.GetDesignerMembers (v.Members.Values, baseType, null, dom, null)) {
-				t.Fields.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultField (t, m.Name) {
+			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
+			var dom = refman.TypeCtx.Compilation;
+			var baseType = dom.FindType (info.BaseType);
+			foreach (var m in CodeBehind.GetDesignerMembers (v.Members.Values, baseType, null)) {
+				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
 					Accessibility = Accessibility.Protected,
-					ReturnType = m.Type
+					ReturnType = m.Type.ToTypeReference ()
 				});
 			}
 			return t;
@@ -238,8 +238,7 @@ namespace MonoDevelop.AspNet.Gui
 			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
 			workbenchWindow.ViewContent = viewContent;
 			localDocumentInfo.HiddenDocument = new HiddenDocument (workbenchWindow) {
-				HiddenParsedDocument = localDocumentInfo.ParsedLocalDocument,
-				HiddenContext = domWrapper
+				HiddenParsedDocument = localDocumentInfo.ParsedLocalDocument
 			};
 		}
 		
@@ -257,7 +256,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		ICompletionWidget defaultCompletionWidget;
 		MonoDevelop.Ide.Gui.Document defaultDocument;
-		AspProjectDomWrapper domWrapper;
+//		AspProjectDomWrapper domWrapper;
 		public override void Initialize ()
 		{
 			base.Initialize ();
@@ -344,7 +343,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (!HasDoc) {
 				AddAspBeginExpressions (list);
 				string aspPrefix = "asp:";
-				foreach (var cls in WebTypeContext.ListSystemControlClasses (TypeSystemService.GetContext (project).GetTypeDefinition ("System.Web.UI", "Control", 0, StringComparer.Ordinal), project))
+				foreach (var cls in WebTypeContext.ListSystemControlClasses (TypeSystemService.GetCompilation (project).FindType ("System.Web.UI.Control"), project))
 					list.Add (new AspTagCompletionData (aspPrefix, cls));
 				
 				base.GetElementCompletions (list);
@@ -382,9 +381,8 @@ namespace MonoDevelop.AspNet.Gui
 				return;
 			}
 			
-			var ctx = controlClass.GetProjectContent ();
 			string defaultProp;
-			bool childrenAsProperties = AreChildrenAsProperties (ctx, controlClass, out defaultProp);
+			bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
 			if (defaultProp != null && defaultProp.Length == 0)
 				defaultProp = null;
 			
@@ -407,7 +405,7 @@ namespace MonoDevelop.AspNet.Gui
 				
 				string propName = defaultProp ?? parentName.Name;
 				IProperty property =
-					GetAllProperties (controlClass.GetProjectContent (), controlClass)
+					controlClass.GetProperties ()
 						.Where (x => string.Compare (propName, x.Name, StringComparison.OrdinalIgnoreCase) == 0)
 						.FirstOrDefault ();
 				
@@ -415,7 +413,7 @@ namespace MonoDevelop.AspNet.Gui
 					return;
 				
 				//sanity checks on attributes
-				switch (GetPersistenceMode (ctx, property)) {
+				switch (GetPersistenceMode (property)) {
 				case System.Web.UI.PersistenceMode.Attribute:
 				case System.Web.UI.PersistenceMode.EncodedInnerDefaultProperty:
 					return;
@@ -444,19 +442,19 @@ namespace MonoDevelop.AspNet.Gui
 				//to be able to resolve the correct child types here
 				//so we assume it's a list and have a quick hack to find arguments of strongly typed ILists
 				
-				IType collectionType = property.ReturnType.Resolve (controlClass.GetProjectContent ());
+				IType collectionType = property.ReturnType;
 				if (collectionType == null) {
 					list.AddRange (refman.GetControlCompletionData ());
 					return;
 				}
 				
 				string addStr = "Add";
-				IMethod meth = GetAllMethods (ctx, collectionType)
+				IMethod meth = collectionType.GetMethods ()
 					.Where (m => m.Parameters.Count == 1 && m.Name == addStr).FirstOrDefault ();
 				
 				if (meth != null) {
-					IType argType = meth.Parameters [0].Type.Resolve (ctx);
-					if (argType != null && argType.IsBaseType (ctx, ctx.GetTypeDefinition ("System.Web.UI", "Control", 0, StringComparer.Ordinal))) {
+					IType argType = meth.Parameters [0].Type;
+					if (argType != null && argType.IsBaseType (argType.GetDefinition ().Compilation.FindType ("System.Web.UI.Control"))) {
 						list.AddRange (refman.GetControlCompletionData (argType));
 						return;
 					}
@@ -472,8 +470,8 @@ namespace MonoDevelop.AspNet.Gui
 					LoggingService.LogWarning ("IType {0} does not have a SourceProjectDom", controlClass);
 				}
 				
-				foreach (IProperty prop in GetUniqueMembers<IProperty> (GetAllProperties (controlClass.GetProjectContent (), controlClass)))
-					if (GetPersistenceMode (ctx, prop) != System.Web.UI.PersistenceMode.Attribute)
+				foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
+					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
 						list.Add (prop.Name, prop.GetStockIcon (), prop.Documentation);
 				return;
 			}
@@ -536,8 +534,8 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (!(expr is AspNetDataBindingExpression || expr is AspNetRenderExpression))
 				return null;
-			ITypeDefinition codeBehindClass;
-			ITypeResolveContext projectDatabase;
+			IType codeBehindClass;
+			ICompilation projectDatabase;
 			GetCodeBehind (out codeBehindClass, out projectDatabase);
 			
 			if (codeBehindClass == null)
@@ -545,25 +543,25 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//list just the class's properties, not properties on base types
 			CompletionDataList list = new CompletionDataList ();
-			list.AddRange (from p in codeBehindClass.GetProperties (projectDatabase)
+			list.AddRange (from p in codeBehindClass.GetProperties ()
 				where p.IsPublic || p.IsPublic
 				select new CompletionData (p.Name, "md-property"));
-			list.AddRange (from p in codeBehindClass.GetFields (projectDatabase)
+			list.AddRange (from p in codeBehindClass.GetFields ()
 				where p.IsProtected || p.IsPublic
 				select new CompletionData (p.Name, "md-property"));
 			
 			return list.Count > 0? list : null;
 		}
 		
-		void GetCodeBehind (out ITypeDefinition codeBehindClass, out ITypeResolveContext projectDatabase)
+		void GetCodeBehind (out IType codeBehindClass, out ICompilation projectDatabase)
 		{
 			codeBehindClass = null;
 			projectDatabase = null;
 			
 			if (HasDoc && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
-				projectDatabase = TypeSystemService.GetContext (project);
+				projectDatabase = TypeSystemService.GetCompilation (project);
 				if (projectDatabase != null)
-					codeBehindClass = projectDatabase.GetTypeDefinition ("", aspDoc.Info.InheritedClass, 0, StringComparer.Ordinal);
+					codeBehindClass = projectDatabase.FindType (aspDoc.Info.InheritedClass);
 			}
 		}
 		
@@ -593,7 +591,7 @@ namespace MonoDevelop.AspNet.Gui
 			Debug.Assert (name.IsValid);
 			Debug.Assert (name.HasPrefix);
 			
-			var database = TypeSystemService.GetContext (project);
+			var database = TypeSystemService.GetCompilation (project);
 			
 			if (database == null) {
 				LoggingService.LogWarning ("Could not obtain project DOM in AddAspAttributeCompletionData");
@@ -602,27 +600,27 @@ namespace MonoDevelop.AspNet.Gui
 			
 			IType controlClass = refman.GetControlType (name.Prefix, name.Name);
 			if (controlClass == null) {
-				controlClass = database.GetTypeDefinition ("System.Web.UI.WebControls", "WebControl", 0 , StringComparer.Ordinal);
+				controlClass = database.FindType ("System.Web.UI.WebControls.WebControl");
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
 					return;
 				}
 			}
 			
-			AddControlMembers (list, database, controlClass, existingAtts);
+			AddControlMembers (list, controlClass, existingAtts);
 		}
 		
-		void AddControlMembers (CompletionDataList list, ITypeResolveContext database, IType controlClass, 
+		void AddControlMembers (CompletionDataList list, IType controlClass, 
 		                        Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
-			foreach (var prop in GetUniqueMembers<IProperty> (GetAllProperties (database, controlClass)))
+			foreach (var prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 				if (prop.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
-					if (GetPersistenceMode (database, prop) == System.Web.UI.PersistenceMode.Attribute)
+					if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
 						list.Add (prop.Name, prop.GetStockIcon (), prop.Documentation);
 			
 			//similarly add events
-			foreach (var eve in GetUniqueMembers<IEvent> (GetAllEvents (database, controlClass))) {
+			foreach (var eve in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
 				string eveName = "On" + eve.Name;
 				if (eve.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
 					list.Add (eveName, eve.GetStockIcon (), eve.Documentation);
@@ -640,7 +638,7 @@ namespace MonoDevelop.AspNet.Gui
 				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
 				
 				var database = WebTypeContext.GetSystemWebDom (project);
-				controlClass = database.GetTypeDefinition ("System.Web.UI.WebControls", "WebControl", 0, StringComparer.Ordinal);
+				controlClass = database.FindType ("System.Web.UI.WebControls.WebControl");
 
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
@@ -649,22 +647,22 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			//find the codebehind class
-			ITypeDefinition codeBehindClass;
-			ITypeResolveContext projectDatabase;
+			IType codeBehindClass;
+			ICompilation projectDatabase;
 			GetCodeBehind (out codeBehindClass, out projectDatabase);
 			
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attName.Name.StartsWith ("On")) {
 				string eventName = attName.Name.Substring (2);
 				
-				foreach (IEvent ev in GetAllEvents (projectDatabase, controlClass)) {
+				foreach (IEvent ev in controlClass.GetEvents ()) {
 					if (ev.Name == eventName) {
-						var domMethod = BindingService.MDDomToCodeDomMethod (projectDatabase, ev);
+						var domMethod = BindingService.MDDomToCodeDomMethod (ev);
 						if (domMethod == null)
 							return;
 						
 						foreach (IMethod meth 
-						    in BindingService.GetCompatibleMethodsInClass (projectDatabase, codeBehindClass, ev))
+						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, ev))
 						{
 							list.Add (meth.Name, "md-method",
 							    GettextCatalog.GetString ("A compatible method in the CodeBehind class"));
@@ -678,7 +676,7 @@ namespace MonoDevelop.AspNet.Gui
 						}
 							
 						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
-							(projectDatabase, codeBehindClass, suggestedIdentifier);
+							(codeBehindClass, suggestedIdentifier);
 						domMethod.Attributes = (domMethod.Attributes & ~System.CodeDom.MemberAttributes.AccessMask)
 							| System.CodeDom.MemberAttributes.Family;
 						
@@ -701,17 +699,17 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			//if it's a property and is an enum or bool, suggest valid values
-			foreach (IProperty prop in GetAllProperties (projectDatabase, controlClass)) {
+			foreach (IProperty prop in controlClass.GetProperties ()) {
 				if (prop.Name != attName.Name)
 					continue;
 				
 				//boolean completion
-				if (prop.ReturnType.Resolve (projectDatabase).Equals (projectDatabase.GetTypeDefinition (typeof (bool)))) {
+				if (prop.ReturnType.Equals (projectDatabase.FindType (KnownTypeCode.Boolean))) {
 					AddBooleanCompletionData (list);
 					return;
 				}
 				//color completion
-				if (prop.ReturnType.Resolve (projectDatabase).Equals (projectDatabase.GetTypeDefinition (typeof (System.Drawing.Color)))) {
+				if (prop.ReturnType.Equals (projectDatabase.FindType (typeof (System.Drawing.Color)))) {
 					System.Drawing.ColorConverter conv = new System.Drawing.ColorConverter ();
 					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
 						if (c.IsSystemColor)
@@ -723,9 +721,9 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				
 				//enum completion
-				IType retCls = prop.ReturnType.Resolve (projectDatabase);
-				if (retCls != null && retCls.IsEnum ()) {
-					foreach (var enumVal in retCls.GetFields (projectDatabase))
+				IType retCls = prop.ReturnType;
+				if (retCls != null && retCls.Kind == TypeKind.Enum) {
+					foreach (var enumVal in retCls.GetFields ())
 						if (enumVal.IsPublic && enumVal.IsStatic)
 							list.Add (enumVal.Name, "md-literal", enumVal.Documentation);
 					return;
@@ -744,27 +742,6 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		static IEnumerable<IProperty> GetAllProperties (
-		    ITypeResolveContext projectDatabase,
-		    IType cls)
-		{
-			return cls.GetProperties (projectDatabase);
-		}
-		
-		static IEnumerable<IEvent> GetAllEvents (
-		    ITypeResolveContext projectDatabase,
-		    IType cls)
-		{
-			return cls.GetEvents (projectDatabase);
-		}
-		
-		static IEnumerable<IMethod> GetAllMethods (
-		    ITypeResolveContext projectDatabase,
-		    IType cls)
-		{
-			return cls.GetMethods (projectDatabase);
-		}
-		
 		static void AddBooleanCompletionData (CompletionDataList list)
 		{
 			list.Add ("true", "md-literal");
@@ -775,11 +752,11 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#region Querying types' attributes
 		
-		static System.Web.UI.PersistenceMode GetPersistenceMode (ITypeResolveContext projectDatabase, IProperty prop)
+		static System.Web.UI.PersistenceMode GetPersistenceMode (IProperty prop)
 		{
 			foreach (var att in prop.Attributes) {
-				if (att.AttributeType.Resolve (projectDatabase).ReflectionName == "System.Web.UI.PersistenceModeAttribute") {
-					var expr = att.GetPositionalArguments (projectDatabase).FirstOrDefault ();
+				if (att.AttributeType.ReflectionName == "System.Web.UI.PersistenceModeAttribute") {
+					var expr = att.PositionalArguments.FirstOrDefault ();
 					if (expr == null) {
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return System.Web.UI.PersistenceMode.Attribute;
@@ -787,7 +764,7 @@ namespace MonoDevelop.AspNet.Gui
 					
 					return (System.Web.UI.PersistenceMode) expr.ConstantValue;
 				}
-				else if (att.AttributeType.Resolve (projectDatabase).ReflectionName == "System.Web.UI.TemplateContainerAttribute")
+				else if (att.AttributeType.ReflectionName == "System.Web.UI.TemplateContainerAttribute")
 				{
 					return System.Web.UI.PersistenceMode.InnerProperty;
 				}
@@ -795,13 +772,13 @@ namespace MonoDevelop.AspNet.Gui
 			return System.Web.UI.PersistenceMode.Attribute;
 		}
 		
-		static bool AreChildrenAsProperties (ITypeResolveContext ctx, IType type, out string defaultProperty)
+		static bool AreChildrenAsProperties (IType type, out string defaultProperty)
 		{
 			bool childrenAsProperties = false;
 			defaultProperty = "";
 			
-			IAttribute att = GetAttributes (ctx, type, "System.Web.UI.ParseChildrenAttribute").FirstOrDefault ();
-			var posArgs = att.GetPositionalArguments (ctx);
+			IAttribute att = GetAttributes (type, "System.Web.UI.ParseChildrenAttribute").FirstOrDefault ();
+			var posArgs = att.PositionalArguments;
 			if (att == null || posArgs.Count == 0)
 				return childrenAsProperties;
 			
@@ -830,25 +807,25 @@ namespace MonoDevelop.AspNet.Gui
 				defaultProperty = (string)expr.ConstantValue;
 			}
 			
-			var namedArgs = att.GetNamedArguments (ctx);
+			var namedArgs = att.NamedArguments;
 			if (namedArgs.Count > 0) {
-				if (namedArgs.Any (p => p.Key == "ChildrenAsProperties")) {
-					var expr = namedArgs.First (p => p.Key == "ChildrenAsProperties").Value;
+				if (namedArgs.Any (p => p.Key.Name == "ChildrenAsProperties")) {
+					var expr = namedArgs.First (p => p.Key.Name == "ChildrenAsProperties").Value;
 					if (expr == null) {
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return false;
 					}
 					childrenAsProperties = (bool)expr.ConstantValue;
 				}
-				if (namedArgs.Any (p => p.Key == "DefaultProperty")) {
-					var expr = namedArgs.First (p => p.Key == "DefaultProperty").Value;
+				if (namedArgs.Any (p => p.Key.Name == "DefaultProperty")) {
+					var expr = namedArgs.First (p => p.Key.Name == "DefaultProperty").Value;
 					if (expr == null) {
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return false;
 					}
 					defaultProperty = (string)expr.ConstantValue;
 				}
-				if (namedArgs.Any (p => p.Key == "ChildControlType")) {
+				if (namedArgs.Any (p => p.Key.Name == "ChildControlType")) {
 					//TODO: implement this
 					LoggingService.LogWarning ("ASP.NET completion does not yet handle ParseChildrenAttribute (Type)");
 					return false;
@@ -858,10 +835,10 @@ namespace MonoDevelop.AspNet.Gui
 			return childrenAsProperties;
 		}
 		
-		static IEnumerable<IAttribute> GetAttributes (ITypeResolveContext ctx, IType type, string attName)
+		static IEnumerable<IAttribute> GetAttributes (IType type, string attName)
 		{
 			foreach (var att in type.GetDefinition ().Attributes) {
-				if (att.AttributeType.Resolve (ctx).ReflectionName == attName)
+				if (att.AttributeType.ReflectionName == attName)
 					yield return att;
 			}
 			
@@ -870,9 +847,9 @@ namespace MonoDevelop.AspNet.Gui
 				yield break;
 			}
 			
-			foreach (IType t2 in type.GetAllBaseTypes (ctx)) {
+			foreach (IType t2 in type.GetAllBaseTypes ()) {
 				foreach (IAttribute att in t2.GetDefinition ().Attributes)
-					if (att.AttributeType.Resolve (ctx).ReflectionName == attName)
+					if (att.AttributeType.ReflectionName == attName)
 						yield return att;
 			}
 		}

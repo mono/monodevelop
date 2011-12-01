@@ -26,17 +26,18 @@
 using System;
 using System.IO;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.TypeSystem
 {
 	public interface ITypeSystemParser
 	{
-		ParsedDocument Parse (bool storeAst, string fileName, TextReader content);
+		ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null);
 	}
 	
 	public abstract class AbstractTypeSystemParser : ITypeSystemParser
 	{
-		public virtual ParsedDocument Parse (bool storeAst, string fileName, TextReader content)
+		public virtual ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
 			return null;
 		}

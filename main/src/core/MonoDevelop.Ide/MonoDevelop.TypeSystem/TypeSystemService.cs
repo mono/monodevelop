@@ -76,12 +76,18 @@ namespace MonoDevelop.TypeSystem
 			return "TODO";
 		}
 		
-		public static bool IsBaseType (this IType type, ITypeResolveContext ctx, IType potentialBase)
+		public static bool IsBaseType (this IType type, IType potentialBase)
 		{
 			return type.GetAllBaseTypes ().Any (t => t.Equals (potentialBase));
 		}
 		
 		public static bool IsObsolete (this IEntity member)
+		{
+			// TODO: Implement me!
+			return false;
+		}
+		
+		public static bool IsObsolete (this IUnresolvedEntity member)
 		{
 			// TODO: Implement me!
 			return false;

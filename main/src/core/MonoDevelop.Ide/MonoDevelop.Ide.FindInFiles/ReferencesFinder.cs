@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public static List<Project> GetAllReferencingProjects (Solution solution, Project sourceProject)
 		{
 			var projects = new List<Project> ();
-			projects.Add (Tuple.Create (sourceProject, TypeSystemService.GetProjectContext (sourceProject)));
+			projects.Add (sourceProject);
 			foreach (var project in solution.GetAllProjects ()) {
 				if (project.GetReferencedItems (ConfigurationSelector.Default).Any (prj => prj == sourceProject))
 					projects.Add (project);

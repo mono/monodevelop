@@ -34,12 +34,13 @@ using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Html
 {
 	public class HtmlParser : AbstractTypeSystemParser
 	{
-		public override ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, TextReader tr)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
 			var doc = new XmlParsedDocument (fileName);
 //			doc.Flags = ParsedDocumentFlags.NonSerializable;

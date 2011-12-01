@@ -187,16 +187,16 @@ namespace MonoDevelop.DesignerSupport
 //			return cr;
 //		}
 		
-		public static IEnumerable<IMethod> GetCompatibleMethodsInClass (ITypeResolveContext ctx, IType cls, IEvent eve)
+		public static IEnumerable<IMethod> GetCompatibleMethodsInClass (IType cls, IEvent eve)
 		{
-			IMethod eveMeth = GetMethodSignature (ctx, eve);
+			IMethod eveMeth = GetMethodSignature (eve);
 			if (eveMeth == null)
 				return new IMethod[0];
-			return GetCompatibleMethodsInClass (ctx, cls, eveMeth);
+			return GetCompatibleMethodsInClass (cls, eveMeth);
 		}
 		
 		//TODO: check accessibility
-		public static IEnumerable<IMethod> GetCompatibleMethodsInClass (ITypeResolveContext ctx, IType cls, IMethod matchMeth)
+		public static IEnumerable<IMethod> GetCompatibleMethodsInClass (IType cls, IMethod matchMeth)
 		{
 			IType[] pars = new IType[matchMeth.Parameters.Count];
 			List<IType>[] baseTypes = new List<IType>[matchMeth.Parameters.Count];
@@ -229,18 +229,18 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		public static bool IdentifierExistsInClass (ITypeResolveContext parserContext, ITypeDefinition cls, string identifier)
+		public static bool IdentifierExistsInClass (IType cls, string identifier)
 		{
 			return cls.GetMembers ().Any (m => m.Name == identifier);
 		}
 		
-		public static string GenerateIdentifierUniqueInClass (ITypeResolveContext parserContext, ITypeDefinition cls, string trialIdentifier)
+		public static string GenerateIdentifierUniqueInClass (IType cls, string trialIdentifier)
 		{
 			string trialValue = trialIdentifier;
 			
 			for (int suffix = 1; suffix <= int.MaxValue; suffix++)
 			{
-				if (!IdentifierExistsInClass (parserContext, cls, trialValue))
+				if (!IdentifierExistsInClass (cls, trialValue))
 					return trialValue;
 				
 				trialValue = trialIdentifier + suffix.ToString ();
@@ -312,7 +312,7 @@ namespace MonoDevelop.DesignerSupport
 			return newMethod;
 		}
 		
-		public static IMethod GetMethodSignature (ITypeResolveContext context, IEvent ev)
+		public static IMethod GetMethodSignature (IEvent ev)
 		{
 			if (ev.ReturnType == null)
 				return null;
@@ -346,10 +346,10 @@ namespace MonoDevelop.DesignerSupport
 			return meth;
 		}
 		
-		public static CodeMemberMethod MDDomToCodeDomMethod (ITypeResolveContext context, IEvent eve)
+		public static CodeMemberMethod MDDomToCodeDomMethod (IEvent eve)
 		{
-			IMethod meth = GetMethodSignature (context, eve);
-			return meth != null ? MDDomToCodeDomMethod (context, meth) : null;
+			IMethod meth = GetMethodSignature (eve);
+			return meth != null ? MDDomToCodeDomMethod (meth) : null;
 		}
 		
 		static void CodeDomModifiersToMDDom (DefaultUnresolvedMethod method, MemberAttributes modifiers)
@@ -436,7 +436,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		
-		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (ITypeResolveContext ctx, IMethod mi)
+		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IMethod mi)
 		{
 			CodeMemberMethod newMethod = new CodeMemberMethod ();
 			newMethod.Name = mi.Name;

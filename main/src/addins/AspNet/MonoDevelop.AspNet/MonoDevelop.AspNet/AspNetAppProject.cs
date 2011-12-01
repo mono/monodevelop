@@ -332,7 +332,7 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		public ITypeResolveContext ResolveAssemblyDom (string assemblyName)
+		public ICompilation ResolveAssemblyDom (string assemblyName)
 		{
 			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
@@ -351,7 +351,7 @@ namespace MonoDevelop.AspNet
 						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' could not be found", reference.Reference, this.Name);
 						continue;
 					}
-					return TypeSystemService.GetContext (p);
+					return TypeSystemService.GetCompilation (p);
 				}
 			}
 			
@@ -690,9 +690,9 @@ namespace MonoDevelop.AspNet
 		{
 			string typeName = GetCodebehindTypeName (fileName);
 			if (typeName != null) {
-				var dom = TypeSystemService.GetContext (this);
+				var dom = TypeSystemService.GetCompilation (this);
 				if (dom != null)
-					return dom.GetTypeDefinition ("", typeName, 0, StringComparer.Ordinal);
+					return dom.FindType (typeName);
 			}
 			return null;
 		}
@@ -712,7 +712,7 @@ namespace MonoDevelop.AspNet
 			protected override string GenerateInfo (string filename)
 			{
 				try {
-					var doc = TypeSystemService.ParseFile (TypeSystemService.GetProjectContext (Project), filename, DesktopService.GetMimeTypeForUri (filename), File.ReadAllText (filename)) as AspNetParsedDocument;
+					var doc = TypeSystemService.ParseFile (filename, DesktopService.GetMimeTypeForUri (filename), File.ReadAllText (filename)) as AspNetParsedDocument;
 					if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
 						return doc.Info.InheritedClass;
 				} catch (Exception ex) {

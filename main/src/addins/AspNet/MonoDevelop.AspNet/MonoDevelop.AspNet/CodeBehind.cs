@@ -154,9 +154,9 @@ namespace MonoDevelop.AspNet
 			if (memberList.Members.Count == 0)
 				return ccu;
 			
-			var dom = refman.TypeCtx.TypeResolveContext;
-			var cls = dom.GetTypeDefinition ("", className, 0, StringComparer.Ordinal);
-			var members = GetDesignerMembers (memberList.Members.Values, cls, filename, dom, dom);
+			var dom = refman.TypeCtx.Compilation;
+			var cls = dom.FindType (className);
+			var members = GetDesignerMembers (memberList.Members.Values, cls, filename);
 			
 			//add fields for each control in the page
 			
@@ -176,21 +176,20 @@ namespace MonoDevelop.AspNet
 		/// <returns>The filtered list of non-conflicting members.</returns>
 		// TODO: check compatibilty with existing members
 		public static IEnumerable<CodeBehindMember> GetDesignerMembers (
-			IEnumerable<CodeBehindMember> members, IType cls, string designerFile, ITypeResolveContext resolveDom,
-			ITypeResolveContext internalDom)
+			IEnumerable<CodeBehindMember> members, IType cls, string designerFile)
 		{
 			var existingMembers = new HashSet<string> ();
 			while (cls != null) {
-				foreach (var member in cls.GetDefinition ().Members) {
-					if (member.Accessibility == Accessibility.Private || (member.Accessibility == Accessibility.Internal && member.DeclaringType.GetProjectContent () != internalDom))
+				foreach (var member in cls.GetMembers ()) {
+					if (member.Accessibility == Accessibility.Private || member.Accessibility == Accessibility.Internal)
 					    continue;
 					if (member.DeclaringType.GetDefinition ().Region.FileName == designerFile)
 						continue;
 					existingMembers.Add (member.Name);
 				}
-				if (!cls.GetBaseTypes (internalDom).Any ())
+				if (!cls.GetAllBaseTypeDefinitions ().Any ())
 					break;
-				cls = cls.GetBaseTypes (internalDom).First ();
+				cls = cls.GetAllBaseTypeDefinitions ().First ();
 			}
 			return members.Where (m => !existingMembers.Contains (m.Name));
 		}

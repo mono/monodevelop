@@ -88,7 +88,7 @@ namespace MonoDevelop.AspNet.Parser
 				
 				var ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
-					ITypeResolveContext dom = TypeCtx.ResolveAssembly (ard.Assembly);
+					var dom = TypeCtx.ResolveAssembly (ard.Assembly);
 					if (dom == null)
 						continue;
 					
@@ -149,7 +149,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
-			return GetControlCompletionData (TypeSystemService.GetContext (Project).GetTypeDefinition ("System.Web.UI", "Control", 0, StringComparer.Ordinal));
+			return GetControlCompletionData (TypeSystemService.GetCompilation (Project).FindType ("System.Web.UI.Control"));
 		}
 		
 		public IEnumerable<CompletionData> GetControlCompletionData (IType baseType)
@@ -210,7 +210,7 @@ namespace MonoDevelop.AspNet.Parser
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
 					string assembly = ard.Assembly;
-					ITypeResolveContext dom = TypeCtx.ResolveAssembly (ard.Assembly);
+					var dom = TypeCtx.ResolveAssembly (ard.Assembly);
 					if (dom == null)
 						continue;
 					type = WebTypeContext.AssemblyTypeLookup (dom, ard.Namespace, tagName);
@@ -414,20 +414,20 @@ namespace MonoDevelop.AspNet.Parser
 			return usings;
 		}
 		
-		public IList<ITypeResolveContext> GetDoms ()
+		public IList<ICompilation> GetDoms ()
 		{
 			var asms = new HashSet<string> (Project.RegistrationCache.GetAssembliesForPath (DirectoryPath));
 			foreach (var s in Doc.Info.Assemblies)
 				asms.Add (s.Name);
 			
-			var doms = new List<ITypeResolveContext> ();
-			doms.Add (TypeCtx.TypeResolveContext);
-			
+			var doms = new List<ICompilation> ();
+			doms.Add (TypeCtx.Compilation);
+/*			
 			foreach (var asmName in asms) {
 				var dom = TypeCtx.ResolveAssembly (asmName);
 				if (dom != null)
 					doms.Add (dom);
-			}
+			}*/
 			return doms;
 		}
 	}

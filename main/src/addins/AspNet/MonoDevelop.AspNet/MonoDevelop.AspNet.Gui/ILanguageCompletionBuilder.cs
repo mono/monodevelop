@@ -97,8 +97,8 @@ namespace MonoDevelop.AspNet.Gui
 	/// </summary>
 	public class DocumentInfo
 	{
-		public DocumentInfo (ITypeResolveContext dom, AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports,
-		                     IList<ITypeResolveContext> references)
+		public DocumentInfo (ICompilation dom, AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports,
+		                     IList<ICompilation> references)
 		{
 			this.Dom = dom;
 			this.AspNetDocument = aspNetParsedDocument;
@@ -111,15 +111,15 @@ namespace MonoDevelop.AspNet.Gui
 		
 		IType codeBesideClass;
 		
-		public ITypeResolveContext Dom { get; private set; }
+		public ICompilation Dom { get; private set; }
 		public AspNetParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
 		public List<ExpressionNode> Expressions { get; private set; }
 		public List<TagNode> ScriptBlocks { get; private set; }
-		public IList<ITypeResolveContext> References { get; set; }
+		public IList<ICompilation> References { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
 		
-		public ITypeDefinition CodeBesideClass { get; set; }
+		public IUnresolvedTypeDefinition CodeBesideClass { get; set; }
 		
 		public string BaseType {
 			get {
@@ -225,13 +225,6 @@ namespace MonoDevelop.AspNet.Gui
 	
 	public class HiddenDocument : MonoDevelop.Ide.Gui.Document
 	{
-		internal ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext HiddenContext;
-		public override ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext TypeResolveContext {
-			get {
-				return HiddenContext;
-			}
-		}
-		
 		internal ParsedDocument HiddenParsedDocument;
 		public override ParsedDocument ParsedDocument {
 			get {

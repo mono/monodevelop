@@ -37,7 +37,9 @@ namespace MonoDevelop.Projects.Text
 			private set;
 		}
 		
-		public abstract string GenerateDocumentation (ITypeResolveContext ctx, IMember member, string linePrefix);
+		public abstract string GenerateDocumentation (IMember member, string linePrefix);
+		
+		public abstract string GenerateDocumentation (IUnresolvedMember member, string linePrefix);
 		
 		static DocGenerator ()
 		{

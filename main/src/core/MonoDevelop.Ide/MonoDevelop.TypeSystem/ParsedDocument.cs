@@ -57,7 +57,7 @@ namespace MonoDevelop.TypeSystem
 		
 		public virtual IParsedFile ParsedFile {
 			get { return this; }
-			protected set { throw new InvalidOperationException (); }
+			set { throw new InvalidOperationException (); }
 		}
 
 		public IList<Comment> Comments {
@@ -330,7 +330,7 @@ namespace MonoDevelop.TypeSystem
 		
 		public override IParsedFile ParsedFile {
 			get { return parsedFile; }
-			protected set { parsedFile = value; FileName = parsedFile.FileName; }
+			set { parsedFile = value; FileName = parsedFile.FileName; }
 		}
 		
 		public ParsedDocumentDecorator (IParsedFile parsedFile) : base (parsedFile.FileName)

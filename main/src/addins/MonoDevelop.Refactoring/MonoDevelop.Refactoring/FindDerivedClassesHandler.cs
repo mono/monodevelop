@@ -58,9 +58,7 @@ namespace MonoDevelop.Refactoring
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					var cache = new Dictionary<string, TextEditorData> ();
 					foreach (var p in projects) {
-						if (p.Item2 == null) // may happen for cecil contexts
-							continue;
-						foreach (var type in TypeSystemService.GetCompilation (p.Item1).GetAllTypeDefinitions ()) {
+						foreach (var type in TypeSystemService.GetCompilation (p).GetAllTypeDefinitions ()) {
 							if (!type.IsDerivedFrom (cls)) 
 								continue;
 							TextEditorData textFile;
@@ -68,7 +66,7 @@ namespace MonoDevelop.Refactoring
 								cache[type.Region.FileName] = textFile = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName);
 							}
 							int position = textFile.LocationToOffset (type.Region.BeginLine, type.Region.BeginColumn);
-							monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (type.Region.FileName, p.Item1), position, 0));
+							monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (type.Region.FileName, p), position, 0));
 						}
 					}
 					foreach (var tf in cache.Values) {

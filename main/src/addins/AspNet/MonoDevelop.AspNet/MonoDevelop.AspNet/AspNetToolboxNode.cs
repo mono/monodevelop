@@ -124,9 +124,9 @@ namespace MonoDevelop.AspNet
 			//FIXME: only do this on the insert, not the preview - or remove it afterwards
 			RegisterReference (document.Project);
 			
-			var database = document.TypeResolveContext;
+			var database = document.Compilation;
 			
-			var cls = database.GetTypeDefinition (Type.Load ());
+			var cls = database.FindType (Type.Load ());
 			if (cls == null)
 				return tag;
 			

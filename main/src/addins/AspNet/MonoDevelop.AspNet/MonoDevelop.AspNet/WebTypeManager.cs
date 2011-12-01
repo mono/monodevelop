@@ -44,6 +44,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core.Assemblies;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AspNet
 {
@@ -57,26 +58,26 @@ namespace MonoDevelop.AspNet
 				throw new ArgumentException ("project");
 			Project = project;
 			SystemWebDom = GetSystemWebDom (project);
-			TypeResolveContext = TypeSystemService.GetContext ( project);
-			if (TypeResolveContext == null)
+			Compilation = TypeSystemService.GetCompilation (project);
+			if (Compilation == null)
 				throw new InvalidOperationException ("Could not load parse database for project");
 		}
 		
 		public AspNetAppProject Project { get; private set; }
-		public ITypeResolveContext SystemWebDom { get; private set; }
-		public ITypeResolveContext TypeResolveContext { get; private set; }
+		public ICompilation SystemWebDom { get; private set; }
+		public ICompilation Compilation { get; private set; }
 		
 		public TargetFramework TargetFramework {
 			get { return Project.TargetFramework; }
 		}
 		
 		//FIXME: this shouldn't be public
-		public static ITypeResolveContext GetSystemWebDom (AspNetAppProject project)
+		public static ICompilation GetSystemWebDom (AspNetAppProject project)
 		{
 			return GetSystemWebDom (project.TargetRuntime, project.TargetFramework);
 		}
 		
-		static ITypeResolveContext GetSystemWebDom (TargetRuntime runtime, TargetFramework targetFramework)
+		static ICompilation GetSystemWebDom (TargetRuntime runtime, TargetFramework targetFramework)
 		{
 			string file = runtime.AssemblyContext.GetAssemblyNameForVersion (sysWebAssemblyName, targetFramework);
 			if (string.IsNullOrEmpty (file))
@@ -84,7 +85,7 @@ namespace MonoDevelop.AspNet
 			file = runtime.AssemblyContext.GetAssemblyLocation (file, targetFramework);
 			if (string.IsNullOrEmpty (file))
 				throw new Exception ("System.Web assembly file not found for framework " + targetFramework.Id);
-			ITypeResolveContext dom = TypeSystemService.LoadAssemblyContext (runtime, file);
+			var dom = TypeSystemService.LoadAssemblyContext (runtime, file);
 			if (dom == null)
 				throw new Exception ("System.Web parse database not found for framework " + targetFramework.Id + " file '" + file + "'");
 			return dom;
@@ -92,11 +93,11 @@ namespace MonoDevelop.AspNet
 		
 		#region Assembly resolution
 		
-		Dictionary<string,ITypeResolveContext> cachedDoms = new Dictionary<string, ITypeResolveContext> ();
+		Dictionary<string,ICompilation> cachedDoms = new Dictionary<string, ICompilation> ();
 				
-		public ITypeResolveContext ResolveAssembly (string assemblyName)
+		public ICompilation ResolveAssembly (string assemblyName)
 		{
-			ITypeResolveContext dom;
+			ICompilation dom;
 			if (!cachedDoms.TryGetValue (assemblyName, out dom)) {
 				cachedDoms [assemblyName] = dom = Project.ResolveAssemblyDom (assemblyName);
 				if (dom == null)
@@ -295,7 +296,7 @@ namespace MonoDevelop.AspNet
 		{
 			var str = HtmlControlLookup (tagName, typeAttribute);
 			if (str != null) {
-				return SystemWebDom.GetTypeDefinition ("", str, 0, StringComparer.OrdinalIgnoreCase);
+				return SystemWebDom.FindType (str);
 			}
 			return null;
 		}
@@ -309,18 +310,18 @@ namespace MonoDevelop.AspNet
 			return ListControlClasses (baseType, GetSystemWebDom (project), "System.Web.UI.WebControls");
 		}
 		
-		public static IEnumerable<IType> ListControlClasses (IType baseType, ITypeResolveContext database, string namespac)
+		public static IEnumerable<IType> ListControlClasses (IType baseType, ICompilation database, string namespac)
 		{
 			if (database == null)
 				yield break;
 			var baseTypeDefinition = baseType.GetDefinition ();
 			//return classes if they derive from system.web.ui.control
-			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions (database).Where (t => t.Namespace == namespac))
+			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions ().Where (t => t.Namespace == namespac))
 				if (!type.IsAbstract && type.IsPublic)
 					yield return type;
 			
 			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.IsPublic && baseTypeDefinition.Namespace == namespac) {
-				yield return baseType.Resolve (database);
+				yield return baseType;
 			}
 		}
 		
@@ -339,17 +340,17 @@ namespace MonoDevelop.AspNet
 			return AssemblyTypeLookup (SystemWebDom, "System.Web.UI.WebControls", tagName);
 		}
 		
-		public static string AssemblyTypeNameLookup (ITypeResolveContext assemblyDatabase, string namespac, string tagName)
+		public static string AssemblyTypeNameLookup (ICompilation assemblyDatabase, string namespac, string tagName)
 		{
-			IType cls = AssemblyTypeLookup (assemblyDatabase, namespac, tagName);
+			var cls = AssemblyTypeLookup (assemblyDatabase, namespac, tagName);
 			return cls != null? cls.FullName : null;
 		}
 		
-		public static IType AssemblyTypeLookup (ITypeResolveContext assemblyDatabase, string namespac, string tagName)
+		public static IType AssemblyTypeLookup (ICompilation assemblyDatabase, string namespac, string tagName)
 		{
 			return (assemblyDatabase == null)
 				? null
-				: assemblyDatabase.GetTypeDefinition (namespac, tagName, 0, StringComparer.OrdinalIgnoreCase);
+				: assemblyDatabase.MainAssembly.GetTypeDefinition (namespac, tagName, 0);
 		}
 		
 		#endregion
