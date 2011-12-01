@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp
 		public static ICSharpCode.NRefactory.CSharp.CompilationUnit Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
 		{
 			using (var stream = data.OpenStream ()) {
-				return parser.Parse (stream);
+				return parser.Parse (stream, data.Document.FileName);
 			}
 		}
 		
@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharp
 			}
 			parser.ErrorPrinter.Reset ();
 			using (var stream = data.OpenStream ()) {
-				return parser.Parse (stream);
+				return parser.Parse (stream, data.Document.FileName);
 			}
 		}
 		

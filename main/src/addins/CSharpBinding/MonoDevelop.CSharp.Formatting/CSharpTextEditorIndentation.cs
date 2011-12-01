@@ -111,11 +111,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && Document != null) {
 				//	textEditorData.Document.TextReplaced -= TextCut;
-				var dom = Document.TypeResolveContext;
 				var loc = textEditorData.Document.OffsetToLocation (offset);
-				var location = new TextLocation (loc.Line, loc.Column);
-				//	CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
-				OnTheFlyFormatter.Format (Document, dom, location);
+				OnTheFlyFormatter.Format (Document, loc);
 				//	textEditorData.Document.TextReplaced += TextCut;
 			}
 		}
@@ -502,10 +499,9 @@ namespace MonoDevelop.CSharp.Formatting
 			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
 				//		textEditorData.Document.TextReplaced -= TextCut;
 				
-				var dom = Document.TypeResolveContext;
 				TextLocation location = new TextLocation (textEditorData.Caret.Location.Line + (lastCharInserted == '\n' ? -1 : 0), textEditorData.Caret.Location.Column);
 				//				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
-				OnTheFlyFormatter.Format (Document, dom, location, lastCharInserted == '\n');
+				OnTheFlyFormatter.Format (Document, location, lastCharInserted == '\n');
 
 				//		textEditorData.Document.TextReplaced += TextCut;
 			}

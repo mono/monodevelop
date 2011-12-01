@@ -177,11 +177,11 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		string varName;
 		int varCount;
 		
-		public ITypeReference GetResolvedType (RefactoringOptions options, ResolveResult resolveResult)
+		public IType GetResolvedType (RefactoringOptions options, ResolveResult resolveResult)
 		{
-			ITypeReference result = resolveResult.Type;
-			if (result == null)
-				result = KnownTypeReference.Object;
+//			var result = resolveResult.Type;
+//			if (result == null)
+//				result = KnownTypeReference.Object;
 //			if (resolveResult is MethodGroupResolveResult) {
 //				var mrr = (MethodGroupResolveResult)resolveResult;
 //				var method = options.SelectedItem as IMethod ?? mrr.Methods.FirstOrDefault ();
@@ -200,110 +200,112 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 //					type.AddTypeParameter (method.ReturnType);
 //				result = type;
 //			}
-			return result;
+//			return result;
+			return null;
 		}
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
-			varCount = 0;
-			selectionStart = selectionEnd = -1;
-			
-			List<Change > result = new List<Change> ();
-			TextEditorData data = options.GetTextEditorData ();
-			if (data == null)
-				return result;
-			
-			DocumentLocation endPoint;
-			if (data.IsSomethingSelected) {
-				endPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Lead : data.MainSelection.Anchor; 
-			} else {
-				endPoint = data.Caret.Location;
-			}
-			ResolveResult resolveResult;
-			LineSegment lineSegment;
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
-			var visitor = new VariableLookupVisitor (options, new TextLocation (endPoint.Line, endPoint.Column));
-			var ctx = options.Document.TypeResolveContext;
-			if (options.ResolveResult == null) {
-				LoggingService.LogError ("Declare local error: resolve result == null");
-				return result;
-			}
-			IMember callingMember = options.Document.ParsedDocument.GetMember (options.Location);
-			if (callingMember != null)
-				visitor.MemberLocation = callingMember.Region.Begin;
-			unit.AcceptVisitor (visitor, null);
-			resolveResult = options.Resolve (selectedExpression);
-			if (resolveResult == null)
-				return result;
-			var resolvedType = resolveResult.Type.Resolve (ctx);
-			
-			AstType returnType;
-			if (resolveResult.Type == null) {
-				returnType = new SimpleType ("var");
-			} else {
-				returnType = options.CreateShortType (resolvedType);
-			}
-			
-			varName = CreateVariableName (resolvedType, visitor);
-			
-			// insert local variable declaration
-			TextReplaceChange insert = new TextReplaceChange ();
-			insert.FileName = options.Document.FileName;
-			insert.Description = GettextCatalog.GetString ("Insert variable declaration");
-			
-			var varDecl = new VariableDeclarationStatement (returnType, varName, selectedExpression.Clone ());
-			
-			var node = unit.GetNodeAt (endPoint.Line, endPoint.Column);
-			
-			var containing = node.Parent;
-			while (!(containing.Parent is BlockStatement)) {
-				containing = containing.Parent;
-			}
-			
-			if (containing is BlockStatement) {
-				lineSegment = data.Document.GetLine (data.Caret.Line);
-			} else {
-				lineSegment = data.Document.GetLine (containing.StartLocation.Line);
-			}
-			insert.Offset = lineSegment.Offset;
-			insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + options.OutputNode (varDecl);
-			var insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + options.OutputNode (varDecl.Type).Length + " ".Length;
-			offsets.Add (insertOffset);
-			result.Add (insert);
-			varCount++;
-
-			// replace main selection
-			TextReplaceChange replace = new TextReplaceChange ();
-			replace.FileName = options.Document.FileName;
-			int startOffset = options.Document.Editor.LocationToOffset (selectedExpression.StartLocation.Line, selectedExpression.StartLocation.Column); 
-			int endOffset   = options.Document.Editor.LocationToOffset (selectedExpression.EndLocation.Line, selectedExpression.EndLocation.Column); 
-			replace.Offset = startOffset;
-			replace.RemovedChars = endOffset - startOffset;
-			replace.InsertedText = varName;
-			result.Add (replace);
-			int delta = insert.InsertedText.Length - insert.RemovedChars;
-			offsets.Add (replace.Offset + delta);
-			delta += varName.Length - replace.RemovedChars;
-			varCount++;
-			selectionStart = insert.Offset;
-			
-			if (replaceAll) {
-				matches.Sort ((x, y) => x.StartLocation.CompareTo (y.StartLocation));
-				foreach (var match in matches) {
-					replace = new TextReplaceChange ();
-					replace.FileName = options.Document.FileName;
-					int start = data.LocationToOffset (match.StartLocation.Line, match.StartLocation.Column);
-					int end = data.LocationToOffset (match.EndLocation.Line, match.EndLocation.Column);
-					
-					replace.Offset = start;
-					replace.RemovedChars = end - start;
-					replace.InsertedText = varName;
-					result.Add (replace);
-					offsets.Add (start + delta);
-					delta += varName.Length - replace.RemovedChars;
-				}
-			}
-			return result;
+			return new List<Change> ();
+//			varCount = 0;
+//			selectionStart = selectionEnd = -1;
+//			
+//			List<Change > result = new List<Change> ();
+//			TextEditorData data = options.GetTextEditorData ();
+//			if (data == null)
+//				return result;
+//			
+//			DocumentLocation endPoint;
+//			if (data.IsSomethingSelected) {
+//				endPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Lead : data.MainSelection.Anchor; 
+//			} else {
+//				endPoint = data.Caret.Location;
+//			}
+//			ResolveResult resolveResult;
+//			LineSegment lineSegment;
+//			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+//			var visitor = new VariableLookupVisitor (options, new TextLocation (endPoint.Line, endPoint.Column));
+//			var ctx = options.Document.TypeResolveContext;
+//			if (options.ResolveResult == null) {
+//				LoggingService.LogError ("Declare local error: resolve result == null");
+//				return result;
+//			}
+//			IMember callingMember = options.Document.ParsedDocument.GetMember (options.Location);
+//			if (callingMember != null)
+//				visitor.MemberLocation = callingMember.Region.Begin;
+//			unit.AcceptVisitor (visitor, null);
+//			resolveResult = options.Resolve (selectedExpression);
+//			if (resolveResult == null)
+//				return result;
+//			var resolvedType = resolveResult.Type.Resolve (ctx);
+//			
+//			AstType returnType;
+//			if (resolveResult.Type == null) {
+//				returnType = new SimpleType ("var");
+//			} else {
+//				returnType = options.CreateShortType (resolvedType);
+//			}
+//			
+//			varName = CreateVariableName (resolvedType, visitor);
+//			
+//			// insert local variable declaration
+//			TextReplaceChange insert = new TextReplaceChange ();
+//			insert.FileName = options.Document.FileName;
+//			insert.Description = GettextCatalog.GetString ("Insert variable declaration");
+//			
+//			var varDecl = new VariableDeclarationStatement (returnType, varName, selectedExpression.Clone ());
+//			
+//			var node = unit.GetNodeAt (endPoint.Line, endPoint.Column);
+//			
+//			var containing = node.Parent;
+//			while (!(containing.Parent is BlockStatement)) {
+//				containing = containing.Parent;
+//			}
+//			
+//			if (containing is BlockStatement) {
+//				lineSegment = data.Document.GetLine (data.Caret.Line);
+//			} else {
+//				lineSegment = data.Document.GetLine (containing.StartLocation.Line);
+//			}
+//			insert.Offset = lineSegment.Offset;
+//			insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + options.OutputNode (varDecl);
+//			var insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + options.OutputNode (varDecl.Type).Length + " ".Length;
+//			offsets.Add (insertOffset);
+//			result.Add (insert);
+//			varCount++;
+//
+//			// replace main selection
+//			TextReplaceChange replace = new TextReplaceChange ();
+//			replace.FileName = options.Document.FileName;
+//			int startOffset = options.Document.Editor.LocationToOffset (selectedExpression.StartLocation.Line, selectedExpression.StartLocation.Column); 
+//			int endOffset   = options.Document.Editor.LocationToOffset (selectedExpression.EndLocation.Line, selectedExpression.EndLocation.Column); 
+//			replace.Offset = startOffset;
+//			replace.RemovedChars = endOffset - startOffset;
+//			replace.InsertedText = varName;
+//			result.Add (replace);
+//			int delta = insert.InsertedText.Length - insert.RemovedChars;
+//			offsets.Add (replace.Offset + delta);
+//			delta += varName.Length - replace.RemovedChars;
+//			varCount++;
+//			selectionStart = insert.Offset;
+//			
+//			if (replaceAll) {
+//				matches.Sort ((x, y) => x.StartLocation.CompareTo (y.StartLocation));
+//				foreach (var match in matches) {
+//					replace = new TextReplaceChange ();
+//					replace.FileName = options.Document.FileName;
+//					int start = data.LocationToOffset (match.StartLocation.Line, match.StartLocation.Column);
+//					int end = data.LocationToOffset (match.EndLocation.Line, match.EndLocation.Column);
+//					
+//					replace.Offset = start;
+//					replace.RemovedChars = end - start;
+//					replace.InsertedText = varName;
+//					result.Add (replace);
+//					offsets.Add (start + delta);
+//					delta += varName.Length - replace.RemovedChars;
+//				}
+//			}
+//			return result;
 		}
 
 		static bool SearchSubExpression (string expression, string subexpression, int startOffset, out int offset, out int length)
@@ -434,7 +436,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			set;
 		}
 		
-		public ITypeReference ReturnType {
+		public IType ReturnType {
 			get;
 			set;
 		}

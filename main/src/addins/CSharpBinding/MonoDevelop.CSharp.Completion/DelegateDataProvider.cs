@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Completion
 			string name = delegateType.Name;
 			var parameters = new StringBuilder ();
 			int curLen = 0;
-			string prefix = !delegateMethod.IsConstructor ? ambience.GetString (ext.ctx, delegateMethod.ReturnType, flags) + " " : "";
+			string prefix = !delegateMethod.IsConstructor ? ambience.GetString (delegateMethod.ReturnType, flags) + " " : "";
 
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
@@ -121,13 +121,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			if (curParameter != null) {
-				var returnType = curParameter.Type.Resolve (ext.ctx);
-				if (returnType.IsDelegate ()) {
+				var returnType = curParameter.Type;
+				if (returnType.Kind == TypeKind.Delegate) {
 					sb.AppendLine ();
 					sb.AppendLine ();
 					sb.Append ("<small>");
 					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
-					sb.Append (ambience.GetString (ext.ctx, returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
+					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
 					sb.Append ("</small>");
 				}
 			}
@@ -139,7 +139,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (paramIndex < 0 || paramIndex >= delegateMethod.Parameters.Count)
 				return "";
 			
-			return ambience.GetString (ext.ctx, delegateMethod, delegateMethod.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+			return ambience.GetString (delegateMethod, delegateMethod.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		
 		public int GetParameterCount (int overload)

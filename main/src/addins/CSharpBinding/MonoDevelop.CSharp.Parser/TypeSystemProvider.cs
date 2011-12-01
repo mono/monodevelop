@@ -39,9 +39,9 @@ namespace MonoDevelop.CSharp.Parser
 {
 	public class TypeSystemParser : ITypeSystemParser
 	{
-		public ParsedDocument Parse (IProjectContent projectContent, bool storeAst, string fileName, System.IO.TextReader content)
+		public ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, MonoDevelop.Projects.Project project = null)
 		{
-			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser (GetCompilerArguments (projectContent));
+			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser (GetCompilerArguments (project));
 			parser.GenerateTypeSystemMode = !storeAst;
 			var result = new ParsedDocumentDecorator ();
 			
@@ -59,13 +59,13 @@ namespace MonoDevelop.CSharp.Parser
 				}
 			};
 			
-			var unit = parser.Parse (content);
-			var visitor = new TypeSystemConvertVisitor (projectContent, fileName);
-			unit.AcceptVisitor (visitor, null);
-			result.ParsedFile = visitor.ParsedFile;
+			var unit = parser.Parse (content, fileName);
+			var pf = unit.ToTypeSystem ();
+			result.ParsedFile = pf;
+			
 			if (storeAst) {
 				result.AddAnnotation (unit);
-				result.AddAnnotation (visitor.ParsedFile);
+				result.AddAnnotation (pf);
 			}
 			return result;
 		}
@@ -188,12 +188,11 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 		
-		string[] GetCompilerArguments (IProjectContent projectContent)
+		string[] GetCompilerArguments (MonoDevelop.Projects.Project project)
 		{
+			if (project == null)
+				return new string[0];
 			var compilerArguments = new List<string> ();
-			var project = projectContent.GetProject ();
-			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null)
-				return compilerArguments.ToArray ();
 			
 			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;

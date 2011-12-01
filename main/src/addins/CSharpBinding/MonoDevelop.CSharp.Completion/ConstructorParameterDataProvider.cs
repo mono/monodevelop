@@ -36,7 +36,7 @@ namespace MonoDevelop.CSharp.Completion
 		public ConstructorParameterDataProvider (CSharpCompletionTextEditorExtension ext, IType type) : base (ext)
 		{
 			this.type = type;
-			foreach (var method in type.GetConstructors (ext.ctx, m => m.IsPublic)) {
+			foreach (var method in type.GetConstructors (m => m.IsPublic)) {
 				methods.Add (method);
 			}
 		}
@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Completion
 		protected override string GetPrefix (IMethod method)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
-			return ambience.GetString (ext.ctx, type, flags) + ".";
+			return ambience.GetString (type, flags) + ".";
 		}
 	}
 }

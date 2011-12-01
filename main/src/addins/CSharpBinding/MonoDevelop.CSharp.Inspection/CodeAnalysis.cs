@@ -63,12 +63,12 @@ namespace MonoDevelop.CSharp.Inspection
 
 		public CSharpResolver GetResolverStateBefore (AstNode node)
 		{
-			return Graph.Visitor.GetResolverStateBefore (node);
+			return Graph.Resolver.GetResolverStateBefore (node);
 		}
 		
 		public ResolveResult GetResolveResult (AstNode node)
 		{
-			return Graph.Visitor.GetResolveResult (node);
+			return Graph.Resolver.Resolve (node);
 		}
 	}
 	

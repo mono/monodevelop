@@ -343,12 +343,12 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		protected override string GetTypeReferenceString (ITypeReference reference, OutputSettings settings)
+		protected override string GetTypeReferenceString (IType reference, OutputSettings settings)
 		{
 			if (reference == null)
 				return "null";
-			var type = reference.Resolve (settings.Context);
-			if (type == SharedTypes.UnknownType)
+			var type = reference;
+			if (type.Kind == TypeKind.Unknown)
 				return reference.ToString ();
 			var sb = new StringBuilder ();
 			if (type is ITypeDefinition && ((ITypeDefinition)type).IsSynthetic&& ((ITypeDefinition)type).Name == "$Anonymous$") {
@@ -473,9 +473,9 @@ namespace MonoDevelop.CSharp
 				return result.ToString ();
 			}
 			
-			if (settings.IncludeBaseTypes && type.BaseTypes.Any ()) {
+			if (settings.IncludeBaseTypes && type.DirectBaseTypes.Any ()) {
 				bool first = true;
-				foreach (var baseType in type.BaseTypes) {
+				foreach (var baseType in type.DirectBaseTypes) {
 //				if (baseType.FullName == "System.Object" || baseType.FullName == "System.Enum")
 //					continue;
 					result.Append (settings.Markup (first ? " : " : ", "));
@@ -500,7 +500,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (method.DeclaringType, new OutputSettings (OutputFlags.UseFullName) { Context = settings.Context}));
+				result.Append (GetTypeReferenceString (method.DeclaringType, new OutputSettings (OutputFlags.UseFullName)));
 				result.Append (settings.Markup ("."));
 			}
 			AppendExplicitInterfaces (result, method, settings);
@@ -564,7 +564,7 @@ namespace MonoDevelop.CSharp
 			if (field == null)
 				return "";
 			var result = new StringBuilder ();
-			bool isEnum = field.DeclaringType != null && field.DeclaringType.IsEnum ();
+			bool isEnum = field.DeclaringType != null && field.DeclaringType.Kind == TypeKind.Enum;
 			AppendModifiers (result, settings, field);
 			
 			if (!settings.CompletionListFomat && settings.IncludeReturnType && !isEnum) {
@@ -599,7 +599,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (evt.DeclaringType, new OutputSettings (OutputFlags.UseFullName) { Context = settings.Context }));
+				result.Append (GetTypeReferenceString (evt.DeclaringType, new OutputSettings (OutputFlags.UseFullName)));
 				result.Append (settings.Markup ("."));
 			}
 			
@@ -625,7 +625,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (property.DeclaringType, new OutputSettings (OutputFlags.UseFullName) { Context = settings.Context }));
+				result.Append (GetTypeReferenceString (property.DeclaringType, new OutputSettings (OutputFlags.UseFullName)));
 				result.Append (settings.Markup ("."));
 			}
 			
@@ -654,7 +654,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (property.DeclaringType, new OutputSettings (OutputFlags.UseFullName) { Context = settings.Context }));
+				result.Append (GetTypeReferenceString (property.DeclaringType, new OutputSettings (OutputFlags.UseFullName)));
 				result.Append (settings.Markup ("."));
 			}
 			
@@ -707,7 +707,7 @@ namespace MonoDevelop.CSharp
 		void AppendExplicitInterfaces (StringBuilder sb, IMember member, OutputSettings settings)
 		{
 			foreach (var explicitInterface in member.InterfaceImplementations) {
-				sb.Append (Format (explicitInterface.InterfaceType.Resolve (settings.Context).FullName));
+				sb.Append (Format (explicitInterface.FullName));
 				sb.Append (settings.Markup ("."));
 			}
 		}

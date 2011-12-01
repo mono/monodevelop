@@ -40,12 +40,12 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		void HandleVisitorUsingDeclarationVisited (UsingDeclaration node, InspectionData data)
 		{
-			if (!data.Graph.Navigator.GetsUsed (data.Document.TypeResolveContext, data.Graph.CSharpResolver, node.StartLocation, node.Namespace)) {
+			if (!data.Graph.Navigator.GetsUsed (data.Graph.CSharpResolver, node.StartLocation, node.Namespace)) {
 				AddResult (data,
 					new DomRegion (node.StartLocation, node.EndLocation),
 					GettextCatalog.GetString ("Remove unused usings"),
 					delegate {
-						var options = new RefactoringOptions () { Document = data.Document, Dom = data.Document.TypeResolveContext};
+						var options = new RefactoringOptions () { Document = data.Document};
 						new RemoveUnusedImportsRefactoring ().Run (options);
 					}
 				);

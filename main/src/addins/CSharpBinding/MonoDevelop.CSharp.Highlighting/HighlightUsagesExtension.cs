@@ -43,16 +43,12 @@ namespace MonoDevelop.CSharp.Highlighting
 {
 	public class HighlightUsagesExtension : TextEditorExtension, IQuickTaskProvider
 	{
-		ITypeResolveContext dom;
-		
 		TextEditorData textEditorData;
 		ITextEditorResolver textEditorResolver;
 		
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			
-			dom = Document.TypeResolveContext;
 			
 			textEditorResolver = base.Document.GetContent<ITextEditorResolver> ();
 			textEditorData = base.Document.Editor;

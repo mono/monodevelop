@@ -47,8 +47,8 @@ namespace MonoDevelop.CSharp.Inspection
 			var memberReference = expr.Parent as MemberReferenceExpression;
 			if (memberReference == null)
 				return;
-			var state = data.Graph.Visitor.GetResolverStateBefore (expr);
-			var wholeResult = data.Graph.Visitor.GetResolveResult (memberReference) as MemberResolveResult;
+			var state = data.Graph.Resolver.GetResolverStateBefore (expr);
+			var wholeResult = data.Graph.Resolver.Resolve (memberReference) as MemberResolveResult;
 			var result = state.LookupSimpleNameOrTypeName (memberReference.MemberName, new List<IType> (), SimpleNameLookupMode.Expression) as MemberResolveResult;
 			if (result == null || wholeResult == null)
 				return;

@@ -39,6 +39,8 @@ using System.IO;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using System.Threading;
 
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -140,15 +142,15 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			foreach (var obj in searchedMembers) {
 				if (obj is IEntity) {
-					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, ctx, (astNode, r) => {
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, (astNode, r) => {
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (r, astNode, editor.FileName, editor)); 
-					});
+					}, CancellationToken.None);
 				} else if (obj is IVariable) {
-					refFinder.FindLocalReferences ((IVariable)obj, file, unit, ctx, (astNode, r) => { 
+					refFinder.FindLocalReferences ((IVariable)obj, file, unit, doc.Compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode)) 
 							result.Add (GetReference (r, astNode, editor.FileName, editor));
-					});
+					}, CancellationToken.None);
 				}
 			}
 			return result;
@@ -156,7 +158,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override IEnumerable<MemberReference> FindReferences ()
 		{
-			var entity = searchedMembers.First () as IEntity;
+			// TODO: Type system conversion.
+			yield break;
+			
+/*			var entity = searchedMembers.First () as IEntity;
 			var scopes = entity != null ? refFinder.GetSearchScopes (entity) : null;
 			List<MemberReference> refs = new List<MemberReference> ();
 			Project prj = null;
@@ -198,7 +203,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 			}
 			
-			return refs;
+			return refs;*/
 		}
 	}
 }

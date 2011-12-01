@@ -39,11 +39,12 @@ namespace MonoDevelop.CSharp.Refactoring
 	{
 		HashSet<string> additionalNamespaces = new HashSet<string> ();
 		
-		public bool GetsUsed (ITypeResolveContext ctx, CSharpResolver cSharpResolver, TextLocation loc, string ns)
+		public bool GetsUsed (CSharpResolver cSharpResolver, TextLocation loc, string ns)
 		{
-			return cSharpResolver.usedScopes
-				.OfType<ITypeOrNamespaceReference> ()
-				.Any (u => u.ResolveNamespace (ctx).NamespaceName == ns) || additionalNamespaces.Contains (ns);
+			return true;
+//			return cSharpResolver.usedScopes
+//				.OfType<ITypeOrNamespaceReference> ()
+//				.Any (u => u.ResolveNamespace (ctx).NamespaceName == ns) || additionalNamespaces.Contains (ns);
 		}
 		
 		#region IResolveVisitorNavigator implementation

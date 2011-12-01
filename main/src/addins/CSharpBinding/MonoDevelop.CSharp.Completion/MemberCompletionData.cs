@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					displayText = ambience.GetString (editorCompletion.ctx, Entity, flags | OutputFlags.HideGenericParameterNames);
+					displayText = ambience.GetString (Entity, flags | OutputFlags.HideGenericParameterNames);
 				}
 				return displayText; 
 			}
@@ -135,16 +135,16 @@ namespace MonoDevelop.CSharp.Completion
 		
 		bool HasNonMethodMembersWithSameName (IMember member)
 		{
-			return member.DeclaringType.GetFields (editorCompletion.ctx).Cast<INamedElement> ()
-				.Concat (member.DeclaringType.GetProperties (editorCompletion.ctx).Cast<INamedElement> ())
-				.Concat (member.DeclaringType.GetEvents (editorCompletion.ctx).Cast<INamedElement> ())
-				.Concat (member.DeclaringType.GetNestedTypes (editorCompletion.ctx).Cast<INamedElement> ())
+			return member.DeclaringType.GetFields ().Cast<INamedElement> ()
+				.Concat (member.DeclaringType.GetProperties ().Cast<INamedElement> ())
+				.Concat (member.DeclaringType.GetEvents ().Cast<INamedElement> ())
+				.Concat (member.DeclaringType.GetNestedTypes ().Cast<INamedElement> ())
 				.Any (e => e.Name == member.Name);
 		}
 		
 		bool HasAnyOverloadWithParameters (IMethod method)
 		{
-			return method.DeclaringType.GetMethods (editorCompletion.ctx).Any (m => m.Parameters.Count > 0);
+			return method.DeclaringType.GetMethods ().Any (m => m.Parameters.Count > 0);
 		}
 		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
@@ -244,7 +244,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (entity is IParameter) {
 				this.completionString = ((IParameter)entity).Name;
 			} else {
-				this.completionString = ambience.GetString (editorCompletion.ctx, entity, OutputFlags.None);
+				this.completionString = ambience.GetString (entity, OutputFlags.None);
 			}
 			descriptionCreated = false;
 			displayText = entity.Name;
@@ -260,7 +260,7 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = true;
 			if (Entity is IMethod && ((IMethod)Entity).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			sb.Append (ambience.GetString (editorCompletion.ctx, Entity, 
+			sb.Append (ambience.GetString (Entity, 
 				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeReturnType | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
 
 			var m = (IMember)Entity;
@@ -270,11 +270,11 @@ namespace MonoDevelop.CSharp.Completion
 				DisplayFlags |= DisplayFlags.Obsolete;
 			}
 			
-			var returnType = m.ReturnType.Resolve (editorCompletion.ctx);
+			var returnType = m.ReturnType;
 			if (returnType.Kind == TypeKind.Delegate) {
 				sb.AppendLine ();
 				sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
-				sb.Append (ambience.GetString (editorCompletion.ctx, returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
+				sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
 			}
 			
 			string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Entity) + "</summary>", new AmbienceService.DocumentationFormatOptions {
@@ -294,11 +294,9 @@ namespace MonoDevelop.CSharp.Completion
 		class OverloadSorter : IComparer<ICompletionData>
 		{
 			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
-			ITypeResolveContext ctx;
 			
-			public OverloadSorter (ITypeResolveContext ctx)
+			public OverloadSorter ()
 			{
-				this.ctx = ctx;
 			}
 			
 			public int Compare (ICompletionData x, ICompletionData y)
@@ -323,8 +321,8 @@ namespace MonoDevelop.CSharp.Completion
 						return result;
 				}
 				
-				string sx = ambience.GetString (ctx, mx, flags);
-				string sy = ambience.GetString (ctx, my, flags);
+				string sx = ambience.GetString (mx, flags);
+				string sy = ambience.GetString (my, flags);
 				result = sx.Length.CompareTo (sy.Length);
 				return result == 0? string.Compare (sx, sy) : result;
 			}
@@ -337,7 +335,7 @@ namespace MonoDevelop.CSharp.Completion
 				
 				var sorted = new List<ICompletionData> (overloads.Values);
 				sorted.Add (this);
-				sorted.Sort (new OverloadSorter (editorCompletion.ctx));
+				sorted.Sort (new OverloadSorter ());
 				return sorted;
 			}
 		}
@@ -361,8 +359,8 @@ namespace MonoDevelop.CSharp.Completion
 				// note that the overload tree is traversed top down.
 				var member = Entity as IMember;
 				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType != null && ((IMember)overload.Entity).DeclaringType != null && member.DeclaringType.ReflectionName != ((IMember)overload.Entity).DeclaringType.ReflectionName) {
-					string str1 = ambience.GetString (editorCompletion.ctx, member as IMember, flags);
-					string str2 = ambience.GetString (editorCompletion.ctx, overload.Entity as IMember, flags);
+					string str1 = ambience.GetString (member as IMember, flags);
+					string str2 = ambience.GetString (overload.Entity as IMember, flags);
 					if (str1 == str2) {
 						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Entity)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Entity)))
 							SetMember (overload.Entity as IMember);
@@ -372,8 +370,8 @@ namespace MonoDevelop.CSharp.Completion
 				
 				string MemberId = (overload.Entity as IMember).GetHelpUrl ();
 				if (Entity is IMethod && overload.Entity is IMethod) {
-					string signature1 = ambience.GetString (editorCompletion.ctx, Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
-					string signature2 = ambience.GetString (editorCompletion.ctx, overload.Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+					string signature1 = ambience.GetString (Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+					string signature2 = ambience.GetString (overload.Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
 					if (signature1 == signature2)
 						return;
 				}

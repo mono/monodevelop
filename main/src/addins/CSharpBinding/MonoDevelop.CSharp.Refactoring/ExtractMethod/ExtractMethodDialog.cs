@@ -37,6 +37,7 @@ using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 {
@@ -149,7 +150,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		bool HasMember (string name)
 		{
 			var ctx = options.Document.TypeResolveContext;
-			foreach (var member in properties.DeclaringMember.DeclaringType.GetMembers (ctx, m => m.Name == name)) {
+			foreach (var member in properties.DeclaringMember.DeclaringType.GetMembers (m => m.Name == name)) {
 				var method = member as IMethod;
 				if (method == null)
 					continue;
@@ -157,7 +158,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 					continue;
 				bool equals = true;
 				for (int i = 0; i < method.Parameters.Count; i++) {
-					if (!properties.Parameters[i].ReturnType.Resolve (ctx).Equals (method.Parameters[i].Type.Resolve (ctx))) {
+					if (!properties.Parameters[i].ReturnType.Equals (method.Parameters[i].Type)) {
 						equals = false;
 						break;
 					}
@@ -203,7 +204,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			Mono.TextEditor.TextEditor editor = data.Parent;
 // Insertion cursor mode test:
 			if (editor != null) {
-				var type = properties.DeclaringMember.DeclaringTypeDefinition;
+				var type = properties.DeclaringMember.DeclaringTypeDefinition.Parts.First ();
 				
 				var mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (options.Document, type));
 				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
@@ -234,7 +235,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 						properties.InsertionPoint = args.InsertionPoint;
 						List<Change> changes = extractMethod.PerformChanges (options, properties);
 						IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-						RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+						RefactoringService.AcceptChanges (monitor, changes);
 					}
 				};
 			}
@@ -248,7 +249,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			SetProperties ();
 			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			((Widget)this).Destroy ();
-			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (options.Dom, changes));
+			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
 		}
 	}
 }

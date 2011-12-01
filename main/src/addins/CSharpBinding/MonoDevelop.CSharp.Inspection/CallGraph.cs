@@ -34,6 +34,7 @@ using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -46,7 +47,8 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public CSharpResolver CSharpResolver;
 		public VisitNamespaceNodesNavigator Navigator;
-		public ResolveVisitor Visitor;
+		public CSharpAstResolver Resolver;
+		
 		System.Threading.CancellationToken token;
 		
 		public CallGraph (System.Threading.CancellationToken token)
@@ -56,7 +58,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public ResolveResult Resolve (AstNode node)
 		{
-			return Visitor.GetResolveResult (node);
+			return Resolver.Resolve (node);
 		}
 		
 		public void Inspect (MonoDevelop.Ide.Gui.Document doc, ParsedDocument parsedDocument)
@@ -64,10 +66,10 @@ namespace MonoDevelop.CSharp.Inspection
 			var pf = parsedDocument.Annotation<CSharpParsedFile> ();
 			var unit = parsedDocument.Annotation<CompilationUnit> ();
 			var ctx = doc.TypeResolveContext;
-			CSharpResolver = new CSharpResolver (ctx, token);
+			
+			Resolver = new CSharpAstResolver (doc.Compilation, unit, pf);
+			
 			Navigator = new VisitNamespaceNodesNavigator ();
-			Visitor = new ResolveVisitor (CSharpResolver, pf, Navigator);
-			Visitor.Scan (unit);
 			
 			/*unit.AcceptVisitor (visitor, null);
 			

@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var method in resolveResult.Methods) {
 				if (method.IsConstructor)
 					continue;
-				string str = ambience.GetString (ext.ctx, method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
+				string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
 				if (alreadyAdded.Contains (str))
 					continue;
 				alreadyAdded.Add (str);
@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.Completion
 		protected virtual string GetPrefix (IMethod method)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
-			return ambience.GetString (ext.ctx, method.ReturnType, flags) + " ";
+			return ambience.GetString (method.ReturnType, flags) + " ";
 		}
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
@@ -267,13 +267,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			if (curParameter != null) {
-				var returnType = curParameter.Type.Resolve (ext.ctx);
-				if (returnType.IsDelegate ()) {
+				var returnType = curParameter.Type;
+				if (returnType.Kind == TypeKind.Delegate) {
 					sb.AppendLine ();
 					sb.AppendLine ();
 					sb.Append ("<small>");
 					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
-					sb.Append (ambience.GetString (ext.ctx, returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
+					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
 					sb.Append ("</small>");
 				}
 			}
@@ -287,7 +287,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (paramIndex < 0 || paramIndex >= method.Parameters.Count)
 				return "";
 			
-			return ambience.GetString (ext.ctx, method, method.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+			return ambience.GetString (method, method.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		
 		public int GetParameterCount (int overload)

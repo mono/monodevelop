@@ -45,6 +45,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -52,11 +53,6 @@ namespace MonoDevelop.CSharp.Completion
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, ICompletionDataFactory, IParameterCompletionDataFactory
 	{
 		internal Mono.TextEditor.TextEditorData textEditorData;
-		internal ITypeResolveContext ctx {
-			get {
-				return document.TypeResolveContext;
-			}
-		}
 		
 		CompilationUnit unit;
 		static readonly CompilationUnit emptyUnit = new CompilationUnit ();
@@ -179,7 +175,6 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			var list = new CompletionDataList ();
 			var engine = new CSharpCompletionEngine (textEditorData.Document, this);
-			engine.ctx = ctx;
 			engine.Unit = Unit;
 			engine.CSharpParsedFile = CSharpParsedFile;
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
@@ -321,7 +316,6 @@ namespace MonoDevelop.CSharp.Completion
 			if (Unit == null || CSharpParsedFile == null)
 				return null;
 			var engine = new CSharpParameterCompletionEngine (textEditorData.Document, this);
-			engine.ctx = ctx;
 			engine.Unit = Unit;
 			engine.CSharpParsedFile = CSharpParsedFile;
 			engine.ProjectContent = Document.GetProjectContext ();
@@ -334,11 +328,12 @@ namespace MonoDevelop.CSharp.Completion
 			var result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);
+				var ctx = CSharpParsedFile.GetResolver (Document.Compilation, scope.Region.Begin);
 				foreach (var u in scope.Usings) {
 					var ns = u.ResolveNamespace (ctx);
 					if (ns == null)
 						continue;
-					result.Add (ns.NamespaceName);
+					result.Add (ns.FullName);
 				}
 				scope = scope.Parent;
 			}
@@ -386,7 +381,6 @@ namespace MonoDevelop.CSharp.Completion
 		public override int GetCurrentParameterIndex (CodeCompletionContext completionCtx)
 		{
 			var engine = new CSharpParameterCompletionEngine (textEditorData.Document, this);
-			engine.ctx = ctx;
 			engine.Unit = Unit;
 			engine.CSharpParsedFile = CSharpParsedFile;
 			engine.ProjectContent = Document.GetProjectContext ();
@@ -440,7 +434,7 @@ namespace MonoDevelop.CSharp.Completion
 		#region ICompletionDataFactory implementation
 		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity)
 		{
-			return new MemberCompletionData (this, entity as IMember, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
+			return new MemberCompletionData (this, entity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
 				HideExtensionParameter = true
 			};
 		}
@@ -449,8 +443,29 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new CompletionData (text, entity.GetStockIcon (), null, text);
 		}
+		
+		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IUnresolvedEntity entity)
+		{
+			// TODO: Type system conversion 
+/*			return new MemberCompletionData (this, entity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
+				HideExtensionParameter = true
+			};*/
+			return null;
+		}
+
+		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IUnresolvedEntity entity, string text)
+		{
+			// TODO: Type system conversion
+			//return new CompletionData (text, entity.GetStockIcon (), null, text);
+			return null;
+		}
 
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
+		{
+			return new CompletionData (shortType, type.GetStockIcon ());
+		}
+		
+		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IUnresolvedTypeDefinition type, string shortType)
 		{
 			return new CompletionData (shortType, type.GetStockIcon ());
 		}
@@ -470,17 +485,17 @@ namespace MonoDevelop.CSharp.Completion
 			return new VariableCompletionData (variable);
 		}
 
-		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (ITypeParameter parameter)
+		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IUnresolvedTypeParameter parameter)
 		{
 			return new CompletionData (parameter.Name, parameter.GetStockIcon ());
 		}
 
-		ICompletionData ICompletionDataFactory.CreateEventCreationCompletionData (string varName, IType delegateType, IEvent evt, string parameterDefinition, IMember currentMember, ITypeDefinition currentType)
+		ICompletionData ICompletionDataFactory.CreateEventCreationCompletionData (string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType)
 		{
 			return new EventCreationCompletionData (this, varName, delegateType, evt, parameterDefinition, currentMember, currentType);
 		}
 		
-		ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData (int declarationBegin, ITypeDefinition type, IMember m)
+		ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
 		{
 			return new NewOverrideCompletionData (this, declarationBegin, type, m);
 		}

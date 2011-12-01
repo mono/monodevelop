@@ -45,18 +45,19 @@ namespace MonoDevelop.CSharp.Refactoring.RefactorImports
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
-			var doc = options.Document.UpdateParseDocument ();
-			var unit = doc.Annotation<CompilationUnit> ();
-			var resolver  = new CSharpResolver (options.Dom, System.Threading.CancellationToken.None);
-			var nav = new VisitNamespaceNodesNavigator ();
-			new ResolveVisitor (resolver, doc.Annotation<CSharpParsedFile> (), nav).Scan (unit);
 			var result = new List<Change> ();
-			var visitor = new ObservableAstVisitor<object, object> ();
-			visitor.UsingDeclarationVisited += delegate(UsingDeclaration u, object arg) {
-				if (!nav.GetsUsed (options.Dom, resolver, u.StartLocation, u.Namespace))
-					result.Add (options.Document.Editor.GetRemoveNodeChange (u));
-			};
-			unit.AcceptVisitor (visitor);
+// TODO: Type system conversion.
+//			var doc = options.Document.UpdateParseDocument ();
+//			var unit = doc.Annotation<CompilationUnit> ();
+//			var resolver  = new CSharpResolver (options.Dom, System.Threading.CancellationToken.None);
+//			var nav = new VisitNamespaceNodesNavigator ();
+//			new ResolveVisitor (resolver, doc.Annotation<CSharpParsedFile> (), nav).Scan (unit);
+//			var visitor = new ObservableAstVisitor<object, object> ();
+//			visitor.UsingDeclarationVisited += delegate(UsingDeclaration u, object arg) {
+//				if (!nav.GetsUsed (options.Dom, resolver, u.StartLocation, u.Namespace))
+//					result.Add (options.Document.Editor.GetRemoveNodeChange (u));
+//			};
+//			unit.AcceptVisitor (visitor);
 			return result;
 		}
 	}

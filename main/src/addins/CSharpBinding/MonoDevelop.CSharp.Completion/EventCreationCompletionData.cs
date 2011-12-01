@@ -41,13 +41,13 @@ namespace MonoDevelop.CSharp.Completion
 	public class EventCreationCompletionData : CompletionData
 	{
 		string parameterList;
-		IMember callingMember;
+		IUnresolvedMember callingMember;
 		CSharpCompletionTextEditorExtension ext;
 		int initialOffset;
 		public bool AddSemicolon = true;
 		TextEditorData editor;
 		
-		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
+		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string varName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType) : base (null)
 		{
 			if (string.IsNullOrEmpty (varName)) {
 				this.DisplayText   = "Handle" + (evt != null ? evt.Name : "");
@@ -55,9 +55,9 @@ namespace MonoDevelop.CSharp.Completion
 				this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + (evt != null ? evt.Name : "");
 			}
 			
-			if (declaringType != null && declaringType.GetMembers (ext.ctx).Any (m => m.Name == this.DisplayText)) {
+			if (declaringType != null && declaringType.Members.Any (m => m.Name == this.DisplayText)) {
 				for (int i = 1; i < 10000; i++) {
-					if (!declaringType.GetMembers (ext.ctx).Any (m => m.Name == this.DisplayText + i)) {
+					if (!declaringType.Members.Any (m => m.Name == this.DisplayText + i)) {
 						this.DisplayText = this.DisplayText + i.ToString ();
 						break;
 					}

@@ -44,11 +44,11 @@ namespace MonoDevelop.CSharp.Completion
 		IMember member;
 		static Ambience ambience = new CSharpAmbience ();
 		int    declarationBegin;
-		ITypeDefinition  type;
+		IUnresolvedTypeDefinition  type;
 		
 		public bool GenerateBody { get; set; }
 		
-		public NewOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeDefinition type, IMember member) : base (null)
+		public NewOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, IUnresolvedTypeDefinition type, IMember member) : base (null)
 		{
 			this.ext = ext;
 			this.type   = type;
@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
 			this.Icon = member.GetStockIcon ();
-			this.DisplayText = ambience.GetString (ext.ctx, member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter);
+			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter);
 			this.CompletionText = member.Name;
 		}
 		
@@ -68,13 +68,13 @@ namespace MonoDevelop.CSharp.Completion
 			bool isExplicit = false;
 			if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				foreach (var m in type.Members) {
-					if (m.Name == member.Name && !m.ReturnType.Resolve (ext.ctx).Equals (member.ReturnType.Resolve (ext.ctx))) {
+					if (m.Name == member.Name && !m.ReturnType.Equals (member.ReturnType)) {
 						isExplicit = true;
 						break;
 					}
 				}
-			}
-			var result = generator.CreateMemberImplementation (ext.ctx, type, member, isExplicit);
+			}// TODO: Type system conversion.
+			var result = generator.CreateMemberImplementation (type, member, isExplicit);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();

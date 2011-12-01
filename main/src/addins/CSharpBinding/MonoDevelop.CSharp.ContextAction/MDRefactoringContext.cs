@@ -40,6 +40,7 @@ using System.Linq;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -63,12 +64,6 @@ namespace MonoDevelop.CSharp.ContextAction
 				default:
 					return true;
 				}
-			}
-		}
-		
-		public override ITypeResolveContext TypeResolveContext {
-			get {
-				return Document.TypeResolveContext;
 			}
 		}
 		
@@ -376,6 +371,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			return new MdScript (this);
 		}
+		
 		CSharpParsedFile CSharpParsedFile { get; set; }
 		
 		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
@@ -390,12 +386,12 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public override AstType CreateShortType (IType fullType)
 		{
-			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
-			csResolver.CurrentMember = CSharpParsedFile.GetMember (Location);
-			csResolver.CurrentTypeDefinition = CSharpParsedFile.GetInnermostTypeDefinition (Location);
-			csResolver.CurrentUsingScope = CSharpParsedFile.GetUsingScope (Location);
-			TypeSystemAstBuilder builder = new TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);
+			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
+			
+			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
+			
+			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
+			return builder.ConvertType (fullType);			
 		}
 		
 		/*
@@ -416,13 +412,11 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		public override ResolveResult Resolve (AstNode node)
 		{
-			var pf = ParsedDocument.Annotation<CSharpParsedFile> ();
-			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
-			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
+			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
+			var cu = Document.ParsedDocument.Annotation<CompilationUnit> ();
 			
-			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, pf, navigator);
-			visitor.Scan (Unit);
-			return visitor.GetResolveResult (node);
+			var resolver = new CSharpAstResolver (Document.Compilation, cu, parsedFile);
+			return resolver.Resolve (node);
 		}
 		
 		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, MemberDeclaration replaceWidth)

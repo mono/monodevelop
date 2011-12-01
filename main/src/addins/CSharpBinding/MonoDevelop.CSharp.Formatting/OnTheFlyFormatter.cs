@@ -38,29 +38,30 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.ContextAction;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	public class OnTheFlyFormatter
 	{
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom)
+		public static void Format (MonoDevelop.Ide.Gui.Document data)
 		{
-			Format (data, dom, TextLocation.Empty, false);
+			Format (data, TextLocation.Empty, false);
 		}
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, TextLocation location, bool runAferCR = false)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location, bool runAferCR = false)
 		{
-			Format (data, dom, location, false, runAferCR);
+			Format (data, location, false, runAferCR);
 		} 
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, TextLocation location, bool correctBlankLines, bool runAferCR = false)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location, bool correctBlankLines, bool runAferCR = false)
 		{
 			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, data, dom, location, correctBlankLines, runAferCR);
+			Format (policyParent, mimeTypeChain, data, location, correctBlankLines, runAferCR);
 		}
 
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, ITypeResolveContext dom, TextLocation location, bool correctBlankLines, bool runAferCR/* = false*/)
+		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, TextLocation location, bool correctBlankLines, bool runAferCR/* = false*/)
 		{
 			if (data.ParsedDocument == null)
 				return;

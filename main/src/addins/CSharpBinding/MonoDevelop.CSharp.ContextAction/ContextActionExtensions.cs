@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		public static void FormatText (this AstNode node, MonoDevelop.Ide.Gui.Document doc)
 		{
 			doc.UpdateParseDocument ();
-			MonoDevelop.CSharp.Formatting.OnTheFlyFormatter.Format (doc, doc.TypeResolveContext, node.StartLocation);
+			MonoDevelop.CSharp.Formatting.OnTheFlyFormatter.Format (doc, node.StartLocation);
 		}
 	}
 }

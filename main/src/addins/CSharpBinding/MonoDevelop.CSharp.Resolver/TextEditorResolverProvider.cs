@@ -38,6 +38,8 @@ using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -45,7 +47,7 @@ namespace MonoDevelop.CSharp.Resolver
 	{
 		#region ITextEditorResolverProvider implementation
 		
-		public string GetExpression (ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext dom, Mono.TextEditor.TextEditorData data, int offset)
+		public string GetExpression (Mono.TextEditor.TextEditorData data, int offset)
 		{
 			if (offset < 0)
 				return "";
@@ -59,14 +61,9 @@ namespace MonoDevelop.CSharp.Resolver
 			if (unit == null || parsedFile == null || node == null)
 				return "";
 			
-			var csResolver = new CSharpResolver (doc.TypeResolveContext, System.Threading.CancellationToken.None);
-			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
-			var visitor = new ResolveVisitor (csResolver, parsedFile, navigator);
-			unit.AcceptVisitor (visitor, null);
-			
 			return data.GetTextBetween (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column);
 		}
-		public ResolveResult GetLanguageItem (ITypeResolveContext dom, Mono.TextEditor.TextEditorData data, int offset, out DomRegion expressionRegion)
+		public ResolveResult GetLanguageItem (Mono.TextEditor.TextEditorData data, int offset, out DomRegion expressionRegion)
 		{
 			if (offset < 0) {
 				expressionRegion = DomRegion.Empty;
@@ -92,7 +89,7 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-			var node = ResolveAtLocation.Resolve (dom, parsedFile, unit, new TextLocation (loc.Line, loc.Column));
+			var node = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc);
 			if (node == null) {
 				expressionRegion = DomRegion.Empty;
 				return null;
@@ -103,7 +100,7 @@ namespace MonoDevelop.CSharp.Resolver
 			return node;
 		}
 		
-		public ResolveResult GetLanguageItem (ITypeResolveContext dom, Mono.TextEditor.TextEditorData data, int offset, string expression)
+		public ResolveResult GetLanguageItem (Mono.TextEditor.TextEditorData data, int offset, string expression)
 		{
 			if (offset < 0) {
 				return null;
@@ -128,11 +125,9 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			}
 			
-			var csResolver = new CSharpResolver (doc.TypeResolveContext, System.Threading.CancellationToken.None);
-			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
-			var visitor = new ResolveVisitor (csResolver, parsedFile, navigator);
-			unit.AcceptVisitor (visitor, null);
-			var state = visitor.GetResolverStateBefore (node);
+			var resolver = new CSharpAstResolver (doc.Compilation, unit, parsedFile);
+			
+			var state = resolver.GetResolverStateBefore (node, CancellationToken.None);
 			return state.LookupSimpleNameOrTypeName (expression, new List<IType> (), SimpleNameLookupMode.Expression);
 		}
 		
@@ -169,9 +164,9 @@ namespace MonoDevelop.CSharp.Resolver
 			return GettextCatalog.GetString ("Member");
 		}
 		
-		public string CreateTooltip (ITypeResolveContext dom, IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState)
+		public string CreateTooltip (IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState)
 		{
-			OutputSettings settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName) { Context = dom };
+			OutputSettings settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
 //			if ((Gdk.ModifierType.ShiftMask & modifierState) == Gdk.ModifierType.ShiftMask) {
 //				settings.EmitNameCallback = delegate(object domVisitable, ref string outString) {
 //					// crop used namespaces.

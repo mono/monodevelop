@@ -203,11 +203,11 @@ namespace MonoDevelop.CSharp.Project
 		void FillClasses ()
 		{
 			try {
-				ITypeResolveContext ctx = TypeSystemService.GetProjectContext (project);
+				var ctx = TypeSystemService.GetCompilation (project);
 				if (ctx == null)
 					// Project not found in parser database
 					return;
-				foreach (var c in ctx.GetAllTypes ()) {
+				foreach (var c in ctx.GetAllTypeDefinitions ()) {
 					if (c.Methods != null) {
 						foreach (var m in c.Methods) {
 							if (m.IsStatic && m.Name == "Main")

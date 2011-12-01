@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.ext = ext;
 		
 			this.resolvedExpression = resolvedExpression;
-			indexers = new List<IProperty> (type.GetProperties (ext.ctx, p => p.IsIndexer));
+			indexers = new List<IProperty> (type.GetProperties (p => p.IsIndexer));
 		}
 
 		#region IParameterDataProvider implementation
@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			StringBuilder result = new StringBuilder ();
 //			int curLen = 0;
-			result.Append (ambience.GetString (ext.ctx, indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
+			result.Append (ambience.GetString (indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
 			result.Append (' ');
 			result.Append ("<b>");
 			result.Append (resolvedExpression);
@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (paramIndex < 0 || paramIndex >= indexer.Parameters.Count)
 				return "";
 			
-			return ambience.GetString (ext.ctx, indexer, indexer.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.IncludeParameterName | OutputFlags.HighlightName);
+			return ambience.GetString (indexer, indexer.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.IncludeParameterName | OutputFlags.HighlightName);
 		}
 
 		public int GetParameterCount (int overload)

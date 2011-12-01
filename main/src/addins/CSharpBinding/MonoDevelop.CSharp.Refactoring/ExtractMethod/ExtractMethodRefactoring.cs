@@ -113,12 +113,13 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (doc == null)
 				return null;
 
-			IMember member = doc.GetMember (buffer.Caret.Line, buffer.Caret.Column);
+			var member = doc.GetMember (buffer.Caret.Location);
 			if (member == null)
 				return null;
 			
-			ExtractMethodParameters param = new ExtractMethodParameters () {
-				DeclaringMember = member,
+			var param = new ExtractMethodParameters () {
+// TODO: Type system conversion.
+//				DeclaringMember = member,
 				Location = new TextLocation (buffer.Caret.Line, buffer.Caret.Column)
 			};
 			Analyze (options, param, true);
@@ -415,10 +416,10 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			return sb.ToString ();
 		}
 		
-		static IMethod GenerateMethodStub (RefactoringOptions options,ITypeDefinition callingType, ExtractMethodParameters param)
+		static IUnresolvedMethod GenerateMethodStub (RefactoringOptions options, IUnresolvedTypeDefinition callingType, ExtractMethodParameters param)
 		{
-			var result = new DefaultMethod (callingType, param.Name);
-			result.ReturnType = param.ExpressionType ?? KnownTypeReference.Void;
+			var result = new DefaultUnresolvedMethod (callingType, param.Name);
+			result.ReturnType = param.ExpressionType.ToTypeReference ();
 			result.Accessibility = param.Modifiers;
 //			if (!param.ReferencesMember)
 //				result.Modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
@@ -428,8 +429,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			foreach (var p in param.Parameters) {
 				if (param.OneChangedVariable && p.UsedAfterCutRegion && !p.UsedInCutRegion)
 					continue;
-				var newParameter = new DefaultParameter (p.ReturnType, p.Name);
-				
+				var newParameter = new DefaultUnresolvedParameter (p.ReturnType.ToTypeReference (), p.Name);
 				if (!param.OneChangedVariable) {
 					if (!p.IsDefinedInsideCutRegion && p.IsChangedInsideCutRegion) {
 						if (p.UsedBeforeCutRegion) {
@@ -469,16 +469,16 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				TabSize = options.Document.Editor.Options.TabSize
 			};
 			var ctx = options.Document.TypeResolveContext;
-			ITypeDefinition callingType = null;
+			IUnresolvedTypeDefinition callingType = null;
 			var cu = options.Document.ParsedDocument;
 			if (cu != null)
-				callingType = cu.GetInnermostTypeDefinition (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
+				callingType = cu.GetInnermostTypeDefinition (options.Document.Editor.Caret.Location);
 			var newMethod = GenerateMethodStub (options, callingType, param);
 
-			var createdMethod = codeGenerator.CreateMemberImplementation (ctx, callingType, newMethod, false);
+			var createdMethod = codeGenerator.CreateMemberImplementation (callingType, newMethod, false);
 
 			if (param.GenerateComment && DocGenerator.Instance != null)
-				methodText.AppendLine (DocGenerator.Instance.GenerateDocumentation (ctx, newMethod, indent + "/// "));
+				methodText.AppendLine (DocGenerator.Instance.GenerateDocumentation (newMethod, indent + "/// "));
 			string code = createdMethod.Code;
 			int idx1 = code.LastIndexOf ("throw");
 			int idx2 = code.LastIndexOf (";");
@@ -493,7 +493,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				if (param.OneChangedVariable) {
 					var par = param.Variables.First (p => p.IsDefinedInsideCutRegion && p.UsedAfterCutRegion);
 					if (!par.UsedInCutRegion) {
-						text.Append (codeGenerator.GetShortTypeString (options.Document, par.ReturnType.Resolve (ctx)));
+						text.Append (codeGenerator.GetShortTypeString (options.Document, par.ReturnType));
 						text.Append (" ");
 						text.Append (par.Name);
 						text.AppendLine (";");
@@ -553,7 +553,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
 			var insertionPoint = param.InsertionPoint;
 			if (insertionPoint == null) {
-				var points = CodeGenerationService.GetInsertionPoints (options.Document, param.DeclaringMember.DeclaringTypeDefinition);
+				var points = CodeGenerationService.GetInsertionPoints (options.Document, param.DeclaringMember.DeclaringTypeDefinition.Parts.First ());
 				insertionPoint = points.LastOrDefault (p => p.Location.Line < param.DeclaringMember.Region.BeginLine);
 				if (insertionPoint == null)
 					insertionPoint = points.FirstOrDefault ();
