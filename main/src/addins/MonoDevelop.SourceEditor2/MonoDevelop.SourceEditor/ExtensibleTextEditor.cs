@@ -449,15 +449,6 @@ namespace MonoDevelop.SourceEditor
 			return null;
 		}
 		
-		public ITypeResolveContext ITypeResolveContext {
-			get {
-				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null) 
-					return doc.TypeResolveContext;
-				return null;
-			}
-		}
-		
 		internal ParsedDocument ParsedDocument {
 			get {
 				var doc = IdeApp.Workbench.ActiveDocument;
@@ -489,7 +480,7 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ITypeResolveContext, GetTextEditorData (), offset, out region);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (GetTextEditorData (), offset, out region);
 			} else {
 				region = DomRegion.Empty;
 				this.resolveResult = null;
@@ -520,7 +511,7 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ITypeResolveContext, GetTextEditorData (), offset, expression);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (GetTextEditorData (), offset, expression);
 			} else {
 				this.resolveResult = null;
 			}
@@ -531,7 +522,7 @@ namespace MonoDevelop.SourceEditor
 		public string GetExpression (int offset)
 		{
 			if (textEditorResolverProvider != null) 
-				return textEditorResolverProvider.GetExpression (this.ITypeResolveContext, GetTextEditorData (), offset);
+				return textEditorResolverProvider.GetExpression (GetTextEditorData (), offset);
 			return string.Empty;
 		}
 		

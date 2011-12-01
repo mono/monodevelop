@@ -692,14 +692,6 @@ namespace MonoDevelop.SourceEditor
 
 		}
 		
-		public ITypeResolveContext GetParserContext ()
-		{
-			//Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
-			if (Project != null)
-				return TypeSystemService.GetContext (Project);
-			return new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleProjectContent ();
-		}
-		
 		public Ambience GetAmbience ()
 		{
 			string file = this.IsUntitled ? this.UntitledName : this.ContentName;

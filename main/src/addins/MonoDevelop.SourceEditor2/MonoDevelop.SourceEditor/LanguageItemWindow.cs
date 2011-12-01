@@ -46,11 +46,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, IParsedFile unit)
 		{
-			ITypeResolveContext dom = ed.ITypeResolveContext;
 			Ambience ambience = AmbienceService.GetAmbience (ed.Document.MimeType);
 			string tooltip = null;
 			if (result != null && ed.TextEditorResolverProvider != null) {
-				tooltip = ed.TextEditorResolverProvider.CreateTooltip (dom, unit, result, errorInformations, ambience, modifierState);
+				tooltip = ed.TextEditorResolverProvider.CreateTooltip (unit, result, errorInformations, ambience, modifierState);
 // TODO: Type sysetm conversion. (btw. this isn't required because the analyzer should provide semantic error messages.)	
 //				if (result.ResolveErrors.Count > 0) {
 //					StringBuilder sb = new StringBuilder ();
