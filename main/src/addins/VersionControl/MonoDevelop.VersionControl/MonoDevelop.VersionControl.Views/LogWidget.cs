@@ -346,15 +346,11 @@ namespace MonoDevelop.VersionControl.Views
 						}
 						
 					} else {
-						string prevRevisionText;
+						string prevRevisionText = "";
 						try {
 							prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
 						} catch (Exception e) {
-							Application.Invoke (delegate {
-								LoggingService.LogError ("Error while getting revision text", e);
-								MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
-							});
-							return;
+							// The file did not exist at this point in time, so just treat it as empty
 						}
 						
 						var originalDocument = new Mono.TextEditor.Document (prevRevisionText);
