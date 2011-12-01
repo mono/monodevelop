@@ -1317,7 +1317,7 @@ namespace Mono.Debugging.Soft
 				MDB.StackFrame[] frames = thread.GetFrames ();
 				if (frames.Length == 0)
 					return string.Empty;
-				EvaluationOptions ops = Options.EvaluationOptions;
+				EvaluationOptions ops = Options.EvaluationOptions.Clone ();
 				ops.AllowTargetInvoke = true;
 				var ctx = new SoftEvaluationContext (this, frames[0], ops);
 				ValueReference val = ctx.Evaluator.Evaluate (ctx, exp);
