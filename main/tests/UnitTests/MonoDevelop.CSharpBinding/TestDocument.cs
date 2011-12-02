@@ -31,13 +31,6 @@ namespace MonoDevelop.CSharpBinding
 {
 	public class TestDocument : MonoDevelop.Ide.Gui.Document
 	{
-		internal ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext HiddenContext;
-		public override ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext TypeResolveContext {
-			get {
-				return HiddenContext;
-			}
-		}
-		
 		internal ParsedDocument HiddenParsedDocument;
 		public override ParsedDocument ParsedDocument {
 			get {
