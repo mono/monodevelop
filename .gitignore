@@ -182,6 +182,7 @@ autom4te.cache/
 
 #resharper
 *_Resharper.*
+*.Resharper
 
 #dotCover
 *.dotCover
