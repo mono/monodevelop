@@ -133,7 +133,11 @@ namespace MonoDevelop.TypeSystem
 		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
 			ProjectContentWrapper wrapper;
-			projectContents.TryGetValue (project, out wrapper);
+			if (project != null) {
+				projectContents.TryGetValue (project, out wrapper);
+			} else {
+				wrapper = null;
+			}
 			
 			var parser = GetParser (mimeType);
 			if (parser == null)
@@ -412,11 +416,21 @@ namespace MonoDevelop.TypeSystem
 				LoadSolutionCache (solution);
 				foreach (Project project in solution.GetAllProjects ())
 					Load (project);
+				ReloadAllReferences ();
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}
 		}
 		
+		static void ReloadAllReferences ()
+		{
+			lock (rwLock) {
+				foreach (var wrapper in projectContents)
+					wrapper.Value.ReloadAssemblyReferences (wrapper.Key);
+			}
+		}
+		
+		[Serializable]
 		public class ProjectContentWrapper
 		{
 			IProjectContent content;
@@ -430,7 +444,9 @@ namespace MonoDevelop.TypeSystem
 				}
 			}
 			
+			[NonSerialized]
 			ICompilation compilation = null;
+			
 			public ICompilation Compilation {
 				get {
 					if (compilation == null)
@@ -443,12 +459,54 @@ namespace MonoDevelop.TypeSystem
 			{
 				this.content = content;
 			}
+			
+
+			public void ReloadAssemblyReferences (Project project)
+			{
+				var netProject = project as DotNetProject;
+				if (netProject == null)
+					return;
+				var contexts = new List<IAssemblyReference> ();
+		
+				foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
+					var referencedProject = pr as Project;
+					if (referencedProject == null)
+						continue;
+					ProjectContentWrapper wrapper;
+					if (projectContents.TryGetValue (referencedProject, out wrapper))
+						contexts.Add (wrapper.Compilation.MainAssembly.UnresolvedAssembly);
+				}
+				
+				AssemblyContext ctx;
+				// Add mscorlib reference
+				var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
+				ctx = LoadAssemblyContext (corLibRef.Location);
+				if (ctx != null)
+					contexts.Add (ctx.Ctx);
+				
+				// Get the assembly references throught the project, since it may have custom references
+				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+					string fileName;
+					if (!Path.IsPathRooted (file)) {
+						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
+					} else {
+						fileName = Path.GetFullPath (file);
+					}
+					ctx = LoadAssemblyContext (fileName);
+					
+					if (ctx != null)
+						contexts.Add (ctx.Ctx);
+				}
+				
+				Content = Content.RemoveAssemblyReferences (Content.AssemblyReferences);
+				Content = Content.AddAssemblyReferences (contexts);
+			}
 		}
 		
 		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 		
-		public static void Load (Project project)
+		static void Load (Project project)
 		{
 			if (IncLoadCount (project) != 1)
 				return;
@@ -459,13 +517,16 @@ namespace MonoDevelop.TypeSystem
 					IProjectContent context = null;
 					if (solutionCache.ContainsKey (project.FileName))
 						context = solutionCache [project.FileName];
+					
+					ProjectContentWrapper wrapper;
 					if (context == null) {
 						context = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
-						projectContents [project] = new ProjectContentWrapper (context);
+						projectContents [project] = wrapper = new ProjectContentWrapper (context);
 						QueueParseJob (projectContents [project], project);
 					} else {
-						projectContents [project] = new ProjectContentWrapper (context);
+						projectContents [project] = wrapper = new ProjectContentWrapper (context);
 					}
+					
 					referenceCounter [project] = 1;
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, context));
 					project.FileChangedInProject += OnFileChanged;
@@ -481,12 +542,27 @@ namespace MonoDevelop.TypeSystem
 		
 		public static Project GetProject (IEntity entity)
 		{
-			throw new NotImplementedException ();
+			if (entity == null)
+				return null;
+			
+			ITypeDefinition def;
+			if (entity is IType) {
+				def = ((IType)entity).GetDefinition ();
+			} else {
+				def = entity.DeclaringTypeDefinition;
+			}
+			if (def == null)
+				return null;
+			return GetProject (def.Compilation.MainAssembly.AssemblyName);
+				
 		}
 		
 		public static Project GetProject (string assemblyName)
 		{
-			throw new NotImplementedException ();
+			foreach (var wrapper in projectContents) 
+				if (wrapper.Value.Compilation.MainAssembly.AssemblyName == assemblyName)
+					return wrapper.Key;
+			return null;
 		}
 		
 		#region Project modification handlers
@@ -528,11 +604,13 @@ namespace MonoDevelop.TypeSystem
 			if (!args.Any (x => x is SolutionItemModifiedEventInfo && (((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework" || ((SolutionItemModifiedEventInfo)x).Hint == "References")))
 				return;
 			cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
+			var project = (Project)sender;
 			
-/*			var project = (Project)sender;
-			lock (cachedProjectContents) {
-				cachedProjectContents.Remove (project);
-			}*/
+			ProjectContentWrapper wrapper;
+			projectContents.TryGetValue (project, out wrapper);
+			if (wrapper == null)
+				return;
+			ReloadAllReferences ();
 		}
 		#endregion
 		
@@ -651,7 +729,6 @@ namespace MonoDevelop.TypeSystem
 		}
 		#endregion
 		
-		static Dictionary<string, AssemblyContext> assemblyContents = new Dictionary<string, AssemblyContext> ();
 		
 		class SimpleAssemblyResolver : IAssemblyResolver
 		{
@@ -756,11 +833,16 @@ namespace MonoDevelop.TypeSystem
 		
 		static AssemblyContext LoadAssemblyContext (string fileName)
 		{
+			AssemblyContext loadedContext;
+			if (cachedAssemblyContents.TryGetValue(fileName, out loadedContext))
+				return loadedContext;
+			
 			string cache = GetCacheDirectory (fileName);
 			if (cache != null) {
 				TouchCache (cache);
 				var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "completion.cache"));
 				if (deserialized != null) {
+					cachedAssemblyContents[fileName] = deserialized;
 					return deserialized;
 				} else {
 					RemoveCache (cache);
@@ -789,6 +871,7 @@ namespace MonoDevelop.TypeSystem
 				cache = CreateCacheDirectory (fileName);
 				if (cache != null)
 					SerializeObject (Path.Combine (cache, "completion.cache"), result);
+				cachedAssemblyContents[fileName] = result;
 				return result;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error loading assembly " + fileName, ex);
@@ -835,6 +918,7 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		static Dictionary<Project, ITypeResolveContext> cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
+		static Dictionary<string, AssemblyContext> cachedAssemblyContents = new Dictionary<string, AssemblyContext> ();
 
 		
 		public static ITypeResolveContext GetContext (Project project)
@@ -844,51 +928,11 @@ namespace MonoDevelop.TypeSystem
 				ITypeResolveContext result;
 				if (cachedProjectContents.TryGetValue (project, out result))
 					return result;
-				List<ITypeResolveContext> contexts = new List<ITypeResolveContext> ();
 				
 				ProjectContentWrapper content;
 				if (projectContents.TryGetValue (project, out content))
 					contexts.Add (content);
-				foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
-					var referencedProject = pr as Project;
-					if (referencedProject == null)
-						continue;
-					if (projectContents.TryGetValue (referencedProject, out content))
-						contexts.Add (content);
-				}
-					
-				AssemblyContext ctx;
-				if (project is DotNetProject) {
-					var netProject = (DotNetProject)project;
-					
-					// Add mscorlib reference
-					var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
-					if (!assemblyContents.TryGetValue (corLibRef.Location, out ctx))
-						ctx = assemblyContents [corLibRef.Location] = LoadAssemblyContext (corLibRef.Location);
-					if (ctx != null)
-						contexts.Add (ctx);
-					
-					// Get the assembly references throught the project, since it may have custom references
-					foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-						string fileName;
-						if (!Path.IsPathRooted (file)) {
-							fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-						} else {
-							fileName = Path.GetFullPath (file);
-						}
-						string refId = fileName;
-	
-						if (!assemblyContents.TryGetValue (refId, out ctx)) {
-							try {
-								assemblyContents [refId] = ctx = LoadAssemblyContext (fileName);
-							} catch (Exception) {
-							}
-						}
-						
-						if (ctx != null)
-							contexts.Add (ctx);
-					}
-				}
+				
 				result = new CompositeTypeResolveContext (contexts);
 				cachedProjectContents [project] = result;
 				return result;
@@ -1140,8 +1184,8 @@ namespace MonoDevelop.TypeSystem
 					context.LastWriteTime = writeTime;
 					if (cache != null) {
 						SerializeObject (Path.Combine (cache, "completion.cache"), context);
-						
 					}
+					ReloadAllReferences ();
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while updating assembly " + context.FileName, e);
@@ -1164,7 +1208,7 @@ namespace MonoDevelop.TypeSystem
 			Queue<KeyValuePair<string, AssemblyContext>> assemblyList;
 			
 			lock (rwLock) {
-				assemblyList = new Queue<KeyValuePair<string, AssemblyContext>> (assemblyContents);
+				assemblyList = new Queue<KeyValuePair<string, AssemblyContext>> (cachedAssemblyContents);
 			}
 			
 			while (assemblyList.Count > 0) {
@@ -1198,7 +1242,7 @@ namespace MonoDevelop.TypeSystem
 					pending = PendingJobCount;
 					
 				} while (pending > 0);
-				
+				ReloadAllReferences ();
 				queueEmptied.Set ();
 			} finally {
 				if (monitor != null)

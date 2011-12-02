@@ -456,11 +456,11 @@ namespace MonoDevelop.TypeSystem
 			if (type.Kind == TypeKind.Interface)
 				yield break;
 
-			foreach (IMethod method in type.Methods)
+			foreach (var method in type.Methods)
 				if (!IncompleteOrSingleLine (method.BodyRegion))
 					yield return new FoldingRegion (method.BodyRegion, FoldType.Member);
 			
-			foreach (IProperty property in type.Properties)
+			foreach (var property in type.Properties)
 				if (!IncompleteOrSingleLine (property.BodyRegion))
 					yield return new FoldingRegion (property.BodyRegion, FoldType.Member);
 		}

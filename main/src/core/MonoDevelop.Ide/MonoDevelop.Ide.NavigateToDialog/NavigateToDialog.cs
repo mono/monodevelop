@@ -535,8 +535,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						if (doc.Project == null && doc.IsFile) {
 							var info = doc.ParsedDocument;
 							if (info != null) {
-								var ctx = doc.TypeResolveContext.CreateCompilation ();
-								foreach (var type in ctx.GetAllTypeDefinitions ()) {
+								var ctx = doc.Compilation;
+								foreach (var type in ctx.MainAssembly.GetAllTypeDefinitions ()) {
 									yield return type;
 								}
 							}
@@ -546,8 +546,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
 					
 					foreach (Project p in projects) {
-						var pctx = TypeSystemService.GetProjectContext (p);
-						foreach (var type in pctx.CreateCompilation ().GetAllTypeDefinitions ())
+						var pctx = TypeSystemService.GetCompilation (p);
+						foreach (var type in pctx.MainAssembly.GetAllTypeDefinitions ())
 							yield return type;
 					}
 				} finally {
