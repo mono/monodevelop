@@ -92,6 +92,13 @@ namespace MonoDevelop.TypeSystem
 			// TODO: Implement me!
 			return false;
 		}
+		
+		public static IType Resolve (this IUnresolvedTypeDefinition def, Project project)
+		{
+			var pf = TypeSystemService.GetProjectContext (project).GetFile (def.Region.FileName);
+			var ctx = pf.GetTypeResolveContext (TypeSystemService.GetCompilation (project), def.Region.Begin);
+			return def.Resolve (ctx);
+		}
 	}
 	
 	public static class TypeSystemService
@@ -919,25 +926,6 @@ namespace MonoDevelop.TypeSystem
 		
 		static Dictionary<Project, ITypeResolveContext> cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
 		static Dictionary<string, AssemblyContext> cachedAssemblyContents = new Dictionary<string, AssemblyContext> ();
-
-		
-		public static ITypeResolveContext GetContext (Project project)
-		{
-			throw new NotImplementedException ();
-/*			lock (cachedProjectContents) {
-				ITypeResolveContext result;
-				if (cachedProjectContents.TryGetValue (project, out result))
-					return result;
-				
-				ProjectContentWrapper content;
-				if (projectContents.TryGetValue (project, out content))
-					contexts.Add (content);
-				
-				result = new CompositeTypeResolveContext (contexts);
-				cachedProjectContents [project] = result;
-				return result;
-			}*/
-		}
 		
 		public static void ForceUpdate (ITypeResolveContext context)
 		{

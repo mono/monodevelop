@@ -123,10 +123,10 @@ namespace MonoDevelop.GtkCore
 				var cls = parser.GetClass (clsname);
 				if (cls == null)
 					continue;
-				CodeGenerationService.AddAttribute (parser.Ctx, cls, "System.ComponentModel.ToolboxItem", true);
+				CodeGenerationService.AddAttribute (cls, "System.ComponentModel.ToolboxItem", true);
 				XmlElement elem = DocumentElement.SelectSingleNode ("object[@type='" + clsname + "']") as XmlElement;
 				if (elem != null && elem.HasAttribute ("palette-category")) {
-					CodeGenerationService.AddAttribute (parser.Ctx, cls, "System.ComponentModel.Category", elem.GetAttribute ("palette-category"));
+					CodeGenerationService.AddAttribute (cls, "System.ComponentModel.Category", elem.GetAttribute ("palette-category"));
 				}
 			}
 		}

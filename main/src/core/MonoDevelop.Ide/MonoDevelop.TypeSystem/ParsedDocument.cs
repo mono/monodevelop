@@ -186,6 +186,10 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		public virtual ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		{
+			return null;
+		}
 		#endregion
 
 		#region IFreezable implementation
@@ -407,6 +411,13 @@ namespace MonoDevelop.TypeSystem
 		{
 			return base.GenerateFolds ().Concat (AddFolds ());
 		}
+		
+		
+		public override ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		{
+			return parsedFile.GetTypeResolveContext (compilation, loc);
+		}
+		
 		/*
 		#region IFreezable implementation
 		public override void Freeze ()
@@ -619,6 +630,7 @@ namespace MonoDevelop.TypeSystem
 			}
 			return false;
 		}
+		
 	}
 }
 

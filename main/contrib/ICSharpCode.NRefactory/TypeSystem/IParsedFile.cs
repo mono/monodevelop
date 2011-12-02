@@ -73,5 +73,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the parser errors.
 		/// </summary>
 		IList<Error> Errors { get; }
+		
+		ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc);
 	}
 }

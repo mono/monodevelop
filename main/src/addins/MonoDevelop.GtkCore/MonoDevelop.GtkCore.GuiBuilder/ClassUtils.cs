@@ -37,21 +37,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	internal class ClassUtils
 	{
-		public static IField FindWidgetField (ITypeResolveContext ctx, ITypeDefinition cls, string name)
+		public static IField FindWidgetField (ITypeDefinition cls, string name)
 		{
 			foreach (IField field in cls.Fields) {
-				if (name == GetWidgetFieldName (ctx, field))
+				if (name == GetWidgetFieldName (field))
 					return field;
 			}
 			return null;
 		}
 		
-		public static string GetWidgetFieldName (ITypeResolveContext ctx, IField field)
+		public static string GetWidgetFieldName (IField field)
 		{
 			foreach (IAttribute att in field.Attributes)	{
-				var type = att.AttributeType.Resolve (ctx);
+				var type = att.AttributeType;
 				if (type.ReflectionName == "Glade.Widget" || type.ReflectionName == "Widget" || type.ReflectionName == "Glade.WidgetAttribute" || type.ReflectionName == "WidgetAttribute") {
-					var pArgs = att.GetPositionalArguments (ctx);
+					var pArgs = att.PositionalArguments;
 					if (pArgs != null && pArgs.Count > 0) {
 						var exp = pArgs[0] as ConstantResolveResult;
 						if (exp != null)

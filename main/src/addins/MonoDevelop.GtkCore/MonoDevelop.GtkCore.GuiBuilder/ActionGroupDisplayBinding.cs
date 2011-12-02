@@ -105,8 +105,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			ArrayList list = new ArrayList ();
 			var ctx = gproject.GetParserContext ();
-			foreach (var cls in ctx.GetTypes ())
-				if (IsValidClass (ctx, cls))
+			foreach (var cls in ctx.MainAssembly.GetAllTypeDefinitions ())
+				if (IsValidClass (cls))
 					list.Add (cls.FullName);
 		
 			// Ask what to do
@@ -124,7 +124,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return gproject.GetSourceCodeFile (group);
 		}
 		
-		static ITypeDefinition CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
+		static IUnresolvedTypeDefinition CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
@@ -169,14 +169,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return CodeGenerationService.AddType ((DotNetProject)project, folder, namspace, type);
 		}
 		
-		internal static bool IsValidClass (ITypeResolveContext ctx, IType cls)
+		internal static bool IsValidClass (IType cls)
 		{
-			foreach (var bt in cls.GetBaseTypes (ctx)) {
+			foreach (var bt in cls.GetAllBaseTypeDefinitions ()) {
 				if (bt.ReflectionName == "Gtk.ActionGroup")
 					return true;
 				
 				var baseCls = bt;
-				if (baseCls != null && IsValidClass (ctx, baseCls))
+				if (baseCls != null && IsValidClass (baseCls))
 					return true;
 			}
 			return false;

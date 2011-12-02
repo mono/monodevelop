@@ -41,15 +41,15 @@ namespace MonoDevelop.GtkCore
 
 	public class WidgetParser
 	{
-		ITypeResolveContext ctx;
+		ICompilation ctx;
 
-		public ITypeResolveContext Ctx {
+		public ICompilation Ctx {
 			get {
 				return ctx;
 			}
 		}
 		
-		public WidgetParser (ITypeResolveContext ctx)
+		public WidgetParser (ICompilation ctx)
 		{
 			this.ctx = ctx;
 		}
@@ -58,10 +58,10 @@ namespace MonoDevelop.GtkCore
 		{
 			Dictionary<string, ITypeDefinition> tb_items = new Dictionary<string, ITypeDefinition> ();
 
-			var wt = ctx.GetTypeDefinition ("Gtk", "Widget", 0, StringComparer.Ordinal);
+			var wt = ctx.FindType ("Gtk.Widget");
 			if (wt != null) {
-				foreach (var t in wt.GetSubTypeDefinitions (ctx)) {
-					if (t.ProjectContent == ctx && IsToolboxWidget (t))
+				foreach (var t in wt.GetSubTypeDefinitions ()) {
+					if (IsToolboxWidget (t))
 						tb_items [t.FullName] = t;
 				}
 			}
@@ -83,8 +83,7 @@ namespace MonoDevelop.GtkCore
 					events [ev.Name] = ev;
 					
 			if (inherited) {
-				foreach (var bt in cls.BaseTypes) {
-					var bcls = bt.Resolve (ctx).GetDefinition ();
+				foreach (var bcls in cls.GetAllBaseTypeDefinitions ()) {
 					if (bcls != null && bcls.Kind != TypeKind.Class)
 						CollectMembers (bcls, true, topType, properties, events);
 				}
@@ -93,14 +92,13 @@ namespace MonoDevelop.GtkCore
 		
 		public string GetBaseType (ITypeDefinition cls, Hashtable knownTypes)
 		{
-			foreach (var bt in cls.BaseTypes) {
-				string name = bt.Resolve (ctx).ReflectionName;
+			foreach (var bt in cls.GetAllBaseTypeDefinitions ()) {
+				string name = bt.ReflectionName;
 				if (knownTypes.Contains (name))
 					return name;
 			}
 
-			foreach (var bt in cls.BaseTypes) {
-				var bcls = bt.Resolve (ctx).GetDefinition ();
+			foreach (var bcls in cls.GetAllBaseTypeDefinitions ()) {
 				if (bcls != null) {
 					string ret = GetBaseType (bcls, knownTypes);
 					if (ret != null)
@@ -114,7 +112,7 @@ namespace MonoDevelop.GtkCore
 		{
 //			foreach (IAttributeSection section in decoration.Attributes) {
 				foreach (IAttribute at in decoration.Attributes) {
-					var type = at.AttributeType.Resolve (ctx);
+					var type = at.AttributeType;
 					switch (type.ReflectionName) {
 					case "Category":
 					case "CategoryAttribute":
@@ -124,7 +122,7 @@ namespace MonoDevelop.GtkCore
 					default:
 						continue;
 					}
-					var pargs = at.GetPositionalArguments (ctx);
+					var pargs = at.PositionalArguments;
 					if (pargs != null && pargs.Count > 0) {
 						var val = pargs[0] as ConstantResolveResult;
 						if (val is string)
@@ -146,7 +144,7 @@ namespace MonoDevelop.GtkCore
 				ns = "";
 				name = classname;
 			}
-			return ctx.GetTypeDefinition (ns, name, 0, StringComparer.Ordinal);
+			return ctx.MainAssembly.GetTypeDefinition (ns, name, 0);
 		}
 
 		public bool IsBrowsable (IMember member)
@@ -158,13 +156,13 @@ namespace MonoDevelop.GtkCore
 			if (prop != null) {
 				if (!prop.CanGet || !prop.CanSet)
 					return false;
-				if (Array.IndexOf (supported_types, prop.ReturnType.Resolve (ctx).ReflectionName) == -1)
+				if (Array.IndexOf (supported_types, prop.ReturnType.ReflectionName) == -1)
 					return false;
 			}
 
 	//		foreach (IAttributeSection section in member.Attributes) {
 				foreach (IAttribute at in member.Attributes) {
-					var type = at.AttributeType.Resolve (ctx);
+					var type = at.AttributeType;
 					switch (type.ReflectionName) {
 					case "Browsable":
 					case "BrowsableAttribute":
@@ -174,7 +172,7 @@ namespace MonoDevelop.GtkCore
 					default:
 						continue;
 					}
-					var pargs = at.GetPositionalArguments (ctx);
+					var pargs = at.PositionalArguments;
 					if (pargs != null && pargs.Count > 0) {
 						var val = pargs[0] as ConstantResolveResult;
 						if (val.ConstantValue is bool) {
@@ -192,7 +190,7 @@ namespace MonoDevelop.GtkCore
 				return false;
 
 			foreach (IAttribute at in cls.Attributes) {
-				var type = at.AttributeType.Resolve (ctx);
+				var type = at.AttributeType;
 				switch (type.ReflectionName) {
 				case "ToolboxItem":
 				case "ToolboxItemAttribute":
@@ -202,7 +200,7 @@ namespace MonoDevelop.GtkCore
 				default:
 					continue;
 				}
-				var pargs = at.GetPositionalArguments (ctx);
+				var pargs = at.PositionalArguments;
 				if (pargs != null && pargs.Count > 0) {
 					var val = pargs[0] as ConstantResolveResult;
 					if (val.ConstantValue == null)
@@ -214,8 +212,7 @@ namespace MonoDevelop.GtkCore
 				}
 			}
 
-			foreach (var bt in cls.BaseTypes) {
-				var bcls = bt.Resolve (ctx).GetDefinition ();
+			foreach (var bcls in cls.GetAllBaseTypeDefinitions ()) {
 				if (bcls != null && bcls.Kind != TypeKind.Interface)
 					return IsToolboxWidget (bcls);
 			}

@@ -107,7 +107,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			var dom = TypeSystemService.GetCompilation (project);
-			var ctx = TypeSystemService.GetContext (project);
 			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
 			HashSet<string> addedNames = new HashSet<string> ();
 			foreach (var ns in dom.RootNamespace.ChildNamespaces) {

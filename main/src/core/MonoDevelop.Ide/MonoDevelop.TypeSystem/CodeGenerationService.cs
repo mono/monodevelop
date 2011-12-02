@@ -372,7 +372,7 @@ namespace MonoDevelop.TypeSystem
 		}
 		#endregion
 		
-		public static void AddAttribute (ITypeResolveContext ctx, ITypeDefinition cls, string name, params object[] parameters)
+		public static void AddAttribute (ITypeDefinition cls, string name, params object[] parameters)
 		{
 			bool isOpen;
 			string fileName = cls.Region.FileName;

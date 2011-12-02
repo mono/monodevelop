@@ -107,8 +107,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Find the classes that could be bound to this design
 			var ctx = fproject.GetParserContext ();
 			ArrayList list = new ArrayList ();
-			foreach (var cls in ctx.GetAllTypes ()) {
-				if (IsValidClass (ctx, cls))
+			foreach (var cls in ctx.MainAssembly.GetAllTypeDefinitions ()) {
+				if (IsValidClass (cls))
 					list.Add (cls.FullName);
 			}
 		
@@ -224,14 +224,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		internal bool IsValidClass (ITypeResolveContext ctx, IType cls)
+		internal bool IsValidClass (IType cls)
 		{
-			foreach (var bt in cls.GetBaseTypes (ctx)) {
-				if (bt.Resolve (ctx).ReflectionName == rootWidget.Component.Type.ClassName)
+			foreach (var bt in cls.GetAllBaseTypeDefinitions ()) {
+				if (bt.ReflectionName == rootWidget.Component.Type.ClassName)
 					return true;
 				
-				var baseCls = bt.Resolve (ctx);
-				if (baseCls != null && IsValidClass (ctx, baseCls))
+				var baseCls = bt;
+				if (baseCls != null && IsValidClass (baseCls))
 					return true;
 			}
 			return false;

@@ -39,6 +39,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -478,24 +479,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		ITypeDefinition GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
+		IUnresolvedTypeDefinition GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			string name = CodeBinder.GetClassName (obj);
 			return FindClass (name, getUserClass);
 		}
 		
-		public ITypeDefinition FindClass (string className)
+		public IUnresolvedTypeDefinition FindClass (string className)
 		{
 			return FindClass (className, true);
 		}
 		
-		public ITypeDefinition FindClass (string className, bool getUserClass)
+		public IUnresolvedTypeDefinition FindClass (string className, bool getUserClass)
 		{
 			FilePath gui_folder = GtkDesignInfo.FromProject (project).GtkGuiFolder;
 			var ctx = GetParserContext ();
 			if (ctx == null)
 				return null;
-			var classes = ctx.GetTypes ();
+			var classes = ctx.MainAssembly.GetAllTypeDefinitions ();
 			if (classes == null)
 				return null;
 			foreach (var cls in classes) {
@@ -503,7 +504,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					if (getUserClass) {
 						// Return this class only if it is declared outside the gtk-gui
 						// folder. Generated partial classes will be ignored.
-						foreach (var part in cls.GetParts ()) {
+						foreach (var part in cls.Parts) {
 							if (!string.IsNullOrEmpty (part.Region.FileName) && !((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder)) {
 								return part;
 							}
@@ -512,15 +513,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					}
 					if (getUserClass && !string.IsNullOrEmpty (cls.Region.FileName) && ((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder))
 						continue;
-					return cls;
+					return cls.Parts.First ();
 				}
 			}
 			return null;
 		}
 		
-		public ITypeResolveContext GetParserContext ()
+		public ICompilation GetParserContext ()
 		{
-			var dom = TypeSystemService.GetProjectContext (Project);
+			var dom = TypeSystemService.GetCompilation (Project);
 			if (dom != null && needsUpdate) {
 				needsUpdate = false;
 //				dom.ForceUpdate ();

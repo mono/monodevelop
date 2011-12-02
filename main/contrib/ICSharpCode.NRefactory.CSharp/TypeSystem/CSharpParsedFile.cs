@@ -106,7 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return rootUsingScope;
 		}
 
-		public CSharpTypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		public ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
 		{
 			var rctx = new CSharpTypeResolveContext (compilation.MainAssembly);
 			rctx = rctx.WithUsingScope (GetUsingScope (loc).Resolve (compilation));
@@ -127,7 +127,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 
 		public ICSharpCode.NRefactory.CSharp.Resolver.CSharpResolver GetResolver (ICompilation compilation, TextLocation loc)
 		{
-			return new ICSharpCode.NRefactory.CSharp.Resolver.CSharpResolver (GetTypeResolveContext (compilation, loc));
+			return new ICSharpCode.NRefactory.CSharp.Resolver.CSharpResolver (GetTypeResolveContext (compilation, loc) as CSharpTypeResolveContext);
 		}
 		
 		public IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)

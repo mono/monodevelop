@@ -71,7 +71,7 @@ namespace MonoDevelop.Refactoring.Rename
 			return false;
 		}
 
-		public static void Rename (ITypeResolveContext ctx, IEntity entity, string newName)
+		public static void Rename (IEntity entity, string newName)
 		{
 			using (var monitor = new NullProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (entity, monitor);
