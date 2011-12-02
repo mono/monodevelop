@@ -52,13 +52,13 @@ namespace MonoDevelop.DocFood
 			this.data = data;
 		}
 		
-		public static string GetBaseDocumentation (ITypeResolveContext ctx, IEntity member)
+		public static string GetBaseDocumentation (IEntity member)
 		{
 			if (member.DeclaringTypeDefinition == null)
 				return null;
 			if (member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsDestructor))
 				return null;
-			foreach (var type in member.DeclaringTypeDefinition.GetAllBaseTypeDefinitions (ctx)) {
+			foreach (var type in member.DeclaringTypeDefinition.GetAllBaseTypeDefinitions ()) {
 				if (type.Equals (member.DeclaringTypeDefinition))
 					continue;
 				IMember documentMember = null;
@@ -122,7 +122,7 @@ namespace MonoDevelop.DocFood
 			}
 		}
 
-		public IEntity member;
+		public INamedElement member;
 		MemberVisitor visitor = new MemberVisitor ();
 		string currentType;
 		int wordCount;
@@ -302,9 +302,9 @@ namespace MonoDevelop.DocFood
 		}
 		
 		internal string curName;
-		public void GenerateDoc (ITypeResolveContext ctx, IEntity member)
+		public void GenerateDoc (IEntity member)
 		{
-			Init (ctx, member);
+			Init (member);
 			
 			this.member = member;
 			this.currentType = GetType (member);
@@ -381,9 +381,9 @@ namespace MonoDevelop.DocFood
 //			}
 		}
 		
-		void Init (ITypeResolveContext ctx, IEntity member)
+		void Init (IEntity member)
 		{
-			FillDocumentation (GetBaseDocumentation (ctx, member));
+			FillDocumentation (GetBaseDocumentation (member));
 //			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.EndLine > 1) {
 //				LineSegment start = data.Document.GetLine (member.Region.BeginLine);
 //				LineSegment end = data.Document.GetLine (member.BodyRegion.EndLine);
@@ -556,9 +556,9 @@ namespace MonoDevelop.DocFood
 		}
 		
 		#region implemented abstract members of MonoDevelop.Projects.Text.DocGenerator
-		public override string GenerateDocumentation (ITypeResolveContext ctx, IMember member, string linePrefix)
+		public override string GenerateDocumentation (IMember member, string linePrefix)
 		{
-			return DocumentBufferHandler.GenerateDocumentation (ctx, null, member, "", linePrefix);
+			return DocumentBufferHandler.GenerateDocumentation (null, member, "", linePrefix);
 		}
 		#endregion
 	}

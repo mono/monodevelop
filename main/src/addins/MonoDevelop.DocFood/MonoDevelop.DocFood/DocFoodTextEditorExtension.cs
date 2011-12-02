@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
@@ -45,16 +46,16 @@ namespace MonoDevelop.DocFood
 			textEditorData = Document.Editor;
 		}
 		
-		string GenerateDocumentation (ITypeResolveContext ctx, IEntity member, string indent)
+		string GenerateDocumentation (IEntity member, string indent)
 		{
-			string doc = DocumentBufferHandler.GenerateDocumentation (ctx, textEditorData, member, indent);
+			string doc = DocumentBufferHandler.GenerateDocumentation (textEditorData, member, indent);
 			int trimStart = (Math.Min (doc.Length-1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 		
-		string GenerateEmptyDocumentation (ITypeResolveContext ctx, IEntity member, string indent)
+		string GenerateEmptyDocumentation (IEntity member, string indent)
 		{
-			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (ctx, textEditorData, member, indent);
+			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (textEditorData, member, indent);
 			int trimStart = (Math.Min (doc.Length-1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
@@ -74,11 +75,11 @@ namespace MonoDevelop.DocFood
 			if (member == null)
 				return base.KeyPress (key, keyChar, modifier);
 			var ctx = document.TypeResolveContext;
-			string documentation = GenerateDocumentation (ctx, member, textEditorData.Document.GetLineIndent (line));
+			string documentation = GenerateDocumentation (member, textEditorData.Document.GetLineIndent (line));
 			if (string.IsNullOrEmpty (documentation))
 				return base.KeyPress (key, keyChar, modifier);
 			
-			string documentationEmpty = GenerateEmptyDocumentation (ctx, member, textEditorData.Document.GetLineIndent (line));
+			string documentationEmpty = GenerateEmptyDocumentation (member, textEditorData.Document.GetLineIndent (line));
 			
 			int offset = textEditorData.Caret.Offset;
 			
@@ -108,11 +109,14 @@ namespace MonoDevelop.DocFood
 		IEntity GetMemberToDocument ()
 		{
 			var parsedDocument = Document.UpdateParseDocument ();
+			
 			var type = parsedDocument.GetInnermostTypeDefinition (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (type == null) {
 				foreach (var t in parsedDocument.TopLevelTypeDefinitions) {
-					if (t.Region.BeginLine > textEditorData.Caret.Line)
-						return t;
+					if (t.Region.BeginLine > textEditorData.Caret.Line) {
+						var ctx = (parsedDocument.ParsedFile as CSharpParsedFile).GetTypeResolveContext (Document.Compilation, t.Region.Begin);
+						return t.Resolve (ctx).GetDefinition ();
+					}
 				}
 				return null;
 			}
@@ -120,7 +124,8 @@ namespace MonoDevelop.DocFood
 			IMember result = null;
 			foreach (var member in type.Members) {
 				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
-					result = member;
+					var ctx = (parsedDocument.ParsedFile as CSharpParsedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
+					result = member.CreateResolved (ctx);
 				}
 			}
 			return result;
