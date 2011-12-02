@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using Mono.TextEditor;
+using System.Linq;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -47,8 +48,8 @@ namespace MonoDevelop.CodeMetrics
 			foreach (var field in cls.Fields)
 				totalaccess += field.Value.InternalAccessCount;
 			
-			cls.LCOM = 1 - (double)(totalaccess/(cls.Class.Methods.Count*cls.Class.Fields.Count));
-			cls.LCOM_HS = (cls.Class.Methods.Count - totalaccess/cls.Class.Fields.Count)/(cls.Class.Methods.Count-1);
+			cls.LCOM = 1 - (double)(totalaccess/(cls.Class.Methods.Count()*cls.Class.Fields.Count()));
+			cls.LCOM_HS = (cls.Class.Methods.Count() - totalaccess/cls.Class.Fields.Count())/(cls.Class.Methods.Count()-1);
 			
 		}
 		/*

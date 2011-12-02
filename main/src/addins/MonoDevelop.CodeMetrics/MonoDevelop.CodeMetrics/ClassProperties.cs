@@ -297,8 +297,8 @@ namespace MonoDevelop.CodeMetrics
 			AddField ();
 			
 			this.FieldCount = this.Fields.Count;
-			this.EventCount = this.Class.Events.Count;
-			this.MethodCount = this.Methods.Count;
+			this.EventCount = this.Class.Events.Count ();
+			this.MethodCount = this.Methods.Count ();
 			this.StartLine = this.Class.BodyRegion.BeginLine;
 			this.EndLine = this.Class.BodyRegion.EndLine;
 		}

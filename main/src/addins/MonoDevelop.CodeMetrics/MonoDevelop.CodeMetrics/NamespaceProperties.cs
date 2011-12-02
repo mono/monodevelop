@@ -146,7 +146,7 @@ namespace MonoDevelop.CodeMetrics
 			key.Append(type.FullName);
 			
 			foreach(var typeArg in type.TypeParameters) {
-				foreach(var constraint in typeArg.GetConstraints (type.ProjectContent)) {
+				foreach(var constraint in typeArg.DirectBaseTypes) {
 					key.Append(" " + constraint);
 				}
 			}
@@ -176,7 +176,7 @@ namespace MonoDevelop.CodeMetrics
 			lock(Classes)
 			{
 				foreach(var typeArg in cls.TypeParameters) {
-					foreach(var constraint in typeArg.GetConstraints (cls.ProjectContent)) {
+					foreach(var constraint in typeArg.DirectBaseTypes) {
 						key.Append(constraint.ToString ());
 					}
 				}
@@ -191,7 +191,7 @@ namespace MonoDevelop.CodeMetrics
 			lock(Structs)
 			{
 				foreach(var typeArg in strct.TypeParameters) {
-					foreach(var constraint in typeArg.GetConstraints (strct.ProjectContent)) {
+					foreach(var constraint in typeArg.DirectBaseTypes) {
 						key.Append(constraint.ToString ());
 					}
 				}
@@ -206,7 +206,7 @@ namespace MonoDevelop.CodeMetrics
 			lock(Interfaces)
 			{
 				foreach(var typeArg in interfce.TypeParameters) {
-					foreach(var constraint in typeArg.GetConstraints (interfce.ProjectContent)) {
+					foreach(var constraint in typeArg.DirectBaseTypes) {
 						key.Append(constraint.ToString ());
 					}
 				}
@@ -221,7 +221,7 @@ namespace MonoDevelop.CodeMetrics
 			lock(Enums)
 			{
 				foreach(var typeArg in enm.TypeParameters) {
-					foreach(var constraint in typeArg.GetConstraints (enm.ProjectContent)) {
+					foreach(var constraint in typeArg.DirectBaseTypes) {
 						key.Append(constraint.ToString ());
 					}
 				}
@@ -236,7 +236,7 @@ namespace MonoDevelop.CodeMetrics
 			lock(Delegates)
 			{
 				foreach(var typeArg in dlgte.TypeParameters) {
-					foreach(var constraint in typeArg.GetConstraints (dlgte.ProjectContent)) {
+					foreach(var constraint in typeArg.DirectBaseTypes) {
 						key.Append(constraint.ToString ());
 					}
 				}

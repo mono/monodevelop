@@ -36,6 +36,7 @@ using MonoDevelop.Projects;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -43,8 +44,8 @@ namespace MonoDevelop.CodeMetrics
 	{
 		public static void AddTypes (ProjectProperties projectprop, MetricsContext ctx)
 		{
-			var dom = TypeSystemService.GetProjectContext (projectprop.Project);
-			foreach (var ob in dom.GetTypes ()) {
+			var dom = TypeSystemService.GetCompilation (projectprop.Project);
+			foreach (var ob in dom.MainAssembly.GetAllTypeDefinitions ()) {
 				projectprop.AddInstance(ob);
 			}
 		}
@@ -133,7 +134,7 @@ namespace MonoDevelop.CodeMetrics
 			results.Append(GettextCatalog.GetString("\nInner classes : ") + item.InnerClassCount);
 			results.Append(GettextCatalog.GetString("\nStructs : ") + item.StructCount);
 			results.Append(GettextCatalog.GetString("\nMethods : ") + item.MethodCount);
-			results.Append(GettextCatalog.GetString("\nProperties : ") + item.Class.Properties.Count);
+			results.Append(GettextCatalog.GetString("\nProperties : ") + item.Class.Properties.Count ());
 			results.Append(GettextCatalog.GetString("\nLack of cohesion of methods : ") + item.LCOM);
 			results.Append(GettextCatalog.GetString("\nLack of cohesion of methods (Henderson-Sellers) : ") + item.LCOM_HS);
 			return results;
@@ -155,8 +156,8 @@ namespace MonoDevelop.CodeMetrics
 		{
 			StringBuilder results = new StringBuilder();
 			results.Append(GettextCatalog.GetString("\nName : " + item.FullName));
-			results.Append(GettextCatalog.GetString("\nTotal number of fields : " + item.Struct.Fields.Count));
-			results.Append(GettextCatalog.GetString("\nTotal number of properties : " + item.Struct.Properties.Count));
+			results.Append(GettextCatalog.GetString("\nTotal number of fields : " + item.Struct.Fields.Count ()));
+			results.Append(GettextCatalog.GetString("\nTotal number of properties : " + item.Struct.Properties.Count ()));
 			return results;
 		}
 		
@@ -164,8 +165,8 @@ namespace MonoDevelop.CodeMetrics
 		{
 			StringBuilder results = new StringBuilder();
 			results.Append(GettextCatalog.GetString("\nName : " + item.FullName));
-			results.Append(GettextCatalog.GetString("\nTotal number of properties : " + item.Interface.Properties.Count));
-			results.Append(GettextCatalog.GetString("\nTotal number of methods : " + item.Interface.Methods.Count));
+			results.Append(GettextCatalog.GetString("\nTotal number of properties : " + item.Interface.Properties.Count ()));
+			results.Append(GettextCatalog.GetString("\nTotal number of methods : " + item.Interface.Methods.Count ()));
 			return results;
 		}
 		
