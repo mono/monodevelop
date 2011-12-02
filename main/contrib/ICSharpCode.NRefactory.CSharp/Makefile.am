@@ -132,6 +132,7 @@ FILES =  \
 	Completion/CSharpParameterCompletionEngine.cs \
 	Completion/ICompletionDataFactory.cs \
 	Completion/IParameterCompletionDataFactory.cs \
+	CSharpProjectContent.cs \
 	Formatter/AstFormattingVisitor.cs \
 	Formatter/CSharpFormattingOptions.cs \
 	Formatter/Indent.cs \
@@ -201,8 +202,6 @@ FILES =  \
 	Parser/mcs/typemanager.cs \
 	Parser/mcs/typespec.cs \
 	Parser/mcs/visit.cs \
-	Parser/ParsedFile.cs \
-	Parser/TypeSystemConvertVisitor.cs \
 	Properties/AssemblyInfo.cs \
 	Refactoring/Action.cs \
 	Refactoring/ContextAction/AddAnotherAccessor.cs \
@@ -238,37 +237,44 @@ FILES =  \
 	Refactoring/Script.cs \
 	Refactoring/TextReplaceAction.cs \
 	Refactoring/TypeSystemAstBuilder.cs \
-	Resolver/AliasNamespaceReference.cs \
 	Resolver/CompositeResolveVisitorNavigator.cs \
-	Resolver/ConstantValues.cs \
 	Resolver/ConversionResolveResult.cs \
 	Resolver/Conversions.cs \
-	Resolver/CSharpAttribute.cs \
+	Resolver/CSharpAstResolver.cs \
 	Resolver/CSharpInvocationResolveResult.cs \
+	Resolver/CSharpOperators.cs \
 	Resolver/CSharpResolver.cs \
 	Resolver/DetectSkippableNodesNavigator.cs \
-	Resolver/ErrorResolveResult.cs \
 	Resolver/FindReferencedEntities.cs \
 	Resolver/FindReferences.cs \
 	Resolver/FindReferenceSearchScope.cs \
 	Resolver/IResolveVisitorNavigator.cs \
-	Resolver/ITypeOrNamespaceReference.cs \
 	Resolver/LambdaResolveResult.cs \
 	Resolver/Log.cs \
-	Resolver/MapTypeIntoNewContext.cs \
 	Resolver/MemberLookup.cs \
-	Resolver/MemberTypeOrNamespaceReference.cs \
 	Resolver/MethodGroupResolveResult.cs \
 	Resolver/NodeListResolveVisitorNavigator.cs \
-	Resolver/OperatorResolveResult.cs \
 	Resolver/OverloadResolution.cs \
 	Resolver/OverloadResolutionErrors.cs \
 	Resolver/ResolveAtLocation.cs \
 	Resolver/ResolveVisitor.cs \
 	Resolver/SimpleNameLookupMode.cs \
-	Resolver/SimpleTypeOrNamespaceReference.cs \
 	Resolver/TypeInference.cs \
-	Resolver/UsingScope.cs
+	TypeSystem/AliasNamespaceReference.cs \
+	TypeSystem/AttributeTypeReference.cs \
+	TypeSystem/ConstantValues.cs \
+	TypeSystem/CSharpAssembly.cs \
+	TypeSystem/CSharpAttribute.cs \
+	TypeSystem/CSharpParsedFile.cs \
+	TypeSystem/CSharpTypeResolveContext.cs \
+	TypeSystem/CSharpUnresolvedTypeDefinition.cs \
+	TypeSystem/MemberTypeOrNamespaceReference.cs \
+	TypeSystem/MethodTypeParameterWithInheritedConstraints.cs \
+	TypeSystem/ResolvedUsingScope.cs \
+	TypeSystem/SimpleTypeOrNamespaceReference.cs \
+	TypeSystem/TypeOrNamespaceReference.cs \
+	TypeSystem/TypeSystemConvertVisitor.cs \
+	TypeSystem/UsingScope.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
