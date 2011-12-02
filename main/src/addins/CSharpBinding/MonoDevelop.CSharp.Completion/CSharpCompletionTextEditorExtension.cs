@@ -175,6 +175,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			var list = new CompletionDataList ();
 			var engine = new CSharpCompletionEngine (textEditorData.Document, this);
+			engine.ctx = CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location);
 			engine.Unit = Unit;
 			engine.CSharpParsedFile = CSharpParsedFile;
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
@@ -316,6 +317,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (Unit == null || CSharpParsedFile == null)
 				return null;
 			var engine = new CSharpParameterCompletionEngine (textEditorData.Document, this);
+			engine.ctx = CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location);
 			engine.Unit = Unit;
 			engine.CSharpParsedFile = CSharpParsedFile;
 			engine.ProjectContent = Document.GetProjectContext ();

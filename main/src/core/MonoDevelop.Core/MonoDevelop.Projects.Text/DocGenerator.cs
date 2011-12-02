@@ -39,8 +39,6 @@ namespace MonoDevelop.Projects.Text
 		
 		public abstract string GenerateDocumentation (IMember member, string linePrefix);
 		
-		public abstract string GenerateDocumentation (IUnresolvedMember member, string linePrefix);
-		
 		static DocGenerator ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DocumentationGenerator", delegate (object sender, ExtensionNodeEventArgs args) {

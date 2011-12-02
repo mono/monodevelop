@@ -45,6 +45,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 {
@@ -468,7 +469,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				EolMarker = options.Document.Editor.EolMarker,
 				TabSize = options.Document.Editor.Options.TabSize
 			};
-			var ctx = options.Document.TypeResolveContext;
 			IUnresolvedTypeDefinition callingType = null;
 			var cu = options.Document.ParsedDocument;
 			if (cu != null)
@@ -476,9 +476,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			var newMethod = GenerateMethodStub (options, callingType, param);
 
 			var createdMethod = codeGenerator.CreateMemberImplementation (callingType, newMethod, false);
-
-			if (param.GenerateComment && DocGenerator.Instance != null)
-				methodText.AppendLine (DocGenerator.Instance.GenerateDocumentation (newMethod, indent + "/// "));
+			
+			if (param.GenerateComment && DocGenerator.Instance != null) {
+				var ctx = (cu.ParsedFile as CSharpParsedFile).GetTypeResolveContext (options.Document.Compilation, callingType.Region.Begin);
+				methodText.AppendLine (DocGenerator.Instance.GenerateDocumentation (newMethod.CreateResolved (ctx), indent + "/// "));
+			}
 			string code = createdMethod.Code;
 			int idx1 = code.LastIndexOf ("throw");
 			int idx2 = code.LastIndexOf (";");

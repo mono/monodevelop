@@ -249,20 +249,24 @@ namespace MonoDevelop.CSharp
 			var result = new List<PathEntry> ();
 			var amb = GetAmbience ();
 			var ctx = (unit.ParsedFile as CSharpParsedFile).GetTypeResolveContext (document.Compilation, loc);
-			
-			var type = unit.GetInnermostTypeDefinition (loc).Resolve (ctx);
-			var curType = type.GetDefinition ();
-			while (curType != null) {
-				var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
-				if (curType.DeclaringTypeDefinition == null)
-					flags |= OutputFlags.UseFullInnerTypeName;
-				var markup = amb.GetString ((IEntity)curType, flags);
-				result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)curType.DeclaringTypeDefinition ?? unit });
-				curType = curType.DeclaringTypeDefinition;
+			var typeDef = unit.GetInnermostTypeDefinition (loc);
+			IType type = null;
+			if (typeDef != null) {
+				type = typeDef.Resolve (ctx);
+				var curType = type.GetDefinition ();
+				while (curType != null) {
+					var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
+					if (curType.DeclaringTypeDefinition == null)
+						flags |= OutputFlags.UseFullInnerTypeName;
+					var markup = amb.GetString ((IEntity)curType, flags);
+					result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)curType.DeclaringTypeDefinition ?? unit });
+					curType = curType.DeclaringTypeDefinition;
+				}
 			}
 			
-			var member = type != null && type.Kind != TypeKind.Delegate ? unit.GetMember (loc.Line, loc.Column).CreateResolved (ctx) : null;
-			if (member != null) {
+			var unresolvedMember = type != null && type.Kind != TypeKind.Delegate ? unit.GetMember (loc.Line, loc.Column) : null;
+			if (unresolvedMember != null) {
+				var member = unresolvedMember.CreateResolved (ctx);
 				var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
 				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member.DeclaringTypeDefinition });
 			}
@@ -274,7 +278,7 @@ namespace MonoDevelop.CSharp
 			PathEntry noSelection = null;
 			if (type == null) {
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
-			} else if (member == null && type.Kind != TypeKind.Delegate) 
+			} else if (unresolvedMember == null && type.Kind != TypeKind.Delegate) 
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = type };
 			if (noSelection != null) 
 				result.Add (noSelection);
