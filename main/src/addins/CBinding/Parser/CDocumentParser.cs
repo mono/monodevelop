@@ -43,24 +43,21 @@ namespace CBinding.Parser
 	/// </summary>
 	public class CDocumentParser:  AbstractTypeSystemParser
 	{
-		public override ParsedDocument Parse (IProjectContent dom, bool storeAst, string fileName, TextReader reader)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader reader, Project project = null)
 		{
 			var doc = new DefaultParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
-			Project p = (null == dom || null == dom.GetProject ())? 
-				IdeApp.Workspace.GetProjectContainingFile (fileName):
-				dom.GetProject ();
-			ProjectInformation pi = ProjectInformationManager.Instance.Get (p);
+			ProjectInformation pi = ProjectInformationManager.Instance.Get (project);
 			
 			string content = reader.ReadToEnd ();
 			string[] contentLines = content.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
 			
-			var globals = new DefaultTypeDefinition (dom, "", GettextCatalog.GetString ("(Global Scope)"));
+			var globals = new DefaultUnresolvedTypeDefinition ("", GettextCatalog.GetString ("(Global Scope)"));
 			lock (pi) {
 				// Add containers to type list
 				foreach (LanguageItem li in pi.Containers ()) {
 					if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
-						var tmp = AddLanguageItem (dom, pi, globals, li, contentLines)  as ITypeDefinition;
+						var tmp = AddLanguageItem (pi, globals, li, contentLines) as IUnresolvedTypeDefinition;
 						if (null != tmp){ doc.TopLevelTypeDefinitions.Add (tmp); }
 					}
 				}
@@ -68,13 +65,12 @@ namespace CBinding.Parser
 				// Add global category for unscoped symbols
 				foreach (LanguageItem li in pi.InstanceMembers ()) {
 					if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
-						AddLanguageItem (dom, pi, globals, li, contentLines);
+						AddLanguageItem (pi, globals, li, contentLines);
 					}
 				}
 			}
 			
 			doc.TopLevelTypeDefinitions.Add (globals);
-			Console.WriteLine (doc.TopLevelTypeDefinitions.Count);
 			return doc;
 		}
 		
@@ -146,23 +142,23 @@ namespace CBinding.Parser
 		
 		static readonly Regex paramExpression = new Regex (@"(?<type>[^\s]+)\s+(?<subtype>[*&]*)(?<name>[^\s[]+)(?<array>\[.*)?", RegexOptions.Compiled);
 		
-		static object AddLanguageItem (IProjectContent dom, ProjectInformation pi, DefaultTypeDefinition klass, LanguageItem li, string[] contentLines)
+		static object AddLanguageItem (ProjectInformation pi, DefaultUnresolvedTypeDefinition klass, LanguageItem li, string[] contentLines)
 		{
 			
 			if (li is Class || li is Structure || li is Enumeration) {
-				var type = LanguageItemToIType (dom, pi, li, contentLines);
+				var type = LanguageItemToIType (pi, li, contentLines);
 				klass.NestedTypes.Add (type);
 				return type;
 			}
 			
 			if (li is Function) {
 				var method = FunctionToIMethod (pi, klass, (Function)li, contentLines);
-				klass.Methods.Add (method);
+				klass.Members.Add (method);
 				return method;
 			}
 			
 			var field = LanguageItemToIField (klass, li, contentLines);
-			klass.Fields.Add (field);
+			klass.Members.Add (field);
 			return field;
 		}
 		
@@ -179,15 +175,15 @@ namespace CBinding.Parser
 		/// <param name="contentLines">
 		/// A <see cref="System.String[]"/>: The document in which item is defined.
 		/// </param>
-		static DefaultTypeDefinition LanguageItemToIType (IProjectContent content, ProjectInformation pi, LanguageItem item, string[] contentLines)
+		static DefaultUnresolvedTypeDefinition LanguageItemToIType (ProjectInformation pi, LanguageItem item, string[] contentLines)
 		{
-			var klass = new DefaultTypeDefinition (content, "", item.File);
+			var klass = new DefaultUnresolvedTypeDefinition ("", item.File);
 			if (item is Class || item is Structure) {
 				klass.Region = new DomRegion ((int)item.Line, 1, FindFunctionEnd (contentLines, (int)item.Line-1) + 2, 1);
 				klass.Kind = item is Class ? TypeKind.Class : TypeKind.Struct;
 				foreach (LanguageItem li in pi.AllItems ()) {
 					if (klass.Equals (li.Parent) && FilePath.Equals (li.File, item.File))
-						AddLanguageItem (content, pi, klass, li, contentLines);
+						AddLanguageItem (pi, klass, li, contentLines);
 				}
 				return klass;
 			}
@@ -197,29 +193,29 @@ namespace CBinding.Parser
 			return klass;
 		}
 		
-		static IField LanguageItemToIField (ITypeDefinition type, LanguageItem item, string[] contentLines)
+		static IUnresolvedField LanguageItemToIField (IUnresolvedTypeDefinition type, LanguageItem item, string[] contentLines)
 		{
-			var result = new DefaultField (type, item.Name);
+			var result = new DefaultUnresolvedField (type, item.Name);
 			result.Region = new DomRegion ((int)item.Line, 1, (int)item.Line + 1, 1);
 			return result;
 		}
 		
-		static IMethod FunctionToIMethod (ProjectInformation pi, ITypeDefinition type, Function function, string[] contentLines)
+		static IUnresolvedMethod FunctionToIMethod (ProjectInformation pi, IUnresolvedTypeDefinition type, Function function, string[] contentLines)
 		{
-			var method = new DefaultMethod (type, function.Name);
+			var method = new DefaultUnresolvedMethod (type, function.Name);
 			method.Region = new DomRegion ((int)function.Line, 1, FindFunctionEnd (contentLines, (int)function.Line-1)+2, 1);
 			
 			Match match;
 			bool abort = false;
-			var parameters = new List<IParameter> ();
+			var parameters = new List<IUnresolvedParameter> ();
 			foreach (string parameter in function.Parameters) {
 				match = paramExpression.Match (parameter);
 				if (null == match) {
 					abort = true;
 					break;
 				}
-				var typeRef = new GetClassTypeReference (string.Format ("{0}{1}{2}", match.Groups["type"].Value, match.Groups["subtype"].Value, match.Groups["array"].Value), 0);
-				var p =  new DefaultParameter (typeRef, match.Groups["name"].Value);
+				var typeRef = new DefaultUnresolvedTypeDefinition (string.Format ("{0}{1}{2}", match.Groups["type"].Value, match.Groups["subtype"].Value, match.Groups["array"].Value));
+				var p =  new DefaultUnresolvedParameter (typeRef, match.Groups["name"].Value);
 				parameters.Add (p);
 			}
 			if (!abort)

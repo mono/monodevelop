@@ -47,8 +47,7 @@ namespace CBinding.Parser
 	{
 		object tag;
 		Ambience amb;
-		ITypeResolveContext ctx;
-		List<IEntity> memberList = new List<IEntity> ();
+		List<IUnresolvedEntity> memberList = new List<IUnresolvedEntity> ();
 		
 		Document Document {
 			get;
@@ -58,7 +57,6 @@ namespace CBinding.Parser
 		public DataProvider (Document doc, object tag, Ambience amb)
 		{
 			this.Document = doc;
-			this.ctx = doc.TypeResolveContext;
 			this.tag = tag;
 			this.amb = amb;
 			Reset ();
@@ -69,24 +67,29 @@ namespace CBinding.Parser
 		{
 			memberList.Clear ();
 			if (tag is IParsedFile) {
-				var types = new Stack<ITypeDefinition> (((IParsedFile)tag).TopLevelTypeDefinitions);
+				var types = new Stack<IUnresolvedTypeDefinition> (((IParsedFile)tag).TopLevelTypeDefinitions);
 				while (types.Count > 0) {
 					var type = types.Pop ();
 					memberList.Add (type);
 					foreach (var innerType in type.NestedTypes)
 						types.Push (innerType);
 				}
-			} else if (tag is ITypeDefinition) {
-				memberList.AddRange (((ITypeDefinition)tag).Members);
+			} else if (tag is IUnresolvedTypeDefinition) {
+				memberList.AddRange (((IUnresolvedTypeDefinition)tag).Members);
 			}
 			memberList.Sort ((x, y) => String.Compare (GetString (amb, x), GetString (amb, y), StringComparison.OrdinalIgnoreCase));
 		}
 		
-		string GetString (Ambience amb, IEntity x)
+		string GetString (Ambience amb, IUnresolvedEntity x)
 		{
+			var ctx = Document.ParsedDocument.ParsedFile.GetTypeResolveContext (Document.Compilation, x.Region.Begin);
+			IEntity rx = null;
+			if (x is IUnresolvedMember)
+				rx = ((IUnresolvedMember)x).CreateResolved (ctx);
+			
 			if (tag is IParsedFile)
-				return amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
-			return amb.GetString (ctx, x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
+				return amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
+			return amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
 		}
 		
 		public string GetMarkup (int n)

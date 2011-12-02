@@ -684,12 +684,11 @@ namespace CBinding
 			
 			var result = new List<PathEntry> ();
 			var amb = GetAmbience ();
-			var ctx = document.TypeResolveContext;
 			var type = unit.GetInnermostTypeDefinition (loc.Line, loc.Column) ?? unit.TopLevelTypeDefinitions.FirstOrDefault ();
 			var curType = type;
 			object lastTag = unit;
 			while (curType != null) {
-				var markup = amb.GetString (ctx, (IEntity)curType, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
+				var markup = amb.GetString ((IEntity)curType, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
 				result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = lastTag });
 				lastTag = curType;
 				curType = curType.DeclaringTypeDefinition;
@@ -697,14 +696,15 @@ namespace CBinding
 			
 			var member = type.Members.FirstOrDefault (m => m.Region.IsInside (loc.Line, loc.Column));
 			if (member != null) {
-				var markup = amb.GetString (ctx, member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
+				var ctx = Document.ParsedDocument.ParsedFile.GetTypeResolveContext (Document.Compilation, member.Region.Begin);;
+				var markup = amb.GetString (member.CreateResolved (ctx), OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
 				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = lastTag });
 			}
 			
 			PathEntry noSelection = null;
 			if (type == null) {
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
-			} else if (member == null && !type.IsDelegate ()) 
+			} else if (member == null && type.Kind != TypeKind.Delegate) 
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = type };
 			if (noSelection != null) 
 				result.Add (noSelection);
