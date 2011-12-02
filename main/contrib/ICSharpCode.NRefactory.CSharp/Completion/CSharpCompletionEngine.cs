@@ -578,7 +578,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (cu == null)
 				return null;
 			var member = cu.GetNodeAt<EnumMemberDeclaration> (location);
-			Console.WriteLine ("member:" + cu.GetNodeAt (location) +"/" + location);
 			Print (cu);
 			if (member != null && member.NameToken.EndLocation < location)
 				return DefaultControlSpaceItems ();
@@ -1096,7 +1095,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (hintType != null) {
 				
 				if (hintType.Kind != TypeKind.Unknown) {
-					Console.WriteLine ("hint!");
 					var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 					pred = t => {
 						// check if type is in inheritance tree.
@@ -1106,7 +1104,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// check for valid constructors
 						if (t.GetConstructors ().Count () == 0)
 							return true;
-						Console.WriteLine ("check!");
 						bool isProtectedAllowed = currentType != null ? currentType.Resolve (ctx).GetDefinition ().IsDerivedFrom (t.GetDefinition ()) : false;
 						return t.GetConstructors ().Any (m => lookup.IsAccessible (m, isProtectedAllowed));
 					};
@@ -1556,8 +1553,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				includeStaticMembers = mrr.Member.Name == mrr.Type.Name;
 			}
 			
-			Console.WriteLine ("type:" + type +"/"+type.GetType ());
-			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
+//			Console.WriteLine ("type:" + type +"/"+type.GetType ());
+//			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			

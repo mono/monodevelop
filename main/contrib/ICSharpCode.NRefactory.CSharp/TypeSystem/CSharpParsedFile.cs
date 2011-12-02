@@ -113,6 +113,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			var curDef = GetInnermostTypeDefinition (loc);
 			if (curDef != null) {
 				var resolvedDef = curDef.Resolve (rctx).GetDefinition ();
+				if (resolvedDef == null)
+					return rctx;
 				rctx = rctx.WithCurrentTypeDefinition (resolvedDef);
 				
 				var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.Begin <= loc && loc < m.BodyRegion.End);

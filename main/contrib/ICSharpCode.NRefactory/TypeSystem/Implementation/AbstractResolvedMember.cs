@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IMember> InterfaceImplementations {
 			get {
-				throw new NotImplementedException();
+				return new List<IMember> ();
 			}
 		}
 		

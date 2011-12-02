@@ -625,8 +625,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					newField.AddChild (new CSharpTokenNode (Convert (em.Initializer.Location), 1), EnumMemberDeclaration.Roles.Assign);
 					newField.AddChild ((Expression)em.Initializer.Accept (this), EnumMemberDeclaration.InitializerRole);
 				}
-				Console.WriteLine (newField.StartLocation +"-" + newField.EndLocation);
-				
 				typeStack.Peek ().AddChild (newField, TypeDeclaration.MemberRole);
 			}
 			#endregion
