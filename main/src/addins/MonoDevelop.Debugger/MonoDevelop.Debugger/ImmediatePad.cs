@@ -72,6 +72,7 @@ namespace MonoDevelop.Debugger
 				ops.AllowMethodEvaluation = true;
 				ops.AllowTargetInvoke = true;
 				ops.EvaluationTimeout = 20000;
+				ops.EllipsizeStrings = false;
 				var ff = DebuggingService.CurrentFrame;
 				string tt = e.Text;
 				ValidationResult vres = ff.ValidateExpression (tt, ops);

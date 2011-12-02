@@ -284,7 +284,10 @@ namespace Mono.Debugging.Client
 		/// </remarks>
 		public object GetRawValue ()
 		{
-			return GetRawValue (parentFrame.DebuggerSession.EvaluationOptions);
+			EvaluationOptions ops = parentFrame.DebuggerSession.EvaluationOptions.Clone ();
+			ops.EllipsizeStrings = false;
+			
+			return GetRawValue (ops);
 		}
 		
 		/// <summary>
