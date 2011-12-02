@@ -1353,10 +1353,10 @@ namespace Mono.TextEditor
 				if (this.textEditorData.VAdjustment.Upper < Allocation.Height) {
 					this.textEditorData.VAdjustment.Value = 0;
 				} else {
-					double yMargin = 1 * this.LineHeight;
+					double yMargin = 3 * this.LineHeight;
 					double caretPosition = LineToY (p.Line);
 					if (this.textEditorData.VAdjustment.Value > caretPosition) {
-						this.textEditorData.VAdjustment.Value = caretPosition;
+						this.textEditorData.VAdjustment.Value = caretPosition - yMargin;
 					} else if (this.textEditorData.VAdjustment.Value + this.textEditorData.VAdjustment.PageSize - this.LineHeight < caretPosition + yMargin) {
 						this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize + this.LineHeight + yMargin;
 					}
