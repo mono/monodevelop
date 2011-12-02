@@ -42,13 +42,14 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class DomTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(ITypeDefinition); }
+			get { return typeof(IUnresolvedTypeDefinition); }
 		}
 		
 		public override string ContextMenuAddinPath {
@@ -110,15 +111,16 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var type = (ITypeDefinition)dataObject;
+			var type = (IUnresolvedTypeDefinition)dataObject;
 			return type.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			var type = (ITypeDefinition)dataObject;
-			label = Ambience.GetString (GetContent (treeBuilder), (IType)type, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
-			if (type.GetDefinition ().IsPrivate || type.GetDefinition ().IsPrivate)
+			var type = (IUnresolvedTypeDefinition)dataObject;
+			var resolved = Resolve (treeBuilder, type);
+			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			if (type.IsPrivate)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
 			icon = ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu);
@@ -126,11 +128,11 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var type = (ITypeDefinition)dataObject;
+			var type = (IUnresolvedTypeDefinition)dataObject;
 			var list = new System.Collections.ArrayList ();
 			list.Add (new BaseTypeFolder (type));
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			foreach (var t in type.NestedTypes.Where (m => !m.GetDefinition ().IsSynthetic && !(publicOnly && m.GetDefinition ().IsPublic)))
+			foreach (var t in type.NestedTypes.Where (m => !m.IsSynthetic && !(publicOnly && m.IsPublic)))
 				list.Add (t);
 			foreach (var m in type.Members.Where (m => !m.IsSynthetic && !(publicOnly && !(m.IsPublic || m.IsInternal))))
 				list.Add (m);
@@ -157,10 +159,11 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public string GetDescription (ITreeNavigator navigator)
 		{
-			var type = (IType)navigator.DataItem;
+			var type = (IUnresolvedTypeDefinition)navigator.DataItem;
+			var resolved = Resolve (navigator, type);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-//			result.Append (Ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"), type.FullName));
@@ -171,22 +174,23 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var type =  CecilLoader.GetCecilObject ((ITypeDefinition)navigator.DataItem);
+			var type =  CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type));
 		}
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var type =  CecilLoader.GetCecilObject ((ITypeDefinition)navigator.DataItem);
+			var type =  CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, b => b.AddType (type));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			var type = (ITypeDefinition)navigator.DataItem;
+			var type = (IUnresolvedTypeDefinition)navigator.DataItem;
+			var resolved = Resolve (navigator, type);
 			var result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (GetContent (navigator), (IType) type, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
@@ -196,7 +200,7 @@ namespace MonoDevelop.AssemblyBrowser
 			options.Ambience = Ambience;
 			result.AppendLine ();
 			
-			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (type), options));
+			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (resolved.GetDefinition ()), options));
 			
 			return result.ToString ();
 		}

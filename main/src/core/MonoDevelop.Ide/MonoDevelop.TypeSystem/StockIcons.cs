@@ -105,6 +105,8 @@ namespace MonoDevelop.TypeSystem
 				return ((IType)element).GetStockIcon ();
 			if (element is ITypeParameter)
 				return ((ITypeParameter)element).GetStockIcon ();
+			if (element is IUnresolvedEntity)
+				return ((IUnresolvedEntity)element).GetStockIcon ();
 			return ((IEntity)element).GetStockIcon ();
 		}
 		
@@ -185,6 +187,26 @@ namespace MonoDevelop.TypeSystem
 			case EntityType.Operator:
 				if (((IMethod)entity).IsExtensionMethod)
 					return extensionMethodIconTable [ModifierToOffset (entity.Accessibility)];
+				return methodIconTable [ModifierToOffset (entity.Accessibility)];
+			case EntityType.Property:
+			case EntityType.Indexer:
+				return propertyIconTable [ModifierToOffset (entity.Accessibility)];
+			case EntityType.Event:
+				return eventIconTable [ModifierToOffset (entity.Accessibility)];
+			}
+			return "";
+		}
+		public static string GetStockIcon (this IUnresolvedEntity entity)
+		{
+			switch (entity.EntityType) {
+			case EntityType.TypeDefinition:
+				return GetStockIcon ((IUnresolvedTypeDefinition)entity);
+			case EntityType.Field:
+				return fieldIconTable [ModifierToOffset (entity.Accessibility)];
+			case EntityType.Method:
+			case EntityType.Constructor:
+			case EntityType.Destructor:
+			case EntityType.Operator:
 				return methodIconTable [ModifierToOffset (entity.Accessibility)];
 			case EntityType.Property:
 			case EntityType.Indexer:

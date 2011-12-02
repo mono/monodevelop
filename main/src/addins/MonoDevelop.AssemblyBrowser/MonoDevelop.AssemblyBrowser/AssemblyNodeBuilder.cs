@@ -45,7 +45,7 @@ namespace MonoDevelop.AssemblyBrowser
 	class AssemblyNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(Tuple<AssemblyDefinition, IProjectContent>); }
+			get { return typeof(IUnresolvedAssembly); }
 		}
 		
 		public AssemblyNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -54,30 +54,42 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)dataObject).Item1;
-			return compilationUnit.Name.Name;
+			var compilationUnit = (IUnresolvedAssembly)dataObject;
+			return compilationUnit.AssemblyName;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)dataObject).Item1;
-			label = compilationUnit.Name.Name;
+			var compilationUnit = (IUnresolvedAssembly)dataObject;
+			label = compilationUnit.AssemblyName;
 			icon = Context.GetIcon (Stock.Reference);
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)dataObject).Item1;
+			var compilationUnit = (IUnresolvedAssembly)dataObject;
 			
-			foreach (var module in compilationUnit.Modules) {
-				ctx.AddChild (module);
+			var namespaces = new Dictionary<string, Namespace> ();
+			bool publicOnly = builder.Options ["PublicApiOnly"];
+			
+			foreach (var type in compilationUnit.TopLevelTypeDefinitions) {
+				if (publicOnly && !type.IsPublic)
+					continue;
+				if (!namespaces.ContainsKey (type.Namespace))
+					namespaces[type.Namespace] = new Namespace (type.Namespace);
+				var ns = namespaces[type.Namespace];
+				ns.Types.Add (type);
+			}
+			
+			foreach (var ns in namespaces.Values) {
+				builder.AddChild (ns);
 			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)dataObject).Item1;
-			return compilationUnit.Modules.Any ();
+			var compilationUnit = (IUnresolvedAssembly)dataObject;
+			return compilationUnit.TopLevelTypeDefinitions.Any ();
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
@@ -107,7 +119,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)navigator.DataItem).Item1;
+			var compilationUnit = Widget.CecilLoader.GetCecilObject ((IUnresolvedAssembly)navigator.DataItem);
 			StringBuilder result = new StringBuilder ();
 			PrintAssemblyHeader (result, compilationUnit);
 			
@@ -122,7 +134,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var compilationUnit = ((Tuple<AssemblyDefinition, IProjectContent>)navigator.DataItem).Item1;
+			var compilationUnit = Widget.CecilLoader.GetCecilObject ((IUnresolvedAssembly)navigator.DataItem);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => b.AddAssembly (compilationUnit, true));
 		}
 		

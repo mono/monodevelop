@@ -34,12 +34,12 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class BaseTypeFolder : IDisposable
 	{
-		public ITypeDefinition Type {
+		public IUnresolvedTypeDefinition Type {
 			get;
 			private set;
 		}
 		
-		public BaseTypeFolder (ITypeDefinition type)
+		public BaseTypeFolder (IUnresolvedTypeDefinition type)
 		{
 			this.Type = type;
 		}

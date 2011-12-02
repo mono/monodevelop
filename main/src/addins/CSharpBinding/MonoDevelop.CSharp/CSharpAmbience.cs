@@ -349,7 +349,7 @@ namespace MonoDevelop.CSharp
 				return "null";
 			var type = reference;
 			if (type.Kind == TypeKind.Unknown)
-				return reference.ToString ();
+				return ((UnknownType)reference).Name;
 			var sb = new StringBuilder ();
 			if (type is ITypeDefinition && ((ITypeDefinition)type).IsSynthetic&& ((ITypeDefinition)type).Name == "$Anonymous$") {
 				sb.Append ("new {");
@@ -372,6 +372,8 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetTypeString (IType t, OutputSettings settings)
 		{
+			if (t is UnknownType)
+				return ((UnknownType)t).Name;
 			ITypeDefinition type = t.GetDefinition ();
 			if (type == null)
 				return "";
@@ -500,7 +502,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (method.DeclaringType, new OutputSettings (OutputFlags.UseFullName)));
+				result.Append (GetTypeReferenceString (method.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
 				result.Append (settings.Markup ("."));
 			}
 			AppendExplicitInterfaces (result, method, settings);
@@ -541,17 +543,17 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetMethodString (IMethod method, OutputSettings settings)
 		{
-			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.EntityType == EntityType.Constructor || method.EntityType == EntityType.Destructor ? method.DeclaringType.Name : method.Name))), true);
+			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.EntityType == EntityType.Constructor || method.EntityType == EntityType.Destructor ? method.DeclaringTypeDefinition.Name : method.Name))), true);
 		}
 
 		protected override string GetConstructorString (IMethod method, OutputSettings settings)
 		{
-			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.DeclaringType.Name))), false);
+			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.DeclaringTypeDefinition != null ? method.DeclaringTypeDefinition.Name : method.Name))), false);
 		}
 
 		protected override string GetDestructorString (IMethod method, OutputSettings settings)
 		{
-			return InternalGetMethodString (method, settings, settings.EmitName (method, settings.Markup ("~") + Format (FilterName (method.DeclaringType.Name))), false);
+			return InternalGetMethodString (method, settings, settings.EmitName (method, settings.Markup ("~") + Format (FilterName (method.DeclaringTypeDefinition != null ? method.DeclaringTypeDefinition.Name : method.Name))), false);
 		}
 
 		protected override string GetOperatorString (IMethod method, OutputSettings settings)
@@ -564,7 +566,7 @@ namespace MonoDevelop.CSharp
 			if (field == null)
 				return "";
 			var result = new StringBuilder ();
-			bool isEnum = field.DeclaringType != null && field.DeclaringType.Kind == TypeKind.Enum;
+			bool isEnum = field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum;
 			AppendModifiers (result, settings, field);
 			
 			if (!settings.CompletionListFomat && settings.IncludeReturnType && !isEnum) {
@@ -573,7 +575,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (field.DeclaringType, settings));
+				result.Append (GetTypeReferenceString (field.DeclaringTypeDefinition, settings));
 				result.Append (settings.Markup ("."));
 			}
 			result.Append (settings.EmitName (field, FilterName (Format (field.Name))));
@@ -599,7 +601,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (evt.DeclaringType, new OutputSettings (OutputFlags.UseFullName)));
+				result.Append (GetTypeReferenceString (evt.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
 				result.Append (settings.Markup ("."));
 			}
 			
@@ -625,7 +627,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (property.DeclaringType, new OutputSettings (OutputFlags.UseFullName)));
+				result.Append (GetTypeReferenceString (property.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
 				result.Append (settings.Markup ("."));
 			}
 			
@@ -654,7 +656,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (!settings.IncludeReturnType && settings.UseFullName) {
-				result.Append (GetTypeReferenceString (property.DeclaringType, new OutputSettings (OutputFlags.UseFullName)));
+				result.Append (GetTypeReferenceString (property.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
 				result.Append (settings.Markup ("."));
 			}
 			

@@ -43,13 +43,14 @@ using ICSharpCode.Decompiler.Disassembler;
 using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class DomMethodNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IMethod); }
+			get { return typeof(IUnresolvedMethod); }
 		}
 		
 		public DomMethodNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -59,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var method = (IMethod)dataObject;
+			var method = (IUnresolvedMethod)dataObject;
 			return method.FullName;
 		}
 		
@@ -69,21 +70,21 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			var method = (IMethod)dataObject;
-			var ctx = GetContent (treeBuilder);
-			label = Ambience.GetString (ctx, method, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			var method = (IUnresolvedMethod)dataObject;
+			var resolved = Resolve (treeBuilder, method);
+			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
-			icon = ImageService.GetPixbuf (method.GetStockIcon (), Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (resolved.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (!(otherNode.DataItem is IMethod))
+			if (!(otherNode.DataItem is IUnresolvedMethod))
 				return 1;
-			if (otherNode.DataItem is IMethod)
-				return ((IMethod)thisNode.DataItem).Name.CompareTo (((IMethod)otherNode.DataItem).Name);
+			if (otherNode.DataItem is IUnresolvedMethod)
+				return ((IUnresolvedMethod)thisNode.DataItem).Name.CompareTo (((IUnresolvedMethod)otherNode.DataItem).Name);
 			
 			return -1;
 		}
@@ -101,10 +102,11 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			var method = (IMethod)navigator.DataItem;
+			var method = (IUnresolvedMethod)navigator.DataItem;
+			var resolved = Resolve (navigator, method);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (GetContent (navigator), method, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			PrintDeclaringType (result, navigator);
@@ -181,7 +183,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var method = CecilLoader.GetCecilObject ((IMethod)navigator.DataItem);
+			var method = CecilLoader.GetCecilObject ((IUnresolvedMethod)navigator.DataItem);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), method.DeclaringType, b => b.AddMethod (method));
 		}
 		
@@ -206,7 +208,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var method = CecilLoader.GetCecilObject ((IMethod)navigator.DataItem);
+			var method = CecilLoader.GetCecilObject ((IUnresolvedMethod)navigator.DataItem);
 			if (method == null)
 				return null;
 			return Disassemble (data, rd => rd.DisassembleMethod (method));
@@ -214,10 +216,11 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			var method = (IMethod)navigator.DataItem;
+			var method = (IUnresolvedMethod)navigator.DataItem;
+			var resolved = Resolve (navigator, method);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (GetContent (navigator), method, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
+			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
@@ -227,7 +230,7 @@ namespace MonoDevelop.AssemblyBrowser
 			options.Ambience = Ambience;
 			result.AppendLine ();
 			
-			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (method), options));
+			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (resolved), options));
 			
 			return result.ToString ();
 		}

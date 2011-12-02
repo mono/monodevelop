@@ -201,7 +201,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (context == null)
 				throw new ArgumentNullException("context");
 			if (context.CurrentAssembly == null)
-				throw new ArgumentException("An ITypeDefinition cannot be resolved in a context without a current assembly.");
+				return (IType)new UnknownType(this.Namespace, this.Name, this.TypeParameters.Count);
 			return context.CurrentAssembly.GetTypeDefinition(this) 
 				?? (IType)new UnknownType(this.Namespace, this.Name, this.TypeParameters.Count);
 		}

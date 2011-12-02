@@ -143,7 +143,8 @@ namespace ICSharpCode.Decompiler.Ast
 			Ast.BlockStatement astBlock = new BlockStatement();
 			if (block != null) {
 				foreach(ILNode node in block.GetChildren()) {
-					astBlock.AddRange(TransformNode(node));
+					foreach (var stmt in TransformNode(node))
+						astBlock.Add (stmt);
 				}
 			}
 			return astBlock;

@@ -39,13 +39,14 @@ using System.Collections.Generic;
 using Mono.Cecil;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class DomFieldNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IField); }
+			get { return typeof(IUnresolvedField); }
 		}
 		
 		public DomFieldNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -55,17 +56,18 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var field = (IField)dataObject;
+			var field = (IUnresolvedField)dataObject;
 			return field.FullName;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			var field = (IField)dataObject;
-			label = Ambience.GetString (GetContent (treeBuilder), field, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			var field = (IUnresolvedField)dataObject;
+			var resolved = Resolve (treeBuilder, field);
+			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			if (field.IsPrivate || field.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (((IEntity)field).GetStockIcon (), Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (field.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -76,18 +78,19 @@ namespace MonoDevelop.AssemblyBrowser
 				return 1;
 			if (otherNode.DataItem is BaseTypeFolder)
 				return 1;
-			if (otherNode.DataItem is IField)
-				return ((IField)thisNode.DataItem).Name.CompareTo (((IField)otherNode.DataItem).Name);
+			if (otherNode.DataItem is IUnresolvedField)
+				return ((IUnresolvedField)thisNode.DataItem).Name.CompareTo (((IUnresolvedField)otherNode.DataItem).Name);
 			return -1;
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			var field = (IField)navigator.DataItem;
+			var field = (IUnresolvedField)navigator.DataItem;
+			var resolved = Resolve (navigator, field);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (GetContent (navigator), field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -97,22 +100,23 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var field = CecilLoader.GetCecilObject ((IField)navigator.DataItem);
+			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field));
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var field = CecilLoader.GetCecilObject ((IField)navigator.DataItem);
+			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			var field = (IField)navigator.DataItem;
+			var field = (IUnresolvedField)navigator.DataItem;
+			var resolved = Resolve (navigator, field);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (GetContent (navigator), field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
@@ -122,7 +126,7 @@ namespace MonoDevelop.AssemblyBrowser
 			options.Ambience = Ambience;
 			result.AppendLine ();
 			
-			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (field), options));
+			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (resolved), options));
 			
 			return result.ToString ();
 		}

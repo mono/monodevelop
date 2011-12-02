@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Gui.Components;
 using ICSharpCode.NRefactory.TypeSystem;
 using System;
 using Mono.Cecil;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -55,9 +56,19 @@ namespace MonoDevelop.AssemblyBrowser
 			this.Widget = assemblyBrowserWidget;
 		}
 		
-		protected IProjectContent GetContent (ITreeNavigator treeBuilder)
+		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member)
 		{
-			return ((Tuple<AssemblyDefinition, IProjectContent>)treeBuilder.GetParentDataItem (typeof(Tuple<AssemblyDefinition, IProjectContent>), true)).Item2;
+			var mainAssembly = (IUnresolvedAssembly)treeBuilder.GetParentDataItem (typeof(IUnresolvedAssembly), true);
+			if (mainAssembly == null)
+				throw new NullReferenceException ("mainAssembly not found");
+			var simpleCompilation = new SimpleCompilation (mainAssembly);
+			return member.CreateResolved (new SimpleTypeResolveContext (simpleCompilation));
+		}
+		protected IType Resolve (ITreeNavigator treeBuilder, IUnresolvedTypeDefinition member)
+		{
+			var mainAssembly = (IUnresolvedAssembly)treeBuilder.GetParentDataItem (typeof(IUnresolvedAssembly), true);
+			var simpleCompilation = new SimpleCompilation (mainAssembly);
+			return member.Resolve (new SimpleTypeResolveContext (simpleCompilation));
 		}
 	}
 }
