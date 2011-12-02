@@ -1154,11 +1154,16 @@ namespace Mono.TextEditor
 		{
 			SetCaretTo (line, column, true);
 		}
-
+		
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
+			SetCaretTo (line, column, highlight, true);
+		}
+		
+		public void SetCaretTo (int line, int column, bool highlight, bool centerCaret)
+		{
 			if (Parent != null) {
-				Parent.SetCaretTo (line, column, highlight);
+				Parent.SetCaretTo (line, column, highlight, centerCaret);
 			} else {
 				Caret.Location = new DocumentLocation (line, column);
 			}

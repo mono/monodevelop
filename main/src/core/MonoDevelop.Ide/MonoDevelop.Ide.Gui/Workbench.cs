@@ -365,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 					if (vcFound != null) {
 						IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
 						if (line >= 1 && ipos != null) {
-							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine), options.HasFlag (OpenDocumentOptions.CenterCaretLine));
 						}
 						
 						if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
@@ -1109,10 +1109,11 @@ namespace MonoDevelop.Ide.Gui
 	{
 		None = 0,
 		BringToFront = 1,
-		HighlightCaretLine = 1 << 1,
-		OnlyInternalViewer = 1 << 2,
-		OnlyExternalViewer = 1 << 3,
+		CenterCaretLine = 1 << 1,
+		HighlightCaretLine = 1 << 2,
+		OnlyInternalViewer = 1 << 3,
+		OnlyExternalViewer = 1 << 4,
 		
-		Default = BringToFront | HighlightCaretLine
+		Default = BringToFront | CenterCaretLine | HighlightCaretLine
 	}
 }

@@ -1120,12 +1120,16 @@ namespace MonoDevelop.SourceEditor
 		public void SetCaretTo (int line, int column)
 		{
 			this.Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, true));
-			
 		}
 
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
 			this.Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight));
+		}
+		
+		public void SetCaretTo (int line, int column, bool highlight, bool centerCaret)
+		{
+			this.Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight, centerCaret));
 		}
 
 		public void Redo()
