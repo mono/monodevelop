@@ -34,7 +34,7 @@ namespace Mono.Debugging.Client
 		bool allowMethodEvaluation;
 		bool allowToStringCalls;
 		
-		public static char Ellipsis = '…';
+		public static readonly char Ellipsis = '…';
 		
 		public static EvaluationOptions DefaultOptions {
 			get {
