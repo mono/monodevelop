@@ -34,6 +34,8 @@ namespace Mono.Debugging.Client
 		bool allowMethodEvaluation;
 		bool allowToStringCalls;
 		
+		public static char Ellipsis = '…';
+		
 		public static EvaluationOptions DefaultOptions {
 			get {
 				EvaluationOptions ops = new EvaluationOptions ();
@@ -50,6 +52,8 @@ namespace Mono.Debugging.Client
 				ops.UseExternalTypeResolver = true;
 				ops.IntegerDisplayFormat = IntegerDisplayFormat.Decimal;
 				ops.CurrentExceptionTag = "$exception";
+				ops.EllipsizeStrings = true;
+				ops.EllipsizedLength = 100;
 				return ops;
 			}
 		}
@@ -58,6 +62,9 @@ namespace Mono.Debugging.Client
 		{
 			return (EvaluationOptions) MemberwiseClone ();
 		}
+		
+		public bool EllipsizeStrings { get; set; }
+		public int EllipsizedLength { get; set; }
 		
 		public int EvaluationTimeout { get; set; }
 		public int MemberEvaluationTimeout { get; set; }

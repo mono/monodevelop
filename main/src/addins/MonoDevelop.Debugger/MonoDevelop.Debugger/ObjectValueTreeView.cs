@@ -500,6 +500,7 @@ namespace MonoDevelop.Debugger
 			EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
 			ops.AllowMethodEvaluation = true;
 			ops.AllowTargetInvoke = true;
+			ops.EllipsizeStrings = false;
 			
 			string oldName = val.Name;
 			val.Refresh (ops);
