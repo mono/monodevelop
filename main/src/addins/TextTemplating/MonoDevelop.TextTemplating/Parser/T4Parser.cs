@@ -29,12 +29,13 @@ using System.IO;
 using Mono.TextTemplating;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
 	public class T4Parser : AbstractTypeSystemParser
 	{
-		public override ParsedDocument Parse (ICSharpCode.NRefactory.TypeSystem.IProjectContent projectContent, bool storeAst, string fileName, TextReader content)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
 			ParsedTemplate template = new ParsedTemplate (fileName);
 			try {

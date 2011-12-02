@@ -272,15 +272,14 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		class TypeDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
-			ITypeResolveContext ctx;
 			Ambience ambience;
 			
 			public List<ITypeDefinition> List { get; private set; }
 			
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
-				ctx = TypeSystemService.GetContext (project);
-				List = new List<ITypeDefinition> (ctx.GetTypes ());
+				var ctx = TypeSystemService.GetCompilation (project);
+				List = new List<ITypeDefinition> (ctx.MainAssembly.GetAllTypeDefinitions ());
 				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
 			}
 			
@@ -293,7 +292,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			public string GetMarkup (int n)
 			{
-				return ambience.GetString (ctx, (IEntity)List[n], OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.IncludeMarkup);
+				return ambience.GetString ((IEntity)List[n], OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.IncludeMarkup);
 			}
 			
 			public Gdk.Pixbuf GetIcon (int n)
