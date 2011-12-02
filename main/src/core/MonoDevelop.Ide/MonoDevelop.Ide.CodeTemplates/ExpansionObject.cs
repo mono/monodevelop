@@ -47,9 +47,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public IProjectContent Ctx {
-			get;
-			set;
+		public ICompilation Compilation {
+			get {
+				return Document.Compilation;
+			}
 		}
 		
 		public IParsedFile ParsedDocument {
@@ -137,7 +138,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 							return pt.TypeArguments[0];
 						}
 					} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
-						return CurrentContext.Ctx.CreateCompilation ().FindType (KnownTypeCode.Object);
+						return CurrentContext.Compilation.FindType (KnownTypeCode.Object);
 					}
 				}
 			}
@@ -171,7 +172,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			var result = new List<CodeTemplateVariableValue> ();
 			var ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
-			var ctx = CurrentContext.Ctx;
 			if (ext != null) {
 				if (list == null)
 					list = ext.CodeCompletionCommand (CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
@@ -233,7 +233,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				name = name.Substring (0, idx);
 			}
 			
-			var type = CurrentContext.Ctx.CreateCompilation ().FindType (string.IsNullOrEmpty (ns) ? name : ns + "." + name);
+			var type = CurrentContext.Compilation.LookupType (ns, name);
 			if (type == null || type.Kind == TypeKind.Unknown)
 				return fullTypeName;
 			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document.Editor);

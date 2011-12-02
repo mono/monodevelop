@@ -288,6 +288,9 @@ namespace MonoDevelop.DesignerSupport
 			var m = o as IEntity;
 			if (m != null)
 				return m.BodyRegion.IsEmpty ? m.Region : m.BodyRegion;
+			var m2 = o as IUnresolvedEntity;
+			if (m2 != null)
+				return m2.BodyRegion.IsEmpty ? m2.Region : m2.BodyRegion;
 			return ((FoldingRegion)o).Region;
 		}
 		

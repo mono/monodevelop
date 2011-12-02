@@ -110,7 +110,7 @@ namespace MonoDevelop.AspNet.Gui
 			info.AspNetDocument.RootNode.AcceptVisit (v);
 			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
 			var dom = refman.TypeCtx.Compilation;
-			var baseType = dom.FindType (info.BaseType);
+			var baseType = dom.LookupType (info.BaseType);
 			foreach (var m in CodeBehind.GetDesignerMembers (v.Members.Values, baseType, null)) {
 				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
 					Accessibility = Accessibility.Protected,
@@ -343,7 +343,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (!HasDoc) {
 				AddAspBeginExpressions (list);
 				string aspPrefix = "asp:";
-				foreach (var cls in WebTypeContext.ListSystemControlClasses (TypeSystemService.GetCompilation (project).FindType ("System.Web.UI.Control"), project))
+				foreach (var cls in WebTypeContext.ListSystemControlClasses (TypeSystemService.GetCompilation (project).LookupType ("System.Web.UI", "Control"), project))
 					list.Add (new AspTagCompletionData (aspPrefix, cls));
 				
 				base.GetElementCompletions (list);
@@ -454,7 +454,7 @@ namespace MonoDevelop.AspNet.Gui
 				
 				if (meth != null) {
 					IType argType = meth.Parameters [0].Type;
-					if (argType != null && argType.IsBaseType (argType.GetDefinition ().Compilation.FindType ("System.Web.UI.Control"))) {
+					if (argType != null && argType.IsBaseType (argType.GetDefinition ().Compilation.LookupType ("System.Web.UI", "Control"))) {
 						list.AddRange (refman.GetControlCompletionData (argType));
 						return;
 					}
@@ -600,7 +600,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			IType controlClass = refman.GetControlType (name.Prefix, name.Name);
 			if (controlClass == null) {
-				controlClass = database.FindType ("System.Web.UI.WebControls.WebControl");
+				controlClass = database.LookupType ("System.Web.UI.WebControls", "WebControl");
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
 					return;
@@ -638,7 +638,7 @@ namespace MonoDevelop.AspNet.Gui
 				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
 				
 				var database = WebTypeContext.GetSystemWebDom (project);
-				controlClass = database.FindType ("System.Web.UI.WebControls.WebControl");
+				controlClass = database.LookupType ("System.Web.UI.WebControls", "WebControl");
 
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");

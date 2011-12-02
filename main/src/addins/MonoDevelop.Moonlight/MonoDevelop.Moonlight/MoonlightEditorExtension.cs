@@ -59,7 +59,7 @@ namespace MonoDevelop.Moonlight
 			if (database == null)
 				yield break;
 			
-			var swd = database.FindType ("System.Windows.DependencyObject");
+			var swd = database.LookupType ("System.Windows", "DependencyObject");
 			
 			//return classes if they derive from system.web.ui.control
 			foreach (var cls in namespac.Types) {
@@ -125,7 +125,7 @@ namespace MonoDevelop.Moonlight
 			if (database == null)
 				return;
 			
-			IType type = database.FindType ("System.Windows.DependencyObject");
+			IType type = database.LookupType ("System.Windows", "DependencyObject");
 			if (type == null)
 				return;
 			

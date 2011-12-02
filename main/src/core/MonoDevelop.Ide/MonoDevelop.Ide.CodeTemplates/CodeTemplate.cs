@@ -393,7 +393,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 		/// </summary>
 		public TemplateResult InsertTemplateContents (MonoDevelop.Ide.Gui.Document document)
 		{
-			var dom = document.TypeResolveContext;
 			var doc = document.UpdateParseDocument ();
 			Mono.TextEditor.TextEditorData data = document.Editor;
 			
@@ -403,7 +402,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 			TemplateContext context = new TemplateContext {
 				Template = this,
 				Document = document,
-				Ctx = dom,
 				ParsedDocument = doc,
 				InsertPosition = data.Caret.Location,
 				LineIndent = data.Document.GetLineIndent (data.Caret.Line),

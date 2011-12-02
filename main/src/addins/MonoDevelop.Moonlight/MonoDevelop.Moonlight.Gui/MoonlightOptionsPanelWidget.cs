@@ -95,7 +95,7 @@ namespace MonoDevelop.Moonlight.Gui
 			classesFilled = true;
 			try {
 				var dom = TypeSystemService.GetCompilation (project);
-				IType appType = dom.FindType ("System.Windows.Application");
+				IType appType = dom.LookupType ("System.Windows", "Application");
 				if (appType == null)
 					return;
 				foreach (IType type in appType.GetAllBaseTypes ())

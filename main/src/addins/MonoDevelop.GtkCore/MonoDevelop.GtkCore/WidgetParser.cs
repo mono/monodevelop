@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.GtkCore
 {
@@ -58,7 +59,7 @@ namespace MonoDevelop.GtkCore
 		{
 			Dictionary<string, ITypeDefinition> tb_items = new Dictionary<string, ITypeDefinition> ();
 
-			var wt = ctx.FindType ("Gtk.Widget");
+			var wt = ctx.LookupType ("Gtk", "Widget");
 			if (wt != null) {
 				foreach (var t in wt.GetSubTypeDefinitions ()) {
 					if (IsToolboxWidget (t))

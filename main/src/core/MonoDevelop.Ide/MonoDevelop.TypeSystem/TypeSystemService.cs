@@ -99,6 +99,33 @@ namespace MonoDevelop.TypeSystem
 			var ctx = pf.GetTypeResolveContext (TypeSystemService.GetCompilation (project), def.Region.Begin);
 			return def.Resolve (ctx);
 		}
+		
+		public static ITypeDefinition LookupType (this ICompilation compilation, string ns, string name, int typeParameterCount = 0)
+		{
+			var result = compilation.MainAssembly.GetTypeDefinition (ns, name, typeParameterCount);
+			if (result != null)
+				return result;
+			foreach (var refAsm in compilation.ReferencedAssemblies) {
+				result = refAsm.GetTypeDefinition (ns, name, typeParameterCount);
+				if (result != null)
+					return result;
+			}
+			return null;
+		}
+		
+		public static ITypeDefinition LookupType (this ICompilation compilation, string fullName, int typeParameterCount = 0)
+		{
+			int idx = fullName.LastIndexOf ('.');
+			string ns, name;
+			if (idx > 0) {
+				ns = fullName.Substring (0, idx);
+				name = fullName.Substring (idx + 1);
+			} else {
+				ns = "";
+				name = fullName;
+			}
+			return compilation.LookupType (ns, name, typeParameterCount);
+		}
 	}
 	
 	public static class TypeSystemService
@@ -462,11 +489,30 @@ namespace MonoDevelop.TypeSystem
 				}
 			}
 			
+			public Project Project {
+				get {
+					foreach (var pair in projectContents){
+						if (pair.Value == this)
+							return pair.Key;
+					}
+					return null;
+				}
+			}
+			
 			public ProjectContentWrapper (IProjectContent content)
 			{
 				this.content = content;
 			}
 			
+			
+			public IEnumerable<Project> GetReferencedProjects  (Project project)
+			{
+				foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
+					var referencedProject = pr as Project;
+					if (referencedProject != null)
+						yield return referencedProject;
+				}
+			}
 
 			public void ReloadAssemblyReferences (Project project)
 			{
@@ -475,10 +521,7 @@ namespace MonoDevelop.TypeSystem
 					return;
 				var contexts = new List<IAssemblyReference> ();
 		
-				foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
-					var referencedProject = pr as Project;
-					if (referencedProject == null)
-						continue;
+				foreach (var referencedProject in GetReferencedProjects (project)) {
 					ProjectContentWrapper wrapper;
 					if (projectContents.TryGetValue (referencedProject, out wrapper))
 						contexts.Add (wrapper.Compilation.MainAssembly.UnresolvedAssembly);
@@ -914,6 +957,15 @@ namespace MonoDevelop.TypeSystem
 			return content.Compilation;
 		}
 		
+		public static ProjectContentWrapper GetProjectContentWrapper (Project project)
+		{
+			if (project == null)
+				return null;
+			ProjectContentWrapper content;
+			projectContents.TryGetValue (project, out content);
+			return content;
+		}
+		
 		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
 		{
 			using (var reader = new StringReader (text)) {
@@ -927,7 +979,7 @@ namespace MonoDevelop.TypeSystem
 		static Dictionary<Project, ITypeResolveContext> cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
 		static Dictionary<string, AssemblyContext> cachedAssemblyContents = new Dictionary<string, AssemblyContext> ();
 		
-		public static void ForceUpdate (ITypeResolveContext context)
+		public static void ForceUpdate (ProjectContentWrapper context)
 		{
 			CheckModifiedFiles ();
 		}
