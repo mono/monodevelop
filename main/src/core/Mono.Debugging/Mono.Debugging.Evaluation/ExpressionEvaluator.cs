@@ -35,9 +35,6 @@ namespace Mono.Debugging.Evaluation
 {
 	public abstract class ExpressionEvaluator
 	{
-		const int EllipsizeLength = 100;
-		const char Ellipsis = '…';
-		
 		public ValueReference Evaluate (EvaluationContext ctx, string exp)
 		{
 			return Evaluate (ctx, exp, null);
@@ -101,15 +98,9 @@ namespace Mono.Debugging.Evaluation
 					str = EscapeString ("'" + c + "'");
 				return new EvaluationResult (str, ((int) c) + " " + str);
 			}
-			else if (obj is string) {
-				string val = "\"" + EscapeString ((string) obj) + "\"";
-				string display = val;
-				
-				if (val.Length > EllipsizeLength + 2)
-					display = "\"" + EscapeString ((string) obj, EllipsizeLength) + "\"";
-				
-				return new EvaluationResult (val, display);
-			} else if (obj is bool)
+			else if (obj is string)
+				return new EvaluationResult ("\"" + EscapeString ((string)obj) + "\"");
+			else if (obj is bool)
 				return new EvaluationResult (((bool)obj) ? "true" : "false");
 			else if (obj is decimal)
 				return new EvaluationResult (((decimal)obj).ToString (System.Globalization.CultureInfo.InvariantCulture));
@@ -142,12 +133,10 @@ namespace Mono.Debugging.Evaluation
 			return new EvaluationResult (obj.ToString ());
 		}
 
-		public static string EscapeString (string text, int maxLength = int.MaxValue)
+		public static string EscapeString (string text)
 		{
 			StringBuilder sb = new StringBuilder ();
-			int i;
-			
-			for (i = 0; i < text.Length && sb.Length < maxLength; i++) {
+			for (int i = 0; i < text.Length; i++) {
 				char c = text[i];
 				string txt;
 				switch (c) {
@@ -167,10 +156,6 @@ namespace Mono.Debugging.Evaluation
 				}
 				sb.Append (txt);
 			}
-			
-			if (i < text.Length)
-				sb.Append (Ellipsis);
-			
 			return sb.ToString ();
 		}
 		
