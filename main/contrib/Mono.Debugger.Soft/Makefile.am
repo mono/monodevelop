@@ -10,6 +10,7 @@ DEPS = ../../build/bin/Mono.Cecil.dll
 SIGNING_KEY=$(srcdir)/mono.snk
 
 FILES =  \
+	Locale.cs \
 	Mono.Debugger.Soft/AbsentInformationException.cs \
 	Mono.Debugger.Soft/AppDomainCreateEvent.cs \
 	Mono.Debugger.Soft/AppDomainMirror.cs \

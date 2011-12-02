@@ -105,6 +105,7 @@
     <Compile Include="Mono.Debugger.Soft\VMMismatchException.cs" />
     <Compile Include="Mono.Debugger.Soft\VMStartEvent.cs" />
     <Compile Include="Mono.Debugger.Soft\AssemblyLoadEventRequest.cs" />
+    <Compile Include="Locale.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
