@@ -63,7 +63,7 @@ namespace MonoDevelop.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
 		{
-			var ctx = TypeSystemService.GetProjectContext (project);
+			var ctx = TypeSystemService.GetCompilation (project);
 			string ns, name;
 			int idx = fullClassName.LastIndexOf ('.');
 			if (idx < 0) {
@@ -73,11 +73,11 @@ namespace MonoDevelop.NUnit
 				ns = fullClassName.Substring (0, idx);
 				name = fullClassName.Substring (idx + 1);
 			}
-			var cls = ctx.GetTypeDefinition (ns, name, 0, StringComparer.Ordinal);
+			var cls = ctx.MainAssembly.GetTypeDefinition (ns, name, 0);
 			if (cls == null)
 				return null;
 			
-			foreach (var met in cls.GetMethods (ctx)) {
+			foreach (var met in cls.GetMethods ()) {
 				if (met.Name == methodName)
 					return new SourceCodeLocation (cls.GetDefinition ().Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
 			}
