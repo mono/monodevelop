@@ -295,15 +295,14 @@
          id="tspan5421"
          x="3.8116512"
          y="-67.38591"
-         style="font-size:34px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient6215);fill-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold"
-         id="tspan3024">2.9.1</tspan></text>
+         style="font-size:34px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient6215);fill-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold">2.9.1</tspan></text>
     <rect
        style="fill:#9f0000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.49700001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5520-2-0"
        width="56.373768"
        height="17.284218"
-       x="-102.99889"
-       y="-51.988968"
+       x="-86.998886"
+       y="-46.488968"
        ry="2.140903"
        inkscape:export-filename="/home/lluis/nowork/mdgit/main/build/MacOSX/dmg-bg.png"
        inkscape:export-xdpi="128.64999"
@@ -311,8 +310,8 @@
     <text
        xml:space="preserve"
        style="font-size:13px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Heavy'"
-       x="-97.824707"
-       y="-38.048279"
+       x="-79.324707"
+       y="-31.548279"
        id="text5522-9-5"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/lluis/nowork/mdgit/main/build/MacOSX/dmg-bg.png"
@@ -320,8 +319,8 @@
        inkscape:export-ydpi="128.64999"><tspan
          sodipodi:role="line"
          id="tspan5524-3-9"
-         x="-97.824707"
-         y="-38.048279"
+         x="-79.324707"
+         y="-31.548279"
          style="font-size:13px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Heavy'">Beta 1</tspan></text>
     <path
        inkscape:connector-curvature="0"
