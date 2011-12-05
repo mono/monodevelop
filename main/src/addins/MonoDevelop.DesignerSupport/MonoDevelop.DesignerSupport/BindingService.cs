@@ -158,7 +158,7 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 		
-		public static IBaseEntity AddMemberToClass (Project project, ITypeDefinition cls, IUnresolvedTypeDefinition specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+		public static INamedElement AddMemberToClass (Project project, ITypeDefinition cls, IUnresolvedTypeDefinition specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
 			foreach (var c in cls.Parts)
@@ -249,7 +249,12 @@ namespace MonoDevelop.DesignerSupport
 			throw new Exception ("Tried identifiers up to " + trialValue + " and all already existed");
 		}
 		
-		
+		static DomRegion GetRegion (INamedElement el)
+		{
+			if (el is IEntity)
+				return ((IEntity)el).BodyRegion;
+			return ((IUnresolvedEntity)el).BodyRegion;
+		}
 		//opens the code view with the desired method, creating it if it doesn't already exist
 		public static void CreateAndShowMember (Project project, ITypeDefinition cls, IUnresolvedTypeDefinition specificPartToAffect, CodeTypeMember member)
 		{
@@ -258,8 +263,9 @@ namespace MonoDevelop.DesignerSupport
 			
 			//some tests in case code refactorer returns bad values
 			int beginline = specificPartToAffect.BodyRegion.BeginLine;
-			if (!mem.BodyRegion.IsEmpty && mem.BodyRegion.BeginLine >= beginline && mem.BodyRegion.BeginLine <= specificPartToAffect.BodyRegion.EndLine)
-				beginline = mem.BodyRegion.BeginLine;
+			var region = GetRegion (mem);
+			if (!region.IsEmpty && region.BeginLine >= beginline && region.BeginLine <= specificPartToAffect.BodyRegion.EndLine)
+				beginline = region.BeginLine;
 			
 			//jump to the member or class
 			IdeApp.Workbench.OpenDocument (specificPartToAffect.Region.FileName, beginline, 1);

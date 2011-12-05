@@ -273,6 +273,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void ProcessConversion(Expression expr, ResolveResult rr, Conversion conversion, IType targetType)
 		{
+			if (expr == null || expr.IsNull)
+				return;
 			if (conversion.IsAnonymousFunctionConversion) {
 				Log.WriteLine("Processing conversion of anonymous function to " + targetType + "...");
 				AnonymousFunctionConversionData data = conversion.data as AnonymousFunctionConversionData;
@@ -287,7 +289,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					Log.WriteLine("  Data not found.");
 				}
 			}
-			if (expr != null && !expr.IsNull && conversion != Conversion.IdentityConversion)
+			if (conversion != Conversion.IdentityConversion)
 				navigator.ProcessConversion(expr, rr, conversion, targetType);
 		}
 		
@@ -296,6 +298,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void ProcessConversion(Expression expr, ResolveResult rr, IType targetType)
 		{
+			if (expr == null || expr.IsNull)
+				return;
 			ProcessConversion(expr, rr, resolver.conversions.ImplicitConversion(rr, targetType), targetType);
 		}
 		
@@ -791,14 +795,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
 		{
 			try {
+				// Scan enum member attributes before setting resolver.CurrentMember, so that
+				// enum values used as attribute arguments have the correct type.
+				// (which an enum member, all other enum members are treated as having their underlying type)
+				foreach (var attributeSection in enumMemberDeclaration.Attributes)
+					Scan(attributeSection);
+				
 				resolver.CurrentMember = GetMemberFromLocation(enumMemberDeclaration.StartLocation);
 				
-				ScanChildren(enumMemberDeclaration);
-				
-				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(null, resolver.CurrentMember);
-				else
+				if (resolverEnabled && resolver.CurrentTypeDefinition != null) {
+					ResolveAndProcessConversion(enumMemberDeclaration.Initializer, resolver.CurrentTypeDefinition.EnumUnderlyingType);
+					if (resolverEnabled && resolver.CurrentMember != null)
+						return new MemberResolveResult(null, resolver.CurrentMember);
+					else
+						return errorResult;
+				} else {
+					Scan(enumMemberDeclaration.Initializer);
 					return errorResult;
+				}
 			} finally {
 				resolver.CurrentMember = null;
 			}
@@ -2424,7 +2438,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (IsVar(foreachStatement.VariableType)) {
 				if (navigator.Scan(foreachStatement.VariableType) == ResolveVisitorNavigationMode.Resolve) {
 					IType collectionType = Resolve(foreachStatement.InExpression).Type;
-					IType elementType = GetElementType(collectionType, resolver.Compilation, false);
+					IType elementType = GetElementTypeFromCollection(collectionType);
 					StoreCurrentState(foreachStatement.VariableType);
 					StoreResult(foreachStatement.VariableType, new TypeResolveResult(elementType));
 					v = MakeVariable(elementType, foreachStatement.VariableNameToken);
@@ -2581,7 +2595,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled && resolver.CurrentMember != null) {
 				IType returnType = resolver.CurrentMember.ReturnType;
-				IType elementType = GetElementType(returnType, resolver.Compilation, true);
+				IType elementType = GetElementTypeFromIEnumerable(returnType, resolver.Compilation, true);
 				ResolveAndProcessConversion(yieldStatement.Expression, elementType);
 			} else {
 				Scan(yieldStatement.Expression);
@@ -2864,7 +2878,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 										var result = visitor.Resolve(initializer).Type;
 										
 										if (isForEach) {
-											result = GetElementType(result, storedContext.Compilation, false);
+											result = visitor.GetElementTypeFromCollection(result);
 										}
 										this.resolvedType = result;
 									});
@@ -2936,10 +2950,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		 */
-		static IType GetElementType(IType result, ICompilation compilation, bool allowIEnumerator)
+		
+		IType GetElementTypeFromCollection(IType collectionType)
+		{
+			switch (collectionType.Kind) {
+				case TypeKind.Array:
+					return ((ArrayType)collectionType).ElementType;
+				case TypeKind.Dynamic:
+					return SpecialType.Dynamic;
+			}
+			var memberLookup = resolver.CreateMemberLookup();
+			var getEnumeratorMethodGroup = memberLookup.Lookup(new ResolveResult(collectionType), "GetEnumerator", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
+			if (getEnumeratorMethodGroup != null) {
+				var or = getEnumeratorMethodGroup.PerformOverloadResolution(resolver.Compilation, new ResolveResult[0]);
+				if (or.FoundApplicableCandidate && !or.IsAmbiguous && !or.BestCandidate.IsStatic && or.BestCandidate.IsPublic) {
+					IType enumeratorType = or.BestCandidate.ReturnType;
+					return memberLookup.Lookup(new ResolveResult(enumeratorType), "Current", EmptyList<IType>.Instance, false).Type;
+				}
+			}
+			return GetElementTypeFromIEnumerable(collectionType, resolver.Compilation, false);
+		}
+		
+		static IType GetElementTypeFromIEnumerable(IType collectionType, ICompilation compilation, bool allowIEnumerator)
 		{
 			bool foundNonGenericIEnumerable = false;
-			foreach (IType baseType in result.GetAllBaseTypes()) {
+			foreach (IType baseType in collectionType.GetAllBaseTypes()) {
 				ITypeDefinition baseTypeDef = baseType.GetDefinition();
 				if (baseTypeDef != null) {
 					KnownTypeCode typeCode = baseTypeDef.KnownTypeCode;
@@ -3124,7 +3159,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// This assumes queries are only used on IEnumerable.
 			// We might want to look at the signature of a LINQ method (e.g. Select) instead.
-			return GetElementType(type, resolver.Compilation, false);
+			return GetElementTypeFromIEnumerable(type, resolver.Compilation, false);
 		}
 		
 		sealed class QueryExpressionLambda : LambdaResolveResult

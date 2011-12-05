@@ -50,11 +50,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ITypeDefinition currentTypeDefinition;
 		IAssembly currentAssembly;
+		bool isInEnumMemberInitializer;
 		
-		public MemberLookup(ITypeDefinition currentTypeDefinition, IAssembly currentAssembly)
+		public MemberLookup(ITypeDefinition currentTypeDefinition, IAssembly currentAssembly, bool isInEnumMemberInitializer = false)
 		{
 			this.currentTypeDefinition = currentTypeDefinition;
 			this.currentAssembly = currentAssembly;
+			this.isInEnumMemberInitializer = isInEnumMemberInitializer;
 		}
 		
 		#region IsAccessible
@@ -64,7 +66,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public bool IsProtectedAccessAllowed(IType targetType)
 		{
 			ITypeDefinition typeDef = targetType.GetDefinition();
-			return typeDef != null && typeDef.IsDerivedFrom(currentTypeDefinition);
+			if (typeDef == null)
+				return false;
+			for (ITypeDefinition c = currentTypeDefinition; c != null; c = c.DeclaringTypeDefinition) {
+				if (typeDef.IsDerivedFrom(c))
+					return true;
+			}
+			return false;
 		}
 		
 		/// <summary>
@@ -124,7 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				// PERF: this might hurt performance as this method is called several times (once for each member)
 				// make sure resolving base types is cheap (caches?) or cache within the MemberLookup instance
-				if (allowProtectedAccess && currentTypeDefinition.IsDerivedFrom(entity.DeclaringTypeDefinition))
+				if (allowProtectedAccess && t.IsDerivedFrom(entity.DeclaringTypeDefinition))
 					return true;
 			}
 			return false;
@@ -566,6 +574,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (lookupGroups.Count > 1) {
 				return new AmbiguousMemberResolveResult(targetResolveResult, resultGroup.NonMethod);
 			} else {
+				if (isInEnumMemberInitializer) {
+					IField field = resultGroup.NonMethod as IField;
+					if (field != null && field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum) {
+						return new MemberResolveResult(
+							targetResolveResult, field,
+							field.DeclaringTypeDefinition.EnumUnderlyingType,
+							field.IsConst, field.ConstantValue);
+					}
+				}
 				return new MemberResolveResult(targetResolveResult, resultGroup.NonMethod);
 			}
 		}

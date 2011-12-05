@@ -150,6 +150,44 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
+		#region Import
+		/// <summary>
+		/// Imports a type from another compilation.
+		/// </summary>
+		public static IType Import(this ICompilation compilation, IType type)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			if (type == null)
+				return null;
+			return type.ToTypeReference().Resolve(compilation.TypeResolveContext);
+		}
+		
+		/// <summary>
+		/// Imports a type from another compilation.
+		/// </summary>
+		public static ITypeDefinition Import(this ICompilation compilation, ITypeDefinition typeDefinition)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			if (typeDefinition == null)
+				return null;
+			return typeDefinition.ToTypeReference().Resolve(compilation.TypeResolveContext).GetDefinition();
+		}
+		
+		/// <summary>
+		/// Imports a member from another compilation.
+		/// </summary>
+		public static IMember Import(this ICompilation compilation, IMember member)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			if (member == null)
+				return null;
+			return member.ToMemberReference().Resolve(compilation.TypeResolveContext);
+		}
+		#endregion
+		
 		#region GetDelegateInvokeMethod
 		/// <summary>
 		/// Gets the invoke method for a delegate type.
@@ -282,6 +320,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					yield return contextType;
 			}
 		}
-		#endregion		
+		#endregion
 	}
 }

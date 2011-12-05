@@ -143,15 +143,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return false; }
 			}
 			
-			EntityType IBaseEntity.EntityType {
+			EntityType IEntity.EntityType {
 				get { return EntityType.Operator; }
 			}
 			
-			DomRegion IBaseEntity.Region {
+			DomRegion IEntity.Region {
 				get { return DomRegion.Empty; }
 			}
 			
-			DomRegion IBaseEntity.BodyRegion {
+			DomRegion IEntity.BodyRegion {
 				get { return DomRegion.Empty; }
 			}
 			
@@ -167,23 +167,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return Accessibility.Public; }
 			}
 			
-			bool IBaseEntity.IsStatic {
+			bool IEntity.IsStatic {
 				get { return true; }
 			}
 			
-			bool IBaseEntity.IsAbstract {
+			bool IEntity.IsAbstract {
 				get { return false; }
 			}
 			
-			bool IBaseEntity.IsSealed {
+			bool IEntity.IsSealed {
 				get { return false; }
 			}
 			
-			bool IBaseEntity.IsShadowing {
+			bool IEntity.IsShadowing {
 				get { return false; }
 			}
 			
-			bool IBaseEntity.IsSynthetic {
+			bool IEntity.IsSynthetic {
 				get { return true; }
 			}
 			

@@ -74,6 +74,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		IList<Error> Errors { get; }
 		
+		/// <summary>
+		/// Gets a type resolve context at a given location.
+		/// </summary>
 		ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc);
 	}
 }

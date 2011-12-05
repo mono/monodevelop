@@ -47,17 +47,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			int idx = fullName.LastIndexOf ('.');
 			if (idx > 0) {
 				namespaceName = fullName.Substring (0, idx);
-				name = fullName.Substring (idx);
+				name = fullName.Substring (idx + 1);
 			} else {
 				namespaceName = "";
 				name = fullName;
 			}
-			
+
 			this.EntityType = EntityType.TypeDefinition;
 			this.namespaceName = namespaceName;
 			this.Name = name;
 		}
-		
+
 		public DefaultUnresolvedTypeDefinition(string namespaceName, string name)
 		{
 			this.EntityType = EntityType.TypeDefinition;
@@ -201,7 +201,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (context == null)
 				throw new ArgumentNullException("context");
 			if (context.CurrentAssembly == null)
-				return (IType)new UnknownType(this.Namespace, this.Name, this.TypeParameters.Count);
+				throw new ArgumentException("An ITypeDefinition cannot be resolved in a context without a current assembly.");
 			return context.CurrentAssembly.GetTypeDefinition(this) 
 				?? (IType)new UnknownType(this.Namespace, this.Name, this.TypeParameters.Count);
 		}
