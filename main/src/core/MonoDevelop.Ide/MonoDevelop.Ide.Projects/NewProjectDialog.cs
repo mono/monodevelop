@@ -387,7 +387,7 @@ namespace MonoDevelop.Ide.Projects {
 			
 			string solution = txt_subdirectory.Text;
 			string name     = txt_name.Text;
-			string location = entry_location.Path;
+			string location = ProjectLocation;
 
 			if(solution.Equals("")) solution = name; //This was empty when adding after first combine
 			
@@ -416,12 +416,12 @@ namespace MonoDevelop.Ide.Projects {
 			ProjectTemplate item = (ProjectTemplate) templateView.CurrentlySelected;
 			
 			try {
-				System.IO.Directory.CreateDirectory (ProjectLocation);
+				System.IO.Directory.CreateDirectory (location);
 			} catch (IOException) {
-				MessageService.ShowError (GettextCatalog.GetString ("Could not create directory {0}. File already exists.", ProjectLocation));
+				MessageService.ShowError (GettextCatalog.GetString ("Could not create directory {0}. File already exists.", location));
 				return false;
 			} catch (UnauthorizedAccessException) {
-				MessageService.ShowError (GettextCatalog.GetString ("You do not have permission to create to {0}", ProjectLocation));
+				MessageService.ShowError (GettextCatalog.GetString ("You do not have permission to create to {0}", location));
 				return false;
 			}
 			
@@ -443,8 +443,8 @@ namespace MonoDevelop.Ide.Projects {
 		ProjectCreateInformation CreateProjectCreateInformation ()
 		{
 			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
-			cinfo.SolutionPath = SolutionLocation;
-			cinfo.ProjectBasePath = ProjectLocation;
+			cinfo.SolutionPath = FileService.ResolveFullPath (SolutionLocation);
+			cinfo.ProjectBasePath = FileService.ResolveFullPath (ProjectLocation);
 			cinfo.ProjectName = txt_name.Text;
 			cinfo.SolutionName = CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
 			cinfo.ParentFolder = parentFolder;
@@ -548,7 +548,7 @@ namespace MonoDevelop.Ide.Projects {
 			if (basePath == null)
 				basePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
 				
-			entry_location.Path = basePath;
+			entry_location.Path = FileService.ResolveFullPath (basePath);
 			
 			PathChanged (null, null);
 			
