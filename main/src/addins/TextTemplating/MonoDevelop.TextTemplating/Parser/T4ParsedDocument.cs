@@ -71,33 +71,36 @@ namespace MonoDevelop.TextTemplating.Parser
 			}
 		}
 		
-		public override IEnumerable<FoldingRegion> GenerateFolds ()
-		{
-			foreach (ISegment seg in TemplateSegments) {
-				if (seg.EndLocation.Line - seg.TagStartLocation.Line < 1)
-					continue;
-				
-				string name;
-				TemplateSegment ts = seg as TemplateSegment;
-				if (ts != null) {
-					if (ts.Type == SegmentType.Content) {
+		public override IEnumerable<FoldingRegion> Foldings {
+			get {
+				foreach (var region in Comments.ToFolds ()) 
+					yield return region;
+				foreach (ISegment seg in TemplateSegments) {
+					if (seg.EndLocation.Line - seg.TagStartLocation.Line < 1)
 						continue;
-					} else if (ts.Type == SegmentType.Expression) {
-						name = "<#=...#>";
-					} else if (ts.Type == SegmentType.Helper) {
-						name = "<#+...#>";
+					
+					string name;
+					TemplateSegment ts = seg as TemplateSegment;
+					if (ts != null) {
+						if (ts.Type == SegmentType.Content) {
+							continue;
+						} else if (ts.Type == SegmentType.Expression) {
+							name = "<#=...#>";
+						} else if (ts.Type == SegmentType.Helper) {
+							name = "<#+...#>";
+						} else {
+							name = "<#...#>";
+						}
 					} else {
-						name = "<#...#>";
+						Directive dir = (Directive)seg;
+						name = "<#@" + dir.Name + "...#>";
 					}
-				} else {
-					Directive dir = (Directive)seg;
-					name = "<#@" + dir.Name + "...#>";
+					
+					DomRegion region = new DomRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
+				                                      seg.EndLocation.Line, seg.EndLocation.Column);
+					
+					yield return new FoldingRegion (name, region, false);
 				}
-				
-				DomRegion region = new DomRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
-			                                      seg.EndLocation.Line, seg.EndLocation.Column);
-				
-				yield return new FoldingRegion (name, region, false);
 			}
 		}
 	}

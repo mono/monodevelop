@@ -62,12 +62,92 @@ namespace MonoDevelop.CSharp.Parser
 			var unit = parser.Parse (content, fileName);
 			var pf = unit.ToTypeSystem ();
 			result.ParsedFile = pf;
-			
+			result.Add (GenerateFoldings (unit, result));
 			if (storeAst) {
 				result.AddAnnotation (unit);
 				result.AddAnnotation (pf);
 			}
 			return result;
+		}
+		
+		IEnumerable<FoldingRegion> GenerateFoldings (CompilationUnit unit, ParsedDocument doc)
+		{
+			foreach (var fold in doc.ConditionalRegions.ToFolds ())
+				yield return fold;
+			
+			foreach (var fold in doc.Comments.ToFolds ())
+				yield return fold;
+			
+			var visitor = new FoldingVisitor ();
+			unit.AcceptVisitor (visitor, null);
+			foreach (var fold in visitor.Foldings)
+				yield return fold;
+		}
+		
+		class FoldingVisitor : DepthFirstAstVisitor<object, object>
+		{
+			public readonly List<FoldingRegion> Foldings = new List<FoldingRegion> ();
+			
+			public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
+			{
+				Foldings.Add (new FoldingRegion (new DomRegion (namespaceDeclaration.LBraceToken.GetPrevNode ().EndLocation, namespaceDeclaration.RBraceToken.EndLocation), FoldType.Undefined));
+				return base.VisitNamespaceDeclaration (namespaceDeclaration, data);
+			}
+			
+			public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
+			{
+				Foldings.Add (new FoldingRegion (new DomRegion (typeDeclaration.LBraceToken.GetPrevNode ().EndLocation, typeDeclaration.RBraceToken.EndLocation), FoldType.Type));
+				return base.VisitTypeDeclaration (typeDeclaration, data);
+			}
+			
+			public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
+			{
+				if (!methodDeclaration.Body.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (methodDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, methodDeclaration.Body.RBraceToken.EndLocation), FoldType.Member));
+				return base.VisitMethodDeclaration (methodDeclaration, data);
+			}
+			
+			public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
+			{
+				if (!constructorDeclaration.Body.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (constructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, constructorDeclaration.Body.RBraceToken.EndLocation), FoldType.Member));
+				return base.VisitConstructorDeclaration (constructorDeclaration, data);
+			}
+			
+			public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
+			{
+				if (!destructorDeclaration.Body.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (destructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, destructorDeclaration.Body.RBraceToken.EndLocation), FoldType.Member));
+				return base.VisitDestructorDeclaration (destructorDeclaration, data);
+			}
+			
+			public override object VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, object data)
+			{
+				if (!operatorDeclaration.Body.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (operatorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, operatorDeclaration.Body.RBraceToken.EndLocation), FoldType.Member));
+				return base.VisitOperatorDeclaration (operatorDeclaration, data);
+			}
+			
+			public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
+			{
+				if (!propertyDeclaration.LBraceToken.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (propertyDeclaration.LBraceToken.GetPrevNode ().EndLocation, propertyDeclaration.RBraceToken.EndLocation), FoldType.Member));
+				return base.VisitPropertyDeclaration (propertyDeclaration, data);
+			}
+			
+			public override object VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, object data)
+			{
+				if (!indexerDeclaration.LBraceToken.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (indexerDeclaration.LBraceToken.GetPrevNode ().EndLocation, indexerDeclaration.RBraceToken.EndLocation), FoldType.Member));
+				return base.VisitIndexerDeclaration (indexerDeclaration, data);
+			}
+			
+			public override object VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, object data)
+			{
+				if (!eventDeclaration.LBraceToken.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (eventDeclaration.LBraceToken.GetPrevNode ().EndLocation, eventDeclaration.RBraceToken.EndLocation), FoldType.Member));
+				return base.VisitCustomEventDeclaration (eventDeclaration, data);
+			}
 		}
 		
 		void VisitMcsUnit ()
@@ -229,6 +309,22 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			return "Default";
 		}
+	}
+	
+	static class FoldingUtils
+	{
+		public static IEnumerable<FoldingRegion> ToFolds (this IEnumerable<ConditionalRegion> conditionalRegions)
+		{
+			foreach (ConditionalRegion region in conditionalRegions) {
+				yield return new FoldingRegion ("#if " + region.Flag, region.Region, FoldType.ConditionalDefine);
+				foreach (ConditionBlock block in region.ConditionBlocks) {
+					yield return new FoldingRegion ("#elif " + block.Flag, block.Region,
+					                                FoldType.ConditionalDefine);
+				}
+				if (!region.ElseBlock.IsEmpty)
+					yield return new FoldingRegion ("#else", region.ElseBlock, FoldType.ConditionalDefine);
+			}
+		}		
 	}
 }
 

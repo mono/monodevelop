@@ -73,16 +73,16 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		List<FoldingRegion> folds = new List<FoldingRegion> ();
-		public IList<FoldingRegion> AdditionalFolds {
+		List<FoldingRegion> foldings = new List<FoldingRegion> ();
+		public virtual IEnumerable<FoldingRegion> Foldings {
 			get {
-				return folds;
+				return foldings;
 			}
 		}
 		
 		public IEnumerable<FoldingRegion> UserRegions {
 			get {
-				return AdditionalFolds.Where (f => f.Type == FoldType.UserRegion);
+				return Foldings.Where (f => f.Type == FoldType.UserRegion);
 			}
 		}
 		
@@ -204,19 +204,6 @@ namespace MonoDevelop.TypeSystem
 		}
 		#endregion
 		
-		public virtual IEnumerable<FoldingRegion> GenerateFolds ()
-		{
-			foreach (FoldingRegion fold in AdditionalFolds)
-				yield return fold;
-			
-			foreach (FoldingRegion fold in ConditionalRegions.ToFolds ())
-				yield return fold;
-			
-			
-			foreach (var fold in TopLevelTypeDefinitions.ToFolds ())
-				yield return fold;
-		}
-		
 		public void Add (Error error)
 		{
 			errors.Add (error);
@@ -244,7 +231,7 @@ namespace MonoDevelop.TypeSystem
 		
 		public void Add (FoldingRegion region)
 		{
-			folds.Add (region);
+			foldings.Add (region);
 		}
 		
 		public void Add (IEnumerable<Error> errors)
@@ -271,7 +258,7 @@ namespace MonoDevelop.TypeSystem
 		
 		public void Add (IEnumerable<FoldingRegion> folds)
 		{
-			this.folds.AddRange (folds);
+			this.foldings.AddRange (folds);
 		}
 		
 		public void Add (IEnumerable<ConditionalRegion> conditionalRegions)
@@ -361,12 +348,6 @@ namespace MonoDevelop.TypeSystem
 		{
 			return parsedFile.GetMember (location);
 		}
-		/*
-		public override IProjectContent ProjectContent {
-			get {
-				return parsedFile.ProjectContent;
-			}
-		}*/
 
 		public override System.Collections.Generic.IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
 			get {
@@ -387,6 +368,7 @@ namespace MonoDevelop.TypeSystem
 		}
 		#endregion
 		
+		/*
 		IEnumerable<FoldingRegion> AddFolds ()
 		{
 			IEnumerable<FoldingRegion> commentFolds = Comments.ToFolds ();
@@ -406,86 +388,26 @@ namespace MonoDevelop.TypeSystem
 			}
 			
 		}
-		
 		public override IEnumerable<FoldingRegion> GenerateFolds ()
 		{
 			return base.GenerateFolds ().Concat (AddFolds ());
-		}
-		
-		
+		}*/
+			
 		public override ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
 		{
 			return parsedFile.GetTypeResolveContext (compilation, loc);
-		}
-		
-		/*
-		#region IFreezable implementation
-		public override void Freeze ()
-		{
-			parsedFile.Freeze ();
-		}
-
-		public override bool IsFrozen {
-			get {
-				return parsedFile.IsFrozen;
-			}
-		}
-		#endregion*/  
+		} 
 	}
 	
-	static class FoldingUtilities
+	public static class FoldingUtilities
 	{
-		public static IEnumerable<FoldingRegion> ToFolds (this IEnumerable<ConditionalRegion> conditionalRegions)
-		{
-			foreach (ConditionalRegion region in conditionalRegions) {
-				yield return new FoldingRegion ("#if " + region.Flag, region.Region, FoldType.ConditionalDefine);
-				foreach (ConditionBlock block in region.ConditionBlocks) {
-					yield return new FoldingRegion ("#elif " + block.Flag, block.Region,
-					                                FoldType.ConditionalDefine);
-				}
-				if (!region.ElseBlock.IsEmpty)
-					yield return new FoldingRegion ("#else", region.ElseBlock, FoldType.ConditionalDefine);
-			}
-		}
-		
-		public static IEnumerable<FoldingRegion> ToFolds (this IEnumerable<IUnresolvedTypeDefinition> types)
-		{
-			foreach (var type in types)
-				foreach (FoldingRegion fold in type.ToFolds ())
-					yield return fold;
-		}
-		
-		public static IEnumerable<FoldingRegion> ToFolds (this IUnresolvedTypeDefinition type)
-		{
-			if (!IncompleteOrSingleLine (type.BodyRegion))
-				yield return new FoldingRegion (type.BodyRegion, FoldType.Type);
-			
-			foreach (var inner in type.NestedTypes)
-				foreach (FoldingRegion f in inner.ToFolds ())
-					yield return f;
-			
-			if (type.Kind == TypeKind.Interface)
-				yield break;
-
-			foreach (var method in type.Methods)
-				if (!IncompleteOrSingleLine (method.BodyRegion))
-					yield return new FoldingRegion (method.BodyRegion, FoldType.Member);
-			
-			foreach (var property in type.Properties)
-				if (!IncompleteOrSingleLine (property.BodyRegion))
-					yield return new FoldingRegion (property.BodyRegion, FoldType.Member);
-		}
-		
 		static bool IncompleteOrSingleLine (DomRegion region)
 		{
 			return region.BeginLine <= 0 || region.EndLine <= region.BeginLine;
 		}
 		
-		
 		public static IEnumerable<FoldingRegion> ToFolds (this IList<Comment> comments)
 		{
-			
-			
 			for (int i = 0; i < comments.Count; i++) {
 				Comment comment = comments [i];
 				

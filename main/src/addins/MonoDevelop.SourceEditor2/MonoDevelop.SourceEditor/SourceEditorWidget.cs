@@ -403,7 +403,7 @@ namespace MonoDevelop.SourceEditor
 					doc.UpdateHighlighting ();
 				}
 				
-				foreach (FoldingRegion region in parsedDocument.GenerateFolds ()) {
+				foreach (FoldingRegion region in parsedDocument.Foldings) {
 					if (worker != null && worker.CancellationPending)
 						return;
 					FoldingType type = FoldingType.None;

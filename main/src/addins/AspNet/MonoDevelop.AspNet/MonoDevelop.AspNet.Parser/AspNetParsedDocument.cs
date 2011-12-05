@@ -49,15 +49,19 @@ namespace MonoDevelop.AspNet.Parser
 		public RootNode RootNode { get; private set; }
 		public WebSubtype Type { get; private set; }
 		
-		public override IEnumerable<FoldingRegion> GenerateFolds ()
-		{
-			if (RootNode != null) {
-				var regions = new List<FoldingRegion> ();
-				var cuVisitor = new CompilationUnitVisitor (regions);
-				RootNode.AcceptVisit (cuVisitor);
-				return regions;
+		public override IEnumerable<FoldingRegion> Foldings {
+			get {
+				if (RootNode != null) {
+					var regions = new List<FoldingRegion> ();
+					var cuVisitor = new CompilationUnitVisitor (regions);
+					RootNode.AcceptVisit (cuVisitor);
+
+					foreach (var region in Comments.ToFolds ()) 
+						regions.Add (region);
+					return regions;
+				}
+				return new FoldingRegion [0];
 			}
-			return new FoldingRegion [0];
 		}
 	}
 }
