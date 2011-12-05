@@ -148,12 +148,12 @@ namespace MonoDevelop.CodeMetrics
 		{
 			if(cls.Namespace=="") {
 				lock(Classes)
-				{// TODO: Type system conversion
-//					foreach(var typeArg in cls.TypeParameters) {
-//						foreach(var constraint in typeArg.Constraints) {
-//							key.Append(constraint.Name);
-//						}
-//					}
+				{
+					foreach(var typeArg in cls.TypeParameters) {
+						foreach(var constraint in typeArg.DirectBaseTypes) {
+							key.Append(constraint.Name);
+						}
+					}
 					if(Classes.ContainsKey(key.ToString()))
 						return;
 					Classes.Add(key.ToString(), new ClassProperties(cls));
@@ -167,12 +167,12 @@ namespace MonoDevelop.CodeMetrics
 		{
 			if(strct.Namespace=="") {
 				lock(Structs)
-				{ // TODO: Type system conversion
-//					foreach(var typeArg in strct.TypeParameters) {
-//						foreach(var constraint in typeArg.Constraints) {
-//							key.Append(constraint.Name);
-//						}
-//					}
+				{
+					foreach(var typeArg in strct.TypeParameters) {
+						foreach(var constraint in typeArg.DirectBaseTypes) {
+							key.Append(constraint.Name);
+						}
+					}
 					if(Structs.ContainsKey(key.ToString()))
 						return;
 					Structs.Add(key.ToString(), new StructProperties(strct));
@@ -186,12 +186,12 @@ namespace MonoDevelop.CodeMetrics
 		{
 			if(interfce.Namespace=="") {
 				lock(Interfaces)
-				{// TODO: type system conversion.
-//					foreach(var typeArg in interfce.TypeParameters) {
-//						foreach(var constraint in typeArg.Constraints) {
-//							key.Append(constraint.Name);
-//						}
-//					}
+				{
+					foreach(var typeArg in interfce.TypeParameters) {
+						foreach(var constraint in typeArg.DirectBaseTypes) {
+							key.Append(constraint.Name);
+						}
+					}
 					if(Interfaces.ContainsKey(key.ToString()))
 						return;
 					Interfaces.Add(key.ToString(), new InterfaceProperties(interfce));
@@ -205,12 +205,12 @@ namespace MonoDevelop.CodeMetrics
 		{
 			if(enm.Namespace=="") {
 				lock(Enums)
-				{ // TODO: Type system conversion.
-//					foreach(var typeArg in enm.TypeParameters) {
-//						foreach(var constraint in typeArg.Constraints) {
-//							key.Append(constraint.Name);
-//						}
-//					}
+				{
+					foreach(var typeArg in enm.TypeParameters) {
+						foreach(var constraint in typeArg.DirectBaseTypes) {
+							key.Append(constraint.Name);
+						}
+					}
 					if(Enums.ContainsKey(key.ToString()))
 						return;
 					Enums.Add(key.ToString(), new EnumProperties(enm));
@@ -224,12 +224,12 @@ namespace MonoDevelop.CodeMetrics
 		{
 			if(dlgte.Namespace=="") {
 				lock(Delegates)
-				{ // TODO: Type system conversion.
-//					foreach(var typeArg in dlgte.TypeParameters) {
-//						foreach(var constraint in typeArg.Constraints) {
-//							key.Append(constraint.Name);
-//						}
-//					}
+				{
+					foreach(var typeArg in dlgte.TypeParameters) {
+						foreach(var constraint in typeArg.DirectBaseTypes) {
+							key.Append(constraint.Name);
+						}
+					}
 					if(Delegates.ContainsKey(key.ToString()))
 						return;
 					Delegates.Add(key.ToString(), new DelegateProperties(dlgte));
