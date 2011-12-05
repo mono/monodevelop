@@ -60,9 +60,8 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			if (options.SelectedItem is IVariable || options.SelectedItem is IParameter)
 				return true;
-// TODO: Type system conversion.
-//			if (options.SelectedItem is ITypeDefinition)
-//				return ((ITypeDefinition)options.SelectedItem).ProjectContent is SimpleProjectContent;
+			if (options.SelectedItem is ITypeDefinition)
+				return !string.IsNullOrEmpty (((ITypeDefinition)options.SelectedItem).Region.FileName);
 
 			if (options.SelectedItem is IMember) {
 				var cls = ((IMember)options.SelectedItem).DeclaringTypeDefinition;
