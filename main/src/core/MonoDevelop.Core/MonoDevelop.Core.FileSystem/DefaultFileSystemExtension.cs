@@ -89,6 +89,11 @@ namespace MonoDevelop.Core.FileSystem
 			Directory.Move (path, newName);
 		}
 		
+		public override FilePath ResolveFullPath (FilePath path)
+		{
+			return Path.GetFullPath (path);
+		}
+		
 		public override void MoveDirectory (FilePath source, FilePath dest)
 		{
 			Directory.Move (source, dest);
