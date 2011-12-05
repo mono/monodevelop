@@ -73,7 +73,7 @@ namespace Mono.Debugging.Evaluation
 				return null;
 			
 			if (res is EvaluationResult)
-				return (res as EvaluationResult).DisplayValue;
+				return ((EvaluationResult) res).DisplayValue;
 			else
 				return res.ToString ();
 		}
