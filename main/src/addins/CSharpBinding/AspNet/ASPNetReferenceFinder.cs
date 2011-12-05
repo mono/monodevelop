@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //				yield return new DomRegion (fileName, loc.Line, loc.Column, loc.Line, loc.Column + result.Name.Lenhth);
 //			}
 		}
-		public override void SetPossibleFiles (IEnumerable<Tuple<IProjectContent, FilePath>> files)
+		public override void SetPossibleFiles (IEnumerable<FilePath> files)
 		{
 			
 		}
