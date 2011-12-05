@@ -71,6 +71,9 @@ namespace Mono.Debugging.Evaluation
 			object res = ctx.Adapter.TargetObjectToObject (ctx, obj);
 			if (res == null)
 				return null;
+			
+			if (res is EvaluationResult)
+				return (res as EvaluationResult).DisplayValue;
 			else
 				return res.ToString ();
 		}
