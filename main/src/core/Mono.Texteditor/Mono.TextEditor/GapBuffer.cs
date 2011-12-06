@@ -39,8 +39,8 @@ namespace Mono.TextEditor
 		int gapEnd    = 0;
 		int gapLength = 0;
 		
-		const int minGapLength = 16 * 1024;
-		const int maxGapLength = 256 * 1024;
+		const int minGapLength = 4 * 1024;
+		const int maxGapLength = 32 * 1024;
 		
 		public int Length {
 			get {
