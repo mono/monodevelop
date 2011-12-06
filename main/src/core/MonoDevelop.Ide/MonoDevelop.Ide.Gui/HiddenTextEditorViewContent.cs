@@ -167,6 +167,9 @@ namespace MonoDevelop.Ide.Gui
 		public void SetCaretTo (int line, int column, bool highlightCaretLine)
 		{
 		}
+		public void SetCaretTo (int line, int column, bool highlightCaretLine, bool centerCaretLine)
+		{
+		}
 		
 		public void Undo()
 		{

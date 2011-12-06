@@ -97,9 +97,6 @@
     <Compile Include="JumpList.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChangeLog" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Dialogs\CustomAddFilesDialog.resx">
       <DependentUpon>CustomAddFilesDialog.cs</DependentUpon>
       <SubType>Designer</SubType>

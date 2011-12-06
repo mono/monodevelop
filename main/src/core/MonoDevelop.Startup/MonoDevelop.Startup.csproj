@@ -84,7 +84,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChangeLog" />
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>

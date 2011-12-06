@@ -1475,7 +1475,6 @@
     <Compile Include="MonoDevelop.Components\ContextMenuTreeView.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChangeLog" />
     <None Include="Makefile.am" />
     <Data Include="options\DefaultEditingLayout.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

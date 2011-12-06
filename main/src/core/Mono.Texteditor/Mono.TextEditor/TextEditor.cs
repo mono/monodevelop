@@ -1353,10 +1353,10 @@ namespace Mono.TextEditor
 				if (this.textEditorData.VAdjustment.Upper < Allocation.Height) {
 					this.textEditorData.VAdjustment.Value = 0;
 				} else {
-					double yMargin = 1 * this.LineHeight;
+					double yMargin = 3 * this.LineHeight;
 					double caretPosition = LineToY (p.Line);
 					if (this.textEditorData.VAdjustment.Value > caretPosition) {
-						this.textEditorData.VAdjustment.Value = caretPosition;
+						this.textEditorData.VAdjustment.Value = caretPosition - yMargin;
 					} else if (this.textEditorData.VAdjustment.Value + this.textEditorData.VAdjustment.PageSize - this.LineHeight < caretPosition + yMargin) {
 						this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize + this.LineHeight + yMargin;
 					}
@@ -2764,13 +2764,15 @@ namespace Mono.TextEditor
 			TextEditor view;
 			int line, column;
 			bool highlightCaretLine;
+			bool centerCaret;
 			
-			public SetCaret (TextEditor view, int line, int column, bool highlightCaretLine)
+			public SetCaret (TextEditor view, int line, int column, bool highlightCaretLine, bool centerCaret)
 			{
 				this.view = view;
 				this.line = line;
 				this.column = column;
 				this.highlightCaretLine = highlightCaretLine;
+				this.centerCaret = centerCaret;
  			}
 			
 			public void Run (object sender, EventArgs e)
@@ -2782,7 +2784,8 @@ namespace Mono.TextEditor
 				try {
 					view.Caret.Location = new DocumentLocation (line, column);
 					view.GrabFocus ();
-					view.CenterToCaret ();
+					if (centerCaret)
+						view.CenterToCaret ();
 					if (view.TextViewMargin.XOffset == 0)
 						view.HAdjustment.Value = 0;
 					view.SizeAllocated -= Run;
@@ -2800,8 +2803,13 @@ namespace Mono.TextEditor
 		{
 			SetCaretTo (line, column, true);
 		}
-
+		
 		public void SetCaretTo (int line, int column, bool highlight)
+		{
+			SetCaretTo (line, column, highlight, true);
+		}
+
+		public void SetCaretTo (int line, int column, bool highlight, bool centerCaret)
 		{
 			if (line < DocumentLocation.MinLine)
 				throw new ArgumentException ("line < MinLine");
@@ -2809,10 +2817,10 @@ namespace Mono.TextEditor
 				throw new ArgumentException ("column < MinColumn");
 			
 			if (!IsRealized) {
-				SetCaret setCaret = new SetCaret (this, line, column, highlight);
+				SetCaret setCaret = new SetCaret (this, line, column, highlight, centerCaret);
 				SizeAllocated += setCaret.Run;
 			} else {
-				new SetCaret (this, line, column, highlight).Run (null, null);
+				new SetCaret (this, line, column, highlight, centerCaret).Run (null, null);
 			}
 		}
 	}

@@ -460,17 +460,16 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 		
 		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
 		{
-			Gdk.Rectangle geometry = screen.GetMonitorGeometry (0);
+			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor_id);
+			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
 			NSScreen monitor = NSScreen.Screens[monitor_id];
 			RectangleF visible = monitor.VisibleFrame;
 			RectangleF frame = monitor.Frame;
 			
 			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
 			// coordinates.
-			visible.X += geometry.X;
-			visible.Y += geometry.Y;
-			frame.X += geometry.X;
-			frame.Y += geometry.Y;
+			visible.X += xgeometry.X;
+			frame.X += xgeometry.X;
 			
 			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
 			// to get the menu height, we just figure out the difference between the visibleFrame height
@@ -485,10 +484,10 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
 				
 				height = frame.Height - menubarHeight - dockHeight;
-				y = menubarHeight;
+				y = ygeometry.Y + menubarHeight;
 			} else {
 				height = frame.Height;
-				y = frame.Y;
+				y = ygeometry.Y;
 			}
 			
 			// Takes care of the possibility of the Dock being positioned on the left or right edge of the screen.

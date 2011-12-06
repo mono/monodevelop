@@ -64,7 +64,14 @@ namespace Mono.Debugging.Soft
 		public override object Value {
 			get {
 				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
-				return ctx.Frame.GetValue (variable);
+				try {
+					return ctx.Frame.GetValue (variable);
+				} catch (AbsentInformationException) {
+					if (((SoftDebuggerSession) ctx.Session).IsExternalCode (ctx.Frame))
+						throw new EvaluatorException ("Value not available");
+					
+					throw;
+				}
 			}
 			set {
 				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;

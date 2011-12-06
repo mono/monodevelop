@@ -28,6 +28,7 @@ using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 
 using PyBinding;
@@ -66,6 +67,7 @@ namespace PyBinding.Runtime
 		
 		public abstract object   Clone ();
 		public abstract string[] GetArguments (PythonConfiguration config);
+		public abstract IExecutionHandler GetExecutionHandler ();
 		
 		protected virtual string Resolve (string commandName)
 		{

@@ -191,6 +191,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Present ()
 		{
+			//HACK: window resets its size on Win32 on Present if it was maximized by snapping to top edge of screen
+			//partially work around this by avoiding the present call if it's already toplevel
+			if (Platform.IsWindows && RootWindow.HasToplevelFocus)
+				return;
+			
 			//FIXME: this should do a "request for attention" dock bounce on MacOS but only in some cases.
 			//Doing it for all Present calls is excessive and annoying. Maybe we have too many Present calls...
 			//Mono.TextEditor.GtkWorkarounds.PresentWindowWithNotification (RootWindow);
@@ -360,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 					if (vcFound != null) {
 						IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
 						if (line >= 1 && ipos != null) {
-							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine), options.HasFlag (OpenDocumentOptions.CenterCaretLine));
 						}
 						
 						if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
@@ -613,14 +618,18 @@ namespace MonoDevelop.Ide.Gui
 								window.ViewContent.Save (window.ViewContent.ContentName);
 							else
 								window.ViewContent.Save ();
+							args.Cancel |= window.ViewContent.IsDirty;
+
 						}
 						catch (Exception ex) {
 							args.Cancel = true;
 							MessageService.ShowException (ex, GettextCatalog.GetString ("The document could not be saved."));
 						}
 					}
+					if (args.Cancel)
+						FindDocument (window).Select ();
 				} else {
-					args.Cancel = result != AlertButton.CloseWithoutSave;
+					args.Cancel |= result != AlertButton.CloseWithoutSave;
 					if (!args.Cancel)
 						window.ViewContent.DiscardChanges ();
 				}
@@ -747,27 +756,30 @@ namespace MonoDevelop.Ide.Gui
 						viewBinding = binding as IViewDisplayBinding;
 					}
 				}
-				
-				if (binding != null) {
-					if (viewBinding != null)  {
-						var fw = new LoadFileWrapper (workbench, viewBinding, project, openFileInfo);
-						fw.Invoke (fileName);
-					} else {
-						var extBinding = (IExternalDisplayBinding)binding;
-						var app = extBinding.GetApplication (fileName, null, project);
-						app.Launch (fileName);
+				try {
+					if (binding != null) {
+						if (viewBinding != null)  {
+							var fw = new LoadFileWrapper (workbench, viewBinding, project, openFileInfo);
+							fw.Invoke (fileName);
+						} else {
+							var extBinding = (IExternalDisplayBinding)binding;
+							var app = extBinding.GetApplication (fileName, null, project);
+							app.Launch (fileName);
+						}
+						
+						Counters.OpenDocumentTimer.Trace ("Adding to recent files");
+						DesktopService.RecentFiles.AddFile (fileName, project);
+					} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
+						try {
+							Counters.OpenDocumentTimer.Trace ("Showing in browser");
+							DesktopService.OpenFile (fileName);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error opening file: " + fileName, ex);
+							MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
+						}
 					}
-					
-					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
-					DesktopService.RecentFiles.AddFile (fileName, project);
-				} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
-					try {
-						Counters.OpenDocumentTimer.Trace ("Showing in browser");
-						DesktopService.OpenFile (fileName);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error opening file: " + fileName, ex);
-						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
-					}
+				} catch (Exception ex) {
+					monitor.ReportError ("", ex);
 				}
 			}
 		}
@@ -1097,10 +1109,11 @@ namespace MonoDevelop.Ide.Gui
 	{
 		None = 0,
 		BringToFront = 1,
-		HighlightCaretLine = 1 << 1,
-		OnlyInternalViewer = 1 << 2,
-		OnlyExternalViewer = 1 << 3,
+		CenterCaretLine = 1 << 1,
+		HighlightCaretLine = 1 << 2,
+		OnlyInternalViewer = 1 << 3,
+		OnlyExternalViewer = 1 << 4,
 		
-		Default = BringToFront | HighlightCaretLine
+		Default = BringToFront | CenterCaretLine | HighlightCaretLine
 	}
 }

@@ -66,7 +66,10 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override string GetBaseText (FilePath sourcefile)
 		{
-			return File.ReadAllText (Svn.GetPathToBaseText (sourcefile));
+			// The base file will not exist if the file has just been
+			// added to svn and not committed
+			var baseFile = Svn.GetPathToBaseText (sourcefile);
+			return File.Exists (baseFile) ? File.ReadAllText (baseFile) : "";
 		}
 
 		public string GetPathToBaseText (FilePath sourcefile)

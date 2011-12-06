@@ -75,6 +75,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/RemotingService.cs \
 	MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs \
 	MonoDevelop.Core.FileSystem/FileSystemExtension.cs \
+	MonoDevelop.Core.FileSystem/UnixFileSystemExtension.cs \
 	MonoDevelop.Core.Instrumentation/Counter.cs \
 	MonoDevelop.Core.Instrumentation/CounterCategory.cs \
 	MonoDevelop.Core.Instrumentation/InstrumentationService.cs \

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -56,8 +57,9 @@ namespace MonoDevelop.VersionControl
 
 		static void GetFiles (List<FilePath> files, IWorkspaceObject entry)
 		{
+			// Ensure that we strip out all linked files from outside of the solution/projects path.
 			if (entry is IWorkspaceFileObject)
-				files.AddRange (((IWorkspaceFileObject)entry).GetItemFiles (true));
+				files.AddRange (((IWorkspaceFileObject)entry).GetItemFiles (true).Where (file => file.IsChildPathOf (entry.BaseDirectory)));
 		}
 		
 		public static bool CanPublish (Repository vc, string path, bool isDir) {

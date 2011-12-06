@@ -265,7 +265,7 @@ def parse(content, outStream):
         except ImportError:
             pass
 
-        visitor.tree.write(file = outStream)
+        visitor.tree.write(outStream)
     except SyntaxError, ex:
         lineno = hasattr(ex, 'lineno') and ex.lineno or 0
         offset = hasattr(ex, 'offset') and ex.offset or 0

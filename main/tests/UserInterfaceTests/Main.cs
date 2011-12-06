@@ -96,6 +96,10 @@ namespace UserInterfaceTests
 			}
 			
 			AutoTestClientSession session = new AutoTestClientSession ();
+			Console.CancelKeyPress += delegate {
+				Console.WriteLine ("Test session cancelled");
+				session.Stop ();
+			};
 			try {
 				if (attach) {
 					session.AttachApplication ();

@@ -583,8 +583,6 @@ namespace MonoDevelop.Debugger
 		static void OnTargetEvent (object sender, TargetEventArgs args)
 		{
 			try {
-				Console.WriteLine ("OnTargetEvent, type - {0}", args.Type);
-
 				switch (args.Type) {
 					case TargetEventType.TargetExited:
 						Cleanup ();
@@ -602,8 +600,8 @@ namespace MonoDevelop.Debugger
 					default:
 						break;
 				}
-			} catch (Exception e) {
-				Console.WriteLine ("OnTargetEvent, {0}", e.ToString ());
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error handling debugger target event", ex);
 			}
 		}
 		

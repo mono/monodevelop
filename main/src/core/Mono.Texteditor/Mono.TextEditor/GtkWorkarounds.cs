@@ -126,7 +126,8 @@ namespace Mono.TextEditor
 		{
 			IntPtr array = objc_msgSend_IntPtr (cls_NSScreen, sel_screens);
 			IntPtr iter = objc_msgSend_IntPtr (array, sel_objectEnumerator);
-			Gdk.Rectangle geometry = screen.GetMonitorGeometry (0);
+			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor);
+			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
 			RectangleF visible, frame;
 			IntPtr scrn;
 			int i = 0;
@@ -142,10 +143,8 @@ namespace Mono.TextEditor
 			
 			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
 			// coordinates.
-			visible.X += geometry.X;
-			visible.Y += geometry.Y;
-			frame.X += geometry.X;
-			frame.Y += geometry.Y;
+			visible.X += xgeometry.X;
+			frame.X += xgeometry.X;
 			
 			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
 			// to get the menu height, we just figure out the difference between the visibleFrame height
@@ -160,10 +159,10 @@ namespace Mono.TextEditor
 				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
 				
 				height = frame.Height - menubarHeight - dockHeight;
-				y = menubarHeight;
+				y = ygeometry.Y + menubarHeight;
 			} else {
 				height = frame.Height;
-				y = frame.Y;
+				y = ygeometry.Y;
 			}
 			
 			// Takes care of the possibility of the Dock being positioned on the left or right edge of the screen.
@@ -227,10 +226,13 @@ namespace Mono.TextEditor
 				return true;
 			
 			if (Platform.IsMac) {
-				if (evt.Button == 1 &&
+				if (!oldMacKeyHacks &&
+					evt.Button == 1 &&
 					(evt.State & Gdk.ModifierType.ControlMask) != 0 &&
 					(evt.State & (Gdk.ModifierType.Button2Mask | Gdk.ModifierType.Button3Mask)) == 0)
-				return true;
+				{
+					return true;
+				}
 			}
 			
 			return false;
@@ -329,6 +331,7 @@ namespace Mono.TextEditor
 							y -= y_over;
 						}
 					}
+					
 					y = System.Math.Max (geometry.Top, System.Math.Min (y, geometry.Bottom - request.Height));
 					x = System.Math.Max (geometry.Left, System.Math.Min (x, geometry.Right - request.Width));
 					

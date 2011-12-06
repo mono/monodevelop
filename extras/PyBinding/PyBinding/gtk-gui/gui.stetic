@@ -6,28 +6,24 @@
   </configuration>
   <import>
     <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Gettext, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Components, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.GtkCore, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Core.Gui, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Autotools, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.SourceEditor2, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Debugger, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Refactoring, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.VersionControl, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.NUnit, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.XmlEditor, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Deployment, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Deployment.Linux, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.DesignerSupport, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.VBNetBinding, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.CBinding, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.CSharpBinding, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Gettext, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.GtkCore, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.SourceEditor2, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Refactoring, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VersionControl, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.NUnit, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.XmlEditor, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.AspNet, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment.Linux, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VBNetBinding, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CBinding, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CSharpBinding, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Moonlight, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Debugger.Soft, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="../../build/PyBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="PyBinding.Gui.PythonOptionsWidget" design-size="491 382">
@@ -57,7 +53,7 @@
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">5</property>
+                <property name="NRows">6</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
@@ -68,6 +64,26 @@
                   <placeholder />
                 </child>
                 <child>
+                  <widget class="Gtk.Label" id="label2">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Runtime location:</property>
+                    <property name="MnemonicWidget">alignment2</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">1</property>
+                    <property name="BottomAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
                   <widget class="Gtk.Label" id="label4">
                     <property name="MemberName" />
                     <property name="LabelProp" translatable="yes">Python _Options:</property>
@@ -75,8 +91,8 @@
                     <property name="MnemonicWidget">m_PythonOptions</property>
                   </widget>
                   <packing>
-                    <property name="TopAttach">1</property>
-                    <property name="BottomAttach">2</property>
+                    <property name="TopAttach">2</property>
+                    <property name="BottomAttach">3</property>
                     <property name="AutoSize">True</property>
                     <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
@@ -96,8 +112,8 @@
                     <property name="MnemonicWidget">m_ModuleEntry</property>
                   </widget>
                   <packing>
-                    <property name="TopAttach">2</property>
-                    <property name="BottomAttach">3</property>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
                     <property name="AutoSize">False</property>
                     <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
@@ -117,8 +133,8 @@
                     <property name="InvisibleChar">●</property>
                   </widget>
                   <packing>
-                    <property name="TopAttach">2</property>
-                    <property name="BottomAttach">3</property>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">False</property>
@@ -141,8 +157,8 @@
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
-                    <property name="TopAttach">3</property>
-                    <property name="BottomAttach">4</property>
+                    <property name="TopAttach">4</property>
+                    <property name="BottomAttach">5</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">False</property>
                     <property name="YOptions">Fill</property>
@@ -162,8 +178,8 @@
                     <property name="InvisibleChar">●</property>
                   </widget>
                   <packing>
-                    <property name="TopAttach">1</property>
-                    <property name="BottomAttach">2</property>
+                    <property name="TopAttach">2</property>
+                    <property name="BottomAttach">3</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
@@ -184,6 +200,26 @@
                     <property name="Items" translatable="yes" />
                   </widget>
                   <packing>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="MonoDevelop.Components.FileEntry" id="m_RuntimeFileEntry">
+                    <property name="MemberName" />
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">1</property>
+                    <property name="BottomAttach">2</property>
+                    <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
                     <property name="XOptions">Fill</property>

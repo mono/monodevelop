@@ -60,6 +60,11 @@ namespace PyBinding.Gui
 			m_RuntimeListStore.AppendValues ("Python 2.5", typeof (Python25Runtime));
 			m_RuntimeListStore.AppendValues ("Python 2.6", typeof (Python26Runtime));
 			m_RuntimeListStore.AppendValues ("Python 2.7", typeof (Python27Runtime));
+			m_RuntimeListStore.AppendValues ("IronPython", typeof (IronPythonRuntime));
+			
+			m_RuntimeCombo.Changed += delegate {
+				m_RuntimeFileEntry.Path = String.Empty;
+			};
 		}
 		
 		public string DefaultModule {
@@ -131,10 +136,17 @@ namespace PyBinding.Gui
 						Type t = this.m_RuntimeListStore.GetValue (iter, 1) as Type;
 						if (t == value.GetType ()) {
 							this.m_RuntimeCombo.SetActiveIter (iter);
+							this.m_RuntimeFileEntry.Path = value.Path;
 							break;
 						}
 					} while (m_RuntimeListStore.IterNext (ref iter));
 				}
+			}
+		}
+		
+		public string RuntimePath {
+			get {
+				return m_RuntimeFileEntry.Path;
 			}
 		}
 
