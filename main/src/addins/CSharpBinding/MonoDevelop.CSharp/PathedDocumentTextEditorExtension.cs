@@ -106,7 +106,10 @@ namespace MonoDevelop.CSharp
 				IEntity rx = null;
 				if (x is IUnresolvedMember)
 					rx = ((IUnresolvedMember)x).CreateResolved (ctx);
-				
+				if (x is IUnresolvedTypeDefinition)
+					rx = ((IUnresolvedTypeDefinition)x).Resolve (ctx).GetDefinition ();
+				if (rx == null)
+					return "unknown:" + x.GetType ();
 				if (tag is IParsedFile) {
 					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
 				} else {
@@ -259,7 +262,7 @@ namespace MonoDevelop.CSharp
 					if (curType.DeclaringTypeDefinition == null)
 						flags |= OutputFlags.UseFullInnerTypeName;
 					var markup = amb.GetString ((IEntity)curType, flags);
-					result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)curType.DeclaringTypeDefinition ?? unit });
+					result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)typeDef.DeclaringTypeDefinition ?? unit });
 					curType = curType.DeclaringTypeDefinition;
 				}
 			}
@@ -268,7 +271,7 @@ namespace MonoDevelop.CSharp
 			if (unresolvedMember != null) {
 				var member = unresolvedMember.CreateResolved (ctx);
 				var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
-				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member.DeclaringTypeDefinition });
+				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = unresolvedMember.DeclaringTypeDefinition });
 			}
 			
 			var entry = GetRegionEntry (unit, loc);
@@ -279,7 +282,7 @@ namespace MonoDevelop.CSharp
 			if (type == null) {
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
 			} else if (unresolvedMember == null && type.Kind != TypeKind.Delegate) 
-				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = type };
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = typeDef };
 			if (noSelection != null) 
 				result.Add (noSelection);
 			var prev = CurrentPath;
