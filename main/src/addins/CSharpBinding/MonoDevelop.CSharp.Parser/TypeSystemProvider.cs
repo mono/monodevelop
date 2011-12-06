@@ -90,13 +90,15 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
 			{
-				Foldings.Add (new FoldingRegion (new DomRegion (namespaceDeclaration.LBraceToken.GetPrevNode ().EndLocation, namespaceDeclaration.RBraceToken.EndLocation), FoldType.Undefined));
+				if (!namespaceDeclaration.RBraceToken.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (namespaceDeclaration.LBraceToken.GetPrevNode ().EndLocation, namespaceDeclaration.RBraceToken.EndLocation), FoldType.Undefined));
 				return base.VisitNamespaceDeclaration (namespaceDeclaration, data);
 			}
 			
 			public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 			{
-				Foldings.Add (new FoldingRegion (new DomRegion (typeDeclaration.LBraceToken.GetPrevNode ().EndLocation, typeDeclaration.RBraceToken.EndLocation), FoldType.Type));
+				if (!typeDeclaration.RBraceToken.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (typeDeclaration.LBraceToken.GetPrevNode ().EndLocation, typeDeclaration.RBraceToken.EndLocation), FoldType.Type));
 				return base.VisitTypeDeclaration (typeDeclaration, data);
 			}
 			

@@ -411,12 +411,12 @@ namespace MonoDevelop.TypeSystem
 			string cacheDir = GetCacheDirectory (solution.FileName) ?? CreateCacheDirectory (solution.FileName);
 			TouchCache (cacheDir);
 			
-			var cache = new Dictionary<string, ProjectContentWrapper> ();
+			var cache = new Dictionary<string, IProjectContent> ();
 			foreach (var pair in projectContents) {
 				var key = pair.Key.FileName.ToString ();
 				if (string.IsNullOrEmpty (key))
 					continue;
-				cache[key] = pair.Value;
+				cache[key] = pair.Value.Content;
 			}
 			
 			string fileName = Path.GetTempFileName ();
@@ -556,7 +556,7 @@ namespace MonoDevelop.TypeSystem
 		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 		
-		static void Load (Project project)
+		public static void Load (Project project)
 		{
 			if (IncLoadCount (project) != 1)
 				return;

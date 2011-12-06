@@ -43,39 +43,42 @@ namespace MonoDevelop.Refactoring
 	[TestFixture()]
 	public class ImplementInterfaceTests : UnitTests.TestBase
 	{
-//		static IProjectContent Mscorlib  = new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
-//		static IProjectContent SystemCore = new CecilLoader().LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
+		static IUnresolvedAssembly Mscorlib  = new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
+		static IUnresolvedAssembly SystemCore = new CecilLoader().LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
 		
-		void TestCreateInterface (string interfacecode, string outputString)
+		void TestCreateInterface (string interfacecode, string outputString, string stubString = null)
 		{
-//			var project = new UnknownProject ();
-//			project.FileName = "test.csproj";
-//			
-//			TypeSystem.TypeSystemService.Load (project);
-//			var pctx = TypeSystem.TypeSystemService.GetProjectContext (project);
-//			
-//			TypeSystem.TypeSystemService.ParseFile (pctx, "program.cs", "text/x-csharp", interfacecode);
-//			TypeSystem.TypeSystemService.ParseFile (pctx, "stub.cs", "text/x-csharp", "class Stub {\n}\n");
-//			
-//			var stubType = pctx.GetFile ("stub.cs").TopLevelTypeDefinitions.First ();
-//			var iface = pctx.GetFile ("program.cs").TopLevelTypeDefinitions.First ();
-//			
-//			var ctx = new CompositeTypeResolveContext (new [] { pctx, Mscorlib/*, SystemCore */});
-//			var gen = new CSharpCodeGenerator ();
-//			gen.EolMarker = "\n";
-//			string generated = gen.CreateInterfaceImplementation (ctx, stubType, iface, false);
-//			// crop #region
-//			generated = generated.Substring (generated.IndexOf ("implementation") + "implementation".Length);
-//			generated = generated.Substring (0, generated.LastIndexOf ("#"));
-//			generated = generated.Trim ();
-//			System.Console.WriteLine (generated);
-//			Assert.AreEqual (outputString, generated);
+			var project = new UnknownProject ();
+			project.FileName = "test.csproj";
+			
+			TypeSystem.TypeSystemService.Load (project);
+			
+			TypeSystem.TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", interfacecode);
+			TypeSystem.TypeSystemService.ParseFile (project, "stub.cs", "text/x-csharp", "class Stub {\n "+stubString+"}\n");
+			
+			var wrapper = TypeSystem.TypeSystemService.GetProjectContentWrapper (project);
+			wrapper.Content = wrapper.Content.AddAssemblyReferences (new [] { Mscorlib, SystemCore });
+			
+			var pctx = TypeSystem.TypeSystemService.GetCompilation (project);
+			
+			var stubType = pctx.MainAssembly.GetTypeDefinition ("", "Stub", 0);
+			var iface = pctx.MainAssembly.GetTypeDefinition ("", "ITest", 0);
+			
+			var gen = new CSharpCodeGenerator ();
+			gen.EolMarker = "\n";
+			string generated = gen.CreateInterfaceImplementation (stubType, stubType.Parts.First (), iface, false);
+			Assert.IsNotEmpty (generated);
+			// crop #region
+			generated = generated.Substring (generated.IndexOf ("implementation") + "implementation".Length);
+			generated = generated.Substring (0, generated.LastIndexOf ("#"));
+			generated = generated.Trim ();
+			System.Console.WriteLine (generated);
+			Assert.AreEqual (outputString, generated);
 		}
 		
 		/// <summary>
 		/// Bug 663842 - Interface implementation does not include constraints
 		/// </summary>
-		[Ignore()]
 		[Test()]
 		public void TestBug663842 ()
 		{
@@ -144,6 +147,22 @@ interface ITest {
 	{
 		throw new System.NotImplementedException ();
 	}");
+		}
+		
+		
+		/// <summary>
+		/// Bug 2074 - [Regression] Implement Interface implicitly does not check the methods already exist 
+		/// </summary>
+		[Test()]
+		public void TestBug2074 ()
+		{
+			TestCreateInterface (@"interface ITest {
+	void Method1 ();
+	void Method2 ();
+}", @"public void Method1 ()
+	{
+		throw new System.NotImplementedException ();
+	}", "public void Method2 () {}");
 		}
 	}
 }

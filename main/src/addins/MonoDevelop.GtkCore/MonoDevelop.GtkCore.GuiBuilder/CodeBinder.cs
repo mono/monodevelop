@@ -178,7 +178,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			};
 			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
 				met.Parameters.Add (new DefaultUnresolvedParameter (new DefaultUnresolvedTypeDefinition (pinfo.TypeName), pinfo.Name));
-			CodeGenerationService.AddNewMember (cls, met);
+			var resolvedCls = cls.Resolve (cls.ParsedFile.GetTypeResolveContext (TypeSystemService.GetCompilation (project), cls.Region.Begin)).GetDefinition ();
+			CodeGenerationService.AddNewMember (resolvedCls, cls, met);
 		}
 		
 		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
@@ -214,7 +215,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
 			if (editor != null) {
-				CodeGenerationService.AddNewMember (cls, GetFieldCode (cls, obj, name));
+				var resolvedCls = cls.Resolve (cls.ParsedFile.GetTypeResolveContext (TypeSystemService.GetCompilation (project), cls.Region.Begin)).GetDefinition ();
+				CodeGenerationService.AddNewMember (resolvedCls, cls, GetFieldCode (cls, obj, name));
 			}
 		}
 		

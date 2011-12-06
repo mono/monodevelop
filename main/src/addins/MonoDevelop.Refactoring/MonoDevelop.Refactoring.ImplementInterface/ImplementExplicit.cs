@@ -59,7 +59,12 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			var def = interfaceType.GetDefinition ();
 			if (def == null)
 				return false;
-			return def.Kind == TypeKind.Interface;
+			if (def.Kind != TypeKind.Interface)
+				return false;
+			
+			var declaringType = options.Document.ParsedDocument.GetInnermostTypeDefinition (loc.Line, loc.Column);
+			var type = declaringType.Resolve (options.Document.ParsedDocument.GetTypeResolveContext (options.Document.Compilation, loc)).GetDefinition ();
+			return CodeGenerator.CollectMembersToImplement (type, def, false).Any ();
 		}
 		
 		public override bool IsValid (RefactoringOptions options)
@@ -98,7 +103,8 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 					var generator = options.CreateCodeGenerator ();
 					if (generator == null) 
 						return;
-					args.InsertionPoint.Insert (options.GetTextEditorData (), generator.CreateInterfaceImplementation (declaringType, interfaceType, implementExplicit));
+					var type = declaringType.Resolve (options.Document.ParsedDocument.GetTypeResolveContext (options.Document.Compilation, loc)).GetDefinition ();
+					args.InsertionPoint.Insert (options.GetTextEditorData (), generator.CreateInterfaceImplementation (type, declaringType, interfaceType, implementExplicit));
 				}
 			};
 		}

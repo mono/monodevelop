@@ -474,8 +474,9 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (cu != null)
 				callingType = cu.GetInnermostTypeDefinition (options.Document.Editor.Caret.Location);
 			var newMethod = GenerateMethodStub (options, callingType, param);
+			var type = callingType.Resolve (options.Document.ParsedDocument.GetTypeResolveContext (options.Document.Compilation, options.Location)).GetDefinition ();
 
-			var createdMethod = codeGenerator.CreateMemberImplementation (callingType, newMethod, false);
+			var createdMethod = codeGenerator.CreateMemberImplementation (type, callingType, newMethod, false);
 			
 			if (param.GenerateComment && DocGenerator.Instance != null) {
 				var ctx = (cu.ParsedFile as CSharpParsedFile).GetTypeResolveContext (options.Document.Compilation, callingType.Region.Begin);

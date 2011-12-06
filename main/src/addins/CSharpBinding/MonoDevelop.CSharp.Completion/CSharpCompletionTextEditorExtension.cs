@@ -76,6 +76,18 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
+		public ParsedDocument ParsedDocument {
+			get {
+				return document.ParsedDocument;
+			}
+		}
+		
+		public ICompilation Compilation {
+			get {
+				return document.Compilation;
+			}
+		}
+		
 		CSharpFormattingPolicy policy;
 		public CSharpFormattingPolicy FormattingPolicy {
 			get {

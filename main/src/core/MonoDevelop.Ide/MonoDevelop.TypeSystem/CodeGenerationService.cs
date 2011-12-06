@@ -81,20 +81,20 @@ namespace MonoDevelop.TypeSystem
 			return newDocument.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
 		}
 		
-		public static void AddNewMember (IUnresolvedTypeDefinition type, IUnresolvedMember newMember, bool implementExplicit = false)
+		public static void AddNewMember (ITypeDefinition type, IUnresolvedTypeDefinition part, IUnresolvedMember newMember, bool implementExplicit = false)
 		{
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
+			var data = TextFileProvider.Instance.GetTextEditorData (part.Region.FileName, out isOpen);
 			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
 			
-			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
+			var insertionPoints = GetInsertionPoints (data, parsedDocument, part);
 			
-			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMember);
+			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, newMember);
 			
 			var generator = CreateCodeGenerator (data);
 
 			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.Region.Begin));
-			var generatedCode = generator.CreateMemberImplementation (type, newMember, implementExplicit);
+			var generatedCode = generator.CreateMemberImplementation (type, part, newMember, implementExplicit);
 			suitableInsertionPoint.Insert (data, generatedCode.Code);
 			if (!isOpen) {
 				try {
@@ -127,29 +127,29 @@ namespace MonoDevelop.TypeSystem
 			return indentLevel;
 		}
 		
-		public static void AddNewMembers (Project project, IUnresolvedTypeDefinition type, IEnumerable<IUnresolvedMember> newMembers, string regionName = null, Func<IUnresolvedMember, bool> implementExplicit = null)
+		public static void AddNewMembers (Project project, ITypeDefinition type, IUnresolvedTypeDefinition part, IEnumerable<IUnresolvedMember> newMembers, string regionName = null, Func<IUnresolvedMember, bool> implementExplicit = null)
 		{
 			IUnresolvedMember firstNewMember = newMembers.FirstOrDefault ();
 			if (firstNewMember == null)
 				return;
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
+			var data = TextFileProvider.Instance.GetTextEditorData (part.Region.FileName, out isOpen);
 			var parsedDocument = TypeSystemService.ParseFile (project, data);
 			
-			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
+			var insertionPoints = GetInsertionPoints (data, parsedDocument, part);
 			
 			
-			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, firstNewMember);
+			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, firstNewMember);
 			
 			var generator = CreateCodeGenerator (data);
-			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.Region.Begin));
+			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (part.Region.Begin));
 			StringBuilder sb = new StringBuilder ();
 			foreach (var newMember in newMembers) {
 				if (sb.Length > 0) {
 					sb.AppendLine ();
 					sb.AppendLine ();
 				}
-				sb.Append (generator.CreateMemberImplementation (type, newMember, implementExplicit != null ? implementExplicit (newMember) : false).Code);
+				sb.Append (generator.CreateMemberImplementation (type, part, newMember, implementExplicit != null ? implementExplicit (newMember) : false).Code);
 			}
 			suitableInsertionPoint.Insert (data, string.IsNullOrEmpty (regionName) ? sb.ToString () : generator.WrapInRegions (regionName, sb.ToString ()));
 			if (!isOpen) {
@@ -204,7 +204,7 @@ namespace MonoDevelop.TypeSystem
 			result.Add (GetInsertionPosition (data.Document, realStartLocation.Line, realStartLocation.Column));
 			result [0].LineBefore = NewLineInsertion.None;
 			
-			foreach (IMember member in type.Members) {
+			foreach (var member in type.Members) {
 				TextLocation domLocation = member.BodyRegion.End;
 				if (domLocation.Line <= 0) {
 					LineSegment lineSegment = data.GetLine (member.Region.BeginLine);

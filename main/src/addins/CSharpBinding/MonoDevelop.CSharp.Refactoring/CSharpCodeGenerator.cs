@@ -58,7 +58,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		class CodeGenerationOptions
 		{
 			public bool ExplicitDeclaration { get; set; }
-			public IUnresolvedTypeDefinition ImplementingType { get; set; }
+			public ITypeDefinition ImplementingType { get; set; }
+			public IUnresolvedTypeDefinition Part { get; set; }
 		}
 		
 		public override string WrapInRegions (string regionName, string text)
@@ -75,13 +76,16 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result.ToString ();
 		}
 		
-		public override CodeGeneratorMemberResult CreateMemberImplementation (IUnresolvedTypeDefinition implementingType, IUnresolvedMember member,
+		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
+		                                                                      IUnresolvedTypeDefinition part,
+		                                                                      IUnresolvedMember member,
 		                                                                      bool explicitDeclaration)
 		{
-			SetIndentTo (implementingType);
+			SetIndentTo (part);
 			var options = new CodeGenerationOptions () {
 				ExplicitDeclaration = explicitDeclaration,
-				ImplementingType = implementingType
+				ImplementingType = implementingType,
+				Part = part
 			};
 			if (member is IMethod)
 				return GenerateCode ((IMethod)member, options);
@@ -94,13 +98,16 @@ namespace MonoDevelop.CSharp.Refactoring
 			throw new NotSupportedException ("member " +  member + " is not supported.");
 		}
 		
-		public override CodeGeneratorMemberResult CreateMemberImplementation (IUnresolvedTypeDefinition implementingType, IMember member,
+		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
+		                                                                      IUnresolvedTypeDefinition part,
+		                                                                      IMember member,
 		                                                                      bool explicitDeclaration)
 		{
-			SetIndentTo (implementingType);
+			SetIndentTo (part);
 			var options = new CodeGenerationOptions () {
 				ExplicitDeclaration = explicitDeclaration,
-				ImplementingType = implementingType
+				ImplementingType = implementingType,
+				Part = part
 			};
 			if (member is IMethod)
 				return GenerateCode ((IMethod)member, options);
@@ -180,10 +187,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (GetIndent (IndentLevel));
 		}
 		
-		void AppendReturnType (StringBuilder result, IUnresolvedTypeDefinition implementingType, IType type)
+		void AppendReturnType (StringBuilder result, CodeGenerationOptions options, IType type)
 		{
 			if (type == null)
 				throw new ArgumentNullException ("type");
+			var implementingType = options.Part;
 			var loc = implementingType.Region.Begin;
 			
 			var pf = implementingType.ParsedFile;
@@ -193,20 +201,23 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append (type.ToString ());
 				return;
 			}
-			//TODO: Type system conversion
-			
-/*			var shortType = CreateShortType (file, loc, resolved);
-			
-			using (var stringWriter = new System.IO.StringWriter ()) {
-				var formatter = new TextWriterOutputFormatter (stringWriter);
-				stringWriter.NewLine = EolMarker;
-				var visitor = new CSharpOutputVisitor (formatter, project.GetFormattingOptions ());
-				shortType.AcceptVisitor (visitor, null);
-				var typeString = stringWriter.ToString ();
-				if (typeString.StartsWith ("global::"))
-					typeString = typeString.Substring ("global::".Length);
-				result.Append (typeString);
-			}*/
+			var def = type.GetDefinition ();
+			if (def != null) {
+				using (var stringWriter = new System.IO.StringWriter ()) {
+					var formatter = new TextWriterOutputFormatter (stringWriter);
+					stringWriter.NewLine = EolMarker; 
+						var visitor = new CSharpOutputVisitor (formatter, new CSharpFormattingOptions ());
+						var shortType = CreateShortType (def.Compilation, file, loc, resolved);
+						shortType.AcceptVisitor (visitor, null);
+					
+					var typeString = stringWriter.ToString ();
+					if (typeString.StartsWith ("global::"))
+						typeString = typeString.Substring ("global::".Length);
+					result.Append (typeString);
+				}
+			} else {
+				result.Append (new ICSharpCode.NRefactory.CSharp.CSharpAmbience ().ConvertType (type));
+			}
 		}
 		
 		/*
@@ -230,7 +241,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendIndent (result);
 			AppendModifiers (result, options, field);
 			result.Append (" ");
-			AppendReturnType (result, options.ImplementingType, field.ReturnType);
+			AppendReturnType (result, options, field.ReturnType);
 			result.Append (" ");
 			result.Append (field.Name);
 			result.Append (";");
@@ -244,7 +255,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendModifiers (result, options, evt);
 			
 			result.Append ("event ");
-			AppendReturnType (result, options.ImplementingType, evt.ReturnType);
+			AppendReturnType (result, options, evt.ReturnType);
 			result.Append (" ");
 			if (options.ExplicitDeclaration) {
 				result.Append (ambience.GetString (evt.DeclaringTypeDefinition, OutputFlags.IncludeGenerics));
@@ -306,10 +317,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			int bodyStartOffset = -1, bodyEndOffset = -1;
 			StringBuilder result = new StringBuilder ();
 			AppendModifiers (result, options, method);
-			AppendReturnType (result, options.ImplementingType, method.ReturnType);
+			AppendReturnType (result, options, method.ReturnType);
 			result.Append (" ");
 			if (options.ExplicitDeclaration) {
-				AppendReturnType (result, options.ImplementingType, method.DeclaringTypeDefinition);
+				AppendReturnType (result, options, method.DeclaringTypeDefinition);
 				result.Append (".");
 			}
 			result.Append (method.Name);
@@ -326,13 +337,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (Policy.BeforeMethodDeclarationParentheses)
 				result.Append (" ");
 			result.Append ("(");
-			AppendParameterList (result, options.ImplementingType, method.Parameters);
+			AppendParameterList (result, options, method.Parameters);
 			result.Append (")");
 			
 			var typeParameters = method.TypeParameters;
-			foreach (var p in typeParameters) {
-				Console.WriteLine (p.EffectiveBaseClass);
-			}
 			
 			if (typeParameters.Any (p => p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || p.HasValueTypeConstraint || p.DirectBaseTypes.Any ())) {
 				result.Append (" where ");
@@ -364,12 +372,18 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("class");
 						constraintCount++;
 					}
-					
+					bool hadInterfaces = false;
 					foreach (var c in p.DirectBaseTypes) {
+						if (c.FullName == "System.Object" && (p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || hadInterfaces))
+							continue;
+						if (c.FullName == "System.ValueType" && p.HasValueTypeConstraint)
+							continue;
 						if (constraintCount != 0)
 							result.Append (", ");
 						constraintCount++;
-						AppendReturnType (result, options.ImplementingType, c);
+						AppendReturnType (result, options, c);
+						if (c.Kind == TypeKind.Interface)
+							hadInterfaces = true;
 					}
 				}
 			}
@@ -443,7 +457,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
 		}
 		
-		void AppendParameterList (StringBuilder result, IUnresolvedTypeDefinition implementingType, IList<IParameter> parameters)
+		void AppendParameterList (StringBuilder result, CodeGenerationOptions options, IList<IParameter> parameters)
 		{
 			for (int i = 0; i < parameters.Count; i++) {
 				if (i > 0)
@@ -456,7 +470,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("ref ");
 				if (p.IsParams)
 					result.Append ("params ");
-				AppendReturnType (result, implementingType, p.Type);
+				AppendReturnType (result, options, p.Type);
 				result.Append (" ");
 				result.Append (p.Name);
 			}
@@ -488,7 +502,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendIndent (result);
 			if (options.ExplicitDeclaration || options.ImplementingType.Kind == TypeKind.Interface)
 				return;
-			result.Append (GetModifiers (options.ImplementingType, member));
+			result.Append (GetModifiers (options.Part, member));
 			
 			bool isFromInterface = false;
 			if (member.DeclaringType != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
@@ -514,11 +528,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			var regions = new List<CodeGeneratorBodyRegion> ();
 			var result = new StringBuilder ();
 			AppendModifiers (result, options, property);
-			AppendReturnType (result, options.ImplementingType, property.ReturnType);
+			AppendReturnType (result, options, property.ReturnType);
 			result.Append (" ");
 			if (property.IsIndexer) {
 				result.Append ("this[");
-				AppendParameterList (result, options.ImplementingType, property.Parameters);
+				AppendParameterList (result, options, property.Parameters);
 				result.Append ("]");
 			} else {
 				if (options.ExplicitDeclaration) {
@@ -604,8 +618,12 @@ namespace MonoDevelop.CSharp.Refactoring
 //				result.Append (ambience.GetString (modifiers));
 //				result.Append (" ");
 //			}
+			var options = new CodeGenerationOptions () {
+				ImplementingType = field.DeclaringTypeDefinition,
+				Part = implementingType
+			};
 			
-			AppendReturnType (result, implementingType, field.ReturnType);
+			AppendReturnType (result, options, field.ReturnType);
 			result.Append (" ");
 			result.Append (propertyName);
 			AppendBraceStart (result, Policy.PropertyBraceStyle);

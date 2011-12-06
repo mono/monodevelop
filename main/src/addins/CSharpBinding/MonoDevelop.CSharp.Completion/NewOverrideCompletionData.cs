@@ -73,8 +73,9 @@ namespace MonoDevelop.CSharp.Completion
 						break;
 					}
 				}
-			}// TODO: Type system conversion.
-			var result = generator.CreateMemberImplementation (type, member, isExplicit);
+			}
+			var resolvedType = type.Resolve (ext.ParsedDocument.GetTypeResolveContext (ext.Compilation, editor.Caret.Location)).GetDefinition ();
+			var result = generator.CreateMemberImplementation (resolvedType, type, member, isExplicit);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();

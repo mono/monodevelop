@@ -113,7 +113,6 @@ namespace MonoDevelop.TypeSystem
 		
 		public static void AddGenerator (MimeTypeExtensionNode node)
 		{
-			Console.WriteLine ("add generator :"+ node.MimeType);
 			generators [node.MimeType] = node;
 		}
 		
@@ -126,27 +125,23 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (IndentLevel < 0)
 				IndentLevel = CodeGenerationService.CalculateBodyIndentLevel (implementingType);
-			Console.WriteLine ("indent level:" + IndentLevel);
 		}
 		
-		public string CreateInterfaceImplementation (IUnresolvedTypeDefinition implementingType, IType interfaceType, bool explicitly, bool wrapRegions = true)
+		public string CreateInterfaceImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition implementingPart, IType interfaceType, bool explicitly, bool wrapRegions = true)
 		{
-			SetIndentTo (implementingType);
+			SetIndentTo (implementingPart);
 			StringBuilder result = new StringBuilder ();
 			List<IMember> implementedMembers = new List<IMember> ();
-			foreach (var baseInterface in interfaceType.GetAllBaseTypes ()) {
-				var def = baseInterface.GetDefinition ();
-				if (def != null && def.Kind != TypeKind.Interface)
-					continue;
+			foreach (var def in interfaceType.GetAllBaseTypeDefinitions ().Where (bt => bt.Kind == TypeKind.Interface)) {
 				if (result.Length > 0) {
 					AppendLine (result);
 					AppendLine (result);
 				}
-				string implementation = InternalCreateInterfaceImplementation (implementingType, baseInterface, explicitly, implementedMembers);
+				string implementation = InternalCreateInterfaceImplementation (implementingType, implementingPart, def, explicitly, implementedMembers);
 				if (string.IsNullOrWhiteSpace (implementation))
 					continue;
 				if (wrapRegions) {
-					result.Append (WrapInRegions (baseInterface.Name + " implementation", implementation));
+					result.Append (WrapInRegions (def.Name + " implementation", implementation));
 				} else {
 					result.Append (implementation);
 				}
@@ -167,70 +162,74 @@ namespace MonoDevelop.TypeSystem
 			return true;
 		}
 		
-		protected string InternalCreateInterfaceImplementation (IUnresolvedTypeDefinition implementingType, IType interfaceType, bool explicitly, List<IMember> implementedMembers)
+		public static List<KeyValuePair<IMember, bool>> CollectMembersToImplement (ITypeDefinition implementingType, ITypeDefinition interfaceType, bool explicitly)
 		{
-			StringBuilder result = new StringBuilder ();
-			
+			Console.WriteLine (Environment.StackTrace);
 			List<KeyValuePair<IMember, bool>> toImplement = new List<KeyValuePair<IMember, bool>> ();
 			bool alreadyImplemented;
 			
 			// Stub out non-implemented events defined by @iface
-			foreach (var ev in interfaceType.GetEvents ()) {
+			foreach (var ev in interfaceType.Events) {
 				if (ev.IsSynthetic)
 					continue;
 				bool needsExplicitly = explicitly;
-// TODO: Type system conversion.
-//				alreadyImplemented = implementingType.GetAllBaseType ().Any (x => x.Kind != TypeKind.Interface && x.GetEvents (dom).Any (y => y.Name == ev.Name));
-//				
-//				if (!alreadyImplemented)
-//					toImplement.Add (new KeyValuePair<IMember, bool> (ev, needsExplicitly));
+				alreadyImplemented = implementingType.GetAllBaseTypeDefinitions ().Any (x => x.Kind != TypeKind.Interface && x.Events.Any (y => y.Name == ev.Name));
+				
+				if (!alreadyImplemented)
+					toImplement.Add (new KeyValuePair<IMember, bool> (ev, needsExplicitly));
 			}
 			
 			// Stub out non-implemented methods defined by @iface
-			foreach (var method in interfaceType.GetMethods ()) {
+			foreach (var method in interfaceType.Methods) {
 				if (method.IsSynthetic)
 					continue;
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
-// TODO: Type system conversion.
-/*				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
+				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
 					if (t.Kind == TypeKind.Interface)
 						continue;
-					foreach (var cmet in t.GetMethods (dom)) {
+					foreach (var cmet in t.Methods) {
 						if (cmet.Name == method.Name && CompareParameters (cmet.Parameters, method.Parameters)) {
 							if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
 								needsExplicitly = true;
 							else
-								alreadyImplemented |= !needsExplicitly || cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Resolve (ctx).Equals (interfaceType));
+								alreadyImplemented |= !needsExplicitly /*|| cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Equals (interfaceType))*/;
 						}
 					}
-				}*/
+				}
 				if (!alreadyImplemented) 
 					toImplement.Add (new KeyValuePair<IMember, bool> (method, needsExplicitly));
 			}
 			
 			// Stub out non-implemented properties defined by @iface
-			foreach (var prop in interfaceType.GetProperties ()) {
+			foreach (var prop in interfaceType.Properties) {
 				if (prop.IsSynthetic)
 					continue;
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
-// TODO: Type system conversion.
-/*				foreach (IType t in implementingType.GetBaseTypes ()) {
+				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
 					if (t.Kind == TypeKind.Interface)
 						continue;
-					foreach (IProperty cprop in t.GetProperties (dom)) {
+					foreach (IProperty cprop in t.Properties) {
 						if (cprop.Name == prop.Name) {
 							if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
 								needsExplicitly = true;
 							else
-								alreadyImplemented |= !needsExplicitly || cprop.InterfaceImplementations.Any (impl => impl.InterfaceType.Resolve (ctx).Equals (interfaceType));
+								alreadyImplemented |= !needsExplicitly/* || cprop.InterfaceImplementations.Any (impl => impl.InterfaceType.Resolve (ctx).Equals (interfaceType))*/;
 						}
 					}
-				}*/
+				}
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember, bool> (prop, needsExplicitly));
 			}
+			return toImplement;
+		}
+
+		protected string InternalCreateInterfaceImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition part, ITypeDefinition interfaceType, bool explicitly, List<IMember> implementedMembers)
+		{
+			StringBuilder result = new StringBuilder ();
+			var toImplement = CollectMembersToImplement (implementingType, interfaceType, explicitly);
+			
 			bool first = true;
 			foreach (var pair in toImplement) {
 				if (!first) {
@@ -249,8 +248,7 @@ namespace MonoDevelop.TypeSystem
 						isExplicit = true;
 					}
 				}
-// TODO: Type system converision
-//				result.Append (CreateMemberImplementation (implementingType, pair.Key, isExplicit).Code);
+				result.Append (CreateMemberImplementation (implementingType, part, pair.Key, isExplicit).Code);
 				implementedMembers.Add (pair.Key);
 			}
 			
@@ -258,8 +256,8 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		public abstract string WrapInRegions (string regionName, string text);
-		public abstract CodeGeneratorMemberResult CreateMemberImplementation (IUnresolvedTypeDefinition implementingType, IUnresolvedMember member, bool explicitDeclaration);
-		public abstract CodeGeneratorMemberResult CreateMemberImplementation (IUnresolvedTypeDefinition implementingType, IMember member, bool explicitDeclaration);
+		public abstract CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition part, IUnresolvedMember member, bool explicitDeclaration);
+		public abstract CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition part, IMember member, bool explicitDeclaration);
 		
 		public abstract string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly);
 		
