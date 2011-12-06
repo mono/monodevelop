@@ -245,13 +245,12 @@ namespace MonoDevelop.CSharp
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
 			var unit = Document.ParsedDocument;
-			if (unit == null)
+			if (unit == null || unit.ParsedFile == null)
 				return;
-			
 			var loc = Document.Editor.Caret.Location;
 			var result = new List<PathEntry> ();
 			var amb = GetAmbience ();
-			var ctx = (unit.ParsedFile as CSharpParsedFile).GetTypeResolveContext (document.Compilation, loc);
+			var ctx = unit.ParsedFile.GetTypeResolveContext (document.Compilation, loc);
 			var typeDef = unit.GetInnermostTypeDefinition (loc);
 			IType type = null;
 			if (typeDef != null) {
