@@ -980,6 +980,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						newParentNode = newParentNode.Parent;
 				}
 				
+				if (newParentNode is AssignmentExpression) {
+					var assign = (AssignmentExpression)newParentNode;
+					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, assign.Left, expressionOrVariableDeclaration.Item3);
+					if (resolved != null) {
+						hintType = resolved.Item1.Type;
+					}
+				}
+				
 				if (newParentNode is VariableDeclarationStatement) {
 					var varDecl = (VariableDeclarationStatement)newParentNode;
 					hintTypeAst = varDecl.Type;
