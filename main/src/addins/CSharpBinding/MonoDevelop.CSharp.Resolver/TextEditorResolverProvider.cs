@@ -152,6 +152,9 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			switch (member.EntityType) {
 			case EntityType.Field:
+				var field = member as IField;
+				if (field.IsConst)
+					return GettextCatalog.GetString ("Constant");
 				return GettextCatalog.GetString ("Field");
 			case EntityType.Property:
 				return GettextCatalog.GetString ("Property");
@@ -162,6 +165,15 @@ namespace MonoDevelop.CSharp.Resolver
 				return GettextCatalog.GetString ("Event");
 			}
 			return GettextCatalog.GetString ("Member");
+		}
+		
+		string GetConst (object obj)
+		{
+			if (obj is string)
+				return '"' + obj.ToString () + '"';
+			if (obj is char)
+				return "'" + obj + "'";
+			return obj.ToString ();
 		}
 		
 		public string CreateTooltip (IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState)
@@ -242,7 +254,17 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append ("<small><i>");
 					s.Append (GetString (member));
 					s.Append ("</i></small>\n");
-					s.Append (ambience.GetString (member, settings));
+					var field = member as IField;
+					if (field != null && field.IsConst) {
+						s.Append (ambience.GetString (field.Type, settings));
+						s.Append (" ");
+						s.Append (field.Name);
+						s.Append (" = ");
+						s.Append (GetConst (field.ConstantValue));
+						s.Append (";");
+					} else {
+						s.Append (ambience.GetString (member, settings));
+					}
 					doc = AmbienceService.GetDocumentationSummary (member);
 				} else if (result is NamespaceResolveResult) {
 					s.Append ("<small><i>");
