@@ -70,7 +70,7 @@ namespace MonoDevelop.MacDev
 		public override void Launch (params string[] files)
 		{
 			if (!AppleSdkSettings.IsXcode42)
-				throw new UserException ("XCode 4.2 is required to open file {0}", files [0]);
+				throw new UserException (string.Format ("XCode 4.2 is required to open file {0}", files [0]));
 
 			project.XcodeProjectTracker.OpenDocument (files[0]);
 		}
