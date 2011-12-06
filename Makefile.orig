@@ -5,6 +5,7 @@
 
 # Here are a few paths that need to be configured first:
 MDROOT  = INSERT_MD_ROOT
+MAROOT  = INSERT_MA_ROOT
 MONOBIN = INSERT_MONO_BIN
 FSBIN = INSERT_FSHARP_BIN
 ATKDIR = INSERT_ATK_DIR
@@ -13,7 +14,7 @@ GTKDIR = INSERT_GTK_DIR
 GDKDIR = INSERT_GDK_DIR
 GLIBDIR = INSERT_GLIB_DIR
 MONO = INSERT_MONO
-MDRUN = $(MONO) $(MDROOT)/bin/mdrun.exe
+MDRUN = $(MONO) $(MDROOT)/bin/mdtool.exe
 
 FSC = INSERT_FSHARP_COMPILER
 CSC = INSERT_CSHARP_COMPILER
@@ -25,6 +26,7 @@ RESOURCES = \
 	--resource:src/Resources/EmptyFSharpSource.xft.xml \
 	--resource:src/Resources/EmptyFSharpScript.xft.xml \
 	--resource:src/Resources/FSharpConsoleProject.xpt.xml \
+        --resource:src/Resources/FSharpLibraryProject.xpt.xml \
 	--resource:src/Resources/fsharp-icon-32.png \
 	--resource:src/Resources/fsharp-script-32.png \
 	--resource:src/Resources/fsharp-file-icon.png \
@@ -52,13 +54,17 @@ FILES = \
 	src/FSharpSyntaxMode.fs \
 	src/FSharpResourceIdBuilder.fs \
 	src/FSharpLanguageBinding.fs \
+	src/FSharpProjectFileNodeExtension.fs \
+	src/FSharpProjectServiceExtension.fs \
 	src/FSharpParser.fs \
 	src/FSharpTextEditorCompletion.fs \
 	src/FSharpResolverProvider.fs
 
 REFERENCES = \
 	-r:$(MONOBIN)/mscorlib.dll \
+	-r:$(MONOBIN)/Mono.Posix.dll \
 	-r:System.dll -r:System.Xml.dll \
+	-r:$(MAROOT)/Mono.Addins.dll -r:Mono.Cairo.dll /codepage:65001 \
 	-r:$(MDBIN)/MonoDevelop.Core.dll \
 	-r:$(MDBIN)/MonoDevelop.Ide.dll \
 	-r:$(MDBIN)/Mono.TextEditor.dll \

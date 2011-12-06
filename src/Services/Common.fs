@@ -310,7 +310,7 @@ module Common =
     if not coreRef then
       let dirs = ScriptOptions.getDefaultDirectories None []
       match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
-      | Some fn -> yield "-r:" + wrapf(fn)
+      | Some fn -> yield "-r:/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/FSharp.Core.dll"
       | None -> Debug.tracef "Resolution" "FSharp.Core assembly resolution failed!"
       
     for file in files do 
@@ -383,12 +383,12 @@ module Common =
         AddinManager.CurrentAddin.GetFilePath ("fsc.exe")
     | _ when Environment.runningOnMono && ((ScriptOptions.safeExists "/usr/bin/fsharpc") || (ScriptOptions.safeExists "/usr/local/bin/fsharpc")) ->
         // On Mono, we always prefer 'fsharpc' script, especially if we can find it
-        "fsharpc"
+        "/Library/Frameworks/Mono.framework/Versions/2.10.6/lib/mono/4.0/fsc.exe"
     | Some(dir) when File.Exists(Path.Combine(dir, "fsc.exe")) ->  
         // If we can find 'fsc.exe' then that is good no matter where we're running
         Path.Combine(dir, "fsc.exe")
         // Fallback case - depends on the platform
-    | _ -> if Environment.runningOnMono then "fsharpc" else "fsc.exe"
+    | _ -> if Environment.runningOnMono then "/Library/Frameworks/Mono.framework/Versions/2.10.6/lib/mono/4.0/fsc.exe" else "fsc.exe"
 
   /// If we cannto find F# Interactive, we use just "fsi.exe" on 
   /// .NET or we use "fsharpi" command on Mono (installed by the package)
@@ -399,11 +399,11 @@ module Common =
         AddinManager.CurrentAddin.GetFilePath ("fsi.exe")
     | _ when Environment.runningOnMono && ScriptOptions.safeExists("/usr/bin/fsharpi") ->
         // On Mono, we always prefer 'fsharpi' script, especially if we can find it
-        "fsharpi"
+        "/Library/Frameworks/Mono.framework/Versions/2.10.6/lib/mono/4.0/fsi.exe"
     | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsi.exe")) ->  
         // If we can find 'fsi.exe' then that is good no matter where we're running
         Path.Combine(dir, "fsi.exe")
         // Fallback case - depends on the platform
-    | _ -> if Environment.runningOnMono then "fsharpi" else "fsi.exe"
+    | _ -> if Environment.runningOnMono then "/Library/Frameworks/Mono.framework/Versions/2.10.6/lib/mono/4.0/fsi.exe" else "fsi.exe"
 
   do Debug.tracef "Resolution" "Paths:\n - fsc = %s\n - fsi = %s" fscPath fsiPath

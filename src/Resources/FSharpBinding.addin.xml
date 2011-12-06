@@ -1,25 +1,25 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="Community" copyright="???" url="http://www.fsharp.net"
-       description="F# Language Binding" category="Language bindings" version="2.8">
+       description="F# Language Binding" category="Language bindings" version="2.8.4">
 
   <Runtime>
     <Import assembly="FSharpBinding.dll" />
     <Import assembly="FSharpBinding.Gui.dll" />
-    <Import assembly="FSharp.Compiler.dll" />
-    <Import assembly="FSharp.Compiler.Server.Shared.dll" />
-    <Import assembly="FSharp.Build.dll" />
-    <Import assembly="FSharp.Compiler.Interactive.Settings.dll" />
-    <Import assembly="FSharp.Core.dll" />
-    <Import file="fsc.exe" />
-    <Import file="fsi.exe" />
-    <Import file="FSharp.Core.optdata" />
-    <Import file="FSharp.Core.sigdata" />
+    <Import assembly="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/FSharp.Compiler.dll" />
+    <Import assembly="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/FSharp.Compiler.Server.Shared.dll" />
+    <Import assembly="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/FSharp.Build.dll" />
+    <Import assembly="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/FSharp.Compiler.Interactive.Settings.dll" />
+    <Import assembly="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/FSharp.Core.dll" />
+    <Import file="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/fsc.exe" />
+    <Import file="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/fsi.exe" />
+    <Import file="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/FSharp.Core.optdata" />
+    <Import file="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/FSharp.Core.sigdata" />
   </Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.8"/>
-		<Addin id="Ide" version="2.8"/>
-		<Addin id="SourceEditor2" version="2.8"/>
+		<Addin id="Core" version="2.8.4"/>
+		<Addin id="Ide" version="2.8.4"/>
+		<Addin id="SourceEditor2" version="2.8.4"/>
   </Dependencies>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -62,7 +62,8 @@
 
   <Extension path="/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id="FSharpConsoleProject" resource="FSharpConsoleProject.xpt.xml"/>
-	</Extension>
+		<ProjectTemplate id="FSharpLibraryProject" resource="FSharpLibraryProject.xpt.xml"/>	
+   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
     <DataType class = "FSharp.MonoDevelop.FSharpCompilerParameters" />
