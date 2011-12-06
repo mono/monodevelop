@@ -385,7 +385,7 @@ namespace Mono.TextEditor
 		extern static bool gdk_quartz_set_fix_modifiers (bool fix);
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
-		static Dictionary<long,MappedKeys> mappedKeys = new Dictionary<long,MappedKeys> ();
+		static Dictionary<ulong,MappedKeys> mappedKeys = new Dictionary<ulong,MappedKeys> ();
 		
 		/// <summary>Map raw GTK key input to work around platform bugs and decompose accelerator keys</summary>
 		/// <param name='evt'>The raw key event</param>
@@ -396,7 +396,10 @@ namespace Mono.TextEditor
 			out KeyboardShortcut[] accels)
 		{
 			//this uniquely identifies the raw key
-			long id = (((long)evt.State)) | (((long)evt.HardwareKeycode) << 32) | ((long)evt.Group << 48);
+			ulong id;
+			unchecked {
+				id = (((ulong)(uint)evt.State) | (((ulong)evt.HardwareKeycode) << 32) | (((ulong)evt.Group) << 48));
+			}
 			
 			MappedKeys mapped;
 			if (!mappedKeys.TryGetValue (id, out mapped)) {

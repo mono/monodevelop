@@ -872,10 +872,14 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			ModifierType mod;
 			Gdk.Key key;
-			uint keyVal;
-			GtkWorkarounds.MapRawKeys (evt, out key, out mod, out keyVal);
+			Gdk.ModifierType mod;
+			KeyboardShortcut[] accels;
+			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
+			
+			uint keyVal = (uint) key;
+			key = accels[0].Key;
+			mod = accels[0].Modifier;
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
