@@ -36,6 +36,7 @@ http://msdn2.microsoft.com/en-us/library/b5ysx397.aspx
 		<compilation 
 			defaultLanguage="${AspNetLanguage}"
 			debug="true"
+			targetFramework="3.5"
 		>
 			<assemblies>
 			</assemblies>
