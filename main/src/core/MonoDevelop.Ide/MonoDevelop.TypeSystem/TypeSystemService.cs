@@ -886,7 +886,8 @@ namespace MonoDevelop.TypeSystem
 			AssemblyContext loadedContext;
 			if (cachedAssemblyContents.TryGetValue(fileName, out loadedContext))
 				return loadedContext;
-			
+			if (!File.Exists (fileName))
+				return null;
 			string cache = GetCacheDirectory (fileName);
 			if (cache != null) {
 				TouchCache (cache);
