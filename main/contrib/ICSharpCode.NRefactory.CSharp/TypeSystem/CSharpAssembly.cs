@@ -187,7 +187,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					}
 					typeDef = new DefaultResolvedTypeDefinition(new SimpleTypeResolveContext(parentType), parts.ToArray());
 					foreach (var part in parts) {
-						nestedTypeDict.Add(part, typeDef);
+						if (nestedTypeDict.ContainsKey (part))
+							continue;
+						nestedTypeDict.Add (part, typeDef);
 					}
 					return typeDef;
 				}
