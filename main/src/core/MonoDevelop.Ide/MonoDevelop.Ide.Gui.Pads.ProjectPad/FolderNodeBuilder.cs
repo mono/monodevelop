@@ -303,8 +303,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), MonoDevelop.Ide.Gui.Stock.CopyIcon, true))
 			{
+				// If we drag and drop a node in the treeview corresponding to a directory, do not move
+				// the entire directory. We should only move the files which exist in the project. Otherwise
+				// we will need a lot of hacks all over the code to prevent us from incorrectly moving version
+				// control related files such as .svn directories
 				bool move = operation == DragOperation.Move;
-				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);
+				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, true);
 			}
 		}
 		
