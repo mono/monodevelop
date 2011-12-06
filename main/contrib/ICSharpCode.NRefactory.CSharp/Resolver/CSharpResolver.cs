@@ -1306,7 +1306,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					ITypeDefinition def = n.GetTypeDefinition(identifier, k);
 					if (def != null) {
 						IType result = def;
-						if (parameterizeResultType) {
+						if (parameterizeResultType && typeArguments.Count > 0) {
 							result = new ParameterizedType(def, typeArguments);
 						}
 						if (u.HasAlias(identifier))
