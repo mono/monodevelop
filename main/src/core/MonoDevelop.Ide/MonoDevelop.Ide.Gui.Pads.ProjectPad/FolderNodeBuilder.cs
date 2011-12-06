@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
-						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, targetPath.FileName);
+						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, targetPath.ParentDirectory.FileName);
 					if (!MessageService.Confirm (q, AlertButton.Move))
 						return;
 				}
@@ -237,7 +237,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
-						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, targetPath.FileName);
+						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, targetPath.ParentDirectory.FileName);
 					if (!MessageService.Confirm (q, AlertButton.Copy))
 						return;
 				}
