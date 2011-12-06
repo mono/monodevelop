@@ -1577,20 +1577,26 @@ namespace MonoDevelop.Ide
 					!copyOnlyProjectFiles ||
 					IsDirectoryHierarchyEmpty (sourcePath)));
 
-			// Get the list of files to copy
-
+			// We need to remove all files + directories from the source project
+			// but when dealing with the VCS addins we need to process only the
+			// files so we do not create a 'file' in the VCS which corresponds
+			// to a directory in the project and blow things up.
+			List<ProjectFile> filesToRemove = null;
 			List<ProjectFile> filesToMove = null;
 			try {
 				//get the real ProjectFiles
 				if (sourceProject != null) {
 					if (sourceIsFolder) {
 						var virtualPath = sourcePath.ToRelative (sourceProject.BaseDirectory);
-						filesToMove = sourceProject.Files.GetFilesInVirtualPath (virtualPath).ToList ();
+						// Grab all the child nodes of the folder we just dragged/dropped
+						filesToRemove = sourceProject.Files.GetFilesInVirtualPath (virtualPath).ToList ();
+						// Add the folder itself so we can remove it from the soruce project if its a Move operation
+						filesToRemove.Add (sourceProject.Files.Where (f => f.ProjectVirtualPath == virtualPath).FirstOrDefault ());
 					} else {
-						filesToMove = new List<ProjectFile> ();
+						filesToRemove = new List<ProjectFile> ();
 						var pf = sourceProject.GetProjectFile (sourcePath);
 						if (pf != null)
-							filesToMove.Add (pf);
+							filesToRemove.Add (pf);
 					}
 				}
 				//get all the non-project files and create fake ProjectFiles
@@ -1598,18 +1604,21 @@ namespace MonoDevelop.Ide
 					var col = new List<ProjectFile> ();
 					GetAllFilesRecursive (sourcePath, col);
 					if (sourceProject != null) {
-						var names = new HashSet<string> (filesToMove.Select (f => sourceProject.BaseDirectory.Combine (f.ProjectVirtualPath).ToString ()));
+						var names = new HashSet<string> (filesToRemove.Select (f => sourceProject.BaseDirectory.Combine (f.ProjectVirtualPath).ToString ()));
 						foreach (var f in col)
 							if (names.Add (f.Name))
-							    filesToMove.Add (f);
+							    filesToRemove.Add (f);
 					} else {
-						filesToMove = col;
+						filesToRemove = col;
 					}
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not get any file from '{0}'.", sourcePath), ex);
 				return;
 			}
+			
+			// Strip out all the directories to leave us with just the files.
+			filesToMove = filesToRemove.Where (f => f.Subtype != Subtype.Directory).ToList ();
 			
 			// If copying a single file, bring any grouped children along
 			ProjectFile sourceParent = null;
@@ -1681,8 +1690,6 @@ namespace MonoDevelop.Ide
 				}
 				
 				if (sourceProject != null) {
-					if (removeFromSource && sourceProject.Files.Contains (file))
-						sourceProject.Files.Remove (file);
 					if (fileIsLink) {
 						var linkFile = (sourceProject == targetProject)? file : (ProjectFile) file.Clone ();
 						if (movingFolder) {
@@ -1709,6 +1716,12 @@ namespace MonoDevelop.Ide
 				}
 				
 				monitor.Step (1);
+			}
+			
+			if (removeFromSource) {
+				// Remove all files and directories under 'sourcePath'
+				foreach (var v in filesToRemove)
+					sourceProject.Files.Remove (v);
 			}
 			
 			var pfolder = sourcePath.ParentDirectory;
