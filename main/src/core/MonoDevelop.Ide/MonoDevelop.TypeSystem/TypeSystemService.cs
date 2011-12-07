@@ -41,6 +41,7 @@ using MonoDevelop.Core.Collections;
 using System.Xml;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -944,8 +945,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (project == null)
 				return null;
-			ProjectContentWrapper content;
-			projectContents.TryGetValue (project, out content);
+			var content = GetProjectContentWrapper (project);
 			return content.Content;
 		}
 		
@@ -953,8 +953,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (project == null)
 				return null;
-			ProjectContentWrapper content;
-			projectContents.TryGetValue (project, out content);
+			var content = GetProjectContentWrapper (project);
 			return content.Compilation;
 		}
 		
@@ -963,8 +962,9 @@ namespace MonoDevelop.TypeSystem
 			if (project == null)
 				return null;
 			ProjectContentWrapper content;
-			projectContents.TryGetValue (project, out content);
-			return content;
+			if (projectContents.TryGetValue (project, out content))
+				return content;
+			return new ProjectContentWrapper (new CSharpProjectContent ());
 		}
 		
 		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
