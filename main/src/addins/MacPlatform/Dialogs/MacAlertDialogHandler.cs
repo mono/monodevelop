@@ -123,6 +123,10 @@ namespace MonoDevelop.MacIntegration
 					applyToAllCheck.Title = GettextCatalog.GetString ("Apply to all");
 				}
 				
+				// Hack up a slightly wider than normal alert dialog. I don't know how to do this in a nicer way
+				// as the min size constraints are apparently ignored.
+				var frame = ((NSPanel) alert.Window).Frame;
+				((NSPanel) alert.Window).SetFrame (new RectangleF (frame.X, frame.Y, Math.Max (frame.Width, 600), frame.Height), true);
 				alert.Layout ();
 				
 				int result = alert.RunModal () - (int)NSAlertButtonReturn.First;

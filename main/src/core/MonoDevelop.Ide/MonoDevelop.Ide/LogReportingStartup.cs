@@ -50,12 +50,17 @@ namespace MonoDevelop.Ide
 //			}
 			
 			LogReportingService.ShouldEnableReporting = () => {
-				var result = MessageService.AskQuestion ("A crash has been detected",
-					"MonoDevelop has crashed recently. Details of this crash along with anonymous installation " +
-					"information can be uploaded to Xamarin to help diagnose the issue. This information " +
-					"will be used to help diagnose the crash. Do you wish to upload this information?",
-					AlertButton.Yes, AlertButton.No);
-
+				var title = GettextCatalog.GetString ("A crash has just occurred");
+				var part1 = GettextCatalog.GetString ("Details of this crash, along with anonymous installation " +
+							"information, can be uploaded to Xamarin to help diagnose the issue. " +
+						    "Do you wish to automatically upload this information for this and future crashes?");
+				var part2 = GettextCatalog.GetString ("This setting can be changed in the 'Log Agent' section of the MonoDevelop preferences");
+				
+				var result = MessageService.AskQuestion (
+					title,
+				    string.Format ("{0}{1}{1}{2}", part1, Environment.NewLine, part2),
+					AlertButton.No, AlertButton.Yes);
+				
 				return result == AlertButton.Yes;
 			};
 			
