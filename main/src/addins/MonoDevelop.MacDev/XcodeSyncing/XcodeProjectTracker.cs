@@ -312,7 +312,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		bool UpdateXcodeProject (IProgressMonitor monitor)
 		{
 			try {
-				xcode.UpdateProject (monitor, CreateSyncList (), CreateProject (dnp.Name));
+				if (xcode.CheckRunning ())
+					xcode.UpdateProject (monitor, CreateSyncList (), CreateProject (dnp.Name));
 				return true;
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Error updating Xcode project"), ex);
