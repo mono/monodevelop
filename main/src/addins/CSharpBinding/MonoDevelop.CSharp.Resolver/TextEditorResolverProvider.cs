@@ -139,13 +139,30 @@ namespace MonoDevelop.CSharp.Resolver
 		static string namespaceStr = GettextCatalog.GetString ("Namespace");		
 		static string GetString (IType type)
 		{
-			if (type.Kind == TypeKind.Delegate)
-				return GettextCatalog.GetString ("Delegate");
-			if (type.Kind == TypeKind.Enum)
-				return GettextCatalog.GetString ("Enum");
-			if (type.Kind == TypeKind.Struct)
+			switch (type.Kind) {
+			case TypeKind.Class:
+				return GettextCatalog.GetString ("Class");
+			case TypeKind.Interface:
+				return GettextCatalog.GetString ("Interface");
+			case TypeKind.Struct:
 				return GettextCatalog.GetString ("Struct");
-			return GettextCatalog.GetString ("Class");
+			case TypeKind.Delegate:
+				return GettextCatalog.GetString ("Delegate");
+			case TypeKind.Enum:
+				return GettextCatalog.GetString ("Enum");
+			
+			case TypeKind.Dynamic:
+				return GettextCatalog.GetString ("Dynamic");
+			case TypeKind.TypeParameter:
+				return GettextCatalog.GetString ("Type parameter");
+			
+			case TypeKind.Array:
+				return GettextCatalog.GetString ("Array");
+			case TypeKind.Pointer:
+				return GettextCatalog.GetString ("Pointer");
+			}
+			
+			return null;
 		}
 		
 		static string GetString (IMember member)
@@ -224,9 +241,9 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append (String.Format (GettextCatalog.GetString ("Unresolved identifier '{0}'"), ((UnknownIdentifierResolveResult)result).Identifier));
 				} else if (result is MethodGroupResolveResult) {
 					var mrr = (MethodGroupResolveResult)result;
-					s.Append("<small><i>");
-					s.Append(methodStr);
-					s.Append("</i></small>\n");
+					s.Append ("<small><i>");
+					s.Append (methodStr);
+					s.Append ("</i></small>\n");
 					var allMethods = new List<IMethod> (mrr.Methods);
 					foreach (var l in mrr.GetExtensionMethods ()) {
 						allMethods.AddRange (l);
@@ -234,21 +251,13 @@ namespace MonoDevelop.CSharp.Resolver
 					
 					var method = allMethods.FirstOrDefault ();
 					if (method != null) {
-						s.Append(ambience.GetString(method, settings));
+						s.Append (ambience.GetString (method, settings));
 						if (allMethods.Count > 1) {
 							int overloadCount = allMethods.Count - 1;
-							s.Append(string.Format(GettextCatalog.GetPluralString(" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
+							s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
 						}
-						doc = AmbienceService.GetDocumentationSummary(method);
+						doc = AmbienceService.GetDocumentationSummary (method);
 					}
-				} else if (result is TypeResolveResult) {
-					var tr = (TypeResolveResult)result;
-					s.Append ("<small><i>");
-					s.Append (GetString (tr.Type));
-					s.Append ("</i></small>\n");
-					settings.OutputFlags |= OutputFlags.UseFullName;
-					s.Append (ambience.GetString (tr.Type, settings));
-					doc = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
 				} else if (result is MemberResolveResult) {
 					var member = ((MemberResolveResult)result).Member;
 					s.Append ("<small><i>");
@@ -272,12 +281,22 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append ("</i></small>\n");
 					s.Append (ambience.GetString (((NamespaceResolveResult)result).NamespaceName, settings));
 				} else {
-					s.Append (ambience.GetString (result.Type, settings));
+					var tr = result;
+					Console.WriteLine (tr.Type.Kind);
+					var typeString = GetString (tr.Type);
+					if (!string.IsNullOrEmpty (typeString)) {
+						s.Append ("<small><i>");
+						s.Append (typeString);
+						s.Append ("</i></small>\n");
+					}
+					settings.OutputFlags |= OutputFlags.UseFullName;
+					s.Append (ambience.GetString (tr.Type, settings));
+					doc = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
 				}
 				
 				if (!string.IsNullOrEmpty (doc)) {
 					s.Append ("\n<small>");
-					s.Append (AmbienceService.GetDocumentationMarkup ( "<summary>" + doc +  "</summary>"));
+					s.Append (AmbienceService.GetDocumentationMarkup ("<summary>" + doc + "</summary>"));
 					s.Append ("</small>");
 				}
 			}

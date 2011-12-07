@@ -37,9 +37,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
-		public SimpleType(string identifier)
+		public SimpleType (string identifier)
 		{
 			this.Identifier = identifier;
+		}
+		
+		public SimpleType (Identifier identifier)
+		{
+			this.IdentifierToken = identifier;
 		}
 		
 		public SimpleType(string identifier, TextLocation location)

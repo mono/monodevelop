@@ -2414,7 +2414,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var location = LocationsBag.GetLocations (c);
 					var constraint = new Constraint ();
 					constraint.AddChild (new CSharpTokenNode (Convert (c.Location), "where".Length), InvocationExpression.Roles.Keyword);
-					constraint.AddChild (Identifier.Create (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
+					constraint.AddChild (new SimpleType (Identifier.Create (c.TypeParameter.Value, Convert (c.TypeParameter.Location))), Constraint.BaseTypeRole);
 					if (location != null)
 						constraint.AddChild (new CSharpTokenNode (Convert (location [0]), 1), Constraint.ColonRole);
 					var commaLocs = LocationsBag.GetLocations (c.ConstraintExpressions);

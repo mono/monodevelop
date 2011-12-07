@@ -352,8 +352,12 @@ namespace MonoDevelop.CSharp
 				return ((UnknownType)reference).Name;
 			if (type.Kind == TypeKind.Unknown)
 				return reference.ToString ();
+			
+			if (reference.Kind == TypeKind.TypeParameter)
+				return reference.FullName;
+			
 			var sb = new StringBuilder ();
-			if (type is ITypeDefinition && ((ITypeDefinition)type).IsSynthetic&& ((ITypeDefinition)type).Name == "$Anonymous$") {
+			if (type is ITypeDefinition && ((ITypeDefinition)type).IsSynthetic && ((ITypeDefinition)type).Name == "$Anonymous$") {
 				sb.Append ("new {");
 				foreach (var property in ((ITypeDefinition)type).Properties) {
 					sb.AppendLine ();
@@ -376,6 +380,8 @@ namespace MonoDevelop.CSharp
 		{
 			if (t is UnknownType)
 				return ((UnknownType)t).Name;
+			if (t.Kind == TypeKind.TypeParameter)
+				return t.FullName;
 			ITypeDefinition type = t.GetDefinition ();
 			if (type == null)
 				return "";
@@ -446,7 +452,6 @@ namespace MonoDevelop.CSharp
 				result.Append (typeString);
 				result.Append (settings.Markup ("."));
 			}
-			
 			result.Append (settings.EmitName (type, type.Name));
 			if (settings.IncludeGenerics && type.TypeParameterCount > 0) {
 				result.Append (settings.Markup ("<"));
