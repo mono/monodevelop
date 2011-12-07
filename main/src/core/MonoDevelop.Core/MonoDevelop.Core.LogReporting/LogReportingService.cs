@@ -57,7 +57,7 @@ namespace MonoDevelop.Core.LogReporting
 		public static void ReportUnhandledException (Exception ex)
 		{
 			// if the user hasn't opted in/out yet, ask them
-			if (!ReportCrashes.HasValue) {
+			if (true) {//!ReportCrashes.HasValue) {
 				var handler = ShouldEnableReporting;
 				if (handler != null)
 					ReportCrashes = handler ();
