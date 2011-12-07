@@ -132,29 +132,6 @@ namespace Mono.TextEditor
 			widget.GdkWindow.Raise ();
 		}
 		
-		protected override void OnRealized ()
-		{
-			WidgetFlags |= WidgetFlags.Realized;
-			WindowAttr attributes = new WindowAttr ();
-			attributes.WindowType = Gdk.WindowType.Child;
-			attributes.X = Allocation.X;
-			attributes.Y = Allocation.Y;
-			attributes.Width = Allocation.Width;
-			attributes.Height = Allocation.Height;
-			attributes.Wclass = WindowClass.InputOutput;
-			attributes.Visual = this.Visual;
-			attributes.Colormap = this.Colormap;
-			attributes.EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask);
-			attributes.Mask = this.Events | Gdk.EventMask.ExposureMask;
-//			attributes.Mask = EventMask;
-			
-			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
-			this.GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
-			this.GdkWindow.UserData = this.Raw;
-			this.Style = Style.Attach (this.GdkWindow);
-			this.WidgetFlags &= ~WidgetFlags.NoWindow;
-		}
-		
 		protected override void OnAdded (Widget widget)
 		{
 			AddTopLevelWidget (widget, 0, 0);
@@ -179,9 +156,6 @@ namespace Mono.TextEditor
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			if (this.GdkWindow != null) 
-				this.GdkWindow.MoveResize (allocation);
-			allocation = new Rectangle (0, 0, allocation.Width, allocation.Height);
 			if (textEditorWidget.Allocation != allocation)
 				textEditorWidget.SizeAllocate (allocation);
 			SetChildrenPositions (allocation);
@@ -189,15 +163,19 @@ namespace Mono.TextEditor
 		
 		void SetChildrenPositions (Rectangle allocation)
 		{
-			//Console.WriteLine (textEditorWidget.VAdjustment.Value +"/" + textEditorWidget.HAdjustment.Value);
 			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
 				if (child.Child == textEditorWidget)
 					continue;
 				Requisition req = child.Child.SizeRequest ();
-				//Console.WriteLine (child.X + "x" + child.Y);
-				Rectangle childRectangle = new Gdk.Rectangle (/*allocation.X + */ (int)(child.FixedPosition ? child.X : child.X * textEditorWidget.Options.Zoom - textEditorWidget.HAdjustment.Value), 
-				                                              /*allocation.Y + */ (int)(child.FixedPosition ? child.Y : child.Y * textEditorWidget.Options.Zoom - textEditorWidget.VAdjustment.Value), req.Width, req.Height);
-			//	if (childRectangle != child.Child.Allocation)
+				var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
+				if (!child.FixedPosition) {
+					double zoom = textEditorWidget.Options.Zoom;
+					childRectangle.X = (int)(child.X * zoom - textEditorWidget.HAdjustment.Value);
+					childRectangle.Y = (int)(child.Y * zoom - textEditorWidget.VAdjustment.Value);
+				}
+				childRectangle.X += allocation.X;
+				childRectangle.Y += allocation.Y;
+				
 				child.Child.SizeAllocate (childRectangle);
 			}
 		}

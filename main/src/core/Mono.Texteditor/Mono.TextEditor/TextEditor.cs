@@ -573,20 +573,22 @@ namespace Mono.TextEditor
 		protected override void OnRealized ()
 		{
 			WidgetFlags |= WidgetFlags.Realized;
-			WindowAttr attributes = new WindowAttr ();
-			attributes.WindowType = Gdk.WindowType.Child;
-			attributes.X = Allocation.X;
-			attributes.Y = Allocation.Y;
-			attributes.Width = Allocation.Width;
-			attributes.Height = Allocation.Height;
-			attributes.Wclass = WindowClass.InputOutput;
-			attributes.Visual = this.Visual;
-			attributes.Colormap = this.Colormap;
-			attributes.EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask);
-			attributes.Mask = this.Events | Gdk.EventMask.ExposureMask;
-//			attributes.Mask = EventMask;
+			WindowAttr attributes = new WindowAttr () {
+				WindowType = Gdk.WindowType.Child,
+				X = Allocation.X,
+				Y = Allocation.Y,
+				Width = Allocation.Width,
+				Height = Allocation.Height,
+				Wclass = WindowClass.InputOutput,
+				Visual = this.Visual,
+				Colormap = this.Colormap,
+				EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask),
+				Mask = this.Events | Gdk.EventMask.ExposureMask,
+				//Mask = EventMask,
+			};
 			
-			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
+			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y
+				| WindowAttributesType.Colormap | WindowAttributesType.Visual;
 			this.GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
 			this.GdkWindow.UserData = this.Raw;
 			this.Style = Style.Attach (this.GdkWindow);
@@ -880,6 +882,7 @@ namespace Mono.TextEditor
 			uint keyVal = (uint) key;
 			key = accels[0].Key;
 			mod = accels[0].Modifier;
+			
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
