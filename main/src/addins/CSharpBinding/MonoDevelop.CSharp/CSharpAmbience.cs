@@ -460,8 +460,7 @@ namespace MonoDevelop.CSharp
 						result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
 					if (!settings.HideGenericParameterNames) {
 						if (t is ParameterizedType) {
-							result.Append (GetString (((ParameterizedType)t).TypeArguments [i], settings));
-							
+							result.Append (GetTypeReferenceString (((ParameterizedType)t).TypeArguments [i], settings));
 						} else {
 							result.Append (NetToCSharpTypeName (type.TypeParameters [i].FullName));
 						}
