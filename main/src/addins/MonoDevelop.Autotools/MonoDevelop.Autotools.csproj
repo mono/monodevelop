@@ -120,7 +120,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="templates\Makefile.am.project.template">

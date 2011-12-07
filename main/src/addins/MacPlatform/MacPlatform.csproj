@@ -89,7 +89,6 @@
     <Compile Include="MacInterop\AppleEvents\Native.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChangeLog" />
     <None Include="Makefile.am" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

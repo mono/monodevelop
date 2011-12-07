@@ -1126,7 +1126,7 @@ namespace MonoDevelop.Debugger.Win32
 			try {
 				if (thread.ActiveFrame == null)
 					return string.Empty;
-				EvaluationOptions ops = Options.EvaluationOptions;
+				EvaluationOptions ops = Options.EvaluationOptions.Clone ();
 				ops.AllowTargetInvoke = true;
 				CorEvaluationContext ctx = new CorEvaluationContext (this, new CorBacktrace (thread, this), 0, ops);
 				ctx.Thread = thread;

@@ -63,6 +63,11 @@ namespace MonoDevelop.Core.FileSystem
 			GetNextForPath (file, false).RenameFile (file, newName);
 		}
 		
+		public virtual FilePath ResolveFullPath (FilePath path)
+		{
+			return GetNextForPath (path, true).ResolveFullPath (path);
+		}
+		
 		public virtual void MoveFile (FilePath source, FilePath dest)
 		{
 			GetNextForPath (source, false).MoveFile (source, dest);

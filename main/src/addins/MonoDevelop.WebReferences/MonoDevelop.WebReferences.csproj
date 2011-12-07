@@ -127,7 +127,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChangeLog" />
     <None Include="TODO" />
   </ItemGroup>
   <ItemGroup>

@@ -129,6 +129,10 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
+		public bool HasMessageBar {
+			get { return messageBar != null; }
+		}
+		
 		Gtk.VBox vbox = new Gtk.VBox ();
 		public Gtk.VBox Vbox {
 			get { return this.vbox; }
@@ -763,6 +767,7 @@ namespace MonoDevelop.SourceEditor
 				messageBar.ActionArea.Add (b2);
 			}
 			
+			view.IsDirty = true;
 			view.WarnOverwrite = true;
 			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
 			vbox.ReorderChild (messageBar, 0);
@@ -896,6 +901,7 @@ namespace MonoDevelop.SourceEditor
 				messageBar.ActionArea.Add (b2);
 			}
 			
+			view.IsDirty = true;
 			view.WarnOverwrite = true;
 			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
 			vbox.ReorderChild (messageBar, 0);

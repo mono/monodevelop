@@ -306,7 +306,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Schemas\xhtml1-frameset.xsd">

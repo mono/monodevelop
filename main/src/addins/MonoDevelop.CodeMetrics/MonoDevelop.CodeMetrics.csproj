@@ -132,9 +132,6 @@
     <Compile Include="MonoDevelop.CodeMetrics\IProperties.cs" />
     <Compile Include="MonoDevelop.CodeMetrics\AssociationBetweenClasses.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ChangeLog" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>

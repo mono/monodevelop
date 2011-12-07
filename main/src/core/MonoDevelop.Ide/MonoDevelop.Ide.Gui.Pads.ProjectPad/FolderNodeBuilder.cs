@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
-						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, targetPath.FileName);
+						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, targetPath.ParentDirectory.FileName);
 					if (!MessageService.Confirm (q, AlertButton.Move))
 						return;
 				}
@@ -237,7 +237,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
-						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, targetPath.FileName);
+						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, targetPath.ParentDirectory.FileName);
 					if (!MessageService.Confirm (q, AlertButton.Copy))
 						return;
 				}
@@ -303,8 +303,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), MonoDevelop.Ide.Gui.Stock.CopyIcon, true))
 			{
+				// If we drag and drop a node in the treeview corresponding to a directory, do not move
+				// the entire directory. We should only move the files which exist in the project. Otherwise
+				// we will need a lot of hacks all over the code to prevent us from incorrectly moving version
+				// control related files such as .svn directories
 				bool move = operation == DragOperation.Move;
-				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);
+				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, true);
 			}
 		}
 		

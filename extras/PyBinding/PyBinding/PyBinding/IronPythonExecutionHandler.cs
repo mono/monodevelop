@@ -1,10 +1,6 @@
+// IronPythonExecutionHandler.cs
 // 
-// PythonExecutionHandler.cs
-//  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Carlos Alberto Cortez <calberto.cortez@gmail.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +22,14 @@
 
 using System;
 using System.IO;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 
+using PyBinding.Runtime;
+
 namespace PyBinding
-{
-	public class PythonExecutionHandler: IExecutionHandler
+{	
+	public class IronPythonExecutionHandler : IExecutionHandler
 	{
 		public bool CanExecute (ExecutionCommand command)
 		{
@@ -40,29 +39,13 @@ namespace PyBinding
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var config = ((PythonExecutionCommand)command).Configuration;
-			return config.Runtime.GetExecutionHandler ().Execute (command, console);
-		}
-		
-	}
-	
-	// This is our default handler (used by Python2.5/2.6/2.7)
-	public class CPythonExecutionHandler : NativePlatformExecutionHandler
-	{
-		public override bool CanExecute (ExecutionCommand command)
-		{
-			return command is PythonExecutionCommand;
-		}
-		
-		public override IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
-		{			
-			PythonExecutionCommand cmd = (PythonExecutionCommand) command;
+			var runtime = (IronPythonRuntime)config.Runtime;
 			
-			string[] args = cmd.Configuration.Runtime.GetArguments (cmd.Configuration);
-			string dir = Path.GetFullPath (cmd.Configuration.OutputDirectory);				
+			var args = runtime.GetArguments (config);
+			string dir = Path.GetFullPath (config.ParentItem.BaseDirectory);
 			
-			NativeExecutionCommand ncmd = new NativeExecutionCommand (cmd.Configuration.Runtime.Path, string.Join (" ", args), dir, cmd.Configuration.EnvironmentVariables);
-			return base.Execute (ncmd, console);
+			var cmd = new DotNetExecutionCommand (runtime.Path, String.Join (" ", args), dir, config.EnvironmentVariables);
+			return cmd.TargetRuntime.GetExecutionHandler ().Execute (cmd, console);
 		}
-		
 	}
 }

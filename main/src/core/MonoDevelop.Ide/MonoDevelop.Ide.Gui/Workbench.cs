@@ -191,6 +191,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Present ()
 		{
+			//HACK: window resets its size on Win32 on Present if it was maximized by snapping to top edge of screen
+			//partially work around this by avoiding the present call if it's already toplevel
+			if (Platform.IsWindows && RootWindow.HasToplevelFocus)
+				return;
+			
 			//FIXME: this should do a "request for attention" dock bounce on MacOS but only in some cases.
 			//Doing it for all Present calls is excessive and annoying. Maybe we have too many Present calls...
 			//Mono.TextEditor.GtkWorkarounds.PresentWindowWithNotification (RootWindow);
@@ -360,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 					if (vcFound != null) {
 						IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
 						if (line >= 1 && ipos != null) {
-							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine), options.HasFlag (OpenDocumentOptions.CenterCaretLine));
 						}
 						
 						if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
@@ -613,14 +618,18 @@ namespace MonoDevelop.Ide.Gui
 								window.ViewContent.Save (window.ViewContent.ContentName);
 							else
 								window.ViewContent.Save ();
+							args.Cancel |= window.ViewContent.IsDirty;
+
 						}
 						catch (Exception ex) {
 							args.Cancel = true;
 							MessageService.ShowException (ex, GettextCatalog.GetString ("The document could not be saved."));
 						}
 					}
+					if (args.Cancel)
+						FindDocument (window).Select ();
 				} else {
-					args.Cancel = result != AlertButton.CloseWithoutSave;
+					args.Cancel |= result != AlertButton.CloseWithoutSave;
 					if (!args.Cancel)
 						window.ViewContent.DiscardChanges ();
 				}
@@ -1100,10 +1109,11 @@ namespace MonoDevelop.Ide.Gui
 	{
 		None = 0,
 		BringToFront = 1,
-		HighlightCaretLine = 1 << 1,
-		OnlyInternalViewer = 1 << 2,
-		OnlyExternalViewer = 1 << 3,
+		CenterCaretLine = 1 << 1,
+		HighlightCaretLine = 1 << 2,
+		OnlyInternalViewer = 1 << 3,
+		OnlyExternalViewer = 1 << 4,
 		
-		Default = BringToFront | HighlightCaretLine
+		Default = BringToFront | CenterCaretLine | HighlightCaretLine
 	}
 }

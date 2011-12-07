@@ -86,6 +86,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			get { return tree; }
 		}
 		
+		public virtual void OnRenameStarting (ref int selectionStart, ref int selectionLength)
+		{
+		}
+
 		public virtual void RenameItem (string newName)
 		{
 		}

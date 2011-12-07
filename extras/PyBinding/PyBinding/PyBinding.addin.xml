@@ -99,6 +99,7 @@
         <DataType class = "PyBinding.Runtime.Python25Runtime"/>
         <DataType class = "PyBinding.Runtime.Python26Runtime"/>
         <DataType class = "PyBinding.Runtime.Python27Runtime"/>
+        <DataType class = "PyBinding.Runtime.IronPythonRuntime"/>
         <DataType class = "PyBinding.Compiler.Python25Compiler"/>
     </Extension>
 

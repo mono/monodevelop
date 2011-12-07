@@ -420,7 +420,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				strptr = Marshal.StringToHGlobalAnsi (pathorurl);
 				Marshal.WriteIntPtr (first, strptr);
 				
-				LogCollector collector = new LogCollector (ret);
+				LogCollector collector = new LogCollector ((SubversionRepository)repo, ret);
 				
 				CheckError (svn.client_log (array, ref revisionStart, ref revisionEnd, 1, 0,
 				                            new LibSvnClient.svn_log_message_receiver_t (collector.Func),
@@ -880,9 +880,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					string npath1 = NormalizePath (path1, localpool);
 					string npath2 = NormalizePath (path2, localpool);
 					CheckError (svn.client_diff (options, npath1, ref revision1, npath2, ref revision2, (recursive ? 1 : 0), 0, 1, outfile, errfile, ctx, localpool));
-					using (StreamReader sr = new StreamReader (fout)) {
-						return sr.ReadToEnd ();
-					}
+					return MonoDevelop.Projects.Text.TextFile.ReadFile (fout).Text;
 				} else {
 					throw new Exception ("Could not get diff information");
 				}
@@ -949,7 +947,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return IntPtr.Zero;
 		}
 		
-		private void CheckError (IntPtr error)
+		internal static void CheckError (IntPtr error)
 		{
 			if (error == IntPtr.Zero)
 				return;
@@ -970,7 +968,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			throw new SubversionException (msg);
 		}
 		
-		string GetErrorMessage (LibSvnClient.svn_error_t error)
+		static string GetErrorMessage (LibSvnClient.svn_error_t error)
 		{
 			if (error.message != null)
 				return error.message;
@@ -1246,8 +1244,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			static readonly DateTime Epoch = new DateTime (1970, 1, 1);
 			
 			List<SvnRevision> logs;
+			SubversionRepository repo;
 			
-			public LogCollector (List<SvnRevision> logs) { this.logs = logs; }
+			public LogCollector (SubversionRepository repo, List<SvnRevision> logs) { this.repo = repo; this.logs = logs; }
 			
 			public IntPtr Func (IntPtr baton, IntPtr apr_hash_changed_paths, int revision, IntPtr author, IntPtr date, IntPtr message, IntPtr pool)
 			{
@@ -1280,7 +1279,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 						case 'R': ac = RevisionAction.Replace; break;
 						default: ac = RevisionAction.Modify; break; // should be an 'M'
 					}
-					items.Add (new RevisionPath (name, ac, ""));
+					
+					IntPtr result = IntPtr.Zero;
+					SvnClient.CheckError (svn.client_root_url_from_path (ref result, repo.RootPath, IntPtr.Zero, pool));
+					if (result == IntPtr.Zero) // Should never happen
+						items.Add (new RevisionPath (name, ac, ""));
+					else
+						items.Add (new RevisionPath (Marshal.PtrToStringAnsi (result) + "/" + name, ac, ""));
 				}
 				
 				SvnRevision ent = new SvnRevision (null, revision, Epoch.AddTicks (time * 10), Marshal.PtrToStringAnsi (author), smessage, items.ToArray ());

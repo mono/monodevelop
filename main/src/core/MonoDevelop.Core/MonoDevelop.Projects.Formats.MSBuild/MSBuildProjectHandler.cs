@@ -186,6 +186,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
+					
+					//for some reason, MD internally handles "AnyCPU" as "", but we need to be explicit when
+					//passing it to the build engine
+					var platform = configObject.Platform;
+					if (platform.Length == 0)
+						platform = "AnyCPU";
+					
 					MSBuildResult[] results = builder.RunTarget (target, configObject.Name, configObject.Platform,
 						logWriter, verbosity);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);

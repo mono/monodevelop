@@ -192,7 +192,7 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetExpressionValues (string[] expressions, bool evaluateMethods)
 		{
-			EvaluationOptions options = session.EvaluationOptions;
+			EvaluationOptions options = session.EvaluationOptions.Clone ();
 			options.AllowMethodEvaluation = evaluateMethods;
 			return GetExpressionValues (expressions, options);
 		}
@@ -218,7 +218,7 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue GetExpressionValue (string expression, bool evaluateMethods)
 		{
-			EvaluationOptions options = session.EvaluationOptions;
+			EvaluationOptions options = session.EvaluationOptions.Clone ();
 			options.AllowMethodEvaluation = evaluateMethods;
 			return GetExpressionValue (expression, options);
 		}

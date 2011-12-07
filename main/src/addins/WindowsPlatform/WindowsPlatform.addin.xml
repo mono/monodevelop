@@ -15,7 +15,7 @@
 	<Dependencies>
 		<Addin id="Core" version="2.9.1"/>
 		<Addin id="Ide" version="2.9.1"/>
-  </Dependencies>
+	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">
 		<Class class = "MonoDevelop.Platform.WindowsPlatform"/>

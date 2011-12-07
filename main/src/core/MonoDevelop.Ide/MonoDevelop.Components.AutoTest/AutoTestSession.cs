@@ -171,7 +171,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 		
-		object GetActiveWidget ()
+		Gtk.Widget GetActiveWidget ()
 		{
 			Gtk.Window win = null;
 			foreach (Gtk.Window w in Gtk.Window.ListToplevels ()) {
@@ -179,18 +179,19 @@ namespace MonoDevelop.Components.AutoTest
 					win = w;
 			}
 			
-			if (win != null) {
-				Gtk.Widget widget = win;
-				while (widget is Gtk.Container) {
-					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
-					if (child != null)
-						widget = child;
-					else
-						break;
-				}
-				return widget;
+			if (win == null) {
+				throw new Exception ("No window is focused");
 			}
-			return win;
+			
+			Gtk.Widget widget = win;
+			while (widget is Gtk.Container) {
+				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
+				if (child != null)
+					widget = child;
+				else
+					break;
+			}
+			return widget;
 		}
 		
 		public object GetValue (string name)

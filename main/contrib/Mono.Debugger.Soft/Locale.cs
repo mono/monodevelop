@@ -1,10 +1,15 @@
 //
-// IEditableTextBuffer.cs
+// Locale.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//   Miguel de Icaza (miguel@ximian.com)
+//   Andreas Nahr (ClassDevelopment@A-SoftTech.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// (C) 2001 - 2003 Ximian, Inc (http://www.ximian.com)
+//
+
+//
+// Copyright (C) 2004 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,42 +32,20 @@
 //
 
 using System;
-using MonoDevelop.Projects.Text;
 
-namespace MonoDevelop.Ide.Gui.Content
-{
-	public interface IEditableTextBuffer : ITextBuffer, IEditableTextFile, IUndoHandler
-	{	
-		int LineCount { get; }
-		void SetCaretTo (int line, int column);
-		void SetCaretTo (int line, int column, bool highlightLine);
-		void SetCaretTo (int line, int column, bool highlightLine, bool centerCaret);
-		bool HasInputFocus { get; }
-		
-		event EventHandler CaretPositionSet;
-		event EventHandler<TextChangedEventArgs> TextChanged;
-	}
-	
-	public class TextChangedEventArgs : System.EventArgs
+internal sealed class Locale {
+
+	private Locale ()
 	{
-		int startIndex;
-		public int StartIndex {
-			get { 
-				return startIndex; 
-			}
-		}
-		
-		int endIndex;
-		public int EndIndex {
-			get { 
-				return endIndex; 
-			}
-		}
-		
-		public TextChangedEventArgs (int startIndex, int endIndex)
-		{
-			this.startIndex = startIndex;
-			this.endIndex   = endIndex;
-		}
+	}
+
+	public static string GetText (string msg)
+	{
+		return msg;
+	}
+
+	public static string GetText (string fmt, params object [] args)
+	{
+		return String.Format (fmt, args);
 	}
 }

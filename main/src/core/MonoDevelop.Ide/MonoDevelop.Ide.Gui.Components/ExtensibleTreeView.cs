@@ -211,6 +211,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 			text_render.Ypad = 0;
 			IdeApp.Preferences.CustomPadFontChanged += CustomFontPropertyChanged;;
+			text_render.EditingStarted += HandleEditingStarted;
 			text_render.Edited += HandleOnEdit;
 			text_render.EditingCanceled += HandleOnEditCancelled;
 			
@@ -433,6 +434,11 @@ namespace MonoDevelop.Ide.Gui.Components
 						LoggingService.LogError (ex.ToString ());
 					}
 				}
+			} catch (Exception ex) {
+				// We're now in an indeterminate state, so report the exception
+				// and exit.
+				GLib.ExceptionManager.RaiseUnhandledException (ex, true);
+				return false;
 			} finally {
 				if (updatesLocked)
 					UnlockUpdates ();
@@ -1171,12 +1177,44 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			node.ExpandToNode (); //make sure the parent of the node that is being edited is expanded
 			
-			store.SetValue (iter, ExtensibleTreeView.TextColumn, node.NodeName);
+			string nodeName = node.NodeName;
+			store.SetValue (iter, ExtensibleTreeView.TextColumn, nodeName);
 			
+			// Get and validate the initial text selection
+			int nameLength = nodeName != null ? nodeName.Length : 0,
+				selectionStart = 0, selectionLength = nameLength;
+			foreach (NodeBuilder b in node.NodeBuilderChain) {
+				try {
+					NodeCommandHandler handler = b.CommandHandler;
+					handler.SetCurrentNode(node);
+					handler.OnRenameStarting(ref selectionStart, ref selectionLength);
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
+				}
+			}
+			if (selectionStart < 0 || selectionStart >= nameLength)
+				selectionStart = 0;
+			if (selectionStart + selectionLength > nameLength)
+				selectionLength = nameLength - selectionStart;
+			// This will apply the selection as soon as possible
+			GLib.Idle.Add (() => {
+				var editable = currentLabelEditable;
+				if (editable == null)
+					return false;
+
+				editable.SelectRegion (selectionStart, selectionStart + selectionLength);
+				return false;
+			});
 			text_render.Editable = true;
 			tree.SetCursor (store.GetPath (iter), complete_column, true);
 			
 			editingText = true;
+		}
+
+		Gtk.Editable currentLabelEditable;
+		void HandleEditingStarted (object o, Gtk.EditingStartedArgs e)
+		{
+			currentLabelEditable = e.Editable as Gtk.Entry;
 		}
 
 		void HandleOnEdit (object o, Gtk.EditedArgs e)
@@ -1184,6 +1222,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			try {
 				editingText = false;
 				text_render.Editable = false;
+				currentLabelEditable = null;
 				
 				Gtk.TreeIter iter;
 				if (!store.GetIterFromString (out iter, e.Path))
@@ -1227,6 +1266,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			editingText = false;
 			text_render.Editable = false;
+			currentLabelEditable = null;
 			
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 			if (node == null)

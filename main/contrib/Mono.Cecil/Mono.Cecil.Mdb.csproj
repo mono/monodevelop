@@ -42,10 +42,6 @@
     <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb.dll.sources" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Mono.CompilerServices.SymbolWriter\ChangeLog" />
-    <None Include="ChangeLog" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\AssemblyInfo.cs" />
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbReader.cs" />
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbWriter.cs" />

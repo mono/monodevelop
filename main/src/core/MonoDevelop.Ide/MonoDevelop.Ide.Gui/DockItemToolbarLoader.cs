@@ -152,18 +152,27 @@ namespace MonoDevelop.Ide.Gui
 		{
 			CommandInfo cmdInfo = IdeApp.CommandService.GetCommandInfo (cmdId, targetRoute);
 			
-			if (lastDesc != cmdInfo.Description) {
+			bool hasAccel = string.IsNullOrEmpty (cmdInfo.AccelKey);
+			bool hasIcon = !cmdInfo.Icon.IsNull;
+			string desc = cmdInfo.Description;
+			
+			//If the button only has an icon it's not always clear what it does. In such cases, use the label as a
+			//fallback tooltip. Also do this if there's an accelerator, so the user can see what it is.
+			if (string.IsNullOrEmpty (desc) && (hasIcon || hasAccel))
+				desc = cmdInfo.Text;
+			
+			if (lastDesc != desc) {
 				string toolTip;
-				if (string.IsNullOrEmpty (cmdInfo.AccelKey)) {
-					toolTip = cmdInfo.Description;
+				if (hasAccel) {
+					toolTip = desc;
 				} else {
-					toolTip = cmdInfo.Description + " (" + KeyBindingManager.BindingToDisplayLabel (cmdInfo.AccelKey, false) + ")";
+					toolTip = desc + " (" + KeyBindingManager.BindingToDisplayLabel (cmdInfo.AccelKey, false) + ")";
 				}
 				button.TooltipText = toolTip;
-				lastDesc = cmdInfo.Description;
+				lastDesc = desc;
 			}
 			
-			if (cmdInfo.Icon.IsNull && button.Label != cmdInfo.Text)
+			if (!hasIcon && button.Label != cmdInfo.Text)
 				button.Label = cmdInfo.Text;
 			
 			if (cmdInfo.Icon != stockId) {

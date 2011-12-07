@@ -7,7 +7,8 @@
        description = "XML Editor"
        category    = "IDE extensions"
        version     = "2.9.1">
-	<Runtime>
+
+	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll" />
 		<Import file="schemas/appconfig.xsd" />
 		<Import file="schemas/MonoDevelopAddIn.xsd" />

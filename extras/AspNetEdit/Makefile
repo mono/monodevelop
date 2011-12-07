@@ -57,7 +57,6 @@ dist: $(CONFIG_MAKE)
 		esac \
 	done
 	(make dist-local distdir=$(PACKAGE)-$(VERSION))
-	make
 	make post-dist-hook distsir=$$distdir
 	tar czvf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
 	rm -rf $(PACKAGE)-$(VERSION)

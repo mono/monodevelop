@@ -105,9 +105,9 @@
     <Compile Include="Mono.Debugger.Soft\VMMismatchException.cs" />
     <Compile Include="Mono.Debugger.Soft\VMStartEvent.cs" />
     <Compile Include="Mono.Debugger.Soft\AssemblyLoadEventRequest.cs" />
+    <Compile Include="Locale.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Mono.Debugger.Soft\ChangeLog" />
     <None Include="Makefile.am" />
     <None Include="mono-git-revision" />
   </ItemGroup>

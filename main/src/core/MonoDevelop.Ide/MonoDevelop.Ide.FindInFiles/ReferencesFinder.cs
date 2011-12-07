@@ -139,6 +139,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				yield return new FileList (ctx, prj.Files.Select (f => f.FilePath));
 				break;
 			case RefactoryScope.Solution:
+				var allProjects = solution.GetAllProjects ();
 				if (monitor != null)
 					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
 				var sourceProject = TypeSystemService.GetProject ((IEntity)member);

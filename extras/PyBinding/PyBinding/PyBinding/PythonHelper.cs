@@ -129,6 +129,13 @@ namespace PyBinding
 			}
 			catch {}
 			
+			try {
+				return new IronPythonRuntime () {
+					Path = Which ("ipy.exe")
+				};
+			}
+			catch {}
+			
 			// look for "python" and what version it is
 			
 			return null;

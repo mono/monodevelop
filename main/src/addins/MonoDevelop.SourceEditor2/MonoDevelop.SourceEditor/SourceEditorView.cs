@@ -363,6 +363,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!widget.EnsureCorrectEolMarker (fileName, encoding))
 				return;
+			if (widget.HasMessageBar)
+				return;
+			
 			if (!string.IsNullOrEmpty (ContentName))
 				AutoSave.RemoveAutoSaveFile (ContentName);
 
@@ -515,7 +518,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 			UpdatePinnedWatches ();
-			this.IsDirty = false;
+			this.IsDirty = !didLoadCleanly;
 			UpdateTasks (null, null);
 			widget.TextEditor.VAdjustment.Changed += HandleTextEditorVAdjustmentChanged;
 			if (didLoadCleanly)
@@ -1106,12 +1109,16 @@ namespace MonoDevelop.SourceEditor
 		public void SetCaretTo (int line, int column)
 		{
 			this.Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, true));
-			
 		}
 
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
 			this.Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight));
+		}
+		
+		public void SetCaretTo (int line, int column, bool highlight, bool centerCaret)
+		{
+			this.Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight, centerCaret));
 		}
 
 		public void Redo()

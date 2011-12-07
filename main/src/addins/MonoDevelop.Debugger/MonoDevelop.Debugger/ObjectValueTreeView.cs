@@ -48,7 +48,7 @@ namespace MonoDevelop.Debugger
 		List<string> valueNames = new List<string> ();
 		Dictionary<string,string> oldValues = new Dictionary<string,string> ();
 		List<ObjectValue> values = new List<ObjectValue> ();
-		Dictionary<ObjectValue,TreeIter> nodes = new Dictionary<ObjectValue, TreeIter> (); 
+		Dictionary<ObjectValue,TreeRowReference> nodes = new Dictionary<ObjectValue, TreeRowReference> ();
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
 		TreeStore store;
 		TreeViewState state;
@@ -497,9 +497,10 @@ namespace MonoDevelop.Debugger
 			if (!store.IterParent (out parent, it))
 				parent = TreeIter.Zero;
 			
-			EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions;
+			EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
 			ops.AllowMethodEvaluation = true;
 			ops.AllowTargetInvoke = true;
+			ops.EllipsizeStrings = false;
 			
 			string oldName = val.Name;
 			val.Refresh (ops);
@@ -527,7 +528,7 @@ namespace MonoDevelop.Debugger
 		void RegisterValue (ObjectValue val, TreeIter it)
 		{
 			if (val.IsEvaluating) {
-				nodes [val] = it;
+				nodes [val] = new TreeRowReference (store, store.GetPath (it));
 				val.ValueChanged += OnValueUpdated;
 			}
 		}
@@ -578,7 +579,14 @@ namespace MonoDevelop.Debugger
 
 		bool FindValue (ObjectValue val, out TreeIter it)
 		{
-			return nodes.TryGetValue (val, out it);
+			TreeRowReference row;
+			
+			if (!nodes.TryGetValue (val, out row)) {
+				it = TreeIter.Zero;
+				return false;
+			}
+			
+			return store.GetIter (out it, row.Path);
 		}
 		
 		public void ResetChangeTracking ()
@@ -747,23 +755,22 @@ namespace MonoDevelop.Debugger
 		{
 			if (!allowExpanding)
 				return true;
-			bool expanded = (bool) store.GetValue (iter, ExpandedCol);
-			if (!expanded) {
-				store.SetValue (iter, ExpandedCol, true);
-				TreeIter it;
-				store.IterChildren (out it, iter);
-				store.Remove (ref it);
-				ObjectValue val = (ObjectValue) store.GetValue (iter, ObjectCol);
-				foreach (ObjectValue cval in val.GetAllChildren ())
-					AppendValue (iter, null, cval);
-				return base.OnTestExpandRow (iter, path);
+			
+			if (GetRowExpanded (path))
+				return true;
+			
+			TreeIter parent;
+			if (store.IterParent (out parent, iter)) {
+				if (!GetRowExpanded (store.GetPath (parent)))
+					return true;
 			}
-			else
-				return false;
+			
+			return base.OnTestExpandRow (iter, path);
 		}
 		
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
 		{
+			store.SetValue (iter, ExpandedCol, false);
 			base.OnRowCollapsed (iter, path);
 			if (compact)
 				ColumnsAutosize ();
@@ -771,7 +778,27 @@ namespace MonoDevelop.Debugger
 		
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
+			store.SetValue (iter, ExpandedCol, true);
+			TreeIter it;
+			
+			if (store.IterChildren (out it, iter)) {
+				ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
+				if (val == null) {
+					val = (ObjectValue) store.GetValue (iter, ObjectCol);
+					bool first = true;
+					
+					foreach (ObjectValue cval in val.GetAllChildren ()) {
+						SetValues (iter, it, null, cval);
+						RegisterValue (cval, it);
+						it = store.InsertNodeAfter (it);
+					}
+					
+					store.Remove (ref it);
+				}
+			}
+			
 			base.OnRowExpanded (iter, path);
+			
 			if (compact)
 				ColumnsAutosize ();
 		}
@@ -1121,7 +1148,7 @@ namespace MonoDevelop.Debugger
 			TreePath[] sel = Selection.GetSelectedRows ();
 			if (store.GetIter (out it, sel[0])) {
 				ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
-				if (val.Name == DebuggingService.DebuggerSession.EvaluationOptions.CurrentExceptionTag)
+				if (val != null && val.Name == DebuggingService.DebuggerSession.EvaluationOptions.CurrentExceptionTag)
 					DebuggingService.ShowExceptionCaughtDialog ();
 			}
 		}

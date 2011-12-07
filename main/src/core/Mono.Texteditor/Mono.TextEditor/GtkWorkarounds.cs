@@ -126,7 +126,8 @@ namespace Mono.TextEditor
 		{
 			IntPtr array = objc_msgSend_IntPtr (cls_NSScreen, sel_screens);
 			IntPtr iter = objc_msgSend_IntPtr (array, sel_objectEnumerator);
-			Gdk.Rectangle geometry = screen.GetMonitorGeometry (0);
+			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor);
+			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
 			RectangleF visible, frame;
 			IntPtr scrn;
 			int i = 0;
@@ -142,10 +143,8 @@ namespace Mono.TextEditor
 			
 			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
 			// coordinates.
-			visible.X += geometry.X;
-			visible.Y += geometry.Y;
-			frame.X += geometry.X;
-			frame.Y += geometry.Y;
+			visible.X += xgeometry.X;
+			frame.X += xgeometry.X;
 			
 			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
 			// to get the menu height, we just figure out the difference between the visibleFrame height
@@ -160,10 +159,10 @@ namespace Mono.TextEditor
 				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
 				
 				height = frame.Height - menubarHeight - dockHeight;
-				y = menubarHeight;
+				y = ygeometry.Y + menubarHeight;
 			} else {
 				height = frame.Height;
-				y = frame.Y;
+				y = ygeometry.Y;
 			}
 			
 			// Takes care of the possibility of the Dock being positioned on the left or right edge of the screen.
@@ -227,10 +226,13 @@ namespace Mono.TextEditor
 				return true;
 			
 			if (Platform.IsMac) {
-				if (evt.Button == 1 &&
+				if (!oldMacKeyHacks &&
+					evt.Button == 1 &&
 					(evt.State & Gdk.ModifierType.ControlMask) != 0 &&
 					(evt.State & (Gdk.ModifierType.Button2Mask | Gdk.ModifierType.Button3Mask)) == 0)
-				return true;
+				{
+					return true;
+				}
 			}
 			
 			return false;
@@ -329,6 +331,7 @@ namespace Mono.TextEditor
 							y -= y_over;
 						}
 					}
+					
 					y = System.Math.Max (geometry.Top, System.Math.Min (y, geometry.Bottom - request.Height));
 					x = System.Math.Max (geometry.Left, System.Math.Min (x, geometry.Right - request.Width));
 					
@@ -382,7 +385,7 @@ namespace Mono.TextEditor
 		extern static bool gdk_quartz_set_fix_modifiers (bool fix);
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;
-		static Dictionary<long,MappedKeys> mappedKeys = new Dictionary<long,MappedKeys> ();
+		static Dictionary<ulong,MappedKeys> mappedKeys = new Dictionary<ulong,MappedKeys> ();
 		
 		/// <summary>Map raw GTK key input to work around platform bugs and decompose accelerator keys</summary>
 		/// <param name='evt'>The raw key event</param>
@@ -393,7 +396,10 @@ namespace Mono.TextEditor
 			out KeyboardShortcut[] accels)
 		{
 			//this uniquely identifies the raw key
-			long id = (((long)evt.State)) | (((long)evt.HardwareKeycode) << 32) | ((long)evt.Group << 48);
+			ulong id;
+			unchecked {
+				id = (((ulong)(uint)evt.State) | (((ulong)evt.HardwareKeycode) << 32) | (((ulong)evt.Group) << 48));
+			}
 			
 			MappedKeys mapped;
 			if (!mappedKeys.TryGetValue (id, out mapped)) {
@@ -415,21 +421,11 @@ namespace Mono.TextEditor
 				gdk_keymap_add_virtual_modifiers (keymap.Handle, ref modifier);
 			}
 			
-			// Workaround for bug "Bug 688247 - Ctrl+Alt key not work on windows7 with bootcamp on a Mac Book Pro"
-			// Ctrl+Alt should behave like right alt key - unfortunately TranslateKeyboardState doesn't handle it. 
-			if (Platform.IsWindows) {
-				const Gdk.ModifierType ctrlAlt = Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask;
-				if ((modifier & ctrlAlt) == ctrlAlt) {
-					modifier = (modifier & ~ctrlAlt) | Gdk.ModifierType.Mod2Mask;
-					grp = 1;
-				}
-			}
-			
 			//full key mapping
 			uint keyval;
 			int effectiveGroup, level;
 			Gdk.ModifierType consumedModifiers;
-			keymap.TranslateKeyboardState (keycode, modifier, grp, out keyval, out effectiveGroup,
+			TranslateKeyboardState (keycode, modifier, grp, out keyval, out effectiveGroup,
 				out level, out consumedModifiers);
 			mapped.Key = (Gdk.Key)keyval;
 			mapped.State = FixMacModifiers (evt.State & ~consumedModifiers, grp);
@@ -444,7 +440,7 @@ namespace Mono.TextEditor
 			modifier &= ~Gdk.ModifierType.LockMask;
 			
 			//fully decomposed
-			keymap.TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.None, 0,
+			TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.None, 0,
 				out keyval, out effectiveGroup, out level, out consumedModifiers);
 			accelList.Add (new KeyboardShortcut ((Gdk.Key)keyval, FixMacModifiers (modifier, grp) & accelMods));
 			
@@ -458,7 +454,7 @@ namespace Mono.TextEditor
 			
 			//with group 1 composed
 			if (grp == 1) {
-				keymap.TranslateKeyboardState (evt.HardwareKeycode, modifier & ~Gdk.ModifierType.ShiftMask, 1,
+				TranslateKeyboardState (evt.HardwareKeycode, modifier & ~Gdk.ModifierType.ShiftMask, 1,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
 				//somehow GTK on mac manages to consume a shift that we don't even pass to it
 				if (oldMacKeyHacks) {
@@ -470,7 +466,7 @@ namespace Mono.TextEditor
 			
 			//with group 1 and shift composed
 			if (grp == 1 && (modifier & Gdk.ModifierType.ShiftMask) != 0) {
-				keymap.TranslateKeyboardState (evt.HardwareKeycode, modifier, 1,
+				TranslateKeyboardState (evt.HardwareKeycode, modifier, 1,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
 				var m = FixMacModifiers ((modifier & ~consumedModifiers), 0) & accelMods;
 				AddIfNotDuplicate (accelList, new KeyboardShortcut ((Gdk.Key)keyval, m));
@@ -481,6 +477,23 @@ namespace Mono.TextEditor
 			
 			mapped.Accels = accelList.ToArray ();
 			return mapped;
+		}
+		
+		// Workaround for bug "Bug 688247 - Ctrl+Alt key not work on windows7 with bootcamp on a Mac Book Pro"
+		// Ctrl+Alt should behave like right alt key - unfortunately TranslateKeyboardState doesn't handle it. 
+		static void TranslateKeyboardState (uint hardware_keycode, Gdk.ModifierType state, int group, out uint keyval,
+			out int effective_group, out int level, out Gdk.ModifierType consumed_modifiers)
+		{
+			if (Platform.IsWindows) {
+				const Gdk.ModifierType ctrlAlt = Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask;
+				if ((state & ctrlAlt) == ctrlAlt) {
+					state = (state & ~ctrlAlt) | Gdk.ModifierType.Mod2Mask;
+					group = 1;
+				}
+			}
+			
+			keymap.TranslateKeyboardState (hardware_keycode, state, group, out keyval, out effective_group,
+				out level, out consumed_modifiers);
 		}
 		
 		static Gdk.ModifierType FixMacModifiers (Gdk.ModifierType mod, byte grp)

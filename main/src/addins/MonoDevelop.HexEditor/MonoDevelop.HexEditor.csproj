@@ -168,7 +168,4 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <ItemGroup>
-    <None Include="ChangeLog" />
-  </ItemGroup>
 </Project>

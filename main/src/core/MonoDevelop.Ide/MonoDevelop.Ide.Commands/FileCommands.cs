@@ -203,7 +203,9 @@ namespace MonoDevelop.Ide.Commands
 		internal static bool CanPrint ()
 		{
 			IPrintable print;
-			return IdeApp.Workbench.ActiveDocument != null
+			//HACK: disable printing on Windows while it doesn't work
+			return !Platform.IsWindows
+				&& IdeApp.Workbench.ActiveDocument != null
 				&& (print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ()) != null
 				&& print.CanPrint;
 		}

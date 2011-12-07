@@ -45,7 +45,9 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public ConsoleProgressMonitor () : this (Console.Out)
 		{
-			wrap = true;
+			//FIXME: can we efficiently update Console.WindowWidth when it changes?
+			columns = Console.WindowWidth;
+			this.wrap = columns > 0;
 		}
 		
 		public ConsoleProgressMonitor (TextWriter writer)

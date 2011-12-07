@@ -34,7 +34,7 @@ namespace MonoDevelop.UserInterfaceTests
 	{
 		public static void OpenFile (FilePath file)
 		{
-			TestService.Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.OpenDocument", (FilePath) file);
+			TestService.Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.OpenDocument", (FilePath) file, true);
 		}
 		
 		public static void OpenFile (string relFile, FilePath projectFilePath)
