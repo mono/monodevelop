@@ -78,8 +78,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						offset--;
 					if (offset > 0) {
 						var nonWsResult = MagicKeyCompletion (document.GetCharAt (offset), controlSpace);
-						if (nonWsResult != null)
-							result = result.Concat (nonWsResult);
+						if (nonWsResult != null) {
+							var text = new HashSet<string> (result.Select (r => r.CompletionText));
+							result = result.Concat (nonWsResult.Where (r => !text.Contains (r.CompletionText)));
+						}
 					}
 				}
 				
