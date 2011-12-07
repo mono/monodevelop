@@ -155,6 +155,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
+			if (!TextEditorProperties.EnableAutoCodeCompletion)
+				return null;
 			//	var timer = Counters.ResolveTime.BeginTiming ();
 			try {
 				if (char.IsLetterOrDigit (completionChar))
@@ -175,8 +177,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
-			if (!TextEditorProperties.EnableAutoCodeCompletion)
-				return null;
 			if (textEditorData.CurrentMode is CompletionTextLinkMode) {
 				if (!((CompletionTextLinkMode)textEditorData.CurrentMode).TriggerCodeCompletion)
 					return null;
@@ -206,7 +206,6 @@ namespace MonoDevelop.CSharp.Completion
 			int triggerWordLength = 0;
 			char ch = completionContext.TriggerOffset > 0 ? textEditorData.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
 			return InternalHandleCodeCompletion (completionContext, ch, true, ref triggerWordLength);
-			
 		}
 		
 		static bool ContainsPublicConstructors (ITypeDefinition t)

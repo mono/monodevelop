@@ -400,7 +400,10 @@ namespace MonoDevelop.Ide.Gui
 					Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
 					if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						Present ();
-						doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+						doc.RunWhenLoaded (() => {
+							if (doc.Window != null)
+								doc.Window.SelectWindow ();
+						});
 					}
 					return doc;
 				} else {
