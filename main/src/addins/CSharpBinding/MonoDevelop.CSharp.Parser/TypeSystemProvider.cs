@@ -150,6 +150,22 @@ namespace MonoDevelop.CSharp.Parser
 					Foldings.Add (new FoldingRegion (new DomRegion (eventDeclaration.LBraceToken.GetPrevNode ().EndLocation, eventDeclaration.RBraceToken.EndLocation), FoldType.Member));
 				return base.VisitCustomEventDeclaration (eventDeclaration, data);
 			}
+			
+			public override object VisitSwitchStatement (SwitchStatement switchStatement, object data)
+			{
+				if (!switchStatement.RBraceToken.IsNull)
+					Foldings.Add (new FoldingRegion (new DomRegion (switchStatement.LBraceToken.GetPrevNode ().EndLocation, switchStatement.RBraceToken.EndLocation), FoldType.Member));
+				return base.VisitSwitchStatement (switchStatement, data);
+			}
+			
+			public override object VisitBlockStatement (BlockStatement blockStatement, object data)
+			{
+				if (!(blockStatement.Parent is AttributedNode) && blockStatement.EndLocation.Line - blockStatement.StartLocation.Line > 2) {
+					Foldings.Add (new FoldingRegion (new DomRegion (blockStatement.GetPrevNode ().EndLocation, blockStatement.EndLocation), FoldType.Undefined));
+				}
+				
+				return base.VisitBlockStatement (blockStatement, data);
+			}
 		}
 		
 		void VisitMcsUnit ()

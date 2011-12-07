@@ -282,7 +282,6 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append (ambience.GetString (((NamespaceResolveResult)result).NamespaceName, settings));
 				} else {
 					var tr = result;
-					Console.WriteLine (tr.Type.Kind);
 					var typeString = GetString (tr.Type);
 					if (!string.IsNullOrEmpty (typeString)) {
 						s.Append ("<small><i>");
