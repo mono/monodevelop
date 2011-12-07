@@ -467,7 +467,15 @@ namespace MonoDevelop.Ide
 		void HandleException (Exception ex, bool willShutdown)
 		{
 			string message = GettextCatalog.GetString ("An unhandled exception has occurred.");
+			var original = LogReportingService.ReportCrashes;
+			
+			// Attempt to log the crash. If the user hasn't opted in, they will get prompted now to opt in/out.
 			LogReportingService.ReportUnhandledException (ex);
+			
+			// If the user has just been prompted to enable crash reporting there is no need to display the
+			// normal crash dialog this time round unless we are about to shut down.
+			if (!original.HasValue && !willShutdown)
+				return;
 			
 			var report = LogReportingService.ReportCrashes;
 			if (report.HasValue && report.Value) {
