@@ -26,6 +26,7 @@ FILES =  \
 	Dialogs/Layout.cs \
 	Dialogs/MacAddFileDialogHandler.cs \
 	Dialogs/MacAlertDialogHandler.cs \
+	Dialogs/MacExceptionDialogHandler.cs \
 	Dialogs/MacOpenFileDialogHandler.cs \
 	Dialogs/MacSelectFileDialogHandler.cs \
 	Dialogs/MDBox.cs \
