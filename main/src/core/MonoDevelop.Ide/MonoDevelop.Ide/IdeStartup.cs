@@ -466,7 +466,6 @@ namespace MonoDevelop.Ide
 		
 		void HandleException (Exception ex, bool willShutdown)
 		{
-			string message = GettextCatalog.GetString ("An unhandled exception has occurred.");
 			var original = LogReportingService.ReportCrashes;
 			
 			// Attempt to log the crash. If the user hasn't opted in, they will get prompted now to opt in/out.
@@ -477,16 +476,19 @@ namespace MonoDevelop.Ide
 			if (!original.HasValue && !willShutdown)
 				return;
 			
+			
+			string message;
+			string title = GettextCatalog.GetString ("An unhandled exception has occurred.");
 			var report = LogReportingService.ReportCrashes;
 			if (report.HasValue && report.Value) {
-				message += GettextCatalog.GetString (" Details of this crash have been automatically submitted for analysis.");
+				message = GettextCatalog.GetString ("Details of this crash have been automatically submitted for analysis.");
 			} else {
-				message += GettextCatalog.GetString (" Details of this crash have not been submitted as error reporting has been disabled.");
+				message = GettextCatalog.GetString ("Details of this crash have not been submitted as error reporting is disabled.");
 			}
 			
 			if (willShutdown)
 				message += GettextCatalog.GetString (" MonoDevelop will now close.");
-			MessageService.ShowException (ex, message);
+			MessageService.ShowException (ex, message, title);
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>
