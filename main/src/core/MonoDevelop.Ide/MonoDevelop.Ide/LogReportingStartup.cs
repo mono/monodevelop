@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide
 				var part1 = GettextCatalog.GetString ("Details of this crash, along with anonymous installation " +
 							"information, can be uploaded to Xamarin to help diagnose the issue. " +
 						    "Do you wish to automatically upload this information for this and future crashes?");
-				var part2 = GettextCatalog.GetString ("This setting can be changed in the 'Log Agent' section of the MonoDevelop preferences");
+				var part2 = GettextCatalog.GetString ("This setting can be changed in the 'Log Agent' section of the MonoDevelop preferences.");
 				
 				var result = MessageService.AskQuestion (
 					title,
