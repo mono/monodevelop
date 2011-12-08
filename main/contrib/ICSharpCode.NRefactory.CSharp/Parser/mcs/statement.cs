@@ -691,6 +691,11 @@ namespace Mono.CSharp {
 		{
 			throw new NotImplementedException ();
 		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 
 	//
@@ -5207,10 +5212,11 @@ namespace Mono.CSharp {
 			this.Block = block;
 			this.Specific = catch_clauses;
 			this.inside_try_finally = inside_try_finally;
+			
 			if (catch_clauses != null) {
 				Catch c = catch_clauses [0];
 				if (c.IsGeneral) {
-					this.General = c;
+					this.General = c;			
 					catch_clauses.RemoveAt (0);
 				}
 			}

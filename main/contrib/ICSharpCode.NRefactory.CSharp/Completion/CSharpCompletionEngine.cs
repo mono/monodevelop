@@ -445,6 +445,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
+				// Handle foreach (type name _
+				if (n is IdentifierExpression) {
+					var prev = n.GetPrevNode () as ForeachStatement;
+					if (prev != null && prev.InExpression.IsNull) {
+						if (controlSpace) {
+							contextList.AddCustom ("in");
+							return contextList.Result;
+						}
+						return null;
+					}
+				}
+				
+				if (n is Identifier && n.Parent is ForeachStatement) {
+					if (controlSpace)
+						return DefaultControlSpaceItems ();
+					return null;
+				}
+				
 				if (n is ArrayInitializerExpression) {
 					var initalizerResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
 					
@@ -638,6 +656,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = Unit.GetNodeAt (location);
 				rr = ResolveExpression (CSharpParsedFile, node, Unit);
 			}
+			if (node is Identifier && node.Parent is ForeachStatement) {
+				var foreachStmt = (ForeachStatement)node.Parent;
+				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
+					if (possibleName.Length > 0)
+						wrapper.Result.Add (factory.CreateLiteralCompletionData (possibleName.ToString ()));
+				}
+					
+				AutoSelect = false;
+				AutoCompleteEmptyMatch = false;
+				return wrapper.Result;
+			}
+
 			
 			AddContextCompletion (wrapper, rr != null && (node is Expression) ? rr.Item2 : GetState (), node);
 			
@@ -1826,6 +1856,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var id = new IdentifierExpression ("stub");
 					forStmt.EmbeddedStatement = new BlockStatement () { Statements = { new ExpressionStatement (id) }};
 					expr = id;
+					baseUnit = tmpUnit;
+				}
+			}
+			
+			if (expr == null) {
+				var forStmt = tmpUnit.GetNodeAt<ForeachStatement> (location.Line, location.Column - 3); 
+				if (forStmt != null && forStmt.EmbeddedStatement.IsNull) {
+					forStmt.VariableNameToken = Identifier.Create ("stub");
+					expr = forStmt.VariableNameToken;
 					baseUnit = tmpUnit;
 				}
 			}

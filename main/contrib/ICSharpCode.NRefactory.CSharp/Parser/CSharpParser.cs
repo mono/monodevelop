@@ -1894,13 +1894,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (foreachStatement.Variable != null)
 					result.AddChild (Identifier.Create (foreachStatement.Variable.Name, Convert (foreachStatement.Variable.Location)), ForeachStatement.Roles.Identifier);
 				
-				if (location != null)
+				if (location != null && location.Count > 1)
 					result.AddChild (new CSharpTokenNode (Convert (location [1]), "in".Length), ForeachStatement.Roles.InKeyword);
 				
 				if (foreachStatement.Expr != null)
 					result.AddChild ((Expression)foreachStatement.Expr.Accept (this), ForeachStatement.Roles.Expression);
 				
-				if (location != null)
+				if (location != null && location.Count > 2)
 					result.AddChild (new CSharpTokenNode (Convert (location [2]), 1), ForeachStatement.Roles.RPar);
 				if (foreachStatement.Statement != null)
 					result.AddChild ((Statement)foreachStatement.Statement.Accept (this), ForeachStatement.Roles.EmbeddedStatement);
