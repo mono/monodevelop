@@ -236,7 +236,7 @@ namespace MonoDevelop.Debugger
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Application to Debug")) {
 				TransientFor = IdeApp.Workbench.RootWindow,
 			};
-			if (dialog.Run ())
+			if (dialog.Run () && IdeApp.ProjectOperations.CanExecuteFile (dialog.SelectedFile))
 				IdeApp.ProjectOperations.DebugApplication (dialog.SelectedFile);
 		}
 		
