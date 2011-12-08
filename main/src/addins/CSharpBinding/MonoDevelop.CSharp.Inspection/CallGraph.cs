@@ -65,8 +65,6 @@ namespace MonoDevelop.CSharp.Inspection
 		{
 			var pf = parsedDocument.Annotation<CSharpParsedFile> ();
 			var unit = parsedDocument.Annotation<CompilationUnit> ();
-			var ctx = doc.TypeResolveContext;
-			
 			Resolver = new CSharpAstResolver (doc.Compilation, unit, pf);
 			
 			Navigator = new VisitNamespaceNodesNavigator ();

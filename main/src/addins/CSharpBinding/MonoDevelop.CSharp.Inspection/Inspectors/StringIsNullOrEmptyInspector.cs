@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharp.Inspection
 							new DomRegion (binOp.StartLocation.Line, binOp.StartLocation.Column, binOp.EndLocation.Line, binOp.EndLocation.Column),
 							GettextCatalog.GetString ("Use string.IsNullOrEmpty"),
 							delegate {
-							Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
+//							Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
 //							binOp.Replace (data.Document, invocation);	
 						}
 						);
@@ -133,8 +133,8 @@ namespace MonoDevelop.CSharp.Inspection
 							new DomRegion (binOp.StartLocation, binOp.EndLocation),
 							GettextCatalog.GetString ("Use string.IsNullOrEmpty"),
 							delegate {
-								Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
-								invocation = new UnaryOperatorExpression (UnaryOperatorType.Not, invocation);
+//								Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
+//								invocation = new UnaryOperatorExpression (UnaryOperatorType.Not, invocation);
 //								binOp.Replace (data.Document, invocation);	
 							}
 						);

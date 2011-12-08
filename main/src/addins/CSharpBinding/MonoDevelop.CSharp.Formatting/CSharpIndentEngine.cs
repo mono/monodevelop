@@ -887,7 +887,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var after = stack.PeekInside (0);
 			if ((after & Inside.ParenList) == Inside.ParenList && pc == '(') {
-				var indent = stack.PeekIndent (0);
+//				var indent = stack.PeekIndent (0);
 				var kw = stack.PeekKeyword (0);
 				var line = stack.PeekLineNr (0);
 				stack.Pop ();

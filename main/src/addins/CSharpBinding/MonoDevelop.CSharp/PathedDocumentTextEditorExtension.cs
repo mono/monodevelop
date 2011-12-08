@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp
 		{
 			object tag;
 			Ambience amb;
-			List<IUnresolvedEntity> memberList = new List<IUnresolvedEntity> ();
+			List<IEntity> memberList = new List<IEntity> ();
 			Document Document {
 				get;
 				set;
@@ -81,42 +81,39 @@ namespace MonoDevelop.CSharp
 				stringCache.Clear ();
 				memberList.Clear ();
 				if (tag is IParsedFile) {
-					var types = new Stack<IUnresolvedTypeDefinition> (((IParsedFile)tag).TopLevelTypeDefinitions);
+					var types = new Stack<ITypeDefinition> (this.Document.Compilation.GetAllTypeDefinitions ().Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
 					while (types.Count > 0) {
 						var type = types.Pop ();
 						memberList.Add (type);
-						foreach (var innerType in type.NestedTypes)
+						foreach (var innerType in type.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic))
 							types.Push (innerType);
 					}
-				} else if (tag is IUnresolvedTypeDefinition) {
-					memberList.AddRange (((IUnresolvedTypeDefinition)tag).NestedTypes);
-					memberList.AddRange (((IUnresolvedTypeDefinition)tag).Members);
+				} else if (tag is ITypeDefinition) {
+					var type = (ITypeDefinition)tag;
+					memberList.AddRange (type.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
+					memberList.AddRange (type.Members.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
+				} else if (tag is IMember) {
+					var member = (IMember)tag;
+					memberList.AddRange (member.DeclaringTypeDefinition.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
+					memberList.AddRange (member.DeclaringTypeDefinition.Members.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
 				}
 				memberList.Sort ((x, y) => String.Compare (x.Name, y.Name, StringComparison.OrdinalIgnoreCase));
 			}
 			
-			Dictionary<IUnresolvedEntity, string> stringCache = new Dictionary<IUnresolvedEntity, string> ();
-			string GetString (Ambience amb, IUnresolvedEntity x)
+			Dictionary<IEntity, string> stringCache = new Dictionary<IEntity, string> ();
+			string GetString (Ambience amb, IEntity rx)
 			{
 				string result;
-				if (stringCache.TryGetValue(x, out result))
+				if (stringCache.TryGetValue(rx, out result))
 					return result;
 				var pf = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
-				var ctx = pf.GetTypeResolveContext (Document.Compilation, x.Region.Begin);
-				IEntity rx = null;
-				if (x is IUnresolvedMember)
-					rx = ((IUnresolvedMember)x).CreateResolved (ctx);
-				if (x is IUnresolvedTypeDefinition)
-					rx = ((IUnresolvedTypeDefinition)x).Resolve (ctx).GetDefinition ();
-				if (rx == null)
-					return "unknown:" + x.GetType ();
 				if (tag is IParsedFile) {
 					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
 				} else {
 					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
 				}
 				
-				stringCache[x] = result;
+				stringCache[rx] = result;
 				return result;
 			}
 			
@@ -250,27 +247,24 @@ namespace MonoDevelop.CSharp
 			var loc = Document.Editor.Caret.Location;
 			var result = new List<PathEntry> ();
 			var amb = GetAmbience ();
-			var ctx = unit.ParsedFile.GetTypeResolveContext (document.Compilation, loc);
-			var typeDef = unit.GetInnermostTypeDefinition (loc);
-			IType type = null;
+			var currentType = unit.GetInnermostTypeDefinition (loc);
+			var typeDef = currentType != null ? Document.Compilation.GetAllTypeDefinitions ().FirstOrDefault (t => !t.IsSynthetic && t.Parts.Any (p => p.Region == currentType.Region)) : null;
 			if (typeDef != null) {
-				type = typeDef.Resolve (ctx);
-				var curType = type.GetDefinition ();
+				var curType = typeDef;
 				while (curType != null) {
 					var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
 					if (curType.DeclaringTypeDefinition == null)
 						flags |= OutputFlags.UseFullInnerTypeName;
 					var markup = amb.GetString ((IEntity)curType, flags);
-					result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)typeDef.DeclaringTypeDefinition ?? unit });
+					result.Insert (0, new PathEntry (ImageService.GetPixbuf (curType.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)typeDef.DeclaringTypeDefinition ?? unit });
 					curType = curType.DeclaringTypeDefinition;
 				}
 			}
 			
-			var unresolvedMember = type != null && type.Kind != TypeKind.Delegate ? unit.GetMember (loc.Line, loc.Column) : null;
-			if (unresolvedMember != null) {
-				var member = unresolvedMember.CreateResolved (ctx);
+			var member = typeDef != null && typeDef.Kind != TypeKind.Delegate ? typeDef.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (loc)) : null;
+			if (member != null) {
 				var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
-				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = unresolvedMember.DeclaringTypeDefinition });
+				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member });
 			}
 			
 			var entry = GetRegionEntry (unit, loc);
@@ -278,9 +272,9 @@ namespace MonoDevelop.CSharp
 				result.Add (entry);
 			
 			PathEntry noSelection = null;
-			if (type == null) {
+			if (typeDef == null) {
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
-			} else if (unresolvedMember == null && type.Kind != TypeKind.Delegate) 
+			} else if (member == null && typeDef.Kind != TypeKind.Delegate) 
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = typeDef };
 			if (noSelection != null) 
 				result.Add (noSelection);
@@ -288,7 +282,7 @@ namespace MonoDevelop.CSharp
 			if (prev != null && prev.Length == result.Count) {
 				bool equals = true;
 				for (int i = 0; i < prev.Length; i++) {
-					if (prev[i].Markup != result[i].Markup) {
+					if (prev [i].Markup != result [i].Markup) {
 						equals = false;
 						break;
 					}
