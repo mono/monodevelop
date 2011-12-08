@@ -87,6 +87,7 @@
     <Compile Include="MacMainMenu.cs" />
     <Compile Include="MacInterop\Carbon.cs" />
     <Compile Include="MacInterop\AppleEvents\Native.cs" />
+    <Compile Include="Dialogs\MacExceptionDialogHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

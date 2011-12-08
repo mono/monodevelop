@@ -51,5 +51,6 @@
 		<Class class="MonoDevelop.MacIntegration.MacAddFileDialogHandler" />
 		<Class class="MonoDevelop.MacIntegration.MacOpenFileDialogHandler" />
 		<Class class="MonoDevelop.MacIntegration.MacAlertDialogHandler" />
+		<Class class="MonoDevelop.MacIntegration.MacExceptionDialogHandler" />
 	</Extension>
 </Addin>
