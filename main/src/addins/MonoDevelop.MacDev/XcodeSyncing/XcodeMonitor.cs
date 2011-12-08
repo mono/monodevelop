@@ -357,6 +357,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 				const string XCODE_OPEN_PROJECT =
 @"tell application ""{0}""
+	activate
 	open ""{1}""
 end tell";
 
