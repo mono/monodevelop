@@ -648,6 +648,8 @@ namespace Mono.Debugging.Soft
 		{
 			if (val is ObjectMirror)
 				return ((ObjectMirror)val).Type;
+			if (val is EnumMirror)
+				return ((EnumMirror)val).Type;
 			if (val is StructMirror)
 				return ((StructMirror)val).Type;
 			if (val is PrimitiveValue) {
@@ -659,8 +661,7 @@ namespace Mono.Debugging.Soft
 			}
 			if (val is ArrayMirror)
 				return ((ArrayMirror)val).Type;
-			if (val is EnumMirror)
-				return ((EnumMirror)val).Type;
+			
 			throw new NotSupportedException ();
 		}
 		
