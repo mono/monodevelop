@@ -831,16 +831,14 @@ namespace MonoDevelop.SourceEditor
 				};
 				messageBar.ActionArea.Add (b1);
 				
-				Button b2 = new Button (GettextCatalog.GetString("_Keep changes"));
+				Button b2 = new Button (GettextCatalog.GetString("_Keep line endings"));
 				b2.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
 				b2.Clicked += delegate(object sender, EventArgs e) {
-					try {
-						useIncorrectMarkers = true;
-						view.Save (fileName, encoding);
-					} finally {
-						RemoveMessageBar ();
-						view.WorkbenchWindow.ShowNotification = false;
-					}
+					useIncorrectMarkers = true;
+					RemoveMessageBar ();
+					view.WorkbenchWindow.ShowNotification = false;
+					
+					view.Save (fileName, encoding);
 				};
 				messageBar.ActionArea.Add (b2);
 			}
