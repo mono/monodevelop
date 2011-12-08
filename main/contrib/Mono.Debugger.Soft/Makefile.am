@@ -39,6 +39,7 @@ FILES =  \
 	Mono.Debugger.Soft/IInvokeAsyncResult.cs \
 	Mono.Debugger.Soft/ILInstruction.cs \
 	Mono.Debugger.Soft/IMirror.cs \
+	Mono.Debugger.Soft/InterfaceMappingMirror.cs \
 	Mono.Debugger.Soft/InvalidStackFrameException.cs \
 	Mono.Debugger.Soft/InvocationException.cs \
 	Mono.Debugger.Soft/InvokeOptions.cs \

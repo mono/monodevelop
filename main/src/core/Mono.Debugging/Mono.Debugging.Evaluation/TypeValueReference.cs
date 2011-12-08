@@ -130,8 +130,6 @@ namespace Mono.Debugging.Evaluation
 				if (!groupPrivateMembers)
 					flags |= BindingFlags.NonPublic;
 				
-				ObjectValueNameTracker names = new ObjectValueNameTracker (ctx);
-				
 				TypeDisplayData tdata = ctx.Adapter.GetTypeDisplayData (ctx, type);
 				object tdataType = type;
 				
@@ -146,7 +144,6 @@ namespace Mono.Debugging.Evaluation
 						continue;
 
 					ObjectValue oval = val.CreateObjectValue (options);
-					names.FixName (val, oval);
 					list.Add (oval);
 				}
 				

@@ -362,8 +362,7 @@ namespace Mono.Debugging.Evaluation
 			// to avoid problems with objects being invalidated due to evaluations in the target,
 			List<ValueReference> list = new List<ValueReference> ();
 			list.AddRange (GetMembersSorted (ctx, objectSource, type, proxy, access));
-
-			var names = new ObjectValueNameTracker (ctx);
+			
 			object tdataType = type;
 			
 			foreach (ValueReference val in list) {
@@ -388,7 +387,6 @@ namespace Mono.Debugging.Evaluation
 					}
 					else {
 						ObjectValue oval = val.CreateObjectValue (true);
-						names.FixName (val, oval);
 						values.Add (oval);
 					}
 
@@ -1067,33 +1065,6 @@ namespace Mono.Debugging.Evaluation
 				return state;
 			else
 				return DebuggerBrowsableState.Collapsed;
-		}
-	}
-	
-	class ObjectValueNameTracker
-	{
-		Dictionary<string,KeyValuePair<ObjectValue, ValueReference>> names = new Dictionary<string,KeyValuePair<ObjectValue, ValueReference>> ();
-		EvaluationContext ctx;
-		
-		public ObjectValueNameTracker (EvaluationContext ctx)
-		{
-			this.ctx = ctx;
-		}
-		
-		public void FixName (ValueReference val, ObjectValue oval)
-		{
-			KeyValuePair<ObjectValue, ValueReference> other;
-			if (names.TryGetValue (oval.Name, out other)) {
-				object tn = val.DeclaringType;
-				if (tn != null)
-					oval.Name += " (" + ctx.Adapter.GetDisplayTypeName (ctx, tn) + ")";
-				if (!other.Key.Name.EndsWith (")")) {
-					tn = other.Value.DeclaringType;
-					if (tn != null)
-						other.Key.Name += " (" + ctx.Adapter.GetDisplayTypeName (ctx, tn) + ")";
-				}
-			} else
-				names [oval.Name] = new KeyValuePair<ObjectValue, ValueReference> (oval, val);
 		}
 	}
 	
