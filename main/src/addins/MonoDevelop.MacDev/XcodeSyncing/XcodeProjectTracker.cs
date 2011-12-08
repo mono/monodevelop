@@ -265,7 +265,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			if (updateProject) {
 				using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing to Xcode..."))) {
 					//FIXME: make this async (and safely async)
+					var running = xcode.CheckRunning ();
 					UpdateXcodeProject (monitor);
+					if (running)
+						xcode.OpenProject ();
 				}
 			}
 		}
@@ -312,8 +315,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		bool UpdateXcodeProject (IProgressMonitor monitor)
 		{
 			try {
-				if (xcode.CheckRunning ())
-					xcode.UpdateProject (monitor, CreateSyncList (), CreateProject (dnp.Name));
+				xcode.UpdateProject (monitor, CreateSyncList (), CreateProject (dnp.Name));
 				return true;
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Error updating Xcode project"), ex);
@@ -372,7 +374,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					FileService.NotifyFilesChanged (changeCtx.FileSyncJobs.Select (f => f.Original));
 				});
 				
-				if (typesAdded)
+				if (typesAdded && xcode.CheckRunning ())
 					UpdateXcodeProject (monitor);
 				
 				return true;
