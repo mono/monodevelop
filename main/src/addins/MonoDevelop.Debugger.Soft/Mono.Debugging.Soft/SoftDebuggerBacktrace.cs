@@ -91,6 +91,9 @@ namespace Mono.Debugging.Soft
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
 		{
 			ValidateStack ();
+			if (frameIndex >= frames.Length)
+				return null;
+			
 			MDB.StackFrame frame = frames [frameIndex];
 			return new SoftEvaluationContext (session, frame, options);
 		}

@@ -217,6 +217,9 @@ namespace Mono.Debugging.Evaluation
 				return null;
 			
 			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
+			if (ctx == null)
+				return null;
+			
 			finfo = new FrameInfo ();
 			finfo.Context = ctx;
 			finfo.LocalVariables.AddRange (ctx.Adapter.GetLocalVariables (ctx));
