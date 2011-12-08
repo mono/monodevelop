@@ -142,8 +142,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.Log.WriteLine ("Queuing Xcode project {0} to write when opened", projectDir);
 				pendingProjectWrite = emptyProject;
 			}
-			
-			OpenProject ();
+
 			monitor.EndTask ();
 			monitor.ReportSuccess (GettextCatalog.GetString ("Xcode project updated."));
 		}
