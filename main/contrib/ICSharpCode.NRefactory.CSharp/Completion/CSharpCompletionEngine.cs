@@ -246,7 +246,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				int tokenIndex = offset;
 				string token = GetPreviousToken (ref tokenIndex, false);
 				// check propose name, for context <variable name> <ctrl+space> (but only in control space context)
-				IType isAsType = null;
+				//IType isAsType = null;
 				var isAsExpression = GetExpressionAt (offset);
 				if (controlSpace && isAsExpression != null && isAsExpression.Item2 is VariableDeclarationStatement && token != "new") {
 					var parent = isAsExpression.Item2 as VariableDeclarationStatement;

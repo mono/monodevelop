@@ -33,11 +33,34 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class SimpleType : AstType
 	{
+		#region Null
+		public new static readonly SimpleType Null = new NullSimpleType ();
+		
+		sealed class NullSimpleType : SimpleType
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+			{
+				return default (S);
+			}
+			
+			protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+			{
+				return other == null || other.IsNull;
+			}
+		}
+		#endregion
+		
 		public SimpleType()
 		{
 		}
 		
-		public SimpleType (string identifier)
+		public SimpleType(string identifier)
 		{
 			this.Identifier = identifier;
 		}

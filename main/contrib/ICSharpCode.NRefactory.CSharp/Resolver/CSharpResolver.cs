@@ -43,7 +43,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		readonly ICompilation compilation;
 		internal readonly Conversions conversions;
-		CSharpTypeResolveContext context;
+		readonly CSharpTypeResolveContext context;
+		readonly bool checkForOverflow;
+		readonly bool isWithinLambdaExpression;
 		
 		#region Constructor
 		public CSharpResolver(ICompilation compilation)
@@ -65,6 +67,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (context.CurrentTypeDefinition != null)
 				currentTypeDefinitionCache = new TypeDefinitionCache(context.CurrentTypeDefinition);
 		}
+		
+		private CSharpResolver(ICompilation compilation, Conversions conversions, CSharpTypeResolveContext context, bool checkForOverflow, bool isWithinLambdaExpression, TypeDefinitionCache currentTypeDefinitionCache, ImmutableStack<IVariable> localVariableStack, ObjectInitializerContext objectInitializerStack)
+		{
+			this.compilation = compilation;
+			this.conversions = conversions;
+			this.context = context;
+			this.checkForOverflow = checkForOverflow;
+			this.isWithinLambdaExpression = isWithinLambdaExpression;
+			this.currentTypeDefinitionCache = currentTypeDefinitionCache;
+			this.localVariableStack = localVariableStack;
+			this.objectInitializerStack = objectInitializerStack;
+		}
 		#endregion
 		
 		#region Properties
@@ -82,53 +96,101 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			get { return context; }
 		}
 		
-		/// <summary>
-		/// Gets/Sets whether the current context is <c>checked</c>.
-		/// </summary>
-		public bool CheckForOverflow { get; set; }
-		
-		/// <summary>
-		/// Gets/Sets the current member definition that is used to look up identifiers as parameters
-		/// or type parameters.
-		/// </summary>
-		/// <remarks>Don't forget to also set CurrentTypeDefinition when setting CurrentMember;
-		/// setting one of the properties does not automatically set the other.</remarks>
-		public IMember CurrentMember {
-			get { return context.CurrentMember; }
-			set {
-				context = context.WithCurrentMember(value);
-			}
+		CSharpResolver WithContext(CSharpTypeResolveContext newContext)
+		{
+			return new CSharpResolver(compilation, conversions, newContext, checkForOverflow, isWithinLambdaExpression, currentTypeDefinitionCache, localVariableStack, objectInitializerStack);
 		}
 		
 		/// <summary>
-		/// Gets/Sets the current using scope that is used to look up identifiers as class names.
+		/// Gets whether the current context is <c>checked</c>.
+		/// </summary>
+		public bool CheckForOverflow {
+			get { return checkForOverflow; }
+		}
+		
+		/// <summary>
+		/// Sets whether the current context is <c>checked</c>.
+		/// </summary>
+		public CSharpResolver WithCheckForOverflow(bool checkForOverflow)
+		{
+			return new CSharpResolver(compilation, conversions, context, checkForOverflow, isWithinLambdaExpression, currentTypeDefinitionCache, localVariableStack, objectInitializerStack);
+		}
+		
+		/// <summary>
+		/// Gets whether the resolver is currently within a lambda expression.
+		/// </summary>
+		public bool IsWithinLambdaExpression {
+			get { return isWithinLambdaExpression; }
+		}
+		
+		/// <summary>
+		/// Sets whether the resolver is currently within a lambda expression.
+		/// </summary>
+		public CSharpResolver WithIsWithinLambdaExpression(bool isWithinLambdaExpression)
+		{
+			return new CSharpResolver(compilation, conversions, context, checkForOverflow, isWithinLambdaExpression, currentTypeDefinitionCache, localVariableStack, objectInitializerStack);
+		}
+		
+		/// <summary>
+		/// Gets the current member definition that is used to look up identifiers as parameters
+		/// or type parameters.
+		/// </summary>
+		public IMember CurrentMember {
+			get { return context.CurrentMember; }
+		}
+		
+		/// <summary>
+		/// Sets the current member definition.
+		/// </summary>
+		/// <remarks>Don't forget to also set CurrentTypeDefinition when setting CurrentMember;
+		/// setting one of the properties does not automatically set the other.</remarks>
+		public CSharpResolver WithCurrentMember(IMember member)
+		{
+			return WithContext(context.WithCurrentMember(member));
+		}
+		
+		/// <summary>
+		/// Gets the current using scope that is used to look up identifiers as class names.
 		/// </summary>
 		public ResolvedUsingScope CurrentUsingScope {
 			get { return context.CurrentUsingScope; }
-			set {
-				context = context.WithUsingScope(value);
-			}
+		}
+		
+		/// <summary>
+		/// Sets the current using scope that is used to look up identifiers as class names.
+		/// </summary>
+		public CSharpResolver WithCurrentUsingScope(ResolvedUsingScope usingScope)
+		{
+			return WithContext(context.WithUsingScope(usingScope));
 		}
 		#endregion
 		
 		#region Per-CurrentTypeDefinition Cache
-		TypeDefinitionCache currentTypeDefinitionCache;
+		readonly TypeDefinitionCache currentTypeDefinitionCache;
 		
 		/// <summary>
-		/// Gets/Sets the current type definition that is used to look up identifiers as simple members.
+		/// Gets the current type definition.
 		/// </summary>
 		public ITypeDefinition CurrentTypeDefinition {
 			get { return context.CurrentTypeDefinition; }
-			set {
-				context = context.WithCurrentTypeDefinition(value);
-				if (value == null) {
-					currentTypeDefinitionCache = null;
-				} else {
-					if (currentTypeDefinitionCache == null || currentTypeDefinitionCache.TypeDefinition != value) {
-						currentTypeDefinitionCache = new TypeDefinitionCache(value);
-					}
-				}
-			}
+		}
+		
+		/// <summary>
+		/// Sets the current type definition.
+		/// </summary>
+		public CSharpResolver WithCurrentTypeDefinition(ITypeDefinition typeDefinition)
+		{
+			if (this.CurrentTypeDefinition == typeDefinition)
+				return this;
+			
+			TypeDefinitionCache newTypeDefinitionCache;
+			if (typeDefinition != null)
+				newTypeDefinitionCache = new TypeDefinitionCache(typeDefinition);
+			else
+				newTypeDefinitionCache = null;
+			
+			return new CSharpResolver(compilation, conversions, context.WithCurrentTypeDefinition(typeDefinition),
+			                          checkForOverflow, isWithinLambdaExpression, newTypeDefinitionCache, localVariableStack, objectInitializerStack);
 		}
 		
 		sealed class TypeDefinitionCache
@@ -151,36 +213,43 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// The beginning of a block is marked by a null entry.
 		
 		// This data structure is used to allow efficient cloning of the resolver with its local variable context.
-		ImmutableStack<IVariable> localVariableStack = ImmutableStack<IVariable>.Empty;
+		readonly ImmutableStack<IVariable> localVariableStack = ImmutableStack<IVariable>.Empty;
+		
+		CSharpResolver WithLocalVariableStack(ImmutableStack<IVariable> stack)
+		{
+			return new CSharpResolver(compilation, conversions, context, checkForOverflow, isWithinLambdaExpression, currentTypeDefinitionCache, stack, objectInitializerStack);
+		}
 		
 		/// <summary>
 		/// Opens a new scope for local variables.
 		/// </summary>
-		public void PushBlock()
+		public CSharpResolver PushBlock()
 		{
-			localVariableStack = localVariableStack.Push(null);
+			return WithLocalVariableStack(localVariableStack.Push(null));
 		}
 		
 		/// <summary>
 		/// Closes the current scope for local variables; removing all variables in that scope.
 		/// </summary>
-		public void PopBlock()
+		public CSharpResolver PopBlock()
 		{
+			var stack = localVariableStack;
 			IVariable removedVar;
 			do {
-				removedVar = localVariableStack.Peek();
-				localVariableStack = localVariableStack.Pop();
+				removedVar = stack.Peek();
+				stack = stack.Pop();
 			} while (removedVar != null);
+			return WithLocalVariableStack(stack);
 		}
 		
 		/// <summary>
 		/// Adds a new variable or lambda parameter to the current block.
 		/// </summary>
-		public void AddVariable(IVariable variable)
+		public CSharpResolver AddVariable(IVariable variable)
 		{
 			if (variable == null)
 				throw new ArgumentNullException("variable");
-			localVariableStack = localVariableStack.Push(variable);
+			return WithLocalVariableStack(localVariableStack.Push(variable));
 		}
 		
 		/// <summary>
@@ -191,11 +260,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return localVariableStack.Where(v => v != null);
 			}
 		}
-		
-		/// <summary>
-		/// Gets whether the resolver is currently within a lambda expression.
-		/// </summary>
-		public bool IsWithinLambdaExpression { get; set; }
 		#endregion
 		
 		#region Object Initializer Context
@@ -211,23 +275,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ObjectInitializerContext objectInitializerStack;
+		readonly ObjectInitializerContext objectInitializerStack;
+		
+		CSharpResolver WithObjectInitializerStack(ObjectInitializerContext stack)
+		{
+			return new CSharpResolver(compilation, conversions, context, checkForOverflow, isWithinLambdaExpression, currentTypeDefinitionCache, localVariableStack, stack);
+		}
 		
 		/// <summary>
 		/// Pushes the type of the object that is currently being initialized.
 		/// </summary>
-		public void PushInitializerType(IType type)
+		public CSharpResolver PushInitializerType(IType type)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			objectInitializerStack = new ObjectInitializerContext(type, objectInitializerStack);
+			return WithObjectInitializerStack(new ObjectInitializerContext(type, objectInitializerStack));
 		}
 		
-		public void PopInitializerType()
+		public CSharpResolver PopInitializerType()
 		{
 			if (objectInitializerStack == null)
 				throw new InvalidOperationException();
-			objectInitializerStack = objectInitializerStack.prev;
+			return WithObjectInitializerStack(objectInitializerStack.prev);
 		}
 		
 		/// <summary>
@@ -244,9 +313,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Creates a copy of this CSharp resolver.
 		/// </summary>
+		[Obsolete("CSharpResolver is immutable, cloning is no longer necessary")]
 		public CSharpResolver Clone()
 		{
-			return (CSharpResolver)MemberwiseClone();
+			return this;
 		}
 		#endregion
 		
@@ -1306,7 +1376,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					ITypeDefinition def = n.GetTypeDefinition(identifier, k);
 					if (def != null) {
 						IType result = def;
-						if (parameterizeResultType && typeArguments.Count > 0) {
+						if (parameterizeResultType) {
 							result = new ParameterizedType(def, typeArguments);
 						}
 						if (u.HasAlias(identifier))
@@ -1410,7 +1480,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (mgrr != null) {
 					Debug.Assert(mgrr.extensionMethods == null);
 					// set the values that are necessary to make MethodGroupResolveResult.GetExtensionMethods() work
-					mgrr.resolver = this.Clone();
+					mgrr.resolver = this;
 				}
 			}
 			return result;

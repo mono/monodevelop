@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.namespaceName = namespaceName;
 			this.Name = name;
 		}
-
+		
 		public DefaultUnresolvedTypeDefinition(string namespaceName, string name)
 		{
 			this.EntityType = EntityType.TypeDefinition;

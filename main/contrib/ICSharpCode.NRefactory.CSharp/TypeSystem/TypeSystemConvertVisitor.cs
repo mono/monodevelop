@@ -468,7 +468,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 			foreach (Constraint c in constraints) {
 				foreach (var tp in list) {
-					if (tp.Name == c.TypeParameter) {
+					if (tp.Name == c.TypeParameter.Identifier) {
 						foreach (AstType type in c.BaseTypes) {
 							PrimitiveType primType = type as PrimitiveType;
 							if (primType != null) {
