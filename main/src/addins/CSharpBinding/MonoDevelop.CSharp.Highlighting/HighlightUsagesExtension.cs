@@ -61,7 +61,6 @@ namespace MonoDevelop.CSharp.Highlighting
 		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
 		{
 			RemoveMarkers (false);
-			
 		}
 
 		void HandleTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
@@ -102,6 +101,8 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void HandleTextEditorDataCaretPositionChanged (object sender, DocumentLocationEventArgs e)
 		{
+			if (!SourceEditor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages)
+				return;
 			if (!textEditorData.IsSomethingSelected && markers.Values.Any (m => m.Contains (textEditorData.Caret.Offset)))
 				return;
 			RemoveMarkers (textEditorData.IsSomethingSelected);
