@@ -292,7 +292,7 @@ namespace Mono.Debugging.Evaluation
 			string typeName = obj != null ? GetValueTypeName (ctx, obj) : "";
 			
 			if (obj == null || IsNull (ctx, obj)) {
-				return ObjectValue.CreateObject (source, path, GetDisplayTypeName (typeName), "(null)", flags, null);
+				return ObjectValue.CreateNullObject (source, path, GetDisplayTypeName (typeName), flags);
 			}
 			else if (IsPrimitive (ctx, obj) || IsEnum (ctx,obj)) {
 				return ObjectValue.CreatePrimitive (source, path, GetDisplayTypeName (typeName), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);

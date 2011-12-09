@@ -38,6 +38,7 @@ namespace Mono.Debugging.Client
 	{
 		ObjectPath path;
 		int arrayCount = -1;
+		bool isNull;
 		string name;
 		string value;
 		string typeName;
@@ -88,9 +89,15 @@ namespace Mono.Debugging.Client
 		
 		public static ObjectValue CreateNullObject (IObjectValueSource source, string name, string typeName, ObjectValueFlags flags)
 		{
-			ObjectValue ob = Create (source, new ObjectPath (name), typeName);
+			return CreateNullObject (source, new ObjectPath (name), typeName, flags);
+		}
+		
+		public static ObjectValue CreateNullObject (IObjectValueSource source, ObjectPath path, string typeName, ObjectValueFlags flags)
+		{
+			ObjectValue ob = Create (source, path, typeName);
 			ob.flags = flags | ObjectValueFlags.Object;
 			ob.value = "(null)";
+			ob.isNull = true;
 			return ob;
 		}
 		
@@ -218,6 +225,7 @@ namespace Mono.Debugging.Client
 				if (res != null) {
 					this.value = res.Value;
 					displayValue = res.DisplayValue;
+					isNull = value == null;
 				}
 			}
 		}
@@ -382,6 +390,8 @@ namespace Mono.Debugging.Client
 		/// </value>
 		public bool HasChildren {
 			get {
+				if (isNull)
+					return false;
 				if (IsEvaluating)
 					return false;
 				if (children != null)
