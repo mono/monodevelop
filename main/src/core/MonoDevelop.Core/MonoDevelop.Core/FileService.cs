@@ -129,8 +129,8 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (oldName));
 			Debug.Assert (!String.IsNullOrEmpty (newName));
 			if (Path.GetFileName (oldName) != newName) {
-				string newPath = Path.Combine (Path.GetDirectoryName (oldName), newName);
-				InternalMoveFile (oldName, newPath);
+				var newPath = ((FilePath)oldName).ParentDirectory.Combine (newName);
+				InternalRenameFile (oldName, newName);
 				OnFileRenamed (new FileCopyEventArgs (oldName, newPath, false));
 				OnFileCreated (new FileEventArgs (newPath, false));
 				OnFileRemoved (new FileEventArgs (oldName, false));
@@ -184,6 +184,15 @@ namespace MonoDevelop.Core
 				dstExt.CopyFile (srcFile, dstFile, true);
 				srcExt.DeleteFile (srcFile);
 			}
+		}
+		
+		static void InternalRenameFile (string srcFile, string newName)
+		{
+			Debug.Assert (!string.IsNullOrEmpty (srcFile));
+			Debug.Assert (!string.IsNullOrEmpty (newName));
+			FileSystemExtension srcExt = GetFileSystemForPath (srcFile, false);
+			
+			srcExt.RenameFile (srcFile, newName);
 		}
 		
 		public static void CreateDirectory (string path)
