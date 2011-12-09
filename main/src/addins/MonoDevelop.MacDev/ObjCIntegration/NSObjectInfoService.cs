@@ -112,6 +112,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			var project = (DotNetProject)sender;
 			var dom = TypeSystemService.GetProjectContentWrapper (project);
+			if (dom == null)
+				return;
 			NSObjectProjectInfo info;
 			lock (infos) {
 				if (!infos.TryGetValue (dom, out info))
@@ -124,6 +126,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			var project = (DotNetProject)e.Project;
 			var dom = TypeSystemService.GetProjectContentWrapper (project);
+			if (dom == null)
+				return;
 			lock (infos) {
 				project.ReferenceAddedToProject -= HandleDomReferencesUpdated;
 				project.ReferenceRemovedFromProject -= HandleDomReferencesUpdated;
