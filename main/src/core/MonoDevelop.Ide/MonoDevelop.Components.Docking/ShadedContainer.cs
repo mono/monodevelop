@@ -186,6 +186,8 @@ namespace MonoDevelop.Components.Docking
 		
 		public void DrawBackground (Gtk.Widget w, Gdk.Rectangle allocation)
 		{
+			//HACK: the shadow positions are all worn on recent GTK, disable them for now
+			/*
 			if (shadowSize == 0) {
 				Gdk.Rectangle wr = new Gdk.Rectangle (allocation.X, allocation.Y, allocation.Width, allocation.Height);
 				using (Cairo.Context ctx = Gdk.CairoHelper.Create (w.GdkWindow)) {
@@ -203,36 +205,37 @@ namespace MonoDevelop.Components.Docking
 			
 			int x, y;
 			w.GdkWindow.GetOrigin (out x, out y);
-			Gdk.Rectangle rect = new Gdk.Rectangle (x + allocation.X, y + allocation.Y, allocation.Width, allocation.Height);
+			Gdk.Rectangle allocAbs = allocation;
+			allocAbs.Offset (x, y);
 			
 			Section s = new Section ();
-			s.Size = rect.Width;
+			s.Size = allocAbs.Width;
 			secsT.Add (s);
 			secsB.Add (s);
-			s.Size = rect.Height;
+			s.Size = allocAbs.Height;
 			secsL.Add (s);
 			secsR.Add (s);
-				
+						
 			foreach (var rects in allocations) {
 				int sx, sy;
 				rects.Key.GdkWindow.GetOrigin (out sx, out sy);
 				foreach (Gdk.Rectangle srt in rects.Value) {
-					if (srt == rect)
+					Gdk.Rectangle srtAbs = srt;
+					srtAbs.Offset (sx, sy);
+					if (srtAbs == allocAbs)
 						continue;
-					Gdk.Rectangle sr = srt;
-					sr.Offset (sx, sy);
-					if (sr.Right == rect.X)
-						RemoveSection (secsL, sr.Y - rect.Y, sr.Height);
-					if (sr.Bottom == rect.Y)
-						RemoveSection (secsT, sr.X - rect.X, sr.Width);
-					if (sr.X == rect.Right)
-						RemoveSection (secsR, sr.Y - rect.Y, sr.Height);
-					if (sr.Y == rect.Bottom)
-						RemoveSection (secsB, sr.X - rect.X, sr.Width);
+					if (srtAbs.Right == allocAbs.X)
+						RemoveSection (secsL, srtAbs.Y - allocAbs.Y, srtAbs.Height);
+					if (srtAbs.Bottom == allocAbs.Y)
+						RemoveSection (secsT, srtAbs.X - allocAbs.X, srtAbs.Width);
+					if (srtAbs.X == allocAbs.Right)
+						RemoveSection (secsR, srtAbs.Y - allocAbs.Y, srtAbs.Height);
+					if (srtAbs.Y == allocAbs.Bottom)
+						RemoveSection (secsB, srtAbs.X - allocAbs.X, srtAbs.Width);
 				}
 			}			
 			
-			Gdk.Rectangle r = new Gdk.Rectangle (allocation.X, allocation.Y, allocation.Width, allocation.Height);
+			Gdk.Rectangle r = allocation;
 			using (Cairo.Context ctx = Gdk.CairoHelper.Create (w.GdkWindow)) {
 				ctx.Rectangle (r.X, r.Y, r.Width, r.Height);
 				ctx.Color = GtkUtil.ToCairoColor (lightColor);
@@ -242,7 +245,7 @@ namespace MonoDevelop.Components.Docking
 				DrawShadow (ctx, r, PositionType.Top, secsT);
 				DrawShadow (ctx, r, PositionType.Right, secsR);
 				DrawShadow (ctx, r, PositionType.Bottom, secsB);
-			}
+			}*/
 		}
 		
 		void DrawShadow (Cairo.Context ctx, Gdk.Rectangle ar, PositionType pos, List<Section> secs)
