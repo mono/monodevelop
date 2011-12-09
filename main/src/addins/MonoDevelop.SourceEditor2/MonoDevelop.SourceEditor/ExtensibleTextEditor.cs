@@ -469,11 +469,12 @@ namespace MonoDevelop.SourceEditor
 		
 		int           oldOffset = -1;
 		ResolveResult resolveResult = null;
+		DomRegion     resolveRegion = DomRegion.Empty;
 		public ResolveResult GetLanguageItem (int offset, out DomRegion region)
 		{
 			// we'll cache old results.
 			if (offset == oldOffset) {
-				region = DomRegion.Empty;
+				region = this.resolveRegion;
 				return this.resolveResult;
 			}
 			
@@ -481,9 +482,11 @@ namespace MonoDevelop.SourceEditor
 			
 			if (textEditorResolverProvider != null) {
 				this.resolveResult = textEditorResolverProvider.GetLanguageItem (GetTextEditorData (), offset, out region);
+				this.resolveRegion = region;
 			} else {
 				region = DomRegion.Empty;
 				this.resolveResult = null;
+				this.resolveRegion = region;
 			}
 			
 			return this.resolveResult;
