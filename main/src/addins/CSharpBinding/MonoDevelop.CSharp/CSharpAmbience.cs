@@ -247,7 +247,6 @@ namespace MonoDevelop.CSharp
 				AppendType (sb, type.DeclaringType, settings);
 				sb.Append (settings.Markup ("."));
 			}
-			
 			if (type.Namespace == "System" && type.TypeParameterCount == 0) {
 				switch (type.Name) {
 				case "Object":
@@ -303,14 +302,23 @@ namespace MonoDevelop.CSharp
 			
 			var typeWithElementType = type as TypeWithElementType;
 			if (typeWithElementType != null) {
+				if (typeWithElementType is PointerType) {
+					sb.Append (settings.Markup ("*"));
+				} 
 				AppendType (sb, typeWithElementType.ElementType, settings);
+				
+				if (typeWithElementType is ArrayType) {
+					sb.Append (settings.Markup ("["));
+					sb.Append (settings.Markup (new string (',', ((ArrayType)type).Dimensions - 1)));
+					sb.Append (settings.Markup ("]"));
+				}
 				return;
 			}
 			
 			var pt = type as ParameterizedType;
 			if (pt != null) {
 				if (pt.Name == "Nullable" && pt.Namespace == "System" && pt.TypeParameterCount == 1) {
-					AppendType (sb, pt.TypeArguments[0], settings);
+					AppendType (sb, pt.TypeArguments [0], settings);
 					sb.Append (settings.Markup ("?"));
 					return;
 				}
@@ -320,7 +328,7 @@ namespace MonoDevelop.CSharp
 					for (int i = 0; i < pt.TypeParameterCount; i++) {
 						if (i > 0)
 							sb.Append (settings.Markup (", "));
-						AppendType (sb, pt.TypeArguments[i], settings);
+						AppendType (sb, pt.TypeArguments [i], settings);
 					}
 					sb.Append (settings.Markup (">"));
 				}
@@ -336,7 +344,7 @@ namespace MonoDevelop.CSharp
 					for (int i = 0; i < typeDef.TypeParameterCount; i++) {
 						if (i > 0)
 							sb.Append (settings.Markup (", "));
-						AppendType (sb, typeDef.TypeParameters[i], settings);
+						AppendType (sb, typeDef.TypeParameters [i], settings);
 					}
 					sb.Append (settings.Markup (">"));
 				}
@@ -382,6 +390,24 @@ namespace MonoDevelop.CSharp
 				return ((UnknownType)t).Name;
 			if (t.Kind == TypeKind.TypeParameter)
 				return t.FullName;
+			
+			var typeWithElementType = t as TypeWithElementType;
+			if (typeWithElementType != null) {
+				var sb = new StringBuilder ();
+			
+				if (typeWithElementType is PointerType) {
+					sb.Append (settings.Markup ("*"));
+				} 
+				AppendType (sb, typeWithElementType.ElementType, settings);
+				
+				if (typeWithElementType is ArrayType) {
+					sb.Append (settings.Markup ("["));
+					sb.Append (settings.Markup (new string (',', ((ArrayType)t).Dimensions - 1)));
+					sb.Append (settings.Markup ("]"));
+				}
+				return sb.ToString ();
+			}
+			
 			ITypeDefinition type = t.GetDefinition ();
 			if (type == null)
 				return "";
@@ -422,12 +448,14 @@ namespace MonoDevelop.CSharp
 					return "void";
 				}
 			}
-				
+			
 			// output anonymous type
 			if (type.IsSynthetic && type.Name == "$Anonymous$")
 				return GetTypeReferenceString (type, settings);
 			
 			var result = new StringBuilder ();
+			
+			
 			var def = type;
 			AppendModifiers (result, settings, def);
 			if (settings.IncludeKeywords)
