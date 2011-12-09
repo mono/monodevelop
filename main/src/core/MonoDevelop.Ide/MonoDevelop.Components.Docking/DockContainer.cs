@@ -139,6 +139,9 @@ namespace MonoDevelop.Components.Docking
 			if (layout == null)
 				return;
 			
+			if (this.GdkWindow != null)
+				this.GdkWindow.MoveResize (rect);
+			
 			// This container has its own window, so allocation of children
 			// is relative to 0,0
 			rect.X = rect.Y = 0;
@@ -357,8 +360,19 @@ namespace MonoDevelop.Components.Docking
 
 			Style = Style.Attach (GdkWindow);
 			Style.SetBackground (GdkWindow, State);
+			this.WidgetFlags &= ~WidgetFlags.NoWindow;
 			
 			//GdkWindow.SetBackPixmap (null, true);
+		}
+		
+		protected override void OnUnrealized ()
+		{
+			if (this.GdkWindow != null) {
+				this.GdkWindow.UserData = IntPtr.Zero;
+				this.GdkWindow.Destroy ();
+				this.WidgetFlags |= WidgetFlags.NoWindow;
+			}
+			base.OnUnrealized ();
 		}
 		
 		internal void ShowPlaceholder ()
