@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp
 		
 		public bool IsSourceCodeFile (string fileName)
 		{
-			return string.Compare (Path.GetExtension (fileName), ".cs", true) == 0;
+			return StringComparer.OrdinalIgnoreCase.Equals (Path.GetExtension (fileName), ".cs");
 		}
 		
 		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)

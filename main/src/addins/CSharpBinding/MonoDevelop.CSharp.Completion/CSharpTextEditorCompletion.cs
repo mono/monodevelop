@@ -119,7 +119,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
-			return System.IO.Path.GetExtension (doc.Name) == ".cs";
+			return StringComparer.OrdinalIgnoreCase.Equals (System.IO.Path.GetExtension (doc.Name), ".cs");
 		}
 		
 		#region Sharing the tracker
