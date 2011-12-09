@@ -272,9 +272,13 @@ namespace MonoDevelop.Components.Docking
 				cr.Pattern = solidPattern;
 				cr.FillPreserve ();
 				solidPattern.Destroy ();
+				
+				cr.NewPath ();
+				cr.LineWidth = 1d;
+				cr.Color = (HslColor) frame.Style.Dark (StateType.Normal);
+				cr.Rectangle (rect.X + 0.5d, rect.Y + 0.5d, rect.Width, rect.Height);
+				cr.Stroke ();
 			}
-			
-			header.GdkWindow.DrawRectangle (frame.Style.DarkGC (Gtk.StateType.Normal), false, rect);
 			
 			foreach (Widget child in header.Children)
 				header.PropagateExpose (child, a.Event);
@@ -402,7 +406,7 @@ namespace MonoDevelop.Components.Docking
 			
 			bool res = base.OnExposeEvent (evnt);
 			
-			//HACK: for some reason we seem to need to paint a sightly bigger box to align with the header
+			//for some reason we seem to need to paint a sightly bigger box to align with the header
 			//even though the allocation appears to be the same
 			rect.Width += 1;
 			rect.Height += 1;

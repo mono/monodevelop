@@ -186,8 +186,6 @@ namespace MonoDevelop.Components.Docking
 		
 		public void DrawBackground (Gtk.Widget w, Gdk.Rectangle allocation)
 		{
-			//HACK: the shadow positions are all worn on recent GTK, disable them for now
-			/*
 			if (shadowSize == 0) {
 				Gdk.Rectangle wr = new Gdk.Rectangle (allocation.X, allocation.Y, allocation.Width, allocation.Height);
 				using (Cairo.Context ctx = Gdk.CairoHelper.Create (w.GdkWindow)) {
@@ -241,11 +239,14 @@ namespace MonoDevelop.Components.Docking
 				ctx.Color = GtkUtil.ToCairoColor (lightColor);
 				ctx.Fill ();
 				
+				//HACK: the shadow positions are all worn on recent GTK, disable them for now
+				/*
 				DrawShadow (ctx, r, PositionType.Left, secsL);
 				DrawShadow (ctx, r, PositionType.Top, secsT);
 				DrawShadow (ctx, r, PositionType.Right, secsR);
 				DrawShadow (ctx, r, PositionType.Bottom, secsB);
-			}*/
+				*/
+			}
 		}
 		
 		void DrawShadow (Cairo.Context ctx, Gdk.Rectangle ar, PositionType pos, List<Section> secs)
