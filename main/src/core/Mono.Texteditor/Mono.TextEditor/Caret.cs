@@ -89,8 +89,11 @@ namespace Mono.TextEditor
 		public int Offset {
 			get {
 				int result = 0;
-				if (Line <= TextEditorData.Document.LineCount) {
-					LineSegment line = TextEditorData.Document.GetLine (Line);
+				var doc = TextEditorData.Document;
+				if (doc == null)
+					return 0;
+				if (Line <= doc.LineCount) {
+					LineSegment line = doc.GetLine (Line);
 					if (line != null)
 						result = line.Offset;
 					result += System.Math.Min (Column - 1, line.EditableLength);
@@ -98,7 +101,7 @@ namespace Mono.TextEditor
 				return result;
 			}
 			set {
-				int line   = System.Math.Max (1, TextEditorData.Document.OffsetToLineNumber (value));
+				int line = System.Math.Max (1, TextEditorData.Document.OffsetToLineNumber (value));
 				var lineSegment = TextEditorData.Document.GetLine (line);
 				int column = lineSegment != null ? value - lineSegment.Offset + 1 : 1;
 				Location = new DocumentLocation (line, column);
