@@ -48,6 +48,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.showTabsCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowTabs;
 			this.showEolCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowEolMarkers;
 			this.enableAnimationCheckbutton1.Active = DefaultSourceEditorOptions.Instance.EnableAnimations;
+			this.enableHighlightUsagesCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableHighlightUsages;
 			return this;
 		}
 		
@@ -63,6 +64,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.ShowTabs = this.showTabsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ShowEolMarkers = this.showEolCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.EnableAnimations = this.enableAnimationCheckbutton1.Active;
+			DefaultSourceEditorOptions.Instance.EnableHighlightUsages = this.enableHighlightUsagesCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

@@ -242,6 +242,7 @@ namespace MonoDevelop.SourceEditor
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
+			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
 		}
 		
 		#region new options
@@ -437,6 +438,19 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		bool enableHighlightUsages;
+		public bool EnableHighlightUsages {
+			get {
+				return enableHighlightUsages;
+			}
+			set {
+				if (value != this.enableHighlightUsages) {
+					this.enableHighlightUsages = value;
+					PropertyService.Set ("EnableHighlightUsages", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
 		#endregion
 		
 		bool useViModes = false;

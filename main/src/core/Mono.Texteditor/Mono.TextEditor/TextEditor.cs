@@ -893,6 +893,12 @@ namespace Mono.TextEditor
 			KeyboardShortcut[] accels;
 			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
 			
+			//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
+			if ((key == Gdk.Key.Menu && mod == ModifierType.None) || (key == Gdk.Key.F10 && mod == ModifierType.ShiftMask)) {
+				OnPopupMenu ();
+				return true;
+			}
+			
 			uint keyVal = (uint) key;
 			key = accels[0].Key;
 			mod = accels[0].Modifier;
@@ -907,20 +913,26 @@ namespace Mono.TextEditor
 				return true;
 			}
 			
+			//FIXME: why are we doing this?
 			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
 				mod = Gdk.ModifierType.None;
 			
 			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
 			
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
-				ResetIMContext ();	
+				ResetIMContext ();
+				//FIXME: should call base.OnKeyPressEvent when SimulateKeyPress didn't handle the event
 				SimulateKeyPress (key, unicodeChar, mod);
 				return true;
 			}
 			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
-			if (!filter) {
-				return OnIMProcessedKeyPressEvent (key, unicodeChar, mod);
-			}
+			if (filter)
+				return true;
+			
+			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
+			if (OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
+				return true;
+			
 			return base.OnKeyPressEvent (evt);
 		}
 		
