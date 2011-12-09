@@ -376,10 +376,9 @@ namespace MonoDevelop.Components.Docking
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			Gdk.Rectangle rect;
+			Gdk.Rectangle rect = Allocation;
 			
 			if (GradientBackround) {
-				rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 				HslColor gcol = Style.Background (Gtk.StateType.Normal);
 				
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
@@ -403,20 +402,34 @@ namespace MonoDevelop.Components.Docking
 			
 			bool res = base.OnExposeEvent (evnt);
 			
-			Gdk.GC borderColor = Style.DarkGC (Gtk.StateType.Normal);
+			//HACK: for some reason we seem to need to paint a sightly bigger box to align with the header
+			//even though the allocation appears to be the same
+			rect.Width += 1;
+			rect.Height += 1;
 			
-			rect = Allocation;
-			for (int n=0; n<topMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X, rect.Y + n, rect.Right - 1, rect.Y + n);
-			
-			for (int n=0; n<bottomMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X, rect.Bottom - n - 1, rect.Right - 1, rect.Bottom - n - 1);
-			
-			for (int n=0; n<leftMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X + n, rect.Y, rect.X + n, rect.Bottom - 1);
-			
-			for (int n=0; n<rightMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.Right - n - 1, rect.Y, rect.Right - n - 1, rect.Bottom - 1);
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
+				cr.Color = (HslColor) Style.Dark (Gtk.StateType.Normal);
+				
+				double y = rect.Y + topMargin / 2d;
+				cr.LineWidth = topMargin;
+				cr.Line (rect.X, y, rect.Right, y);
+				cr.Stroke ();
+				
+				y = rect.Bottom - bottomMargin / 2d;
+				cr.LineWidth = bottomMargin;
+				cr.Line (rect.X, y, rect.Right, y);
+				cr.Stroke ();
+				
+				double x = rect.X + leftMargin / 2d;
+				cr.LineWidth = leftMargin;
+				cr.Line (x, rect.Y, x, rect.Bottom);
+				cr.Stroke ();
+				
+				x = rect.Right - rightMargin / 2d;
+				cr.LineWidth = rightMargin;
+				cr.Line (x, rect.Y, x, rect.Bottom);
+				cr.Stroke ();
+			}
 			
 			return res;
 		}
