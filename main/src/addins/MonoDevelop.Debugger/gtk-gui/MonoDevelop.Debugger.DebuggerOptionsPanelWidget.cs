@@ -13,6 +13,7 @@ namespace MonoDevelop.Debugger
 		private global::Gtk.CheckButton checkGroupPrivate;
 		private global::Gtk.CheckButton checkGroupStatic;
 		private global::Gtk.Table tableEval;
+		private global::Gtk.Label label3;
 		private global::Gtk.Label label60;
 		private global::Gtk.SpinButton spinTimeout;
 		private global::Gtk.Label label4;
@@ -31,7 +32,7 @@ namespace MonoDevelop.Debugger
 			this.notebook1 = new global::Gtk.Notebook ();
 			this.notebook1.CanFocus = true;
 			this.notebook1.Name = "notebook1";
-			this.notebook1.CurrentPage = 1;
+			this.notebook1.CurrentPage = 0;
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
@@ -117,14 +118,24 @@ namespace MonoDevelop.Debugger
 			this.tableEval.RowSpacing = ((uint)(6));
 			this.tableEval.ColumnSpacing = ((uint)(6));
 			// Container child tableEval.Gtk.Table+TableChild
+			this.label3 = new global::Gtk.Label ();
+			this.label3.Name = "label3";
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("ms");
+			this.tableEval.Add (this.label3);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableEval [this.label3]));
+			w7.LeftAttach = ((uint)(2));
+			w7.RightAttach = ((uint)(3));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableEval.Gtk.Table+TableChild
 			this.label60 = new global::Gtk.Label ();
 			this.label60.Name = "label60";
 			this.label60.Xalign = 0F;
 			this.label60.LabelProp = global::Mono.Unix.Catalog.GetString ("Evaluation Timeout:");
 			this.tableEval.Add (this.label60);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableEval [this.label60]));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableEval [this.label60]));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child tableEval.Gtk.Table+TableChild
 			this.spinTimeout = new global::Gtk.SpinButton (0, 1000000, 100);
 			this.spinTimeout.CanFocus = true;
@@ -133,16 +144,16 @@ namespace MonoDevelop.Debugger
 			this.spinTimeout.ClimbRate = 100;
 			this.spinTimeout.Numeric = true;
 			this.tableEval.Add (this.spinTimeout);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableEval [this.spinTimeout]));
-			w8.LeftAttach = ((uint)(1));
-			w8.RightAttach = ((uint)(2));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.tableEval [this.spinTimeout]));
+			w9.LeftAttach = ((uint)(1));
+			w9.RightAttach = ((uint)(2));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox3.Add (this.tableEval);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.tableEval]));
-			w9.Position = 6;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.tableEval]));
+			w10.Position = 6;
+			w10.Expand = false;
+			w10.Fill = false;
 			this.notebook1.Add (this.vbox3);
 			// Notebook tab
 			this.label4 = new global::Gtk.Label ();
@@ -163,19 +174,19 @@ namespace MonoDevelop.Debugger
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("This priority list will be used by MonoDevelop when selecting the engine to be used for debugging an application.");
 			this.label2.Wrap = true;
 			this.vbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
-			w11.Position = 0;
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
+			w12.Position = 0;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.prioritylist = new global::MonoDevelop.Ide.Gui.Components.PriorityList ();
 			this.prioritylist.Name = "prioritylist";
 			this.vbox2.Add (this.prioritylist);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.prioritylist]));
-			w12.Position = 1;
-			this.notebook1.Add (this.vbox2);
-			global::Gtk.Notebook.NotebookChild w13 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox2]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.prioritylist]));
 			w13.Position = 1;
+			this.notebook1.Add (this.vbox2);
+			global::Gtk.Notebook.NotebookChild w14 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox2]));
+			w14.Position = 1;
 			// Notebook tab
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
