@@ -310,14 +310,20 @@ namespace Mono.TextEditor
 		{
 			if (document == null) 
 				return;
-			document.LineChanged -= HandleDocLineChanged;
+			
 			document.BeginUndo -= OnBeginUndo;
 			document.EndUndo -= OnEndUndo;
+			
 			document.Undone -= DocumentHandleUndone;
 			document.Redone -= DocumentHandleRedone;
+			document.LineChanged -= HandleDocLineChanged;
+			
 			document.TextSet -= HandleDocTextSet;
 			document.Folded -= HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated -= HandleTextEditorDataDocumentFoldTreeUpdated;
+			
+			document.splitter.LineInserted -= HandleDocumentsplitterhandleLineInserted;
+			document.splitter.LineRemoved -= HandleDocumentsplitterhandleLineRemoved;
 			
 			document = null;
 		}
