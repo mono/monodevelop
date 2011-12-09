@@ -61,7 +61,7 @@ namespace Mono.Debugging.Soft
 		public override DC.StackFrame[] GetStackFrames (int firstIndex, int lastIndex)
 		{
 			ValidateStack ();
-			if (lastIndex == -1)
+			if (lastIndex < 0)
 				lastIndex = frames.Length - 1;
 			List<DC.StackFrame> list = new List<DC.StackFrame> ();
 			for (int n = firstIndex; n <= lastIndex && n < frames.Length; n++)
@@ -91,6 +91,9 @@ namespace Mono.Debugging.Soft
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
 		{
 			ValidateStack ();
+			if (frameIndex >= frames.Length)
+				return null;
+			
 			MDB.StackFrame frame = frames [frameIndex];
 			return new SoftEvaluationContext (session, frame, options);
 		}

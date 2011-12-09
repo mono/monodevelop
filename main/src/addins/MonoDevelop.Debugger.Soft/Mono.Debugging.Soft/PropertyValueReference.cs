@@ -73,11 +73,7 @@ namespace Mono.Debugging.Soft
 
 		public override string Name {
 			get {
-				int i = property.Name.LastIndexOf ('.');
-				if (i != -1)
-					return property.Name.Substring (i + 1);
-				else
-					return property.Name;
+				return property.Name;
 			}
 		}
 

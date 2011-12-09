@@ -43,9 +43,21 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			widget.ApplyChanges ();
 		}
+		
+		public override bool IsVisible ()
+		{
+			return IsMaintenanceMode;
+		}
+		
+		static bool IsMaintenanceMode {
+			get {
+				return IdeApp.Preferences.EnableInstrumentation ||
+					IdeApp.Preferences.EnableAutomatedTesting ||
+					!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_MAINTENANCE"));
+			}
+		}
 	}
 	
-	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class MaintenanceOptionsPanelWidget : Gtk.Bin
 	{
 

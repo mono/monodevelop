@@ -434,6 +434,11 @@ namespace MonoDevelop.Ide.Gui.Components
 						LoggingService.LogError (ex.ToString ());
 					}
 				}
+			} catch (Exception ex) {
+				// We're now in an indeterminate state, so report the exception
+				// and exit.
+				GLib.ExceptionManager.RaiseUnhandledException (ex, true);
+				return false;
 			} finally {
 				if (updatesLocked)
 					UnlockUpdates ();

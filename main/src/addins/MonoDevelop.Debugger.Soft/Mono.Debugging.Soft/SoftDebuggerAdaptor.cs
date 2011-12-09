@@ -646,8 +646,12 @@ namespace Mono.Debugging.Soft
 		
 		public override object GetValueType (EvaluationContext ctx, object val)
 		{
+			if (val is ArrayMirror)
+				return ((ArrayMirror)val).Type;
 			if (val is ObjectMirror)
 				return ((ObjectMirror)val).Type;
+			if (val is EnumMirror)
+				return ((EnumMirror)val).Type;
 			if (val is StructMirror)
 				return ((StructMirror)val).Type;
 			if (val is PrimitiveValue) {
@@ -655,12 +659,9 @@ namespace Mono.Debugging.Soft
 				if (pv.Value == null)
 					return typeof(Object);
 				else
-					return ((PrimitiveValue)val).Value.GetType ();
+					return pv.Value.GetType ();
 			}
-			if (val is ArrayMirror)
-				return ((ArrayMirror)val).Type;
-			if (val is EnumMirror)
-				return ((EnumMirror)val).Type;
+			
 			throw new NotSupportedException ();
 		}
 		

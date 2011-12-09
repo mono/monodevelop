@@ -573,20 +573,22 @@ namespace Mono.TextEditor
 		protected override void OnRealized ()
 		{
 			WidgetFlags |= WidgetFlags.Realized;
-			WindowAttr attributes = new WindowAttr ();
-			attributes.WindowType = Gdk.WindowType.Child;
-			attributes.X = Allocation.X;
-			attributes.Y = Allocation.Y;
-			attributes.Width = Allocation.Width;
-			attributes.Height = Allocation.Height;
-			attributes.Wclass = WindowClass.InputOutput;
-			attributes.Visual = this.Visual;
-			attributes.Colormap = this.Colormap;
-			attributes.EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask);
-			attributes.Mask = this.Events | Gdk.EventMask.ExposureMask;
-//			attributes.Mask = EventMask;
+			WindowAttr attributes = new WindowAttr () {
+				WindowType = Gdk.WindowType.Child,
+				X = Allocation.X,
+				Y = Allocation.Y,
+				Width = Allocation.Width,
+				Height = Allocation.Height,
+				Wclass = WindowClass.InputOutput,
+				Visual = this.Visual,
+				Colormap = this.Colormap,
+				EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask),
+				Mask = this.Events | Gdk.EventMask.ExposureMask,
+				//Mask = EventMask,
+			};
 			
-			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
+			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y
+				| WindowAttributesType.Colormap | WindowAttributesType.Visual;
 			this.GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
 			this.GdkWindow.UserData = this.Raw;
 			this.Style = Style.Attach (this.GdkWindow);
@@ -872,10 +874,21 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			ModifierType mod;
 			Gdk.Key key;
-			uint keyVal;
-			GtkWorkarounds.MapRawKeys (evt, out key, out mod, out keyVal);
+			Gdk.ModifierType mod;
+			KeyboardShortcut[] accels;
+			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
+			
+			//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
+			if ((key == Gdk.Key.Menu && mod == ModifierType.None) || (key == Gdk.Key.F10 && mod == ModifierType.ShiftMask)) {
+				OnPopupMenu ();
+				return true;
+			}
+			
+			uint keyVal = (uint) key;
+			key = accels[0].Key;
+			mod = accels[0].Modifier;
+			
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
@@ -886,20 +899,26 @@ namespace Mono.TextEditor
 				return true;
 			}
 			
+			//FIXME: why are we doing this?
 			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
 				mod = Gdk.ModifierType.None;
 			
 			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
 			
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
-				ResetIMContext ();	
+				ResetIMContext ();
+				//FIXME: should call base.OnKeyPressEvent when SimulateKeyPress didn't handle the event
 				SimulateKeyPress (key, unicodeChar, mod);
 				return true;
 			}
 			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
-			if (!filter) {
-				return OnIMProcessedKeyPressEvent (key, unicodeChar, mod);
-			}
+			if (filter)
+				return true;
+			
+			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
+			if (OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
+				return true;
+			
 			return base.OnKeyPressEvent (evt);
 		}
 		
