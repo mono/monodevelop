@@ -122,10 +122,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			info.SetNeedsUpdating ();
 		}
 
-		static void HandleDomUnloaded (object sender, ProjectEventArgs e)
+		static void HandleDomUnloaded (object sender, ProjectUnloadEventArgs e)
 		{
 			var project = (DotNetProject)e.Project;
-			var dom = TypeSystemService.GetProjectContentWrapper (project);
+			var dom = e.Wrapper;
 			if (dom == null)
 				return;
 			lock (infos) {
@@ -369,4 +369,5 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		Removed,
 		Modified
 	}
+	
 }

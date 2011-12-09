@@ -443,7 +443,7 @@ namespace MonoDevelop.TypeSystem
 			if (item is Workspace) {
 				var ws = (Workspace)item;
 				foreach (WorkspaceItem it in ws.Items)
-				Load (it);
+					Load (it);
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
@@ -456,6 +456,7 @@ namespace MonoDevelop.TypeSystem
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}
 		}
+
 		
 		static void ReloadAllReferences ()
 		{
@@ -698,22 +699,23 @@ namespace MonoDevelop.TypeSystem
 				return;
 			
 			if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
-				project.FileChangedInProject   -= OnFileChanged;
-				project.FileAddedToProject     -= OnFileAdded;
+				project.FileChangedInProject -= OnFileChanged;
+				project.FileAddedToProject -= OnFileAdded;
 				project.FileRemovedFromProject -= OnFileRemoved;
-				project.FileRenamedInProject   -= OnFileRenamed;
-				project.Modified               -= OnProjectModified;
+				project.FileRenamedInProject -= OnFileRenamed;
+				project.Modified -= OnProjectModified;
 				
+				var wrapper = projectContents [project];
 				projectContents.Remove (project);
 				referenceCounter.Remove (project);
 				
-				OnProjectUnloaded (new ProjectEventArgs (project));
+				OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
 			}
 		}
 		
-		public static event EventHandler<ProjectEventArgs> ProjectUnloaded;
+		public static event EventHandler<ProjectUnloadEventArgs> ProjectUnloaded;
 
-		static void OnProjectUnloaded (ProjectEventArgs e)
+		static void OnProjectUnloaded (ProjectUnloadEventArgs e)
 		{
 			var handler = ProjectUnloaded;
 			if (handler != null)
@@ -741,6 +743,7 @@ namespace MonoDevelop.TypeSystem
 			if (args.SolutionItem is Project)
 				Unload ((Project)args.SolutionItem);
 		}
+		
 		#endregion
 
 		#region Reference Counting
@@ -1291,6 +1294,18 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		#endregion
+	}
+	
+	public sealed class ProjectUnloadEventArgs : EventArgs
+	{
+		public readonly Project Project;
+		public readonly TypeSystemService.ProjectContentWrapper Wrapper;
+
+		public ProjectUnloadEventArgs (Project project, TypeSystemService.ProjectContentWrapper wrapper)
+		{
+			this.Project = project;
+			this.Wrapper = wrapper;
+		}
 	}
 }
 
