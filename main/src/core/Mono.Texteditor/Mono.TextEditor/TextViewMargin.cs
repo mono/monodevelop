@@ -1969,10 +1969,10 @@ namespace Mono.TextEditor
 			if (isDefaultColor && !drawDefaultBackground)
 				return;
 			cr.Color = color;
-			double xp = System.Math.Floor (area.X);
+			double xp = /*System.Math.Floor*/ (area.X);
 			
 			if (textEditor.Options.ShowRuler) {
-				double divider = System.Math.Max (area.X, System.Math.Min (x + TextStartPosition + rulerX + 0.5, area.X + area.Width));
+				double divider = System.Math.Max (area.X, System.Math.Min (x + TextStartPosition + rulerX, area.X + area.Width));
 				if (divider < area.X + area.Width) {
 					cr.Rectangle (xp, area.Y, divider - area.X, area.Height);
 					cr.Fill ();
@@ -1984,7 +1984,7 @@ namespace Mono.TextEditor
 					return;
 				}
 			}
-			cr.Rectangle (xp, area.Y, System.Math.Ceiling (area.Width), area.Height);
+			cr.Rectangle (xp, area.Y, area.Width, area.Height);
 			cr.Fill ();
 		}
 
