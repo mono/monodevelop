@@ -47,7 +47,7 @@ namespace MonoDevelop.Core.FileSystem
 		
 		public override void RenameFile (FilePath file, string newName)
 		{
-			File.Move (file, newName);
+			File.Move (file, Path.Combine (file.ParentDirectory, newName));
 		}
 		
 		public override void MoveFile (FilePath source, FilePath dest)
