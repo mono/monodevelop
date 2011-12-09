@@ -697,7 +697,7 @@ namespace MonoDevelop.TypeSystem
 			if (DecLoadCount (project) != 0)
 				return;
 			
-			if (--referenceCounter [project] <= 0) {
+			if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
 				project.FileChangedInProject   -= OnFileChanged;
 				project.FileAddedToProject     -= OnFileAdded;
 				project.FileRemovedFromProject -= OnFileRemoved;
