@@ -466,6 +466,55 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		public class UnresolvedAssemblyDecorator : IUnresolvedAssembly
+		{
+			ProjectContentWrapper wrapper;
+			
+			IUnresolvedAssembly assembly {
+				get {
+					return wrapper.Compilation.MainAssembly.UnresolvedAssembly;
+				}
+			}
+			
+			public UnresolvedAssemblyDecorator (ProjectContentWrapper wrapper)
+			{
+				this.wrapper = wrapper;
+			}
+
+			#region IUnresolvedAssembly implementation
+			public string AssemblyName {
+				get {
+					return assembly.AssemblyName;
+				}
+			}
+
+			public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
+				get {
+					return assembly.AssemblyAttributes;
+				}
+			}
+
+			public IEnumerable<IUnresolvedAttribute> ModuleAttributes {
+				get {
+					return assembly.ModuleAttributes;
+				}
+			}
+
+			public IEnumerable<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
+				get {
+					return assembly.TopLevelTypeDefinitions;
+				}
+			}
+			#endregion
+
+			#region IAssemblyReference implementation
+			public IAssembly Resolve (ITypeResolveContext context)
+			{
+				return assembly.Resolve (context);
+			}
+			#endregion
+		}
+		
 		[Serializable]
 		public class ProjectContentWrapper
 		{
@@ -526,7 +575,7 @@ namespace MonoDevelop.TypeSystem
 				foreach (var referencedProject in GetReferencedProjects (project)) {
 					ProjectContentWrapper wrapper;
 					if (projectContents.TryGetValue (referencedProject, out wrapper))
-						contexts.Add (wrapper.Compilation.MainAssembly.UnresolvedAssembly);
+						contexts.Add (new UnresolvedAssemblyDecorator (wrapper));
 				}
 				
 				AssemblyContext ctx;
@@ -1286,7 +1335,6 @@ namespace MonoDevelop.TypeSystem
 					pending = PendingJobCount;
 					
 				} while (pending > 0);
-				ReloadAllReferences ();
 				queueEmptied.Set ();
 			} finally {
 				if (monitor != null)
