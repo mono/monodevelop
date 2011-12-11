@@ -243,6 +243,10 @@ namespace MonoDevelop.CSharp
 		
 		public void AppendType (StringBuilder sb, IType type, OutputSettings settings)
 		{
+			if (type.Kind == TypeKind.Unknown) {
+				sb.Append (type.Name);
+				return;
+			}
 			if (type.DeclaringType != null) {
 				AppendType (sb, type.DeclaringType, settings);
 				sb.Append (settings.Markup ("."));
@@ -356,10 +360,9 @@ namespace MonoDevelop.CSharp
 			if (reference == null)
 				return "null";
 			var type = reference;
-			if (type is UnknownType)
-				return ((UnknownType)reference).Name;
-			if (type.Kind == TypeKind.Unknown)
-				return reference.ToString ();
+			if (type.Kind == TypeKind.Unknown) {
+				return reference.Name;
+			}
 			
 			if (reference.Kind == TypeKind.TypeParameter)
 				return reference.FullName;
@@ -386,8 +389,10 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetTypeString (IType t, OutputSettings settings)
 		{
-			if (t is UnknownType)
-				return ((UnknownType)t).Name;
+			if (t.Kind == TypeKind.Unknown) {
+				return t.Name;
+			}
+			
 			if (t.Kind == TypeKind.TypeParameter)
 				return t.FullName;
 			

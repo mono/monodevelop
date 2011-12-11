@@ -316,25 +316,28 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 
-		static void BuildTreeChildren (TreeStore store, TreeIter parent, ParsedDocument parsedDocument)
+		void BuildTreeChildren (TreeStore store, TreeIter parent, ParsedDocument parsedDocument)
 		{
 			if (parsedDocument == null)
 				return;
-			foreach (var cls in parsedDocument.TopLevelTypeDefinitions) {
+			
+			foreach (var unresolvedCls in parsedDocument.TopLevelTypeDefinitions) {
+				var cls = document.Compilation.MainAssembly.GetTypeDefinition (unresolvedCls);
+				
 				TreeIter childIter;
 				if (!parent.Equals (TreeIter.Zero))
 					childIter = store.AppendValues (parent, cls);
 				else
 					childIter = store.AppendValues (cls);
 
-				AddTreeClassContents (store, childIter, parsedDocument, cls);
+				AddTreeClassContents (store, childIter, parsedDocument, cls, unresolvedCls);
 			}
 		}
 
-		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, IUnresolvedTypeDefinition cls)
+		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, ITypeDefinition cls, IUnresolvedTypeDefinition part)
 		{
 			List<object> items = new List<object> ();
-			foreach (object o in cls.Members)
+			foreach (object o in cls.GetMembers (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin)))
 				items.Add (o);
 
 			items.Sort (ClassOutlineNodeComparer.CompareRegion);
@@ -376,8 +379,8 @@ namespace MonoDevelop.DesignerSupport
 				}
 				
 				TreeIter childIter = store.AppendValues (currentParent, item);
-				if (item is IUnresolvedTypeDefinition)
-					AddTreeClassContents (store, childIter, parsedDocument, (IUnresolvedTypeDefinition)item);
+				if (item is ITypeDefinition)
+					AddTreeClassContents (store, childIter, parsedDocument, (ITypeDefinition)item, part);
 					
 			} 
 		}
