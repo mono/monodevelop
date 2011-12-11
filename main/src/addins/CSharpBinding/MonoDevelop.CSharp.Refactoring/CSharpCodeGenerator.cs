@@ -662,7 +662,27 @@ namespace MonoDevelop.CSharp.Refactoring
 			while ((line = doc.Editor.GetLine (startLine + result)) != null && doc.Editor.GetLineIndent (line).Length == line.EditableLength) {
 				result++;
 			}
+		
 			return result;
+		}
+		
+		static bool InsertUsingAfter (AstNode node)
+		{
+			return node is ICSharpCode.NRefactory.CSharp.Comment ||
+				node is UsingDeclaration ||
+				node is UsingAliasDeclaration;
+		}
+		
+		static AstNode SearchUsingInsertionPoint (AstNode parent)
+		{
+			var node = parent.FirstChild;
+			while (true) {
+				var next = node.NextSibling;
+				if (!InsertUsingAfter (next))
+					break;
+				node = next;
+			}
+			return node;
 		}
 		
 		public override void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
@@ -676,35 +696,35 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (policy == null)
 				policy = this.Policy;
 			
-			var node = unit.FirstChild;
-			while (node.NextSibling is ICSharpCode.NRefactory.CSharp.Comment || node.NextSibling is UsingDeclaration || node.NextSibling is UsingAliasDeclaration) {
-				node = node.NextSibling;
-			}
+			var node = SearchUsingInsertionPoint (unit);
 			
 			var text = new StringBuilder ();
 			int lines = 0;
-			if (node != null && node != unit.FirstChild) {
+			
+			if (InsertUsingAfter (node)) {
 				lines = policy.BlankLinesBeforeUsings + 1;
 				while (lines-- > 0) {
 					text.Append (doc.Editor.EolMarker);
 				}
 			}
+			
 			text.Append ("using ");
 			text.Append (nsName);
 			text.Append (";");
 			
 			int offset = 0;
 			if (node != null) {
-				var loc = node == unit.FirstChild ? node.StartLocation : node.EndLocation;
+				var loc = InsertUsingAfter (node) ? node.EndLocation : node.StartLocation;
 				offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
 			}
 			
 			lines = policy.BlankLinesAfterUsings;
 			lines -= CountBlankLines (doc, doc.Editor.OffsetToLineNumber (offset) + 1);
+			if (lines > 0)
+				text.Append (doc.Editor.EolMarker);
 			while (lines-- > 0) {
 				text.Append (doc.Editor.EolMarker);
 			}
-			
 			using (var undo = doc.Editor.OpenUndoGroup ()) {
 				int caretOffset = doc.Editor.Caret.Offset;
 				int inserted = doc.Editor.Insert (offset, text.ToString ());
@@ -726,31 +746,46 @@ namespace MonoDevelop.CSharp.Refactoring
 				AddGlobalNamespaceImport (doc, nsName);
 				return;
 			}
-				
 			
-			var node = unit.FirstChild;
-			while (node.NextSibling is ICSharpCode.NRefactory.CSharp.Comment || node.NextSibling is UsingDeclaration || node.NextSibling is UsingAliasDeclaration) {
-				node = node.NextSibling;
-			}
+			var policy = doc.Project != null ? doc.Project.Policies.Get <CSharpFormattingPolicy> () : null;
+			if (policy == null)
+				policy = this.Policy;
+			
+			
+			var node = SearchUsingInsertionPoint (nsDecl);
 			
 			var text = new StringBuilder ();
+			int lines = 0;
 			
-			text.Append (doc.Editor.EolMarker);
+			if (InsertUsingAfter (node)) {
+				lines = policy.BlankLinesBeforeUsings + 1;
+				while (lines-- > 0) {
+					text.Append (doc.Editor.EolMarker);
+				}
+			}
+			
 			string indent = doc.Editor.GetLineIndent (nsDecl.StartLocation.Line) + "\t";
 			text.Append (indent);
 			text.Append ("using ");
 			text.Append (nsName);
 			text.Append (";");
-			text.Append (doc.Editor.EolMarker);
 			
 			int offset;
 			TextLocation loc;
 			if (node != null) {
-				loc = node == unit.FirstChild ? node.StartLocation : node.EndLocation;
+				loc = InsertUsingAfter (node) ? node.EndLocation : node.StartLocation;
 			} else {
 				loc = nsDecl.LBraceToken.EndLocation;
 			}
 			offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
+			
+			lines = policy.BlankLinesAfterUsings;
+			lines -= CountBlankLines (doc, doc.Editor.OffsetToLineNumber (offset) + 1);
+			if (lines > 0)
+				text.Append (doc.Editor.EolMarker);
+			while (lines-- > 0) {
+				text.Append (doc.Editor.EolMarker);
+			}
 			
 			using (var undo = doc.Editor.OpenUndoGroup ()) {
 				int caretOffset = doc.Editor.Caret.Offset;
