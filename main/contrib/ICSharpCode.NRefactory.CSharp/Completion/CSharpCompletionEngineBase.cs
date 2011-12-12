@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public IProjectContent ProjectContent { get; set; }
 		
 		ICompilation compilation;
+
 		protected ICompilation Compilation {
 			get {
 				if (compilation == null)
@@ -293,7 +293,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 
-		protected CompilationUnit ParseStub (string continuation, bool appendSemicolon = true)
+		protected CompilationUnit ParseStub (string continuation, bool appendSemicolon = true, string afterContinuation = null)
 		{
 			var mt = GetMemberTextToCaret ();
 			if (mt == null)
@@ -318,6 +318,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Append (memberText);
 			wrapper.Append (continuation);
 			AppendMissingClosingBrackets (wrapper, memberText, appendSemicolon);
+			wrapper.Append (afterContinuation);
 			
 			if (wrapInClass)
 				wrapper.Append ('}');
@@ -330,11 +331,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
+			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
-					return parser.Parse (stream, "stub.cs" , wrapInClass ? memberLocation.Line - 2 : 0);
-				} catch (Exception){
+					return parser.Parse (stream, "stub.cs", wrapInClass ? memberLocation.Line - 2 : 0);
+				} catch (Exception) {
 					Console.WriteLine ("------");
 					Console.WriteLine (wrapper);
 					throw;

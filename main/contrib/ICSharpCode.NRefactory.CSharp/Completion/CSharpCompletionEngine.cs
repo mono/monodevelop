@@ -415,6 +415,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var contextList = new CompletionDataWrapper (this);
 				var identifierStart = GetExpressionAtCursor ();
+				
+				if (identifierStart != null && identifierStart.Item2 is TypeParameterDeclaration)
+					return null;
+				
 				if (identifierStart != null && identifierStart.Item2 is VariableInitializer && location <= ((VariableInitializer)identifierStart.Item2).NameToken.EndLocation) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
 				}
@@ -439,6 +443,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return HandleKeywordCompletion (tokenIndex, token);
 					}
 				}
+				
 				if (identifierStart == null)
 					return HandleAccessorContext () ?? DefaultControlSpaceItems ();
 				
@@ -654,6 +659,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = Unit.GetNodeAt (location);
 				rr = ResolveExpression (CSharpParsedFile, node, Unit);
 			}
+			Console.WriteLine ("node:" + node);
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -1871,6 +1877,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				expr = tmpUnit.GetNodeAt<VariableInitializer> (location.Line, location.Column - 1);
 				baseUnit = tmpUnit;
+			}
+			
+			// try parameter declaration type
+			if (expr == null) {
+				baseUnit = ParseStub (">", false, "{}");
+				expr = baseUnit.GetNodeAt<TypeParameterDeclaration> (location.Line, location.Column - 1); 
+			}
+			
+			// try parameter declaration method
+			if (expr == null) {
+				baseUnit = ParseStub ("> ()", false, "{}");
+				expr = baseUnit.GetNodeAt<TypeParameterDeclaration> (location.Line, location.Column - 1); 
 			}
 			
 			if (expr == null)
