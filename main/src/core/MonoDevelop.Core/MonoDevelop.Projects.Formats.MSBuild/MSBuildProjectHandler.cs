@@ -1493,8 +1493,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				file.LastGenOutput = lastGenOutput;
 			
 			string link = buildItem.GetMetadata ("Link");
-			if (!string.IsNullOrEmpty (link))
-				file.Link = MSBuildProjectService.FromMSBuildPathRelative (project.ItemDirectory, link);
+			if (!string.IsNullOrEmpty (link)) {
+				if (!Platform.IsWindows)
+					link = MSBuildProjectService.UnescapePath (link);
+				file.Link = link;
+			}
 			
 			file.Condition = buildItem.Condition;
 			return file;
