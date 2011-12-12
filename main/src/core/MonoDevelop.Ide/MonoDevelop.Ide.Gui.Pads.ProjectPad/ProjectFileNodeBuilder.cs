@@ -146,6 +146,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public override void RenameItem (string newName)
 		{
+			ProjectFile newProjectFile = null;
 			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
 			
 			FilePath oldPath, newPath, newLink = FilePath.Null, oldLink = FilePath.Null;
@@ -159,27 +160,29 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				newPath = oldPath.ParentDirectory.Combine (newName);	
 			}
 			
-			if (oldPath != newPath) {
-				try {
-					if (!FileService.IsValidPath (newPath)) {
-						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-					} else if (File.Exists (newPath) || Directory.Exists (newPath) ||
-					           (file.Project != null && file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory)) != null)) {
-						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
-					} else {
-						if (file.IsLink) {
-							file.Link = newLink;
-						} else {
-							FileService.RenameFile (oldPath, newName);
-						}
-						if (file.Project != null)
-							IdeApp.ProjectOperations.Save (file.Project);
-					}
-				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
+			try {
+				if (file.Project != null)
+					newProjectFile = file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory));
+				
+				if (!FileService.IsValidPath (newPath)) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-				} catch (System.IO.IOException ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("There was an error renaming the file."));
+				} else if (newProjectFile != null && newProjectFile != file) {
+					// If there is already a file under the newPath which is *different*, then throw an exception
+					MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+				} else {
+					if (file.IsLink) {
+						file.Link = newLink;
+					} else {
+						// This could throw an exception if we try to replace another file during the rename.
+						FileService.RenameFile (oldPath, newName);
+					}
+					if (file.Project != null)
+						IdeApp.ProjectOperations.Save (file.Project);
 				}
+			} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
+				MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+			} catch (System.IO.IOException ex) {
+				MessageService.ShowException (ex, GettextCatalog.GetString ("There was an error renaming the file."));
 			}
 		}
 		

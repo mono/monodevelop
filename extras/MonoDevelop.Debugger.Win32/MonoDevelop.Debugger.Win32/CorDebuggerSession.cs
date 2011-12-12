@@ -755,6 +755,10 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			if (terminated)
 				return;
+			
+			if (bi.Status != BreakEventStatus.Bound || bi.Handle == null)
+				return;
+			
 			CorFunctionBreakpoint corBp = (CorFunctionBreakpoint)bi.Handle;
 			corBp.Activate (false);
 		}

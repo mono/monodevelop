@@ -254,7 +254,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (fileName == null)
 				return false;
-			return fileName.EndsWith (".cs");
+			return fileName.EndsWith (".cs", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public override string SingleLineComment (string text)
