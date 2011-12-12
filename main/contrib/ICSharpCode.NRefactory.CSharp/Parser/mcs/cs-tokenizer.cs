@@ -2237,7 +2237,7 @@ namespace Mono.CSharp
 					sbag.PushCommentChar (c);
 				var pc = peek_char ();
 				if ((pc == '\n' || pc == -1) && position_stack.Count == 0) 
-					sbag.EndComment (line, col + 1);
+					sbag.EndComment (line, col);
 			} while (c != -1 && c != '\n');
 		}
 
@@ -3219,7 +3219,7 @@ namespace Mono.CSharp
 							endCol = col;
 						}
 						if (position_stack.Count == 0)
-							sbag.EndComment (endLine, endCol + 1);
+							sbag.EndComment (endLine, endCol);
 												
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
