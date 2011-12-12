@@ -59,7 +59,7 @@ namespace MonoDevelop.VersionControl
 					msg += " " + e.InnerException.Message;
 				}
 				tracker.ReportError (msg, e);
-				Console.Error.WriteLine(e);
+				GLib.ExceptionManager.RaiseUnhandledException (e, false);
 			} finally {			
 				threadnotify.WakeupMain();
 			}

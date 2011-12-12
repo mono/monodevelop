@@ -41,6 +41,7 @@
 
 	<Section id = "Other" _label = "Other">
 		<Section id = "SdkLocations" _label = "SDK Locations" />
+		<Section id = "LogAgent" _label = "Log Agent" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" />
 		<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" />
 	</Section>
 </Extension>

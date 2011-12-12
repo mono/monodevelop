@@ -89,6 +89,11 @@ FILES =  \
 	MonoDevelop.Core.Logging/InstrumentationLogger.cs \
 	MonoDevelop.Core.Logging/LogLevel.cs \
 	MonoDevelop.Core.Logging/RemoteLogger.cs \
+	MonoDevelop.Core.LogReporting/CrashEventArgs.cs \
+	MonoDevelop.Core.LogReporting/CrashMonitor.cs \
+	MonoDevelop.Core.LogReporting/ICrashMonitor.cs \
+	MonoDevelop.Core.LogReporting/LogReportingService.cs \
+	MonoDevelop.Core.LogReporting/MacCrashMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedAsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs \
@@ -488,6 +493,7 @@ REFS =  \
 	-r:System.Configuration \
 	-r:System.Core \
 	-r:System.Runtime.Remoting \
+	-r:System.Web \
 	-r:System.Xml \
 	-r:System.Xml.Linq
 

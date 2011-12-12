@@ -1,5 +1,5 @@
 // 
-// ICrashMonitor.cs
+// CrashEventArgs.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
@@ -26,14 +26,17 @@
 
 using System;
 
-namespace MonoDevelop.Monitoring
+namespace MonoDevelop.Core.LogReporting
 {
-	public  interface ICrashMonitor
+	public class CrashEventArgs : EventArgs
 	{
-		event EventHandler ApplicationExited;
-		event EventHandler<CrashEventArgs> CrashDetected;
+		public string CrashLogPath {
+			get; private set;
+		}
 		
-		void Start ();
-		void Stop ();
+		public CrashEventArgs (string crashLogPath)
+		{
+			CrashLogPath = crashLogPath;
+		}
 	}
 }
