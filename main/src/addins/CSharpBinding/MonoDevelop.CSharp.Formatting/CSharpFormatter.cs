@@ -134,22 +134,38 @@ namespace MonoDevelop.CSharp.Formatting
 				Console.WriteLine ("couldn't parse : " + data.Text);
 				return;
 			}
-			
 			if (parser.HasErrors)
 				return;
 			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var adapter = new TextEditorDataAdapter (data);
+			var factory = new FormattingActionFactory (data);
 			
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data)) {
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, factory) {
 				HadErrors =  parser.HasErrors
 			};
+			
+			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
+			
+			var startPositionChange = factory.CreateTextReplaceAction (startOffset, 0, null);
+			changes.Add (startPositionChange);
+			
+			var endPositionChange = factory.CreateTextReplaceAction (endOffset, 0, null);
+			changes.Add (endPositionChange);
+			
 			using (var undo = data.OpenUndoGroup ()) {
 				MDRefactoringContext.MdScript.RunActions (changes, null);
+			}
+			
+			if (data.IsSomethingSelected) {
+				var range = data.SelectionRange;
+				if (range.Offset == startOffset && range.EndOffset == endOffset) {
+					data.SetSelection (startPositionChange.Offset, endPositionChange.Offset);
+				}
 			}
 		}
 
