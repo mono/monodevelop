@@ -930,10 +930,15 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateBreakpoints (bool forceUpdate = false)
 		{
+			FilePath fp = Name;
+			
 			if (!forceUpdate) {
 				int i = 0, count = 0;
 				bool mismatch = false;
 				foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
+					if (fp.FullPath != bp.FileName)
+						continue;
+					
 					count++;
 					if (i < breakpointSegments.Count) {
 						int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments[i].Offset);
@@ -944,6 +949,7 @@ namespace MonoDevelop.SourceEditor
 						i++;
 					}
 				}
+				
 				if (count != breakpointSegments.Count)
 					mismatch = true;
 				
@@ -958,9 +964,12 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.Document.RemoveMarker (line, typeof (DisabledBreakpointTextMarker));
 				widget.TextEditor.Document.RemoveMarker (line, typeof (InvalidBreakpointTextMarker));
 			}
-	
+			
 			breakpointSegments.Clear ();
 			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
+				if (fp.FullPath != bp.FileName)
+					continue;
+				
 				lineNumbers.Add (bp.Line);
 				AddBreakpoint (bp);
 			}
