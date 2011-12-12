@@ -69,6 +69,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		#endregion
 		
+		IUnresolvedTypeDefinition FindInnerType (IUnresolvedTypeDefinition parent, TextLocation location)
+		{
+			var currentType = parent;
+			foreach (var type in parent.NestedTypes) {
+				if (type.Region.Begin < location  && location < type.Region.End)
+					currentType = FindInnerType (type, location);
+			}
+			
+			return currentType;
+		}
 		protected void SetOffset (int offset)
 		{
 			Reset ();
@@ -76,7 +86,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.offset = offset;
 			this.location = document.GetLocation (offset);
 			
-			this.currentType = CSharpParsedFile.GetInnermostTypeDefinition (location);
+			this.currentType = null;
+			
+			foreach (var type in CSharpParsedFile.TopLevelTypeDefinitions) {
+				if (type.Region.Begin < location)
+					currentType = type;
+			}
+			currentType = FindInnerType (currentType, location);
+			
 			this.currentMember = null;
 			if (this.currentType != null) {
 				foreach (var member in currentType.Members) {

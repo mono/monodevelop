@@ -659,7 +659,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = Unit.GetNodeAt (location);
 				rr = ResolveExpression (CSharpParsedFile, node, Unit);
 			}
-			Console.WriteLine ("node:" + node);
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -761,7 +760,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				if (this.currentMember != null) {
-					foreach (var member in ctx.CurrentTypeDefinition.GetMembers ()) {
+					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition (currentType);
+					foreach (var member in def.GetMembers ()) {
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
 					}
