@@ -34,6 +34,7 @@ namespace MonoDevelop.Core.LogReporting
 {
 	public static class LogReportingService
 	{
+		const string ServiceVersion = "1";
 		public static readonly FilePath CrashLogDirectory = UserProfile.Current.LogDir.Combine ("LogAgent");
 		
 		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
@@ -71,7 +72,7 @@ namespace MonoDevelop.Core.LogReporting
 			using (var stream = new MemoryStream ()) {
 				using (var writer = System.Xml.XmlWriter.Create (stream)) {
 						writer.WriteStartElement ("CrashLog");
-						writer.WriteAttributeString ("version", "1");
+						writer.WriteAttributeString ("version", ServiceVersion);
 						
 						writer.WriteElementString ("SystemInformation", SystemInformation.ToText ());
 						writer.WriteElementString ("Exception", ex.ToString ());
@@ -129,7 +130,7 @@ namespace MonoDevelop.Core.LogReporting
 					server = "monodevlog.xamarin.com:35162";
 
 				var request = (HttpWebRequest) WebRequest.Create (string.Format ("http://{0}/logagentreport/", server));
-				request.Headers.Add ("LogAgentVersion", "1");
+				request.Headers.Add ("LogAgentVersion", ServiceVersion);
 				request.Headers.Add ("LogAgent_Filename", Path.GetFileName (filename));
 				request.Headers.Add ("Content-Encoding", "gzip");
 				request.Method = "POST";
