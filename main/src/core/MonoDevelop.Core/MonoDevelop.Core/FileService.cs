@@ -132,8 +132,6 @@ namespace MonoDevelop.Core
 				var newPath = ((FilePath)oldName).ParentDirectory.Combine (newName);
 				InternalRenameFile (oldName, newName);
 				OnFileRenamed (new FileCopyEventArgs (oldName, newPath, false));
-				OnFileCreated (new FileEventArgs (newPath, false));
-				OnFileRemoved (new FileEventArgs (oldName, false));
 			}
 		}
 		
