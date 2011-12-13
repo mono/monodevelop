@@ -7,12 +7,12 @@
        description = "Windows Platform Support for MonoDevelop"
        category    = "Platform Support"
        version     = "2.9.1">
-	
 	<Runtime>
 		<Import assembly="WindowsPlatform.dll"/>
 	</Runtime>
 
 	<Dependencies>
+
 		<Addin id="Core" version="2.9.1"/>
 		<Addin id="Ide" version="2.9.1"/>
 	</Dependencies>

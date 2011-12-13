@@ -38,14 +38,15 @@ namespace MacCrashLogger
 	{
 		static int Main (string [] args)
 		{
-			string error;
-			if (!MonoDevelop.CrashLog.CrashLogOptions.TryParse (args, out error)) {
-				Console.Error.WriteLine (error);
-				return 1;
-			}
-			
-			NSApplication.Init ();
-			NSApplication.Main (args);
+//			string error;
+//			if (!MonoDevelop.CrashLog.CrashLogOptions.TryParse (args, out error)) {
+//				Console.Error.WriteLine (error);
+//				return 1;
+//			}
+//			
+//			NSApplication.Init ();
+//			NSApplication.Main (args);
+//			return 0;
 			return 0;
 		}
 	}

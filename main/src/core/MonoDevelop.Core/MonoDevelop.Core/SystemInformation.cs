@@ -57,7 +57,7 @@ namespace MonoDevelop.Core
 			else
 				Instance = new LinuxSystemInformation ();
 			
-			SessionUuid = Guid.NewGuid ().ToString ();
+			SessionUuid = DateTime.UtcNow.Ticks.ToString ();
 		}
 		
 		protected abstract void AppendOperatingSystem (StringBuilder sb);

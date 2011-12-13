@@ -15,6 +15,7 @@
 	    <Addin id="VersionControl.Subversion" version="2.9.1"/>
 	</Dependencies>
 	
+
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
 		<Condition id="Platform" value="!windows">
 			<Class class = "MonoDevelop.VersionControl.Subversion.Unix.SvnClient" />

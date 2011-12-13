@@ -486,6 +486,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/LogAgentOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/MaintenanceOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/SdkLocationPanel.cs \
@@ -706,6 +707,7 @@ FILES =  \
 	MonoDevelop.Ide/IdeStartup.cs \
 	MonoDevelop.Ide/IdeVersionInfo.cs \
 	MonoDevelop.Ide/ImageService.cs \
+	MonoDevelop.Ide/LogReportingStartup.cs \
 	MonoDevelop.Ide/MessageService.cs \
 	MonoDevelop.Ide/ProjectOperations.cs \
 	MonoDevelop.Ide/RootWorkspace.cs \

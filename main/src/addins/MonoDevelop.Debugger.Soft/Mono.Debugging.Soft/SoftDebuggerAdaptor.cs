@@ -361,7 +361,7 @@ namespace Mono.Debugging.Soft
 			foreach (LocalVariable var in locals) {
 				if (!var.IsArg) {
 					string name = !string.IsNullOrEmpty (var.Name) || cx.SourceCodeAvailable ? var.Name : "loc" + var.Index;
-					if (name.Length == 0 || name.StartsWith ("<")) {
+					if (name.Length == 0 || name.StartsWith ("<") || name.StartsWith ("$locvar")) {
 						if (IsCompilerGeneratedType (cx, var.Type)) {
 							foreach (var gv in GetCompilerGeneratedLocalVariables (cx, new VariableValueReference (cx, name, var)))
 								yield return gv;

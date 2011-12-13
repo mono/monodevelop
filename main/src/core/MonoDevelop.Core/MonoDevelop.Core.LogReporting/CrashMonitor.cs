@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace MonoDevelop.Monitoring
+namespace MonoDevelop.Core.LogReporting
 {
 	public abstract class CrashMonitor : ICrashMonitor
 	{

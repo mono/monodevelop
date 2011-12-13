@@ -129,22 +129,38 @@ namespace MonoDevelop.CSharp.Formatting
 				Console.WriteLine ("couldn't parse : " + data.Text);
 				return;
 			}
-			
 			if (parser.HasErrors)
 				return;
 			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+			var factory = new FormattingActionFactory (data);
 			
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, new FormattingActionFactory (data), data.Options.TabsToSpaces, data.Options.IndentationSize) {
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, factory, data.Options.TabsToSpaces, data.Options.IndentationSize) {
 				HadErrors =  parser.HasErrors, 
 				EolMarker = data.EolMarker
 			};
 			
+			compilationUnit.AcceptVisitor (formattingVisitor, null);
+			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
+			
+			var startPositionChange = factory.CreateTextReplaceAction (startOffset, 0, null);
+			changes.Add (startPositionChange);
+			
+			var endPositionChange = factory.CreateTextReplaceAction (endOffset, 0, null);
+			changes.Add (endPositionChange);
+			
 			using (var undo = data.OpenUndoGroup ()) {
 				MDRefactoringContext.MdScript.RunActions (changes, null);
+			}
+			
+			if (data.IsSomethingSelected) {
+				var range = data.SelectionRange;
+				if (range.Offset == startOffset && range.EndOffset == endOffset) {
+					data.SetSelection (startPositionChange.Offset, endPositionChange.Offset);
+				}
 			}
 		}
 

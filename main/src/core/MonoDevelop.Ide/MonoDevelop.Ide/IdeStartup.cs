@@ -51,6 +51,7 @@ using MonoDevelop.Core.Instrumentation;
 using System.Diagnostics;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using MonoDevelop.Core.LogReporting;
 
 namespace MonoDevelop.Ide
 {
@@ -268,10 +269,6 @@ namespace MonoDevelop.Ide
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			
-			string logAgentEnabled = Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_AGENT_ENABLED");
-			if (string.Equals (logAgentEnabled, "true", StringComparison.OrdinalIgnoreCase))
-				LaunchCrashMonitoringService ();
-			
 			IdeApp.Run ();
 			
 			// unloading services
@@ -308,45 +305,6 @@ namespace MonoDevelop.Ide
 				errorsList.Add (new AddinError (args.AddinId, args.Message, args.Exception, false));
 		}
 		
-		void LaunchCrashMonitoringService ()
-		{
-			string enabledKey = "MonoDevelop.CrashMonitoring.Enabled";
-			
-			if (Platform.IsMac) {
-				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
-				var pid = Process.GetCurrentProcess ().Id;
-				var logPath = UserProfile.Current.LogDir.Combine ("LogAgent");
-				var email = FeedbackService.ReporterEMail;
-				var logOnly = "";
-				
-				var fileInfo = new FileInfo (Path.Combine (logPath, "crashlogs.xml"));
-				if (!PropertyService.HasValue (enabledKey) && fileInfo.Exists && fileInfo.Length > 0) {
-					var result = MessageService.AskQuestion ("A crash has been detected",
-						"MonoDevelop has crashed recently. Details of this crash along with your configured " +
-						"email address can be uploaded to Xamarin to help diagnose the issue. This information " +
-						"will be used to help diagnose the crash and notify you of potential workarounds " +
-						"or fixes. Do you wish to upload this information?",
-						AlertButton.Yes, AlertButton.No);
-					PropertyService.Set (enabledKey, result == AlertButton.Yes);
-				}
-				
-				if (string.IsNullOrEmpty (email))
-					email = AuthorInformation.Default.Email;
-				if (string.IsNullOrEmpty (email))
-					email = "unknown@email.com";
-				if (!PropertyService.Get<bool> (enabledKey))
-					logOnly = "-logonly";
-
-				var psi = new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -p {1} -l {2} -email {3} {4}", crashmonitor, pid, logPath, email, logOnly)) {
-					UseShellExecute = false,
-				};
-				Process.Start (psi);
-			}
-			//else {
-			//	LoggingService.LogError ("Could not launch crash reporter process. MonoDevelop will not be able to automatically report any crash information.");
-			//}
-		}
-
 		void ListenCallback (IAsyncResult state)
 		{
 			Socket sock = (Socket)state.AsyncState;
@@ -499,16 +457,38 @@ namespace MonoDevelop.Ide
 		void SetupExceptionManager ()
 		{
 			GLib.ExceptionManager.UnhandledException += delegate (GLib.UnhandledExceptionArgs args) {
-				var ex = (Exception)args.ExceptionObject;
-				LoggingService.LogError ("Unhandled Exception", ex);
-				MessageService.ShowException (ex, "Unhandled Exception");
+				HandleException ((Exception)args.ExceptionObject, args.IsTerminating);
 			};
 			AppDomain.CurrentDomain.UnhandledException += delegate (object sender, UnhandledExceptionEventArgs args) {
-				//FIXME: try to save all open files, since we can't prevent the runtime from terminating
-				var ex = (Exception)args.ExceptionObject;
-				LoggingService.LogFatalError ("Unhandled Exception", ex);
-				MessageService.ShowException (ex, "Unhandled Exception. MonoDevelop will now close.");
+				HandleException ((Exception)args.ExceptionObject, args.IsTerminating);
 			};
+		}
+		
+		void HandleException (Exception ex, bool willShutdown)
+		{
+			var original = LogReportingService.ReportCrashes;
+			
+			// Attempt to log the crash. If the user hasn't opted in, they will get prompted now to opt in/out.
+			LogReportingService.ReportUnhandledException (ex);
+			
+			// If the user has just been prompted to enable crash reporting there is no need to display the
+			// normal crash dialog this time round unless we are about to shut down.
+			if (!original.HasValue && !willShutdown)
+				return;
+			
+			
+			string message;
+			string title = GettextCatalog.GetString ("An unhandled exception has occurred.");
+			var report = LogReportingService.ReportCrashes;
+			if (report.HasValue && report.Value) {
+				message = GettextCatalog.GetString ("Details of this crash have been automatically submitted for analysis.");
+			} else {
+				message = GettextCatalog.GetString ("Details of this crash have not been submitted as error reporting is disabled.");
+			}
+			
+			if (willShutdown)
+				message += GettextCatalog.GetString (" MonoDevelop will now close.");
+			MessageService.ShowException (ex, message, title);
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>
@@ -530,8 +510,7 @@ namespace MonoDevelop.Ide
 			if (options.ShowHelp || options.Error != null)
 				return options.Error != null? -1 : 0;
 			
-			if (Platform.IsWindows || options.RedirectOutput)
-				RedirectOutputToLogFile ();
+			LoggingService.Initialize (options.RedirectOutput);
 			
 			int ret = -1;
 			bool retry = false;
@@ -557,78 +536,7 @@ namespace MonoDevelop.Ide
 			}
 			while (retry);
 
-			CloseOutputLogFile ();
-
 			return ret;
-		}
-
-		static void RedirectOutputToLogFile ()
-		{
-			FilePath logDir = UserProfile.Current.LogDir;
-			if (!Directory.Exists (logDir))
-				Directory.CreateDirectory (logDir);
-			
-			//TODO: log rotation
-			string file = logDir.Combine ("MonoDevelop.log");
-			try {
-				if (Platform.IsWindows) {
-					//TODO: redirect the file descriptors on Windows, just plugging in a textwriter won't get everything
-					RedirectOutputToFileWindows (file);
-				} else {
-					RedirectOutputToFileUnix (file);
-				}
-			} catch {
-			}
-		}
-
-		static StreamWriter logFile;
-		static int logFd = -1;
-		
-		static void CloseOutputLogFile ()
-		{
-			if (logFile != null) {
-				logFile.Dispose ();
-				logFile = null;
-			}
-			if (logFd > -1) {
-				Mono.Unix.Native.Syscall.close (logFd);
-				logFd = -1;
-			}
-		}
-		
-		static void RedirectOutputToFileWindows (string file)
-		{
-			logFile = new StreamWriter (file);
-			logFile.AutoFlush = true;
-			Console.SetOut (logFile);
-			Console.SetError (logFile);
-		}
-		
-		static void RedirectOutputToFileUnix (string file)
-		{
-			const int STDOUT_FILENO = 1;
-			const int STDERR_FILENO = 2;
-			
-			Mono.Unix.Native.OpenFlags flags = Mono.Unix.Native.OpenFlags.O_WRONLY
-				| Mono.Unix.Native.OpenFlags.O_CREAT | Mono.Unix.Native.OpenFlags.O_TRUNC;
-			var mode = Mono.Unix.Native.FilePermissions.S_IFREG
-				| Mono.Unix.Native.FilePermissions.S_IRUSR | Mono.Unix.Native.FilePermissions.S_IWUSR
-				| Mono.Unix.Native.FilePermissions.S_IRGRP | Mono.Unix.Native.FilePermissions.S_IWGRP;
-			
-			int fd = Mono.Unix.Native.Syscall.open (file, flags, mode);
-			if (fd < 0)
-				//error
-				return;
-			
-			int res = Mono.Unix.Native.Syscall.dup2 (fd, STDOUT_FILENO);
-			if (res < 0)
-				//error
-				return;
-			
-			res = Mono.Unix.Native.Syscall.dup2 (fd, STDERR_FILENO);
-			if (res < 0)
-				//error
-				return;
 		}
 	}
 	

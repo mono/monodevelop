@@ -27,7 +27,7 @@
 using System;
 using System.IO;
 
-namespace MonoDevelop.Monitoring
+namespace MonoDevelop.Core.LogReporting
 {
 	class MacCrashMonitor : CrashMonitor
 	{

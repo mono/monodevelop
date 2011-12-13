@@ -349,6 +349,8 @@ namespace MonoDevelop.Ide.Gui
 		public void CloseContent (IViewContent content)
 		{
 			if (viewContentCollection.Contains(content)) {
+				if (content.Project != null)
+					content.Project.NameChanged -= HandleProjectNameChanged;
 				viewContentCollection.Remove(content);
 			}
 		}
@@ -404,8 +406,16 @@ namespace MonoDevelop.Ide.Gui
 			tabControl.InsertPage (sdiWorkspaceWindow, tabLabel, -1);
 			tabLabel.Show ();
 			
+			if (content.Project != null)
+				content.Project.NameChanged += HandleProjectNameChanged;
+			
 			if (bringToFront)
 				content.WorkbenchWindow.SelectWindow();
+		}
+
+		void HandleProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
+		{
+			SetWorkbenchTitle ();
 		}
 		
 		void ShowPadNode (ExtensionNode node)

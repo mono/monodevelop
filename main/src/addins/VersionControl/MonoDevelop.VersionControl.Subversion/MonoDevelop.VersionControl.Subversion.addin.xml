@@ -16,6 +16,7 @@
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/VersionControl">
+
 		<Command id = "MonoDevelop.VersionControl.Subversion.Commands.Resolve" 
 			_label = "Resolve"
 			description = "Resolve conflicts on working copy files or directories."/>
