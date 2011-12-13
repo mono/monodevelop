@@ -2487,27 +2487,35 @@ namespace Mono.TextEditor
 			
 			int ox = 0, oy = 0;
 			if (GdkWindow != null)
-				this.GdkWindow.GetOrigin (out ox, out oy);
+				GdkWindow.GetOrigin (out ox, out oy);
 			
 			int w;
 			double xalign;
-			provider.GetRequiredPosition (this, liw, out w, out xalign);
+			provider.GetRequiredPosition (this, tipWindow, out w, out xalign);
 			w += 10;
 			
 			int x = xloc + ox + (int) textViewMargin.XOffset;
-			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (x, oy + yloc));
+			int y = yloc + oy;
+			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
 			
 			x -= (int) ((double) w * xalign);
+			y += 10;
 			
 			if (x + w >= geometry.Right)
 				x = geometry.Right - w;
 			if (x < geometry.Left)
 				x = geometry.Left;
 			
-			tipWindow.Move (x, yloc + oy + 10);
+			int h = tipWindow.SizeRequest ().Height;
+			if (y + h >= geometry.Bottom)
+				y = geometry.Bottom - h;
+			if (y < geometry.Top)
+				y = geometry.Top;
+			
+			tipWindow.Move (x, y);
+			
 			tipWindow.ShowAll ();
 		}
-		
 
 		public void HideTooltip ()
 		{
