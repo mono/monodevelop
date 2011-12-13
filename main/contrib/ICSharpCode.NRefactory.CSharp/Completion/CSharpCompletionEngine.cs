@@ -770,6 +770,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
 					}
+					var declaring = def.DeclaringTypeDefinition;
+					while (declaring != null) {
+						foreach (var member in declaring.GetMembers (m => m.IsStatic)) {
+							if (memberPred == null || memberPred (member))
+								wrapper.AddMember (member);
+						}
+						declaring = declaring.DeclaringTypeDefinition;
+					}
 				}
 				foreach (var p in currentType.TypeParameters) {
 					wrapper.AddTypeParameter (p);
