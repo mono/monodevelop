@@ -71,6 +71,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IUnresolvedTypeDefinition FindInnerType (IUnresolvedTypeDefinition parent, TextLocation location)
 		{
+			if (parent == null)
+				return null;
 			var currentType = parent;
 			foreach (var type in parent.NestedTypes) {
 				if (type.Region.Begin < location  && location < type.Region.End)
@@ -78,6 +80,64 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			return currentType;
+		}
+		
+		bool IsInsideType (IUnresolvedTypeDefinition currentType, TextLocation location)
+		{
+			int startOffset = document.GetOffset (currentType.Region.Begin);
+			int endOffset = document.GetOffset (location);
+			bool foundEndBracket = false;
+		
+			var bracketStack = new Stack<char> ();
+		
+			bool isInString = false, isInChar = false;
+			bool isInLineComment = false, isInBlockComment = false;
+			
+			for (int i = startOffset; i < endOffset; i++) {
+				char ch = document.GetCharAt (i);
+				switch (ch) {
+					case '(':
+					case '[':
+					case '{':
+						if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+							bracketStack.Push (ch);
+						break;
+					case ')':
+					case ']':
+					case '}':
+						if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+						if (bracketStack.Count > 0)
+							bracketStack.Pop ();
+						break;
+					case '\r':
+					case '\n':
+						isInLineComment = false;
+						break;
+					case '/':
+						if (isInBlockComment) {
+							if (i > 0 && document.GetCharAt (i - 1) == '*') 
+								isInBlockComment = false;
+						} else if (!isInString && !isInChar && i + 1 < document.TextLength) {
+							char nextChar = document.GetCharAt (i + 1);
+							if (nextChar == '/')
+								isInLineComment = true;
+							if (!isInLineComment && nextChar == '*')
+								isInBlockComment = true;
+						}
+						break;
+					case '"':
+						if (!(isInChar || isInLineComment || isInBlockComment)) 
+							isInString = !isInString;
+						break;
+					case '\'':
+						if (!(isInString || isInLineComment || isInBlockComment)) 
+							isInChar = !isInChar;
+						break;
+					default :
+						break;
+					}
+				}
+			return bracketStack.Any (t => t == '{');
 		}
 		protected void SetOffset (int offset)
 		{
@@ -94,6 +154,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			currentType = FindInnerType (currentType, location);
 			
+			// location is beyond last reported end region, now we need to check, if the end region changed
+			if (currentType != null && currentType.Region.End < location) {
+				if (!IsInsideType (currentType, location))
+					currentType = null;
+			}
 			this.currentMember = null;
 			if (this.currentType != null) {
 				foreach (var member in currentType.Members) {
@@ -405,7 +470,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return Tuple.Create (CSharpParsedFile, (AstNode)attr, Unit);
 				}
 			}
-			
 			if (currentMember == null && currentType == null) {
 				return null;
 			}

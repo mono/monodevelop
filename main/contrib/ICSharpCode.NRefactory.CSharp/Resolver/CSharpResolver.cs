@@ -393,7 +393,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					break;
 				case UnaryOperatorType.BitNot:
 					if (type.Kind == TypeKind.Enum) {
-						if (expression.IsCompileTimeConstant && !isNullable) {
+						if (expression.IsCompileTimeConstant && !isNullable && expression.ConstantValue != null) {
 							// evaluate as (E)(~(U)x);
 							var U = compilation.FindType(expression.ConstantValue.GetType());
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
@@ -415,12 +415,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			CSharpOperators.UnaryOperatorMethod m = (CSharpOperators.UnaryOperatorMethod)builtinOperatorOR.BestCandidate;
 			IType resultType = m.ReturnType;
 			if (builtinOperatorOR.BestCandidateErrors != OverloadResolutionErrors.None) {
-				// If there are any user-defined operators, prefer those over the built-in operators.
-				// It'll be a more informative error.
-				if (userDefinedOperatorOR.BestCandidate != null)
+				if (userDefinedOperatorOR.BestCandidate != null) {
+					// If there are any user-defined operators, prefer those over the built-in operators.
+					// It'll be a more informative error.
 					return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
-				else
+				} else if (builtinOperatorOR.BestCandidateAmbiguousWith != null) {
+					// If the best candidate is ambiguous, just use the input type instead
+					// of picking one of the ambiguous overloads.
+					return new ErrorResolveResult(expression.Type);
+				} else {
 					return new ErrorResolveResult(resultType);
+				}
 			} else if (expression.IsCompileTimeConstant && m.CanEvaluateAtCompileTime) {
 				object val;
 				try {
@@ -1325,7 +1330,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult LookInCurrentType(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode, bool parameterizeResultType)
 		{
 			int k = typeArguments.Count;
-			MemberLookup lookup = CreateMemberLookup();
+			MemberLookup lookup;
+			if (lookupMode == SimpleNameLookupMode.BaseTypeReference && this.CurrentTypeDefinition != null) {
+				// When looking up a base type reference, treat us as being outside the current type definition
+				// for accessibility purposes.
+				// This avoids a stack overflow when referencing a protected class nested inside the base class
+				// of a parent class. (NameLookupTests.InnerClassInheritingFromProtectedBaseInnerClassShouldNotCauseStackOverflow)
+				lookup = new MemberLookup(this.CurrentTypeDefinition.DeclaringTypeDefinition, this.Compilation.MainAssembly, false);
+			} else {
+				lookup = CreateMemberLookup();
+			}
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1376,7 +1390,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					ITypeDefinition def = n.GetTypeDefinition(identifier, k);
 					if (def != null) {
 						IType result = def;
-						if (parameterizeResultType) {
+						if (parameterizeResultType && k > 0) {
 							result = new ParameterizedType(def, typeArguments);
 						}
 						if (u.HasAlias(identifier))
@@ -1521,9 +1535,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public MemberLookup CreateMemberLookup()
 		{
+			ITypeDefinition currentTypeDefinition = this.CurrentTypeDefinition;
 			bool isInEnumMemberInitializer = this.CurrentMember != null && this.CurrentMember.EntityType == EntityType.Field
-				&& this.CurrentTypeDefinition != null && this.CurrentTypeDefinition.Kind == TypeKind.Enum;
-			return new MemberLookup(this.CurrentTypeDefinition, this.Compilation.MainAssembly, isInEnumMemberInitializer);
+				&& currentTypeDefinition != null && currentTypeDefinition.Kind == TypeKind.Enum;
+			return new MemberLookup(currentTypeDefinition, this.Compilation.MainAssembly, isInEnumMemberInitializer);
 		}
 		#endregion
 		
@@ -1581,6 +1596,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			return extensionMethodGroups;
 		}
+		
+		public List<List<IMethod>> GetAllExtensionMethods(IType targetType)
+		{
+			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+			foreach (var inputGroup in GetAllExtensionMethods()) {
+				List<IMethod> outputGroup = new List<IMethod>();
+				foreach (var method in inputGroup) {
+					outputGroup.Add(method);
+				}
+				if (outputGroup.Count > 0)
+					extensionMethodGroups.Add(outputGroup);
+			}
+			return extensionMethodGroups;
+		}
+		
+		//
 		
 		/// <summary>
 		/// Gets all extension methods available in the current using scope.
