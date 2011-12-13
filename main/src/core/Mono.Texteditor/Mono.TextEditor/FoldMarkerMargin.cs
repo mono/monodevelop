@@ -148,7 +148,9 @@ namespace Mono.TextEditor
 			}
 			StopTimer ();
 			if (found) {
-				foldings = editor.Document.GetFoldingContaining (lineSegment);
+				var list = new List<FoldSegment>(editor.Document.GetFoldingContaining (lineSegment));
+				list.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
+				foldings = list;
 				if (editor.TextViewMargin.BackgroundRenderer == null) {
 					timerId = GLib.Timeout.Add (150, SetBackgroundRenderer);
 				} else {
