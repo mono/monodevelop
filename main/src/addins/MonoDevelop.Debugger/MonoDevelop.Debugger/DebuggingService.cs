@@ -829,14 +829,14 @@ namespace MonoDevelop.Debugger
 		
 		static void OnLineCountChanged (object ob, LineCountEventArgs a)
 		{
-			List<Breakpoint> bps = new List<Breakpoint> (breakpoints.GetBreakpoints ());
-			foreach (Breakpoint bp in bps) {
+			foreach (Breakpoint bp in breakpoints.GetBreakpoints ()) {
 				if (bp.FileName == a.TextFile.Name) {
 					if (bp.Line > a.LineNumber) {
-						// If the line that has the breakpoint is deleted, delete the breakpoint
-						breakpoints.Remove (bp);
+						// If the line that has the breakpoint is deleted, delete the breakpoint, otherwise update the line #.
 						if (bp.Line + a.LineCount >= a.LineNumber)
-							breakpoints.Add (bp.FileName, bp.Line + a.LineCount);
+							breakpoints.UpdateBreakpointLine (bp, bp.Line + a.LineCount);
+						else
+							breakpoints.Remove (bp);
 					}
 					else if (bp.Line == a.LineNumber && a.LineCount < 0)
 						breakpoints.Remove (bp);
