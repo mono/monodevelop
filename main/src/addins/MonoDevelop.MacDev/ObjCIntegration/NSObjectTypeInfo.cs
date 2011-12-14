@@ -203,6 +203,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				
 				sw.WriteLine ("@end");
 			}
+
+			var lastSourceUpdateTime = DefinedIn.Max (f => File.GetLastWriteTime (f));
+			File.SetLastWriteTime (hFilePath, lastSourceUpdateTime);
+			File.SetLastWriteTime (mFilePath, lastSourceUpdateTime);
 		}
 		
 		static string AsId (string objcType)
