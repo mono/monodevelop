@@ -498,6 +498,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						return contextList.Result;
 					}
+					Console.WriteLine ("blub");
 					return DefaultControlSpaceItems ();
 				}
 				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
@@ -740,6 +741,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			AddKeywords (wrapper, primitiveTypesKeywords);
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
+			
+			if (node.Role == AstNode.Roles.Argument) {
+				var resolved = ResolveExpression (CSharpParsedFile, node.Parent, Unit);
+				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
+				if (invokeResult != null) {
+					int argNum = 0;
+					foreach (var arg in node.Parent.Children.Where (c => c.Role == AstNode.Roles.Argument)) {
+						if (arg == node)
+							break;
+						argNum++;
+					}
+					var param = argNum < invokeResult.Member.Parameters.Count ? invokeResult.Member.Parameters [argNum] : null;
+					if (param != null && param.Type.Kind == TypeKind.Enum) {
+						AddEnumMembers (wrapper, param.Type, state);
+					}
+				}
+			}
+			
 		}
 		
 		static bool IsInSwitchContext (AstNode node)
@@ -1774,6 +1793,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
+			Print (baseUnit);
 			if (mref == null) {
 				var invoke = baseUnit.GetNodeAt<InvocationExpression> (location); 
 				if (invoke != null)
