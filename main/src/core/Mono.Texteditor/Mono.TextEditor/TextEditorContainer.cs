@@ -62,7 +62,6 @@ namespace Mono.TextEditor
 		
 		public TextEditorContainer (TextEditor textEditorWidget)
 		{
-			WidgetFlags |= WidgetFlags.NoWindow;
 			this.textEditorWidget = textEditorWidget;
 			AddTopLevelWidget (textEditorWidget, 0, 0);
 			stage.ActorStep += OnActorStep;
@@ -107,6 +106,14 @@ namespace Mono.TextEditor
 			info.X = x;
 			info.Y = y;
 			containerChildren.Add (info);
+			
+			widget.Mapped += (sender, e) => {
+				Console.WriteLine ("\tChild mapped!");
+			};
+			
+			widget.Unmapped += (sender, e) => {
+				Console.WriteLine ("\tChild unmapped!");
+			};
 		}
 		
 		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)
@@ -153,9 +160,60 @@ namespace Mono.TextEditor
 			containerChildren.ForEach (child => callback (child.Child));
 		}
 		
+		protected override void OnMapped ()
+		{
+			WidgetFlags |= WidgetFlags.Mapped;
+			containerChildren.ForEach (child => child.Child.Map ());
+			GdkWindow.Show ();
+		}
+		
+		protected override void OnUnmapped ()
+		{
+			WidgetFlags &= ~WidgetFlags.Mapped;
+			
+			// We hide the window first so that the user doesn't see widgets disappearing one by one.
+			GdkWindow.Hide ();
+			
+			containerChildren.ForEach (child => child.Child.Unmap ());
+		}
+		
+		protected override void OnRealized ()
+		{
+			WidgetFlags |= WidgetFlags.Realized;
+			WindowAttr attributes = new WindowAttr () {
+				WindowType = Gdk.WindowType.Child,
+				X = Allocation.X,
+				Y = Allocation.Y,
+				Width = Allocation.Width,
+				Height = Allocation.Height,
+				Wclass = WindowClass.InputOutput,
+				Visual = this.Visual,
+				Colormap = this.Colormap,
+				EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask),
+				Mask = this.Events | Gdk.EventMask.ExposureMask,
+			};
+			
+			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
+			GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
+			GdkWindow.UserData = Raw;
+			Style = Style.Attach (GdkWindow);
+		}
+		
+		protected override void OnUnrealized ()
+		{
+			WidgetFlags &= ~WidgetFlags.Realized;
+			GdkWindow.Dispose ();
+			GdkWindow = null;
+			
+			base.OnUnrealized ();
+		}
+		
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
+			if (this.GdkWindow != null)
+				this.GdkWindow.MoveResize (allocation);
+			allocation = new Rectangle (0, 0, allocation.Width, allocation.Height);
 			if (textEditorWidget.Allocation != allocation)
 				textEditorWidget.SizeAllocate (allocation);
 			SetChildrenPositions (allocation);
