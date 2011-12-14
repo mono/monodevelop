@@ -425,8 +425,9 @@ namespace Mono.TextEditor
 			DisposeGCs ();
 
 			markerLayout.FontDescription = textEditor.Options.Font;
-			markerLayout.FontDescription.Weight = Pango.Weight.Bold;
-			markerLayout.SetText (" ");
+			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
+			markerLayout.FontDescription.Style = Pango.Style.Italic;
+			markerLayout.SetText ("_");
 			int w, h;
 			markerLayout.GetSize (out w, out h);
 			
