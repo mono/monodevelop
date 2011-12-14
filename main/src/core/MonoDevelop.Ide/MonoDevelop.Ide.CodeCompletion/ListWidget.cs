@@ -86,6 +86,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 		
+		public bool CloseOnSquareBrackets {
+			get;
+			set;
+		}
+		
+			
 		static bool inCategoryMode;
 		public bool InCategoryMode {
 			get { return inCategoryMode; }

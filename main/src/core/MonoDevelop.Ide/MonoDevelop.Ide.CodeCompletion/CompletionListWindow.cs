@@ -240,6 +240,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 //				Reset (true);
 				this.AutoSelect = list.AutoSelect;
 				this.AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
+				this.CloseOnSquareBrackets = list.CloseOnSquareBrackets;
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";

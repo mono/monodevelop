@@ -199,6 +199,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
+		public bool CloseOnSquareBrackets {
+			get {
+				return list.CloseOnSquareBrackets;
+			}
+			set {
+				list.CloseOnSquareBrackets = value;
+			}
+		}
+		
 		public string PartialWord {
 			get { return word.ToString (); }
 			set {
@@ -390,6 +399,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return KeyActions.Ignore;
 			}
 			const string commitChars = " <>()[]{}=+-*/%~&|!";
+			if (keyChar == '[' && CloseOnSquareBrackets)
+				return KeyActions.Process | KeyActions.CloseWindow;
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
@@ -405,7 +416,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (match >= 0 && System.Char.IsPunctuation (keyChar)) {
 					string text = DataProvider.GetCompletionText (FilteredItems [match]);
 					if (!text.ToUpper ().StartsWith (word.ToString ().ToUpper ()))
-						match =-1;	 
+						match = -1;	 
 				}
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					ResetSizes ();

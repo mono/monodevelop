@@ -54,6 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public bool AutoCompleteEmptyMatch;
 		public bool AutoSelect;
 		public string DefaultCompletionString;
+		public bool CloseOnSquareBrackets;
 		#endregion
 		
 		public CSharpCompletionEngine (IDocument document, ICompletionDataFactory factory)
@@ -1211,6 +1212,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} 
 			AddTypesAndNamespaces (wrapper, state, null, pred, m => false);
 			AddKeywords (wrapper, primitiveTypesKeywords.Where (k => k != "void"));
+			CloseOnSquareBrackets = true;
 			AutoCompleteEmptyMatch = true;
 			return wrapper.Result;
 		}

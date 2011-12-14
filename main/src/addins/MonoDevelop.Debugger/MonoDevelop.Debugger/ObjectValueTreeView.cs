@@ -1397,7 +1397,13 @@ namespace MonoDevelop.Debugger
 		public bool AutoCompleteEmptyMatch {
 			get { return false; }
 		}
-
+		
+		public bool CloseOnSquareBrackets {
+			get {
+				return false;
+			}
+		}
+		
 		public CompletionSelectionMode CompletionSelectionMode {
 			get;
 			set;
