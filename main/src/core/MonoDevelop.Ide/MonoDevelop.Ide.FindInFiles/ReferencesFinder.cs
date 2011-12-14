@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (dom == null)
 					yield break;
 				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Finding references in project..."), dom.Project.Files.Count);
+					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in project..."), dom.Project.Files.Count);
 				foreach (var file in dom.Project.Files) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			case RefactoryScope.Solution:
 				var allProjects = solution.GetAllProjects ();
 				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Finding references in solution..."),
+					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."),
 						allProjects.Sum (p => p.Files.Count));
 				foreach (var project in allProjects) {
 					if (monitor != null && monitor.IsCancelRequested)
