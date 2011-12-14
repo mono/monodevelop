@@ -255,7 +255,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			if (updateTypes) {
-				using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing to Xcode..."))) {
+				using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing types to Xcode..."))) {
 					//FIXME: make this async (and safely async)
 					//FIXME: only update the project if obj-c types change
 					updateProject |= UpdateTypes (monitor, true);
@@ -263,7 +263,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			if (updateProject) {
-				using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing to Xcode..."))) {
+				using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Syncing project to Xcode..."))) {
 					//FIXME: make this async (and safely async)
 					var running = xcode.CheckRunning ();
 					UpdateXcodeProject (monitor);
