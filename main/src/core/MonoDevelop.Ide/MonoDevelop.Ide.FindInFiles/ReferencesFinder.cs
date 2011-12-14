@@ -129,7 +129,6 @@ namespace MonoDevelop.Ide.FindInFiles
 					yield return new FileList (doc.TypeResolveContext, new [] { (FilePath)unit.FileName });
 				break;
 			case RefactoryScope.Project:
-				
 				var prj = TypeSystemService.GetProject ((IEntity)member);
 				if (prj == null)
 					yield break;
@@ -141,7 +140,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			case RefactoryScope.Solution:
 				var allProjects = solution.GetAllProjects ();
 				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
+					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), solution.GetAllProjects ().Count);
 				var sourceProject = TypeSystemService.GetProject ((IEntity)member);
 				foreach (var project in GetAllReferencingProjects (solution, sourceProject)) {
 					if (monitor != null && monitor.IsCancelRequested)
