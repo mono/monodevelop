@@ -39,6 +39,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	Mono.TextEditor.Tests.DefaultEditActions/BookmarkTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/DeleteActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs \
