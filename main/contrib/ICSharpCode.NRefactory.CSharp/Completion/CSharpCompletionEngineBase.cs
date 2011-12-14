@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			var currentType = parent;
 			foreach (var type in parent.NestedTypes) {
-				if (type.Region.Begin < location  && location < type.Region.End)
+				if (type.Region.Begin < location && location < type.Region.End)
 					currentType = FindInnerType (type, location);
 			}
 			
@@ -96,49 +96,50 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			for (int i = startOffset; i < endOffset; i++) {
 				char ch = document.GetCharAt (i);
 				switch (ch) {
-					case '(':
-					case '[':
-					case '{':
-						if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
-							bracketStack.Push (ch);
-						break;
-					case ')':
-					case ']':
-					case '}':
-						if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
-						if (bracketStack.Count > 0)
-							bracketStack.Pop ();
-						break;
-					case '\r':
-					case '\n':
-						isInLineComment = false;
-						break;
-					case '/':
-						if (isInBlockComment) {
-							if (i > 0 && document.GetCharAt (i - 1) == '*') 
-								isInBlockComment = false;
-						} else if (!isInString && !isInChar && i + 1 < document.TextLength) {
-							char nextChar = document.GetCharAt (i + 1);
-							if (nextChar == '/')
-								isInLineComment = true;
-							if (!isInLineComment && nextChar == '*')
-								isInBlockComment = true;
-						}
-						break;
-					case '"':
-						if (!(isInChar || isInLineComment || isInBlockComment)) 
-							isInString = !isInString;
-						break;
-					case '\'':
-						if (!(isInString || isInLineComment || isInBlockComment)) 
-							isInChar = !isInChar;
-						break;
-					default :
-						break;
+				case '(':
+				case '[':
+				case '{':
+					if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+						bracketStack.Push (ch);
+					break;
+				case ')':
+				case ']':
+				case '}':
+					if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+					if (bracketStack.Count > 0)
+						bracketStack.Pop ();
+					break;
+				case '\r':
+				case '\n':
+					isInLineComment = false;
+					break;
+				case '/':
+					if (isInBlockComment) {
+						if (i > 0 && document.GetCharAt (i - 1) == '*') 
+							isInBlockComment = false;
+					} else if (!isInString && !isInChar && i + 1 < document.TextLength) {
+						char nextChar = document.GetCharAt (i + 1);
+						if (nextChar == '/')
+							isInLineComment = true;
+						if (!isInLineComment && nextChar == '*')
+							isInBlockComment = true;
 					}
+					break;
+				case '"':
+					if (!(isInChar || isInLineComment || isInBlockComment)) 
+						isInString = !isInString;
+					break;
+				case '\'':
+					if (!(isInString || isInLineComment || isInBlockComment)) 
+						isInChar = !isInChar;
+					break;
+				default :
+					break;
 				}
+			}
 			return bracketStack.Any (t => t == '{');
 		}
+
 		protected void SetOffset (int offset)
 		{
 			Reset ();
@@ -413,7 +414,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
-			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
@@ -477,13 +477,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt (location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
-			AstNode expr;
+			AstNode expr = null;
 			if (mref is InvocationExpression) {
 				expr = ((InvocationExpression)mref).Target;
 			} else if (mref is ObjectCreateExpression) {
 				expr = mref;
 			} else {
-				return null;
+				baseUnit = ParseStub (")};", false);
+				mref = baseUnit.GetNodeAt (location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
+				if (mref is InvocationExpression) {
+					expr = ((InvocationExpression)mref).Target;
+				} else if (mref is ObjectCreateExpression) {
+					expr = mref;
+				}
+				if (expr == null)
+					return null;
 			}
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
