@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using Gtk;
 
 namespace MonoDevelop.Components
@@ -56,13 +57,32 @@ namespace MonoDevelop.Components
 			
 			textView.WrapMode = Gtk.WrapMode.Word;
 			textView.KeyPressEvent += TextViewKeyPressEvent;
-	
+			textView.PopulatePopup += TextViewPopulatePopup;
+			
 			// The 'Freezer' tag is used to keep everything except
 			// the input line from being editable
 			TextTag tag = new TextTag ("Freezer");
 			tag.Editable = false;
 			Buffer.TagTable.Add (tag);
 			Prompt (false);
+		}
+
+		void TextViewPopulatePopup (object o, PopulatePopupArgs args)
+		{
+			MenuItem item = new MenuItem (GettextCatalog.GetString ("Clear"));
+			SeparatorMenuItem sep = new SeparatorMenuItem ();
+			
+			item.Activated += ClearActivated;
+			item.Show ();
+			sep.Show ();
+			
+			args.Menu.Add (sep);
+			args.Menu.Add (item);
+		}
+
+		void ClearActivated (object sender, EventArgs e)
+		{
+			Clear ();
 		}
 		
 		public void SetFont (Pango.FontDescription font)

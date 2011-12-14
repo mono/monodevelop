@@ -243,6 +243,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return str;
 		}
+
+		public static string UnescapePath (string path)
+		{
+			if (string.IsNullOrEmpty (path))
+				return path;
+			
+			if (!Platform.IsWindows)
+				path = path.Replace ("\\", "/");
+			
+			return UnscapeString (path);
+		}
 		
 		public static string UnscapeString (string str)
 		{
@@ -302,11 +313,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (string.IsNullOrEmpty (relPath))
 				return false;
 			
-			string path = relPath;
-			if (!Platform.IsWindows)
-				path = path.Replace ("\\", "/");
-			
-			path = UnscapeString (path);
+			string path = UnescapePath (relPath);
 
 			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':') {
 				if (Platform.IsWindows) {

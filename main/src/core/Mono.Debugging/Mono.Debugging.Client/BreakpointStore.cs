@@ -235,6 +235,13 @@ namespace Mono.Debugging.Client
 			breakpoints.CopyTo (array, arrayIndex);
 		}
 		
+		public void UpdateBreakpointLine (Breakpoint bp, int newLine)
+		{
+			Remove (bp);
+			bp.SetLine (newLine);
+			Add (bp);
+		}
+		
 		internal void AdjustBreakpointLine (Breakpoint bp, int newLine)
 		{
 			Remove (bp);

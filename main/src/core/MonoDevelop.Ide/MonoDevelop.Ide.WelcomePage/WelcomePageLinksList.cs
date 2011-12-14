@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (child.Name != "Link")
 					throw new InvalidOperationException ("Unexpected child '" + child.Name + "'");
 				var button = new WelcomePageLinkButton (child, iconSize);
-				this.PackEnd (button, true, false, 0);
+				this.PackStart (button, true, false, 0);
 			}
 		}
 	}
