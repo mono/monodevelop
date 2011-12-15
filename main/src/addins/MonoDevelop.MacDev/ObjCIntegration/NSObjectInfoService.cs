@@ -204,7 +204,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					var attType = att.AttributeType;
 					bool isIBOutlet = attType.Equals (dom.Compilation.LookupType (typeNamespace, iboutletAttType));
 					if (!isIBOutlet) {
-						if (attType.Equals (dom.Compilation.LookupType (typeNamespace, connectAttType)))
+						if (!attType.Equals (dom.Compilation.LookupType (typeNamespace, connectAttType)))
 							continue;
 					}
 					string name = null;
@@ -234,7 +234,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					var attType = att.AttributeType;
 					bool isIBAction = attType.Equals (dom.Compilation.LookupType (typeNamespace, ibactionAttType));
 					if (!isIBAction) {
-						if (attType.Equals (dom.Compilation.LookupType (typeNamespace, exportAttType)))
+						if (!attType.Equals (dom.Compilation.LookupType (typeNamespace, exportAttType)))
 							continue;
 					}
 					bool isDesigner =  MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (
