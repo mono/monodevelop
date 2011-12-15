@@ -62,6 +62,9 @@ dist: dist-recursive
 run:
 	cd main && make run
 
+run-gdb:
+	cd main && make run-gdb
+
 test:
 	cd main/tests/UnitTests && make test fixture=$(fixture)
 
