@@ -64,6 +64,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			if (File.Exists (target))
 				File.Delete (target);
 			File.Copy (source, target);
+			File.SetLastWriteTime (target, File.GetLastWriteTime (source));
 			context.UpdateSyncTime (targetRelative);
 		}
 		
