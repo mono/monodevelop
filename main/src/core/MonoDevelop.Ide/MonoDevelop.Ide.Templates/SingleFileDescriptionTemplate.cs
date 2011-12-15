@@ -266,8 +266,11 @@ namespace MonoDevelop.Ide.Templates
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
 			CodeFormatter formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 			
-			if (formatter != null)
-				content = formatter.FormatText (policyParent != null ? policyParent.Policies : null, content);
+			if (formatter != null) {
+				var formatted = formatter.FormatText (policyParent != null ? policyParent.Policies : null, content);
+				if (formatted != null)
+					content = formatted;
+			}
 			
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
