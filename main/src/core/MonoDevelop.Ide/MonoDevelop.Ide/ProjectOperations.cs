@@ -1429,7 +1429,7 @@ namespace MonoDevelop.Ide
 					
 					string fileBuildAction = buildAction;
 					if (string.IsNullOrEmpty (buildAction))
-						fileBuildAction = project.GetDefaultBuildAction (file);
+						fileBuildAction = project.GetDefaultBuildAction (targetPath);
 					
 					//files in the target directory get added directly in their current location without moving/copying
 					if (file.CanonicalPath == targetPath) {
