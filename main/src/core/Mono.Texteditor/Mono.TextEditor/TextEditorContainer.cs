@@ -202,9 +202,10 @@ namespace Mono.TextEditor
 		protected override void OnUnrealized ()
 		{
 			WidgetFlags &= ~WidgetFlags.Realized;
-			GdkWindow.Dispose ();
-			GdkWindow = null;
-			
+			if (GdkWindow != null) {
+				GdkWindow.Dispose ();
+				GdkWindow = null;
+			}
 			base.OnUnrealized ();
 		}
 		
