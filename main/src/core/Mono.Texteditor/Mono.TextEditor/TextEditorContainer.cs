@@ -106,14 +106,6 @@ namespace Mono.TextEditor
 			info.X = x;
 			info.Y = y;
 			containerChildren.Add (info);
-			
-			widget.Mapped += (sender, e) => {
-				Console.WriteLine ("\tChild mapped!");
-			};
-			
-			widget.Unmapped += (sender, e) => {
-				Console.WriteLine ("\tChild unmapped!");
-			};
 		}
 		
 		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)
