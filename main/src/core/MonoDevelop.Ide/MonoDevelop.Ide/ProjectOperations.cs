@@ -1473,16 +1473,7 @@ namespace MonoDevelop.Ide
 						}
 						
 						if (action == AddAction.Link) {
-							//FIXME: MD project system doesn't cope with duplicate includes - project save/load will remove the file
-							ProjectFile pf;
-							if (filesInProject.TryGetValue (file, out pf)) {
-								var link = pf.Link;
-								MessageService.ShowWarning (GettextCatalog.GetString (
-									"The link '{0}' in the project already includes the file '{1}'", link, file));
-								continue;
-							}
-							
-							pf = new ProjectFile (file, fileBuildAction) {
+							ProjectFile pf = new ProjectFile (file, fileBuildAction) {
 								Link = vpath
 							};
 							vpathsInProject.Add (pf.ProjectVirtualPath);
