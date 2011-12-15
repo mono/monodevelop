@@ -72,11 +72,6 @@ namespace MonoDevelop.Projects
 					Compile,
 					Content,
 					EmbeddedResource,
-					ApplicationDefinition,
-					InterfaceDefinition,
-					Resource,
-//					SplashScreen,
-//					EntityDeploy
 				};
 			}
 		}
