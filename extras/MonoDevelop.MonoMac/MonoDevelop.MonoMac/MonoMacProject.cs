@@ -264,5 +264,16 @@ namespace MonoDevelop.MonoMac
 			doc.WriteToFile (name);
 			return AddFile (name);
 		}
+		
+		protected override IList<string> GetCommonBuildActions ()
+		{
+			return new string[] {
+				BuildAction.None,
+				BuildAction.Compile,
+				BuildAction.Content,
+				BuildAction.EmbeddedResource,
+				BuildAction.InterfaceDefinition,
+			};
+		}
 	}
 }
