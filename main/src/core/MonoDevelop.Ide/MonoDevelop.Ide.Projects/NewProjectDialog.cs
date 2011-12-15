@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Projects {
 			this.openSolution = openCombine;
 			TransientFor = IdeApp.Workbench.RootWindow;
 			Title = newSolution ? GettextCatalog.GetString ("New Solution") : GettextCatalog.GetString ("New Project");
-
+			
 			InitializeTemplates ();
 			
 			if (!newSolution) {
@@ -303,8 +303,8 @@ namespace MonoDevelop.Ide.Projects {
 		{
 			if (!btn_new.Sensitive)
 				return;
+			
 			if (notebook.Page == 0) {
-				
 				if (!CreateProject ())
 					return;
 				
@@ -489,6 +489,8 @@ namespace MonoDevelop.Ide.Projects {
 				}
 				
 				PathChanged (null, null);
+				
+				btn_new.GrabDefault ();
 			} catch (Exception ex) {
 				txt_name.Sensitive = false;
 				btn_new.Sensitive = false;
