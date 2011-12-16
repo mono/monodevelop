@@ -5,7 +5,7 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class PackagingFeatureWidget
 	{
 		private global::Gtk.VBox box;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

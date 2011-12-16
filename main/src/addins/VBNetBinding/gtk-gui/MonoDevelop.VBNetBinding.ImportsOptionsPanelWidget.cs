@@ -12,7 +12,7 @@ namespace MonoDevelop.VBNetBinding
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.Button cmdRemove;
 		private global::Gtk.Label label10;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

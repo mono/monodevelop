@@ -15,7 +15,7 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -2317,6 +2317,7 @@ Diagnostic</property>
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Every hour</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -5522,7 +5523,7 @@ Large</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.FindInFiles.FindInFilesDialog" design-size="456 289">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.FindInFiles.FindInFilesDialog" design-size="456 348">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="TypeHint">Dialog</property>
@@ -5531,7 +5532,7 @@ Large</property>
     <property name="DestroyWithParent">True</property>
     <property name="SkipPagerHint">True</property>
     <property name="SkipTaskbarHint">True</property>
-    <property name="Buttons">4</property>
+    <property name="Buttons">3</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
@@ -5544,13 +5545,76 @@ Large</property>
             <property name="Spacing">6</property>
             <property name="BorderWidth">6</property>
             <child>
+              <widget class="Gtk.HBox" id="hbox3">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.RadioButton" id="toggleFindInFiles">
+                    <property name="MemberName" />
+                    <property name="Tooltip" translatable="yes">Switch to Find in Files</property>
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">Find in Files</property>
+                    <property name="Active">True</property>
+                    <property name="DrawIndicator">False</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="Relief">None</property>
+                    <property name="Group">FindInFilesMode</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">False</property>
+                    <property name="Expand">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.VSeparator" id="vseparator1">
+                    <property name="MemberName" />
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.RadioButton" id="toggleReplaceInFiles">
+                    <property name="MemberName" />
+                    <property name="Tooltip" translatable="yes">Switch to Replace in Files</property>
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">Replace in Files</property>
+                    <property name="DrawIndicator">False</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="Relief">None</property>
+                    <property name="Group">FindInFilesMode</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">2</property>
+                    <property name="AutoSize">False</property>
+                    <property name="Expand">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
               <widget class="Gtk.HBox" id="hbox1">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Table" id="tableFindAndReplace">
                     <property name="MemberName" />
-                    <property name="NRows">3</property>
+                    <property name="NRows">2</property>
                     <property name="NColumns">2</property>
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
@@ -5608,28 +5672,6 @@ Large</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Label" id="labelFileMask">
-                        <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="LabelProp" translatable="yes">_File Mask:</property>
-                        <property name="UseUnderline">True</property>
-                        <property name="MnemonicWidget">comboboxentryFileMask</property>
-                      </widget>
-                      <packing>
-                        <property name="TopAttach">2</property>
-                        <property name="BottomAttach">3</property>
-                        <property name="AutoSize">True</property>
-                        <property name="XOptions">Fill</property>
-                        <property name="YOptions">Fill</property>
-                        <property name="XExpand">False</property>
-                        <property name="XFill">True</property>
-                        <property name="XShrink">False</property>
-                        <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
-                        <property name="YShrink">False</property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="Gtk.Label" id="labelFind">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
@@ -5653,38 +5695,13 @@ Large</property>
                       <widget class="Gtk.Label" id="labelScope">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
-                        <property name="LabelProp" translatable="yes">_Scope:</property>
+                        <property name="LabelProp" translatable="yes">_Look in:</property>
                         <property name="UseUnderline">True</property>
                         <property name="MnemonicWidget">comboboxScope</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">1</property>
                         <property name="BottomAttach">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="XOptions">Fill</property>
-                        <property name="YOptions">Fill</property>
-                        <property name="XExpand">False</property>
-                        <property name="XFill">True</property>
-                        <property name="XShrink">False</property>
-                        <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
-                        <property name="YShrink">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="MonoDevelop.Components.SearchEntry" id="searchentry1">
-                        <property name="MemberName" />
-                        <property name="ForceFilterButtonVisible">False</property>
-                        <property name="IsCheckMenu">False</property>
-                        <property name="ActiveFilterID">0</property>
-                        <property name="Ready">False</property>
-                        <property name="HasFocus">False</property>
-                      </widget>
-                      <packing>
-                        <property name="TopAttach">2</property>
-                        <property name="BottomAttach">3</property>
-                        <property name="LeftAttach">1</property>
-                        <property name="RightAttach">2</property>
                         <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
                         <property name="YOptions">Fill</property>
@@ -5704,7 +5721,7 @@ Large</property>
                 </child>
               </widget>
               <packing>
-                <property name="Position">0</property>
+                <property name="Position">1</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -5792,7 +5809,7 @@ Large</property>
                 </child>
               </widget>
               <packing>
-                <property name="Position">1</property>
+                <property name="Position">2</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -5813,7 +5830,7 @@ Large</property>
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
-        <property name="Size">4</property>
+        <property name="Size">3</property>
         <property name="LayoutStyle">End</property>
         <child>
           <widget class="Gtk.Button" id="buttonStop">
@@ -5848,22 +5865,6 @@ Large</property>
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Button" id="buttonReplace">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-find-and-replace Menu</property>
-            <property name="Label" translatable="yes">R_eplace</property>
-            <property name="UseUnderline">True</property>
-            <property name="ResponseId">0</property>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
           <widget class="Gtk.Button" id="buttonSearch">
             <property name="MemberName" />
             <property name="CanDefault">True</property>
@@ -5875,7 +5876,7 @@ Large</property>
             <property name="label">gtk-find</property>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">2</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
