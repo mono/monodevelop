@@ -129,7 +129,7 @@ namespace Mono.TextEditor.Vi
 					statusText = value + " recording";
 				}
 			}
-		
+	
 		}
 		
 		protected virtual string RunExCommand (string command)
@@ -148,7 +148,7 @@ namespace Mono.TextEditor.Vi
 						return "Jumped to beginning of document.";
 					}
 					
-					Data.Caret.Line = line - 1;
+					Data.Caret.Line = line;
 					Editor.ScrollToCaret ();
 					return string.Format ("Jumped to line {0}.", line);
 				}
