@@ -204,7 +204,8 @@ namespace MonoDevelop.Refactoring
 							// remove used namespaces for conflict resolving. 
 							if (options.Document.CompilationUnit.IsNamespaceUsedAt (ns, options.ResolveResult.ResolvedExpression.Region.Start))
 								continue;
-							CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
+							string escaped_ns = ns.Replace ("_", "__");
+							CommandInfo info = resolveMenu.CommandInfos.Add ("using " + escaped_ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
 							info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
 						}
 						if (!(resolveResult is UnresolvedMemberResolveResult))
@@ -518,7 +519,7 @@ namespace MonoDevelop.Refactoring
 			{
 				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
 				if (pos < 0) {
-					LoggingService.LogError ("Invalie expression position: " + resolveResult.ResolvedExpression);
+					LoggingService.LogError ("Invalid expression position: " + resolveResult.ResolvedExpression);
 					return;
 				}
 				doc.Editor.Insert (pos, ns + ".");
