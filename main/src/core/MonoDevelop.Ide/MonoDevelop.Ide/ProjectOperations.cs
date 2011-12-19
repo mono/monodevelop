@@ -1905,14 +1905,24 @@ namespace MonoDevelop.Ide
 		class ProviderProxy : ITextEditorDataProvider, IEditableTextFile
 		{
 			TextEditorData data;
-			public ProviderProxy (TextEditorData data)
+			string encoding;
+			bool bom;
+			
+			public ProviderProxy (TextEditorData data, string encoding, bool bom)
 			{
 				this.data = data;
+				this.encoding = encoding;
+				this.bom = bom;
 			}
 
 			public TextEditorData GetTextEditorData ()
 			{
 				return data;
+			}
+			
+			void Save ()
+			{
+				TextFile.WriteFile (Name, Text, encoding, bom);
 			}
 			
 			#region IEditableTextFile implementation
@@ -1924,6 +1934,7 @@ namespace MonoDevelop.Ide
 			{
 				return data.GetTextBetween (startPosition, endPosition);
 			}
+			
 			public char GetCharAt (int position)
 			{
 				return data.GetCharAt (position);
@@ -1944,15 +1955,15 @@ namespace MonoDevelop.Ide
 			public int InsertText (int position, string text)
 			{
 				int result = data.Insert (position, text);
-				File.WriteAllText (Name, Text);
+				Save ();
+				
 				return result;
 			}
-			
 			
 			public void DeleteText (int position, int length)
 			{
 				data.Remove (position, length);
-				File.WriteAllText (Name, Text);
+				Save ();
 			}
 			
 			public string Text {
@@ -1961,6 +1972,7 @@ namespace MonoDevelop.Ide
 				}
 				set {
 					data.Text = value;
+					Save ();
 				}
 			}
 			
@@ -1976,10 +1988,12 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
+			TextFile file = TextFile.ReadFile (filePath);
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = filePath;
-			data.Text = File.ReadAllText (filePath);
-			return new ProviderProxy (data);
+			data.Text = file.Text;
+			
+			return new ProviderProxy (data, file.SourceEncoding, file.HadBOM);
 		}
 		
 		public TextEditorData GetTextEditorData (FilePath filePath)
@@ -1997,9 +2011,10 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
+			TextFile file = TextFile.ReadFile (filePath);
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = filePath;
-			data.Text = File.ReadAllText (filePath);
+			data.Text = file.Text;
 			isOpen = false;
 			return data;
 		}
