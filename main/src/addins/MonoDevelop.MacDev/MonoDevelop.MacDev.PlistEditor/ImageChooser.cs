@@ -200,14 +200,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 				cr.Translate (imgAlloc.X, imgAlloc.Y);
 				
 				using (var layout = new Pango.Layout (PangoContext)) {
-					layout.SetText (string.Format ("({0}x{1})", displaySize.Width, displaySize.Height));
-				
-					layout.Width = (int)((imgAlloc.Width - 16) * Pango.Scale.PangoScale);
+					layout.SetText (string.Format ("({0}x{1})", acceptedSize.Width, acceptedSize.Height));
+					layout.Width = (int) (imgAlloc.Width * Pango.Scale.PangoScale);
 					layout.Wrap = Pango.WrapMode.WordChar;
 					layout.Alignment = Pango.Alignment.Center;
+
 					int pw, ph;
 					layout.GetPixelSize (out pw, out ph);
-					cr.MoveTo ((imgAlloc.Width - layout.Width / Pango.Scale.PangoScale) / 2, (imgAlloc.Height - ph) / 2);
+					cr.MoveTo (0, (imgAlloc.Height - ph) / 2);
 					cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
 					cr.ShowLayout (layout);
 				}
