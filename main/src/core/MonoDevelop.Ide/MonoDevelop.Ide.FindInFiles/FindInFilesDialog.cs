@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 			comboboxentryFind.Entry.SelectRegion (0, comboboxentryFind.ActiveText.Length);
-			
+			comboboxentryFind.GrabFocus ();
 			DeleteEvent += delegate { Destroy (); };
 			UpdateStopButton ();
 			
