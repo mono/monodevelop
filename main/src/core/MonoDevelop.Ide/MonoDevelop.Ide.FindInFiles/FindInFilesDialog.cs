@@ -126,8 +126,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			TransientFor = IdeApp.Workbench.RootWindow;
 
-			comboboxentryFind.Entry.Activated += delegate { buttonSearch.Click (); };
-			
 			toggleReplaceInFiles.Active = showReplace;
 			toggleFindInFiles.Active = !showReplace;
 			
