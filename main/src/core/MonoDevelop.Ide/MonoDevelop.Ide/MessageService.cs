@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string message)
 		{
-			ShowException (parent, e, message, "An unhandled exception occured");
+			ShowException (parent, e, message, "An unexpected error occured");
 		}
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string message, string title)
