@@ -86,11 +86,11 @@ namespace MonoDevelop.MacIntegration
 					if (button.IsStockButton)
 						label = Gtk.Stock.Lookup (label).Label;
 					label = label.Replace ("_", "");
-					
+
 					//this message seems to be a standard Mac message since alert handles it specially
 					if (button == AlertButton.CloseWithoutSave)
 						label = GettextCatalog.GetString ("Don't Save");
-					
+
 					alert.AddButton (label);
 				}
 				

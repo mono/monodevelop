@@ -41,11 +41,36 @@ namespace MonoDevelop.MacIntegration
 {
 	class MacExceptionDialogHandler : IExceptionDialogHandler
 	{
+		class MyTextView : NSTextView
+		{
+			public MyTextView (RectangleF frame)
+				: base (frame)
+			{
+
+			}
+
+			public override void KeyDown (NSEvent theEvent)
+			{
+				if (theEvent.ModifierFlags.HasFlag (NSEventModifierMask.CommandKeyMask)) {
+					switch (theEvent.Characters) {
+					case "x":
+						Cut (this);
+						break;
+					case "c":
+						Copy (this);
+						break;
+					case "a":
+						SelectAll (this);
+						break;
+					}
+				}
+				
+				base.KeyDown (theEvent);
+			}
+		}
 		public bool Run (ExceptionDialogData data)
 		{
-			using (var alert = new NSAlert ()) {
-				alert.AlertStyle = NSAlertStyle.Critical;
-				
+			using (var alert = new NSAlert { AlertStyle = NSAlertStyle.Critical }) {
 				var pix = ImageService.GetPixbuf (Gtk.Stock.DialogError, Gtk.IconSize.Dialog);
 				byte[] buf = pix.SaveToBuffer ("tiff");
 				alert.Icon = new NSImage (NSData.FromArray (buf));
@@ -53,30 +78,47 @@ namespace MonoDevelop.MacIntegration
 				alert.MessageText = data.Title ?? "Some Message";
 				alert.InformativeText = data.Message ?? "Some Info";
 
-				if (data.Exception != null) {
+				List<AlertButton> buttons = null;
+				if (data.Buttons != null && data.Buttons.Length > 0)
+					buttons = data.Buttons.Reverse ().ToList ();
 
-					var text = new NSTextView (new RectangleF (0, 0, float.MaxValue, float.MaxValue));
+				if (buttons != null) {
+					foreach (var button in buttons) {
+						var label = button.Label;
+						if (button.IsStockButton)
+							label = Gtk.Stock.Lookup (label).Label;
+						label = label.Replace ("_", "");
+
+						//this message seems to be a standard Mac message since alert handles it specially
+						if (button == AlertButton.CloseWithoutSave)
+							label = GettextCatalog.GetString ("Don't Save");
+
+						alert.AddButton (label);
+					}
+				}
+
+				if (data.Exception != null) {
+					var scrollSize = new SizeF (500, 130);
+
+					var text = new MyTextView (new RectangleF (0, 0, float.MaxValue, float.MaxValue));
 					text.HorizontallyResizable = true;
 					text.TextContainer.ContainerSize = new SizeF (float.MaxValue, float.MaxValue);
 					text.TextContainer.WidthTracksTextView = false;
 					text.InsertText (new NSString (data.Exception.ToString ()));
+
 					text.Editable = false;
-					
-					var scrollView = new NSScrollView (new RectangleF (0, 0, 450, 150)) {
+
+					var scrollView = new NSScrollView (new RectangleF (PointF.Empty, scrollSize)) {
 						HasHorizontalScroller = true,
+						HasVerticalScroller = true,
 						DocumentView = text,
 					};
-;
+
 					alert.AccessoryView = scrollView;
 				}
-				
-				// Hack up a slightly wider than normal alert dialog. I don't know how to do this in a nicer way
-				// as the min size constraints are apparently ignored.
-				var frame = ((NSPanel) alert.Window).Frame;
-				((NSPanel) alert.Window).SetFrame (new RectangleF (frame.X, frame.Y, Math.Max (frame.Width, 600), frame.Height), true);
-				
+
 				int result = alert.RunModal () - (int)NSAlertButtonReturn.First;
-				
+				data.ResultButton = buttons != null ? buttons [result] : null;
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}
 			

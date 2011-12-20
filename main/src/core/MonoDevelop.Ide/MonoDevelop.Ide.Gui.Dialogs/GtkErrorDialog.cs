@@ -51,8 +51,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			detailsTextView.Buffer.TagTable.Add (tagWrap);
 			
 			expander.Visible = false;
+
+			ActionArea.Homogeneous = true;
+			ActionArea.Remove (okButton);
 		}
 		
+		public AlertButton[] Buttons {
+			get; set;
+		}
+
 		public string Message {
 			get { return descriptionLabel.Text; }
 			set {
@@ -63,7 +70,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				descriptionLabel.Text = message;
 			}
 		}
-		
+
+		protected override void OnRealized ()
+		{
+			for (int i = 0; i < Buttons.Length; i++) {
+				Gtk.Button button;
+				button = new Gtk.Button (Buttons[i].Label);
+				button.ShowAll ();
+				AddActionWidget (button, i);
+			}
+			base.OnRealized ();
+		}
+
 		public void AddDetails (string text, bool wrapped)
 		{
 			TextIter it = detailsTextView.Buffer.EndIter;

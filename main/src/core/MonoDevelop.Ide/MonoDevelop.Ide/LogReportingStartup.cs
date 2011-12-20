@@ -39,33 +39,48 @@ namespace MonoDevelop.Ide
 	{
 		protected override void Run ()
 		{
-//			var pid = Process.GetCurrentProcess ().Id;
-//			var directory = new DirectoryInfo (LogReportingService.CrashLogDirectory);
-//			
-//			if (Platform.IsMac) {
-//				var crashmonitor = Path.Combine (PropertyService.EntryAssemblyPath, "MonoDevelopLogAgent.app");
-//				Process.Start (new ProcessStartInfo ("open", string.Format ("-a {0} -n --args -pid {1} -log {2} -session {3}", crashmonitor, pid, directory.FullName, SystemInformation.SessionUuid)) {
-//					UseShellExecute = false,
-//				});
-//			}
-			
-			LogReportingService.ShouldEnableReporting = () => {
-				var title = GettextCatalog.GetString ("A crash has just occurred");
-				var part1 = GettextCatalog.GetString ("Details of this crash, along with anonymous installation " +
-							"information, can be uploaded to Xamarin to help diagnose the issue. " +
-						    "Do you wish to automatically upload this information for this and future crashes?");
-				var part2 = GettextCatalog.GetString ("This setting can be changed in the 'Log Agent' section of the MonoDevelop preferences.");
-				
-				var result = MessageService.AskQuestion (
-					title,
-				    string.Format ("{0}{1}{1}{2}", part1, Environment.NewLine, part2),
-					AlertButton.No, AlertButton.Yes);
-				
-				return result == AlertButton.Yes;
-			};
 			
 			// Process cached crash reports if there are any and uploading is enabled
 			LogReportingService.ProcessCache ();
+
+			// Attach a handler for when exceptions need to be processed
+			LogReportingService.UnhandledErrorOccured = (enabled, ex, willShutdown) => {
+				AlertButton[] buttons = null;
+				string message = null;
+				string title = GettextCatalog.GetString ("An error has occurred");
+
+				if (enabled.HasValue) {
+					if (enabled.Value) {
+						message = GettextCatalog.GetString ("Details of this error have been automatically submitted for analysis.");
+					} else {
+						message = GettextCatalog.GetString ("Details of this error have not been submitted as error reporting is disabled.");
+					}
+					if (willShutdown)
+						message += GettextCatalog.GetString (" MonoDevelop will now close.");
+
+					buttons = new [] { AlertButton.Ok };
+				} else {
+					var part1 = GettextCatalog.GetString ("Details of this error, along with anonymous installation " +
+								"information, can be uploaded to Xamarin to help diagnose the issue. " +
+							    "Do you wish to automatically upload this information for this and future crashes?");
+					var part2 = GettextCatalog.GetString ("This setting can be changed in the 'Log Agent' section of the MonoDevelop preferences.");
+					message = string.Format ("{0}{1}{1}{2}", part1, Environment.NewLine, part2);
+					buttons = new [] { AlertButton.Never, AlertButton.ThisTimeOnly, AlertButton.Always };
+				}
+
+				var result = MessageService.ShowException (ex, message, title, buttons);
+				if (enabled.HasValue) {
+					// In this case we will not change the value
+					return enabled;
+				} else if (result == AlertButton.Always) {
+					return true;
+				} else if (result == AlertButton.Never) {
+					return false;
+				} else {
+					// The user has decided to submit this one only
+					return null;
+				}
+			};
 		}
 	}
 }
