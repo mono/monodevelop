@@ -338,7 +338,9 @@ namespace Mono.TextEditor
 		
 		void HandleHAdjustementValueChanged (object sender, EventArgs e)
 		{
-			SetChildrenPositions (Allocation);
+			var alloc = this.Allocation;
+			alloc.X = alloc.Y = 0;
+			SetChildrenPositions (alloc);
 		}
 		
 		protected override void OnDestroyed ()
