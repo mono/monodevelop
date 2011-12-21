@@ -92,8 +92,10 @@ namespace MonoDevelop.Projects
 		{
 			fileName = FileService.GetFullPath (fileName);
 			for (int n=0; n<Count; n++) {
-				if (Items [n].Name == fileName)
+				if (Items [n].Name == fileName) {
 					RemoveAt (n);
+					break;
+				}
 			}
 		}
 	}
