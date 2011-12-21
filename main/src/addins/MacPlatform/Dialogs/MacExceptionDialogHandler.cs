@@ -68,15 +68,17 @@ namespace MonoDevelop.MacIntegration
 				base.KeyDown (theEvent);
 			}
 		}
+		
 		public bool Run (ExceptionDialogData data)
 		{
 			using (var alert = new NSAlert { AlertStyle = NSAlertStyle.Critical }) {
-				var pix = ImageService.GetPixbuf (Gtk.Stock.DialogError, Gtk.IconSize.Dialog);
-				byte[] buf = pix.SaveToBuffer ("tiff");
-				alert.Icon = new NSImage (NSData.FromArray (buf));
+				alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 				
-				alert.MessageText = data.Title ?? "Some Message";
-				alert.InformativeText = data.Message ?? "Some Info";
+				alert.MessageText = data.Title ?? GettextCatalog.GetString ("Error");
+				
+				if (!string.IsNullOrEmpty (data.Message)) {
+					alert.InformativeText = data.Message;
+				}
 
 				List<AlertButton> buttons = null;
 				if (data.Buttons != null && data.Buttons.Length > 0)
@@ -98,23 +100,83 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				if (data.Exception != null) {
-					var scrollSize = new SizeF (500, 130);
-
-					var text = new MyTextView (new RectangleF (0, 0, float.MaxValue, float.MaxValue));
-					text.HorizontallyResizable = true;
+					var scrollSize = new SizeF (400, 130);
+					float spacing = 4;
+					
+					string title = GettextCatalog.GetString ("View details");
+					string altTitle = GettextCatalog.GetString ("Hide details");
+					
+					var buttonFrame = new RectangleF (0, 0, 0, 0);
+					var button = new NSButton (buttonFrame) {
+						BezelStyle = NSBezelStyle.Disclosure,
+						Title = "",
+						AlternateTitle = "",
+					};
+					button.SetButtonType (NSButtonType.OnOff);
+					button.SizeToFit ();
+					
+					var label = new MDClickableLabel (title) {
+						Alignment = NSTextAlignment.Left,
+					};
+					label.SizeToFit ();
+					
+					button.SetFrameSize (new SizeF (button.Frame.Width, Math.Max (button.Frame.Height, label.Frame.Height)));
+					label.SetFrameOrigin (new PointF (button.Frame.Width + 5, button.Frame.Y));
+					
+					var text = new MyTextView (new RectangleF (0, 0, float.MaxValue, float.MaxValue)) {
+						HorizontallyResizable = true,
+					};
 					text.TextContainer.ContainerSize = new SizeF (float.MaxValue, float.MaxValue);
-					text.TextContainer.WidthTracksTextView = false;
+					text.TextContainer.WidthTracksTextView = true;
 					text.InsertText (new NSString (data.Exception.ToString ()));
-
 					text.Editable = false;
 
-					var scrollView = new NSScrollView (new RectangleF (PointF.Empty, scrollSize)) {
+					var scrollView = new NSScrollView (new RectangleF (PointF.Empty, SizeF.Empty)) {
 						HasHorizontalScroller = true,
 						HasVerticalScroller = true,
-						DocumentView = text,
 					};
-
-					alert.AccessoryView = scrollView;
+					
+					var accessory = new NSView (new RectangleF (0, 0, scrollSize.Width, button.Frame.Height));
+					accessory.AddSubview (scrollView);
+					accessory.AddSubview (button);
+					accessory.AddSubview (label);
+					
+					alert.AccessoryView = accessory;
+					
+					button.Activated += delegate {
+						float change;
+						if (button.State == NSCellStateValue.On) {
+							change = scrollSize.Height + spacing;
+							label.StringValue = altTitle;
+							scrollView.Hidden = false;
+							scrollView.Frame = new RectangleF (PointF.Empty, scrollSize);
+							scrollView.DocumentView = text;
+						} else {
+							change = -(scrollSize.Height + spacing);
+							label.StringValue = title;
+							scrollView.Hidden = true;
+							scrollView.Frame = new RectangleF (PointF.Empty, SizeF.Empty);
+						}
+						var f = accessory.Frame;
+						f.Height += change;
+						accessory.Frame = f;
+						var lf = label.Frame;
+						lf.Y += change;
+						label.Frame = lf;
+						var bf = button.Frame;
+						bf.Y += change;
+						button.Frame = bf;
+						label.SizeToFit ();
+						var panel = (NSPanel) alert.Window;
+						var pf = panel.Frame;
+						pf.Height += change;
+						pf.Y -= change;
+						panel.SetFrame (pf, true, true);
+						//unless we assign the icon again, it starts nesting old icon into the warning icon
+						alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
+						alert.Layout ();
+					};
+					label.OnMouseUp += (sender, e) => button.PerformClick (e.Event);
 				}
 
 				int result = alert.RunModal () - (int)NSAlertButtonReturn.First;
@@ -123,6 +185,73 @@ namespace MonoDevelop.MacIntegration
 			}
 			
 			return true;
+		}
+		
+		class MDClickableLabel: MDLabel
+		{
+			public MDClickableLabel (string text) : base (text)
+			{
+			}
+			
+			public override void MouseDown (NSEvent theEvent)
+			{
+				if (OnMouseDown != null)
+					OnMouseDown (this, new NSEventArgs (theEvent));
+				else
+					base.MouseDown (theEvent);
+			}
+			
+			public event EventHandler<NSEventArgs> OnMouseDown;
+			
+			public override void MouseUp (NSEvent theEvent)
+			{
+				if (OnMouseUp != null)
+					OnMouseUp (this, new NSEventArgs (theEvent));
+				else
+					base.MouseUp (theEvent);
+			}
+			
+			public event EventHandler<NSEventArgs> OnMouseUp;
+			
+			public override void MouseEntered (NSEvent theEvent)
+			{
+				if (OnMouseEntered != null)
+					OnMouseEntered (this, new NSEventArgs (theEvent));
+				else
+					base.MouseEntered (theEvent);
+			}
+			
+			public event EventHandler<NSEventArgs> OnMouseEntered;
+			
+			public override void MouseExited (NSEvent theEvent)
+			{
+				if (OnMouseExited != null)
+					OnMouseExited (this, new NSEventArgs (theEvent));
+				else
+					base.MouseExited (theEvent);
+			}
+			
+			public event EventHandler<NSEventArgs> OnMouseExited;
+			
+			public override void MouseMoved (NSEvent theEvent)
+			{
+				if (OnMouseMoved != null)
+					OnMouseMoved (this, new NSEventArgs (theEvent));
+				else
+					base.MouseMoved (theEvent);
+			}
+			
+			public event EventHandler<NSEventArgs> OnMouseMoved;
+		}
+		
+		class NSEventArgs : EventArgs
+		{
+			public NSEventArgs (NSEvent evt)
+			{
+				this.Event = evt;
+			}
+			
+			public NSEvent Event { get; private set; }
 		}
 	}
 }
