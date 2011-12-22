@@ -130,7 +130,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				} else if (!SupportedFormats.Contains (type.Name)) {
 					var formats = string.Join (", ", SupportedFormats.Select (f => "'" + f + "'"));
 					errorTitle = GettextCatalog.GetString ("Invalid image selected");
-					errorMessage = GettextCatalog.GetString ("An image of type '{0}' has been selected but you must select an image of type '{1}'.", formats);
+					errorMessage = GettextCatalog.GetString ("An image of type '{0}' has been selected but you must select an image of type '{1}'.", type.Name, formats);
 				} else {
 					return true;
 				}
