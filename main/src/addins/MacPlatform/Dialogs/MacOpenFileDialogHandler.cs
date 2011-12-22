@@ -147,7 +147,7 @@ namespace MonoDevelop.MacIntegration
 					var selection = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 					bool slnViewerSelected = false;
 					if (viewerSelector != null) {
-						FillViewers (currentViewers, viewerSelector, selection);
+						FillViewers (currentViewers, viewerSelector, closeSolutionButton, selection);
 						if (currentViewers.Count == 0 || currentViewers[0] != null) {
 							if (closeSolutionButton != null)
 								closeSolutionButton.Hidden = true;
@@ -204,7 +204,7 @@ namespace MonoDevelop.MacIntegration
 			return true;
 		}
 		
-		static void FillViewers (List<FileViewer> currentViewers, NSPopUpButton button, FilePath[] filenames)
+		static void FillViewers (List<FileViewer> currentViewers, NSPopUpButton button, NSButton closeSolutionButton, FilePath[] filenames)
 		{
 			button.Menu.RemoveAllItems ();
 			currentViewers.Clear ();
@@ -218,20 +218,37 @@ namespace MonoDevelop.MacIntegration
 			if (System.IO.Directory.Exists (filename))
 				return;
 			
+			int selected = 0;
+			int i = 0;
+			
 			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (filename)) {
 				button.Menu.AddItem (new NSMenuItem () { Title = GettextCatalog.GetString ("Solution Workbench") });
 				currentViewers.Add (null);
+				
+				if (closeSolutionButton != null)
+					closeSolutionButton.State = NSCellStateValue.On;
+				
+				i++;
 			}
+			
 			foreach (var vw in DisplayBindingService.GetFileViewers (filename, null)) {
 				if (!vw.IsExternal) {
 					button.Menu.AddItem (new NSMenuItem () { Title = vw.Title });
 					currentViewers.Add (vw);
+					
+					if (vw.CanUseAsDefault) {
+						if (closeSolutionButton != null)
+							closeSolutionButton.State = NSCellStateValue.Off;
+						
+						selected = i;
+					}
+					
+					i++;
 				}
 			}
+			
 			button.Enabled = currentViewers.Count > 1;
-			button.SelectItem (0);
+			button.SelectItem (selected);
 		}
 	}
-	
-
 }
