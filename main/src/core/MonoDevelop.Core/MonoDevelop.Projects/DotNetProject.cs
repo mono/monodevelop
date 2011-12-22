@@ -778,6 +778,33 @@ namespace MonoDevelop.Projects
 			if (base.CheckNeedsBuild (configuration))
 				return true;
 			
+			// base.CheckNeedsBuild() checks Project references, but not Assembly, Package, or Custom.
+			DateTime mtime = GetLastBuildTime (configuration);
+			foreach (ProjectReference pref in References) {
+				switch (pref.ReferenceType) {
+				case ReferenceType.Assembly:
+					foreach (var file in GetAssemblyRefsRec (pref.Reference, new HashSet<string> ())) {
+						try {
+							if (File.GetLastWriteTime (file) > mtime)
+								return true;
+						} catch (IOException) {
+							// Ignore.
+						}
+					}
+					break;
+				case ReferenceType.Package:
+					foreach (var assembly in pref.Package.Assemblies) {
+						try {
+							if (File.GetLastWriteTime (assembly.Location) > mtime)
+								return true;
+						} catch (IOException) {
+							// Ignore.
+						}
+					}
+					break;
+				}
+			}
+			
 			return Files.Any (file => file.BuildAction == BuildAction.EmbeddedResource
 					&& String.Compare (Path.GetExtension (file.FilePath), ".resx", StringComparison.OrdinalIgnoreCase) == 0
 					&& MD1DotNetProjectHandler.IsResgenRequired (file.FilePath));
