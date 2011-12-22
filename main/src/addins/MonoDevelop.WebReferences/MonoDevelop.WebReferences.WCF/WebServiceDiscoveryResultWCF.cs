@@ -149,9 +149,12 @@ namespace MonoDevelop.WebReferences.WCF
 			bool targetMonoTouch = dotNetProject.TargetFramework.Id.Identifier == ("MonoTouch");
 			bool targetMonoDroid = dotNetProject.TargetFramework.Id.Identifier == ("MonoDroid");
 			
+			bool targetCoreClr = targetMoonlight || targetMonoDroid || targetMonoTouch;
+			bool generateSyncMethods = targetMonoDroid | targetMonoTouch;
+			
 			ServiceContractGenerator generator = new ServiceContractGenerator (ccu);
 			generator.Options = ServiceContractGenerationOptions.ChannelInterface | ServiceContractGenerationOptions.ClientClass;
-			if (refGroup.ClientOptions.GenerateAsynchronousMethods || targetMoonlight || targetMonoTouch)
+			if (refGroup.ClientOptions.GenerateAsynchronousMethods || targetCoreClr)
 				generator.Options |= ServiceContractGenerationOptions.AsynchronousMethods;
 			if (refGroup.ClientOptions.GenerateInternalTypes)
 				generator.Options |= ServiceContractGenerationOptions.InternalTypes;
@@ -177,11 +180,11 @@ namespace MonoDevelop.WebReferences.WCF
 			
 			foreach (ContractDescription cd in contracts) {
 				cd.Namespace = proxyNamespace;
-				if (targetMoonlight || targetMonoTouch) {
+				if (targetCoreClr) {
 					var moonctx = new MoonlightChannelBaseContext ();
-					cd.Behaviors.Add (new MoonlightChannelBaseContractExtension (moonctx, targetMonoTouch));
+					cd.Behaviors.Add (new MoonlightChannelBaseContractExtension (moonctx, generateSyncMethods));
 					foreach (var od in cd.Operations)
-						od.Behaviors.Add (new MoonlightChannelBaseOperationExtension (moonctx, targetMonoTouch));
+						od.Behaviors.Add (new MoonlightChannelBaseOperationExtension (moonctx, generateSyncMethods));
 					generator.GenerateServiceContractType (cd);
 					moonctx.Fixup ();
 				}
