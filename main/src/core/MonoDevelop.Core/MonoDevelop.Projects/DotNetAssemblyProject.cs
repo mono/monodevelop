@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects
 			case "MSBuild05":
 				return TargetFrameworkMoniker.NET_2_0;
 			case "MSBuild08":
-				return TargetFrameworkMoniker.NET_3_5;
+				return TargetFrameworkMoniker.NET_2_0;
 			case "MSBuild10":
 				return TargetFrameworkMoniker.NET_4_0;
 			}
