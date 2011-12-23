@@ -145,6 +145,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (elem != null)
 				elem.ParentNode.RemoveChild (elem);
 			else
+				//FIXME: should this actually log an error?
 				Console.WriteLine ("ppnf:");
 		}
 		
