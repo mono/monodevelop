@@ -113,19 +113,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			Project p = dataObject as Project;
 			
+			string escapedProjectName = EscapeTextForMarkup (p.Name);
 			string iconName;
+			
 			if (p is DotNetProject && ((DotNetProject)p).LanguageBinding == null) {
 				iconName = Gtk.Stock.DialogError;
-				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", p.Name, ((DotNetProject)p).LanguageName);
+				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", escapedProjectName, ((DotNetProject)p).LanguageName);
 			} else if (p is UnknownProject) {
 				iconName = Gtk.Stock.DialogError;
-				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown project type)</span>", p.Name);
+				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown project type)</span>", escapedProjectName);
 			} else {
 				iconName = p.StockIcon;
 				if (p.ParentSolution != null && p.ParentSolution.SingleStartup && p.ParentSolution.StartupItem == p)
-					label = "<b>" + p.Name + "</b>";
+					label = "<b>" + escapedProjectName + "</b>";
 				else
-					label = p.Name;
+					label = escapedProjectName;
 			}
 			
 			icon = Context.GetIcon (iconName);

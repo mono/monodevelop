@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			label = GettextCatalog.GetString ("References");
+			label = EscapeTextForMarkup (GettextCatalog.GetString ("References"));
 			icon = Context.GetIcon (Stock.OpenReferenceFolder);
 			closedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
 		}

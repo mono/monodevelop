@@ -64,7 +64,7 @@ namespace MonoDevelop.AddinAuthoring.NodeBuilders
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
 		{
 			Extension ext = (Extension) dataObject;
-			label = Util.GetDisplayName (ext);
+			label = EscapeTextForMarkup (Util.GetDisplayName (ext));
 			icon = Context.GetIcon ("md-extension");
 		}	
 		
