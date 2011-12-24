@@ -249,21 +249,57 @@ namespace Mono.Debugging.Soft
 			return new PropertyValueReference (ctx, props[i], target, null, values);
 		}
 		
-		bool IsCompilerGeneratedType (SoftEvaluationContext cx, TypeMirror tm)
-		{
-			return tm.Name.IndexOf (">c__AnonStorey") != -1 || tm.Name.IndexOf (">c__Iterator") != -1;
-		}
-		
-		bool InCompilerGeneratedType (EvaluationContext ctx)
+		bool InGeneratedClosureType (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			if (cx.Frame.Method.IsStatic)
 				return false;
 			TypeMirror tm = cx.Frame.Method.DeclaringType;
-			return IsCompilerGeneratedType (cx, tm);
+			return IsGeneratedClosureType (tm);
+		}
+		
+		static bool IsGeneratedClosureType (TypeMirror tm)
+		{
+			return tm.Name.IndexOf ("<>c__") != -1;
+		}
+		
+		static bool IsGeneratedIteratorType (TypeMirror tm)
+		{
+			return tm.Name.IndexOf (">c__Iterator") != -1;
+		}
+		
+		static bool IsHoistedThisReference (FieldInfoMirror field)
+		{
+			// mcs is "<>f__this"
+			// csc is "<>4__this"
+			return field.Name.StartsWith ("<>") && field.Name.EndsWith ("__this");
+		}
+		
+		static bool IsClosureReferenceField (FieldInfoMirror field)
+		{
+			// mcs is "<>f__ref"
+			// csc is "CS$<>"
+			return field.Name.StartsWith ("CS$<>") || field.Name.StartsWith ("<>f__ref");
+		}
+		
+		static bool IsClosureReferenceLocal (LocalVariable local)
+		{
+			if (local.Name == null)
+				return false;
+			
+			return
+				// mcs
+				local.Name.Length == 0 || local.Name.StartsWith ("<") || local.Name.StartsWith ("$locvar")
+				// csc
+				|| local.Name.StartsWith ("CS$<>");
+		}
+		
+		static bool IsGeneratedTemporaryLocal (LocalVariable local)
+		{
+			return local.Name != null && local.Name.StartsWith ("CS$");
 		}
 
-		IEnumerable<ValueReference> GetCompilerGeneratedLocalVariables (SoftEvaluationContext cx, ValueReference vthis)
+		IEnumerable<ValueReference> GetHoistedLocalVariables (SoftEvaluationContext cx, ValueReference vthis)
 		{
 			if (vthis == null)
 				return new ValueReference [0];
@@ -273,17 +309,18 @@ namespace Mono.Debugging.Soft
 				return new ValueReference [0];
 			
 			TypeMirror tm = (TypeMirror) vthis.Type;
-			bool isIterator = tm.Name.IndexOf (">c__Iterator") != -1;
+			bool isIterator = IsGeneratedIteratorType (tm);
 			
 			var list = new List<ValueReference> ();
 			TypeMirror type = (TypeMirror) vthis.Type;
 			foreach (FieldInfoMirror field in type.GetFields ()) {
-				if (field.Name == "<>f__this")
+				if (IsHoistedThisReference (field))
 					continue;
-				if (field.Name.StartsWith ("<>f__ref")) {
-					list.AddRange (GetCompilerGeneratedLocalVariables (cx, new FieldValueReference (cx, field, val, type)));
+				if (IsClosureReferenceField (field)) {
+					list.AddRange (GetHoistedLocalVariables (cx, new FieldValueReference (cx, field, val, type)));
 					continue;
 				}
+				//FIXME: this never gets reached?
 				if (field.Name.StartsWith ("<")) {
 					if (isIterator) {
 						int i = field.Name.IndexOf ('>');
@@ -299,23 +336,45 @@ namespace Mono.Debugging.Soft
 			return list;
 		}
 		
-		ValueReference GetCompilerGeneratedThisReference (SoftEvaluationContext cx)
+		ValueReference GetHoistedThisReference (SoftEvaluationContext cx)
 		{
 			try {
 				Value val = cx.Frame.GetThis ();
 				TypeMirror type = (TypeMirror) GetValueType (cx, val);
-				FieldInfoMirror field = type.GetField ("<>f__this");
-				if (field != null)
-					return new FieldValueReference (cx, field, val, type, "this", ObjectValueFlags.Literal);
+				return GetHoistedThisReference (cx, type, val);
 			} catch (AbsentInformationException) {
 			}
 			return null;
 		}
 		
+		ValueReference GetHoistedThisReference (SoftEvaluationContext cx, TypeMirror type, object val)
+		{
+			foreach (FieldInfoMirror field in type.GetFields ()) {
+				if (IsHoistedThisReference (field)) {
+					return new FieldValueReference (cx, field, val, type, "this", ObjectValueFlags.Literal);
+				} else if (IsClosureReferenceField (field)) {
+					var fieldRef = new FieldValueReference (cx, field, val, type);
+					var thisRef = GetHoistedThisReference (cx, field.FieldType, fieldRef.Value);
+					if (thisRef != null)
+						return thisRef;
+				}
+			}
+			return null;
+		}
+		
+		// if the local does not have a name, constructs one from the index
+		static string GetLocalName (SoftEvaluationContext cx, LocalVariable local)
+		{
+			var name = local.Name;
+			if (!string.IsNullOrEmpty (local.Name) || cx.SourceCodeAvailable)
+				return name;
+			return "loc" + local.Index;
+		}
+		
 		protected override ValueReference OnGetLocalVariable (EvaluationContext ctx, string name)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			if (InCompilerGeneratedType (cx))
+			if (InGeneratedClosureType (cx))
 				return FindByName (OnGetLocalVariables (cx), v => v.Name, name, ctx.CaseSensitive);
 			
 			try {
@@ -326,12 +385,13 @@ namespace Mono.Debugging.Soft
 						if (int.TryParse (name.Substring (3), out idx))
 							local = cx.Frame.Method.GetLocals ().FirstOrDefault (loc => loc.Index == idx);
 					}
-				} else
-					local = ctx.CaseSensitive ? cx.Frame.GetVisibleVariableByName (name) : FindByName (cx.Frame.GetVisibleVariables(), v => v.Name, name, false);
-				
+				} else {
+					local = ctx.CaseSensitive
+						? cx.Frame.GetVisibleVariableByName (name)
+						: FindByName (cx.Frame.GetVisibleVariables(), v => v.Name, name, false);
+				}
 				if (local != null) {
-					string vname = !string.IsNullOrEmpty (local.Name) || cx.SourceCodeAvailable ? local.Name : "loc" + local.Index;
-					return new VariableValueReference (ctx, vname, local);
+					return new VariableValueReference (ctx, GetLocalName (cx, local), local);
 				}
 				return FindByName (OnGetLocalVariables (ctx), v => v.Name, name, ctx.CaseSensitive);;
 			} catch (AbsentInformationException) {
@@ -342,9 +402,9 @@ namespace Mono.Debugging.Soft
 		protected override IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			if (InCompilerGeneratedType (cx)) {
+			if (InGeneratedClosureType (cx)) {
 				ValueReference vthis = GetThisReference (cx);
-				return GetCompilerGeneratedLocalVariables (cx, vthis).Union (GetLocalVariables (cx));
+				return GetHoistedLocalVariables (cx, vthis).Union (GetLocalVariables (cx));
 			}
 			else
 				return GetLocalVariables (cx);
@@ -358,17 +418,15 @@ namespace Mono.Debugging.Soft
 			} catch (AbsentInformationException) {
 				yield break;
 			}
-			foreach (LocalVariable var in locals) {
-				if (!var.IsArg) {
-					string name = !string.IsNullOrEmpty (var.Name) || cx.SourceCodeAvailable ? var.Name : "loc" + var.Index;
-					if (name.Length == 0 || name.StartsWith ("<") || name.StartsWith ("$locvar")) {
-						if (IsCompilerGeneratedType (cx, var.Type)) {
-							foreach (var gv in GetCompilerGeneratedLocalVariables (cx, new VariableValueReference (cx, name, var)))
-								yield return gv;
-						}
+			foreach (LocalVariable local in locals) {
+				if (local.IsArg)
+					continue;
+				if (IsClosureReferenceLocal (local) && IsGeneratedClosureType (local.Type)) {
+					foreach (var gv in GetHoistedLocalVariables (cx, new VariableValueReference (cx, local.Name, local))) {
+						yield return gv;
 					}
-					else
-						yield return new VariableValueReference (cx, name, var);
+				} else if (!IsGeneratedTemporaryLocal (local)) {
+					yield return new VariableValueReference (cx, GetLocalName (cx, local), local);
 				}
 			}
 		}
@@ -508,8 +566,8 @@ namespace Mono.Debugging.Soft
 		protected override ValueReference OnGetThisReference (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			if (InCompilerGeneratedType (cx))
-				return GetCompilerGeneratedThisReference (cx);
+			if (InGeneratedClosureType (cx))
+				return GetHoistedThisReference (cx);
 			else
 				return GetThisReference (cx);
 		}
