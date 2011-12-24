@@ -917,6 +917,7 @@ namespace MonoDevelop.Ide
 				entry.Execute (monitor, context, IdeApp.Workspace.ActiveConfiguration);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
+				LoggingService.LogError ("Execution failed", ex);
 			} finally {
 				monitor.Dispose ();
 			}
