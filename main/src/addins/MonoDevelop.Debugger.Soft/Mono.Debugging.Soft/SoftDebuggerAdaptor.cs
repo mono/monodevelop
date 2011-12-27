@@ -310,6 +310,12 @@ namespace Mono.Debugging.Soft
 		
 		static string GetHoistedIteratorLocalName (FieldInfoMirror field)
 		{
+			//mcs captured args, of form <$>name
+			if (field.Name.StartsWith ("<$>")) {
+				return field.Name.Substring (3);
+			}
+			
+			// csc, mcs locals of form <name>__0
 			if (field.Name.StartsWith ("<")) {
 				int i = field.Name.IndexOf ('>');
 				if (i > 1) {
@@ -343,11 +349,11 @@ namespace Mono.Debugging.Soft
 				if (field.Name.StartsWith ("<")) {
 					if (isIterator) {
 						var name = GetHoistedIteratorLocalName (field);
-						if (name != null) {
+						if (!string.IsNullOrEmpty (name)) {
 							list.Add (new FieldValueReference (cx, field, val, type, name, ObjectValueFlags.Variable));
 						}
 					}
-				} else {
+				} else if (!field.Name.Contains ("$")) {
 					list.Add (new FieldValueReference (cx, field, val, type, field.Name, ObjectValueFlags.Variable));
 				}
 			}
