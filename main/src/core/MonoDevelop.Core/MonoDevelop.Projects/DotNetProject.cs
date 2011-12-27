@@ -793,6 +793,9 @@ namespace MonoDevelop.Projects
 					}
 					break;
 				case ReferenceType.Package:
+					if (pref.Package == null) {
+						break;
+					}
 					foreach (var assembly in pref.Package.Assemblies) {
 						try {
 							if (File.GetLastWriteTime (assembly.Location) > mtime)
