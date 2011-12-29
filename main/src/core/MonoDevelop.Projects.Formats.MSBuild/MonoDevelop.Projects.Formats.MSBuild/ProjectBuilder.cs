@@ -58,6 +58,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			{
 				engine = new Engine (binDir);
 				engine.GlobalProperties.SetProperty ("BuildingInsideVisualStudio", "true");
+				
+				//we don't have host compilers in MD, and this is set to true by some of the MS targets
+				//which causes it to always run the CoreCompile task if BuildingInsideVisualStudio is also
+				//true, because the VS in-process compiler would take care of the deps tracking
+				engine.GlobalProperties.SetProperty ("UseHostCompilerIfAvailable", "false");
 
 				consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 				engine.RegisterLogger (consoleLogger);
