@@ -759,6 +759,18 @@ namespace Mono.Debugging.Soft
 			if (vm.Version.AtLeast (2, 9)) {
 				var sourceFileList = pending_bes.Where (b => b.FileName != null).Select (b => b.FileName).ToArray ();
 				if (sourceFileList.Length > 0) {
+					//HACK: explicitly try lowercased drivename on windows, since csc (when not hosted in VS) lowercases
+					//the drivename in the pdb files that get converted to mdbs as-is
+					//FIXME: we should really do a case-insensitive request on Win/Mac, when sdb supports that
+					if (IsWindows) {
+						int originalCount = sourceFileList.Length;
+						Array.Resize (ref sourceFileList, originalCount * 2);
+						for (int i = 0; i < originalCount; i++) {
+							string n = sourceFileList[i];
+							sourceFileList[originalCount + i] = char.ToLower (n[0]) + n.Substring (1);
+						}
+					}
+						     
 					if (typeLoadReq == null) {
 						typeLoadReq = vm.CreateTypeLoadRequest ();
 					}
@@ -766,6 +778,7 @@ namespace Mono.Debugging.Soft
 					typeLoadReq.SourceFileFilter = sourceFileList;
 					typeLoadReq.Enabled = true;
 				}
+						
 				var typeNameList = pending_bes.Where (b => b.ExceptionName != null).Select (b => b.ExceptionName).ToArray ();
 				if (typeNameList.Length > 0) {
 					// Use a separate request since the filters are ANDed together
@@ -841,7 +854,17 @@ namespace Mono.Debugging.Soft
 			// just the ones which match a source file with an existing breakpoint.
 			//
 			if (vm.Version.AtLeast (2, 9)) {
-				foreach (TypeMirror t in vm.GetTypesForSourceFile (filename, false))
+				//FIXME: do a case insensitive request on Win/Mac when sdb supports it (currently asserts NOTIMPLEMENTED)
+				var typesInFile = vm.GetTypesForSourceFile (filename, false);
+				
+				//HACK: explicitly try lowercased drivename on windows, since csc (when not hosted in VS) lowercases
+				//the drivename in the pdb files that get converted to mdbs as-is
+				if (typesInFile.Count == 0 && IsWindows) {
+					string alternateCaseFilename = char.ToLower (filename[0]) + filename.Substring (1);
+					typesInFile = vm.GetTypesForSourceFile (alternateCaseFilename, false);
+				}
+				
+				foreach (TypeMirror t in typesInFile)
 					ProcessType (t);
 			}
 	
@@ -1718,11 +1741,17 @@ namespace Mono.Debugging.Soft
 		readonly static bool IsMac;
 		readonly static StringComparer PathComparer;
 		
+		static bool IgnoreFilenameCase {
+			get {
+				return IsMac || IsWindows;
+			}
+		}
+		
 		static SoftDebuggerSession ()
 		{
 			IsWindows = Path.DirectorySeparatorChar == '\\';
 			IsMac = !IsWindows && IsRunningOnMac();
-			PathComparer = (IsWindows || IsMac)? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+			PathComparer = (IgnoreFilenameCase)? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 		}
 		
 		//From Managed.Windows.Forms/XplatUI
