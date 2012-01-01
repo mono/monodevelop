@@ -43,8 +43,15 @@ namespace MonoDevelop.SourceEditor
 		
 		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
-			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
-			return new TooltipItem (ed.GetErrorInformationAt (offset), editor.Document.GetLineByOffset (offset));
+			var ed = editor as ExtensibleTextEditor;
+			if (ed == null)
+				return null;
+
+			string errorInformation = ed.GetErrorInformationAt (offset);
+			if (string.IsNullOrEmpty (errorInformation))
+				return null;
+
+			return new TooltipItem (errorInformation, editor.Document.GetLineByOffset (offset));
 		}
 		
 		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
