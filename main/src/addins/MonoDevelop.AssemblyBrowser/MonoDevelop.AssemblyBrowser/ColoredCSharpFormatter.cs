@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using ICSharpCode.NRefactory;
 
 using System;
 using System.Text;
@@ -47,7 +48,7 @@ namespace MonoDevelop.AssemblyBrowser
 	}
 	
 		
-	public class ColoredCSharpFormatter : ITextOutput
+	public class ColoredCSharpFormatter : ICSharpCode.Decompiler.ITextOutput
 	{
 		public StringBuilder sb = new StringBuilder();
 		Document doc;
@@ -75,9 +76,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		public TextOutputLocation Location {
+		public TextLocation Location {
 			get {
-				return new TextOutputLocation () { Line = currentLine, Column = 1 };
+				return new TextLocation (currentLine, 1);
 			}
 		}
 		
@@ -119,13 +120,17 @@ namespace MonoDevelop.AssemblyBrowser
 			currentLine++;
 		}
 
-		public void WriteDefinition (string text, object definition)
+		public void WriteDefinition (string text, object definition, bool isLocal)
 		{
 			WriteIndent ();
 			sb.Append (text);
 		}
 
-		public void WriteReference (string text, object reference)
+		public void AddDebuggerMemberMapping (ICSharpCode.Decompiler.MemberMapping memberMapping)
+		{
+		}
+
+		public void WriteReference (string text, object reference, bool isLocal)
 		{
 			WriteIndent ();
 			ReferencedSegments.Add (new ReferenceSegment (sb.Length, text.Length, reference));

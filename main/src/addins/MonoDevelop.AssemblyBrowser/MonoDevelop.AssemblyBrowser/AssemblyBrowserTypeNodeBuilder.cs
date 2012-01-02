@@ -62,13 +62,16 @@ namespace MonoDevelop.AssemblyBrowser
 			if (mainAssembly == null)
 				throw new NullReferenceException ("mainAssembly not found");
 			var simpleCompilation = new SimpleCompilation (mainAssembly);
-			return member.CreateResolved (new SimpleTypeResolveContext (simpleCompilation));
+			return member.CreateResolved (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
 		}
+		
 		protected IType Resolve (ITreeNavigator treeBuilder, IUnresolvedTypeDefinition member)
 		{
 			var mainAssembly = (IUnresolvedAssembly)treeBuilder.GetParentDataItem (typeof(IUnresolvedAssembly), true);
+			if (mainAssembly == null)
+				throw new NullReferenceException ("mainAssembly not found");
 			var simpleCompilation = new SimpleCompilation (mainAssembly);
-			return member.Resolve (new SimpleTypeResolveContext (simpleCompilation));
+			return member.Resolve (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
 		}
 	}
 }
