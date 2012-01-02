@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				nestedContext = nestedContext.WithUsingScope(context.CurrentUsingScope.UnresolvedUsingScope.Resolve(nestedCompilation));
 			}
 			if (context.CurrentTypeDefinition != null) {
-				nestedContext = nestedContext.WithCurrentTypeDefinition(context.CurrentTypeDefinition.ToTypeReference().Resolve(nestedContext).GetDefinition());
+				nestedContext = nestedContext.WithCurrentTypeDefinition(nestedCompilation.Import(context.CurrentTypeDefinition));
 			}
 			return nestedContext;
 		}

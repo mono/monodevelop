@@ -753,16 +753,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var conversions = this.ArgumentConversions;
 			ResolveResult[] args = new ResolveResult[arguments.Length];
 			for (int i = 0; i < args.Length; i++) {
-				if (conversions[i] == Conversion.IdentityConversion || conversions[i] == Conversion.None) {
+				if (conversions[i] == Conversion.IdentityConversion) {
 					args[i] = arguments[i];
 				} else {
 					int parameterIndex = bestCandidate.ArgumentToParameterMap[i];
 					IType parameterType;
-					if (parameterIndex >= 0)
+					if (parameterIndex >= 0) {
 						parameterType = bestCandidate.ParameterTypes[parameterIndex];
-					else
+					} else {
 						parameterType = SpecialType.UnknownType;
-					args[i] = new ConversionResolveResult(parameterType, arguments[i], conversions[i]);
+					}
+					if (arguments[i].IsCompileTimeConstant && conversions[i] != Conversion.None) {
+						args[i] = new CSharpResolver(compilation).ResolveCast(parameterType, arguments[i]);
+					} else {
+						args[i] = new ConversionResolveResult(parameterType, arguments[i], conversions[i]);
+					}
 				}
 			}
 			return args;
@@ -793,7 +798,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.BestCandidateErrors,
 				this.IsExtensionMethodInvocation,
 				this.BestCandidateIsExpandedForm,
-				member is ILiftedOperator,
 				isDelegateInvocation: false,
 				argumentToParameterMap: this.GetArgumentToParameterMap());
 		}

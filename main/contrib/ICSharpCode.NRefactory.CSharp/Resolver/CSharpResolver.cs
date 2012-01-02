@@ -364,7 +364,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				userDefinedOperatorOR.AddCandidate(candidate);
 			}
 			if (userDefinedOperatorOR.FoundApplicableCandidate) {
-				return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
+				return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR, UnaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow));
 			}
 			
 			expression = UnaryNumericPromotion(op, ref type, isNullable, expression);
@@ -418,7 +418,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (userDefinedOperatorOR.BestCandidate != null) {
 					// If there are any user-defined operators, prefer those over the built-in operators.
 					// It'll be a more informative error.
-					return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
+					return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR, UnaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow));
 				} else if (builtinOperatorOR.BestCandidateAmbiguousWith != null) {
 					// If the best candidate is ambiguous, just use the input type instead
 					// of picking one of the ambiguous overloads.
@@ -543,7 +543,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				userDefinedOperatorOR.AddCandidate(candidate);
 			}
 			if (userDefinedOperatorOR.FoundApplicableCandidate) {
-				return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
+				return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow));
 			}
 			
 			if (SpecialType.NullType.Equals(lhsType) && rhsType.IsReferenceType == false
@@ -762,7 +762,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// If there are any user-defined operators, prefer those over the built-in operators.
 				// It'll be a more informative error.
 				if (userDefinedOperatorOR.BestCandidate != null)
-					return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
+					return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow));
 				else
 					return new ErrorResolveResult(resultType);
 			} else if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && m.CanEvaluateAtCompileTime) {
@@ -1142,9 +1142,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult CreateResolveResultForUserDefinedOperator(OverloadResolution r)
+		ResolveResult CreateResolveResultForUserDefinedOperator(OverloadResolution r, System.Linq.Expressions.ExpressionType operatorType)
 		{
-			return r.CreateResolveResult(null);
+			if (r.BestCandidateErrors != OverloadResolutionErrors.None)
+				return r.CreateResolveResult(null);
+			IMethod method = (IMethod)r.BestCandidate;
+			return new OperatorResolveResult(method.ReturnType, operatorType, method,
+			                                 isLiftedOperator: method is OverloadResolution.ILiftedOperator,
+			                                 operands: r.GetArgumentsWithConversions());
 		}
 		#endregion
 		
@@ -2123,5 +2128,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return new TypeOfResolveResult(compilation.FindType(KnownTypeCode.Type), referencedType);
 		}
+		
+		#region ResolveAssignment
+		public ResolveResult ResolveAssignment(AssignmentOperatorType op, ResolveResult lhs, ResolveResult rhs)
+		{
+			var linqOp = AssignmentExpression.GetLinqNodeType(op, this.CheckForOverflow);
+			var bop = AssignmentExpression.GetCorrespondingBinaryOperator(op);
+			if (bop == null) {
+				return new OperatorResolveResult(lhs.Type, linqOp, lhs, this.Convert(rhs, lhs.Type));
+			}
+			ResolveResult bopResult = ResolveBinaryOperator(bop.Value, lhs, rhs);
+			OperatorResolveResult opResult = bopResult as OperatorResolveResult;
+			if (opResult == null || opResult.Operands.Count != 2)
+				return bopResult;
+			return new OperatorResolveResult(lhs.Type, linqOp, opResult.UserDefinedOperatorMethod, opResult.IsLiftedOperator,
+			                                 new [] { lhs, opResult.Operands[1] });
+		}
+		#endregion
 	}
 }

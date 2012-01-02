@@ -201,7 +201,7 @@ namespace Mono.CSharp
 		// from classes from the arraylist `type_bases' 
 		//
 		protected TypeSpec base_type;
-		protected FullNamedExpression base_type_expr;	// TODO: It's temporary variable
+		FullNamedExpression base_type_expr;	// TODO: It's temporary variable
 		protected TypeSpec[] iface_exprs;
 
 		protected List<FullNamedExpression> type_bases;
@@ -255,6 +255,12 @@ namespace Mono.CSharp
 		}
 
 		#region Properties
+
+		public List<FullNamedExpression> BaseTypeExpressions {
+			get {
+				return type_bases;
+			}
+		}
 
 		public override TypeSpec CurrentType {
 			get {
@@ -332,7 +338,7 @@ namespace Mono.CSharp
 		{
 			visitor.Visit (this);
 		}
-		
+
 		public bool AddMember (MemberCore symbol)
 		{
 			return AddToContainer (symbol, symbol.MemberName.Basename);
@@ -1366,9 +1372,13 @@ namespace Mono.CSharp
 
 			type_defined = true;
 
-			// TODO: Driver resolves only first level of namespace, do the rest here for now
-			if (IsTopLevel && (ModFlags & Modifiers.COMPILER_GENERATED) == 0) {
-				NamespaceEntry.Resolve ();
+			// Nested type share same namespace
+			if (IsTopLevel && !IsCompilerGenerated) {
+				NamespaceEntry.Define ();
+				if (partial_parts != null) {
+					foreach (var part in partial_parts)
+						part.NamespaceEntry.Define ();
+				}
 			}
 
 			if (!DefineBaseTypes ()) {

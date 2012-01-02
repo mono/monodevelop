@@ -547,7 +547,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			} else {
 				ctor.BodyRegion = MakeRegion(constructorDeclaration.Body);
 			}
-			ctor.ReturnType = currentTypeDefinition;
+			ctor.ReturnType = KnownTypeReference.Void;
 			
 			ConvertAttributes(ctor.Attributes, constructorDeclaration.Attributes);
 			ConvertParameters(ctor.Parameters, constructorDeclaration.Parameters);

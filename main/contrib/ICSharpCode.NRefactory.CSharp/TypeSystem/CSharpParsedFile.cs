@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return null;
 		}
 		
-		public ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		public CSharpTypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
 		{
 			var rctx = new CSharpTypeResolveContext (compilation.MainAssembly);
 			rctx = rctx.WithUsingScope (GetUsingScope (loc).Resolve (compilation));
@@ -158,10 +158,15 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			return rctx;
 		}
+		
+		ITypeResolveContext IParsedFile.GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		{
+			return GetTypeResolveContext (compilation, loc);
+		}
 
 		public ICSharpCode.NRefactory.CSharp.Resolver.CSharpResolver GetResolver (ICompilation compilation, TextLocation loc)
 		{
-			return new ICSharpCode.NRefactory.CSharp.Resolver.CSharpResolver (GetTypeResolveContext (compilation, loc) as CSharpTypeResolveContext);
+			return new ICSharpCode.NRefactory.CSharp.Resolver.CSharpResolver (GetTypeResolveContext (compilation, loc));
 		}
 	}
 }

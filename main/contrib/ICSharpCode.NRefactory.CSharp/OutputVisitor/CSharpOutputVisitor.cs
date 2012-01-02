@@ -2329,18 +2329,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public object VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective, object data)
 		{
-			if (lastWritten == LastWritten.Division) {
-				// When there's a comment starting after a division operator
-				// "1.0 / /*comment*/a", then we need to insert a space in front of the comment.
-				formatter.Space ();
-			}
 			formatter.StartNode (preProcessorDirective);
-			formatter.WriteToken ("#" + preProcessorDirective.Type.ToString ().ToLower ());
-			if (!string.IsNullOrEmpty(preProcessorDirective.Argument)) {
-				formatter.Space();
-				formatter.WriteToken(preProcessorDirective.Argument);
-			}
-			formatter.NewLine();
+			formatter.WritePreProcessorDirective(preProcessorDirective.Type, preProcessorDirective.Argument);
 			formatter.EndNode (preProcessorDirective);
 			lastWritten = LastWritten.Whitespace;
 			return null;
@@ -2496,6 +2486,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				VisitNamedNode((NamedNode)childNode, data);
 			} else if (childNode is OptionalNode) {
 				VisitOptionalNode((OptionalNode)childNode, data);
+			} else if (childNode is Repeat) {
+				VisitRepeat((Repeat)childNode, data);
 			} else {
 				WritePrimitiveValue(childNode);
 			}
