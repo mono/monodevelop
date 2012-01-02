@@ -138,16 +138,17 @@ namespace MonoDevelop.CSharp.Refactoring
 			var unit = doc.ParsedDocument.Annotation<CompilationUnit> ();
 			var file = doc.ParsedDocument.Annotation<CSharpParsedFile> ();
 			var ctx = doc.TypeResolveContext;
+			var compilation = doc.Compilation;
 			var result = new List<MemberReference> ();
 			
 			foreach (var obj in searchedMembers) {
 				if (obj is IEntity) {
-					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, (astNode, r) => {
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, compilation, (astNode, r) => {
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (r, astNode, editor.FileName, editor)); 
 					}, CancellationToken.None);
 				} else if (obj is IVariable) {
-					refFinder.FindLocalReferences ((IVariable)obj, file, unit, doc.Compilation, (astNode, r) => { 
+					refFinder.FindLocalReferences ((IVariable)obj, file, unit, compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode)) 
 							result.Add (GetReference (r, astNode, editor.FileName, editor));
 					}, CancellationToken.None);
@@ -160,6 +161,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var entity = searchedMembers.First () as IEntity;
 			var scopes = entity != null ? refFinder.GetSearchScopes (entity) : null;
+			var compilation = Content != null ? Content.CreateCompilation () : null;
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
 				refs.AddRange (FindInDocument (opendoc.Item2));
@@ -187,6 +189,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						scopes,
 						parsedFile,
 						unit,
+						compilation,
 						(astNode, result) => refs.Add (GetReference (result, astNode, file, editor)),
 						CancellationToken.None
 					);
