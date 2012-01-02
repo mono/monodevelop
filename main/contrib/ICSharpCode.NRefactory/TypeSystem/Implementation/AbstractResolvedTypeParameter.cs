@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -232,14 +232,30 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return EmptyList<IType>.Instance;
 		}
 		
+		static readonly IUnresolvedMethod dummyConstructor = CreateDummyConstructor();
+		
+		static IUnresolvedMethod CreateDummyConstructor()
+		{
+			var m = new DefaultUnresolvedMethod {
+				EntityType = EntityType.Constructor,
+				Name = ".ctor",
+				Accessibility = Accessibility.Public,
+				IsSynthetic = true,
+				ReturnType = KnownTypeReference.Void
+			};
+			m.Freeze();
+			return m;
+		}
+		
 		public IEnumerable<IMethod> GetConstructors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
 				if (this.HasDefaultConstructorConstraint || this.HasValueTypeConstraint) {
-					throw new NotImplementedException();
-					//DefaultMethod m = DefaultMethod.CreateDefaultConstructor(GetDummyClassForTypeParameter(constraints));
-					//if (filter(m))
-					//	return new [] { m };
+					if (filter == null || filter(dummyConstructor)) {
+						var resolvedCtor = (IMethod)dummyConstructor.CreateResolved(compilation.TypeResolveContext);
+						IMethod m = new SpecializedMethod(this, resolvedCtor, EmptyList<IType>.Instance);
+						return new [] { m };
+					}
 				}
 				return EmptyList<IMethod>.Instance;
 			} else {

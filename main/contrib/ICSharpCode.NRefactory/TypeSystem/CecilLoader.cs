@@ -443,12 +443,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				PInvokeInfo info = methodDefinition.PInvokeInfo;
 				var dllImport = new DefaultUnresolvedAttribute(dllImportAttributeTypeRef, new[] { KnownTypeReference.String });
 				dllImport.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, info.Module.Name));
-				/*
-				if (info.IsBestFitDisabled)
-					dllImport.AddNamedFieldArgument("BestFitMapping", falseValue);
-				if (info.IsBestFitEnabled)
-					dllImport.AddNamedFieldArgument("BestFitMapping", trueValue);
-				*/
+				
+//				if (info.IsBestFitDisabled)
+//					dllImport.AddNamedFieldArgument("BestFitMapping", falseValue);
+//				if (info.IsBestFitEnabled)
+//					dllImport.AddNamedFieldArgument("BestFitMapping", trueValue);
+				
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
 					case PInvokeAttributes.CallConvCdecl:
@@ -1645,10 +1645,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			
-			if (method.IsConstructor)
-				m.ReturnType = parentType;
-			else
-				m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method.MethodReturnType);
+			m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method.MethodReturnType);
 			
 			if (HasAnyAttributes(method))
 				AddAttributes(method, m.Attributes, m.ReturnTypeAttributes);

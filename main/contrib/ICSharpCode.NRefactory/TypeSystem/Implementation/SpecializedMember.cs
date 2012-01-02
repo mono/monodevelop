@@ -115,7 +115,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public IList<IMember> InterfaceImplementations {
-			get { return new List<IMember> (); }
+			get { throw new NotImplementedException(); }
 		}
 		
 		public bool IsExplicitInterfaceImplementation {
