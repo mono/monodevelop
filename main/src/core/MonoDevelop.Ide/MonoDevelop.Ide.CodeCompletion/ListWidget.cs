@@ -88,7 +88,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static bool inCategoryMode;
 		public bool InCategoryMode {
 			get { return inCategoryMode; }
-			set { inCategoryMode = value; this.CalcVisibleRows (); this.UpdatePage (); }
+			set {
+				inCategoryMode = value;
+				this.CalcVisibleRows ();
+				this.UpdatePage ();
+				if (inCategoryMode)
+					SelectFirstItemInCategory ();
+			}
 		}
 		public int CategoryCount {
 			get { return this.categories.Count; }
@@ -555,10 +561,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			categories.Sort (delegate (Category left, Category right) {
 				return right.CompletionCategory != null ? right.CompletionCategory.CompareTo (left.CompletionCategory) : -1;
 			});
+			
+			SelectFirstItemInCategory ();
 			CalcVisibleRows ();
 			UpdatePage ();
 			
 			OnWordsFiltered (EventArgs.Empty);
+		}
+		
+		void SelectFirstItemInCategory ()
+		{
+			if (string.IsNullOrEmpty (CompletionString) && inCategoryMode)
+				selection = categories.First ().Items.First ();
 		}
 		
 		protected virtual void OnWordsFiltered (EventArgs e)
