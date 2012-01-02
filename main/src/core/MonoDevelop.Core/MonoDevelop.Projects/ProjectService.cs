@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects
 			AddinManager.AddExtensionNodeHandler (ProjectBindingsExtensionPath, OnProjectsExtensionChanged);
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 			
-			defaultFormat = formatManager.GetFileFormat ("MSBuild05");
+			defaultFormat = formatManager.GetFileFormat ("MSBuild10");
 		}
 		
 		public DataContext DataContext {

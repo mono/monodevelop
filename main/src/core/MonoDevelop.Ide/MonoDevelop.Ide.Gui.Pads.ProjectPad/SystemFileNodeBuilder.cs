@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			SystemFile file = (SystemFile) dataObject;
-			label = file.Name;
+			label = EscapeTextForMarkup (file.Name);
 			
 			icon = DesktopService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu);
 			

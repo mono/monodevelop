@@ -39,8 +39,10 @@ namespace MonoDevelop.Ide
 {
 	public class AlertButton 
 	{
+		public static AlertButton Always  = new AlertButton (GettextCatalog.GetString ("_Always"));
 		public static AlertButton Ok      = new AlertButton (Gtk.Stock.Ok, true);
 		public static AlertButton Yes     = new AlertButton (Gtk.Stock.Yes, true);
+		public static AlertButton Never   = new AlertButton (GettextCatalog.GetString ("_Never"));
 		public static AlertButton No      = new AlertButton (Gtk.Stock.No, true);
 		public static AlertButton Close   = new AlertButton (Gtk.Stock.Close, true);
 		public static AlertButton Cancel  = new AlertButton (Gtk.Stock.Cancel, true);
@@ -59,6 +61,7 @@ namespace MonoDevelop.Ide
 		public static AlertButton Stop    = new AlertButton (Gtk.Stock.Stop, true);
 		public static AlertButton Proceed = new AlertButton (GettextCatalog.GetString ("_Proceed"));
 		public static AlertButton Replace = new AlertButton (GettextCatalog.GetString ("_Replace"));
+		public static AlertButton ThisTimeOnly = new AlertButton (GettextCatalog.GetString ("_This time only"));
 		
 		public static AlertButton OverwriteFile = new AlertButton (GettextCatalog.GetString ("_Overwrite file"));
 		
@@ -154,6 +157,11 @@ namespace MonoDevelop.Ide
 			ShowException (RootWindow, e, message, title);
 		}
 		
+		public static AlertButton ShowException (Exception e, string message, string title, params AlertButton[] buttons)
+		{
+			return ShowException (RootWindow, e, message, title, buttons);
+		}
+
 		public static void ShowException (Gtk.Window parent, Exception e)
 		{
 			ShowException (RootWindow, e, e.Message);
@@ -161,12 +169,17 @@ namespace MonoDevelop.Ide
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string message)
 		{
-			ShowException (parent, e, message, "An unhandled exception occured");
+			ShowException (parent, e, message, "An unexpected error occured");
 		}
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string message, string title)
 		{
-			messageService.ShowException (parent, title, message, e);
+			ShowException (parent, e, message, title, null);
+		}
+
+		public static AlertButton ShowException (Gtk.Window parent, Exception e, string message, string title, params AlertButton[] buttons)
+		{
+			return messageService.ShowException (parent, title, message, e, buttons);
 		}
 		#endregion
 		
@@ -421,15 +434,17 @@ namespace MonoDevelop.Ide
 		//The real GTK# code is wrapped in a GuiSyncObject to make calls synchronous on the GUI thread
 		private class InternalMessageService : GuiSyncObject
 		{
-			public void ShowException (Gtk.Window parent, string title, string message, Exception e)
+			public AlertButton ShowException (Gtk.Window parent, string title, string message, Exception e, params AlertButton[] buttons)
 			{
 				var exceptionDialog = new ExceptionDialog () {
+					Buttons = buttons,
 					Title = title,
 					Message = message,
 					Exception = e,
 					TransientFor = parent,
 				};
 				exceptionDialog.Run ();
+				return exceptionDialog.ResultButton;
 			}
 			
 			public AlertButton GenericAlert (MessageDescription message)

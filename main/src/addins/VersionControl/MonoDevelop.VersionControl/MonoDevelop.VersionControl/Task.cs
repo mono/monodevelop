@@ -59,7 +59,6 @@ namespace MonoDevelop.VersionControl
 					msg += " " + e.InnerException.Message;
 				}
 				tracker.ReportError (msg, e);
-				GLib.ExceptionManager.RaiseUnhandledException (e, false);
 			} finally {			
 				threadnotify.WakeupMain();
 			}

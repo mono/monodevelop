@@ -466,29 +466,11 @@ namespace MonoDevelop.Ide
 		
 		void HandleException (Exception ex, bool willShutdown)
 		{
-			var original = LogReportingService.ReportCrashes;
+			// Log the crash to the MonoDevelop.log file first:
+			LoggingService.LogError (string.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown), ex);
 			
-			// Attempt to log the crash. If the user hasn't opted in, they will get prompted now to opt in/out.
-			LogReportingService.ReportUnhandledException (ex);
-			
-			// If the user has just been prompted to enable crash reporting there is no need to display the
-			// normal crash dialog this time round unless we are about to shut down.
-			if (!original.HasValue && !willShutdown)
-				return;
-			
-			
-			string message;
-			string title = GettextCatalog.GetString ("An unhandled exception has occurred.");
-			var report = LogReportingService.ReportCrashes;
-			if (report.HasValue && report.Value) {
-				message = GettextCatalog.GetString ("Details of this crash have been automatically submitted for analysis.");
-			} else {
-				message = GettextCatalog.GetString ("Details of this crash have not been submitted as error reporting is disabled.");
-			}
-			
-			if (willShutdown)
-				message += GettextCatalog.GetString (" MonoDevelop will now close.");
-			MessageService.ShowException (ex, message, title);
+			// Pass it off to the reporting service now.
+			LogReportingService.ReportUnhandledException (ex, willShutdown);
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>

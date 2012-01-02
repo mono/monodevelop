@@ -209,17 +209,36 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (Filenames.Length == 0 || Filename.Length == 0 || System.IO.Directory.Exists (Filename))
 				return;
 			
+			int selected = 0;
+			int i = 0;
+			
 			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (Filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (Filename)) {
 				viewerSelector.AppendText (GettextCatalog.GetString ("Solution Workbench"));
 				currentViewers.Add (null);
+				
+				if (closeWorkspaceCheck.Visible)
+					closeWorkspaceCheck.Active = true;
+				
+				i++;
 			}
+			
 			foreach (FileViewer vw in DisplayBindingService.GetFileViewers (Filename, null)) {
 				if (!vw.IsExternal) {
 					viewerSelector.AppendText (vw.Title);
 					currentViewers.Add (vw);
+					
+					if (vw.CanUseAsDefault) {
+						if (closeWorkspaceCheck.Visible)
+							closeWorkspaceCheck.Active = false;
+						
+						selected = i;
+					}
+					
+					i++;
 				}
 			}
-			viewerSelector.Active = 0;
+			
+			viewerSelector.Active = selected;
 			viewerLabel.Sensitive = viewerSelector.Sensitive = currentViewers.Count > 1;
 		}
 		
@@ -236,7 +255,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				closeWorkspaceCheck.Visible = false;
 				return;
 			}
-			   
+			
 			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (Filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (Filename)) {
 				encodingLabel.Sensitive = encodingMenu.Sensitive = (SelectedViewer != null);
 				closeWorkspaceCheck.Visible = viewerLabel.Visible && IdeApp.Workspace.IsOpen;

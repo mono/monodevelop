@@ -24,7 +24,7 @@ namespace MonoDevelop.VBNetBinding
 		private global::Gtk.Label label86;
 		private global::Gtk.Label label88;
 		private global::Gtk.ComboBoxEntry txtMyType;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

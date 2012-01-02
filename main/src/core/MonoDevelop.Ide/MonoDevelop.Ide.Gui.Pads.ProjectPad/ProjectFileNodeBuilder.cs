@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFile file = (ProjectFile) dataObject;
 
-			label = file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName;
+			label = EscapeTextForMarkup (file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName);
 			if (!File.Exists (file.FilePath)) {
 				label = "<span foreground='red'>" + label + "</span>";
 			}
@@ -369,7 +369,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (action == "--") {
 					info.AddSeparator ();
 				} else {
-					CommandInfo ci = info.Add (BuildAction.Translate (action), action);
+					CommandInfo ci = info.Add (action, action);
 					ci.Checked = toggledActions.Contains (action);
 					if (ci.Checked)
 						ci.CheckedInconsistent = toggledActions.Count > 1;

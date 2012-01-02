@@ -43,7 +43,11 @@ namespace MonoDevelop.Core.LogReporting
 		static int CrashId;
 		static int Processing;
 		
-		public static Func<bool> ShouldEnableReporting;
+		// Return value is the new value for 'ReportCrashes'
+		// First parameter is the current value of 'ReportCrashes
+		// Second parameter is the exception
+		// Thirdparameter shows if the exception is fatal or not
+		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccured;
 		
 		public static bool? ReportCrashes {
 			get { return PropertyService.Get<bool?> (ReportCrashesKey); }
@@ -55,14 +59,10 @@ namespace MonoDevelop.Core.LogReporting
 			set { PropertyService.Set (ReportUsageKey, value); }
 		}
 		
-		public static void ReportUnhandledException (Exception ex)
+		public static void ReportUnhandledException (Exception ex, bool willShutDown)
 		{
-			// if the user hasn't opted in/out yet, ask them
-			if (!ReportCrashes.HasValue) {
-				var handler = ShouldEnableReporting;
-				if (handler != null)
-					ReportCrashes = handler ();
-			}
+			if (UnhandledErrorOccured != null)
+				ReportCrashes = UnhandledErrorOccured (ReportCrashes, ex, willShutDown);
 			
 			// If crash reporting has been explicitly disabled, disregard this crash
 			if (ReportCrashes.HasValue && !ReportCrashes.Value)
@@ -82,10 +82,9 @@ namespace MonoDevelop.Core.LogReporting
 				data = stream.ToArray ();
 			}
 			
-			// If crash reporting has not been enabled or disabled yet, just log to disk.
-			// Otherwise log to disk only if uploading fails.
+			// Log to disk only if uploading fails.
 			var filename = string.Format ("{0}.{1}.crashlog", SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
-			if (!ReportCrashes.GetValueOrDefault () || !TryUploadReport (filename, data)) {
+			if (!TryUploadReport (filename, data)) {
 				if (!Directory.Exists (CrashLogDirectory))
 					Directory.CreateDirectory (CrashLogDirectory);
 

@@ -9,7 +9,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".txt" DefaultName="EmptyTextfile" BuildAction="None"/>
+		<File DefaultExtension=".txt" DefaultName="EmptyTextFile" />
 	</TemplateFiles>
 	
 	<FileOptions/>

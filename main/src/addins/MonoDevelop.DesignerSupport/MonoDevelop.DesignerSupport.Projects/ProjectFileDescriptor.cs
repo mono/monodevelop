@@ -137,7 +137,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			public override object ConvertTo (System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType)
 			{
-				return MonoDevelop.Projects.BuildAction.Translate ((string)value);
+				return (string)value;
 			}
 
 			public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
@@ -151,7 +151,7 @@ namespace MonoDevelop.DesignerSupport
 				if (!IsValid (context, value))
 					throw new FormatException ("Invalid build target name");
 				
-				return MonoDevelop.Projects.BuildAction.ReTranslate ((string)value);
+				return (string)value;
 			}
 			
 			public override bool IsValid (ITypeDescriptorContext context, object value)
@@ -159,7 +159,7 @@ namespace MonoDevelop.DesignerSupport
 				if (!(value is string))
 					return false;
 				
-				string str = MonoDevelop.Projects.BuildAction.ReTranslate ((string) value);
+				string str = (string) value;
 				if (string.IsNullOrEmpty (str) || !char.IsLetter (str[0]))
 					return false;
 				

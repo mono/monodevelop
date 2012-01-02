@@ -106,14 +106,6 @@ namespace Mono.TextEditor
 			info.X = x;
 			info.Y = y;
 			containerChildren.Add (info);
-			
-			widget.Mapped += (sender, e) => {
-				Console.WriteLine ("\tChild mapped!");
-			};
-			
-			widget.Unmapped += (sender, e) => {
-				Console.WriteLine ("\tChild unmapped!");
-			};
 		}
 		
 		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)
@@ -346,7 +338,9 @@ namespace Mono.TextEditor
 		
 		void HandleHAdjustementValueChanged (object sender, EventArgs e)
 		{
-			SetChildrenPositions (Allocation);
+			var alloc = this.Allocation;
+			alloc.X = alloc.Y = 0;
+			SetChildrenPositions (alloc);
 		}
 		
 		protected override void OnDestroyed ()

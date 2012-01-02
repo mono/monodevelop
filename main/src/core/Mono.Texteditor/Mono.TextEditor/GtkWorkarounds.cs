@@ -155,7 +155,7 @@ namespace Mono.TextEditor
 			float x, y, width, height;
 			
 			if (visible.Height < frame.Height) {
-				float dockHeight = visible.Y;
+				float dockHeight = visible.Y - frame.Y;
 				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
 				
 				height = frame.Height - menubarHeight - dockHeight;
@@ -314,26 +314,27 @@ namespace Mono.TextEditor
 					bool flip_left = true;
 					bool flip_up   = false;
 					
-					int x_over = x + request.Width - geometry.Right;
-					if (x_over > 0) {
+					if (x + request.Width > geometry.Right) {
 						if (flip_left) {
 							x -= request.Width;
 						} else {
-							x -= x_over;
+							x = geometry.Right - request.Width;
 						}
+						
+						if (x < geometry.Left)
+							x = geometry.Left;
 					}
 					
-					int y_over = y + request.Height - geometry.Bottom;
-					if (y_over > 0) {
+					if (y + request.Height > geometry.Bottom) {
 						if (flip_up) {
 							y -= request.Height;
 						} else {
-							y -= y_over;
+							y = geometry.Bottom - request.Height;
 						}
+						
+						if (y < geometry.Top)
+							y = geometry.Top;
 					}
-					
-					y = System.Math.Max (geometry.Top, System.Math.Min (y, geometry.Bottom - request.Height));
-					x = System.Math.Max (geometry.Left, System.Math.Min (x, geometry.Right - request.Width));
 					
 					pushIn = false;
 				};

@@ -36,7 +36,6 @@ distcheck: distcheck-recursive
 
 distclean: distclean-recursive
 	rm -rf config.make local-config
-	
 
 dist: dist-recursive
 	rm -rf tarballs
@@ -50,7 +49,7 @@ dist: dist-recursive
 		gunzip $$t ;\
 	done
 	for t in `ls tarballs/*.tar`; do \
- 		bzip2 $$t ;\
+		bzip2 $$t ;\
 	done
 	rm -rf specs
 	mkdir -p specs
@@ -62,7 +61,10 @@ dist: dist-recursive
 
 run:
 	cd main && make run
-	
+
+run-gdb:
+	cd main && make run-gdb
+
 test:
 	cd main/tests/UnitTests && make test fixture=$(fixture)
 

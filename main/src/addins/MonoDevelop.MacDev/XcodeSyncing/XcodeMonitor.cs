@@ -366,7 +366,9 @@ end tell";
 		const string XCODE_OPEN_PROJECT_FILE =
 @"tell application ""{0}""
 	activate
+	activate
 	open ""{1}""
+	activate
 	open ""{2}""
 end tell";
 

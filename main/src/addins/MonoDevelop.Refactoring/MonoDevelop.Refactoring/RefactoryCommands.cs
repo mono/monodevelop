@@ -635,46 +635,46 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-//		public class ResolveNameOperation
-//		{
-//			ITypeResolveContext ctx;
-//			Document doc;
-//			string ns;
-//			ResolveResult resolveResult;
-//			
-//			public ResolveNameOperation (ITypeResolveContext ctx, Document doc, ResolveResult resolveResult, string ns)
-//			{
-//				this.ctx = ctx;
-//				this.doc = doc;
-//				this.resolveResult = resolveResult;
-//				this.ns = ns;
-//			}
-//			
-//			public void AddImport ()
-//			{
-//				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-//				
-//				if (resolveResult is NamespaceResolveResult) {
-//					refactorer.AddLocalNamespaceImport (ctx, doc.FileName, ns, resolveResult.ResolvedExpression.Region.Start);
-//				} else {
-//					refactorer.AddGlobalNamespaceImport (ctx, doc.FileName, ns);
-//				}
-//			}
-//			
-//			public void ResolveName ()
-//			{
-//				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.BeginLine, resolveResult.ResolvedExpression.Region.BeginColumn);
-//				if (pos < 0) {
-//					LoggingService.LogError ("Invalie expression position: " + resolveResult.ResolvedExpression);
-//					return;
-//				}
-//				doc.Editor.Insert (pos, ns + ".");
-//				if (doc.Editor.Caret.Offset >= pos)
-//					doc.Editor.Caret.Offset += (ns + ".").Length;
-//				doc.Editor.Document.CommitLineUpdate (resolveResult.ResolvedExpression.Region.BeginLine);
-//			}
-//		}
-
+/*		public class ResolveNameOperation
+		{
+			ProjectDom ctx;
+			Document doc;
+			string ns;
+			ResolveResult resolveResult;
+			
+			public ResolveNameOperation (ProjectDom ctx, Document doc, ResolveResult resolveResult, string ns)
+			{
+				this.ctx = ctx;
+				this.doc = doc;
+				this.resolveResult = resolveResult;
+				this.ns = ns;
+			}
+			
+			public void AddImport ()
+			{
+				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+				
+				if (resolveResult is NamespaceResolveResult) {
+					refactorer.AddLocalNamespaceImport (ctx, doc.FileName, ns, resolveResult.ResolvedExpression.Region.Start);
+				} else {
+					refactorer.AddGlobalNamespaceImport (ctx, doc.FileName, ns);
+				}
+			}
+			
+			public void ResolveName ()
+			{
+				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
+				if (pos < 0) {
+					LoggingService.LogError ("Invalid expression position: " + resolveResult.ResolvedExpression);
+					return;
+				}
+				doc.Editor.Insert (pos, ns + ".");
+				if (doc.Editor.Caret.Offset >= pos)
+					doc.Editor.Caret.Offset += (ns + ".").Length;
+				doc.Editor.Document.CommitLineUpdate (resolveResult.ResolvedExpression.Region.Start.Line);
+			}
+		}
+*/
 		bool IsModifiable (object member)
 		{
 			IType t = member as IType;

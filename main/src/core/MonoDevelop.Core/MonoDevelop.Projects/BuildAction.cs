@@ -72,45 +72,8 @@ namespace MonoDevelop.Projects
 					Compile,
 					Content,
 					EmbeddedResource,
-					ApplicationDefinition,
-					InterfaceDefinition,
-					Resource,
-//					SplashScreen,
-//					EntityDeploy
 				};
 			}
 		}
-		static Dictionary<string, string> translations = new Dictionary<string, string> ();
-		static BuildAction()
-		{
-			translations[None] = GettextCatalog.GetString ("Nothing");
-			translations[Compile] = GettextCatalog.GetString ("Compile");
-			translations[EmbeddedResource] = GettextCatalog.GetString ("Embed as resource");
-			translations[Content] = GettextCatalog.GetString ("Content");
-			translations[ApplicationDefinition] = GettextCatalog.GetString ("Application definition");
-			translations[Page] = GettextCatalog.GetString ("Page");
-			translations[InterfaceDefinition] = GettextCatalog.GetString ("Interface definition");
-			translations[Resource] = GettextCatalog.GetString ("Resource");
-			translations[SplashScreen] = GettextCatalog.GetString ("Splash screen");
-			translations[EntityDeploy] = GettextCatalog.GetString ("Entity deploy");
-		}
-		
-		public static string ReTranslate (string translatedAction)
-		{
-			foreach (KeyValuePair<string, string> translation in translations) {
-				if (translation.Value == translatedAction)
-					return translation.Key;
-			}
-			return translatedAction;
-		}
-		
-		public static string Translate (string action)
-		{
-			string result;
-			if (translations.TryGetValue (action, out result))
-				return result;
-			return action;
-		}
-		
 	}
 }

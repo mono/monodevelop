@@ -420,6 +420,18 @@ namespace MonoDevelop.Moonlight
 			}
 		}
 		
+		protected override IList<string> GetCommonBuildActions ()
+		{
+			return new string[] {
+				BuildAction.None,
+				BuildAction.Compile,
+				BuildAction.Content,
+				BuildAction.EmbeddedResource,
+				BuildAction.Resource,
+				BuildAction.ApplicationDefinition,
+			};
+		}
+		
 		#endregion
 	}
 }

@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Solution solution = dataObject as Solution;
-			label = GettextCatalog.GetString ("Solution {0}", solution.Name);
+			label = EscapeTextForMarkup (GettextCatalog.GetString ("Solution {0}", solution.Name));
 			icon = Context.GetIcon (Stock.Solution);
 		}
 

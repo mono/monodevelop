@@ -244,8 +244,8 @@ namespace MonoDevelop.Database.Sql
 			int columnCount = statement.Columns.Count;
 			for (int i=0; i<columnCount; i++) {
 				OperatorExpression expr = new OperatorExpression (statement.Columns[i], Operator.Equals, statement.Values[i]);
-				sb.Append (expr);
-				sb.Append (i == (columnCount - 1) ? ", " : "");
+				sb.Append (GetExpressionSql (expr));
+				sb.Append (i != (columnCount - 1) ? ", " : "");
 			}
 			
 			if (statement.Where != null) {

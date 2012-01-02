@@ -69,8 +69,11 @@ namespace MonoDevelop.MacDev
 		
 		public override void Launch (params string[] files)
 		{
-			if (!AppleSdkSettings.IsXcode42)
-				throw new UserException (string.Format ("XCode 4.2 is required to open file {0}", files [0]));
+			// Users without paid apple developer accounts do not have access to Xcode 4.2 so we
+			// cannot rely on people having it installed. As such, if we want to support MonoMac
+			// development on Snow Leopard we should just check that Xcode is installed.
+			if (!AppleSdkSettings.IsValid)
+				throw new UserException (string.Format ("XCode is required to open file {0}", files [0]));
 
 			project.XcodeProjectTracker.OpenDocument (files[0]);
 		}

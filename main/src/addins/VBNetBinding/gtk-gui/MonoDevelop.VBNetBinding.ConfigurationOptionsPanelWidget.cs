@@ -39,7 +39,7 @@ namespace MonoDevelop.VBNetBinding
 		private global::Gtk.Label label96;
 		private global::Gtk.Entry txtAdditionalArguments;
 		private global::Gtk.Entry txtDefineConstants;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

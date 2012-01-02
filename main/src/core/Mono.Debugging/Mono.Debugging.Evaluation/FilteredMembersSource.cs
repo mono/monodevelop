@@ -48,6 +48,7 @@ namespace Mono.Debugging.Evaluation
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			EvaluationContext cctx = ctx.WithOptions (options);
+			var names = new ObjectValueNameTracker (cctx);
 			object tdataType = null;
 			TypeDisplayData tdata = null;
 			List<ObjectValue> list = new List<ObjectValue> ();
@@ -61,6 +62,7 @@ namespace Mono.Debugging.Evaluation
 				if (state == DebuggerBrowsableState.Never)
 					continue;
 				ObjectValue oval = val.CreateObjectValue (options);
+				names.Disambiguate (val, oval);
 				list.Add (oval);
 			}
 			if ((bindingFlags & BindingFlags.NonPublic) == 0) {

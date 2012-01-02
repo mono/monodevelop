@@ -30,6 +30,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Projects
 {
@@ -289,6 +290,40 @@ namespace MonoDevelop.Projects
 		public IBuildTarget SourceTarget {
 			get { return sourceTarget; }
 			set { sourceTarget = value; }
+		}
+		
+		//FIXME: this doesn't get hanlde the complete MSBuild error format, see
+		//http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx
+		static Regex regexError = new Regex (
+			@"^(\s*(?<file>[^\(]+)(\((?<line>\d*)(,(?<column>\d*[\+]*))?\))?:\s+)*(?<level>\w+)\s+(?<number>..\d+):\s*(?<message>.*)",
+			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		
+		public static BuildError FromMSBuildErrorFormat (string lineText)
+		{
+			Match match = regexError.Match (lineText);
+			if (!match.Success)
+				return null;
+			
+			return new BuildError () {
+				FileName    = match.Result ("${file}") ?? "",
+				IsWarning   = match.Result ("${level}") == "warning",
+				ErrorNumber = match.Result ("${number}"),
+				ErrorText   = match.Result ("${message}"),
+				Line        = GetLineNumber (match.Result ("${line}")),
+				Column      = GetLineNumber (match.Result ("${column}")),
+			};
+		}
+		
+		static int GetLineNumber (string textValue)
+		{
+			if (string.IsNullOrEmpty (textValue))
+				return 0;
+			
+			int val;
+			if (Int32.TryParse (textValue, out val))
+				return val;
+			
+			return -1;
 		}
 	}
 }

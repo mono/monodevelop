@@ -480,7 +480,7 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			float x, y, width, height;
 			
 			if (visible.Height <= frame.Height) {
-				float dockHeight = visible.Y;
+				float dockHeight = visible.Y - frame.Y;
 				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
 				
 				height = frame.Height - menubarHeight - dockHeight;

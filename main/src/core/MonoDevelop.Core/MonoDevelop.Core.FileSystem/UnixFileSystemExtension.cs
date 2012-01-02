@@ -32,13 +32,22 @@ namespace MonoDevelop.Core.FileSystem
 {
 	class UnixFileSystemExtension : DefaultFileSystemExtension
 	{
+		const int PATHMAX = 4096 + 1;
+		
 		[DllImport ("libc")]
-		static extern string realpath (string path, IntPtr buffer);
+		static extern IntPtr realpath (string path, IntPtr buffer);
 		
 		public override FilePath ResolveFullPath (FilePath path)
 		{
-			// Handle symlinks
-			return realpath (path, IntPtr.Zero);
+			IntPtr buffer = IntPtr.Zero;
+			try {
+				buffer = Marshal.AllocHGlobal (PATHMAX);
+				var result = realpath (path, buffer);
+				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+			} finally {
+				if (buffer != IntPtr.Zero)
+					Marshal.FreeHGlobal (buffer);
+			}
 		}
 	}
 }

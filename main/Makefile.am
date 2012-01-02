@@ -110,6 +110,11 @@ runmd: $(PROGRAM)
 run-debug: $(PROGRAM)
 	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH) --debug=casts $(MD_BIN_PATH)/MonoDevelop.exe
 
+run-gdb: $(PROGRAM)
+	echo "run --debug $(MD_BIN_PATH)/MonoDevelop.exe" > gdb.commands
+	$(MD_LAUNCH_SETUP) gdb $(RUNTIME) -x gdb.commands
+	rm -f gdb.commands
+
 run-profile: $(PROGRAM)
 	$(MD_LAUNCH) -O=inline --profile $(MD_BIN_PATH)/MonoDevelop.exe
 
@@ -125,7 +130,7 @@ plot-trace:
 
 run-profile-heap: $(PROGRAM)
 	$(MD_LAUNCH) -O=inline --profile=heap:heaplog $(MD_BIN_PATH)/MonoDevelop.exe
-	
+
 check-addins:
 	$(MDTOOL_RUN) setup reg-build -v
 
@@ -156,7 +161,7 @@ include $(top_srcdir)/Makefile.include
 filter_stale_uninstalled = \
     | egrep -v '^.*/share/mime/.*$$' \
     | egrep -v '^.*./share/icons/hicolor/icon-theme\.cache$$'
-    
+
 filter_stale_buildfiles       = | egrep -v '^./report.out$$'
 distuninstallcheck_listfiles  = find . -type f -print 		# automake-1.9 setting
 distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering

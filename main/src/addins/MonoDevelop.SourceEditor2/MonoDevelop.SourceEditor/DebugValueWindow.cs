@@ -95,7 +95,7 @@ namespace MonoDevelop.SourceEditor
 			tree.RootPinAlwaysVisible = true;
 			tree.PinnedWatch = watch;
 			DocumentLocation location = editor.Document.OffsetToLocation (offset);
-			tree.PinnedWatchLine = location.Line + 1;
+			tree.PinnedWatchLine = location.Line;
 			tree.PinnedWatchFile = ((ExtensibleTextEditor)editor).View.ContentName;
 			
 			tree.AddValue (value);
