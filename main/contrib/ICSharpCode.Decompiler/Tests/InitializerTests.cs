@@ -532,9 +532,9 @@ public class InitializerTests
 			});
 	}
 	
-	public void MultidimensionalInit()
+	public int[,] MultidimensionalInit()
 	{
-		int[,] expr_09 = new int[, ]
+		return new int[,]
 		{
 
 	        {
@@ -651,11 +651,11 @@ public class InitializerTests
 	    };
 	}
 
-	public void MultidimensionalInit2()
+	public int[][,] MultidimensionalInit2()
 	{
-		int[][,] array = new int[][,]
+		return new int[][,]
 		{
-	        new int[, ]
+			new int[,]
 	            {
 
 	                {
@@ -687,7 +687,7 @@ public class InitializerTests
 					}
 
 	            },
-	        new int[, ]
+	        new int[,]
 	            {
 
 	                {
@@ -719,7 +719,7 @@ public class InitializerTests
 					}
 
 	            },
-	        new int[, ]
+	        new int[,]
 	            {
 
 	                {
@@ -750,7 +750,7 @@ public class InitializerTests
 						0
 					}
 	            },
-	        new int[, ]
+	        new int[,]
 	            {
 
 	                {
@@ -785,11 +785,11 @@ public class InitializerTests
 	    };
 	}
 
-	public void ArrayOfArrayOfArrayInit()
+	public int[][,,] ArrayOfArrayOfArrayInit()
 	{
-		int[][,,] array = new int[][,,]
+		return new int[][,,]
 		{
-			new int[, , ]
+			new int[,,]
 			{
 				{
 					{
@@ -827,7 +827,7 @@ public class InitializerTests
 				}
 			},
 
-			new int[, , ]
+			new int[,,]
 			{
 				{
 					{

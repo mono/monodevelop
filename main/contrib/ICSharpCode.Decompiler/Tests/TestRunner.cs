@@ -52,10 +52,16 @@ namespace ICSharpCode.Decompiler.Tests
 			TestFile(@"..\..\Tests\DelegateConstruction.cs");
 		}
 		
+		[Test, Ignore("Not yet implemented")]
+		public void ExpressionTrees()
+		{
+			TestFile(@"..\..\Tests\ExpressionTrees.cs");
+		}
+		
 		[Test]
 		public void ExceptionHandling()
 		{
-			TestFile(@"..\..\Tests\ExceptionHandling.cs");
+			TestFile(@"..\..\Tests\ExceptionHandling.cs", false);
 		}
 		
 		[Test]
@@ -80,6 +86,12 @@ namespace ICSharpCode.Decompiler.Tests
 		public void InitializerTests()
 		{
 			TestFile(@"..\..\Tests\InitializerTests.cs");
+		}
+
+		[Test]
+		public void LiftedOperators()
+		{
+			TestFile(@"..\..\Tests\LiftedOperators.cs");
 		}
 		
 		[Test]
@@ -106,7 +118,7 @@ namespace ICSharpCode.Decompiler.Tests
 			TestFile(@"..\..\Tests\PropertiesAndEvents.cs");
 		}
 		
-		[Test, Ignore("Formatting differences in anonymous method create expressions")]
+		[Test]
 		public void QueryExpressions()
 		{
 			TestFile(@"..\..\Tests\QueryExpressions.cs");
@@ -150,8 +162,14 @@ namespace ICSharpCode.Decompiler.Tests
 		
 		static void TestFile(string fileName)
 		{
+			TestFile(fileName, false);
+			TestFile(fileName, true);
+		}
+
+		static void TestFile(string fileName, bool optimize)
+		{
 			string code = File.ReadAllText(fileName);
-			AssemblyDefinition assembly = Compile(code);
+			AssemblyDefinition assembly = Compile(code, optimize);
 			AstBuilder decompiler = new AstBuilder(new DecompilerContext(assembly.MainModule));
 			decompiler.AddAssembly(assembly);
 			new Helpers.RemoveCompilerAttribute().Run(decompiler.CompilationUnit);
@@ -160,11 +178,11 @@ namespace ICSharpCode.Decompiler.Tests
 			CodeAssert.AreEqual(code, output.ToString());
 		}
 
-		static AssemblyDefinition Compile(string code)
+		static AssemblyDefinition Compile(string code, bool optimize)
 		{
 			CSharpCodeProvider provider = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v4.0" } });
 			CompilerParameters options = new CompilerParameters();
-			options.CompilerOptions = "/unsafe /o-";
+			options.CompilerOptions = "/unsafe /o" + (optimize ? "+" : "-");
 			options.ReferencedAssemblies.Add("System.Core.dll");
 			CompilerResults results = provider.CompileAssemblyFromSource(options, code);
 			try {

@@ -43,15 +43,15 @@ namespace ICSharpCode.Decompiler.Ast
 			return default(S);
 		}
 		
-		public static void ReplaceAll (AstNode tree)
+		public static void ReplaceAll(AstNode tree)
 		{
 			foreach (var cs in tree.Descendants.OfType<CommentStatement>()) {
-				cs.Parent.InsertChildBefore (cs, new Comment (cs.comment), Roles.Comment);
-				cs.Remove ();
+				cs.Parent.InsertChildBefore(cs, new Comment(cs.comment), Roles.Comment);
+				cs.Remove();
 			}
 		}
 		
-		protected override bool DoMatch (AstNode other, Match match)
+		protected override bool DoMatch(AstNode other, Match match)
 		{
 			CommentStatement o = other as CommentStatement;
 			return o != null && MatchString(comment, o.comment);

@@ -17,7 +17,6 @@ FILES =  \
 	Ast/Annotations.cs \
 	Ast/AstBuilder.cs \
 	Ast/AstMethodBodyBuilder.cs \
-	Ast/CecilTypeResolveContext.cs \
 	Ast/CommentStatement.cs \
 	Ast/DecompilerContext.cs \
 	Ast/NameVariables.cs \
@@ -27,9 +26,12 @@ FILES =  \
 	Ast/Transforms/CombineQueryExpressions.cs \
 	Ast/Transforms/ContextTrackingVisitor.cs \
 	Ast/Transforms/ConvertConstructorCallIntoInitializer.cs \
+	Ast/Transforms/CustomPatterns.cs \
 	Ast/Transforms/DecimalConstantTransform.cs \
 	Ast/Transforms/DeclareVariables.cs \
 	Ast/Transforms/DelegateConstruction.cs \
+	Ast/Transforms/ExpressionTreeConverter.cs \
+	Ast/Transforms/FlattenSwitchBlocks.cs \
 	Ast/Transforms/IntroduceExtensionMethods.cs \
 	Ast/Transforms/IntroduceQueryExpressions.cs \
 	Ast/Transforms/IntroduceUnsafeModifier.cs \
@@ -69,6 +71,7 @@ FILES =  \
 	ILAst/ILCodes.cs \
 	ILAst/ILInlining.cs \
 	ILAst/InitializerPeepholeTransforms.cs \
+	ILAst/LiftedOperators.cs \
 	ILAst/LoopsAndConditions.cs \
 	ILAst/PatternMatching.cs \
 	ILAst/PeepholeTransform.cs \
@@ -77,7 +80,6 @@ FILES =  \
 	ILAst/YieldReturnDecompiler.cs \
 	ITextOutput.cs \
 	PlainTextOutput.cs \
-	Properties/AssemblyInfo.cs \
 	ReferenceResolvingException.cs \
 	Tests/CallOverloadedMethod.cs \
 	TextOutputWriter.cs 
